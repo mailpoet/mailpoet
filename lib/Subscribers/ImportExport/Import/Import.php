@@ -111,7 +111,8 @@ class Import {
         // add, if required, missing required fields to new subscribers
         $new_subscribers = $this->addMissingRequiredFields($new_subscribers);
         $new_subscribers = $this->setSubscriptionStatusToSubscribed($new_subscribers);
-        $new_subscribers = $this->setSourceAndLinkToken($new_subscribers);
+        $new_subscribers = $this->setSource($new_subscribers);
+        $new_subscribers = $this->setLinkToken($new_subscribers);
         $created_subscribers =
           $this->createOrUpdateSubscribers(
             'create',
@@ -298,15 +299,20 @@ class Import {
     return $subscribers_data;
   }
 
-  private function setSourceAndLinkToken($subscribers_data) {
+  private function setSource($subscribers_data) {
     $subscribers_count = count($subscribers_data['data'][key($subscribers_data['data'])]);
     $subscribers_data['fields'][] = 'source';
-    $subscribers_data['fields'][] = 'link_token';
     $subscribers_data['data']['source'] = array_fill(
       0,
       $subscribers_count,
       Source::IMPORTED
     );
+    return $subscribers_data;
+  }
+
+  private function setLinkToken($subscribers_data) {
+    $subscribers_count = count($subscribers_data['data'][key($subscribers_data['data'])]);
+    $subscribers_data['fields'][] = 'link_token';
     $subscribers_data['data']['link_token'] = array_map(
       function () {
         return Security::generateRandomString(Subscriber::LINK_TOKEN_LENGTH);
