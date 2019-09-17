@@ -23,6 +23,7 @@ class NewsletterEntity {
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
   const TYPE_NOTIFICATION_HISTORY = 'notification_history';
+  const TYPE_WC_TRANSACTIONAL_EMAIL = 'wc_transactional';
 
   // standard newsletters
   const STATUS_DRAFT = 'draft';

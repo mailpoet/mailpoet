@@ -41,6 +41,7 @@ class Newsletter extends Model {
   const TYPE_WELCOME = NewsletterEntity::TYPE_WELCOME;
   const TYPE_NOTIFICATION = NewsletterEntity::TYPE_NOTIFICATION;
   const TYPE_NOTIFICATION_HISTORY = NewsletterEntity::TYPE_NOTIFICATION_HISTORY;
+  const TYPE_WC_TRANSACTIONAL_EMAIL = NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL;
   // standard newsletters
   const STATUS_DRAFT = NewsletterEntity::STATUS_DRAFT;
   const STATUS_SCHEDULED = NewsletterEntity::STATUS_SCHEDULED;
