@@ -5,6 +5,7 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Menu;
 use MailPoet\Config\MP2Migrator;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -24,16 +25,21 @@ class WelcomeWizard {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var FeaturesController */
+  private $features_controller;
+
   function __construct(
     PageRenderer $page_renderer,
     SettingsController $settings,
     WooCommerceHelper $woocommerce_helper,
-    WPFunctions $wp
+    WPFunctions $wp,
+    FeaturesController $features_controller
   ) {
     $this->page_renderer = $page_renderer;
     $this->settings = $settings;
     $this->woocommerce_helper = $woocommerce_helper;
     $this->wp = $wp;
+    $this->features_controller = $features_controller;
   }
 
   function render() {
@@ -47,6 +53,7 @@ class WelcomeWizard {
       'subscribers_count' => Subscriber::getTotalSubscribers(),
       'has_premium_key' => Bridge::isMSSKeySpecified(),
     ];
+    $data['mailpoet_feature_flags'] = $this->features_controller->getAllFlags();
     $this->page_renderer->displayPage('welcome_wizard.html', $data);
   }
 }

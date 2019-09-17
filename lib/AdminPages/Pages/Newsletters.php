@@ -5,6 +5,7 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Env;
 use MailPoet\Config\Menu;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
@@ -40,6 +41,9 @@ class Newsletters {
   /** @var Installation */
   private $installation;
 
+  /** @var FeaturesController */
+  private $features_controller;
+
   function __construct(
     PageRenderer $page_renderer,
     PageLimit $listing_page_limit,
@@ -47,7 +51,8 @@ class Newsletters {
     SettingsController $settings,
     UserFlagsController $user_flags,
     WooCommerceHelper $woocommerce_helper,
-    Installation $installation
+    Installation $installation,
+    FeaturesController $features_controller
   ) {
     $this->page_renderer = $page_renderer;
     $this->listing_page_limit = $listing_page_limit;
@@ -56,6 +61,7 @@ class Newsletters {
     $this->user_flags = $user_flags;
     $this->woocommerce_helper = $woocommerce_helper;
     $this->installation = $installation;
+    $this->features_controller = $features_controller;
   }
 
   function render() {
@@ -98,6 +104,7 @@ class Newsletters {
     $data['is_woocommerce_active'] = $this->woocommerce_helper->isWooCommerceActive();
     $data['is_mailpoet_update_available'] = array_key_exists(Env::$plugin_path, $this->wp->getPluginUpdates());
     $data['subscribers_count'] = Subscriber::getTotalSubscribers();
+    $data['mailpoet_feature_flags'] = $this->features_controller->getAllFlags();
 
     if (!$data['premium_plugin_active']) {
       $data['free_premium_subscribers_limit'] = License::FREE_PREMIUM_SUBSCRIBERS_LIMIT;

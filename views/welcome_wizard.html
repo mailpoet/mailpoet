@@ -18,6 +18,7 @@
   var subscribers_count = <%= subscribers_count %>;
   var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscribers_count) %>';
   var has_premium_key = <%= json_encode(has_premium_key) %>;
+  var mailpoet_feature_flags = <%= json_encode(mailpoet_feature_flags) %>;
 </script>
 
 <div id="mailpoet_wizard_container"></div>
