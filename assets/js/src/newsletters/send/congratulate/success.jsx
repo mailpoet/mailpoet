@@ -7,7 +7,9 @@ import PitchMss from './success_pitch_mss.jsx';
 function Success(props) {
   if (!window.has_premium_key) {
     return (
-      <PitchMss />
+      <PitchMss
+        MSS_pitch_illustration_url={props.MSS_pitch_illustration_url}
+      />
     );
   }
   return (
@@ -22,6 +24,7 @@ function Success(props) {
 Success.propTypes = {
   successClicked: PropTypes.func.isRequired,
   illustrationImageUrl: PropTypes.string.isRequired,
+  MSS_pitch_illustration_url: PropTypes.string.isRequired,
   newsletter: PropTypes.shape({
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,

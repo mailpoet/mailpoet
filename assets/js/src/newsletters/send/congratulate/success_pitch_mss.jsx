@@ -9,7 +9,7 @@ function PitchMss(props) {
     <div className="mailpoet_congratulate_success">
       <h1>{MailPoet.I18n.t('congratulationsMSSPitchHeader')}</h1>
       <WelcomeWizardStepLayoutBody
-        illustrationUrl={props.MSS_pitch_illustration_url}
+        illustrationUrl={props.MSSPitchIllustrationUrl}
         displayProgressBar={false}
       >
         HERE COMES THE BODY
@@ -19,7 +19,8 @@ function PitchMss(props) {
 }
 
 PitchMss.propTypes = {
-  MSS_pitch_illustration_url: PropTypes.string.isRequired,
+  MSSPitchIllustrationUrl: PropTypes.string.isRequired,
+  onFinish: PropTypes.func.isRequired,
 };
 
 
