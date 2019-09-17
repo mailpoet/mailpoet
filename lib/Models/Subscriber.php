@@ -38,7 +38,9 @@ class Subscriber extends Model {
   const STATUS_BOUNCED = 'bounced';
   const STATUS_INACTIVE = 'inactive';
 
+  const DEPRECATED_LINK_TOKEN_LENGTH = 6;
   const LINK_TOKEN_LENGTH = 32;
+
   /** @var string|bool */
   public $token;
 
@@ -121,7 +123,10 @@ class Subscriber extends Model {
     return self::where('wp_user_id', $wp_user->ID)->findOne();
   }
 
-  static function generateToken($email = null, $length = 32) {
+  /**
+   * @deprecated Only for backward compatibility for old tokens
+   */
+  static function generateToken($email = null, $length = self::DEPRECATED_LINK_TOKEN_LENGTH) {
     if ($email !== null) {
       $auth_key = '';
       if (defined('AUTH_KEY')) {

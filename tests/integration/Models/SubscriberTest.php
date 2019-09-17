@@ -674,7 +674,7 @@ class SubscriberTest extends \MailPoetTest {
 
   function testItGeneratesSubscriberToken() {
     $token = Subscriber::generateToken($this->test_data['email']);
-    expect(strlen($token))->equals(32);
+    expect(strlen($token))->equals(6);
   }
 
   function testItVerifiesSubscriberToken() {
