@@ -7,7 +7,7 @@ import WelcomeWizardPitchMSSStep from '../../../wizard/steps/pitch_mss_step.jsx'
 
 function PitchMss(props) {
   return (
-    <div className="mailpoet_congratulate_success">
+    <div className="mailpoet_congratulate_success mailpoet_congratulate_mss_pitch">
       <h1>{MailPoet.I18n.t('congratulationsMSSPitchHeader')}</h1>
       <WelcomeWizardStepLayoutBody
         illustrationUrl={props.MSSPitchIllustrationUrl}
