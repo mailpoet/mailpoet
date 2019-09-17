@@ -9,6 +9,7 @@ function Success(props) {
     return (
       <PitchMss
         MSS_pitch_illustration_url={props.MSS_pitch_illustration_url}
+        onFinish={props.successClicked}
       />
     );
   }

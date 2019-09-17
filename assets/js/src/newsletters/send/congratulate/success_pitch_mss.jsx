@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
 import WelcomeWizardStepLayoutBody from '../../../wizard/layout/step_layout_body.jsx';
+import WelcomeWizardPitchMSSStep from '../../../wizard/steps/pitch_mss_step.jsx';
 
 function PitchMss(props) {
   return (
@@ -12,7 +13,12 @@ function PitchMss(props) {
         illustrationUrl={props.MSSPitchIllustrationUrl}
         displayProgressBar={false}
       >
-        HERE COMES THE BODY
+        <WelcomeWizardPitchMSSStep
+          next={props.onFinish}
+          subscribersCount={25}
+          mailpoetAccountUrl="http://xxx"
+          isWoocommerceActive={true}
+        />
       </WelcomeWizardStepLayoutBody>
     </div>
   );
