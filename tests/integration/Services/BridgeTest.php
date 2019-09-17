@@ -260,7 +260,7 @@ class BridgeTest extends \MailPoetTest {
   }
 
   function testItPingsBridge() {
-    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     expect(Bridge::pingBridge())->true();
   }
 
