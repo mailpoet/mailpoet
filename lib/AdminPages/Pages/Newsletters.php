@@ -97,8 +97,9 @@ class Newsletters {
     $data['premium_plugin_active'] = License::getLicense();
     $data['is_woocommerce_active'] = $this->woocommerce_helper->isWooCommerceActive();
     $data['is_mailpoet_update_available'] = array_key_exists(Env::$plugin_path, $this->wp->getPluginUpdates());
+    $data['subscribers_count'] = Subscriber::getTotalSubscribers();
+
     if (!$data['premium_plugin_active']) {
-      $data['subscribers_count'] = Subscriber::getTotalSubscribers();
       $data['free_premium_subscribers_limit'] = License::FREE_PREMIUM_SUBSCRIBERS_LIMIT;
     }
 

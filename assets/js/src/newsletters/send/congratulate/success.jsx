@@ -11,6 +11,7 @@ function Success(props) {
         MSSPitchIllustrationUrl={props.MSSPitchIllustrationUrl}
         onFinish={props.successClicked}
         isWoocommerceActive={props.isWoocommerceActive}
+        subscribersCount={props.subscribersCount}
       />
     );
   }
@@ -32,6 +33,7 @@ Success.propTypes = {
     type: PropTypes.string.isRequired,
   }).isRequired,
   isWoocommerceActive: PropTypes.bool.isRequired,
+  subscribersCount: PropTypes.number.isRequired,
 };
 
 

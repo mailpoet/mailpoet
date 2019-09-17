@@ -43,8 +43,9 @@
       var mailpoet_mss_active = <%= json_encode(mss_active) %>;
       var mailpoet_free_plan_announcement_seen = !!+'<%= settings.free_plan_announcement_seen %>';
       var mailpoet_mta_method = '<%= settings.mta.method %>';
+      var mailpoet_subscribers_count = <%= subscribers_count %>;
+
       <% if not(premium_plugin_active) %>
-        var mailpoet_subscribers_count = <%= subscribers_count %>;
         var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;
       <% endif %>
     <% endautoescape %>
