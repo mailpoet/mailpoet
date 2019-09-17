@@ -47,7 +47,7 @@ class MailChimpTest extends \MailPoetUnitTest {
   }
 
   function testItFailsWithIncorrectAPIKey() {
-    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     try {
       $mailchimp = clone($this->mailchimp);
@@ -60,7 +60,7 @@ class MailChimpTest extends \MailPoetUnitTest {
   }
 
   function testItCanGetLists() {
-    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     try {
       $lists = $this->mailchimp->getLists();
     } catch (\Exception $e) {
@@ -72,7 +72,7 @@ class MailChimpTest extends \MailPoetUnitTest {
   }
 
   function testItFailsWithIncorrectLists() {
-    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     try {
       $this->mailchimp->getSubscribers();
@@ -90,7 +90,7 @@ class MailChimpTest extends \MailPoetUnitTest {
   }
 
   function testItCanGetSubscribers() {
-    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     try {
       $subscribers = $this->mailchimp->getSubscribers([$this->lists[0]]);
@@ -106,7 +106,7 @@ class MailChimpTest extends \MailPoetUnitTest {
   }
 
   function testItFailsWhenSubscribersDataTooLarge() {
-    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $mailchimp = clone($this->mailchimp);
     $mailchimp->max_post_size = 10;
 
