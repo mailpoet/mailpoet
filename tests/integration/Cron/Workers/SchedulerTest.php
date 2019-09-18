@@ -305,7 +305,7 @@ class SchedulerTest extends \MailPoetTest {
   function testItReschedulesQueueDeliveryWhenMailpoetSubscriberHasNotConfirmedSubscription() {
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
-    $subscriber = $this->_createSubscriber($wp_user_id = null, 'unsubscribed');
+    $subscriber = $this->_createSubscriber($wp_user_id = null, 'unconfirmed');
     $segment = $this->_createSegment();
     $subscriber_segment = $this->_createSubscriberSegment($subscriber->id, $segment->id);
     $newsletter = $this->_createNewsletter();
@@ -329,6 +329,31 @@ class SchedulerTest extends \MailPoetTest {
       Carbon::createFromTimestamp(current_time('timestamp'))
         ->addMinutes(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT)
     );
+  }
+
+  function testItDoesntRunQueueDeliveryWhenMailpoetSubscriberHasUnsubscribed() {
+    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    Carbon::setTestNow($current_time); // mock carbon to return current time
+    $subscriber = $this->_createSubscriber($wp_user_id = null, 'unsubscribed');
+    $segment = $this->_createSegment();
+    $subscriber_segment = $this->_createSubscriberSegment($subscriber->id, $segment->id);
+    $newsletter = $this->_createNewsletter();
+    $newsletter_option_field =
+      $this->_createNewsletterOptionField('segment', Newsletter::TYPE_NOTIFICATION);
+    $newsletter_option = $this->_createNewsletterOption(
+      $newsletter_option_field->id, $newsletter->id,
+      $segment->id
+    );
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
+      ->findOne($newsletter->id);
+    $queue = $this->_createQueue($newsletter->id);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class));
+
+    // return false
+    $result = $scheduler->verifyMailpoetSubscriber($subscriber->id, $newsletter, $queue);
+    expect($result)->false();
+    // update the time queue is scheduled to run at
+    expect(SendingQueue::findOne($queue->id))->false();
   }
 
   function testItCanVerifyMailpoetSubscriber() {
