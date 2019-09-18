@@ -15,7 +15,7 @@ class ReceiveStandardEmailCest {
     $I->wantTo('Receive a standard newsletter as a subscriber');
 
     //create a wp user with wp role subscriber
-    $I->cli('user create narwhal standardtest@example.com --role=subscriber --allow-root');
+    $I->cli(['user', 'create', 'narwhal', 'standardtest@example.com', '--role=subscriber', '--allow-root']);
     //Create a newsletter with template
     $I->login();
     $I->amOnMailpoetPage('Emails');

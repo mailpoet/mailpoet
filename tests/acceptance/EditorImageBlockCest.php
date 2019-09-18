@@ -7,7 +7,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 class EditorImageBlockCest {
   function addImage(\AcceptanceTester $I) {
     $I->wantTo('add image block to newsletter');
-    $I->cli('media import /wp-core/wp-content/plugins/mailpoet/tests/_data/unicornsplaceholder.png --allow-root');
+    $I->cli(['media', 'import', '/wp-core/wp-content/plugins/mailpoet/tests/_data/unicornsplaceholder.png', '--allow-root']);
     $newsletter = (new Newsletter())
       ->loadBodyFrom('newsletterWithText.json')
       ->create();

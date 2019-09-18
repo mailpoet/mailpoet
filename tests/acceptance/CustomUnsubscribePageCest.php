@@ -7,8 +7,8 @@ class CustomUnsubscribePageCest {
     $I->wantTo('Create page with MP subscriber shortcode');
     $pageTitle = 'SorryToSeeYouGo';
     $pageText = 'Manage your subscription';
-    $pageContent = escapeshellarg("[mailpoet_manage text=\"$pageText\"]");
-    $I->cli("post create --allow-root --post_type=page --post_status=publish --post_title=$pageTitle --post_content=$pageContent");
+    $pageContent = "[mailpoet_manage text=\"$pageText\"]";
+    $I->cli(['post', 'create', '--post_type=page', '--post_status=publish', '--post_title=' . $pageTitle, '--post_content=' . $pageContent, '--allow-root']);
     $I->login();
     $I->amOnPage('/wp-admin/edit.php?post_type=page');
     $I->waitForText($pageTitle);

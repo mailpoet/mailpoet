@@ -28,7 +28,7 @@ class NewsletterStatisticsCest {
   function showWooCommercePurchaseStatistics(\AcceptanceTester $I) {
     $title = 'Newsletter Title';
     $currency = 'EUR';
-    $I->cli("option set woocommerce_currency $currency --allow-root");
+    $I->cli(['option', 'set', 'woocommerce_currency', $currency, '--allow-root']);
 
     $newsletter = $this->createNewsletter($title);
     $click1 = $this->createClickInNewsletter($newsletter);
@@ -56,7 +56,7 @@ class NewsletterStatisticsCest {
   function dontShowWooCommercePurchaseStatisticsWithZeroValue(\AcceptanceTester $I) {
     $title = 'Newsletter Title';
     $currency = 'EUR';
-    $I->cli("option set woocommerce_currency $currency --allow-root");
+    $I->cli(['option', 'set', 'woocommerce_currency', $currency, '--allow-root']);
 
     $newsletter = $this->createNewsletter($title);
     $click = $this->createClickInNewsletter($newsletter);

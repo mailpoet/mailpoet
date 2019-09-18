@@ -27,7 +27,7 @@ class RevenueTrackingCookieCest {
     $this->settings->withTrackingEnabled()->withCookieRevenueTrackingDisabled();
     $segment_name = $I->createListWithSubscriber();
     // make sure a post exists
-    $I->cli('post create --allow-root --post_status=publish --post_type=post --post_title=Lorem --post_content=Ipsum');
+    $I->cli(['post', 'create', '--allow-root', '--post_status=publish', '--post_type=post', '--post_title=Lorem', '--post_content=Ipsum']);
 
     $I->login();
     // enable the settings
@@ -66,7 +66,7 @@ class RevenueTrackingCookieCest {
     $this->settings->withTrackingEnabled()->withCookieRevenueTracking();
     $segment_name = $I->createListWithSubscriber();
     // make sure a post exists
-    $I->cli('post create --allow-root --post_status=publish --post_type=post --post_title=Lorem --post_content=Ipsum');
+    $I->cli(['post', 'create', '--allow-root', '--post_status=publish', '--post_type=post', '--post_title=Lorem', '--post_content=Ipsum']);
 
     $I->login();
     // dis the settings
