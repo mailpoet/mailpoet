@@ -202,7 +202,23 @@ const itemActions = [
   {
     name: 'trash',
     display: function display(segment) {
-      return !isSpecialSegment(segment);
+      return !isSpecialSegment(segment) && segment.automated_emails_subjects.length === 0;
+    },
+  },
+  {
+    name: 'delete',
+    label: MailPoet.I18n.t('moveToTrash'),
+    onClick: function onClick(segment) {
+      MailPoet.Notice.error(
+        MailPoet.I18n.t('trashDisallowed').replace(
+          '%$1s',
+          segment.automated_emails_subjects.map((subject) => `'${subject}'`).join(', ')
+        ),
+        { scroll: true }
+      );
+    },
+    display: function display(segment) {
+      return !isSpecialSegment(segment) && segment.automated_emails_subjects.length > 0;
     },
   },
 ];
