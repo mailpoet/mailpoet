@@ -1,12 +1,14 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WooCommerce\Helper as WCHelper;
 
 /**
  * @property array $subscribers_count
+ * @property array $automated_emails_subjects
  * @property string $name
  * @property string $type
  * @property string $description
@@ -115,6 +117,29 @@ class Segment extends Model {
       ->whereNull('subscribers.deleted_at')
       ->findOne()
       ->asArray();
+
+    return $this;
+  }
+
+  function withAutomatedEmailsSubjects() {
+    $automated_emails = NewsletterSegment::tableAlias('relation')
+      ->where('relation.segment_id', $this->id)
+      ->join(
+        MP_NEWSLETTERS_TABLE,
+        'newsletters.id = relation.newsletter_id',
+        'newsletters'
+      )
+      ->whereIn('newsletters.type', [
+        NewsletterEntity::TYPE_AUTOMATIC,
+        NewsletterEntity::TYPE_WELCOME,
+        NewsletterEntity::TYPE_NOTIFICATION,
+      ])
+      ->select('newsletters.subject')
+      ->findMany();
+
+    $this->automated_emails_subjects = array_map(function($email) {
+      return $email->subject;
+    }, $automated_emails);
 
     return $this;
   }

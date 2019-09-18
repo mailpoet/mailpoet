@@ -58,6 +58,7 @@ class Segments extends APIEndpoint {
 
       $data[] = $segment
         ->withSubscribersCount()
+        ->withAutomatedEmailsSubjects()
         ->asArray();
     }
 
