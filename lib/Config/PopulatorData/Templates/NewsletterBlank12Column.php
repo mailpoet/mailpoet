@@ -21,7 +21,7 @@ class NewsletterBlank12Column {
   function get() {
     return [
       'name' => WPFunctions::get()->__("Newsletter: Blank 1:2 Column", 'mailpoet'),
-      'categories' => json_encode(['standard']),
+      'categories' => json_encode(['standard', 'blank']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

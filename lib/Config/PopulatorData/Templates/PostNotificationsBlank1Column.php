@@ -21,7 +21,7 @@ class PostNotificationsBlank1Column {
   function get() {
     return [
       'name' => WPFunctions::get()->__("Post Notifications: Blank 1 Column", 'mailpoet'),
-      'categories' => json_encode(['notification']),
+      'categories' => json_encode(['notification', 'blank']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
