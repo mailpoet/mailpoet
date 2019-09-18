@@ -36,10 +36,6 @@ if (window.mailpoet_woocommerce_active) {
 templatesCategories.push(
   ...[
     {
-      name: 'all',
-      label: MailPoet.I18n.t('allTemplates'),
-    },
-    {
       name: 'recent',
       label: MailPoet.I18n.t('recentlySent'),
     },
