@@ -22,6 +22,9 @@ use Mailpoet\Models\Form as FormModel;
  */
 class AcceptanceTester extends \Codeception\Actor {
   use _generated\AcceptanceTesterActions {
+    cli as _cli;
+    cliToArray as _cliToArray;
+    cliToString as _cliToString;
     switchToNextTab as _switchToNextTab;
     waitForElement as _waitForElement;
     waitForElementChange as _waitForElementChange;
@@ -141,8 +144,8 @@ class AcceptanceTester extends \Codeception\Actor {
       $form_factory = new Form();
       $form = $form_factory->withName('Confirmation Form')->create();
     }
-    $I->cli('widget reset sidebar-1 --allow-root');
-    $I->cli('widget add mailpoet_form sidebar-1 2 --form=' . $form->id . ' --title="Subscribe to Our Newsletter" --allow-root');
+    $I->cli(['widget', 'reset', 'sidebar-1', '--allow-root']);
+    $I->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter', '--allow-root']);
 
     // subscribe
     $I->amOnUrl(self::WP_URL);
@@ -243,11 +246,11 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function activateWooCommerce() {
     $I = $this;
-    $I->cli('plugin activate woocommerce --allow-root');
+    $I->cli(['plugin', 'activate', 'woocommerce', '--allow-root']);
   }
   public function deactivateWooCommerce() {
     $I = $this;
-    $I->cli('plugin deactivate woocommerce --allow-root');
+    $I->cli(['plugin', 'deactivate', 'woocommerce', '--allow-root']);
   }
 
   /**
@@ -351,5 +354,22 @@ class AcceptanceTester extends \Codeception\Actor {
     $I = $this;
     $I->click('Place order');
     $I->waitForText('Your order has been received');
+  }
+
+  // Enforce WP-CLI to be called with array because:
+  //  - It's recommended now (https://github.com/lucatume/wp-browser/commit/6dbf93709194c630191c0c7de527b577105be743).
+  //  - It's default in Symfony\Process now.
+  //  - String variant is still buggy even after a fix (https://github.com/lucatume/wp-browser/commit/b078ef37917b4f0668d064ea950e4b41f1773cb6).
+
+  public function cli(array $userCommand) {
+    return $this->_cli($userCommand);
+  }
+
+  public function cliToArray(array $userCommand) {
+    return $this->_cliToArray($userCommand);
+  }
+
+  public function cliToString(array $userCommand) {
+    return $this->_cliToString($userCommand);
   }
 }

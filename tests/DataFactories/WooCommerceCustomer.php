@@ -55,8 +55,8 @@ class WooCommerceCustomer {
 
 
   function create() {
-    $create_output = $this->tester->cliToArray("wc customer create --porcelain --allow-root --user=admin --first_name=\"{$this->data['first_name']}\" --last_name=\"{$this->data['last_name']}\" --email=\"{$this->data['email']}\" --password=\"{$this->data['password']}\"");
-    $customer_out = $this->tester->cliToArray("wc customer get $create_output[0] --format=json --allow-root --user=admin");
+    $create_output = $this->tester->cliToArray(['wc', 'customer', 'create', '--porcelain', '--allow-root', '--user=admin', "--first_name={$this->data['first_name']}", "--last_name={$this->data['last_name']}", "--email={$this->data['email']}", "--password={$this->data['password']}"]);
+    $customer_out = $this->tester->cliToArray(['wc', 'customer', 'get', $create_output[0], '--format=json', '--allow-root', '--user=admin']);
     return json_decode($customer_out[0], true);
   }
 
@@ -64,11 +64,11 @@ class WooCommerceCustomer {
    * @param int $id
    */
   function delete($id) {
-    $this->tester->cliToArray("wc customer delete $id --force=1 --allow-root --user=admin");
+    $this->tester->cliToArray(['wc', 'customer', 'delete', $id, '--force=1', '--allow-root', '--user=admin']);
   }
 
   function deleteAll() {
-    $list = $this->tester->cliToArray("wc customer list --format=json --allow-root --user=admin --fields=id");
+    $list = $this->tester->cliToArray(['wc', 'customer', 'list', '--format=json', '--allow-root', '--user=admin', '--fields=id']);
     foreach (json_decode($list[0], true) as $item) {
       $this->delete($item['id']);
     }

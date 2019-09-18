@@ -31,7 +31,7 @@ class SubscriptionCaptchaCest {
     $subscriber_factory = new Subscriber();
     $subscriber_factory->withEmail($this->subscriber_email)->withCountConfirmations(1)->create();
 
-    $I->cli('widget add mailpoet_form sidebar-1 2 --form=' . $form->id . ' --title="Subscribe to Our Newsletter" --allow-root');
+    $I->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter', '--allow-root']);
   }
 
   function checkCaptchaPageExistsAfterSubscription(\AcceptanceTester $I) {

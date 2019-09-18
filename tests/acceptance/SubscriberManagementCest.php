@@ -21,7 +21,7 @@ class SubscriberManagementCest {
 
   private function generateWPUsersList(\AcceptanceTester $I) {
     $I->wantTo('Create some subscribers');
-    $I->cli('user import-csv --path /wp-core/wp-content/plugins/mailpoet/tests/_data/users.csv --allow-root');
+    $I->cli(['user', 'import-csv', '/wp-core/wp-content/plugins/mailpoet/tests/_data/users.csv', '--allow-root']);
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
     $I->seeNoJSErrors();
