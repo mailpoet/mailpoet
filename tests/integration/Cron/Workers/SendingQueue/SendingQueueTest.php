@@ -488,6 +488,36 @@ class SendingQueueTest extends \MailPoetTest {
     expect($statistics)->notEquals(false);
   }
 
+  function testItPreventsSendingWelcomeEmailWhenSubscriberIsUnsubscribed() {
+    $this->newsletter->type = Newsletter::TYPE_WELCOME;
+    $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+    $this->subscriber->save();
+    $this->newsletter_segment->delete();
+
+    $sending_queue_worker = new SendingQueueWorker(
+      $this->sending_error_handler,
+      $this->stats_notifications_worker,
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        [
+          'send' => Expected::exactly(0),
+        ],
+        $this
+      )
+    );
+    $sending_queue_worker->process();
+
+    // queue status is set to completed
+    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
+
+    expect($updated_queue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
+      ->equals([]);
+    expect($updated_queue->count_total)->equals(0);
+    expect($updated_queue->count_processed)->equals(0);
+    expect($updated_queue->count_to_process)->equals(0);
+  }
+
   function testItRemovesNonexistentSubscribersFromProcessingList() {
     $queue = $this->queue;
     $queue->setSubscribers([

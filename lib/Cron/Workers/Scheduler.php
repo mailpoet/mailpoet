@@ -171,13 +171,7 @@ class Scheduler {
       $queue->delete();
       return false;
     }
-    // check if subscriber is confirmed (subscribed)
-    if ($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
-      // reschedule delivery
-      $queue->rescheduleProgressively();
-      return false;
-    }
-    return true;
+    return $this->verifySubscriber($subscriber, $queue);
   }
 
   function verifyWPSubscriber($subscriber_id, $newsletter, $queue) {
@@ -191,6 +185,18 @@ class Scheduler {
     if ($newsletter->role !== WelcomeScheduler::WORDPRESS_ALL_ROLES
       && !in_array($newsletter->role, $wp_user['roles'])
     ) {
+      $queue->delete();
+      return false;
+    }
+    return $this->verifySubscriber($subscriber, $queue);
+  }
+
+  function verifySubscriber($subscriber, $queue) {
+    if ($subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
+      // reschedule delivery
+      $queue->rescheduleProgressively();
+      return false;
+    } else if ($subscriber->status === Subscriber::STATUS_UNSUBSCRIBED) {
       $queue->delete();
       return false;
     }
