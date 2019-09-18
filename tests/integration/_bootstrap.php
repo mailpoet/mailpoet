@@ -186,6 +186,16 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
 
     return $method->invokeArgs($object, $parameters);
   }
+
+  public static function markTestSkipped($message = '')
+  {
+    $branch_name = getenv('CIRCLE_BRANCH');
+    if ($branch_name === 'master' || $branch_name === 'release') {
+      self::fail('Cannot skip tests on this branch.');
+    } else {
+      parent::markTestSkipped($message);
+    }
+  }
 }
 
 function asCallable($fn) {
