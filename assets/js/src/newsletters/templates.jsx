@@ -24,6 +24,10 @@ const templatesCategories = [
     name: 'notification',
     label: MailPoet.I18n.t('tabNotificationTitle'),
   },
+  {
+    name: 'blank',
+    label: MailPoet.I18n.t('tabBlankTitle'),
+  },
 ];
 
 if (window.mailpoet_woocommerce_active) {
