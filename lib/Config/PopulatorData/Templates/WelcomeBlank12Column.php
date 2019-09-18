@@ -21,7 +21,7 @@ class WelcomeBlank12Column {
   function get() {
     return [
       'name' => WPFunctions::get()->__("Welcome Email: Blank 1:2 Column", 'mailpoet'),
-      'categories' => json_encode(['welcome']),
+      'categories' => json_encode(['welcome', 'blank']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

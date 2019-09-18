@@ -14,7 +14,6 @@ use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\Form;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
@@ -157,7 +156,6 @@ class Populator {
     $this->createDefaultUsersFlags();
     $this->createMailPoetPage();
     $this->createSourceForSubscribers();
-    $this->updateNewsletterCategories();
     $this->updateMetaFields();
     $this->scheduleInitialInactiveSubscribersCheck();
     $this->scheduleAuthorizedSendingEmailsCheck();
@@ -552,20 +550,6 @@ class Populator {
       ' WHERE `source` = "' . Source::UNKNOWN . '"' .
       ' AND `is_woocommerce_user` = 1'
     );
-  }
-
-  private function updateNewsletterCategories() {
-    global $wpdb;
-    // perform once for versions below or equal to 3.14.0
-    if (version_compare($this->settings->get('db_version', '3.14.1'), '3.14.0', '>')) {
-      return false;
-    }
-    $query = "UPDATE `%s` SET categories = REPLACE(REPLACE(categories, ',\"blank\"', ''), ',\"sample\"', ',\"all\"')";
-    $wpdb->query(sprintf(
-      $query,
-      NewsletterTemplate::$_table
-    ));
-    return true;
   }
 
   private function updateMetaFields() {
