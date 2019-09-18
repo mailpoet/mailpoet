@@ -29,6 +29,9 @@ class ListingTabs extends React.Component {
 
   render() {
     const tabs = this.state.tabs.map((tab) => {
+      if (tab.display === false) {
+        return null;
+      }
       const tabClasses = classNames(
         'nav-tab',
         { 'nav-tab-active': (this.props.tab === tab.name) }
