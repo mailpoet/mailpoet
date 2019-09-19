@@ -20,7 +20,7 @@ BenefitsList.propTypes = {
   isWoocommerceActive: PropTypes.bool.isRequired,
 };
 
-const Controlls = (props) => (
+const Controls = (props) => (
   <div className="mailpoet_welcome_wizard_step_controls">
     <p>
       <a
@@ -56,7 +56,7 @@ const Controlls = (props) => (
   </div>
 );
 
-Controlls.propTypes = {
+Controls.propTypes = {
   mailpoetAccountUrl: PropTypes.string.isRequired,
   next: PropTypes.func.isRequired,
   nextButtonText: PropTypes.string.isRequired,
@@ -73,7 +73,7 @@ const FreePlanSubscribers = (props) => (
     <BenefitsList
       isWoocommerceActive={props.isWoocommerceActive}
     />
-    <Controlls
+    <Controls
       mailpoetAccountUrl={props.mailpoetAccountUrl}
       next={props.next}
       nextButtonText={MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
@@ -101,7 +101,7 @@ const NotFreePlanSubscribers = (props) => (
     <BenefitsList
       isWoocommerceActive={props.isWoocommerceActive}
     />
-    <Controlls
+    <Controls
       mailpoetAccountUrl={props.mailpoetAccountUrl}
       next={props.next}
       nextButtonText={MailPoet.I18n.t('welcomeWizardMSSNotFreeButton')}
