@@ -12,7 +12,7 @@ class SettingsArchivePageCest {
     $segment = $segment_factory->withName('Empty Send')->create();
     $pageTitle = 'EmptyNewsletterArchive';
     $pageContent = "[mailpoet_archive segments=\"$segment->id\"]";
-    $I->cli(['post', 'create', '--allow-root', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle", "--post_content=$pageContent"]);
+    $I->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle", "--post_content=$pageContent"]);
     $I->login();
     $I->amOnPage('/wp-admin/edit.php?post_type=page');
     $I->waitForText($pageTitle);
@@ -30,7 +30,7 @@ class SettingsArchivePageCest {
     $newsletterFactory->withSubject('SentNewsletter')->withSentStatus()->withSendingQueue()->withSegments([$segment2])->create();
     $pageTitle2 = 'SentNewsletterArchive';
     $pageContent2 = "[mailpoet_archive segments=\"$segment2->id\"]";
-    $I->cli(['post', 'create', '--allow-root', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle2", "--post_content=$pageContent2"]);
+    $I->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle2", "--post_content=$pageContent2"]);
     $I->login();
     $I->amOnPage('/wp-admin/edit.php?post_type=page');
     $I->waitForText($pageTitle2);

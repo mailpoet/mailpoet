@@ -82,7 +82,7 @@ class WooCommerceOrder {
 
 
   function create() {
-    $cmd = ['wc', 'shop_order', 'create', '--porcelain', '--allow-root', '--user=admin'];
+    $cmd = ['wc', 'shop_order', 'create', '--porcelain', '--user=admin'];
     $cmd[] = '--status=' . $this->data['status'];
     $cmd[] = '--customer_id=' . $this->data['customer_id'];
     $cmd[] = '--billing=' . json_encode($this->data['billing']);
@@ -91,7 +91,7 @@ class WooCommerceOrder {
       $cmd[] = '--line_items=' . json_encode($this->data['products']);
     }
     $create_output = $this->tester->cliToArray($cmd);
-    $order_out = $this->tester->cliToArray(['wc', 'shop_order', 'get', $create_output[0], '--format=json', '--allow-root', '--user=admin']);
+    $order_out = $this->tester->cliToArray(['wc', 'shop_order', 'get', $create_output[0], '--format=json', '--user=admin']);
     $order = json_decode($order_out[0], true);
     if (isset($this->data['date_created'])) {
       wp_update_post([
@@ -107,11 +107,11 @@ class WooCommerceOrder {
    * @param int $id
    */
   function delete($id) {
-    $this->tester->cliToArray(['wc', 'shop_order', 'delete', $id, '--force=1', '--allow-root', '--user=admin']);
+    $this->tester->cliToArray(['wc', 'shop_order', 'delete', $id, '--force=1', '--user=admin']);
   }
 
   function deleteAll() {
-    $list = $this->tester->cliToArray(['wc', 'shop_order', 'list', '--format=json', '--allow-root', '--user=admin', '--fields=id']);
+    $list = $this->tester->cliToArray(['wc', 'shop_order', 'list', '--format=json', '--user=admin', '--fields=id']);
     foreach (json_decode($list[0], true) as $item) {
       $this->delete($item['id']);
     }
