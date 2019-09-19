@@ -144,8 +144,8 @@ class AcceptanceTester extends \Codeception\Actor {
       $form_factory = new Form();
       $form = $form_factory->withName('Confirmation Form')->create();
     }
-    $I->cli(['widget', 'reset', 'sidebar-1', '--allow-root']);
-    $I->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter', '--allow-root']);
+    $I->cli(['widget', 'reset', 'sidebar-1']);
+    $I->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter']);
 
     // subscribe
     $I->amOnUrl(self::WP_URL);
@@ -246,11 +246,11 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function activateWooCommerce() {
     $I = $this;
-    $I->cli(['plugin', 'activate', 'woocommerce', '--allow-root']);
+    $I->cli(['plugin', 'activate', 'woocommerce']);
   }
   public function deactivateWooCommerce() {
     $I = $this;
-    $I->cli(['plugin', 'deactivate', 'woocommerce', '--allow-root']);
+    $I->cli(['plugin', 'deactivate', 'woocommerce']);
   }
 
   /**

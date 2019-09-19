@@ -113,7 +113,7 @@ class WooCommerceProduct {
   }
 
   function create() {
-    $create_command = ['wc', 'product', 'create', '--porcelain', '--allow-root', '--user=admin'];
+    $create_command = ['wc', 'product', 'create', '--porcelain', '--user=admin'];
     $create_command[] = "--name={$this->data['name']}";
     $create_command[] = "--type={$this->data['type']}";
     $create_command[] = "--regular_price={$this->data['price']}";
@@ -138,17 +138,17 @@ class WooCommerceProduct {
       $create_command[] = '--images=' . json_encode($this->data['images']);
     }
     $create_output = $this->tester->cliToArray($create_command);
-    $product_out = $this->tester->cliToArray(['wc', 'product', 'get', $create_output[0], '--format=json', '--allow-root', '--user=admin']);
+    $product_out = $this->tester->cliToArray(['wc', 'product', 'get', $create_output[0], '--format=json', '--user=admin']);
     return json_decode($product_out[0], true);
   }
 
   function createCategory($name) {
-    $create_output = $this->tester->cliToArray(['wc', 'product_cat', 'create', '--porcelain', '--allow-root', '--user=admin', "--name=$name"]);
+    $create_output = $this->tester->cliToArray(['wc', 'product_cat', 'create', '--porcelain', '--user=admin', "--name=$name"]);
     return $create_output[0];
   }
 
   function createTag($name) {
-    $create_output = $this->tester->cliToArray(['wc', 'product_tag', 'create', '--porcelain', '--allow-root', '--user=admin', "--name=$name"]);
+    $create_output = $this->tester->cliToArray(['wc', 'product_tag', 'create', '--porcelain', '--user=admin', "--name=$name"]);
     return $create_output[0];
   }
 
@@ -156,11 +156,11 @@ class WooCommerceProduct {
    * @param int $id
    */
   function delete($id) {
-    $this->tester->cliToArray(['wc', 'product', 'delete', $id, '--force=1', '--allow-root', '--user=admin']);
+    $this->tester->cliToArray(['wc', 'product', 'delete', $id, '--force=1', '--user=admin']);
   }
 
   function deleteAll() {
-    $list = $this->tester->cliToArray(['wc', 'product', 'list', '--format=json', '--allow-root', '--user=admin', '--fields=id']);
+    $list = $this->tester->cliToArray(['wc', 'product', 'list', '--format=json', '--user=admin', '--fields=id']);
     foreach (json_decode($list[0], true) as $item) {
       $this->delete($item['id']);
     }

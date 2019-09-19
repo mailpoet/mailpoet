@@ -8,7 +8,7 @@ class CustomUnsubscribePageCest {
     $pageTitle = 'SorryToSeeYouGo';
     $pageText = 'Manage your subscription';
     $pageContent = "[mailpoet_manage text=\"$pageText\"]";
-    $I->cli(['post', 'create', '--post_type=page', '--post_status=publish', '--post_title=' . $pageTitle, '--post_content=' . $pageContent, '--allow-root']);
+    $I->cli(['post', 'create', '--post_type=page', '--post_status=publish', '--post_title=' . $pageTitle, '--post_content=' . $pageContent]);
     $I->login();
     $I->amOnPage('/wp-admin/edit.php?post_type=page');
     $I->waitForText($pageTitle);

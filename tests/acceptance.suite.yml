@@ -36,6 +36,7 @@ modules:
     - WPCLI:
         path: /wp-core
         throw: true
+        allow-root: true
 extensions:
   enabled:
     - ErrorsExtension
