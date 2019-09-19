@@ -40,4 +40,5 @@ extensions:
   enabled:
     - ErrorsExtension
     - DefaultsExtension
+    - CheckSkippedTestsExtension
     - CleanupExtension # register last to backup also effects of other extensions
