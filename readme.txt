@@ -4,6 +4,7 @@ Tags: email marketing, newsletter, newsletter subscribers, email, welcome email,
 Requires at least: 4.7
 Tested up to: 5.2
 Stable tag: 3.36.0
+Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
