@@ -12,6 +12,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Clicks;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
 
@@ -48,12 +49,13 @@ class ClicksTest extends \MailPoetTest {
     $link->newsletter_id = $newsletter->id;
     $link->queue_id = $queue->id;
     $this->link = $link->save();
+    $link_tokens = new LinkTokens;
     // build track data
     $this->track_data = (object)[
       'queue' => $queue,
       'subscriber' => $subscriber,
       'newsletter' => $newsletter,
-      'subscriber_token' => $subscriber->getLinkToken(),
+      'subscriber_token' => $link_tokens->getToken($subscriber),
       'link' => $link,
       'preview' => false,
     ];

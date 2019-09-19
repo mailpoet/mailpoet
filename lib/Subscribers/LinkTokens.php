@@ -18,7 +18,7 @@ class LinkTokens {
   }
 
   function verifyToken(Subscriber $subscriber, $token) {
-    $database_token = $subscriber->getLinkToken();
+    $database_token = $this->getToken($subscriber);
     $request_token = substr($token, 0, strlen($database_token));
     return call_user_func(
       'hash_equals',

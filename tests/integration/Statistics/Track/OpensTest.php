@@ -9,6 +9,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\Opens;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class OpensTest extends \MailPoetTest {
@@ -30,12 +31,13 @@ class OpensTest extends \MailPoetTest {
     $queue->setSubscribers([$subscriber->id]);
     $queue->updateProcessedSubscribers([$subscriber->id]);
     $this->queue = $queue->save();
+    $link_tokens = new LinkTokens;
     // build track data
     $this->track_data = (object)[
       'queue' => $queue,
       'subscriber' => $subscriber,
       'newsletter' => $newsletter,
-      'subscriber_token' => $subscriber->getLinkToken(),
+      'subscriber_token' => $link_tokens->getToken($subscriber),
       'preview' => false,
     ];
     // instantiate class
