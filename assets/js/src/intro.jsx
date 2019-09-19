@@ -1,24 +1,32 @@
 import introJs from 'intro.js';
 import MailPoet from 'mailpoet';
 
-const getIntroSteps = () => ([
-  {
-    element: document.querySelector('#toplevel_page_mailpoet-newsletters > ul > li > a[href*=mailpoet-segments]').parentNode,
-    intro: MailPoet.I18n.t('introLists'),
-  },
-  {
-    element: document.querySelector('#toplevel_page_mailpoet-newsletters > ul > li > a[href*=mailpoet-forms]').parentNode,
-    intro: MailPoet.I18n.t('introForms'),
-  },
-  {
+const getIntroSteps = () => {
+  const steps = [];
+  const segmentsMenuItem = document.querySelector('#toplevel_page_mailpoet-newsletters > ul > li > a[href*=mailpoet-segments]');
+  if (segmentsMenuItem) {
+    steps.push({
+      element: segmentsMenuItem.parentNode,
+      intro: MailPoet.I18n.t('introLists'),
+    });
+  }
+  const formMenuItem = document.querySelector('#toplevel_page_mailpoet-newsletters > ul > li > a[href*=mailpoet-forms]');
+  if (formMenuItem) {
+    steps.push({
+      element: formMenuItem.parentNode,
+      intro: MailPoet.I18n.t('introForms'),
+    });
+  }
+  steps.push({
     element: '.mailpoet-chat',
     intro: MailPoet.I18n.t('introChat'),
-  },
-  {
+  });
+  steps.push({
     element: '#mailpoet-new-email',
     intro: MailPoet.I18n.t('introEmails'),
-  },
-]);
+  });
+  return steps;
+};
 
 let introActive = false;
 
