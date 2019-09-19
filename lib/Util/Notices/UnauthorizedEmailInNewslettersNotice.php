@@ -52,8 +52,8 @@ class UnauthorizedEmailInNewslettersNotice {
   private function getNewslettersLinks($validation_error) {
     $links = '';
     foreach ($validation_error['invalid_senders_in_newsletters'] as $error) {
-      $link_text = $this->wp->_x('Update the from address of %subject', '%subject will be replaced by a newsletter subject');
-      $link_text = str_replace('%subject', EscapeHelper::escapeHtmlText($error['subject']), $link_text);
+      $link_text = $this->wp->_x('Update the from address of %s', '%s will be replaced by a newsletter subject');
+      $link_text = str_replace('%s', EscapeHelper::escapeHtmlText($error['subject']), $link_text);
       $link_url = $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG . '#/send/' . $error['newsletter_id']);
       $link = Helpers::replaceLinkTags("[link]{$link_text}[/link]", $link_url, ['target' => '_blank']);
       $links .= "<p>$link</p>";
@@ -64,12 +64,12 @@ class UnauthorizedEmailInNewslettersNotice {
   private function getAuthorizationLink($validation_error) {
     $emails = array_unique(array_column($validation_error['invalid_senders_in_newsletters'], 'sender_address'));
     if (count($emails) > 1) {
-      $authorize_link = $this->wp->_x('Authorize %email1 and %email2', 'Link for user to authorize their email address');
-      $authorize_link = str_replace('%email2', EscapeHelper::escapeHtmlText(array_pop($emails)), $authorize_link);
-      $authorize_link = str_replace('%email1', EscapeHelper::escapeHtmlText(implode(', ', $emails)), $authorize_link);
+      $authorize_link = $this->wp->_x('Authorize %1$s and %2$s', 'Link for user to authorize their email address');
+      $authorize_link = str_replace('%2$s', EscapeHelper::escapeHtmlText(array_pop($emails)), $authorize_link);
+      $authorize_link = str_replace('%1$s', EscapeHelper::escapeHtmlText(implode(', ', $emails)), $authorize_link);
     } else {
-      $authorize_link = $this->wp->_x('Authorize %email', 'Link for user to authorize their email address');
-      $authorize_link = str_replace('%email', EscapeHelper::escapeHtmlText($emails[0]), $authorize_link);
+      $authorize_link = $this->wp->_x('Authorize %s', 'Link for user to authorize their email address');
+      $authorize_link = str_replace('%s', EscapeHelper::escapeHtmlText($emails[0]), $authorize_link);
     }
 
     $authorize_link = Helpers::replaceLinkTags("[link]{$authorize_link}[/link]", 'https://account.mailpoet.com/authorization', ['target' => '_blank']);
