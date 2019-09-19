@@ -1,7 +1,7 @@
 import introJs from 'intro.js';
 import MailPoet from 'mailpoet';
 
-const introSteps = [
+const getIntroSteps = () => ([
   {
     element: document.querySelector('#toplevel_page_mailpoet-newsletters > ul > li > a[href*=mailpoet-segments]').parentNode,
     intro: MailPoet.I18n.t('introLists'),
@@ -18,7 +18,7 @@ const introSteps = [
     element: '#mailpoet-new-email',
     intro: MailPoet.I18n.t('introEmails'),
   },
-];
+]);
 
 let introActive = false;
 
@@ -34,7 +34,7 @@ function Intro() {
 
   const intro = introJs();
   intro.setOptions({
-    steps: introSteps,
+    steps: getIntroSteps(),
     nextLabel: `${MailPoet.I18n.t('introNext')} →`,
     prevLabel: `← ${MailPoet.I18n.t('introBack')}`,
     skipLabel: MailPoet.I18n.t('introSkip'),
