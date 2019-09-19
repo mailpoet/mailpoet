@@ -178,7 +178,7 @@ jobs:
           command: |
               mkdir -m 777 -p tests/_output/exceptions
               cd tests/docker
-              docker-compose run -e SKIP_DEPS=1 -e MULTISITE=<< parameters.multisite >> codeception -g acceptance_group_<< parameters.index >> --steps --debug -vvv --html --xml
+              docker-compose run -e SKIP_DEPS=1 -e CIRCLE_BRANCH=${CIRCLE_BRANCH} -e MULTISITE=<< parameters.multisite >> codeception -g acceptance_group_<< parameters.index >> --steps --debug -vvv --html --xml
       - run:
           name: Check exceptions
           command: |
