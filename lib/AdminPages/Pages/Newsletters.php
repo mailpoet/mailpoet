@@ -78,7 +78,7 @@ class Newsletters {
     $data['segments'] = $segments;
     $data['settings'] = $this->settings->getAll();
     $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
-    $data['has_premium_key'] = Bridge::isMSSKeySpecified();
+    $data['has_mss_key_specified'] = Bridge::isMSSKeySpecified();
     $data['current_wp_user'] = $this->wp->wpGetCurrentUser()->to_array();
     $data['current_wp_user_firstname'] = $this->wp->wpGetCurrentUser()->user_firstname;
     $data['site_url'] = $this->wp->siteUrl();
