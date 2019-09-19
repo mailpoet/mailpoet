@@ -50,6 +50,9 @@ class FeatureAnnouncement extends React.Component {
       language: window.mailpoet_user_locale,
       callback: this.beamerCallback,
     };
+    if (window.mailpoet_woocommerce_active) {
+      window.beamer_config.filter = 'woocommerce';
+    }
     MailPoet.Modal.loading(true);
     window.mailpoet_feature_announcement_has_news = false;
     this.setState({ beamerLoaded: true });
