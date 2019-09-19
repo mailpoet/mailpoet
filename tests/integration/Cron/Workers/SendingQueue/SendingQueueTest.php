@@ -31,6 +31,7 @@ use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\Url;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -97,9 +98,10 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   private function getTrackedUnsubscribeURL() {
+    $link_tokens = new LinkTokens;
     $data = Links::createUrlDataObject(
       $this->subscriber->id,
-      $this->subscriber->getLinkToken(),
+      $link_tokens->getToken($this->subscriber),
       $this->queue->id,
       $this->newsletter_link->hash,
       false

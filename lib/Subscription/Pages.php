@@ -13,6 +13,7 @@ use MailPoet\Util\Helpers;
 use MailPoet\Util\Url as UrlHelper;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Block\Date as FormBlockDate;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Pages {
@@ -44,13 +45,17 @@ class Pages {
   /** @var WelcomeScheduler */
   private $welcome_scheduler;
 
+  /** @var LinkTokens */
+  private $link_tokens;
+
   function __construct(
     NewSubscriberNotificationMailer $new_subscriber_notification_sender,
     WPFunctions $wp,
     SettingsController $settings,
     UrlHelper $url_helper,
     CaptchaRenderer $captcha_renderer,
-    WelcomeScheduler $welcome_scheduler
+    WelcomeScheduler $welcome_scheduler,
+    LinkTokens $link_tokens
   ) {
     $this->wp = $wp;
     $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
@@ -58,6 +63,7 @@ class Pages {
     $this->url_helper = $url_helper;
     $this->captcha_renderer = $captcha_renderer;
     $this->welcome_scheduler = $welcome_scheduler;
+    $this->link_tokens = $link_tokens;
   }
 
   function init($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false) {
@@ -438,7 +444,7 @@ class Pages {
       $subscriber->email .
     '" />';
     $form_html .= '<input type="hidden" name="token" value="' .
-      $subscriber->getLinkToken() .
+      $this->link_tokens->getToken($subscriber) .
     '" />';
 
     $form_html .= '<p class="mailpoet_paragraph">';

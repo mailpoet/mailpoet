@@ -3,6 +3,7 @@ namespace MailPoet\Models;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Util\Helpers;
 use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
@@ -106,15 +107,6 @@ class Subscriber extends Model {
     return (bool)$this->is_woocommerce_user;
   }
 
-  function getLinkToken() {
-    if ($this->link_token === null) {
-      $this->link_token = self::generateToken($this->email);
-      // `$this->save()` fails if the subscriber has subscriptions, segments or custom fields
-      \ORM::rawExecute(sprintf('UPDATE %s SET link_token = ? WHERE email = ?', self::$_table), [$this->link_token, $this->email]);
-    }
-    return $this->link_token;
-  }
-
   static function getCurrentWPUser() {
     $wp_user = WPFunctions::get()->wpGetCurrentUser();
     if (empty($wp_user->ID)) {
@@ -138,7 +130,7 @@ class Subscriber extends Model {
   }
 
   function verifyToken($token) {
-    $database_token = $this->getLinkToken();
+    $database_token = (new LinkTokens)->getToken($this);
     $request_token = substr($token, 0, strlen($database_token));
     return call_user_func(
       'hash_equals',

@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter;
 use MailPoet\Router\Router;
 use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
 use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Subscribers\LinkTokens;
 
 class Url {
   const TYPE_ARCHIVE = 'display_archive';
@@ -16,8 +17,9 @@ class Url {
     $queue = false,
     $preview = false
   ) {
+    $link_tokens = new LinkTokens;
     if ($subscriber instanceof SubscriberModel) {
-      $subscriber->token = $subscriber->getLinkToken();
+      $subscriber->token = $link_tokens->getToken($subscriber);
     }
     switch ($type) {
       case self::TYPE_ARCHIVE:

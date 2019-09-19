@@ -11,6 +11,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\ViewInBrowser;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions;
 
@@ -33,12 +34,13 @@ class ViewInBrowserTest extends \MailPoetTest {
     $queue->setSubscribers([$subscriber->id]);
     $queue->updateProcessedSubscribers([$subscriber->id]);
     $this->queue = $queue->save();
+    $link_tokens = new LinkTokens;
     // build browser preview data
     $this->browser_preview_data = [
       'queue_id' => $queue->id,
       'subscriber_id' => $subscriber->id,
       'newsletter_id' => $newsletter->id,
-      'subscriber_token' => $subscriber->getLinkToken(),
+      'subscriber_token' => $link_tokens->getToken($subscriber),
       'preview' => false,
     ];
     // instantiate class

@@ -9,6 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Models\NewsletterLink as NewsletterLinkModel;
+use MailPoet\Subscribers\LinkTokens;
 
 class Links {
   static function process($rendered_newsletter, $newsletter, $queue) {
@@ -45,9 +46,10 @@ class Links {
       if (!$link_hash instanceof NewsletterLinkModel) {
         return '';
       }
+      $link_tokens = new LinkTokens;
       $data = NewsletterLinks::createUrlDataObject(
         $subscriber->id,
-        $subscriber->getLinkToken(),
+        $link_tokens->getToken($subscriber),
         $queue->id,
         $link_hash->hash,
         false

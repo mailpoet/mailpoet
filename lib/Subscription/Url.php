@@ -6,6 +6,7 @@ use MailPoet\Router\Endpoints\Subscription as SubscriptionEndpoint;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\Pages as SettingsPages;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Url {
@@ -43,10 +44,10 @@ class Url {
     if ($post === null || $action === null) return;
 
     $url = WPFunctions::get()->getPermalink($post);
-
+    $link_tokens = new LinkTokens;
     if ($subscriber !== null) {
       $data = [
-        'token' => $subscriber->getLinkToken(),
+        'token' => $link_tokens->getToken($subscriber),
         'email' => $subscriber->email,
       ];
     } elseif (is_null($data)) {

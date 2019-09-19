@@ -12,6 +12,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscription\Pages;
 
@@ -28,9 +29,10 @@ class PagesTest extends \MailPoetTest {
     $this->subscriber->hydrate(Fixtures::get('subscriber_template'));
     $this->subscriber->status = Subscriber::STATUS_UNCONFIRMED;
     $this->subscriber->save();
+    $link_tokens = new LinkTokens;
     expect($this->subscriber->getErrors())->false();
     $this->test_data['email'] = $this->subscriber->email;
-    $this->test_data['token'] = $this->subscriber->getLinkToken();
+    $this->test_data['token'] = $link_tokens->getToken($this->subscriber);
     $this->pages = ContainerWrapper::getInstance()->get(Pages::class);
   }
 

@@ -7,6 +7,7 @@ use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Router\Router;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\Util\pQuery\pQuery as DomParser;
@@ -134,9 +135,10 @@ class Links {
       if (preg_match('/-/', $match)) {
         list(, $hash) = explode('-', $match);
       }
+      $link_tokens = new LinkTokens;
       $data = self::createUrlDataObject(
         $subscriber->id,
-        $subscriber->getLinkToken(),
+        $link_tokens->getToken($subscriber),
         $queue_id,
         $hash,
         $preview
