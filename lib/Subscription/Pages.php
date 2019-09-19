@@ -288,7 +288,7 @@ class Pages {
         'email' => self::DEMO_EMAIL,
         'first_name' => 'John',
         'last_name' => 'Doe',
-        'link_token' => Subscriber::generateToken(self::DEMO_EMAIL),
+        'link_token' => 'bfd0889dbc7f081e171fa0cee7401df2',
       ]);
     } else if ($this->subscriber !== false) {
       $subscriber = $this->subscriber

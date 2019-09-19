@@ -115,20 +115,6 @@ class Subscriber extends Model {
     return self::where('wp_user_id', $wp_user->ID)->findOne();
   }
 
-  /**
-   * Only for backward compatibility for old tokens
-   */
-  static function generateToken($email = null, $length = self::OBSOLETE_LINK_TOKEN_LENGTH) {
-    if ($email !== null) {
-      $auth_key = '';
-      if (defined('AUTH_KEY')) {
-        $auth_key = AUTH_KEY;
-      }
-      return substr(md5($auth_key . $email), 0, $length);
-    }
-    return false;
-  }
-
   function verifyToken($token) {
     $database_token = (new LinkTokens)->getToken($this);
     $request_token = substr($token, 0, strlen($database_token));
