@@ -28,7 +28,8 @@ const Controlls = (props) => (
         target="_blank"
         rel="noopener noreferrer"
         className="button button-primary"
-        onClick={() => {
+        onClick={(event) => {
+          event.preventDefault();
           window.open(props.mailpoetAccountUrl);
           props.next();
         }}
