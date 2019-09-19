@@ -249,13 +249,19 @@ Module.SaveView = Marionette.View.extend({
   validateNewsletter: function (jsonObject) {
     var body = '';
     var newsletter = App.getNewsletter();
+    var content;
     if (!App._contentContainer.isValid()) {
       this.showValidationError(App._contentContainer.validationError);
       return;
     }
 
     if (jsonObject && jsonObject.body && jsonObject.body.content) {
+      content = jsonObject.body.content;
       body = JSON.stringify(jsonObject.body.content);
+      if (!content.blocks || !Array.isArray(content.blocks) || (content.blocks.length === 0)) {
+        this.showValidationError(MailPoet.I18n.t('newsletterIsEmpty'));
+        return;
+      }
     }
     if (App.getConfig().get('validation.validateUnsubscribeLinkPresent')
         && body.indexOf('[link:subscription_unsubscribe_url]') < 0
