@@ -119,7 +119,7 @@ class LinksTest extends \MailPoetTest {
     $subscriber_email = 'test@example.com';
     $data = [
       'subscriber_id' => 1,
-      'subscriber_token' => Subscriber::generateToken($subscriber_email),
+      'subscriber_token' => md5($subscriber_email),
       'queue_id' => 2,
       'link_hash' => 'hash',
       'preview' => false,
