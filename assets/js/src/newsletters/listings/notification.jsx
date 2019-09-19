@@ -189,7 +189,7 @@ class NewsletterListNotification extends React.Component {
       // force refresh of listing so that groups are updated
       this.forceUpdate();
     }).fail((response) => {
-      MailPoet.Notice.error(MailPoet.I18n.t('postNotificationActivationFailed'));
+      MailPoet.Notice.showApiErrorNotice(response);
 
       // reset value to actual newsletter's status
       e.target.value = response.status;

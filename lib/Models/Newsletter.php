@@ -343,6 +343,17 @@ class Newsletter extends Model {
   }
 
   function setStatus($status = null) {
+    if ($status === self::STATUS_ACTIVE) {
+      if (!$this->body || empty(json_decode($this->body))) {
+        $this->setError(
+          Helpers::replaceLinkTags(
+            __('This is an empty email without any content and it cannot be sent. Please update [link]the email[/link].'),
+            'admin.php?page=mailpoet-newsletter-editor&id=' . $this->id
+          )
+        );
+        return $this;
+      }
+    }
     if (in_array($status, [
       self::STATUS_DRAFT,
       self::STATUS_SCHEDULED,
