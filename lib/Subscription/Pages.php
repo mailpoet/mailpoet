@@ -110,7 +110,7 @@ class Pages {
     }
 
     $subscriber = Subscriber::where('email', $email)->findOne();
-    return ($subscriber && $subscriber->verifyToken($token)) ? $subscriber : false;
+    return ($subscriber && $this->link_tokens->verifyToken($subscriber, $token)) ? $subscriber : false;
   }
 
   function confirm() {

@@ -115,16 +115,6 @@ class Subscriber extends Model {
     return self::where('wp_user_id', $wp_user->ID)->findOne();
   }
 
-  function verifyToken($token) {
-    $database_token = (new LinkTokens)->getToken($this);
-    $request_token = substr($token, 0, strlen($database_token));
-    return call_user_func(
-      'hash_equals',
-      $database_token,
-      $request_token
-    );
-  }
-
   static function filterOutReservedColumns(array $subscriber_data) {
     $reserved_columns = [
       'id',

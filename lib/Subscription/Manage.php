@@ -5,6 +5,7 @@ namespace MailPoet\Subscription;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Subscriber;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Util\Url as UrlHelper;
 
 class Manage {
@@ -15,9 +16,13 @@ class Manage {
   /** @var FieldNameObfuscator */
   private $field_name_obfuscator;
 
-  function __construct(UrlHelper $url_helper, FieldNameObfuscator $field_name_obfuscator) {
+  /** @var LinkTokens */
+  private $link_tokens;
+
+  function __construct(UrlHelper $url_helper, FieldNameObfuscator $field_name_obfuscator, LinkTokens $link_tokens) {
     $this->url_helper = $url_helper;
     $this->field_name_obfuscator = $field_name_obfuscator;
+    $this->link_tokens = $link_tokens;
   }
 
   function onSave() {
@@ -32,7 +37,7 @@ class Manage {
 
     if (!empty($subscriber_data['email'])) {
       $subscriber = Subscriber::where('email', $subscriber_data['email'])->findOne();
-      if ($subscriber && $subscriber->verifyToken($token)) {
+      if ($subscriber && $this->link_tokens->verifyToken($subscriber, $token)) {
         if ($subscriber_data['email'] !== Pages::DEMO_EMAIL) {
           $subscriber = Subscriber::createOrUpdate($this->filterOutEmptyMandatoryFields($subscriber_data));
           $subscriber->getErrors();

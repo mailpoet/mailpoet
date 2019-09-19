@@ -10,6 +10,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -31,9 +32,13 @@ class Track {
   /** @var Opens */
   private $opens;
 
-  public function __construct(Clicks $clicks, Opens $opens) {
+  /** @var LinkTokens */
+  private $link_tokens;
+
+  public function __construct(Clicks $clicks, Opens $opens, LinkTokens $link_tokens) {
     $this->clicks = $clicks;
     $this->opens = $opens;
+    $this->link_tokens = $link_tokens;
   }
 
   function click($data) {
@@ -70,7 +75,7 @@ class Track {
 
   function _validateTrackData($data) {
     if (!$data->subscriber || !$data->queue || !$data->newsletter) return false;
-    $subscriber_token_match = $data->subscriber->verifyToken($data->subscriber_token);
+    $subscriber_token_match = $this->link_tokens->verifyToken($data->subscriber, $data->subscriber_token);
     if (!$subscriber_token_match) {
       $this->terminate(403);
     }

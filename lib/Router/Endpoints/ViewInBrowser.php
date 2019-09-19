@@ -9,6 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ViewInBrowser {
@@ -24,9 +25,13 @@ class ViewInBrowser {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(AccessControl $access_control, SettingsController $settings) {
+  /** @var LinkTokens */
+  private $link_tokens;
+
+  function __construct(AccessControl $access_control, SettingsController $settings, LinkTokens $link_tokens) {
     $this->access_control = $access_control;
     $this->settings = $settings;
+    $this->link_tokens = $link_tokens;
   }
 
   function view($data) {
@@ -60,7 +65,7 @@ class ViewInBrowser {
       false;
     if ($data->subscriber) {
       if (empty($data->subscriber_token) ||
-         !$data->subscriber->verifyToken($data->subscriber_token)
+         !$this->link_tokens->verifyToken($data->subscriber, $data->subscriber_token)
       ) return false;
     } else if (!$data->subscriber && !empty($data->preview)) {
       // if this is a preview and subscriber does not exist,
