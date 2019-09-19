@@ -53,7 +53,7 @@ class TrackTest extends \MailPoetTest {
       'preview' => false,
     ];
     // instantiate class
-    $this->track = new Track(new Clicks(new SettingsController(), new Cookies()), new Opens());
+    $this->track = new Track(new Clicks(new SettingsController(), new Cookies()), new Opens(), new LinkTokens());
   }
 
   function testItReturnsFalseWhenTrackDataIsMissing() {
@@ -81,9 +81,12 @@ class TrackTest extends \MailPoetTest {
       ]
     );
     $data->subscriber->email = 'random@email.com';
-    $track = Stub::make(Track::class, ['terminate' => function($code) {
-      expect($code)->equals(403);
-    }]);
+    $track = Stub::make(Track::class, [
+      'link_tokens' => new LinkTokens,
+      'terminate' => function($code) {
+        expect($code)->equals(403);
+      },
+    ]);
     $track->_validateTrackData($data);
   }
 
