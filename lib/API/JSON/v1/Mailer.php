@@ -45,6 +45,7 @@ class Mailer extends APIEndpoint {
         (isset($data['sender'])) ? $data['sender'] : false,
         (isset($data['reply_to'])) ? $data['reply_to'] : false
       );
+      // report this as 'sending_test' in metadata since this endpoint is only used to test sending methods for now
       $extra_params = [
         'meta' => $this->mailerMetaInfo->getSendingTestMetaInfo(),
       ];
