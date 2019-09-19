@@ -42,7 +42,6 @@
     "phpunit/phpunit": "5.7.27",
     "redcomponent/teststatistics": "^2.2",
     "sensiolabs/security-checker": "^5.0",
-    "umpirsky/twig-gettext-extractor": "1.1.*",
     "vlucas/phpdotenv": "^2.4.0"
   },
   "autoload": {
