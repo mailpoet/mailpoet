@@ -51,7 +51,7 @@ class WelcomeWizard {
       'sender' => $this->settings->get('sender'),
       'admin_email' => $this->wp->getOption('admin_email'),
       'subscribers_count' => Subscriber::getTotalSubscribers(),
-      'has_premium_key' => Bridge::isMSSKeySpecified(),
+      'has_mss_key_specified' => Bridge::isMSSKeySpecified(),
     ];
     $data['mailpoet_feature_flags'] = $this->features_controller->getAllFlags();
     $this->page_renderer->displayPage('welcome_wizard.html', $data);

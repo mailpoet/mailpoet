@@ -5,7 +5,7 @@ export const getStepsCount = () => {
   if (window.is_woocommerce_active) {
     stepsCount += 1;
   }
-  if (!window.has_premium_key && MailPoet.FeaturesController.isSupported('display-mss-pitch')) {
+  if (!window.has_mss_key_specified && MailPoet.FeaturesController.isSupported('display-mss-pitch')) {
     stepsCount += 1;
   }
   return stepsCount;

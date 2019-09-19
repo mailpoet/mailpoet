@@ -7,7 +7,7 @@ import PitchMss from './success_pitch_mss.jsx';
 import FeaturesContext from '../../../features/context.jsx';
 
 function SuccessContent(props) {
-  if (!window.has_premium_key && props.isSupported('display-mss-pitch')) {
+  if (!window.has_mss_key_specified && props.isSupported('display-mss-pitch')) {
     return (
       <PitchMss
         MSSPitchIllustrationUrl={props.MSSPitchIllustrationUrl}
