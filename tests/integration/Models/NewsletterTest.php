@@ -899,6 +899,7 @@ class NewsletterTest extends \MailPoetTest {
     foreach ($newsletters_with_activation as $type) {
       $newsletter = Newsletter::createOrUpdate([
         'type' => $type,
+        'body' => '["x", "y"]',
       ]);
       $task = ScheduledTask::createOrUpdate([
         'status' => ScheduledTask::STATUS_PAUSED,
@@ -912,6 +913,17 @@ class NewsletterTest extends \MailPoetTest {
       $task_found = ScheduledTask::findOne($task->id());
       expect($task_found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     }
+  }
+
+  function testBlocksActivationOfEmptyNewsletter() {
+    $newsletter = Newsletter::createOrUpdate([
+      'type' => Newsletter::TYPE_NOTIFICATION,
+      'body' => '[]',
+      'status' => Newsletter::STATUS_DRAFT,
+    ]);
+    $newsletter = $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
+    expect($newsletter->status)->equals(Newsletter::STATUS_DRAFT);
+    expect($newsletter->getErrors())->notEmpty();
   }
 
   function _after() {
