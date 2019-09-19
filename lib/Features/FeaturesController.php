@@ -2,6 +2,8 @@
 
 namespace MailPoet\Features;
 
+use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
+
 class FeaturesController {
 
   // Define features below in the following form:
@@ -33,7 +35,12 @@ class FeaturesController {
     if (!$this->exists($feature)) {
       throw new \RuntimeException("Unknown feature '$feature'");
     }
-    $this->ensureFlagsLoaded();
+    // ensure controller works even if used before migrator, return default value in such case
+    try {
+      $this->ensureFlagsLoaded();
+    } catch (TableNotFoundException $e) {
+      return $this->defaults[$feature];
+    }
     return $this->flags[$feature];
   }
 
@@ -58,8 +65,8 @@ class FeaturesController {
       return;
     }
 
-    $this->flags = [];
     $flagsMap = $this->getValueMap();
+    $this->flags = [];
     foreach ($this->defaults as $name => $default) {
       $this->flags[$name] = isset($flagsMap[$name]) ? $flagsMap[$name] : $default;
     }
