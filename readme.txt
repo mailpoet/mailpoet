@@ -104,6 +104,7 @@ The MailPoet Sending Service is very easy to setup, you just have to enter a key
 * Dutch
 * French (FR and CA)
 * German
+* Hebrew
 * Hungarian
 * Italian
 * Japanese
