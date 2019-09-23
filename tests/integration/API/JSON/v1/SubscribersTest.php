@@ -740,6 +740,38 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
+  function testItKeepsSpecialSegmentsUnchangedAfterSaving() {
+    $wc_segment = Segment::createOrUpdate([
+      'name' => 'WooCommerce Users',
+      'type' => Segment::TYPE_WC_USERS,
+    ]);
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'woo@commerce.com',
+      'first_name' => 'Woo',
+      'last_name' => 'Commerce',
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'segments' => [
+        $this->segment_1->id,
+        $wc_segment->id,
+      ],
+    ]);
+    $subscriber_data = [
+      'id' => $subscriber->id(),
+      'email' => 'woo@commerce.com',
+      'first_name' => 'Woo',
+      'last_name' => 'Commerce',
+      'segments' => [
+        $this->segment_1->id,
+      ],
+    ];
+    $this->endpoint->save($subscriber_data);
+
+    $subscriber = Subscriber::findOne($subscriber->id);
+    $subscriber_segments = $subscriber->segments()->findArray();
+    expect($subscriber_segments[0]['id'])->equals($this->segment_1->id);
+    expect($subscriber_segments[1]['id'])->equals($wc_segment->id);
+  }
+
   private function _createWelcomeNewsletter() {
     $welcome_newsletter = Newsletter::create();
     $welcome_newsletter->type = Newsletter::TYPE_WELCOME;
