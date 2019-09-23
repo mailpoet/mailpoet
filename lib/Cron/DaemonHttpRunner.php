@@ -73,8 +73,8 @@ class DaemonHttpRunner {
       // if workers took less time to execute than the daemon execution limit,
       // pause daemon execution to ensure that daemon runs only once every X seconds
       $elapsed_time = microtime(true) - $this->timer;
-      if ($elapsed_time < CronHelper::DAEMON_EXECUTION_LIMIT) {
-        $this->pauseExecution(CronHelper::DAEMON_EXECUTION_LIMIT - $elapsed_time);
+      if ($elapsed_time < CronHelper::getDaemonExecutionLimit()) {
+        $this->pauseExecution(CronHelper::getDaemonExecutionLimit() - $elapsed_time);
       }
     }
     // after each execution, re-read daemon data in case it changed
