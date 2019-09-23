@@ -29,7 +29,7 @@ use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Url as SubscriptionUrl;
+use MailPoet\Subscription\SubscriptionUrlFactory as SubscriptionUrl;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;

@@ -17,10 +17,10 @@ class CaptchaRenderer {
   /** @var CaptchaSession */
   private $captcha_session;
 
-  /** @var Url */
+  /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
-  function __construct(UrlHelper $url_helper, WPFunctions $wp, CaptchaSession $captcha_session, Url $subscription_url_factory) {
+  function __construct(UrlHelper $url_helper, WPFunctions $wp, CaptchaSession $captcha_session, SubscriptionUrlFactory $subscription_url_factory) {
     $this->url_helper = $url_helper;
     $this->wp = $wp;
     $this->captcha_session = $captcha_session;

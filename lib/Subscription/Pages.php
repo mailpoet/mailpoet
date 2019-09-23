@@ -48,7 +48,7 @@ class Pages {
   /** @var LinkTokens */
   private $link_tokens;
 
-  /** @var Url */
+  /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
   function __construct(
@@ -59,7 +59,7 @@ class Pages {
     CaptchaRenderer $captcha_renderer,
     WelcomeScheduler $welcome_scheduler,
     LinkTokens $link_tokens,
-    Url $subscription_url_factory
+    SubscriptionUrlFactory $subscription_url_factory
   ) {
     $this->wp = $wp;
     $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;

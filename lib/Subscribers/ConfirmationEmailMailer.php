@@ -9,7 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Url;
+use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -29,13 +29,13 @@ class ConfirmationEmailMailer {
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
-  /** @var Url */
+  /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
   /**
    * @param Mailer|null $mailer
    */
-  function __construct($mailer = null, WPFunctions $wp = null, Url $subscription_url_factory = null) {
+  function __construct($mailer = null, WPFunctions $wp = null, SubscriptionUrlFactory $subscription_url_factory = null) {
     if ($mailer) {
       $this->mailer = $mailer;
     }
@@ -49,7 +49,7 @@ class ConfirmationEmailMailer {
     $this->mailerMetaInfo = new MetaInfo;
 
     if ($subscription_url_factory === null) {
-      $subscription_url_factory = new Url($this->wp, $this->settings);
+      $subscription_url_factory = new SubscriptionUrlFactory($this->wp, $this->settings);
     }
     $this->subscription_url_factory = $subscription_url_factory;
   }

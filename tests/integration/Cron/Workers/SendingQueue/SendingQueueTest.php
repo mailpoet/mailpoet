@@ -33,7 +33,7 @@ use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\Captcha;
-use MailPoet\Subscription\Url;
+use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
@@ -97,7 +97,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   private function getDirectUnsubscribeURL() {
-    return Url::getInstance()->getUnsubscribeUrl($this->subscriber);
+    return SubscriptionUrlFactory::getInstance()->getUnsubscribeUrl($this->subscriber);
   }
 
   private function getTrackedUnsubscribeURL() {

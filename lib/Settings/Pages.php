@@ -78,7 +78,7 @@ class Pages {
   }
 
   static function getPageData($page) {
-    $subscription_url_factory = Subscription\Url::getInstance();
+    $subscription_url_factory = Subscription\SubscriptionUrlFactory::getInstance();
     return [
       'id' => $page->ID,
       'title' => $page->post_title,

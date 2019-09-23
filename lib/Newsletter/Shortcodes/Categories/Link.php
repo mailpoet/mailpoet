@@ -5,7 +5,7 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
-use MailPoet\Subscription\Url as SubscriptionUrl;
+use MailPoet\Subscription\SubscriptionUrlFactory as SubscriptionUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Link {

@@ -5,7 +5,7 @@ use Codeception\Util\Stub;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Router\Router;
-use MailPoet\Subscription\Url;
+use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
 use MailPoet\Config\Populator;
@@ -16,7 +16,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class UrlTest extends \MailPoetTest {
 
-  /** @var Url */
+  /** @var SubscriptionUrlFactory */
   private $url;
 
   /** @var SettingsController */
@@ -30,7 +30,7 @@ class UrlTest extends \MailPoetTest {
     $wc_transactional_emails = new TransactionalEmails(WPFunctions::get(), $this->settings);
     $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, $features_controller, $wc_transactional_emails);
     $populator->up();
-    $this->url = new Url(WPFunctions::get(), $this->settings);
+    $this->url = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings);
   }
 
   function testItReturnsTheDefaultPageUrlIfNoPageIsSetInSettings() {
