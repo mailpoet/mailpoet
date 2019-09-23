@@ -29,7 +29,7 @@ use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\SubscriptionUrlFactory as SubscriptionUrl;
+use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -38,12 +38,12 @@ class NewslettersTest extends \MailPoetTest {
   /** @var Newsletters */
   private $endpoint;
 
-  /** @var SubscriptionUrl */
+  /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
   function _before() {
     parent::_before();
-    $this->subscription_url_factory = SubscriptionUrl::getInstance();
+    $this->subscription_url_factory = SubscriptionUrlFactory::getInstance();
     $this->endpoint = ContainerWrapper::getInstance()->get(Newsletters::class);
     $this->newsletter = Newsletter::createOrUpdate(
       [

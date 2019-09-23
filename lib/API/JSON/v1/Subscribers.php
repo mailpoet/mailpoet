@@ -24,7 +24,7 @@ use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
-use MailPoet\Subscription\SubscriptionUrlFactory as SubscriptionUrl;
+use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Subscribers extends APIEndpoint {
@@ -65,7 +65,7 @@ class Subscribers extends APIEndpoint {
   /** @var ConfirmationEmailMailer; */
   private $confirmation_email_mailer;
 
-  /** @var SubscriptionUrl */
+  /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
   public function __construct(
@@ -79,7 +79,7 @@ class Subscribers extends APIEndpoint {
     SettingsController $settings,
     CaptchaSession $captcha_session,
     ConfirmationEmailMailer $confirmation_email_mailer,
-    SubscriptionUrl $subscription_url_factory
+    SubscriptionUrlFactory $subscription_url_factory
   ) {
     $this->bulk_action_controller = $bulk_action_controller;
     $this->subscribers_listings = $subscribers_listings;
