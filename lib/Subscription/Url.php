@@ -10,8 +10,19 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Url {
-  static function getCaptchaUrl() {
-    $post = self::getPost(self::getSetting('subscription.pages.captcha'));
+  /** @var WPFunctions */
+  private $wp;
+
+  /** @var SettingsController */
+  private $settings;
+
+  public function __construct(WPFunctions $wp, SettingsController $settings) {
+    $this->wp = $wp;
+    $this->settings = $settings;
+  }
+
+  function getCaptchaUrl() {
+    $post = self::getPost($this->settings->get('subscription.pages.captcha'));
     return self::getSubscriptionUrl($post, 'captcha', null);
   }
 

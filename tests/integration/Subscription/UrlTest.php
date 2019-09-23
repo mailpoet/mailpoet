@@ -15,6 +15,13 @@ use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class UrlTest extends \MailPoetTest {
+
+  /** @var Url */
+  private $url;
+
+  /** @var SettingsController */
+  private $settings;
+
   function _before() {
     parent::_before();
     $this->settings = new SettingsController;
@@ -23,12 +30,13 @@ class UrlTest extends \MailPoetTest {
     $wc_transactional_emails = new TransactionalEmails(WPFunctions::get(), $this->settings);
     $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, $features_controller, $wc_transactional_emails);
     $populator->up();
+    $this->url = new Url(WPFunctions::get(), $this->settings);
   }
 
   function testItReturnsTheDefaultPageUrlIfNoPageIsSetInSettings() {
     $this->settings->delete('subscription');
 
-    $url = Url::getCaptchaUrl();
+    $url = $this->url->getCaptchaUrl();
     expect($url)->notNull();
     expect($url)->contains('action=captcha');
     expect($url)->contains('endpoint=subscription');
@@ -40,7 +48,7 @@ class UrlTest extends \MailPoetTest {
   }
 
   function testItReturnsTheCaptchaUrl() {
-    $url = Url::getCaptchaUrl();
+    $url = $this->url->getCaptchaUrl();
     expect($url)->notNull();
     expect($url)->contains('action=captcha');
     expect($url)->contains('endpoint=subscription');
