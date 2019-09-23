@@ -26,27 +26,27 @@ class Url {
   }
 
   function getCaptchaUrl() {
-    $post = self::getPost($this->settings->get('subscription.pages.captcha'));
+    $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
     return $this->getSubscriptionUrl($post, 'captcha', null);
   }
 
   function getCaptchaImageUrl($width, $height) {
-    $post = self::getPost($this->settings->get('subscription.pages.captcha'));
+    $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
     return $this->getSubscriptionUrl($post, 'captchaImage', null, ['width' => $width, 'height' => $height]);
   }
 
   function getConfirmationUrl(Subscriber $subscriber = null) {
-    $post = self::getPost($this->settings->get('subscription.pages.confirmation'));
+    $post = $this->getPost($this->settings->get('subscription.pages.confirmation'));
     return $this->getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
   function getManageUrl(Subscriber $subscriber = null) {
-    $post = self::getPost($this->settings->get('subscription.pages.manage'));
+    $post = $this->getPost($this->settings->get('subscription.pages.manage'));
     return $this->getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
   function getUnsubscribeUrl(Subscriber $subscriber = null) {
-    $post = self::getPost($this->settings->get('subscription.pages.unsubscribe'));
+    $post = $this->getPost($this->settings->get('subscription.pages.unsubscribe'));
     return $this->getSubscriptionUrl($post, 'unsubscribe', $subscriber);
   }
 
@@ -99,9 +99,9 @@ class Url {
     return self::$instance;
   }
 
-  static private function getPost($post = null) {
+  private function getPost($post = null) {
     if ($post) {
-      $post_object = WPFunctions::get()->getPost($post);
+      $post_object = $this->wp->getPost($post);
       if ($post_object) {
         return $post_object;
       }
