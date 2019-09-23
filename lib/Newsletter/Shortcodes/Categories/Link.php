@@ -19,6 +19,7 @@ class Link {
     $content,
     $wp_user_preview
   ) {
+    $subscription_url_factory = SubscriptionUrl::getInstance();
     switch ($shortcode_details['action']) {
       case 'subscription_unsubscribe_url':
         return self::processUrl(
@@ -31,7 +32,7 @@ class Link {
       case 'subscription_manage_url':
         return self::processUrl(
           $shortcode_details['action'],
-          SubscriptionUrl::getManageUrl($wp_user_preview ? null : $subscriber),
+          $subscription_url_factory->getManageUrl($wp_user_preview ? null : $subscriber),
           $queue,
           $wp_user_preview
         );
@@ -73,6 +74,7 @@ class Link {
   static function processShortcodeAction(
     $shortcode_action, $newsletter, $subscriber, $queue, $wp_user_preview
   ) {
+    $subscription_url_factory = SubscriptionUrl::getInstance();
     switch ($shortcode_action) {
       case 'subscription_unsubscribe_url':
         $settings = new SettingsController();
@@ -84,7 +86,7 @@ class Link {
         $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
         break;
       case 'subscription_manage_url':
-        $url = SubscriptionUrl::getManageUrl($subscriber);
+        $url = $subscription_url_factory->getManageUrl($subscriber);
         break;
       case 'newsletter_view_in_browser_url':
         $url = NewsletterUrl::getViewInBrowserUrl(

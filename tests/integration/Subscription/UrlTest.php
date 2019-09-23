@@ -81,7 +81,7 @@ class UrlTest extends \MailPoetTest {
 
   function testItReturnsTheManageSubscriptionUrl() {
     // preview
-    $url = Url::getManageUrl(null);
+    $url = $this->url->getManageUrl(null);
     expect($url)->notNull();
     expect($url)->contains('action=manage');
     expect($url)->contains('endpoint=subscription');
@@ -90,7 +90,7 @@ class UrlTest extends \MailPoetTest {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'john@mailpoet.com',
     ]);
-    $url = Url::getManageUrl($subscriber);
+    $url = $this->url->getManageUrl($subscriber);
     expect($url)->contains('action=manage');
     expect($url)->contains('endpoint=subscription');
 

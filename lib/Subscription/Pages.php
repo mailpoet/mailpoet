@@ -48,6 +48,9 @@ class Pages {
   /** @var LinkTokens */
   private $link_tokens;
 
+  /** @var Url */
+  private $subscription_url_factory;
+
   function __construct(
     NewSubscriberNotificationMailer $new_subscriber_notification_sender,
     WPFunctions $wp,
@@ -55,7 +58,8 @@ class Pages {
     UrlHelper $url_helper,
     CaptchaRenderer $captcha_renderer,
     WelcomeScheduler $welcome_scheduler,
-    LinkTokens $link_tokens
+    LinkTokens $link_tokens,
+    Url $subscription_url_factory
   ) {
     $this->wp = $wp;
     $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
@@ -64,6 +68,7 @@ class Pages {
     $this->captcha_renderer = $captcha_renderer;
     $this->welcome_scheduler = $welcome_scheduler;
     $this->link_tokens = $link_tokens;
+    $this->subscription_url_factory = $subscription_url_factory;
   }
 
   function init($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false) {
@@ -499,7 +504,7 @@ class Pages {
       : $this->wp->__('Manage your subscription', 'mailpoet')
     );
 
-    return '<a href="' . Url::getManageUrl(
+    return '<a href="' . $this->subscription_url_factory->getManageUrl(
       $this->subscriber ?: null
     ) . '">' . $text . '</a>';
   }
