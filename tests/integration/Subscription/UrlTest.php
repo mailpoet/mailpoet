@@ -63,7 +63,7 @@ class UrlTest extends \MailPoetTest {
 
   function testItReturnsTheConfirmationUrl() {
     // preview
-    $url = Url::getConfirmationUrl(null);
+    $url = $this->url->getConfirmationUrl(null);
     expect($url)->notNull();
     expect($url)->contains('action=confirm');
     expect($url)->contains('endpoint=subscription');
@@ -72,7 +72,7 @@ class UrlTest extends \MailPoetTest {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'john@mailpoet.com',
     ]);
-    $url = Url::getConfirmationUrl($subscriber);
+    $url = $this->url->getConfirmationUrl($subscriber);
     expect($url)->contains('action=confirm');
     expect($url)->contains('endpoint=subscription');
 

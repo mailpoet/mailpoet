@@ -31,8 +31,8 @@ class Url {
     return self::getSubscriptionUrl($post, 'captchaImage', null, ['width' => $width, 'height' => $height]);
   }
 
-  static function getConfirmationUrl(Subscriber $subscriber = null) {
-    $post = self::getPost(self::getSetting('subscription.pages.confirmation'));
+  function getConfirmationUrl(Subscriber $subscriber = null) {
+    $post = self::getPost($this->settings->get('subscription.pages.confirmation'));
     return self::getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
