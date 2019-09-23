@@ -1,0 +1,12 @@
+# enable file serving (Apache 2.4)
+<IfModule mod_authz_core.c>
+  Require all granted
+</IfModule>
+
+# enable file serving (Apache 2.2)
+<IfModule !mod_authz_core.c>
+  <IfModule mod_authz_host.c>
+    Order allow,deny
+    Allow from all
+  </IfModule>
+</IfModule>
