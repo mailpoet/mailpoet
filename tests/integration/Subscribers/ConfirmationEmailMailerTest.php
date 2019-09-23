@@ -2,7 +2,6 @@
 
 namespace MailPoet\Subscribers;
 
-use AspectMock\Test as Mock;
 use Codeception\Stub;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Segment;
@@ -10,14 +9,15 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Url;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   function testItSendsConfirmationEmail() {
-    Mock::double('MailPoet\Subscription\Url', [
-      'getConfirmationUrl' => 'http://example.com',
-    ]);
+    $subcription_url_facrory_mock = $this->createMock(Url::class);
+    $subcription_url_facrory_mock->method('getConfirmationUrl')->willReturn('http://example.com');
+
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'first_name' => 'John',
@@ -40,7 +40,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         }),
     ], $this);
 
-    $sender = new ConfirmationEmailMailer($mailer, new WPFunctions);
+    $sender = new ConfirmationEmailMailer($mailer, new WPFunctions, $subcription_url_facrory_mock);
 
 
     $segment = Segment::createOrUpdate(
@@ -147,7 +147,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
   }
 
   function _after() {
-    Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);

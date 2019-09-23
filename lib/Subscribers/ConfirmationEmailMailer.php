@@ -35,7 +35,7 @@ class ConfirmationEmailMailer {
   /**
    * @param Mailer|null $mailer
    */
-  function __construct($mailer = null, WPFunctions $wp = null) {
+  function __construct($mailer = null, WPFunctions $wp = null, Url $subscription_url_factory = null) {
     if ($mailer) {
       $this->mailer = $mailer;
     }
@@ -44,9 +44,14 @@ class ConfirmationEmailMailer {
     } else {
       $this->wp = new WPFunctions;
     }
+
     $this->settings = new SettingsController();
     $this->mailerMetaInfo = new MetaInfo;
-    $this->subscription_url_factory = new Url($this->wp, $this->settings);
+
+    if ($subscription_url_factory === null) {
+      $subscription_url_factory = new Url($this->wp, $this->settings);
+    }
+    $this->subscription_url_factory = $subscription_url_factory;
   }
 
   function sendConfirmationEmail(Subscriber $subscriber) {
