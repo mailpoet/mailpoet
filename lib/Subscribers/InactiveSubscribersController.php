@@ -74,11 +74,17 @@ class InactiveSubscribersController {
     $inactives_task_ids_table = sprintf("
       CREATE TEMPORARY TABLE IF NOT EXISTS inactives_task_ids
       (INDEX task_id_ids (id))
-      SELECT task_id as id FROM $sending_queues_table as sq
-        JOIN (SELECT newsletter_id as id FROM $statistics_opens_table as so WHERE so.created_at > '%s' GROUP BY newsletter_id) newsletters_ids ON newsletters_ids.id = sq.newsletter_id
-        JOIN $scheduled_tasks_table as st ON sq.task_id = st.id AND st.processed_at > '%s' AND st.processed_at < '%s'
-        GROUP BY task_id",
-        $threshold_date_iso, $threshold_date_iso, $day_ago_iso
+      SELECT DISTINCT task_id as id FROM $sending_queues_table as sq
+        JOIN $scheduled_tasks_table as st ON sq.task_id = st.id
+        WHERE st.processed_at > '%s'
+        AND st.processed_at < '%s'
+        AND EXISTS (
+          SELECT 1
+          FROM $statistics_opens_table as so
+          WHERE so.created_at > '%s'
+          AND so.newsletter_id = sq.newsletter_id
+        )",
+        $threshold_date_iso, $day_ago_iso, $threshold_date_iso
       );
       \ORM::rawExecute($inactives_task_ids_table);
 
