@@ -26,8 +26,8 @@ class Url {
     return self::getSubscriptionUrl($post, 'captcha', null);
   }
 
-  static function getCaptchaImageUrl($width, $height) {
-    $post = self::getPost(self::getSetting('subscription.pages.captcha'));
+  function getCaptchaImageUrl($width, $height) {
+    $post = self::getPost($this->settings->get('subscription.pages.captcha'));
     return self::getSubscriptionUrl($post, 'captchaImage', null, ['width' => $width, 'height' => $height]);
   }
 
