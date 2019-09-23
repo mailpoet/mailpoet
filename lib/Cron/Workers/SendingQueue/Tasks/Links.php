@@ -60,7 +60,8 @@ class Links {
         $data
       );
     } else {
-      $url = Url::getUnsubscribeUrl($subscriber);
+      $subscription_url_factory = Url::getInstance();
+      $url = $subscription_url_factory->getUnsubscribeUrl($subscriber);
     }
     return $url;
   }

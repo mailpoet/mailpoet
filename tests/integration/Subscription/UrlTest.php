@@ -41,7 +41,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->contains('action=captcha');
     expect($url)->contains('endpoint=subscription');
 
-    $url = Url::getUnsubscribeUrl(null);
+    $url = $this->url->getUnsubscribeUrl(null);
     expect($url)->notNull();
     expect($url)->contains('action=unsubscribe');
     expect($url)->contains('endpoint=subscription');
@@ -99,7 +99,7 @@ class UrlTest extends \MailPoetTest {
 
   function testItReturnsTheUnsubscribeUrl() {
     // preview
-    $url = Url::getUnsubscribeUrl(null);
+    $url = $this->url->getUnsubscribeUrl(null);
     expect($url)->notNull();
     expect($url)->contains('action=unsubscribe');
     expect($url)->contains('endpoint=subscription');
@@ -108,7 +108,7 @@ class UrlTest extends \MailPoetTest {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'john@mailpoet.com',
     ]);
-    $url = Url::getUnsubscribeUrl($subscriber);
+    $url = $this->url->getUnsubscribeUrl($subscriber);
     expect($url)->contains('action=unsubscribe');
     expect($url)->contains('endpoint=subscription');
 

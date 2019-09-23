@@ -302,7 +302,7 @@ class ShortcodesTest extends \MailPoetTest {
       '[link:newsletter_view_in_browser_url]',
     ];
     $links = [
-      SubscriptionUrl::getUnsubscribeUrl(null),
+      $this->subscription_url_factory->getUnsubscribeUrl(null),
       $this->subscription_url_factory->getManageUrl(null),
       NewsletterUrl::getViewInBrowserUrl(null, $this->newsletter, false, false, true),
     ];

@@ -24,7 +24,7 @@ class Link {
       case 'subscription_unsubscribe_url':
         return self::processUrl(
           $shortcode_details['action'],
-          SubscriptionUrl::getUnsubscribeUrl($wp_user_preview ? null : $subscriber),
+          $subscription_url_factory->getUnsubscribeUrl($wp_user_preview ? null : $subscriber),
           $queue,
           $wp_user_preview
         );
@@ -83,7 +83,7 @@ class Link {
           $unsubscribe_event = new Unsubscribes();
           $unsubscribe_event->track($newsletter->id, $subscriber->id, $queue->id);
         }
-        $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
+        $url = $subscription_url_factory->getUnsubscribeUrl($subscriber);
         break;
       case 'subscription_manage_url':
         $url = $subscription_url_factory->getManageUrl($subscriber);
