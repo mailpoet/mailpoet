@@ -9,6 +9,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing;
 use MailPoet\Models\Form;
+use MailPoet\Models\Segment;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -333,6 +334,7 @@ class Subscribers extends APIEndpoint {
     if (empty($data['segments'])) {
       $data['segments'] = [];
     }
+    $data['segments'] = array_merge($data['segments'], $this->getNonDefaultSubscribedSegments($data));
     $new_segments = $this->findNewSegments($data);
     $subscriber = Subscriber::createOrUpdate($data);
     $errors = $subscriber->getErrors();
@@ -354,6 +356,31 @@ class Subscribers extends APIEndpoint {
     return $this->successResponse(
       Subscriber::findOne($subscriber->id)->asArray()
     );
+  }
+
+  private function getNonDefaultSubscribedSegments(array $data) {
+    if (!isset($data['id']) || (int)$data['id'] <= 0) {
+      return [];
+    }
+
+    $subscribed_segment_ids = [];
+    $non_default_segment = Segment::select('id')
+      ->whereNotEqual('type', Segment::TYPE_DEFAULT)
+      ->findArray();
+    $non_default_segment_ids = array_map(function($segment) {
+      return $segment['id'];
+    }, $non_default_segment);
+
+    $subscribed_segments = SubscriberSegment::select('segment_id')
+      ->where('subscriber_id', $data['id'])
+      ->where('status', Subscriber::STATUS_SUBSCRIBED)
+      ->whereIn('segment_id', $non_default_segment_ids)
+      ->findArray();
+    $subscribed_segment_ids = array_map(function($segment) {
+      return $segment['segment_id'];
+    }, $subscribed_segments);
+
+    return $subscribed_segment_ids;
   }
 
   private function findNewSegments(array $data) {
