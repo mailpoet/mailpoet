@@ -38,8 +38,12 @@ class NewslettersTest extends \MailPoetTest {
   /** @var Newsletters */
   private $endpoint;
 
+  /** @var SubscriptionUrl */
+  private $subscription_url_factory;
+
   function _before() {
     parent::_before();
+    $this->subscription_url_factory = SubscriptionUrl::getInstance();
     $this->endpoint = ContainerWrapper::getInstance()->get(Newsletters::class);
     $this->newsletter = Newsletter::createOrUpdate(
       [
@@ -134,7 +138,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
-      ContainerWrapper::getInstance()->get(MetaInfo::class)
+      ContainerWrapper::getInstance()->get(MetaInfo::class),
+      $this->subscription_url_factory
     );
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -798,9 +803,10 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   function testItCanSendAPreview() {
+
     $subscriber = 'test@subscriber.com';
     $unsubscribeLink = SubscriptionUrl::getUnsubscribeUrl(null);
-    $manageLink = SubscriptionUrl::getManageUrl(null);
+    $manageLink = $this->subscription_url_factory->getManageUrl(null);
     $viewInBrowserLink = Url::getViewInBrowserUrl(null, $this->newsletter, false, false, true);
     $mailerMetaInfo = new MetaInfo;
     $data = [

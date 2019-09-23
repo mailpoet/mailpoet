@@ -40,8 +40,8 @@ class Url {
     return self::getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
-  static function getManageUrl(Subscriber $subscriber = null) {
-    $post = self::getPost(self::getSetting('subscription.pages.manage'));
+  function getManageUrl(Subscriber $subscriber = null) {
+    $post = self::getPost($this->settings->get('subscription.pages.manage'));
     return self::getSubscriptionUrl($post, 'manage', $subscriber);
   }
 

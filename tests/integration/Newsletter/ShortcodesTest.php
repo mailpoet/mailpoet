@@ -26,6 +26,8 @@ class ShortcodesTest extends \MailPoetTest {
   public $subscriber;
   /** @var SettingsController */
   private $settings;
+  /** @var SubscriptionUrl */
+  private $subscription_url_factory;
 
   function _before() {
     parent::_before();
@@ -44,6 +46,7 @@ class ShortcodesTest extends \MailPoetTest {
       $this->subscriber
     );
     $this->settings->set('tracking.enabled', false);
+    $this->subscription_url_factory = new SubscriptionUrl(WPFunctions::get(), $this->settings);
   }
 
   function testItCanExtractShortcodes() {
@@ -300,7 +303,7 @@ class ShortcodesTest extends \MailPoetTest {
     ];
     $links = [
       SubscriptionUrl::getUnsubscribeUrl(null),
-      SubscriptionUrl::getManageUrl(null),
+      $this->subscription_url_factory->getManageUrl(null),
       NewsletterUrl::getViewInBrowserUrl(null, $this->newsletter, false, false, true),
     ];
     $result = $shortcodes_object->process($shortcodes);
