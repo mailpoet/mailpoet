@@ -45,8 +45,8 @@ class Url {
     return self::getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
-  static function getUnsubscribeUrl(Subscriber $subscriber = null) {
-    $post = self::getPost(self::getSetting('subscription.pages.unsubscribe'));
+  function getUnsubscribeUrl(Subscriber $subscriber = null) {
+    $post = self::getPost($this->settings->get('subscription.pages.unsubscribe'));
     return self::getSubscriptionUrl($post, 'unsubscribe', $subscriber);
   }
 
@@ -109,10 +109,5 @@ class Url {
     // Resort to a default MailPoet page if no page is selected
     $pages = SettingsPages::getMailPoetPages();
     return reset($pages);
-  }
-
-  static private function getSetting($key) {
-    $setting = new SettingsController();
-    return $setting->get($key);
   }
 }

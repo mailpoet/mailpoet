@@ -97,7 +97,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   private function getDirectUnsubscribeURL() {
-    return Url::getUnsubscribeUrl($this->subscriber);
+    return Url::getInstance()->getUnsubscribeUrl($this->subscriber);
   }
 
   private function getTrackedUnsubscribeURL() {
