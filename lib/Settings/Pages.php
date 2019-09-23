@@ -78,13 +78,14 @@ class Pages {
   }
 
   static function getPageData($page) {
+    $subscription_url_factory = Subscription\Url::getInstance();
     return [
       'id' => $page->ID,
       'title' => $page->post_title,
       'url' => [
-        'unsubscribe' => Subscription\Url::getSubscriptionUrl($page, 'unsubscribe'),
-        'manage' => Subscription\Url::getSubscriptionUrl($page, 'manage'),
-        'confirm' => Subscription\Url::getSubscriptionUrl($page, 'confirm'),
+        'unsubscribe' => $subscription_url_factory->getSubscriptionUrl($page, 'unsubscribe'),
+        'manage' => $subscription_url_factory->getSubscriptionUrl($page, 'manage'),
+        'confirm' => $subscription_url_factory->getSubscriptionUrl($page, 'confirm'),
       ],
     ];
   }
