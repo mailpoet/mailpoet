@@ -3,7 +3,6 @@ namespace MailPoet\Models;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Util\Helpers;
 use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
