@@ -9,13 +9,13 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Url;
+use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   function testItSendsConfirmationEmail() {
-    $subcription_url_facrory_mock = $this->createMock(Url::class);
+    $subcription_url_facrory_mock = $this->createMock(SubscriptionUrlFactory::class);
     $subcription_url_facrory_mock->method('getConfirmationUrl')->willReturn('http://example.com');
 
     $subscriber = Subscriber::create();

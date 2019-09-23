@@ -9,9 +9,9 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\WP\Functions as WPFunctions;
 
-class Url {
+class SubscriptionUrlFactory {
 
-  /** @var Url */
+  /** @var SubscriptionUrlFactory */
   private static $instance;
 
   /** @var WPFunctions */
@@ -90,11 +90,11 @@ class Url {
   }
 
   /**
-   * @return Url
+   * @return SubscriptionUrlFactory
    */
   static function getInstance() {
-    if (!self::$instance) {
-      self::$instance = new Url(new WPFunctions, new SettingsController);
+    if (!self::$instance instanceof SubscriptionUrlFactory) {
+      self::$instance = new SubscriptionUrlFactory(new WPFunctions, new SettingsController);
     }
     return self::$instance;
   }

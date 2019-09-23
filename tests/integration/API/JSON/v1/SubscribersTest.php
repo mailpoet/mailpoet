@@ -29,7 +29,7 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
-use MailPoet\Subscription\Url;
+use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions;
 
@@ -66,7 +66,7 @@ class SubscribersTest extends \MailPoetTest {
       $settings,
       $this->captcha_session,
       $container->get(ConfirmationEmailMailer::class),
-      new Url($wp, $settings)
+      new SubscriptionUrlFactory($wp, $settings)
     );
     $obfuscator = new FieldNameObfuscator();
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');

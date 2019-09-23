@@ -14,7 +14,7 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
-use MailPoet\Subscription\Url as SubscriptionUrl;
+use MailPoet\Subscription\SubscriptionUrlFactory as SubscriptionUrl;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 

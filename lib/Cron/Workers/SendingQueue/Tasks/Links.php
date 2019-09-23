@@ -4,7 +4,7 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\Router\Router;
-use MailPoet\Subscription\Url;
+use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
@@ -60,7 +60,7 @@ class Links {
         $data
       );
     } else {
-      $subscription_url_factory = Url::getInstance();
+      $subscription_url_factory = SubscriptionUrlFactory::getInstance();
       $url = $subscription_url_factory->getUnsubscribeUrl($subscriber);
     }
     return $url;
