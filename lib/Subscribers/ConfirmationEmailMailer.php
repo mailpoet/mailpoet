@@ -29,6 +29,9 @@ class ConfirmationEmailMailer {
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
+  /** @var Url */
+  private $subscription_url_factory;
+
   /**
    * @param Mailer|null $mailer
    */
@@ -43,6 +46,7 @@ class ConfirmationEmailMailer {
     }
     $this->settings = new SettingsController();
     $this->mailerMetaInfo = new MetaInfo;
+    $this->subscription_url_factory = new Url($this->wp, $this->settings);
   }
 
   function sendConfirmationEmail(Subscriber $subscriber) {
@@ -78,7 +82,7 @@ class ConfirmationEmailMailer {
     // replace activation link
     $body = Helpers::replaceLinkTags(
       $body,
-      Url::getConfirmationUrl($subscriber),
+      $this->subscription_url_factory->getConfirmationUrl($subscriber),
       ['target' => '_blank'],
       'activation_link'
     );
