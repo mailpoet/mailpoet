@@ -29,6 +29,7 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
+use MailPoet\Subscription\Url;
 use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions;
 
@@ -51,6 +52,8 @@ class SubscribersTest extends \MailPoetTest {
       ->willReturn('abcd');
     $session = new Session($cookies_mock);
     $container = ContainerWrapper::getInstance();
+    $settings = $container->get(SettingsController::class);
+    $wp = $container->get(Functions::class);
     $this->captcha_session = new CaptchaSession($container->get(Functions::class), $session);
     $this->endpoint = new Subscribers(
       $container->get(BulkActionController::class),
@@ -59,10 +62,11 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(RequiredCustomFieldValidator::class),
       $container->get(Handler::class),
       $container->get(Captcha::class),
-      $container->get(Functions::class),
-      $container->get(SettingsController::class),
+      $wp,
+      $settings,
       $this->captcha_session,
-      $container->get(ConfirmationEmailMailer::class)
+      $container->get(ConfirmationEmailMailer::class),
+      new Url($wp, $settings)
     );
     $obfuscator = new FieldNameObfuscator();
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');

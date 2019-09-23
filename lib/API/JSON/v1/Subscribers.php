@@ -65,6 +65,9 @@ class Subscribers extends APIEndpoint {
   /** @var ConfirmationEmailMailer; */
   private $confirmation_email_mailer;
 
+  /** @var SubscriptionUrl */
+  private $subscription_url_factory;
+
   public function __construct(
     Listing\BulkActionController $bulk_action_controller,
     SubscribersListings $subscribers_listings,
@@ -75,7 +78,8 @@ class Subscribers extends APIEndpoint {
     WPFunctions $wp,
     SettingsController $settings,
     CaptchaSession $captcha_session,
-    ConfirmationEmailMailer $confirmation_email_mailer
+    ConfirmationEmailMailer $confirmation_email_mailer,
+    SubscriptionUrl $subscription_url_factory
   ) {
     $this->bulk_action_controller = $bulk_action_controller;
     $this->subscribers_listings = $subscribers_listings;
@@ -87,6 +91,7 @@ class Subscribers extends APIEndpoint {
     $this->settings = $settings;
     $this->captcha_session = $captcha_session;
     $this->confirmation_email_mailer = $confirmation_email_mailer;
+    $this->subscription_url_factory = $subscription_url_factory;
   }
 
   function get($data = []) {
@@ -279,7 +284,7 @@ class Subscribers extends APIEndpoint {
       $is_builtin_captcha_required = $this->subscription_captcha->isRequired(isset($data['email']) ? $data['email'] : '');
       if ($is_builtin_captcha_required && empty($data['captcha'])) {
         $meta = [];
-        $meta['redirect_url'] = SubscriptionUrl::getCaptchaUrl();
+        $meta['redirect_url'] = $this->subscription_url_factory->getCaptchaUrl();
         return $this->badRequest([
           APIError::BAD_REQUEST => WPFunctions::get()->__('Please fill in the CAPTCHA.', 'mailpoet'),
         ], $meta);
