@@ -17,10 +17,14 @@ class CaptchaRenderer {
   /** @var CaptchaSession */
   private $captcha_session;
 
-  function __construct(UrlHelper $url_helper, WPFunctions $wp, CaptchaSession $captcha_session) {
+  /** @var Url */
+  private $subscription_url_factory;
+
+  function __construct(UrlHelper $url_helper, WPFunctions $wp, CaptchaSession $captcha_session, Url $subscription_url_factory) {
     $this->url_helper = $url_helper;
     $this->wp = $wp;
     $this->captcha_session = $captcha_session;
+    $this->subscription_url_factory = $subscription_url_factory;
   }
 
   public function getCaptchaPageTitle() {
@@ -91,7 +95,7 @@ class CaptchaRenderer {
 
     $width = 220;
     $height = 60;
-    $captcha_url = Url::getCaptchaImageUrl($width, $height);
+    $captcha_url = $this->subscription_url_factory->getCaptchaImageUrl($width, $height);
 
     $form_html .= '<div class="mailpoet_form_hide_on_success">';
     $form_html .= '<p class="mailpoet_paragraph">';

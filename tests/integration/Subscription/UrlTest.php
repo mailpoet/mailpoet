@@ -55,7 +55,7 @@ class UrlTest extends \MailPoetTest {
   }
 
   function testItReturnsTheCaptchaImageUrl() {
-    $url = Url::getCaptchaImageUrl(250, 100);
+    $url = $this->url->getCaptchaImageUrl(250, 100);
     expect($url)->notNull();
     expect($url)->contains('action=captchaImage');
     expect($url)->contains('endpoint=subscription');
