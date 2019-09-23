@@ -52,7 +52,7 @@ class SupervisorTest extends \MailPoetTest {
   function testRestartsDaemonWhenExecutionDurationIsAboveLimit() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $supervisor = new Supervisor();
-    $supervisor->daemon['updated_at'] = time() - CronHelper::DAEMON_EXECUTION_TIMEOUT;
+    $supervisor->daemon['updated_at'] = time() - CronHelper::getDaemonExecutionTimeout();
     $daemon = $supervisor->checkDaemon();
     expect(is_int($daemon['updated_at']))->true();
     expect($daemon['updated_at'])->notEquals($supervisor->daemon['updated_at']);

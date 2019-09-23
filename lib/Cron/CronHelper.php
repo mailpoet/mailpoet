@@ -6,15 +6,28 @@ use MailPoet\Router\Endpoints\CronDaemon as CronDaemonEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
+use MailPoet\WP\Functions;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CronHelper {
   const DAEMON_EXECUTION_LIMIT = 20; // seconds
-  const DAEMON_EXECUTION_TIMEOUT = 35; // seconds
   const DAEMON_REQUEST_TIMEOUT = 5; // seconds
   const DAEMON_SETTING = 'cron_daemon';
   const DAEMON_STATUS_ACTIVE = 'active';
   const DAEMON_STATUS_INACTIVE = 'inactive';
+
+  static function getDaemonExecutionLimit() {
+    $wp = Functions::get();
+    $limit = $wp->applyFilters('mailpoet_cron_get_execution_limit', self::DAEMON_EXECUTION_LIMIT);
+    return $limit;
+  }
+
+  static function getDaemonExecutionTimeout() {
+    $limit = self::getDaemonExecutionLimit();
+    $timeout = $limit * 1.75;
+    $wp = Functions::get();
+    return $wp->applyFilters('mailpoet_cron_get_execution_timeout', $timeout);
+  }
 
   static function createDaemon($token) {
     $daemon = [
@@ -189,7 +202,7 @@ class CronHelper {
 
   static function enforceExecutionLimit($timer) {
     $elapsed_time = microtime(true) - $timer;
-    if ($elapsed_time >= self::DAEMON_EXECUTION_LIMIT) {
+    if ($elapsed_time >= self::getDaemonExecutionLimit()) {
       throw new \Exception(__('Maximum execution time has been reached.', 'mailpoet'));
     }
   }
