@@ -27,30 +27,30 @@ class Url {
 
   function getCaptchaUrl() {
     $post = self::getPost($this->settings->get('subscription.pages.captcha'));
-    return self::getSubscriptionUrl($post, 'captcha', null);
+    return $this->getSubscriptionUrl($post, 'captcha', null);
   }
 
   function getCaptchaImageUrl($width, $height) {
     $post = self::getPost($this->settings->get('subscription.pages.captcha'));
-    return self::getSubscriptionUrl($post, 'captchaImage', null, ['width' => $width, 'height' => $height]);
+    return $this->getSubscriptionUrl($post, 'captchaImage', null, ['width' => $width, 'height' => $height]);
   }
 
   function getConfirmationUrl(Subscriber $subscriber = null) {
     $post = self::getPost($this->settings->get('subscription.pages.confirmation'));
-    return self::getSubscriptionUrl($post, 'confirm', $subscriber);
+    return $this->getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
   function getManageUrl(Subscriber $subscriber = null) {
     $post = self::getPost($this->settings->get('subscription.pages.manage'));
-    return self::getSubscriptionUrl($post, 'manage', $subscriber);
+    return $this->getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
   function getUnsubscribeUrl(Subscriber $subscriber = null) {
     $post = self::getPost($this->settings->get('subscription.pages.unsubscribe'));
-    return self::getSubscriptionUrl($post, 'unsubscribe', $subscriber);
+    return $this->getSubscriptionUrl($post, 'unsubscribe', $subscriber);
   }
 
-  static function getSubscriptionUrl(
+  function getSubscriptionUrl(
     $post = null,
     $action = null,
     Subscriber $subscriber = null,
@@ -58,7 +58,7 @@ class Url {
   ) {
     if ($post === null || $action === null) return;
 
-    $url = WPFunctions::get()->getPermalink($post);
+    $url = $this->wp->getPermalink($post);
     $link_tokens = new LinkTokens;
     if ($subscriber !== null) {
       $data = [
@@ -83,7 +83,7 @@ class Url {
 
     $url_params = parse_url($url);
     if (empty($url_params['scheme'])) {
-      $url = WPFunctions::get()->getBloginfo('url') . $url;
+      $url = $this->wp->getBloginfo('url') . $url;
     }
 
     return $url;
