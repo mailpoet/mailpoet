@@ -10,6 +10,10 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Url {
+
+  /** @var Url */
+  private static $instance;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -83,6 +87,16 @@ class Url {
     }
 
     return $url;
+  }
+
+  /**
+   * @return Url
+   */
+  static function getInstance() {
+    if (!self::$instance) {
+      self::$instance = new Url(new WPFunctions, new SettingsController);
+    }
+    return self::$instance;
   }
 
   static private function getPost($post = null) {
