@@ -2,11 +2,12 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\Config\Session;
+use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaSession {
   const EXPIRATION = 1800; // 30 minutes
+  const ID_LENGTH = 32;
 
   const SESSION_HASH_KEY = 'hash';
   const SESSION_FORM_KEY = 'form';
@@ -14,16 +15,22 @@ class CaptchaSession {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var Session */
-  private $session;
+  /** @var string */
+  private $id;
 
-  function __construct(WPFunctions $wp, Session $session) {
+  function __construct(WPFunctions $wp) {
     $this->wp = $wp;
-    $this->session = $session;
   }
 
-  function isAvailable() {
-    return $this->session->getId() !== null;
+  function init($id = null) {
+    $this->id = $id ?: Security::generateRandomString(self::ID_LENGTH);
+  }
+
+  function getId() {
+    if ($this->id === null) {
+      throw new \Exception("MailPoet captcha session not initialized.");
+    }
+    return $this->id;
   }
 
   function reset() {
@@ -48,10 +55,6 @@ class CaptchaSession {
   }
 
   private function getKey($type) {
-    $session_id = $this->session->getId();
-    if ($session_id === null) {
-      throw new \Exception("MailPoet session not initialized.");
-    }
-    return implode('_', ['MAILPOET', $session_id, $type]);
+    return implode('_', ['MAILPOET', $this->getId(), $type]);
   }
 }
