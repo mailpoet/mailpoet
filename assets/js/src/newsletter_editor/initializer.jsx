@@ -6,18 +6,17 @@ import ReactDOM from 'react-dom';
 import displayTutorial from './tutorial.jsx';
 
 const renderBreadcrumb = (newsletterType) => {
-  if (newsletterType === 'wc_transactional') {
-    return null;
-  }
-  const breadcrumbContainer = document.getElementById('mailpoet_editor_breadcrumb');
-  const breadcrumb = Hooks.applyFilters(
-    'mailpoet_newsletters_editor_breadcrumb',
-    <Breadcrumb step="editor" />,
-    newsletterType,
-    'editor'
-  );
+  if (newsletterType !== 'wc_transactional') {
+    const breadcrumbContainer = document.getElementById('mailpoet_editor_breadcrumb');
+    const breadcrumb = Hooks.applyFilters(
+      'mailpoet_newsletters_editor_breadcrumb',
+      <Breadcrumb step="editor" />,
+      newsletterType,
+      'editor'
+    );
 
-  ReactDOM.render(breadcrumb, breadcrumbContainer);
+    ReactDOM.render(breadcrumb, breadcrumbContainer);
+  }
 };
 
 const initializeEditor = (config) => {
