@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WooCommerce\TransactionalEmails;
@@ -46,7 +47,7 @@ class ShortcodesTest extends \MailPoetTest {
       $this->subscriber
     );
     $this->settings->set('tracking.enabled', false);
-    $this->subscription_url_factory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings);
+    $this->subscription_url_factory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, new LinkTokens);
   }
 
   function testItCanExtractShortcodes() {

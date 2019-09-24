@@ -24,6 +24,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
@@ -66,7 +67,7 @@ class SubscribersTest extends \MailPoetTest {
       $settings,
       $this->captcha_session,
       $container->get(ConfirmationEmailMailer::class),
-      new SubscriptionUrlFactory($wp, $settings)
+      new SubscriptionUrlFactory($wp, $settings, new LinkTokens)
     );
     $obfuscator = new FieldNameObfuscator();
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');

@@ -20,9 +20,13 @@ class SubscriptionUrlFactory {
   /** @var SettingsController */
   private $settings;
 
-  public function __construct(WPFunctions $wp, SettingsController $settings) {
+  /** @var LinkTokens */
+  private $link_tokens;
+
+  public function __construct(WPFunctions $wp, SettingsController $settings, LinkTokens $link_tokens) {
     $this->wp = $wp;
     $this->settings = $settings;
+    $this->link_tokens = $link_tokens;
   }
 
   function getCaptchaUrl() {
@@ -59,10 +63,9 @@ class SubscriptionUrlFactory {
     if ($post === null || $action === null) return;
 
     $url = $this->wp->getPermalink($post);
-    $link_tokens = new LinkTokens;
     if ($subscriber !== null) {
       $data = [
-        'token' => $link_tokens->getToken($subscriber),
+        'token' => $this->link_tokens->getToken($subscriber),
         'email' => $subscriber->email,
       ];
     } elseif (is_null($data)) {
@@ -94,7 +97,7 @@ class SubscriptionUrlFactory {
    */
   static function getInstance() {
     if (!self::$instance instanceof SubscriptionUrlFactory) {
-      self::$instance = new SubscriptionUrlFactory(new WPFunctions, new SettingsController);
+      self::$instance = new SubscriptionUrlFactory(new WPFunctions, new SettingsController, new LinkTokens);
     }
     return self::$instance;
   }
