@@ -9,11 +9,11 @@ use MailPoetVendor\Twig\TwigFunction;
 
 class I18n extends AbstractExtension {
 
-  private $_text_domain;
+  private $_text_domains;
 
   function __construct($text_domain) {
     // set text domain
-    $this->_text_domain = $text_domain;
+    $this->_text_domains = [$text_domain, 'woocommerce'];
   }
 
   function getFunctions() {
@@ -95,9 +95,9 @@ class I18n extends AbstractExtension {
 
   private function setTextDomain($args = []) {
     // make sure that the last argument is our text domain
-    if ($args[count($args) - 1] !== $this->_text_domain) {
+    if (!in_array($args[count($args) - 1], $this->_text_domain)) {
       // otherwise add it to the list of arguments
-      $args[] = $this->_text_domain;
+      $args[] = $this->_text_domains[0];
     }
     return $args;
   }
