@@ -3,21 +3,17 @@
     {
       "type": "vcs",
       "url": "https://github.com/mailpoet/html2text"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/mailpoet/swiftmailer"
     }
   ],
   "require": {
     "php": ">=5.6",
     "cerdic/css-tidy": "^1.6",
-    "tburry/pquery": "^1.1.1",
     "j4mie/paris": "1.5.6",
-    "swiftmailer/swiftmailer": "dev-tls",
     "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
-    "soundasleep/html2text": "dev-master"
+    "soundasleep/html2text": "dev-master",
+    "swiftmailer/swiftmailer": "5.4.12",
+    "tburry/pquery": "^1.1.1"
   },
   "require-dev": {
     "ext-gd": "*",

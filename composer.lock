@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "64970643bb96721f7b2d39e7979224e8",
+    "content-hash": "c641885578d3d2bb8a3853d01d0827fe",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -327,16 +327,16 @@
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "dev-tls",
+            "version": "v5.4.12",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mailpoet/swiftmailer.git",
-                "reference": "e6963324036afd178d3a8356e5c705ae4a442ef9"
+                "url": "https://github.com/swiftmailer/swiftmailer.git",
+                "reference": "181b89f18a90f8925ef805f950d47a7190e9b950"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mailpoet/swiftmailer/zipball/e6963324036afd178d3a8356e5c705ae4a442ef9",
-                "reference": "e6963324036afd178d3a8356e5c705ae4a442ef9",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/181b89f18a90f8925ef805f950d47a7190e9b950",
+                "reference": "181b89f18a90f8925ef805f950d47a7190e9b950",
                 "shasum": ""
             },
             "require": {
@@ -357,11 +357,7 @@
                     "lib/swift_required.php"
                 ]
             },
-            "autoload-dev": {
-                "psr-0": {
-                    "Swift_": "tests/unit"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -381,10 +377,7 @@
                 "mail",
                 "mailer"
             ],
-            "support": {
-                "source": "https://github.com/mailpoet/swiftmailer/tree/tls"
-            },
-            "time": "2018-07-09T16:02:27+00:00"
+            "time": "2018-07-31T09:26:32+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -8463,7 +8456,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "swiftmailer/swiftmailer": 20,
         "soundasleep/html2text": 20
     },
     "prefer-stable": false,
