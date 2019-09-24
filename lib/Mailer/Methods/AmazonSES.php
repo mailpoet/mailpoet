@@ -6,6 +6,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Swift_Message;
 
 class AmazonSES {
   public $aws_access_key;
@@ -108,7 +109,7 @@ class AmazonSES {
   }
 
   function createMessage($newsletter, $subscriber, $extra_params = []) {
-    $message = \Swift_Message::newInstance()
+    $message = Swift_Message::newInstance()
       ->setTo($this->processSubscriber($subscriber))
       ->setFrom([
           $this->sender['from_email'] => $this->sender['from_name'],
@@ -132,7 +133,7 @@ class AmazonSES {
     return $message;
   }
 
-  function encodeMessage(\Swift_Message $message) {
+  function encodeMessage(Swift_Message $message) {
     return base64_encode($message->toString());
   }
 

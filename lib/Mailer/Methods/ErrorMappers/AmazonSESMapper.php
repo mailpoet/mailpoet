@@ -6,6 +6,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Swift_RfcComplianceException;
 
 class AmazonSESMapper {
   use BlacklistErrorMapperTrait;
@@ -15,7 +16,7 @@ class AmazonSESMapper {
 
   function getErrorFromException(\Exception $e, $subscriber) {
     $level = MailerError::LEVEL_HARD;
-    if ($e instanceof \Swift_RfcComplianceException) {
+    if ($e instanceof Swift_RfcComplianceException) {
       $level = MailerError::LEVEL_SOFT;
     }
     $subscriber_errors = [new SubscriberError($subscriber, null)];

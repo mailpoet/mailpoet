@@ -6,6 +6,11 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Swift_Mailer;
+use MailPoetVendor\Swift_Message;
+use MailPoetVendor\Swift_Plugins_LoggerPlugin;
+use MailPoetVendor\Swift_Plugins_Loggers_ArrayLogger;
+use MailPoetVendor\Swift_SmtpTransport;
 
 class SMTP {
   public $host;
@@ -45,8 +50,8 @@ class SMTP {
       $return_path :
       $this->sender['from_email'];
     $this->mailer = $this->buildMailer();
-    $this->mailer_logger = new \Swift_Plugins_Loggers_ArrayLogger();
-    $this->mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($this->mailer_logger));
+    $this->mailer_logger = new Swift_Plugins_Loggers_ArrayLogger();
+    $this->mailer->registerPlugin(new Swift_Plugins_LoggerPlugin($this->mailer_logger));
     $this->error_mapper = $error_mapper;
     $this->blacklist = new BlacklistCheck();
   }
@@ -73,7 +78,7 @@ class SMTP {
   }
 
   function buildMailer() {
-    $transport = \Swift_SmtpTransport::newInstance(
+    $transport = Swift_SmtpTransport::newInstance(
       $this->host, $this->port, $this->encryption);
     $connection_timeout = $this->wp->applyFilters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT);
     $transport->setTimeout($connection_timeout);
@@ -83,11 +88,11 @@ class SMTP {
         ->setPassword($this->password);
     }
     $transport = $this->wp->applyFilters('mailpoet_mailer_smtp_transport_agent', $transport);
-    return \Swift_Mailer::newInstance($transport);
+    return Swift_Mailer::newInstance($transport);
   }
 
   function createMessage($newsletter, $subscriber, $extra_params = []) {
-    $message = \Swift_Message::newInstance()
+    $message = Swift_Message::newInstance()
       ->setTo($this->processSubscriber($subscriber))
       ->setFrom(
         [
