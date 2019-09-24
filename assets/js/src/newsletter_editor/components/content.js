@@ -20,6 +20,9 @@ Module.NewsletterModel = SuperModel.extend({
     // doesn't control don't change.
     return _.pick(SuperModel.prototype.toJSON.call(this), this.whitelisted);
   },
+  isWoocommerceTransactional: function isWoocommerceTransactional() {
+    return this.get('type') === 'wc_transactional';
+  },
 });
 
 // Content block view and model handlers for different content types
