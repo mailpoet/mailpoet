@@ -1,10 +1,22 @@
 <div class="mailpoet_save_wrapper {{ wrapperClass }}">
+{{#if isWoocommerceTransactional}}
+    <div class="mailpoet_button_group mailpoet_save_button_group">
+        <input type="button" name="save" value="<%= __('Save') %>" class="button button-primary mailpoet_save_button" />
+    </div>
+    <div class="clearfix"></div>
+    <div class="mailpoet_editor_messages">
+        <div class="mailpoet_save_error"></div>
+        <div class="mailpoet_editor_last_saved mailpoet_hidden"><%= __('Autosaved') %> <span class="mailpoet_autosaved_at"></span></div>
+    </div>
+    <div class="clearfix"></div>
+    <a href="admin.php?page=wc-settings&tab=email" class="button button-primary mailpoet_save_button" style="margin-top: 7px"><%= __('Edit WooCommerce Email settings') %></a>
+{{else}}
     <input type="button" name="next" value="<%= __('Next') %>" class="button button-primary mailpoet_save_next" />
     <div class="mailpoet_button_group mailpoet_save_button_group">
         <input type="button" name="save" value="<%= __('Save') %>" class="button button-primary mailpoet_save_button" /><button class="button button-primary mailpoet_save_show_options" data-automation-id="newsletter_save_options_toggle" ><span class="dashicons mailpoet_save_show_options_icon"></span></button>
     </div>
     <div class="clearfix"></div>
-    <div class="mailpoet_editor_messages">    
+    <div class="mailpoet_editor_messages">
         <div class="mailpoet_save_error"></div>
         <div class="mailpoet_editor_last_saved mailpoet_hidden"><%= __('Autosaved') %> <span class="mailpoet_autosaved_at"></span></div>
     </div>
@@ -24,4 +36,5 @@
         <p><input type="text" name="export_template_name" value="" placeholder="<%= __('Template name') %>" class="mailpoet_input mailpoet_export_template_name" /></p>
         <p><input type="button" name="export_template" value="<%= __('Export template') %>" class="button button-primary mailpoet_button_full mailpoet_export_template" /></p>
     </div>
+{{/if}}
 </div>

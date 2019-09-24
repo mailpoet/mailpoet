@@ -107,6 +107,7 @@ Module.SaveView = Marionette.View.extend({
   templateContext: function () {
     return {
       wrapperClass: this.wrapperClass,
+      isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
     };
   },
   events: {
@@ -356,8 +357,9 @@ App.on('before:start', function (BeforeStartApp) {
 });
 
 App.on('start', function (BeforeStartApp) {
-  var topSaveView = new Module.SaveView();
-  var bottomSaveView = new Module.SaveView();
+  var model = BeforeStartApp.getNewsletter();
+  var topSaveView = new Module.SaveView({ model: model });
+  var bottomSaveView = new Module.SaveView({ model: model });
   bottomSaveView.setDropdownDirectionUp();
 
   BeforeStartApp._appView.showChildView('topRegion', topSaveView);
