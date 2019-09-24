@@ -49,7 +49,7 @@ class ConfirmationEmailMailer {
     $this->mailerMetaInfo = new MetaInfo;
 
     if ($subscription_url_factory === null) {
-      $subscription_url_factory = new SubscriptionUrlFactory($this->wp, $this->settings);
+      $subscription_url_factory = SubscriptionUrlFactory::getInstance();
     }
     $this->subscription_url_factory = $subscription_url_factory;
   }
