@@ -6,6 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
@@ -37,6 +38,9 @@ class Settings {
   /** @var Captcha */
   private $captcha;
 
+  /** @var FeaturesController */
+  private $features_controller;
+
   /** @var Installation */
   private $installation;
 
@@ -47,7 +51,8 @@ class Settings {
     WPFunctions $wp,
     ServicesChecker $services_checker,
     Installation $installation,
-    Captcha $captcha
+    Captcha $captcha,
+    FeaturesController $features_controller
   ) {
     $this->page_renderer = $page_renderer;
     $this->settings = $settings;
@@ -56,6 +61,7 @@ class Settings {
     $this->services_checker = $services_checker;
     $this->installation = $installation;
     $this->captcha = $captcha;
+    $this->features_controller = $features_controller;
   }
 
   function render() {
@@ -87,6 +93,9 @@ class Settings {
         'smtp' => Hosts::getSMTPHosts(),
       ],
       'built_in_captcha_supported' => $this->captcha->isSupported(),
+      'display_woocommerce_editor' => $this->features_controller->isSupported(
+        FeaturesController::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER
+      ),
     ];
 
     $data['is_new_user'] = $this->installation->isNewInstallation();
