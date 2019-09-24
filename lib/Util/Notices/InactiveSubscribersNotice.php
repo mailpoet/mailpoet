@@ -46,10 +46,12 @@ class InactiveSubscribersNotice {
   }
 
   private function display($inactive_subscribers_count) {
-    $error_string = __('Good news! MailPoet won’t send emails to your [number] inactive subscribers. This is a standard practice to maintain good deliverability and open rates. But if you want to disable it, you can do so in settings. [link]Read more.[/link]', 'mailpoet');
     $go_to_settings_string = __('Go to the Advanced Settings', 'mailpoet');
 
-    $notice = str_replace('[number]', $this->wp->numberFormatI18n($inactive_subscribers_count), $error_string);
+    $notice = sprintf(
+      __('Good news! MailPoet won’t send emails to your %s inactive subscribers. This is a standard practice to maintain good deliverability and open rates. But if you want to disable it, you can do so in settings. [link]Read more.[/link]', 'mailpoet'),
+      $this->wp->numberFormatI18n($inactive_subscribers_count)
+    );
     $notice = Helpers::replaceLinkTags($notice, 'https://kb.mailpoet.com/article/264-inactive-subscribers', [
       'target' => '_blank',
       'data-beacon-article' => '5cbf19622c7d3a026fd3efe1',
