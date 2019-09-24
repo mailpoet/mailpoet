@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, email automation
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.36.0
+Stable tag: 3.37.0
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -163,6 +163,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.37.0 - 2019-09-24 =
+* Improved: automatic emails now respect the subscription status of a subscriber;
+* Improved: templates display is now easier to navigate;
+* Fixed: inactive subscribers sync works faster on huge databases. Big thanks to TDN sysadmin!
+* Fixed: Fatal error feature_flags table does not exist;
+* Fixed: intro now works correctly for users with restricted admin capabilities;
+* Fixed: lists can no longer be deleted if they have an assigned automatic email;
+* Fixed: WooCommerce customers are no longer unsubscribed from the WooCommerce customers list when updating their subscription.
 
 = 3.36.0 - 2019-09-17 =
 * Added: SPF check when sending a preview email;
