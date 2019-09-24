@@ -45,6 +45,7 @@
       var mailpoet_mss_active = <%= json_encode(mss_active) %>;
       var mailpoet_free_plan_announcement_seen = !!+'<%= settings.free_plan_announcement_seen %>';
       var mailpoet_mta_method = '<%= settings.mta.method %>';
+      var mailpoet_editor_javascript_url = '<%= getJavascriptScriptUrl("newsletter_editor.js") %>';
       var mailpoet_subscribers_count = <%= subscribers_count %>;
 
       <% if not(premium_plugin_active) %>
