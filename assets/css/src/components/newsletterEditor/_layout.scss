@@ -6,6 +6,14 @@ $content-border-color: $structure-border-color;
   width: 100%;
 }
 
+#mailpoet_editor_heading_left {
+  float: left;
+}
+
+#mailpoet_editor_heading_right {
+  float: right;
+}
+
 #mailpoet_editor_heading {
   clear: both;
   margin-bottom: 13px;
