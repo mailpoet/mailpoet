@@ -1,6 +1,31 @@
 <table class="form-table">
   <tr>
     <th scope="row">
+      <label for="settings[woocommerce_use_mailpoet_editor]">
+        <%= _x('Use MailPoet to customize WooCommerce emails', "Setting for using our editor for WooCommerce email") %>
+      </label>
+      <p class="description">
+        <%= _x('You can use the MailPoet editor to customize the template used to send WooCommerce emails (notification for order processing, completed, ...).', "Setting for using our editor for WooCommerce email") %>
+      </p>
+    </th>
+    <td>
+      <p>
+        <input
+        data-toggle="mailpoet_woocommerce_use_mailpoet_editor"
+        type="checkbox"
+        value="1"
+        id="settings[woocommerce_use_mailpoet_editor]"
+        name="woocommerce[use_mailpoet_editor]"
+        <% if(settings.woocommerce.use_mailpoet_editor) %>checked="checked"<% endif %>
+        >
+        <br>
+        <a class="button-secondary mailpoet_woocommerce_editor_button" href="?page=mailpoet-newsletter-editor&id=<%= settings.woocommerce.transactional_email_id %>"><%= _x('Open template editor', 'Settings button to go to WooCommerce email editor') %></a>
+        <a class="button-secondary mailpoet_woocommerce_editor_button_disabled" disabled="disabled"><%= _x('Open template editor', 'Settings button to go to WooCommerce email editor') %></a>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <th scope="row">
       <label for="settings[woocommerce_optin_on_checkout]">
         <%= _x('Opt-in on checkout', "settings area: add an email opt-in checkbox on the checkout page (e-commerce websites)") %>
       </label>
