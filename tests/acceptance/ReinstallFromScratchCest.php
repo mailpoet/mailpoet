@@ -34,8 +34,7 @@ class ReinstallFromScratchCest {
     $I->waitForElement('#mailpoet_reinstall');
     $I->click('Reinstall now...');
     $I->acceptPopup();
-    $I->waitForElement('#mailpoet_loading');
-    $I->waitForElementNotVisible('#mailpoet_loading');
+    $I->waitForText('Welcome! Let’s get you started on the right foot.');
 
     // Step 3 - skip all tutorials, which could interfere with other tests
     $settings = new Settings();
