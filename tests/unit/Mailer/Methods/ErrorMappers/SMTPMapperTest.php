@@ -7,6 +7,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Swift_RfcComplianceException;
 
 class SMTPMapperTest extends \MailPoetUnitTest {
 
@@ -37,7 +38,7 @@ class SMTPMapperTest extends \MailPoetUnitTest {
 
   function testItCreatesSoftErrorForInvalidEmail() {
     $message = 'Invalid email';
-    $error = $this->mapper->getErrorFromException(new \Swift_RfcComplianceException($message), 'john@rambo.com');
+    $error = $this->mapper->getErrorFromException(new Swift_RfcComplianceException($message), 'john@rambo.com');
     expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
   }
 

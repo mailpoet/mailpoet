@@ -7,6 +7,7 @@
     "gregwar/captcha": "^1.1",
     "monolog/monolog": "^1.23",
     "sabberworm/php-css-parser": "^8.1",
+    "swiftmailer/swiftmailer": "5.4.12",
     "symfony/dependency-injection": "3.4.26",
     "symfony/polyfill-mbstring": "^1.11",
     "symfony/polyfill-php72": "^1.11",
@@ -21,7 +22,8 @@
       "../tools/vendor/php-scoper.phar add-prefix",
       "mv ./build/* ../vendor-prefixed",
       "php fix-twig.php",
-      "php fix-doctrine.php"
+      "php fix-doctrine.php",
+      "php fix-swiftmailer.php"
     ]
   },
   "config": {

@@ -17,9 +17,6 @@ class RequirementsChecker {
   public $vendor_classes = [
     '\ORM',
     '\Model',
-    '\Swift_Mailer',
-    '\Swift_SmtpTransport',
-    '\Swift_Message',
     '\Carbon\Carbon',
     '\Sudzy\ValidModel',
     '\Sudzy\ValidationException',
