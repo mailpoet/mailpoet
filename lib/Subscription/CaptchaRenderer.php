@@ -31,7 +31,8 @@ class CaptchaRenderer {
     return $this->wp->__("Confirm you’re not a robot", 'mailpoet');
   }
 
-  public function getCaptchaPageContent() {
+  public function getCaptchaPageContent($session_id) {
+    $this->captcha_session->init($session_id);
     $fields = [
       [
         'id' => 'captcha',
@@ -87,6 +88,7 @@ class CaptchaRenderer {
       'class="mailpoet_form mailpoet_captcha_form" ' .
       'novalidate>';
     $form_html .= '<input type="hidden" name="data[form_id]" value="' . $form_id . '" />';
+    $form_html .= '<input type="hidden" name="data[captcha_session_id]" value="' . $this->captcha_session->getId() . '" />';
     $form_html .= '<input type="hidden" name="api_version" value="v1" />';
     $form_html .= '<input type="hidden" name="endpoint" value="subscribers" />';
     $form_html .= '<input type="hidden" name="mailpoet_method" value="subscribe" />';
@@ -95,7 +97,7 @@ class CaptchaRenderer {
 
     $width = 220;
     $height = 60;
-    $captcha_url = $this->subscription_url_factory->getCaptchaImageUrl($width, $height);
+    $captcha_url = $this->subscription_url_factory->getCaptchaImageUrl($width, $height, $this->captcha_session->getId());
 
     $form_html .= '<div class="mailpoet_form_hide_on_success">';
     $form_html .= '<p class="mailpoet_paragraph">';

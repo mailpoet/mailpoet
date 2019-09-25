@@ -167,7 +167,7 @@ class Pages {
   function setPageTitle($page_title = '') {
     global $post;
 
-    if ($this->isPreview() === false && $this->subscriber === false) {
+    if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === false) {
       return $this->wp->__("Hmmm... we don't have a record of you.", 'mailpoet');
     }
 
@@ -199,8 +199,8 @@ class Pages {
   function setPageContent($page_content = '[mailpoet_page]') {
     global $post;
 
-    // if we're not in preview mode and the subscriber does not exist
-    if ($this->isPreview() === false && $this->subscriber === false) {
+    // if we're not in preview mode or captcha page and the subscriber does not exist
+    if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === false) {
       return $this->wp->__("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
     }
 
@@ -209,7 +209,8 @@ class Pages {
 
       switch ($this->action) {
         case self::ACTION_CAPTCHA:
-          $content = $this->captcha_renderer->getCaptchaPageContent();
+          $captcha_session_id = isset($this->data['captcha_session_id']) ? $this->data['captcha_session_id'] : null;
+          $content = $this->captcha_renderer->getCaptchaPageContent($captcha_session_id);
           break;
         case self::ACTION_CONFIRM:
           $content = $this->getConfirmContent();
