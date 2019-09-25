@@ -13,6 +13,13 @@ class NewsletterTypes extends React.Component {
     }).isRequired,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      isCreating: false,
+    };
+  }
+
   setupNewsletter = (type) => {
     if (type !== undefined) {
       this.props.history.push(`/new/${type}`);
@@ -23,7 +30,7 @@ class NewsletterTypes extends React.Component {
     }
   };
 
-  getAutomaticEmails = () => {
+  getAutomaticEmails() {
     if (!window.mailpoet_automatic_emails) return [];
 
     return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
@@ -39,7 +46,7 @@ class NewsletterTypes extends React.Component {
             onClick={onClick}
             role="button"
             tabIndex={0}
-            disabled={!window.mailpoet_premium_active}
+            disabled={!window.mailpoet_premium_active || this.state.isCreating}
             onKeyDown={(event) => {
               if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
               ) {
@@ -55,9 +62,10 @@ class NewsletterTypes extends React.Component {
 
       return email;
     });
-  };
+  }
 
-  createNewsletter = (type) => {
+  createNewsletter(type) {
+    this.setState({ isCreating: true });
     MailPoet.trackEvent('Emails > Type selected', {
       'MailPoet Free version': window.mailpoet_version,
       'Email type': type,
@@ -73,6 +81,7 @@ class NewsletterTypes extends React.Component {
     }).done((response) => {
       this.props.history.push(`/template/${response.data.id}`);
     }).fail((response) => {
+      this.setState({ isCreating: false });
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
           response.errors.map((error) => error.message),
@@ -80,37 +89,36 @@ class NewsletterTypes extends React.Component {
         );
       }
     });
-  };
+  }
 
   render() {
-    const createStandardNewsletter = _.partial(this.createNewsletter, 'standard');
-    const createNotificationNewsletter = _.partial(this.setupNewsletter, 'notification');
-    const createWelcomeNewsletter = _.partial(this.setupNewsletter, 'welcome');
+    const createStandardNewsletter = _.partial(this.createNewsletter.bind(this), 'standard');
+    const createNotificationNewsletter = _.partial(this.setupNewsletter.bind(this), 'notification');
+    const createWelcomeNewsletter = _.partial(this.setupNewsletter.bind(this), 'welcome');
     const defaultTypes = [
       {
         slug: 'standard',
         title: MailPoet.I18n.t('regularNewsletterTypeTitle'),
         description: MailPoet.I18n.t('regularNewsletterTypeDescription'),
-        action: (function action() {
-          return (
-            <a
-              className="button button-primary"
-              data-automation-id="create_standard"
-              onClick={createStandardNewsletter}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(event) => {
-                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-                ) {
-                  event.preventDefault();
-                  createStandardNewsletter();
-                }
-              }}
-            >
-              {MailPoet.I18n.t('create')}
-            </a>
-          );
-        }()),
+        action: (
+          <a
+            className="button button-primary"
+            data-automation-id="create_standard"
+            onClick={createStandardNewsletter}
+            role="button"
+            tabIndex={0}
+            disabled={this.state.isCreating}
+            onKeyDown={(event) => {
+              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              ) {
+                event.preventDefault();
+                createStandardNewsletter();
+              }
+            }}
+          >
+            {MailPoet.I18n.t('create')}
+          </a>
+        ),
       },
       {
         slug: 'welcome',
@@ -118,26 +126,25 @@ class NewsletterTypes extends React.Component {
         description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
         videoGuide: 'https://kb.mailpoet.com/article/254-video-guide-to-welcome-emails',
         videoGuideBeacon: '5b05ebf20428635ba8b2aa53',
-        action: (function action() {
-          return (
-            <a
-              className="button button-primary"
-              onClick={createWelcomeNewsletter}
-              data-automation-id="create_welcome"
-              onKeyDown={(event) => {
-                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-                ) {
-                  event.preventDefault();
-                  createWelcomeNewsletter();
-                }
-              }}
-              role="button"
-              tabIndex={0}
-            >
-              {MailPoet.I18n.t('setUp')}
-            </a>
-          );
-        }()),
+        action: (
+          <a
+            className="button button-primary"
+            onClick={createWelcomeNewsletter}
+            data-automation-id="create_welcome"
+            disabled={this.state.isCreating}
+            onKeyDown={(event) => {
+              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              ) {
+                event.preventDefault();
+                createWelcomeNewsletter();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+          >
+            {MailPoet.I18n.t('setUp')}
+          </a>
+        ),
       },
       {
         slug: 'notification',
@@ -145,26 +152,25 @@ class NewsletterTypes extends React.Component {
         description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
         videoGuide: 'https://kb.mailpoet.com/article/210-video-guide-to-post-notifications',
         videoGuideBeacon: '59ba6fb3042863033a1cd5a5',
-        action: (function action() {
-          return (
-            <a
-              className="button button-primary"
-              data-automation-id="create_notification"
-              onClick={createNotificationNewsletter}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(event) => {
-                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-                ) {
-                  event.preventDefault();
-                  createNotificationNewsletter();
-                }
-              }}
-            >
-              {MailPoet.I18n.t('setUp')}
-            </a>
-          );
-        }()),
+        action: (
+          <a
+            className="button button-primary"
+            data-automation-id="create_notification"
+            onClick={createNotificationNewsletter}
+            role="button"
+            disabled={this.state.isCreating}
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              ) {
+                event.preventDefault();
+                createNotificationNewsletter();
+              }
+            }}
+          >
+            {MailPoet.I18n.t('setUp')}
+          </a>
+        ),
       },
     ];
 
