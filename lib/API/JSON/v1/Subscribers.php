@@ -179,8 +179,9 @@ class Subscribers extends APIEndpoint {
 
     if (!empty($captcha_settings['type'])
       && $captcha_settings['type'] === Captcha::TYPE_BUILTIN
-      && $this->captcha_session->isAvailable()
     ) {
+      $captcha_session_id = isset($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
+      $this->captcha_session->init($captcha_session_id);
       if (!isset($data['captcha'])) {
         // Save form data to session
         $this->captcha_session->setFormData(array_merge($data, ['form_id' => $form_id]));
@@ -239,7 +240,7 @@ class Subscribers extends APIEndpoint {
     if ($errors !== false) {
       return $this->badRequest($errors);
     } else {
-      if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN && $this->captcha_session->isAvailable()) {
+      if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
         // Captcha has been verified, invalidate the session vars
         $this->captcha_session->reset();
       }
@@ -280,11 +281,11 @@ class Subscribers extends APIEndpoint {
     }
 
     $is_builtin_captcha_required = false;
-    if ($captcha_settings['type'] === Captcha::TYPE_BUILTIN && $this->captcha_session->isAvailable()) {
+    if ($captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
       $is_builtin_captcha_required = $this->subscription_captcha->isRequired(isset($data['email']) ? $data['email'] : '');
       if ($is_builtin_captcha_required && empty($data['captcha'])) {
         $meta = [];
-        $meta['redirect_url'] = $this->subscription_url_factory->getCaptchaUrl();
+        $meta['redirect_url'] = $this->subscription_url_factory->getCaptchaUrl($this->captcha_session->getId());
         return $this->badRequest([
           APIError::BAD_REQUEST => WPFunctions::get()->__('Please fill in the CAPTCHA.', 'mailpoet'),
         ], $meta);
