@@ -8,7 +8,7 @@ if (empty($mailpoet_plugin)) exit;
 require_once($mailpoet_plugin['autoloader']);
 
 // setup Tracy Debugger in dev mode and only for PHP version > 7.1
-$tracy_path = __DIR__ . '/tools/tracy.phar';
+$tracy_path = __DIR__ . '/tools/vendor/tracy.phar';
 if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracy_path)) {
   require_once $tracy_path;
 

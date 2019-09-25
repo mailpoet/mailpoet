@@ -11,9 +11,15 @@ if (!$is_dev_mode) {
   return;
 }
 
+// prepare vendor dir
+$vendor_dir = __DIR__ . '/vendor';
+if (!file_exists($vendor_dir)) {
+  mkdir($vendor_dir);
+}
+
 // download all tools
 foreach ($tools as $url => $path) {
-  $phar_path = __DIR__ . "/$path";
+  $phar_path = "$vendor_dir/$path";
   $phar_info_path = "$phar_path.info";
 
   fwrite(STDERR, "Downloading '$url'...");
