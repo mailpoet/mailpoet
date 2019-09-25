@@ -29,6 +29,9 @@ MailPoet.Ajax = {
   post: function post(options) {
     return this.request('post', options);
   },
+  get: function get(options) {
+    return this.request('get', options);
+  },
   init: function init(options) {
     // merge options
     this.options = jQuery.extend({}, this.defaults, options);
@@ -70,7 +73,7 @@ MailPoet.Ajax = {
     }
 
     // ajax request
-    deferred = jQuery.post(
+    deferred = jQuery[method](
       this.options.url,
       params,
       null,
