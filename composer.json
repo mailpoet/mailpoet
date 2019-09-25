@@ -68,9 +68,11 @@
   "scripts": {
     "pre-install-cmd": [
       "@php tools/install.php",
+      "mkdir -p vendor-prefixed"
     ],
     "pre-update-cmd": [
       "@php tools/install.php",
+      "mkdir -p vendor-prefixed"
     ],
     "post-update-cmd": [
       "@fixPHPUnit57CodeCoverageForPHP72",
