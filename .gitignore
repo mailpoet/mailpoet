@@ -1,7 +1,6 @@
 .DS_Store
 TODO
 composer.phar
-php-scoper.phar
 /vendor
 /vendor-prefixed
 /vendor_backup

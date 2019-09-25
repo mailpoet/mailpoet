@@ -30,11 +30,6 @@ $ cp .env.sample .env
 # download composer
 $ curl -sS https://getcomposer.org/installer | php
 $ chmod +x ./composer.phar
-# download a PHP-Scoper
-$ curl -sL https://github.com/humbug/php-scoper/releases/download/0.11.4/php-scoper.phar --output php-scoper.phar
-# needed for installation.
-$ mkdir -p vendor-prefixed
-$ chmod +x ./php-scoper.phar
 # install PHP dependencies
 $ ./composer.phar install
 # install all dependencies (PHP and JS)
