@@ -77,7 +77,7 @@ SidebarView = Marionette.View.extend({
       }
     },
   },
-  templateContext: function () { // eslint-disable-line func-names
+  templateContext: function () {
     return {
       isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
     };
