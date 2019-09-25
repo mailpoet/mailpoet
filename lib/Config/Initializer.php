@@ -58,9 +58,6 @@ class Initializer {
   /** @var DatabaseInitializer */
   private $database_initializer;
 
-  /** @var Session */
-  private $session;
-
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
@@ -76,8 +73,7 @@ class Initializer {
     CronTrigger $cron_trigger,
     PermanentNotices $permanent_notices,
     Shortcodes $shortcodes,
-    DatabaseInitializer $database_initializer,
-    Session $session
+    DatabaseInitializer $database_initializer
   ) {
       $this->renderer_factory = $renderer_factory;
       $this->access_control = $access_control;
@@ -92,7 +88,6 @@ class Initializer {
       $this->permanent_notices = $permanent_notices;
       $this->shortcodes = $shortcodes;
       $this->database_initializer = $database_initializer;
-      $this->session = $session;
   }
 
   function init() {
@@ -186,7 +181,6 @@ class Initializer {
 
   function initialize() {
     try {
-      $this->setupSession();
       $this->maybeDbUpdate();
       $this->setupInstaller();
       $this->setupUpdater();
@@ -213,10 +207,6 @@ class Initializer {
     }
 
     define(self::INITIALIZED, true);
-  }
-
-  function setupSession() {
-    $this->session->init();
   }
 
   function maybeDbUpdate() {
