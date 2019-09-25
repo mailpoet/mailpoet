@@ -33,17 +33,9 @@ class WooCommerceSyncTest extends \MailPoetTest {
     expect($this->worker->processTaskStrategy($task))->equals(true);
   }
 
-  function testItWillNotRunInMultipleInstances() {
-    $this->woocommerce_segment->expects($this->once())
-      ->method('synchronizeCustomers');
-    $task = $this->createScheduledTask();
-    expect($this->worker->processTaskStrategy($task))->equals(true);
-    expect($this->worker->processTaskStrategy($task))->equals(false);
-    expect($task->getMeta())->notEmpty();
-  }
-
   function testItWillResetTheInProgressFlagOnFail() {
     $task = $this->createScheduledTask();
+    $this->worker->startProgress($task);
     $this->woocommerce_segment->expects($this->once())
       ->method('synchronizeCustomers')
       ->willThrowException(new \Exception('test error'));
@@ -52,23 +44,8 @@ class WooCommerceSyncTest extends \MailPoetTest {
       $this->fail('An exception should be thrown');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('test error');
-      expect($task->getMeta())->isEmpty();
+      expect($task->getMeta())->equals(['in_progress' => null]);
     }
-  }
-
-  function testItWillRescheduleTaskIfItIsRunningForTooLong() {
-    $this->woocommerce_segment->expects($this->once())
-      ->method('synchronizeCustomers');
-    $task = $this->createScheduledTask();
-    $task = ScheduledTask::findOne($task->id); // make sure `updated_at` is set by the DB
-    expect($this->worker->processTaskStrategy($task))->equals(true);
-    $scheduled_at = $task->scheduled_at;
-    $task->updated_at = Carbon::createFromTimestamp(strtotime($task->updated_at))
-      ->subMinutes(WooCommerceSync::TASK_RUN_TIMEOUT + 1);
-    expect($this->worker->processTaskStrategy($task))->equals(false);
-    expect($scheduled_at < $task->scheduled_at)->true();
-    expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
-    expect($task->getMeta())->isEmpty();
   }
 
   private function createScheduledTask() {
