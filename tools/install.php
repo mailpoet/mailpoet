@@ -1,6 +1,7 @@
 <?php
 
 $tools = [
+  'https://github.com/phpstan/phpstan/releases/download/0.11.5/phpstan.phar' => 'phpstan.phar',
   'https://github.com/nette/tracy/releases/download/v2.6.4/tracy.phar' => 'tracy.phar',
 ];
 

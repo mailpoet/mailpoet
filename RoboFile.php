@@ -429,7 +429,7 @@ class RoboFile extends \Robo\Tasks {
       ->taskExec(
         'WP_ROOT="' . getenv('WP_ROOT') . '" ' .
         'php -d memory_limit=2G ' .
-        "$dir/phpstan.phar analyse " .
+        "$dir/tools/vendor/phpstan.phar analyse " .
         "--configuration $dir/tasks/phpstan/phpstan.neon " .
         '--level 5 ' .
         "$dir/lib"
