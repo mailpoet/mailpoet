@@ -37,7 +37,7 @@ class UrlTest extends \MailPoetTest {
   function testItReturnsTheDefaultPageUrlIfNoPageIsSetInSettings() {
     $this->settings->delete('subscription');
 
-    $url = $this->url->getCaptchaUrl();
+    $url = $this->url->getCaptchaUrl('abc');
     expect($url)->notNull();
     expect($url)->contains('action=captcha');
     expect($url)->contains('endpoint=subscription');
@@ -49,14 +49,14 @@ class UrlTest extends \MailPoetTest {
   }
 
   function testItReturnsTheCaptchaUrl() {
-    $url = $this->url->getCaptchaUrl();
+    $url = $this->url->getCaptchaUrl('abc');
     expect($url)->notNull();
     expect($url)->contains('action=captcha');
     expect($url)->contains('endpoint=subscription');
   }
 
   function testItReturnsTheCaptchaImageUrl() {
-    $url = $this->url->getCaptchaImageUrl(250, 100);
+    $url = $this->url->getCaptchaImageUrl(250, 100, 'abc');
     expect($url)->notNull();
     expect($url)->contains('action=captchaImage');
     expect($url)->contains('endpoint=subscription');
