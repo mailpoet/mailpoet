@@ -9,10 +9,15 @@ jobs:
       TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
       - checkout
+      - run:
+          name: "Compute checksum for prefixer"
+          command: find prefixer -type f -not -path 'prefixer/build/*' -not -path 'prefixer/vendor/*' | sort | xargs cat | sha512sum > prefixer-checksum
       - restore_cache:
           key: tools-{{ checksum "tools/install.php" }}
       - restore_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
+      - restore_cache:
+          key: composer-prefixed-{{ checksum "prefixer-checksum" }}
       - restore_cache:
           keys:
             - npm-{{ checksum "package-lock.json" }}
@@ -37,6 +42,12 @@ jobs:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
           paths:
             - vendor
+      - save_cache:
+          key: composer-prefixed-{{ checksum "prefixer-checksum" }}
+          paths:
+            - prefixer/build
+            - prefixer/vendor
+            - vendor-prefixed
       - save_cache:
           key: npm-{{ checksum "package-lock.json" }}
           paths:
