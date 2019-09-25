@@ -68,8 +68,8 @@ sed -i "s/define( *'WP_DEBUG', false *);/$CONFIG/" ./wp-config.php
 # Example: docker-compose run -e SKIP_DEPS=1 codeception ...
 if [[ -z "${SKIP_DEPS}" ]]; then
   cd /project
-  php composer.phar install
-  cd /wp-core
+  ./tools/vendor/composer.phar install
+  cd - >/dev/null
 fi
 
 # activate MailPoet

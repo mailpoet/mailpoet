@@ -30,7 +30,7 @@ npm ci --prefer-offline
 
 # Dependency injection container cache.
 echo '[BUILD] Building DI Container cache'
-./composer.phar install
+./tools/vendor/composer.phar install
 ./do container:dump
 
 # Generate Doctrine metadata
@@ -53,16 +53,16 @@ fi
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
 mkdir vendor-prefixed
-./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
+./tools/vendor/composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
 echo '[BUILD] Fetching prefixed production libraries'
-./composer.phar install --prefer-dist --working-dir=./prefixer/
+./tools/vendor/composer.phar install --prefer-dist --working-dir=./prefixer/
 
 # Remove Doctrinne Annotations (no need since generated metadata are packed)
 # Should be removed before `dump-autoload` to not include the annotations classes on the autoloader.
 rm -rf vendor-prefixed/doctrine/annotations
 
-./composer.phar dump-autoload
+./tools/vendor/composer.phar dump-autoload
 
 # Copy release folders.
 echo '[BUILD] Copying release folders'

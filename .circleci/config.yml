@@ -19,10 +19,9 @@ jobs:
           name: "Set up test environment"
           command: |
             # install plugin dependencies
-            curl -sS https://getcomposer.org/installer | php
-            ./composer.phar validate --no-check-all --no-check-publish
-            ./composer.phar validate --no-check-all --no-check-publish --working-dir=prefixer
-            ./composer.phar install
+            COMPOSER_DEV_MODE=1 php tools/install.php
+            ./tools/vendor/composer.phar validate --no-check-all --no-check-publish
+            ./tools/vendor/composer.phar validate --no-check-all --no-check-publish --working-dir=prefixer
             touch .env
             ./do install
             ./do compile:all --env production

@@ -27,11 +27,6 @@ $ cd mailpoet
 # create the .env file
 $ cp .env.sample .env
 # change the values on .env file
-# download composer
-$ curl -sS https://getcomposer.org/installer | php
-$ chmod +x ./composer.phar
-# install PHP dependencies
-$ ./composer.phar install
 # install all dependencies (PHP and JS)
 $ ./do install
 # compile JS and CSS files

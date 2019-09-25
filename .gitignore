@@ -1,6 +1,5 @@
 .DS_Store
 TODO
-composer.phar
 /vendor
 /vendor-prefixed
 /vendor_backup
