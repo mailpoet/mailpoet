@@ -31,6 +31,8 @@
       var mailpoet_feature_flags = <%= json_encode(mailpoet_feature_flags) %>;
 
       var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active) %>;
+      var mailpoet_woocommerce_customizer_enabled = <%= json_encode(woocommerce_customizer_enabled) %>;
+      var mailpoet_woocommerce_transactional_email_id = <%= json_encode(woocommerce_transactional_email_id) %>;
       var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
       var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
       var mailpoet_last_announcement_seen = <%= json_encode(last_announcement_seen) %>;
@@ -174,6 +176,7 @@
     'wooCommerceCustomizerTypeTitle': __('WooCommerce Emails Customizer'),
     'wooCommerceCustomizerTypeDescription': __("Customize the template used for your WooCommerce emails using MailPoet's editor. Example of WooCommerce email: Order processing notification, Order failed notification, ..."),
     'customize': 'Customize',
+    'activate_and_customize': 'Activate & Customize',
     'welcomeNewsletterTypeTitle': __('Welcome Email'),
     'welcomeNewsletterTypeDescription': __('Automatically send an email (or series of emails) to new subscribers or WordPress users. Send a day, a week, or a month after they sign up.'),
     'premiumFeatureLink': __('This is a Premium feature'),
