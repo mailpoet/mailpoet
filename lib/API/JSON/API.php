@@ -79,7 +79,11 @@ class API {
 
   function setupAjax() {
     $this->wp->doAction('mailpoet_api_setup', [$this]);
-    $this->setRequestData($_POST);
+    if (isset($_POST['api_version'])) {
+      $this->setRequestData($_POST);
+    } else {
+      $this->setRequestData($_GET);
+    }
 
     $ignoreToken = (
       $this->settings->get('captcha.type') != Captcha::TYPE_DISABLED &&
