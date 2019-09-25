@@ -68,7 +68,7 @@ class NewsletterTemplates extends React.Component {
   }
 
   componentWillMount() {
-    MailPoet.Ajax.post({
+    MailPoet.Ajax.get({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletterTemplates',
       action: 'getAll',
