@@ -152,6 +152,21 @@ class Settings {
     return $this;
   }
 
+  function withWooCommerceEmailCustomizerEnabled() {
+    $this->settings->set('woocommerce.use_mailpoet_editor', true);
+    return $this;
+  }
+
+  function withWooCommerceEmailCustomizerDisabled() {
+    $this->settings->set('woocommerce.use_mailpoet_editor', false);
+    return $this;
+  }
+
+  function withWooCommerceTransactionalEmailId($id) {
+    $this->settings->set('woocommerce.transactional_email_id', $id);
+    return $this;
+  }
+
   function withDeactivateSubscriberAfter3Months() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 90);
     return $this;
