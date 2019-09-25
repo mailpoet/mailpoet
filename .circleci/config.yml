@@ -10,6 +10,8 @@ jobs:
     steps:
       - checkout
       - restore_cache:
+          key: tools-{{ checksum "tools/install.php" }}
+      - restore_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
       - restore_cache:
           keys:
@@ -27,6 +29,10 @@ jobs:
             ./do compile:all --env production
             ./do doctrine:generate-metadata
             ./do doctrine:generate-proxies
+      - save_cache:
+          key: tools-{{ checksum "tools/install.php" }}
+          paths:
+            - tools/vendor
       - save_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
           paths:
