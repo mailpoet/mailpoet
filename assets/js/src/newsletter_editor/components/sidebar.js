@@ -77,6 +77,11 @@ SidebarView = Marionette.View.extend({
       }
     },
   },
+  templateContext: function () { // eslint-disable-line func-names
+    return {
+      isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
+    };
+  },
   initialize: function () {
     jQuery(window)
       .on('resize', this.updateHorizontalScroll.bind(this))
@@ -430,7 +435,9 @@ App.on('before:start', function (BeforeStartApp) {
 });
 
 App.on('start', function (StartApp) {
-  var sidebarView = new SidebarView();
+  var sidebarView = new SidebarView({
+    model: StartApp.getNewsletter(),
+  });
 
   StartApp._appView.showChildView('sidebarRegion', sidebarView);
 
