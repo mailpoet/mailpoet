@@ -28,5 +28,6 @@ foreach ($tools as $url => $path) {
   }
   file_put_contents($phar_path, $resource);
   file_put_contents($phar_info_path, $url);
+  chmod($phar_path, 0755);
   fwrite(STDERR, " done.\n");
 }
