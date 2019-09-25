@@ -10,6 +10,9 @@ describe('Heading', function () {
       var model = new Backbone.SuperModel({
         subject: 'a test subject',
       });
+      model.isWoocommerceTransactional = function () {
+        return false;
+      };
       view = new (HeadingComponent.HeadingView)({
         model: model,
       });
@@ -26,6 +29,9 @@ describe('Heading', function () {
           subject: 'a test subject',
           preheader: 'a test preheader',
         });
+        model.isWoocommerceTransactional = function () {
+          return false;
+        };
         view = new (HeadingComponent.HeadingView)({
           model: model,
         });

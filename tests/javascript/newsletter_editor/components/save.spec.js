@@ -7,6 +7,7 @@ import SaveInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-tra
 
 const expect = global.expect;
 const sinon = global.sinon;
+const Backbone = global.Backbone;
 
 var EditorApplication = App;
 
@@ -109,15 +110,25 @@ describe('Save', function () {
     });
 
     it('renders', function () {
-      var view = new (SaveComponent.SaveView)();
+      var view;
+      var model = new Backbone.SuperModel({});
+      model.isWoocommerceTransactional = function () {
+        return false;
+      };
+      view = new (SaveComponent.SaveView)({ model: model });
       expect(view.render).to.not.throw();
     });
 
     describe('validateNewsletter', function () {
       var hideValidationErrorStub;
       var view;
+      var model;
       beforeEach(function () {
-        view = new (SaveComponent.SaveView)();
+        model = new Backbone.SuperModel({});
+        model.isWoocommerceTransactional = function () {
+          return false;
+        };
+        view = new (SaveComponent.SaveView)({ model: model });
         hideValidationErrorStub = sinon.stub(view, 'hideValidationError');
       });
 
@@ -152,9 +163,14 @@ describe('Save', function () {
 
     describe('once rendered', function () {
       var view;
+      var model;
       beforeEach(function () {
         EditorApplication._contentContainer = { isValid: sinon.stub().returns(true) };
-        view = new (SaveComponent.SaveView)();
+        model = new Backbone.SuperModel({});
+        model.isWoocommerceTransactional = function () {
+          return false;
+        };
+        view = new (SaveComponent.SaveView)({ model: model });
         view.render();
       });
 
@@ -213,7 +229,11 @@ describe('Save', function () {
             },
           },
         }).default;
-        view = new (module.SaveView)();
+        model = new Backbone.SuperModel({});
+        model.isWoocommerceTransactional = function () {
+          return false;
+        };
+        view = new (module.SaveView)({ model: model });
         view.render();
 
         view.$('.mailpoet_save_as_template_name').val('A sample template');
@@ -235,7 +255,11 @@ describe('Save', function () {
         global.stubChannel(EditorApplication, {
           trigger: spy,
         });
-        view = new (module.SaveView)();
+        model = new Backbone.SuperModel({});
+        model.isWoocommerceTransactional = function () {
+          return false;
+        };
+        view = new (module.SaveView)({ model: model });
         view.render();
 
         view.$('.mailpoet_save_next').click();
