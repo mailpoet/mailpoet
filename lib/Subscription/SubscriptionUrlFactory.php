@@ -29,14 +29,19 @@ class SubscriptionUrlFactory {
     $this->link_tokens = $link_tokens;
   }
 
-  function getCaptchaUrl() {
+  function getCaptchaUrl($session_id) {
     $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
-    return $this->getSubscriptionUrl($post, 'captcha', null);
+    return $this->getSubscriptionUrl($post, 'captcha', null, ['captcha_session_id' => $session_id]);
   }
 
-  function getCaptchaImageUrl($width, $height) {
+  function getCaptchaImageUrl($width, $height, $session_id) {
     $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
-    return $this->getSubscriptionUrl($post, 'captchaImage', null, ['width' => $width, 'height' => $height]);
+    return $this->getSubscriptionUrl(
+      $post,
+      'captchaImage',
+      null,
+      ['width' => $width, 'height' => $height, 'captcha_session_id' => $session_id]
+    );
   }
 
   function getConfirmationUrl(Subscriber $subscriber = null) {
