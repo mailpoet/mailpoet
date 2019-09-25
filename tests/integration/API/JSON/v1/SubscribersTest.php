@@ -5,7 +5,6 @@ use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\API\JSON\Response as APIResponse;
-use MailPoet\Config\Session;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\BulkActionController;
@@ -48,14 +47,10 @@ class SubscribersTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->cleanup();
-    $cookies_mock = $this->createMock(Cookies::class);
-    $cookies_mock->method('get')
-      ->willReturn('abcd');
-    $session = new Session($cookies_mock);
     $container = ContainerWrapper::getInstance();
     $settings = $container->get(SettingsController::class);
     $wp = $container->get(Functions::class);
-    $this->captcha_session = new CaptchaSession($container->get(Functions::class), $session);
+    $this->captcha_session = new CaptchaSession($container->get(Functions::class));
     $this->endpoint = new Subscribers(
       $container->get(BulkActionController::class),
       $container->get(SubscribersListings::class),
