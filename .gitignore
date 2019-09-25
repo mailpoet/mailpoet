@@ -30,3 +30,4 @@ prefixer/vendor
 prefixer/build
 docker-compose.override.yml
 tasks/code_sniffer/vendor
+/tools/vendor
