@@ -2,10 +2,8 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\Config\Session;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
-use MailPoet\Util\Cookies;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Gregwar\Captcha\CaptchaBuilder;
@@ -26,7 +24,7 @@ class Captcha {
       $wp = new WPFunctions;
     }
     if ($captcha_session === null) {
-      $captcha_session = new CaptchaSession($wp, new Session(new Cookies()));
+      $captcha_session = new CaptchaSession($wp);
     }
     $this->wp = $wp;
     $this->captcha_session = $captcha_session;
@@ -83,7 +81,7 @@ class Captcha {
     return !empty(array_intersect($roles, (array)$user->roles));
   }
 
-  function renderImage($width = null, $height = null, $return = false) {
+  function renderImage($width = null, $height = null, $session_id = null, $return = false) {
     if (!$this->isSupported()) {
       return false;
     }
@@ -101,6 +99,7 @@ class Captcha {
       ->setMaxBehindLines(0)
       ->build($width ?: 220, $height ?: 60, $font);
 
+    $this->captcha_session->init($session_id);
     $this->captcha_session->setCaptchaHash($builder->getPhrase());
 
     if ($return) {

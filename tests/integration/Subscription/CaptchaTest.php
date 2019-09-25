@@ -3,7 +3,6 @@ namespace MailPoet\Test\Subscription;
 
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
-use MailPoet\Config\Session;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Subscription\Captcha;
@@ -13,6 +12,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Functions;
 
 class CaptchaTest extends \MailPoetTest {
+  const CAPTCHA_SESSION_ID = 'ABC';
 
   /** @var Captcha */
   private $captcha;
@@ -23,7 +23,8 @@ class CaptchaTest extends \MailPoetTest {
   function _before() {
     $cookies_mock = $this->createMock(Cookies::class);
     $cookies_mock->method('get')->willReturn('abcd');
-    $this->captcha_session = new CaptchaSession(new Functions(), new Session($cookies_mock));
+    $this->captcha_session = new CaptchaSession(new Functions());
+    $this->captcha_session->init(self::CAPTCHA_SESSION_ID);
     $this->captcha = new Captcha(new WPFunctions, $this->captcha_session);
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $this->captcha_session->reset();
@@ -56,7 +57,7 @@ class CaptchaTest extends \MailPoetTest {
 
   function testItRendersImageAndStoresHashToSession() {
     expect($this->captcha_session->getCaptchaHash())->false();
-    $image = $this->captcha->renderImage(null, null, true);
+    $image = $this->captcha->renderImage(null, null, self::CAPTCHA_SESSION_ID, true);
     expect($image)->notEmpty();
     expect($this->captcha_session->getCaptchaHash())->notEmpty();
   }

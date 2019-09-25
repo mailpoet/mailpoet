@@ -38,7 +38,8 @@ class Subscription {
     $captcha = new UserSubscription\Captcha;
     $width = !empty($data['width']) ? (int)$data['width'] : null;
     $height = !empty($data['height']) ? (int)$data['height'] : null;
-    return $captcha->renderImage($width, $height);
+    $session_id = !empty($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
+    return $captcha->renderImage($width, $height, $session_id);
   }
 
   function confirm($data) {
