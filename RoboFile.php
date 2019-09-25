@@ -19,7 +19,7 @@ class RoboFile extends \Robo\Tasks {
   function install() {
     return $this->taskExecStack()
       ->stopOnFail()
-      ->exec('./composer.phar install')
+      ->exec('./tools/vendor/composer.phar install')
       ->exec('npm ci --prefer-offline')
       ->run();
   }
@@ -27,7 +27,7 @@ class RoboFile extends \Robo\Tasks {
   function update() {
     return $this->taskExecStack()
       ->stopOnFail()
-      ->exec('./composer.phar update')
+      ->exec('./tools/vendor/composer.phar update')
       ->exec('npm update')
       ->run();
   }
@@ -425,7 +425,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->collectionBuilder()
       ->taskExec('rm -rf ' . __DIR__ . '/vendor/goaop')
       ->taskExec('rm -rf ' . __DIR__ . '/vendor/nikic')
-      ->taskExec('cd ' . __DIR__ . ' && ./composer.phar dump-autoload')
+      ->taskExec('cd ' . __DIR__ . ' && ./tools/vendor/composer.phar dump-autoload')
       ->taskExec(
         'WP_ROOT="' . getenv('WP_ROOT') . '" ' .
         'php -d memory_limit=2G ' .
@@ -435,7 +435,7 @@ class RoboFile extends \Robo\Tasks {
         "$dir/lib"
       )
       ->dir(__DIR__ . '/tasks/phpstan')
-      ->taskExec('cd ' . __DIR__ . ' && ./composer.phar install')
+      ->taskExec('cd ' . __DIR__ . ' && ./tools/vendor/composer.phar install')
       ->run();
   }
 
