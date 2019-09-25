@@ -95,7 +95,7 @@ class I18n extends AbstractExtension {
 
   private function setTextDomain($args = []) {
     // make sure that the last argument is our text domain
-    if (!in_array($args[count($args) - 1], $this->_text_domain)) {
+    if (!in_array($args[count($args) - 1], $this->_text_domains)) {
       // otherwise add it to the list of arguments
       $args[] = $this->_text_domains[0];
     }
