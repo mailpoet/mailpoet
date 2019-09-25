@@ -73,10 +73,10 @@ jobs:
         name: "Set up environment"
         command: |
           source ./.circleci/setup.bash && setup php7
-          wget https://github.com/phpstan/phpstan/releases/download/0.11.5/phpstan.phar
     - run:
         name: "Static analysis"
         command: ./do qa:phpstan
+
   php5_unit:
     resource_class: small
     working_directory: /home/circleci/mailpoet

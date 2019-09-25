@@ -1,5 +1,7 @@
 parameters:
   tmpDir: ../../temp/phpstan
+  autoload_files:
+    - %rootDir%/../../../vendor/autoload.php
   bootstrap: bootstrap.php
   ignoreErrors:
     - '#Function members_register_.+ not found#'
