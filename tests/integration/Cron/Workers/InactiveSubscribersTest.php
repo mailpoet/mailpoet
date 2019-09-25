@@ -100,4 +100,25 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $this->setExpectedException(\Exception::class, 'Maximum execution time has been reached.');
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
   }
+
+  function testItWillResetTheInProgressFlagOnFail() {
+    $this->settings->set('deactivate_subscriber_after_inactive_days', 5);
+    $controller_mock = $this->createMock(InactiveSubscribersController::class);
+
+    $task = ScheduledTask::createOrUpdate([]);
+
+    $controller_mock->expects($this->once())
+      ->method('markInactiveSubscribers')
+      ->willThrowException(new \Exception('test error'));
+
+    try {
+      $worker = new InactiveSubscribers($controller_mock, $this->settings);
+      $worker->startProgress($task);
+      $worker->processTaskStrategy($task);
+      $this->fail('An exception should be thrown');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('test error');
+      expect($task->getMeta())->equals(['in_progress' => null]);
+    }
+  }
 }

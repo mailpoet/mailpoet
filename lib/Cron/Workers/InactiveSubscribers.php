@@ -6,7 +6,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\InactiveSubscribersController;
 
-class InactiveSubscribers extends SimpleWorker {
+class InactiveSubscribers extends SingleInstanceSimpleWorker {
   const TASK_TYPE = 'inactive_subscribers';
   const BATCH_SIZE = 1000;
 
@@ -28,26 +28,31 @@ class InactiveSubscribers extends SimpleWorker {
 
 
   function processTaskStrategy(ScheduledTask $task) {
-    $tracking_enabled = (bool)$this->settings->get('tracking.enabled');
-    if (!$tracking_enabled) {
+    try {
+      $tracking_enabled = (bool)$this->settings->get('tracking.enabled');
+      if (!$tracking_enabled) {
+        self::schedule();
+        return true;
+      }
+      $days_to_inactive = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
+      // Activate all inactive subscribers in case the feature is turned off
+      if ($days_to_inactive === 0) {
+        $this->inactive_subscribers_controller->reactivateInactiveSubscribers();
+        self::schedule();
+        return true;
+      }
+      // Handle activation/deactivation within interval
+      while ($this->inactive_subscribers_controller->markInactiveSubscribers($days_to_inactive, self::BATCH_SIZE) === self::BATCH_SIZE) {
+        CronHelper::enforceExecutionLimit($this->timer);
+      };
+      while ($this->inactive_subscribers_controller->markActiveSubscribers($days_to_inactive, self::BATCH_SIZE) === self::BATCH_SIZE) {
+        CronHelper::enforceExecutionLimit($this->timer);
+      };
       self::schedule();
-      return true;
+    } catch (\Exception $e) {
+      $this->stopProgress($task);
+      throw $e;
     }
-    $days_to_inactive = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
-    // Activate all inactive subscribers in case the feature is turned off
-    if ($days_to_inactive === 0) {
-      $this->inactive_subscribers_controller->reactivateInactiveSubscribers();
-      self::schedule();
-      return true;
-    }
-    // Handle activation/deactivation within interval
-    while ($this->inactive_subscribers_controller->markInactiveSubscribers($days_to_inactive, self::BATCH_SIZE) === self::BATCH_SIZE) {
-      CronHelper::enforceExecutionLimit($this->timer);
-    };
-    while ($this->inactive_subscribers_controller->markActiveSubscribers($days_to_inactive, self::BATCH_SIZE) === self::BATCH_SIZE) {
-      CronHelper::enforceExecutionLimit($this->timer);
-    };
-    self::schedule();
     return true;
   }
 }
