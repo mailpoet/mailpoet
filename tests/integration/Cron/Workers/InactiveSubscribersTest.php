@@ -95,7 +95,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
       'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
-    $worker = new InactiveSubscribers($controller_mock, $this->settings, microtime(true) - (CronHelper::DAEMON_EXECUTION_LIMIT - 1));
+    $worker = new InactiveSubscribers($controller_mock, $this->settings, microtime(true) - (CronHelper::getDaemonExecutionLimit() - 1));
     sleep(1);
     $this->setExpectedException(\Exception::class, 'Maximum execution time has been reached.');
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
