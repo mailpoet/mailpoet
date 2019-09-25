@@ -4,6 +4,7 @@ import MailPoet from 'mailpoet';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
+import jQuery from 'jquery';
 import { withRouter } from 'react-router-dom';
 
 class NewsletterTypes extends React.Component {
@@ -57,6 +58,67 @@ class NewsletterTypes extends React.Component {
     });
   };
 
+  getAdditionalTypes = () => {
+    const show = window.mailpoet_woocommerce_active && MailPoet.FeaturesController.isSupported('wc-transactional-emails-customizer');
+    if (!show) {
+      return [];
+    }
+    return [
+      {
+        slug: 'wc_transactional',
+        title: MailPoet.I18n.t('wooCommerceCustomizerTypeTitle'),
+        description: MailPoet.I18n.t('wooCommerceCustomizerTypeDescription'),
+        action: (
+          <a
+            className="button button-primary"
+            data-automation-id="customize_woocommerce"
+            onClick={this.openWooCommerceCustomizer}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              ) {
+                event.preventDefault();
+                this.openWooCommerceCustomizer();
+              }
+            }}
+          >
+            {MailPoet.I18n.t(window.mailpoet_woocommerce_customizer_enabled ? 'customize' : 'activate_and_customize')}
+          </a>
+        ),
+      },
+    ];
+  };
+
+  openWooCommerceCustomizer = () => {
+    const promise = jQuery.Deferred();
+    MailPoet.trackEvent('Emails > Type selected', {
+      'MailPoet Free version': window.mailpoet_version,
+      'Email type': 'wc_transactional',
+    });
+    if (!window.mailpoet_woocommerce_customizer_enabled) {
+      promise.then(() => MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'settings',
+        action: 'set',
+        data: {
+          'woocommerce.use_mailpoet_editor': true,
+        },
+      }));
+    }
+    promise.done(() => {
+      window.location.href = `?page=mailpoet-newsletter-editor&id=${window.mailpoet_woocommerce_transactional_email_id}`;
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map((error) => error.message),
+          { scroll: true }
+        );
+      }
+    });
+    promise.resolve();
+  };
+
   createNewsletter = (type) => {
     MailPoet.trackEvent('Emails > Type selected', {
       'MailPoet Free version': window.mailpoet_version,
@@ -81,45 +143,6 @@ class NewsletterTypes extends React.Component {
       }
     });
   };
-
-  openWooCommerceCustomizer() {
-    console.log('Opening the customizer...');
-  }
-
-  getAdditionalTypes() {
-    const openWooCommerceCustomizer = this.openWooCommerceCustomizer.bind(this);
-    const show = window.mailpoet_woocommerce_active && MailPoet.FeaturesController.isSupported('wc-transactional-emails-customizer');
-    if (!show) {
-      return [];
-    }
-    return [
-      {
-        slug: 'wc_transactional',
-        title: MailPoet.I18n.t('wooCommerceCustomizerTypeTitle'),
-        description: MailPoet.I18n.t('wooCommerceCustomizerTypeDescription'),
-        action: (function action() {
-          return (
-            <a
-              className="button button-primary"
-              data-automation-id="customize_woocommerce"
-              onClick={openWooCommerceCustomizer}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(event) => {
-                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-                ) {
-                  event.preventDefault();
-                  openWooCommerceCustomizer();
-                }
-              }}
-            >
-              {MailPoet.I18n.t('customize')}
-            </a>
-          );
-        }()),
-      },
-    ];
-  }
 
   render() {
     const createStandardNewsletter = _.partial(this.createNewsletter, 'standard');

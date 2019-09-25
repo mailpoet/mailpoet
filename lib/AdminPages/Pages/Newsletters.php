@@ -161,7 +161,8 @@ class Newsletters {
 
     $data['is_new_user'] = $this->installation->isNewInstallation();
     $data['sent_newsletters_count'] = (int)Newsletter::where('status', Newsletter::STATUS_SENT)->count();
-
+    $data['woocommerce_customizer_enabled'] = (bool)$this->settings->get('woocommerce.use_mailpoet_editor');
+    $data['woocommerce_transactional_email_id'] = $this->settings->get('woocommerce.transactional_email_id');
     $this->wp->wpEnqueueScript('jquery-ui');
     $this->wp->wpEnqueueScript('jquery-ui-datepicker');
 
