@@ -82,10 +82,46 @@ class NewsletterTypes extends React.Component {
     });
   };
 
+  openWooCommerceCustomizer() {
+    console.log('Opening the customizer...');
+  }
+
+  getAdditionalTypes() {
+    const openWooCommerceCustomizer = this.openWooCommerceCustomizer.bind(this);
+    return [
+      {
+        slug: 'wc_transactional',
+        title: MailPoet.I18n.t('wooCommerceCustomizerTypeTitle'),
+        description: MailPoet.I18n.t('wooCommerceCustomizerTypeDescription'),
+        action: (function action() {
+          return (
+            <a
+              className="button button-primary"
+              data-automation-id="customize_woocommerce"
+              onClick={openWooCommerceCustomizer}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                ) {
+                  event.preventDefault();
+                  openWooCommerceCustomizer();
+                }
+              }}
+            >
+              {MailPoet.I18n.t('customize')}
+            </a>
+          );
+        }()),
+      },
+    ];
+  }
+
   render() {
     const createStandardNewsletter = _.partial(this.createNewsletter, 'standard');
     const createNotificationNewsletter = _.partial(this.setupNewsletter, 'notification');
     const createWelcomeNewsletter = _.partial(this.setupNewsletter, 'welcome');
+
     const defaultTypes = [
       {
         slug: 'standard',
@@ -168,7 +204,11 @@ class NewsletterTypes extends React.Component {
       },
     ];
 
-    const types = Hooks.applyFilters('mailpoet_newsletters_types', [...defaultTypes, ...this.getAutomaticEmails()], this);
+    const types = Hooks.applyFilters('mailpoet_newsletters_types', [
+      ...defaultTypes,
+      ...this.getAutomaticEmails(),
+      ...this.getAdditionalTypes(),
+    ], this);
     const badgeClassName = (window.mailpoet_is_new_user === true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
 
     return (
