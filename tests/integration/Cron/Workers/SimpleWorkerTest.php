@@ -38,8 +38,8 @@ class SimpleWorkerTest extends \MailPoetTest {
 
   function testItThrowsExceptionWhenExecutionLimitIsReached() {
     try {
-      $worker = new MockSimpleWorker(
-        microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT
+      new MockSimpleWorker(
+        microtime(true) - CronHelper::getDaemonExecutionLimit()
       );
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch (\Exception $e) {

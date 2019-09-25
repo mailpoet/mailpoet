@@ -95,8 +95,8 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon = $this->makeEmpty(Daemon::class);
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => Expected::exactly(1, function($pause_delay) {
-        expect($pause_delay)->lessThan(CronHelper::DAEMON_EXECUTION_LIMIT);
-        expect($pause_delay)->greaterThan(CronHelper::DAEMON_EXECUTION_LIMIT - 1);
+        expect($pause_delay)->lessThan(CronHelper::getDaemonExecutionLimit());
+        expect($pause_delay)->greaterThan(CronHelper::getDaemonExecutionLimit() - 1);
       }),
       'callSelf' => null,
       'terminateRequest' => null,

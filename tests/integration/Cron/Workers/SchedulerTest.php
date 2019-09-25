@@ -32,7 +32,7 @@ class SchedulerTest extends \MailPoetTest {
 
   function testItThrowsExceptionWhenExecutionLimitIsReached() {
     try {
-      $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT);
+      $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), microtime(true) - CronHelper::getDaemonExecutionLimit());
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
@@ -540,7 +540,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = Stub::make(Scheduler::class, [
       'processPostNotificationNewsletter' => Expected::exactly(1),
     ], $this);
-    $scheduler->timer = microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT;
+    $scheduler->timer = microtime(true) - CronHelper::getDaemonExecutionLimit();
     try {
       $scheduler->process();
       self::fail('Maximum execution time limit exception was not thrown.');
