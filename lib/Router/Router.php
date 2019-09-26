@@ -22,7 +22,7 @@ class Router {
 
   function __construct(AccessControl $access_control, ContainerInterface $container, $api_data = false) {
     $api_data = ($api_data) ? $api_data : $_GET;
-    $this->api_request = isset($api_data[self::NAME]);
+    $this->api_request = is_array($api_data) && array_key_exists(self::NAME, $api_data);
     $this->endpoint = isset($api_data['endpoint']) ?
       Helpers::underscoreToCamelCase($api_data['endpoint']) :
       false;
