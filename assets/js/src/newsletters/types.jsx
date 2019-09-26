@@ -102,7 +102,7 @@ class NewsletterTypes extends React.Component {
         endpoint: 'settings',
         action: 'set',
         data: {
-          'woocommerce.use_mailpoet_editor': true,
+          'woocommerce.use_mailpoet_editor': 1,
         },
       }));
     }
