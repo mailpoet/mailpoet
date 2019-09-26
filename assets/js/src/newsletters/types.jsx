@@ -231,11 +231,12 @@ class NewsletterTypes extends React.Component {
       },
     ];
 
-    const types = Hooks.applyFilters('mailpoet_newsletters_types', [
+    let types = Hooks.applyFilters('mailpoet_newsletters_types', [
       ...defaultTypes,
       ...this.getAutomaticEmails(),
-      ...this.getAdditionalTypes(),
     ], this);
+    types = types.concat(this.getAdditionalTypes());
+
     const badgeClassName = (window.mailpoet_is_new_user === true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
 
     return (
