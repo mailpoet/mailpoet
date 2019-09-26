@@ -147,7 +147,7 @@ Module.SaveView = Marionette.View.extend({
   afterSave: function (json) {
     this.validateNewsletter(json);
     // Update 'Last saved timer'
-    this.$('.mailpoet_editor_last_saved').removeClass('mailpoet_hidden');
+    this.$('.mailpoet_editor_last_saved .mailpoet_autosaved_message').removeClass('mailpoet_hidden');
     this.$('.mailpoet_autosaved_at').text('');
   },
   showSaveOptions: function () {
