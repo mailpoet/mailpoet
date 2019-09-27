@@ -2,19 +2,30 @@
 
 namespace MailPoet\WooCommerce;
 
+use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 
 class Settings {
 
+  /** @var FeaturesController */
+  private $features_controller;
+
   /** @var SettingsController */
   private $settings;
 
-  function __construct(SettingsController $settings) {
+  function __construct(
+    FeaturesController $features_controller,
+    SettingsController $settings
+  ) {
+    $this->features_controller = $features_controller;
     $this->settings = $settings;
   }
 
   function disableWooCommerceSettings() {
     if ($_GET['tab'] !== 'email') {
+      return;
+    }
+    if (!$this->features_controller->isSupported(FeaturesController::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER)) {
       return;
     }
     if (!(bool)$this->settings->get('woocommerce.use_mailpoet_editor')) {
