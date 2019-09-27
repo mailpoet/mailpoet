@@ -1,6 +1,6 @@
 import React from 'react';
-import getFeaturesContext from './getFeaturesContext';
-import getConstantsContext from './getConstantsContext';
+import getFeaturesContext from './getFeaturesContext.jsx';
+import getConstantsContext from './getConstantsContext.jsx';
 
 /**
  * Builds the value of the global context.

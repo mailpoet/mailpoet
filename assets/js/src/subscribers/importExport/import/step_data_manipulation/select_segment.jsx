@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useContext, useState } from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
-import GlobalContext from 'context';
+import { GlobalContext } from 'context/index.jsx';
 
 import { createSelection, destroySelection } from './generate_segment_selection.jsx';
 import createNewSegment from './create_new_segment.jsx';
