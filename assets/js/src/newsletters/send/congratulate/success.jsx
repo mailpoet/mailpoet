@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { GlobalContext } from 'context';
 import MSSUserSuccess from './success_for_mss_users.jsx';
 import PitchMss from './success_pitch_mss.jsx';
 
-import FeaturesContext from '../../../features/context.jsx';
 
 function SuccessContent(props) {
   if (!window.has_mss_key_specified && props.isSupported('display-mss-pitch')) {
@@ -28,15 +28,12 @@ function SuccessContent(props) {
 }
 
 function Success(props) {
+  const { features } = React.useContext(GlobalContext);
   return (
-    <FeaturesContext.Consumer>
-      {(FeaturesController) => (
-        <SuccessContent
-          {...props}
-          isSupported={FeaturesController.isSupported}
-        />
-      )}
-    </FeaturesContext.Consumer>
+    <SuccessContent
+      {...props}
+      isSupported={features.isSupported}
+    />
   );
 }
 
