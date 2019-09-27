@@ -4,6 +4,7 @@ namespace MailPoet\WooCommerce;
 
 use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Settings {
 
@@ -13,12 +14,17 @@ class Settings {
   /** @var SettingsController */
   private $settings;
 
+  /** @var WPFunctions */
+  private $wp;
+
   function __construct(
     FeaturesController $features_controller,
-    SettingsController $settings
+    SettingsController $settings,
+    WPFunctions $wp
   ) {
     $this->features_controller = $features_controller;
     $this->settings = $settings;
+    $this->wp = $wp;
   }
 
   function disableWooCommerceSettings() {
@@ -56,12 +62,12 @@ class Settings {
 
     <div class="mailpoet-woocommerce-email-overlay">
       <a class="button button-primary" href="?page=mailpoet-newsletter-editor&id=<?php echo $woocommerce_template_id; ?>">
-        <?php echo _x('Customize with MailPoet', 'Button in WooCommerce settings page'); ?>
+        <?php echo $this->wp->_x('Customize with MailPoet', 'Button in WooCommerce settings page'); ?>
       </a>
       <br>
       <br>
       <a href="?page=mailpoet-settings#woocommerce">
-        <?php echo _x('Disable MailPoet customizer', ''); ?>
+        <?php echo $this->wp->_x('Disable MailPoet customizer', 'Link from WooCommerce plugin to MailPoet'); ?>
       </a>
     </div>
 
