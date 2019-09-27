@@ -2,7 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import GlobalContext from 'context';
+import { GlobalContext } from 'context/index.jsx';
 
 function SelectImportMethod({
   activeMethod,

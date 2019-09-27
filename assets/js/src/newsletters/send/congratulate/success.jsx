@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { GlobalContext } from 'context';
+import { GlobalContext } from 'context/index.jsx';
 import MSSUserSuccess from './success_for_mss_users.jsx';
 import PitchMss from './success_pitch_mss.jsx';
 
