@@ -12,6 +12,7 @@ use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
+use MailPoet\WooCommerce\Settings as WooCommerceSettings;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -41,6 +42,9 @@ class Hooks {
   /** @var WooCommerceSegment */
   private $woocommerce_segment;
 
+  /** @var WooCommerceSettings */
+  private $woocommerce_settings;
+
   /** @var WooCommercePurchases */
   private $woocommerce_purchases;
 
@@ -59,6 +63,7 @@ class Hooks {
     WPFunctions $wp,
     WooCommerceSubscription $woocommerce_subscription,
     WooCommerceSegment $woocommerce_segment,
+    WooCommerceSettings $woocommerce_settings,
     WooCommercePurchases $woocommerce_purchases,
     PostNotificationScheduler $post_notification_scheduler,
     WordpressMailerReplacer $wordpress_mailer_replacer
@@ -71,6 +76,7 @@ class Hooks {
     $this->wp = $wp;
     $this->woocommerce_subscription = $woocommerce_subscription;
     $this->woocommerce_segment = $woocommerce_segment;
+    $this->woocommerce_settings = $woocommerce_settings;
     $this->woocommerce_purchases = $woocommerce_purchases;
     $this->post_notification_scheduler = $post_notification_scheduler;
     $this->wordpress_mailer_replacer = $wordpress_mailer_replacer;
@@ -85,6 +91,7 @@ class Hooks {
     $this->setupSubscriptionEvents();
     $this->setupWooCommerceSubscriptionEvents();
     $this->setupPostNotifications();
+    $this->setupWooCommerceSettings();
   }
 
   function initEarlyHooks() {
@@ -249,6 +256,13 @@ class Hooks {
       '\MailPoet\Segments\WP::synchronizeUser',
       1
     );
+  }
+
+  function setupWooCommerceSettings() {
+    $this->wp->addAction('woocommerce_settings_start', [
+      $this->woocommerce_settings,
+      'disableWooCommerceSettings',
+    ]);
   }
 
   function setupWooCommerceUsers() {
