@@ -28,7 +28,7 @@ class Settings {
   }
 
   function disableWooCommerceSettings() {
-    if ($_GET['tab'] !== 'email') {
+    if ($_GET['tab'] !== 'email' || $_GET['section']) {
       return;
     }
     if (!$this->features_controller->isSupported(FeaturesController::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER)) {
