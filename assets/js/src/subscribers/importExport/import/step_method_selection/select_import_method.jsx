@@ -2,13 +2,14 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import ImportContext from '../context.jsx';
+import GlobalContext from 'context';
 
 function SelectImportMethod({
   activeMethod,
   onMethodChange,
 }) {
-  const { isNewUser } = React.useContext(ImportContext);
+  const { constants } = React.useContext(GlobalContext);
+  const { isNewUser } = constants;
   const badgeClasses = classNames(
     'mailpoet_badge',
     'mailpoet_badge_video',

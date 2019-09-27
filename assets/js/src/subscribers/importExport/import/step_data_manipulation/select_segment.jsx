@@ -2,13 +2,14 @@ import React, { useLayoutEffect, useContext, useState } from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
-import ImportContext from '../context.jsx';
+import GlobalContext from 'context';
 
 import { createSelection, destroySelection } from './generate_segment_selection.jsx';
 import createNewSegment from './create_new_segment.jsx';
 
 function SelectSegment({ setSelectedSegments }) {
-  const { segments: originalSegments } = useContext(ImportContext);
+  const { constants } = useContext(GlobalContext);
+  const { segments: originalSegments } = constants;
   const [selectionSegments, setSelectionSegments] = useState(originalSegments);
 
   useLayoutEffect(() => {
