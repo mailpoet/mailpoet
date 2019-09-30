@@ -2,8 +2,8 @@
 
 namespace MailPoet\Services\Bridge;
 
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Logging\Logger;
+use MailPoet\WP\Functions as WPFunctions;
 
 class API {
   const SENDING_STATUS_OK = 'ok';

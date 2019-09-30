@@ -2,8 +2,8 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\WP\Notice;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Notice;
 
 class DeferredAdminNotices {
 

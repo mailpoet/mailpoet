@@ -7,10 +7,10 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Tracy\ApiPanel\ApiPanel;
 use MailPoet\Tracy\DIPanel\DIPanel;
-use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 use Tracy\Debugger;
 use Tracy\ILogger;
 

@@ -5,8 +5,8 @@ namespace MailPoet\Test\Models;
 use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Util\Helpers;
 
 class ScheduledTaskTest extends \MailPoetTest {

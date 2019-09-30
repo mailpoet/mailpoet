@@ -4,8 +4,8 @@ namespace MailPoet\Util\Notices;
 
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Notice as WPNotice;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Notice as WPNotice;
 
 class DiscountsAnnouncement {
 

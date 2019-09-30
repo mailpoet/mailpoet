@@ -2,13 +2,13 @@
 
 namespace MailPoet\Twig;
 
-use MailPoet\Analytics\Reporter;
 use MailPoet\Analytics\Analytics as AnalyticsGenerator;
+use MailPoet\Analytics\Reporter;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
-use MailPoet\WP\Functions as WPFunctions;
 
 class Analytics extends AbstractExtension {
   public function getFunctions() {

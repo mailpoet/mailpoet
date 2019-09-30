@@ -2,9 +2,9 @@
 
 namespace MailPoet\Test\API\MP;
 
-use Codeception\Util\Fixtures;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
+use Codeception\Util\Fixtures;
 use MailPoet\CustomFields\ApiDataSanitizer;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\ScheduledTask;

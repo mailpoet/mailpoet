@@ -2,12 +2,12 @@
 
 namespace MailPoet\Test\Subscribers\ImportExport\Export;
 
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Subscribers\ImportExport\Export\DynamicSubscribersGetter;
+use MailPoet\WP\Functions as WPFunctions;
 
 class DynamicSubscribersGetterTest extends \MailPoetTest {
   function _before() {

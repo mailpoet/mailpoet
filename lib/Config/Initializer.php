@@ -9,8 +9,8 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
-use MailPoet\WP\Notice as WPNotice;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Notice as WPNotice;
 
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 

@@ -3,8 +3,8 @@
 namespace MailPoet\Config\PopulatorData;
 
 use MailPoet\Form\Util\Styles;
-use MailPoet\Models\Segment;
 use MailPoet\Models\Form;
+use MailPoet\Models\Segment;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DefaultForm {

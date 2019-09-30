@@ -2,12 +2,12 @@
 
 namespace MailPoet\Util\Notices;
 
+use MailPoet\Newsletter\Renderer\EscapeHelper;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
-use MailPoet\Newsletter\Renderer\EscapeHelper;
 
 class UnauthorizedEmailNotice {
 

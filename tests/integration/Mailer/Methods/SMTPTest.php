@@ -4,9 +4,9 @@ namespace MailPoet\Test\Mailer\Methods;
 
 use Codeception\Stub;
 use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Mailer\Methods\SMTP;
-use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SMTPTest extends \MailPoetTest {

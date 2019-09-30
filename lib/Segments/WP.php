@@ -3,10 +3,10 @@
 namespace MailPoet\Segments;
 
 use MailPoet\Models\ModelValidator;
+use MailPoet\Models\Segment;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;

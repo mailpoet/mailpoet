@@ -2,8 +2,8 @@
 
 namespace MailPoet\Newsletter;
 
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Doctrine\Repository;
+use MailPoet\Entities\NewsletterEntity;
 
 /**
  * @method NewsletterEntity[] findBy(array $criteria, array $order_by = null, int $limit = null, int $offset = null)

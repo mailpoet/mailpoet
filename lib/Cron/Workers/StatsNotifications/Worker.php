@@ -13,8 +13,8 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatsNotification;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Worker {
 

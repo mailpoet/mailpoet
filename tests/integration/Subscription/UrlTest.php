@@ -3,16 +3,16 @@
 namespace MailPoet\Test\Subscription;
 
 use Codeception\Util\Stub;
+use MailPoet\Config\Populator;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Router\Router;
-use MailPoet\Subscribers\LinkTokens;
-use MailPoet\Subscription\SubscriptionUrlFactory;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\Setting;
-use MailPoet\Config\Populator;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\Captcha;
+use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 

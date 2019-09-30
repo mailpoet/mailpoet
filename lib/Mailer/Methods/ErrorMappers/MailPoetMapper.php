@@ -2,13 +2,12 @@
 
 namespace MailPoet\Mailer\Methods\ErrorMappers;
 
-use MailPoet\Mailer\MailerError;
+use InvalidArgumentException;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Services\Bridge\API;
-use InvalidArgumentException;
 use MailPoet\Util\Helpers;
-
 use MailPoet\WP\Functions as WPFunctions;
 
 class MailPoetMapper {

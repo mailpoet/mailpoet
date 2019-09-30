@@ -2,10 +2,10 @@
 
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\Util\CSS;
 use MailPoet\Util\pQuery\pQuery;
-use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Footer {
   static function render($element) {

@@ -4,8 +4,8 @@ namespace MailPoet\Models;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * @property array $subscribers_count

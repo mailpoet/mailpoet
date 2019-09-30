@@ -2,9 +2,9 @@
 
 namespace MailPoet\Test\WP;
 
-use MailPoet\WP\Posts;
 use Codeception\Util\Stub;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Posts;
 
 class PostsTest extends \MailPoetUnitTest {
 

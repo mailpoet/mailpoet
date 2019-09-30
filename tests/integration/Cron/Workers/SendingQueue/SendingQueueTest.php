@@ -3,9 +3,9 @@
 namespace MailPoet\Test\Cron\Workers\SendingQueue;
 
 use Carbon\Carbon;
-use Codeception\Util\Fixtures;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
+use Codeception\Util\Fixtures;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;

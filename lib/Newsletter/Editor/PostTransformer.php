@@ -2,9 +2,9 @@
 
 namespace MailPoet\Newsletter\Editor;
 
+use MailPoet\Config\Env;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\Config\Env;
 
 class PostTransformer {
 

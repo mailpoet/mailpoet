@@ -3,9 +3,9 @@
 namespace MailPoet\Models;
 
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Tasks\Subscribers as TaskSubscribers;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Emoji;
-use MailPoet\Tasks\Subscribers as TaskSubscribers;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**

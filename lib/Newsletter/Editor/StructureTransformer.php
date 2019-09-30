@@ -2,9 +2,9 @@
 
 namespace MailPoet\Newsletter\Editor;
 
+use MailPoet\Util\DOM as DOMUtil;
 use pQuery;
 use pQuery\DomNode;
-use MailPoet\Util\DOM as DOMUtil;
 
 class StructureTransformer {
 

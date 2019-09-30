@@ -2,8 +2,8 @@
 
 namespace MailPoet\Form\Util;
 
-use MailPoet\Form\Widget;
 use MailPoet\Config\Env;
+use MailPoet\Form\Widget;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Export {

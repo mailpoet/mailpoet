@@ -3,8 +3,8 @@
 namespace MailPoet\Logging;
 
 use Carbon\Carbon;
-use MailPoetVendor\Monolog\Handler\AbstractProcessingHandler;
 use MailPoet\Models\Log;
+use MailPoetVendor\Monolog\Handler\AbstractProcessingHandler;
 
 class LogHandler extends AbstractProcessingHandler {
 

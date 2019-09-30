@@ -4,18 +4,18 @@ namespace MailPoet\Test\Models;
 
 use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\NewsletterSegment;
-use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\StatisticsOpens;
+use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\Segment;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
+use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsUnsubscribes;
-use MailPoet\Util\Security;
+use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper as WCHelper;
 
 class NewsletterTest extends \MailPoetTest {

@@ -26,8 +26,8 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Newsletters extends APIEndpoint {
 

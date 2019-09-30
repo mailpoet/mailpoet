@@ -3,26 +3,26 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Config\Renderer;
-use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
-use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
-use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
-use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails as StatsNotificationsWorkerForAutomatedEmails;
-use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationScheduler;
-use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
-use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
+use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
+use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
+use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails as StatsNotificationsWorkerForAutomatedEmails;
+use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationScheduler;
+use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
+use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
+use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MetaInfo;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Services\AuthorizedEmailsController;
-use MailPoet\Statistics\Track\WooCommercePurchases;
-use MailPoet\WooCommerce\Helper as WooCommerceHelper;
-use MailPoet\Mailer\Mailer;
-use MailPoet\Mailer\MetaInfo;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscribers\InactiveSubscribersController;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WorkersFactory {

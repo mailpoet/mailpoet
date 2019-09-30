@@ -2,16 +2,16 @@
 
 namespace MailPoet\Test\Config;
 
+use Helper\Database;
 use MailPoet\Config\Activator;
 use MailPoet\Config\MP2Migrator;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\CustomField;
+use MailPoet\Models\Form;
 use MailPoet\Models\MappingToExternalEntities;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
-use MailPoet\Models\Form;
-use Helper\Database;
 use MailPoet\Settings\SettingsController;
 
 class MP2MigratorTest extends \MailPoetTest {

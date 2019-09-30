@@ -2,9 +2,9 @@
 
 namespace MailPoet\Newsletter;
 
-use MailPoet\Router\Router;
-use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
 use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
+use MailPoet\Router\Router;
 use MailPoet\Subscribers\LinkTokens;
 
 class Url {

@@ -3,12 +3,12 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Stub;
-use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\UserFlags;
 use MailPoet\Entities\UserFlagEntity;
-use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\Settings\UserFlagsRepository;
 
 class UserFlagsTest extends \MailPoetTest {
 

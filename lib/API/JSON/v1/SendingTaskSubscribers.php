@@ -2,17 +2,17 @@
 
 namespace MailPoet\API\JSON\v1;
 
-use MailPoet\Listing;
+use MailPoet\API\JSON\Endpoint as APIEndpoint;
+use MailPoet\API\JSON\Error as APIError;
+use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Listing;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Config\AccessControl;
-use MailPoet\API\JSON\Error as APIError;
+use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\API\JSON\Endpoint as APIEndpoint;
-use MailPoet\Models\SendingQueue as SendingQueueModel;
 
 class SendingTaskSubscribers extends APIEndpoint {
   public $permissions = [

@@ -8,9 +8,8 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\License\License;
 use MailPoet\WP\DateTime;
-use MailPoet\WP\Notice as WPNotice;
-
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Notice as WPNotice;
 
 class ServicesChecker {
 

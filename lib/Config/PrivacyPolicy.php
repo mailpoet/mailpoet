@@ -3,8 +3,8 @@
 namespace MailPoet\Config;
 
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WP\Functions as WPFunctions;
 
 class PrivacyPolicy {
 

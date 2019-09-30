@@ -3,8 +3,8 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Stub\Expected;
-use MailPoet\API\JSON\v1\Mailer;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\API\JSON\v1\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Services\AuthorizedEmailsController;

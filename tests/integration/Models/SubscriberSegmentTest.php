@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\Models;
 
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 
 class SubscriberSegmentTest extends \MailPoetTest {

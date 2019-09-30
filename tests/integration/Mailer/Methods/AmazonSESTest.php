@@ -5,8 +5,8 @@ namespace MailPoet\Test\Mailer\Methods;
 use Codeception\Stub;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\AmazonSES;
-use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
+use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 
 class AmazonSESTest extends \MailPoetTest {
   function _before() {

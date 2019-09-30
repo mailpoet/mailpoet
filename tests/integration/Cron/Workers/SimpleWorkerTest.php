@@ -6,11 +6,11 @@ use Carbon\Carbon;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 
 require_once('SimpleWorkerMockImplementation.php');
-use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 
 class SimpleWorkerTest extends \MailPoetTest {
   function _before() {

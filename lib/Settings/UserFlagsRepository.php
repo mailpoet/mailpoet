@@ -2,8 +2,8 @@
 
 namespace MailPoet\Settings;
 
-use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Doctrine\Repository;
+use MailPoet\Entities\UserFlagEntity;
 
 /**
  * @method UserFlagEntity[] findBy(array $criteria, array $order_by = null, int $limit = null, int $offset = null)

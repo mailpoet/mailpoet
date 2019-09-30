@@ -5,12 +5,12 @@ namespace MailPoet\Test\Cron\Workers\KeyCheck;
 use Carbon\Carbon;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
+use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCheckWorker;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 
 require_once('KeyCheckWorkerMockImplementation.php');
-use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCheckWorker;
 
 class KeyCheckWorkerTest extends \MailPoetTest {
   function _before() {

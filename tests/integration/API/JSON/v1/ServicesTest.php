@@ -4,8 +4,8 @@ namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
-use MailPoet\API\JSON\v1\Services;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\API\JSON\v1\Services;
 use MailPoet\Config\Installer;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\SPFCheck;

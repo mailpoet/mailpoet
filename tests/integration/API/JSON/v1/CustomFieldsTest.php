@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\API\JSON\v1;
 
-use MailPoet\API\JSON\v1\CustomFields;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\API\JSON\v1\CustomFields;
 use MailPoet\Models\CustomField;
 
 class CustomFieldsTest extends \MailPoetTest {

@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\Util;
 
-use pQuery;
 use MailPoet\Util\DOM as DOMUtil;
+use pQuery;
 
 class DOMTest extends \MailPoetUnitTest {
 

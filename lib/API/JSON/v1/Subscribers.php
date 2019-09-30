@@ -23,8 +23,8 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
-use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Subscribers extends APIEndpoint {

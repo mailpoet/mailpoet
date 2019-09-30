@@ -3,9 +3,8 @@
 namespace MailPoet\Config;
 
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Notice as WPNotice;
-
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Notice as WPNotice;
 
 class RequirementsChecker {
   const TEST_FOLDER_PERMISSIONS = 'TempAndCacheFolderCreation';

@@ -3,8 +3,8 @@
 namespace MailPoet\Util;
 
 use Carbon\Carbon;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Installation {
   const NEW_INSTALLATION_DAYS_LIMIT = 30;

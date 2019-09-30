@@ -4,8 +4,8 @@ namespace MailPoet\Segments;
 
 use MailPoet\Config\Env;
 use MailPoet\Models\ModelValidator;
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;

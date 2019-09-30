@@ -2,27 +2,27 @@
 
 namespace MailPoet\Cron\Triggers;
 
-use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
-use MailPoet\Cron\Workers\InactiveSubscribers;
-use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
-use MailPoet\Cron\Workers\WooCommerceOrders;
-use MailPoet\Services\Bridge;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Settings\SettingsController;
-use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
+use MailPoet\Cron\Workers\Beamer as BeamerWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
+use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
+use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
-use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
+use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
-use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
-use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
-use MailPoet\Cron\Workers\Beamer as BeamerWorker;
-use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
+use MailPoet\Cron\Workers\UnsubscribeTokens;
+use MailPoet\Cron\Workers\WooCommerceOrders;
+use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
+use MailPoet\Mailer\MailerLog;
+use MailPoet\Models\ScheduledTask;
+use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class WordPress {
   const SCHEDULED_IN_THE_PAST = 'past';

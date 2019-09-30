@@ -6,11 +6,11 @@ use Codeception\Stub\Expected;
 use Codeception\Util\Stub;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\MailPoet;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge\API;
-use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 
 class MailPoetAPITest extends \MailPoetTest {
   function _before() {

@@ -8,12 +8,12 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\WooCommerceSync;
+use MailPoet\Models\Form;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\Models\Form;
 
 class Settings extends APIEndpoint {
 

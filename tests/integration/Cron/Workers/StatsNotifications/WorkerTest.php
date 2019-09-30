@@ -14,8 +14,8 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\StatsNotification;
 use MailPoet\Settings\SettingsController;
-use PHPUnit\Framework\MockObject\MockObject;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class WorkerTest extends \MailPoetTest {
 

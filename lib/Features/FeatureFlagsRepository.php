@@ -2,8 +2,8 @@
 
 namespace MailPoet\Features;
 
-use MailPoet\Entities\FeatureFlagEntity;
 use MailPoet\Doctrine\Repository;
+use MailPoet\Entities\FeatureFlagEntity;
 
 /**
  * @method FeatureFlagEntity[] findAll()

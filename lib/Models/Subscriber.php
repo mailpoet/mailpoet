@@ -5,9 +5,9 @@ namespace MailPoet\Models;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
-use function MailPoet\Util\array_column;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Util\Security;
+use MailPoet\WP\Functions as WPFunctions;
+use function MailPoet\Util\array_column;
 
 /**
  * @property int $id
