@@ -10,6 +10,7 @@ namespace MailPoet\Models;
  */
 class NewsletterLink extends Model {
   public static $_table = MP_NEWSLETTER_LINKS_TABLE;
+  const UNSUBSCRIBE_LINK_SHORT_CODE = '[link:subscription_unsubscribe_url]';
 
   /**
    * @param Newsletter $newsletter
