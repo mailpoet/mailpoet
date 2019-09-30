@@ -6,6 +6,12 @@
   <!-- Namespaces -->
   <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
   <rule ref="SlevomatCodingStandard.Namespaces.NamespaceDeclaration"/>
+  <rule ref="SlevomatCodingStandard.Namespaces.NamespaceSpacing">
+    <properties>
+      <property name="linesCountBeforeNamespace" value="1" />
+      <property name="linesAfterNamespace" value="1" />
+    </properties>
+  </rule>
 
   <!-- Namespaces - "use" statements -->
   <rule ref="PSR2.Namespaces.UseDeclaration"/> <!-- One namespace per use, one blank line after final use statement -->
