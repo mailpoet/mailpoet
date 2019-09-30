@@ -53,6 +53,21 @@ class LinksTest extends \MailPoetTest {
     expect($result['html'])->contains($newsletter_link->hash);
   }
 
+  function testItCanEnsureThatUnsubscribeLinkIsAlwaysPresent() {
+    $newsletter = Newsletter::create();
+    $newsletter->type = Newsletter::TYPE_STANDARD;
+    $newsletter->save();
+    $rendered_newsletter = [
+      'html' => '<a href="http://example.com">Example Link</a>',
+      'text' => '<a href="http://example.com">Example Link</a>',
+    ];
+    $queue = (object)['id' => 2];
+    Links::process($rendered_newsletter, $newsletter, $queue);
+    $unsubscribe_count = NewsletterLink::where('newsletter_id', $newsletter->id)
+      ->where('url', NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE)->count();
+    expect($unsubscribe_count)->equals(1);
+  }
+
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);

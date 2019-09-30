@@ -23,6 +23,7 @@ class Links {
     // join HTML and TEXT rendered body into a text string
     $content = Helpers::joinObject($rendered_newsletter);
     list($content, $links) = NewsletterLinks::process($content, $newsletter_id, $queue_id);
+    $links = NewsletterLinks::ensureUnsubscribeLink($links);
     // split the processed body with hashed links back to HTML and TEXT
     list($rendered_newsletter['html'], $rendered_newsletter['text'])
       = Helpers::splitObject($content);
