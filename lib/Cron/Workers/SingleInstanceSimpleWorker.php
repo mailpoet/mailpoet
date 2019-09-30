@@ -36,7 +36,6 @@ abstract class SingleInstanceSimpleWorker extends SimpleWorker {
 
     // If the task is running for too long consider it stuck and reschedule
     if (!empty($task->updated_at) && $updated_at->diffInMinutes($current_time, false) > self::TASK_RUN_TIMEOUT) {
-      $this->ensureMetaIsArray($task);
       $task->meta = array_merge($task->getMeta(), ['in_progress' => null]);
       $this->reschedule($task, self::TIMED_OUT_TASK_RESCHEDULE_TIMEOUT);
       return true;
@@ -49,23 +48,12 @@ abstract class SingleInstanceSimpleWorker extends SimpleWorker {
   }
 
   function startProgress(ScheduledTask $task) {
-    $this->ensureMetaIsArray($task);
     $task->meta = array_merge($task->getMeta(), ['in_progress' => true]);
     $task->save();
   }
 
   function stopProgress(ScheduledTask $task) {
-    $this->ensureMetaIsArray($task);
     $task->meta = array_merge($task->getMeta(), ['in_progress' => null]);
     $task->save();
-  }
-
-  private function ensureMetaIsArray(ScheduledTask $task) {
-    $meta = $task->getMeta();
-    if (empty($meta)) {
-      $task->meta = [];
-    } elseif (!is_array($meta)) {
-      $task->meta = (array)$meta;
-    }
   }
 }
