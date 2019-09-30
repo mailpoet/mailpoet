@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder, email automation
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.37.0
+Stable tag: 3.37.1
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -163,6 +163,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.37.1 - 2019-09-30 =
+* Added: cron execution parameters can now be customized using WordPress filters. Thanks, @deltafactory!
 
 = 3.37.0 - 2019-09-24 =
 * Improved: automatic emails now respect the subscription status of a subscriber;
