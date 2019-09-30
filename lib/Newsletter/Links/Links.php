@@ -10,8 +10,8 @@ use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Util\Helpers;
-use MailPoet\Util\Security;
 use MailPoet\Util\pQuery\pQuery as DomParser;
+use MailPoet\Util\Security;
 
 use function MailPoet\Util\array_column;
 

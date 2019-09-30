@@ -5,10 +5,10 @@ namespace MailPoet\Subscribers\ImportExport\Export;
 use MailPoet\Config\Env;
 use MailPoet\Models\CustomField;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
-use function MailPoet\Util\array_column;
 use MailPoet\Util\Security;
 use MailPoet\Util\XLSXWriter;
 use MailPoet\WP\Functions as WPFunctions;
+use function MailPoet\Util\array_column;
 
 class Export {
   const SUBSCRIBER_BATCH_SIZE = 15000;

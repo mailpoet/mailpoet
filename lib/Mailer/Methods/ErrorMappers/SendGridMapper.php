@@ -2,8 +2,8 @@
 
 namespace MailPoet\Mailer\Methods\ErrorMappers;
 
-use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\WP\Functions as WPFunctions;
 

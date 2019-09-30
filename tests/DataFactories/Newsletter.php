@@ -3,11 +3,11 @@
 namespace MailPoet\Test\DataFactories;
 
 use Carbon\Carbon;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 
 class Newsletter {
 

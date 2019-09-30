@@ -3,18 +3,18 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Stub;
+use Helper\WordPressHooks as WPHooksHelper;
+use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Models\Setting;
-use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Referrals\ReferralDetector;
-use MailPoet\WP\Functions as WPFunctions;
-use Helper\WordPressHooks as WPHooksHelper;
-use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WooCommerce\TransactionalEmails;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SetupTest extends \MailPoetTest {
   function _before() {

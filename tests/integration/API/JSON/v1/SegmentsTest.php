@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\API\JSON\v1;
 
-use MailPoet\API\JSON\v1\Segments;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\API\JSON\v1\Segments;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;

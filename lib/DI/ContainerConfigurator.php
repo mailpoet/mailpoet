@@ -2,9 +2,9 @@
 
 namespace MailPoet\DI;
 
+use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Reference;
-use MailPoetVendor\Psr\Container\ContainerInterface;
 
 class ContainerConfigurator implements IContainerConfigurator {
 

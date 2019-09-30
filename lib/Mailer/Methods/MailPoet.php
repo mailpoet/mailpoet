@@ -2,8 +2,8 @@
 
 namespace MailPoet\Mailer\Methods;
 
-use MailPoet\Mailer\Mailer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;

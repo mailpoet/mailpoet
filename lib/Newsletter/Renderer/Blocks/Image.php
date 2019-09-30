@@ -2,9 +2,9 @@
 
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Image {
   static function render($element, $column_base_width) {

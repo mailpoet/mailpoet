@@ -3,8 +3,8 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
-use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Block;
+use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 use MailPoet\Settings\Pages;

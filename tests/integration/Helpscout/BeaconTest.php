@@ -5,8 +5,8 @@ namespace MailPoet\Test\Helpscout;
 use MailPoet\Helpscout\Beacon;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class BeaconTest extends \MailPoetTest {
   function _before() {

@@ -8,8 +8,8 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Subscribers\ImportExport\Export\Export;
 use MailPoet\Subscribers\ImportExport\Export\DefaultSubscribersGetter;
+use MailPoet\Subscribers\ImportExport\Export\Export;
 
 class ExportTest extends \MailPoetTest {
   function _before() {

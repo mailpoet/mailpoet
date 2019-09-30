@@ -3,9 +3,9 @@
 namespace MailPoet\Router;
 
 use MailPoet\Config\AccessControl;
-use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 
 class Router {
   public $api_request;

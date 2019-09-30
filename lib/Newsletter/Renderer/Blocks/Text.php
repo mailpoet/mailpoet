@@ -3,8 +3,8 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Editor\PostContentManager;
-use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
+use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\Util\pQuery\pQuery;
 
 class Text {

@@ -13,10 +13,10 @@ use MailPoet\API\JSON\v1\APITestNamespacedEndpointStubV1;
 use MailPoet\API\JSON\v2\APITestNamespacedEndpointStubV2;
 use MailPoet\Config\AccessControl;
 use MailPoet\DI\ContainerConfigurator;
-use MailPoet\Settings\SettingsController;
-use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 
 // required to be able to use wp_delete_user()
 require_once(ABSPATH . 'wp-admin/includes/user.php');

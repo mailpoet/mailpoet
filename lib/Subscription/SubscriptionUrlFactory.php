@@ -2,9 +2,9 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\Router\Router;
-use MailPoet\Router\Endpoints\Subscription as SubscriptionEndpoint;
 use MailPoet\Models\Subscriber;
+use MailPoet\Router\Endpoints\Subscription as SubscriptionEndpoint;
+use MailPoet\Router\Router;
 use MailPoet\Settings\Pages as SettingsPages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;

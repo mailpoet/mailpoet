@@ -6,11 +6,11 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\AccessControl;
 use MailPoet\DI\ContainerConfigurator;
-use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoet\DI\ContainerFactory;
 use MailPoet\Router\Endpoints\RouterTestMockEndpoint;
 use MailPoet\Router\Router;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 
 require_once('RouterTestMockEndpoint.php');
 

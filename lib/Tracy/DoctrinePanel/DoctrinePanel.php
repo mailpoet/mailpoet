@@ -2,8 +2,8 @@
 
 namespace MailPoet\Tracy\DoctrinePanel;
 
-use MailPoetVendor\Doctrine\DBAL\Logging\DebugStack;
 use MailPoetVendor\Doctrine\DBAL\Configuration;
+use MailPoetVendor\Doctrine\DBAL\Logging\DebugStack;
 use MailPoetVendor\Doctrine\DBAL\Platforms\Keywords\MySQLKeywords;
 use MailPoetVendor\Doctrine\ORM\EntityManagerInterface;
 use Tracy\Debugger;

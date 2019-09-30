@@ -3,12 +3,11 @@
 namespace MailPoet\Config;
 
 use MailPoet\Twig;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Twig\Environment as TwigEnv;
 use MailPoetVendor\Twig\Extension\DebugExtension;
 use MailPoetVendor\Twig\Lexer as TwigLexer;
 use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
-
-use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
   protected $cache_path;

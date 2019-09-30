@@ -2,9 +2,9 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form as FormModel;
 use MailPoet\Util\Url as UrlHelper;
-use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaRenderer {

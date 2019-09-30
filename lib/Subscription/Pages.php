@@ -2,18 +2,18 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
+use MailPoet\Form\Block\Date as FormBlockDate;
+use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Url as UrlHelper;
-use MailPoet\Form\Renderer as FormRenderer;
-use MailPoet\Form\Block\Date as FormBlockDate;
-use MailPoet\Subscribers\LinkTokens;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Pages {

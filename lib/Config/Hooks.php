@@ -2,16 +2,16 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Mailer\WordPress\Replacer;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
+use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
+use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
-use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 

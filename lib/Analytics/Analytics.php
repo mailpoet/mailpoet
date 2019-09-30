@@ -3,8 +3,8 @@
 namespace MailPoet\Analytics;
 
 use Carbon\Carbon;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Analytics {
 

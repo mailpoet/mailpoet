@@ -3,14 +3,14 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Util\Fixtures;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\Subscriber;
-use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingTaskSubscribers;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Models\Newsletter;
+use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Subscriber;
 
 class SendingTaskSubscribersTest extends \MailPoetTest {
 

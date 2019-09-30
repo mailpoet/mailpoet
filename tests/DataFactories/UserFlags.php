@@ -2,9 +2,9 @@
 
 namespace MailPoet\Test\DataFactories;
 
-use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\UserFlagEntity;
+use MailPoet\Settings\UserFlagsRepository;
 
 class UserFlags {
   /** @var int */

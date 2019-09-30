@@ -4,8 +4,8 @@ namespace MailPoet\Test\Settings;
 
 use Codeception\Stub;
 use MailPoet\Entities\UserFlagEntity;
-use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class UserFlagsControllerTest extends \MailPoetTest {

@@ -4,11 +4,11 @@ namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
 use MailPoet\Models\Newsletter;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Renderer {
   public $blocks_renderer;

@@ -4,8 +4,8 @@ namespace MailPoet\Test\API\JSON\v1;
 
 use Carbon\Carbon;
 use Codeception\Stub\Expected;
-use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Models\ScheduledTask;

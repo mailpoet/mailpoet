@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\Cron;
 
-use Codeception\Stub;
 use AspectMock\Test as Mock;
+use Codeception\Stub;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Models\Setting;

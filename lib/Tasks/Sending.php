@@ -6,8 +6,8 @@ use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
-use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
+use function MailPoet\Util\array_column;
 
 /**
  * A facade class containing all necessary models to work with a sending queue

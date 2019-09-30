@@ -4,16 +4,16 @@ namespace MailPoet\Test\Cron\Workers;
 
 use Carbon\Carbon;
 use MailPoet\Cron\Workers\Bounce;
+use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge\API;
+use MailPoet\Settings\SettingsController;
 
 require_once('BounceTestMockAPI.php');
-use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
-use MailPoet\Settings\SettingsController;
 
 class BounceTest extends \MailPoetTest {
   function _before() {

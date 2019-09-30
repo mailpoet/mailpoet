@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use MailPoet\API\JSON\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
+use MailPoet\Cron\Workers\Beamer;
+use MailPoet\Cron\Workers\Bounce as BounceWorker;
+use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
@@ -13,9 +16,6 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
-use MailPoet\Cron\Workers\Bounce as BounceWorker;
-use MailPoet\Cron\Workers\Beamer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WordPressTest extends \MailPoetTest {

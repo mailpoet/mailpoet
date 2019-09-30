@@ -2,8 +2,8 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\Subscriber;
 use MailPoet\Util\Helpers;
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');

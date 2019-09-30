@@ -3,9 +3,9 @@
 namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Activator;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Setup extends APIEndpoint {
   public $permissions = [

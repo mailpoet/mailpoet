@@ -4,9 +4,9 @@ namespace MailPoet\Test\DI;
 
 use Codeception\Stub;
 use MailPoet\DI\ContainerWrapper;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 use MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder;
-use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 class ContainerWrapperTest extends \MailPoetUnitTest {

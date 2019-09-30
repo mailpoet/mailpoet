@@ -4,9 +4,9 @@ namespace MailPoet\Test\Mailer\Methods;
 
 use Codeception\Stub;
 use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\SendGrid;
-use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 
 class SendGridTest extends \MailPoetTest {
   function _before() {

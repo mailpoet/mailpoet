@@ -6,8 +6,8 @@ use MailPoetVendor\Doctrine\Common\Annotations\SimpleAnnotationReader;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
 use MailPoetVendor\Doctrine\ORM\Configuration;
-use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use MailPoetVendor\Doctrine\ORM\Mapping\Driver\PHPDriver;
+use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
 class ConfigurationFactory {
   const ENTITY_DIR = __DIR__ . '/../Entities';

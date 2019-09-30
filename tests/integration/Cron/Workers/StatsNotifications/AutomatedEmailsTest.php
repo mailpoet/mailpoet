@@ -8,8 +8,8 @@ use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
-use PHPUnit\Framework\MockObject\MockObject;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class AutomatedEmailsTest extends \MailPoetTest {
 

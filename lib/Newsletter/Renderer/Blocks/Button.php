@@ -2,8 +2,8 @@
 
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
-use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
+use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Button {
   static function render($element, $column_base_width) {

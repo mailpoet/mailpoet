@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
-use Codeception\Stub;
 use AspectMock\Test as Mock;
+use Codeception\Stub;
 use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;

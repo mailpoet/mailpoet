@@ -2,15 +2,15 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
-use MailPoet\Settings\SettingsController;
-use MailPoet\Util\Helpers;
-use MailPoet\Router\Router;
-use MailPoet\Subscription\SubscriptionUrlFactory;
-use MailPoet\Models\Subscriber;
-use MailPoet\Router\Endpoints\Track;
-use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Models\NewsletterLink as NewsletterLinkModel;
+use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Links\Links as NewsletterLinks;
+use MailPoet\Router\Endpoints\Track;
+use MailPoet\Router\Router;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Util\Helpers;
 
 class Links {
   static function process($rendered_newsletter, $newsletter, $queue) {
