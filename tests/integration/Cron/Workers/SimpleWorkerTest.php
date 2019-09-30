@@ -205,6 +205,57 @@ class SimpleWorkerTest extends \MailPoetTest {
     }
   }
 
+  function testItWillNotRunInMultipleInstances() {
+    $worker = $this->getMockBuilder(MockSimpleWorker::class)
+      ->setMethods(['processTaskStrategy'])
+      ->getMock();
+    $worker->expects($this->once())
+      ->method('processTaskStrategy')
+      ->willReturn(true);
+    $task = $this->createRunningTask();
+    expect(empty($task->getMeta()['in_progress']))->equals(true);
+    expect($worker->processTask($task))->equals(true);
+    $task->meta = ['in_progress' => true];
+    expect($worker->processTask($task))->equals(false);
+  }
+
+  function testItWillResetTheInProgressFlagOnFail() {
+    $worker = $this->getMockBuilder(MockSimpleWorker::class)
+      ->setMethods(['processTaskStrategy'])
+      ->getMock();
+    $worker->expects($this->once())
+      ->method('processTaskStrategy')
+      ->willThrowException(new \Exception('test error'));
+    $task = $this->createRunningTask();
+    try {
+      $worker->processTask($task);
+      $this->fail('An exception should be thrown');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('test error');
+      expect(empty($task->getMeta()['in_progress']))->equals(true);
+    }
+  }
+
+  function testItWillRescheduleTaskIfItIsRunningForTooLong() {
+    $worker = $this->getMockBuilder(MockSimpleWorker::class)
+      ->setMethods(['processTaskStrategy'])
+      ->getMock();
+    $worker->expects($this->once())
+      ->method('processTaskStrategy')
+      ->willReturn(true);
+    $task = $this->createRunningTask();
+    $task = ScheduledTask::findOne($task->id); // make sure `updated_at` is set by the DB
+    expect($worker->processTask($task))->equals(true);
+    $scheduled_at = $task->scheduled_at;
+    $task->updated_at = Carbon::createFromTimestamp(strtotime($task->updated_at))
+      ->subMinutes(MockSimpleWorker::TASK_RUN_TIMEOUT + 1);
+    expect($worker->processTask($task))->equals(false);
+    $task = ScheduledTask::findOne($task->id);
+    expect($scheduled_at < $task->scheduled_at)->true();
+    expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+    expect(empty($task->getMeta()['in_progress']))->equals(true);
+  }
+
   function testItCalculatesNextRunDateWithinNextWeekBoundaries() {
     $current_date = Carbon::createFromTimestamp(current_time('timestamp'));
     $next_run_date = MockSimpleWorker::getNextRunDate();

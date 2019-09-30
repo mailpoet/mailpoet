@@ -6,9 +6,10 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\InactiveSubscribersController;
 
-class InactiveSubscribers extends SingleInstanceSimpleWorker {
+class InactiveSubscribers extends SimpleWorker {
   const TASK_TYPE = 'inactive_subscribers';
   const BATCH_SIZE = 1000;
+  const SUPPORT_MULTIPLE_INSTANCES = false;
 
   /** @var InactiveSubscribersController */
   private $inactive_subscribers_controller;
