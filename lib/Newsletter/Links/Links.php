@@ -53,35 +53,6 @@ class Links {
     return array_unique($extracted_links, SORT_REGULAR);
   }
 
-  static function load($newsletter_id, $queue_id) {
-    $links = NewsletterLink::whereEqual('newsletter_id', $newsletter_id)
-      ->whereEqual('queue_id', $queue_id)
-      ->findMany();
-    $saved_links = [];
-    foreach ($links as $link) {
-      $saved_links[$link->url] = $link->asArray();
-    }
-    return $saved_links;
-  }
-
-  static function hash($extracted_links, $saved_links) {
-    $processed_links = array_map(function(&$link) {
-      $link['type'] = Links::LINK_TYPE_URL;
-      $link['link'] = $link['url'];
-      $link['processed_link'] = self::DATA_TAG_CLICK . '-' . $link['hash'];
-      return $link;
-    }, $saved_links);
-    foreach ($extracted_links as $extracted_link) {
-      $link = $extracted_link['link'];
-      if (array_key_exists($link, $processed_links))
-        continue;
-      // Use URL as a key to map between extracted and processed links
-      // regardless of their sequential position (useful for link skips etc.)
-      $processed_links[$link] = self::hashLink($link, $extracted_link['type']);
-    }
-    return $processed_links;
-  }
-
   static function replace($content, $processed_links) {
     // replace HTML anchor tags
     $DOM = DomParser::parseStr($content);
@@ -238,5 +209,34 @@ class Links {
       // it will be further replaced with the proper track API URL during sending
       'processed_link' => self::DATA_TAG_CLICK . '-' . $hash,
     ];
+  }
+
+  private static function hash($extracted_links, $saved_links) {
+    $processed_links = array_map(function(&$link) {
+      $link['type'] = Links::LINK_TYPE_URL;
+      $link['link'] = $link['url'];
+      $link['processed_link'] = self::DATA_TAG_CLICK . '-' . $link['hash'];
+      return $link;
+    }, $saved_links);
+    foreach ($extracted_links as $extracted_link) {
+      $link = $extracted_link['link'];
+      if (array_key_exists($link, $processed_links))
+        continue;
+      // Use URL as a key to map between extracted and processed links
+      // regardless of their sequential position (useful for link skips etc.)
+      $processed_links[$link] = self::hashLink($link, $extracted_link['type']);
+    }
+    return $processed_links;
+  }
+
+  private static function load($newsletter_id, $queue_id) {
+    $links = NewsletterLink::whereEqual('newsletter_id', $newsletter_id)
+      ->whereEqual('queue_id', $queue_id)
+      ->findMany();
+    $saved_links = [];
+    foreach ($links as $link) {
+      $saved_links[$link->url] = $link->asArray();
+    }
+    return $saved_links;
   }
 }

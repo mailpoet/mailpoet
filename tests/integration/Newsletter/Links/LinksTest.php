@@ -191,7 +191,7 @@ class LinksTest extends \MailPoetTest {
     expect($newsltter_link->url)->equals('http://example.com');
   }
 
-  function testItCanLoadLinks() {
+  function testItCanReuseAlreadySavedLinks() {
     $link = NewsletterLink::create();
     $link->newsletter_id = 1;
     $link->queue_id = 2;
@@ -206,11 +206,11 @@ class LinksTest extends \MailPoetTest {
     $link->url = 'http://demo.com';
     $link->save();
 
-    $links = Links::load(1, 2);
+    list($content, $links) = Links::process('<a href="http://example.com">x</a>', 1, 2);
     expect(is_array($links))->true();
     expect(count($links))->equals(1);
-    expect($links['http://example.com']['hash'])->equals(123);
-    expect($links['http://example.com']['url'])->equals('http://example.com');
+    expect($links[0]['hash'])->equals(123);
+    expect($links[0]['url'])->equals('http://example.com');
   }
 
   function testItMatchesHashedLinks() {
