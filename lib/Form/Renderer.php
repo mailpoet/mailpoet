@@ -4,7 +4,6 @@ namespace MailPoet\Form;
 
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
-
 use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {

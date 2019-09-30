@@ -5,7 +5,6 @@ namespace MailPoet\Config;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Release\API;
 use MailPoet\Settings\SettingsController;
-
 use MailPoet\WP\Functions as WPFunctions;
 
 class Updater {

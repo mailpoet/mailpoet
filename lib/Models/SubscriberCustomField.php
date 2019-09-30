@@ -3,6 +3,7 @@
 namespace MailPoet\Models;
 
 use MailPoet\Util\Helpers;
+
 use function MailPoet\Util\array_column;
 
 /**

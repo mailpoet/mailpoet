@@ -12,6 +12,7 @@ use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
+
 use function MailPoet\Util\array_column;
 
 /**
