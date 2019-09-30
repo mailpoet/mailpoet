@@ -56,7 +56,7 @@ MailPoet.Ajax = {
       data: this.options.data || {},
     };
   },
-  constructGETUrl: function constructGETUrl(options) {
+  constructGetUrl: function constructGetUrl(options) {
     this.init(options);
     return this.options.url + '?' + jQuery.param(this.getParams());
   },
