@@ -27,12 +27,7 @@ class WooCommerceSync extends SingleInstanceSimpleWorker {
   }
 
   function processTaskStrategy(ScheduledTask $task) {
-    try {
-      $this->woocommerce_segment->synchronizeCustomers();
-    } catch (\Exception $e) {
-      $this->stopProgress($task);
-      throw $e;
-    }
+    $this->woocommerce_segment->synchronizeCustomers();
     return true;
   }
 

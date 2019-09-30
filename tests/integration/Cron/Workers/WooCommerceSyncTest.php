@@ -33,21 +33,6 @@ class WooCommerceSyncTest extends \MailPoetTest {
     expect($this->worker->processTaskStrategy($task))->equals(true);
   }
 
-  function testItWillResetTheInProgressFlagOnFail() {
-    $task = $this->createScheduledTask();
-    $this->worker->startProgress($task);
-    $this->woocommerce_segment->expects($this->once())
-      ->method('synchronizeCustomers')
-      ->willThrowException(new \Exception('test error'));
-    try {
-      $this->worker->processTaskStrategy($task);
-      $this->fail('An exception should be thrown');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('test error');
-      expect($task->getMeta())->equals(['in_progress' => null]);
-    }
-  }
-
   private function createScheduledTask() {
     $task = ScheduledTask::create();
     $task->type = WooCommerceSync::TASK_TYPE;
