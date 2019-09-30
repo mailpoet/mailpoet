@@ -18,6 +18,9 @@ abstract class SingleInstanceSimpleWorker extends SimpleWorker {
     if ($this->isInProgress($task)) {
       return false;
     }
+    if ($this->rescheduleOutdated($task)) {
+      return false;
+    }
 
     $this->startProgress($task);
     $completed = $this->processTaskStrategy($task);
@@ -29,21 +32,12 @@ abstract class SingleInstanceSimpleWorker extends SimpleWorker {
     return (bool)$completed;
   }
 
-  function isInProgress(ScheduledTask $task) {
+  private function isInProgress(ScheduledTask $task) {
     $meta = $task->getMeta();
-    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $updated_at = Carbon::createFromTimestamp(strtotime($task->updated_at));
-
-    // If the task is running for too long consider it stuck and reschedule
-    if (!empty($task->updated_at) && $updated_at->diffInMinutes($current_time, false) > self::TASK_RUN_TIMEOUT) {
-      $task->meta = array_merge($task->getMeta(), ['in_progress' => null]);
-      $this->reschedule($task, self::TIMED_OUT_TASK_RESCHEDULE_TIMEOUT);
-      return true;
-    } elseif (!empty($meta['in_progress'])) {
+    if (!empty($meta['in_progress'])) {
       // Do not run multiple instances of the task
       return true;
     }
-
     return false;
   }
 
@@ -55,5 +49,19 @@ abstract class SingleInstanceSimpleWorker extends SimpleWorker {
   function stopProgress(ScheduledTask $task) {
     $task->meta = array_merge($task->getMeta(), ['in_progress' => null]);
     $task->save();
+  }
+
+  private function rescheduleOutdated(ScheduledTask $task) {
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $updated_at = Carbon::createFromTimestamp(strtotime($task->updated_at));
+
+    // If the task is running for too long consider it stuck and reschedule
+    if (!empty($task->updated_at) && $updated_at->diffInMinutes($current_time, false) > self::TASK_RUN_TIMEOUT) {
+      $this->stopProgress($task);
+      $this->reschedule($task, self::TIMED_OUT_TASK_RESCHEDULE_TIMEOUT);
+      return true;
+    }
+
+    return false;
   }
 }

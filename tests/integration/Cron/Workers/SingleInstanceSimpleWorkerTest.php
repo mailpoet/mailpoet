@@ -19,10 +19,10 @@ class SingleInstanceSimpleWorkerTest extends \MailPoetTest {
       ->method('processTaskStrategy')
       ->willReturn(true);
     $task = $this->createScheduledTask();
-    expect($this->worker->isInProgress($task))->equals(false);
+    expect(empty($task->getMeta()['in_progress']))->equals(true);
     expect($this->worker->processTask($task))->equals(true);
     $this->worker->startProgress($task);
-    expect($this->worker->isInProgress($task))->equals(true);
+    expect(empty($task->getMeta()['in_progress']))->equals(false);
     expect($this->worker->processTask($task))->equals(false);
   }
 
@@ -36,7 +36,7 @@ class SingleInstanceSimpleWorkerTest extends \MailPoetTest {
       $this->fail('An exception should be thrown');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('test error');
-      expect($this->worker->isInProgress($task))->equals(true);
+      expect(empty($task->getMeta()['in_progress']))->equals(false);
     }
   }
 
@@ -54,7 +54,7 @@ class SingleInstanceSimpleWorkerTest extends \MailPoetTest {
     $task = ScheduledTask::findOne($task->id);
     expect($scheduled_at < $task->scheduled_at)->true();
     expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
-    expect($this->worker->isInProgress($task))->equals(false);
+    expect(empty($task->getMeta()['in_progress']))->equals(true);
   }
 
   private function createScheduledTask() {
