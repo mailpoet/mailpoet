@@ -332,15 +332,6 @@
     'selectAutomaticEmailsEventsHeading': __('Select %$1s events'),
     'cronNotAccessibleNotice': __('Oops! There seems to be an issue with the sending on your website. [link]See our guide[/link] to solve this yourself.'),
 
-    'introLists': __('Welcome on board. Let’s get you started quickly. Here, you can create new lists.'),
-    'introForms': __('Create a form and add it to your website so your visitors can subscribe to your list.'),
-    'introChat': __('You have a question? Start a chat or send a message to get an answer from our support team.'),
-    'introEmails': __('We suggest you begin by creating a newsletter, a welcome email or a post notification. Enjoy!'),
-    'introNext': _x('Next', 'A label on a button'),
-    'introBack': _x('Back', 'A label on a button'),
-    'introSkip': _x('Skip', 'A label on a button'),
-    'introDone': _x('Done', 'A label on a button'),
-
     'whatsNew': __("What’s new"),
     'updateMailPoetNotice': __('[link]Update MailPoet[/link] to see the latest changes'),
 
@@ -402,23 +393,4 @@
 
 <% block after_translations %>
   <%= do_action('mailpoet_newsletters_translations_after') %>
-<% endblock %>
-
-<% block after_javascript %>
-<% if settings.show_intro %>
-<script>
-  const initIntro = () => {
-    const beacon = document.querySelector('#beacon-container iframe');
-    if (beacon) {
-      beacon.classList.add('mailpoet-chat');
-      MailPoet.showIntro();
-    } else {
-      setTimeout(initIntro, 200);
-    }
-  };
-  document.addEventListener('DOMContentLoaded', function(){
-    initIntro();
-  }, false);
-</script>
-<% endif %>
 <% endblock %>
