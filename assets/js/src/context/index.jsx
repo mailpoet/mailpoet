@@ -1,6 +1,7 @@
 import React from 'react';
 import getFeaturesContext from './getFeaturesContext.jsx';
-import getConstantsContext from './getConstantsContext.jsx';
+import getSegmentsContext from './getSegmentsContext.jsx';
+import getUsersContext from './getUsersContext.jsx';
 
 /**
  * Builds the value of the global context.
@@ -9,8 +10,9 @@ import getConstantsContext from './getConstantsContext.jsx';
  */
 export function useGlobalContextValue(data) {
   const features = getFeaturesContext(data);
-  const constants = getConstantsContext(data);
-  return { features, constants };
+  const segments = getSegmentsContext(data);
+  const users = getUsersContext(data);
+  return { features, segments, users };
 }
 
 export const GlobalContext = React.createContext(useGlobalContextValue(window));
