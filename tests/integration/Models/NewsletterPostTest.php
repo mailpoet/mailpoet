@@ -2,7 +2,7 @@
 namespace MailPoet\Test\Models;
 
 use Carbon\Carbon;
-use MailPoet\Models\NewsletterPost as NewsletterPost;
+use MailPoet\Models\NewsletterPost;
 
 class NewsletterPostTest extends \MailPoetTest {
   function testItCanGetLatestNewsletterPost() {
