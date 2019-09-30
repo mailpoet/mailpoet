@@ -13,6 +13,7 @@ use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
+
 use function MailPoet\Util\array_column;
 
 class Import {

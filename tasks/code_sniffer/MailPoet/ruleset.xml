@@ -21,6 +21,13 @@
   <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
   <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
   <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
+  <rule ref="SlevomatCodingStandard.Namespaces.UseSpacing">
+    <properties>
+      <property name="linesCountBeforeFirstUse" value="1" />
+      <property name="linesCountAfterLastUse" value="1" />
+      <property name="linesCountBetweenUseTypes" value="1" />
+    </properties>
+  </rule>
 
   <!-- checks for unused methods, unused or write-only properties in a class and unused private constants -->
   <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements"/>

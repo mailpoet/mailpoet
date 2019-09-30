@@ -3,6 +3,7 @@
 namespace MailPoet\Tasks\Subscribers;
 
 use MailPoet\Models\ScheduledTaskSubscriber;
+
 use function MailPoet\Util\array_column;
 
 class BatchIterator implements \Iterator, \Countable {

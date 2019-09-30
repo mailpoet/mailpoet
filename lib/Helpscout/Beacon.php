@@ -7,7 +7,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-
 use MailPoet\WP\Functions as WPFunctions;
 
 class Beacon {

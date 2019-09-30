@@ -7,6 +7,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\WP\Functions as WPFunctions;
+
 use function MailPoet\Util\array_column;
 
 /**
