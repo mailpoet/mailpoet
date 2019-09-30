@@ -3,6 +3,10 @@
   <config name="installed_paths" value="tasks/code_sniffer/vendor/squizlabs/php_codesniffer,tasks/code_sniffer/vendor/phpcompatibility/php-compatibility,tasks/code_sniffer/vendor/slevomat/coding-standard"/>
   <description>MailPoet specific rule set</description>
 
+  <!-- Namespaces -->
+  <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
+  <rule ref="SlevomatCodingStandard.Namespaces.NamespaceDeclaration"/>
+
   <!-- Namespaces - "use" statements -->
   <rule ref="PSR2.Namespaces.UseDeclaration"/> <!-- One namespace per use, one blank line after final use statement -->
   <rule ref="SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash"/>
