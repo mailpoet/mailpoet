@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Cron\Workers;
 
 use MailPoet\Cron\Workers\ExportFilesCleanup;

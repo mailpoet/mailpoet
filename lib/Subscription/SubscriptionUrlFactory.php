@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Subscription;
 
 use MailPoet\Router\Router;

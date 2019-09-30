@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Mailer;
 
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;

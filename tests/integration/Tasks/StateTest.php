@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\Migration;

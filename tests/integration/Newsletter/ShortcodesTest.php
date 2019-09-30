@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Newsletter;
 
 use Codeception\Util\Stub;

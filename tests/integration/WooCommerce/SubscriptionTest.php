@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\WooCommerce;
 
 use Codeception\Util\Fixtures;

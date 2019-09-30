@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Settings\SettingsController;

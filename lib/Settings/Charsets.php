@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Settings;
 
 class Charsets {

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Util\License;
 
 class License {

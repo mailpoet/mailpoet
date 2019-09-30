@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\Util;
+
 use pQuery\DomNode;
 
 class DOM {

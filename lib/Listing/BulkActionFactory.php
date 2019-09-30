@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Listing;
 
 class BulkActionFactory {

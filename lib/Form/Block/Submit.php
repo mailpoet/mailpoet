@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Form\Block;
 
 class Submit extends Base {

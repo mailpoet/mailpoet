@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Newsletter\Links;
 
 use Codeception\Util\Fixtures;

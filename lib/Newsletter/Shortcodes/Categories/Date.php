@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Newsletter\Shortcodes\Categories;
+
 use MailPoet\WP\Functions as WPFunctions;
 
 class Date {

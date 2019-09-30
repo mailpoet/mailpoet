@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Config;
 
 use MailPoet\Config\ServicesChecker;

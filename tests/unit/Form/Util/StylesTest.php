@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Form\Util;
 
 use MailPoet\Form\Util\Styles;

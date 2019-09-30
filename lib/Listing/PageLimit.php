@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Listing;
 
 use MailPoet\WP\Functions as WPFunctions;

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Util\License;
 
 use MailPoet\Util\License\License;

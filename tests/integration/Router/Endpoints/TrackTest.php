@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Router\Endpoints;
 
 use Codeception\Stub;

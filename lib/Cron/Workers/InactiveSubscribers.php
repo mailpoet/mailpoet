@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Cron\CronHelper;

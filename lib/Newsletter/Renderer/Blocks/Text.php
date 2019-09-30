@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Editor\PostContentManager;

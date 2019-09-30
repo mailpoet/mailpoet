@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Newsletter\Editor;
 
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;

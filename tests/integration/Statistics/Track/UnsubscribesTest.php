@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Statistics\Track;
 
 use MailPoet\Models\Newsletter;

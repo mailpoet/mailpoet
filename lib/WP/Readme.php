@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\WP;
 
 class Readme {

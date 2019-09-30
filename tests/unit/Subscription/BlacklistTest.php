@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Subscription;
 
 class BlacklistTest extends \MailPoetUnitTest {

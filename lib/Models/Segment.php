@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Models;
 
 use MailPoet\Entities\NewsletterEntity;

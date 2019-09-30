@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Services\Bridge;
+
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\Logging\Logger;
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Analytics;
 
 use Carbon\Carbon;

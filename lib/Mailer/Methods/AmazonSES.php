@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;

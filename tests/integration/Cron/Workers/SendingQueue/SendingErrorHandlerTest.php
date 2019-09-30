@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Cron\Workers;
 
 use Codeception\Stub;

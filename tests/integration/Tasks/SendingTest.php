@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Tasks;
 
 use Carbon\Carbon;

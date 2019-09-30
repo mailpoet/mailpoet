@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\API\JSON;
+
 use MailPoet\WP\Functions as WPFunctions;
 
 abstract class Response {

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Statistics\Track;
 
 use MailPoet\Models\StatisticsOpens;

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Referrals;
 
 use MailPoet\Settings\SettingsController;

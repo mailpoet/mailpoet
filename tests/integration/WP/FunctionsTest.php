@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\WP;
 
 use MailPoet\WP\Functions as WPFunctions;

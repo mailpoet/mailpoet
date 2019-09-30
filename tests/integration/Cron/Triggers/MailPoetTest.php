@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Cron\Triggers;
 
 use MailPoet\API\JSON\Endpoints\Cron;

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Util;
 
 use pQuery;

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\Models\StatisticsClicks;

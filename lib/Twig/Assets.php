@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Twig;
 
 use MailPoet\WP\Functions as WPFunctions;

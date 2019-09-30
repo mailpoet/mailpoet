@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Util\License\Features;
 
 use Codeception\Util\Fixtures;
