@@ -120,7 +120,8 @@ class ScheduledTask extends Model {
   }
 
   function getMeta() {
-    return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
+    $meta = (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
+    return !empty($meta) ? (array)$meta : [];
   }
 
   function delete() {
