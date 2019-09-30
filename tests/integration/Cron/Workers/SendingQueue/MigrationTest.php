@@ -1,6 +1,6 @@
 <?php
-namespace MailPoet\Test\Cron\Workers;
 
+namespace MailPoet\Test\Cron\Workers;
 
 use Carbon\Carbon;
 use Codeception\Stub;

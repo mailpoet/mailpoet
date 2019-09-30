@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Newsletter;
 
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;

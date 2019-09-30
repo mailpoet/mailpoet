@@ -1,6 +1,6 @@
 <?php
-namespace MailPoet\Newsletter\Editor;
 
+namespace MailPoet\Newsletter\Editor;
 
 class PostListTransformer {
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Newsletter\Editor;
 
 use AspectMock\Test as Mock;

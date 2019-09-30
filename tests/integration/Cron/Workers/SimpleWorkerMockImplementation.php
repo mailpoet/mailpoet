@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Cron\Workers;
 
 class SimpleWorkerMockImplementation extends SimpleWorker {

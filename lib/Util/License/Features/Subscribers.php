@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Util\License\Features;
 
 use MailPoet\Models\Subscriber as SubscriberModel;

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\API\JSON\v1;
 
 use Carbon\Carbon;

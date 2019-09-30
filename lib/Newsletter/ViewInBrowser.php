@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Newsletter;
 
 use MailPoet\Newsletter\Links\Links;

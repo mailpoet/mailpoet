@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Newsletter;
 
 use MailPoet\Logging\Logger;

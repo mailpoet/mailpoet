@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Models;
 
 class MappingToExternalEntities extends Model {

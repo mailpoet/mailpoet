@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\Date;

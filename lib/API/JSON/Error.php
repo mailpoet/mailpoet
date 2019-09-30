@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\API\JSON;
 
 final class Error {

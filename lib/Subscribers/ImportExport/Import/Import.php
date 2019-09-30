@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Subscribers\ImportExport\Import;
 
 use MailPoet\Form\Block\Date;

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\API\MP\v1;
 
 class APIException extends \Exception {

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Util;
 
 class XlsxWriterTest extends \MailPoetUnitTest {

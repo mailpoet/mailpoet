@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;

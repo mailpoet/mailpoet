@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
 
 use MailPoet\Mailer\MailerError;

@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Services\Release;
+
 use MailPoet\WP\Functions as WPFunctions;
 
 class API {

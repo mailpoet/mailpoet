@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\Newsletter\Editor;
+
 use MailPoet\WP\Functions as WPFunctions;
 
 class TitleListTransformer {

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Models;
 
 use WC_Order;

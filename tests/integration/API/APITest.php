@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\API;
 
 use MailPoet\API\API;

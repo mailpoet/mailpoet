@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\Mailer;
+
 use MailPoet\WP\Functions as WPFunctions;
 
 class MailerError {

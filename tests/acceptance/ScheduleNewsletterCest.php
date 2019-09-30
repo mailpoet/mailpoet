@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;

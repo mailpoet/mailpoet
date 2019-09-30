@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Mailer\Mailer as MailerFactory;

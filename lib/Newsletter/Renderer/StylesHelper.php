@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Newsletter\Renderer;
 
 class StylesHelper {

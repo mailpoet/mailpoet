@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Cron\Workers\KeyCheck;
 
 use MailPoet\Cron\Workers\SimpleWorker;

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Subscribers\ImportExport\Import;
 
 use Codeception\Stub;

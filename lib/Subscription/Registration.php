@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\Subscription;
+
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\WP\Functions as WPFunctions;

@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config;
+
 use MailPoet\WP\Functions as WPFunctions;
 
 class PluginActivatedHook {

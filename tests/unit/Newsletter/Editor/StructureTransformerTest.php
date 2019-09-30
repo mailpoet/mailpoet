@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Newsletter\Editor;
 
 use MailPoet\Newsletter\Editor\StructureTransformer;

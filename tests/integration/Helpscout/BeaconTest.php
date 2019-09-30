@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Helpscout;
 
 use MailPoet\Helpscout\Beacon;

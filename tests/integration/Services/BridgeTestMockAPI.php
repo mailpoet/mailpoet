@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Services\Bridge;
 
 use Carbon\Carbon;

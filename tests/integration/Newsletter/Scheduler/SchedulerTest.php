@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Newsletter\Scheduler;
 
 use Carbon\Carbon;

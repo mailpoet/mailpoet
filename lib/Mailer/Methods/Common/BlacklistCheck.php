@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Mailer\Methods\Common;
 
 use MailPoet\Subscription\Blacklist;

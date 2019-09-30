@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\Models;
+
 use Carbon\Carbon;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Renderer\Renderer;

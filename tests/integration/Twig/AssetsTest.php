@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Twig;
 
 use MailPoet\Twig\Assets;

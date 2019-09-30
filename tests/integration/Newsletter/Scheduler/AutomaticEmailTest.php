@@ -2,7 +2,6 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
-
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\Models\Newsletter;

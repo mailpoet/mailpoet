@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Subscribers;
 
 use MailPoet\Config\Renderer;

@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\API\JSON;
+
 use MailPoet\WP\Functions as WPFunctions;
 
 class ErrorResponse extends Response {

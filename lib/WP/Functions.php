@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\WP;
 
 use WP_Error;

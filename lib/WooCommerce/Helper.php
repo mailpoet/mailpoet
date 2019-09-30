@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\WooCommerce;
 
 class Helper {

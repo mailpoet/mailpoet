@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Logging\Logger;

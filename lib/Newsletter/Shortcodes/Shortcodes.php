@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\Newsletter\Shortcodes;
+
 use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Cron;
 
 use MailPoet\Settings\SettingsController;

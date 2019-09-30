@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Cron\Workers;
 
 use Carbon\Carbon;

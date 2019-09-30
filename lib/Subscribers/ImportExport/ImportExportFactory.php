@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Subscribers\ImportExport;
 
 use MailPoet\Models\CustomField;

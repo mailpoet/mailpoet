@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Cron\Workers\KeyCheck;
 
 class KeyCheckWorkerMockImplementation extends KeyCheckWorker {

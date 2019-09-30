@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Form\Util;
 
 use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;

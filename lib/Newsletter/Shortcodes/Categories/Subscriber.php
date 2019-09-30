@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Subscriber as SubscriberModel;

@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;

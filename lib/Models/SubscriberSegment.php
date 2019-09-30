@@ -1,6 +1,6 @@
 <?php
-namespace MailPoet\Models;
 
+namespace MailPoet\Models;
 
 /**
  * @property int $id

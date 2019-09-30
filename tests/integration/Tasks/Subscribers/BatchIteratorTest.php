@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Tasks\Subscribers;
 
 use MailPoet\Models\ScheduledTaskSubscriber;

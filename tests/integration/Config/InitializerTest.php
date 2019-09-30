@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Config;
 
 class InitializerTest extends \MailPoetTest {
