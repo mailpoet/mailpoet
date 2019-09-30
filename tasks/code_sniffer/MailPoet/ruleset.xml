@@ -3,10 +3,14 @@
   <config name="installed_paths" value="tasks/code_sniffer/vendor/squizlabs/php_codesniffer,tasks/code_sniffer/vendor/phpcompatibility/php-compatibility,tasks/code_sniffer/vendor/slevomat/coding-standard"/>
   <description>MailPoet specific rule set</description>
 
+  <!-- Namespaces - "use" statements -->
+  <rule ref="PSR2.Namespaces.UseDeclaration"/> <!-- One namespace per use, one blank line after final use statement -->
+  <rule ref="SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash"/>
+  <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/> <!-- Prohibits multiple uses separated by commas -->
+
   <!-- checks for unused methods, unused or write-only properties in a class and unused private constants -->
   <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements"/>
-  <rule ref="SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash"/>
-  <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/>
+
   <!-- Reports empty comments -->
   <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
   <!-- This sniff enforces trailing commas in multi-line arrays -->
@@ -110,9 +114,6 @@
 
   <!-- Each class must be in a file by itself and must be under a namespace -->
   <rule ref="PSR1.Classes.ClassDeclaration"/>
-
-  <!-- One namespace per use, one blank line after final use statement -->
-  <rule ref="PSR2.Namespaces.UseDeclaration"/>
 
   <!-- When referencing arrays there should be no whitespace between brackets -->
   <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
