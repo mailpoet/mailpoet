@@ -8,8 +8,8 @@ import { createSelection, destroySelection } from './generate_segment_selection.
 import createNewSegment from './create_new_segment.jsx';
 
 function SelectSegment({ setSelectedSegments }) {
-  const { constants } = useContext(GlobalContext);
-  const { segments: originalSegments } = constants;
+  const { segments: segmentsContext } = useContext(GlobalContext);
+  const { all: originalSegments } = segmentsContext;
   const [selectionSegments, setSelectionSegments] = useState(originalSegments);
 
   useLayoutEffect(() => {

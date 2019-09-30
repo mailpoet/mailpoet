@@ -8,8 +8,8 @@ function SelectImportMethod({
   activeMethod,
   onMethodChange,
 }) {
-  const { constants } = React.useContext(GlobalContext);
-  const { isNewUser } = constants;
+  const { users } = React.useContext(GlobalContext);
+  const { isNewUser } = users;
   const badgeClasses = classNames(
     'mailpoet_badge',
     'mailpoet_badge_video',
