@@ -102,10 +102,10 @@ abstract class SimpleWorker {
     CronHelper::enforceExecutionLimit($this->timer);
 
     if (!static::SUPPORT_MULTIPLE_INSTANCES) {
-      if ($this->isInProgress($task)) {
+      if ($this->rescheduleOutdated($task)) {
         return false;
       }
-      if ($this->rescheduleOutdated($task)) {
+      if ($this->isInProgress($task)) {
         return false;
       }
       $this->startProgress($task);
