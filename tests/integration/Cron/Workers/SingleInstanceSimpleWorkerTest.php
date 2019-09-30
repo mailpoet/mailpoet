@@ -26,7 +26,7 @@ class SingleInstanceSimpleWorkerTest extends \MailPoetTest {
     expect($this->worker->processTask($task))->equals(false);
   }
 
-  function testItWillKeepTheInProgressFlagOnFail() {
+  function testItWillResetTheInProgressFlagOnFail() {
     $task = $this->createScheduledTask();
     $this->worker->expects($this->once())
       ->method('processTaskStrategy')
@@ -36,7 +36,7 @@ class SingleInstanceSimpleWorkerTest extends \MailPoetTest {
       $this->fail('An exception should be thrown');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('test error');
-      expect(empty($task->getMeta()['in_progress']))->equals(false);
+      expect(empty($task->getMeta()['in_progress']))->equals(true);
     }
   }
 

@@ -23,7 +23,14 @@ abstract class SingleInstanceSimpleWorker extends SimpleWorker {
     }
 
     $this->startProgress($task);
-    $completed = $this->processTaskStrategy($task);
+
+    try {
+      $completed = $this->processTaskStrategy($task);
+    } catch (\Exception $e) {
+      $this->stopProgress($task);
+      throw $e;
+    }
+
     if ($completed) {
       $this->complete($task);
     }
