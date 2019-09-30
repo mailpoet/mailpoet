@@ -8,6 +8,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Router\Router;
+use function MailPoetVendor\Symfony\Component\DependencyInjection\Loader\Configurator\expr;
 
 class LinksTest extends \MailPoetTest {
   function testItOnlyExtractsLinksFromAnchorTags() {
@@ -235,6 +236,25 @@ class LinksTest extends \MailPoetTest {
     $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queue_id);
     expect($result)->contains($newsletter_link->url);
     expect($result)->contains('[mailpoet_click_data]-123');
+  }
+
+  function testItCanEnsureThatUnsubscribeLinkIsAmongProcessedLinks() {
+    $links = [
+      [
+        'link' => 'http://example.com',
+        'type' => Links::LINK_TYPE_URL,
+        'processed_link' => '[mailpoet_click_data]-123',
+        'hash' => 'abcdfgh',
+      ],
+    ];
+    $links = Links::ensureUnsubscribeLink($links);
+    expect(count($links))->equals(2);
+    expect($links[1]['link'])->equals(NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE);
+    expect($links[1]['type'])->equals(Links::LINK_TYPE_SHORTCODE);
+    expect($links[1])->hasKey('processed_link');
+    expect($links[1])->hasKey('hash');
+    $links = Links::ensureUnsubscribeLink($links);
+    expect(count($links))->equals(2);
   }
 
   function testItCanConvertAllHashedLinksToUrls() {

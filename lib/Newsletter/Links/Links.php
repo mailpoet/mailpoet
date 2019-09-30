@@ -75,17 +75,9 @@ class Links {
       $link = $extracted_link['link'];
       if (array_key_exists($link, $processed_links))
         continue;
-      $hash = Security::generateHash();
       // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
-      $processed_links[$link] = [
-        'type' => $extracted_link['type'],
-        'hash' => $hash,
-        'link' => $link,
-        // replace link with a temporary data tag + hash
-        // it will be further replaced with the proper track API URL during sending
-        'processed_link' => self::DATA_TAG_CLICK . '-' . $hash,
-      ];
+      $processed_links[$link] = self::hashLink($link, $extracted_link['type']);
     }
     return $processed_links;
   }
@@ -170,6 +162,20 @@ class Links {
     }
   }
 
+  static function ensureUnsubscribeLink(array $processed_links) {
+    if (in_array(
+      NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
+      \MailPoet\Util\array_column($processed_links, 'link'))
+    ) {
+      return $processed_links;
+    }
+    $processed_links[] = self::hashLink(
+      NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
+      Links::LINK_TYPE_SHORTCODE
+    );
+    return $processed_links;
+  }
+
   static function convertHashedLinksToShortcodesAndUrls($content, $queue_id, $convert_all = false) {
     preg_match_all(self::getLinkRegex(), $content, $links);
     $links = array_unique(Helpers::flattenArray($links));
@@ -220,5 +226,17 @@ class Links {
     $transformed_data['link_hash'] = (!empty($data[3])) ? $data[3] : false;
     $transformed_data['preview'] = (!empty($data[4])) ? $data[4] : false;
     return $transformed_data;
+  }
+
+  private static function hashLink($link, $type) {
+    $hash = Security::generateHash();
+    return [
+      'type' => $type,
+      'hash' => $hash,
+      'link' => $link,
+      // replace link with a temporary data tag + hash
+      // it will be further replaced with the proper track API URL during sending
+      'processed_link' => self::DATA_TAG_CLICK . '-' . $hash,
+    ];
   }
 }
