@@ -12,6 +12,7 @@
       <property name="linesAfterNamespace" value="1" />
     </properties>
   </rule>
+  <rule ref="SlevomatCodingStandard.Namespaces.RequireOneNamespaceInFile"/>
 
   <!-- Namespaces - "use" statements -->
   <rule ref="PSR2.Namespaces.UseDeclaration"/> <!-- One namespace per use, one blank line after final use statement -->
