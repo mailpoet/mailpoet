@@ -21,7 +21,7 @@ class SimpleText {
   function get() {
     return [
       'name' => WPFunctions::get()->__("Simple Text", 'mailpoet'),
-      'categories' => json_encode(['standard', 'all']),
+      'categories' => json_encode(['standard', 'blank']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
