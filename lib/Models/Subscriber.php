@@ -173,9 +173,12 @@ class Subscriber extends Model {
     ];
 
     foreach ($segments as $segment) {
-      $subscribers_count = $segment->subscribers()
-        ->filter('groupBy', $group)
-        ->count();
+      $subscribers_count = 0;
+      $subscribers = $segment->subscribers()
+        ->filter('groupBy', $group);
+      if ($subscribers) {
+        $subscribers_count = $subscribers->count();
+      }
 
       $label = sprintf(
         '%s (%s)',
