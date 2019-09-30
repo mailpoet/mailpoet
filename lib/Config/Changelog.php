@@ -83,10 +83,6 @@ class Changelog {
   }
 
   private function setupNewInstallation() {
-    // ensure there was no MP2 migration (migration resets $version so it must be checked)
-    if ($this->settings->get(MP2Migrator::MIGRATION_STARTED_SETTING_KEY) === null) {
-      $this->settings->set('show_intro', true);
-    }
     $this->settings->set('show_congratulate_after_first_newsletter', true);
     $this->settings->set('show_poll_success_delivery_preview', true);
   }

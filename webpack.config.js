@@ -52,7 +52,6 @@ const baseConfig = {
       'papaparse': 'papaparse/papaparse.min.js',
       'html2canvas': 'html2canvas/dist/html2canvas.js',
       'asyncqueue': 'vendor/jquery.asyncqueue.js',
-      'intro.js': 'intro.js/intro.js',
     },
   },
   node: {
