@@ -21,8 +21,7 @@ class SingleInstanceSimpleWorkerTest extends \MailPoetTest {
     $task = $this->createScheduledTask();
     expect(empty($task->getMeta()['in_progress']))->equals(true);
     expect($this->worker->processTask($task))->equals(true);
-    $this->worker->startProgress($task);
-    expect(empty($task->getMeta()['in_progress']))->equals(false);
+    $task->meta = ['in_progress' => true];
     expect($this->worker->processTask($task))->equals(false);
   }
 

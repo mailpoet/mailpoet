@@ -48,12 +48,12 @@ abstract class SingleInstanceSimpleWorker extends SimpleWorker {
     return false;
   }
 
-  function startProgress(ScheduledTask $task) {
+  private function startProgress(ScheduledTask $task) {
     $task->meta = array_merge($task->getMeta(), ['in_progress' => true]);
     $task->save();
   }
 
-  function stopProgress(ScheduledTask $task) {
+  private function stopProgress(ScheduledTask $task) {
     $task->meta = array_merge($task->getMeta(), ['in_progress' => null]);
     $task->save();
   }
