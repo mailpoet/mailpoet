@@ -19,6 +19,7 @@
   <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/> <!-- Prohibits multiple uses separated by commas -->
   <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
   <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
+  <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
 
   <!-- checks for unused methods, unused or write-only properties in a class and unused private constants -->
   <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements"/>
