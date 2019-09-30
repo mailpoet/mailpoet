@@ -30,7 +30,7 @@ class NewsletterTypes extends React.Component {
     }
   };
 
-  getAutomaticEmails() {
+  getAutomaticEmails = () => {
     if (!window.mailpoet_automatic_emails) return [];
 
     return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
@@ -64,7 +64,7 @@ class NewsletterTypes extends React.Component {
     });
   }
 
-  createNewsletter(type) {
+  createNewsletter = (type) => {
     this.setState({ isCreating: true });
     MailPoet.trackEvent('Emails > Type selected', {
       'MailPoet Free version': window.mailpoet_version,
@@ -92,9 +92,9 @@ class NewsletterTypes extends React.Component {
   }
 
   render() {
-    const createStandardNewsletter = _.partial(this.createNewsletter.bind(this), 'standard');
-    const createNotificationNewsletter = _.partial(this.setupNewsletter.bind(this), 'notification');
-    const createWelcomeNewsletter = _.partial(this.setupNewsletter.bind(this), 'welcome');
+    const createStandardNewsletter = _.partial(this.createNewsletter, 'standard');
+    const createNotificationNewsletter = _.partial(this.setupNewsletter, 'notification');
+    const createWelcomeNewsletter = _.partial(this.setupNewsletter, 'welcome');
     const defaultTypes = [
       {
         slug: 'standard',
