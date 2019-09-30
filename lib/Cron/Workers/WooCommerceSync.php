@@ -7,8 +7,9 @@ use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-class WooCommerceSync extends SingleInstanceSimpleWorker {
+class WooCommerceSync extends SimpleWorker {
   const TASK_TYPE = 'woocommerce_sync';
+  const SUPPORT_MULTIPLE_INSTANCES = false;
 
   /** @var WooCommerceSegment */
   private $woocommerce_segment;

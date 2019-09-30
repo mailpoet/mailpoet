@@ -14,6 +14,10 @@ abstract class SimpleWorker {
   const TASK_BATCH_SIZE = 5;
   const AUTOMATIC_SCHEDULING = true;
 
+  const SUPPORT_MULTIPLE_INSTANCES = true;
+  const TASK_RUN_TIMEOUT = 120;
+  const TIMED_OUT_TASK_RESCHEDULE_TIMEOUT = 5;
+
   function __construct($timer = false) {
     if (static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
@@ -97,12 +101,34 @@ abstract class SimpleWorker {
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
 
-    if ($this->processTaskStrategy($task)) {
-      $this->complete($task);
-      return true;
+    if (!static::SUPPORT_MULTIPLE_INSTANCES) {
+      if ($this->isInProgress($task)) {
+        return false;
+      }
+      if ($this->rescheduleOutdated($task)) {
+        return false;
+      }
+      $this->startProgress($task);
     }
 
-    return false;
+    try {
+      $completed = $this->processTaskStrategy($task);
+    } catch (\Exception $e) {
+      if (!static::SUPPORT_MULTIPLE_INSTANCES) {
+        $this->stopProgress($task);
+      }
+      throw $e;
+    }
+
+    if ($completed) {
+      $this->complete($task);
+    }
+
+    if (!static::SUPPORT_MULTIPLE_INSTANCES) {
+      $this->stopProgress($task);
+    }
+
+    return (bool)$completed;
   }
 
   function processTaskStrategy(ScheduledTask $task) {
@@ -121,6 +147,39 @@ abstract class SimpleWorker {
     $task->setExpr('updated_at', 'NOW()');
     $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->save();
+  }
+
+  private function isInProgress(ScheduledTask $task) {
+    $meta = $task->getMeta();
+    if (!empty($meta['in_progress'])) {
+      // Do not run multiple instances of the task
+      return true;
+    }
+    return false;
+  }
+
+  private function startProgress(ScheduledTask $task) {
+    $task->meta = array_merge($task->getMeta(), ['in_progress' => true]);
+    $task->save();
+  }
+
+  private function stopProgress(ScheduledTask $task) {
+    $task->meta = array_merge($task->getMeta(), ['in_progress' => null]);
+    $task->save();
+  }
+
+  private function rescheduleOutdated(ScheduledTask $task) {
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $updated_at = Carbon::createFromTimestamp(strtotime($task->updated_at));
+
+    // If the task is running for too long consider it stuck and reschedule
+    if (!empty($task->updated_at) && $updated_at->diffInMinutes($current_time, false) > self::TASK_RUN_TIMEOUT) {
+      $this->stopProgress($task);
+      $this->reschedule($task, self::TIMED_OUT_TASK_RESCHEDULE_TIMEOUT);
+      return true;
+    }
+
+    return false;
   }
 
   static function getNextRunDate() {
