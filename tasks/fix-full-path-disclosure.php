@@ -4,6 +4,11 @@
 // (directly used PHP file may output path-leaking errors, such as some used symbols are missing)
 $code = "if (!defined('ABSPATH')) exit;";
 
+// paths to skip (relative to given <directory> parameter)
+$skip_paths = [
+  'mailpoet-cron.php',
+];
+
 // process command line arguments
 if (count($argv) !== 2) {
   $cmd = basename(__FILE__);
@@ -23,6 +28,11 @@ $iterator = new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterato
 $files = new RecursiveIteratorIterator($iterator, RecursiveIteratorIterator::SELF_FIRST);
 foreach ($files as $file) {
   if (substr($file, -3) !== 'php') {
+    continue;
+  }
+
+  $short_path = substr($file, strlen($directory));
+  if (in_array($short_path, $skip_paths, true)) {
     continue;
   }
 
