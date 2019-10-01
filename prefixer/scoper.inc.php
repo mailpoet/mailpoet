@@ -68,7 +68,7 @@ return [
   // If `true` then the user defined classes belonging to the global namespace will not be prefixed.
   //
   // For more see https://github.com/humbug/php-scoper#constants--constants--functions-from-the-global-namespace
-  'whitelist-global-classes' => true,
+  'whitelist-global-classes' => false,
 
   // If `true` then the user defined functions belonging to the global namespace will not be prefixed.
   //
