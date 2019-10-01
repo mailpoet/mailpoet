@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Shortcodes;
 
 use MailPoet\Models\CustomField;
+use MailPoet\Models\NewsletterLink;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ShortcodesHelper {
@@ -82,7 +83,7 @@ class ShortcodesHelper {
           'text' => WPFunctions::get()->__('Unsubscribe link', 'mailpoet'),
           'shortcode' => sprintf(
             '<a target="_blank" href="%s">%s</a>',
-            '[link:subscription_unsubscribe_url]',
+            NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
             WPFunctions::get()->__('Unsubscribe', 'mailpoet')
           ),
         ],
