@@ -6,9 +6,7 @@ use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
-use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Router\Router;
-use function MailPoetVendor\Symfony\Component\DependencyInjection\Loader\Configurator\expr;
 
 class LinksTest extends \MailPoetTest {
   function testItOnlyExtractsLinksFromAnchorTags() {
