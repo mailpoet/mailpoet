@@ -12,6 +12,8 @@ use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\Util\pQuery\pQuery as DomParser;
 
+use function MailPoet\Util\array_column;
+
 class Links {
   const DATA_TAG_CLICK = '[mailpoet_click_data]';
   const DATA_TAG_OPEN = '[mailpoet_open_data]';
@@ -136,7 +138,7 @@ class Links {
   static function ensureUnsubscribeLink(array $processed_links) {
     if (in_array(
       NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
-      \MailPoet\Util\array_column($processed_links, 'link'))
+      array_column($processed_links, 'link'))
     ) {
       return $processed_links;
     }
