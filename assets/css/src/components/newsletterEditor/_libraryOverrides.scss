@@ -29,7 +29,9 @@
     border: 1px solid $content-border-color;
     border-radius: 3px;
     box-shadow: 0 0 3px 1px rgba(0, 0, 0, .05);
-    z-index: 1;
+
+    /* Fix for fixed TinyMCE toolbar to be above WP menu */
+    z-index: 50001;
   }
 
   /* Fix for TinyMCE modals are above WP menu */
