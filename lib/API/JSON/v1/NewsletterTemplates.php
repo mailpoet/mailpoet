@@ -13,6 +13,10 @@ class NewsletterTemplates extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
+  protected static $get_methods = [
+    'getAll',
+  ];
+
   function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
