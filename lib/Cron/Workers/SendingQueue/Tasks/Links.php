@@ -42,7 +42,7 @@ class Links {
     $settings = new SettingsController();
     if ((boolean)$settings->get('tracking.enabled')) {
       $link_hash = NewsletterLinkModel::where('queue_id', $queue->id)
-        ->where('url', '[link:subscription_unsubscribe_url]')
+        ->where('url', NewsletterLinkModel::UNSUBSCRIBE_LINK_SHORT_CODE)
         ->findOne();
       if (!$link_hash instanceof NewsletterLinkModel) {
         return '';
