@@ -5,6 +5,7 @@ namespace MailPoet\Test\API\JSON;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\API\JSON\API as JSONAPI;
+use MailPoet\API\JSON\Endpoint;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\SuccessResponse;
@@ -96,7 +97,7 @@ class APITest extends \MailPoetTest {
       'method' => 'test',
     ];
 
-    $response = $this->api->setRequestData($data);
+    $response = $this->api->setRequestData($data, Endpoint::TYPE_POST);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
@@ -112,7 +113,7 @@ class APITest extends \MailPoetTest {
       'api_version' => 'v2',
       'method' => 'test',
     ];
-    $this->api->setRequestData($data);
+    $this->api->setRequestData($data, Endpoint::TYPE_POST);
 
     expect($this->api->getRequestedAPIVersion())->equals('v2');
     expect($this->api->getRequestedEndpointClass())->equals(
@@ -133,7 +134,7 @@ class APITest extends \MailPoetTest {
       'api_version' => 'v1',
       'data' => ['test' => 'data'],
     ];
-    $this->api->setRequestData($data);
+    $this->api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $this->api->processRoute();
 
     expect($response->getData()['data'])->equals($data['data']);
@@ -151,7 +152,7 @@ class APITest extends \MailPoetTest {
       'api_version' => 'v2',
       'method' => 'testVersion',
     ];
-    $this->api->setRequestData($data);
+    $this->api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $this->api->processRoute();
     expect($response->getData()['data'])->equals($data['api_version']);
   }
@@ -187,7 +188,7 @@ class APITest extends \MailPoetTest {
       ]
     );
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
-    $api->setRequestData($data);
+    $api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $api->processRoute();
     expect($response->getData()['data'])->equals($data['data']);
   }
@@ -210,7 +211,7 @@ class APITest extends \MailPoetTest {
 
     $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
-    $api->setRequestData($data);
+    $api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $api->processRoute();
     expect($response->status)->equals(Response::STATUS_FORBIDDEN);
   }
@@ -293,7 +294,7 @@ class APITest extends \MailPoetTest {
       'api_version' => 'v2',
       'method' => 'fakeMethod',
     ];
-    $this->api->setRequestData($data);
+    $this->api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $this->api->processRoute();
 
     expect($response->status)->equals(Response::STATUS_BAD_REQUEST);
