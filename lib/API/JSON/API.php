@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\API\JSON;
 
+use MailPoet\API\JSON\Endpoint;
 use MailPoet\Config\AccessControl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
@@ -18,6 +19,7 @@ class API {
   private $_request_endpoint;
   private $_request_method;
   private $_request_token;
+  private $_request_type;
   private $_request_endpoint_class;
   private $_request_data = [];
   private $_endpoint_namespaces = [];
@@ -79,10 +81,11 @@ class API {
 
   function setupAjax() {
     $this->wp->doAction('mailpoet_api_setup', [$this]);
+
     if (isset($_POST['api_version'])) {
-      $this->setRequestData($_POST);
+      $this->setRequestData($_POST, Endpoint::TYPE_POST);
     } else {
-      $this->setRequestData($_GET);
+      $this->setRequestData($_GET, Endpoint::TYPE_GET);
     }
 
     $ignoreToken = (
@@ -101,7 +104,7 @@ class API {
     $response->send();
   }
 
-  function setRequestData($data) {
+  function setRequestData($data, $request_type) {
     $this->_request_api_version = !empty($data['api_version']) ? $data['api_version'] : false;
 
     $this->_request_endpoint = isset($data['endpoint'])
@@ -113,6 +116,7 @@ class API {
     $this->_request_method = isset($data[$method_param_name])
       ? Helpers::underscoreToCamelCase(trim($data[$method_param_name]))
       : null;
+    $this->_request_type = $request_type;
 
     $this->_request_token = isset($data['token'])
       ? trim($data['token'])
@@ -168,6 +172,10 @@ class API {
       $endpoint = $this->container->get($this->_request_endpoint_class);
       if (!method_exists($endpoint, $this->_request_method)) {
         throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
+      }
+
+      if (!$endpoint->isMethodAllowed($this->_request_method, $this->_request_type)) {
+        throw new \Exception(__('HTTP request method not allowed.', 'mailpoet'));
       }
 
       if (class_exists(Debugger::class)) {
