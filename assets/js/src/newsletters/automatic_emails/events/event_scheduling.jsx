@@ -1,0 +1,174 @@
+import React from 'react';
+import Selection from 'form-field-selection';
+import Text from 'form-field-text';
+import { timeDelayValues } from 'newsletter-scheduling-common-options';
+import _ from 'underscore';
+import PropTypes from 'prop-types';
+
+const defaultAfterTimeType = 'immediate';
+const defaultAfterTimeNumber = 1;
+const defaultAfterTimeNumberForMinutes = 30;
+const defaultAfterTimeNumberInputFieldSize = 3;
+
+class EventScheduling extends React.Component {
+  constructor(props) {
+    super(props);
+    const { item, event } = this.props;
+
+    this.handleChange = this.handleChange.bind(this);
+    const afterTimeType = item.afterTimeType || event.defaultAfterTimeType || defaultAfterTimeType;
+    const eventDefaultAfterTimeNumber = afterTimeType === 'minutes' ? defaultAfterTimeNumberForMinutes : defaultAfterTimeNumber;
+    const afterTimeNumber = item.afterTimeNumber || eventDefaultAfterTimeNumber;
+
+    this.state = {
+      afterTimeType,
+      afterTimeNumber,
+    };
+
+    // Propagate change when default values were applied
+    if (item.afterTimeNumber !== afterTimeNumber
+      || item.afterTimeType !== afterTimeType
+    ) {
+      this.propagateChange(this.state);
+    }
+  }
+
+  displayAfterTimeNumberField() {
+    const { afterTimeNumberSize, event } = this.props;
+    const { afterTimeType, afterTimeNumber } = this.state;
+    if (afterTimeType === 'immediate') return null;
+    if (
+      event.timeDelayValues
+      && event.timeDelayValues[afterTimeType]
+      && !event.timeDelayValues[afterTimeType].displayAfterTimeNumberField
+    ) return null;
+
+    const props = {
+      field: {
+        id: 'scheduling_time_duration',
+        name: 'scheduling_time_duration',
+        defaultValue: afterTimeNumber ? afterTimeNumber.toString() : '',
+        size: afterTimeNumberSize,
+      },
+      item: {},
+      onValueChange: _.partial(this.handleChange, _, 'afterTimeNumber'),
+    };
+
+    return (
+      <Text {...props} />
+    );
+  }
+
+  displayAfterTimeTypeOptions() {
+    const { event } = this.props;
+    let values = timeDelayValues;
+    if (event.timeDelayValues) {
+      values = Object
+        .entries(event.timeDelayValues)
+        .reduce((accumulator, [key, value]) => {
+          accumulator[key] = value.text;
+          return accumulator;
+        }, {});
+    }
+    const { afterTimeType } = this.state;
+    const props = {
+      field: {
+        id: 'scheduling_time_interval',
+        name: 'scheduling_time_interval',
+        forceSelect2: true,
+        values: _.map(values, (name, id) => ({ name, id })),
+        extendSelect2Options: {
+          minimumResultsForSearch: Infinity,
+        },
+        selected: () => afterTimeType,
+      },
+      onValueChange: _.partial(this.handleChange, _, 'afterTimeType'),
+    };
+
+    return (
+      <Selection {...props} />
+    );
+  }
+
+  handleChange(e, property) {
+    let { value } = e.target;
+    if (property === 'afterTimeNumber') {
+      value = parseInt(e.target.value, 10);
+      value = Number.isNaN(value) ? null : value;
+    }
+    const data = { [property]: value };
+
+    // Reset afterTimeNumber to default when switching between minutes and other types
+    const { afterTimeType } = this.state;
+    if (property === 'afterTimeType' && afterTimeType !== value) {
+      if (afterTimeType === 'minutes') {
+        data.afterTimeNumber = defaultAfterTimeNumber;
+      }
+      if (value === 'minutes') {
+        data.afterTimeNumber = defaultAfterTimeNumberForMinutes;
+      }
+    }
+    this.setState(data, this.propagateChange(data));
+  }
+
+  propagateChange(data) {
+    const { onValueChange } = this.props;
+    if (!onValueChange) return;
+
+    onValueChange(data);
+  }
+
+  render() {
+    const { event } = this.props;
+    return (
+      <>
+        <div className="event-scheduling-time-duration-selection">
+          {this.displayAfterTimeNumberField()}
+        </div>
+        <div className="event-scheduling-time-interval-selection">
+          {this.displayAfterTimeTypeOptions()}
+        </div>
+        {
+          event.schedulingReadMoreLink
+          && (
+            <a
+              href={event.schedulingReadMoreLink.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="event-scheduling-read-more-link"
+            >
+              {event.schedulingReadMoreLink.text}
+            </a>
+          )
+        }
+      </>
+    );
+  }
+}
+
+EventScheduling.propTypes = {
+  item: PropTypes.shape({
+    afterTimeType: PropTypes.string.isRequired,
+    afterTimeNumber: PropTypes.number,
+  }).isRequired,
+  afterTimeNumberSize: PropTypes.number,
+  onValueChange: PropTypes.func,
+  event: PropTypes.shape({
+    defaultAfterTimeType: PropTypes.string,
+    timeDelayValues: PropTypes.objectOf(PropTypes.shape({
+      text: PropTypes.string,
+      displayAfterTimeNumberField: PropTypes.bool,
+    })),
+    schedulingReadMoreLink: PropTypes.shape({
+      link: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired,
+    }),
+  }).isRequired,
+};
+
+EventScheduling.defaultProps = {
+  afterTimeNumberSize: defaultAfterTimeNumberInputFieldSize,
+  onValueChange: null,
+};
+
+export default EventScheduling;
