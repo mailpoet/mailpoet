@@ -1,8 +1,11 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails\WooCommerce\Events;
+namespace MailPoet\Test\AutomaticEmails\WooCommerce\Events;
 
 use Carbon\Carbon;
+use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
+use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCartPageVisitTracker;
+use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -11,7 +14,6 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;

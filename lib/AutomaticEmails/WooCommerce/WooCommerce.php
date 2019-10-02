@@ -1,8 +1,8 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails\WooCommerce;
+namespace MailPoet\AutomaticEmails\WooCommerce;
 
-use MailPoet\Premium\AutomaticEmails\AutomaticEmails;
+use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
@@ -49,15 +49,15 @@ class WooCommerce {
   function setupGroup() {
     return [
       'slug' => self::SLUG,
-      'title' => WPFunctions::get()->__('WooCommerce', 'mailpoet-premium'),
-      'description' => WPFunctions::get()->__('Automatically send an email when there is a new WooCommerce product, order and some other action takes place.', 'mailpoet-premium'),
+      'title' => WPFunctions::get()->__('WooCommerce', 'mailpoet'),
+      'description' => WPFunctions::get()->__('Automatically send an email when there is a new WooCommerce product, order and some other action takes place.', 'mailpoet'),
       'events' => $this->wp->applyFilters(self::EVENTS_FILTER, []),
     ];
   }
 
   function setupEvents($events) {
     $custom_event_details = (!$this->_woocommerce_enabled) ? [
-      'actionButtonTitle' => WPFunctions::get()->__('WooCommerce is required', 'mailpoet-premium'),
+      'actionButtonTitle' => WPFunctions::get()->__('WooCommerce is required', 'mailpoet'),
       'actionButtonLink' => 'https://wordpress.org/plugins/woocommerce/',
     ] : [];
 
@@ -69,8 +69,8 @@ class WooCommerce {
       );
       if (!class_exists($event_class) || !method_exists($event_class, 'getEventDetails')) {
         $notice = sprintf('%s %s',
-          sprintf(__('WooCommerce %s event is misconfigured.', 'mailpoet-premium'), $event),
-          WPFunctions::get()->__('Please contact our technical support for assistance.', 'mailpoet-premium')
+          sprintf(__('WooCommerce %s event is misconfigured.', 'mailpoet'), $event),
+          WPFunctions::get()->__('Please contact our technical support for assistance.', 'mailpoet')
         );
         Notice::displayWarning($notice);
 

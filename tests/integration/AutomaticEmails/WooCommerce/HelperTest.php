@@ -1,10 +1,11 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails\WooCommerce;
+namespace MailPoet\Test\AutomaticEmails\WooCommerce;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
+use MailPoet\AutomaticEmails\WooCommerce\Helper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;

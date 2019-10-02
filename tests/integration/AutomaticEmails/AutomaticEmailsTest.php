@@ -1,13 +1,14 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails;
+namespace MailPoet\Test\AutomaticEmails;
 
+use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomaticEmailsTest extends \MailPoetTest {
   function _before() {
     $this->AM = new AutomaticEmails();
-    $this->wp = new WPFunctions;
+    $this->wp = new WPFunctions();
   }
   function testItCanUnregisterAutomaticEmails() {
     $this->wp->addFilter('mailpoet_automatic_email_test1', function() {

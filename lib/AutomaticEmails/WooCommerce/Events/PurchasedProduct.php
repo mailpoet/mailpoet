@@ -1,12 +1,12 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails\WooCommerce\Events;
+namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
+use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
+use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Logging\Logger;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -62,16 +62,16 @@ class PurchasedProduct {
   function getEventDetails() {
     return [
       'slug' => self::SLUG,
-      'title' => WPFunctions::get()->__('Purchased This Product', 'mailpoet-premium'),
-      'description' => WPFunctions::get()->__('Let MailPoet send an email to customers who purchase a specific product.', 'mailpoet-premium'),
-      'listingScheduleDisplayText' => WPFunctions::get()->__('Email sent when a customer buys product: %s', 'mailpoet-premium'),
-      'listingScheduleDisplayTextPlural' => WPFunctions::get()->__('Email sent when a customer buys products: %s', 'mailpoet-premium'),
+      'title' => WPFunctions::get()->__('Purchased This Product', 'mailpoet'),
+      'description' => WPFunctions::get()->__('Let MailPoet send an email to customers who purchase a specific product.', 'mailpoet'),
+      'listingScheduleDisplayText' => WPFunctions::get()->__('Email sent when a customer buys product: %s', 'mailpoet'),
+      'listingScheduleDisplayTextPlural' => WPFunctions::get()->__('Email sent when a customer buys products: %s', 'mailpoet'),
       'options' => [
         'type' => 'remote',
         'multiple' => true,
         'remoteQueryMinimumInputLength' => 3,
         'remoteQueryFilter' => 'woocommerce_product_purchased_get_products',
-        'placeholder' => WPFunctions::get()->__('Start typing to search for products...', 'mailpoet-premium'),
+        'placeholder' => WPFunctions::get()->__('Start typing to search for products...', 'mailpoet'),
       ],
     ];
   }
