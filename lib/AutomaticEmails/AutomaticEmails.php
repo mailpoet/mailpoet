@@ -28,18 +28,19 @@ class AutomaticEmails {
         $group
       );
 
-      if (!class_exists($group_class) || !method_exists($group_class, 'init')) {
-        $notice = sprintf('%s %s',
-          sprintf(__('%s automatic email group is misconfigured.', 'mailpoet'), $group),
-          WPFunctions::get()->__('Please contact our technical support for assistance.', 'mailpoet')
-        );
-        Notice::displayWarning($notice);
-
+      if (!class_exists($group_class)) {
+        $this->displayGroupWarning($group);
         continue;
       }
 
       $group_instance = new $group_class();
-      $group_instance->init();
+
+      if (method_exists($group_instance, 'init')) {
+        $group_instance->init();
+      } else {
+        $this->displayGroupWarning($group);
+        continue;
+      }
     }
   }
 
@@ -135,5 +136,13 @@ class AutomaticEmails {
     array_map(function($group) use($self) {
       $self->wp->removeAllFilters($group);
     }, $registered_groups);
+  }
+
+  private function displayGroupWarning($group) {
+    $notice = sprintf('%s %s',
+      sprintf(__('%s automatic email group is misconfigured.', 'mailpoet'), $group),
+      WPFunctions::get()->__('Please contact our technical support for assistance.', 'mailpoet')
+    );
+    Notice::displayWarning($notice);
   }
 }
