@@ -1,0 +1,139 @@
+<?php
+
+namespace MailPoet\Premium\AutomaticEmails\WooCommerce\Events;
+
+use MailPoet\Logging\Logger;
+use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
+use MailPoet\Premium\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
+use MailPoet\Premium\AutomaticEmails\WooCommerce\WooCommerce;
+use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WP\Functions as WPFunctions;
+
+use function MailPoet\Util\array_column;
+
+class PurchasedInCategory {
+  const SLUG = 'woocommerce_product_purchased_in_category';
+
+  /** @var WCHelper */
+  private $woocommerce_helper;
+
+  /** @var WCPremiumHelper */
+  private $premium_helper;
+
+  /** @var AutomaticEmailScheduler */
+  private $scheduler;
+
+  function __construct(WCHelper $woocommerce_helper = null, WCPremiumHelper $premium_helper = null) {
+    if ($woocommerce_helper === null) {
+      $woocommerce_helper = new WCHelper();
+    }
+    if ($premium_helper === null) {
+      $premium_helper = new WCPremiumHelper;
+    }
+    $this->woocommerce_helper = $woocommerce_helper;
+    $this->premium_helper = $premium_helper;
+    $this->scheduler = new AutomaticEmailScheduler();
+  }
+
+  function getEventDetails() {
+    return [
+      'slug' => self::SLUG,
+      'title' => _x('Purchased In This Category', 'This is the name of a type for automatic email for ecommerce. Those emails are sent automatically every time a customer buys for the first time a product in a given category', 'mailpoet-premium'),
+      'description' => __('Let MailPoet send an email to customers who purchase a product from a specific category.', 'mailpoet-premium'),
+      'listingScheduleDisplayText' => __('Email sent when a customer buys a product in category: %s', 'mailpoet-premium'),
+      'listingScheduleDisplayTextPlural' => __('Email sent when a customer buys a product in categories: %s', 'mailpoet-premium'),
+      'options' => [
+        'multiple' => true,
+        'type' => 'remote',
+        'remoteQueryMinimumInputLength' => 3,
+        'remoteQueryFilter' => 'woocommerce_product_purchased_get_categories',
+        'placeholder' => _x('Start typing to search for categories…', 'Search input for product category (ecommerce)', 'mailpoet-premium'),
+      ],
+    ];
+  }
+
+  function init() {
+    WPFunctions::get()->removeAllFilters('woocommerce_product_purchased_get_categories');
+    WPFunctions::get()->addFilter(
+      'woocommerce_product_purchased_get_categories',
+      [$this, 'getCategories']
+    );
+
+    $accepted_order_states = WPFunctions::get()->applyFilters('mailpoet_first_purchase_order_states', ['completed', 'processing']);
+    foreach ($accepted_order_states as $state) {
+      WPFunctions::get()->addAction(
+        'woocommerce_order_status_' . $state,
+        [$this, 'scheduleEmail'],
+        10,
+        1
+      );
+    }
+  }
+
+  function getCategories($search_query) {
+    $args = [
+      'taxonomy' => 'product_cat',
+      'search' => $search_query,
+      'orderby' => 'name',
+      'hierarchical' => 0,
+      'hide_empty' => 1,
+      'order' => 'ASC',
+    ];
+    $all_categories = get_categories($args);
+
+    return array_map(function($category) {
+      return [
+        'id' => $category->term_id,
+        'name' => $category->name,
+      ];
+    }, $all_categories);
+  }
+
+  function scheduleEmail($order_id) {
+    $order_details = $this->woocommerce_helper->wcGetOrder($order_id);
+    if (!$order_details || !$order_details->get_billing_email()) {
+      Logger::getLogger(self::SLUG)->addInfo(
+        'Email not scheduled because the order customer was not found',
+        ['order_id' => $order_id]
+      );
+      return;
+    }
+    $customer_email = $order_details->get_billing_email();
+
+    $subscriber = $this->premium_helper->getWooCommerceSegmentSubscriber($customer_email);
+
+    if (!$subscriber instanceof Subscriber) {
+      Logger::getLogger(self::SLUG)->addInfo(
+        'Email not scheduled because the customer was not found as WooCommerce list subscriber',
+        ['order_id' => $order_id, 'customer_email' => $customer_email]
+      );
+      return;
+    }
+
+    $ordered_product_categories = [];
+    foreach ($order_details->get_items() as $order_item_product) {
+      $product = $order_item_product->get_product();
+      $ordered_product_categories = array_merge($ordered_product_categories, $product->get_category_ids());
+    }
+
+    $scheduling_condition = function($automatic_email) use ($ordered_product_categories, $subscriber) {
+      $meta = $automatic_email->getMeta();
+      if (empty($meta['option']) || $automatic_email->wasScheduledForSubscriber($subscriber->id)) return false;
+
+      $meta_categories = array_column($meta['option'], 'id');
+      $matched_categories = array_intersect($meta_categories, $ordered_product_categories);
+
+      return !empty($matched_categories);
+    };
+
+    Logger::getLogger(self::SLUG)->addInfo(
+      'Email scheduled', [
+        'order_id' => $order_id,
+        'customer_email' => $customer_email,
+        'subscriber_id' => $subscriber->id,
+      ]
+    );
+    $this->scheduler->scheduleAutomaticEmail(WooCommerce::SLUG, self::SLUG, $scheduling_condition, $subscriber->id);
+  }
+}

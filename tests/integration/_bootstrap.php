@@ -204,4 +204,13 @@ function asCallable($fn) {
   };
 }
 
+
+// this is needed since it is not possible to mock __unset on non-existing class
+// (PHPUnit creates empty __unset method without parameters which is a PHP error)
+if (!class_exists(WC_Session::class)) {
+  class WC_Session {
+    function __unset($name) {}
+  }
+}
+
 include '_fixtures.php';
