@@ -7,7 +7,6 @@ use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
 use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
-use MailPoet\AutomaticEmails\WooCommerce\OrderDetails;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -17,10 +16,11 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending;
+use MailPoet\Test\AutomaticEmails\WooCommerce\WooCommerceStubs\OrderDetails;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-require_once(__DIR__ . '/../WooCommerceStub.php');
+require_once __DIR__ . '/../WooCommerceStubs/OrderDetails.php';
 
 class FirstPurchaseTest extends \MailPoetTest {
   function _before() {
@@ -134,7 +134,7 @@ class FirstPurchaseTest extends \MailPoetTest {
 
   function testItDoesNotScheduleEmailWhenCustomerEmailIsEmpty() {
     $order_details = Stub::make(
-      new \WooCommerceStub\OrderDetails(),
+      new OrderDetails(),
       [
         'get_billing_email' => Expected::once(),
       ],
@@ -149,7 +149,7 @@ class FirstPurchaseTest extends \MailPoetTest {
   }
 
   function testItDoesNotScheduleEmailWhenItIsNotCustomersFirstPurchase() {
-    $order_details = Stub::make(new \WooCommerceStub\OrderDetails(), ['get_billing_email' => 'test@example.com']);
+    $order_details = Stub::make(new OrderDetails(), ['get_billing_email' => 'test@example.com']);
     $helper = Stub::make(WCHelper::class, [
       'wcGetOrder' => $order_details,
     ]);
@@ -164,7 +164,7 @@ class FirstPurchaseTest extends \MailPoetTest {
   function testItDoesNotScheduleEmailWhenCustomerIsNotAWCSegmentSubscriber() {
     $date_created = new \DateTime('2018-12-12');
     $order_details = Stub::make(
-      new \WooCommerceStub\OrderDetails(),
+      new OrderDetails(),
       [
         'get_billing_email' => 'test@example.com',
         'get_date_created' => Expected::once(function() use ($date_created) {
@@ -235,7 +235,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $helper = Stub::make(WCHelper::class, [
       'wcGetOrder' => function($order_id) use ($customer_email, $date_created) {
         $order_details = Stub::construct(
-          new \WooCommerceStub\OrderDetails(),
+          new OrderDetails(),
           [$order_id],
           [
             'get_billing_email' => $customer_email,
