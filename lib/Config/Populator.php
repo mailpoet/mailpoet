@@ -15,6 +15,7 @@ use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Form;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
@@ -428,6 +429,34 @@ class Populator {
       [
         'name' => 'schedule',
         'newsletter_type' => 'notification',
+      ],
+      [
+        'name' => 'group',
+        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+      ],
+      [
+        'name' => 'event',
+        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+      ],
+      [
+        'name' => 'sendTo',
+        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+      ],
+      [
+        'name' => 'segment',
+        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+      ],
+      [
+        'name' => 'afterTimeNumber',
+        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+      ],
+      [
+        'name' => 'afterTimeType',
+        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+      ],
+      [
+        'name' => 'meta',
+        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
       ],
     ];
 
