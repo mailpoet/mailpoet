@@ -2,9 +2,9 @@ import React from 'react';
 import _ from 'underscore';
 import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
-import AutomaticEmailEventsList from 'automatic-email-events-list';
+import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
 import EventsConditions from 'newsletters/automatic_emails/events_conditions.jsx';
-import AutomaticEmailsBreadcrumb from 'automatic-emails-breadcrumb';
+import AutomaticEmailsBreadcrumb from 'newsletters/types/automatic_emails/breadcrumb.jsx';
 import SendEventConditions from 'newsletters/automatic_emails/send_event_conditions.jsx';
 import Listings from 'newsletters/automatic_emails/listings.jsx';
 

@@ -1,10 +1,10 @@
 import React from 'react';
-import Listing from 'listing';
-import ListingTabs from 'newsletters-listings-tabs';
-import ListingHeading from 'newsletters-listings-heading';
-import FeatureAnnouncement from 'feature-announcement';
-import { checkMailerStatus, addStatsCTAAction } from 'newsletters-listings-utils';
-import Statistics from 'newsletters-listings-statistics';
+import Listing from 'listing/listing.jsx';
+import ListingTabs from 'newsletters/listings/tabs.jsx';
+import ListingHeading from 'newsletters/listings/heading.jsx';
+import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
+import { checkMailerStatus, addStatsCTAAction } from 'newsletters/listings/utils.jsx';
+import Statistics from 'newsletters/listings/statistics.jsx';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';

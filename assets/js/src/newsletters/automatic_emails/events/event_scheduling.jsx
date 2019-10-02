@@ -1,7 +1,7 @@
 import React from 'react';
-import Selection from 'form-field-selection';
-import Text from 'form-field-text';
-import { timeDelayValues } from 'newsletter-scheduling-common-options';
+import Selection from 'form/fields/selection.jsx';
+import Text from 'form/fields/text.jsx';
+import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 
