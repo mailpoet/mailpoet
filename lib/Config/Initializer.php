@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\API\JSON\API;
+use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
 use MailPoet\Settings\SettingsController;
@@ -15,6 +16,7 @@ use MailPoet\WP\Notice as WPNotice;
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
+  public $automatic_emails;
 
   /** @var AccessControl */
   private $access_control;
@@ -200,6 +202,7 @@ class Initializer {
 
       $this->setupPermanentNotices();
       $this->setupDeactivationSurvey();
+      $this->setupAutomaticEmails();
 
       WPFunctions::get()->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (\Exception $e) {
@@ -326,5 +329,30 @@ class Initializer {
   function setupDeactivationSurvey() {
     $survey = new DeactivationSurvey($this->renderer);
     $survey->init();
+  }
+
+  function setupAutomaticEmails() {
+    $automatic_emails = new AutomaticEmails();
+    $automatic_emails->init();
+    $this->automatic_emails = $automatic_emails->getAutomaticEmails();
+
+    WPFunctions::get()->addAction(
+      'mailpoet_newsletters_translations_after',
+      [$this, 'includeAutomaticEmailsData']
+    );
+
+    WPFunctions::get()->addAction(
+      'mailpoet_newsletter_editor_after_javascript',
+      [$this, 'includeAutomaticEmailsData']
+    );
+  }
+
+  function includeAutomaticEmailsData() {
+    $data = [
+      'automatic_emails' => $this->automatic_emails,
+      'woocommerce_optin_on_checkout' => $this->settings->get('woocommerce.optin_on_checkout.enabled', false),
+    ];
+
+    echo $this->renderer->render('automatic_emails.html', $data);
   }
 }
