@@ -129,62 +129,6 @@ const baseConfig = {
         ]
       },
       {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/utils.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.NewslettersListingsUtils',
-          'babel-loader',
-        ]
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/statistics.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.NewslettersListingsStatistics',
-          'babel-loader',
-        ]
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/tabs.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.NewslettersListingsTabs',
-          'babel-loader',
-        ]
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/listings/heading.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.NewslettersListingsHeading',
-          'babel-loader',
-        ]
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/announcements/feature_announcement.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.FeatureAnnouncement',
-          'babel-loader',
-        ]
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/form/fields/selection.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.FormFieldSelection',
-          'babel-loader',
-        ]
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/form/fields/text.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.FormFieldText',
-          'babel-loader',
-        ]
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/scheduling/common.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.NewsletterSchedulingCommonOptions',
-          'babel-loader',
-        ]
-      },
-      {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/badges/stats.jsx'),
         use: [
           'expose-loader?' + globalPrefix + '.StatsBadge',
@@ -192,30 +136,9 @@ const baseConfig = {
         ]
       },
       {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/breadcrumb.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.NewsletterCreationBreadcrumb',
-          'babel-loader',
-        ]
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/events_list.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.AutomaticEmailEventsList',
-          'babel-loader',
-        ]
-      },
-      {
         include: path.resolve(__dirname, 'assets/js/src/help-tooltip.jsx'),
         use: [
           'expose-loader?' + globalPrefix + '.HelpTooltip',
-          'babel-loader',
-        ]
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/types/automatic_emails/breadcrumb.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.AutomaticEmailsBreadcrumb',
           'babel-loader',
         ]
       },
@@ -291,16 +214,6 @@ const adminConfig = {
       'form/form.jsx',
       'listing/listing.jsx',
       'newsletters/badges/stats.jsx',
-      'newsletters/breadcrumb.jsx',
-      'newsletters/listings/tabs.jsx',
-      'newsletters/listings/utils.jsx',
-      'newsletters/listings/statistics.jsx',
-      'newsletters/listings/heading.jsx',
-      'announcements/feature_announcement.jsx',
-      'announcements/free_plan_announcement.jsx',
-      'newsletters/types/automatic_emails/events_list.jsx',
-      'newsletters/types/automatic_emails/breadcrumb.jsx',
-      'newsletters/types/welcome/scheduling.jsx',
       'common/check_spf_record.jsx',
     ],
     admin: 'webpack_admin_index.jsx',
