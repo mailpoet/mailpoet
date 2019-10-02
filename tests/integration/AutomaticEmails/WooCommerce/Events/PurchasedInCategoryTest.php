@@ -1,8 +1,11 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails\WooCommerce\Events;
+namespace MailPoet\Test\AutomaticEmails\WooCommerce\Events;
 
 use Codeception\Util\Fixtures;
+use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
+use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
+use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -10,8 +13,6 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Tasks\Sending;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;

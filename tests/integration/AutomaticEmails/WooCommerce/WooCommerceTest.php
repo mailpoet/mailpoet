@@ -1,13 +1,14 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails\WooCommerce;
+namespace MailPoet\Test\AutomaticEmails\WooCommerce;
 
 use Codeception\Util\Stub;
-use MailPoet\Premium\AutomaticEmails\AutomaticEmails;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\Events\AbandonedCart;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\Events\FirstPurchase;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
+use MailPoet\AutomaticEmails\AutomaticEmails;
+use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
+use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
+use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
+use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
+use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WooCommerceTest extends \MailPoetTest {

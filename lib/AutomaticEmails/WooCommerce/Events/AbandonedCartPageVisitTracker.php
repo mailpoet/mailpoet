@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails\WooCommerce\Events;
+namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use Carbon\Carbon;
 use MailPoet\Statistics\Track\Clicks;

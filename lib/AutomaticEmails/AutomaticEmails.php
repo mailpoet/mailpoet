@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails;
+namespace MailPoet\AutomaticEmails;
 
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
@@ -30,8 +30,8 @@ class AutomaticEmails {
 
       if (!class_exists($group_class) || !method_exists($group_class, 'init')) {
         $notice = sprintf('%s %s',
-          sprintf(__('%s automatic email group is misconfigured.', 'mailpoet-premium'), $group),
-          WPFunctions::get()->__('Please contact our technical support for assistance.', 'mailpoet-premium')
+          sprintf(__('%s automatic email group is misconfigured.', 'mailpoet'), $group),
+          WPFunctions::get()->__('Please contact our technical support for assistance.', 'mailpoet')
         );
         Notice::displayWarning($notice);
 

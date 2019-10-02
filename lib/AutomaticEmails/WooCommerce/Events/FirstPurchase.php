@@ -1,14 +1,14 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails\WooCommerce\Events;
+namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
+use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
+use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Logging\Logger;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -65,20 +65,20 @@ class FirstPurchase {
   function getEventDetails() {
     return [
       'slug' => self::SLUG,
-      'title' => WPFunctions::get()->__('First Purchase', 'mailpoet-premium'),
-      'description' => WPFunctions::get()->__('Let MailPoet send an email to customers who make their first purchase.', 'mailpoet-premium'),
-      'listingScheduleDisplayText' => WPFunctions::get()->__('Email sent when a customer makes their first purchase.', 'mailpoet-premium'),
+      'title' => WPFunctions::get()->__('First Purchase', 'mailpoet'),
+      'description' => WPFunctions::get()->__('Let MailPoet send an email to customers who make their first purchase.', 'mailpoet'),
+      'listingScheduleDisplayText' => WPFunctions::get()->__('Email sent when a customer makes their first purchase.', 'mailpoet'),
       'badge' => [
-        'text' => WPFunctions::get()->__('Must-have', 'mailpoet-premium'),
+        'text' => WPFunctions::get()->__('Must-have', 'mailpoet'),
         'style' => 'red',
       ],
       'shortcodes' => [
         [
-          'text' => WPFunctions::get()->__('Order amount', 'mailpoet-premium'),
+          'text' => WPFunctions::get()->__('Order amount', 'mailpoet'),
           'shortcode' => self::ORDER_TOTAL_SHORTCODE,
         ],
         [
-          'text' => WPFunctions::get()->__('Order date', 'mailpoet-premium'),
+          'text' => WPFunctions::get()->__('Order date', 'mailpoet'),
           'shortcode' => self::ORDER_DATE_SHORTCODE,
         ],
       ],

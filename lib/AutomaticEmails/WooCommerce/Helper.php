@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails\WooCommerce;
+namespace MailPoet\AutomaticEmails\WooCommerce;
 
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;

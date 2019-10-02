@@ -1,12 +1,12 @@
 <?php
 
-namespace MailPoet\Premium\AutomaticEmails\WooCommerce\Events;
+namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
+use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
+use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Logging\Logger;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
-use MailPoet\Premium\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -39,16 +39,16 @@ class PurchasedInCategory {
   function getEventDetails() {
     return [
       'slug' => self::SLUG,
-      'title' => _x('Purchased In This Category', 'This is the name of a type for automatic email for ecommerce. Those emails are sent automatically every time a customer buys for the first time a product in a given category', 'mailpoet-premium'),
-      'description' => __('Let MailPoet send an email to customers who purchase a product from a specific category.', 'mailpoet-premium'),
-      'listingScheduleDisplayText' => __('Email sent when a customer buys a product in category: %s', 'mailpoet-premium'),
-      'listingScheduleDisplayTextPlural' => __('Email sent when a customer buys a product in categories: %s', 'mailpoet-premium'),
+      'title' => _x('Purchased In This Category', 'This is the name of a type for automatic email for ecommerce. Those emails are sent automatically every time a customer buys for the first time a product in a given category', 'mailpoet'),
+      'description' => __('Let MailPoet send an email to customers who purchase a product from a specific category.', 'mailpoet'),
+      'listingScheduleDisplayText' => __('Email sent when a customer buys a product in category: %s', 'mailpoet'),
+      'listingScheduleDisplayTextPlural' => __('Email sent when a customer buys a product in categories: %s', 'mailpoet'),
       'options' => [
         'multiple' => true,
         'type' => 'remote',
         'remoteQueryMinimumInputLength' => 3,
         'remoteQueryFilter' => 'woocommerce_product_purchased_get_categories',
-        'placeholder' => _x('Start typing to search for categories…', 'Search input for product category (ecommerce)', 'mailpoet-premium'),
+        'placeholder' => _x('Start typing to search for categories…', 'Search input for product category (ecommerce)', 'mailpoet'),
       ],
     ];
   }
