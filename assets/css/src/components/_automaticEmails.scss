@@ -1,0 +1,34 @@
+div.event-selection,
+div.event-option-selection:not(:empty),
+div.event-segment-selection,
+div.event-scheduling-time-duration-selection,
+div.event-scheduling-time-interval-selection {
+  padding-right: 5px;
+}
+
+div.events-conditions-header {
+  font-weight: 600;
+}
+
+div.events-conditions-container {
+  div {
+    float: left;
+  }
+
+  a.event-scheduling-read-more-link {
+    clear: both;
+    display: block;
+    margin-top: 50px;
+  }
+
+  &:after {
+    clear: both;
+    content: '';
+    display: table;
+  }
+
+  input {
+    border: 1px solid #aaa;
+    border-radius: 4px;
+  }
+}
