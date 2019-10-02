@@ -273,6 +273,14 @@
     'newsletter_editor_template_sidebar_styles',
     'newsletter/templates/components/sidebar/styles.hbs'
   ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_content_block',
+    'newsletter/templates/blocks/woocommerceContent/block.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_content_widget',
+    'newsletter/templates/blocks/woocommerceContent/widget.hbs'
+  ) %>
 <% endblock %>
 
 <% block content %>
@@ -604,7 +612,14 @@
       ),
       textBlockSettings: Handlebars.compile(
         jQuery('#newsletter_editor_template_text_settings').html()
-      )
+      ),
+
+      woocommerceContentBlock: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_content_block').html()
+      ),
+      woocommerceContentInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_content_widget').html()
+      ),
     };
 
     var config = {
