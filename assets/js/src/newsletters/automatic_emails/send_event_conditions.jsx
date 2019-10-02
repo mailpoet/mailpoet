@@ -1,5 +1,5 @@
 import React from 'react';
-import Selection from 'form-field-selection';
+import Selection from 'form/fields/selection.jsx';
 import EventScheduling from 'newsletters/automatic_emails/events/event_scheduling.jsx';
 import EventOptions from 'newsletters/automatic_emails/events/event_options.jsx';
 import _ from 'underscore';
