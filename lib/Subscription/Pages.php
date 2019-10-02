@@ -74,7 +74,6 @@ class Pages {
   function init($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false) {
     $this->action = $action;
     $this->data = $data;
-    $this->wp = new WPFunctions();
     $this->subscriber = $this->getSubscriber();
     if ($init_page_filters) $this->initPageFilters();
     if ($init_shortcodes) $this->initShortcodes();
