@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Form\AssetsController;
 use MailPoet\Form\Block\Date as FormBlockDate;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\CustomField;
@@ -51,6 +52,9 @@ class Pages {
   /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
+  /** @var AssetsController */
+  private $assets_controller;
+
   function __construct(
     NewSubscriberNotificationMailer $new_subscriber_notification_sender,
     WPFunctions $wp,
@@ -59,7 +63,8 @@ class Pages {
     CaptchaRenderer $captcha_renderer,
     WelcomeScheduler $welcome_scheduler,
     LinkTokens $link_tokens,
-    SubscriptionUrlFactory $subscription_url_factory
+    SubscriptionUrlFactory $subscription_url_factory,
+    AssetsController $assets_controller
   ) {
     $this->wp = $wp;
     $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
@@ -69,6 +74,7 @@ class Pages {
     $this->welcome_scheduler = $welcome_scheduler;
     $this->link_tokens = $link_tokens;
     $this->subscription_url_factory = $subscription_url_factory;
+    $this->assets_controller = $assets_controller;
   }
 
   function init($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false) {
@@ -201,11 +207,14 @@ class Pages {
       return $this->wp->__("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
     }
 
+    $this->assets_controller->setupFrontEndDependencies();
+
     if (strpos($page_content, '[mailpoet_page]') !== false) {
       $content = '';
 
       switch ($this->action) {
         case self::ACTION_CAPTCHA:
+
           $captcha_session_id = isset($this->data['captcha_session_id']) ? $this->data['captcha_session_id'] : null;
           $content = $this->captcha_renderer->getCaptchaPageContent($captcha_session_id);
           break;
