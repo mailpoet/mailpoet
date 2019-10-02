@@ -15,7 +15,7 @@ class Settings {
   }
 
   function withDefaultSettings() {
-    $this->withCronTriggerMethod('WordPress');
+    $this->withCronTriggerMethod('Linux Cron');
     $this->withSendingMethodSmtpMailhog();
     $this->withSender('admin', 'wp@example.com');
     $this->withSkippedTutorials();
