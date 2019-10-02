@@ -16,10 +16,12 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending;
+use MailPoet\Test\AutomaticEmails\WooCommerce\WooCommerceStubs\ItemDetails;
+use MailPoet\Test\AutomaticEmails\WooCommerce\WooCommerceStubs\OrderDetails;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-require_once(__DIR__ . '/../WooCommerceStub.php');
+require_once __DIR__ . '/../WooCommerceStubs/ItemDetails.php';
 
 class PurchasedProductTest extends \MailPoetTest {
   function _before() {
@@ -44,7 +46,7 @@ class PurchasedProductTest extends \MailPoetTest {
 
   function testItDoesNotScheduleEmailWhenCustomerEmailIsEmpty() {
     $order_details = Stub::make(
-      new \WooCommerceStub\OrderDetails(),
+      new OrderDetails(),
       [
         'get_billing_email' => Expected::once(),
       ],
@@ -61,13 +63,13 @@ class PurchasedProductTest extends \MailPoetTest {
 
   function testItDoesNotScheduleEmailWhenCustomerIsNotAWCSegmentSubscriber() {
     $order_details = Stub::make(
-      new \WooCommerceStub\OrderDetails(),
+      new OrderDetails(),
       [
         'get_billing_email' => 'test@example.com',
         'get_items' => function() {
           return [
             Stub::make(
-              new \WooCommerceStub\ItemDetails(),
+              new ItemDetails(),
               [
                 'get_product_id' => 12,
               ]
@@ -124,19 +126,19 @@ class PurchasedProductTest extends \MailPoetTest {
     $subscriber->save();
 
     $order_details = Stub::make(
-      new \WooCommerceStub\OrderDetails(),
+      new OrderDetails(),
       [
         'get_billing_email' => 'test@example.com',
         'get_items' => function() use ($incorrect_product_ids) {
           return [
             Stub::make(
-              new \WooCommerceStub\ItemDetails(),
+              new ItemDetails(),
               [
                 'get_product_id' => $incorrect_product_ids[0],
               ]
             ),
             Stub::make(
-              new \WooCommerceStub\ItemDetails(),
+              new ItemDetails(),
               [
                 'get_product_id' => $incorrect_product_ids[1],
               ]
@@ -202,19 +204,19 @@ class PurchasedProductTest extends \MailPoetTest {
     $subscriber->save();
 
     $order_details = Stub::make(
-      new \WooCommerceStub\OrderDetails(),
+      new OrderDetails(),
       [
         'get_billing_email' => 'test@example.com',
         'get_items' => function() use ($incorrect_product_id, $product_id) {
           return [
             Stub::make(
-              new \WooCommerceStub\ItemDetails(),
+              new ItemDetails(),
               [
                 'get_product_id' => $incorrect_product_id,
               ]
             ),
             Stub::make(
-              new \WooCommerceStub\ItemDetails(),
+              new ItemDetails(),
               [
                 'get_product_id' => $product_id,
               ]
