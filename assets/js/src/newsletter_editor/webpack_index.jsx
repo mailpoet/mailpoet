@@ -48,3 +48,4 @@ import 'newsletter_editor/blocks/automatedLatestContentLayout.js'; // side effec
 import 'newsletter_editor/blocks/posts.js'; // side effect - calls App.on()
 import 'newsletter_editor/blocks/products.js'; // side effect - calls App.on()
 import 'newsletter_editor/blocks/social.js'; // side effect - calls App.on()
+import 'newsletter_editor/blocks/woocommerceContent.js'; // side effect - calls App.on()
