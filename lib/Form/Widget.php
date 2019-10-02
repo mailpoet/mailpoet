@@ -3,12 +3,10 @@
 namespace MailPoet\Form;
 
 use MailPoet\API\JSON\API;
-use MailPoet\Config\Env;
 use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -16,10 +14,8 @@ class Widget extends \WP_Widget {
   private $renderer;
   private $wp;
 
-  /** @var SettingsController  */
-  private $settings;
-
-  const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit';
+  /** @var AssetsController */
+  private $assets_controller;
 
   function __construct() {
     parent::__construct(
@@ -29,12 +25,12 @@ class Widget extends \WP_Widget {
     );
     $this->wp = new WPFunctions;
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
-    $this->settings = new SettingsController();
+    $this->assets_controller = new AssetsController($this->wp, $this->renderer, new SettingsController());
     if (!is_admin()) {
       $this->setupIframe();
     } else {
       WPFunctions::get()->addAction('widgets_admin_page', [
-        $this,
+        $this->assets_controller,
         'setupAdminWidgetPageDependencies',
       ]);
     }
@@ -51,13 +47,7 @@ class Widget extends \WP_Widget {
       ]
     );
 
-    ob_start();
-    WPFunctions::get()->wpPrintScripts('jquery');
-    WPFunctions::get()->wpPrintScripts('mailpoet_vendor');
-    WPFunctions::get()->wpPrintScripts('mailpoet_public');
-    echo '<script src="' . self::RECAPTCHA_API_URL . '" async defer></script>';
-    $scripts = ob_get_contents();
-    ob_end_clean();
+    $scripts = $this->assets_controller->printScripts();
 
     // language attributes
     $language_attributes = [];
@@ -92,79 +82,6 @@ class Widget extends \WP_Widget {
     }
 
     exit();
-  }
-
-  function setupDependencies() {
-    WPFunctions::get()->wpEnqueueStyle(
-      'mailpoet_public',
-      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('public.css')
-    );
-
-    WPFunctions::get()->wpEnqueueScript(
-      'mailpoet_vendor',
-      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
-      [],
-      Env::$version,
-      true
-    );
-
-    WPFunctions::get()->wpEnqueueScript(
-      'mailpoet_public',
-      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('public.js'),
-      ['jquery'],
-      Env::$version,
-      true
-    );
-
-    $captcha = $this->settings->get('captcha');
-    if (!empty($captcha['type']) && $captcha['type'] === Captcha::TYPE_RECAPTCHA) {
-      WPFunctions::get()->wpEnqueueScript(
-        'mailpoet_recaptcha',
-        self::RECAPTCHA_API_URL,
-        ['mailpoet_public']
-      );
-    }
-
-    WPFunctions::get()->wpLocalizeScript('mailpoet_public', 'MailPoetForm', [
-      'ajax_url' => WPFunctions::get()->adminUrl('admin-ajax.php'),
-      'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false),
-    ]);
-
-    $ajax_failed_error_message = WPFunctions::get()->__('An error has happened while performing a request, please try again later.');
-
-    $inline_script = <<<EOL
-function initMailpoetTranslation() {
-  if (typeof MailPoet !== 'undefined') {
-    MailPoet.I18n.add('ajaxFailedErrorMessage', '%s')
-  } else {
-    setTimeout(initMailpoetTranslation, 250);
-  }
-}
-setTimeout(initMailpoetTranslation, 250);
-EOL;
-    WPFunctions::get()->wpAddInlineScript(
-      'mailpoet_public',
-      sprintf($inline_script, $ajax_failed_error_message),
-      'after'
-    );
-  }
-
-  function setupAdminWidgetPageDependencies() {
-    WPFunctions::get()->wpEnqueueScript(
-      'mailpoet_vendor',
-      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
-      [],
-      Env::$version,
-      true
-    );
-
-    WPFunctions::get()->wpEnqueueScript(
-      'mailpoet_admin',
-      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('mailpoet.js'),
-      [],
-      Env::$version,
-      true
-    );
   }
 
   /**
@@ -250,7 +167,7 @@ EOL;
    * Output the widget itself.
    */
   function widget($args, $instance = null) {
-    $this->setupDependencies();
+    $this->assets_controller->setupFrontEndDependencies();
 
     // turn $args into variables
     extract($args);

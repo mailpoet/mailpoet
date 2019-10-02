@@ -127,6 +127,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Features\FeatureFlagsRepository::class);
     // Form
     $container->autowire(\MailPoet\Form\Util\FieldNameObfuscator::class)->setPublic(true);
+    $container->autowire(\MailPoet\Form\AssetsController::class);
     // Listing
     $container->autowire(\MailPoet\Listing\BulkActionController::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\BulkActionFactory::class)->setPublic(true);
