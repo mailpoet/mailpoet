@@ -197,8 +197,6 @@ class Pages {
   }
 
   function setPageContent($page_content = '[mailpoet_page]') {
-    global $post;
-
     // if we're not in preview mode or captcha page and the subscriber does not exist
     if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === false) {
       return $this->wp->__("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
