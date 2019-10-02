@@ -67,23 +67,27 @@ class WooCommerce {
         __NAMESPACE__,
         $event
       );
-      if (!class_exists($event_class) || !method_exists($event_class, 'getEventDetails')) {
-        $notice = sprintf('%s %s',
-          sprintf(__('WooCommerce %s event is misconfigured.', 'mailpoet'), $event),
-          WPFunctions::get()->__('Please contact our technical support for assistance.', 'mailpoet')
-        );
-        Notice::displayWarning($notice);
 
+      if (!class_exists($event_class)) {
+        $this->displayEventWarning($event);
         continue;
       }
 
       $event_instance = new $event_class();
 
-      if (method_exists($event_class, 'init')) {
+      if (method_exists($event_instance, 'init')) {
         $event_instance->init();
+      } else {
+        $this->displayEventWarning($event);
+        continue;
       }
 
-      $event_details = array_merge($event_instance->getEventDetails(), $custom_event_details);
+      if (method_exists($event_instance, 'getEventDetails')) {
+        $event_details = array_merge($event_instance->getEventDetails(), $custom_event_details);
+      } else {
+        $this->displayEventWarning($event);
+        continue;
+      }
       $events[] = $event_details;
     }
 
@@ -92,5 +96,13 @@ class WooCommerce {
 
   function isWoocommerceEnabled() {
     return $this->woocommerce_helper->isWooCommerceActive();
+  }
+
+  private function displayEventWarning($event) {
+    $notice = sprintf('%s %s',
+      sprintf(__('WooCommerce %s event is misconfigured.', 'mailpoet'), $event),
+      WPFunctions::get()->__('Please contact our technical support for assistance.', 'mailpoet')
+    );
+    Notice::displayWarning($notice);
   }
 }
