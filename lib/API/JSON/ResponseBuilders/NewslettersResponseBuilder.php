@@ -51,6 +51,12 @@ class NewslettersResponseBuilder {
     foreach ($newsletter->getOptions() as $option) {
       $output[$option->getOptionField()->getName()] = $option->getValue();
     }
+
+    // convert 'afterTimeNumber' string to integer
+    if (isset($output['afterTimeNumber']) && is_numeric($output['afterTimeNumber'])) {
+      $output['afterTimeNumber'] = (int)$output['afterTimeNumber'];
+    }
+
     return $output;
   }
 
