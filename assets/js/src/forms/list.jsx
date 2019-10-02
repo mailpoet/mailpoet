@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
-import Listing from '../listing/listing.jsx';
+import Listing from 'listing/listing.jsx';
 
 const columns = [
   {
