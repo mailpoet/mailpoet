@@ -3,7 +3,6 @@
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use Codeception\Util\Fixtures;
-use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
 use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Models\Newsletter;

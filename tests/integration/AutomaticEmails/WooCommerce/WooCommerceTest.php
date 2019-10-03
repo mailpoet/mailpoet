@@ -8,7 +8,6 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
-use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WooCommerceTest extends \MailPoetTest {
