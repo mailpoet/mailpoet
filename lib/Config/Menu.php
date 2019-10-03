@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\AdminPages\Pages\DynamicSegments;
 use MailPoet\AdminPages\Pages\ExperimentalFeatures;
 use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
@@ -265,7 +266,26 @@ class Menu {
       ]);
     });
 
-    $this->wp->doAction('mailpoet_menu_after_lists');
+    // Dynamic segments page
+    $dynamic_segments_page = $this->wp->addSubmenuPage(
+      self::MAIN_PAGE_SLUG,
+      $this->setPageTitle(__('Segments', 'mailpoet')),
+      $this->wp->__('Segments', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_SEGMENTS,
+      'mailpoet-dynamic-segments',
+      [
+        $this,
+        'dynamicSegments',
+      ]
+    );
+
+    // add limit per page to screen options
+    $this->wp->addAction('load-' . $dynamic_segments_page, function() {
+      $this->wp->addScreenOption('per_page', [
+        'label' => WPFunctions::get()->_x('Number of segments per page', 'segments per page (screen options)', 'mailpoet'),
+        'option' => 'mailpoet_dynamic_segments_per_page',
+      ]);
+    });
 
     // Settings page
     $this->wp->addSubmenuPage(
@@ -430,6 +450,10 @@ class Menu {
 
   function segments() {
     $this->container->get(Segments::class)->render();
+  }
+
+  function dynamicSegments() {
+    $this->container->get(DynamicSegments::class)->render();
   }
 
   function forms() {
