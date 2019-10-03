@@ -3,15 +3,16 @@
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use Codeception\Util\Fixtures;
-use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -20,9 +21,6 @@ class PurchasedInCategoryTest extends \MailPoetTest {
 
   /** @var WCHelper */
   private $woocommerce_helper;
-
-  /** @var WCPremiumHelper */
-  private $premium_helper;
 
   /** @var PurchasedInCategory */
   private $event;
@@ -38,8 +36,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     WPFunctions::set(new WPFunctions);
     WPFunctions::get()->removeAllFilters('woocommerce_payment_complete');
     $this->woocommerce_helper = $this->makeEmpty(WCHelper::class, []);
-    $this->premium_helper = $this->makeEmpty(WCPremiumHelper::class, []);
-    $this->event = new PurchasedInCategory($this->woocommerce_helper, $this->premium_helper);
+    $this->event = new PurchasedInCategory($this->woocommerce_helper);
   }
 
   function testItGetsEventDetails() {
@@ -66,11 +63,6 @@ class PurchasedInCategoryTest extends \MailPoetTest {
       ->expects($this->atLeastOnce())
       ->method('get_billing_email')
       ->will($this->returnValue('email@example.com'));
-    $this->premium_helper
-      ->expects($this->once())
-      ->method('getWooCommerceSegmentSubscriber')
-      ->with($this->equalTo('email@example.com'))
-      ->will($this->returnValue(false));
     $this->event->scheduleEmail(2);
   }
 
@@ -98,6 +90,8 @@ class PurchasedInCategoryTest extends \MailPoetTest {
       ],
       $newsletter->id
     );
+
+    $customer_email = 'email@example.com';
     $order = $this->getOrderMock(['15', '16']);
     $this->woocommerce_helper
       ->expects($this->once())
@@ -106,13 +100,22 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $order
       ->expects($this->atLeastOnce())
       ->method('get_billing_email')
-      ->will($this->returnValue('email@example.com'));
+      ->will($this->returnValue($customer_email));
+
     $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
-    $this->premium_helper
-      ->expects($this->once())
-      ->method('getWooCommerceSegmentSubscriber')
-      ->with($this->equalTo('email@example.com'))
-      ->will($this->returnValue($subscriber));
+    $subscriber->email = $customer_email;
+    $subscriber->is_woocommerce_user = 1;
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->save();
+
+    $subscriber_segment = SubscriberSegment::create();
+    $subscriber_segment->hydrate([
+      'subscriber_id' => $subscriber->id,
+      'segment_id' => Segment::getWooCommerceSegment()->id,
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+    ]);
+    $subscriber_segment->save();
+
     $this->event->scheduleEmail(3);
     $scheduled_task = Sending::getByNewsletterId($newsletter->id);
     expect($scheduled_task)->notEmpty();

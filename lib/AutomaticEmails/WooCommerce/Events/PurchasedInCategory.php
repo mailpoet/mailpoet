@@ -2,7 +2,6 @@
 
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
-use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Logging\Logger;
 use MailPoet\Models\Subscriber;
@@ -18,21 +17,14 @@ class PurchasedInCategory {
   /** @var WCHelper */
   private $woocommerce_helper;
 
-  /** @var WCPremiumHelper */
-  private $premium_helper;
-
   /** @var AutomaticEmailScheduler */
   private $scheduler;
 
-  function __construct(WCHelper $woocommerce_helper = null, WCPremiumHelper $premium_helper = null) {
+  function __construct(WCHelper $woocommerce_helper = null) {
     if ($woocommerce_helper === null) {
       $woocommerce_helper = new WCHelper();
     }
-    if ($premium_helper === null) {
-      $premium_helper = new WCPremiumHelper;
-    }
     $this->woocommerce_helper = $woocommerce_helper;
-    $this->premium_helper = $premium_helper;
     $this->scheduler = new AutomaticEmailScheduler();
   }
 
@@ -101,7 +93,7 @@ class PurchasedInCategory {
     }
     $customer_email = $order_details->get_billing_email();
 
-    $subscriber = $this->premium_helper->getWooCommerceSegmentSubscriber($customer_email);
+    $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customer_email);
 
     if (!$subscriber instanceof Subscriber) {
       Logger::getLogger(self::SLUG)->addInfo(

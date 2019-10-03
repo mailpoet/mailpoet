@@ -13,8 +13,10 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -229,7 +231,17 @@ class FirstPurchaseTest extends \MailPoetTest {
     $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
     $subscriber->email = $customer_email;
     $subscriber->is_woocommerce_user = 1;
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
+
+    $subscriber_segment = SubscriberSegment::create();
+    $subscriber_segment->hydrate([
+      'subscriber_id' => $subscriber->id,
+      'segment_id' => Segment::getWooCommerceSegment()->id,
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+    ]);
+    $subscriber_segment->save();
+
     $date_created = new \DateTime('2018-12-12');
     $helper = Stub::make(WCHelper::class, [
       'wcGetOrder' => function($order_id) use ($customer_email, $date_created) {
@@ -245,13 +257,8 @@ class FirstPurchaseTest extends \MailPoetTest {
         return $order_details;
       },
     ]);
-    $premium_helper = Stub::make(new WCPremiumHelper, [
-      'getCustomerOrderCount' => 1,
-      'getWooCommerceSegmentSubscriber' => function () use ($subscriber) {
-        return $subscriber;
-      },
-    ]);
-    $event = new FirstPurchase($helper, $premium_helper);
+
+    $event = new FirstPurchase($helper);
     $event->init();
     $order_id = 12;
 

@@ -5,7 +5,6 @@ namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
-use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs\ItemDetails;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs\OrderDetails;
@@ -14,13 +13,16 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../WooCommerceStubs/ItemDetails.php';
+require_once __DIR__ . '/../WooCommerceStubs/OrderDetails.php';
 
 class PurchasedProductTest extends \MailPoetTest {
   function _before() {
@@ -200,7 +202,16 @@ class PurchasedProductTest extends \MailPoetTest {
     $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
     $subscriber->email = $customer_email;
     $subscriber->is_woocommerce_user = 1;
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
+
+    $subscriber_segment = SubscriberSegment::create();
+    $subscriber_segment->hydrate([
+      'subscriber_id' => $subscriber->id,
+      'segment_id' => Segment::getWooCommerceSegment()->id,
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+    ]);
+    $subscriber_segment->save();
 
     $order_details = Stub::make(
       new OrderDetails(),
@@ -229,13 +240,8 @@ class PurchasedProductTest extends \MailPoetTest {
     $helper = Stub::make(WCHelper::class, [
       'wcGetOrder' => $order_details,
     ]);
-    $premium_helper = Stub::make(new WCPremiumHelper, [
-      'getCustomerOrderCount' => 1,
-      'getWooCommerceSegmentSubscriber' => function () use ($subscriber) {
-        return $subscriber;
-      },
-    ]);
-    $event = new PurchasedProduct($helper, $premium_helper);
+
+    $event = new PurchasedProduct($helper);
 
     // ensure there are no existing scheduled tasks
     $scheduled_task = Sending::getByNewsletterId($newsletter->id);
