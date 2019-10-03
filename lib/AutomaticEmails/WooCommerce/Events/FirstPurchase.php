@@ -160,7 +160,7 @@ class FirstPurchase {
       'order_id' => $order_details->get_id(),
     ];
 
-    $subscriber = $this->premium_helper->getWooCommerceSegmentSubscriber($customer_email);
+    $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customer_email);
 
     if (!$subscriber instanceof Subscriber) {
       Logger::getLogger(self::SLUG)->addInfo(

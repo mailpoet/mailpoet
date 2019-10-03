@@ -29,27 +29,6 @@ class Helper {
     $this->helper = $helper;
   }
 
-  /**
-   * @param string $customer_email
-   * @return bool|Subscriber
-   */
-  function getWooCommerceSegmentSubscriber($customer_email) {
-    $wc_segment = Segment::getWooCommerceSegment();
-    return Subscriber::tableAlias('subscribers')
-      ->select('subscribers.*')
-      ->where('subscribers.email', $customer_email)
-      ->join(
-          MP_SUBSCRIBER_SEGMENT_TABLE,
-          'relation.subscriber_id = subscribers.id',
-          'relation'
-        )
-      ->where('relation.segment_id', $wc_segment->id)
-      ->where('relation.status', Subscriber::STATUS_SUBSCRIBED)
-      ->where('subscribers.status', Subscriber::STATUS_SUBSCRIBED)
-      ->where('subscribers.is_woocommerce_user', 1)
-      ->findOne();
-  }
-
   function getCustomerOrderCount($customer_email) {
     // registered user
     $user = $this->wp->getUserBy('email', $customer_email);
