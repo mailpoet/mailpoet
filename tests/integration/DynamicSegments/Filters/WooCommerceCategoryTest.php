@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Filters;
+namespace MailPoet\DynamicSegments\Filters;
 
 class WooCommerceCategoryTest extends \MailPoetTest {
 

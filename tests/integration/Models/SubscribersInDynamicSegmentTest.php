@@ -1,10 +1,10 @@
 <?php
 
-namespace MailPoet\Premium\Models;
+namespace MailPoet\Models;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
-use MailPoet\Premium\DynamicSegments\Filters\UserRole;
+use MailPoet\DynamicSegments\Filters\UserRole;
 
 class SubscribersInDynamicSegmentTest extends \MailPoetTest {
 

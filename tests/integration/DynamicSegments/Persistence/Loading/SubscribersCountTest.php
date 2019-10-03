@@ -1,11 +1,11 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Persistence\Loading;
+namespace MailPoet\DynamicSegments\Persistence\Loading;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
-use MailPoet\Premium\DynamicSegments\Filters\UserRole;
-use MailPoet\Premium\Models\DynamicSegment;
+use MailPoet\DynamicSegments\Filters\UserRole;
+use MailPoet\Models\DynamicSegment;
 
 class SubscribersCountTest extends \MailPoetTest {
   function _before() {

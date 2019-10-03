@@ -1,8 +1,8 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\FreePluginConnectors;
+namespace MailPoet\DynamicSegments\FreePluginConnectors;
 
-use MailPoet\Premium\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegment;
 
 class SubscribersBulkActionHandlerTest extends \MailPoetTest {
 
