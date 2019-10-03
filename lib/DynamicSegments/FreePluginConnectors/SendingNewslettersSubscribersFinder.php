@@ -1,19 +1,19 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\FreePluginConnectors;
+namespace MailPoet\DynamicSegments\FreePluginConnectors;
 
+use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
+use MailPoet\DynamicSegments\Persistence\Loading\SubscribersIds;
+use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\Premium\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
-use MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersIds;
-use MailPoet\Premium\Models\DynamicSegment;
 
 class SendingNewslettersSubscribersFinder {
 
   /** @var SingleSegmentLoader */
   private $single_segment_loader;
 
-  /** @var \MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersIds */
+  /** @var SubscribersIds */
   private $subscribers_ids_loader;
 
   public function __construct(SingleSegmentLoader $single_segment_loader, SubscribersIds $subscribers_ids_loader) {

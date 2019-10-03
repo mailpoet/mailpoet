@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Premium\API\JSON\v1;
+namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;

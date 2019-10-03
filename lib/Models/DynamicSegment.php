@@ -1,9 +1,9 @@
 <?php
 
-namespace MailPoet\Premium\Models;
+namespace MailPoet\Models;
 
+use MailPoet\DynamicSegments\Filters\Filter;
 use MailPoet\Models\Segment as MailPoetSegment;
-use MailPoet\Premium\DynamicSegments\Filters\Filter;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
@@ -66,12 +66,12 @@ class DynamicSegment extends MailPoetSegment {
     return [
       [
         'name' => 'all',
-        'label' => WPFunctions::get()->__('All', 'mailpoet-premium'),
+        'label' => WPFunctions::get()->__('All', 'mailpoet'),
         'count' => DynamicSegment::getPublished()->where('type', DynamicSegment::TYPE_DYNAMIC)->count(),
       ],
       [
         'name' => 'trash',
-        'label' => WPFunctions::get()->__('Trash', 'mailpoet-premium'),
+        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
         'count' => parent::getTrashed()->where('type', DynamicSegment::TYPE_DYNAMIC)->count(),
       ],
     ];

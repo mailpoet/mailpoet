@@ -1,16 +1,16 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\FreePluginConnectors;
+namespace MailPoet\DynamicSegments\FreePluginConnectors;
 
-use MailPoet\Premium\DynamicSegments\Persistence\Loading\Loader;
-use MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersCount;
+use MailPoet\DynamicSegments\Persistence\Loading\Loader;
+use MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount;
 
 class AddToNewslettersSegments {
 
   /** @var  Loader */
   private $loader;
 
-  /** @var \MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersCount */
+  /** @var SubscribersCount */
   private $subscribersCountLoader;
 
   public function __construct(Loader $loader, SubscribersCount $subscribersCountLoader) {

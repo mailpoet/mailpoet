@@ -1,9 +1,9 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Persistence\Loading;
+namespace MailPoet\DynamicSegments\Persistence\Loading;
 
-use MailPoet\Premium\DynamicSegments\Mappers\DBMapper;
-use MailPoet\Premium\Models\DynamicSegment;
+use MailPoet\DynamicSegments\Mappers\DBMapper;
+use MailPoet\Models\DynamicSegment;
 
 class SingleSegmentLoader {
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Exceptions;
+namespace MailPoet\DynamicSegments\Exceptions;
 
 class ErrorSavingException extends \Exception {
 

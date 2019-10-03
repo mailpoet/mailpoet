@@ -1,13 +1,13 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\FreePluginConnectors;
+namespace MailPoet\DynamicSegments\FreePluginConnectors;
 
-use MailPoet\Premium\DynamicSegments\Persistence\Loading\Loader;
-use MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersCount;
+use MailPoet\DynamicSegments\Persistence\Loading\Loader;
+use MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount;
 
 class AddToSubscribersFilters {
 
-  /** @var  \MailPoet\Premium\DynamicSegments\Persistence\Loading\Loader */
+  /** @var Loader */
   private $loader;
 
   /** @var SubscribersCount */

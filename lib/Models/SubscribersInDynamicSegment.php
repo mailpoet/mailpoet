@@ -1,10 +1,10 @@
 <?php
 
-namespace MailPoet\Premium\Models;
+namespace MailPoet\Models;
 
+use MailPoet\DynamicSegments\Mappers\DBMapper;
+use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
 use MailPoet\Models\Subscriber;
-use MailPoet\Premium\DynamicSegments\Mappers\DBMapper;
-use MailPoet\Premium\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
 
 class SubscribersInDynamicSegment extends Subscriber {
 
