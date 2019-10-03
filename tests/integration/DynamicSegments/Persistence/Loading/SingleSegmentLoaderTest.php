@@ -1,11 +1,11 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Persistence\Loading;
+namespace MailPoet\DynamicSegments\Persistence\Loading;
 
-use MailPoet\Premium\DynamicSegments\Filters\UserRole;
-use MailPoet\Premium\DynamicSegments\Mappers\DBMapper;
-use MailPoet\Premium\Models\DynamicSegment;
-use MailPoet\Premium\Models\DynamicSegmentFilter;
+use MailPoet\DynamicSegments\Filters\UserRole;
+use MailPoet\DynamicSegments\Mappers\DBMapper;
+use MailPoet\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegmentFilter;
 
 class SingleSegmentLoaderTest extends \MailPoetTest {
 
@@ -33,7 +33,7 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
 
   function testItLoadsSegments() {
     $data = $this->loader->load($this->segment->id);
-    expect($data)->isInstanceOf('\MailPoet\Premium\Models\DynamicSegment');
+    expect($data)->isInstanceOf('\MailPoet\Models\DynamicSegment');
   }
 
   function testItThrowsForUnknownSegment() {
@@ -51,7 +51,7 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
     $data = $this->loader->load($this->segment->id);
     $filters0 = $data->getFilters();
     expect($filters0)->count(1);
-    expect($filters0[0])->isInstanceOf('\MailPoet\Premium\DynamicSegments\Filters\UserRole');
+    expect($filters0[0])->isInstanceOf('\MailPoet\DynamicSegments\Filters\UserRole');
     expect($filters0[0]->getRole())->equals('Administrator');
   }
 

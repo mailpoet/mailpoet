@@ -1,10 +1,10 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\FreePluginConnectors;
+namespace MailPoet\DynamicSegments\FreePluginConnectors;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
-use MailPoet\Premium\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegment;
 
 class AddToSubscribersFiltersTest extends \MailPoetTest {
 
@@ -14,11 +14,11 @@ class AddToSubscribersFiltersTest extends \MailPoetTest {
       'value' => '',
     ];
 
-    $segment_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () {
+    $segment_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () {
       return [];
     })]);
 
-    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount' => Expected::never()]);
+    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount' => Expected::never()]);
 
     $filter = new AddToSubscribersFilters($segment_loader, $subscribers_count_loader);
     $result = $filter->add([$original_segment]);
@@ -33,11 +33,11 @@ class AddToSubscribersFiltersTest extends \MailPoetTest {
       'id' => 1,
     ]);
 
-    $segment_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () use ($dynamic_segment) {
+    $segment_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () use ($dynamic_segment) {
       return [$dynamic_segment];
     })]);
 
-    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount']);
+    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount']);
     $subscribers_count_loader
       ->expects($this->once())
       ->method('getSubscribersCount')
@@ -69,7 +69,7 @@ class AddToSubscribersFiltersTest extends \MailPoetTest {
     ]);
 
     $segment_loader = Stub::makeEmpty(
-      '\MailPoet\Premium\DynamicSegments\Persistence\Loading\Loader',
+      '\MailPoet\DynamicSegments\Persistence\Loading\Loader',
       [
         'load' => Expected::once(function () use ($dynamic_segment1, $dynamic_segment2) {
           return [$dynamic_segment1, $dynamic_segment2];
@@ -77,7 +77,7 @@ class AddToSubscribersFiltersTest extends \MailPoetTest {
       ]
     );
 
-    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount']);
+    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount']);
     $subscribers_count_loader
       ->expects($this->exactly(2))
       ->method('getSubscribersCount')

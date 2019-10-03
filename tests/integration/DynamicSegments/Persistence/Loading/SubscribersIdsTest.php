@@ -1,12 +1,12 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Persistence\Loading;
+namespace MailPoet\DynamicSegments\Persistence\Loading;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
+use MailPoet\DynamicSegments\Filters\UserRole;
+use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\Subscriber;
-use MailPoet\Premium\DynamicSegments\Filters\UserRole;
-use MailPoet\Premium\Models\DynamicSegment;
 
 class SubscribersIdsTest extends \MailPoetTest {
 

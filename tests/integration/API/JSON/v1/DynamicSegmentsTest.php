@@ -1,18 +1,18 @@
 <?php
 
-namespace MailPoet\Premium\API\JSON\v1;
+namespace MailPoet\API\JSON\v1;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\DynamicSegments\Exceptions\ErrorSavingException;
+use MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException;
+use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
+use MailPoet\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegmentFilter;
 use MailPoet\Models\Model;
-use MailPoet\Premium\DynamicSegments\Exceptions\ErrorSavingException;
-use MailPoet\Premium\DynamicSegments\Exceptions\InvalidSegmentTypeException;
-use MailPoet\Premium\DynamicSegments\Filters\UserRole;
-use MailPoet\Premium\Models\DynamicSegment;
-use MailPoet\Premium\Models\DynamicSegmentFilter;
 
 class DynamicSegmentsTest extends \MailPoetTest {
 
@@ -28,12 +28,12 @@ class DynamicSegmentsTest extends \MailPoetTest {
   private $listing_handler;
 
   function _before() {
-    $this->bulk_action = ContainerWrapper::getInstance()->getPremiumContainer()->get(BulkActionController::class);
-    $this->listing_handler = ContainerWrapper::getInstance()->getPremiumContainer()->get(Handler::class);
+    $this->bulk_action = ContainerWrapper::getInstance()->get(BulkActionController::class);
+    $this->listing_handler = ContainerWrapper::getInstance()->get(Handler::class);
   }
 
   function testGetReturnsResponse() {
-    $loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
+    $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
       'load' => function () {
         $dynamic_segment = DynamicSegment::create();
         $dynamic_segment->hydrate([
@@ -59,7 +59,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
   }
 
   function testGetReturnsError() {
-    $loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
+    $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
       'load' => function () {
         throw new \InvalidArgumentException('segment not found');
       },
@@ -71,7 +71,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
   }
 
   function testSaverSavesData() {
-    $mapper = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
+    $mapper = Stub::makeEmpty('\MailPoet\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
       $dynamic_segment = DynamicSegment::create();
       $dynamic_segment->hydrate([
         'name' => 'name',
@@ -79,7 +79,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
       ]);
       return $dynamic_segment;
     })]);
-    $saver = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Saver', ['save' => Expected::once()]);
+    $saver = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Saver', ['save' => Expected::once()]);
 
     $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, $mapper, $saver);
     $response = $endpoint->save([]);
@@ -88,10 +88,10 @@ class DynamicSegmentsTest extends \MailPoetTest {
   }
 
   function testSaverReturnsErrorOnInvalidData() {
-    $mapper = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
+    $mapper = Stub::makeEmpty('\MailPoet\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
       throw new InvalidSegmentTypeException();
     })]);
-    $saver = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Saver', ['save' => Expected::never()]);
+    $saver = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Saver', ['save' => Expected::never()]);
 
     $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, $mapper, $saver);
     $response = $endpoint->save([]);
@@ -100,7 +100,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
   }
 
   function testSaverReturnsErrorOnSave() {
-    $mapper = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
+    $mapper = Stub::makeEmpty('\MailPoet\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
       $dynamic_segment = DynamicSegment::create();
       $dynamic_segment->hydrate([
         'name' => 'name',
@@ -108,7 +108,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
       ]);
       return $dynamic_segment;
     })]);
-    $saver = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Saver', ['save' => Expected::once(function () {
+    $saver = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Saver', ['save' => Expected::once(function () {
       throw new ErrorSavingException('Error saving data', Model::DUPLICATE_RECORD);
     })]);
 
@@ -125,7 +125,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
       'name' => 'Trash test',
       'description' => 'description',
     ]);
-    $loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
+    $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
       'load' => function () use($dynamic_segment) {
         return $dynamic_segment;
       },
@@ -150,7 +150,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
       'name' => 'Restore test',
       'description' => 'description',
     ]);
-    $loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
+    $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
       'load' => function () use($dynamic_segment) {
         return $dynamic_segment;
       },
@@ -178,7 +178,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $filter = DynamicSegmentFilter::createOrUpdate([
       'segment_id' => $dynamic_segment->id,
     ]);
-    $loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
+    $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
       'load' => function () use($dynamic_segment) {
         return $dynamic_segment;
       },

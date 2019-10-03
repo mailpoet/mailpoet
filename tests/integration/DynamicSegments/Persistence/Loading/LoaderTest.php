@@ -1,11 +1,11 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Persistence\Loading;
+namespace MailPoet\DynamicSegments\Persistence\Loading;
 
-use MailPoet\Premium\DynamicSegments\Filters\UserRole;
-use MailPoet\Premium\DynamicSegments\Mappers\DBMapper;
-use MailPoet\Premium\Models\DynamicSegment;
-use MailPoet\Premium\Models\DynamicSegmentFilter;
+use MailPoet\DynamicSegments\Filters\UserRole;
+use MailPoet\DynamicSegments\Mappers\DBMapper;
+use MailPoet\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegmentFilter;
 
 class LoaderTest extends \MailPoetTest {
 
@@ -45,15 +45,15 @@ class LoaderTest extends \MailPoetTest {
   function testItLoadsSegments() {
     $data = $this->loader->load();
     expect($data)->count(2);
-    expect($data[0])->isInstanceOf('\MailPoet\Premium\Models\DynamicSegment');
-    expect($data[1])->isInstanceOf('\MailPoet\Premium\Models\DynamicSegment');
+    expect($data[0])->isInstanceOf('\MailPoet\Models\DynamicSegment');
+    expect($data[1])->isInstanceOf('\MailPoet\Models\DynamicSegment');
   }
 
   function testItDoesNotLoadTrashedSegments() {
     $this->segments[0]->trash();
     $data = $this->loader->load();
     expect($data)->count(1);
-    expect($data[0])->isInstanceOf('\MailPoet\Premium\Models\DynamicSegment');
+    expect($data[0])->isInstanceOf('\MailPoet\Models\DynamicSegment');
     expect($data[0]->name)->equals('segment 2');
   }
 
@@ -71,8 +71,8 @@ class LoaderTest extends \MailPoetTest {
     $filters1 = $data[1]->getFilters();
     expect($filters0)->count(1);
     expect($filters1)->count(1);
-    expect($filters0[0])->isInstanceOf('\MailPoet\Premium\DynamicSegments\Filters\UserRole');
-    expect($filters1[0])->isInstanceOf('\MailPoet\Premium\DynamicSegments\Filters\UserRole');
+    expect($filters0[0])->isInstanceOf('\MailPoet\DynamicSegments\Filters\UserRole');
+    expect($filters1[0])->isInstanceOf('\MailPoet\DynamicSegments\Filters\UserRole');
     expect($filters0[0]->getRole())->equals('Editor');
     expect($filters1[0]->getRole())->equals('Administrator');
   }

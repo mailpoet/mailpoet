@@ -1,26 +1,28 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\FreePluginConnectors;
+namespace MailPoet\DynamicSegments\FreePluginConnectors;
 
 use Codeception\Util\Stub;
+use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
+use MailPoet\DynamicSegments\Persistence\Loading\SubscribersIds;
+use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\Premium\Models\DynamicSegment;
 
 class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
 
-  /** @var \MailPoet\Premium\DynamicSegments\Persistence\Loading\SingleSegmentLoader */
+  /** @var SingleSegmentLoader */
   private $single_segment_loader;
 
-  /** @var \MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersIds */
+  /** @var SubscribersIds */
   private $subscribers_ids_loader;
 
   /** @var SendingNewslettersSubscribersFinder */
   private $subscribers_in_segments_finder;
 
   function _before() {
-    $this->single_segment_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SingleSegmentLoader');
-    $this->subscribers_ids_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersIds');
+    $this->single_segment_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader');
+    $this->subscribers_ids_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersIds');
     $this->subscribers_in_segments_finder = new SendingNewslettersSubscribersFinder($this->single_segment_loader, $this->subscribers_ids_loader);
   }
 

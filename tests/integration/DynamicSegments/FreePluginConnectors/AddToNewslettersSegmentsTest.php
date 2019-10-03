@@ -1,10 +1,10 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\FreePluginConnectors;
+namespace MailPoet\DynamicSegments\FreePluginConnectors;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
-use MailPoet\Premium\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegment;
 
 class AddToNewslettersSegmentsTest extends \MailPoetTest {
 
@@ -15,11 +15,11 @@ class AddToNewslettersSegmentsTest extends \MailPoetTest {
       'description' => '',
     ]);
 
-    $segment_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () {
+    $segment_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () {
       return [];
     })]);
 
-    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount' => Expected::never()]);
+    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount' => Expected::never()]);
 
     $filter = new AddToNewslettersSegments($segment_loader, $subscribers_count_loader);
     $result = $filter->add([$dynamic_segment]);
@@ -34,11 +34,11 @@ class AddToNewslettersSegmentsTest extends \MailPoetTest {
       'id' => 1,
     ]);
 
-    $segment_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () use ($dynamic_segment) {
+    $segment_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () use ($dynamic_segment) {
       return [$dynamic_segment];
     })]);
 
-    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount']);
+    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount']);
     $subscribers_count_loader
       ->expects($this->once())
       ->method('getSubscribersCount')

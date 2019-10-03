@@ -1,11 +1,11 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Persistence;
+namespace MailPoet\DynamicSegments\Persistence;
 
+use MailPoet\DynamicSegments\Filters\UserRole;
+use MailPoet\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegmentFilter;
 use MailPoet\Models\Model;
-use MailPoet\Premium\DynamicSegments\Filters\UserRole;
-use MailPoet\Premium\Models\DynamicSegment;
-use MailPoet\Premium\Models\DynamicSegmentFilter;
 
 class SaverTest extends \MailPoetTest {
 
@@ -46,7 +46,7 @@ class SaverTest extends \MailPoetTest {
       'description' => 'desc2',
       'id' => $dynamic_segment1->id,
     ]);
-    $this->setExpectedException('\MailPoet\Premium\DynamicSegments\Exceptions\ErrorSavingException', 'Another record already exists. Please specify a different "PRIMARY".', Model::DUPLICATE_RECORD);
+    $this->setExpectedException('\MailPoet\DynamicSegments\Exceptions\ErrorSavingException', 'Another record already exists. Please specify a different "PRIMARY".', Model::DUPLICATE_RECORD);
     $this->saver->save($dynamic_segment2);
   }
 
@@ -59,7 +59,7 @@ class SaverTest extends \MailPoetTest {
     $dynamic_segment->setFilters([new UserRole('editor', 'and')]);
     $id = $this->saver->save($dynamic_segment);
     $loaded = DynamicSegmentFilter::select('*')->where('segment_id', $id)->findOne();
-    expect($loaded)->isInstanceOf('\MailPoet\Premium\Models\DynamicSegmentFilter');
+    expect($loaded)->isInstanceOf('\MailPoet\Models\DynamicSegmentFilter');
   }
 
 }

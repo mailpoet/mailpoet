@@ -1,8 +1,8 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Mappers;
+namespace MailPoet\DynamicSegments\Mappers;
 
-use MailPoet\Premium\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegment;
 
 class FormDataMapperTest extends \MailPoetTest {
 
@@ -19,7 +19,7 @@ class FormDataMapperTest extends \MailPoetTest {
       'description' => '',
       'segmentType' => '',
     ];
-    $this->setExpectedException('\MailPoet\Premium\DynamicSegments\Exceptions\InvalidSegmentTypeException');
+    $this->setExpectedException('\MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException');
     $this->mapper->mapDataToDB($data);
   }
 
@@ -29,7 +29,7 @@ class FormDataMapperTest extends \MailPoetTest {
       'description' => '',
       'segmentType' => 'invalid',
     ];
-    $this->setExpectedException('\MailPoet\Premium\DynamicSegments\Exceptions\InvalidSegmentTypeException');
+    $this->setExpectedException('\MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException');
     $this->mapper->mapDataToDB($data);
   }
 
@@ -41,7 +41,7 @@ class FormDataMapperTest extends \MailPoetTest {
       'wordpressRole' => 'administrator',
     ];
     $segment = $this->mapper->mapDataToDB($data);
-    $this->assertInstanceOf('\MailPoet\Premium\Models\DynamicSegment', $segment);
+    $this->assertInstanceOf('\MailPoet\Models\DynamicSegment', $segment);
     $this->assertEquals('Name', $segment->name);
     $this->assertEquals('Description', $segment->description);
     $this->assertNull($segment->id);
@@ -54,7 +54,7 @@ class FormDataMapperTest extends \MailPoetTest {
       'description' => 'Description',
       'segmentType' => 'woocommerce',
     ];
-    $this->setExpectedException('\MailPoet\Premium\DynamicSegments\Exceptions\InvalidSegmentTypeException');
+    $this->setExpectedException('\MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException');
     $this->mapper->mapDataToDB($data);
   }
 
@@ -67,13 +67,13 @@ class FormDataMapperTest extends \MailPoetTest {
       'action' => 'purchasedCategory',
     ];
     $segment = $this->mapper->mapDataToDB($data);
-    $this->assertInstanceOf('\MailPoet\Premium\Models\DynamicSegment', $segment);
+    $this->assertInstanceOf('\MailPoet\Models\DynamicSegment', $segment);
     $this->assertEquals('Name', $segment->name);
     $this->assertEquals('Description', $segment->description);
     $this->assertNull($segment->id);
     $filters = $segment->getFilters();
     $this->assertCount(1, $filters);
-    $this->assertInstanceOf('\MailPoet\Premium\DynamicSegments\Filters\WooCommerceCategory', $filters[0]);
+    $this->assertInstanceOf('\MailPoet\DynamicSegments\Filters\WooCommerceCategory', $filters[0]);
   }
 
   public function testItCreatesWooCommerceProductFilter() {
@@ -85,13 +85,13 @@ class FormDataMapperTest extends \MailPoetTest {
       'action' => 'purchasedProduct',
     ];
     $segment = $this->mapper->mapDataToDB($data);
-    $this->assertInstanceOf('\MailPoet\Premium\Models\DynamicSegment', $segment);
+    $this->assertInstanceOf('\MailPoet\Models\DynamicSegment', $segment);
     $this->assertEquals('Name', $segment->name);
     $this->assertEquals('Description', $segment->description);
     $this->assertNull($segment->id);
     $filters = $segment->getFilters();
     $this->assertCount(1, $filters);
-    $this->assertInstanceOf('\MailPoet\Premium\DynamicSegments\Filters\WooCommerceProduct', $filters[0]);
+    $this->assertInstanceOf('\MailPoet\DynamicSegments\Filters\WooCommerceProduct', $filters[0]);
   }
 
   public function testItSetsIdOnEdit() {

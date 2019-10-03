@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Filters;
+namespace MailPoet\DynamicSegments\Filters;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\StatisticsClicks;
