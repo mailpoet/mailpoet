@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'underscore';
 import { Link, withRouter } from 'react-router-dom';
 import MailPoet from 'mailpoet';
-import Form from 'form';
+import Form from 'form/form.jsx';
 import PropTypes from 'prop-types';
 
 import wordpressRoleFields from './filters/wordpress_role.jsx';
