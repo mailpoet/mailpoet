@@ -2,7 +2,6 @@
 
 namespace MailPoet\AutomaticEmails;
 
-use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomaticEmailsTest extends \MailPoetTest {

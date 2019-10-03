@@ -3,7 +3,6 @@
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use Carbon\Carbon;
-use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCartPageVisitTracker;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;

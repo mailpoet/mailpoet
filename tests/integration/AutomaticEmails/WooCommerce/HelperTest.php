@@ -5,12 +5,10 @@ namespace MailPoet\AutomaticEmails\WooCommerce;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
-use MailPoet\AutomaticEmails\WooCommerce\Helper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\WooCommerce\Helper as WCHelper;
-use MailPoet\WP\Functions as WPFunctions;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
