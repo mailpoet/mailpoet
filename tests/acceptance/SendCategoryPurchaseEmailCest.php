@@ -15,6 +15,7 @@ class SendCategoryPurchaseEmailCest {
     $settings_factory = new Settings();
     $settings_factory->withWooCommerceListImportPageDisplayed(true);
     $settings_factory->withWooCommerceCheckoutOptinEnabled();
+    $settings_factory->withCronTriggerMethod('WordPress');
   }
 
   function sendCategoryPurchaseEmail(\AcceptanceTester $I) {

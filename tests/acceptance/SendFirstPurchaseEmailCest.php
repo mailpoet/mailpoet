@@ -13,6 +13,7 @@ class SendFirstPurchaseEmailCest {
     $this->settings_factory = new Settings();
     $this->settings_factory->withWooCommerceListImportPageDisplayed(true);
     $this->settings_factory->withWooCommerceCheckoutOptinEnabled();
+    $this->settings_factory->withCronTriggerMethod('WordPress');
   }
 
   function sendFirstPurchaseEmail(\AcceptanceTester $I) {
