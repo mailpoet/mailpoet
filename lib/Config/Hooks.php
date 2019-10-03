@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\DynamicSegments\DynamicSegmentHooks;
 use MailPoet\Mailer\WordPress\Replacer;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
@@ -54,6 +55,9 @@ class Hooks {
   /** @var WordpressMailerReplacer */
   private $wordpress_mailer_replacer;
 
+  /** @var DynamicSegmentHooks */
+  private $dynamic_segment_hooks;
+
   function __construct(
     Form $subscription_form,
     Comment $subscription_comment,
@@ -66,7 +70,8 @@ class Hooks {
     WooCommerceSettings $woocommerce_settings,
     WooCommercePurchases $woocommerce_purchases,
     PostNotificationScheduler $post_notification_scheduler,
-    WordpressMailerReplacer $wordpress_mailer_replacer
+    WordpressMailerReplacer $wordpress_mailer_replacer,
+    DynamicSegmentHooks $dynamic_segment_hooks
   ) {
     $this->subscription_form = $subscription_form;
     $this->subscription_comment = $subscription_comment;
@@ -80,6 +85,7 @@ class Hooks {
     $this->woocommerce_purchases = $woocommerce_purchases;
     $this->post_notification_scheduler = $post_notification_scheduler;
     $this->wordpress_mailer_replacer = $wordpress_mailer_replacer;
+    $this->dynamic_segment_hooks = $dynamic_segment_hooks;
   }
 
   function init() {
@@ -92,6 +98,7 @@ class Hooks {
     $this->setupWooCommerceSubscriptionEvents();
     $this->setupPostNotifications();
     $this->setupWooCommerceSettings();
+    $this->dynamic_segment_hooks->init();
   }
 
   function initEarlyHooks() {
