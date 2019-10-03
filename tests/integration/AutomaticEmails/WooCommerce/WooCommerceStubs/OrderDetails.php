@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Test\AutomaticEmails\WooCommerce\WooCommerceStubs;
+namespace MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs;
 
 require_once __DIR__ . '/ItemDetails.php';
 

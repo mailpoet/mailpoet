@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Test\API\JSON\v1;
+namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\v1\AutomaticEmails;
 use MailPoet\WP\Functions as WPFunctions;

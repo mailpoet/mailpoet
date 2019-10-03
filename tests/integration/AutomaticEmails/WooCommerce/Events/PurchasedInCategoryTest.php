@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Test\AutomaticEmails\WooCommerce\Events;
+namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use Codeception\Util\Fixtures;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;

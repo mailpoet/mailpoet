@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Test\AutomaticEmails\WooCommerce\WooCommerceStubs;
+namespace MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs;
 
 // phpcs:disable PSR1.Methods.CamelCapsMethodName
 class ItemDetails {

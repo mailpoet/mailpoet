@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Test\AutomaticEmails;
+namespace MailPoet\AutomaticEmails;
 
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\WP\Functions as WPFunctions;
