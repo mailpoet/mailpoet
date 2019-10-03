@@ -5,7 +5,6 @@ namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
-use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs\OrderDetails;
 use MailPoet\Models\Newsletter;
@@ -154,10 +153,9 @@ class FirstPurchaseTest extends \MailPoetTest {
     $helper = Stub::make(WCHelper::class, [
       'wcGetOrder' => $order_details,
     ]);
-    $premium_helper = Stub::make(new WCPremiumHelper, [
+    $event = $this->construct(FirstPurchase::class, [$helper], [
       'getCustomerOrderCount' => 2,
     ]);
-    $event = new FirstPurchase($helper, $premium_helper);
     $result = $event->scheduleEmailWhenOrderIsPlaced(12);
     expect($result)->isEmpty();
   }
@@ -180,10 +178,15 @@ class FirstPurchaseTest extends \MailPoetTest {
     $helper = Stub::make(WCHelper::class, [
       'wcGetOrder' => $order_details,
     ]);
-    $premium_helper = Stub::make(new WCPremiumHelper, [
-      'getCustomerOrderCount' => 1,
-    ]);
-    $event = new FirstPurchase($helper, $premium_helper);
+
+    $customer_email = 'test@example.com';
+    $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
+    $subscriber->email = $customer_email;
+    $subscriber->is_woocommerce_user = 1;
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->save();
+
+    $event = new FirstPurchase($helper);
     $result = $event->scheduleEmailWhenOrderIsPlaced(12);
     expect($result)->isEmpty();
   }

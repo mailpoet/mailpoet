@@ -2,7 +2,6 @@
 
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
-use MailPoet\AutomaticEmails\WooCommerce\Helper as WCPremiumHelper;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Logging\Logger;
 use MailPoet\Models\Newsletter;
@@ -21,23 +20,14 @@ class FirstPurchase {
    */
   private $helper;
 
-  /**
-   * @var WCPremiumHelper
-   */
-  private $premium_helper;
-
   /** @var AutomaticEmailScheduler */
   private $scheduler;
 
-  function __construct(WCHelper $helper = null, WCPremiumHelper $premium_helper = null) {
+  function __construct(WCHelper $helper = null) {
     if ($helper === null) {
       $helper = new WCHelper();
     }
-    if ($premium_helper === null) {
-      $premium_helper = new WCPremiumHelper;
-    }
     $this->helper = $helper;
-    $this->premium_helper = $premium_helper;
     $this->scheduler = new AutomaticEmailScheduler();
   }
 
@@ -142,7 +132,7 @@ class FirstPurchase {
     }
 
     $customer_email = $order_details->get_billing_email();
-    $customer_order_count = $this->premium_helper->getCustomerOrderCount($customer_email);
+    $customer_order_count = $this->getCustomerOrderCount($customer_email);
     if ($customer_order_count > 1) {
       Logger::getLogger(self::SLUG)->addInfo(
         'Email not scheduled because this is not the first order of the customer', [
@@ -184,4 +174,25 @@ class FirstPurchase {
     $this->scheduler->scheduleAutomaticEmail(WooCommerce::SLUG, self::SLUG, $check_email_was_not_scheduled, $subscriber->id, $meta);
   }
 
+  function getCustomerOrderCount($customer_email) {
+    // registered user
+    $user = WPFunctions::get()->getUserBy('email', $customer_email);
+    if ($user) {
+      return $this->helper->wcGetCustomerOrderCount($user->ID);
+    }
+    // guest user
+    return $this->getGuestCustomerOrderCountByEmail($customer_email);
+  }
+
+  private function getGuestCustomerOrderCountByEmail($customer_email) {
+    global $wpdb;
+    $count = $wpdb->get_var( "SELECT COUNT(*)
+        FROM $wpdb->posts as posts
+        LEFT JOIN {$wpdb->postmeta} AS meta ON posts.ID = meta.post_id
+        WHERE   meta.meta_key = '_billing_email'
+        AND     posts.post_type = 'shop_order'
+        AND     meta_value = '" . WPFunctions::get()->escSql($customer_email) . "'
+    " );
+    return (int)$count;
+  }
 }
