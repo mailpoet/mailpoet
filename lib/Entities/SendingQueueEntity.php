@@ -73,7 +73,7 @@ class SendingQueueEntity {
   private $task;
 
   /**
-   * @OneToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="sending_queue")
+   * @ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="queues")
    * @var NewsletterEntity
    */
   private $newsletter;
