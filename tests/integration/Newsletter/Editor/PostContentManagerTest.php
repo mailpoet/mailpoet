@@ -3,13 +3,16 @@
 namespace MailPoet\Test\Newsletter\Editor;
 
 use MailPoet\Newsletter\Editor\PostContentManager;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PostContentManagerTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->post_content = new PostContentManager();
+    $this->post_content = new PostContentManager(
+      $this->make(WooCommerceHelper::class, ['isWooCommerceActive' => false])
+    );
   }
 
   function testFilterContentRetainsStructuralTags() {
@@ -133,7 +136,9 @@ class PostContentManagerTest extends \MailPoetTest {
 
 
   function testItAppliesCustomMaxExcerptLenghViaHook() {
-    $post_content_manager = new PostContentManager();
+    $post_content_manager = new PostContentManager(
+      $this->make(WooCommerceHelper::class, ['isWooCommerceActive' => false])
+    );
     $post = (object)[
       'post_content' => '<p>one two three four five six</p>',
     ];
@@ -145,7 +150,9 @@ class PostContentManagerTest extends \MailPoetTest {
         return 2;
       }
     );
-    $post_content_manager = new PostContentManager();
+    $post_content_manager = new PostContentManager(
+      $this->make(WooCommerceHelper::class, ['isWooCommerceActive' => false])
+    );
     $excerpt = $post_content_manager->getContent($post, 'excerpt');
     expect($excerpt)->equals('one two &hellip;');
   }
