@@ -29,7 +29,7 @@ class NewslettersResponseBuilder {
       'parent_id' => ($parent = $newsletter->getParent()) ? $parent->getId() : null,
       'segments' => $this->buildSegments($newsletter),
       'options' => $this->buildOptions($newsletter),
-      'queue' => ($queue = $newsletter->getQueue()) ? $this->buildQueue($queue) : false, // false for BC
+      'queue' => ($queue = $newsletter->getLatestQueue()) ? $this->buildQueue($queue) : false, // false for BC
       'unsubscribe_token' => $newsletter->getUnsubscribeToken(),
     ];
   }
