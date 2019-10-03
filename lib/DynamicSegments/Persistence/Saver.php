@@ -1,12 +1,12 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Persistence;
+namespace MailPoet\DynamicSegments\Persistence;
 
+use MailPoet\DynamicSegments\Exceptions\ErrorSavingException;
+use MailPoet\DynamicSegments\Filters\Filter;
+use MailPoet\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegmentFilter;
 use MailPoet\Models\Model;
-use MailPoet\Premium\DynamicSegments\Exceptions\ErrorSavingException;
-use MailPoet\Premium\DynamicSegments\Filters\Filter;
-use MailPoet\Premium\Models\DynamicSegment;
-use MailPoet\Premium\Models\DynamicSegmentFilter;
 
 class Saver {
 

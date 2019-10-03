@@ -1,9 +1,9 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Persistence\Loading;
+namespace MailPoet\DynamicSegments\Persistence\Loading;
 
+use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\Subscriber;
-use MailPoet\Premium\Models\DynamicSegment;
 
 class SubscribersCount {
 

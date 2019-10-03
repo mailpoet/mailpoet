@@ -1,11 +1,11 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\FreePluginConnectors;
+namespace MailPoet\DynamicSegments\FreePluginConnectors;
 
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\BulkActionFactory;
 use MailPoet\Listing\Handler;
-use MailPoet\Premium\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegment;
 
 class SubscribersBulkActionHandler {
 
@@ -19,7 +19,7 @@ class SubscribersBulkActionHandler {
   function apply(array $segment, array $data) {
     if ($segment['type'] === DynamicSegment::TYPE_DYNAMIC) {
       $bulkAction = new BulkActionController(new BulkActionFactory(), new Handler());
-      return $bulkAction->apply('\MailPoet\Premium\Models\SubscribersInDynamicSegment', $data);
+      return $bulkAction->apply('\MailPoet\Models\SubscribersInDynamicSegment', $data);
     }
   }
 

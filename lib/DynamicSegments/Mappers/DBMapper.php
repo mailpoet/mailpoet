@@ -1,20 +1,20 @@
 <?php
 
-namespace MailPoet\Premium\DynamicSegments\Mappers;
+namespace MailPoet\DynamicSegments\Mappers;
 
-use MailPoet\Premium\DynamicSegments\Exceptions\InvalidSegmentTypeException;
-use MailPoet\Premium\DynamicSegments\Filters\EmailAction;
-use MailPoet\Premium\DynamicSegments\Filters\Filter;
-use MailPoet\Premium\DynamicSegments\Filters\UserRole;
-use MailPoet\Premium\DynamicSegments\Filters\WooCommerceCategory;
-use MailPoet\Premium\DynamicSegments\Filters\WooCommerceProduct;
-use MailPoet\Premium\Models\DynamicSegment;
-use MailPoet\Premium\Models\DynamicSegmentFilter;
+use MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException;
+use MailPoet\DynamicSegments\Filters\EmailAction;
+use MailPoet\DynamicSegments\Filters\Filter;
+use MailPoet\DynamicSegments\Filters\UserRole;
+use MailPoet\DynamicSegments\Filters\WooCommerceCategory;
+use MailPoet\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Models\DynamicSegment;
+use MailPoet\Models\DynamicSegmentFilter;
 
 class DBMapper {
 
   /**
- * @param \MailPoet\Premium\Models\DynamicSegment $segment_data
+ * @param DynamicSegment $segment_data
  * @param DynamicSegmentFilter[] $filters_data
  *
  * @return DynamicSegment
@@ -26,7 +26,7 @@ class DBMapper {
   }
 
   /**
-   * @param \MailPoet\Premium\Models\DynamicSegment[] $segments_data
+   * @param DynamicSegment[] $segments_data
    * @param DynamicSegmentFilter[] $filters_data
    *
    * @return DynamicSegment[]

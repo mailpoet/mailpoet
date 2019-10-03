@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Premium\Models;
+namespace MailPoet\Models;
 
 use MailPoet\Models\Model;
 use MailPoet\WP\Functions as WPFunctions;

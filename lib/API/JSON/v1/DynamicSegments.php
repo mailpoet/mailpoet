@@ -1,21 +1,21 @@
 <?php
 
-namespace MailPoet\Premium\API\JSON\v1;
+namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
+use MailPoet\DynamicSegments\Exceptions\ErrorSavingException;
+use MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException;
+use MailPoet\DynamicSegments\Mappers\DBMapper;
+use MailPoet\DynamicSegments\Mappers\FormDataMapper;
+use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
+use MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount;
+use MailPoet\DynamicSegments\Persistence\Saver;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Model;
-use MailPoet\Premium\DynamicSegments\Exceptions\ErrorSavingException;
-use MailPoet\Premium\DynamicSegments\Exceptions\InvalidSegmentTypeException;
-use MailPoet\Premium\DynamicSegments\Mappers\DBMapper;
-use MailPoet\Premium\DynamicSegments\Mappers\FormDataMapper;
-use MailPoet\Premium\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
-use MailPoet\Premium\DynamicSegments\Persistence\Loading\SubscribersCount;
-use MailPoet\Premium\DynamicSegments\Persistence\Saver;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DynamicSegments extends APIEndpoint {
@@ -56,7 +56,7 @@ class DynamicSegments extends APIEndpoint {
       $id = (int)$data['id'];
     } else {
       return $this->errorResponse([
-        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet-premium'),
+        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
@@ -72,7 +72,7 @@ class DynamicSegments extends APIEndpoint {
       ], $filters[0]->toArray()));
     } catch (\InvalidArgumentException $e) {
       return $this->errorResponse([
-        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet-premium'),
+        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -99,21 +99,21 @@ class DynamicSegments extends APIEndpoint {
   private function getErrorString(InvalidSegmentTypeException $e) {
     switch ($e->getCode()) {
       case InvalidSegmentTypeException::MISSING_TYPE:
-        return WPFunctions::get()->__('Segment type is missing.', 'mailpoet-premium');
+        return WPFunctions::get()->__('Segment type is missing.', 'mailpoet');
       case InvalidSegmentTypeException::INVALID_TYPE:
-        return WPFunctions::get()->__('Segment type is unknown.', 'mailpoet-premium');
+        return WPFunctions::get()->__('Segment type is unknown.', 'mailpoet');
       case InvalidSegmentTypeException::MISSING_ROLE:
-        return WPFunctions::get()->__('Please select user role.', 'mailpoet-premium');
+        return WPFunctions::get()->__('Please select user role.', 'mailpoet');
       case InvalidSegmentTypeException::MISSING_ACTION:
-        return WPFunctions::get()->__('Please select email action.', 'mailpoet-premium');
+        return WPFunctions::get()->__('Please select email action.', 'mailpoet');
       case InvalidSegmentTypeException::MISSING_NEWSLETTER_ID:
-        return WPFunctions::get()->__('Please select an email.', 'mailpoet-premium');
+        return WPFunctions::get()->__('Please select an email.', 'mailpoet');
       case InvalidSegmentTypeException::MISSING_PRODUCT_ID:
-        return WPFunctions::get()->__('Please select category.', 'mailpoet-premium');
+        return WPFunctions::get()->__('Please select category.', 'mailpoet');
       case InvalidSegmentTypeException::MISSING_CATEGORY_ID:
-        return WPFunctions::get()->__('Please select product.', 'mailpoet-premium');
+        return WPFunctions::get()->__('Please select product.', 'mailpoet');
       default:
-        return WPFunctions::get()->__('An error occurred while saving data.', 'mailpoet-premium');
+        return WPFunctions::get()->__('An error occurred while saving data.', 'mailpoet');
     }
   }
 
@@ -122,7 +122,7 @@ class DynamicSegments extends APIEndpoint {
       $id = (int)$data['id'];
     } else {
       return $this->errorResponse([
-        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet-premium'),
+        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
@@ -135,7 +135,7 @@ class DynamicSegments extends APIEndpoint {
       );
     } catch (\InvalidArgumentException $e) {
       return $this->errorResponse([
-        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet-premium'),
+        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -145,7 +145,7 @@ class DynamicSegments extends APIEndpoint {
       $id = (int)$data['id'];
     } else {
       return $this->errorResponse([
-        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet-premium'),
+        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
@@ -158,7 +158,7 @@ class DynamicSegments extends APIEndpoint {
       );
     } catch (\InvalidArgumentException $e) {
       return $this->errorResponse([
-        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet-premium'),
+        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -168,7 +168,7 @@ class DynamicSegments extends APIEndpoint {
       $id = (int)$data['id'];
     } else {
       return $this->errorResponse([
-        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet-premium'),
+        Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
@@ -178,13 +178,13 @@ class DynamicSegments extends APIEndpoint {
       return $this->successResponse(null, ['count' => 1]);
     } catch (\InvalidArgumentException $e) {
       return $this->errorResponse([
-        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet-premium'),
+        Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
       ]);
     }
   }
 
   function listing($data = []) {
-    $listing_data = $this->listing_handler->get('\MailPoet\Premium\Models\DynamicSegment', $data);
+    $listing_data = $this->listing_handler->get('\MailPoet\Models\DynamicSegment', $data);
 
     $data = [];
     foreach ($listing_data['items'] as $segment) {
@@ -208,7 +208,7 @@ class DynamicSegments extends APIEndpoint {
 
   function bulkAction($data = []) {
     try {
-      $meta = $this->bulk_action->apply('\MailPoet\Premium\Models\DynamicSegment', $data);
+      $meta = $this->bulk_action->apply('\MailPoet\Models\DynamicSegment', $data);
       return $this->successResponse(null, $meta);
     } catch (\Exception $e) {
       return $this->errorResponse([
