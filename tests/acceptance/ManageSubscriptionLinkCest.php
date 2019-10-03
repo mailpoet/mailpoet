@@ -7,13 +7,21 @@ use MailPoet\Test\DataFactories\Settings;
 
 class ManageSubscriptionLinkCest {
 
+  /** @var Settings */
+  private $settings;
+
   function __construct() {
     $this->newsletter_title = 'Subscription links Email ' . \MailPoet\Util\Security::generateRandomString();
   }
 
+  protected function _inject(Settings $settings) {
+    $this->settings = $settings;
+  }
+
   function _before() {
-    $settings = new Settings();
-    $settings->withConfirmationEmailEnabled();
+    $this->settings
+      ->withConfirmationEmailEnabled()
+      ->withCronTriggerMethod('WordPress');
   }
 
   function manageSubscriptionLink(\AcceptanceTester $I) {

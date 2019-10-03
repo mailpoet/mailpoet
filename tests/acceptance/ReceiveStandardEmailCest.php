@@ -3,10 +3,20 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Test\DataFactories\Settings;
 
 class ReceiveStandardEmailCest {
 
+  /** @var Settings */
+  private $settings;
+
+  protected function _inject(Settings $settings) {
+    $this->settings = $settings;
+  }
+
   function receiveStandardEmail(\AcceptanceTester $I) {
+    $this->settings->withCronTriggerMethod('WordPress');
+
     $newsletter_title = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
     $standard_template = '[data-automation-id=\'select_template_0\']';
     $title_element = '[data-automation-id=\'newsletter_title\']';

@@ -12,8 +12,15 @@ class WooCommerceListImportPageCest {
   /** @var WooCommerceCustomer */
   private $customer_factory;
 
+  /** @var Settings */
+  private $settings;
+
   /** @var WooCommerceOrder*/
   private $order_factory;
+
+  protected function _inject(Settings $settings) {
+    $this->settings = $settings;
+  }
 
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
@@ -22,8 +29,9 @@ class WooCommerceListImportPageCest {
   }
 
   function importListPageImportTest(\AcceptanceTester $I) {
-    $settings_factory = new Settings();
-    $settings_factory->withWooCommerceListImportPageDisplayed(false);
+    $this->settings
+      ->withWooCommerceListImportPageDisplayed(false)
+      ->withCronTriggerMethod('WordPress');
     $order = $this->order_factory->create();
     $guest_user_data = $order['billing'];
     $registered_customer = $this->customer_factory->withEmail('customer1@email.com')->create();
@@ -82,8 +90,7 @@ class WooCommerceListImportPageCest {
    * @param \AcceptanceTester $I
    */
   function importListPageRedirectionTest(\AcceptanceTester $I) {
-    $settings_factory = new Settings();
-    $settings_factory->withWooCommerceListImportPageDisplayed(false);
+    $this->settings->withWooCommerceListImportPageDisplayed(false);
     $order = $this->order_factory
       ->withDateCreated('2001-08-22T11:11:56') // any time in the past. Must be before the plugin activation
       ->create();

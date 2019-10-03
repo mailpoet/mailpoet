@@ -12,13 +12,23 @@ class SettingsInactiveSubscribersChangeCest {
   const INACTIVE_SUBSCRIBERS_COUNT = 2;
   const INACTIVE_LIST_NAME = 'Lazy Subscribers';
 
+  /** @var Settings */
+  private $settings;
+
+  protected function _inject(Settings $settings) {
+    $this->settings = $settings;
+  }
+
   public function _before() {
     $segment = (new Segment())->withName(self::INACTIVE_LIST_NAME)->create();
     (new Subscriber())->withSegments([$segment])->create();
     for ($i = 0; $i < self::INACTIVE_SUBSCRIBERS_COUNT; $i++) {
       (new Subscriber())->withStatus('inactive')->withSegments([$segment])->create();
     }
-    (new Settings)->withDeactivateSubscriberAfter6Months()->withTrackingEnabled();
+    $this->settings
+      ->withDeactivateSubscriberAfter6Months()
+      ->withTrackingEnabled()
+      ->withCronTriggerMethod('WordPress');
   }
 
   function inactiveSubscribersSettingsChange(\AcceptanceTester $I) {

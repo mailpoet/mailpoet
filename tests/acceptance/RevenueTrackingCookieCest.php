@@ -17,6 +17,7 @@ class RevenueTrackingCookieCest {
 
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
+    $this->settings->withCronTriggerMethod('WordPress');
   }
 
   function cookieIsStoredOnClick(\AcceptanceTester $I) {
@@ -59,7 +60,7 @@ class RevenueTrackingCookieCest {
   }
 
   function cookieIsNotStoredWhenSettingsDisabled(\AcceptanceTester $I) {
-    $I->wantTo('Test Revenue cookie is saved');
+    $I->wantTo('Test Revenue cookie is not saved');
     $newsletter_subject = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
     $newsletter = (new Newsletter())->withSubject($newsletter_subject)->create();
     // make sure the settings is enabled
