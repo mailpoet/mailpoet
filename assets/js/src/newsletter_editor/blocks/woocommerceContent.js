@@ -3,6 +3,7 @@ import App from 'newsletter_editor/App';
 import BaseBlock from 'newsletter_editor/blocks/base';
 
 const BlockModel = BaseBlock.BlockModel.extend({
+  stale: ['styles'],
   defaults: function () {
     return this._getDefaults({
       type: 'woocommerceContent',
@@ -40,6 +41,13 @@ const BlockView = BaseBlock.BlockView.extend({
   onRender: function () {
     this.toolsView = new BlockToolsView({ model: this.model });
     this.showChildView('toolsRegion', this.toolsView);
+  },
+  templateContext: function templateContext() {
+    return {
+      viewCid: this.cid,
+      model: this.model.toJSON(),
+      styles: this.model.get('styles').toJSON(),
+    };
   },
 });
 
