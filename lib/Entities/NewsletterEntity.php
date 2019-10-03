@@ -9,6 +9,7 @@ use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\Common\Collections\Collection;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\ORM\EntityNotFoundException;
 use MailPoetVendor\Doctrine\ORM\Mapping\Column;
 
@@ -352,9 +353,12 @@ class NewsletterEntity {
   }
 
   /**
-   * @param SendingQueueEntity|null $queue
+   * @return SendingQueueEntity|null
    */
-  function setQueue($queue) {
-    $this->queue = $queue;
+  function getLatestQueue() {
+    $criteria = new Criteria();
+    $criteria->orderBy(['id' => Criteria::DESC]);
+    $criteria->setMaxResults(1);
+    return $this->queues->matching($criteria)->first() ?: null;
   }
 }
