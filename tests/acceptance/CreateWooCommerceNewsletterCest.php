@@ -16,7 +16,6 @@ class CreateWooCommerceNewsletterCest {
     $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('[data-automation-id="new_email"]');
-    $I->dontSeeElement('[data-automation-id="woocommerce_premium_feature_notice"]');
     $I->click('[data-automation-id="create_woocommerce"]');
     $I->click('[data-automation-id="create_woocommerce_first_purchase"]');
 
