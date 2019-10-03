@@ -12,15 +12,21 @@ use MailPoet\Test\DataFactories\Subscriber;
 
 class ReceivePostNotificationCest {
 
-  function _before() {
-    $settings = new Settings();
-    $settings->withTrackingDisabled();
+  /** @var Settings */
+  private $settings;
+
+  protected function _inject(Settings $settings) {
+    $this->settings = $settings;
   }
 
   function receivePostNotification(\AcceptanceTester $I) {
     $I->wantTo('Receive a post notification email');
     $newsletter_subject = 'Post Notification Receive Test' . \MailPoet\Util\Security::generateRandomString();
     $post_title = 'A post ' . \MailPoet\Util\Security::generateRandomString();
+
+    $this->settings
+      ->withTrackingDisabled()
+      ->withCronTriggerMethod('WordPress');
 
     $segment_factory = new Segment();
     $segment = $segment_factory->withName('Receive Post Notification List')->create();
