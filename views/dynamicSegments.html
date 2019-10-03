@@ -1,0 +1,88 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+  <div id="dynamic_segments_container"></div>
+
+  <script type="text/javascript">
+    var mailpoet_listing_per_page = <%= items_per_page %>;
+    var wordpress_editable_roles_list = <%= json_encode(wordpress_editable_roles_list)  %>;
+    var mailpoet_newsletters_list = <%= json_encode(newsletters_list)  %>;
+    var mailpoet_product_categories = <%= json_encode(product_categories)  %>;
+    mailpoet_product_categories = mailpoet_product_categories.map(function(category) {
+      category.id = category.cat_ID;
+      return category;
+    });
+    var mailpoet_products = <%= json_encode(products) %>;
+    mailpoet_products = mailpoet_products.map(function(product) {
+      product.id = product.ID;
+      return product;
+    });
+    var is_woocommerce_active = <%= json_encode(is_woocommerce_active)  %>;
+    var mailpoet_beacon_articles = ['5a574bd92c7d3a194368233e'];
+  </script>
+<% endblock %>
+
+<% block translations %>
+  <%= localize({
+    'pageTitle': __('Segments'),
+    'formPageTitle': __('Segment'),
+    'formSegmentTitle': __('Segment'),
+    'new': __('Add New'),
+    'backToList': __('Back'),
+    'name': __('Name'),
+    'description': __('Description'),
+    'descriptionTip': __('This text box is for your own use and is never shown to your subscribers.'),
+    'segmentUpdated': __('Segment successfully updated!'),
+    'segmentAdded': __('Segment successfully added!'),
+    'save': __('Save'),
+    'segmentType': __('Type'),
+    'wpUserRole': __('WordPress user roles'),
+    'email': __('Email'),
+    'nameColumn': __('Name'),
+    'subscribersCountColumn': __('Number of subscribers'),
+    'updatedAtColumn': __('Modified on'),
+    'loadingDynamicSegmentItems': __('Loading data…'),
+    'noDynamicSegmentItemsFound': __('No segments found'),
+    'numberOfItemsSingular': __('1 item'),
+    'numberOfItemsMultiple': __('%$1d items'),
+    'previousPage': __('Previous page'),
+    'firstPage': __('First page'),
+    'nextPage': __('Next page'),
+    'lastPage': __('Last page'),
+    'currentPage': __('Current page'),
+    'pageOutOf': _x('of', 'Page X of Y'),
+    'edit': __('Edit'),
+    'viewSubscribers': __('View Subscribers'),
+    'notSentYet': __('Not sent yet'),
+    'selectLinkPlaceholder': __('Select link'),
+    'selectNewsletterPlaceholder': __('Select email'),
+    'selectActionPlaceholder': __('Select action'),
+    'selectUserRolePlaceholder': __('Select user role'),
+    'emailActionOpened': _x('opened', 'Dynamic segment creation: when newsletter was opened'),
+    'emailActionNotOpened': _x('not opened', 'Dynamic segment creation: when newsletter was not opened'),
+    'emailActionClicked': _x('clicked', 'Dynamic segment creation: when a newsletter link was clicked'),
+    'emailActionNotClicked': _x('not clicked', 'Dynamic segment creation: when a newsletter link was not clicked'),
+    'searchLabel': __('Search'),
+    'segmentsTip': _x('Tip', 'A note about dynamic segments usage'),
+    'segmentsTipText': __('segments allow you to group your subscribers by other criteria, such as events and actions.'),
+    'segmentsTipLink': __('Read more.'),
+
+    'oneSegmentTrashed': __('1 segment was moved to the trash.'),
+    'multipleSegmentsTrashed': __('%$1d segments were moved to the trash.'),
+    'oneSegmentRestored': __('1 segment has been restored from the Trash.'),
+    'multipleSegmentsRestored': __('%$1d segments have been restored from the Trash.'),
+    'trash': __('Trash'),
+    'moveToTrash': __('Move to trash'),
+    'emptyTrash': __('Empty Trash'),
+    'restore': __('Restore'),
+    'deletePermanently': __('Delete permanently'),
+    'oneSegmentDeleted': __('1 segment was permanently deleted.'),
+    'multipleSegmentsDeleted': __('%$1d segments were permanently deleted.'),
+    'permanentlyDeleted': __('%d segments were permanently deleted.'),
+    'wooPurchasedCategory': __('Customers who have purchased in this category…'),
+    'wooPurchasedProduct': __('Customers who have purchased this product…'),
+    'selectWooPurchasedCategory': __('Search category'),
+    'selectWooPurchasedProduct': __('Search products'),
+    'woocommerce': _x('WooCommerce', 'Dynamic segment creation: User selects this to use any woocommerce filters'),
+  }) %>
+<% endblock %>
