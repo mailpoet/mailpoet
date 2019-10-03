@@ -4,9 +4,12 @@ import BaseBlock from 'newsletter_editor/blocks/base';
 
 const BlockModel = BaseBlock.BlockModel.extend({
   defaults: function () {
-    return {
+    return this._getDefaults({
       type: 'woocommerceContent',
-    };
+      styles: {
+        titleColor: '#000000',
+      },
+    }, App.getConfig().get('blockDefaults.woocommerceContent'));
   },
 });
 

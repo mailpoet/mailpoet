@@ -66,6 +66,9 @@ class NewsletterEditor {
       'current_wp_user' => array_merge($subscriber_data, $this->wp->wpGetCurrentUser()->to_array()),
       'sub_menu' => Menu::MAIN_PAGE_SLUG,
       'mss_active' => Bridge::isMPSendingServiceEnabled(),
+      'woocommerce' => [
+        'email_base_color' => $this->wp->getOption('woocommerce_email_base_color', '#000000'),
+      ],
     ];
     $this->wp->wpEnqueueMedia();
     $this->wp->wpEnqueueStyle('editor', $this->wp->includesUrl('css/editor.css'));
