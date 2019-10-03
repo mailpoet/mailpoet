@@ -50,6 +50,7 @@ class Migrator {
       'log',
       'user_flags',
       'feature_flags',
+      'dynamic_segment_filters',
     ];
   }
 
@@ -533,6 +534,19 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id),',
       'UNIQUE KEY name (name)',
+    ];
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function dynamicSegmentFilters() {
+    $attributes = [
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'segment_id int(11) unsigned NOT NULL,',
+      'created_at timestamp NULL,',
+      'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'filter_data longblob,',
+      'PRIMARY KEY (id),',
+      'KEY segment_id (segment_id)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
