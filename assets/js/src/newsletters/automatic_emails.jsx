@@ -8,7 +8,7 @@ import AutomaticEmailsBreadcrumb from 'newsletters/types/automatic_emails/breadc
 import SendEventConditions from 'newsletters/automatic_emails/send_event_conditions.jsx';
 import Listings from 'newsletters/automatic_emails/listings.jsx';
 
-const emails = window.mailpoet_premium_automatic_emails || [];
+const emails = window.mailpoet_woocommerce_automatic_emails || [];
 const newslettersContainer = document.getElementById('newsletters_container');
 
 if (newslettersContainer && !_.isEmpty(emails)) {

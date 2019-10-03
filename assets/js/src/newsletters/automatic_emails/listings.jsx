@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
-const automaticEmails = window.mailpoet_premium_automatic_emails || {};
+const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
 
 const messages = {
   onTrash: (response) => {
