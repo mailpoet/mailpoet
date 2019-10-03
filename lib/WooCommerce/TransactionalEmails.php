@@ -244,51 +244,7 @@ class TransactionalEmails {
            ],
           3 =>
            [
-            'type' => 'container',
-            'columnLayout' => false,
-            'orientation' => 'horizontal',
-            'image' =>
-             [
-              'src' => null,
-              'display' => 'scale',
-             ],
-            'styles' =>
-             [
-              'block' =>
-               [
-                'backgroundColor' => 'transparent',
-               ],
-             ],
-            'blocks' =>
-             [
-              0 =>
-               [
-                'type' => 'container',
-                'columnLayout' => false,
-                'orientation' => 'vertical',
-                'image' =>
-                 [
-                  'src' => null,
-                  'display' => 'scale',
-                 ],
-                'styles' =>
-                 [
-                  'block' =>
-                   [
-                    'backgroundColor' => 'transparent',
-                   ],
-                 ],
-                'blocks' =>
-                 [
-                  0 =>
-                   [
-                    'type' => 'text',
-                    'text' => '<p style="text-align: center;"><strong>WIDGET "WC CONTENT" GOES HERE</strong></p>
-    <p style="text-align: center;"><strong>(instead of the column)</strong></p>',
-                   ],
-                 ],
-               ],
-             ],
+             'type' => 'woocommerceContent',
            ],
           4 =>
            [
