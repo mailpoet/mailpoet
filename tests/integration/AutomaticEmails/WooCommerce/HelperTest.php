@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Test\AutomaticEmails\WooCommerce;
+namespace MailPoet\AutomaticEmails\WooCommerce;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
