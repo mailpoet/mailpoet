@@ -122,13 +122,6 @@ const baseConfig = {
         ],
       },
       {
-        test: /form.jsx/i,
-        use: [
-          'expose-loader?' + globalPrefix + '.Form',
-          'babel-loader'
-        ]
-      },
-      {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/badges/stats.jsx'),
         use: [
           'expose-loader?' + globalPrefix + '.StatsBadge',
@@ -211,7 +204,6 @@ const adminConfig = {
       'prop-types',
       'classnames',
       'help-tooltip.jsx',
-      'form/form.jsx',
       'listing/listing.jsx',
       'newsletters/badges/stats.jsx',
       'common/check_spf_record.jsx',
