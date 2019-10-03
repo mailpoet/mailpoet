@@ -36,10 +36,7 @@ class NewsletterTypes extends React.Component {
 
     return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
       const email = automaticEmail;
-      const onClick = window.mailpoet_premium_active
-        ? _.partial(this.setupNewsletter, automaticEmail.slug)
-        : undefined;
-      email.disabled = !window.mailpoet_premium_active;
+      const onClick = _.partial(this.setupNewsletter, automaticEmail.slug);
       email.action = (() => (
         <div>
           <a
@@ -47,7 +44,7 @@ class NewsletterTypes extends React.Component {
             onClick={onClick}
             role="button"
             tabIndex={0}
-            disabled={!window.mailpoet_premium_active || this.state.isCreating}
+            disabled={this.state.isCreating}
             onKeyDown={(event) => {
               if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
               ) {
@@ -271,13 +268,6 @@ class NewsletterTypes extends React.Component {
                     {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
                   </h3>
                   <p>{type.description}</p>
-                  {type.disabled && (
-                  <p data-automation-id={`${type.slug}_premium_feature_notice`}>
-                    <span style={{ color: 'red' }}>{MailPoet.I18n.t('premiumFeature')}</span>
-                    {' '}
-                    <a href="?page=mailpoet-premium">{MailPoet.I18n.t('learnMore')}</a>
-                  </p>
-                  )}
                   { type.videoGuide && (
                     <a className={badgeClassName} href={type.videoGuide} data-beacon-article={type.videoGuideBeacon} target="_blank" rel="noopener noreferrer">
                       <span className="dashicons dashicons-format-video" />
