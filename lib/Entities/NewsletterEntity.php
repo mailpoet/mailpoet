@@ -130,14 +130,15 @@ class NewsletterEntity {
   private $options;
 
   /**
-   * @OneToOne(targetEntity="MailPoet\Entities\SendingQueueEntity", mappedBy="newsletter")
-   * @var SendingQueueEntity|null
+   * @OneToMany(targetEntity="MailPoet\Entities\SendingQueueEntity", mappedBy="newsletter")
+   * @var SendingQueueEntity[]|Collection
    */
-  private $queue;
+  private $queues;
 
   function __construct() {
     $this->newsletter_segments = new ArrayCollection();
     $this->options = new ArrayCollection();
+    $this->queues = new ArrayCollection();
   }
 
   /**
@@ -344,10 +345,10 @@ class NewsletterEntity {
   }
 
   /**
-   * @return SendingQueueEntity|null
+   * @return SendingQueueEntity[]|Collection
    */
-  function getQueue() {
-    return $this->queue;
+  function getQueues() {
+    return $this->queues;
   }
 
   /**
