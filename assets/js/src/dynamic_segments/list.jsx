@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
-import Listing from 'listing';
+import Listing from 'listing/listing.jsx';
 import PropTypes from 'prop-types';
 
 const columns = [
