@@ -8,7 +8,6 @@ use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
-use MailPoetVendor\Doctrine\Common\Collections\Collection;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\ORM\EntityNotFoundException;
 use MailPoetVendor\Doctrine\ORM\Mapping\Column;
@@ -120,19 +119,19 @@ class NewsletterEntity {
 
   /**
    * @OneToMany(targetEntity="MailPoet\Entities\NewsletterSegmentEntity", mappedBy="newsletter")
-   * @var NewsletterSegmentEntity[]|Collection
+   * @var NewsletterSegmentEntity[]|ArrayCollection
    */
   private $newsletter_segments;
 
   /**
    * @OneToMany(targetEntity="MailPoet\Entities\NewsletterOptionEntity", mappedBy="newsletter")
-   * @var NewsletterOptionEntity[]|Collection
+   * @var NewsletterOptionEntity[]|ArrayCollection
    */
   private $options;
 
   /**
    * @OneToMany(targetEntity="MailPoet\Entities\SendingQueueEntity", mappedBy="newsletter")
-   * @var SendingQueueEntity[]|Collection
+   * @var SendingQueueEntity[]|ArrayCollection
    */
   private $queues;
 
@@ -332,21 +331,21 @@ class NewsletterEntity {
   }
 
   /**
-   * @return NewsletterSegmentEntity[]|Collection
+   * @return NewsletterSegmentEntity[]|ArrayCollection
    */
   function getNewsletterSegments() {
     return $this->newsletter_segments;
   }
 
   /**
-   * @return NewsletterOptionEntity[]|Collection
+   * @return NewsletterOptionEntity[]|ArrayCollection
    */
   function getOptions() {
     return $this->options;
   }
 
   /**
-   * @return SendingQueueEntity[]|Collection
+   * @return SendingQueueEntity[]|ArrayCollection
    */
   function getQueues() {
     return $this->queues;
