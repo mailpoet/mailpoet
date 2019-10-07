@@ -4,7 +4,7 @@ namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Logging\Logger;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
@@ -78,14 +78,14 @@ class Scheduler {
   }
 
   function processPostNotificationNewsletter($newsletter, $queue) {
-    Logger::getLogger('post-notifications')->addInfo(
+    LoggerFactory::getLogger('post-notifications')->addInfo(
       'process post notification in scheduler',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
     );
     // ensure that segments exist
     $segments = $newsletter->segments()->findMany();
     if (empty($segments)) {
-      Logger::getLogger('post-notifications')->addInfo(
+      LoggerFactory::getLogger('post-notifications')->addInfo(
         'post notification no segments',
         ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
       );
@@ -97,7 +97,7 @@ class Scheduler {
     $subscribers_count = $this->subscribers_finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
 
     if (empty($subscribers_count)) {
-      Logger::getLogger('post-notifications')->addInfo(
+      LoggerFactory::getLogger('post-notifications')->addInfo(
         'post notification no subscribers',
         ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
       );
@@ -114,7 +114,7 @@ class Scheduler {
     $queue->save();
     // update notification status
     $notification_history->setStatus(Newsletter::STATUS_SENDING);
-    Logger::getLogger('post-notifications')->addInfo(
+    LoggerFactory::getLogger('post-notifications')->addInfo(
       'post notification set status to sending',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
     );

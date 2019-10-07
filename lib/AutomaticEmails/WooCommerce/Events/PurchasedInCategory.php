@@ -3,7 +3,7 @@
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
-use MailPoet\Logging\Logger;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
 use MailPoet\WooCommerce\Helper as WCHelper;
@@ -85,7 +85,7 @@ class PurchasedInCategory {
   function scheduleEmail($order_id) {
     $order_details = $this->woocommerce_helper->wcGetOrder($order_id);
     if (!$order_details || !$order_details->get_billing_email()) {
-      Logger::getLogger(self::SLUG)->addInfo(
+      LoggerFactory::getLogger(self::SLUG)->addInfo(
         'Email not scheduled because the order customer was not found',
         ['order_id' => $order_id]
       );
@@ -96,7 +96,7 @@ class PurchasedInCategory {
     $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customer_email);
 
     if (!$subscriber instanceof Subscriber) {
-      Logger::getLogger(self::SLUG)->addInfo(
+      LoggerFactory::getLogger(self::SLUG)->addInfo(
         'Email not scheduled because the customer was not found as WooCommerce list subscriber',
         ['order_id' => $order_id, 'customer_email' => $customer_email]
       );
@@ -119,7 +119,7 @@ class PurchasedInCategory {
       return !empty($matched_categories);
     };
 
-    Logger::getLogger(self::SLUG)->addInfo(
+    LoggerFactory::getLogger(self::SLUG)->addInfo(
       'Email scheduled', [
         'order_id' => $order_id,
         'customer_email' => $customer_email,

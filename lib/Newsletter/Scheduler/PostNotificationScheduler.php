@@ -2,7 +2,7 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
-use MailPoet\Logging\Logger;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -24,7 +24,7 @@ class PostNotificationScheduler {
   const INTERVAL_MONTHLY = 'monthly';
 
   function transitionHook($new_status, $old_status, $post) {
-    Logger::getLogger('post-notifications')->addInfo(
+    LoggerFactory::getLogger('post-notifications')->addInfo(
       'transition post notification hook initiated',
       [
         'post_id' => $post->ID,
@@ -40,7 +40,7 @@ class PostNotificationScheduler {
   }
 
   function schedulePostNotification($post_id) {
-    Logger::getLogger('post-notifications')->addInfo(
+    LoggerFactory::getLogger('post-notifications')->addInfo(
       'schedule post notification hook',
       ['post_id' => $post_id]
     );
@@ -88,7 +88,7 @@ class PostNotificationScheduler {
     $sending_task->status = SendingQueue::STATUS_SCHEDULED;
     $sending_task->scheduled_at = $next_run_date;
     $sending_task->save();
-    Logger::getLogger('post-notifications')->addInfo(
+    LoggerFactory::getLogger('post-notifications')->addInfo(
       'schedule post notification',
       ['sending_task' => $sending_task->id(), 'scheduled_at' => $next_run_date]
     );

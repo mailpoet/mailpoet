@@ -2,7 +2,7 @@
 
 namespace MailPoet\Services\Bridge;
 
-use MailPoet\Logging\Logger;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class API {
@@ -81,7 +81,7 @@ class API {
   }
 
   function logCurlInformation($headers, $info) {
-    Logger::getLogger('mss')->addInfo(
+    LoggerFactory::getLogger('mss')->addInfo(
       'requests-curl.after_request',
       ['headers' => $headers, 'curl_info' => $info]
     );
