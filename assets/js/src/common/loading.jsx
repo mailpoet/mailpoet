@@ -2,7 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 
 class Loading extends React.Component {
-  componentWillMount() {
+  componentDidMount() {
     MailPoet.Modal.loading(true);
   }
 
