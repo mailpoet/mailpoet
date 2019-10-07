@@ -78,8 +78,11 @@ class ListingPages extends React.Component {
       if (this.props.page > 1) {
         previousPage = (
           <a
-            href="javascript:;"
-            onClick={this.setPreviousPage}
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              this.setPreviousPage(event);
+            }}
             className="prev-page button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('previousPage')}</span>
@@ -91,8 +94,11 @@ class ListingPages extends React.Component {
       if (this.props.page > 2) {
         firstPage = (
           <a
-            href="javascript:;"
-            onClick={this.setFirstPage}
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              this.setFirstPage(event);
+            }}
             className="first-page button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('firstPage')}</span>
@@ -104,8 +110,11 @@ class ListingPages extends React.Component {
       if (this.props.page < this.getLastPage()) {
         nextPage = (
           <a
-            href="javascript:;"
-            onClick={this.setNextPage}
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              this.setNextPage(event);
+            }}
             className="next-page button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('nextPage')}</span>
@@ -117,8 +126,11 @@ class ListingPages extends React.Component {
       if (this.props.page < this.getLastPage() - 1) {
         lastPage = (
           <a
-            href="javascript:;"
-            onClick={this.setLastPage}
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              this.setLastPage();
+            }}
             className="last-page button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('lastPage')}</span>
