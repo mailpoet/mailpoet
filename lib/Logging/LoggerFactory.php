@@ -24,6 +24,9 @@ use MailPoetVendor\Monolog\Processor\WebProcessor;
  */
 class LoggerFactory {
 
+  /** @var LoggerFactory */
+  private static $instance;
+
   /** @var \MailPoetVendor\Monolog\Logger[] */
   private static $instance = [];
 
@@ -49,6 +52,12 @@ class LoggerFactory {
       self::$instance[$name]->pushHandler(new LogHandler(self::getDefaultLogLevel()));
     }
     return self::$instance[$name];
+
+  static function getInstance() {
+    if (!self::$instance instanceof LoggerFactory) {
+      self::$instance = new LoggerFactory();
+    }
+    return self::$instance;
   }
 
   private static function getDefaultLogLevel() {
