@@ -2,6 +2,10 @@
   @include clearfix();
 }
 
+.relative-holder {
+  position: relative;
+}
+
 a:focus {
   outline: 0 none !important;
 }

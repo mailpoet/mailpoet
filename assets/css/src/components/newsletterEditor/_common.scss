@@ -239,8 +239,11 @@ select.mailpoet_font-size {
 }
 
 .tooltip-help-send-preview {
+  color: #fff;
+  margin-top: -10px;
   position: absolute;
-  right: 15px;
+  right: 4px;
+  top: 50%;
 }
 
 .tooltip-help-designer-ideal-width {
