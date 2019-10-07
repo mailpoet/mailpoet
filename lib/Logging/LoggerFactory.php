@@ -22,7 +22,7 @@ use MailPoetVendor\Monolog\Processor\WebProcessor;
  *
  * If WP_DEBUG is true additional information will be added to every log message.
  */
-class Logger {
+class LoggerFactory {
 
   /** @var \MailPoetVendor\Monolog\Logger[] */
   private static $instance = [];

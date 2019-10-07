@@ -7,7 +7,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
-use MailPoet\Logging\Logger;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
@@ -55,7 +55,7 @@ class SendingQueue {
       if (!$queue instanceof SendingTask) continue;
       ScheduledTaskModel::touchAllByIds([$queue->task_id]);
 
-      Logger::getLogger('newsletters')->addInfo(
+      LoggerFactory::getLogger('newsletters')->addInfo(
         'sending queue processing',
         ['task_id' => $queue->task_id]
       );
@@ -66,7 +66,7 @@ class SendingQueue {
       // pre-process newsletter (render, replace shortcodes/links, etc.)
       $newsletter = $this->newsletter_task->preProcessNewsletter($newsletter, $queue);
       if (!$newsletter) {
-        Logger::getLogger('newsletters')->addInfo(
+        LoggerFactory::getLogger('newsletters')->addInfo(
           'delete task in sending queue',
           ['task_id' => $queue->task_id]
         );
@@ -87,7 +87,7 @@ class SendingQueue {
       // get subscribers
       $subscriber_batches = new BatchIterator($queue->task_id, $this->batch_size);
       foreach ($subscriber_batches as $subscribers_to_process_ids) {
-        Logger::getLogger('newsletters')->addInfo(
+        LoggerFactory::getLogger('newsletters')->addInfo(
           'subscriber batch processing',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id, 'subscriber_batch_count' => count($subscribers_to_process_ids)]
         );
@@ -118,7 +118,7 @@ class SendingQueue {
             continue;
           }
         }
-        Logger::getLogger('newsletters')->addInfo(
+        LoggerFactory::getLogger('newsletters')->addInfo(
           'before queue chunk processing',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id, 'found_subscribers_count' => count($found_subscribers)]
         );
@@ -127,12 +127,12 @@ class SendingQueue {
           $_newsletter,
           $found_subscribers
         );
-        Logger::getLogger('newsletters')->addInfo(
+        LoggerFactory::getLogger('newsletters')->addInfo(
           'after queue chunk processing',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
         );
         if ($queue->status === ScheduledTaskModel::STATUS_COMPLETED) {
-          Logger::getLogger('newsletters')->addInfo(
+          LoggerFactory::getLogger('newsletters')->addInfo(
             'completed newsletter sending',
             ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
           );

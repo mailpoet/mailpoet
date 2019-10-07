@@ -2,7 +2,7 @@
 
 namespace MailPoet\Newsletter;
 
-use MailPoet\Logging\Logger;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Editor\Transformer;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -42,7 +42,7 @@ class AutomatedLatestContent {
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     WPFunctions::get()->wpSetCurrentUser(0);
 
-    Logger::getLogger('post-notifications')->addInfo(
+    LoggerFactory::getLogger('post-notifications')->addInfo(
       'loading automated latest content',
       ['args' => $args, 'posts_to_exclude' => $posts_to_exclude, 'newsletter_id' => $this->newsletter_id, 'newer_than_timestamp' => $this->newer_than_timestamp]
     );
@@ -91,7 +91,7 @@ class AutomatedLatestContent {
     WPFunctions::get()->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filter_priority);
     $this->_attachSentPostsFilter();
 
-    Logger::getLogger('post-notifications')->addInfo(
+    LoggerFactory::getLogger('post-notifications')->addInfo(
       'getting automated latest content',
       ['parameters' => $parameters]
     );
@@ -166,7 +166,7 @@ class AutomatedLatestContent {
         'post_date' => $post->post_date,
       ];
     }
-    Logger::getLogger('post-notifications')->addInfo(
+    LoggerFactory::getLogger('post-notifications')->addInfo(
       'automated latest content loaded posts',
       ['posts' => $posts_to_log]
     );
