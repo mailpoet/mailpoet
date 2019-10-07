@@ -77,8 +77,11 @@ class ListingItem extends React.Component {
                 {(!isFirst) ? ' | ' : ''}
                 <a
                   type="button"
-                  href="javascript:;"
-                  onClick={() => this.handleTrashItem(this.props.item.id)}
+                  href="#"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    this.handleTrashItem(this.props.item.id);
+                  }}
                 >
                   {MailPoet.I18n.t('moveToTrash')}
                 </a>
@@ -122,12 +125,13 @@ class ListingItem extends React.Component {
               >
                 {(!isFirst) ? ' | ' : ''}
                 <a
-                  href="javascript:;"
-                  onClick={
-                    (action.onClick !== undefined)
-                      ? () => action.onClick(this.props.item, this.props.onRefreshItems)
-                      : false
-                  }
+                  href="#"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    if (action.onClick !== undefined) {
+                      action.onClick(this.props.item, this.props.onRefreshItems);
+                    }
+                  }}
                 >
                   { action.label }
                 </a>
@@ -157,8 +161,11 @@ class ListingItem extends React.Component {
           <div className="row-actions">
             <span>
               <a
-                href="javascript:;"
-                onClick={() => this.handleRestoreItem(this.props.item.id)}
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault();
+                  this.handleRestoreItem(this.props.item.id);
+                }}
               >
                 {MailPoet.I18n.t('restore')}
               </a>
@@ -167,8 +174,11 @@ class ListingItem extends React.Component {
             <span className="delete">
               <a
                 className="submitdelete"
-                href="javascript:;"
-                onClick={() => this.handleDeleteItem(this.props.item.id)}
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault();
+                  this.handleDeleteItem(this.props.item.id);
+                }}
               >
                 {MailPoet.I18n.t('deletePermanently')}
               </a>

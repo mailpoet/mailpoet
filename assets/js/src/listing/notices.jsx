@@ -84,9 +84,12 @@ const MailerError = (props) => {
       { props.mta_method === 'PHPMail' ? <PHPMailerCheckSettingsNotice /> : <MailerCheckSettingsNotice /> }
       <p>
         <a
-          href="javascript:;"
+          href="#"
           className="button button-primary"
-          onClick={resumeMailerSending}
+          onClick={(event) => {
+            event.preventDefault();
+            resumeMailerSending(event);
+          }}
         >
           { MailPoet.I18n.t('mailerResumeSendingButton') }
         </a>

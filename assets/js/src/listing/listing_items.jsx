@@ -62,8 +62,11 @@ class ListingItems extends React.Component { // eslint-disable-line react/prefer
             }
               &nbsp;
             <a
-              onClick={this.props.onSelectAll}
-              href="javascript:;"
+              href="#"
+              onClick={(event) => {
+                event.preventDefault();
+                this.props.onSelectAll(event);
+              }}
             >
               {
                 (this.props.selection !== 'all')

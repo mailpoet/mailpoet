@@ -72,8 +72,11 @@ const LinkButton = ({ className, onClick, children }) => (
   <a
     className={classNames('button', className)}
     style={{ display: 'inline-block' }}
-    href="javascript:;"
-    onClick={onClick}
+    href="#"
+    onClick={(event) => {
+      event.preventDefault();
+      onClick(event);
+    }}
   >
     {children}
   </a>

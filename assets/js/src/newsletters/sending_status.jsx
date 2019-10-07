@@ -152,8 +152,11 @@ const ListingItem = ({
           <br />
           <a
             className="button"
-            href="javascript:;"
-            onClick={resend}
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              resend();
+            }}
           >
             {MailPoet.I18n.t('resend')}
           </a>

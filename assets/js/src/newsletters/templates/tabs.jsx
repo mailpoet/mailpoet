@@ -7,9 +7,12 @@ const Tabs = ({ tabs, selected, select }) => (
       {tabs.map(({ name, label }) => (
         <li key={name}>
           <a
-            href="javascript:"
+            href="#"
             className={selected === name ? 'current' : ''}
-            onClick={() => select(name)}
+            onClick={(event) => {
+              event.preventDefault();
+              select(name);
+            }}
           >
             {' '}
             {label}

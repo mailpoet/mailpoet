@@ -191,7 +191,6 @@ class FormList extends React.Component {
           {' '}
           <button
             className="page-title-action"
-            href="javascript:;"
             onClick={this.createForm}
             data-automation-id="create_new_form"
             type="button"

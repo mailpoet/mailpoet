@@ -26,9 +26,12 @@ class ListingGroups extends React.Component {
         <li key={group.name}>
           {(index > 0) ? ' |' : ''}
           <a
-            href="javascript:;"
+            href="#"
             className={classes}
-            onClick={() => this.handleSelect(group.name)}
+            onClick={(event) => {
+              event.preventDefault();
+              this.handleSelect(group.name);
+            }}
             data-automation-id={`filters_${group.label.replace(' ', '_').toLowerCase()}`}
           >
             {group.label}

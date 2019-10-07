@@ -193,8 +193,11 @@ class NewsletterListStandard extends React.Component {
           <strong>
             <a
               className="row-title"
-              href="javascript:;"
-              onClick={() => confirmEdit(newsletter)}
+              href="#"
+              onClick={(event) => {
+                event.preventDefault();
+                confirmEdit(newsletter);
+              }}
             >
               { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
             </a>
