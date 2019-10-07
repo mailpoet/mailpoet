@@ -28,7 +28,14 @@ class LoggerFactory {
   private static $instance;
 
   /** @var \MailPoetVendor\Monolog\Logger[] */
-  private static $logger_instances = [];
+  private $logger_instances = [];
+
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct(SettingsController $settings) {
+    $this->settings = $settings;
+  }
 
   /**
    * @param string $name
@@ -36,34 +43,33 @@ class LoggerFactory {
    *
    * @return \MailPoetVendor\Monolog\Logger
    */
-  public static function getLogger($name = 'MailPoet', $attach_processors = WP_DEBUG) {
-    if (!isset(self::$logger_instances[$name])) {
-      self::$logger_instances[$name] = new \MailPoetVendor\Monolog\Logger($name);
+  function getLogger($name = 'MailPoet', $attach_processors = WP_DEBUG) {
+    if (!isset($this->logger_instances[$name])) {
+      $this->logger_instances[$name] = new \MailPoetVendor\Monolog\Logger($name);
 
       if ($attach_processors) {
         // Adds the line/file/class/method from which the log call originated
-        self::$logger_instances[$name]->pushProcessor(new IntrospectionProcessor());
+        $this->logger_instances[$name]->pushProcessor(new IntrospectionProcessor());
         // Adds the current request URI, request method and client IP to a log record
-        self::$logger_instances[$name]->pushProcessor(new WebProcessor());
+        $this->logger_instances[$name]->pushProcessor(new WebProcessor());
         // Adds the current memory usage to a log record
-        self::$logger_instances[$name]->pushProcessor(new MemoryUsageProcessor());
+        $this->logger_instances[$name]->pushProcessor(new MemoryUsageProcessor());
       }
 
-      self::$logger_instances[$name]->pushHandler(new LogHandler(self::getDefaultLogLevel()));
+      $this->logger_instances[$name]->pushHandler(new LogHandler($this->getDefaultLogLevel()));
     }
-    return self::$logger_instances[$name];
+    return $this->logger_instances[$name];
   }
 
   static function getInstance() {
     if (!self::$instance instanceof LoggerFactory) {
-      self::$instance = new LoggerFactory();
+      self::$instance = new LoggerFactory(new SettingsController);
     }
     return self::$instance;
   }
 
-  private static function getDefaultLogLevel() {
-    $settings = new SettingsController();
-    $log_level = $settings->get('logging', 'errors');
+  private function getDefaultLogLevel() {
+    $log_level = $this->settings->get('logging', 'errors');
     switch ($log_level) {
       case 'everything':
         return \MailPoetVendor\Monolog\Logger::DEBUG;
