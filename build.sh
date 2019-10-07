@@ -127,7 +127,6 @@ rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font/cap
 
 # Copy release files.
 echo '[BUILD] Copying release files'
-cp .htaccess $plugin_name
 cp license.txt $plugin_name
 cp index.php $plugin_name
 cp $plugin_name-cron.php $plugin_name
