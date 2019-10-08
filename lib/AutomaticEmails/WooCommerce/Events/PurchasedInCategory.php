@@ -20,12 +20,16 @@ class PurchasedInCategory {
   /** @var AutomaticEmailScheduler */
   private $scheduler;
 
+  /** @var LoggerFactory */
+  private $logger_factory;
+
   function __construct(WCHelper $woocommerce_helper = null) {
     if ($woocommerce_helper === null) {
       $woocommerce_helper = new WCHelper();
     }
     $this->woocommerce_helper = $woocommerce_helper;
     $this->scheduler = new AutomaticEmailScheduler();
+    $this->logger_factory = LoggerFactory::getInstance();
   }
 
   function getEventDetails() {
@@ -85,7 +89,7 @@ class PurchasedInCategory {
   function scheduleEmail($order_id) {
     $order_details = $this->woocommerce_helper->wcGetOrder($order_id);
     if (!$order_details || !$order_details->get_billing_email()) {
-      LoggerFactory::getLogger(self::SLUG)->addInfo(
+      $this->logger_factory->getLogger(self::SLUG)->addInfo(
         'Email not scheduled because the order customer was not found',
         ['order_id' => $order_id]
       );
@@ -96,7 +100,7 @@ class PurchasedInCategory {
     $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customer_email);
 
     if (!$subscriber instanceof Subscriber) {
-      LoggerFactory::getLogger(self::SLUG)->addInfo(
+      $this->logger_factory->getLogger(self::SLUG)->addInfo(
         'Email not scheduled because the customer was not found as WooCommerce list subscriber',
         ['order_id' => $order_id, 'customer_email' => $customer_email]
       );
@@ -119,7 +123,7 @@ class PurchasedInCategory {
       return !empty($matched_categories);
     };
 
-    LoggerFactory::getLogger(self::SLUG)->addInfo(
+    $this->logger_factory->getLogger(self::SLUG)->addInfo(
       'Email scheduled', [
         'order_id' => $order_id,
         'customer_email' => $customer_email,
