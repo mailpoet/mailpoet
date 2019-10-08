@@ -150,8 +150,7 @@ abstract class SimpleWorker {
   }
 
   private function isInProgress(ScheduledTask $task) {
-    $meta = $task->getMeta();
-    if (!empty($meta['in_progress'])) {
+    if (!empty($task->in_progress)) {
       // Do not run multiple instances of the task
       return true;
     }
@@ -159,12 +158,12 @@ abstract class SimpleWorker {
   }
 
   private function startProgress(ScheduledTask $task) {
-    $task->meta = array_merge($task->getMeta(), ['in_progress' => true]);
+    $task->in_progress = true;
     $task->save();
   }
 
   private function stopProgress(ScheduledTask $task) {
-    $task->meta = array_merge($task->getMeta(), ['in_progress' => null]);
+    $task->in_progress = false;
     $task->save();
   }
 

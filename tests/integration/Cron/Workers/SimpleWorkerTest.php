@@ -214,9 +214,9 @@ class SimpleWorkerTest extends \MailPoetTest {
       ->method('processTaskStrategy')
       ->willReturn(true);
     $task = $this->createRunningTask();
-    expect(empty($task->getMeta()['in_progress']))->equals(true);
+    expect(empty($task->in_progress))->equals(true);
     expect($worker->processTask($task))->equals(true);
-    $task->meta = ['in_progress' => true];
+    $task->in_progress = true;
     expect($worker->processTask($task))->equals(false);
   }
 
@@ -233,7 +233,7 @@ class SimpleWorkerTest extends \MailPoetTest {
       $this->fail('An exception should be thrown');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('test error');
-      expect(empty($task->getMeta()['in_progress']))->equals(true);
+      expect(empty($task->in_progress))->equals(true);
     }
   }
 
@@ -254,7 +254,7 @@ class SimpleWorkerTest extends \MailPoetTest {
     $task = ScheduledTask::findOne($task->id);
     expect($scheduled_at < $task->scheduled_at)->true();
     expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
-    expect(empty($task->getMeta()['in_progress']))->equals(true);
+    expect(empty($task->in_progress))->equals(true);
   }
 
   function testItCalculatesNextRunDateWithinNextWeekBoundaries() {
