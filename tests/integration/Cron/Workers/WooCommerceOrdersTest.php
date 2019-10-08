@@ -6,6 +6,7 @@ use DateTime;
 use MailPoet\Cron\Workers\WooCommerceOrders;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatisticsClicks;
+use MailPoet\Models\StatisticsWooCommercePurchases;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
@@ -120,6 +121,35 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     expect($tasks[0]->status)->equals(ScheduledTask::STATUS_COMPLETED);
   }
 
+  function testItResetsPreviouslyTrackedOrders() {
+    $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(true);
+    $this->woocommerce_helper->method('wcGetOrders')->willReturnOnConsecutiveCalls([1, 2], [3], [4]);
+    $click = $this->createClick();
+
+    $this->woocommerce_purchases->expects($this->exactly(4))->method('trackPurchase');
+
+    // wrong data inserted by a past buggy version should be removed for each order
+    // nothing new is inserted because we don't fully mock WC_Order (expect count 0)
+    $this->createOrder(1, $click);
+    $this->createOrder(2, $click);
+    $this->worker->process(); // schedule
+    $this->worker->process(); // prepare
+    $this->worker->process(); // run for 1, 2
+    expect(StatisticsWooCommercePurchases::findMany())->count(0);
+
+    // don't remove data for unrelated orders (for order ID 4 row should not be removed)
+    $this->createOrder(3, $click);
+    $this->createOrder(4, $click);
+    $this->worker->process(); // run for 3
+    $purchase_stats = StatisticsWooCommercePurchases::findMany();
+    expect($purchase_stats)->count(1);
+    expect($purchase_stats[0]->order_id)->equals(4);
+
+    // now row for order ID 4 should be removed as well
+    $this->worker->process(); // run for 4
+    expect(StatisticsWooCommercePurchases::findMany())->count(0);
+  }
+
   function _after() {
     $this->cleanup();
   }
@@ -137,6 +167,18 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $click->created_at = $timestamp->format('Y-m-d H:i:s');
     $click->updated_at = $timestamp->format('Y-m-d H:i:s');
     return $click->save();
+  }
+
+  private function createOrder($id, StatisticsClicks $click) {
+    $statistics = StatisticsWooCommercePurchases::create();
+    $statistics->newsletter_id = $click->newsletter_id;
+    $statistics->subscriber_id = $click->subscriber_id;
+    $statistics->queue_id = $click->queue_id;
+    $statistics->click_id = $click->id;
+    $statistics->order_id = $id;
+    $statistics->order_currency = 'EUR';
+    $statistics->order_price_total = 123.0;
+    $statistics->save();
   }
 
   private function cleanup() {
