@@ -12,9 +12,13 @@ class AutomatedLatestContent {
   private $newsletter_id;
   private $newer_than_timestamp;
 
+  /** @var LoggerFactory */
+  private $logger_factory;
+
   function __construct($newsletter_id = false, $newer_than_timestamp = false) {
     $this->newsletter_id = $newsletter_id;
     $this->newer_than_timestamp = $newer_than_timestamp;
+    $this->logger_factory = LoggerFactory::getInstance();
   }
 
   function filterOutSentPosts($where) {
@@ -42,7 +46,7 @@ class AutomatedLatestContent {
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     WPFunctions::get()->wpSetCurrentUser(0);
 
-    LoggerFactory::getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger('post-notifications')->addInfo(
       'loading automated latest content',
       ['args' => $args, 'posts_to_exclude' => $posts_to_exclude, 'newsletter_id' => $this->newsletter_id, 'newer_than_timestamp' => $this->newer_than_timestamp]
     );
@@ -91,7 +95,7 @@ class AutomatedLatestContent {
     WPFunctions::get()->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filter_priority);
     $this->_attachSentPostsFilter();
 
-    LoggerFactory::getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger('post-notifications')->addInfo(
       'getting automated latest content',
       ['parameters' => $parameters]
     );
@@ -166,7 +170,7 @@ class AutomatedLatestContent {
         'post_date' => $post->post_date,
       ];
     }
-    LoggerFactory::getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger('post-notifications')->addInfo(
       'automated latest content loaded posts',
       ['posts' => $posts_to_log]
     );
