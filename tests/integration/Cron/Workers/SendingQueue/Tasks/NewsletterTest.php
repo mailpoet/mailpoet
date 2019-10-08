@@ -8,6 +8,7 @@ use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
@@ -37,6 +38,9 @@ class NewsletterTest extends \MailPoetTest {
   /** @var SendingTask */
   private $queue;
 
+  /** @var LoggerFactory */
+  private $logger_factory;
+
   function _before() {
     parent::_before();
     $this->newsletter_task = new NewsletterTask();
@@ -62,6 +66,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->queue = SendingTask::create();
     $this->queue->newsletter_id = $this->newsletter->id;
     $this->queue->save();
+    $this->logger_factory = LoggerFactory::getInstance();
   }
 
   function testItConstructs() {
@@ -209,6 +214,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletter->parent_id = $this->newsletter->id;
     $posts_task = $this->make(PostsTask::class, [
       'getAlcPostsCount' => 1,
+      'logger_factory' => $this->logger_factory,
     ]);
     $newsletter_task = new NewsletterTask(new WPFunctions, $posts_task);
     $result = $newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);

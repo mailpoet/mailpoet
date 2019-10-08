@@ -7,11 +7,18 @@ use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterPost;
 
 class Posts {
+  /** @var LoggerFactory */
+  private $logger_factory;
+
+  public function __construct() {
+    $this->logger_factory = LoggerFactory::getInstance();
+  }
+
   function extractAndSave($rendered_newsletter, $newsletter) {
     if ($newsletter->type !== NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
       return false;
     }
-    LoggerFactory::getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger('post-notifications')->addInfo(
       'extract and save posts - before',
       ['newsletter_id' => $newsletter->id]
     );
@@ -30,7 +37,7 @@ class Posts {
       $newsletter_post->post_id = $post_id;
       $newsletter_post->save();
     }
-    LoggerFactory::getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger('post-notifications')->addInfo(
       'extract and save posts - after',
       ['newsletter_id' => $newsletter->id, 'matched_posts_ids' => $matched_posts_ids]
     );

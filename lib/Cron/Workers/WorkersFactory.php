@@ -14,6 +14,7 @@ use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails as StatsNotificatio
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationScheduler;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Segments\SubscribersFinder;
@@ -65,6 +66,9 @@ class WorkersFactory {
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
+  /** @var LoggerFactory */
+  private $logger_factory;
+
   public function __construct(
     SendingErrorHandler $sending_error_handler,
     StatsNotificationScheduler $statsNotificationsScheduler,
@@ -77,7 +81,8 @@ class WorkersFactory {
     WooCommercePurchases $woocommerce_purchases,
     AuthorizedEmailsController $authorized_emails_controller,
     SubscribersFinder $subscribers_finder,
-    MetaInfo $mailerMetaInfo
+    MetaInfo $mailerMetaInfo,
+    LoggerFactory $logger_factory
   ) {
     $this->sending_error_handler = $sending_error_handler;
     $this->statsNotificationsScheduler = $statsNotificationsScheduler;
@@ -91,16 +96,17 @@ class WorkersFactory {
     $this->authorized_emails_controller = $authorized_emails_controller;
     $this->subscribers_finder = $subscribers_finder;
     $this->mailerMetaInfo = $mailerMetaInfo;
+    $this->logger_factory = $logger_factory;
   }
 
   /** @return SchedulerWorker */
   function createScheduleWorker($timer) {
-    return new SchedulerWorker($this->subscribers_finder, $timer);
+    return new SchedulerWorker($this->subscribers_finder, $this->logger_factory, $timer);
   }
 
   /** @return SendingQueueWorker */
   function createQueueWorker($timer) {
-    return new SendingQueueWorker($this->sending_error_handler, $this->statsNotificationsScheduler, $timer);
+    return new SendingQueueWorker($this->sending_error_handler, $this->statsNotificationsScheduler, $this->logger_factory, $timer);
   }
 
   /** @return StatsNotificationsWorker */
