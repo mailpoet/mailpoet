@@ -108,15 +108,14 @@ abstract class SimpleWorker {
       if ($this->isInProgress($task)) {
         return false;
       }
-      $this->startProgress($task);
     }
+
+    $this->startProgress($task);
 
     try {
       $completed = $this->processTaskStrategy($task);
     } catch (\Exception $e) {
-      if (!static::SUPPORT_MULTIPLE_INSTANCES) {
-        $this->stopProgress($task);
-      }
+      $this->stopProgress($task);
       throw $e;
     }
 
@@ -124,9 +123,7 @@ abstract class SimpleWorker {
       $this->complete($task);
     }
 
-    if (!static::SUPPORT_MULTIPLE_INSTANCES) {
-      $this->stopProgress($task);
-    }
+    $this->stopProgress($task);
 
     return (bool)$completed;
   }
