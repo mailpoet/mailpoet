@@ -174,6 +174,7 @@ class Import {
         $custom_field = CustomField::findOne($column);
         // validate date type
         if ($custom_field->type === 'date') {
+          $validation_rule = 'datetime';
           $data = array_map(
             function($index, $date) use($validation_rule, &$invalid_records) {
               if (empty($date)) return $date;
