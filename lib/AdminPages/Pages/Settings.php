@@ -18,6 +18,7 @@ use MailPoet\Util\Installation;
 use MailPoet\Util\License\License;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Notice as WPNotice;
 
 class Settings {
   /** @var PageRenderer */
@@ -102,6 +103,13 @@ class Settings {
 
     $data = array_merge($data, Installer::getPremiumStatus());
 
+    if (isset($_GET['enable-customizer-notice'])) {
+      $notice = new WPNotice(WPNotice::TYPE_ERROR, $this->wp->_x(
+        'You need to enable MailPoet email customizer for WooCommerce if you want to access to the customizer.',
+        'Notice in Settings when WooCommerce customizer is not enabled'
+      ));
+      $notice->displayWPNotice();
+    }
     $this->page_renderer->displayPage('settings.html', $data);
   }
 

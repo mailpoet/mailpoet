@@ -53,7 +53,7 @@ class NewsletterEditor {
         || !(bool)$this->settings->get('woocommerce.use_mailpoet_editor', false)
       )
     ) {
-      header('Location: admin.php?page=mailpoet-settings#woocommerce', true, 302);
+      header('Location: admin.php?page=mailpoet-settings&enable-customizer-notice#woocommerce', true, 302);
       return;
     }
 
