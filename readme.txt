@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.37.1
+Stable tag: 3.37.2
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -163,6 +163,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.37.2 - 2019-10-08 =
+* Improved: TinyMCE toolbar user experience;
+* Improved: faster loading of the template page when creating a new email;
+* Fixed: assets not loading on the MailPoet captcha page;
+* Fixed: missing translations;
+* Fixed: linux cron now works again;
+* Fixed: blank MailPoet pages on some hosting setups.
 
 = 3.37.1 - 2019-10-01 =
 * Added: cron execution parameters can now be customized using WordPress filters. Thanks, @deltafactory!
