@@ -18,7 +18,7 @@ class Posts {
     if ($newsletter->type !== NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
       return false;
     }
-    $this->logger_factory->getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'extract and save posts - before',
       ['newsletter_id' => $newsletter->id]
     );
@@ -37,7 +37,7 @@ class Posts {
       $newsletter_post->post_id = $post_id;
       $newsletter_post->save();
     }
-    $this->logger_factory->getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'extract and save posts - after',
       ['newsletter_id' => $newsletter->id, 'matched_posts_ids' => $matched_posts_ids]
     );

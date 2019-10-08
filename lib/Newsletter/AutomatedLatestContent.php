@@ -46,7 +46,7 @@ class AutomatedLatestContent {
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     WPFunctions::get()->wpSetCurrentUser(0);
 
-    $this->logger_factory->getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'loading automated latest content',
       ['args' => $args, 'posts_to_exclude' => $posts_to_exclude, 'newsletter_id' => $this->newsletter_id, 'newer_than_timestamp' => $this->newer_than_timestamp]
     );
@@ -95,7 +95,7 @@ class AutomatedLatestContent {
     WPFunctions::get()->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filter_priority);
     $this->_attachSentPostsFilter();
 
-    $this->logger_factory->getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'getting automated latest content',
       ['parameters' => $parameters]
     );
@@ -170,7 +170,7 @@ class AutomatedLatestContent {
         'post_date' => $post->post_date,
       ];
     }
-    $this->logger_factory->getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'automated latest content loaded posts',
       ['posts' => $posts_to_log]
     );

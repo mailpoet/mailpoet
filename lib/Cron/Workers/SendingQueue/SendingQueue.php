@@ -66,7 +66,7 @@ class SendingQueue {
       if (!$queue instanceof SendingTask) continue;
       ScheduledTaskModel::touchAllByIds([$queue->task_id]);
 
-      $this->logger_factory->getLogger('newsletters')->addInfo(
+      $this->logger_factory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
         'sending queue processing',
         ['task_id' => $queue->task_id]
       );
@@ -77,7 +77,7 @@ class SendingQueue {
       // pre-process newsletter (render, replace shortcodes/links, etc.)
       $newsletter = $this->newsletter_task->preProcessNewsletter($newsletter, $queue);
       if (!$newsletter) {
-        $this->logger_factory->getLogger('newsletters')->addInfo(
+        $this->logger_factory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
           'delete task in sending queue',
           ['task_id' => $queue->task_id]
         );
@@ -98,7 +98,7 @@ class SendingQueue {
       // get subscribers
       $subscriber_batches = new BatchIterator($queue->task_id, $this->batch_size);
       foreach ($subscriber_batches as $subscribers_to_process_ids) {
-        $this->logger_factory->getLogger('newsletters')->addInfo(
+        $this->logger_factory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
           'subscriber batch processing',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id, 'subscriber_batch_count' => count($subscribers_to_process_ids)]
         );
@@ -129,7 +129,7 @@ class SendingQueue {
             continue;
           }
         }
-        $this->logger_factory->getLogger('newsletters')->addInfo(
+        $this->logger_factory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
           'before queue chunk processing',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id, 'found_subscribers_count' => count($found_subscribers)]
         );
@@ -138,12 +138,12 @@ class SendingQueue {
           $_newsletter,
           $found_subscribers
         );
-        $this->logger_factory->getLogger('newsletters')->addInfo(
+        $this->logger_factory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
           'after queue chunk processing',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
         );
         if ($queue->status === ScheduledTaskModel::STATUS_COMPLETED) {
-          $this->logger_factory->getLogger('newsletters')->addInfo(
+          $this->logger_factory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
             'completed newsletter sending',
             ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
           );

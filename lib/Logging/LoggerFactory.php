@@ -23,6 +23,9 @@ use MailPoetVendor\Monolog\Processor\WebProcessor;
  * If WP_DEBUG is true additional information will be added to every log message.
  */
 class LoggerFactory {
+  const TOPIC_NEWSLETTERS = 'newsletters';
+  const TOPIC_POST_NOTIFICATIONS = 'post-notifications';
+  const TOPIC_MSS = 'mss';
 
   /** @var LoggerFactory */
   private static $instance;

@@ -31,7 +31,7 @@ class PostNotificationScheduler {
   }
 
   function transitionHook($new_status, $old_status, $post) {
-    $this->logger_factory->getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'transition post notification hook initiated',
       [
         'post_id' => $post->ID,
@@ -47,7 +47,7 @@ class PostNotificationScheduler {
   }
 
   function schedulePostNotification($post_id) {
-    $this->logger_factory->getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'schedule post notification hook',
       ['post_id' => $post_id]
     );
@@ -95,7 +95,7 @@ class PostNotificationScheduler {
     $sending_task->status = SendingQueue::STATUS_SCHEDULED;
     $sending_task->scheduled_at = $next_run_date;
     $sending_task->save();
-    $this->logger_factory->getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'schedule post notification',
       ['sending_task' => $sending_task->id(), 'scheduled_at' => $next_run_date]
     );

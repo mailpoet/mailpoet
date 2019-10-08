@@ -84,7 +84,7 @@ class API {
   }
 
   function logCurlInformation($headers, $info) {
-    $this->logger_factory->getLogger('mss')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_MSS)->addInfo(
       'requests-curl.after_request',
       ['headers' => $headers, 'curl_info' => $info]
     );
