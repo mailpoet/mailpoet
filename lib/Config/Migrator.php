@@ -129,6 +129,7 @@ class Migrator {
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
+      'in_progress int(1),',
       'reschedule_count int(11) NOT NULL DEFAULT 0,',
       'meta longtext,',
       'PRIMARY KEY  (id),',

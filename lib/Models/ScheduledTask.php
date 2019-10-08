@@ -14,6 +14,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property string|null $type
  * @property int $priority
  * @property string|null $scheduled_at
+ * @property boolean|null $in_progress
  * @property int $reschedule_count
  * @property string|array|null $meta
  */
