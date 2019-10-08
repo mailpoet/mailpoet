@@ -57,18 +57,12 @@ class StatisticsClicks extends Model {
     // subquery to find latest click IDs for each newsletter
     $table = self::$_table;
     $latest_click_ids_per_newsletter_query = "
-      SELECT (
-        SELECT id
-        FROM $table
-        WHERE newsletter_id = c.newsletter_id
-        ORDER BY updated_at DESC
-        LIMIT 1
-      )
-      FROM $table c
-      WHERE c.subscriber_id = :subscriber_id
-      AND c.updated_at > :from
-      AND c.updated_at < :to
-      GROUP BY c.newsletter_id
+      SELECT MAX(id)
+      FROM $table
+      WHERE subscriber_id = :subscriber_id
+      AND updated_at > :from
+      AND updated_at < :to
+      GROUP BY newsletter_id
     ";
 
     return static::tableAlias('clicks')
