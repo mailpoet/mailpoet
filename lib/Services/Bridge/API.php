@@ -22,6 +22,8 @@ class API {
 
   private $api_key;
   private $wp;
+  /** @var LoggerFactory */
+  private $logger_factory;
 
   public $url_me = 'https://bridge.mailpoet.com/api/v0/me';
   public $url_premium = 'https://bridge.mailpoet.com/api/v0/premium';
@@ -37,6 +39,7 @@ class API {
     } else {
       $this->wp = $wp;
     }
+    $this->logger_factory = LoggerFactory::getInstance();
   }
 
   function checkMSSKey() {
@@ -81,7 +84,7 @@ class API {
   }
 
   function logCurlInformation($headers, $info) {
-    LoggerFactory::getLogger('mss')->addInfo(
+    $this->logger_factory->getLogger('mss')->addInfo(
       'requests-curl.after_request',
       ['headers' => $headers, 'curl_info' => $info]
     );
