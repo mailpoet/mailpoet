@@ -39,9 +39,9 @@ class WooCommerceOrders extends SimpleWorker {
       return true;
     }
 
-    // continue from 'last_id' processed by previous run
+    // continue from 'last_processed_id' from previous run
     $meta = $task->getMeta();
-    $last_id = isset($meta['last_id']) ? $meta['last_id'] : 0;
+    $last_id = isset($meta['last_processed_id']) ? $meta['last_processed_id'] : 0;
     add_filter('posts_where', function ($where = '') use ($last_id) {
       global $wpdb;
       return $where . " AND {$wpdb->prefix}posts.ID > " . $last_id;
@@ -63,7 +63,7 @@ class WooCommerceOrders extends SimpleWorker {
     foreach ($order_ids as $order_id) {
       $this->woocommerce_purchases->trackPurchase($order_id, false);
     }
-    $task->meta = ['last_id' => end($order_ids)];
+    $task->meta = ['last_processed_id' => end($order_ids)];
     $task->save();
     return false;
   }

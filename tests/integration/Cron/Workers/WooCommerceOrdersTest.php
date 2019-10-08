@@ -106,12 +106,12 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->worker->process(); // run for 1, 2, 3
 
     $task = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findOne();
-    expect($task->getMeta())->equals(['last_id' => 3]);
+    expect($task->getMeta())->equals(['last_processed_id' => 3]);
 
     $this->worker->process(); // run for 4, 5
 
     $task = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findOne();
-    expect($task->getMeta())->equals(['last_id' => 5]);
+    expect($task->getMeta())->equals(['last_processed_id' => 5]);
 
     $this->worker->process(); // complete
 
