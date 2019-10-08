@@ -15,6 +15,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoetVendor\Monolog\Logger;
 
 class Scheduler {
   const TASK_BATCH_SIZE = 5;
@@ -24,11 +25,15 @@ class Scheduler {
   /** @var SubscribersFinder */
   private $subscribers_finder;
 
-  function __construct(SubscribersFinder $subscribers_finder, $timer = false) {
+  /** @var LoggerFactory */
+  private $logger_factory;
+
+  function __construct(SubscribersFinder $subscribers_finder, LoggerFactory $logger_factory, $timer = false) {
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
     $this->subscribers_finder = $subscribers_finder;
+    $this->logger_factory = $logger_factory;
   }
 
   function process() {
@@ -78,14 +83,14 @@ class Scheduler {
   }
 
   function processPostNotificationNewsletter($newsletter, $queue) {
-    LoggerFactory::getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger('post-notifications')->addInfo(
       'process post notification in scheduler',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
     );
     // ensure that segments exist
     $segments = $newsletter->segments()->findMany();
     if (empty($segments)) {
-      LoggerFactory::getLogger('post-notifications')->addInfo(
+      $this->logger_factory->getLogger('post-notifications')->addInfo(
         'post notification no segments',
         ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
       );
@@ -97,7 +102,7 @@ class Scheduler {
     $subscribers_count = $this->subscribers_finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
 
     if (empty($subscribers_count)) {
-      LoggerFactory::getLogger('post-notifications')->addInfo(
+      $this->logger_factory->getLogger('post-notifications')->addInfo(
         'post notification no subscribers',
         ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
       );
@@ -114,7 +119,7 @@ class Scheduler {
     $queue->save();
     // update notification status
     $notification_history->setStatus(Newsletter::STATUS_SENDING);
-    LoggerFactory::getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger('post-notifications')->addInfo(
       'post notification set status to sending',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
     );

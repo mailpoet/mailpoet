@@ -26,6 +26,9 @@ class Newsletter {
   /** @var PostsTask */
   private $posts_task;
 
+  /** @var LoggerFactory */
+  private $logger_factory;
+
   function __construct(WPFunctions $wp = null, PostsTask $posts_task = null) {
     $settings = new SettingsController();
     $this->tracking_enabled = (boolean)$settings->get('tracking.enabled');
@@ -37,6 +40,7 @@ class Newsletter {
       $posts_task = new PostsTask;
     }
     $this->posts_task = $posts_task;
+    $this->logger_factory = LoggerFactory::getInstance();
   }
 
   function getNewsletterFromQueue($queue) {
@@ -74,7 +78,7 @@ class Newsletter {
         $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-RENDER', $sending_task->id)) :
         $newsletter;
     }
-    LoggerFactory::getLogger('newsletters')->addInfo(
+    $this->logger_factory->getLogger('newsletters')->addInfo(
       'pre-processing newsletter',
       ['newsletter_id' => $newsletter->id, 'task_id' => $sending_task->task_id]
     );
@@ -105,7 +109,7 @@ class Newsletter {
       $this->posts_task->getAlcPostsCount($rendered_newsletter, $newsletter) === 0
     ) {
       // delete notification history record since it will never be sent
-      LoggerFactory::getLogger('post-notifications')->addInfo(
+      $this->logger_factory->getLogger('post-notifications')->addInfo(
         'no posts in post notification, deleting it',
         ['newsletter_id' => $newsletter->id, 'task_id' => $sending_task->task_id]
       );
