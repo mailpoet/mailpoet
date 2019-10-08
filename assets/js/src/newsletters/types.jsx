@@ -4,7 +4,6 @@ import MailPoet from 'mailpoet';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
-import jQuery from 'jquery';
 import { withRouter } from 'react-router-dom';
 
 class NewsletterTypes extends React.Component {
@@ -94,33 +93,27 @@ class NewsletterTypes extends React.Component {
     ];
   };
 
-  openWooCommerceCustomizer = () => {
-    const promise = jQuery.Deferred();
+  openWooCommerceCustomizer = async () => {
     MailPoet.trackEvent('Emails > Type selected', {
       'MailPoet Free version': window.mailpoet_version,
       'Email type': 'wc_transactional',
     });
     if (!window.mailpoet_woocommerce_customizer_enabled) {
-      promise.then(() => MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'settings',
-        action: 'set',
-        data: {
-          'woocommerce.use_mailpoet_editor': 1,
-        },
-      }));
-    }
-    promise.done(() => {
-      window.location.href = `?page=mailpoet-newsletter-editor&id=${window.mailpoet_woocommerce_transactional_email_id}`;
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
-          { scroll: true }
-        );
+      try {
+        await MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'settings',
+          action: 'set',
+          data: {
+            'woocommerce.use_mailpoet_editor': 1,
+          },
+        });
+      } catch (response) {
+        MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
+        return;
       }
-    });
-    promise.resolve();
+    }
+    window.location.href = `?page=mailpoet-newsletter-editor&id=${window.mailpoet_woocommerce_transactional_email_id}`;
   };
 
   createNewsletter = (type) => {
