@@ -21,12 +21,16 @@ class PurchasedProduct {
   /** @var AutomaticEmailScheduler */
   private $scheduler;
 
+  /** @var LoggerFactory */
+  private $logger_factory;
+
   function __construct(WCHelper $helper = null) {
     if ($helper === null) {
       $helper = new WCHelper();
     }
     $this->helper = $helper;
     $this->scheduler = new AutomaticEmailScheduler();
+    $this->logger_factory = LoggerFactory::getInstance();
   }
 
   function init() {
@@ -77,7 +81,7 @@ class PurchasedProduct {
     $woocommerce_products = new \WP_Query($args);
     $woocommerce_products = $woocommerce_products->get_posts();
     if (empty($woocommerce_products)) {
-      LoggerFactory::getLogger(self::SLUG)->addInfo(
+      $this->logger_factory->getLogger(self::SLUG)->addInfo(
         'no products found', ['search_query' => $product_search_query]
       );
       return;
@@ -95,7 +99,7 @@ class PurchasedProduct {
   function scheduleEmailWhenProductIsPurchased($order_id) {
     $order_details = $this->helper->wcGetOrder($order_id);
     if (!$order_details || !$order_details->get_billing_email()) {
-      LoggerFactory::getLogger(self::SLUG)->addInfo(
+      $this->logger_factory->getLogger(self::SLUG)->addInfo(
         'Email not scheduled because the order customer was not found',
         ['order_id' => $order_id]
       );
@@ -106,7 +110,7 @@ class PurchasedProduct {
     $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customer_email);
 
     if (!$subscriber instanceof Subscriber) {
-      LoggerFactory::getLogger(self::SLUG)->addInfo(
+      $this->logger_factory->getLogger(self::SLUG)->addInfo(
         'Email not scheduled because the customer was not found as WooCommerce list subscriber',
         ['order_id' => $order_id, 'customer_email' => $customer_email]
       );
@@ -129,7 +133,7 @@ class PurchasedProduct {
       return !empty($matched_products);
     };
 
-    LoggerFactory::getLogger(self::SLUG)->addInfo(
+    $this->logger_factory->getLogger(self::SLUG)->addInfo(
       'Email scheduled', [
         'order_id' => $order_id,
         'customer_email' => $customer_email,
