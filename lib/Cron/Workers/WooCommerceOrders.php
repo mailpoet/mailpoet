@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers;
 use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatisticsClicks;
+use MailPoet\Models\StatisticsWooCommercePurchases;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -61,6 +62,8 @@ class WooCommerceOrders extends SimpleWorker {
     }
 
     foreach ($order_ids as $order_id) {
+      // clean all records for given order to fix wrong data inserted by a past buggy version
+      StatisticsWooCommercePurchases::where('order_id', $order_id)->deleteMany();
       $this->woocommerce_purchases->trackPurchase($order_id, false);
     }
     $task->meta = ['last_processed_id' => end($order_ids)];
