@@ -83,14 +83,14 @@ class Scheduler {
   }
 
   function processPostNotificationNewsletter($newsletter, $queue) {
-    $this->logger_factory->getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'process post notification in scheduler',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
     );
     // ensure that segments exist
     $segments = $newsletter->segments()->findMany();
     if (empty($segments)) {
-      $this->logger_factory->getLogger('post-notifications')->addInfo(
+      $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
         'post notification no segments',
         ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
       );
@@ -102,7 +102,7 @@ class Scheduler {
     $subscribers_count = $this->subscribers_finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
 
     if (empty($subscribers_count)) {
-      $this->logger_factory->getLogger('post-notifications')->addInfo(
+      $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
         'post notification no subscribers',
         ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
       );
@@ -119,7 +119,7 @@ class Scheduler {
     $queue->save();
     // update notification status
     $notification_history->setStatus(Newsletter::STATUS_SENDING);
-    $this->logger_factory->getLogger('post-notifications')->addInfo(
+    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'post notification set status to sending',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
     );
