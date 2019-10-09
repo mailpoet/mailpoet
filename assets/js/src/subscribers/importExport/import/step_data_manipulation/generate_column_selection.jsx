@@ -68,7 +68,6 @@ export default () => {
                   });
               });
             jQuery(selectElement).data('column-id', newColumnData.id);
-            jQuery(selectElement).data('validation-rule', false);
             // close popup
             MailPoet.Modal.close();
           }).fail((response) => {

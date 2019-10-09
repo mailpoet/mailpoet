@@ -19,7 +19,6 @@ function ColumnDataMatch({ header, subscribers }) {
             <select
               className="mailpoet_subscribers_column_data_match"
               data-column-id={columnType.column_id}
-              data-validation-rule="false"
               data-column-index={i}
               id={`column_${i}`}
             />
