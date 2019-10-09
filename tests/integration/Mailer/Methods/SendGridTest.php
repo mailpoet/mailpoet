@@ -35,7 +35,7 @@ class SendGridTest extends \MailPoetTest {
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = [
-      'subject' => 'testing SendGrid',
+      'subject' => 'testing SendGrid … © & ěščřžýáíéůėę€żąß∂ 😊👨‍👩‍👧‍👧', // try some special chars
       'body' => [
         'html' => 'HTML body',
         'text' => 'TEXT body',

@@ -45,7 +45,7 @@ class AmazonSESTest extends \MailPoetTest {
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = [
-      'subject' => 'testing AmazonSES',
+      'subject' => 'testing AmazonSES … © & ěščřžýáíéůėę€żąß∂ 😊👨‍👩‍👧‍👧', // try some special chars
       'body' => [
         'html' => 'HTML body',
         'text' => 'TEXT body',
