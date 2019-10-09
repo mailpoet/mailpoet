@@ -11,6 +11,7 @@ if (!defined('OBJECT')) {
 }
 
 define('ABSPATH', '/');
+define('WP_DEBUG', false);
 
 $console = new \Codeception\Lib\Console\Output([]);
 

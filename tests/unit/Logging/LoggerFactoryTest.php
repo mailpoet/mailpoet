@@ -3,10 +3,11 @@
 namespace MailPoet\Logging;
 
 use MailPoet\Settings\SettingsController;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
-class LoggerTest extends \MailPoetTest {
+class LoggerFactoryTest extends \MailPoetUnitTest {
 
-  /** @var SettingsController */
+  /** @var MockObject */
   private $settings;
 
   /** @var LoggerFactory */
@@ -14,8 +15,8 @@ class LoggerTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
-    $this->logger_factory = LoggerFactory::getInstance();
+    $this->settings = $this->createMock(SettingsController::class);
+    $this->logger_factory = new LoggerFactory($this->settings);
   }
 
   public function testItCreatesLogger() {
@@ -36,7 +37,6 @@ class LoggerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAttachProcessors() {
-    define(WP_DEBUG, false);
     $logger1 = $this->logger_factory->getLogger('logger-without-processors', false);
     $processors = $logger1->getProcessors();
     expect($processors)->isEmpty();
@@ -50,28 +50,28 @@ class LoggerTest extends \MailPoetTest {
   }
 
   public function testItSetsDefaultLoggingLevel() {
-    $this->settings->set('logging', null);
+    $this->settings->expects($this->once())->method('get')->willReturn(null);
     $logger1 = $this->logger_factory->getLogger('logger-with-handler');
     $handlers = $logger1->getHandlers();
     expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::ERROR);
   }
 
   public function testItSetsLoggingLevelForNothing() {
-    $this->settings->set('logging', 'nothing');
+    $this->settings->expects($this->once())->method('get')->willReturn('nothing');
     $logger1 = $this->logger_factory->getLogger('logger-for-nothing');
     $handlers = $logger1->getHandlers();
     expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::EMERGENCY);
   }
 
   public function testItSetsLoggingLevelForErrors() {
-    $this->settings->set('logging', 'errors');
+    $this->settings->expects($this->once())->method('get')->willReturn('errors');
     $logger1 = $this->logger_factory->getLogger('logger-for-errors');
     $handlers = $logger1->getHandlers();
     expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::ERROR);
   }
 
   public function testItSetsLoggingLevelForEverything() {
-    $this->settings->set('logging', 'everything');
+    $this->settings->expects($this->once())->method('get')->willReturn('everything');
     $logger1 = $this->logger_factory->getLogger('logger-for-everything');
     $handlers = $logger1->getHandlers();
     expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::DEBUG);
