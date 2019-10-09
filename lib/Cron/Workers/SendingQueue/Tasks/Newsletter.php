@@ -67,16 +67,16 @@ class Newsletter {
     return $newsletter;
   }
 
-  function preProcessNewsletter(\MailPoet\Models\Newsletter $newsletter, $queue) {
+  function preProcessNewsletter(\MailPoet\Models\Newsletter $newsletter, $sending_task) {
     // return the newsletter if it was previously rendered
-    if (!is_null($queue->getNewsletterRenderedBody())) {
-      return (!$queue->validate()) ?
-        $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-RENDER', $queue->id)) :
+    if (!is_null($sending_task->getNewsletterRenderedBody())) {
+      return (!$sending_task->validate()) ?
+        $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-RENDER', $sending_task->id)) :
         $newsletter;
     }
     Logger::getLogger('newsletters')->addInfo(
       'pre-processing newsletter',
-      ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+      ['newsletter_id' => $newsletter->id, 'task_id' => $sending_task->task_id]
     );
     // if tracking is enabled, do additional processing
     if ($this->tracking_enabled) {
@@ -90,7 +90,7 @@ class Newsletter {
         $newsletter
       );
       // hash and save all links
-      $rendered_newsletter = LinksTask::process($rendered_newsletter, $newsletter, $queue);
+      $rendered_newsletter = LinksTask::process($rendered_newsletter, $newsletter, $sending_task);
     } else {
       // render newsletter
       $rendered_newsletter = $newsletter->render();
@@ -107,7 +107,7 @@ class Newsletter {
       // delete notification history record since it will never be sent
       Logger::getLogger('post-notifications')->addInfo(
         'no posts in post notification, deleting it',
-        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+        ['newsletter_id' => $newsletter->id, 'task_id' => $sending_task->task_id]
       );
       $newsletter->delete();
       return false;
@@ -115,31 +115,31 @@ class Newsletter {
     // extract and save newsletter posts
     $this->posts_task->extractAndSave($rendered_newsletter, $newsletter);
     // update queue with the rendered and pre-processed newsletter
-    $queue->newsletter_rendered_subject = ShortcodesTask::process(
+    $sending_task->newsletter_rendered_subject = ShortcodesTask::process(
       $newsletter->subject,
       $rendered_newsletter['html'],
       $newsletter,
       null,
-      $queue
+      $sending_task
     );
     // if the rendered subject is empty, use a default subject,
     // having no subject in a newsletter is considered spammy
-    if (empty(trim($queue->newsletter_rendered_subject))) {
-      $queue->newsletter_rendered_subject = WPFunctions::get()->__('No subject', 'mailpoet');
+    if (empty(trim($sending_task->newsletter_rendered_subject))) {
+      $sending_task->newsletter_rendered_subject = WPFunctions::get()->__('No subject', 'mailpoet');
     }
-    $queue->newsletter_rendered_body = $rendered_newsletter;
-    $queue->save();
+    $sending_task->newsletter_rendered_body = $rendered_newsletter;
+    $sending_task->save();
     // catch DB errors
-    $queue_errors = $queue->getErrors();
+    $queue_errors = $sending_task->getErrors();
     if (!$queue_errors) {
       // verify that the rendered body was successfully saved
-      $queue = SendingQueueModel::findOne($queue->id);
-      if ($queue instanceof SendingQueueModel) {
-        $queue_errors = ($queue->validate() !== true);
+      $sending_queue = SendingQueueModel::findOne($sending_task->id);
+      if ($sending_queue instanceof SendingQueueModel) {
+        $queue_errors = ($sending_queue->validate() !== true);
       }
     }
     if ($queue_errors) {
-      $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-SAVE', $queue->id));
+      $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-SAVE', $sending_task->id));
     }
     return $newsletter;
   }
