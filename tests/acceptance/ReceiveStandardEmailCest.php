@@ -17,7 +17,10 @@ class ReceiveStandardEmailCest {
   function receiveStandardEmail(\AcceptanceTester $I) {
     $this->settings->withCronTriggerMethod('WordPress');
 
-    $newsletter_title = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
+    // try some special characters in the subject to ensure they are received correctly
+    $special_chars = '… © & ěščřžýáíéůėę€żąß∂‍‍‍';
+
+    $newsletter_title = 'Receive Test ' . $special_chars;
     $standard_template = '[data-automation-id=\'select_template_0\']';
     $title_element = '[data-automation-id=\'newsletter_title\']';
     $send_form_element = '[data-automation-id="newsletter_send_form"]';
