@@ -29,4 +29,4 @@ foreach ($files as $file) {
 }
 
 # remove unused PHP file that starts with shebang line instead of <?php and causes PHP lint on WP repo to fail
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/swiftmailer/swiftmailer/lib/swiftmailer_generate_mimes_config.php');
+exec('rm -f ' . __DIR__ . '/../vendor-prefixed/swiftmailer/swiftmailer/lib/swiftmailer_generate_mimes_config.php');
