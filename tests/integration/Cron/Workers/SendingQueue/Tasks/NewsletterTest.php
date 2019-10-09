@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
-use AspectMock\Test as Mock;
 use Codeception\Stub;
 use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
@@ -343,13 +342,16 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   function testItLogsErrorWhenExistingRenderedNewsletterBodyIsInvalid() {
-    $queue_mock = Mock::double(
-      $this->queue,
-      [
-        'getNewsletterRenderedBody' => 'a:2:{s:4:"html"',
-        'validate' => false,
-      ]
-    );
+    $queue_mock = $this->createMock(SendingTask::class);
+    $queue_mock
+      ->expects($this->any())
+      ->method('__call')
+      ->with('getNewsletterRenderedBody')
+      ->willReturn('a:2:{s:4:"html"');
+    $queue_mock
+      ->expects($this->once())
+      ->method('validate')
+      ->willReturn(false);
     try {
       $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock);
       self::fail('Sending error exception was not thrown.');
@@ -362,17 +364,25 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItLogsErrorWhenNewlyRenderedNewsletterBodyIsInvalid() {
     $queue = $this->queue;
-    $queue_mock = Mock::double(
-      $this->queue,
-      [
-        'getNewsletterRenderedBody' => null,
-      ]
-    );
+    $queue_mock = $this->createMock(SendingTask::class);
+    $queue_mock
+      ->expects($this->any())
+      ->method('__call')
+      ->with('getNewsletterRenderedBody')
+      ->willReturn(null);
+    $queue_mock
+      ->expects($this->once())
+      ->method('save');
+    $queue_mock
+      ->expects($this->once())
+      ->method('getErrors')
+      ->willReturn([]);
     $queue_mock->id = $queue->id;
+    $queue_mock->task_id = $queue->task_id;
 
-    // broken serialized object
-    $queue->newsletter_rendered_body = 'a:2:{s:4:"html"';
-    $queue->save();
+    $sending_queue = \ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
+    $sending_queue->set('newsletter_rendered_body', 'a:2:{s:4:"html"');
+    $sending_queue->save();
     try {
       $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock);
       self::fail('Sending error exception was not thrown.');
@@ -385,18 +395,26 @@ class NewsletterTest extends \MailPoetTest {
 
   function testItPreProcessesNewsletterWhenNewlyRenderedNewsletterBodyIsValid() {
     $queue = $this->queue;
-    $queue_mock = Mock::double(
-      new \stdClass(),
-      [
-        'getNewsletterRenderedBody' => null,
-      ]
-    );
+    $queue_mock = $this->createMock(SendingTask::class);
+    $queue_mock
+      ->expects($this->any())
+      ->method('__call')
+      ->with('getNewsletterRenderedBody')
+      ->willReturn(null);
+    $queue_mock
+      ->expects($this->once())
+      ->method('save');
+    $queue_mock
+      ->expects($this->once())
+      ->method('getErrors')
+      ->willReturn([]);
     $queue_mock->id = $queue->id;
     $queue_mock->task_id = $queue->task_id;
 
     // properly serialized object
-    $queue->newsletter_rendered_body = 'a:2:{s:4:"html";s:4:"test";s:4:"text";s:4:"test";}';
-    $queue->save();
+    $sending_queue = \ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
+    $sending_queue->set('newsletter_rendered_body', 'a:2:{s:4:"html";s:4:"test";s:4:"text";s:4:"test";}');
+    $sending_queue->save();
     expect($this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock))->equals($this->newsletter);
   }
 
