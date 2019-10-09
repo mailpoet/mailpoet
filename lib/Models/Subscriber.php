@@ -101,7 +101,7 @@ class Subscriber extends Model {
   }
 
   function isWPUser() {
-    return ($this->wp_user_id !== null);
+    return (bool)$this->wp_user_id;
   }
 
   function isWooCommerceUser() {
