@@ -34,11 +34,10 @@ export default (subscribersToImport, segments, updateExistingSubscribers, onImpo
   _.each(jQuery('select.mailpoet_subscribers_column_data_match'),
     (column, columnIndex) => {
       const columnId = jQuery(column).data('column-id');
-      const validationRule = jQuery(column).data('validation-rule');
       if (columnId === 'ignore') {
         return;
       }
-      columns[columnId] = { index: columnIndex, validation_rule: validationRule };
+      columns[columnId] = { index: columnIndex };
     });
 
   _.each(clickSubscribers, () => {

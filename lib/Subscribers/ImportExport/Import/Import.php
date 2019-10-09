@@ -22,14 +22,10 @@ class Import {
   public $update_subscribers;
   public $subscribers_fields;
   public $subscribers_custom_fields;
-  public $subscribers_fields_validation_rules;
   public $subscribers_count;
   public $created_at;
   public $updated_at;
   public $required_subscribers_fields;
-  private $default_subscribers_data_validation_rules = [
-    'email' => 'email',
-  ];
   const DB_QUERY_CHUNK_SIZE = 100;
 
   public function __construct($data) {
@@ -46,7 +42,6 @@ class Import {
     $this->subscribers_custom_fields = $this->getCustomSubscribersFields(
       array_keys($data['columns'])
     );
-    $this->subscribers_fields_validation_rules = $this->getSubscriberDataValidationRules($data['columns']);
     $this->subscribers_count = count(reset($this->subscribers_data));
     $this->created_at = date('Y-m-d H:i:s', (int)$data['timestamp']);
     $this->updated_at = date('Y-m-d H:i:s', (int)$data['timestamp'] + 1);
@@ -75,22 +70,9 @@ class Import {
     }
   }
 
-  function getSubscriberDataValidationRules($subscribers_fields) {
-    $validation_rules = [];
-    foreach ($subscribers_fields as $column => $field) {
-      $validation_rules[$column] = (!empty($field['validation_rule'])) ?
-        $field['validation_rule'] :
-        false;
-    }
-    return array_replace($validation_rules, $this->default_subscribers_data_validation_rules);
-  }
-
   function process() {
     // validate data based on field validation rules
-    $subscribers_data = $this->validateSubscribersData(
-      $this->subscribers_data,
-      $this->subscribers_fields_validation_rules
-    );
+    $subscribers_data = $this->validateSubscribersData($this->subscribers_data);
     if (!$subscribers_data) {
       throw new \Exception(__('No valid subscribers were found.', 'mailpoet'));
     }
@@ -154,12 +136,11 @@ class Import {
     ];
   }
 
-  function validateSubscribersData($subscribers_data, $validation_rules) {
+  function validateSubscribersData($subscribers_data) {
     $invalid_records = [];
     $validator = new ModelValidator();
     foreach ($subscribers_data as $column => &$data) {
-      $validation_rule = $validation_rules[$column];
-      if ($validation_rule === 'email') {
+      if ($column === 'email') {
         $data = array_map(
           function($index, $email) use(&$invalid_records, $validator) {
             if (!$validator->validateNonRoleEmail($email)) {
