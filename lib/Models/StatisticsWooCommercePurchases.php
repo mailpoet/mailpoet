@@ -16,9 +16,13 @@ use WC_Order;
 class StatisticsWooCommercePurchases extends Model {
   public static $_table = MP_STATISTICS_WOOCOMMERCE_PURCHASES_TABLE;
 
-  static function createOrUpdateByClickAndOrder(StatisticsClicks $click, WC_Order $order) {
-    $statistics = self::where('click_id', $click->id)
-      ->where('order_id', $order->get_id())
+  static function createOrUpdateByClickDataAndOrder(StatisticsClicks $click, WC_Order $order) {
+    // search by subscriber and newsletter IDs (instead of click itself) to avoid duplicities
+    // when a new click from the subscriber appeared since last tracking for given newsletter
+    // (this will keep the originally tracked click - likely the click that led to the order)
+    $statistics = self::where('order_id', $order->get_id())
+      ->where('subscriber_id', $click->subscriber_id)
+      ->where('newsletter_id', $click->newsletter_id)
       ->findOne();
 
     if (!$statistics) {

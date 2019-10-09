@@ -38,7 +38,7 @@ class WooCommercePurchases {
     $processed_newsletter_ids_map = [];
     $order_email_clicks = $this->getClicks($order->get_billing_email(), $from, $to);
     foreach ($order_email_clicks as $click) {
-      StatisticsWooCommercePurchases::createOrUpdateByClickAndOrder($click, $order);
+      StatisticsWooCommercePurchases::createOrUpdateByClickDataAndOrder($click, $order);
       $processed_newsletter_ids_map[$click->newsletter_id] = true;
     }
 
@@ -52,7 +52,7 @@ class WooCommercePurchases {
       if (isset($processed_newsletter_ids_map[$click->newsletter_id])) {
         continue; // do not track click for newsletters that were already tracked by order email
       }
-      StatisticsWooCommercePurchases::createOrUpdateByClickAndOrder($click, $order);
+      StatisticsWooCommercePurchases::createOrUpdateByClickDataAndOrder($click, $order);
     }
   }
 

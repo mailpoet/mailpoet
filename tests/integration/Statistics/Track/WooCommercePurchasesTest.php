@@ -138,6 +138,17 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     expect(count(StatisticsWooCommercePurchases::findMany()))->equals(1);
   }
 
+  function testItTracksPaymentOnlyOnceWhenNewClickAppears() {
+    $this->createClick($this->link, $this->subscriber, 5);
+    $order_mock = $this->createOrderMock($this->subscriber->email);
+    $woocommerce_purchases = new WooCommercePurchases($this->createWooCommerceHelperMock($order_mock), $this->cookies);
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+
+    $this->createClick($this->link, $this->subscriber, 1);
+    $woocommerce_purchases->trackPurchase($order_mock->get_id());
+    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(1);
+  }
+
   function testItDoesNotTrackPaymentWhenClickTooOld() {
     $this->createClick($this->link, $this->subscriber, 20);
     $order_mock = $this->createOrderMock($this->subscriber->email);
