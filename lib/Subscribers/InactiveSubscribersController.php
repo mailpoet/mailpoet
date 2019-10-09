@@ -13,6 +13,8 @@ use MailPoet\Models\Subscriber;
 
 class InactiveSubscribersController {
 
+  private $inactives_task_ids_table_created = false;
+
   /**
    * @param int $days_to_inactive
    * @param int $batch_size
@@ -71,7 +73,8 @@ class InactiveSubscribersController {
 
     // We take into account only emails which have at least one opening tracked
     // to ensure that tracking was enabled for the particular email
-    $inactives_task_ids_table = sprintf("
+    if (!$this->inactives_task_ids_table_created) {
+      $inactives_task_ids_table = sprintf("
       CREATE TEMPORARY TABLE IF NOT EXISTS inactives_task_ids
       (INDEX task_id_ids (id))
       SELECT DISTINCT task_id as id FROM $sending_queues_table as sq
@@ -87,6 +90,8 @@ class InactiveSubscribersController {
         $threshold_date_iso, $day_ago_iso, $threshold_date_iso
       );
       \ORM::rawExecute($inactives_task_ids_table);
+      $this->inactives_task_ids_table_created = true;
+    }
 
     // If MP2 migration occurred during detection interval we can't deactivate subscribers
     // because they are imported with original subscription date but they were not present in a list for whole period
