@@ -16,11 +16,11 @@ class InactiveSubscribersController {
   /**
    * @param int $days_to_inactive
    * @param int $batch_size
-   * @return int
+   * @return int|boolean
    */
-  function markInactiveSubscribers($days_to_inactive, $batch_size) {
+  function markInactiveSubscribers($days_to_inactive, $batch_size, $start_id = null) {
     $threshold_date = $this->getThresholdDate($days_to_inactive);
-    return $this->deactivateSubscribers($threshold_date, $batch_size);
+    return $this->deactivateSubscribers($threshold_date, $batch_size, $start_id);
   }
 
   /**
@@ -56,9 +56,9 @@ class InactiveSubscribersController {
   /**
    * @param Carbon $threshold_date
    * @param int $batch_size
-   * @return int
+   * @return int|boolean
    */
-  private function deactivateSubscribers(Carbon $threshold_date, $batch_size) {
+  private function deactivateSubscribers(Carbon $threshold_date, $batch_size, $start_id = null) {
     $subscribers_table = Subscriber::$_table;
     $scheduled_tasks_table = ScheduledTask::$_table;
     $scheduled_task_subcribres_table = ScheduledTaskSubscriber::$_table;
@@ -92,18 +92,20 @@ class InactiveSubscribersController {
     // because they are imported with original subscription date but they were not present in a list for whole period
     $mp2_migration_date = $this->getMP2MigrationDate();
     if ($mp2_migration_date && $mp2_migration_date > $threshold_date) {
-      return 0;
+      return false;
     }
 
     // Select subscribers who received a recent tracked email but didn't open it
+    $start_id = (int)$start_id;
+    $end_id = $start_id + $batch_size;
     $ids_to_deactivate = \ORM::forTable($subscribers_table)->rawQuery("
       SELECT s.id FROM $subscribers_table as s
         JOIN $scheduled_task_subcribres_table as sts ON s.id = sts.subscriber_id
         JOIN inactives_task_ids task_ids ON task_ids.id = sts.task_id
         LEFT OUTER JOIN $statistics_opens_table as so ON s.id = so.subscriber_id AND so.created_at > ?
-      WHERE s.last_subscribed_at < ? AND s.status = ? AND so.id IS NULL
+      WHERE s.last_subscribed_at < ? AND s.status = ? AND so.id IS NULL AND s.id >= ? AND s.id < ?
       GROUP BY s.id LIMIT ?",
-      [$threshold_date_iso, $threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $batch_size]
+      [$threshold_date_iso, $threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $start_id, $end_id, $batch_size]
     )->findArray();
 
     $ids_to_deactivate = array_map(
