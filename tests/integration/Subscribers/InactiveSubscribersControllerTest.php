@@ -67,14 +67,14 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->addSubcriberToTask($subscriber2, $task);
     $batch_size = 1;
 
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batch_size);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batch_size, $subscriber1->id);
     expect($result)->equals(1);
     $subscriber1 = Subscriber::findOne($subscriber1->id);
     $subscriber2 = Subscriber::findOne($subscriber2->id);
     expect($subscriber1->status === Subscriber::STATUS_INACTIVE || $subscriber2->status === Subscriber::STATUS_INACTIVE)->true();
     expect($subscriber1->status === Subscriber::STATUS_SUBSCRIBED || $subscriber2->status === Subscriber::STATUS_SUBSCRIBED)->true();
 
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batch_size);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batch_size, $subscriber2->id);
     expect($result)->equals(1);
     $subscriber1 = Subscriber::findOne($subscriber1->id);
     $subscriber2 = Subscriber::findOne($subscriber2->id);

@@ -82,10 +82,29 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = new InactiveSubscribers($controller_mock, $this->settings);
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
+    $worker->processTaskStrategy(ScheduledTask::createOrUpdate(
+      ['meta' => ['max_subscriber_id' => 2001 /* 3 iterations of BATCH_SIZE in markInactiveSubscribers */]]
+    ));
 
     expect($controller_mock->markInactiveSubscribers(5, 1000))->equals('ok');
     expect($controller_mock->markActiveSubscribers(5, 1000))->equals('ok');
+  }
+
+  function testItCanStopDeactivationIfMarkInactiveSubscribersReturnsFalse() {
+    $this->settings->set('deactivate_subscriber_after_inactive_days', 5);
+    $controller_mock = Stub::make(InactiveSubscribersController::class, [
+      'markInactiveSubscribers' => Stub\Expected::once(false),
+      'markActiveSubscribers' => Stub\Expected::once(1),
+      'reactivateInactiveSubscribers' => Stub\Expected::never(),
+    ], $this);
+
+    $task = ScheduledTask::createOrUpdate([]);
+
+    $worker = new InactiveSubscribers($controller_mock, $this->settings);
+    $worker->processTaskStrategy($task);
+
+    $meta = $task->getMeta();
+    expect(isset($meta['last_subscriber_id']))->equals(false);
   }
 
   function testThrowsAnExceptionWhenTimeIsOut() {
