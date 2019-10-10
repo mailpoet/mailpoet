@@ -16,6 +16,9 @@ class CronHelper {
   const DAEMON_STATUS_ACTIVE = 'active';
   const DAEMON_STATUS_INACTIVE = 'inactive';
 
+  // Error codes
+  const DAEMON_EXECUTION_LIMIT_REACHED = 1001;
+
   static function getDaemonExecutionLimit() {
     $wp = Functions::get();
     $limit = $wp->applyFilters('mailpoet_cron_get_execution_limit', self::DAEMON_EXECUTION_LIMIT);
@@ -203,7 +206,7 @@ class CronHelper {
   static function enforceExecutionLimit($timer) {
     $elapsed_time = microtime(true) - $timer;
     if ($elapsed_time >= self::getDaemonExecutionLimit()) {
-      throw new \Exception(__('Maximum execution time has been reached.', 'mailpoet'));
+      throw new \Exception(__('Maximum execution time has been reached.', 'mailpoet'), self::DAEMON_EXECUTION_LIMIT_REACHED);
     }
   }
 }
