@@ -345,28 +345,38 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function qaCodeSniffer($severity='errors') {
-    if ($severity === 'all') {
-      $severityFlag = '-w';
-    } else {
-      $severityFlag = '-n';
-    }
+    $severityFlag = $severity === 'all' ? '-w' : '-n';
+    $task = implode(' ', [
+      './tasks/code_sniffer/vendor/bin/phpcs',
+      '--extensions=php',
+      $severityFlag,
+      '--standard=tasks/code_sniffer/MailPoet',
+    ]);
+
     return $this->collectionBuilder()
-      ->taskExec(
-        './tasks/code_sniffer/vendor/bin/phpcs ' .
-        '--standard=./tasks/code_sniffer/MailPoet ' .
-        '--runtime-set testVersion 5.6-7.3 ' .
-        '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,' .
-        './lib/Util/pQuery/*,./lib/Config/PopulatorData/Templates/* ' .
-        'lib/ ' .
-        $severityFlag
+
+      // PHP >= 5.6 for lib & tests
+      ->taskExec($task)
+      ->rawArg('--runtime-set testVersion 5.6-7.3')
+      ->arg('--ignore=' . implode(',', [
+          'lib/Config/PopulatorData/Templates',
+          'lib/Util/CSS.php',
+          'lib/Util/Sudzy',
+          'lib/Util/pQuery',
+          'lib/Util/XLSXWriter.php',
+          'tests/_data',
+          'tests/_output',
+          'tests/_support',
+          'tests/Actions.php',
+          'tests/integration/_bootstrap.php',
+          'tests/integration/_fixtures.php',
+          'tests/unit/_bootstrap.php',
+        ])
       )
-      ->taskExec(
-        './tasks/code_sniffer/vendor/bin/phpcs ' .
-        '--standard=./tasks/code_sniffer/MailPoet ' .
-        '--runtime-set testVersion 5.6-7.3 ' .
-        '--ignore=./tests/unit/_bootstrap.php,./tests/unit/_fixtures.php,./tests/integration/_bootstrap.php,./tests/integration/_fixtures.php ' .
-        'tests/unit tests/integration tests/acceptance tests/DataFactories ' .
-        $severityFlag
+      ->args([
+        'lib',
+        'tests',
+      ])
       )
       ->run();
   }
