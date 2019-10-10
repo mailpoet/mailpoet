@@ -1,4 +1,5 @@
 <?php
+
 use Codeception\Util\Fixtures;
 
 $newsletter_body_text =

@@ -44,7 +44,7 @@ class WooCommercePastRevenues {
     // Create subscribers
     $subscribers_ids = [];
     $subscriber_emails = [];
-    for ($i=1; $i <= self::SUBSCRIBERS_COUNT; $i++) {
+    for ($i = 1; $i <= self::SUBSCRIBERS_COUNT; $i++) {
       $email = "address$i@email.com";
       $subscriber = $this->createSubscriber("address$i@email.com", "last_name_$i", $minimal_created_at_date, $subscribers_list);
       $subscribers_ids[] = $subscriber->id;
@@ -59,7 +59,7 @@ class WooCommercePastRevenues {
     // Products
     $product_category = $this->createProductCategory('WC Revenues Test Category', 'revenues-test-cat');
     $products = [];
-    for ($i=1; $i <= self::PRODUCTS_COUNT; $i++) {
+    for ($i = 1; $i <= self::PRODUCTS_COUNT; $i++) {
       $products[] = $this->createProduct("Product $i", 100, [$product_category->term_id]);
     }
     yield "Products done";
@@ -200,7 +200,7 @@ class WooCommercePastRevenues {
         $sent_standard_newsletters
       );
       // Pick amount of received emails and generate opens and clicks
-      $opened_count = floor(count($subscriber_received_emails)/rand(2,5));
+      $opened_count = floor(count($subscriber_received_emails) / rand(2, 5));
       $emails_to_click = array_intersect_key(
         $subscriber_received_emails,
         array_flip(array_rand($subscriber_received_emails, $opened_count))
@@ -333,18 +333,18 @@ class WooCommercePastRevenues {
 
     // Add subscribers to task
     $batch_data = [];
-    foreach($subscribers_ids as $subscriber_id) {
+    foreach ($subscribers_ids as $subscriber_id) {
       $batch_data[] = "({$task->id}, $subscriber_id, 1, '$sent_at')";
       if (count($batch_data) % 1000 === 0) {
         \ORM::rawExecute(
-          "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ',  $batch_data)
+          "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batch_data)
         );
         $batch_data = [];
       }
     }
     if ($batch_data) {
       \ORM::rawExecute(
-        "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ',  $batch_data)
+        "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batch_data)
       );
     }
 
@@ -438,7 +438,7 @@ class WooCommercePastRevenues {
     $order = wc_create_order();
     $order->set_address($address, 'billing');
     $order->set_address($address, 'shipping');
-    foreach($products as $product) {
+    foreach ($products as $product) {
       $order->add_product($product);
     }
     $order->calculate_totals();
