@@ -10,11 +10,11 @@ if (jQuery('#mailpoet_settings').length > 0) {
       'mta(/:group)': 'sendingMethodGroup',
       '(:tab)': 'tabs',
     },
-    defaultRoute: function () { // eslint-disable-line func-names
+    defaultRoute: function defaultRoute() {
       // display basics tab as default
       this.tabs('basics');
     },
-    sendingMethodGroup: function (group) { // eslint-disable-line func-names
+    sendingMethodGroup: function sendingMethodGroup(group) {
       // display mta tab
       this.tabs('mta');
 
@@ -45,7 +45,11 @@ if (jQuery('#mailpoet_settings').length > 0) {
         jQuery('#mailpoet_sending_method_setup').fadeIn();
       }
     },
-    tabs: function (tab) { // eslint-disable-line func-names
+    tabs: function tabs(tab) {
+      if (tab === 'woocommerce' && !window.mailpoet_woocommerce_active) {
+        window.location.hash = '#basics';
+        return;
+      }
       // reset all active tabs
       jQuery('.nav-tab-wrapper a').removeClass('nav-tab-active');
 
@@ -73,7 +77,7 @@ if (jQuery('#mailpoet_settings').length > 0) {
     },
   }))();
 
-  jQuery(document).ready(function () { // eslint-disable-line func-names
+  jQuery(document).ready(function ready() {
     if (!Backbone.History.started) Backbone.history.start();
   });
 }
