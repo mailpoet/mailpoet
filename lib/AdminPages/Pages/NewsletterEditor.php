@@ -54,7 +54,7 @@ class NewsletterEditor {
       )
     ) {
       header('Location: admin.php?page=mailpoet-settings&enable-customizer-notice#woocommerce', true, 302);
-      return;
+      exit;
     }
 
     $subscriber = Subscriber::getCurrentWPUser();
