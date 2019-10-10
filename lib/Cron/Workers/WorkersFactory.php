@@ -168,8 +168,8 @@ class WorkersFactory {
     return new AuthorizedSendingEmailsCheck($this->authorized_emails_controller, $timer);
   }
 
-  /** @return WooCommerceOrders */
-  function createWooCommerceOrdersWorker($timer) {
-    return new WooCommerceOrders($this->woocommerce_helper, $this->woocommerce_purchases, $timer);
+  /** @return WooCommercePastOrders */
+  function createWooCommercePastOrdersWorker($timer) {
+    return new WooCommercePastOrders($this->woocommerce_helper, $this->woocommerce_purchases, $timer);
   }
 }

@@ -10,8 +10,7 @@ use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-class WooCommerceOrders extends SimpleWorker {
-  const TASK_TYPE = 'woocommerce_orders';
+class WooCommercePastOrders extends SimpleWorker {
   const TASK_TYPE = 'woocommerce_past_orders';
   const BATCH_SIZE = 20;
 
