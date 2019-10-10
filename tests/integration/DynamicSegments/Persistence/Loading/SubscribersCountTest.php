@@ -51,7 +51,13 @@ class SubscribersCountTest extends \MailPoetTest {
     $emails = ['user-role-test1@example.com', 'user-role-test2@example.com', 'user-role-test3@example.com'];
     foreach ($emails as $email) {
       $user = get_user_by('email', $email);
-      if ($user) {
+      if (!$user) {
+        continue;
+      }
+
+      if (is_multisite()) {
+        wpmu_delete_user($user->ID);
+      } else {
         wp_delete_user($user->ID);
       }
     }
