@@ -16,7 +16,7 @@ use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
-use MailPoet\Cron\Workers\WooCommerceOrders;
+use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
@@ -176,9 +176,9 @@ class WordPress {
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
 
-    // WooCommerce orders revenues sync
-    $woo_commerce_orders_tasks = self::getTasksCount([
-      'type' => WooCommerceOrders::TASK_TYPE,
+    // WooCommerce past orders revenues sync
+    $woo_commerce_past_orders_tasks = self::getTasksCount([
+      'type' => WooCommercePastOrders::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
@@ -203,7 +203,7 @@ class WordPress {
       || $woo_commerce_sync_tasks
       || $authorized_email_addresses_tasks
       || $beamer_active
-      || $woo_commerce_orders_tasks
+      || $woo_commerce_past_orders_tasks
       || $unsubscribe_tokens_tasks
       || $subscriber_link_tokens_tasks
     );

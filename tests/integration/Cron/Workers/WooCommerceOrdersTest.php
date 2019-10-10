@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Cron\Workers;
 
 use DateTime;
-use MailPoet\Cron\Workers\WooCommerceOrders;
+use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsWooCommercePurchases;
@@ -17,7 +17,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
   /** @var WooCommercePurchases */
   private $woocommerce_purchases;
 
-  /** @var WooCommerceOrders */
+  /** @var WooCommercePastOrders */
   private $worker;
 
   function _before() {
@@ -25,7 +25,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->woocommerce_helper = $this->createMock(WooCommerceHelper::class);
     $this->woocommerce_purchases = $this->createMock(WooCommercePurchases::class);
 
-    $this->worker = new WooCommerceOrders($this->woocommerce_helper, $this->woocommerce_purchases, microtime(true));
+    $this->worker = new WooCommercePastOrders($this->woocommerce_helper, $this->woocommerce_purchases, microtime(true));
   }
 
   function testItDoesNotRunIfWooCommerceIsDisabled() {
@@ -33,7 +33,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     expect($this->worker->checkProcessingRequirements())->false();
 
     $this->worker->process();
-    $tasks = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findMany();
+    $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
     expect($tasks)->isEmpty();
   }
 
@@ -42,7 +42,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     expect($this->worker->checkProcessingRequirements())->true();
 
     $this->worker->process();
-    $tasks = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findMany();
+    $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
     expect($tasks)->count(1);
   }
 
@@ -53,28 +53,28 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     // 1. schedule
     expect($this->worker->checkProcessingRequirements())->true();
     $this->worker->process();
-    $task = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findOne();
+    $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
 
     // 2. prepare
     expect($this->worker->checkProcessingRequirements())->true();
     $this->worker->process();
-    $task = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findOne();
+    $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->status)->null(); // null means 'running'
 
     // 3. run
     expect($this->worker->checkProcessingRequirements())->true();
     $this->worker->process();
-    $task = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findOne();
+    $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->status)->equals(ScheduledTask::STATUS_COMPLETED);
 
     // 4. complete (do not schedule again)
     expect($this->worker->checkProcessingRequirements())->false();
     $this->worker->process();
-    $task = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findOne();
+    $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->status)->equals(ScheduledTask::STATUS_COMPLETED);
 
-    $tasks = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findMany();
+    $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
     expect($tasks)->count(1);
   }
 
@@ -89,7 +89,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->worker->process(); // prepare
     $this->worker->process(); // run
 
-    $tasks = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findMany();
+    $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
     expect($tasks)->count(1);
     expect($tasks[0]->status)->equals(null);  // null means 'running'
   }
@@ -106,17 +106,17 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->worker->process(); // prepare
     $this->worker->process(); // run for 1, 2, 3
 
-    $task = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findOne();
+    $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->getMeta())->equals(['last_processed_id' => 3]);
 
     $this->worker->process(); // run for 4, 5
 
-    $task = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findOne();
+    $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->getMeta())->equals(['last_processed_id' => 5]);
 
     $this->worker->process(); // complete
 
-    $tasks = ScheduledTask::where('type', WooCommerceOrders::TASK_TYPE)->findMany();
+    $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
     expect($tasks)->count(1);
     expect($tasks[0]->status)->equals(ScheduledTask::STATUS_COMPLETED);
   }

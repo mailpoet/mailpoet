@@ -290,7 +290,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createExportFilesCleanupWorker' => $worker,
       'createInactiveSubscribersWorker' => $worker,
       'createAuthorizedSendingEmailsCheckWorker' => $worker,
-      'createWooCommerceOrdersWorker' => $worker,
+      'createWooCommercePastOrdersWorker' => $worker,
       'createBeamerkWorker' => $worker,
     ]);
   }
