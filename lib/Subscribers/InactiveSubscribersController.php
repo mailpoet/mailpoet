@@ -103,15 +103,26 @@ class InactiveSubscribersController {
     // Select subscribers who received a recent tracked email but didn't open it
     $start_id = (int)$start_id;
     $end_id = $start_id + $batch_size;
-    $ids_to_deactivate = \ORM::forTable($subscribers_table)->rawQuery("
-      SELECT s.id FROM $subscribers_table as s
-        JOIN $scheduled_task_subcribres_table as sts ON s.id = sts.subscriber_id
+    $inactive_subscriber_ids_tmp_table = 'inactive_subscriber_ids';
+    \ORM::rawExecute("
+      CREATE TEMPORARY TABLE IF NOT EXISTS $inactive_subscriber_ids_tmp_table
+      (UNIQUE subscriber_id (id))
+      SELECT DISTINCT s.id FROM $subscribers_table as s
+        JOIN $scheduled_task_subcribres_table as sts USE INDEX (subscriber_id) ON s.id = sts.subscriber_id
         JOIN inactives_task_ids task_ids ON task_ids.id = sts.task_id
+      WHERE s.last_subscribed_at < ? AND s.status = ? AND s.id >= ? AND s.id < ?
+      LIMIT ?",
+      [$threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $start_id, $end_id, $batch_size]
+    );
+
+    $ids_to_deactivate = \ORM::forTable($inactive_subscriber_ids_tmp_table)->rawQuery("
+      SELECT s.id FROM $inactive_subscriber_ids_tmp_table s
         LEFT OUTER JOIN $statistics_opens_table as so ON s.id = so.subscriber_id AND so.created_at > ?
-      WHERE s.last_subscribed_at < ? AND s.status = ? AND so.id IS NULL AND s.id >= ? AND s.id < ?
-      GROUP BY s.id LIMIT ?",
-      [$threshold_date_iso, $threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $start_id, $end_id, $batch_size]
+        WHERE so.id IS NULL",
+      [$threshold_date_iso]
     )->findArray();
+
+    \ORM::rawExecute("DROP TABLE $inactive_subscriber_ids_tmp_table");
 
     $ids_to_deactivate = array_map(
       function ($id) {
