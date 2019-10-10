@@ -18,7 +18,7 @@ return [
         'vendor-bin',
         'composer',
       ])
-      ->in('vendor')
+      ->in('vendor'),
   ],
 
   // Whitelists a list of files. Unlike the other whitelist related features, this one is about completely leaving

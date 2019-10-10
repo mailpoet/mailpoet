@@ -97,9 +97,9 @@ class ReleaseVersionController {
     $data = [
       'update' => [
         'fixVersions' => [
-          ['set' => [['name' => $version]]]
-        ]
-      ]
+          ['set' => [['name' => $version]]],
+        ],
+      ],
     ];
     return $this->jira->updateIssue($issue_key, $data);
   }

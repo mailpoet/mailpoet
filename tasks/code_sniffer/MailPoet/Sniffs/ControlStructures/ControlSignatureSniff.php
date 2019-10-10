@@ -1,4 +1,7 @@
 <?php
+
+namespace MailPoet\Sniffs;
+
 /**
  * Verifies spacing of control statements.
  *
@@ -14,7 +17,7 @@
  */
 
 if (class_exists('PHP_CodeSniffer\Sniffs\AbstractPatternSniff', true) === false) {
-    throw new \PHP_CodeSniffer\Exceptions\RuntimeException('Class PHP_CodeSniffer\Sniffs\AbstractPatternSniff not found');
+  throw new \PHP_CodeSniffer\Exceptions\RuntimeException('Class PHP_CodeSniffer\Sniffs\AbstractPatternSniff not found');
 }
 
 /**
@@ -29,33 +32,33 @@ if (class_exists('PHP_CodeSniffer\Sniffs\AbstractPatternSniff', true) === false)
  * @version   Release: @package_version@
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
-class MailPoet_Sniffs_ControlStructures_ControlSignatureSniff extends PHP_CodeSniffer\Sniffs\AbstractPatternSniff {
+class ControlSignatureSniff extends \PHP_CodeSniffer\Sniffs\AbstractPatternSniff {
 
-    /**
-     * If true, comments will be ignored if they are found in the code.
-     *
-     * @var boolean
-     */
-    public $ignoreComments = true;
+  /**
+   * If true, comments will be ignored if they are found in the code.
+   *
+   * @var boolean
+   */
+  public $ignoreComments = true;
 
-    /**
-     * Returns the patterns that this test wishes to verify.
-     *
-     * @return string[]
-     */
-    protected function getPatterns() {
-      return array(
-        'do {EOL...} while (...);EOL',
-        'while (...) {EOL',
-        'for (...) {EOL',
-        'if (...) {EOL',
-        'foreach (...) {EOL',
-        '} else if (...) {EOL',
-        '} elseif (...) {EOL',
-        '} else {EOL',
-        'do {EOL',
-        'switch (...) {EOL',
-        'catch (...) {EOL',
-      );
-    }
+  /**
+   * Returns the patterns that this test wishes to verify.
+   *
+   * @return string[]
+   */
+  protected function getPatterns() {
+    return [
+      'do {EOL...} while (...);EOL',
+      'while (...) {EOL',
+      'for (...) {EOL',
+      'if (...) {EOL',
+      'foreach (...) {EOL',
+      '} else if (...) {EOL',
+      '} elseif (...) {EOL',
+      '} else {EOL',
+      'do {EOL',
+      'switch (...) {EOL',
+      'catch (...) {EOL',
+    ];
+  }
 }

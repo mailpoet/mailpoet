@@ -5,16 +5,14 @@ namespace MailPoet\Premium\DI;
 use MailPoet\DI\IContainerConfigurator;
 use MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class ContainerConfigurator implements IContainerConfigurator{
-  function configure(ContainerBuilder $container)
-  {
+// phpcs:ignore Squiz.Classes.ClassFileName
+class ContainerConfigurator implements IContainerConfigurator {
+  function configure(ContainerBuilder $container) {
   }
 
-  function getDumpNamespace()
-  {
+  function getDumpNamespace() {
   }
 
-  function getDumpClassname()
-  {
+  function getDumpClassname() {
   }
 }

@@ -66,7 +66,7 @@ class GitHubController {
         'head' => self::RELEASE_SOURCE_BRANCH,
         'base' => 'master',
         'direction' => 'desc',
-      ]
+      ],
     ]);
     $response = json_decode($response->getBody()->getContents(), true);
     if (sizeof($response) === 0) {
@@ -182,11 +182,10 @@ class GitHubController {
     return json_decode($response->getBody()->getContents(), true);
   }
 
-  private function uploadReleaseZip($upload_url, $release_zip_path)
-  {
+  private function uploadReleaseZip($upload_url, $release_zip_path) {
     $this->http_client->post($upload_url, [
       'headers' => [
-        'Content-Type' => 'application/zip'
+        'Content-Type' => 'application/zip',
       ],
       'query' => [
         'name' => $this->zip_filename,
@@ -195,8 +194,7 @@ class GitHubController {
     ]);
   }
 
-  private function publishDraftAsRelease($release_id)
-  {
+  private function publishDraftAsRelease($release_id) {
     $this->http_client->patch('releases/' . urlencode($release_id), [
       'json' => [
         'draft' => false,

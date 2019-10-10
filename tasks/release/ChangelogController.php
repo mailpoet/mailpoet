@@ -38,7 +38,7 @@ class ChangelogController {
 
   private function renderHeading(array $version) {
     $date = empty($version['releaseDate']) ? date('Y-m-d') : $version['releaseDate'];
-    return "= {$version['name']}" . self::HEADING_GLUE .  "$date =";
+    return "= {$version['name']}" . self::HEADING_GLUE . "$date =";
   }
 
   private function renderList(array $issues, $field) {

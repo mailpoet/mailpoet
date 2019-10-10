@@ -66,7 +66,7 @@ class JiraController {
       'query' => [
         'maxResults' => 1,
         'orderBy' => '-sequence',
-      ]
+      ],
     ]);
     $version = json_decode($response->getBody()->getContents(), true);
     if (empty($version) || empty($version['values'])) {
@@ -81,7 +81,7 @@ class JiraController {
         'maxResults' => 1,
         'orderBy' => '-sequence',
         'status' => 'released',
-      ]
+      ],
     ]);
     $version = json_decode($response->getBody()->getContents(), true);
     if (empty($version) || empty($version['values'])) {
