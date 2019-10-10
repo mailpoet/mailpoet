@@ -61,7 +61,7 @@ abstract class SimpleWorker {
         $this->processTask($task);
       }
     } catch (\Exception $e) {
-      if ($task) {
+      if ($task && $e->getCode() !== CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
         $task->rescheduleProgressively();
       }
       throw $e;

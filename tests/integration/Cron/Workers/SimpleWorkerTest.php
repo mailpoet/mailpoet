@@ -206,6 +206,31 @@ class SimpleWorkerTest extends \MailPoetTest {
     }
   }
 
+  function testWillNotRescheduleATaskOnCronTimeout() {
+    $task = $this->createRunningTask();
+    $worker = Stub::construct(
+      $this->worker,
+      [],
+      [
+        'processTaskStrategy' => function () {
+          CronHelper::enforceExecutionLimit(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT - 1);
+        },
+      ],
+      $this
+    );
+    $scheduled_at = $task->scheduled_at;
+    try {
+      $worker->process();
+      $this->fail('An exception should be thrown');
+    } catch (\Exception $e) {
+      expect($e->getCode())->equals(CronHelper::DAEMON_EXECUTION_LIMIT_REACHED);
+      $task = ScheduledTask::findOne($task->id);
+      expect($scheduled_at)->equals($task->scheduled_at);
+      expect($task->status)->equals(null);
+      expect($task->reschedule_count)->equals(0);
+    }
+  }
+
   function testItWillNotRunInMultipleInstances() {
     $worker = $this->getMockBuilder(MockSimpleWorker::class)
       ->setMethods(['processTaskStrategy'])
