@@ -15,13 +15,13 @@
  * @since 3.0.0-beta.1
  */
 
-$mailpoet_plugin = array(
+$mailpoet_plugin = [
   'version' => '3.38.0',
   'filename' => __FILE__,
   'path' => dirname(__FILE__),
   'autoloader' => dirname(__FILE__) . '/vendor/autoload.php',
-  'initializer' => dirname(__FILE__) . '/mailpoet_initializer.php'
-);
+  'initializer' => dirname(__FILE__) . '/mailpoet_initializer.php',
+];
 
 function mailpoet_deactivate_plugin() {
   deactivate_plugins(plugin_basename(__FILE__));

@@ -1,5 +1,6 @@
 <?php
 
+// phpcs:ignore PSR1.Classes.ClassDeclaration
 class RoboFile extends \Robo\Tasks {
   const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
 
@@ -377,6 +378,11 @@ class RoboFile extends \Robo\Tasks {
         'lib',
         'tests',
       ])
+
+      // PHP >= 5.6 in plugin root directory
+      ->taskExec($task)
+      ->rawArg('--runtime-set testVersion 5.6-7.3')
+      ->rawArg('-l .')
       )
       ->run();
   }
