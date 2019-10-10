@@ -101,6 +101,9 @@ class NewsletterTemplates extends React.Component {
     const categoriesNames = templatesCategories.map((category) => category.name);
     let categories;
 
+    if (categoriesNames.indexOf('woocommerce') === -1) {
+      categoriesNames.push('woocommerce');
+    }
     try {
       categories = JSON.parse(template.categories)
         .filter((name) => categoriesNames.indexOf(name) !== -1);
