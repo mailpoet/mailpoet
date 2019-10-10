@@ -44,7 +44,7 @@ $replacements = [
   [
     'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/Binary/NotInBinary.php',
     'find' => [
-      '\'!twig_in_filter(\''
+      '\'!twig_in_filter(\'',
     ],
     'replace' => [
       '\'!\\\\MailPoetVendor\\\\twig_in_filter(\'',
@@ -53,7 +53,7 @@ $replacements = [
   [
     'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/Binary/InBinary.php',
     'find' => [
-      '\'twig_in_filter(\''
+      '\'twig_in_filter(\'',
     ],
     'replace' => [
       '\'\\\\MailPoetVendor\\\\twig_in_filter(\'',

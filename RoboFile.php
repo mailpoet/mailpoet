@@ -383,7 +383,24 @@ class RoboFile extends \Robo\Tasks {
       ->taskExec($task)
       ->rawArg('--runtime-set testVersion 5.6-7.3')
       ->rawArg('-l .')
+
+      // PHP >= 7.2 for dev tools, etc.
+      ->taskExec($task)
+      ->rawArg('--runtime-set testVersion 7.2-7.3')
+      ->arg('--ignore=' . implode(',', [
+          'prefixer/build',
+          'prefixer/vendor',
+          'tasks/code_sniffer/vendor',
+          'tasks/makepot',
+          'tools/vendor',
+        ])
       )
+      ->args([
+        '.circleci',
+        'prefixer',
+        'tasks',
+        'tools',
+      ])
       ->run();
   }
 

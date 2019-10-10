@@ -1,14 +1,17 @@
 <?php
 
-class WooCommerce {}
+// phpcs:ignore
+class WooCommerce {
+}
 
 /**
 * @return WooCommerce
 */
-function WC() {}
+function WC() {
+}
 
 function wc_get_customer_order_count(int $user_id): int {
-return 0;
+  return 0;
 }
 
 /**
@@ -16,7 +19,7 @@ return 0;
 * @return mixed
 */
 function wc_get_order($order = false) {
-return false;
+  return false;
 }
 
 /**
@@ -24,25 +27,27 @@ return false;
 * @return WC_Order[]|int[]|\stdClass
 */
 function wc_get_orders($args) {
-return [];
+  return [];
 }
 
 function wc_price(float $price, array $args = []): string {
-return '';
+  return '';
 }
 
 /**
 * @return string
 */
 function get_woocommerce_currency() {
-return '';
+  return '';
 }
 
-function wc_get_product($the_product = false, $deprecated = array()) {
-return null;
+function wc_get_product($the_product = false, $deprecated = []) {
+  return null;
 }
 
-class WC_DateTime extends \DateTime {}
+// phpcs:ignore
+class WC_DateTime extends \DateTime {
+}
 
 /**
 * @method int get_id()
@@ -51,4 +56,5 @@ class WC_DateTime extends \DateTime {}
 * @method string get_currency(string $context = 'view')
 * @method float get_total(string $context = 'view')
 */
-class WC_Order {}
+class WC_Order { // phpcs:ignore
+}

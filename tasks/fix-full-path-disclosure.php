@@ -18,7 +18,7 @@ if (count($argv) !== 2) {
 }
 
 // absolutize path (if not absolute)
-$directory = rtrim($argv[1]. '/');
+$directory = rtrim($argv[1] . '/');
 if (mb_substr($directory, 0, 1) !== DIRECTORY_SEPARATOR) {
   $directory = getcwd() . DIRECTORY_SEPARATOR . $directory;
 }

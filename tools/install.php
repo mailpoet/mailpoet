@@ -8,7 +8,7 @@ $tools = [
 ];
 
 // ensure installation in dev-mode only
-$is_dev_mode = (bool) getenv('COMPOSER_DEV_MODE');
+$is_dev_mode = (bool)getenv('COMPOSER_DEV_MODE');
 if (!$is_dev_mode) {
   fwrite(STDERR, "Skipping installing dev tools in non-dev mode.\n");
   return;

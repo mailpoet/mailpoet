@@ -7,6 +7,7 @@ if (!file_exists($path)) {
 $filename = $path . '/mailpoet-' . microtime(true) . '.txt';
 $file_handle = fopen($filename, "w");
 
+// phpcs:ignore Squiz.PHP.DiscouragedFunctions
 $call_arguments = print_r($argv, true) . "\n";
 fwrite($file_handle, $call_arguments);
 
