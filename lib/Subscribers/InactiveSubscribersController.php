@@ -71,6 +71,13 @@ class InactiveSubscribersController {
     $day_ago = new Carbon();
     $day_ago_iso = $day_ago->subDay()->toDateTimeString();
 
+    // If MP2 migration occurred during detection interval we can't deactivate subscribers
+    // because they are imported with original subscription date but they were not present in a list for whole period
+    $mp2_migration_date = $this->getMP2MigrationDate();
+    if ($mp2_migration_date && $mp2_migration_date > $threshold_date) {
+      return false;
+    }
+
     // We take into account only emails which have at least one opening tracked
     // to ensure that tracking was enabled for the particular email
     if (!$this->inactives_task_ids_table_created) {
@@ -93,13 +100,6 @@ class InactiveSubscribersController {
       $this->inactives_task_ids_table_created = true;
     }
 
-    // If MP2 migration occurred during detection interval we can't deactivate subscribers
-    // because they are imported with original subscription date but they were not present in a list for whole period
-    $mp2_migration_date = $this->getMP2MigrationDate();
-    if ($mp2_migration_date && $mp2_migration_date > $threshold_date) {
-      return false;
-    }
-
     // Select subscribers who received a recent tracked email but didn't open it
     $start_id = (int)$start_id;
     $end_id = $start_id + $batch_size;
@@ -110,9 +110,8 @@ class InactiveSubscribersController {
       SELECT DISTINCT s.id FROM $subscribers_table as s
         JOIN $scheduled_task_subcribres_table as sts USE INDEX (subscriber_id) ON s.id = sts.subscriber_id
         JOIN inactives_task_ids task_ids ON task_ids.id = sts.task_id
-      WHERE s.last_subscribed_at < ? AND s.status = ? AND s.id >= ? AND s.id < ?
-      LIMIT ?",
-      [$threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $start_id, $end_id, $batch_size]
+      WHERE s.last_subscribed_at < ? AND s.status = ? AND s.id >= ? AND s.id < ?",
+      [$threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $start_id, $end_id]
     );
 
     $ids_to_deactivate = \ORM::forTable($inactive_subscriber_ids_tmp_table)->rawQuery("
