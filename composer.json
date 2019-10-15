@@ -72,13 +72,15 @@
       "@fixPHPUnit57CodeCoverageForPHP72",
       "./prefixer/process.sh",
       "./tools/vendor/composer.phar dump-autoload",
-      "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install"
+      "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
+      "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
     ],
     "post-install-cmd": [
       "@fixPHPUnit57CodeCoverageForPHP72",
       "./prefixer/process.sh",
       "./tools/vendor/composer.phar dump-autoload",
-      "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install"
+      "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
+      "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
     ],
     "fixPHPUnit57CodeCoverageForPHP72": "sed -i -- 's/\\$numTests = count(\\$coverageData\\[\\$i\\]);/$numTests = (is_array($coverageData[$i]) ? count($coverageData[$i]) : 0);/g' vendor/phpunit/php-code-coverage/src/Report/Html/Renderer/File.php"
   },

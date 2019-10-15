@@ -391,6 +391,7 @@ class RoboFile extends \Robo\Tasks {
           'prefixer/build',
           'prefixer/vendor',
           'tasks/code_sniffer/vendor',
+          'tasks/phpstan/vendor',
           'tasks/makepot',
           'tools/vendor',
         ])
@@ -462,7 +463,7 @@ class RoboFile extends \Robo\Tasks {
       ->taskExec(
         'WP_ROOT="' . getenv('WP_ROOT') . '" ' .
         'php -d memory_limit=2G ' .
-        "$dir/tools/vendor/phpstan.phar analyse " .
+        "$dir/tasks/phpstan/vendor/bin/phpstan analyse " .
         "--configuration $dir/tasks/phpstan/phpstan.neon " .
         '--level 5 ' .
         "$dir/lib"

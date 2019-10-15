@@ -1,0 +1,8 @@
+{
+    "require": {
+        "phpstan/phpstan-shim": "0.11.16"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
