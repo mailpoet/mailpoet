@@ -1,8 +1,9 @@
 parameters:
+  mailpoetDir: %rootDir%/../../../../..
   tmpDir: ../../temp/phpstan
-  autoload_files:
-    - %rootDir%/../../../vendor/autoload.php
   bootstrap: bootstrap.php
+  autoload_files:
+    - %mailpoetDir%/vendor/autoload.php
   ignoreErrors:
     - '#Function members_register_.+ not found#'
     - '#MailPoet\\Premium\\DI\\ContainerConfigurator not found#' # this class is not available when premium is not active
