@@ -54,7 +54,7 @@ services:
           - test.local
 
   mysql:
-    image: circleci/mysql:5.7-ram
+    image: circleci/mysql:5.7.27-ram
     environment:
       MYSQL_ROOT_PASSWORD: wordpress
       MYSQL_DATABASE: wordpress
