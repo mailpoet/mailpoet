@@ -476,7 +476,12 @@ class RoboFile extends \Robo\Tasks {
       // tests
       ->taskExec($task)
       ->rawArg('--configuration=phpstan-tests.neon')
-      ->arg("$dir/tests/unit")
+      ->rawArg(
+        implode(' ', [
+          "$dir/tests/DataFactories",
+          "$dir/tests/unit",
+        ])
+      )
       ->dir(__DIR__ . '/tasks/phpstan')
 
       ->taskExec('cd ' . __DIR__ . ' && ./tools/vendor/composer.phar install')
