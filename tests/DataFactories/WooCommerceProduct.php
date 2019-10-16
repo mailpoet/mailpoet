@@ -98,7 +98,7 @@ class WooCommerceProduct {
     $ids = array_map(function($id){
       return ['id' => $id];
     }, $ids);
-    return $this->update('tagIds', $id);
+    return $this->update('tagIds', $ids);
   }
 
   /**
