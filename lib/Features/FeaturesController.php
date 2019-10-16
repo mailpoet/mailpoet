@@ -12,6 +12,7 @@ class FeaturesController {
   const SEND_WORDPRESS_MAILS_WITH_MP3 = 'send-wordpress-mails-with-mp3';
   const WC_TRANSACTIONAL_EMAILS_CUSTOMIZER = 'wc-transactional-emails-customizer';
   const DISPLAY_MSS_PITCH = 'display-mss-pitch';
+  const NEW_FORM_EDITOR = 'new-form-editor';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
@@ -20,6 +21,7 @@ class FeaturesController {
     self::SEND_WORDPRESS_MAILS_WITH_MP3 => false,
     self::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER => false,
     self::DISPLAY_MSS_PITCH => false,
+    self::NEW_FORM_EDITOR => false,
   ];
 
   /** @var array */
