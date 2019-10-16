@@ -23,6 +23,7 @@ use MailPoet\AdminPages\Pages\Update;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceListImport;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -45,17 +46,22 @@ class Menu {
   /** @var ContainerWrapper */
   private $container;
 
+  /** @var FeaturesController */
+  private $features_controller;
+
   private $subscribers_over_limit;
 
   function __construct(
     AccessControl $access_control,
     WPFunctions $wp,
     ServicesChecker $services_checker,
+    FeaturesController $features_controller,
     ContainerWrapper $container
   ) {
     $this->access_control = $access_control;
     $this->wp = $wp;
     $this->services_checker = $services_checker;
+    $this->features_controller = $features_controller;
     $this->container = $container;
   }
 
@@ -178,7 +184,7 @@ class Menu {
     });
 
     // form editor
-    $this->wp->addSubmenuPage(
+    $form_editor_page = $this->wp->addSubmenuPage(
       true,
       $this->setPageTitle(__('Form Editor', 'mailpoet')),
       $this->wp->__('Form Editor', 'mailpoet'),
@@ -189,6 +195,15 @@ class Menu {
         'formEditor',
       ]
     );
+
+    // add body class for form editor page
+    if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
+      $this->wp->addAction('load-' . $form_editor_page, function() {
+        $this->wp->addAction('admin_body_class', function ($classes) {
+          return ltrim($classes . ' block-editor-page');
+        });
+      });
+    }
 
     // Subscribers page
     $subscribers_page = $this->wp->addSubmenuPage(

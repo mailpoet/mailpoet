@@ -22,6 +22,7 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
 <% block templates %><% endblock %>
 
 <!-- main container -->
+<% block container %>
 <div class="wrap">
   <!-- notices -->
   <div id="mailpoet_notice_error" class="mailpoet_notice" style="display:none;"></div>
@@ -34,6 +35,7 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
   <!-- content block -->
   <% block content %><% endblock %>
 </div>
+<% endblock %>
 
 <!-- stylesheets -->
 <%= stylesheet(
