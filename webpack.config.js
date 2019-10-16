@@ -209,7 +209,7 @@ const adminConfig = {
       'common/check_spf_record.jsx',
     ],
     admin: 'webpack_admin_index.jsx',
-    form_editor: 'form_editor/webpack_index.jsx',
+    form_editor_legacy: 'form_editor_legacy/webpack_index.jsx',
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
   },
   plugins: [
@@ -245,14 +245,14 @@ const adminConfig = {
               return true;
             }
 
-            // add admin/form_editor/newsletter_editor shared modules
+            // add admin/form_editor_legacy/newsletter_editor shared modules
             const filteredChunks = chunks.filter((chunk) => {
-              return ['admin', 'form_editor', 'newsletter_editor'].includes(chunk.name);
+              return ['admin', 'form_editor_legacy', 'newsletter_editor'].includes(chunk.name);
             });
             return filteredChunks.length > 1;
           },
           enforce: true,
-          chunks: (chunk) => ['admin_vendor', 'admin', 'form_editor', 'newsletter_editor'].includes(chunk.name),
+          chunks: (chunk) => ['admin_vendor', 'admin', 'form_editor_legacy', 'newsletter_editor'].includes(chunk.name),
           priority: 0,
         },
       }
