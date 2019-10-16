@@ -453,22 +453,32 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function qaPhpstan() {
+    $dir = __DIR__;
+    $task = implode(' ', [
+      'WP_ROOT="' . getenv('WP_ROOT') . '"',
+      'php -d memory_limit=2G',
+      "$dir/tasks/phpstan/vendor/bin/phpstan analyse ",
+      '--level 5',
+    ]);
+
     // PHPStan must be run out of main plugin directory to avoid its autoloading
     // from vendor/autoload.php where some dev dependencies cause conflicts.
-    $dir = __DIR__;
     return $this->collectionBuilder()
       ->taskExec('rm -rf ' . __DIR__ . '/vendor/goaop')
       ->taskExec('rm -rf ' . __DIR__ . '/vendor/nikic')
       ->taskExec('cd ' . __DIR__ . ' && ./tools/vendor/composer.phar dump-autoload')
-      ->taskExec(
-        'WP_ROOT="' . getenv('WP_ROOT') . '" ' .
-        'php -d memory_limit=2G ' .
-        "$dir/tasks/phpstan/vendor/bin/phpstan analyse " .
-        "--configuration $dir/tasks/phpstan/phpstan.neon " .
-        '--level 5 ' .
-        "$dir/lib"
-      )
+
+      // lib
+      ->taskExec($task)
+      ->arg("$dir/lib")
       ->dir(__DIR__ . '/tasks/phpstan')
+
+      // tests
+      ->taskExec($task)
+      ->rawArg('--configuration=phpstan-tests.neon')
+      ->arg("$dir/tests/unit")
+      ->dir(__DIR__ . '/tasks/phpstan')
+
       ->taskExec('cd ' . __DIR__ . ' && ./tools/vendor/composer.phar install')
       ->run();
   }

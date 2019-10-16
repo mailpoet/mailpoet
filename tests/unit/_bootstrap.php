@@ -1,7 +1,9 @@
 <?php
 
-function __($text) {
-  return $text;
+if (!function_exists('__')) {
+  function __($text) {
+    return $text;
+  }
 }
 
 // Fix for mocking WPFunctions
@@ -10,8 +12,13 @@ if (!defined('OBJECT')) {
   define( 'OBJECT', 'OBJECT' );
 }
 
-define('ABSPATH', '/');
-define('WP_DEBUG', false);
+if (!defined('ABSPATH')) {
+  define('ABSPATH', '/');
+}
+
+if (!defined('WP_DEBUG')) {
+  define('WP_DEBUG', false);
+}
 
 $console = new \Codeception\Lib\Console\Output([]);
 
