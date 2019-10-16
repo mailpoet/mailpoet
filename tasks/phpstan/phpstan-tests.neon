@@ -11,3 +11,6 @@ parameters:
     - %mailpoetDir%/tests/unit
   dynamicConstantNames:
     - WP_DEBUG
+
+includes:
+  - vendor/phpstan/phpstan-phpunit/extension.neon
