@@ -34,6 +34,7 @@ jobs:
             ./do compile:all --env production
             ./do doctrine:generate-metadata
             ./do doctrine:generate-proxies
+            vendor/bin/codecept build
       - save_cache:
           key: tools-{{ checksum "tools/install.php" }}
           paths:
