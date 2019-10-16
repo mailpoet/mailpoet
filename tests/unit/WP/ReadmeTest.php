@@ -5,6 +5,9 @@ namespace MailPoet\Test\WP;
 use MailPoet\WP\Readme;
 
 class ReadmeTest extends \MailPoetUnitTest {
+  /** @var string */
+  private $data;
+
   function _before() {
     // Sample taken from https://wordpress.org/plugins/about/readme.txt
     $this->data = file_get_contents(dirname(__FILE__) . '/ReadmeTestData.txt');

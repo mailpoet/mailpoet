@@ -35,7 +35,7 @@ class SocialTest extends \MailPoetUnitTest {
   ];
 
   function testItRendersCorrectly() {
-    $output = Social::render($this->block, 200);
+    $output = Social::render($this->block);
     $expected_result = '
       <tr>
         <td class="mailpoet_padded_side mailpoet_padded_vertical" valign="top" align="center">

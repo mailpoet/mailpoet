@@ -7,6 +7,15 @@ use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MailChimpTest extends \MailPoetUnitTest {
+  /** @var string */
+  private $api_key;
+
+  /** @var MailChimp */
+  private $mailchimp;
+
+  /** @var array */
+  private $lists;
+
   function __construct() {
     parent::__construct();
     $this->api_key = getenv('WP_TEST_IMPORT_MAILCHIMP_API');

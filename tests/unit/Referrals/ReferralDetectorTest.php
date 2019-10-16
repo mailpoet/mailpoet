@@ -8,10 +8,10 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class ReferralDetectorTest extends \MailPoetUnitTest {
 
-  /** @var MockObject */
+  /** @var SettingsController&MockObject */
   private $settings_mock;
 
-  /** @var MockObject */
+  /** @var WPFunctions&MockObject */
   private $wp_mock;
 
   function _before() {

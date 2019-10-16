@@ -33,7 +33,9 @@ class TextTest extends \MailPoetUnitTest {
   function testItRendersParagraph() {
     $this->block['text'] = '<p>Text</p>';
     $output = Text::render($this->block);
-    $paragraph_table = $this->parser->parseStr($output)->query('table')[0]->toString();
+    $table = $this->parser->parseStr($output)->query('table');
+    assert($table instanceof \pQuery);
+    $paragraph_table = $table[0]->toString();
     $expected_result = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
         <tr>
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
@@ -46,7 +48,9 @@ class TextTest extends \MailPoetUnitTest {
   function testItRendersList() {
     $this->block['text'] = '<ul><li>Item 1</li><li>Item 2</li></ul>';
     $output = Text::render($this->block);
-    $list = $this->parser->parseStr($output)->query('ul')[0]->toString();
+    $ul = $this->parser->parseStr($output)->query('ul');
+    assert($ul instanceof \pQuery);
+    $list = $ul[0]->toString();
     $expected_result = '<ul class="mailpoet_paragraph" style="padding-top:0;padding-bottom:0;margin-top:10px;text-align:left;margin-bottom:10px;"><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 1</li><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 2</li></ul>';
     expect($list)->equals($expected_result);
   }
@@ -54,7 +58,9 @@ class TextTest extends \MailPoetUnitTest {
   function testItRendersBlockquotes() {
     $this->block['text'] = '<blockquote><p>Quote</p></blockquote>';
     $output = Text::render($this->block);
-    $blockquote_table = $this->parser->parseStr($output)->query('table')[0]->toString();
+    $table = $this->parser->parseStr($output)->query('table');
+    assert($table instanceof \pQuery);
+    $blockquote_table = $table[0]->toString();
     $expected_result = '<table class="mailpoet_blockquote" width="100%" spacing="0" border="0" cellpadding="0">
         <tbody>
           <tr>

@@ -5,6 +5,8 @@ namespace MailPoet\Test\Newsletter\Editor;
 use MailPoet\Newsletter\Editor\StructureTransformer;
 
 class StructureTransformerTest extends \MailPoetUnitTest {
+  /** @var StructureTransformer */
+  private $transformer;
 
   function _before() {
     parent::_before();
