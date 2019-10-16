@@ -1,0 +1,12 @@
+<% extends 'layout.html' %>
+<% block content %>
+<div id="mailpoet_form_edit">
+</div>
+
+<script>
+  <% autoescape 'js' %>
+  var mailpoet_form_data = <%= json_encode(form) %>;
+  <% endautoescape %>
+</script>
+<%= javascript('form_editor.js')%>
+<% endblock %>
