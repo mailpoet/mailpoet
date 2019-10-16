@@ -1,14 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Editor from './components/editor.jsx';
 
 const appElement = document.querySelector('#mailpoet_form_edit');
 
 if (appElement) {
   ReactDOM.render(
-    <h1>
-      Here comes editor for:
-      {window.mailpoet_form_data.name}
-    </h1>,
+    <Editor />,
     appElement
   );
 }
