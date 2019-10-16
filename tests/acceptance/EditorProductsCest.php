@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 use MailPoet\Util\Security;
@@ -28,6 +29,9 @@ class EditorProductsCest {
 
   /** @var WooCommerceProduct */
   private $product_factory;
+
+  /** @var NewsletterModel */
+  private $newsletter;
 
   private function initializeNewsletter(\AcceptanceTester $I) {
     $this->newsletter = (new Newsletter())

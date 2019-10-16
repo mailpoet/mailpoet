@@ -9,9 +9,12 @@ parameters:
     - %mailpoetDir%/vendor/codeception/verify/src/Codeception/Verify.php
   autoload_directories:
     - %mailpoetDir%/tests/_support
+    - %mailpoetDir%/tests/acceptance
     - %mailpoetDir%/tests/unit
   dynamicConstantNames:
     - WP_DEBUG
+  ignoreErrors:
+    - '/Parameter #1 $cssOrXPath of method AcceptanceTester::moveMouseOver() expects string|null, array<string, string> given./'
 
 includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon
