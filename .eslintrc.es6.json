@@ -31,7 +31,10 @@
     "jsx-a11y/label-has-for": [2, {
       "required": {"some": ["nesting", "id"]} // some of our labels are hidden and we cannot nest those
     }],
-    "jsx-a11y/anchor-is-valid": 0 // cannot fix this one, it would break wprdpress themes
+    "jsx-a11y/anchor-is-valid": 0, // cannot fix this one, it would break wprdpress themes
+    "jsx-a11y/label-has-associated-control": [ 2, {
+      "either": "either" // control has to be either nested or associated via htmlFor
+    }]
   }
 }
 
