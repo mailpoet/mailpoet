@@ -1,0 +1,16 @@
+parameters:
+  earlyTerminatingMethodCalls:
+    PHPUnit_Framework_TestCase:
+      - fail
+      - markTestIncomplete
+      - markTestSkipped
+
+services:
+  -
+    class: MailPoet\PHPStan\Extensions\PHPUnit5CompatExtension\Type\CreateMockDynamicReturnTypeExtension
+    tags:
+      - phpstan.broker.dynamicMethodReturnTypeExtension
+  -
+    class: MailPoet\PHPStan\Extensions\PHPUnit5CompatExtension\Type\GetMockBuilderDynamicReturnTypeExtension
+    tags:
+      - phpstan.broker.dynamicMethodReturnTypeExtension
