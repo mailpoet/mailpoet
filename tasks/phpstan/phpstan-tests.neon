@@ -1,0 +1,13 @@
+parameters:
+  mailpoetDir: %rootDir%/../../../../..
+  tmpDir: ../../temp/phpstan
+  bootstrap: bootstrap.php
+  autoload_files:
+    - %mailpoetDir%/vendor/autoload.php
+    - %mailpoetDir%/vendor/codeception/codeception/autoload.php
+    - %mailpoetDir%/vendor/codeception/verify/src/Codeception/function.php
+    - %mailpoetDir%/vendor/codeception/verify/src/Codeception/Verify.php
+  autoload_directories:
+    - %mailpoetDir%/tests/unit
+  dynamicConstantNames:
+    - WP_DEBUG
