@@ -15,3 +15,4 @@ parameters:
 includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - extensions/PHPUnit5CompatExtension/extension.neon
+  - extensions/CodeceptionExtension/extension.neon

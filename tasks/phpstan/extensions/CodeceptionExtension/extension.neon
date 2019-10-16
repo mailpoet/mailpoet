@@ -1,0 +1,9 @@
+services:
+  -
+    class: MailPoet\PHPStan\Extensions\CodeceptionExtension\Type\StubDynamicReturnTypeExtension
+    tags:
+      - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+  -
+    class: MailPoet\PHPStan\Extensions\CodeceptionExtension\Type\TestCaseDynamicReturnTypeExtension
+    tags:
+      - phpstan.broker.dynamicMethodReturnTypeExtension
