@@ -360,10 +360,22 @@ const testConfig = {
     'jquery': 'jQuery',
     'interact': 'interact',
     'spectrum': 'spectrum',
-  }
+  },
 };
 
-module.exports = [adminConfig, publicConfig, migratorConfig, testConfig].map((config) => {
+// FormEditor config
+const formEditorConfig = {
+  name: 'form_editor',
+  entry: {
+    form_editor: 'form_editor/index.jsx',
+  },
+  externals: {
+    'jquery': 'jQuery',
+    'mailpoet': 'MailPoet',
+  },
+};
+
+module.exports = [adminConfig, publicConfig, migratorConfig, formEditorConfig, testConfig].map((config) => {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(

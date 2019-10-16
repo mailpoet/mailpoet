@@ -3,6 +3,7 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
@@ -13,8 +14,12 @@ class FormEditor {
   /** @var PageRenderer */
   private $page_renderer;
 
-  function __construct(PageRenderer $page_renderer) {
+  /** @var FeaturesController */
+  private $features_controller;
+
+  function __construct(PageRenderer $page_renderer, FeaturesController $features_controller) {
     $this->page_renderer = $page_renderer;
+    $this->features_controller = $features_controller;
   }
 
   function render() {
@@ -35,6 +40,11 @@ class FormEditor {
       'sub_menu' => 'mailpoet-forms',
     ];
 
-    $this->page_renderer->displayPage('form/editor.html', $data);
+    if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
+      $this->page_renderer->displayPage('form/editor.html', $data);
+    } else {
+      $this->page_renderer->displayPage('form/editor_legacy.html', $data);
+    }
+
   }
 }
