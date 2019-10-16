@@ -15,6 +15,10 @@ jobs:
       - restore_cache:
           key: tools-{{ checksum "tools/install.php" }}
       - restore_cache:
+          key: composer-{{ checksum "tasks/phpstan/composer.json" }}-{{ checksum "tasks/phpstan/composer.lock" }}
+      - restore_cache:
+          key: composer-{{ checksum "tasks/code_sniffer/composer.json" }}-{{ checksum "tasks/code_sniffer/composer.lock" }}
+      - restore_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
       - restore_cache:
           key: composer-prefixed-{{ checksum "prefixer-checksum" }}
@@ -39,6 +43,14 @@ jobs:
           key: tools-{{ checksum "tools/install.php" }}
           paths:
             - tools/vendor
+      - save_cache:
+          key: composer-{{ checksum "tasks/phpstan/composer.json" }}-{{ checksum "tasks/phpstan/composer.lock" }}
+          paths:
+            - tasks/phpstan/vendor
+      - save_cache:
+          key: composer-{{ checksum "tasks/code_sniffer/composer.json" }}-{{ checksum "tasks/code_sniffer/composer.lock" }}
+          paths:
+            - tasks/code_sniffer/vendor
       - save_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
           paths:
