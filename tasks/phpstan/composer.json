@@ -3,6 +3,11 @@
         "phpstan/phpstan-phpunit": "0.11.2",
         "phpstan/phpstan-shim": "0.11.16"
     },
+    "autoload": {
+        "psr-4": {
+            "MailPoet\\PHPStan\\Extensions\\": "extensions"
+        }
+    },
     "config": {
         "sort-packages": true
     }
