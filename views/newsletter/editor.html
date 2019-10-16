@@ -281,6 +281,18 @@
     'newsletter_editor_template_woocommerce_content_widget',
     'newsletter/templates/blocks/woocommerceContent/widget.hbs'
   ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_heading_block',
+    'newsletter/templates/blocks/woocommerceHeading/block.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_heading_widget',
+    'newsletter/templates/blocks/woocommerceHeading/widget.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_heading_settings',
+    'newsletter/templates/blocks/woocommerceHeading/settings.hbs'
+  ) %>
 <% endblock %>
 
 <% block content %>
@@ -619,6 +631,16 @@
       ),
       woocommerceContentInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_woocommerce_content_widget').html()
+      ),
+
+      woocommerceHeadingBlock: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_heading_block').html()
+      ),
+      woocommerceHeadingInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_heading_widget').html()
+      ),
+      woocommerceHeadingBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_heading_settings').html()
       ),
     };
 
@@ -1410,6 +1432,12 @@
         woocommerceContent: {
           styles: {
             titleColor: '<%= woocommerce.email_base_color %>',
+          },
+        },
+        woocommerceHeading: {
+          styles: {
+            fontColor: '#000000',
+            backgroundColor: '<%= woocommerce.email_base_color %>',
           },
         },
       },
