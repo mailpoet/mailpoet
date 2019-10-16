@@ -479,6 +479,7 @@ class RoboFile extends \Robo\Tasks {
       ->rawArg(
         implode(' ', [
           "$dir/tests/DataFactories",
+          "$dir/tests/acceptance",
           "$dir/tests/unit",
         ])
       )

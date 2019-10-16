@@ -10,6 +10,9 @@ class ManageSubscriptionLinkCest {
   /** @var Settings */
   private $settings;
 
+  /** @var string */
+  private $newsletter_title;
+
   function __construct() {
     $this->newsletter_title = 'Subscription links Email ' . \MailPoet\Util\Security::generateRandomString();
   }
@@ -118,6 +121,6 @@ class ManageSubscriptionLinkCest {
         continue;
       }
     }
-    $I->see('Sent to 1 of 1', 60);
+    $I->see('Sent to 1 of 1');
   }
 }

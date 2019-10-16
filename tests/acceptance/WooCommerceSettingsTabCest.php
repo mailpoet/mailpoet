@@ -14,6 +14,9 @@ class WooCommerceSettingsTabCest {
   /** @var Features */
   private $features;
 
+  /** @var Settings */
+  private $settings_factory;
+
   protected function _inject(Features $features) {
     $this->features = $features;
   }
