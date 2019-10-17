@@ -20,7 +20,7 @@ Module.save = function () {
 
   // Stringify to enable transmission of primitive non-string value types
   if (!_.isUndefined(json.body)) {
-    delete json.body.blockDefaults.woocommerceHeading.styles.backgroundColor;
+    delete json.body.blockDefaults.woocommerceHeading;
     delete json.body.blockDefaults.woocommerceContent;
     json.body = JSON.stringify(json.body);
   }

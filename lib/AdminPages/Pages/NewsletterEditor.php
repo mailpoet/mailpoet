@@ -10,6 +10,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class NewsletterEditor {
@@ -28,18 +29,23 @@ class NewsletterEditor {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var TransactionalEmails */
+  private $wc_transactional_emails;
+
   function __construct(
     PageRenderer $page_renderer,
     SettingsController $settings,
     UserFlagsController $user_flags,
     WooCommerceHelper $woocommerce_helper,
-    WPFunctions $wp
+    WPFunctions $wp,
+    TransactionalEmails $wc_transactional_emails
   ) {
     $this->page_renderer = $page_renderer;
     $this->settings = $settings;
     $this->user_flags = $user_flags;
     $this->woocommerce_helper = $woocommerce_helper;
     $this->wp = $wp;
+    $this->wc_transactional_emails = $wc_transactional_emails;
   }
 
   function render() {
@@ -68,6 +74,7 @@ class NewsletterEditor {
       'mss_active' => Bridge::isMPSendingServiceEnabled(),
       'woocommerce' => [
         'email_base_color' => $this->wp->getOption('woocommerce_email_base_color', '#000000'),
+        'email_heading' => $this->wc_transactional_emails->getEmailHeading(),
       ],
     ];
     $this->wp->wpEnqueueMedia();

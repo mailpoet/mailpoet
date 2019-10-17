@@ -21,7 +21,7 @@ class TransactionalEmails {
     $this->settings = $settings;
   }
 
-  function init() {
+  public function init() {
     $saved_email_id = (bool)$this->settings->get(self::SETTING_EMAIL_ID, false);
     if (!$saved_email_id) {
       $email = Newsletter::createOrUpdate([
@@ -32,6 +32,25 @@ class TransactionalEmails {
       ]);
       $this->settings->set(self::SETTING_EMAIL_ID, $email->id);
     }
+  }
+
+  public function getEmailHeading() {
+    $default_heading = __('Thank you for your order', 'woocommerce');
+    $settings = $this->wp->getOption('woocommerce_customer_processing_order_settings');
+    if (!$settings) {
+      return $default_heading;
+    }
+    return $this->replacePlaceholders($settings['heading'] ?: $default_heading);
+  }
+
+  private function replacePlaceholders($text) {
+    $title = $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES);
+    $address = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
+    return str_replace(
+      ['{site_title}','{site_address}'],
+      [$title, $address],
+      $text
+    );
   }
 
   private function getBody() {

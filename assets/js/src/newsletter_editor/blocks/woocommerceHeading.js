@@ -5,10 +5,11 @@ import App from 'newsletter_editor/App';
 import BaseBlock from 'newsletter_editor/blocks/base';
 
 const BlockModel = BaseBlock.BlockModel.extend({
-  stale: ['styles.backgroundColor'],
+  stale: ['styles.backgroundColor', 'content'],
   defaults() {
     return this._getDefaults({
       type: 'woocommerceHeading',
+      content: '',
       styles: {
         fontColor: '#000000',
         backgroundColor: '#FFFFFF',
@@ -71,7 +72,7 @@ const WidgetView = BaseBlock.WidgetView.extend({
 });
 
 const BlockView = BaseBlock.BlockView.extend({
-  className: 'mailpoet_block mailpoet_woocommerce_heading_block mailpoet_droppable_block',
+  className: 'mailpoet_container mailpoet_woocommerce_heading_block mailpoet_droppable_block',
   initialize: function initialize() {
     BaseBlock.BlockView.prototype.initialize.apply(this, arguments);
     this.listenTo(this.model, 'change:styles.fontColor', this.render);
@@ -94,6 +95,7 @@ const BlockView = BaseBlock.BlockView.extend({
     return {
       viewCid: this.cid,
       model: this.model.toJSON(),
+      content: this.model.get('content'),
       styles: this.model.get('styles').toJSON(),
     };
   },
