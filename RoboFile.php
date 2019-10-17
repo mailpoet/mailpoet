@@ -368,7 +368,6 @@ class RoboFile extends \Robo\Tasks {
           'tests/_data',
           'tests/_output',
           'tests/_support',
-          'tests/Actions.php',
           'tests/integration/_bootstrap.php',
           'tests/integration/_fixtures.php',
           'tests/unit/_bootstrap.php',
