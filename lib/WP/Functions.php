@@ -493,6 +493,14 @@ class Functions {
     return wp_parse_args($args, $defaults);
   }
 
+  function wpParseUrl($url, $component = -1) {
+    return wp_parse_url($url, $component);
+  }
+
+  function wpSpecialcharsDecode($string, $quote_style = ENT_NOQUOTES ) {
+    return wp_specialchars_decode($string, $quote_style);
+  }
+
   function wpPrintScripts($handles = false) {
     return wp_print_scripts($handles);
   }
