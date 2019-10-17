@@ -32,6 +32,13 @@ const WidgetView = BaseBlock.WidgetView.extend({
 
 const BlockView = BaseBlock.BlockView.extend({
   className: 'mailpoet_block mailpoet_woocommerce_content_block mailpoet_droppable_block',
+  initialize: function initialize() {
+    BaseBlock.BlockView.prototype.initialize.apply(this, arguments);
+    this.listenTo(App.getChannel(), 'changeWoocommerceBaseColor', (value) => {
+      this.model.set('styles.titleColor', value);
+      this.render();
+    });
+  },
   getTemplate() { return window.templates.woocommerceContentBlock; },
   regions: {
     toolsRegion: '.mailpoet_tools',
