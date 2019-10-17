@@ -2,6 +2,7 @@
 
 namespace Helper;
 
+use Codeception\Module\WebDriver;
 use Codeception\TestInterface;
 
 // here you can define custom actions
@@ -18,6 +19,7 @@ class Acceptance extends \Codeception\Module
    */
   function seeNoJSErrors() {
     $wd = $this->getModule('WPWebDriver');
+    assert($wd instanceof WebDriver);
 
     try {
       $logEntries = array_slice(
@@ -45,7 +47,9 @@ class Acceptance extends \Codeception\Module
   }
 
   function getCurrentUrl() {
-    return $this->getModule('WPWebDriver')->_getCurrentUri();
+    $wd = $this->getModule('WPWebDriver');
+    assert($wd instanceof WebDriver);
+    return $wd->_getCurrentUri();
   }
 
   protected function isJSError($logEntry) {
