@@ -6,10 +6,13 @@ parameters:
       - markTestSkipped
 
 services:
+  # resolves return type from $this->createMock(SomeMockedClass::class) and other methods in PHPUnit_Framework_TestCase
   -
     class: MailPoet\PHPStan\Extensions\PHPUnit5CompatExtension\Type\CreateMockDynamicReturnTypeExtension
     tags:
       - phpstan.broker.dynamicMethodReturnTypeExtension
+
+  # resolves return type from $this->getMockBuilder(SomeMockedClass::class) in PHPUnit_Framework_TestCase
   -
     class: MailPoet\PHPStan\Extensions\PHPUnit5CompatExtension\Type\GetMockBuilderDynamicReturnTypeExtension
     tags:

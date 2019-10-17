@@ -1,8 +1,11 @@
 services:
+  # resolves return type from Stub::make(SomeMockedClass::class) and other Stub methods
   -
     class: MailPoet\PHPStan\Extensions\CodeceptionExtension\Type\StubDynamicReturnTypeExtension
     tags:
       - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+
+  # resolves return type from $this->make(SomeMockedClass::class) and other test case methods
   -
     class: MailPoet\PHPStan\Extensions\CodeceptionExtension\Type\TestCaseDynamicReturnTypeExtension
     tags:
