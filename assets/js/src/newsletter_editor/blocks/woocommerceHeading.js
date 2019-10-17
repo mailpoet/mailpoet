@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import App from 'newsletter_editor/App';
 import BaseBlock from 'newsletter_editor/blocks/base';
@@ -27,9 +28,13 @@ const SettingsView = BaseBlock.BlockSettingsView.extend({
   events: function events() {
     return {
       'change .mailpoet_field_wc_heading_font_color': _.partial(this.changeColorField, 'styles.fontColor'),
-      'change .mailpoet_field_wc_heading_background_color': _.partial(this.changeColorField, 'styles.backgroundColor'),
+      'change .mailpoet_field_wc_heading_background_color': this.backgroundColorChanged,
       'click .mailpoet_done_editing': 'close',
     };
+  },
+  backgroundColorChanged: function backgroundColorChanged(event) {
+    this.changeColorField('styles.backgroundColor', event);
+    App.getChannel().trigger('changeWoocommerceBaseColor', jQuery(event.target).val());
   },
   close: function close() {
     MailPoet.Ajax.post({
