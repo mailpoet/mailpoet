@@ -1,5 +1,7 @@
 <?php
+
 namespace Helper;
+
 use MailPoet\Config\Env;
 
 // here you can define custom actions

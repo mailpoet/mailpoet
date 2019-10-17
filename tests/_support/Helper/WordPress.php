@@ -1,11 +1,13 @@
 <?php
+
 namespace Helper;
+
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
 class WordPress extends \Codeception\Module
 {
-  private static $functions_to_intercept = array();
+  private static $functions_to_intercept = [];
 
   static function interceptFunction($function_name, $callback) {
     self::$functions_to_intercept[$function_name] = $callback;
@@ -16,7 +18,7 @@ class WordPress extends \Codeception\Module
   }
 
   static function releaseAllFunctions() {
-    self::$functions_to_intercept = array();
+    self::$functions_to_intercept = [];
   }
 
   static function getInterceptor($function_name) {
@@ -26,11 +28,13 @@ class WordPress extends \Codeception\Module
 }
 
 // WP function overrides for \MailPoet namespace go here
-namespace MailPoet\WP;
+
+namespace MailPoet\WP; // phpcs:ignore
 
 function override($func, $args) {
   $func = str_replace(__NAMESPACE__ . '\\', '', $func);
-  if ($callback = \Helper\WordPress::getInterceptor($func)) {
+  $callback = \Helper\WordPress::getInterceptor($func);
+  if ($callback) {
     return call_user_func_array($callback, $args);
   }
   return call_user_func_array('\\' . $func, $args);

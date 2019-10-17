@@ -1,13 +1,16 @@
 <?php
+
 namespace Helper;
-// here you can define custom actions
-// all public methods declared in helper class will be available in $I
 
 use Codeception\TestInterface;
 
+// here you can define custom actions
+// all public methods declared in helper class will be available in $I
+
+
 class Acceptance extends \Codeception\Module
 {
-  protected $js_errors = array();
+  protected $js_errors = [];
 
   /**
    * Note: Selenium JS error log buffer is cleared after logs retrieval:
@@ -30,6 +33,7 @@ class Acceptance extends \Codeception\Module
       }
 
       if (!empty($this->js_errors)) {
+        // phpcs:ignore Squiz.PHP.DiscouragedFunctions
         $this->debug('JS errors : ' . print_r($this->js_errors, true));
       }
     } catch (\Exception $e) {
@@ -55,6 +59,6 @@ class Acceptance extends \Codeception\Module
   }
 
   function _after(TestInterface $test) {
-    $this->js_errors = array();
+    $this->js_errors = [];
   }
 }

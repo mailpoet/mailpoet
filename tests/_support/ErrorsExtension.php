@@ -4,7 +4,7 @@ use Codeception\Event\TestEvent;
 use Codeception\Events;
 use Codeception\Extension;
 
-class ErrorsExtension extends Extension {
+class ErrorsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDeclaration
   const ERROR_LOG_PATH = __DIR__ . '/../_output/exceptions/error.log';
 
   private $errors = [];

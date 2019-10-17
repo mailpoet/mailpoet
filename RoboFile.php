@@ -367,10 +367,7 @@ class RoboFile extends \Robo\Tasks {
           'lib/Util/XLSXWriter.php',
           'tests/_data',
           'tests/_output',
-          'tests/_support',
-          'tests/integration/_bootstrap.php',
-          'tests/integration/_fixtures.php',
-          'tests/unit/_bootstrap.php',
+          'tests/_support/_generated',
         ])
       )
       ->args([

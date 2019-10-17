@@ -6,7 +6,7 @@ use Codeception\Extension;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\UserFlags;
 
-class DefaultsExtension extends Extension {
+class DefaultsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDeclaration
 
   public static $events = [
     Events::SUITE_BEFORE => 'setupDefaults',

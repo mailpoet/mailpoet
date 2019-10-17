@@ -91,6 +91,7 @@ foreach ($woocommerceBlacklistFilters as $woocommerceBlacklistFilter) {
   unset($GLOBALS['wp_filter'][$woocommerceBlacklistFilter]);
 };
 
+// phpcs:ignore PSR1.Classes.ClassDeclaration, Squiz.Classes.ClassFileName
 abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $backupGlobals = true;
   protected $backupGlobalsBlacklist = [
@@ -187,8 +188,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
     return $method->invokeArgs($object, $parameters);
   }
 
-  public static function markTestSkipped($message = '')
-  {
+  public static function markTestSkipped($message = '') {
     $branch_name = getenv('CIRCLE_BRANCH');
     if ($branch_name === 'master' || $branch_name === 'release') {
       self::fail('Cannot skip tests on this branch.');
@@ -208,8 +208,10 @@ function asCallable($fn) {
 // this is needed since it is not possible to mock __unset on non-existing class
 // (PHPUnit creates empty __unset method without parameters which is a PHP error)
 if (!class_exists(WC_Session::class)) {
+  // phpcs:ignore
   class WC_Session {
-    function __unset($name) {}
+    function __unset($name) {
+    }
   }
 }
 
