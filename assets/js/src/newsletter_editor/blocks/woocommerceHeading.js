@@ -17,6 +17,19 @@ const BlockModel = BaseBlock.BlockModel.extend({
 
 const SettingsView = BaseBlock.BlockSettingsView.extend({
   getTemplate: function getTemplate() { return window.templates.woocommerceHeadingBlockSettings; },
+  templateContext() {
+    return {
+      model: this.model.toJSON(),
+      styles: this.model.get('styles').toJSON(),
+    };
+  },
+  events: function events() {
+    return {
+      'change .mailpoet_field_wc_heading_font_color': _.partial(this.changeColorField, 'styles.fontColor'),
+      'change .mailpoet_field_wc_heading_background_color': _.partial(this.changeColorField, 'styles.backgroundColor'),
+      'click .mailpoet_done_editing': 'close',
+    };
+  },
 });
 
 const BlockToolsView = BaseBlock.BlockToolsView.extend({
@@ -42,6 +55,12 @@ const WidgetView = BaseBlock.WidgetView.extend({
 
 const BlockView = BaseBlock.BlockView.extend({
   className: 'mailpoet_block mailpoet_woocommerce_heading_block mailpoet_droppable_block',
+  initialize: function initialize() {
+    BaseBlock.BlockView.prototype.initialize.apply(this, arguments);
+    this.listenTo(this.model, 'change:styles.fontColor', this.render);
+    this.listenTo(this.model, 'change:styles.backgroundColor', this.render);
+  },
+  modelEvents: _.omit(BaseBlock.BlockView.prototype.modelEvents, 'change'),
   getTemplate() { return window.templates.woocommerceHeadingBlock; },
   behaviors: _.defaults({
     ShowSettingsBehavior: {},
