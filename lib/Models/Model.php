@@ -74,6 +74,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @method $this whereRaw($clause, $parameters=array())
  * @method static $this whereRaw($clause, $parameters=array())
  * @method $this deleteMany()
+ * @method static $this deleteMany()
  * @method $this orderByDesc($column_name)
  * @method static $this orderByDesc($column_name)
  * @method $this orderByAsc($column_name)

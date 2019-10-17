@@ -22,7 +22,7 @@ use function MailPoet\Util\array_column;
 /**
  * @property int $id
  * @property string $type
- * @property object|boolean $queue
+ * @property object|array|boolean $queue
  * @property string $hash
  * @property string $sender_address
  * @property string $status

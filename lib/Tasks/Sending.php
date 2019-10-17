@@ -15,6 +15,7 @@ use function MailPoet\Util\array_column;
  * @property string|null $status
  * @property int $task_id
  * @property int $id
+ * @property int $newsletter_id
  */
 class Sending {
   const TASK_TYPE = 'sending';
