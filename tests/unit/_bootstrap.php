@@ -22,6 +22,7 @@ if (!defined('WP_DEBUG')) {
 
 $console = new \Codeception\Lib\Console\Output([]);
 
+// phpcs:ignore PSR1.Classes.ClassDeclaration,Squiz.Classes.ClassFileName
 abstract class MailPoetUnitTest extends \Codeception\TestCase\Test {
   protected $runTestInSeparateProcess = false;
   protected $preserveGlobalState = false;

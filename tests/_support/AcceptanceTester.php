@@ -1,9 +1,9 @@
 <?php
 
+use Mailpoet\Models\Form as FormModel;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
-use Mailpoet\Models\Form as FormModel;
 
 /**
  * Inherited Methods
@@ -20,7 +20,7 @@ use Mailpoet\Models\Form as FormModel;
  *
  * @SuppressWarnings(PHPMD)
  */
-class AcceptanceTester extends \Codeception\Actor {
+class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes.ClassDeclaration
   use _generated\AcceptanceTesterActions {
     cli as _cli;
     cliToArray as _cliToArray;

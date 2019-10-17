@@ -16,22 +16,22 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class UnitTester extends \Codeception\Actor {
+class UnitTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes.ClassDeclaration
   use _generated\UnitTesterActions;
 
   // generate random users
-  function generateSubscribers($count, $data = array()) {
+  function generateSubscribers($count, $data = []) {
     for ($i = 0; $i < $count; $i++) {
       $this->generateSubscriber($data);
     }
   }
 
-  function generateSubscriber($data = array()) {
-    $subscriber_data = array(
-      'email' => sprintf('user%s@mailpoet.com', bin2hex(random_bytes(7))), // phpcs:ignore
+  function generateSubscriber($data = []) {
+    $subscriber_data = [
+      'email' => sprintf('user%s@mailpoet.com', bin2hex(random_bytes(7))), // phpcs:ignore PHPCompatibility
       'first_name' => $this->generateName(),
-      'last_name' => $this->generateName()
-    );
+      'last_name' => $this->generateName(),
+    ];
 
     $subscriber = \MailPoet\Models\Subscriber::create();
     $subscriber->hydrate(array_merge($subscriber_data, $data));
@@ -45,8 +45,8 @@ class UnitTester extends \Codeception\Actor {
     $vowels = 'aeiouy';
     $consonants = 'bcdfgjklmnpqrstvwxz';
     $specials = ' \'';
-    $alphabet = $consonants.$vowels;
-    $charset = $specials.$alphabet;
+    $alphabet = $consonants . $vowels;
+    $charset = $specials . $alphabet;
 
     // pick first letter in alphabet
     $name .= $alphabet{mt_rand(0, strlen($alphabet) - 1)};

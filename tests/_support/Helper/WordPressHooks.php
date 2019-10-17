@@ -1,29 +1,31 @@
 <?php
+
 namespace Helper;
+
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
 class WordPressHooks extends \Codeception\Module
 {
-  private static $filters_applied = array();
-  private static $filters_added = array();
-  private static $actions_done = array();
-  private static $actions_added = array();
+  private static $filters_applied = [];
+  private static $filters_added = [];
+  private static $actions_done = [];
+  private static $actions_added = [];
 
   static function interceptApplyFilters() {
-    WordPress::interceptFunction('apply_filters', array(__CLASS__, 'applyFilters'));
+    WordPress::interceptFunction('apply_filters', [__CLASS__, 'applyFilters']);
   }
 
   static function interceptAddFilter() {
-    WordPress::interceptFunction('add_filter', array(__CLASS__, 'addFilter'));
+    WordPress::interceptFunction('add_filter', [__CLASS__, 'addFilter']);
   }
 
   static function interceptDoAction() {
-    WordPress::interceptFunction('do_action', array(__CLASS__, 'doAction'));
+    WordPress::interceptFunction('do_action', [__CLASS__, 'doAction']);
   }
 
   static function interceptAddAction() {
-    WordPress::interceptFunction('add_action', array(__CLASS__, 'addAction'));
+    WordPress::interceptFunction('add_action', [__CLASS__, 'addAction']);
   }
 
   static function applyFilters() {
@@ -85,9 +87,9 @@ class WordPressHooks extends \Codeception\Module
 
   static function releaseAllHooks() {
     WordPress::releaseAllFunctions();
-    self::$filters_applied = array();
-    self::$filters_added = array();
-    self::$actions_done = array();
-    self::$actions_added = array();
+    self::$filters_applied = [];
+    self::$filters_added = [];
+    self::$actions_done = [];
+    self::$actions_added = [];
   }
 }

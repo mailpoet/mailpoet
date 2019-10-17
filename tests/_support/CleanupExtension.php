@@ -6,7 +6,7 @@ use Codeception\Events;
 use Codeception\Extension;
 use MailPoet\Config\Env;
 
-class CleanupExtension extends Extension {
+class CleanupExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDeclaration
   const DB_BACKUP_PATH = __DIR__ . '/../_data/acceptanceBackup.sql';
   const DB_HOST = 'mysql';
   const DB_USERNAME = 'root';

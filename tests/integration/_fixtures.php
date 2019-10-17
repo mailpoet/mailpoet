@@ -1,4 +1,5 @@
 <?php
+
 use Codeception\Util\Fixtures;
 use MailPoet\Models\Subscriber;
 
@@ -169,7 +170,7 @@ Fixtures::add(
 /**
  * Simple class mocking dynamic segment filter.
  */
-class DynamicSegmentFilter {
+class DynamicSegmentFilter { // phpcs:ignore PSR1.Classes.ClassDeclaration, Squiz.Classes.ClassFileName
   protected $ids;
 
   function __construct($ids) {
