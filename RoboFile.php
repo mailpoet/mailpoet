@@ -474,6 +474,7 @@ class RoboFile extends \Robo\Tasks {
       ->rawArg('--configuration=phpstan-tests.neon')
       ->rawArg(
         implode(' ', [
+          "$dir/tests/_support",
           "$dir/tests/DataFactories",
           "$dir/tests/acceptance",
           "$dir/tests/unit",

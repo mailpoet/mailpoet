@@ -8,6 +8,7 @@ parameters:
     - %mailpoetDir%/vendor/codeception/verify/src/Codeception/function.php
     - %mailpoetDir%/vendor/codeception/verify/src/Codeception/Verify.php
   autoload_directories:
+    - %mailpoetDir%/tests/_support/_generated # without this line PHPStan segfaults ¯\_(ツ)_/¯
     - %mailpoetDir%/tests/_support
     - %mailpoetDir%/tests/acceptance
     - %mailpoetDir%/tests/unit
@@ -15,6 +16,8 @@ parameters:
     - WP_DEBUG
   ignoreErrors:
     - '/Parameter #1 $cssOrXPath of method AcceptanceTester::moveMouseOver() expects string|null, array<string, string> given./'
+  excludes_analyse:
+    - %mailpoetDir%/tests/_support/_generated
 
 includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon

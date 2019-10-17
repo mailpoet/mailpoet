@@ -1,6 +1,6 @@
 <?php
 
-use Mailpoet\Models\Form as FormModel;
+use MailPoet\Models\Form as FormModel;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
