@@ -1,7 +1,7 @@
 {
   "private": true,
   "engines": {
-    "npm": "~6.8.0"
+    "npm": "~6.12"
   },
   "browserslist": [
     "last 2 major versions",
