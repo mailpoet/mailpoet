@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import MailPoet from 'mailpoet';
 import App from 'newsletter_editor/App';
 import BaseBlock from 'newsletter_editor/blocks/base';
 
@@ -29,6 +30,17 @@ const SettingsView = BaseBlock.BlockSettingsView.extend({
       'change .mailpoet_field_wc_heading_background_color': _.partial(this.changeColorField, 'styles.backgroundColor'),
       'click .mailpoet_done_editing': 'close',
     };
+  },
+  close: function close() {
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'woocommerce_settings',
+      action: 'set',
+      data: {
+        woocommerce_email_base_color: this.model.get('styles.backgroundColor'),
+      },
+    });
+    this.destroy();
   },
 });
 
