@@ -5,7 +5,7 @@ import App from 'newsletter_editor/App';
 import BaseBlock from 'newsletter_editor/blocks/base';
 
 const BlockModel = BaseBlock.BlockModel.extend({
-  stale: ['styles'],
+  stale: ['styles.backgroundColor'],
   defaults() {
     return this._getDefaults({
       type: 'woocommerceHeading',
