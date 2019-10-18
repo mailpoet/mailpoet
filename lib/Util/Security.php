@@ -43,12 +43,10 @@ class Security {
   }
 
   static public function generateUnsubscribeToken($model) {
-    $token = self::generateRandomString(self::UNSUBSCRIBE_TOKEN_LENGTH);
-    $found = $model::whereEqual('unsubscribe_token', $token)->count();
-    while ($found > 0) {
+    do {
       $token = self::generateRandomString(self::UNSUBSCRIBE_TOKEN_LENGTH);
       $found = $model::whereEqual('unsubscribe_token', $token)->count();
-    }
+    } while ($found > 0);
     return $token;
   }
 }
