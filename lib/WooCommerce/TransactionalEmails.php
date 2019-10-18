@@ -70,9 +70,10 @@ class TransactionalEmails {
   private function replacePlaceholders($text) {
     $title = $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES);
     $address = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
+    $order_date = date('Y-m-d');
     return str_replace(
-      ['{site_title}','{site_address}'],
-      [$title, $address],
+      ['{site_title}','{site_address}', '{order_date}', '{order_number}'],
+      [$title, $address, $order_date, '0001'],
       $text
     );
   }
