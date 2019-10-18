@@ -59,9 +59,10 @@ class TransactionalEmails {
     foreach ($this->email_headings as $name => $heading) {
       $settings = $this->wp->getOption($heading['option_name']);
       if (!$settings) {
-        $values[$name] = $heading['default'];
+        $values[$name] = $this->replacePlaceholders($heading['default']);
       } else {
-        $values[$name] = $this->replacePlaceholders($settings['heading'] ?: $heading['default']);
+        $value = isset($settings['heading']) ? $settings['heading'] : $heading['default'];
+        $values[$name] = $this->replacePlaceholders($value);
       }
     }
     return $values;
