@@ -73,8 +73,8 @@ class NewsletterEditor {
       'sub_menu' => Menu::MAIN_PAGE_SLUG,
       'mss_active' => Bridge::isMPSendingServiceEnabled(),
       'woocommerce' => [
+        'email_headings' => $this->wc_transactional_emails->getEmailHeadings(),
         'email_base_color' => $this->wp->getOption('woocommerce_email_base_color', '#000000'),
-        'email_heading' => $this->wc_transactional_emails->getEmailHeading(),
         'email_text_color' => $this->wp->getOption('woocommerce_email_text_color', '#000000'),
       ],
     ];
