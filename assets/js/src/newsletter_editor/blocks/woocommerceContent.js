@@ -2,10 +2,11 @@ import App from 'newsletter_editor/App';
 import BaseBlock from 'newsletter_editor/blocks/base';
 
 const BlockModel = BaseBlock.BlockModel.extend({
-  stale: ['styles'],
+  stale: ['styles', 'selected'],
   defaults() {
     return this._getDefaults({
       type: 'woocommerceContent',
+      selected: 'new_account',
       styles: {
         titleColor: '#000000',
       },
@@ -38,8 +39,23 @@ const BlockView = BaseBlock.BlockView.extend({
       this.model.set('styles.titleColor', value);
       this.render();
     });
+    this.listenTo(App.getChannel(), 'changeWCEmailType', (value) => {
+      this.model.set('selected', value);
+      this.render();
+    });
   },
-  getTemplate() { return window.templates.woocommerceContentBlock; },
+  getTemplate() {
+    if (this.model.get('selected') === 'new_account') {
+      return window.templates.woocommerceNewAccount;
+    }
+    if (this.model.get('selected') === 'processing_order') {
+      return window.templates.woocommerceProcessingOrder;
+    }
+    if (this.model.get('selected') === 'completed_order') {
+      return window.templates.woocommerceCompletedOrder;
+    }
+    return window.templates.woocommerceCustomerNote;
+  },
   regions: {
     toolsRegion: '.mailpoet_tools',
   },
@@ -52,7 +68,10 @@ const BlockView = BaseBlock.BlockView.extend({
     return {
       viewCid: this.cid,
       model: this.model.toJSON(),
+      selected: this.model.get('selected'),
       styles: this.model.get('styles').toJSON(),
+      siteName: window.mailpoet_site_name,
+      siteAddress: window.mailpoet_site_address,
     };
   },
 });

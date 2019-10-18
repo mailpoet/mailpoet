@@ -1,0 +1,14 @@
+<div class="mailpoet_tools"></div>
+<style type="text/css">
+    .mailpoet_editor_view_{{ viewCid }} .mailpoet_content h1,
+    .mailpoet_editor_view_{{ viewCid }} .mailpoet_content h2,
+    .mailpoet_editor_view_{{ viewCid }} .mailpoet_content h3 {
+        color: {{ styles.titleColor }};
+    }
+</style>
+<div class="mailpoet_content mailpoet_woocommerce_content" data-automation-id="woocommerce_content">
+<p style="margin:0 0 16px"><%= __('Hi %s,', 'woocommerce') | format('Elon') %></p>
+<p style="margin:0 0 16px"><%= __('Thanks for creating an account on %1$s. Your username is %2$s. You can access your account area to view orders, change your password, and more at: %3$s', 'woocommerce') | format('{{siteName}}', '<strong>elon.musk</strong>', '<a href="http://{{siteAddress}}" style="color:#fe5301;font-weight:normal;text-decoration:underline" target="_blank">{{siteAddress}}</a>') | raw %></p>
+<p style="margin:0 0 16px"><%= __('We look forward to seeing you soon.', 'woocommerce') %>.</p>
+</div>
+<div class="mailpoet_block_highlight"></div>

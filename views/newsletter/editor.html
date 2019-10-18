@@ -274,8 +274,20 @@
     'newsletter/templates/components/sidebar/styles.hbs'
   ) %>
   <%= partial(
-    'newsletter_editor_template_woocommerce_content_block',
-    'newsletter/templates/blocks/woocommerceContent/block.hbs'
+    'newsletter_editor_template_woocommerce_new_account_content',
+    'newsletter/templates/blocks/woocommerceContent/new_account.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_processing_order_content',
+    'newsletter/templates/blocks/woocommerceContent/processing_order.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_completed_order_content',
+    'newsletter/templates/blocks/woocommerceContent/completed_order.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_woocommerce_customer_note_content',
+    'newsletter/templates/blocks/woocommerceContent/customer_note.hbs'
   ) %>
   <%= partial(
     'newsletter_editor_template_woocommerce_content_widget',
@@ -626,8 +638,17 @@
         jQuery('#newsletter_editor_template_text_settings').html()
       ),
 
-      woocommerceContentBlock: Handlebars.compile(
-        jQuery('#newsletter_editor_template_woocommerce_content_block').html()
+      woocommerceNewAccount: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_new_account_content').html()
+      ),
+      woocommerceProcessingOrder: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_processing_order_content').html()
+      ),
+      woocommerceCompletedOrder: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_completed_order_content').html()
+      ),
+      woocommerceCustomerNote: Handlebars.compile(
+        jQuery('#newsletter_editor_template_woocommerce_customer_note_content').html()
       ),
       woocommerceContentInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_woocommerce_content_widget').html()
@@ -643,6 +664,9 @@
         jQuery('#newsletter_editor_template_woocommerce_heading_settings').html()
       ),
     };
+
+    var mailpoet_site_name = '<%= site_name %>';
+    var mailpoet_site_address = '<%= site_address %>';
 
     var config = {
       availableStyles: {
