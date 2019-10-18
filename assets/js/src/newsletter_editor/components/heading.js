@@ -18,6 +18,9 @@ Module.HeadingView = Marionette.View.extend({
     return {
       'keyup .mailpoet_input_title': _.partial(this.changeField, 'subject'),
       'keyup .mailpoet_input_preheader': _.partial(this.changeField, 'preheader'),
+      'change #mailpoet_heading_email_type': (event) => {
+        App.getChannel().trigger('changeWCEmailType', event.target.value);
+      },
     };
   },
   changeField: function (field, event) { // eslint-disable-line func-names
