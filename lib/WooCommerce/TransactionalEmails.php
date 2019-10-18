@@ -16,9 +16,29 @@ class TransactionalEmails {
   /** @var SettingsController */
   private $settings;
 
+  private $email_headings;
+
   function __construct(WPFunctions $wp, SettingsController $settings) {
     $this->wp = $wp;
     $this->settings = $settings;
+    $this->email_headings = [
+      'new_account' => [
+        'option_name' => 'woocommerce_new_order_settings',
+        'default' => __('New Order: #{order_number}', 'woocommerce'),
+      ],
+      'processing_order' => [
+        'option_name' => 'woocommerce_customer_processing_order_settings',
+        'default' => __('Thank you for your order', 'woocommerce'),
+      ],
+      'completed_order' => [
+        'option_name' => 'woocommerce_customer_completed_order_settings',
+        'default' => __('Thanks for shopping with us', 'woocommerce'),
+      ],
+      'customer_note' => [
+        'option_name' => 'woocommerce_customer_note_settings',
+        'default' => __('A note has been added to your order', 'woocommerce'),
+      ],
+    ];
   }
 
   public function init() {
@@ -34,13 +54,17 @@ class TransactionalEmails {
     }
   }
 
-  public function getEmailHeading() {
-    $default_heading = __('Thank you for your order', 'woocommerce');
-    $settings = $this->wp->getOption('woocommerce_customer_processing_order_settings');
-    if (!$settings) {
-      return $default_heading;
+  public function getEmailHeadings() {
+    $values = [];
+    foreach ($this->email_headings as $name => $heading) {
+      $settings = $this->wp->getOption($heading['option_name']);
+      if (!$settings) {
+        $values[$name] = $heading['default'];
+      } else {
+        $values[$name] = $this->replacePlaceholders($settings['heading'] ?: $heading['default']);
+      }
     }
-    return $this->replacePlaceholders($settings['heading'] ?: $default_heading);
+    return $values;
   }
 
   private function replacePlaceholders($text) {

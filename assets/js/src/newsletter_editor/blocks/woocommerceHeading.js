@@ -5,11 +5,11 @@ import App from 'newsletter_editor/App';
 import BaseBlock from 'newsletter_editor/blocks/base';
 
 const BlockModel = BaseBlock.BlockModel.extend({
-  stale: ['styles.backgroundColor', 'content'],
+  stale: ['styles.backgroundColor', 'contents', 'selected'],
   defaults() {
     return this._getDefaults({
       type: 'woocommerceHeading',
-      content: '',
+      selected: 'new_account',
       styles: {
         fontColor: '#000000',
         backgroundColor: '#FFFFFF',
@@ -77,6 +77,10 @@ const BlockView = BaseBlock.BlockView.extend({
     BaseBlock.BlockView.prototype.initialize.apply(this, arguments);
     this.listenTo(this.model, 'change:styles.fontColor', this.render);
     this.listenTo(this.model, 'change:styles.backgroundColor', this.render);
+    this.listenTo(App.getChannel(), 'changeWCEmailType', (value) => {
+      this.model.set('selected', value);
+      this.render();
+    });
   },
   modelEvents: _.omit(BaseBlock.BlockView.prototype.modelEvents, 'change'),
   getTemplate() { return window.templates.woocommerceHeadingBlock; },
@@ -92,10 +96,12 @@ const BlockView = BaseBlock.BlockView.extend({
     this.showChildView('toolsRegion', this.toolsView);
   },
   templateContext() {
+    const contents = this.model.get('contents').toJSON();
+    const selected = this.model.get('selected');
     return {
       viewCid: this.cid,
       model: this.model.toJSON(),
-      content: this.model.get('content'),
+      content: contents[selected],
       styles: this.model.get('styles').toJSON(),
     };
   },
