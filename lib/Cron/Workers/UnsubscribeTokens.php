@@ -16,25 +16,33 @@ class UnsubscribeTokens extends SimpleWorker {
   const AUTOMATIC_SCHEDULING = false;
 
   function processTaskStrategy(ScheduledTask $task) {
-    $subscribers_count = $this->addTokens(Subscriber::class);
-    while ($subscribers_count === self::BATCH_SIZE) {
+    $meta = $task->getMeta();
+    do {
       CronHelper::enforceExecutionLimit($this->timer);
-      $subscribers_count = $this->addTokens(Subscriber::class);
-    };
-    $newsletters_count = $this->addTokens(Newsletter::class);
-    while ($newsletters_count === self::BATCH_SIZE) {
+      $subscribers_count = $this->addTokens(Subscriber::class, $meta['last_subscriber_id']);
+      $task->meta = $meta;
+      $task->save();
+    } while ($subscribers_count === self::BATCH_SIZE);
+    do {
       CronHelper::enforceExecutionLimit($this->timer);
-      $newsletters_count = $this->addTokens(Newsletter::class);
-    };
+      $newsletters_count = $this->addTokens(Newsletter::class, $meta['last_newsletter_id']);
+      $task->meta = $meta;
+      $task->save();
+    } while ($newsletters_count === self::BATCH_SIZE);
     if ($subscribers_count > 0 || $newsletters_count > 0) {
-      self::schedule();
+      return false;
     }
     return true;
   }
 
-  public function addTokens($model) {
-    $instances = $model::whereNull('unsubscribe_token')->limit(self::BATCH_SIZE)->findMany();
+  private function addTokens($model, &$last_processed_id = 0) {
+    $instances = $model::whereNull('unsubscribe_token')
+      ->whereGt('id', (int)$last_processed_id)
+      ->orderByAsc('id')
+      ->limit(self::BATCH_SIZE)
+      ->findMany();
     foreach ($instances as $instance) {
+      $last_processed_id = $instance->id;
       $instance->set('unsubscribe_token', Security::generateUnsubscribeToken($model));
       $instance->save();
     }
@@ -45,5 +53,4 @@ class UnsubscribeTokens extends SimpleWorker {
     $wp = new WPFunctions;
     return Carbon::createFromTimestamp($wp->currentTime('timestamp'));
   }
-
 }
