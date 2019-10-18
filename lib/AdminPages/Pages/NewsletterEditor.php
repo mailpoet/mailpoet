@@ -77,6 +77,8 @@ class NewsletterEditor {
         'email_base_color' => $this->wp->getOption('woocommerce_email_base_color', '#000000'),
         'email_text_color' => $this->wp->getOption('woocommerce_email_text_color', '#000000'),
       ],
+      'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
+      'site_address' => $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST),
     ];
     $this->wp->wpEnqueueMedia();
     $this->wp->wpEnqueueStyle('editor', $this->wp->includesUrl('css/editor.css'));
