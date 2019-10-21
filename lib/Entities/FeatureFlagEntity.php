@@ -5,10 +5,11 @@ namespace MailPoet\Entities;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
- * @Entity()
- * @Table(name="feature_flags", uniqueConstraints={@UniqueConstraint(name="name",columns={"name"})})
+ * @ORM\Entity()
+ * @ORM\Table(name="feature_flags", uniqueConstraints={@ORM\UniqueConstraint(name="name",columns={"name"})})
  */
 class FeatureFlagEntity {
   use AutoincrementedIdTrait;
@@ -16,13 +17,13 @@ class FeatureFlagEntity {
   use UpdatedAtTrait;
 
   /**
-   * @Column(type="string", nullable=false, unique=true)
+   * @ORM\Column(type="string", nullable=false, unique=true)
    * @var string
    */
   private $name;
 
   /**
-   * @Column(type="boolean", nullable=true)
+   * @ORM\Column(type="boolean", nullable=true)
    * @var bool|null
    */
   private $value;

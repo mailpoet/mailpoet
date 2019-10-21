@@ -42,7 +42,7 @@ class ConfigurationFactory {
     // register annotation reader if doctrine/annotations package is installed
     // (i.e. in dev environment, on production metadata is dumped in the build)
     if (class_exists(SimpleAnnotationReader::class)) {
-      $configuration->setMetadataDriverImpl($configuration->newDefaultAnnotationDriver([self::ENTITY_DIR]));
+      $configuration->setMetadataDriverImpl($configuration->newDefaultAnnotationDriver([self::ENTITY_DIR], false));
     } else {
       // Should never be called but Doctrine requires having driver set
       $configuration->setMetadataDriverImpl(new PHPDriver([]));

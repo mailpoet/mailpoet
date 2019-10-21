@@ -5,10 +5,11 @@ namespace MailPoet\Entities;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
- * @Entity()
- * @Table(name="newsletter_segment")
+ * @ORM\Entity()
+ * @ORM\Table(name="newsletter_segment")
  */
 class NewsletterSegmentEntity {
   use AutoincrementedIdTrait;
@@ -16,13 +17,13 @@ class NewsletterSegmentEntity {
   use UpdatedAtTrait;
 
   /**
-   * @ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="newsletter_segments")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="newsletter_segments")
    * @var NewsletterEntity
    */
   private $newsletter;
 
   /**
-   * @ManyToOne(targetEntity="MailPoet\Entities\SegmentEntity")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SegmentEntity")
    * @var SegmentEntity
    */
   private $segment;

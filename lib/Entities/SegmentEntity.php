@@ -6,10 +6,11 @@ use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
- * @Entity()
- * @Table(name="segments")
+ * @ORM\Entity()
+ * @ORM\Table(name="segments")
  */
 class SegmentEntity {
   use AutoincrementedIdTrait;
@@ -22,19 +23,19 @@ class SegmentEntity {
   const TYPE_DEFAULT = 'default';
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $name;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $type;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $description;

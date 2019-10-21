@@ -3,10 +3,11 @@
 namespace MailPoet\Doctrine\EntityTraits;
 
 use DateTimeInterface;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 trait CreatedAtTrait {
   /**
-   * @Column(type="datetimetz")
+   * @ORM\Column(type="datetimetz")
    * @var DateTimeInterface
    */
   private $created_at;

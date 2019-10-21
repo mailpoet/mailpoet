@@ -153,7 +153,7 @@ class JsonTypesTest extends \MailPoetTest {
     $configuration_factory = new ConfigurationFactory();
     $configuration = $configuration_factory->createConfiguration();
 
-    $metadata_driver = $configuration->newDefaultAnnotationDriver([__DIR__]);
+    $metadata_driver = $configuration->newDefaultAnnotationDriver([__DIR__], false);
     $configuration->setMetadataDriverImpl($metadata_driver);
     $configuration->setMetadataCacheImpl(new ArrayCache());
 

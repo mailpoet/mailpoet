@@ -5,10 +5,11 @@ namespace MailPoet\Entities;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
- * @Entity()
- * @Table(name="newsletter_option")
+ * @ORM\Entity()
+ * @ORM\Table(name="newsletter_option")
  */
 class NewsletterOptionEntity {
   use AutoincrementedIdTrait;
@@ -16,19 +17,19 @@ class NewsletterOptionEntity {
   use UpdatedAtTrait;
 
   /**
-   * @Column(type="text")
+   * @ORM\Column(type="text")
    * @var string|null
    */
   private $value;
 
   /**
-   * @ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="options")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="options")
    * @var NewsletterEntity
    */
   private $newsletter;
 
   /**
-   * @ManyToOne(targetEntity="MailPoet\Entities\NewsletterOptionFieldEntity", inversedBy="options")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterOptionFieldEntity", inversedBy="options")
    * @var NewsletterOptionFieldEntity
    */
   private $option_field;
