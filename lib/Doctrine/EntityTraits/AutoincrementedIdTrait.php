@@ -2,11 +2,13 @@
 
 namespace MailPoet\Doctrine\EntityTraits;
 
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
+
 trait AutoincrementedIdTrait {
   /**
-   * @Column(type="integer")
-   * @Id
-   * @GeneratedValue
+   * @ORM\Column(type="integer")
+   * @ORM\Id
+   * @ORM\GeneratedValue
    * @var int|null
    */
   private $id;

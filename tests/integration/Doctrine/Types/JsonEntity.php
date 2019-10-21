@@ -2,27 +2,29 @@
 
 namespace MailPoet\Test\Doctrine\Types;
 
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
+
 /**
- * @Entity()
- * @Table(name="test_json_entity")
+ * @ORM\Entity()
+ * @ORM\Table(name="test_json_entity")
  */
 class JsonEntity {
   /**
-   * @Column(type="integer")
-   * @Id
-   * @GeneratedValue
+   * @ORM\Column(type="integer")
+   * @ORM\Id
+   * @ORM\GeneratedValue
    * @var int|null
    */
   private $id;
 
   /**
-   * @Column(type="json")
+   * @ORM\Column(type="json")
    * @var array|null
    */
   private $json_data;
 
   /**
-   * @Column(type="json_or_serialized")
+   * @ORM\Column(type="json_or_serialized")
    * @var array|null
    */
   private $json_or_serialized_data;

@@ -7,10 +7,11 @@ use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
- * @Entity()
- * @Table(name="scheduled_tasks")
+ * @ORM\Entity()
+ * @ORM\Table(name="scheduled_tasks")
  */
 class ScheduledTaskEntity {
   const STATUS_COMPLETED = 'completed';
@@ -27,37 +28,37 @@ class ScheduledTaskEntity {
   use DeletedAtTrait;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string|null
    */
   private $type;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string|null
    */
   private $status;
 
   /**
-   * @Column(type="integer")
+   * @ORM\Column(type="integer")
    * @var int
    */
   private $priority = 0;
 
   /**
-   * @Column(type="datetimetz")
+   * @ORM\Column(type="datetimetz")
    * @var DateTimeInterface|null
    */
   private $scheduled_at;
 
   /**
-   * @Column(type="datetimetz")
+   * @ORM\Column(type="datetimetz")
    * @var DateTimeInterface|null
    */
   private $processed_at;
 
   /**
-   * @Column(type="json")
+   * @ORM\Column(type="json")
    * @var array|null
    */
   private $meta;

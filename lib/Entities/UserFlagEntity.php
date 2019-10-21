@@ -5,10 +5,11 @@ namespace MailPoet\Entities;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
- * @Entity()
- * @Table(name="user_flags")
+ * @ORM\Entity()
+ * @ORM\Table(name="user_flags")
  */
 class UserFlagEntity {
   use AutoincrementedIdTrait;
@@ -16,19 +17,19 @@ class UserFlagEntity {
   use UpdatedAtTrait;
 
   /**
-   * @Column(type="integer")
+   * @ORM\Column(type="integer")
    * @var int
    */
   private $user_id;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $name;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string|null
    */
   private $value;

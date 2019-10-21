@@ -6,10 +6,11 @@ use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
- * @Entity()
- * @Table(name="sending_queues")
+ * @ORM\Entity()
+ * @ORM\Table(name="sending_queues")
  */
 class SendingQueueEntity {
   const STATUS_COMPLETED = 'completed';
@@ -25,55 +26,55 @@ class SendingQueueEntity {
   use DeletedAtTrait;
 
   /**
-   * @Column(type="json_or_serialized")
+   * @ORM\Column(type="json_or_serialized")
    * @var array|null
    */
   private $newsletter_rendered_body;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string|null
    */
   private $newsletter_rendered_subject;
 
   /**
-   * @Column(type="text")
+   * @ORM\Column(type="text")
    * @var string|null
    */
   private $subscribers;
 
   /**
-   * @Column(type="integer")
+   * @ORM\Column(type="integer")
    * @var int
    */
   private $count_total = 0;
 
   /**
-   * @Column(type="integer")
+   * @ORM\Column(type="integer")
    * @var int
    */
   private $count_processed = 0;
 
   /**
-   * @Column(type="integer")
+   * @ORM\Column(type="integer")
    * @var int
    */
   private $count_to_process = 0;
 
   /**
-   * @Column(type="json")
+   * @ORM\Column(type="json")
    * @var array|null
    */
   private $meta;
 
   /**
-   * @OneToOne(targetEntity="MailPoet\Entities\ScheduledTaskEntity")
+   * @ORM\OneToOne(targetEntity="MailPoet\Entities\ScheduledTaskEntity")
    * @var ScheduledTaskEntity
    */
   private $task;
 
   /**
-   * @ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="queues")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="queues")
    * @var NewsletterEntity
    */
   private $newsletter;

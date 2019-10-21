@@ -10,11 +10,11 @@ use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\ORM\EntityNotFoundException;
-use MailPoetVendor\Doctrine\ORM\Mapping\Column;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
- * @Entity()
- * @Table(name="newsletters")
+ * @ORM\Entity()
+ * @ORM\Table(name="newsletters")
  */
 class NewsletterEntity {
   // types
@@ -40,103 +40,103 @@ class NewsletterEntity {
   use DeletedAtTrait;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string|null
    */
   private $hash;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $subject;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $type;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $sender_address;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $sender_name;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $status = self::STATUS_DRAFT;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $reply_to_address;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $reply_to_name;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $preheader;
 
   /**
-   * @Column(type="json")
+   * @ORM\Column(type="json")
    * @var array|null
    */
   private $body;
 
   /**
-   * @Column(type="datetimetz")
+   * @ORM\Column(type="datetimetz")
    * @var DateTimeInterface|null
    */
   private $sent_at;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string|null
    */
   private $unsubscribe_token;
 
   /**
-   * @Column(type="string")
+   * @ORM\Column(type="string")
    * @var string
    */
   private $ga_campaign;
 
   /**
-   * @ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @var NewsletterEntity|null
    */
   private $parent;
 
   /**
-   * @OneToMany(targetEntity="MailPoet\Entities\NewsletterSegmentEntity", mappedBy="newsletter")
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\NewsletterSegmentEntity", mappedBy="newsletter")
    * @var NewsletterSegmentEntity[]|ArrayCollection
    */
   private $newsletter_segments;
 
   /**
-   * @OneToMany(targetEntity="MailPoet\Entities\NewsletterOptionEntity", mappedBy="newsletter")
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\NewsletterOptionEntity", mappedBy="newsletter")
    * @var NewsletterOptionEntity[]|ArrayCollection
    */
   private $options;
 
   /**
-   * @OneToMany(targetEntity="MailPoet\Entities\SendingQueueEntity", mappedBy="newsletter")
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\SendingQueueEntity", mappedBy="newsletter")
    * @var SendingQueueEntity[]|ArrayCollection
    */
   private $queues;

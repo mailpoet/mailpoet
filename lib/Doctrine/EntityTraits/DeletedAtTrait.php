@@ -3,10 +3,11 @@
 namespace MailPoet\Doctrine\EntityTraits;
 
 use DateTimeInterface;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 trait DeletedAtTrait {
   /**
-   * @Column(type="datetimetz", nullable=true)
+   * @ORM\Column(type="datetimetz", nullable=true)
    * @var DateTimeInterface|null
    */
   private $deleted_at;
