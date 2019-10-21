@@ -11,6 +11,7 @@
     "symfony/dependency-injection": "3.4.26",
     "symfony/polyfill-mbstring": "^1.11",
     "symfony/polyfill-php72": "^1.11",
+    "symfony/validator": "3.4.32",
     "twig/twig": "1.38.4"
   },
   "scripts": {
@@ -23,7 +24,8 @@
       "mv ./build/* ../vendor-prefixed",
       "php fix-twig.php",
       "php fix-doctrine.php",
-      "php fix-swiftmailer.php"
+      "php fix-swiftmailer.php",
+      "php fix-validator.php"
     ]
   },
   "config": {
