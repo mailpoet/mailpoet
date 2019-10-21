@@ -31,7 +31,7 @@ Trusted by 300,000 WordPress websites since 2011.
 * Build and send newsletters with WordPress
 * Create automatic emails to send new post notifications
 * Send automated signup welcome emails (**now in free**)
-* Increase your sales with our emails for WooCommerce (Premium)
+* Increase your sales with our emails for WooCommerce
 * Insightful stats on your audience engagement (Premium)
 
 = Why choose MailPoet =
@@ -55,9 +55,7 @@ Please note:
 * Multisite is not supported
 * Review [our minimum requirements](https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3)
 
-= WooCommerce emails (Premium) =
-
-**All WooCommerce features are free for stores of 1,000 customers or fewer. [Read More.](https://www.mailpoet.com/free-plan/)**
+= WooCommerce emails =
 
 Increase your sales and stay in touch with your customers with our emails for WooCommerce!
 
@@ -74,12 +72,9 @@ With our WooCommerce emails, you can :
 The Premium version adds the following features:
 
 * For each newsletter, see which subscribers opened it and which links got the most clicks
-* All WooCommerce emails features
 * Removes the small MailPoet logo in the footer of your emails
 * Same day support (Monday to Friday)
 * Send to over 1,000 subscribers with your own sending method (host, SendGrid, Amazon SES)
-
-See the [short video summary on the Premium](https://kb.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
 
 = MailPoet Sending Service =
 **MailPoet Sending Service is free for your first 1,000 subscribers (pay as you go afterwards). [Read More](https://www.mailpoet.com/free-plan/)**
