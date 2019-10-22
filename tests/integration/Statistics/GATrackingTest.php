@@ -69,19 +69,6 @@ class GATrackingTest extends \MailPoetTest {
     expect($result['html'])->contains('utm_campaign=' . urlencode($this->ga_campaign));
   }
 
-  function testItGetsSecondLevelDomainName() {
-    $cases = [
-      'mailpoet.com' => 'mailpoet.com',
-      'newsletters.mailpoet.com' => 'mailpoet.com',
-      'test.example.co.uk' => 'example.co.uk',
-      'example.co.uk' => 'example.co.uk',
-      'localhost' => 'localhost',
-    ];
-    foreach ($cases as $subdomain => $domain) {
-      expect(GATracking::getSecondLevelDomainName($subdomain))->equals($domain);
-    }
-  }
-
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
   }
