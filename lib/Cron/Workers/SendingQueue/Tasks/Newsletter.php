@@ -13,6 +13,7 @@ use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\GATracking;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -26,10 +27,13 @@ class Newsletter {
   /** @var PostsTask */
   private $posts_task;
 
+  /** @var GATracking */
+  private $ga_tracking;
+
   /** @var LoggerFactory */
   private $logger_factory;
 
-  function __construct(WPFunctions $wp = null, PostsTask $posts_task = null) {
+  function __construct(WPFunctions $wp = null, PostsTask $posts_task = null, GATracking $ga_tracking = null) {
     $settings = new SettingsController();
     $this->tracking_enabled = (boolean)$settings->get('tracking.enabled');
     if ($wp === null) {
@@ -40,6 +44,10 @@ class Newsletter {
       $posts_task = new PostsTask;
     }
     $this->posts_task = $posts_task;
+    if ($ga_tracking === null) {
+      $ga_tracking = new GATracking;
+    }
+    $this->ga_tracking = $ga_tracking;
     $this->logger_factory = LoggerFactory::getInstance();
   }
 
@@ -93,6 +101,7 @@ class Newsletter {
         $rendered_newsletter,
         $newsletter
       );
+      $rendered_newsletter = $this->ga_tracking->applyGATracking($rendered_newsletter, $newsletter);
       // hash and save all links
       $rendered_newsletter = LinksTask::process($rendered_newsletter, $newsletter, $sending_task);
     } else {
@@ -103,6 +112,7 @@ class Newsletter {
         $rendered_newsletter,
         $newsletter
       );
+      $rendered_newsletter = $this->ga_tracking->applyGATracking($rendered_newsletter, $newsletter);
     }
     // check if this is a post notification and if it contains at least 1 ALC post
     if ($newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY &&
