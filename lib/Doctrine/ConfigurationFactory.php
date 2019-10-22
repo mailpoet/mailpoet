@@ -2,6 +2,7 @@
 
 namespace MailPoet\Doctrine;
 
+use MailPoetVendor\Doctrine\Common\Annotations\AnnotationRegistry;
 use MailPoetVendor\Doctrine\Common\Annotations\SimpleAnnotationReader;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
@@ -38,6 +39,10 @@ class ConfigurationFactory {
     // metadata cache (for production cache is pre-generated at build time)
     $metadata_storage = new MetadataCache(self::METADATA_DIR);
     $configuration->setMetadataCacheImpl($metadata_storage);
+
+    // autoload all annotation classes using registered loaders (Composer)
+    // (needed for Symfony\Validator constraint annotations to be loaded)
+    AnnotationRegistry::registerLoader('class_exists');
 
     // register annotation reader if doctrine/annotations package is installed
     // (i.e. in dev environment, on production metadata is dumped in the build)

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
+use MailPoet\Doctrine\EventListeners\ValidationListener;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 
@@ -84,7 +85,8 @@ class TimestampListenerTest extends \MailPoetTest {
     $configuration->setMetadataCacheImpl(new ArrayCache());
 
     $timestamp_listener = new TimestampListener($this->wp);
-    $entity_manager_factory = new EntityManagerFactory($this->connection, $configuration, $timestamp_listener);
+    $validation_listener = new ValidationListener();
+    $entity_manager_factory = new EntityManagerFactory($this->connection, $configuration, $timestamp_listener, $validation_listener);
     return $entity_manager_factory->createEntityManager();
   }
 }
