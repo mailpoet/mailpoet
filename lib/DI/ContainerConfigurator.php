@@ -117,6 +117,7 @@ class ContainerConfigurator implements IContainerConfigurator {
       ->setFactory([new Reference(\MailPoet\Doctrine\EntityManagerFactory::class), 'createEntityManager'])
       ->setPublic(true);
     $container->autowire(\MailPoet\Doctrine\EventListeners\TimestampListener::class);
+    $container->autowire(\MailPoet\Doctrine\EventListeners\ValidationListener::class);
     // Dynamic segments
     $container->autowire(\MailPoet\DynamicSegments\DynamicSegmentHooks::class);
     // Cron
