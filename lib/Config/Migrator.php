@@ -282,6 +282,7 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
       'unsubscribe_token char(15) NULL,',
+      'ga_campaign varchar(250) NOT NULL DEFAULT "",',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY unsubscribe_token (unsubscribe_token),',
       'KEY type_status (type,status)',
