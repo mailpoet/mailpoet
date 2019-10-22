@@ -39,6 +39,7 @@ use function MailPoet\Util\array_column;
  * @property string|null $schedule
  * @property boolean|null $isScheduled
  * @property string|null $scheduledAt
+ * @property string $ga_campaign
  */
 
 class Newsletter extends Model {
