@@ -5,9 +5,17 @@ namespace MailPoet\Statistics;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\SecondLevelDomainNames;
 use MailPoet\WP\Functions as WPFunctions;
 
 class GATracking {
+
+  /** @var SecondLevelDomainNames */
+  private $secondLevelDomainNames;
+
+  function __construct() {
+    $this->secondLevelDomainNames = new SecondLevelDomainNames();
+  }
 
   function applyGATracking($rendered_newsletter, $newsletter, $internal_host = null) {
     if ($newsletter instanceof Newsletter && $newsletter->type == Newsletter::TYPE_NOTIFICATION_HISTORY) {
@@ -42,7 +50,7 @@ class GATracking {
       'utm_campaign' => urlencode($ga_campaign),
     ];
     $internal_host = $internal_host ?: parse_url(home_url(), PHP_URL_HOST);
-    $internal_host = self::getSecondLevelDomainName($internal_host);
+    $internal_host = $this->secondLevelDomainNames->get($internal_host);
     foreach ($extracted_links as $extracted_link) {
       if ($extracted_link['type'] !== NewsletterLinks::LINK_TYPE_URL) {
         continue;
@@ -59,12 +67,5 @@ class GATracking {
       ];
     }
     return $processed_links;
-  }
-
-  public static function getSecondLevelDomainName($host) {
-    if (preg_match('/[^.]*\.[^.]{2,3}(?:\.[^.]{2,3})?$/', $host, $matches)) {
-      return $matches[0];
-    }
-    return $host;
   }
 }
