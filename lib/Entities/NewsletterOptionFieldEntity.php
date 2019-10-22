@@ -6,6 +6,7 @@ use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
+use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -18,12 +19,14 @@ class NewsletterOptionFieldEntity {
 
   /**
    * @ORM\Column(type="string")
+   * @Assert\NotBlank()
    * @var string
    */
   private $name;
 
   /**
    * @ORM\Column(type="string")
+   * @Assert\NotBlank()
    * @var string
    */
   private $newsletter_type;

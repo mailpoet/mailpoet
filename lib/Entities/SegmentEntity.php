@@ -7,6 +7,7 @@ use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
+use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -24,6 +25,7 @@ class SegmentEntity {
 
   /**
    * @ORM\Column(type="string")
+   * @Assert\NotBlank()
    * @var string
    */
   private $name;
