@@ -7,6 +7,7 @@ use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
+use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -27,6 +28,7 @@ class SendingQueueEntity {
 
   /**
    * @ORM\Column(type="json_or_serialized")
+   * @Assert\NotBlank()
    * @var array|null
    */
   private $newsletter_rendered_body;

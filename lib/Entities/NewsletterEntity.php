@@ -11,6 +11,7 @@ use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\ORM\EntityNotFoundException;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
+use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -53,6 +54,7 @@ class NewsletterEntity {
 
   /**
    * @ORM\Column(type="string")
+   * @Assert\NotBlank()
    * @var string
    */
   private $type;
