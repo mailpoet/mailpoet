@@ -2,6 +2,7 @@ import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import Scheduling from 'newsletters/types/welcome/scheduling.jsx';
 import SenderField from 'newsletters/send/sender_address_field.jsx';
+import GATrackingField from 'newsletters/send/ga_tracking.jsx';
 
 let fields = [
   {
@@ -66,6 +67,7 @@ let fields = [
       },
     ],
   },
+  GATrackingField,
 ];
 
 fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);

@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 
 import DateTime from 'newsletters/send/date_time.jsx';
 import SenderField from 'newsletters/send/sender_address_field.jsx';
+import GATrackingField from 'newsletters/send/ga_tracking.jsx';
 
 const currentTime = window.mailpoet_current_time || '00:00';
 const defaultDateTime = `${window.mailpoet_current_date} 00:00:00`;
@@ -190,6 +191,7 @@ let fields = [
       },
     ],
   },
+  GATrackingField,
   {
     name: 'options',
     label: MailPoet.I18n.t('scheduleIt'),

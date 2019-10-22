@@ -7,6 +7,7 @@ import EventsConditions from 'newsletters/automatic_emails/events_conditions.jsx
 import AutomaticEmailsBreadcrumb from 'newsletters/types/automatic_emails/breadcrumb.jsx';
 import SendEventConditions from 'newsletters/automatic_emails/send_event_conditions.jsx';
 import Listings from 'newsletters/automatic_emails/listings.jsx';
+import GATrackingField from 'newsletters/send/ga_tracking.jsx';
 
 const emails = window.mailpoet_woocommerce_automatic_emails || [];
 const newslettersContainer = document.getElementById('newsletters_container');
@@ -232,6 +233,7 @@ const configureSendPageOptions = (defaultFields, newsletter) => {
         },
       ],
     },
+    GATrackingField,
   ];
 
   return {
