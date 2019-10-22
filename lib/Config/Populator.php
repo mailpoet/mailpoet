@@ -176,6 +176,7 @@ class Populator {
     $this->detectReferral();
     $this->updateFormsSuccessMessages();
     $this->initWooCommerceTransactionalEmails();
+    $this->moveGoogleAnalyticsFromPremium();
   }
 
   private function createMailPoetPage() {
@@ -690,6 +691,37 @@ class Populator {
     $settings = $this->settings->get(Worker::SETTINGS_KEY);
     $settings['automated'] = true;
     $this->settings->set(Worker::SETTINGS_KEY, $settings);
+  }
+
+  private function moveGoogleAnalyticsFromPremium() {
+    global $wpdb;
+    if (version_compare($this->settings->get('db_version', '3.38.2'), '3.38.1', '>')) {
+      return;
+    }
+    $premium_table_name = $wpdb->prefix . 'mailpoet_premium_newsletter_extra_data';
+    $premium_table_exists = (int)$wpdb->get_var(
+      $wpdb->prepare(
+        "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema=%s AND table_name=%s;",
+        $wpdb->dbname,
+        $premium_table_name
+      )
+    );
+    if ($premium_table_exists) {
+      $query = "
+        UPDATE
+          `%s` as n
+        JOIN %s as ped ON n.id=ped.newsletter_id
+          SET n.ga_campaign = ped.ga_campaign
+      ";
+      $wpdb->query(
+        sprintf(
+          $query,
+          Newsletter::$_table,
+          $premium_table_name
+        )
+      );
+    }
+    return true;
   }
 
   private function detectReferral() {
