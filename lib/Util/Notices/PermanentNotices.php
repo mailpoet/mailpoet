@@ -17,9 +17,6 @@ class PermanentNotices {
   /** @var AfterMigrationNotice */
   private $after_migration_notice;
 
-  /** @var DiscountsAnnouncement */
-  private $discounts_announcement;
-
   /** @var UnauthorizedEmailNotice */
   private $unauthorized_emails_notice;
 
@@ -36,7 +33,6 @@ class PermanentNotices {
     $this->wp = $wp;
     $this->php_version_warnings = new PHPVersionWarnings();
     $this->after_migration_notice = new AfterMigrationNotice();
-    $this->discounts_announcement = new DiscountsAnnouncement();
     $this->unauthorized_emails_notice = new UnauthorizedEmailNotice(new SettingsController, $wp);
     $this->unauthorized_emails_in_newsletters_notice = new UnauthorizedEmailInNewslettersNotice(new SettingsController, $wp);
     $this->inactive_subscribers_notice = new InactiveSubscribersNotice(new SettingsController, $wp);
@@ -65,11 +61,6 @@ class PermanentNotices {
     $this->inactive_subscribers_notice->init(
       Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
     );
-    $this->discounts_announcement->init(
-      empty($_GET['page'])
-      && $this->wp->isAdmin()
-      && strpos($_SERVER['SCRIPT_NAME'], 'wp-admin/index.php') !== false
-    );
     $this->black_friday_notice->init(
       Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
     );
@@ -83,9 +74,6 @@ class PermanentNotices {
         break;
       case (AfterMigrationNotice::OPTION_NAME):
         $this->after_migration_notice->disable();
-        break;
-      case (DiscountsAnnouncement::OPTION_NAME):
-        $this->discounts_announcement->disable();
         break;
       case (BlackFridayNotice::OPTION_NAME):
         $this->black_friday_notice->disable();
