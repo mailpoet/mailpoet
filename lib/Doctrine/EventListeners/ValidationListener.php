@@ -4,17 +4,14 @@ namespace MailPoet\Doctrine\EventListeners;
 
 use MailPoet\Doctrine\ValidationException;
 use MailPoetVendor\Doctrine\ORM\Event\OnFlushEventArgs;
-use MailPoetVendor\Symfony\Component\Validator\Validation;
 use MailPoetVendor\Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidationListener {
   /** @var ValidatorInterface */
   private $validator;
 
-  function __construct() {
-    $this->validator = Validation::createValidatorBuilder()
-      ->enableAnnotationMapping()
-      ->getValidator();
+  function __construct(ValidatorInterface $validator) {
+    $this->validator = $validator;
   }
 
   function onFlush(OnFlushEventArgs $event_args) {

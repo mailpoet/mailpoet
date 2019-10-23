@@ -8,6 +8,7 @@ use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
 use MailPoet\Doctrine\EventListeners\ValidationListener;
+use MailPoet\Doctrine\Validator\ValidatorFactory;
 use MailPoet\Test\Doctrine\Types\JsonEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
@@ -160,8 +161,9 @@ class JsonTypesTest extends \MailPoetTest {
     $configuration->setMetadataDriverImpl($metadata_driver);
     $configuration->setMetadataCacheImpl(new ArrayCache());
 
+    $validator_factory = new ValidatorFactory($annotation_reader_provider);
     $timestamp_listener = new TimestampListener($this->wp);
-    $validation_listener = new ValidationListener();
+    $validation_listener = new ValidationListener($validator_factory->createValidator());
     $entity_manager_factory = new EntityManagerFactory($this->connection, $configuration, $timestamp_listener, $validation_listener);
     return $entity_manager_factory->createEntityManager();
   }

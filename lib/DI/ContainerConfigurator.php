@@ -119,6 +119,9 @@ class ContainerConfigurator implements IContainerConfigurator {
       ->setPublic(true);
     $container->autowire(\MailPoet\Doctrine\EventListeners\TimestampListener::class);
     $container->autowire(\MailPoet\Doctrine\EventListeners\ValidationListener::class);
+    $container->autowire(\MailPoet\Doctrine\Validator\ValidatorFactory::class);
+    $container->autowire(\MailPoetVendor\Symfony\Component\Validator\Validator\ValidatorInterface::class)
+      ->setFactory([new Reference(\MailPoet\Doctrine\Validator\ValidatorFactory::class), 'createValidator']);
     // Dynamic segments
     $container->autowire(\MailPoet\DynamicSegments\DynamicSegmentHooks::class);
     // Cron
