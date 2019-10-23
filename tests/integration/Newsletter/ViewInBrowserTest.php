@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Newsletter;
 
+use Codeception\Stub\Expected;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
@@ -12,6 +13,7 @@ use MailPoet\Newsletter\ViewInBrowser;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Emoji;
 
 class ViewInBrowserTest extends \MailPoetTest {
   function _before() {
@@ -72,7 +74,8 @@ class ViewInBrowserTest extends \MailPoetTest {
       'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="' . Links::DATA_TAG_CLICK . '-90e56">Unsubscribe</a> or visit <a href="' . Links::DATA_TAG_CLICK . '-i1893">Google</a><img alt="" class="" src="' . Links::DATA_TAG_OPEN . '"></p>',
       'text' => 'test',
     ];
-    $this->view_in_browser = new ViewInBrowser(false);
+    $this->emoji = new Emoji();
+    $this->view_in_browser = new ViewInBrowser($this->emoji, false);
     // create newsletter
     $newsletter = Newsletter::create();
     $newsletter->hydrate($this->newsletter);
@@ -115,7 +118,15 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   function testItReusesRenderedNewsletterBodyWhenQueueExists() {
-    $rendered_body = $this->view_in_browser->renderNewsletter(
+    $emoji = $this->make(
+      Emoji::class,
+      ['decodeEmojisInBody' => Expected::once(function ($params) {
+        return $params;
+      })],
+      $this
+    );
+    $view_in_browser = new ViewInBrowser($emoji, false);
+    $rendered_body = $view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
       $this->queue,
@@ -140,7 +151,7 @@ class ViewInBrowserTest extends \MailPoetTest {
   function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
     $settings = new SettingsController();
     $settings->set('tracking.enabled', true);
-    $view_in_browser = new ViewInBrowser(true);
+    $view_in_browser = new ViewInBrowser($this->emoji, true);
     $queue = $this->queue;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
     $rendered_body = $view_in_browser->renderNewsletter(

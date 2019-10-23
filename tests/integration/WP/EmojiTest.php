@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\WP;
 
+use Codeception\Stub\Expected;
 use MailPoet\Config\Env;
 use MailPoet\WP\Emoji;
 
@@ -13,6 +14,30 @@ class EmojiTest extends \MailPoetTest {
 
     $this->column = 'dummycol';
     $this->emoji = new Emoji();
+  }
+
+  function testItCanEncodeNewsletterRenderedBody() {
+    $emoji = $this->make(
+      Emoji::class,
+      ['encodeForUTF8Column' => Expected::exactly(3, function ($params) {
+        return $params;
+      })],
+      $this
+    );
+    $emoji->encodeEmojisInBody(['text' => 'call 1', 'html' => 'call 2']);
+    $emoji->encodeEmojisInBody('string, call 3');
+  }
+
+  function testItCanDecodeNewsletterBody() {
+    $emoji = $this->make(
+      Emoji::class,
+      ['decodeEntities' => Expected::exactly(3, function ($params) {
+        return $params;
+      })],
+      $this
+    );
+    $emoji->decodeEmojisInBody(['text' => 'call 1', 'html' => 'call 2']);
+    $emoji->decodeEmojisInBody('string, call 3');
   }
 
   function testItCanEncodeForUTF8Column() {

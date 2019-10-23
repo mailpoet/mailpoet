@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
 use Codeception\Stub;
+use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
@@ -19,6 +20,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Router;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class NewsletterTest extends \MailPoetTest {
@@ -283,7 +285,15 @@ class NewsletterTest extends \MailPoetTest {
       'text' => 'queue TEXT body',
     ];
     $queue->newsletter_rendered_subject = 'queue subject';
-    $result = $this->newsletter_task->prepareNewsletterForSending(
+    $emoji = $this->make(
+      Emoji::class,
+      ['decodeEmojisInBody' => Expected::once(function ($params) {
+        return $params;
+      })],
+      $this
+    );
+    $newsletter_task = new NewsletterTask(null, null, null, $emoji);
+    $result = $newsletter_task->prepareNewsletterForSending(
       $this->newsletter,
       $this->subscriber,
       $queue
@@ -421,7 +431,16 @@ class NewsletterTest extends \MailPoetTest {
     $sending_queue = \ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
     $sending_queue->set('newsletter_rendered_body', 'a:2:{s:4:"html";s:4:"test";s:4:"text";s:4:"test";}');
     $sending_queue->save();
-    expect($this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock))->equals($this->newsletter);
+
+    $emoji = $this->make(
+      Emoji::class,
+      ['encodeEmojisInBody' => Expected::once(function ($params) {
+        return $params;
+      })],
+      $this
+    );
+    $newsletter_task = new NewsletterTask(null, null, null, $emoji);
+    expect($newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock))->equals($this->newsletter);
   }
 
   function _after() {

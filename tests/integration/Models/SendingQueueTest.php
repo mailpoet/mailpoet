@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Models;
 
-use AspectMock\Test as Mock;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
@@ -21,26 +20,6 @@ class SendingQueueTest extends \MailPoetTest {
       'html' => 'some html',
       'text' => 'some text',
     ];
-  }
-
-  function testItCanEncodeEmojisInBody() {
-    $mock = Mock::double('MailPoet\WP\Emoji', [
-      'encodeForUTF8Column' => function($params) {
-        return $params;
-      },
-    ]);
-    $this->queue->encodeEmojisInBody($this->rendered_body);
-    $mock->verifyInvokedMultipleTimes('encodeForUTF8Column', 2);
-  }
-
-  function testItCanDecodeEmojisInBody() {
-    $mock = Mock::double('MailPoet\WP\Emoji', [
-      'decodeEntities' => function($params) {
-        return $params;
-      },
-    ]);
-    $this->queue->decodeEmojisInBody($this->rendered_body);
-    $mock->verifyInvokedMultipleTimes('decodeEntities', 2);
   }
 
   function testItChecksProcessedSubscribersForOldQueues() {
@@ -149,7 +128,6 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   function _after() {
-    Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
