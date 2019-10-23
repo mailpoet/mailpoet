@@ -10,6 +10,7 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ViewInBrowser {
@@ -28,15 +29,19 @@ class ViewInBrowser {
   /** @var LinkTokens */
   private $link_tokens;
 
-  function __construct(AccessControl $access_control, SettingsController $settings, LinkTokens $link_tokens) {
+  /** @var Emoji */
+  private $emoji;
+
+  function __construct(AccessControl $access_control, SettingsController $settings, LinkTokens $link_tokens, Emoji $emoji) {
     $this->access_control = $access_control;
     $this->settings = $settings;
     $this->link_tokens = $link_tokens;
+    $this->emoji = $emoji;
   }
 
   function view($data) {
     $data = $this->_processBrowserPreviewData($data);
-    $view_in_browser = new NewsletterViewInBrowser((bool)$this->settings->get('tracking.enabled'));
+    $view_in_browser = new NewsletterViewInBrowser($this->emoji, (bool)$this->settings->get('tracking.enabled'));
     return $this->_displayNewsletter($view_in_browser->view($data));
   }
 

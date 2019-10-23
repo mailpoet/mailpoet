@@ -5,7 +5,6 @@ namespace MailPoet\Models;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Tasks\Subscribers as TaskSubscribers;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
@@ -31,15 +30,12 @@ class SendingQueue extends Model {
   const PRIORITY_MEDIUM = SendingQueueEntity::PRIORITY_MEDIUM;
   const PRIORITY_LOW = SendingQueueEntity::PRIORITY_LOW;
 
-  private $emoji;
-
   function __construct() {
     parent::__construct();
 
     $this->addValidations('newsletter_rendered_body', [
       'validRenderedNewsletterBody' => WPFunctions::get()->__('Rendered newsletter body is invalid!', 'mailpoet'),
     ]);
-    $this->emoji = new Emoji();
   }
 
   function task() {
@@ -75,7 +71,7 @@ class SendingQueue extends Model {
     if (!Helpers::isJson($this->newsletter_rendered_body) && !is_null($this->newsletter_rendered_body)) {
       $this->set(
         'newsletter_rendered_body',
-        json_encode($this->encodeEmojisInBody($this->newsletter_rendered_body))
+        json_encode($this->newsletter_rendered_body)
       );
     }
     if (!is_null($this->meta) && !Helpers::isJson($this->meta)) {
@@ -114,28 +110,6 @@ class SendingQueue extends Model {
     return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
   }
 
-  function encodeEmojisInBody($newsletter_rendered_body) {
-    if (is_array($newsletter_rendered_body)) {
-      foreach ($newsletter_rendered_body as $key => $value) {
-        $newsletter_rendered_body[$key] = $this->emoji->encodeForUTF8Column(
-          self::$_table,
-          'newsletter_rendered_body',
-          $value
-        );
-      }
-    }
-    return $newsletter_rendered_body;
-  }
-
-  function decodeEmojisInBody($newsletter_rendered_body) {
-    if (is_array($newsletter_rendered_body)) {
-      foreach ($newsletter_rendered_body as $key => $value) {
-        $newsletter_rendered_body[$key] = $this->emoji->decodeEntities($value);
-      }
-    }
-    return $newsletter_rendered_body;
-  }
-
   function isSubscriberProcessed($subscriber_id) {
     if (!empty($this->subscribers)
       && ScheduledTaskSubscriber::getTotalCount($this->task_id) === 0
@@ -161,10 +135,10 @@ class SendingQueue extends Model {
 
   private function decodeRenderedNewsletterBodyObject($rendered_body) {
     if (is_serialized($rendered_body)) {
-      return $this->decodeEmojisInBody(unserialize($rendered_body));
+      return unserialize($rendered_body);
     }
     if (Helpers::isJson($rendered_body)) {
-      return $this->decodeEmojisInBody(json_decode($rendered_body, true));
+      return json_decode($rendered_body, true);
     }
     return $rendered_body;
   }

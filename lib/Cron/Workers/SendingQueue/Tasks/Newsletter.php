@@ -15,6 +15,7 @@ use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\GATracking;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Newsletter {
@@ -33,7 +34,10 @@ class Newsletter {
   /** @var LoggerFactory */
   private $logger_factory;
 
-  function __construct(WPFunctions $wp = null, PostsTask $posts_task = null, GATracking $ga_tracking = null) {
+  /** @var Emoji */
+  private $emoji;
+
+  function __construct(WPFunctions $wp = null, PostsTask $posts_task = null, GATracking $ga_tracking = null, Emoji $emoji = null) {
     $settings = new SettingsController();
     $this->tracking_enabled = (boolean)$settings->get('tracking.enabled');
     if ($wp === null) {
@@ -49,6 +53,10 @@ class Newsletter {
     }
     $this->ga_tracking = $ga_tracking;
     $this->logger_factory = LoggerFactory::getInstance();
+    if ($emoji === null) {
+      $emoji = new Emoji();
+    }
+    $this->emoji = $emoji;
   }
 
   function getNewsletterFromQueue($queue) {
@@ -141,6 +149,7 @@ class Newsletter {
     if (empty(trim($sending_task->newsletter_rendered_subject))) {
       $sending_task->newsletter_rendered_subject = WPFunctions::get()->__('No subject', 'mailpoet');
     }
+    $rendered_newsletter = $this->emoji->encodeEmojisInBody($rendered_newsletter);
     $sending_task->newsletter_rendered_body = $rendered_newsletter;
     $sending_task->save();
     // catch DB errors
@@ -162,6 +171,7 @@ class Newsletter {
     // shortcodes and links will be replaced in the subject, html and text body
     // to speed the processing, join content into a continuous string
     $rendered_newsletter = $queue->getNewsletterRenderedBody();
+    $rendered_newsletter = $this->emoji->decodeEmojisInBody($rendered_newsletter);
     $prepared_newsletter = Helpers::joinObject(
       [
         $queue->newsletter_rendered_subject,

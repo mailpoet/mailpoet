@@ -14,6 +14,28 @@ class Emoji {
     $this->wp = $wp;
   }
 
+  function encodeEmojisInBody($newsletter_rendered_body) {
+    if (is_array($newsletter_rendered_body)) {
+      return array_map([$this, 'encodeRenderedBodyForUTF8Column'], $newsletter_rendered_body);
+    }
+    return $this->encodeRenderedBodyForUTF8Column($newsletter_rendered_body);
+  }
+
+  function decodeEmojisInBody($newsletter_rendered_body) {
+    if (is_array($newsletter_rendered_body)) {
+      return array_map([$this, 'decodeEntities'], $newsletter_rendered_body);
+    }
+    return $this->decodeEntities($newsletter_rendered_body);
+  }
+
+  private function encodeRenderedBodyForUTF8Column($value) {
+    return $this->encodeForUTF8Column(
+      MP_SENDING_QUEUES_TABLE,
+      'newsletter_rendered_body',
+      $value
+    );
+  }
+
   function encodeForUTF8Column($table, $field, $value) {
     global $wpdb;
     $charset = $wpdb->get_col_charset($table, $field);
