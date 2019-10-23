@@ -220,10 +220,15 @@ class Listings extends React.Component {
 
   renderSettings = (newsletter) => {
     const event = automaticEmails[newsletter.options.group].events[newsletter.options.event];
-    const meta = newsletter.options.meta || {};
-    const metaOptionValues = (meta.option) ? _.pluck(meta.option, 'name') : [];
+    let meta;
+    try {
+      meta = JSON.parse(newsletter.options.meta || null);
+    } catch (e) {
+      meta = newsletter.options.meta || null;
+    }
+    const metaOptionValues = (meta && meta.option) ? _.pluck(meta.option, 'name') : [];
 
-    if (meta.option && _.isEmpty(metaOptionValues)) {
+    if (meta && _.isEmpty(metaOptionValues)) {
       return (
         <span className="mailpoet_error">
           { MailPoet.I18n.t('automaticEmailEventOptionsNotConfigured') }

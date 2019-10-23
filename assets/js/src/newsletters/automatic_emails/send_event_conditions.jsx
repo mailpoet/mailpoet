@@ -40,7 +40,12 @@ class SendEventConditions extends React.Component {
 
   displayEventOptions() {
     const { event, eventSlug } = this.state;
-    const meta = this.emailOptions.meta || {};
+    let meta;
+    try {
+      meta = JSON.parse(this.emailOptions.meta || null);
+    } catch (e) {
+      meta = this.emailOptions.meta || null;
+    }
     const props = {
       emailSlug: this.email.slug,
       eventSlug,
@@ -48,7 +53,7 @@ class SendEventConditions extends React.Component {
       eventOptions: event.options || null,
     };
 
-    if (meta.option) {
+    if (meta && meta.option) {
       // if event uses remote filter to populate options, use the saved meta options
       // to build the initial select list
       if (props.eventOptions.type === 'remote') {
@@ -131,7 +136,7 @@ class SendEventConditions extends React.Component {
 
     if (afterTimeNumber) options.afterTimeNumber = afterTimeNumber;
     if (segment) options.segment = segment;
-    if (eventOptionValue) options.meta = { option: eventOptionValue };
+    if (eventOptionValue) options.meta = JSON.stringify({ option: this.state.eventOptionValue });
 
     onValueChange({
       target: {
