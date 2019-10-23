@@ -4,7 +4,8 @@ namespace MailPoet\Doctrine;
 
 use MailPoetVendor\Doctrine\Common\Annotations\SimpleAnnotationReader;
 use MailPoetVendor\Doctrine\Common\Cache\CacheProvider;
-use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadata;
+use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadata as DoctrineClassMetadata;
+use MailPoetVendor\Symfony\Component\Validator\Mapping\ClassMetadata as ValidatorClassMetadata;
 use ReflectionClass;
 use ReflectionException;
 
@@ -29,7 +30,7 @@ class MetadataCache extends CacheProvider {
 
   protected function doFetch($id) {
     if (!$this->doContains($id)) {
-      return null;
+      return false;
     }
     return unserialize(file_get_contents($this->getFilename($id)));
   }
@@ -41,9 +42,9 @@ class MetadataCache extends CacheProvider {
     // in dev mode invalidate cache if source file has changed
     if ($file_exists && $this->is_dev_mode) {
       $class_metadata = unserialize(file_get_contents($filename));
-      assert($class_metadata instanceof ClassMetadata);
+      assert($class_metadata instanceof DoctrineClassMetadata || $class_metadata instanceof ValidatorClassMetadata);
       try {
-        $reflection = new ReflectionClass($class_metadata->getName());
+        $reflection = new ReflectionClass($class_metadata->name);
       } catch (ReflectionException $e) {
         return false;
       }
