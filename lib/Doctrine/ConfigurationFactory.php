@@ -2,11 +2,11 @@
 
 namespace MailPoet\Doctrine;
 
-use MailPoetVendor\Doctrine\Common\Annotations\AnnotationRegistry;
-use MailPoetVendor\Doctrine\Common\Annotations\SimpleAnnotationReader;
+use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
 use MailPoetVendor\Doctrine\ORM\Configuration;
+use MailPoetVendor\Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use MailPoetVendor\Doctrine\ORM\Mapping\Driver\PHPDriver;
 use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
@@ -19,8 +19,12 @@ class ConfigurationFactory {
   /** @var bool */
   private $is_dev_mode;
 
-  function __construct($is_dev_mode = null) {
+  /** @var AnnotationReaderProvider */
+  private $annotation_reader_provider;
+
+  function __construct($is_dev_mode = null, AnnotationReaderProvider $annotation_reader_provider) {
     $this->is_dev_mode = $is_dev_mode === null ? WP_DEBUG : $is_dev_mode;
+    $this->annotation_reader_provider = $annotation_reader_provider;
   }
 
   function createConfiguration() {
@@ -40,14 +44,10 @@ class ConfigurationFactory {
     $metadata_storage = new MetadataCache(self::METADATA_DIR);
     $configuration->setMetadataCacheImpl($metadata_storage);
 
-    // autoload all annotation classes using registered loaders (Composer)
-    // (needed for Symfony\Validator constraint annotations to be loaded)
-    AnnotationRegistry::registerLoader('class_exists');
-
-    // register annotation reader if doctrine/annotations package is installed
-    // (i.e. in dev environment, on production metadata is dumped in the build)
-    if (class_exists(SimpleAnnotationReader::class)) {
-      $configuration->setMetadataDriverImpl($configuration->newDefaultAnnotationDriver([self::ENTITY_DIR], false));
+    // annotation reader exists only in dev environment, on production cache is pre-generated
+    $annotation_reader = $this->annotation_reader_provider->getAnnotationReader();
+    if ($annotation_reader) {
+      $configuration->setMetadataDriverImpl(new AnnotationDriver($annotation_reader, [self::ENTITY_DIR]));
     } else {
       // Should never be called but Doctrine requires having driver set
       $configuration->setMetadataDriverImpl(new PHPDriver([]));

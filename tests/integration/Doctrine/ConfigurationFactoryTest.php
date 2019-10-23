@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Config;
 
+use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
 use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\MetadataCache;
 use MailPoet\Doctrine\TablePrefixMetadataFactory;
@@ -13,7 +14,7 @@ use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
 class ConfigurationFactoryTest extends \MailPoetTest {
   function testItSetsUpBasicOptions() {
-    $configuration_factory = new ConfigurationFactory();
+    $configuration_factory = new ConfigurationFactory(false, new AnnotationReaderProvider());
     $configuration = $configuration_factory->createConfiguration();
 
     expect($configuration)->isInstanceOf(Configuration::class);
@@ -35,12 +36,12 @@ class ConfigurationFactoryTest extends \MailPoetTest {
 
   function testItSetsUpEnvironmentSpecificOptions() {
     // dev mode
-    $configuration_factory = new ConfigurationFactory(true);
+    $configuration_factory = new ConfigurationFactory(true, new AnnotationReaderProvider());
     $configuration = $configuration_factory->createConfiguration();
     expect($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
     // production mode
-    $configuration_factory = new ConfigurationFactory(false);
+    $configuration_factory = new ConfigurationFactory(false, new AnnotationReaderProvider());
     $configuration = $configuration_factory->createConfiguration();
     expect($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_NEVER);
   }

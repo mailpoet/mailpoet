@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Doctrine\EventListeners;
 
 use Exception;
+use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
 use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
@@ -151,7 +152,8 @@ class JsonTypesTest extends \MailPoetTest {
   }
 
   private function createEntityManager() {
-    $configuration_factory = new ConfigurationFactory();
+    $annotation_reader_provider = new AnnotationReaderProvider();
+    $configuration_factory = new ConfigurationFactory(false, $annotation_reader_provider);
     $configuration = $configuration_factory->createConfiguration();
 
     $metadata_driver = $configuration->newDefaultAnnotationDriver([__DIR__], false);
