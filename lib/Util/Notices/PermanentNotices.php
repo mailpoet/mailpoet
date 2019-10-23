@@ -40,6 +40,11 @@ class PermanentNotices {
   }
 
   public function init() {
+    $excludeWizard = [
+      'mailpoet-welcome-wizard',
+      'mailpoet-woocommerce-list-import',
+      'mailpoet-revenue-tracking-permission',
+    ];
     $this->wp->addAction('wp_ajax_dismissed_notice_handler', [
       $this,
       'ajaxDismissNoticeHandler',
@@ -47,22 +52,22 @@ class PermanentNotices {
 
     $this->php_version_warnings->init(
       phpversion(),
-      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+      Menu::isOnMailPoetAdminPage($excludeWizard)
     );
     $this->after_migration_notice->init(
-      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+      Menu::isOnMailPoetAdminPage($excludeWizard)
     );
     $this->unauthorized_emails_notice->init(
-      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+      Menu::isOnMailPoetAdminPage($excludeWizard)
     );
     $this->unauthorized_emails_in_newsletters_notice->init(
       Menu::isOnMailPoetAdminPage($exclude = null, $page_id = 'mailpoet-newsletters')
     );
     $this->inactive_subscribers_notice->init(
-      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+      Menu::isOnMailPoetAdminPage($excludeWizard)
     );
     $this->black_friday_notice->init(
-      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+      Menu::isOnMailPoetAdminPage($excludeWizard)
     );
   }
 
