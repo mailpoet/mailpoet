@@ -301,12 +301,24 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function doctrineGenerateMetadata() {
-    $metadata_dir = \MailPoet\Doctrine\ConfigurationFactory::METADATA_DIR;
-    $this->_exec("rm -rf $metadata_dir");
+    $doctrine_metadata_dir = \MailPoet\Doctrine\ConfigurationFactory::METADATA_DIR;
+    $validator_metadata_dir = \MailPoet\Doctrine\Validator\ValidatorFactory::METADATA_DIR;
+    $this->_exec("rm -rf $doctrine_metadata_dir");
+    $this->_exec("rm -rf $validator_metadata_dir");
 
     $entity_manager = $this->createDoctrineEntityManager();
-    $entity_manager->getMetadataFactory()->getAllMetadata();
-    $this->say("Doctrine metadata generated to: $metadata_dir");
+    $doctrine_metadata = $entity_manager->getMetadataFactory()->getAllMetadata();
+
+    $annotation_reader_provider = new \MailPoet\Doctrine\Annotations\AnnotationReaderProvider();
+    $validator_factory = new \MailPoet\Doctrine\Validator\ValidatorFactory($annotation_reader_provider);
+    $validator = $validator_factory->createValidator();
+
+    foreach ($doctrine_metadata as $metadata) {
+      $validator->getMetadataFor($metadata->getName());
+    }
+
+    $this->say("Doctrine metadata generated to: $doctrine_metadata_dir");
+    $this->say("Validator metadata generated to: $validator_metadata_dir");
   }
 
   function doctrineGenerateProxies() {
@@ -975,7 +987,8 @@ class RoboFile extends \Robo\Tasks {
     if (\MailPoet\Config\Env::$db_prefix === null) {
       \MailPoet\Config\Env::$db_prefix = ''; // ensure some prefix is set
     }
-    $configuration = (new \MailPoet\Doctrine\ConfigurationFactory(true))->createConfiguration();
+    $annotation_reader_provider = new \MailPoet\Doctrine\Annotations\AnnotationReaderProvider();
+    $configuration = (new \MailPoet\Doctrine\ConfigurationFactory(true, $annotation_reader_provider))->createConfiguration();
     $platform_class = \MailPoet\Doctrine\ConnectionFactory::PLATFORM_CLASS;
     return \MailPoetVendor\Doctrine\ORM\EntityManager::create([
       'driver' => \MailPoet\Doctrine\ConnectionFactory::DRIVER,
