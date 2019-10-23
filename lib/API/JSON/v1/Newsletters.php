@@ -27,6 +27,7 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Newsletters extends APIEndpoint {
@@ -65,6 +66,9 @@ class Newsletters extends APIEndpoint {
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
+  /** @var Emoji */
+  private $emoji;
+
   function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
@@ -75,7 +79,8 @@ class Newsletters extends APIEndpoint {
     NewslettersRepository $newsletters_repository,
     NewslettersResponseBuilder $newsletters_response_builder,
     PostNotificationScheduler $post_notification_scheduler,
-    MetaInfo $mailerMetaInfo
+    MetaInfo $mailerMetaInfo,
+    Emoji $emoji
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
@@ -87,6 +92,7 @@ class Newsletters extends APIEndpoint {
     $this->newsletters_response_builder = $newsletters_response_builder;
     $this->post_notification_scheduler = $post_notification_scheduler;
     $this->mailerMetaInfo = $mailerMetaInfo;
+    $this->emoji = $emoji;
   }
 
   function get($data = []) {
@@ -170,6 +176,9 @@ class Newsletters extends APIEndpoint {
       $old_newsletter = Newsletter::findOne(intval($data['id'])) ?: null;
     }
 
+    if (!empty($data['body'])) {
+      $data['body'] = $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $data['body']);
+    }
     $newsletter = Newsletter::createOrUpdate($data);
     $errors = $newsletter->getErrors();
 
@@ -396,6 +405,7 @@ class Newsletters extends APIEndpoint {
 
     if ($newsletter instanceof Newsletter) {
       $newsletter->body = $data['body'];
+      $newsletter->body = $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $newsletter->body);
       $newsletter->save();
       $subscriber = Subscriber::getCurrentWPUser();
       $preview_url = NewsletterUrl::getViewInBrowserUrl(
