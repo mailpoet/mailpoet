@@ -112,6 +112,12 @@ class NewsletterEntity {
   private $unsubscribe_token;
 
   /**
+   * @Column(type="string")
+   * @var string
+   */
+  private $ga_campaign;
+
+  /**
    * @ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @var NewsletterEntity|null
    */
@@ -301,6 +307,21 @@ class NewsletterEntity {
   function getUnsubscribeToken() {
     return $this->unsubscribe_token;
   }
+
+  /**
+   * @return string
+   */
+  public function getGaCampaign() {
+    return $this->ga_campaign;
+  }
+
+  /**
+   * @param string $ga_campaign
+   */
+  public function setGaCampaign($ga_campaign) {
+    $this->ga_campaign = $ga_campaign;
+  }
+
 
   /**
    * @param string|null $unsubscribe_token

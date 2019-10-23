@@ -138,8 +138,7 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
-      ContainerWrapper::getInstance()->get(MetaInfo::class),
-      $this->subscription_url_factory
+      ContainerWrapper::getInstance()->get(MetaInfo::class)
     );
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
