@@ -29,6 +29,9 @@ class PermanentNotices {
   /** @var InactiveSubscribersNotice */
   private $inactive_subscribers_notice;
 
+  /** @var BlackFridayNotice */
+  private $black_friday_notice;
+
   public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
     $this->php_version_warnings = new PHPVersionWarnings();
@@ -37,6 +40,7 @@ class PermanentNotices {
     $this->unauthorized_emails_notice = new UnauthorizedEmailNotice(new SettingsController, $wp);
     $this->unauthorized_emails_in_newsletters_notice = new UnauthorizedEmailInNewslettersNotice(new SettingsController, $wp);
     $this->inactive_subscribers_notice = new InactiveSubscribersNotice(new SettingsController, $wp);
+    $this->black_friday_notice = new BlackFridayNotice();
   }
 
   public function init() {
@@ -66,6 +70,9 @@ class PermanentNotices {
       && $this->wp->isAdmin()
       && strpos($_SERVER['SCRIPT_NAME'], 'wp-admin/index.php') !== false
     );
+    $this->black_friday_notice->init(
+      Menu::isOnMailPoetAdminPage($exclude = ['mailpoet-welcome-wizard'])
+    );
   }
 
   function ajaxDismissNoticeHandler() {
@@ -79,6 +86,9 @@ class PermanentNotices {
         break;
       case (DiscountsAnnouncement::OPTION_NAME):
         $this->discounts_announcement->disable();
+        break;
+      case (BlackFridayNotice::OPTION_NAME):
+        $this->black_friday_notice->disable();
         break;
       case (InactiveSubscribersNotice::OPTION_NAME):
         $this->inactive_subscribers_notice->disable();
