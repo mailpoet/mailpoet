@@ -32,6 +32,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class NewslettersTest extends \MailPoetTest {
@@ -138,7 +139,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
-      ContainerWrapper::getInstance()->get(MetaInfo::class)
+      ContainerWrapper::getInstance()->get(MetaInfo::class),
+      ContainerWrapper::getInstance()->get(Emoji::class)
     );
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -166,7 +168,16 @@ class NewslettersTest extends \MailPoetTest {
       'options' => [
         $newsletter_option_field->name => 'some_option_value',
       ],
+      'body' => 'some text',
     ];
+
+    $emoji = $this->make(
+      Emoji::class,
+      ['encodeForUTF8Column' => Expected::once(function ($params) {
+        return $params;
+      })],
+      $this
+    );
 
     $wp = Stub::make(new WPFunctions, [
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
@@ -182,7 +193,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
-      ContainerWrapper::getInstance()->get(MetaInfo::class)
+      ContainerWrapper::getInstance()->get(MetaInfo::class),
+      $emoji
     );
 
     $response = $this->endpoint->save($valid_data);
@@ -554,7 +566,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
-      ContainerWrapper::getInstance()->get(MetaInfo::class)
+      ContainerWrapper::getInstance()->get(MetaInfo::class),
+      ContainerWrapper::getInstance()->get(Emoji::class)
     );
 
     $response = $this->endpoint->duplicate(['id' => $this->newsletter->id]);
@@ -870,6 +883,33 @@ class NewslettersTest extends \MailPoetTest {
       'id' => $this->newsletter->id,
       'body' => 'fake body',
     ];
+
+    $emoji = $this->make(
+      Emoji::class,
+      ['encodeForUTF8Column' => Expected::once(function ($params) {
+        return $params;
+      })],
+      $this
+    );
+
+    $wp = Stub::make(new WPFunctions, [
+      'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
+      'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
+    ]);
+    $this->endpoint = new Newsletters(
+      ContainerWrapper::getInstance()->get(BulkActionController::class),
+      ContainerWrapper::getInstance()->get(Handler::class),
+      $wp,
+      $this->makeEmpty(WCHelper::class),
+      new SettingsController(),
+      ContainerWrapper::getInstance()->get(AuthorizedEmailsController::class),
+      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
+      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
+      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
+      ContainerWrapper::getInstance()->get(MetaInfo::class),
+      $emoji
+    );
+
     $response = $this->endpoint->showPreview($data);
     expect($response->meta['preview_url'])->notContains('http');
     expect($response->meta['preview_url'])->regExp('!^\/\/!');
