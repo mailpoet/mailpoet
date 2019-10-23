@@ -5,14 +5,18 @@ namespace MailPoet\Newsletter;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
+use MailPoet\WP\Emoji;
 
 class ViewInBrowser {
+  /** @var Emoji */
+  private $emoji;
 
   /** @var bool */
   private $is_tracking_enabled;
 
-  function __construct($is_tracking_enabled) {
+  function __construct(Emoji $emoji, $is_tracking_enabled) {
     $this->is_tracking_enabled = $is_tracking_enabled;
+    $this->emoji = $emoji;
   }
 
   function view($data) {
@@ -31,6 +35,7 @@ class ViewInBrowser {
   function renderNewsletter($newsletter, $subscriber, $queue, $wp_user_preview) {
     if ($queue && $queue->getNewsletterRenderedBody()) {
       $newsletter_body = $queue->getNewsletterRenderedBody('html');
+      $newsletter_body = $this->emoji->decodeEmojisInBody($newsletter_body);
       // rendered newsletter body has shortcodes converted to links; we need to
       // isolate "view in browser", "unsubscribe" and "manage subscription" links
       // and convert them to shortcodes, which later will be replaced with "#" when
