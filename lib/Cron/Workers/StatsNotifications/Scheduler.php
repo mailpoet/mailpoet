@@ -3,6 +3,9 @@
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use Carbon\Carbon;
+use Doctrine\ORM\EntityManager;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatsNotification;
@@ -24,8 +27,12 @@ class Scheduler {
     Newsletter::TYPE_STANDARD,
   ];
 
-  function __construct(SettingsController $settings) {
+  /** @var EntityManager */
+  private $entity_manager;
+
+  function __construct(SettingsController $settings, EntityManager $entity_manager) {
     $this->settings = $settings;
+    $this->entity_manager = $entity_manager;
   }
 
   function schedule(Newsletter $newsletter) {
@@ -33,16 +40,16 @@ class Scheduler {
       return false;
     }
 
-    $task = ScheduledTask::create();
-    $task->type = Worker::TASK_TYPE;
-    $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduled_at = $this->getNextRunDate();
-    $task->save();
+    $task = new ScheduledTaskEntity();
+    $task->setType(Worker::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $task->setScheduledAt($this->getNextRunDate());
+    $this->entity_manager->persist($task);
+    $this->entity_manager->flush();
 
-    $stats_notifications = StatsNotification::create();
-    $stats_notifications->newsletter_id = $newsletter->id;
-    $stats_notifications->task_id = $task->id;
-    $stats_notifications->save();
+    $stats_notifications = new StatsNotificationEntity($newsletter->id, $task->getId());
+    $this->entity_manager->persist($stats_notifications);
+    $this->entity_manager->flush();
   }
 
   private function shouldSchedule(Newsletter $newsletter) {
