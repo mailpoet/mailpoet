@@ -40,10 +40,6 @@ class ConfigurationFactory {
   private function configureMetadata(Configuration $configuration) {
     $configuration->setClassMetadataFactoryName(TablePrefixMetadataFactory::class);
 
-    // metadata cache (for production cache is pre-generated at build time)
-    $metadata_storage = new MetadataCache(self::METADATA_DIR);
-    $configuration->setMetadataCacheImpl($metadata_storage);
-
     // annotation reader exists only in dev environment, on production cache is pre-generated
     $annotation_reader = $this->annotation_reader_provider->getAnnotationReader();
     if ($annotation_reader) {
@@ -52,6 +48,11 @@ class ConfigurationFactory {
       // Should never be called but Doctrine requires having driver set
       $configuration->setMetadataDriverImpl(new PHPDriver([]));
     }
+
+    // metadata cache (for production cache is pre-generated at build time)
+    $is_read_only = !$annotation_reader;
+    $metadata_storage = new MetadataCache(self::METADATA_DIR, $is_read_only);
+    $configuration->setMetadataCacheImpl($metadata_storage);
   }
 
   private function configureProxies(Configuration $configuration) {
