@@ -2,7 +2,6 @@
 
 namespace MailPoet\Doctrine;
 
-use MailPoetVendor\Doctrine\Common\Annotations\SimpleAnnotationReader;
 use MailPoetVendor\Doctrine\Common\Cache\CacheProvider;
 use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadata as DoctrineClassMetadata;
 use MailPoetVendor\Symfony\Component\Validator\Mapping\ClassMetadata as ValidatorClassMetadata;
@@ -20,8 +19,8 @@ class MetadataCache extends CacheProvider {
   /** @var string */
   private $directory;
 
-  function __construct($dir) {
-    $this->is_dev_mode = defined('WP_DEBUG') && WP_DEBUG && class_exists(SimpleAnnotationReader::class);
+  function __construct($dir, $is_read_only) {
+    $this->is_dev_mode = defined('WP_DEBUG') && WP_DEBUG && !$is_read_only;
     $this->directory = rtrim($dir, '/\\');
     if (!file_exists($this->directory)) {
       mkdir($this->directory);
