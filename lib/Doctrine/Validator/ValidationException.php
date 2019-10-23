@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Doctrine;
+namespace MailPoet\Doctrine\Validator;
 
 use MailPoetVendor\Symfony\Component\Validator\ConstraintViolationInterface;
 use MailPoetVendor\Symfony\Component\Validator\ConstraintViolationListInterface;

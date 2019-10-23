@@ -2,7 +2,7 @@
 
 namespace MailPoet\Doctrine\EventListeners;
 
-use MailPoet\Doctrine\ValidationException;
+use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoetVendor\Doctrine\ORM\Event\OnFlushEventArgs;
 use MailPoetVendor\Symfony\Component\Validator\Validator\ValidatorInterface;
 
