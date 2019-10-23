@@ -11,6 +11,7 @@ parameters:
     - '#Argument of an invalid type pQuery\\IQuery supplied for foreach, only iterables are supported#'
     - '#Parameter \#2 \$prefix of function http_build_query expects string, null given.#'
     - '#Parameter \#1 \$function of function call_user_func_array expects callable(): mixed, .wc_.*. given.#'
+    - '#Parameter \#1 \$reader of class MailPoetVendor\\Doctrine\\ORM\\Mapping\\Driver\\AnnotationDriver constructor expects MailPoetVendor\\Doctrine\\Common\\Annotations\\AnnotationReader, MailPoetVendor\\Doctrine\\Common\\Annotations\\CachedReader given#'
   reportUnmatchedIgnoredErrors: false
   dynamicConstantNames:
     - WP_DEBUG
