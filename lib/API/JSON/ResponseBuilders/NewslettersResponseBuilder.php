@@ -31,6 +31,7 @@ class NewslettersResponseBuilder {
       'options' => $this->buildOptions($newsletter),
       'queue' => ($queue = $newsletter->getLatestQueue()) ? $this->buildQueue($queue) : false, // false for BC
       'unsubscribe_token' => $newsletter->getUnsubscribeToken(),
+      'ga_campaign' => $newsletter->getGaCampaign(),
     ];
   }
 
