@@ -14,7 +14,6 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper as WCHelper;
-use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 use function MailPoet\Util\array_column;
@@ -58,14 +57,11 @@ class Newsletter extends Model {
   // automatic newsletters status
   const STATUS_ACTIVE = NewsletterEntity::STATUS_ACTIVE;
 
-  private $emoji;
-
   function __construct() {
     parent::__construct();
     $this->addValidations('type', [
       'required' => WPFunctions::get()->__('Please specify a type.', 'mailpoet'),
     ]);
-    $this->emoji = new Emoji();
   }
 
   function queue() {
@@ -125,7 +121,7 @@ class Newsletter extends Model {
       }
       $this->set(
         'body',
-        $this->emoji->encodeForUTF8Column(self::$_table, 'body', $this->body)
+        $this->body
       );
     }
 
