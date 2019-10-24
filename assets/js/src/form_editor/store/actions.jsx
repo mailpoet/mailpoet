@@ -5,4 +5,10 @@ export default {
       toggleTo,
     };
   },
+  changeFormName(name) {
+    return {
+      type: 'CHANGE_FORM_NAME',
+      name,
+    };
+  },
 };

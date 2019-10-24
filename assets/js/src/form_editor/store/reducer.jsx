@@ -5,6 +5,14 @@ export default (defaultState) => (state = defaultState, action) => {
         ...state,
         sidebarOpened: action.toggleTo,
       };
+    case 'CHANGE_FORM_NAME':
+      return {
+        ...state,
+        formData: {
+          ...state.formData,
+          name: action.name,
+        },
+      };
     default:
       return state;
   }
