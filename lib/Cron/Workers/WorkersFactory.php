@@ -12,11 +12,13 @@ use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails as StatsNotificationsWorkerForAutomatedEmails;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationScheduler;
+use MailPoet\Cron\Workers\StatsNotifications\StatsNotificationsRepository;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -25,6 +27,7 @@ use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscribers\InactiveSubscribersController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class WorkersFactory {
 
@@ -55,9 +58,7 @@ class WorkersFactory {
   /** @var AuthorizedEmailsController */
   private $authorized_emails_controller;
 
-  /**
-   * @var Renderer
-   */
+  /** @var Renderer */
   private $renderer;
 
   /** @var SubscribersFinder */
@@ -68,6 +69,17 @@ class WorkersFactory {
 
   /** @var LoggerFactory */
   private $logger_factory;
+
+  /** @var StatsNotificationsRepository */
+  private $stats_notifications_repository;
+
+  /** @var EntityManager */
+  private $entity_manager;
+
+  /**
+   * @var NewslettersRepository
+   */
+  private $newsletters_repository;
 
   public function __construct(
     SendingErrorHandler $sending_error_handler,
@@ -82,7 +94,10 @@ class WorkersFactory {
     AuthorizedEmailsController $authorized_emails_controller,
     SubscribersFinder $subscribers_finder,
     MetaInfo $mailerMetaInfo,
-    LoggerFactory $logger_factory
+    LoggerFactory $logger_factory,
+    StatsNotificationsRepository $stats_notifications_repository,
+    NewslettersRepository $newsletters_repository,
+    EntityManager $entity_manager
   ) {
     $this->sending_error_handler = $sending_error_handler;
     $this->statsNotificationsScheduler = $statsNotificationsScheduler;
@@ -97,6 +112,9 @@ class WorkersFactory {
     $this->subscribers_finder = $subscribers_finder;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->logger_factory = $logger_factory;
+    $this->stats_notifications_repository = $stats_notifications_repository;
+    $this->entity_manager = $entity_manager;
+    $this->newsletters_repository = $newsletters_repository;
   }
 
   /** @return SchedulerWorker */
@@ -106,12 +124,26 @@ class WorkersFactory {
 
   /** @return SendingQueueWorker */
   function createQueueWorker($timer) {
-    return new SendingQueueWorker($this->sending_error_handler, $this->statsNotificationsScheduler, $this->logger_factory, $timer);
+    return new SendingQueueWorker(
+      $this->sending_error_handler,
+      $this->statsNotificationsScheduler,
+      $this->logger_factory,
+      $this->newsletters_repository,
+      $timer
+    );
   }
 
   /** @return StatsNotificationsWorker */
   function createStatsNotificationsWorker($timer) {
-    return new StatsNotificationsWorker($this->mailer, $this->renderer, $this->settings, $this->woocommerce_helper, $this->mailerMetaInfo, $timer);
+    return new StatsNotificationsWorker(
+      $this->mailer,
+      $this->renderer,
+      $this->settings,
+      $this->mailerMetaInfo,
+      $this->stats_notifications_repository,
+      $this->entity_manager,
+      $timer
+    );
   }
 
   /** @return StatsNotificationsWorkerForAutomatedEmails */
