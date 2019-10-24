@@ -17,4 +17,10 @@ trait AutoincrementedIdTrait {
   public function getId() {
     return $this->id;
   }
+
+  /** @param int|null $id */
+  public function setId($id) {
+    $this->id = $id;
+  }
+
 }

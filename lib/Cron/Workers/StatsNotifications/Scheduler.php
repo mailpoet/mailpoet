@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -29,9 +28,17 @@ class Scheduler {
   /** @var EntityManager */
   private $entity_manager;
 
-  function __construct(SettingsController $settings, EntityManager $entity_manager) {
+  /** @var StatsNotificationsRepository */
+  private $repository;
+
+  function __construct(
+    SettingsController $settings,
+    EntityManager $entity_manager,
+    StatsNotificationsRepository $repository
+  ) {
     $this->settings = $settings;
     $this->entity_manager = $entity_manager;
+    $this->repository = $repository;
   }
 
   function schedule(NewsletterEntity $newsletter) {
@@ -46,7 +53,7 @@ class Scheduler {
     $this->entity_manager->persist($task);
     $this->entity_manager->flush();
 
-    $stats_notifications = new StatsNotificationEntity($newsletter->getId(), $task->getId());
+    $stats_notifications = new StatsNotificationEntity($newsletter, $task);
     $this->entity_manager->persist($stats_notifications);
     $this->entity_manager->flush();
   }
@@ -55,10 +62,10 @@ class Scheduler {
     if ($this->isDisabled()) {
       return false;
     }
-    if ($this->isTaskScheduled($newsletter->getId())) {
+    if (!in_array($newsletter->getType(), $this->supported_types)) {
       return false;
     }
-    if (!in_array($newsletter->getType(), $this->supported_types)) {
+    if ($this->isTaskScheduled($newsletter->getId())) {
       return false;
     }
     return true;
@@ -85,13 +92,8 @@ class Scheduler {
   }
 
   private function isTaskScheduled($newsletter_id) {
-//    $existing = ScheduledTask::tableAlias('tasks')
-//      ->join(StatsNotification::$_table, 'tasks.id = notification.task_id', 'notification')
-//      ->where('tasks.type', Worker::TASK_TYPE)
-//      ->where('notification.newsletter_id', $newsletter_id)
-//      ->findMany();
-//    return (bool)$existing;
-    return false;
+    $existing = $this->repository->findAllForNewsletter($newsletter_id);
+    return count($existing) > 0;
   }
 
   private function getNextRunDate() {
