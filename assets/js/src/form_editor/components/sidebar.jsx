@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IconButton } from '@wordpress/components';
+import { useDispatch } from '@wordpress/data';
 import PropTypes from 'prop-types';
 import BlockSettings from './block_settings.jsx';
 import FormSettings from './form_settings.jsx';
@@ -26,9 +27,12 @@ SidebarHeader.propTypes = {
 
 export default () => {
   const [activeTab, setActiveTab] = useState('form');
+
+  const { toggleSidebar } = useDispatch('mailpoet-form-editor');
+
   return (
     <div className="edit-post-sidebar">
-      <SidebarHeader>
+      <SidebarHeader closeSidebar={() => toggleSidebar(false)}>
         <ul>
           <li>
             <button
