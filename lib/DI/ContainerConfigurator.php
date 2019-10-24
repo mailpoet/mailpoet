@@ -56,6 +56,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\WelcomeWizard::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\WooCommerceListImport::class)->setPublic(true);
     // Analytics
+    $container->autowire(\MailPoet\Analytics\Analytics::class)->setPublic(true);
     $container->autowire(\MailPoet\Analytics\Reporter::class)->setPublic(true);
     // API
     $container->autowire(\MailPoet\API\JSON\API::class)
@@ -182,8 +183,9 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Segments\WooCommerce::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SubscribersFinder::class);
     // Services
-    $container->autowire(\MailPoet\Services\Bridge::class);
+    $container->autowire(\MailPoet\Services\Bridge::class)->setPublic(true);
     $container->autowire(\MailPoet\Services\AuthorizedEmailsController::class);
+    $container->autowire(\MailPoet\Services\SPFCheck::class)->setPublic(true);
     // Tasks
     $container->autowire(\MailPoet\Tasks\State::class);
     // Settings
