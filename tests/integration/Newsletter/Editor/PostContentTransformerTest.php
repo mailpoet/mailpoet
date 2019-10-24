@@ -2,8 +2,9 @@
 
 namespace MailPoet\Test\Newsletter\Editor;
 
-use AspectMock\Test as Mock;
+use Codeception\Stub\Expected;
 use MailPoet\Newsletter\Editor\PostTransformer;
+use MailPoet\Newsletter\Editor\PostTransformerContentsExtractor;
 
 class PostContentTransformerTest extends \MailPoetTest {
   /** @var array */
@@ -241,12 +242,25 @@ class PostContentTransformerTest extends \MailPoetTest {
     $post = [];
     $expected_with_post_class = true;
 
-    $transformer = new PostTransformer($args);
-    $mock_get_content = Mock::double($transformer, ['getContent' => $this->content_mock]);
-    Mock::double($transformer, ['getFeaturedImage' => null]);
-    Mock::double($transformer, ['getTitle' => 'Title']);
+    $extractor = $this->make(
+      PostTransformerContentsExtractor::class,
+      [
+        'getContent' => Expected::once($this->content_mock),
+        'getFeaturedImage' => null,
+        'getTitle' => 'Title',
+      ],
+      $this
+    );
+    $extractor->expects($this->once())
+      ->method('getContent')
+      ->with(
+        $this->equalTo($post),
+        $this->equalTo($expected_with_post_class),
+        $this->equalTo('full')
+      );
+
+    $transformer = new PostTransformer($args, $extractor);
     $transformer->transform($post);
-    $mock_get_content->verifyInvokedOnce('getContent', [$post, $expected_with_post_class, 'full']);
   }
 
   function testShouldNotAddClassToParagraphsInExcerptWithLayout() {
@@ -259,27 +273,42 @@ class PostContentTransformerTest extends \MailPoetTest {
     $post = [];
     $expected_with_post_class = false;
 
-    $transformer = new PostTransformer($args);
-    $mock_get_content = Mock::double($transformer, ['getContent' => $this->content_mock]);
-    Mock::double($transformer, ['getFeaturedImage' => null]);
-    Mock::double($transformer, ['getTitle' => 'Title']);
+    $extractor = $this->make(
+      PostTransformerContentsExtractor::class,
+      [
+        'getContent' => Expected::once($this->content_mock),
+        'getFeaturedImage' => null,
+        'getTitle' => 'Title',
+      ],
+      $this
+    );
+    $extractor->expects($this->once())
+      ->method('getContent')
+      ->with(
+        $this->equalTo($post),
+        $this->equalTo($expected_with_post_class),
+        $this->equalTo('excerpt')
+      );
+
+    $transformer = new PostTransformer($args, $extractor);
     $transformer->transform($post);
-    $mock_get_content->verifyInvokedOnce('getContent', [$post, $expected_with_post_class, 'excerpt']);
   }
 
   /**
    * @return PostTransformer
    */
   private function getTransformer(array $args, array $content, array $title, array $image = null) {
-    $transformer = new PostTransformer($args);
-    Mock::double($transformer, ['getContent' => $content]);
-    Mock::double($transformer, ['getFeaturedImage' => $image]);
-    Mock::double($transformer, ['getTitle' => $title]);
-    Mock::double($transformer, ['isProduct' => false]);
+    $extractor = $this->make(
+      PostTransformerContentsExtractor::class,
+      [
+        'getContent' => $content,
+        'getFeaturedImage' => $image,
+        'getTitle' => $title,
+        'isProduct' => false,
+      ],
+      $this
+    );
+    $transformer = new PostTransformer($args, $extractor);
     return $transformer;
-  }
-
-  function _after() {
-    Mock::clean();
   }
 }
