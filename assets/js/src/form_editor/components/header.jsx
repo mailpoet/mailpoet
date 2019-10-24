@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconButton } from '@wordpress/components';
+import { IconButton, Button } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 export default () => {
@@ -7,17 +7,26 @@ export default () => {
     (select) => select('mailpoet-form-editor').getSidebarOpened(),
     []
   );
-  const { toggleSidebar } = useDispatch('mailpoet-form-editor');
+  const isFormSaving = useSelect(
+    (select) => select('mailpoet-form-editor').getIsFormSaving(),
+    []
+  );
+  const { toggleSidebar, saveForm } = useDispatch('mailpoet-form-editor');
+
   return (
     <div className="edit-post-header">
       <div className="edit-post-header-toolbar" />
       <div className="edit-post-header__settings">
-        <button
-          type="button"
-          className="components-button editor-post-publish-panel__toggle is-button is-primary"
+        <Button
+          isPrimary
+          isLarge
+          isDefault
+          className="editor-post-publish-button"
+          isBusy={isFormSaving}
+          onClick={saveForm}
         >
-          Save
-        </button>
+          {isFormSaving ? 'Saving...' : 'Save'}
+        </Button>
         <IconButton
           icon="admin-generic"
           label="Settings"
