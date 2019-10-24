@@ -277,7 +277,7 @@ class ClearNews {
                   0 =>
                    [
                     'type' => 'text',
-                    'text' => '<h1 style="text-align: left; line-height: 1.3;" data-post-id="1994"><strong>Good Morning!</strong></h1>
+                    'text' => '<h1 style="text-align: left; line-height: 1.3;"><strong>Good Morning!</strong></h1>
     <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce egestas nisl vel ante finibus fringilla ullamcorper non lectus. Aenean leo neque, egestas et lacus eu, viverra luctus nisi. Donec dapibus mauris at fringilla consequat. Cras sed porta nunc. Ut tincidunt luctus felis sed suscipit. Sed tristique faucibus fermentum.</h3>',
                    ],
                  ],
