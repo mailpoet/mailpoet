@@ -45,7 +45,7 @@ class ViewInBrowserTest extends \MailPoetTest {
       'preview' => false,
     ];
     // instantiate class
-    $this->view_in_browser = new ViewInBrowser(new AccessControl(new Functions()), new SettingsController(), new LinkTokens(), new Emoji());
+    $this->view_in_browser = new ViewInBrowser(new AccessControl(new Functions()), SettingsController::getInstance(), new LinkTokens(), new Emoji());
   }
 
   function testItAbortsWhenBrowserPreviewDataIsMissing() {
@@ -155,12 +155,12 @@ class ViewInBrowserTest extends \MailPoetTest {
     $wp_user = wp_set_current_user(0);
     // when WP user does not have 'manage options' permission, false should be returned
     $wp_user->remove_role('administrator');
-    $view_in_browser = new ViewInBrowser(new AccessControl(new Functions()), new SettingsController(), new LinkTokens(), new Emoji());
+    $view_in_browser = new ViewInBrowser(new AccessControl(new Functions()), SettingsController::getInstance(), new LinkTokens(), new Emoji());
     expect($view_in_browser->_validateBrowserPreviewData($data))->false();
 
     // when WP has 'manage options' permission, data should be returned
     $wp_user->add_role('administrator');
-    $view_in_browser = new ViewInBrowser(new AccessControl(new Functions()), new SettingsController(), new LinkTokens(), new Emoji());
+    $view_in_browser = new ViewInBrowser(new AccessControl(new Functions()), SettingsController::getInstance(), new LinkTokens(), new Emoji());
     expect($view_in_browser->_validateBrowserPreviewData($data))->equals($data);
   }
 
@@ -176,7 +176,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     );
     $data->preview = true;
     wp_set_current_user(1);
-    $view_in_browser = new ViewInBrowser(new AccessControl(new Functions()), new SettingsController(), new LinkTokens(), new Emoji());
+    $view_in_browser = new ViewInBrowser(new AccessControl(new Functions()), SettingsController::getInstance(), new LinkTokens(), new Emoji());
     $result = $view_in_browser->_validateBrowserPreviewData($data);
     expect($result->subscriber->id)->equals(1);
   }
@@ -211,7 +211,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     $view_in_browser = Stub::make($this->view_in_browser, [
       'link_tokens' => new LinkTokens,
       '_displayNewsletter' => Expected::exactly(1),
-      'settings' => new SettingsController(),
+      'settings' => SettingsController::getInstance(),
       'emoji' => new Emoji(),
     ], $this);
     $view_in_browser->view($this->browser_preview_data);

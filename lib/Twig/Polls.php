@@ -12,7 +12,7 @@ class Polls extends AbstractExtension {
   private $settings;
 
   public function __construct() {
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   public function getFunctions() {

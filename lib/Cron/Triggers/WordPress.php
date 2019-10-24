@@ -44,7 +44,7 @@ class WordPress {
   }
 
   private static function checkRunInterval() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $last_run_at = (int)$settings->get(self::LAST_RUN_AT_SETTING, 0);
     $run_interval = WPFunctions::get()->applyFilters('mailpoet_cron_trigger_wordpress_run_interval', self::RUN_INTERVAL);
     $run_interval_elapsed = (time() - $last_run_at) >= $run_interval;
@@ -56,7 +56,7 @@ class WordPress {
   }
 
   static function resetRunInterval() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set(self::LAST_RUN_AT_SETTING, 0);
   }
 
@@ -64,7 +64,7 @@ class WordPress {
     self::loadTasksCounts($wp ?: new WPFunctions);
 
     // migration
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $migration_disabled = $settings->get('cron_trigger.method') === 'none';
     $migration_due_tasks = self::getTasksCount([
       'type' => MigrationWorker::TASK_TYPE,

@@ -102,7 +102,7 @@ class SubscribersTest extends \MailPoetTest {
       ],
     ]);
 
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     // setup mailer
     $this->settings->set('sender', [
       'address' => 'sender@mailpoet.com',

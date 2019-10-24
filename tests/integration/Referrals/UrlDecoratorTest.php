@@ -16,7 +16,7 @@ class UrlDecoratorTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->url_decorator = new UrlDecorator(WPFunctions::get(), $this->settings);
   }
 

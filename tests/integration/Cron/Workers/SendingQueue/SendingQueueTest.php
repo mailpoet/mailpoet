@@ -58,7 +58,7 @@ class SendingQueueTest extends \MailPoetTest {
     parent::_before();
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
     $features_controller = Stub::makeEmpty(FeaturesController::class);
     $wc_transactional_emails = new TransactionalEmails(WPFunctions::get(), $this->settings);

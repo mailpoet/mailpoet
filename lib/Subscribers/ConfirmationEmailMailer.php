@@ -45,7 +45,7 @@ class ConfirmationEmailMailer {
       $this->wp = new WPFunctions;
     }
 
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->mailerMetaInfo = new MetaInfo;
 
     if ($subscription_url_factory === null) {

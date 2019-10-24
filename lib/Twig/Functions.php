@@ -27,7 +27,7 @@ class Functions extends AbstractExtension {
   private $referral_url_decorator;
 
   public function __construct() {
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->woocommerce_helper = new WooCommerceHelper();
     $this->wp = WPFunctions::get();
     $this->referral_url_decorator = new UrlDecorator($this->wp, $this->settings);

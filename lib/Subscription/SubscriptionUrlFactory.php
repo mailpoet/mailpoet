@@ -103,7 +103,7 @@ class SubscriptionUrlFactory {
    */
   static function getInstance() {
     if (!self::$instance instanceof SubscriptionUrlFactory) {
-      self::$instance = new SubscriptionUrlFactory(new WPFunctions, new SettingsController, new LinkTokens);
+      self::$instance = new SubscriptionUrlFactory(new WPFunctions, SettingsController::getInstance(), new LinkTokens);
     }
     return self::$instance;
   }

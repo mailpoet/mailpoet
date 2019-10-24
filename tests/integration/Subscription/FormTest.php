@@ -24,7 +24,7 @@ class FormTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->settings->set('sender', [
       'name' => 'John Doe',
       'address' => 'john.doe@example.com',

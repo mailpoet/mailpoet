@@ -17,7 +17,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
   private $settings;
 
   function _before() {
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->settings->set('tracking.enabled', true);
     $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);

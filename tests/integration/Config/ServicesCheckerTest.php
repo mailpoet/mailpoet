@@ -17,7 +17,7 @@ class ServicesCheckerTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->setMailPoetSendingMethod();
     $this->fillPremiumKey();
     $this->services_checker = new ServicesChecker();

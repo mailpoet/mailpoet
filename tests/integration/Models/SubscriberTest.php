@@ -35,7 +35,7 @@ class SubscriberTest extends \MailPoetTest {
     $this->subscriber = Subscriber::create();
     $this->subscriber->hydrate($this->test_data);
     $this->saved = $this->subscriber->save();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->settings->set('sender', [
       'name' => 'John Doe',
       'address' => 'john.doe@example.com',

@@ -29,7 +29,7 @@ class Mailer {
 
   function __construct(SettingsController $settings = null) {
     if (!$settings) {
-      $settings = new SettingsController();
+      $settings = SettingsController::getInstance();
     }
     $this->settings = $settings;
   }
@@ -69,7 +69,7 @@ class Mailer {
           $this->sender,
           $this->reply_to,
           new MailPoetMapper(),
-          new AuthorizedEmailsController(new SettingsController, new Bridge)
+          new AuthorizedEmailsController(SettingsController::getInstance(), new Bridge)
         );
         break;
       case self::METHOD_SENDGRID:
@@ -109,7 +109,7 @@ class Mailer {
   }
 
   static function getMailerConfig($mailer = false) {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     if (!$mailer) {
       $mailer = $settings->get(self::MAILER_CONFIG_SETTING_NAME);
       if (!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured.', 'mailpoet'));

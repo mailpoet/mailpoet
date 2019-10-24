@@ -13,7 +13,7 @@ class BeamerTest extends \MailPoetTest {
   function testItSetsLastAnnouncementDate() {
     $oldDate = '2019-05-18T10:25:00.000Z';
     $newDate = '2019-05-22T10:25:00.000Z';
-    $settings = new SettingsController;
+    $settings = SettingsController::getInstance();
     $settings->set('last_announcement_date', Carbon::createFromTimeString($oldDate)->getTimestamp());
     $wp = Stub::make(new WPFunctions, [
       'wpRemoteGet' => null,
@@ -29,7 +29,7 @@ class BeamerTest extends \MailPoetTest {
 
   function testItDoesNothingIfNoResponse() {
     $oldDate = '2019-05-18T10:25:00.000Z';
-    $settings = new SettingsController;
+    $settings = SettingsController::getInstance();
     $settings->set('last_announcement_date', Carbon::createFromTimeString($oldDate)->getTimestamp());
     $wp = Stub::make(new WPFunctions, [
       'wpRemoteGet' => null,
@@ -43,7 +43,7 @@ class BeamerTest extends \MailPoetTest {
 
   function testItDoesNothingIfWrongResponse() {
     $oldDate = '2019-05-18T10:25:00.000Z';
-    $settings = new SettingsController;
+    $settings = SettingsController::getInstance();
     $settings->set('last_announcement_date', Carbon::createFromTimeString($oldDate)->getTimestamp());
     $wp = Stub::make(new WPFunctions, [
       'wpRemoteGet' => null,
@@ -57,7 +57,7 @@ class BeamerTest extends \MailPoetTest {
 
   function testItDoesNothingIfEmptyList() {
     $oldDate = '2019-05-18T10:25:00.000Z';
-    $settings = new SettingsController;
+    $settings = SettingsController::getInstance();
     $settings->set('last_announcement_date', Carbon::createFromTimeString($oldDate)->getTimestamp());
     $wp = Stub::make(new WPFunctions, [
       'wpRemoteGet' => null,

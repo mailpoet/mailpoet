@@ -11,7 +11,7 @@ class Settings {
 
   public function __construct() {
     SettingsController::resetCache();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   function withDefaultSettings() {

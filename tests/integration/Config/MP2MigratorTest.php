@@ -21,7 +21,7 @@ class MP2MigratorTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->MP2Migrator = new MP2Migrator($this->settings, ContainerWrapper::getInstance()->get(Activator::class));
   }
 

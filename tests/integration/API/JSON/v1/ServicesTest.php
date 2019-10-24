@@ -20,7 +20,7 @@ class ServicesTest extends \MailPoetTest {
     parent::_before();
     $this->services_endpoint = $this->di_container->get(Services::class);
     $this->data = ['key' => '1234567890abcdef'];
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   function testItRespondsWithErrorIfSPFCheckFails() {

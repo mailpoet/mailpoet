@@ -33,7 +33,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
     $features_controller = Stub::makeEmpty(FeaturesController::class);
     $wc_transactional_emails = new TransactionalEmails(WPFunctions::get(), $this->settings);

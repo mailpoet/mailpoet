@@ -23,7 +23,7 @@ class SendingQueueTest extends \MailPoetTest {
         'type' => Newsletter::TYPE_STANDARD,
       ]
     );
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set('sender', [
       'name' => 'John Doe',
       'address' => 'john.doe@example.com',

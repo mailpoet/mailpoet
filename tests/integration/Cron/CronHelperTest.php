@@ -19,7 +19,7 @@ class CronHelperTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->settings->set('db_version', MAILPOET_VERSION);
     // Disable cron trigger to not run tasks like migration when pinging the daemon
     $this->settings->set('cron_trigger', [

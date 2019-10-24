@@ -18,7 +18,7 @@ class MailerTest extends \MailPoetTest {
     MailerLog::updateMailerLog($mailer_log);
     $mailer_log = MailerLog::getMailerLog();
     expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $authorized_emails_controller = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::never()]);
     // resumeSending() method should clear the mailer log's status
     $bridge = new Bridge($settings);
@@ -30,7 +30,7 @@ class MailerTest extends \MailPoetTest {
   }
 
   function testItRunsAuhtorizedEmailsCheckIfErrorIsPresent() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_sender_address' => 'a@b.c']);
     $authorized_emails_controller = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()]);
     $bridge = new Bridge($settings);

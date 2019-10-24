@@ -17,7 +17,7 @@ class MailPoetTest extends \MailPoetTest {
     // detect any queues to process, it deletes the daemon setting, so Supervisor that's
     // called by the MailPoet cron trigger does not work. for that matter, we need to set
     // the trigger setting to anything but 'WordPress'.
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->settings->set('cron_trigger', [
       'method' => 'none',
     ]);

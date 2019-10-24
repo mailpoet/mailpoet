@@ -1,6 +1,7 @@
 <?php
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -52,7 +53,7 @@ $destroy = function($model) use ($connection) {
 array_map($destroy, $models);
 
 // save plugin version to avoid running migrations (that cause $GLOBALS serialization errors)
-$settings = new \MailPoet\Settings\SettingsController();
+$settings = SettingsController::getInstance();
 $settings->set('db_version', \MailPoet\Config\Env::$version);
 
 $cacheDir = '/tmp';

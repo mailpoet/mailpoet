@@ -42,7 +42,7 @@ class Renderer {
   }
 
   static function renderBlocks($blocks = [], $honeypot_enabled = true) {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     // add honeypot for spambots
     $html = ($honeypot_enabled) ?
       '<label class="mailpoet_hp_email_label">' . WPFunctions::get()->__('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :

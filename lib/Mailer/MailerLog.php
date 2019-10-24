@@ -12,7 +12,7 @@ class MailerLog {
 
   static function getMailerLog($mailer_log = false) {
     if ($mailer_log) return $mailer_log;
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $mailer_log = $settings->get(self::SETTING_NAME);
     if (!$mailer_log) {
       $mailer_log = self::createMailerLog();
@@ -29,7 +29,7 @@ class MailerLog {
       'retry_at' => null,
       'error' => null,
     ];
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set(self::SETTING_NAME, $mailer_log);
     return $mailer_log;
   }
@@ -39,7 +39,7 @@ class MailerLog {
   }
 
   static function updateMailerLog($mailer_log) {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set(self::SETTING_NAME, $mailer_log);
     return $mailer_log;
   }

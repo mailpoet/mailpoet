@@ -64,7 +64,7 @@ class MailerTest extends \MailPoetTest {
         'text' => 'TEXT body',
       ],
     ];
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   function testItRequiresMailerMethod() {
