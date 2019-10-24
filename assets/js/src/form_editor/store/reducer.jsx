@@ -1,8 +1,4 @@
-const DEFAULT_STATE = {
-  sidebarOpened: true,
-};
-
-export default (state = DEFAULT_STATE, action) => {
+export default (defaultState) => (state = defaultState, action) => {
   switch (action.type) {
     case 'TOGGLE_SIDEBAR':
       return {
