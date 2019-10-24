@@ -13,6 +13,16 @@ export default (defaultState) => (state = defaultState, action) => {
           name: action.name,
         },
       };
+    case 'SAVE_FORM_STARTED':
+      return {
+        ...state,
+        isFormSaving: true,
+      };
+    case 'SAVE_FORM_DONE':
+      return {
+        ...state,
+        isFormSaving: false,
+      };
     default:
       return state;
   }

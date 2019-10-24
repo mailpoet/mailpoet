@@ -12,3 +12,19 @@ export function changeFormName(name) {
     name,
   };
 }
+
+export function* saveForm() {
+  yield {
+    type: 'SAVE_FORM_STARTED',
+  };
+  yield {
+    type: 'SAVE_FORM',
+  };
+}
+
+export function saveFormDone(result) {
+  return {
+    type: 'SAVE_FORM_DONE',
+    result,
+  };
+}

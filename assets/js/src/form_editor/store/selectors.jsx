@@ -5,4 +5,10 @@ export default {
   getFormName(state) {
     return state.formData.name;
   },
+  getFormData(state) {
+    return state.formData;
+  },
+  getIsFormSaving(state) {
+    return state.isFormSaving;
+  },
 };
