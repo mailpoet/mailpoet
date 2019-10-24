@@ -64,6 +64,23 @@ abstract class Repository {
     $this->entity_manager->persist($entity);
   }
 
+  function truncate() {
+    $cmd = $this->entity_manager->getClassMetadata($this->getEntityClassName());
+    $connection = $this->entity_manager->getConnection();
+    $connection->beginTransaction();
+    try {
+      $connection->query('SET FOREIGN_KEY_CHECKS=0');
+      $table_name = $cmd->getTableName();
+      $q = "TRUNCATE $table_name";
+      $connection->executeUpdate($q);
+      $connection->query('SET FOREIGN_KEY_CHECKS=1');
+      $connection->commit();
+    }
+    catch (\Exception $e) {
+      $connection->rollback();
+    }
+  }
+
   /**
    * @param object $entity
    */

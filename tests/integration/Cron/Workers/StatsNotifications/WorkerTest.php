@@ -3,6 +3,8 @@
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Config\Renderer;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
@@ -15,6 +17,7 @@ use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\StatsNotification;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class WorkerTest extends \MailPoetTest {
@@ -37,16 +40,27 @@ class WorkerTest extends \MailPoetTest {
   /** @var SendingQueue */
   private $queue;
 
+  /** @var StatsNotificationsRepository */
+  private $repository;
+
   function _before() {
     parent::_before();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatsNotification::$_table);
+    $this->repository = ContainerWrapper::getInstance()->get(StatsNotificationsRepository::class);
+    $this->repository->truncate();
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = new SettingsController();
-    $this->stats_notifications = new Worker($this->mailer, $this->renderer, $this->settings, $this->makeEmpty(WCHelper::class), new MetaInfo);
+    $this->stats_notifications = new Worker(
+      $this->mailer,
+      $this->renderer,
+      $this->settings,
+      new MetaInfo,
+      $this->repository,
+      $this->entity_manager
+    );
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
       'address' => 'email@example.com',
@@ -65,10 +79,13 @@ class WorkerTest extends \MailPoetTest {
       'scheduled_at' => '2017-01-02 12:13:14',
       'processed_at' => null,
     ]);
-    StatsNotification::createOrUpdate([
-      'newsletter_id' => $this->newsletter->id(),
-      'task_id' => $stats_notifications_task->id(),
-    ]);
+    $cmd = $this->entity_manager->getClassMetadata(StatsNotificationEntity::class);
+    \ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
+      . $this->newsletter->id()
+      . ','
+      . $stats_notifications_task->id()
+      . ')'
+    );
     $this->queue = SendingQueue::createOrUpdate([
       'newsletter_rendered_subject' => 'Rendered Email Subject',
       'task_id' => $sending_task->id(),
@@ -259,10 +276,13 @@ class WorkerTest extends \MailPoetTest {
       'scheduled_at' => '2016-01-02 12:13:14',
       'processed_at' => null,
     ]);
-    StatsNotification::createOrUpdate([
-      'newsletter_id' => $newsletter->id(),
-      'task_id' => $stats_notifications_task->id(),
-    ]);
+    $cmd = $this->entity_manager->getClassMetadata(StatsNotificationEntity::class);
+    \ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
+      . $this->newsletter->id()
+      . ','
+      . $stats_notifications_task->id()
+      . ')'
+    );
     SendingQueue::createOrUpdate([
       'newsletter_rendered_subject' => 'Rendered Email Subject2',
       'task_id' => $sending_task->id(),

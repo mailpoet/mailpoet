@@ -5,16 +5,16 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 use Carbon\Carbon;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\StatsNotification;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending;
-use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Worker {
 
@@ -33,62 +33,62 @@ class Worker {
   /** @var SettingsController */
   private $settings;
 
-  /** @var WCHelper */
-  private $woocommerce_helper;
-
   /** @var MetaInfo */
   private $mailerMetaInfo;
+
+  /** @var StatsNotificationsRepository */
+  private $repository;
+
+  /** @var EntityManager */
+  private $entity_manager;
 
   function __construct(
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
-    WCHelper $woocommerce_helper,
     MetaInfo $mailerMetaInfo,
+    StatsNotificationsRepository $repository,
+    EntityManager $entity_manager,
     $timer = false
   ) {
     $this->timer = $timer ?: microtime(true);
     $this->renderer = $renderer;
     $this->mailer = $mailer;
     $this->settings = $settings;
-    $this->woocommerce_helper = $woocommerce_helper;
     $this->mailerMetaInfo = $mailerMetaInfo;
+    $this->repository = $repository;
+    $this->entity_manager = $entity_manager;
   }
 
   /** @throws \Exception */
   function process() {
     $settings = $this->settings->get(self::SETTINGS_KEY);
-    foreach (self::getDueTasks() as $task) {
+    foreach (self::getDueTasks() as $stats_notification_entity) {
       try {
         $extra_params = [
           'meta' => $this->mailerMetaInfo->getStatsNotificationMetaInfo(),
         ];
-        $this->mailer->send($this->constructNewsletter($task), $settings['address'], $extra_params);
+        $this->mailer->send($this->constructNewsletter($stats_notification_entity), $settings['address'], $extra_params);
       } catch (\Exception $e) {
         if (WP_DEBUG) {
           throw $e;
         }
       } finally {
-        $this->markTaskAsFinished($task);
+        $this->markTaskAsFinished($stats_notification_entity->getTask());
       }
       CronHelper::enforceExecutionLimit($this->timer);
     }
   }
 
-  public static function getDueTasks() {
-    $date = new Carbon();
-    return ScheduledTask::orderByAsc('priority')
-      ->orderByAsc('updated_at')
-      ->whereNull('deleted_at')
-      ->where('status', ScheduledTask::STATUS_SCHEDULED)
-      ->whereLte('scheduled_at', $date)
-      ->where('type', self::TASK_TYPE)
-      ->limit(Sending::RESULT_BATCH_SIZE)
-      ->findMany();
+  /**
+   * @return StatsNotificationEntity[]
+   */
+  private function getDueTasks() {
+    return $this->repository->findDueTasks(Sending::RESULT_BATCH_SIZE);
   }
 
-  private function constructNewsletter(ScheduledTask $task) {
-    $newsletter = $this->getNewsletter($task);
+  private function constructNewsletter(StatsNotificationEntity $stats_notification_entity) {
+    $newsletter = $this->getNewsletter($stats_notification_entity);
     $link = NewsletterLink::findTopLinkForNewsletter($newsletter);
     $context = $this->prepareContext($newsletter, $link);
     $subject = $newsletter->queue['newsletter_rendered_subject'];
@@ -101,19 +101,13 @@ class Worker {
     ];
   }
 
-  private function getNewsletter(ScheduledTask $task) {
-    $statsNotificationModel = $task->statsNotification()->findOne();
-    if (!$statsNotificationModel instanceof StatsNotification) {
-      throw new \Exception('Newsletter not found');
-    }
-    $newsletter = $statsNotificationModel->newsletter()->findOne();
-    if (!$newsletter instanceof Newsletter) {
-      throw new \Exception('Newsletter not found');
-    }
+  private function getNewsletter(StatsNotificationEntity $stats_notification_entity) {
+    $newsletter = $stats_notification_entity->getNewsletter();
+    $newsletter = Newsletter::findOne($newsletter->getId());
     return $newsletter
-    ->withSendingQueue()
-    ->withTotalSent()
-    ->withStatistics($this->woocommerce_helper);
+      ->withSendingQueue()
+      ->withTotalSent()
+      ->withStatistics($this->woocommerce_helper);
   }
 
   /**
@@ -148,11 +142,12 @@ class Worker {
     return $context;
   }
 
-  private function markTaskAsFinished(ScheduledTask $task) {
-    $task->status = ScheduledTask::STATUS_COMPLETED;
-    $task->processed_at = new Carbon;
-    $task->scheduled_at = null;
-    $task->save();
+  private function markTaskAsFinished(ScheduledTaskEntity $task) {
+    $task->setStatus(ScheduledTask::STATUS_COMPLETED);
+    $task->setProcessedAt(new Carbon);
+    $task->setScheduledAt(null);
+    $this->entity_manager->persist($task);
+    $this->entity_manager->flush();
   }
 
   public static function getShortcodeLinksMapping() {
