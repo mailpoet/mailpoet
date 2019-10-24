@@ -141,8 +141,8 @@ class WordPressTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, [
       'method' => Mailer::METHOD_MAILPOET,
       'frequency' => [
-        'emails' => Setting::DEFAULT_SENDING_FREQUENCY_EMAILS,
-        'interval' => Setting::DEFAULT_SENDING_FREQUENCY_INTERVAL,
+        'emails' => SettingsController::DEFAULT_SENDING_FREQUENCY_EMAILS,
+        'interval' => SettingsController::DEFAULT_SENDING_FREQUENCY_INTERVAL,
       ],
     ]);
     $this->_addScheduledTask(BounceWorker::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
