@@ -42,14 +42,13 @@ class Analytics {
     return !empty($analytics_settings['enabled']) === true;
   }
 
-  static function setPublicId($new_public_id) {
-    $settings = new SettingsController();
-    $current_public_id = $settings->get('public_id');
+  function setPublicId($new_public_id) {
+    $current_public_id = $this->settings->get('public_id');
     if ($current_public_id !== $new_public_id) {
-      $settings->set('public_id', $new_public_id);
-      $settings->set('new_public_id', 'true');
+      $this->settings->set('public_id', $new_public_id);
+      $this->settings->set('new_public_id', 'true');
       // Force user data to be resent
-      $settings->delete(Analytics::SETTINGS_LAST_SENT_KEY);
+      $this->settings->delete(Analytics::SETTINGS_LAST_SENT_KEY);
     }
   }
 

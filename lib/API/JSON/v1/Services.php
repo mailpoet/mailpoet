@@ -14,20 +14,31 @@ use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Services extends APIEndpoint {
-  public $bridge;
+  /** @var Bridge */
+  private $bridge;
+
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var AnalyticsHelper */
+  private $analytics;
+
+  /** @var SPFCheck */
+  private $spf_check;
+
+  /** @var DateTime */
   public $date_time;
-  public $settings;
-  public $spf_check;
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
 
-  function __construct() {
-    $this->bridge = new Bridge();
+  function __construct(Bridge $bridge, SettingsController $settings, AnalyticsHelper $analytics, SPFCheck $spf_check) {
+    $this->bridge = $bridge;
+    $this->settings = $settings;
+    $this->analytics = $analytics;
+    $this->spf_check = $spf_check;
     $this->date_time = new DateTime();
-    $this->settings = new SettingsController();
-    $this->spf_check = new SPFCheck();
   }
 
   function checkSPFRecord($data = []) {
@@ -77,7 +88,7 @@ class Services extends APIEndpoint {
     }
 
     if (!empty($result['data']['public_id'])) {
-      AnalyticsHelper::setPublicId($result['data']['public_id']);
+      $this->analytics->setPublicId($result['data']['public_id']);
     }
 
     if ($success_message) {
@@ -139,7 +150,7 @@ class Services extends APIEndpoint {
     }
 
     if (!empty($result['data']['public_id'])) {
-      AnalyticsHelper::setPublicId($result['data']['public_id']);
+      $this->analytics->setPublicId($result['data']['public_id']);
     }
 
     if ($success_message) {
