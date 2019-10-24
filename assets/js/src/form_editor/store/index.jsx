@@ -1,5 +1,5 @@
 import { registerStore } from '@wordpress/data';
-import actions from './actions.jsx';
+import * as actions from './actions.jsx';
 import createReducer from './reducer.jsx';
 import selectors from './selectors.jsx';
 
