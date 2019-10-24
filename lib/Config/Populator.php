@@ -39,7 +39,6 @@ class Populator {
   public $prefix;
   public $models;
   public $templates;
-  private $default_segment;
   /** @var SettingsController */
   private $settings;
   /** @var WPFunctions */
@@ -158,8 +157,8 @@ class Populator {
 
     array_map([$this, 'populate'], $this->models);
 
-    $this->createDefaultSegments();
-    $this->createDefaultForm();
+    $default_segment = $this->createDefaultSegment();
+    $this->createDefaultForm($default_segment);
     $this->createDefaultSettings();
     $this->createDefaultUsersFlags();
     $this->createMailPoetPage();
@@ -337,7 +336,7 @@ class Populator {
     $user_flags_repository->flush();
   }
 
-  private function createDefaultSegments() {
+  private function createDefaultSegment() {
     // WP Users segment
     Segment::getWPSegment();
     // WooCommerce customers segment
@@ -348,7 +347,7 @@ class Populator {
 
     // Default segment
     if (Segment::where('type', 'default')->count() === 0) {
-      $this->default_segment = Segment::create();
+      $default_segment = Segment::create();
       $new_list = [
         'name' => $this->wp->__('My First List', 'mailpoet'),
         'description' =>
@@ -357,21 +356,21 @@ class Populator {
       if ($this->flags_controller->isSupported(FeaturesController::NEW_DEFAULT_LIST_NAME)) {
         $new_list['name'] = $this->wp->__('Newsletter mailing list', 'mailpoet');
       }
-      $this->default_segment->hydrate($new_list);
-      $this->default_segment->save();
+      $default_segment->hydrate($new_list);
+      $default_segment->save();
     }
   }
 
-  private function createDefaultForm() {
+  private function createDefaultForm($default_segment) {
     if (Form::count() === 0) {
       $factory = new DefaultForm();
-      if (!$this->default_segment) {
-        $this->default_segment = Segment::where('type', 'default')->orderByAsc('id')->limit(1)->findOne();
+      if (!$default_segment) {
+        $default_segment = Segment::where('type', 'default')->orderByAsc('id')->limit(1)->findOne();
       }
       Form::createOrUpdate([
         'name' => $factory->getName(),
         'body' => serialize($factory->getBody()),
-        'settings' => serialize($factory->getSettings($this->default_segment)),
+        'settings' => serialize($factory->getSettings($default_segment)),
         'styles' => $factory->getStyles(),
       ]);
     }
