@@ -14,7 +14,7 @@ class AfterMigrationNotice {
   private $settings;
 
   function __construct() {
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   function enable() {

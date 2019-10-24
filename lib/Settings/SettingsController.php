@@ -3,6 +3,7 @@
 namespace MailPoet\Settings;
 
 use MailPoet\Cron\CronTrigger;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
@@ -163,5 +164,10 @@ class SettingsController {
   static function resetCache() {
     self::$settings = [];
     self::$loaded = false;
+  }
+
+  /** @return SettingsController */
+  static function getInstance() {
+    return ContainerWrapper::getInstance()->get(SettingsController::class);
   }
 }

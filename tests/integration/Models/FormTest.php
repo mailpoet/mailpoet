@@ -11,7 +11,7 @@ class FormTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->form = Form::createOrUpdate([
       'name' => 'My Form',
     ]);

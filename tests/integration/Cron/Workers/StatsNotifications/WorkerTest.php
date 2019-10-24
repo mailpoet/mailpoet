@@ -59,7 +59,7 @@ class WorkerTest extends \MailPoetTest {
     $this->repository->truncate();
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->stats_notifications = new Worker(
       $this->mailer,

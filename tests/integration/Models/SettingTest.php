@@ -63,13 +63,13 @@ class SettingTest extends \MailPoetTest {
   }
 
   function testSaveDefaultSenderIfNeededNotSaveEmptyValue() {
-    $settings_controller = new SettingsController();
+    $settings_controller = SettingsController::getInstance();
     Setting::saveDefaultSenderIfNeeded('', null);
     expect($settings_controller->get('sender'))->null();
   }
 
   function testSaveDefaultSenderIfNeededDoesntOverride() {
-    $settings_controller = new SettingsController();
+    $settings_controller = SettingsController::getInstance();
     $settings_controller->set('sender', ['name' => 'sender1', 'address' => 'sender1address']);
     Setting::saveDefaultSenderIfNeeded('sender2address', 'sender1');
     $settings = $settings_controller->get('sender');
@@ -78,7 +78,7 @@ class SettingTest extends \MailPoetTest {
   }
 
   function testSaveDefaultSenderIfNeeded() {
-    $settings_controller = new SettingsController();
+    $settings_controller = SettingsController::getInstance();
     Setting::saveDefaultSenderIfNeeded('senderAddress', 'sender');
     $settings = $settings_controller->get('sender');
     expect($settings['name'])->equals('sender');

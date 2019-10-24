@@ -21,7 +21,7 @@ class AnalyticsTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->analytics = new Analytics(
       new Reporter($this->settings, new WooCommerceHelper()),
       $this->settings
@@ -54,7 +54,7 @@ class AnalyticsTest extends \MailPoetTest {
       $this
     );
     $this->settings->set('analytics', ['enabled' => '']);
-    $analytics = new Analytics($reporter, new SettingsController());
+    $analytics = new Analytics($reporter, SettingsController::getInstance());
 
     expect($analytics->generateAnalytics())->null();
   }
@@ -69,7 +69,7 @@ class AnalyticsTest extends \MailPoetTest {
     );
     $this->settings->set('analytics', ['enabled' => '1']);
     $this->settings->set('analytics_last_sent', Carbon::now()->subHours(1));
-    $analytics = new Analytics($reporter, new SettingsController());
+    $analytics = new Analytics($reporter, SettingsController::getInstance());
 
     expect($analytics->generateAnalytics())->null();
   }
@@ -88,7 +88,7 @@ class AnalyticsTest extends \MailPoetTest {
     $this->settings->set('analytics', ['enabled' => '1']);
     $this->settings->set('analytics_last_sent', null);
 
-    $analytics = new Analytics($reporter, new SettingsController());
+    $analytics = new Analytics($reporter, SettingsController::getInstance());
     expect($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
   }
 
@@ -106,7 +106,7 @@ class AnalyticsTest extends \MailPoetTest {
     $this->settings->set('analytics', ['enabled' => '1']);
     $this->settings->set('analytics_last_sent', Carbon::now()->subYear());
 
-    $analytics = new Analytics($reporter, new SettingsController());
+    $analytics = new Analytics($reporter, SettingsController::getInstance());
 
     expect($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
   }

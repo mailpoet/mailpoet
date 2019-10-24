@@ -30,7 +30,7 @@ class SubscriptionTest extends \MailPoetTest {
   function _before() {
     $this->order_id = 123; // dummy
     $this->subscription = ContainerWrapper::getInstance()->get(Subscription::class);
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->wc_segment = Segment::getWooCommerceSegment();
 
     $subscriber = Subscriber::create();

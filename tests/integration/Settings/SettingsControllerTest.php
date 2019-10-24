@@ -13,7 +13,7 @@ class SettingsControllerTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->controller = new SettingsController();
+    $this->controller = SettingsController::getInstance();
   }
 
   function testItReturnsStoredValue() {

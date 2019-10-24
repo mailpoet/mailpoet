@@ -44,7 +44,7 @@ class WP {
         if (empty($wp_user->first_name) && empty($wp_user->last_name)) {
           $first_name = $wp_user->display_name;
         }
-        $signup_confirmation_enabled = (new SettingsController())->get('signup_confirmation.enabled');
+        $signup_confirmation_enabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
         // subscriber data
         $data = [
           'wp_user_id' => $wp_user->ID,
@@ -135,7 +135,7 @@ class WP {
   private static function insertSubscribers() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
-    $signup_confirmation_enabled = (new SettingsController())->get('signup_confirmation.enabled');
+    $signup_confirmation_enabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
 
     $inserterd_user_ids = \ORM::for_table($wpdb->users)->raw_query(sprintf(
       'SELECT %2$s.id, %2$s.user_email as email FROM %2$s

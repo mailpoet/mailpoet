@@ -39,7 +39,7 @@ class NewSubscriberNotificationMailer {
        $this->renderer = new Renderer($caching, $debugging);
     }
     $this->mailer = $mailer;
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->mailerMetaInfo = new MetaInfo();
   }
 

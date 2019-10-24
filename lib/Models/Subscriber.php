@@ -787,7 +787,7 @@ class Subscriber extends Model {
   }
 
   static function setRequiredFieldsDefaultValues($data) {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $required_field_default_values = [
       'first_name' => '',
       'last_name' => '',

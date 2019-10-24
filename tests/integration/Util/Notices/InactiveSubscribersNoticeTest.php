@@ -13,7 +13,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
   function testItDisplays() {
     $this->createSubscribers(50);
 
-    $notice = new InactiveSubscribersNotice(new SettingsController(), new WPFunctions());
+    $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
     $result = $notice->init(true);
     expect($result)->contains('Good news! MailPoet won’t send emails to your 50 inactive subscribers.');
     expect($result)->contains('https://kb.mailpoet.com/article/264-inactive-subscribers');
@@ -23,7 +23,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
   function testItDoesntDisplayWhenDisabled() {
     $this->createSubscribers(50);
 
-    $notice = new InactiveSubscribersNotice(new SettingsController(), new WPFunctions());
+    $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
     $notice->disable();
     $result = $notice->init(true);
     expect($result)->null();
@@ -35,7 +35,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     $settings_factory = new Settings();
     $settings_factory->withDeactivateSubscriberAfter3Months();
 
-    $notice = new InactiveSubscribersNotice(new SettingsController(), new WPFunctions());
+    $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
     $result = $notice->init(true);
     expect($result)->null();
   }
@@ -43,7 +43,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
   function testItDoesntDisplayWhenNotEnoughInactiveSubscribers() {
     $this->createSubscribers(49);
 
-    $notice = new InactiveSubscribersNotice(new SettingsController(), new WPFunctions());
+    $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
     $result = $notice->init(true);
     expect($result)->null();
   }

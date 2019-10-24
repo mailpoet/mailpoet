@@ -25,7 +25,7 @@ class SettingsTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->settings->set('some.setting.key', true);
     $this->endpoint = new Settings(
       $this->settings,

@@ -27,7 +27,7 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
     $this->segments = [Segment::create(), Segment::create()];
     $this->segments[0]->name = 'List1';
     $this->segments[1]->name = 'List2';
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   function testItDoesNotSendIfNoSettings() {

@@ -54,7 +54,7 @@ class TrackTest extends \MailPoetTest {
       'preview' => false,
     ];
     // instantiate class
-    $this->track = new Track(new Clicks(new SettingsController(), new Cookies()), new Opens(), new LinkTokens());
+    $this->track = new Track(new Clicks(SettingsController::getInstance(), new Cookies()), new Opens(), new LinkTokens());
   }
 
   function testItReturnsFalseWhenTrackDataIsMissing() {

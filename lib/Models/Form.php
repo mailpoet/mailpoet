@@ -121,7 +121,7 @@ class Form extends Model {
   }
 
   static function getDefaultSuccessMessage() {
-    $settings = new SettingsController;
+    $settings = SettingsController::getInstance();
     if ($settings->get('signup_confirmation.enabled')) {
       return __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet');
     }

@@ -36,7 +36,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge = new Bridge();
 
     $this->bridge->api = new MockAPI('key');
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   function testItChecksIfCurrentSendingMethodIsMailpoet() {

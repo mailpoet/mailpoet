@@ -42,7 +42,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
     ]);
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->stats_notifications = new AutomatedEmails(
       $this->mailer,
       $this->renderer,

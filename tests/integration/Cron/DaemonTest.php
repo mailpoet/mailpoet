@@ -18,7 +18,7 @@ class DaemonTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
   }
 

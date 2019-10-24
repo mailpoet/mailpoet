@@ -19,7 +19,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class SetupTest extends \MailPoetTest {
   function _before() {
     parent::_before();
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set('signup_confirmation.enabled', false);
   }
 
@@ -30,7 +30,7 @@ class SetupTest extends \MailPoetTest {
 
     $features_controller = Stub::makeEmpty(FeaturesController::class);
 
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $referral_detector = new ReferralDetector($wp, $settings);
     $wc_transactional_emails = new TransactionalEmails($wp, $settings);
     $populator = new Populator($settings, $wp, new Captcha(), $referral_detector, $features_controller, $wc_transactional_emails);
@@ -38,7 +38,7 @@ class SetupTest extends \MailPoetTest {
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $signup_confirmation = $settings->fetch('signup_confirmation.enabled');
     expect($signup_confirmation)->true();
 

@@ -12,7 +12,7 @@ use MailPoetVendor\Twig\TwigFunction;
 
 class Analytics extends AbstractExtension {
   public function getFunctions() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $analytics = new AnalyticsGenerator(
       new Reporter($settings, new WooCommerceHelper()),
       $settings

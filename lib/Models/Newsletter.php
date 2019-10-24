@@ -1045,7 +1045,7 @@ class Newsletter extends Model {
   static function createOrUpdate($data = []) {
     $data['unsubscribe_token'] = Security::generateUnsubscribeToken(self::class);
     return parent::_createOrUpdate($data, false, function($data) {
-      $settings = new SettingsController();
+      $settings = SettingsController::getInstance();
       // set default sender based on settings
       if (empty($data['sender'])) {
         $sender = $settings->get('sender', []);

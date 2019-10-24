@@ -66,7 +66,7 @@ class LoggerFactory {
 
   static function getInstance() {
     if (!self::$instance instanceof LoggerFactory) {
-      self::$instance = new LoggerFactory(new SettingsController);
+      self::$instance = new LoggerFactory(SettingsController::getInstance());
     }
     return self::$instance;
   }

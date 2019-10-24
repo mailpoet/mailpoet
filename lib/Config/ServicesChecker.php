@@ -17,7 +17,7 @@ class ServicesChecker {
   private $settings;
 
   public function __construct() {
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   function isMailPoetAPIKeyValid($display_error_notice = true, $force_check = false) {

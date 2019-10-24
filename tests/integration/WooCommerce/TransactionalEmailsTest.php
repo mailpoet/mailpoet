@@ -22,7 +22,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
 
   function _before() {
     $this->wp = new WPFunctions();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->original_wc_settings = $this->settings->get('woocommerce');
     $this->transactional_emails = new TransactionalEmails($this->wp, $this->settings);
   }

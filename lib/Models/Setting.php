@@ -46,7 +46,7 @@ class Setting extends Model {
   }
 
   public static function saveDefaultSenderIfNeeded($sender_address, $sender_name) {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     if (empty($sender_address) || empty($sender_name) || $settings->get('sender')) {
       return;
     }

@@ -17,7 +17,7 @@ class CronTriggerTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->cron_trigger = new CronTrigger($this->settings);
   }
 

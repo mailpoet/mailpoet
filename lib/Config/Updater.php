@@ -19,7 +19,7 @@ class Updater {
     $this->plugin = WPFunctions::get()->pluginBasename($plugin_name);
     $this->slug = $slug;
     $this->version = $version;
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   function init() {

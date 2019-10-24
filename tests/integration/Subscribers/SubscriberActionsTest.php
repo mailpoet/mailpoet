@@ -33,7 +33,7 @@ class SubscriberActionsTest extends \MailPoetTest {
       'email' => 'john@mailpoet.com',
     ];
     $this->subscriber_actions = ContainerWrapper::getInstance()->get(SubscriberActions::class);
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     $this->settings->set('sender', [
       'name' => 'John Doe',
       'address' => 'john.doe@example.com',

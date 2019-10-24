@@ -100,7 +100,7 @@ class BounceTest extends \MailPoetTest {
   }
 
   private function setMailPoetSendingMethod() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
       [

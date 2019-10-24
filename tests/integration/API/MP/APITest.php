@@ -511,7 +511,7 @@ class APITest extends \MailPoetTest {
   }
 
   function testItSchedulesWelcomeNotificationByDefaultAfterAddingSubscriber() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set('signup_confirmation.enabled', false);
     $API = Stub::makeEmptyExcept(
       \MailPoet\API\MP\v1\API::class,
@@ -529,7 +529,7 @@ class APITest extends \MailPoetTest {
   }
 
   function testItThrowsIfWelcomeEmailFails() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set('signup_confirmation.enabled', false);
     $task = ScheduledTask::create();
     $task->type = 'sending';
@@ -861,7 +861,7 @@ class APITest extends \MailPoetTest {
   }
 
   function _before() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set('signup_confirmation.enabled', true);
   }
 

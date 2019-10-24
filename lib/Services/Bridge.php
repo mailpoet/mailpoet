@@ -38,7 +38,7 @@ class Bridge {
 
   function __construct(SettingsController $settingsController = null) {
     if ($settingsController === null) {
-      $settingsController = new SettingsController;
+      $settingsController = SettingsController::getInstance();
     }
     $this->settings = $settingsController;
   }
@@ -54,13 +54,13 @@ class Bridge {
   }
 
   static function isMSSKeySpecified() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $key = $settings->get(self::API_KEY_SETTING_NAME);
     return !empty($key);
   }
 
   static function isPremiumKeySpecified() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $key = $settings->get(self::PREMIUM_KEY_SETTING_NAME);
     return !empty($key);
   }
@@ -187,7 +187,7 @@ class Bridge {
   }
 
   static function invalidateKey() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set(
       self::API_KEY_STATE_SETTING_NAME,
       ['state' => self::KEY_INVALID]

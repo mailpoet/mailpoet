@@ -136,7 +136,7 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   function testItConvertsShortcodes() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set('tracking.enabled', false);
     $rendered_body = $this->view_in_browser->renderNewsletter(
       $this->newsletter,
@@ -149,7 +149,7 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     $settings->set('tracking.enabled', true);
     $view_in_browser = new ViewInBrowser($this->emoji, true);
     $queue = $this->queue;

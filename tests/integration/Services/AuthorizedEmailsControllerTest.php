@@ -20,7 +20,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   function testItResetsAuthorisedEmailsErrorIfMssIsNotActive() {

@@ -25,7 +25,7 @@ class Widget extends \WP_Widget {
     );
     $this->wp = new WPFunctions;
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
-    $this->assets_controller = new AssetsController($this->wp, $this->renderer, new SettingsController());
+    $this->assets_controller = new AssetsController($this->wp, $this->renderer, SettingsController::getInstance());
     if (!is_admin()) {
       $this->setupIframe();
     } else {

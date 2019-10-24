@@ -40,7 +40,7 @@ class Links {
 
   static function getUnsubscribeUrl($queue, $subscriber_id) {
     $subscriber = Subscriber::where('id', $subscriber_id)->findOne();
-    $settings = new SettingsController();
+    $settings = SettingsController::getInstance();
     if ((boolean)$settings->get('tracking.enabled')) {
       $link_hash = NewsletterLinkModel::where('queue_id', $queue->id)
         ->where('url', NewsletterLinkModel::UNSUBSCRIBE_LINK_SHORT_CODE)

@@ -30,7 +30,7 @@ class BeaconTest extends \MailPoetTest {
     ]);
 
     $this->beacon_data = $this->di_container->get(Beacon::class)->getData();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
   }
 
   function testItReturnsPhpVersion() {

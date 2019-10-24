@@ -15,7 +15,7 @@ class AuthorizedSendingEmailsCheckTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    $this->settings = new SettingsController();
+    $this->settings = SettingsController::getInstance();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 
