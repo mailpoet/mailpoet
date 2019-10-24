@@ -47,16 +47,6 @@ class ScheduledTask extends Model {
     );
   }
 
-  /** @return StatsNotification */
-  function statsNotification() {
-    $model = $this->hasOne(
-      StatsNotification::class,
-      'task_id',
-      'id'
-    );
-    return $model;
-  }
-
   function pause() {
     $this->set('status', self::STATUS_PAUSED);
     $this->save();
