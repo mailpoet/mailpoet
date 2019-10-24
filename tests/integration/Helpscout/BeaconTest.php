@@ -29,7 +29,7 @@ class BeaconTest extends \MailPoetTest {
       'status' => Subscriber::STATUS_BOUNCED,
     ]);
 
-    $this->beacon_data = Beacon::getData();
+    $this->beacon_data = $this->di_container->get(Beacon::class)->getData();
     $this->settings = new SettingsController();
   }
 
@@ -135,7 +135,7 @@ class BeaconTest extends \MailPoetTest {
     };
     $wp = new WPFunctions;
     $wp->addFilter('mailpoet_cron_request_url', $filter);
-    $beacon_data = Beacon::getData();
+    $beacon_data = $this->beacon_data = $this->di_container->get(Beacon::class)->getData();
     expect($beacon_data['Cron ping URL'])->regExp('!^http:\/\/custom_url\/!');
     $wp->removeFilter('mailpoet_cron_request_url', $filter);
   }
