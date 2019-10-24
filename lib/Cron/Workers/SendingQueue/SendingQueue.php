@@ -14,6 +14,7 @@ use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\ScheduledTask as ScheduledTaskModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers\BatchIterator;
@@ -41,10 +42,14 @@ class SendingQueue {
   /** @var LoggerFactory */
   private $logger_factory;
 
+  /** @var NewslettersRepository */
+  private $newsletters_repository;
+
   function __construct(
     SendingErrorHandler $error_handler,
     StatsNotificationsScheduler $stats_notifications_scheduler,
     LoggerFactory $logger_factory,
+    NewslettersRepository $newsletters_repository,
     $timer = false,
     $mailer_task = false,
     $newsletter_task = false
@@ -58,6 +63,7 @@ class SendingQueue {
     $wp = new WPFunctions;
     $this->batch_size = $wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
     $this->logger_factory = $logger_factory;
+    $this->newsletters_repository = $newsletters_repository;
   }
 
   function process() {
@@ -148,7 +154,7 @@ class SendingQueue {
             ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
           );
           $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
-          $this->stats_notifications_scheduler->schedule($newsletter);
+          $this->stats_notifications_scheduler->schedule($this->newsletters_repository->findOneById($newsletter->id));
         }
         $this->enforceSendingAndExecutionLimits();
       }

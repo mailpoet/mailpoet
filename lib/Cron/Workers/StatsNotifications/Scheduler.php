@@ -3,13 +3,12 @@
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use Carbon\Carbon;
-use Doctrine\ORM\EntityManager;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\StatsNotification;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Scheduler {
 
@@ -23,8 +22,8 @@ class Scheduler {
   private $settings;
 
   private $supported_types = [
-    Newsletter::TYPE_NOTIFICATION_HISTORY,
-    Newsletter::TYPE_STANDARD,
+    NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+    NewsletterEntity::TYPE_STANDARD,
   ];
 
   /** @var EntityManager */
@@ -35,7 +34,7 @@ class Scheduler {
     $this->entity_manager = $entity_manager;
   }
 
-  function schedule(Newsletter $newsletter) {
+  function schedule(NewsletterEntity $newsletter) {
     if (!$this->shouldSchedule($newsletter)) {
       return false;
     }
@@ -47,19 +46,19 @@ class Scheduler {
     $this->entity_manager->persist($task);
     $this->entity_manager->flush();
 
-    $stats_notifications = new StatsNotificationEntity($newsletter->id, $task->getId());
+    $stats_notifications = new StatsNotificationEntity($newsletter->getId(), $task->getId());
     $this->entity_manager->persist($stats_notifications);
     $this->entity_manager->flush();
   }
 
-  private function shouldSchedule(Newsletter $newsletter) {
+  private function shouldSchedule(NewsletterEntity $newsletter) {
     if ($this->isDisabled()) {
       return false;
     }
-    if ($this->isTaskScheduled($newsletter->id)) {
+    if ($this->isTaskScheduled($newsletter->getId())) {
       return false;
     }
-    if (!in_array($newsletter->type, $this->supported_types)) {
+    if (!in_array($newsletter->getType(), $this->supported_types)) {
       return false;
     }
     return true;
@@ -86,12 +85,13 @@ class Scheduler {
   }
 
   private function isTaskScheduled($newsletter_id) {
-    $existing = ScheduledTask::tableAlias('tasks')
-      ->join(StatsNotification::$_table, 'tasks.id = notification.task_id', 'notification')
-      ->where('tasks.type', Worker::TASK_TYPE)
-      ->where('notification.newsletter_id', $newsletter_id)
-      ->findMany();
-    return (bool)$existing;
+//    $existing = ScheduledTask::tableAlias('tasks')
+//      ->join(StatsNotification::$_table, 'tasks.id = notification.task_id', 'notification')
+//      ->where('tasks.type', Worker::TASK_TYPE)
+//      ->where('notification.newsletter_id', $newsletter_id)
+//      ->findMany();
+//    return (bool)$existing;
+    return false;
   }
 
   private function getNextRunDate() {
