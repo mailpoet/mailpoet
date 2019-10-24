@@ -12,9 +12,6 @@ use MailPoet\WP\Functions as WPFunctions;
 class Setting extends Model {
   public static $_table = MP_SETTINGS_TABLE;
 
-  const DEFAULT_SENDING_FREQUENCY_EMAILS = 25;
-  const DEFAULT_SENDING_FREQUENCY_INTERVAL = 5; // in minutes
-
   function __construct() {
     parent::__construct();
 
