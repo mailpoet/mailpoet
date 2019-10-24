@@ -25,16 +25,6 @@ class Setting extends Model {
     ]);
   }
 
-  /**
-   * This method is here only for BC fix of 3rd party plugin hacky integration
-   * @deprecated
-   */
-  public static function getValue($key, $default = null) {
-    trigger_error('Calling Settings::getValue() is deprecated and will be removed. Use \MailPoet\Settings\SettingsController instead.', E_USER_DEPRECATED);
-    $settings = new SettingsController();
-    return $settings->get($key, $default);
-  }
-
   public static function getAll() {
     $settingsCollection = self::findMany();
     $settings = [];
