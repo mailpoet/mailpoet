@@ -5,6 +5,7 @@ import selectors from './selectors.jsx';
 
 const defaultState = {
   sidebarOpened: true,
+  formData: window.mailpoet_form_data,
 };
 
 const config = {
