@@ -19,7 +19,6 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Referrals\ReferralDetector;
@@ -309,13 +308,12 @@ class Populator {
 
     $prefix = 'user_seen_editor_tutorial';
     $prefix_length = strlen($prefix);
-    $users_seen_editor_tutorial = Setting::whereLike('name', $prefix . '%')->findMany();
-    if (!empty($users_seen_editor_tutorial)) {
-      foreach ($users_seen_editor_tutorial as $setting) {
-        $user_id = substr($setting->name, $prefix_length);
-        $this->createOrUpdateUserFlag($user_id, 'editor_tutorial_seen', $setting->value);
+    foreach ($this->settings->getAll() as $name => $value) {
+      if (substr($name, 0, $prefix_length) === $prefix) {
+        $user_id = substr($name, $prefix_length);
+        $this->createOrUpdateUserFlag($user_id, 'editor_tutorial_seen', $value);
+        $this->settings->delete($name);
       }
-      Setting::whereLike('name', $prefix . '%')->deleteMany();
     }
   }
 
