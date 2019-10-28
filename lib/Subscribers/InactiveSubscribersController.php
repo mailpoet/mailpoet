@@ -7,13 +7,20 @@ use MailPoet\Config\MP2Migrator;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
+use MailPoet\Settings\SettingsRepository;
 
 class InactiveSubscribersController {
 
   private $inactives_task_ids_table_created = false;
+
+  /** @var SettingsRepository */
+  private $settings_repository;
+
+  function __construct(SettingsRepository $settings_repository) {
+    $this->settings_repository = $settings_repository;
+  }
 
   /**
    * @param int $days_to_inactive
@@ -185,10 +192,7 @@ class InactiveSubscribersController {
   }
 
   private function getMP2MigrationDate() {
-    $migration_complete = Setting::where('name', MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY)->findOne();
-    if ($migration_complete === false) {
-      return null;
-    }
-    return new Carbon($migration_complete->created_at);
+    $setting = $this->settings_repository->findOneByName(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY);
+    return $setting ? Carbon::instance($setting->getCreatedAt()) : null;
   }
 }
