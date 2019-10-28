@@ -4,8 +4,7 @@ namespace MailPoet\Settings;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\Setting;
-use MailPoet\Util\Helpers;
+use MailPoet\Entities\SettingEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SettingsController {
@@ -21,6 +20,13 @@ class SettingsController {
   private $settings = [];
 
   private $defaults = null;
+
+  /** @var SettingsRepository */
+  private $settings_repository;
+
+  function __construct(SettingsRepository $settings_repository) {
+    $this->settings_repository = $settings_repository;
+  }
 
   function get($key, $default = null) {
     $this->ensureLoaded();
@@ -107,7 +113,11 @@ class SettingsController {
   }
 
   function delete($key) {
-    Setting::deleteValue($key);
+    $setting = $this->settings_repository->findOneByName($key);
+    if ($setting) {
+      $this->settings_repository->remove($setting);
+      $this->settings_repository->flush();
+    }
     unset($this->settings[$key]);
   }
 
@@ -115,7 +125,11 @@ class SettingsController {
     if ($this->loaded) {
       return;
     }
-    $this->settings = Setting::getAll() ?: [];
+
+    $this->settings = [];
+    foreach ($this->settings_repository->findAll() as $setting) {
+      $this->settings[$setting->getName()] = $setting->getValue();
+    }
     $this->loaded = true;
   }
 
@@ -132,28 +146,19 @@ class SettingsController {
   }
 
   private function fetchValue($key) {
-    $setting = Setting::where('name', $key)->findOne();
-    if (!$setting instanceof Setting) {
-      return null;
-    }
-    if (is_serialized($setting->value)) {
-      return unserialize($setting->value);
-    } else {
-      return $setting->value;
-    }
+    $setting = $this->settings_repository->findOneByName($key);
+    return $setting ? $setting->getValue() : null;
   }
 
   private function saveValue($key, $value) {
-    $value = Helpers::recursiveTrim($value);
-    if (is_array($value)) {
-      $value = serialize($value);
+    $setting = $this->settings_repository->findOneByName($key);
+    if (!$setting) {
+      $setting = new SettingEntity();
+      $setting->setName($key);
+      $this->settings_repository->persist($setting);
     }
-
-    $setting = Setting::createOrUpdate([
-      'name' => $key,
-      'value' => $value,
-    ]);
-    return ($setting->id() > 0 && $setting->getErrors() === false);
+    $setting->setValue($value);
+    $this->settings_repository->flush();
   }
 
   function resetCache() {

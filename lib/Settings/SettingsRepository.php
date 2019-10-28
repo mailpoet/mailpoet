@@ -14,6 +14,10 @@ use MailPoet\Entities\SettingEntity;
  * @method void remove(SettingEntity $entity)
  */
 class SettingsRepository extends Repository {
+  function findOneByName($name) {
+    return $this->doctrine_repository->findOneBy(['name' => $name]);
+  }
+
   protected function getEntityClassName() {
     return SettingEntity::class;
   }
