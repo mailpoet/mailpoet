@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 use Carbon\Carbon;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Mailer\Mailer;
@@ -42,12 +43,16 @@ class Worker {
   /** @var EntityManager */
   private $entity_manager;
 
+  /** @var NewsletterLinkRepository */
+  private $newsletter_link_repository;
+
   function __construct(
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
     MetaInfo $mailerMetaInfo,
     StatsNotificationsRepository $repository,
+    NewsletterLinkRepository $newsletter_link_repository,
     EntityManager $entity_manager,
     $timer = false
   ) {
@@ -58,6 +63,7 @@ class Worker {
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->repository = $repository;
     $this->entity_manager = $entity_manager;
+    $this->newsletter_link_repository = $newsletter_link_repository;
   }
 
   /** @throws \Exception */
@@ -89,7 +95,11 @@ class Worker {
 
   private function constructNewsletter(StatsNotificationEntity $stats_notification_entity) {
     $newsletter = $this->getNewsletter($stats_notification_entity);
-    $link = NewsletterLink::findTopLinkForNewsletter($newsletter);
+    try {
+      $link = $this->newsletter_link_repository->findTopLinkForNewsletter($newsletter->id);
+    } catch (\MailPoetVendor\Doctrine\ORM\UnexpectedResultException $e) {
+      $link = null;
+    }
     $context = $this->prepareContext($newsletter, $link);
     $subject = $newsletter->queue['newsletter_rendered_subject'];
     return [
@@ -112,10 +122,10 @@ class Worker {
 
   /**
    * @param Newsletter $newsletter
-   * @param \stdClass|NewsletterLink $link
+   * @param NewsletterLinkEntity $link
    * @return array
    */
-  private function prepareContext(Newsletter $newsletter, $link = null) {
+  private function prepareContext(Newsletter $newsletter, NewsletterLinkEntity $link = null) {
     $clicked = ($newsletter->statistics['clicked'] * 100) / $newsletter->total_sent;
     $opened = ($newsletter->statistics['opened'] * 100) / $newsletter->total_sent;
     $unsubscribed = ($newsletter->statistics['unsubscribed'] * 100) / $newsletter->total_sent;
@@ -135,9 +145,9 @@ class Worker {
       'opened' => $opened,
     ];
     if ($link) {
-      $context['topLinkClicks'] = (int)$link->clicksCount;
+      $context['topLinkClicks'] = $link->getTotalClicksCount();
       $mappings = self::getShortcodeLinksMapping();
-      $context['topLink'] = isset($mappings[$link->url]) ? $mappings[$link->url] : $link->url;
+      $context['topLink'] = isset($mappings[$link->getUrl()]) ? $mappings[$link->getUrl()] : $link->getUrl();
     }
     return $context;
   }
