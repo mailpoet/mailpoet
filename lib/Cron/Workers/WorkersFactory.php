@@ -162,7 +162,15 @@ class WorkersFactory {
 
   /** @return StatsNotificationsWorkerForAutomatedEmails */
   function createStatsNotificationsWorkerForAutomatedEmails($timer) {
-    return new StatsNotificationsWorkerForAutomatedEmails($this->mailer, $this->renderer, $this->settings, $this->woocommerce_helper, $this->mailerMetaInfo, $timer);
+    return new StatsNotificationsWorkerForAutomatedEmails(
+      $this->mailer,
+      $this->renderer,
+      $this->settings,
+      $this->stats_notifications_repository,
+      $this->newsletter_statistics_repository,
+      $this->mailerMetaInfo,
+      $timer
+    );
   }
 
   /** @return SendingServiceKeyCheckWorker */
