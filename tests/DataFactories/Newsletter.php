@@ -39,7 +39,6 @@ class Newsletter {
     $this->queue_options = [];
     $this->task_subscribers = [];
     $this->loadBodyFrom('newsletterWithALC.json');
-    SettingsController::resetCache(); // Newsletter model reads settings so we need to ensure it use fresh data
   }
 
   /**

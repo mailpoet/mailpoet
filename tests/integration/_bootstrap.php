@@ -149,7 +149,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
     $this->di_container = ContainerWrapper::getInstance(WP_DEBUG);
     $this->connection = $this->di_container->get(Connection::class);
     $this->entity_manager = $this->di_container->get(EntityManager::class);
-    \MailPoet\Settings\SettingsController::resetCache();
+    $this->di_container->get(SettingsController::class)->resetCache();
     parent::setUp();
   }
 

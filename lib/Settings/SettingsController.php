@@ -16,16 +16,16 @@ class SettingsController {
   const DEFAULT_SENDING_FREQUENCY_INTERVAL = 5; // in minutes
   const DEFAULT_DEACTIVATE_SUBSCRIBER_AFTER_INACTIVE_DAYS = 180;
 
-  private static $loaded = false;
+  private $loaded = false;
 
-  private static $settings = [];
+  private $settings = [];
 
   private $defaults = null;
 
   function get($key, $default = null) {
     $this->ensureLoaded();
     $key_parts = explode('.', $key);
-    $setting = self::$settings;
+    $setting = $this->settings;
     if ($default === null) {
       $default = $this->getDefaultValue($key_parts);
     }
@@ -81,13 +81,13 @@ class SettingsController {
   function fetch($key, $default = null) {
     $keys = explode('.', $key);
     $main_key = $keys[0];
-    self::$settings[$main_key] = $this->fetchValue($main_key);
+    $this->settings[$main_key] = $this->fetchValue($main_key);
     return $this->get($key, $default);
   }
 
   function getAll() {
     $this->ensureLoaded();
-    return array_replace_recursive($this->getAllDefaults(), self::$settings);
+    return array_replace_recursive($this->getAllDefaults(), $this->settings);
   }
 
   function set($key, $value) {
@@ -95,7 +95,7 @@ class SettingsController {
     $key_parts = explode('.', $key);
     $main_key = $key_parts[0];
     $last_key = array_pop($key_parts);
-    $setting =& self::$settings;
+    $setting =& $this->settings;
     foreach ($key_parts as $key_part) {
       $setting =& $setting[$key_part];
       if (!is_array($setting)) {
@@ -103,20 +103,20 @@ class SettingsController {
       }
     }
     $setting[$last_key] = $value;
-    $this->saveValue($main_key, self::$settings[$main_key]);
+    $this->saveValue($main_key, $this->settings[$main_key]);
   }
 
   function delete($key) {
     Setting::deleteValue($key);
-    unset(self::$settings[$key]);
+    unset($this->settings[$key]);
   }
 
   private function ensureLoaded() {
-    if (self::$loaded) {
+    if ($this->loaded) {
       return;
     }
-    self::$settings = Setting::getAll() ?: [];
-    self::$loaded = true;
+    $this->settings = Setting::getAll() ?: [];
+    $this->loaded = true;
   }
 
   private function getDefaultValue($keys) {
@@ -156,14 +156,9 @@ class SettingsController {
     return ($setting->id() > 0 && $setting->getErrors() === false);
   }
 
-  /**
-   * Temporary function for tests use only.
-   * It is needed until this is only instantiated in one place (DI Container)
-   * Once this is achieved we can make properties not static and remove this method
-   */
-  static function resetCache() {
-    self::$settings = [];
-    self::$loaded = false;
+  function resetCache() {
+    $this->settings = [];
+    $this->loaded = false;
   }
 
   /** @return SettingsController */

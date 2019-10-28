@@ -42,7 +42,7 @@ class SettingsTest extends \MailPoetTest {
     expect($response->data['some']['setting']['key'])->true();
 
     Setting::deleteMany();
-    SettingsController::resetCache();
+    $this->settings->resetCache();
     $response = $this->endpoint->get();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals($this->settings->getAllDefaults());
