@@ -30,7 +30,12 @@
   </rule>
 
   <!-- checks for unused methods, unused or write-only properties in a class and unused private constants -->
-  <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements"/>
+  <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
+    <properties>
+      <property name="alwaysUsedPropertiesAnnotations" type="array"
+                value="@ORM\Column,@ORM\ManyToOne,@ORM\OneToMany,@ORM\ManyToMany,@ORM\JoinColumn"/>
+    </properties>
+  </rule>
 
   <!-- Reports empty comments -->
   <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
