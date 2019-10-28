@@ -14,7 +14,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsUnsubscribes;
-use MailPoet\Models\StatsNotification;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -48,6 +48,7 @@ class WorkerTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     $this->repository = ContainerWrapper::getInstance()->get(StatsNotificationsRepository::class);
@@ -63,6 +64,7 @@ class WorkerTest extends \MailPoetTest {
       new MetaInfo,
       $this->repository,
       $this->newsletter_link_repository,
+      ContainerWrapper::getInstance()->get(NewsletterStatisticsRepository::class),
       $this->entity_manager
     );
     $this->settings->set(Worker::SETTINGS_KEY, [

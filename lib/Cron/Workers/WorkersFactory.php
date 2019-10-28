@@ -11,6 +11,7 @@ use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails as StatsNotificationsWorkerForAutomatedEmails;
+use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationScheduler;
 use MailPoet\Cron\Workers\StatsNotifications\StatsNotificationsRepository;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
@@ -19,6 +20,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -81,6 +83,12 @@ class WorkersFactory {
    */
   private $newsletters_repository;
 
+  /** @var NewsletterLinkRepository */
+  private $newsletter_link_repository;
+
+  /** @var NewsletterStatisticsRepository */
+  private $newsletter_statistics_repository;
+
   public function __construct(
     SendingErrorHandler $sending_error_handler,
     StatsNotificationScheduler $statsNotificationsScheduler,
@@ -97,6 +105,8 @@ class WorkersFactory {
     LoggerFactory $logger_factory,
     StatsNotificationsRepository $stats_notifications_repository,
     NewslettersRepository $newsletters_repository,
+    NewsletterLinkRepository $newsletter_link_repository,
+    NewsletterStatisticsRepository $newsletter_statistics_repository,
     EntityManager $entity_manager
   ) {
     $this->sending_error_handler = $sending_error_handler;
@@ -115,6 +125,8 @@ class WorkersFactory {
     $this->stats_notifications_repository = $stats_notifications_repository;
     $this->entity_manager = $entity_manager;
     $this->newsletters_repository = $newsletters_repository;
+    $this->newsletter_link_repository = $newsletter_link_repository;
+    $this->newsletter_statistics_repository = $newsletter_statistics_repository;
   }
 
   /** @return SchedulerWorker */
@@ -141,6 +153,8 @@ class WorkersFactory {
       $this->settings,
       $this->mailerMetaInfo,
       $this->stats_notifications_repository,
+      $this->newsletter_link_repository,
+      $this->newsletter_statistics_repository,
       $this->entity_manager,
       $timer
     );

@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 use Carbon\Carbon;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
@@ -12,6 +13,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending;
 use MailPoet\WP\Functions as WPFunctions;
@@ -46,6 +48,9 @@ class Worker {
   /** @var NewsletterLinkRepository */
   private $newsletter_link_repository;
 
+  /** @var NewsletterStatisticsRepository */
+  private $newsletter_statistics_repository;
+
   function __construct(
     Mailer $mailer,
     Renderer $renderer,
@@ -53,6 +58,7 @@ class Worker {
     MetaInfo $mailerMetaInfo,
     StatsNotificationsRepository $repository,
     NewsletterLinkRepository $newsletter_link_repository,
+    NewsletterStatisticsRepository $newsletter_statistics_repository,
     EntityManager $entity_manager,
     $timer = false
   ) {
@@ -64,6 +70,7 @@ class Worker {
     $this->repository = $repository;
     $this->entity_manager = $entity_manager;
     $this->newsletter_link_repository = $newsletter_link_repository;
+    $this->newsletter_statistics_repository = $newsletter_statistics_repository;
   }
 
   /** @throws \Exception */
@@ -94,14 +101,14 @@ class Worker {
   }
 
   private function constructNewsletter(StatsNotificationEntity $stats_notification_entity) {
-    $newsletter = $this->getNewsletter($stats_notification_entity);
+    $newsletter = $stats_notification_entity->getNewsletter();
     try {
-      $link = $this->newsletter_link_repository->findTopLinkForNewsletter($newsletter->id);
+      $link = $this->newsletter_link_repository->findTopLinkForNewsletter($newsletter->getId());
     } catch (\MailPoetVendor\Doctrine\ORM\UnexpectedResultException $e) {
       $link = null;
     }
     $context = $this->prepareContext($newsletter, $link);
-    $subject = $newsletter->queue['newsletter_rendered_subject'];
+    $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
     return [
       'subject' => sprintf(_x('Stats for email %s', 'title of an automatic email containing statistics (newsletter open rate, click rate, etc)', 'mailpoet'), $subject),
       'body' => [
@@ -111,25 +118,12 @@ class Worker {
     ];
   }
 
-  private function getNewsletter(StatsNotificationEntity $stats_notification_entity) {
-    $newsletter = $stats_notification_entity->getNewsletter();
-    $newsletter = Newsletter::findOne($newsletter->getId());
-    return $newsletter
-      ->withSendingQueue()
-      ->withTotalSent()
-      ->withStatistics($this->woocommerce_helper);
-  }
-
-  /**
-   * @param Newsletter $newsletter
-   * @param NewsletterLinkEntity $link
-   * @return array
-   */
-  private function prepareContext(Newsletter $newsletter, NewsletterLinkEntity $link = null) {
-    $clicked = ($newsletter->statistics['clicked'] * 100) / $newsletter->total_sent;
-    $opened = ($newsletter->statistics['opened'] * 100) / $newsletter->total_sent;
-    $unsubscribed = ($newsletter->statistics['unsubscribed'] * 100) / $newsletter->total_sent;
-    $subject = $newsletter->queue['newsletter_rendered_subject'];
+  private function prepareContext(NewsletterEntity $newsletter, NewsletterLinkEntity $link = null) {
+    $statistics = $this->newsletter_statistics_repository->getStatistics($newsletter);
+    $clicked = ($statistics->getClickCount() * 100) / $statistics->getTotalSentCount();
+    $opened = ($statistics->getOpenCount() * 100) / $statistics->getTotalSentCount();
+    $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $statistics->getTotalSentCount();
+    $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
     $context = [
       'subject' => $subject,
       'preheader' => sprintf(_x(
@@ -140,7 +134,7 @@ class Worker {
       ),
       'topLinkClicks' => 0,
       'linkSettings' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings#basics'),
-      'linkStats' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->id()),
+      'linkStats' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->getId()),
       'clicked' => $clicked,
       'opened' => $opened,
     ];
