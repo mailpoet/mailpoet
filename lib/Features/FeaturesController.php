@@ -10,7 +10,6 @@ class FeaturesController {
   //   const FEATURE_NAME_OF_FEATURE = 'name-of-feature';
   const NEW_DEFAULT_LIST_NAME = 'new-default-list-name';
   const SEND_WORDPRESS_MAILS_WITH_MP3 = 'send-wordpress-mails-with-mp3';
-  const NEW_PREMIUM_PAGE = 'new-premium-page';
   const WC_TRANSACTIONAL_EMAILS_CUSTOMIZER = 'wc-transactional-emails-customizer';
   const DISPLAY_MSS_PITCH = 'display-mss-pitch';
 
@@ -19,7 +18,6 @@ class FeaturesController {
   private $defaults = [
     self::NEW_DEFAULT_LIST_NAME => false,
     self::SEND_WORDPRESS_MAILS_WITH_MP3 => false,
-    self::NEW_PREMIUM_PAGE => false,
     self::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER => false,
     self::DISPLAY_MSS_PITCH => false,
   ];
