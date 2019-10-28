@@ -13,15 +13,6 @@ export function changeFormName(name) {
   };
 }
 
-export function* saveForm() {
-  yield {
-    type: 'SAVE_FORM_STARTED',
-  };
-  yield {
-    type: 'SAVE_FORM',
-  };
-}
-
 export function saveFormDone(result) {
   return {
     type: 'SAVE_FORM_DONE',
@@ -43,5 +34,15 @@ export function removeNotice(id) {
   return {
     type: 'REMOVE_NOTICE',
     id,
+  };
+}
+
+export function* saveForm() {
+  yield {
+    type: 'SAVE_FORM_STARTED',
+  };
+  yield removeNotice('save-form');
+  yield {
+    type: 'SAVE_FORM',
   };
 }

@@ -10,13 +10,15 @@ export default {
       action: 'saveEditor',
       data: formData,
     }).done(() => {
-      dispatch('mailpoet-form-editor').saveFormDone({ status: 'success' });
+      dispatch('mailpoet-form-editor').saveFormDone();
+      dispatch('mailpoet-form-editor').addNotice('Form saved.', 'success', true, 'save-form');
     }).fail((response) => {
       let errorMessage = null;
       if (response.errors.length > 0) {
         errorMessage = response.errors.map((error) => (error.message));
       }
-      dispatch('mailpoet-form-editor').saveFormDone({ status: 'fail', errorMessage });
+      dispatch('mailpoet-form-editor').saveFormDone();
+      dispatch('mailpoet-form-editor').addNotice(errorMessage, 'error', true, 'save-form');
     });
   },
 };
