@@ -44,15 +44,4 @@ class Setting extends Model {
     $value = self::where('name', $value)->findOne();
     return ($value) ? $value->delete() : false;
   }
-
-  public static function saveDefaultSenderIfNeeded($sender_address, $sender_name) {
-    $settings = SettingsController::getInstance();
-    if (empty($sender_address) || empty($sender_name) || $settings->get('sender')) {
-      return;
-    }
-    $settings->set('sender', [
-      'address' => $sender_address,
-      'name' => $sender_name,
-    ]);
-  }
 }

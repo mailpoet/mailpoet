@@ -17,7 +17,6 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Renderer;
@@ -205,8 +204,12 @@ class Newsletters extends APIEndpoint {
       }
     }
 
-    if (isset($data['sender_address']) && isset($data['sender_name'])) {
-      Setting::saveDefaultSenderIfNeeded($data['sender_address'], $data['sender_name']);
+    // save default sender if needed
+    if (!$this->settings->get('sender') && !empty($data['sender_address']) && !empty($data['sender_name'])) {
+      $this->settings->set('sender', [
+        'address' => $data['sender_address'],
+        'name' => $data['sender_name'],
+      ]);
     }
 
     if (!empty($options)) {
