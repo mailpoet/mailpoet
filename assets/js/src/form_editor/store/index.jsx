@@ -8,6 +8,7 @@ const defaultState = {
   sidebarOpened: true,
   formData: window.mailpoet_form_data,
   isFormSaving: false,
+  notices: [],
 };
 
 const config = {
