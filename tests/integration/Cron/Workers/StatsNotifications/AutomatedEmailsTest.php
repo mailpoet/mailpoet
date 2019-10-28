@@ -3,10 +3,15 @@
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Config\Renderer;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\SendingQueue;
+use MailPoet\Models\StatisticsClicks;
+use MailPoet\Models\StatisticsOpens;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -28,6 +33,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ScheduledTask::createOrUpdate([
       'type' => AutomatedEmails::TASK_TYPE,
       'status' => null,
@@ -37,17 +43,15 @@ class AutomatedEmailsTest extends \MailPoetTest {
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = new SettingsController();
-    $this->stats_notifications = $this->getMockBuilder(AutomatedEmails::class)
-      ->enableOriginalConstructor()
-      ->setConstructorArgs([
-        $this->mailer,
-        $this->renderer,
-        $this->settings,
-        $this->makeEmpty(WCHelper::class),
-        new MetaInfo,
-      ])
-      ->setMethods(['getNewsletters'])
-      ->getMock();
+    $this->stats_notifications = new AutomatedEmails(
+      $this->mailer,
+      $this->renderer,
+      $this->settings,
+      ContainerWrapper::getInstance()->get(StatsNotificationsRepository::class),
+      ContainerWrapper::getInstance()->get(NewsletterStatisticsRepository::class),
+      new MetaInfo
+    );
+
     $this->settings->set(Worker::SETTINGS_KEY, [
       'automated' => true,
       'address' => 'email@example.com',
@@ -76,15 +80,11 @@ class AutomatedEmailsTest extends \MailPoetTest {
     expect($this->stats_notifications->checkProcessingRequirements())->equals(false);
   }
 
-  function testItDoesntWorkIfEnabled() {
+  function testItDoesWorkIfEnabled() {
     expect($this->stats_notifications->checkProcessingRequirements())->equals(true);
   }
 
   function testItDoesntRenderIfNoNewslettersFound() {
-    $this->stats_notifications
-      ->expects($this->once())
-      ->method('getNewsletters')
-      ->will($this->returnValue([]));
     $this->renderer->expects($this->never())
       ->method('render');
     $this->mailer->expects($this->never())
@@ -96,20 +96,15 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   function testItRenders() {
-    $newsletter1 = Newsletter::create();
-    $newsletter1->hydrate([
-      'id' => 8765,
+    Newsletter::createOrUpdate([
+      'id' => 8763,
       'subject' => 'Subject',
-      'total_sent' => 10,
-      'statistics' => [
-        'clicked' => 5,
-        'opened' => 2,
-      ],
+      'type' => 'welcome',
+      'status' => 'active',
     ]);
-    $this->stats_notifications
-      ->expects($this->once())
-      ->method('getNewsletters')
-      ->will($this->returnValue([$newsletter1]));
+    $this->createQueue(8763, 10);
+    $this->createClicks(8763, 5);
+    $this->createOpens(8763, 2);
     $this->renderer->expects($this->exactly(2))
       ->method('render');
     $this->renderer->expects($this->at(0))
@@ -129,20 +124,16 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   function testItSends() {
-    $newsletter1 = Newsletter::create();
-    $newsletter1->hydrate([
-      'id' => 8765,
+    Newsletter::createOrUpdate([
+      'id' => 8763,
       'subject' => 'Subject',
-      'total_sent' => 10,
-      'statistics' => [
-        'clicked' => 5,
-        'opened' => 2,
-      ],
+      'type' => 'welcome',
+      'status' => 'active',
     ]);
-    $this->stats_notifications
-      ->expects($this->once())
-      ->method('getNewsletters')
-      ->will($this->returnValue([$newsletter1]));
+    $this->createQueue(8763, 10);
+    $this->createClicks(8763, 5);
+    $this->createOpens(8763, 2);
+
 
     $this->renderer->expects($this->exactly(2))
       ->method('render');
@@ -163,20 +154,15 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   function testItPreparesContext() {
-    $newsletter1 = Newsletter::create();
-    $newsletter1->hydrate([
-      'id' => 8765,
+    Newsletter::createOrUpdate([
+      'id' => 8764,
       'subject' => 'Subject',
-      'total_sent' => 10,
-      'statistics' => [
-        'clicked' => 5,
-        'opened' => 2,
-      ],
+      'type' => 'welcome',
+      'status' => 'active',
     ]);
-    $this->stats_notifications
-      ->expects($this->once())
-      ->method('getNewsletters')
-      ->will($this->returnValue([$newsletter1]));
+    $this->createClicks(8764, 5);
+    $this->createOpens(8764, 2);
+    $this->createQueue(8764, 10);
     $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
       ->with(
@@ -189,20 +175,16 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   function testItAddsNewsletterStatsToContext() {
-    $newsletter1 = Newsletter::create();
-    $newsletter1->hydrate([
+    Newsletter::createOrUpdate([
       'id' => 8765,
       'subject' => 'Subject',
-      'total_sent' => 10,
-      'statistics' => [
-        'clicked' => 5,
-        'opened' => 2,
-      ],
+      'type' => 'welcome',
+      'status' => 'active',
     ]);
-    $this->stats_notifications
-      ->expects($this->once())
-      ->method('getNewsletters')
-      ->will($this->returnValue([$newsletter1]));
+    $this->createClicks(8765, 5);
+    $this->createOpens(8765, 2);
+    $this->createQueue(8765, 10);
+
     $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
       ->with(
@@ -215,6 +197,41 @@ class AutomatedEmailsTest extends \MailPoetTest {
         }));
 
     $this->stats_notifications->process();
+  }
+
+  private function createClicks($newsletter_id, $count) {
+    for ($i = 0; $i < $count; $i++) {
+      StatisticsClicks::createOrUpdate([
+        'newsletter_id' => $newsletter_id,
+        'subscriber_id' => $i + 1,
+        'queue_id' => 5,
+        'link_id' => 4,
+        'count' => 1,
+      ]);
+    }
+  }
+
+  private function createOpens($newsletter_id, $count) {
+    for ($i = 0; $i < $count; $i++) {
+      StatisticsOpens::createOrUpdate([
+        'newsletter_id' => $newsletter_id,
+        'subscriber_id' => $i + 1,
+        'queue_id' => 5,
+      ]);
+    }
+  }
+
+  private function createQueue($newsletter_id, $count_processed) {
+    $sending_task = ScheduledTask::createOrUpdate([
+      'type' => 'sending',
+      'status' => ScheduledTask::STATUS_COMPLETED,
+    ]);
+    SendingQueue::createOrUpdate([
+      'newsletter_rendered_subject' => 'Email Subject',
+      'task_id' => $sending_task->id,
+      'newsletter_id' => $newsletter_id,
+      'count_processed' => $count_processed,
+    ]);
   }
 
 }
