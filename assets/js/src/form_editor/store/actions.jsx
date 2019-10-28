@@ -28,3 +28,20 @@ export function saveFormDone(result) {
     result,
   };
 }
+
+export function addNotice(content, status, isDismissible = false, id = null) {
+  return {
+    type: 'ADD_NOTICE',
+    content,
+    status,
+    isDismissible,
+    id,
+  };
+}
+
+export function removeNotice(id) {
+  return {
+    type: 'REMOVE_NOTICE',
+    id,
+  };
+}

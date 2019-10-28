@@ -1,3 +1,17 @@
+const addNotice = (state, action) => {
+  const notices = state.notices.filter((item) => item.id !== action.id);
+  const notice = {
+    id: action.id ? action.id : Math.random().toString(36).substr(2, 9),
+    content: action.content,
+    isDismissible: action.isDismissible,
+    status: action.status,
+  };
+  return {
+    ...state,
+    notices: [...notices, notice],
+  };
+};
+
 export default (defaultState) => (state = defaultState, action) => {
   switch (action.type) {
     case 'TOGGLE_SIDEBAR':
@@ -22,6 +36,13 @@ export default (defaultState) => (state = defaultState, action) => {
       return {
         ...state,
         isFormSaving: false,
+      };
+    case 'ADD_NOTICE':
+      return addNotice(state, action);
+    case 'REMOVE_NOTICE':
+      return {
+        ...state,
+        notices: [...state.notices].filter((item) => item.id !== action.id),
       };
     default:
       return state;
