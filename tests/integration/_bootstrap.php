@@ -60,20 +60,6 @@ if (is_dir(getenv('WP_TEST_CACHE_PATH'))) {
   $cacheDir = getenv('WP_TEST_CACHE_PATH');
 }
 
-$console->writeln('Clearing AspectMock cache...');
-exec('rm -rf ' . $cacheDir . '/_transformation.cache');
-
-$console->writeln('Initializing AspectMock library...');
-$kernel = \AspectMock\Kernel::getInstance();
-$kernel->init(
-  [
-    'debug' => true,
-    'appDir' => __DIR__ . '/../../',
-    'cacheDir' => $cacheDir,
-    'includePaths' => [__DIR__ . '/../../lib'],
-  ]
-);
-
 // This hook throws an 'Undefined index: SERVER_NAME' error in CLI mode,
 // the action is called in ConflictResolverTest
 remove_filter('admin_print_styles', 'wp_resource_hints', 1);
