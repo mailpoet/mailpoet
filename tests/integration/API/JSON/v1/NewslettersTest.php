@@ -966,6 +966,56 @@ class NewslettersTest extends \MailPoetTest {
     expect($sending_queue)->false();
   }
 
+  function testItSavesDefaultSenderIfNeeded() {
+    $settings = $this->di_container->get(SettingsController::class);
+    $settings->set('sender', null);
+
+    $data = [
+      'subject' => 'My New Newsletter',
+      'type' => Newsletter::TYPE_STANDARD,
+      'sender_name' => 'Test sender',
+      'sender_address' => 'test@example.com',
+    ];
+    $response = $this->endpoint->save($data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($settings->get('sender.name'))->same('Test sender');
+    expect($settings->get('sender.address'))->same('test@example.com');
+  }
+
+  function testItDoesntSaveDefaultSenderWhenEmptyValues() {
+    $settings = $this->di_container->get(SettingsController::class);
+    $settings->set('sender', null);
+
+    $data = [
+      'subject' => 'My New Newsletter',
+      'type' => Newsletter::TYPE_STANDARD,
+      'sender_name' => '',
+      'sender_address' => null,
+    ];
+    $response = $this->endpoint->save($data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($settings->get('sender'))->null();
+  }
+
+  function testItDoesntOverrideDefaultSender() {
+    $settings = $this->di_container->get(SettingsController::class);
+    $settings->set('sender', [
+      'name' => 'Test sender',
+      'address' => 'test@example.com',
+    ]);
+
+    $data = [
+      'subject' => 'My New Newsletter',
+      'type' => Newsletter::TYPE_STANDARD,
+      'sender_name' => 'Another test sender',
+      'sender_address' => 'another.test@example.com',
+    ];
+    $response = $this->endpoint->save($data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($settings->get('sender.name'))->same('Test sender');
+    expect($settings->get('sender.address'))->same('test@example.com');
+  }
+
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
