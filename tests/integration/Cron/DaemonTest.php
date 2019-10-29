@@ -8,8 +8,8 @@ use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 class DaemonTest extends \MailPoetTest {
 
@@ -32,7 +32,7 @@ class DaemonTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 
   private function createWorkersFactoryMock(array $workers = []) {

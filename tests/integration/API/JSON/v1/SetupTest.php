@@ -9,9 +9,9 @@ use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
 use MailPoet\Features\FeaturesController;
-use MailPoet\Models\Setting;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
@@ -57,6 +57,6 @@ class SetupTest extends \MailPoetTest {
   }
 
   function _after() {
-    Setting::deleteMany();
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

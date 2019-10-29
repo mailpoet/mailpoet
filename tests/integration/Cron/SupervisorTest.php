@@ -5,8 +5,8 @@ namespace MailPoet\Test\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Supervisor;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 class SupervisorTest extends \MailPoetTest {
   /** @var SettingsController */
@@ -73,6 +73,6 @@ class SupervisorTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

@@ -7,8 +7,8 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCheckWorker;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsRepository;
 
 require_once('KeyCheckWorkerMockImplementation.php');
 
@@ -75,7 +75,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

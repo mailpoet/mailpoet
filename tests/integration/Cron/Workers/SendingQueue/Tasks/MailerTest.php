@@ -8,10 +8,10 @@ use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
@@ -141,7 +141,7 @@ class MailerTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 }

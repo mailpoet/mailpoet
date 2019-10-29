@@ -5,8 +5,8 @@ namespace MailPoet\Test\Cron;
 use Codeception\Stub;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CronHelperTest extends \MailPoetTest {
@@ -326,7 +326,7 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 
   private function getDeamonTestData() {

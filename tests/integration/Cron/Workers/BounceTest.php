@@ -8,10 +8,10 @@ use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 require_once('BounceTestMockAPI.php');
 
@@ -129,7 +129,7 @@ class BounceTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);

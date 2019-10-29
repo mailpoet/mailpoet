@@ -9,10 +9,10 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Setting;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 class SettingsTest extends \MailPoetTest {
 
@@ -41,7 +41,7 @@ class SettingsTest extends \MailPoetTest {
     expect($response->data)->notEmpty();
     expect($response->data['some']['setting']['key'])->true();
 
-    Setting::deleteMany();
+    $this->di_container->get(SettingsRepository::class)->truncate();
     $this->settings->resetCache();
     $response = $this->endpoint->get();
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -96,6 +96,6 @@ class SettingsTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::forTable(Setting::$_table)->deleteMany();
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

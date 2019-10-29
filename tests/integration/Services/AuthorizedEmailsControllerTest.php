@@ -8,10 +8,10 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\Setting;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 class AuthorizedEmailsControllerTest extends \MailPoetTest {
 
@@ -175,7 +175,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
   }
 }

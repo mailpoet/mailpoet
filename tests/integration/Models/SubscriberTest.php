@@ -11,11 +11,11 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 class SubscriberTest extends \MailPoetTest {
 
@@ -892,6 +892,6 @@ class SubscriberTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

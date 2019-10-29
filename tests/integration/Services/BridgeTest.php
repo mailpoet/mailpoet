@@ -4,11 +4,11 @@ namespace MailPoet\Test\Services;
 
 use Codeception\Util\Stub;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 require_once('BridgeTestMockAPI.php');
@@ -323,6 +323,6 @@ class BridgeTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

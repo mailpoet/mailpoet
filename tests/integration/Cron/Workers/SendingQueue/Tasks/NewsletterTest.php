@@ -16,9 +16,9 @@ use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Router;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -444,7 +444,7 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);

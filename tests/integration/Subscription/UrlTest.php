@@ -5,11 +5,11 @@ namespace MailPoet\Test\Subscription;
 use Codeception\Util\Stub;
 use MailPoet\Config\Populator;
 use MailPoet\Features\FeaturesController;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -128,7 +128,7 @@ class UrlTest extends \MailPoetTest {
   }
 
   function _after() {
-    Setting::deleteMany();
+    $this->di_container->get(SettingsRepository::class)->truncate();
     Subscriber::deleteMany();
   }
 }

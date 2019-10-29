@@ -17,11 +17,11 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class SchedulerTest extends \MailPoetTest {
@@ -840,7 +840,7 @@ class SchedulerTest extends \MailPoetTest {
   function _after() {
     Carbon::setTestNow();
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
