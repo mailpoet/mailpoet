@@ -150,6 +150,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
     $this->connection = $this->di_container->get(Connection::class);
     $this->entity_manager = $this->di_container->get(EntityManager::class);
     $this->di_container->get(SettingsController::class)->resetCache();
+    $this->entity_manager->clear();
     parent::setUp();
   }
 
