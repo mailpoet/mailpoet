@@ -92,7 +92,7 @@ class Scheduler {
   }
 
   private function isTaskScheduled($newsletter_id) {
-    $existing = $this->repository->findAllForNewsletter($newsletter_id);
+    $existing = $this->repository->findByNewsletterId($newsletter_id);
     return count($existing) > 0;
   }
 
