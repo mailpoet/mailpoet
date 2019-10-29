@@ -5,12 +5,16 @@ namespace MailPoet\DynamicSegments\Persistence\Loading;
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 use MailPoet\DynamicSegments\Filters\UserRole;
+use MailPoet\DynamicSegments\RequirementsChecker;
 use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\Subscriber;
 
 class SubscribersIdsTest extends \MailPoetTest {
 
   private $editors_wp_ids = [];
+
+  /** @var RequirementsChecker|\PHPUnit_Framework_MockObject_MockObject */
+  private $requirement_checker;
 
   function _before() {
     $this->cleanData();
@@ -32,22 +36,40 @@ class SubscribersIdsTest extends \MailPoetTest {
       'role' => 'editor',
       'user_pass' => '12123154',
     ]);
+    $this->requirement_checker = $this
+      ->getMockBuilder(RequirementsChecker::class)
+      ->setMethods(['shouldSkipSegment'])
+      ->getMock();
   }
 
   function testItConstructsSubscribersIdQueryForAnyDynamicSegment() {
+    $this->requirement_checker->method('shouldSkipSegment')->willReturn(false);
     $userRole = DynamicSegment::create();
     $userRole->hydrate([
       'name' => 'segment',
       'description' => 'description',
     ]);
     $userRole->setFilters([new UserRole('editor', 'and')]);
-    $loader = new SubscribersIds();
+    $loader = new SubscribersIds($this->requirement_checker);
     $result = $loader->load($userRole);
     $wp_ids = [
       Subscriber::findOne($result[0]->id)->wp_user_id,
       Subscriber::findOne($result[1]->id)->wp_user_id,
     ];
     $this->assertEquals($wp_ids, $this->editors_wp_ids, $message = '', $delta = 0.0, $maxDepth = 10, $canonicalize = true);
+  }
+
+  function testItSkipsConstructingSubscribersIdQueryForAnyDynamicSegmentIfRequirementsNotMet() {
+    $this->requirement_checker->method('shouldSkipSegment')->willReturn(true);
+    $userRole = DynamicSegment::create();
+    $userRole->hydrate([
+      'name' => 'segment',
+      'description' => 'description',
+    ]);
+    $userRole->setFilters([new UserRole('editor', 'and')]);
+    $loader = new SubscribersIds($this->requirement_checker);
+    $result = $loader->load($userRole);
+    expect($result)->isEmpty();
   }
 
   function _after() {
