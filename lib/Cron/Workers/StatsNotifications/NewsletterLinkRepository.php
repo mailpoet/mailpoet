@@ -12,9 +12,7 @@ class NewsletterLinkRepository extends Repository {
 
   /**
    * @param int $newsletter_id
-   * @return NewsletterLinkEntity
-   * @throws \MailPoetVendor\Doctrine\ORM\NoResultException
-   * @throws \MailPoetVendor\Doctrine\ORM\NonUniqueResultException
+   * @return NewsletterLinkEntity|null
    */
   public function findTopLinkForNewsletter($newsletter_id) {
     return $this->doctrine_repository
@@ -27,7 +25,7 @@ class NewsletterLinkRepository extends Repository {
       ->orderBy('counter', 'desc')
       ->setMaxResults(1)
       ->getQuery()
-      ->getSingleResult();
+      ->getOneOrNullResult();
   }
 
 }

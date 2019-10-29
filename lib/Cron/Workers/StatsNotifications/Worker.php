@@ -102,11 +102,7 @@ class Worker {
 
   private function constructNewsletter(StatsNotificationEntity $stats_notification_entity) {
     $newsletter = $stats_notification_entity->getNewsletter();
-    try {
-      $link = $this->newsletter_link_repository->findTopLinkForNewsletter($newsletter->getId());
-    } catch (\MailPoetVendor\Doctrine\ORM\UnexpectedResultException $e) {
-      $link = null;
-    }
+    $link = $this->newsletter_link_repository->findTopLinkForNewsletter($newsletter->getId());
     $context = $this->prepareContext($newsletter, $link);
     $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
     return [
