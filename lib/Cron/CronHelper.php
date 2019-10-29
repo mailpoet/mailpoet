@@ -94,13 +94,17 @@ class CronHelper {
     return Security::generateRandomString();
   }
 
-  static function pingDaemon() {
+  static function pingDaemon($wp = null) {
+    if (is_null($wp)) {
+      $wp = new WPFunctions();
+    }
     $url = self::getCronUrl(
-      CronDaemonEndpoint::ACTION_PING_RESPONSE
+      CronDaemonEndpoint::ACTION_PING_RESPONSE,
+      false,
+      $wp
     );
     $result = self::queryCronUrl($url);
     if (is_wp_error($result)) return $result->get_error_message();
-    $wp = new WPFunctions();
     $response = $wp->wpRemoteRetrieveBody($result);
     $response = substr(trim($response), -strlen(DaemonHttpRunner::PING_SUCCESS_RESPONSE)) === DaemonHttpRunner::PING_SUCCESS_RESPONSE ?
       DaemonHttpRunner::PING_SUCCESS_RESPONSE :
@@ -112,7 +116,10 @@ class CronHelper {
     return $response === DaemonHttpRunner::PING_SUCCESS_RESPONSE;
   }
 
-  static function accessDaemon($token) {
+  static function accessDaemon($token, $wp = null) {
+    if (is_null($wp)) {
+      $wp = new WPFunctions();
+    }
     $data = ['token' => $token];
     $url = self::getCronUrl(
       CronDaemonEndpoint::ACTION_RUN,
@@ -124,8 +131,7 @@ class CronHelper {
     }
     $daemon['run_accessed_at'] = time();
     self::saveDaemon($daemon);
-    $result = self::queryCronUrl($url);
-    $wp = new WPFunctions();
+    $result = self::queryCronUrl($url, $wp);
     return $wp->wpRemoteRetrieveBody($result);
   }
 
