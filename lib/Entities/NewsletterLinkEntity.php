@@ -53,8 +53,9 @@ class NewsletterLinkEntity {
   /**
    * Extra lazy is here for `getTotalClicksCount`.
    * If we didn't specify extra lazy the function would load all clicks and count them. This way it uses a single count query.
-   * @ORM\OneToMany(targetEntity="MailPoet\Entities\StatisticsClicksEntity", mappedBy="link", fetch="EXTRA_LAZY")
-   * @var StatisticsClicksEntity[]|ArrayCollection
+   * @ORM\OneToMany(targetEntity="StatisticsClickEntity", mappedBy="link", fetch="EXTRA_LAZY")
+   *
+   * @var StatisticsClickEntity[]|ArrayCollection
    */
   private $clicks;
 

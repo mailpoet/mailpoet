@@ -11,7 +11,7 @@ use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity()
  * @ORM\Table(name="statistics_opens")
  */
-class StatisticsOpensEntity {
+class StatisticsOpenEntity {
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
   use UpdatedAtTrait;
