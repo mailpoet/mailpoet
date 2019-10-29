@@ -5,9 +5,9 @@ namespace MailPoet\Newsletter\Statistics;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\StatisticsClicksEntity;
-use MailPoet\Entities\StatisticsOpensEntity;
-use MailPoet\Entities\StatisticsUnsubscribesEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\ORM\UnexpectedResultException as UnexpectedResultExceptionAlias;
 
@@ -54,7 +54,7 @@ class NewsletterStatisticsRepository extends Repository {
    * @return int
    */
   function getStatisticsClickCount(NewsletterEntity $newsletter) {
-    return $this->getStatisticsCount($newsletter, StatisticsClicksEntity::class);
+    return $this->getStatisticsCount($newsletter, StatisticsClickEntity::class);
   }
 
   /**
@@ -62,7 +62,7 @@ class NewsletterStatisticsRepository extends Repository {
    * @return int
    */
   function getStatisticsOpenCount(NewsletterEntity $newsletter) {
-    return $this->getStatisticsCount($newsletter, StatisticsOpensEntity::class);
+    return $this->getStatisticsCount($newsletter, StatisticsOpenEntity::class);
   }
 
   /**
@@ -70,7 +70,7 @@ class NewsletterStatisticsRepository extends Repository {
    * @return int
    */
   function getStatisticsUnsubscribeCount(NewsletterEntity $newsletter) {
-    return $this->getStatisticsCount($newsletter, StatisticsUnsubscribesEntity::class);
+    return $this->getStatisticsCount($newsletter, StatisticsUnsubscribeEntity::class);
   }
 
   private function getStatisticsCount(NewsletterEntity $newsletter, $statistics_entity_name) {
