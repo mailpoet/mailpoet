@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Cron;
 
-use AspectMock\Test as Mock;
 use Codeception\Stub;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\DaemonHttpRunner;
@@ -102,8 +101,10 @@ class CronHelperTest extends \MailPoetTest {
       $daemon
     );
     $time = time();
-    Mock::double('MailPoet\Cron\CronHelper', ['queryCronUrl' => []]);
-    CronHelper::accessDaemon('some_token');
+    $wp = Stub::make(new WPFunctions, [
+      'wpRemotePost' => [],
+    ]);
+    CronHelper::accessDaemon('some_token', $wp);
     $updated_daemon = CronHelper::getDaemon();
     expect($updated_daemon['run_accessed_at'])->greaterOrEquals($time);
     expect($updated_daemon['run_accessed_at'])->lessThan($time + 2);
@@ -300,10 +301,10 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   function testItReturnsErrorMessageAsPingResponseWhenCronUrlCannotBeAccessed() {
-    Mock::double('MailPoet\Cron\CronHelper', [
-      'getSiteUrl' => false,
+    $wp = Stub::make(new WPFunctions, [
+      'applyFilters' => false,
     ]);
-    expect(CronHelper::pingDaemon())->equals('A valid URL was not provided.');
+    expect(CronHelper::pingDaemon($wp))->equals('A valid URL was not provided.');
   }
 
   function testItPingsDaemon() {
@@ -318,7 +319,6 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   function _after() {
-    Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 
