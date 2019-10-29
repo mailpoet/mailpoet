@@ -5,9 +5,14 @@ namespace MailPoet\DynamicSegments\Persistence\Loading;
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 use MailPoet\DynamicSegments\Filters\UserRole;
+use MailPoet\DynamicSegments\RequirementsChecker;
 use MailPoet\Models\DynamicSegment;
 
 class SubscribersCountTest extends \MailPoetTest {
+
+  /** @var RequirementsChecker|\PHPUnit_Framework_MockObject_MockObject */
+  private $requirement_checker;
+
   function _before() {
     $this->cleanData();
     wp_insert_user([
@@ -28,9 +33,14 @@ class SubscribersCountTest extends \MailPoetTest {
       'role' => 'editor',
       'user_pass' => '12123154',
     ]);
+    $this->requirement_checker = $this
+      ->getMockBuilder(RequirementsChecker::class)
+      ->setMethods(['shouldSkipSegment'])
+      ->getMock();
   }
 
   function testItConstructsQuery() {
+    $this->requirement_checker->method('shouldSkipSegment')->willReturn(false);
     $userRole = DynamicSegment::create();
     $userRole->hydrate([
       'name' => 'segment',
@@ -38,9 +48,23 @@ class SubscribersCountTest extends \MailPoetTest {
     ]);
     $userRole->setFilters([new UserRole('editor', 'and')]);
 
-    $loader = new SubscribersCount();
+    $loader = new SubscribersCount($this->requirement_checker);
     $count = $loader->getSubscribersCount($userRole);
     expect($count)->equals(2);
+  }
+
+  function testItSkipsIfRequirementNotMet() {
+    $this->requirement_checker->method('shouldSkipSegment')->willReturn(true);
+    $userRole = DynamicSegment::create();
+    $userRole->hydrate([
+      'name' => 'segment',
+      'description' => 'description',
+    ]);
+    $userRole->setFilters([new UserRole('editor', 'and')]);
+
+    $loader = new SubscribersCount($this->requirement_checker);
+    $count = $loader->getSubscribersCount($userRole);
+    expect($count)->equals(0);
   }
 
   function _after() {
