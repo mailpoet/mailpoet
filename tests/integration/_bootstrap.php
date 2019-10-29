@@ -33,7 +33,6 @@ $models = [
   'ScheduledTask',
   'ScheduledTaskSubscriber',
   'SendingQueue',
-  'Setting',
   'Subscriber',
   'SubscriberCustomField',
   'SubscriberSegment',
@@ -44,6 +43,10 @@ $models = [
   'StatisticsUnsubscribes',
 ];
 
+$entities = [
+  MailPoet\Entities\SettingEntity::class,
+];
+
 $connection = ContainerWrapper::getInstance(WP_DEBUG)->get(Connection::class);
 $destroy = function($model) use ($connection) {
   $class = new \ReflectionClass('\MailPoet\Models\\' . $model);
@@ -51,6 +54,16 @@ $destroy = function($model) use ($connection) {
   $connection->executeUpdate("TRUNCATE $table");
 };
 array_map($destroy, $models);
+
+$entity_manager = ContainerWrapper::getInstance(WP_DEBUG)->get(EntityManager::class);
+foreach ($entities as $entity) {
+  $table_name = $entity_manager->getClassMetadata($entity)->getTableName();
+  $connection->transactional(function(Connection $connection) use ($table_name) {
+    $connection->query('SET FOREIGN_KEY_CHECKS=0');
+    $connection->executeUpdate("TRUNCATE $table_name");
+    $connection->query('SET FOREIGN_KEY_CHECKS=1');
+  });
+}
 
 // save plugin version to avoid running migrations (that cause $GLOBALS serialization errors)
 $settings = SettingsController::getInstance();

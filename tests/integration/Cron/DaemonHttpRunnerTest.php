@@ -10,8 +10,8 @@ use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DaemonHttpRunnerTest extends \MailPoetTest {
@@ -271,7 +271,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 
   private function createWorkersFactoryMock(array $workers = []) {

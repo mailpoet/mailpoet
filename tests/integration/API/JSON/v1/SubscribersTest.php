@@ -17,12 +17,12 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
@@ -819,6 +819,6 @@ class SubscribersTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberIP::$_table);
     \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

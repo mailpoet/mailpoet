@@ -6,9 +6,9 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 class SendingServiceKeyCheckTest extends \MailPoetTest {
   function _before() {
@@ -59,6 +59,6 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

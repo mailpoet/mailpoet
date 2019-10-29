@@ -9,7 +9,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsRepository;
 
 require_once('SimpleWorkerMockImplementation.php');
 
@@ -322,7 +322,7 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

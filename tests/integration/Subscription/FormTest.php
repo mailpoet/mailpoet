@@ -10,9 +10,9 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form as FormModel;
 use MailPoet\Models\Segment as SegmentModel;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Form;
 use MailPoet\Util\Security;
 use MailPoet\Util\Url as UrlHelper;
@@ -145,6 +145,6 @@ class FormTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
     \ORM::raw_execute('TRUNCATE ' . FormModel::$_table);
     \ORM::raw_execute('TRUNCATE ' . SubscriberModel::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

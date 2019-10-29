@@ -4,9 +4,9 @@ namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
 use Codeception\Util\Stub;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 class PremiumKeyCheckTest extends \MailPoetTest {
 
@@ -57,6 +57,6 @@ class PremiumKeyCheckTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

@@ -4,8 +4,8 @@ namespace MailPoet\Test\Cron;
 
 use Codeception\Stub;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 require_once('CronTriggerMockMethod.php');
 require_once('CronTriggerMockMethodWithException.php');
@@ -67,6 +67,6 @@ class CronTriggerTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

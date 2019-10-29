@@ -9,8 +9,8 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
-use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
 
 class SendingQueueTest extends \MailPoetTest {
@@ -118,7 +118,7 @@ class SendingQueueTest extends \MailPoetTest {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
     \ORM::raw_execute('TRUNCATE ' . SendingQueueModel::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }

@@ -4,13 +4,14 @@ namespace MailPoet\Subscribers;
 
 use Carbon\Carbon;
 use MailPoet\Config\MP2Migrator;
+use MailPoet\Entities\SettingEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
 
 class InactiveSubscribersControllerTest extends \MailPoetTest {
@@ -25,7 +26,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   const PROCESS_BATCH_SIZE = 100;
 
   function _before() {
-    $this->controller = new InactiveSubscribersController();
+    $this->controller = new InactiveSubscribersController($this->di_container->get(SettingsRepository::class));
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     \ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
@@ -153,10 +154,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   function testItDoesNotDeactivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
 
-    $migration_complete_setting = Setting::createOrUpdate([
-      'name' => MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY,
-      'created_at' => (new Carbon())->subDays(3),
-    ]);
+    $this->createSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY, true, (new Carbon())->subDays(3));
 
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
     $this->addSubcriberToTask($subscriber, $task);
@@ -165,7 +163,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($result)->equals(0);
     $subscriber = Subscriber::findOne($subscriber->id);
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    $migration_complete_setting->delete();
+    $this->removeSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY);
   }
 
   function testItActivatesSubscriberWhoRecentlyOpenedEmail() {
@@ -217,10 +215,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   function testItActivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
 
-    $migration_complete_setting = Setting::createOrUpdate([
-      'name' => MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY,
-      'created_at' => (new Carbon())->subDays(3),
-    ]);
+    $this->createSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY, true, (new Carbon())->subDays(3));
 
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
     $this->addSubcriberToTask($subscriber, $task);
@@ -229,7 +224,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($result)->equals(1);
     $subscriber = Subscriber::findOne($subscriber->id);
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    $migration_complete_setting->delete();
+    $this->removeSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY);
   }
 
   function testItDoesReactivateInactiveSubscribers() {
@@ -299,5 +294,18 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $opened = StatisticsOpens::createOrUpdate(['subscriber_id' => $subscriber->id, 'newsletter_id' => $queue->newsletter_id, 'queue_id' => $queue->id]);
     $opened->created_at = (new Carbon())->subDays($days_ago)->toDateTimeString();
     $opened->save();
+  }
+
+  private function createSetting($name, $value, $created_at) {
+    $table_name = $this->entity_manager->getClassMetadata(SettingEntity::class)->getTableName();
+    $this->connection->executeUpdate(
+      "INSERT INTO $table_name (name, value, created_at) VALUES (?, ?, ?)",
+      [$name, $value, $created_at]
+    );
+  }
+
+  private function removeSetting($name) {
+    $table_name = $this->entity_manager->getClassMetadata(SettingEntity::class)->getTableName();
+    $this->connection->executeUpdate("DELETE FROM $table_name WHERE name = ?", [$name]);
   }
 }

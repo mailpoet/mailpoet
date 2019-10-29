@@ -6,9 +6,9 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Segment;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
@@ -88,6 +88,6 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

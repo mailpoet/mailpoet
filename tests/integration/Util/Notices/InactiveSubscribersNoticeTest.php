@@ -2,9 +2,9 @@
 
 namespace MailPoet\Util\Notices;
 
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
@@ -59,7 +59,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    $this->di_container->get(SettingsRepository::class)->truncate();
     \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 
