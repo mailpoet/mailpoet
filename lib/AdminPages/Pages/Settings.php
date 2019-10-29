@@ -107,7 +107,7 @@ class Settings {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $this->wp->_x(
         'You need to enable MailPoet email customizer for WooCommerce if you want to access to the customizer.',
         'Notice in Settings when WooCommerce customizer is not enabled'
-      ));
+      ), 'mailpoet');
       $notice->displayWPNotice();
     }
     $this->page_renderer->displayPage('settings.html', $data);

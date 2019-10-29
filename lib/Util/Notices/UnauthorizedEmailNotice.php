@@ -42,8 +42,8 @@ class UnauthorizedEmailNotice {
 
   private function getMessageText($validation_error) {
     $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email address %s hasn’t been authorized yet.</b>',
-      'Email addresses have to be authorized to be used to send emails. %s will be replaced by an email address.'
-    );
+      'Email addresses have to be authorized to be used to send emails. %s will be replaced by an email address.',
+      'mailpoet');
     $message = str_replace('%s', EscapeHelper::escapeHtmlText($validation_error['invalid_sender_address']), $text);
     return "<p>$message</p>";
   }
@@ -51,7 +51,7 @@ class UnauthorizedEmailNotice {
   private function getSettingsButtons($validation_error) {
     $buttons = '';
     if (!empty($validation_error['invalid_sender_address'])) {
-      $button = $this->wp->_x('Update my Default sender email address', 'Please reuse the current translation of “Default sender”');
+      $button = $this->wp->_x('Update my Default sender email address', 'Please reuse the current translation of “Default sender”', 'mailpoet');
       $button = Helpers::replaceLinkTags("[link]{$button}[/link]", 'admin.php?page=mailpoet-settings', ['class' => 'button button-secondary']);
       $buttons .= "<p>$button</p>";
     }
@@ -60,10 +60,10 @@ class UnauthorizedEmailNotice {
 
   private function getAuthorizationLink($validation_error) {
     $email = $validation_error['invalid_sender_address'];
-    $authorize_link = $this->wp->_x('Authorize %s', 'Link for user to authorize their email address');
+    $authorize_link = $this->wp->_x('Authorize %s', 'Link for user to authorize their email address', 'mailpoet');
     $authorize_link = str_replace('%s', EscapeHelper::escapeHtmlText($email), $authorize_link);
     $authorize_link = Helpers::replaceLinkTags("[link]{$authorize_link}[/link]", 'https://account.mailpoet.com/authorization', ['target' => '_blank']);
-    $html = '<p><b>' . $this->wp->_x('OR', 'User has to choose between two options') . '</b></p>';
+    $html = '<p><b>' . $this->wp->_x('OR', 'User has to choose between two options', 'mailpoet') . '</b></p>';
     $html .= "<p>$authorize_link</p>";
     return $html;
   }
