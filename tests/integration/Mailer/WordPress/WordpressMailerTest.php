@@ -2,11 +2,6 @@
 
 namespace MailPoet\Mailer\WordPress;
 
-if (!class_exists('PHPMailer')) {
-  // this has to be here otherwise AspectMock is trying to load the PHPMailer and doesn't find it
-  require_once ABSPATH . WPINC . '/class-phpmailer.php';
-}
-
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MetaInfo;
