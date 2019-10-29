@@ -115,6 +115,21 @@ class JsonTypesTest extends \MailPoetTest {
     expect($entity->getJsonOrSerializedData())->null();
   }
 
+  function testItLoadsEmptyStringAsNull() {
+    $this->connection->executeUpdate(
+      "INSERT INTO $this->table_name (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
+      [
+        1,
+        '',
+        '',
+      ]
+    );
+
+    $entity = $this->entity_manager->find(JsonEntity::class, 1);
+    expect($entity->getJsonData())->null();
+    expect($entity->getJsonOrSerializedData())->null();
+  }
+
   function testItDoesNotSaveInvalidData() {
     $entity = new JsonEntity();
     $entity->setJsonData("\xB1\x31"); // invalid unicode sequence

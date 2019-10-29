@@ -28,7 +28,7 @@ class JsonType extends Type {
   }
 
   function convertToPHPValue($value, AbstractPlatform $platform) {
-    if ($value === null) {
+    if ($value === null || $value === '') {
       return null;
     }
 
