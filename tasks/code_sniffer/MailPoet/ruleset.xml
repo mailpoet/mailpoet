@@ -33,7 +33,7 @@
   <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
     <properties>
       <property name="alwaysUsedPropertiesAnnotations" type="array"
-                value="@ORM\Column,@ORM\ManyToOne,@ORM\OneToMany,@ORM\ManyToMany,@ORM\JoinColumn"/>
+                value="@ORM\Column,@ORM\ManyToOne,@ORM\OneToMany,@ORM\ManyToMany,@ORM\OneToOne"/>
     </properties>
   </rule>
 
