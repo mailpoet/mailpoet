@@ -18,14 +18,12 @@ class StatsNotificationEntity {
 
   /**
    * @ORM\OneToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
-   * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")
    * @var NewsletterEntity
    */
   private $newsletter;
 
   /**
    * @ORM\OneToOne(targetEntity="MailPoet\Entities\ScheduledTaskEntity")
-   * @ORM\JoinColumn(name="task_id", referencedColumnName="id")
    * @var ScheduledTaskEntity
    */
   private $task;
