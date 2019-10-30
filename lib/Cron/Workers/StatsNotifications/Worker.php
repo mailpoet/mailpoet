@@ -76,7 +76,7 @@ class Worker {
   /** @throws \Exception */
   function process() {
     $settings = $this->settings->get(self::SETTINGS_KEY);
-    foreach (self::getDueTasks() as $stats_notification_entity) {
+    foreach ($this->repository->findScheduled(Sending::RESULT_BATCH_SIZE) as $stats_notification_entity) {
       try {
         $extra_params = [
           'meta' => $this->mailerMetaInfo->getStatsNotificationMetaInfo(),
@@ -91,13 +91,6 @@ class Worker {
       }
       CronHelper::enforceExecutionLimit($this->timer);
     }
-  }
-
-  /**
-   * @return StatsNotificationEntity[]
-   */
-  private function getDueTasks() {
-    return $this->repository->findDueTasks(Sending::RESULT_BATCH_SIZE);
   }
 
   private function constructNewsletter(StatsNotificationEntity $stats_notification_entity) {

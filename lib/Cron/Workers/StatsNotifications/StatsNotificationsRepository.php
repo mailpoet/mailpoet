@@ -31,7 +31,7 @@ class StatsNotificationsRepository extends Repository {
    * @param int|null $limit
    * @return StatsNotificationEntity[]
    */
-  public function findDueTasks($limit = null) {
+  public function findScheduled($limit = null) {
     $date = new Carbon();
     $query = $this->doctrine_repository
       ->createQueryBuilder('stn')
@@ -57,7 +57,7 @@ class StatsNotificationsRepository extends Repository {
   /**
    * @return NewsletterEntity[]
    */
-  public function getDueAutomatedNewsletters() {
+  public function findScheduledAutomatedNewsletters() {
     return $this->entity_manager
       ->createQueryBuilder()
       ->select('n')
