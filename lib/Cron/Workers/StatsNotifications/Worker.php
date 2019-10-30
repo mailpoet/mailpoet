@@ -139,7 +139,6 @@ class Worker {
     $task->setStatus(ScheduledTask::STATUS_COMPLETED);
     $task->setProcessedAt(new Carbon);
     $task->setScheduledAt(null);
-    $this->entity_manager->persist($task);
     $this->entity_manager->flush();
   }
 
