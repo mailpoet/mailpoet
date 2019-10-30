@@ -28,10 +28,19 @@ class Scheduler {
   /** @var LoggerFactory */
   private $logger_factory;
 
-  function __construct(SubscribersFinder $subscribers_finder, LoggerFactory $logger_factory, $timer = false) {
+  /** @var CronHelper */
+  private $cron_helper;
+
+  function __construct(
+    SubscribersFinder $subscribers_finder,
+    LoggerFactory $logger_factory,
+    CronHelper $cron_helper,
+    $timer = false
+  ) {
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution limit is reached
-    CronHelper::enforceExecutionLimit($this->timer);
+    $this->cron_helper = $cron_helper;
+    $this->cron_helper->enforceExecutionLimit($this->timer);
     $this->subscribers_finder = $subscribers_finder;
     $this->logger_factory = $logger_factory;
   }
@@ -55,7 +64,7 @@ class Scheduler {
       } elseif ($newsletter->type === Newsletter::TYPE_AUTOMATIC) {
         $this->processScheduledAutomaticEmail($newsletter, $queue);
       }
-      CronHelper::enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($this->timer);
     }
   }
 

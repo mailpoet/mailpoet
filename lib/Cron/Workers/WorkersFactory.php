@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Config\Renderer;
+use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
@@ -44,6 +45,9 @@ class WorkersFactory {
 
   /** @var SettingsController */
   private $settings;
+
+  /** @var CronHelper */
+  private $cron_helper;
 
   /** @var WooCommerceSegment */
   private $woocommerce_segment;
@@ -95,6 +99,7 @@ class WorkersFactory {
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
+    CronHelper $cron_helper,
     WooCommerceSegment $woocommerce_segment,
     InactiveSubscribersController $inactive_subscribers_controller,
     WooCommerceHelper $woocommerce_helper,
@@ -114,6 +119,7 @@ class WorkersFactory {
     $this->mailer = $mailer;
     $this->renderer = $renderer;
     $this->settings = $settings;
+    $this->cron_helper = $cron_helper;
     $this->woocommerce_segment = $woocommerce_segment;
     $this->inactive_subscribers_controller = $inactive_subscribers_controller;
     $this->woocommerce_helper = $woocommerce_helper;
@@ -131,7 +137,7 @@ class WorkersFactory {
 
   /** @return SchedulerWorker */
   function createScheduleWorker($timer) {
-    return new SchedulerWorker($this->subscribers_finder, $this->logger_factory, $timer);
+    return new SchedulerWorker($this->subscribers_finder, $this->logger_factory, $this->cron_helper, $timer);
   }
 
   /** @return SendingQueueWorker */
@@ -141,6 +147,7 @@ class WorkersFactory {
       $this->statsNotificationsScheduler,
       $this->logger_factory,
       $this->newsletters_repository,
+      $this->cron_helper,
       $timer
     );
   }
@@ -151,6 +158,7 @@ class WorkersFactory {
       $this->mailer,
       $this->renderer,
       $this->settings,
+      $this->cron_helper,
       $this->mailerMetaInfo,
       $this->stats_notifications_repository,
       $this->newsletter_link_repository,

@@ -45,11 +45,15 @@ class SendingQueue {
   /** @var NewslettersRepository */
   private $newsletters_repository;
 
+  /** @var CronHelper */
+  private $cron_helper;
+
   function __construct(
     SendingErrorHandler $error_handler,
     StatsNotificationsScheduler $stats_notifications_scheduler,
     LoggerFactory $logger_factory,
     NewslettersRepository $newsletters_repository,
+    CronHelper $cron_helper,
     $timer = false,
     $mailer_task = false,
     $newsletter_task = false
@@ -64,6 +68,7 @@ class SendingQueue {
     $this->batch_size = $wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
     $this->logger_factory = $logger_factory;
     $this->newsletters_repository = $newsletters_repository;
+    $this->cron_helper = $cron_helper;
   }
 
   function process() {
@@ -294,7 +299,7 @@ class SendingQueue {
 
   function enforceSendingAndExecutionLimits() {
     // abort if execution limit is reached
-    CronHelper::enforceExecutionLimit($this->timer);
+    $this->cron_helper->enforceExecutionLimit($this->timer);
     // abort if sending limit has been reached
     MailerLog::enforceExecutionRequirements();
   }

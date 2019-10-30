@@ -59,7 +59,7 @@ class Bounce extends SimpleWorker {
 
     foreach ($subscriber_batches as $subscribers_to_process_ids) {
       // abort if execution limit is reached
-      CronHelper::enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($this->timer);
 
       $subscriber_emails = Subscriber::select('email')
         ->whereIn('id', $subscribers_to_process_ids)

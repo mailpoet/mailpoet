@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -18,13 +19,17 @@ abstract class SimpleWorker {
   const TASK_RUN_TIMEOUT = 120;
   const TIMED_OUT_TASK_RESCHEDULE_TIMEOUT = 5;
 
+  /** @var CronHelper */
+  protected $cron_helper;
+
   function __construct($timer = false) {
     if (static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
     }
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution limit is reached
-    CronHelper::enforceExecutionLimit($this->timer);
+    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->cron_helper->enforceExecutionLimit($this->timer);
     $this->wp = new WPFunctions();
   }
 
@@ -92,14 +97,14 @@ abstract class SimpleWorker {
     $task->save();
 
     // abort if execution limit is reached
-    CronHelper::enforceExecutionLimit($this->timer);
+    $this->cron_helper->enforceExecutionLimit($this->timer);
 
     return true;
   }
 
   function processTask(ScheduledTask $task) {
     // abort if execution limit is reached
-    CronHelper::enforceExecutionLimit($this->timer);
+    $this->cron_helper->enforceExecutionLimit($this->timer);
 
     if (!static::SUPPORT_MULTIPLE_INSTANCES) {
       if ($this->rescheduleOutdated($task)) {

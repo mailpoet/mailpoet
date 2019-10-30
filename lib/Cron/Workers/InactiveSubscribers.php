@@ -55,10 +55,10 @@ class InactiveSubscribers extends SimpleWorker {
       $last_subscriber_id += self::BATCH_SIZE;
       $task->meta = ['last_subscriber_id' => $last_subscriber_id];
       $task->save();
-      CronHelper::enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($this->timer);
     };
     while ($this->inactive_subscribers_controller->markActiveSubscribers($days_to_inactive, self::BATCH_SIZE) === self::BATCH_SIZE) {
-      CronHelper::enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($this->timer);
     };
     self::schedule();
     return true;
