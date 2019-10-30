@@ -91,8 +91,6 @@ class NewsletterLinkEntity {
    * @return int
    */
   function getTotalClicksCount() {
-    $criteria = Criteria::create()
-      ->where(Criteria::expr()->eq("link", $this));
-    return $this->clicks->matching($criteria)->count();
+    return $this->clicks->count();
   }
 }
