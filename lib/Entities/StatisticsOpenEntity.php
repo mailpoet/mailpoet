@@ -14,7 +14,6 @@ use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 class StatisticsOpenEntity {
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
-  use UpdatedAtTrait;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")

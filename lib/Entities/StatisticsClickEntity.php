@@ -44,7 +44,7 @@ class StatisticsClickEntity {
 
   /**
    * @ORM\Column(type="integer")
-   * @var int|null
+   * @var int
    */
   private $count;
 
