@@ -5,6 +5,8 @@ use Codeception\Event\TestEvent;
 use Codeception\Events;
 use Codeception\Extension;
 use MailPoet\Config\Env;
+use MailPoet\DI\ContainerWrapper;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class CleanupExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDeclaration
   const DB_BACKUP_PATH = __DIR__ . '/../_data/acceptanceBackup.sql';
@@ -66,6 +68,9 @@ class CleanupExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDec
   function cleanupEnvironment(TestEvent $event) {
     $this->root_connection->exec(file_get_contents(self::DB_BACKUP_PATH));
     exec('rm -rf ' . self::MAILHOG_DATA_PATH . '/*', $output);
+
+    // cleanup EntityManager for data factories that are using it
+    ContainerWrapper::getInstance()->get(EntityManager::class)->clear();
   }
 
   private function createDsnConnectionString() {
