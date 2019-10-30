@@ -18,18 +18,22 @@ class Help {
   /** @var State */
   private $tasks_state;
 
-  function __construct(PageRenderer $page_renderer, State $tasks_state) {
+  /** @var CronHelper */
+  private $cron_helper;
+
+  function __construct(PageRenderer $page_renderer, State $tasks_state, CronHelper $cron_helper) {
     $this->page_renderer = $page_renderer;
     $this->tasks_state = $tasks_state;
+    $this->cron_helper = $cron_helper;
   }
 
   function render() {
     $system_info_data = Beacon::getData();
-    $cron_ping_response = CronHelper::pingDaemon();
+    $cron_ping_response = $this->cron_helper->pingDaemon();
     $system_status_data = [
       'cron' => [
-        'url' => CronHelper::getCronUrl(CronDaemon::ACTION_PING),
-        'isReachable' => CronHelper::validatePingResponse($cron_ping_response),
+        'url' => $this->cron_helper->getCronUrl(CronDaemon::ACTION_PING),
+        'isReachable' => $this->cron_helper->validatePingResponse($cron_ping_response),
         'pingResponse' => $cron_ping_response,
       ],
       'mss' => [
@@ -37,10 +41,10 @@ class Help {
           ['isReachable' => Bridge::pingBridge()] :
           false,
       ],
-      'cronStatus' => CronHelper::getDaemon(),
+      'cronStatus' => $this->cron_helper->getDaemon(),
       'queueStatus' => MailerLog::getMailerLog(),
     ];
-    $system_status_data['cronStatus']['accessible'] = CronHelper::isDaemonAccessible();
+    $system_status_data['cronStatus']['accessible'] = $this->cron_helper->isDaemonAccessible();
     $system_status_data['queueStatus']['tasksStatusCounts'] = $this->tasks_state->getCountsPerStatus();
     $system_status_data['queueStatus']['latestTasks'] = $this->tasks_state->getLatestTasks(Sending::TASK_TYPE);
     $this->page_renderer->displayPage(

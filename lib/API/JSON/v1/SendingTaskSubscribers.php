@@ -25,16 +25,21 @@ class SendingTaskSubscribers extends APIEndpoint {
   /** @var SettingsController */
   private $settings;
 
+  /** @var CronHelper */
+  private $cron_helper;
+
   /** @var WPFunctions */
   private $wp;
 
   function __construct(
     Listing\Handler $listing_handler,
     SettingsController $settings,
+    CronHelper $cron_helper,
     WPFunctions $wp
   ) {
     $this->listing_handler = $listing_handler;
     $this->settings = $settings;
+    $this->cron_helper = $cron_helper;
     $this->wp = $wp;
   }
 
@@ -62,7 +67,7 @@ class SendingTaskSubscribers extends APIEndpoint {
       'groups' => $listing_data['groups'],
       'mta_log' => $this->settings->get('mta_log'),
       'mta_method' => $this->settings->get('mta.method'),
-      'cron_accessible' => CronHelper::isDaemonAccessible(),
+      'cron_accessible' => $this->cron_helper->isDaemonAccessible(),
       'current_time' => $this->wp->currentTime('mysql'),
     ]);
   }
