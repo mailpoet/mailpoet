@@ -3,6 +3,7 @@
 namespace MailPoet\Helpscout;
 
 use MailPoet\Cron\CronHelper;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
@@ -19,6 +20,10 @@ class Beacon {
     $current_user = WPFunctions::get()->wpGetCurrentUser();
     $sender = $settings->get('sender');
     $premium_key = $settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $settings->get(Bridge::API_KEY_SETTING_NAME);
+    $cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $cron_ping_url = $cron_helper->getCronUrl(
+      CronDaemon::ACTION_PING
+    );
     return [
       'name' => $current_user->display_name,
       'email' => $sender['address'],
@@ -48,9 +53,7 @@ class Beacon {
         $mta['frequency']['interval']
       ),
       'Task Scheduler method' => $settings->get('cron_trigger.method'),
-      'Cron ping URL' => CronHelper::getCronUrl(
-        CronDaemon::ACTION_PING
-      ),
+      'Cron ping URL' => $cron_ping_url,
       'Default FROM address' => $settings->get('sender.address'),
       'Default Reply-To address' => $settings->get('reply_to.address'),
       'Bounce Email Address' => $settings->get('bounce.address'),

@@ -47,6 +47,9 @@ class Newsletters extends APIEndpoint {
   /** @var SettingsController */
   private $settings;
 
+  /** @var CronHelper */
+  private $cron_helper;
+
   /** @var AuthorizedEmailsController */
   private $authorized_emails_controller;
 
@@ -75,6 +78,7 @@ class Newsletters extends APIEndpoint {
     WPFunctions $wp,
     WCHelper $woocommerce_helper,
     SettingsController $settings,
+    CronHelper $cron_helper,
     AuthorizedEmailsController $authorized_emails_controller,
     NewslettersRepository $newsletters_repository,
     NewslettersResponseBuilder $newsletters_response_builder,
@@ -87,6 +91,7 @@ class Newsletters extends APIEndpoint {
     $this->wp = $wp;
     $this->woocommerce_helper = $woocommerce_helper;
     $this->settings = $settings;
+    $this->cron_helper = $cron_helper;
     $this->authorized_emails_controller = $authorized_emails_controller;
     $this->newsletters_repository = $newsletters_repository;
     $this->newsletters_response_builder = $newsletters_response_builder;
@@ -556,7 +561,7 @@ class Newsletters extends APIEndpoint {
       'groups' => $listing_data['groups'],
       'mta_log' => $this->settings->get('mta_log'),
       'mta_method' => $this->settings->get('mta.method'),
-      'cron_accessible' => CronHelper::isDaemonAccessible(),
+      'cron_accessible' => $this->cron_helper->isDaemonAccessible(),
       'current_time' => $this->wp->currentTime('mysql'),
     ]);
   }

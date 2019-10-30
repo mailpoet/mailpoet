@@ -10,6 +10,7 @@ use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\API\JSON\v1\Newsletters;
+use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
@@ -42,9 +43,13 @@ class NewslettersTest extends \MailPoetTest {
   /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
+  /** @var CronHelper */
+  private $cron_helper;
+
   function _before() {
     parent::_before();
     $this->subscription_url_factory = SubscriptionUrlFactory::getInstance();
+    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->endpoint = ContainerWrapper::getInstance()->get(Newsletters::class);
     $this->newsletter = Newsletter::createOrUpdate(
       [
@@ -135,6 +140,7 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
+      $this->cron_helper,
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
@@ -189,6 +195,7 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
+      $this->cron_helper,
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
@@ -562,6 +569,7 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
+      $this->cron_helper,
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
@@ -902,6 +910,7 @@ class NewslettersTest extends \MailPoetTest {
       $wp,
       $this->makeEmpty(WCHelper::class),
       new SettingsController(),
+      $this->cron_helper,
       ContainerWrapper::getInstance()->get(AuthorizedEmailsController::class),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
