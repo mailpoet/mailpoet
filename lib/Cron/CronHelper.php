@@ -6,7 +6,6 @@ use MailPoet\Router\Endpoints\CronDaemon as CronDaemonEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
-use MailPoet\WP\Functions;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CronHelper {
@@ -19,20 +18,29 @@ class CronHelper {
   // Error codes
   const DAEMON_EXECUTION_LIMIT_REACHED = 1001;
 
-  static function getDaemonExecutionLimit() {
-    $wp = Functions::get();
-    $limit = $wp->applyFilters('mailpoet_cron_get_execution_limit', self::DAEMON_EXECUTION_LIMIT);
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(SettingsController $settings, WPFunctions $wp) {
+    $this->settings = $settings;
+    $this->wp = $wp;
+  }
+
+  function getDaemonExecutionLimit() {
+    $limit = $this->wp->applyFilters('mailpoet_cron_get_execution_limit', self::DAEMON_EXECUTION_LIMIT);
     return $limit;
   }
 
-  static function getDaemonExecutionTimeout() {
-    $limit = self::getDaemonExecutionLimit();
+  function getDaemonExecutionTimeout() {
+    $limit = $this->getDaemonExecutionLimit();
     $timeout = $limit * 1.75;
-    $wp = Functions::get();
-    return $wp->applyFilters('mailpoet_cron_get_execution_timeout', $timeout);
+    return $this->wp->applyFilters('mailpoet_cron_get_execution_timeout', $timeout);
   }
 
-  static function createDaemon($token) {
+  function createDaemon($token) {
     $daemon = [
       'token' => $token,
       'status' => self::DAEMON_STATUS_ACTIVE,
@@ -42,104 +50,93 @@ class CronHelper {
       'last_error' => null,
       'last_error_date' => null,
     ];
-    self::saveDaemon($daemon);
+    $this->saveDaemon($daemon);
     return $daemon;
   }
 
-  static function restartDaemon($token) {
-    return self::createDaemon($token);
+  function restartDaemon($token) {
+    return $this->createDaemon($token);
   }
 
-  static function getDaemon() {
-    $settings = new SettingsController();
-    return $settings->fetch(self::DAEMON_SETTING);
+  function getDaemon() {
+    return $this->settings->fetch(self::DAEMON_SETTING);
   }
 
-  static function saveDaemonLastError($error) {
-    $daemon = self::getDaemon();
+  function saveDaemonLastError($error) {
+    $daemon = $this->getDaemon();
     if ($daemon) {
       $daemon['last_error'] = $error;
       $daemon['last_error_date'] = time();
-      self::saveDaemon($daemon);
+      $this->saveDaemon($daemon);
     }
   }
 
-  static function saveDaemonRunCompleted($run_completed_at) {
-    $daemon = self::getDaemon();
+  function saveDaemonRunCompleted($run_completed_at) {
+    $daemon = $this->getDaemon();
     if ($daemon) {
       $daemon['run_completed_at'] = $run_completed_at;
-      self::saveDaemon($daemon);
+      $this->saveDaemon($daemon);
     }
   }
 
-  static function saveDaemon($daemon) {
+  function saveDaemon($daemon) {
     $daemon['updated_at'] = time();
-    $settings = new SettingsController();
-    $settings->set(
+    $this->settings->set(
       self::DAEMON_SETTING,
       $daemon
     );
   }
 
-  static function deactivateDaemon($daemon) {
+  function deactivateDaemon($daemon) {
     $daemon['status'] = self::DAEMON_STATUS_INACTIVE;
-    $settings = new SettingsController();
-    $settings->set(
+    $this->settings->set(
       self::DAEMON_SETTING,
       $daemon
     );
   }
 
-  static function createToken() {
+  function createToken() {
     return Security::generateRandomString();
   }
 
-  static function pingDaemon($wp = null) {
-    if (is_null($wp)) {
-      $wp = new WPFunctions();
-    }
-    $url = self::getCronUrl(
-      CronDaemonEndpoint::ACTION_PING_RESPONSE,
-      false,
-      $wp
+  function pingDaemon() {
+    $url = $this->getCronUrl(
+      CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
-    $result = self::queryCronUrl($url);
+    $result = $this->queryCronUrl($url);
     if (is_wp_error($result)) return $result->get_error_message();
-    $response = $wp->wpRemoteRetrieveBody($result);
+    $response = $this->wp->wpRemoteRetrieveBody($result);
     $response = substr(trim($response), -strlen(DaemonHttpRunner::PING_SUCCESS_RESPONSE)) === DaemonHttpRunner::PING_SUCCESS_RESPONSE ?
       DaemonHttpRunner::PING_SUCCESS_RESPONSE :
       $response;
     return $response;
   }
 
-  static function validatePingResponse($response) {
+  function validatePingResponse($response) {
     return $response === DaemonHttpRunner::PING_SUCCESS_RESPONSE;
   }
 
-  static function accessDaemon($token, $wp = null) {
-    if (is_null($wp)) {
-      $wp = new WPFunctions();
-    }
+  function accessDaemon($token) {
     $data = ['token' => $token];
-    $url = self::getCronUrl(
+    $url = $this->getCronUrl(
       CronDaemonEndpoint::ACTION_RUN,
       $data
     );
-    $daemon = self::getDaemon();
+    $daemon = $this->getDaemon();
     if (!$daemon) {
       throw new \LogicException('Daemon does not exist.');
     }
     $daemon['run_accessed_at'] = time();
-    self::saveDaemon($daemon);
-    $result = self::queryCronUrl($url, $wp);
-    return $wp->wpRemoteRetrieveBody($result);
+    $this->saveDaemon($daemon);
+    $result = $this->queryCronUrl($url);
+    return $this->wp->wpRemoteRetrieveBody($result);
   }
 
   /**
    * @return boolean|null
    */
-  static function isDaemonAccessible() {
-    $daemon = self::getDaemon();
+  function isDaemonAccessible() {
+    $daemon = $this->getDaemon();
     if (!$daemon || !isset($daemon['run_accessed_at']) || $daemon['run_accessed_at'] === null) {
       return null;
     }
@@ -155,11 +152,8 @@ class CronHelper {
     return null;
   }
 
-  static function queryCronUrl($url, $wp = null) {
-    if (is_null($wp)) {
-      $wp = new WPFunctions();
-    }
-    $args = $wp->applyFilters(
+  function queryCronUrl($url) {
+    $args = $this->wp->applyFilters(
       'mailpoet_cron_request_args',
       [
         'blocking' => true,
@@ -168,25 +162,22 @@ class CronHelper {
         'user-agent' => 'MailPoet Cron',
       ]
     );
-    return $wp->wpRemotePost($url, $args);
+    return $this->wp->wpRemotePost($url, $args);
   }
 
-  static function getCronUrl($action, $data = false, $wp = null) {
-    if (is_null($wp)) {
-      $wp = new WPFunctions();
-    }
+  function getCronUrl($action, $data = false) {
     $url = Router::buildRequest(
       CronDaemonEndpoint::ENDPOINT,
       $action,
       $data
     );
-    $custom_cron_url = $wp->applyFilters('mailpoet_cron_request_url', $url);
+    $custom_cron_url = $this->wp->applyFilters('mailpoet_cron_request_url', $url);
     return ($custom_cron_url === $url) ?
-      str_replace(home_url(), self::getSiteUrl(), $url) :
+      str_replace(home_url(), $this->getSiteUrl(), $url) :
       $custom_cron_url;
   }
 
-  static function getSiteUrl($site_url = false) {
+  function getSiteUrl($site_url = false) {
     // additional check for some sites running inside a virtual machine or behind
     // proxy where there could be different ports (e.g., host:8080 => guest:80)
     $site_url = ($site_url) ? $site_url : WPFunctions::get()->homeUrl();
@@ -209,9 +200,9 @@ class CronHelper {
     throw new \Exception(__('Site URL is unreachable.', 'mailpoet'));
   }
 
-  static function enforceExecutionLimit($timer) {
+  function enforceExecutionLimit($timer) {
     $elapsed_time = microtime(true) - $timer;
-    if ($elapsed_time >= self::getDaemonExecutionLimit()) {
+    if ($elapsed_time >= $this->getDaemonExecutionLimit()) {
       throw new \Exception(__('Maximum execution time has been reached.', 'mailpoet'), self::DAEMON_EXECUTION_LIMIT_REACHED);
     }
   }
