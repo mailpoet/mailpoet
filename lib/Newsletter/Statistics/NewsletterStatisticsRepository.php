@@ -8,8 +8,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
-use MailPoetVendor\Doctrine\Common\Collections\Criteria;
-use MailPoetVendor\Doctrine\ORM\UnexpectedResultException as UnexpectedResultExceptionAlias;
+use MailPoetVendor\Doctrine\ORM\UnexpectedResultException;
 
 class NewsletterStatisticsRepository extends Repository {
   protected function getEntityClassName() {
@@ -31,7 +30,7 @@ class NewsletterStatisticsRepository extends Repository {
         ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
         ->getQuery()
         ->getSingleScalarResult();
-    } catch (UnexpectedResultExceptionAlias $e) {
+    } catch (UnexpectedResultException $e) {
       return 0;
     }
   }
@@ -83,7 +82,7 @@ class NewsletterStatisticsRepository extends Repository {
         ->setParameter('newsletter', $newsletter)
         ->getQuery()
         ->getSingleScalarResult();
-    } catch (UnexpectedResultExceptionAlias $e) {
+    } catch (UnexpectedResultException $e) {
       return 0;
     }
   }
