@@ -5,21 +5,21 @@ namespace MailPoet\Newsletter\Statistics;
 class NewsletterStatistics {
 
   /** @var int */
-  private $clickCount;
+  private $click_count;
 
   /** @var int */
-  private $openCount;
+  private $open_count;
 
   /** @var int */
-  private $unsubscribeCount;
+  private $unsubscribe_count;
 
   /** @var int */
   private $total_sent_count;
 
-  function __construct($clickCount, $openCount, $unsubscribeCount, $total_sent_count) {
-    $this->clickCount = $clickCount;
-    $this->openCount = $openCount;
-    $this->unsubscribeCount = $unsubscribeCount;
+  function __construct($click_count, $open_count, $unsubscribe_count, $total_sent_count) {
+    $this->click_count = $click_count;
+    $this->open_count = $open_count;
+    $this->unsubscribe_count = $unsubscribe_count;
     $this->total_sent_count = $total_sent_count;
   }
 
@@ -27,21 +27,21 @@ class NewsletterStatistics {
    * @return int
    */
   public function getClickCount() {
-    return $this->clickCount;
+    return $this->click_count;
   }
 
   /**
    * @return int
    */
   public function getOpenCount() {
-    return $this->openCount;
+    return $this->open_count;
   }
 
   /**
    * @return int
    */
   public function getUnsubscribeCount() {
-    return $this->unsubscribeCount;
+    return $this->unsubscribe_count;
   }
 
   /**
