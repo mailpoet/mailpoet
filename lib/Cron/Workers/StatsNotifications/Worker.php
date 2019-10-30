@@ -36,6 +36,9 @@ class Worker {
   /** @var SettingsController */
   private $settings;
 
+  /** @var CronHelper */
+  private $cron_helper;
+
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
@@ -55,6 +58,7 @@ class Worker {
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
+    CronHelper $cron_helper,
     MetaInfo $mailerMetaInfo,
     StatsNotificationsRepository $repository,
     NewsletterLinkRepository $newsletter_link_repository,
@@ -66,6 +70,7 @@ class Worker {
     $this->renderer = $renderer;
     $this->mailer = $mailer;
     $this->settings = $settings;
+    $this->cron_helper = $cron_helper;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->repository = $repository;
     $this->entity_manager = $entity_manager;
@@ -89,7 +94,7 @@ class Worker {
       } finally {
         $this->markTaskAsFinished($stats_notification_entity->getTask());
       }
-      CronHelper::enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($this->timer);
     }
   }
 

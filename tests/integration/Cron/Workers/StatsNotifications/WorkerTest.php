@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Config\Renderer;
+use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Mailer\Mailer;
@@ -16,7 +17,6 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\WooCommerce\Helper as WCHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class WorkerTest extends \MailPoetTest {
@@ -32,6 +32,9 @@ class WorkerTest extends \MailPoetTest {
 
   /** @var SettingsController */
   private $settings;
+
+  /** @var CronHelper */
+  private $cron_helper;
 
   /** @var Newsletter */
   private $newsletter;
@@ -57,10 +60,12 @@ class WorkerTest extends \MailPoetTest {
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = new SettingsController();
+    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->stats_notifications = new Worker(
       $this->mailer,
       $this->renderer,
       $this->settings,
+      $this->cron_helper,
       new MetaInfo,
       $this->repository,
       $this->newsletter_link_repository,

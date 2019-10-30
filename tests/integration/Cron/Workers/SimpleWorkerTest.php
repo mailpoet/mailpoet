@@ -7,6 +7,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 
@@ -15,6 +16,7 @@ require_once('SimpleWorkerMockImplementation.php');
 class SimpleWorkerTest extends \MailPoetTest {
   function _before() {
     parent::_before();
+    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->worker = new MockSimpleWorker();
   }
 
@@ -40,7 +42,7 @@ class SimpleWorkerTest extends \MailPoetTest {
   function testItThrowsExceptionWhenExecutionLimitIsReached() {
     try {
       new MockSimpleWorker(
-        microtime(true) - CronHelper::getDaemonExecutionLimit()
+        microtime(true) - $this->cron_helper->getDaemonExecutionLimit()
       );
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch (\Exception $e) {
@@ -213,7 +215,7 @@ class SimpleWorkerTest extends \MailPoetTest {
       [],
       [
         'processTaskStrategy' => function () {
-          CronHelper::enforceExecutionLimit(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT - 1);
+          $this->cron_helper->enforceExecutionLimit(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT - 1);
         },
       ],
       $this

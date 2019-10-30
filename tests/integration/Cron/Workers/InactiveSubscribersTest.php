@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Codeception\Stub;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\InactiveSubscribersController;
@@ -19,6 +20,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $this->settings = new SettingsController();
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->settings->set('tracking.enabled', true);
+    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
     parent::_before();
   }
 
@@ -115,7 +117,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
       'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
-    $worker = new InactiveSubscribers($controller_mock, $this->settings, microtime(true) - (CronHelper::getDaemonExecutionLimit() - 1));
+    $worker = new InactiveSubscribers($controller_mock, $this->settings, microtime(true) - ($this->cron_helper->getDaemonExecutionLimit() - 1));
     sleep(1);
     $this->setExpectedException(\Exception::class, 'Maximum execution time has been reached.');
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));

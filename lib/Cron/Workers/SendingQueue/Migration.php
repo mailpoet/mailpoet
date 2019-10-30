@@ -132,7 +132,7 @@ class Migration extends SimpleWorker {
     if (!empty($queues)) {
       foreach (array_chunk($queues, self::BATCH_SIZE) as $queue_batch) {
         // abort if execution limit is reached
-        CronHelper::enforceExecutionLimit($this->timer);
+        $this->cron_helper->enforceExecutionLimit($this->timer);
 
         foreach ($queue_batch as $queue) {
           // create a new scheduled task of type "sending"
@@ -181,7 +181,7 @@ class Migration extends SimpleWorker {
     if (!empty($task_ids)) {
       foreach ($task_ids as $task_id) {
         // abort if execution limit is reached
-        CronHelper::enforceExecutionLimit($this->timer);
+        $this->cron_helper->enforceExecutionLimit($this->timer);
 
         $this->migrateTaskSubscribers($task_id);
       }
@@ -216,7 +216,7 @@ class Migration extends SimpleWorker {
       $subscribers_to_migrate = array_slice($subscribers['to_process'], $migrated_unprocessed_count);
       foreach ($subscribers_to_migrate as $sub_id) {
         // abort if execution limit is reached
-        CronHelper::enforceExecutionLimit($this->timer);
+        $this->cron_helper->enforceExecutionLimit($this->timer);
 
         ScheduledTaskSubscriber::createOrUpdate([
           'task_id' => $task_id,
@@ -230,7 +230,7 @@ class Migration extends SimpleWorker {
       $subscribers_to_migrate = array_slice($subscribers['processed'], $migrated_processed_count);
       foreach ($subscribers_to_migrate as $sub_id) {
         // abort if execution limit is reached
-        CronHelper::enforceExecutionLimit($this->timer);
+        $this->cron_helper->enforceExecutionLimit($this->timer);
 
         ScheduledTaskSubscriber::createOrUpdate([
           'task_id' => $task_id,
