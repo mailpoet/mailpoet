@@ -44,6 +44,7 @@ if ($settings->get('cron_trigger.method') !== \MailPoet\Cron\CronTrigger::METHOD
 }
 
 // Run Cron Daemon
-$data = \MailPoet\Cron\CronHelper::createDaemon(null);
+$cron_helper = $container->get(\MailPoet\Cron\CronHelper::class);
+$data = $cron_helper->createDaemon(null);
 $trigger = $container->get(\MailPoet\Cron\Daemon::class);
 $trigger->run($data);

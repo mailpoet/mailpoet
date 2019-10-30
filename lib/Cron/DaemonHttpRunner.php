@@ -15,14 +15,18 @@ class DaemonHttpRunner {
   /** @var Daemon */
   private $daemon;
 
+  /** @var CronHelper */
+  private $cron_helper;
+
   /** @var SettingsController */
   private $settings;
 
   const PING_SUCCESS_RESPONSE = 'pong';
 
-  function __construct(Daemon $daemon = null, SettingsController $settings) {
-    $this->settings_daemon_data = CronHelper::getDaemon();
-    $this->token = CronHelper::createToken();
+  function __construct(Daemon $daemon = null, CronHelper $cron_helper, SettingsController $settings) {
+    $this->cron_helper = $cron_helper;
+    $this->settings_daemon_data = $this->cron_helper->getDaemon();
+    $this->token = $this->cron_helper->createToken();
     $this->timer = microtime(true);
     $this->daemon = $daemon;
     $this->settings = $settings;
@@ -74,12 +78,12 @@ class DaemonHttpRunner {
       // if workers took less time to execute than the daemon execution limit,
       // pause daemon execution to ensure that daemon runs only once every X seconds
       $elapsed_time = microtime(true) - $this->timer;
-      if ($elapsed_time < CronHelper::getDaemonExecutionLimit()) {
-        $this->pauseExecution(CronHelper::getDaemonExecutionLimit() - $elapsed_time);
+      if ($elapsed_time < $this->cron_helper->getDaemonExecutionLimit()) {
+        $this->pauseExecution($this->cron_helper->getDaemonExecutionLimit() - $elapsed_time);
       }
     }
     // after each execution, re-read daemon data in case it changed
-    $settings_daemon_data = CronHelper::getDaemon();
+    $settings_daemon_data = $this->cron_helper->getDaemon();
     if ($this->shouldTerminateExecution($settings_daemon_data)) {
       return $this->terminateRequest();
     }
@@ -91,7 +95,7 @@ class DaemonHttpRunner {
   }
 
   function callSelf() {
-    CronHelper::accessDaemon($this->token);
+    $this->cron_helper->accessDaemon($this->token);
     $this->terminateRequest();
   }
 

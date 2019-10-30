@@ -10,14 +10,18 @@ class Daemon {
   /** @var WorkersFactory */
   private $workers_factory;
 
-  function __construct(WorkersFactory $workers_factory) {
+  /** @var CronHelper */
+  private $cron_helper;
+
+  function __construct(WorkersFactory $workers_factory, CronHelper $cron_helper) {
     $this->timer = microtime(true);
     $this->workers_factory = $workers_factory;
+    $this->cron_helper = $cron_helper;
   }
 
   function run($settings_daemon_data) {
     $settings_daemon_data['run_started_at'] = time();
-    CronHelper::saveDaemon($settings_daemon_data);
+    $this->cron_helper->saveDaemon($settings_daemon_data);
 
     $errors = [];
     foreach ($this->getWorkers() as $worker) {
@@ -33,11 +37,11 @@ class Daemon {
     }
 
     if (!empty($errors)) {
-      CronHelper::saveDaemonLastError($errors);
+      $this->cron_helper->saveDaemonLastError($errors);
     }
 
     // Log successful execution
-    CronHelper::saveDaemonRunCompleted(time());
+    $this->cron_helper->saveDaemonRunCompleted(time());
   }
 
   private function getWorkers() {
