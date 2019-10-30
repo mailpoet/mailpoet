@@ -2,6 +2,7 @@
 
 namespace MailPoet\Doctrine;
 
+use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\EntityRepository as DoctrineEntityRepository;
 use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadata;
@@ -66,19 +67,14 @@ abstract class Repository {
 
   function truncate() {
     $cmd = $this->entity_manager->getClassMetadata($this->getEntityClassName());
+    $table_name = $cmd->getTableName();
     $connection = $this->entity_manager->getConnection();
-    $connection->beginTransaction();
-    try {
+    $connection->transactional(function(Connection $connection) use ($table_name) {
       $connection->query('SET FOREIGN_KEY_CHECKS=0');
-      $table_name = $cmd->getTableName();
       $q = "TRUNCATE $table_name";
       $connection->executeUpdate($q);
       $connection->query('SET FOREIGN_KEY_CHECKS=1');
-      $connection->commit();
-    }
-    catch (\Exception $e) {
-      $connection->rollback();
-    }
+    });
   }
 
   /**
