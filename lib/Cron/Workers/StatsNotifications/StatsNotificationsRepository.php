@@ -19,8 +19,8 @@ class StatsNotificationsRepository extends Repository {
    */
   public function findByNewsletterId($newsletter_id) {
     return $this->doctrine_repository
-      ->createQueryBuilder('stn')
-      ->andWhere('stn.newsletter = :newsletterId')
+      ->createQueryBuilder('sn')
+      ->andWhere('sn.newsletter = :newsletterId')
       ->setParameter('newsletterId', $newsletter_id)
       ->setMaxResults(1)
       ->getQuery()
@@ -34,9 +34,9 @@ class StatsNotificationsRepository extends Repository {
   public function findScheduled($limit = null) {
     $date = new Carbon();
     $query = $this->doctrine_repository
-      ->createQueryBuilder('stn')
-      ->join('stn.task', 'tasks')
-      ->join('stn.newsletter', 'n')
+      ->createQueryBuilder('sn')
+      ->join('sn.task', 'tasks')
+      ->join('sn.newsletter', 'n')
       ->addSelect('tasks')
       ->addSelect('n')
       ->addOrderBy('tasks.priority')
