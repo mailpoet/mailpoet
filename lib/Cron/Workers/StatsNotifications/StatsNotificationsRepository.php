@@ -20,8 +20,7 @@ class StatsNotificationsRepository extends Repository {
   public function findByNewsletterId($newsletter_id) {
     return $this->doctrine_repository
       ->createQueryBuilder('stn')
-      ->join('stn.newsletter', 'n')
-      ->andWhere('n.id = :newsletterId')
+      ->andWhere('stn.newsletter = :newsletterId')
       ->setParameter('newsletterId', $newsletter_id)
       ->setMaxResults(1)
       ->getQuery()
