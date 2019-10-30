@@ -15,20 +15,17 @@ class StatsNotificationsRepository extends Repository {
 
   /**
    * @param int $newsletter_id
-   * @return StatsNotificationEntity[]
+   * @return StatsNotificationEntity|null
    */
   public function findByNewsletterId($newsletter_id) {
     return $this->doctrine_repository
       ->createQueryBuilder('stn')
-      ->join('stn.task', 'tasks')
       ->join('stn.newsletter', 'n')
-      ->addSelect('tasks')
-      ->where('tasks.type = :taskType')
-      ->setParameter('taskType', Worker::TASK_TYPE)
       ->andWhere('n.id = :newsletterId')
       ->setParameter('newsletterId', $newsletter_id)
+      ->setMaxResults(1)
       ->getQuery()
-      ->getResult();
+      ->getOneOrNullResult();
   }
 
   /**
