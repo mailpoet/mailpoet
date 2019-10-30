@@ -116,7 +116,7 @@ class AutomatedEmails extends SimpleWorker {
 
   protected function getNewsletters() {
     $result = [];
-    $newsletters = $this->repository->getDueAutomatedNewsletters();
+    $newsletters = $this->repository->findScheduledAutomatedNewsletters();
     foreach ($newsletters as $newsletter) {
       $statistics = $this->newsletter_statistics_repository->getStatistics($newsletter);
       if ($statistics->getTotalSentCount()) {
