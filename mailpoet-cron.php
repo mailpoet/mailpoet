@@ -34,7 +34,16 @@ if (strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
   set_time_limit(0);
 }
 
-$data = \MailPoet\Cron\CronHelper::createDaemon(null);
 $container = \MailPoet\DI\ContainerWrapper::getInstance(WP_DEBUG);
+
+// Check if Linux Cron method is set in plugin settings
+$settings = $container->get(\MailPoet\Settings\SettingsController::class);
+if ($settings->get('cron_trigger.method') !== \MailPoet\Cron\CronTrigger::METHOD_LINUX_CRON) {
+  echo 'MailPoet is not configured to run with Linux Cron.';
+  exit(1);
+}
+
+// Run Cron Daemon
+$data = \MailPoet\Cron\CronHelper::createDaemon(null);
 $trigger = $container->get(\MailPoet\Cron\Daemon::class);
 $trigger->run($data);
