@@ -17,14 +17,14 @@ class StatisticsUnsubscribeEntity {
   use UpdatedAtTrait;
 
   /**
-   * @ORM\OneToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")
    * @var NewsletterEntity|null
    */
   private $newsletter;
 
   /**
-   * @ORM\OneToOne(targetEntity="MailPoet\Entities\SendingQueueEntity")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SendingQueueEntity")
    * @ORM\JoinColumn(name="queue_id", referencedColumnName="id")
    * @var SendingQueueEntity|null
    */
