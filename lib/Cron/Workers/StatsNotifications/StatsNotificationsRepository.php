@@ -54,23 +54,5 @@ class StatsNotificationsRepository extends Repository {
     return $query->getQuery()->getResult();
   }
 
-  /**
-   * @return NewsletterEntity[]
-   */
-  public function findScheduledAutomatedNewsletters() {
-    return $this->entity_manager
-      ->createQueryBuilder()
-      ->select('n')
-      ->from(NewsletterEntity::class, 'n')
-      ->where('n.status = :status')
-      ->setParameter(':status', NewsletterEntity::STATUS_ACTIVE)
-      ->andWhere('n.deleted_at is null')
-      ->andWhere('n.type IN (:types)')
-      ->setParameter('types', [NewsletterEntity::TYPE_AUTOMATIC, NewsletterEntity::TYPE_WELCOME])
-      ->orderBy('n.subject')
-      ->getQuery()
-      ->getResult();
-  }
-
 }
 

@@ -166,7 +166,7 @@ class WorkersFactory {
       $this->mailer,
       $this->renderer,
       $this->settings,
-      $this->stats_notifications_repository,
+      $this->newsletters_repository,
       $this->newsletter_statistics_repository,
       $this->mailerMetaInfo,
       $timer
