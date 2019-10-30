@@ -232,7 +232,7 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->expects($this->once())
       ->method('findByNewsletterId')
       ->with($newsletter_id)
-      ->willReturn([new ScheduledTaskEntity()]);
+      ->willReturn(new StatsNotificationEntity(new NewsletterEntity(), new ScheduledTaskEntity()));
     $this->entityManager
       ->expects($this->never())
       ->method('persist');

@@ -65,7 +65,7 @@ class Scheduler {
     if (!in_array($newsletter->getType(), $this->supported_types)) {
       return false;
     }
-    if ($this->isTaskScheduled($newsletter->getId())) {
+    if ($this->hasTaskBeenScheduled($newsletter->getId())) {
       return false;
     }
     return true;
@@ -91,9 +91,9 @@ class Scheduler {
     return !(bool)$settings['enabled'];
   }
 
-  private function isTaskScheduled($newsletter_id) {
+  private function hasTaskBeenScheduled($newsletter_id) {
     $existing = $this->repository->findByNewsletterId($newsletter_id);
-    return count($existing) > 0;
+    return $existing instanceof StatsNotificationEntity;
   }
 
   private function getNextRunDate() {
