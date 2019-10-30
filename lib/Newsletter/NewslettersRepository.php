@@ -16,4 +16,23 @@ class NewslettersRepository extends Repository {
   protected function getEntityClassName() {
     return NewsletterEntity::class;
   }
+
+  /**
+   * @param string[] $types
+   * @return NewsletterEntity[]
+   */
+  public function findActiveByTypes($types) {
+    return $this->entity_manager
+      ->createQueryBuilder()
+      ->select('n')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.status = :status')
+      ->setParameter(':status', NewsletterEntity::STATUS_ACTIVE)
+      ->andWhere('n.deleted_at is null')
+      ->andWhere('n.type IN (:types)')
+      ->setParameter('types', $types)
+      ->orderBy('n.subject')
+      ->getQuery()
+      ->getResult();
+  }
 }

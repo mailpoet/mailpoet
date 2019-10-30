@@ -6,15 +6,14 @@ use Carbon\Carbon;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomatedEmails extends SimpleWorker {
@@ -35,7 +34,7 @@ class AutomatedEmails extends SimpleWorker {
   /** @var float */
   public $timer;
 
-  /** @var StatsNotificationsRepository */
+  /** @var NewslettersRepository */
   private $repository;
 
   /** @var NewsletterStatisticsRepository */
@@ -45,7 +44,7 @@ class AutomatedEmails extends SimpleWorker {
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
-    StatsNotificationsRepository $repository,
+    NewslettersRepository $repository,
     NewsletterStatisticsRepository $newsletter_statistics_repository,
     MetaInfo $mailerMetaInfo,
     $timer = false
@@ -116,7 +115,9 @@ class AutomatedEmails extends SimpleWorker {
 
   protected function getNewsletters() {
     $result = [];
-    $newsletters = $this->repository->findScheduledAutomatedNewsletters();
+    $newsletters = $this->repository->findActiveByTypes(
+      [NewsletterEntity::TYPE_AUTOMATIC, NewsletterEntity::TYPE_WELCOME]
+    );
     foreach ($newsletters as $newsletter) {
       $statistics = $this->newsletter_statistics_repository->getStatistics($newsletter);
       if ($statistics->getTotalSentCount()) {

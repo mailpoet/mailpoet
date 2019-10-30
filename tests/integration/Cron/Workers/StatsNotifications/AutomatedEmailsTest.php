@@ -11,9 +11,9 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\WooCommerce\Helper as WCHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class AutomatedEmailsTest extends \MailPoetTest {
@@ -47,7 +47,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
       $this->mailer,
       $this->renderer,
       $this->settings,
-      ContainerWrapper::getInstance()->get(StatsNotificationsRepository::class),
+      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
       ContainerWrapper::getInstance()->get(NewsletterStatisticsRepository::class),
       new MetaInfo
     );
