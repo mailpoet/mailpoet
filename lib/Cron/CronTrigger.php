@@ -8,10 +8,14 @@ class CronTrigger {
   /** @var SettingsController */
   private $settings;
 
+  const METHOD_LINUX_CRON = 'Linux Cron';
+  const METHOD_MAILPOET = 'MailPoet';
+  const METHOD_WORDPRESS = 'WordPress';
+
   public static $available_methods = [
-    'mailpoet' => 'MailPoet',
-    'wordpress' => 'WordPress',
-    'linux_cron' => 'Linux Cron',
+    'mailpoet' => self::METHOD_MAILPOET,
+    'wordpress' => self::METHOD_WORDPRESS,
+    'linux_cron' => self::METHOD_LINUX_CRON,
     'none' => 'Disabled',
   ];
   const DEFAULT_METHOD = 'WordPress';
