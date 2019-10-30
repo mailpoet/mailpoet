@@ -28,6 +28,8 @@ class NewsletterStatisticsRepository extends Repository {
         ->select('SUM(q.count_processed)')
         ->where('t.status = :status')
         ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
+        ->andWhere('q.newsletter = :newsletter')
+        ->setParameter('newsletter', $newsletter)
         ->getQuery()
         ->getSingleScalarResult();
     } catch (UnexpectedResultException $e) {
