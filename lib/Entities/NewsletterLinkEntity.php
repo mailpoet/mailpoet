@@ -40,7 +40,7 @@ class NewsletterLinkEntity {
 
   /**
    * @ORM\Column(type="string")
-   * @var string|null
+   * @var string
    */
   private $hash;
 
