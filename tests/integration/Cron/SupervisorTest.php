@@ -4,6 +4,7 @@ namespace MailPoet\Test\Cron;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Supervisor;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\SettingsController;
 
@@ -21,51 +22,53 @@ class SupervisorTest extends \MailPoetTest {
     $this->settings->set('cron_trigger', [
       'method' => 'none',
     ]);
+    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->supervisor = ContainerWrapper::getInstance()->get(Supervisor::class);
   }
 
-  function testItCanConstruct() {
+  function testItCanBeInitialized() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
-    $supervisor = new Supervisor();
-    expect($supervisor->token)->notEmpty();
-    expect($supervisor->daemon)->notEmpty();
+    $this->supervisor->init();
+    expect($this->supervisor->token)->notEmpty();
+    expect($this->supervisor->daemon)->notEmpty();
   }
 
   function testItCreatesDaemonWhenOneDoesNotExist() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
-    $supervisor = new Supervisor();
-    expect($supervisor->getDaemon())->notEmpty();
+    $this->supervisor->init();
+    expect($this->supervisor->getDaemon())->notEmpty();
   }
 
   function testItReturnsDaemonWhenOneExists() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
-    $supervisor = new Supervisor();
-    expect($supervisor->getDaemon())->equals($supervisor->daemon);
+    $this->supervisor->init();
+    expect($this->supervisor->getDaemon())->equals($this->supervisor->daemon);
   }
 
   function testItDoesNothingWhenDaemonExecutionDurationIsBelowLimit() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
-    $supervisor = new Supervisor();
-    expect($supervisor->checkDaemon())
-      ->equals($supervisor->daemon);
+    $this->supervisor->init();
+    expect($this->supervisor->checkDaemon())
+      ->equals($this->supervisor->daemon);
   }
 
   function testRestartsDaemonWhenExecutionDurationIsAboveLimit() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
-    $supervisor = new Supervisor();
-    $supervisor->daemon['updated_at'] = time() - CronHelper::getDaemonExecutionTimeout();
-    $daemon = $supervisor->checkDaemon();
+    $this->supervisor->init();
+    $this->supervisor->daemon['updated_at'] = time() - $this->cron_helper->getDaemonExecutionTimeout();
+    $daemon = $this->supervisor->checkDaemon();
     expect(is_int($daemon['updated_at']))->true();
-    expect($daemon['updated_at'])->notEquals($supervisor->daemon['updated_at']);
+    expect($daemon['updated_at'])->notEquals($this->supervisor->daemon['updated_at']);
     expect($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
   }
 
   function testRestartsDaemonWhenItIsInactive() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
-    $supervisor = new Supervisor();
-    $supervisor->daemon['updated_at'] = time();
-    $supervisor->daemon['status'] = CronHelper::DAEMON_STATUS_INACTIVE;
-    $daemon = $supervisor->checkDaemon();
+    $this->supervisor->init();
+    $this->supervisor->daemon['updated_at'] = time();
+    $this->supervisor->daemon['status'] = CronHelper::DAEMON_STATUS_INACTIVE;
+    $daemon = $this->supervisor->checkDaemon();
     expect($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
   }
 

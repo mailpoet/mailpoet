@@ -18,6 +18,7 @@ use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
@@ -210,9 +211,10 @@ class WordPress {
   }
 
   static function stop() {
-    $cron_daemon = CronHelper::getDaemon();
+    $cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $cron_daemon = $cron_helper->getDaemon();
     if ($cron_daemon) {
-      CronHelper::deactivateDaemon($cron_daemon);
+      $cron_helper->deactivateDaemon($cron_daemon);
     }
   }
 

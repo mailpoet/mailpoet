@@ -22,6 +22,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->settings = new SettingsController();
+    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
   }
 
   function testItConstructs() {
@@ -79,13 +80,13 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       ]),
     ]);
 
-    $daemon = new Daemon($workers_factory_mock);
+    $daemon = new Daemon($workers_factory_mock, $this->cron_helper);
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,
       'callSelf' => null,
     ]);
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon_http_runner->__construct($daemon, new SettingsController());
+    $daemon_http_runner->__construct($daemon, $this->cron_helper, new SettingsController());
     $daemon_http_runner->run($data);
     $updated_daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($updated_daemon['last_error'][0]['message'])->equals('Message');
@@ -96,8 +97,8 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon = $this->makeEmpty(Daemon::class);
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => Expected::exactly(1, function($pause_delay) {
-        expect($pause_delay)->lessThan(CronHelper::getDaemonExecutionLimit());
-        expect($pause_delay)->greaterThan(CronHelper::getDaemonExecutionLimit() - 1);
+        expect($pause_delay)->lessThan($this->cron_helper->getDaemonExecutionLimit());
+        expect($pause_delay)->greaterThan($this->cron_helper->getDaemonExecutionLimit() - 1);
       }),
       'callSelf' => null,
       'terminateRequest' => null,
@@ -106,7 +107,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon_http_runner->__construct($daemon, new SettingsController());
+    $daemon_http_runner->__construct($daemon, $this->cron_helper, new SettingsController());
     $daemon_http_runner->run($data);
   }
 
@@ -128,7 +129,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(new Daemon($workers_factory_mock), new SettingsController());
+    $daemon->__construct(new Daemon($workers_factory_mock, $this->cron_helper), $this->cron_helper, new SettingsController());
     $daemon->run($data);
   }
 
@@ -152,7 +153,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(new Daemon($workers_factory_mock), new SettingsController());
+    $daemon->__construct(new Daemon($workers_factory_mock, $this->cron_helper), $this->cron_helper, new SettingsController());
     $daemon->run($data);
     $data_after_run = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($data_after_run['token'])->equals(567);
@@ -169,13 +170,13 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'status' => CronHelper::DAEMON_STATUS_INACTIVE,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct($this->makeEmpty(Daemon::class), new SettingsController());
+    $daemon->__construct($this->makeEmpty(Daemon::class), $this->cron_helper, new SettingsController());
     $daemon->run($data);
   }
 
   function testItTerminatesExecutionWhenWPTriggerStopsCron() {
     $workers_factory_mock = $this->createWorkersFactoryMock();
-    $daemon = new Daemon($workers_factory_mock);
+    $daemon = new Daemon($workers_factory_mock, $this->cron_helper);
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
       'checkWPTriggerExecutionRequirements' => false,
       'pauseExecution' => null,
@@ -188,7 +189,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
     $this->settings->set(CronTrigger::SETTING_NAME . '.method', 'WordPress');
     WPFunctions::get()->addFilter('mailpoet_cron_enable_self_deactivation', '__return_true');
-    $daemon_http_runner->__construct($daemon, new SettingsController());
+    $daemon_http_runner->__construct($daemon, $this->cron_helper, new SettingsController());
     $daemon_http_runner->run($data);
     WPFunctions::get()->removeAllFilters('mailpoet_cron_enable_self_deactivation');
   }
@@ -203,7 +204,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon_http_runner->__construct(new Daemon($this->createWorkersFactoryMock()), new SettingsController());
+    $daemon_http_runner->__construct(new Daemon($this->createWorkersFactoryMock(), $this->cron_helper), $this->cron_helper, new SettingsController());
     $daemon_http_runner->run($data);
     $updated_daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($updated_daemon['token'])->equals($daemon_http_runner->token);
@@ -223,7 +224,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       ]),
     ]);
 
-    $daemon = new Daemon($workers_factory_mock);
+    $daemon = new Daemon($workers_factory_mock, $this->cron_helper);
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,
       'callSelf' => null,
@@ -233,7 +234,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     ];
     $now = time();
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon_http_runner->__construct($daemon, new SettingsController());
+    $daemon_http_runner->__construct($daemon, $this->cron_helper, new SettingsController());
     $daemon_http_runner->run($data);
     $updated_daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($updated_daemon['run_started_at'])->greaterOrEquals($now);
@@ -255,7 +256,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon->__construct(new Daemon($this->createWorkersFactoryMock()), new SettingsController());
+    $daemon->__construct(new Daemon($this->createWorkersFactoryMock(), $this->cron_helper), $this->cron_helper, new SettingsController());
     $daemon->run($data);
     expect(ignore_user_abort())->equals(1);
   }
