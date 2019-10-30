@@ -19,7 +19,7 @@ class NewsletterLinkRepository extends Repository {
       ->createQueryBuilder('nl')
       ->join('nl.clicks', 'c')
       ->addSelect('COUNT(c.id) AS HIDDEN counter')
-      ->where('nl.newsletter_id = :newsletterId')
+      ->where('nl.newsletter = :newsletterId')
       ->setParameter('newsletterId', $newsletter_id)
       ->groupBy('nl.id')
       ->orderBy('counter', 'desc')
