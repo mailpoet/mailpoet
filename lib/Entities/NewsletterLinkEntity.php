@@ -19,12 +19,6 @@ class NewsletterLinkEntity {
   use UpdatedAtTrait;
 
   /**
-   * @ORM\Column(type="integer")
-   * @var integer
-   */
-  private $newsletter_id;
-
-  /**
    * @ORM\OneToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")
    * @var NewsletterEntity|null
