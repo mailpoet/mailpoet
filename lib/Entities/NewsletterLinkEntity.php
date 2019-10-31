@@ -6,7 +6,6 @@ use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
-use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -47,7 +46,7 @@ class NewsletterLinkEntity {
   /**
    * Extra lazy is here for `getTotalClicksCount`.
    * If we didn't specify extra lazy the function would load all clicks and count them. This way it uses a single count query.
-   * @ORM\OneToMany(targetEntity="StatisticsClickEntity", mappedBy="link", fetch="EXTRA_LAZY")
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\StatisticsClickEntity", mappedBy="link", fetch="EXTRA_LAZY")
    *
    * @var StatisticsClickEntity[]|ArrayCollection
    */
