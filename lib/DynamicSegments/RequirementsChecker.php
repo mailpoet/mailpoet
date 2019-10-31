@@ -31,8 +31,15 @@ class RequirementsChecker {
     if ($this->woocommerce_helper->isWooCommerceActive()) {
       return false;
     }
-    $class = get_class($filter);
-    return strpos($class, 'WooCommerce') !== false;
+
+    $class_name = get_class($filter);
+    $ref = new \ReflectionClass($class_name);
+    $constants = $ref->getConstants();
+    if (!array_key_exists('SEGMENT_TYPE', $constants)) {
+      return true;
+    }
+
+    return $constants['SEGMENT_TYPE'] === 'woocommerce';
   }
 
 }
