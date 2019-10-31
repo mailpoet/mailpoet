@@ -14,14 +14,6 @@ use MailPoet\WP\Functions as WPFunctions;
 class Form extends Model {
   public static $_table = MP_FORMS_TABLE;
 
-  function __construct() {
-    parent::__construct();
-
-    $this->addValidations('name', [
-      'required' => __('Please specify a name.', 'mailpoet'),
-    ]);
-  }
-
   function getSettings() {
     return WPFunctions::get()->isSerialized($this->settings) ? unserialize($this->settings) : $this->settings;
   }

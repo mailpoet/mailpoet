@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util;
 use MailPoet\Listing;
@@ -20,16 +21,21 @@ class Forms extends APIEndpoint {
   /** @var Listing\Handler */
   private $listing_handler;
 
+  /** @var FeaturesController */
+  private $features_controller;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,
   ];
 
   function __construct(
     Listing\BulkActionController $bulk_action,
-    Listing\Handler $listing_handler
+    Listing\Handler $listing_handler,
+    FeaturesController $features_controller
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
+    $this->features_controller = $features_controller;
   }
 
   function get($data = []) {
@@ -69,9 +75,13 @@ class Forms extends APIEndpoint {
   }
 
   function create() {
+    $form_name = WPFunctions::get()->__('New form', 'mailpoet');
+    if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
+      $form_name = '';
+    }
     // create new form
     $form_data = [
-      'name' => WPFunctions::get()->__('New form', 'mailpoet'),
+      'name' => $form_name,
       'body' => [
         [
           'id' => 'email',
@@ -268,8 +278,9 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
 
     if ($form instanceof Form) {
+      $form_name = $form->name ? sprintf(__('Copy of %s', 'mailpoet'), $form->name) : '';
       $data = [
-        'name' => sprintf(__('Copy of %s', 'mailpoet'), $form->name),
+        'name' => $form_name,
       ];
       $duplicate = $form->duplicate($data);
       $errors = $duplicate->getErrors();
