@@ -17,7 +17,7 @@ class StatsNotificationsRepository extends Repository {
    * @param int $newsletter_id
    * @return StatsNotificationEntity|null
    */
-  public function findByNewsletterId($newsletter_id) {
+  public function findOneByNewsletterId($newsletter_id) {
     return $this->doctrine_repository
       ->createQueryBuilder('sn')
       ->andWhere('sn.newsletter = :newsletterId')

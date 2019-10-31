@@ -92,7 +92,7 @@ class Scheduler {
   }
 
   private function hasTaskBeenScheduled($newsletter_id) {
-    $existing = $this->repository->findByNewsletterId($newsletter_id);
+    $existing = $this->repository->findOneByNewsletterId($newsletter_id);
     return $existing instanceof StatsNotificationEntity;
   }
 

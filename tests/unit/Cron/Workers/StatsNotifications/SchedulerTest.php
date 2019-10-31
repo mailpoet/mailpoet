@@ -68,7 +68,7 @@ class SchedulerTest extends \MailPoetUnitTest {
 
     $this->repository
       ->expects($this->once())
-      ->method('findByNewsletterId')
+      ->method('findOneByNewsletterId')
       ->with($newsletter_id)
       ->willReturn([]);
 
@@ -108,7 +108,7 @@ class SchedulerTest extends \MailPoetUnitTest {
 
     $this->repository
       ->expects($this->once())
-      ->method('findByNewsletterId')
+      ->method('findOneByNewsletterId')
       ->with($newsletter_id)
       ->willReturn([]);
 
@@ -230,7 +230,7 @@ class SchedulerTest extends \MailPoetUnitTest {
 
     $this->repository
       ->expects($this->once())
-      ->method('findByNewsletterId')
+      ->method('findOneByNewsletterId')
       ->with($newsletter_id)
       ->willReturn(new StatsNotificationEntity(new NewsletterEntity(), new ScheduledTaskEntity()));
     $this->entityManager
