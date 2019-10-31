@@ -2,8 +2,10 @@
 
 namespace MailPoet\Settings;
 
+use Carbon\Carbon;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SettingEntity;
+use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * @method SettingEntity[] findBy(array $criteria, array $order_by = null, int $limit = null, int $offset = null)
@@ -16,6 +18,24 @@ use MailPoet\Entities\SettingEntity;
 class SettingsRepository extends Repository {
   function findOneByName($name) {
     return $this->doctrine_repository->findOneBy(['name' => $name]);
+  }
+
+  function createOrUpdateByName($name, $value) {
+    // Temporarily use low-level INSERT ... ON DUPLICATE KEY UPDATE query to avoid race conditions
+    // between entity fetch and creation with multiple concurrent requests. This will be replaced
+    // by a code solving atomicity of create-or-update on entity (ORM) level in a follow-up ticket.
+    $now = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $table_name = $this->entity_manager->getClassMetadata(SettingEntity::class)->getTableName();
+    $this->entity_manager->getConnection()->executeUpdate("
+      INSERT INTO $table_name (name, value, created_at, updated_at)
+      VALUES (:name, :value, :now, :now)
+      ON DUPLICATE KEY UPDATE value = :value, updated_at = :now 
+    ", [
+      'name' => $name,
+      'value' => is_array($value) ? serialize($value) : $value,
+      'now' => $now,
+    ]);
+    $this->entity_manager->clear(SettingEntity::class);
   }
 
   protected function getEntityClassName() {

@@ -109,7 +109,7 @@ class SettingsController {
       }
     }
     $setting[$last_key] = $value;
-    $this->saveValue($main_key, $this->settings[$main_key]);
+    $this->settings_repository->createOrUpdateByName($main_key, $this->settings[$main_key]);
   }
 
   function delete($key) {
@@ -148,17 +148,6 @@ class SettingsController {
   private function fetchValue($key) {
     $setting = $this->settings_repository->findOneByName($key);
     return $setting ? $setting->getValue() : null;
-  }
-
-  private function saveValue($key, $value) {
-    $setting = $this->settings_repository->findOneByName($key);
-    if (!$setting) {
-      $setting = new SettingEntity();
-      $setting->setName($key);
-      $this->settings_repository->persist($setting);
-    }
-    $setting->setValue($value);
-    $this->settings_repository->flush();
   }
 
   function resetCache() {
