@@ -32,7 +32,7 @@ class RequirementsCheckerTest extends \MailPoetUnitTest {
     expect($this->requirements_checker->shouldSkipSegment($segment))->false();
   }
 
-  function testShouldntBlockWooCommerceSegmentIfWooCommerceIsInactive() {
+  function testShouldBlockWooCommerceSegmentIfWooCommerceIsInactive() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(false);
     $segment = DynamicSegment::create();
     $segment->setFilters([new WooCommerceCategory(1)]);
