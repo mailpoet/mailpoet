@@ -130,8 +130,9 @@ class Widget extends \WP_Widget {
         <?php
         foreach ($forms as $form) {
           $is_selected = ($selected_form === (int)$form['id']) ? 'selected="selected"' : '';
+          $form_name = $form['name'] ? $this->wp->escHtml($form['name']) : "({$this->wp->_x('no name', 'fallback for forms without a name in a form list')})"
           ?>
-        <option value="<?php echo (int)$form['id']; ?>" <?php echo $is_selected; ?>><?php echo WPFunctions::get()->escHtml($form['name']); ?></option>
+        <option value="<?php echo (int)$form['id']; ?>" <?php echo $is_selected; ?>><?php echo $form_name; ?></option>
         <?php }  ?>
       </select>
     </p>

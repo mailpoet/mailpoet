@@ -104,8 +104,9 @@ const itemActions = [
           id: item.id,
         },
       }).done((response) => {
+        const formName = response.data.name ? response.data.name : MailPoet.I18n.t('noName');
         MailPoet.Notice.success(
-          (MailPoet.I18n.t('formDuplicated')).replace('%$1s', response.data.name)
+          (MailPoet.I18n.t('formDuplicated')).replace('%$1s', formName)
         );
         refresh();
       }).fail((response) => {
@@ -165,7 +166,7 @@ class FormList extends React.Component {
               className="row-title"
               href={`admin.php?page=mailpoet-form-editor&id=${form.id}`}
             >
-              { form.name }
+              { form.name ? form.name : `(${MailPoet.I18n.t('noName')})`}
             </a>
           </strong>
           { actions }

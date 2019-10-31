@@ -22,15 +22,6 @@ class FormTest extends \MailPoetTest {
     expect($this->form->getErrors())->false();
   }
 
-  function testItHasToBeValid() {
-    $invalid_form = Form::create();
-    $result = $invalid_form->save();
-    $errors = $result->getErrors();
-
-    expect(is_array($errors))->true();
-    expect($errors[0])->equals('Please specify a name.');
-  }
-
   function testItCanBeGrouped() {
     $forms = Form::filter('groupBy', 'all')->findArray();
     expect($forms)->count(1);

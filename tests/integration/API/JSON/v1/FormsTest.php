@@ -68,10 +68,6 @@ class FormsTest extends \MailPoetTest {
       'name' => 'My first form',
     ];
 
-    $response = $this->endpoint->save(/* missing data */);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a name.');
-
     $response = $this->endpoint->save($form_data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(

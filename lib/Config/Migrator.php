@@ -380,7 +380,7 @@ class Migrator {
   function forms() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
-      'name varchar(90) NOT NULL,',
+      'name varchar(90) NOT NULL,', // should be null but db_delta can't handle this change
       'body longtext,',
       'settings longtext,',
       'styles longtext,',
