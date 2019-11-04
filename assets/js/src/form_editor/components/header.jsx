@@ -1,6 +1,7 @@
 import React from 'react';
 import { IconButton, Button } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
 export default () => {
   const sidebarOpened = useSelect(
@@ -25,7 +26,7 @@ export default () => {
           isBusy={isFormSaving}
           onClick={saveForm}
         >
-          {isFormSaving ? 'Saving...' : 'Save'}
+          {isFormSaving ? `${__('Saving')}` : __('Save')}
         </Button>
         <IconButton
           icon="admin-generic"

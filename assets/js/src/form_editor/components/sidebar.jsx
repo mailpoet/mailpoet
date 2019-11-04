@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { IconButton } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import BlockSettings from './block_settings.jsx';
 import FormSettings from './form_settings.jsx';
@@ -49,7 +50,7 @@ export default () => {
               className={`edit-post-sidebar__panel-tab ${activeTab === 'block' ? 'is-active' : ''}`}
               type="button"
             >
-              Block
+              {__('Block')}
             </button>
           </li>
         </ul>
