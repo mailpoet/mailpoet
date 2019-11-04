@@ -53,9 +53,28 @@ class TransactionalEmails {
     );
   }
 
+  private function getWCEmailSettings() {
+    $wc_email_settings = [
+      'woocommerce_email_background_color' => '#ffffff',
+      'woocommerce_email_base_color' => '#333333',
+      'woocommerce_email_body_background_color' => '#eeeeee',
+      'woocommerce_email_footer_text' => $this->wp->_x('Footer text', 'Default footer text for a WooCommerce transactional email', 'mailpoet'),
+      'woocommerce_email_header_image' => '',
+      'woocommerce_email_text_color' => '#111111',
+    ];
+    $result = [];
+    foreach ($wc_email_settings as $name => $default) {
+      $value = $this->wp->getOption($name, $default);
+      $key = preg_replace('/^woocommerce_email_/', '', $name);
+      $result[$key] = $value;
+    }
+    $result['footer_text'] = $this->replacePlaceholders($result['footer_text']);
+    return $result;
+  }
+
   private function getBody() {
     $social_icon_url = Env::$assets_url . '/img/newsletter_editor/social-icons';
-    $wc_header_image = $this->wp->getOption('woocommerce_email_header_image', '');
+    $wc_email_settings = $this->getWCEmailSettings();
     return  [
       'content' =>
        [
@@ -130,7 +149,7 @@ class TransactionalEmails {
                    [
                     'type' => 'image',
                     'link' => '',
-                    'src' => $wc_header_image,
+                    'src' => $wc_email_settings['header_image'],
                     'alt' => 'mailpoet-logo',
                     'fullWidth' => false,
                     'width' => '160px',
@@ -328,7 +347,7 @@ class TransactionalEmails {
                   1 =>
                    [
                     'type' => 'text',
-                    'text' => '<p style="text-align: center;"><span style="color: #fe5301;">Footer text</span></p>',
+                    'text' => '<p style="text-align: center;">' . $wc_email_settings['footer_text'] . '</p>',
                    ],
                  ],
                ],
@@ -340,28 +359,28 @@ class TransactionalEmails {
        [
         'text' =>
          [
-          'fontColor' => '#111111',
+          'fontColor' => $wc_email_settings['text_color'],
           'fontFamily' => 'Arial',
           'fontSize' => '16px',
           'lineHeight' => '1.6',
          ],
         'h1' =>
          [
-          'fontColor' => '#333333',
+          'fontColor' => $wc_email_settings['base_color'],
           'fontFamily' => 'Source Sans Pro',
           'fontSize' => '36px',
           'lineHeight' => '1.6',
          ],
         'h2' =>
          [
-          'fontColor' => '#222222',
+          'fontColor' => $wc_email_settings['base_color'],
           'fontFamily' => 'Verdana',
           'fontSize' => '24px',
           'lineHeight' => '1.6',
          ],
         'h3' =>
          [
-          'fontColor' => '#333333',
+          'fontColor' => $wc_email_settings['base_color'],
           'fontFamily' => 'Trebuchet MS',
           'fontSize' => '22px',
           'lineHeight' => '1.6',
@@ -373,11 +392,11 @@ class TransactionalEmails {
          ],
         'wrapper' =>
          [
-          'backgroundColor' => '#ffffff',
+          'backgroundColor' => $wc_email_settings['background_color'],
          ],
         'body' =>
          [
-          'backgroundColor' => '#eeeeee',
+          'backgroundColor' => $wc_email_settings['body_background_color'],
          ],
        ],
       'blockDefaults' =>

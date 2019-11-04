@@ -75,6 +75,7 @@ class NewsletterEditor {
       'woocommerce' => [
         'email_base_color' => $this->wp->getOption('woocommerce_email_base_color', '#000000'),
         'email_heading' => $this->wc_transactional_emails->getEmailHeading(),
+        'email_text_color' => $this->wp->getOption('woocommerce_email_text_color', '#000000'),
       ],
     ];
     $this->wp->wpEnqueueMedia();
