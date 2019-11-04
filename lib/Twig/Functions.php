@@ -86,11 +86,6 @@ class Functions extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
-        'mailpoet_has_valid_premium_key',
-        [$this, 'hasValidPremiumKey'],
-        ['is_safe' => ['all']]
-      ),
-      new TwigFunction(
         'wp_time_format',
         [$this, 'getWPTimeFormat'],
         ['is_safe' => ['all']]
@@ -229,11 +224,6 @@ class Functions extends AbstractExtension {
       return $args[$key];
     }
     return null;
-  }
-
-  function hasValidPremiumKey() {
-    $checker = new ServicesChecker();
-    return $checker->isPremiumKeyValid(false);
   }
 
   function installedInLastTwoWeeks() {
