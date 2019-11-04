@@ -1,5 +1,5 @@
 import { select, dispatch } from '@wordpress/data';
-import MailPoet from '../../mailpoet';
+import MailPoet from 'mailpoet';
 
 export default {
   SAVE_FORM() {
@@ -11,7 +11,7 @@ export default {
       data: formData,
     }).done(() => {
       dispatch('mailpoet-form-editor').saveFormDone();
-      dispatch('mailpoet-form-editor').addNotice('Form saved.', 'success', true, 'save-form');
+      dispatch('mailpoet-form-editor').addNotice(MailPoet.I18n.t('formSaved'), 'success', true, 'save-form');
     }).fail((response) => {
       let errorMessage = null;
       if (response.errors.length > 0) {
