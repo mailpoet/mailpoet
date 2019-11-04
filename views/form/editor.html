@@ -17,5 +17,19 @@
   var mailpoet_form_data = <%= json_encode(form) %>;
   <% endautoescape %>
 </script>
+<% endblock %>
+
+<% block translations %>
+<%= localize({
+'addFormName': _x('Add form name', 'A placeholder for form name input'),
+'form': __('Form'),
+'formSettings': _x('Settings', 'A settings section heading'),
+'formPlacement': _x('Form Placement', 'A settings section heading'),
+'customCss': _x('Custom CSS', 'A settings section heading'),
+'formSaved': __('Form saved.'),
+}) %>
+<% endblock %>
+
+<% block after_javascript %>
 <%= javascript('form_editor.js')%>
 <% endblock %>

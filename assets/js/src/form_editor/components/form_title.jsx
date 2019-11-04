@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
 import classnames from 'classnames';
+import MailPoet from 'mailpoet';
 
 export default () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -18,12 +19,12 @@ export default () => {
       <div className={titleClass}>
         <div>
           <label htmlFor="post-title" className="screen-reader-text">
-            Add form name
+            {MailPoet.I18n.t('addFormName')}
           </label>
           <textarea
             id="form-title"
             className="editor-post-title__input"
-            placeholder="Add form name"
+            placeholder={MailPoet.I18n.t('addFormName')}
             rows="1"
             style={{
               overflow: 'hidden',

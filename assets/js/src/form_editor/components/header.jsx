@@ -2,6 +2,7 @@ import React from 'react';
 import { IconButton, Button } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import MailPoet from 'mailpoet';
 
 export default () => {
   const sidebarOpened = useSelect(
@@ -30,7 +31,7 @@ export default () => {
         </Button>
         <IconButton
           icon="admin-generic"
-          label="Settings"
+          label={MailPoet.I18n.t('formSettings')}
           labelPosition="down"
           onClick={() => toggleSidebar(!sidebarOpened)}
           isToggled={sidebarOpened}
