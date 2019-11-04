@@ -45,8 +45,9 @@ class TransactionalEmailsTest extends \MailPoetTest {
 
   function testInitUsesImageFromWCSettings() {
     $wp = Stub::make(new WPFunctions, ['getOption' => function($name) {
-      expect($name)->equals('woocommerce_email_header_image');
-      return 'my-awesome-image-url';
+      if ($name == 'woocommerce_email_header_image') {
+        return 'my-awesome-image-url';
+      }
     }]);
     $transactional_emails = new TransactionalEmails($wp, $this->settings);
     $transactional_emails->init();
