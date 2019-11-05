@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 3.39.0
+Stable tag: 3.39.1
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -158,6 +158,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.39.1 - 2019-11-05 =
+* Added: new premium page in the MailPoet admin;
+* Fixed: Linux cron now only runs when set as the task scheduler method;
+* Fixed: WooCommerce segments are now skipped when WooCommerce is not active.
 
 = 3.39.0 - 2019-10-29 =
 * Added: Google Analytics tracking is now in free;
