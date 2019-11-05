@@ -28,7 +28,7 @@ const createAddNoticeAction = (content, status, isDismissible, id) => ({
   id,
 });
 
-export function addNotice(content, status, id) {
+export function addNonDismissibleNotice(content, status, id) {
   return createAddNoticeAction(content, status, false, id);
 }
 
