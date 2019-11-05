@@ -13,6 +13,14 @@ import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
+import slugify from 'slugify';
+
+const generateGaTrackingCampaignName = (id, subject) => {
+  const name = slugify(subject, { lower: true })
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-$/, '');
+  return `${name || 'newsletter'}_${id}`;
+};
 
 class NewsletterSend extends React.Component {
   static displayName = 'NewsletterSend';
@@ -127,6 +135,10 @@ class NewsletterSend extends React.Component {
       },
     }).done((response) => {
       const thumbnailPromise = response.data.status === 'draft' ? this.getThumbnailPromise(response.meta.preview_url) : null;
+      const item = response.data;
+      if (!item.ga_campaign) {
+        item.ga_campaign = generateGaTrackingCampaignName(item.id, item.subject);
+      }
       this.setState({
         item: response.data,
         fields: this.getFieldsByNewsletter(response.data),
