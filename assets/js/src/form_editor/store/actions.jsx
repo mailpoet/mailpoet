@@ -20,6 +20,12 @@ export function saveFormDone(result) {
   };
 }
 
+export function saveFormStarted() {
+  return {
+    type: 'SAVE_FORM_STARTED',
+  };
+}
+
 const createAddNoticeAction = (content, status, isDismissible, id) => ({
   type: 'ADD_NOTICE',
   content,
@@ -46,8 +52,5 @@ export function removeNotice(id) {
 export function* saveForm() {
   yield {
     type: 'SAVE_FORM',
-  };
-  yield {
-    type: 'SAVE_FORM_STARTED',
   };
 }
