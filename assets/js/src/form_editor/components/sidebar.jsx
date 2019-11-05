@@ -3,6 +3,7 @@ import { IconButton } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import MailPoet from 'mailpoet';
 import BlockSettings from './block_settings.jsx';
 import FormSettings from './form_settings.jsx';
@@ -39,7 +40,7 @@ export default () => {
           <li>
             <button
               onClick={() => setActiveTab('form')}
-              className={`edit-post-sidebar__panel-tab ${activeTab === 'form' ? 'is-active' : ''}`}
+              className={classnames('edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'form' })}
               type="button"
             >
               {MailPoet.I18n.t('form')}
@@ -48,7 +49,7 @@ export default () => {
           <li>
             <button
               onClick={() => setActiveTab('block')}
-              className={`edit-post-sidebar__panel-tab ${activeTab === 'block' ? 'is-active' : ''}`}
+              className={classnames('edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'block' })}
               type="button"
             >
               {__('Block')}
