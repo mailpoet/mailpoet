@@ -26,7 +26,7 @@ export default () => {
         </div>
       </div>
       <div>
-        { sidebarOpened ? <Sidebar /> : '' }
+        { sidebarOpened ? <Sidebar /> : null }
       </div>
     </div>
   );
