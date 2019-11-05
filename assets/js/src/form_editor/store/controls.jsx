@@ -3,6 +3,9 @@ import MailPoet from 'mailpoet';
 
 export default {
   SAVE_FORM() {
+    if (select('mailpoet-form-editor').getIsFormSaving()) {
+      return;
+    }
     const formData = select('mailpoet-form-editor').getFormData();
     dispatch('mailpoet-form-editor').removeNotice('save-form');
     MailPoet.Ajax.post({
