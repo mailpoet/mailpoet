@@ -19,6 +19,7 @@ import {
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 
 const messages = {
+  onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
   onTrash: (response) => {
     const count = Number(response.meta.count);
     let message = null;
