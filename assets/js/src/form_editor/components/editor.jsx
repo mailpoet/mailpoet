@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelect } from '@wordpress/data';
+import { Popover, SlotFillProvider } from '@wordpress/components';
 import classnames from 'classnames';
 import Header from './header.jsx';
 import Sidebar from './sidebar.jsx';
@@ -23,18 +24,21 @@ export default () => {
   });
   return (
     <div className={layoutClass}>
-      <Header />
-      <div className="edit-post-layout__content">
-        <Notices />
-        <div className="edit-post-visual-editor editor-styles-wrapper">
-          <div className="editor-writing-flow block-editor-writing-flow">
-            <FormTitle />
+      <SlotFillProvider>
+        <Header />
+        <div className="edit-post-layout__content">
+          <Notices />
+          <div className="edit-post-visual-editor editor-styles-wrapper">
+            <div className="editor-writing-flow block-editor-writing-flow">
+              <FormTitle />
+            </div>
           </div>
         </div>
-      </div>
-      <div>
-        { sidebarOpened ? <Sidebar /> : null }
-      </div>
+        <div>
+          { sidebarOpened ? <Sidebar /> : null }
+        </div>
+        <Popover.Slot />
+      </SlotFillProvider>
     </div>
   );
 };
