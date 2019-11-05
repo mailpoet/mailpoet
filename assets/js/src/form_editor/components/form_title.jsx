@@ -26,11 +26,6 @@ export default () => {
             className="editor-post-title__input"
             placeholder={MailPoet.I18n.t('addFormName')}
             rows="1"
-            style={{
-              overflow: 'hidden',
-              overflowWrap: 'break-word',
-              resize: 'none',
-            }}
             onFocus={() => setIsSelected(true)}
             onKeyPress={() => setIsSelected(false)}
             onBlur={() => setIsSelected(false)}
