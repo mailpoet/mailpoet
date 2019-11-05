@@ -11,14 +11,14 @@ export default {
       data: formData,
     }).done(() => {
       dispatch('mailpoet-form-editor').saveFormDone();
-      dispatch('mailpoet-form-editor').addNotice(MailPoet.I18n.t('formSaved'), 'success', true, 'save-form');
+      dispatch('mailpoet-form-editor').addDismissibleNotice(MailPoet.I18n.t('formSaved'), 'success', 'save-form');
     }).fail((response) => {
       let errorMessage = null;
       if (response.errors.length > 0) {
         errorMessage = response.errors.map((error) => (error.message));
       }
       dispatch('mailpoet-form-editor').saveFormDone();
-      dispatch('mailpoet-form-editor').addNotice(errorMessage, 'error', true, 'save-form');
+      dispatch('mailpoet-form-editor').addDismissibleNotice(errorMessage, 'error', 'save-form');
     });
   },
 };
