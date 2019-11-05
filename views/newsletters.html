@@ -45,7 +45,6 @@
       var mailpoet_is_new_user = <%= newUser %>;
       var mailpoet_installed_at = '<%= settings.installed_at %>';
       var mailpoet_mss_active = <%= json_encode(mss_active) %>;
-      var mailpoet_free_plan_announcement_seen = !!+'<%= settings.free_plan_announcement_seen %>';
       var mailpoet_mta_method = '<%= settings.mta.method %>';
       var mailpoet_editor_javascript_url = '<%= getJavascriptScriptUrl("newsletter_editor.js") %>';
       var mailpoet_subscribers_count = <%= subscribers_count %>;
@@ -340,10 +339,6 @@
 
     'whatsNew': __("What’s new"),
     'updateMailPoetNotice': __('[link]Update MailPoet[/link] to see the latest changes'),
-
-    'freePlanTitle': __('A new and more generous free plan!'),
-    'freePlanDescription': __('MailPoet Premium and sending is now entirely free for users that have 1,000 subscribers or less.'),
-    'freePlanButton': __('Get MailPoet Premium for free now'),
 
     'congratulationsSendSuccessHeader': __('Congratulations, your newsletter is being sent!'),
     'congratulationsScheduleSuccessHeader': __('Congratulations, your newsletter is scheduled to be sent.'),
