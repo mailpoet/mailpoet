@@ -20,14 +20,20 @@ export function saveFormDone(result) {
   };
 }
 
-export function addNotice(content, status, isDismissible = false, id = null) {
-  return {
-    type: 'ADD_NOTICE',
-    content,
-    status,
-    isDismissible,
-    id,
-  };
+const createAddNoticeAction = (content, status, isDismissible, id) => ({
+  type: 'ADD_NOTICE',
+  content,
+  status,
+  isDismissible,
+  id,
+});
+
+export function addNotice(content, status, id) {
+  return createAddNoticeAction(content, status, false, id);
+}
+
+export function addDismissibleNotice(content, status, id) {
+  return createAddNoticeAction(content, status, true, id);
 }
 
 export function removeNotice(id) {
