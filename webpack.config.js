@@ -367,7 +367,7 @@ const testConfig = {
 const formEditorConfig = {
   name: 'form_editor',
   entry: {
-    form_editor: 'form_editor/index.jsx',
+    form_editor: 'form_editor/form_editor.jsx',
   },
   externals: {
     'jquery': 'jQuery',
