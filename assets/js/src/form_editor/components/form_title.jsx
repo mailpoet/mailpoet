@@ -34,6 +34,7 @@ export default () => {
             spellCheck="false"
             onFocus={() => setIsSelected(true)}
             onKeyPress={() => setIsSelected(false)}
+            onBlur={() => setIsSelected(false)}
             onChange={(e) => changeFormName(e.target.value)}
             value={title}
           />
