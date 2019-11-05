@@ -23,6 +23,7 @@ import {
 } from 'newsletters/scheduling/common.jsx';
 
 const messages = {
+  onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
   onTrash: (response) => {
     const count = Number(response.meta.count);
     let message = null;

@@ -14,7 +14,7 @@ class ListingItems extends React.Component { // eslint-disable-line react/prefer
           || MailPoet.I18n.t('loadingItems');
       } else {
         message = (this.props.messages.onNoItemsFound
-          && this.props.messages.onNoItemsFound(this.props.group))
+          && this.props.messages.onNoItemsFound(this.props.group, this.props.search))
           || MailPoet.I18n.t('noItemsFound');
       }
 
@@ -136,11 +136,12 @@ ListingItems.propTypes = {
   onTrashItem: PropTypes.func.isRequired,
   onRefreshItems: PropTypes.func.isRequired,
   item_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
-
+  search: PropTypes.string,
 };
 
 ListingItems.defaultProps = {
   getListingItemKey: undefined,
+  search: undefined,
 };
 
 export default ListingItems;

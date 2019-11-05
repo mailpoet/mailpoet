@@ -704,6 +704,7 @@ class Listing extends React.Component {
               item_actions={itemActions}
               messages={messages}
               items={items}
+              search={this.state.search}
             />
 
             <tfoot>
