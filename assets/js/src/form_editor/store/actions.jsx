@@ -47,7 +47,6 @@ export function* saveForm() {
   yield {
     type: 'SAVE_FORM_STARTED',
   };
-  yield removeNotice('save-form');
   yield {
     type: 'SAVE_FORM',
   };
