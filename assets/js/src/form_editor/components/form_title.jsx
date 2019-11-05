@@ -31,7 +31,6 @@ export default () => {
               overflowWrap: 'break-word',
               resize: 'none',
             }}
-            spellCheck="false"
             onFocus={() => setIsSelected(true)}
             onKeyPress={() => setIsSelected(false)}
             onBlur={() => setIsSelected(false)}
