@@ -45,9 +45,9 @@ export function removeNotice(id) {
 
 export function* saveForm() {
   yield {
-    type: 'SAVE_FORM_STARTED',
+    type: 'SAVE_FORM',
   };
   yield {
-    type: 'SAVE_FORM',
+    type: 'SAVE_FORM_STARTED',
   };
 }
