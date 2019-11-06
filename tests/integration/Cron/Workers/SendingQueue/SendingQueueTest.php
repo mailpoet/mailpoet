@@ -40,7 +40,6 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -61,8 +60,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->settings = SettingsController::getInstance();
     $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
     $features_controller = Stub::makeEmpty(FeaturesController::class);
-    $wc_transactional_emails = new TransactionalEmails(WPFunctions::get(), $this->settings);
-    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, $features_controller, $wc_transactional_emails);
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, $features_controller);
     $populator->up();
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'john@doe.com';
