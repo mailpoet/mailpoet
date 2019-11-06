@@ -16,6 +16,7 @@ use MailPoet\Settings\UserFlagsController;
 use MailPoet\Util\Installation;
 use MailPoet\Util\License\License;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -162,7 +163,7 @@ class Newsletters {
     $data['is_new_user'] = $this->installation->isNewInstallation();
     $data['sent_newsletters_count'] = (int)Newsletter::where('status', Newsletter::STATUS_SENT)->count();
     $data['woocommerce_customizer_enabled'] = (bool)$this->settings->get('woocommerce.use_mailpoet_editor');
-    $data['woocommerce_transactional_email_id'] = $this->settings->get('woocommerce.transactional_email_id');
+    $data['woocommerce_transactional_email_id'] = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID);
     $this->wp->wpEnqueueScript('jquery-ui');
     $this->wp->wpEnqueueScript('jquery-ui-datepicker');
 

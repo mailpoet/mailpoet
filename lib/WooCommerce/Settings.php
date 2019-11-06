@@ -5,6 +5,7 @@ namespace MailPoet\WooCommerce;
 use MailPoet\Config\Renderer;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WooCommerce\TransactionalEmails;
 
 class Settings {
 
@@ -43,7 +44,7 @@ class Settings {
     }
 
     echo $this->renderer->render('woocommerce/settings_overlay.html', [
-      'woocommerce_template_id' => $this->settings->get('woocommerce.transactional_email_id'),
+      'woocommerce_template_id' => $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID),
     ]);
   }
 }
