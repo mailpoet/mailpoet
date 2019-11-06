@@ -631,7 +631,7 @@ class Subscriber extends Model {
           'WHERE `id` IN (' .
             rtrim(str_repeat('?,', count($subscriber_ids)), ',')
           . ')',
-          'AND `wp_user_id` IS NULL',
+          'AND `wp_user_id` IS NULL OR `wp_user_id` = 0',
           'AND `is_woocommerce_user` = 0',
         ]),
         $subscriber_ids
@@ -649,7 +649,7 @@ class Subscriber extends Model {
       SubscriberCustomField::deleteManySubscriberRelations($subscriber_ids);
       // delete subscribers (except WP Users)
       Subscriber::whereIn('id', $subscriber_ids)
-        ->whereNull('wp_user_id')
+        ->whereRaw('`wp_user_id` IS NULL OR `wp_user_id` = 0')
         ->whereEqual('is_woocommerce_user', 0)
         ->deleteMany();
     });

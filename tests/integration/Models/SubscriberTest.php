@@ -673,6 +673,25 @@ class SubscriberTest extends \MailPoetTest {
     expect($total)->equals(1);
   }
 
+  function testItBulkTrashesSubscribers() {
+    $subscriber_with_wp_user_id_zero = Subscriber::createOrUpdate([
+      'email' => 'some.wp.user0@mailpoet.com',
+      'first_name' => 'Some',
+      'last_name' => 'WP User',
+      'wp_user_id' => 0,
+    ]);
+    $subscriber_with_wp_user_id = Subscriber::createOrUpdate([
+      'email' => 'some.wp.user@mailpoet.com',
+      'first_name' => 'Some',
+      'last_name' => 'WP User',
+      'wp_user_id' => 1,
+    ]);
+    Subscriber::filter('bulkTrash');
+    $not_trashed_subscribers = Subscriber::whereNull('deleted_at')->findArray();
+    expect(count($not_trashed_subscribers))->equals(1);
+    expect($not_trashed_subscribers[0]['wp_user_id'])->equals(1);
+  }
+
   function testItBulkDeletesSubscribers() {
     $segment = Segment::createOrUpdate(
       [
@@ -704,11 +723,26 @@ class SubscriberTest extends \MailPoetTest {
     );
     expect(SubscriberSegment::findMany())->count(1);
 
+    $subscriber_with_wp_user_id_zero = Subscriber::createOrUpdate([
+      'email' => 'some.wp.user0@mailpoet.com',
+      'first_name' => 'Some',
+      'last_name' => 'WP User',
+      'wp_user_id' => 0,
+    ]);
+    $subscriber_with_wp_user_id = Subscriber::createOrUpdate([
+      'email' => 'some.wp.user@mailpoet.com',
+      'first_name' => 'Some',
+      'last_name' => 'WP User',
+      'wp_user_id' => 1,
+    ]);
+
     // associated segments and custom fields should be deleted
     Subscriber::filter('bulkDelete');
     expect(SubscriberCustomField::findArray())->isEmpty();
     expect(SubscriberSegment::findArray())->isEmpty();
-    expect(Subscriber::findArray())->isEmpty();
+    $not_deleted_subscribers = Subscriber::findArray();
+    expect(count($not_deleted_subscribers))->equals(1);
+    expect($not_deleted_subscribers[0]['wp_user_id'])->equals(1);
   }
 
   function testItCanFindSubscribersInSegments() {
