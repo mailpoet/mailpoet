@@ -13,6 +13,7 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\WooCommerce\TransactionalEmails;
 
 class SettingsTest extends \MailPoetTest {
 
@@ -30,7 +31,8 @@ class SettingsTest extends \MailPoetTest {
     $this->endpoint = new Settings(
       $this->settings,
       new Bridge,
-      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => true ])
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => true ]),
+      $this->make(TransactionalEmails::class)
     );
   }
 
@@ -61,7 +63,8 @@ class SettingsTest extends \MailPoetTest {
     $this->endpoint = new Settings(
       $this->settings,
       $this->make(Bridge::class, ['onSettingsSave' => Expected::once()]),
-      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()])
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()]),
+      $this->make(TransactionalEmails::class)
     );
 
     $response = $this->endpoint->set(/* missing data */);

@@ -13,7 +13,6 @@ use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha;
-use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SetupTest extends \MailPoetTest {
@@ -32,8 +31,7 @@ class SetupTest extends \MailPoetTest {
 
     $settings = SettingsController::getInstance();
     $referral_detector = new ReferralDetector($wp, $settings);
-    $wc_transactional_emails = new TransactionalEmails($wp, $settings);
-    $populator = new Populator($settings, $wp, new Captcha(), $referral_detector, $features_controller, $wc_transactional_emails);
+    $populator = new Populator($settings, $wp, new Captcha(), $referral_detector, $features_controller);
     $router = new Setup($wp, new Activator($settings, $populator));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
