@@ -98,9 +98,10 @@ class NewsletterTypes extends React.Component {
       'MailPoet Free version': window.mailpoet_version,
       'Email type': 'wc_transactional',
     });
+    let emailId = window.mailpoet_woocommerce_transactional_email_id;
     if (!window.mailpoet_woocommerce_customizer_enabled) {
       try {
-        await MailPoet.Ajax.post({
+        const response = await MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'settings',
           action: 'set',
@@ -108,12 +109,13 @@ class NewsletterTypes extends React.Component {
             'woocommerce.use_mailpoet_editor': 1,
           },
         });
+        emailId = response.data.woocommerce.transactional_email_id;
       } catch (response) {
         MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
         return;
       }
     }
-    window.location.href = `?page=mailpoet-newsletter-editor&id=${window.mailpoet_woocommerce_transactional_email_id}`;
+    window.location.href = `?page=mailpoet-newsletter-editor&id=${emailId}`;
   };
 
   createNewsletter = (type) => {

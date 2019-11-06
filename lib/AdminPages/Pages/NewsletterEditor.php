@@ -50,7 +50,7 @@ class NewsletterEditor {
 
   function render() {
     $newsletter_id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
-    $woocommerce_template_id = (int)$this->settings->get('woocommerce.transactional_email_id', null);
+    $woocommerce_template_id = (int)$this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
     if (
       $woocommerce_template_id
       && $newsletter_id === $woocommerce_template_id

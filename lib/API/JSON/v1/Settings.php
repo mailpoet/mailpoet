@@ -13,6 +13,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Settings extends APIEndpoint {
@@ -26,6 +27,9 @@ class Settings extends APIEndpoint {
   /** @var AuthorizedEmailsController */
   private $authorized_emails_controller;
 
+  /** @var TransactionalEmails */
+  private $wc_transactional_emails;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
@@ -34,11 +38,13 @@ class Settings extends APIEndpoint {
   public function __construct(
     SettingsController $settings,
     Bridge $bridge,
-    AuthorizedEmailsController $authorized_emails_controller
+    AuthorizedEmailsController $authorized_emails_controller,
+    TransactionalEmails $wc_transactional_emails
   ) {
     $this->settings = $settings;
     $this->bridge = $bridge;
     $this->authorized_emails_controller = $authorized_emails_controller;
+    $this->wc_transactional_emails = $wc_transactional_emails;
   }
 
   function get() {
@@ -87,6 +93,10 @@ class Settings extends APIEndpoint {
       : '0';
     if ($old_subscribe_old_woocommerce_customers !== $new_subscribe_old_woocommerce_customers) {
       $this->onSubscribeOldWoocommerceCustomersChange();
+    }
+
+    if (!empty($new_settings['woocommerce']['use_mailpoet_editor'])) {
+      $this->wc_transactional_emails->init();
     }
   }
 

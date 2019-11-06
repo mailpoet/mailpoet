@@ -31,7 +31,6 @@ use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Helpers;
-use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Populator {
@@ -50,16 +49,12 @@ class Populator {
   /** @var FeaturesController */
   private $flags_controller;
 
-  /** @var TransactionalEmails */
-  private $wc_transactional_emails;
-
   function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     Captcha $captcha,
     ReferralDetector $referralDetector,
-    FeaturesController $flags_controller,
-    TransactionalEmails $wc_transactional_emails
+    FeaturesController $flags_controller
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -147,7 +142,6 @@ class Populator {
       'FarmersMarket',
     ];
     $this->flags_controller = $flags_controller;
-    $this->wc_transactional_emails = $wc_transactional_emails;
   }
 
   function up() {
@@ -173,7 +167,6 @@ class Populator {
     $this->scheduleSubscriberLinkTokens();
     $this->detectReferral();
     $this->updateFormsSuccessMessages();
-    $this->initWooCommerceTransactionalEmails();
     $this->moveGoogleAnalyticsFromPremium();
   }
 
@@ -723,12 +716,5 @@ class Populator {
 
   private function detectReferral() {
     $this->referralDetector->detect();
-  }
-
-  private function initWooCommerceTransactionalEmails() {
-    $feature_enabled = $this->flags_controller->isSupported(FeaturesController::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER);
-    if ($feature_enabled) {
-      $this->wc_transactional_emails->init();
-    }
   }
 }
