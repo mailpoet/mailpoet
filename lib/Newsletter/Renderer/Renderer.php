@@ -13,6 +13,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class Renderer {
   public $blocks_renderer;
   public $columns_renderer;
+  private $preprocessor;
   public $CSS_inliner;
   public $newsletter;
   public $preview;
@@ -30,7 +31,8 @@ class Renderer {
     $this->preview = $preview;
     $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
     $this->columns_renderer = new Columns\Renderer();
-    $this->CSS_inliner = new \MailPoetVendor\CSS();
+    $this->preprocessor = new Preprocessor($this->blocks_renderer);
+    $this->CSS_inliner = new \MailPoet\Util\CSS();
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
     $this->premium_activated = License::getLicense();
     $bridge = new Bridge();
@@ -53,7 +55,7 @@ class Renderer {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
 
-    $content = $this->preProcessALC($content);
+    $content = $this->preprocessor->process($content);
     $rendered_body = $this->renderBody($content);
     $rendered_styles = $this->renderStyles($styles);
     $custom_fonts_links = StylesHelper::getCustomFontsLinks($styles);
@@ -76,30 +78,6 @@ class Renderer {
     return ($type && !empty($rendered_newsletter[$type])) ?
       $rendered_newsletter[$type] :
       $rendered_newsletter;
-  }
-
-  /**
-   * @param array $content
-   * @return array
-   */
-  private function preProcessALC(array $content) {
-    $blocks = [];
-    $content_blocks = (array_key_exists('blocks', $content))
-      ? $content['blocks']
-      : [];
-    foreach ($content_blocks as $block) {
-      if ($block['type'] === 'automatedLatestContentLayout') {
-        $blocks = array_merge(
-          $blocks,
-          $this->blocks_renderer->automatedLatestContentTransformedPosts($block)
-        );
-      } else {
-        $blocks[] = $block;
-      }
-    }
-
-    $content['blocks'] = $blocks;
-    return $content;
   }
 
   /**
