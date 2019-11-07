@@ -41,12 +41,14 @@ class Installer {
 
     $premium_plugin_active = License::getLicense();
     $premium_plugin_installed = $premium_plugin_active || self::isPluginInstalled($slug);
+    $premium_plugin_initialized = defined('MAILPOET_PREMIUM_INITIALIZED') && MAILPOET_PREMIUM_INITIALIZED;
     $premium_install_url = $premium_plugin_installed ? '' : self::getPluginInstallationUrl($slug);
     $premium_activate_url = $premium_plugin_active ? '' : self::getPluginActivationUrl($slug);
 
     return compact(
       'premium_plugin_active',
       'premium_plugin_installed',
+      'premium_plugin_initialized',
       'premium_install_url',
       'premium_activate_url'
     );

@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Env;
+use MailPoet\Config\Installer;
 use MailPoet\Config\Menu;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
@@ -164,6 +165,7 @@ class Newsletters {
     $data['sent_newsletters_count'] = (int)Newsletter::where('status', Newsletter::STATUS_SENT)->count();
     $data['woocommerce_customizer_enabled'] = (bool)$this->settings->get('woocommerce.use_mailpoet_editor');
     $data['woocommerce_transactional_email_id'] = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID);
+    $data['display_detailed_stats'] = Installer::getPremiumStatus()['premium_plugin_initialized'];
     $this->wp->wpEnqueueScript('jquery-ui');
     $this->wp->wpEnqueueScript('jquery-ui-datepicker');
 

@@ -37,8 +37,8 @@ class CampaignStatsPage extends React.Component {
 
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
-      endpoint: window.mailpoet_premium_active ? 'stats' : 'newsletters',
-      action: window.mailpoet_premium_active ? 'get' : 'getWithStats',
+      endpoint: window.mailpoet_display_detailed_stats ? 'stats' : 'newsletters',
+      action: window.mailpoet_display_detailed_stats ? 'get' : 'getWithStats',
       data: {
         id,
       },
