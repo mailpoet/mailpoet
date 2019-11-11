@@ -152,13 +152,22 @@ class MailerLog {
   }
 
   static function isSendingLimitReached($mailer_log = false) {
-    $mailer_config = Mailer::getMailerConfig();
+    $settings = SettingsController::getInstance();
+    $mailer_config = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
     // do not enforce sending limit for MailPoet's sending method
     if ($mailer_config['method'] === Mailer::METHOD_MAILPOET) return false;
     $mailer_log = self::getMailerLog($mailer_log);
     $elapsed_time = time() - (int)$mailer_log['started'];
-    if ($mailer_log['sent'] >= $mailer_config['frequency_limit']) {
-      if ($elapsed_time <= $mailer_config['frequency_interval']) return true;
+
+    if (empty($mailer['frequency'])) {
+      $default_settings = $settings->getAllDefaults();
+      $mailer['frequency'] = $default_settings['mta']['frequency'];
+    }
+    $frequency_interval = (int)$mailer_config['frequency']['interval'] * Mailer::SENDING_LIMIT_INTERVAL_MULTIPLIER;
+    $frequency_limit = (int)$mailer_config['frequency']['emails'];
+
+    if ($mailer_log['sent'] >= $frequency_limit) {
+      if ($elapsed_time <= $frequency_interval) return true;
       // reset mailer log as enough time has passed since the limit was reached
       self::resetMailerLog();
     }
