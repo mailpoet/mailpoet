@@ -5,6 +5,7 @@ namespace MailPoet\Mailer\WordPress;
 use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Settings\SettingsController;
 
 if (!class_exists('PHPMailer')) {
   require_once ABSPATH . WPINC . '/class-phpmailer.php';
@@ -15,12 +16,16 @@ class WordPressMailer extends \PHPMailer {
   /** @var Mailer */
   private $mailer;
 
+  /** @var Mailer */
+  private $fallback_mailer;
+
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
-  function __construct(Mailer $mailer, MetaInfo $mailerMetaInfo) {
+  function __construct(Mailer $mailer, Mailer $fallback_mailer, MetaInfo $mailerMetaInfo) {
     parent::__construct(true);
     $this->mailer = $mailer;
+    $this->fallback_mailer = $fallback_mailer;
     $this->mailerMetaInfo = $mailerMetaInfo;
   }
 
@@ -31,20 +36,30 @@ class WordPressMailer extends \PHPMailer {
     // Prepare everything (including the message) for sending.
     $this->preSend();
 
-    try {
-      $extra_params = [
-        'meta' => $this->mailerMetaInfo->getWordPressTransactionalMetaInfo(),
-      ];
-      $result = $this->mailer->send($this->getEmail(), $this->formatAddress($this->getToAddresses()), $extra_params);
-    } catch (\Exception $e) {
-      throw new \phpmailerException($e->getMessage(), $e->getCode(), $e);
-    }
+    $extra_params = [
+      'meta' => $this->mailerMetaInfo->getWordPressTransactionalMetaInfo(),
+    ];
+    $email = $this->getEmail();
+    $address = $this->formatAddress($this->getToAddresses());
 
-    if ($result['response']) {
-      return true;
-    } else {
-      throw new \phpmailerException($result['error']->getMessage());
+    $send_with_mailer = function ($mailer) use ($email, $address, $extra_params) {
+      $result = $mailer->send($email, $address, $extra_params);
+      if (!$result['response']) {
+        throw new \Exception($result['error']->getMessage());
+      }
+    };
+
+    try {
+      $send_with_mailer($this->mailer);
+    } catch (\Exception $e) {
+      try {
+        $send_with_mailer($this->fallback_mailer);
+      } catch (\Exception $fallback_mailer_exception) {
+        // throw exception passing the original (primary mailer) error
+        throw new \phpmailerException($e->getMessage(), $e->getCode(), $e);
+      }
     }
+    return true;
   }
 
   private function getEmail() {

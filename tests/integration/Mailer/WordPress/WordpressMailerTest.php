@@ -11,7 +11,10 @@ class WordpressMailerTest extends \MailPoetTest {
   function testItdoesNotSendWhenPreSendCheckFails() {
     $mailer = $this->createMock(Mailer::class);
     $mailer->expects($this->never())->method('send');
-    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
+    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer->expects($this->never())->method('send');
+
+    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
   }
@@ -28,7 +31,10 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
+    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer->expects($this->never())->method('send');
+
+    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Email Text Body';
@@ -46,7 +52,10 @@ class WordpressMailerTest extends \MailPoetTest {
         'address' => 'email@example.com',
       ])
       ->willReturn(['response' => true]);
-    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
+    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer->expects($this->never())->method('send');
+
+    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Body';
@@ -67,7 +76,10 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
+    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer->expects($this->never())->method('send');
+
+    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Email Html Body';
@@ -81,7 +93,29 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => true]);
-    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
+    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer->expects($this->never())->method('send');
+
+    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
+    $wpMailer->addAddress('email@example.com');
+    $wpMailer->Body = 'body';
+    expect($wpMailer->send())->true();
+  }
+
+  function testItUsesBackupMailerWhenPrimaryFails() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer
+      ->expects($this->once())
+      ->method('send')
+      ->willThrowException(new \Exception());
+
+    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer
+      ->expects($this->once())
+      ->method('send')
+      ->willReturn(['response' => true]);
+
+    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
     expect($wpMailer->send())->true();
@@ -92,12 +126,26 @@ class WordpressMailerTest extends \MailPoetTest {
     $mailer
       ->expects($this->once())
       ->method('send')
-      ->willReturn(['response' => false, 'error' => new MailerError('send', 1, 'Big Error')]);
-    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
+      ->willReturn(['response' => false, 'error' => new MailerError('send', 1, 'Error from primary mailer')]);
+    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer
+      ->expects($this->once())
+      ->method('send')
+      ->willReturn(['response' => false, 'error' => new MailerError('send', 1, 'Error from fallback mailer')]);
+
+    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
-    $this->expectException(\phpmailerException::class);
-    $wpMailer->send();
+
+    $error_message = null;
+    try {
+      $wpMailer->send();
+    } catch (\phpmailerException $e) {
+      $error_message = $e->getMessage();
+    }
+
+    // ensure error from primary mailer is thrown
+    expect($error_message)->same('Error from primary mailer');
   }
 
   function testItThrowsOnUnknownContentType() {
@@ -105,7 +153,10 @@ class WordpressMailerTest extends \MailPoetTest {
     $mailer
       ->expects($this->never())
       ->method('send');
-    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
+    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer->expects($this->never())->method('send');
+
+    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
     $wpMailer->ContentType = 'application/json';
@@ -118,12 +169,26 @@ class WordpressMailerTest extends \MailPoetTest {
     $mailer
       ->expects($this->once())
       ->method('send')
-      ->willThrowException(new \Exception('Big Error'));
-    $wpMailer = new WordPressMailer($mailer, new MetaInfo);
+      ->willThrowException(new \Exception('Exception from primary mailer'));
+    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer
+      ->expects($this->once())
+      ->method('send')
+      ->willThrowException(new \Exception('Exception from fallback mailer'));
+
+    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
-    $this->expectException(\phpmailerException::class);
-    $wpMailer->send();
+
+    $error_message = null;
+    try {
+      $wpMailer->send();
+    } catch (\phpmailerException $e) {
+      $error_message = $e->getMessage();
+    }
+
+    // ensure exception from primary mailer is thrown
+    expect($error_message)->same('Exception from primary mailer');
   }
 
 }
