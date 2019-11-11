@@ -40,7 +40,12 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         }),
     ], $this);
 
-    $sender = new ConfirmationEmailMailer($mailer, new WPFunctions, $subcription_url_facrory_mock);
+    $sender = new ConfirmationEmailMailer(
+      $mailer,
+      $this->di_container->get(WPFunctions::class),
+      $this->di_container->get(SettingsController::class),
+      $subcription_url_facrory_mock
+    );
 
 
     $segment = Segment::createOrUpdate(
@@ -71,7 +76,12 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         }),
     ], $this);
 
-    $sender = new ConfirmationEmailMailer($mailer);
+    $sender = new ConfirmationEmailMailer(
+      $mailer,
+      $this->di_container->get(WPFunctions::class),
+      $this->di_container->get(SettingsController::class),
+      $this->di_container->get(SubscriptionUrlFactory::class)
+    );
 
     $sender->sendConfirmationEmail($subscriber);
     // error is set on the subscriber model object
@@ -93,7 +103,12 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $settings = SettingsController::getInstance();
     $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_sender_address' => 'email@email.com']);
     $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
-    $sender = new ConfirmationEmailMailer($mailer);
+    $sender = new ConfirmationEmailMailer(
+      $mailer,
+      $this->di_container->get(WPFunctions::class),
+      $this->di_container->get(SettingsController::class),
+      $this->di_container->get(SubscriptionUrlFactory::class)
+    );
 
     $result = $sender->sendConfirmationEmail($subscriber);
     expect($result)->equals(false);
@@ -115,7 +130,12 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         return true;
       },
     ], $this);
-    $sender = new ConfirmationEmailMailer($mailer);
+    $sender = new ConfirmationEmailMailer(
+      $mailer,
+      $this->di_container->get(WPFunctions::class),
+      $this->di_container->get(SettingsController::class),
+      $this->di_container->get(SubscriptionUrlFactory::class)
+    );
 
     for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
       expect($sender->sendConfirmationEmail($subscriber))->equals(true);
@@ -138,7 +158,12 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         return true;
       },
     ], $this);
-    $sender = new ConfirmationEmailMailer($mailer);
+    $sender = new ConfirmationEmailMailer(
+      $mailer,
+      $this->di_container->get(WPFunctions::class),
+      $this->di_container->get(SettingsController::class),
+      $this->di_container->get(SubscriptionUrlFactory::class)
+    );
 
     for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
       expect($sender->sendConfirmationEmail($subscriber))->equals(true);
