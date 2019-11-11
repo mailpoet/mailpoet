@@ -10,6 +10,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\Listing;
+use MailPoet\Mailer\Mailer as MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -71,6 +72,9 @@ class Newsletters extends APIEndpoint {
   /** @var Emoji */
   private $emoji;
 
+  /** @var MailerFactory */
+  private $mailer;
+
   function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
@@ -82,6 +86,7 @@ class Newsletters extends APIEndpoint {
     NewslettersRepository $newsletters_repository,
     NewslettersResponseBuilder $newsletters_response_builder,
     PostNotificationScheduler $post_notification_scheduler,
+    MailerFactory $mailer,
     MetaInfo $mailerMetaInfo,
     Emoji $emoji
   ) {
@@ -95,6 +100,7 @@ class Newsletters extends APIEndpoint {
     $this->newsletters_repository = $newsletters_repository;
     $this->newsletters_response_builder = $newsletters_response_builder;
     $this->post_notification_scheduler = $post_notification_scheduler;
+    $this->mailer = $mailer;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->emoji = $emoji;
   }
@@ -475,14 +481,11 @@ class Newsletters extends APIEndpoint {
       $rendered_newsletter['id'] = $newsletter->id;
 
       try {
-        $mailer = (!empty($data['mailer'])) ?
-          $data['mailer'] :
-          new \MailPoet\Mailer\Mailer();
         $extra_params = [
           'unsubscribe_url' => WPFunctions::get()->homeUrl(),
           'meta' => $this->mailerMetaInfo->getPreviewMetaInfo(),
         ];
-        $result = $mailer->send($rendered_newsletter, $data['subscriber'], $extra_params);
+        $result = $this->mailer->send($rendered_newsletter, $data['subscriber'], $extra_params);
 
         if ($result['response'] === false) {
           $error = sprintf(
