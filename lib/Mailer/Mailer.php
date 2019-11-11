@@ -2,11 +2,16 @@
 
 namespace MailPoet\Mailer;
 
+use MailPoet\Mailer\Methods\AmazonSES;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
+use MailPoet\Mailer\Methods\MailPoet;
+use MailPoet\Mailer\Methods\PHPMail;
+use MailPoet\Mailer\Methods\SendGrid;
+use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -53,7 +58,7 @@ class Mailer {
   private function buildMailer() {
     switch ($this->mailer_config['method']) {
       case self::METHOD_AMAZONSES:
-        $mailer_instance = new $this->mailer_config['class'](
+        $mailer_instance = new AmazonSES(
           $this->mailer_config['region'],
           $this->mailer_config['access_key'],
           $this->mailer_config['secret_key'],
@@ -64,7 +69,7 @@ class Mailer {
         );
         break;
       case self::METHOD_MAILPOET:
-        $mailer_instance = new $this->mailer_config['class'](
+        $mailer_instance = new MailPoet(
           $this->mailer_config['mailpoet_api_key'],
           $this->sender,
           $this->reply_to,
@@ -73,7 +78,7 @@ class Mailer {
         );
         break;
       case self::METHOD_SENDGRID:
-        $mailer_instance = new $this->mailer_config['class'](
+        $mailer_instance = new SendGrid(
           $this->mailer_config['api_key'],
           $this->sender,
           $this->reply_to,
@@ -81,7 +86,7 @@ class Mailer {
         );
         break;
       case self::METHOD_PHPMAIL:
-        $mailer_instance = new $this->mailer_config['class'](
+        $mailer_instance = new PHPMail(
           $this->sender,
           $this->reply_to,
           $this->return_path,
@@ -89,7 +94,7 @@ class Mailer {
         );
         break;
       case self::METHOD_SMTP:
-        $mailer_instance = new $this->mailer_config['class'](
+        $mailer_instance = new SMTP(
           $this->mailer_config['host'],
           $this->mailer_config['port'],
           $this->mailer_config['authentication'],
@@ -119,7 +124,6 @@ class Mailer {
       $mailer['frequency'] = $default_settings['mta']['frequency'];
     }
     // add additional variables to the mailer object
-    $mailer['class'] = 'MailPoet\\Mailer\\Methods\\' . $mailer['method'];
     $mailer['frequency_interval'] =
       (int)$mailer['frequency']['interval'] * self::SENDING_LIMIT_INTERVAL_MULTIPLIER;
     $mailer['frequency_limit'] = (int)$mailer['frequency']['emails'];
