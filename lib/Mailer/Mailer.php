@@ -40,7 +40,7 @@ class Mailer {
   }
 
   function init($mailer = false, $sender = false, $reply_to = false, $return_path = false) {
-    $this->mailer_config = self::getMailerConfig($mailer);
+    $this->mailer_config = $this->getMailerConfig($mailer);
     $this->sender = $this->getSenderNameAndAddress($sender);
     $this->reply_to = $this->getReplyToNameAndAddress($reply_to);
     $this->return_path = $this->getReturnPathAddress($return_path);
@@ -113,20 +113,11 @@ class Mailer {
     return $mailer_instance;
   }
 
-  static function getMailerConfig($mailer = false) {
-    $settings = SettingsController::getInstance();
+  private function getMailerConfig($mailer = false) {
     if (!$mailer) {
-      $mailer = $settings->get(self::MAILER_CONFIG_SETTING_NAME);
+      $mailer = $this->settings->get(self::MAILER_CONFIG_SETTING_NAME);
       if (!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured.', 'mailpoet'));
     }
-    if (empty($mailer['frequency'])) {
-      $default_settings = $settings->getAllDefaults();
-      $mailer['frequency'] = $default_settings['mta']['frequency'];
-    }
-    // add additional variables to the mailer object
-    $mailer['frequency_interval'] =
-      (int)$mailer['frequency']['interval'] * self::SENDING_LIMIT_INTERVAL_MULTIPLIER;
-    $mailer['frequency_limit'] = (int)$mailer['frequency']['emails'];
     return $mailer;
   }
 
