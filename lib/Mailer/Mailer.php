@@ -74,7 +74,7 @@ class Mailer {
           $this->sender,
           $this->reply_to,
           new MailPoetMapper(),
-          new AuthorizedEmailsController(SettingsController::getInstance(), new Bridge)
+          new AuthorizedEmailsController($this->settings, new Bridge)
         );
         break;
       case self::METHOD_SENDGRID:
