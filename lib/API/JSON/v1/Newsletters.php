@@ -169,8 +169,7 @@ class Newsletters extends APIEndpoint {
     if (!empty($data['template_id'])) {
       $template = NewsletterTemplate::whereEqual('id', $data['template_id'])->findOne();
       if ($template instanceof NewsletterTemplate) {
-        $template = $template->asArray();
-        $data['body'] = $template['body'];
+        $data['body'] = $template->body;
       }
       unset($data['template_id']);
     }
