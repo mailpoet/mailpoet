@@ -14,7 +14,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->mss_key = 'some_key';
-    $this->worker = new SendingServiceKeyCheck(microtime(true));
+    $this->worker = new SendingServiceKeyCheck($this->di_container->get(SettingsController::class), microtime(true));
   }
 
   function testItRequiresMailPoetMethodToBeSetUp() {

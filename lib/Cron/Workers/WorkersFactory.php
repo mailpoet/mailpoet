@@ -183,7 +183,7 @@ class WorkersFactory {
 
   /** @return SendingServiceKeyCheckWorker */
   function createSendingServiceKeyCheckWorker($timer) {
-    return new SendingServiceKeyCheckWorker($timer);
+    return new SendingServiceKeyCheckWorker($this->settings, $timer);
   }
 
   /** @return PremiumKeyCheckWorker */
@@ -193,7 +193,7 @@ class WorkersFactory {
 
   /** @return BounceWorker */
   function createBounceWorker($timer) {
-    return new BounceWorker($timer);
+    return new BounceWorker($this->settings, $timer);
   }
 
   /** @return MigrationWorker */

@@ -31,7 +31,7 @@ class BounceTest extends \MailPoetTest {
         ]);
     }
 
-    $this->worker = new Bounce(microtime(true));
+    $this->worker = new Bounce($this->di_container->get(SettingsController::class), microtime(true));
 
     $this->worker->api = new MockAPI('key');
   }
@@ -42,7 +42,7 @@ class BounceTest extends \MailPoetTest {
 
   function testItCanInitializeBridgeAPI() {
     $this->setMailPoetSendingMethod();
-    $worker = new Bounce(microtime(true));
+    $worker = new Bounce($this->di_container->get(SettingsController::class), microtime(true));
     $worker->init();
     expect($worker->api instanceof API)->true();
   }
