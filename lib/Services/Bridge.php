@@ -45,7 +45,7 @@ class Bridge {
 
   static function isMPSendingServiceEnabled() {
     try {
-      $mailer_config = Mailer::getMailerConfig();
+      $mailer_config = SettingsController::getInstance()->get(Mailer::MAILER_CONFIG_SETTING_NAME);
       return !empty($mailer_config['method'])
         && $mailer_config['method'] === Mailer::METHOD_MAILPOET;
     } catch (\Exception $e) {

@@ -9,6 +9,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Bounce as BounceTask;
 use MailPoet\Tasks\Subscribers as TaskSubscribers;
 use MailPoet\Tasks\Subscribers\BatchIterator;
@@ -25,10 +26,17 @@ class Bounce extends SimpleWorker {
 
   public $api;
 
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct(SettingsController $settings, $timer = false) {
+    $this->settings = $settings;
+    parent::__construct($timer);
+  }
+
   function init() {
     if (!$this->api) {
-      $mailer_config = Mailer::getMailerConfig();
-      $this->api = new API($mailer_config['mailpoet_api_key']);
+      $this->api = new API($this->settings->get(Mailer::MAILER_CONFIG_SETTING_NAME)['mailpoet_api_key']);
     }
   }
 
