@@ -17,7 +17,7 @@ class ConfirmationEmailMailer {
 
   const MAX_CONFIRMATION_EMAILS = 3;
 
-  /** @var Mailer|null */
+  /** @var Mailer */
   private $mailer;
 
   /** @var WPFunctions */
@@ -32,25 +32,11 @@ class ConfirmationEmailMailer {
   /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
-  /**
-   * @param Mailer|null $mailer
-   */
-  function __construct($mailer = null, WPFunctions $wp = null, SubscriptionUrlFactory $subscription_url_factory = null) {
-    if ($mailer) {
-      $this->mailer = $mailer;
-    }
-    if ($wp) {
-      $this->wp = $wp;
-    } else {
-      $this->wp = new WPFunctions;
-    }
-
-    $this->settings = SettingsController::getInstance();
+  function __construct(Mailer $mailer, WPFunctions $wp, SettingsController $settings, SubscriptionUrlFactory $subscription_url_factory) {
+    $this->mailer = $mailer;
+    $this->wp = $wp;
+    $this->settings = $settings;
     $this->mailerMetaInfo = new MetaInfo;
-
-    if ($subscription_url_factory === null) {
-      $subscription_url_factory = SubscriptionUrlFactory::getInstance();
-    }
     $this->subscription_url_factory = $subscription_url_factory;
   }
 
@@ -106,10 +92,6 @@ class ConfirmationEmailMailer {
 
     // send email
     try {
-      if (!$this->mailer) {
-        $this->mailer = new Mailer();
-      }
-      $this->mailer->init();
       $extra_params = [
         'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriber),
       ];

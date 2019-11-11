@@ -14,11 +14,11 @@ class NewSubscriberNotificationMailer {
 
   const SETTINGS_KEY = 'subscriber_email_notification';
 
+  /** @var Mailer */
+  private $mailer;
+
   /** @var Renderer */
   private $renderer;
-
-  /** @var \MailPoet\Mailer\Mailer|null */
-  private $mailer;
 
   /** @var SettingsController */
   private $settings;
@@ -26,20 +26,10 @@ class NewSubscriberNotificationMailer {
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
-  /**
-   * @param \MailPoet\Mailer\Mailer|null $mailer
-   * @param Renderer|null $renderer
-   */
-  function __construct($mailer = null, $renderer = null) {
-    if ($renderer) {
-      $this->renderer = $renderer;
-    } else {
-      $caching = !WP_DEBUG;
-      $debugging = WP_DEBUG;
-       $this->renderer = new Renderer($caching, $debugging);
-    }
+  function __construct(Mailer $mailer, Renderer $renderer, SettingsController $settings) {
     $this->mailer = $mailer;
-    $this->settings = SettingsController::getInstance();
+    $this->renderer = $renderer;
+    $this->settings = $settings;
     $this->mailerMetaInfo = new MetaInfo();
   }
 
@@ -58,7 +48,7 @@ class NewSubscriberNotificationMailer {
       $extra_params = [
         'meta' => $this->mailerMetaInfo->getNewSubscriberNotificationMetaInfo(),
       ];
-      $this->getMailer()->send($this->constructNewsletter($subscriber, $segments), $settings['address'], $extra_params);
+      $this->mailer->send($this->constructNewsletter($subscriber, $segments), $settings['address'], $extra_params);
     } catch (\Exception $e) {
       if (WP_DEBUG) {
         throw $e;
@@ -80,16 +70,6 @@ class NewSubscriberNotificationMailer {
       return true;
     }
     return !(bool)$settings['enabled'];
-  }
-
-  /**
-   * @return Mailer
-   */
-  private function getMailer() {
-    if (!$this->mailer) {
-      $this->mailer = new Mailer();
-    }
-    return $this->mailer;
   }
 
   /**
