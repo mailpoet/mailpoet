@@ -2,7 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 
 const PremiumBanner = () => {
-  if (window.mailpoet_premium_active) {
+  if (window.mailpoet_display_detailed_stats) {
     return null;
   }
 
