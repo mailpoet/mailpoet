@@ -17,6 +17,9 @@ class WooCommerceEmailCustomizationCest {
   /** @var int */
   private $woocommerce_email_template_id;
 
+  /** @var string */
+  private $wc_customizer_disabled_message;
+
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->features = new Features;
@@ -28,6 +31,8 @@ class WooCommerceEmailCustomizationCest {
     $I->amOnPluginsPage();
     $I->deactivatePlugin('mailpoet');
     $I->activatePlugin('mailpoet');
+
+    $this->wc_customizer_disabled_message = 'The usage of this email template for your WooCommerce emails is not yet activated.';
   }
 
   function openEmailCustomizerWhenSettingIsEnabled(\AcceptanceTester $I) {
@@ -38,7 +43,6 @@ class WooCommerceEmailCustomizationCest {
 
     $this->settings->withWooCommerceEmailCustomizerEnabled();
 
-    $I->login();
     $I->amOnMailpoetPage('Emails');
     $I->click('[data-automation-id="new_email"]');
 
@@ -50,39 +54,26 @@ class WooCommerceEmailCustomizationCest {
 
     $I->waitForText('Edit template for WooCommerce emails');
     $I->seeInCurrentUrl('?page=mailpoet-newsletter-editor&id=' . $this->woocommerce_email_template_id);
+
+    $I->dontSee($this->wc_customizer_disabled_message);
   }
 
   function openEmailCustomizerWhenSettingIsDisabled(\AcceptanceTester $I) {
     $I->wantTo('Open WooCommerce email customizer while setting is disabled');
-
-    $this->settings->withWooCommerceEmailCustomizerDisabled();
-
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
-
-    $button_selector = '[data-automation-id="customize_woocommerce"]';
-    $I->seeNoJSErrors();
-    $I->waitForText('Activate & Customize', 30);
-    $I->click($button_selector);
-
-    $I->waitForText('Edit template for WooCommerce emails');
-    $this->woocommerce_email_template_id = $this->getWooCommerceEmailTemplateId($I);
-    $I->seeInCurrentUrl('?page=mailpoet-newsletter-editor&id=' . $this->woocommerce_email_template_id);
-  }
-
-  function showNoticeWhenWooCommerceCustomizerIsDisabled(\AcceptanceTester $I) {
-    $I->wantTo('Show notice when WooCommerce Customizer is disabled');
 
     $this->createEmailTemplate($I);
     $this->woocommerce_email_template_id = $this->getWooCommerceEmailTemplateId($I);
 
     $this->settings->withWooCommerceEmailCustomizerDisabled();
 
-    $I->login();
+    $I->amOnMailpoetPage('Emails');
     $I->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletter-editor&id=' . $this->woocommerce_email_template_id);
-    $I->waitForText('You need to enable MailPoet email customizer for WooCommerce if you want to access to the customizer.');
-    $I->seeInCurrentUrl('?page=mailpoet-settings&enable-customizer-notice#woocommerce');
+    $I->waitForText('Edit template for WooCommerce emails');
+
+    $activation_selector = '.mailpoet_save_woocommerce_customizer_disabled';
+    $I->see($this->wc_customizer_disabled_message, $activation_selector);
+    $I->click('Activate now', $activation_selector);
+    $I->waitForElementNotVisible($activation_selector);
   }
 
   private function createEmailTemplate(\AcceptanceTester $I) {
