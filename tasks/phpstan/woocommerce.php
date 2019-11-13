@@ -43,6 +43,10 @@ function get_woocommerce_currency() {
   return '';
 }
 
+function wc_light_or_dark(string $color, string $dark, string $light) {
+  return '';
+}
+
 function wc_get_product($the_product = false, $deprecated = []) {
   return null;
 }
