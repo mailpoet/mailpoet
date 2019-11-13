@@ -117,6 +117,7 @@
           } else {
             $('#settings_stats_notifications_error').hide();
           }
+
           <% if is_woocommerce_active %>
             // if WooCommerce opt-in on checkout is enabled but the checkbox message is empty, show an error
             var woocommerce_optin_on_checkout_enabled = $('input[name="woocommerce[optin_on_checkout][enabled]"]:checked').val(),
@@ -217,6 +218,27 @@
 
         <% if is_woocommerce_active %>
           $('#settings_woocommerce_optin_on_checkout_error').hide();
+
+          $('.mailpoet_woocommerce_editor_button').on('click', function() {
+            var emailId = "<%= settings.woocommerce.transactional_email_id %>";
+            if (!emailId) {
+              MailPoet.Ajax.post({
+                api_version: window.mailpoet_api_version,
+                endpoint: 'settings',
+                action: 'set',
+                data: {
+                  'woocommerce.use_mailpoet_editor': 1,
+                },
+              }).done(function (response) {
+                emailId = response.data.woocommerce.transactional_email_id;
+                window.location.href = '?page=mailpoet-newsletter-editor&id=' + emailId;
+              }).fail(function (response) {
+                MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
+              });
+            } else {
+              window.location.href = '?page=mailpoet-newsletter-editor&id=' + emailId;
+            }
+          });
         <% endif %>
 
         function toggleLinuxCronSettings() {
