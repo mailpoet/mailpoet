@@ -112,6 +112,7 @@ Module.SaveView = Marionette.View.extend({
     return {
       wrapperClass: this.wrapperClass,
       isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
+      woocommerceCustomizerEnabled: App.getConfig().get('woocommerceCustomizerEnabled'),
     };
   },
   events: {
@@ -124,6 +125,8 @@ Module.SaveView = Marionette.View.extend({
     /* Export template */
     'click .mailpoet_save_export': 'showExportTemplate',
     'click .mailpoet_export_template': 'exportTemplate',
+    /* WooCommerce */
+    'click .mailpoet_save_activate_wc_customizer_button': 'activateWooCommerceCustomizer',
   },
 
   initialize: function () {
@@ -301,6 +304,21 @@ Module.SaveView = Marionette.View.extend({
   hideValidationError: function () {
     this.$('.mailpoet_save_error').addClass('mailpoet_hidden');
     this.$('.mailpoet_save_next').removeClass('button-disabled');
+  },
+  activateWooCommerceCustomizer: function () {
+    var $el = this.$('.mailpoet_save_woocommerce_customizer_disabled');
+    return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'settings',
+      action: 'set',
+      data: {
+        'woocommerce.use_mailpoet_editor': 1,
+      },
+    }).done(function () {
+      $el.addClass('mailpoet_hidden');
+    }).fail(function (response) {
+      MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
+    });
   },
 });
 

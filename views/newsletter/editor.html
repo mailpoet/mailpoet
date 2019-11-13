@@ -1488,6 +1488,7 @@
       dragDemoUrlSettings: '<%= editor_tutorial_seen %>',
       installedAt: '<%= settings["installed_at"] %>',
       mtaMethod: '<%= settings["mta"]["method"] %>',
+      woocommerceCustomizerEnabled: <%= woocommerce.customizer_enabled ? 'true' : 'false' %>,
     };
     wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
 
