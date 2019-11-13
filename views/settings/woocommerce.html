@@ -12,7 +12,6 @@
     <td>
       <p>
         <input
-        data-toggle="mailpoet_woocommerce_use_mailpoet_editor"
         type="checkbox"
         value="1"
         id="settings[woocommerce_use_mailpoet_editor]"
@@ -20,8 +19,7 @@
         <% if(settings.woocommerce.use_mailpoet_editor) %>checked="checked"<% endif %>
         >
         <br>
-        <a class="button-secondary mailpoet_woocommerce_editor_button" href="?page=mailpoet-newsletter-editor&id=<%= settings.woocommerce.transactional_email_id %>"><%= _x('Open template editor', 'Settings button to go to WooCommerce email editor') %></a>
-        <a class="button-secondary mailpoet_woocommerce_editor_button_disabled" disabled="disabled"><%= _x('Open template editor', 'Settings button to go to WooCommerce email editor') %></a>
+        <input type="button" name="wc_editor_button" class="button-secondary mailpoet_woocommerce_editor_button" value="<%= _x('Open template editor', 'Settings button to go to WooCommerce email editor') %>">
       </p>
       <input
         type="hidden"

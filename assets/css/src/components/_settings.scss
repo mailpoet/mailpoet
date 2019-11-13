@@ -138,23 +138,7 @@
   }
 
   .mailpoet_woocommerce_editor_button {
-    display: none;
     margin-top: 10px;
-  }
-
-  input:checked ~ .mailpoet_woocommerce_editor_button {
-    display: inline-block;
-  }
-
-  .mailpoet_woocommerce_editor_button_disabled {
-    cursor: not-allowed;
-    display: none;
-    margin-top: 10px;
-    opacity: .7;
-  }
-
-  input:not(:checked) ~ .mailpoet_woocommerce_editor_button_disabled {
-    display: inline-block;
   }
 
   @media screen and (max-width: 782px) {
