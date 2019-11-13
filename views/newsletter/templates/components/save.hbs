@@ -12,6 +12,11 @@
             <span class="mailpoet_autosaved_at mailpoet_hidden"></span>
         </div>
     </div>
+    <div class="clearfix"></div>
+    <div class="mailpoet_save_woocommerce_customizer_disabled{{#if woocommerceCustomizerEnabled}} mailpoet_hidden{{/if}}">
+      <div class="mailpoet_save_woocommerce_error"><%= __('The usage of this email template for your WooCommerce emails is not yet activated.') %></div>
+      <input type="button" name="activate_wc_customizer" value="<%= __('Activate now') %>" class="button button-primary mailpoet_save_activate_wc_customizer_button" style="margin-top: 17px">
+    </div>
 {{else}}
     <input type="button" name="next" value="<%= __('Next') %>" class="button button-primary mailpoet_save_next" />
     <div class="mailpoet_button_group mailpoet_save_button_group">

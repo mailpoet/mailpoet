@@ -75,6 +75,7 @@ class NewsletterEditor {
         'email_base_color' => $email_base_color,
         'email_base_text_color' => $this->woocommerce_helper->wcLightOrDark($email_base_color, '#202020', '#ffffff'),
         'email_text_color' => $this->wp->getOption('woocommerce_email_text_color', '#000000'),
+        'customizer_enabled' => (bool)$this->settings->get('woocommerce.use_mailpoet_editor'),
       ];
     }
     $data = [
