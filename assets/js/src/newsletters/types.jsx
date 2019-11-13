@@ -86,7 +86,7 @@ class NewsletterTypes extends React.Component {
               }
             }}
           >
-            {MailPoet.I18n.t(window.mailpoet_woocommerce_customizer_enabled ? 'customize' : 'activate_and_customize')}
+            {MailPoet.I18n.t('customize')}
           </a>
         ),
       },
@@ -99,7 +99,7 @@ class NewsletterTypes extends React.Component {
       'Email type': 'wc_transactional',
     });
     let emailId = window.mailpoet_woocommerce_transactional_email_id;
-    if (!window.mailpoet_woocommerce_customizer_enabled) {
+    if (!emailId) {
       try {
         const response = await MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
