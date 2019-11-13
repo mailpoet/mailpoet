@@ -41,7 +41,7 @@ class Template {
              [
               'block' =>
                [
-                'backgroundColor' => '#eeeeee',
+                'backgroundColor' => 'transparent',
                ],
              ],
             'blocks' =>
@@ -82,10 +82,10 @@ class Template {
                     'type' => 'image',
                     'link' => '',
                     'src' => $wc_email_settings['header_image'],
-                    'alt' => 'mailpoet-logo',
+                    'alt' => '',
                     'fullWidth' => false,
-                    'width' => '160px',
-                    'height' => '490px',
+                    'width' => '180px',
+                    'height' => '362px',
                     'styles' =>
                      [
                       'block' =>
@@ -186,7 +186,7 @@ class Template {
              [
               'block' =>
                [
-                'backgroundColor' => '#ffffff',
+                'backgroundColor' => 'transparent',
                ],
              ],
             'blocks' =>
@@ -240,7 +240,7 @@ class Template {
              [
               'block' =>
                [
-                'backgroundColor' => '#eeeeee',
+                'backgroundColor' => 'transparent',
                ],
              ],
             'blocks' =>
@@ -293,7 +293,7 @@ class Template {
          [
           'fontColor' => $wc_email_settings['text_color'],
           'fontFamily' => 'Arial',
-          'fontSize' => '16px',
+          'fontSize' => '14px',
           'lineHeight' => '1.6',
          ],
         'h1' =>
@@ -324,11 +324,11 @@ class Template {
          ],
         'wrapper' =>
          [
-          'backgroundColor' => $wc_email_settings['background_color'],
+          'backgroundColor' => $wc_email_settings['body_background_color'],
          ],
         'body' =>
          [
-          'backgroundColor' => $wc_email_settings['body_background_color'],
+          'backgroundColor' => $wc_email_settings['background_color'],
          ],
        ],
       'blockDefaults' =>

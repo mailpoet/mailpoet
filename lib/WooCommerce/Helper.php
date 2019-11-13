@@ -36,6 +36,10 @@ class Helper {
     return get_woocommerce_currency();
   }
 
+  function wcLightOrDark($color, $dark, $light) {
+    return wc_light_or_dark($color, $dark, $light);
+  }
+
   function getOrdersCountCreatedBefore($date_time) {
     global $wpdb;
     $result = $wpdb->get_var( "

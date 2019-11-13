@@ -6,9 +6,9 @@
         color: {{ styles.titleColor }};
     }
 </style>
-<div class="mailpoet_content mailpoet_woocommerce_content" data-automation-id="woocommerce_content">
-<p style="margin:0 0 16px"><%= __('Hi %s,', 'woocommerce') | format('Elon') %></p>
-<p style="margin:0 0 16px"><%= __("Just to let you know &mdash; we've received your order #%s, and it is now being processed:", 'woocommerce') | format('0001') | raw %></p>
+<div class="mailpoet_content mailpoet_woocommerce_content" data-automation-id="woocommerce_content" style="font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;font-size:14px;line-height:150%;text-align:left;">
+<p style="margin:0 0 16px;font-size:14px;"><%= __('Hi %s,', 'woocommerce') | format('Elon') %></p>
+<p style="margin:0 0 16px;font-size:14px;"><%= __("Just to let you know &mdash; we've received your order #%s, and it is now being processed:", 'woocommerce') | format('0001') | raw %></p>
 
 <h2
 	style="display:block;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;font-size:18px;font-weight:bold;line-height:130%;margin:0 0 18px;text-align:left">
@@ -111,6 +111,6 @@
 		</tr>
 	</tbody>
 </table>
-<p style="margin:0 0 16px"><%= __('Thanks for shopping with us.', 'woocommerce') %></p>
+<p style="margin:0 0 16px;font-size:14px;"><%= __('Thanks for shopping with us.', 'woocommerce') %></p>
 </div>
 <div class="mailpoet_block_highlight"></div>

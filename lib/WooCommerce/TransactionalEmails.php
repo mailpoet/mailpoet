@@ -2,6 +2,7 @@
 
 namespace MailPoet\WooCommerce;
 
+use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -126,18 +127,18 @@ class TransactionalEmails {
 
   private function getWCEmailSettings() {
     $wc_email_settings = [
-      'woocommerce_email_background_color' => '#ffffff',
+      'woocommerce_email_background_color' => '#f7f7f7',
       'woocommerce_email_base_color' => '#333333',
-      'woocommerce_email_body_background_color' => '#eeeeee',
+      'woocommerce_email_body_background_color' => '#ffffff',
       'woocommerce_email_footer_text' => $this->wp->_x('Footer text', 'Default footer text for a WooCommerce transactional email', 'mailpoet'),
-      'woocommerce_email_header_image' => '',
+      'woocommerce_email_header_image' => Env::$assets_url . '/img/newsletter_editor/wc-default-logo.png',
       'woocommerce_email_text_color' => '#111111',
     ];
     $result = [];
     foreach ($wc_email_settings as $name => $default) {
-      $value = $this->wp->getOption($name, $default);
+      $value = $this->wp->getOption($name);
       $key = preg_replace('/^woocommerce_email_/', '', $name);
-      $result[$key] = $value;
+      $result[$key] = $value ?: $default;
     }
     $result['footer_text'] = $this->replacePlaceholders($result['footer_text']);
     return $result;

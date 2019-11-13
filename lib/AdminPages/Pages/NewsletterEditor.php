@@ -65,6 +65,16 @@ class NewsletterEditor {
 
     $subscriber = Subscriber::getCurrentWPUser();
     $subscriber_data = $subscriber ? $subscriber->asArray() : [];
+    $woocommerce_data = [];
+    if ($this->woocommerce_helper->isWooCommerceActive()) {
+      $email_base_color = $this->wp->getOption('woocommerce_email_base_color', '#ffffff');
+      $woocommerce_data = [
+        'email_headings' => $this->wc_transactional_emails->getEmailHeadings(),
+        'email_base_color' => $email_base_color,
+        'email_base_text_color' => $this->woocommerce_helper->wcLightOrDark($email_base_color, '#202020', '#ffffff'),
+        'email_text_color' => $this->wp->getOption('woocommerce_email_text_color', '#000000'),
+      ];
+    }
     $data = [
       'shortcodes' => ShortcodesHelper::getShortcodes(),
       'settings' => $this->settings->getAll(),
@@ -72,11 +82,7 @@ class NewsletterEditor {
       'current_wp_user' => array_merge($subscriber_data, $this->wp->wpGetCurrentUser()->to_array()),
       'sub_menu' => Menu::MAIN_PAGE_SLUG,
       'mss_active' => Bridge::isMPSendingServiceEnabled(),
-      'woocommerce' => [
-        'email_headings' => $this->wc_transactional_emails->getEmailHeadings(),
-        'email_base_color' => $this->wp->getOption('woocommerce_email_base_color', '#000000'),
-        'email_text_color' => $this->wp->getOption('woocommerce_email_text_color', '#000000'),
-      ],
+      'woocommerce' => $woocommerce_data,
       'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
       'site_address' => $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST),
     ];
