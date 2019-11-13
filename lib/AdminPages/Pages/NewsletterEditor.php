@@ -54,12 +54,14 @@ class NewsletterEditor {
     if (
       $woocommerce_template_id
       && $newsletter_id === $woocommerce_template_id
-      && (
-        !$this->woocommerce_helper->isWooCommerceActive()
-        || !(bool)$this->settings->get('woocommerce.use_mailpoet_editor', false)
-      )
+      && !$this->woocommerce_helper->isWooCommerceActive()
     ) {
-      header('Location: admin.php?page=mailpoet-settings&enable-customizer-notice#woocommerce', true, 302);
+      $location = 'admin.php?page=mailpoet-settings&enable-customizer-notice#woocommerce';
+      if (headers_sent()) {
+        echo '<script>window.location = "' . $location . '";</script>';
+      } else {
+        header('Location: ' . $location, true, 302);
+      }
       exit;
     }
 
