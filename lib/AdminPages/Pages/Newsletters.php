@@ -163,7 +163,6 @@ class Newsletters {
 
     $data['is_new_user'] = $this->installation->isNewInstallation();
     $data['sent_newsletters_count'] = (int)Newsletter::where('status', Newsletter::STATUS_SENT)->count();
-    $data['woocommerce_customizer_enabled'] = (bool)$this->settings->get('woocommerce.use_mailpoet_editor');
     $data['woocommerce_transactional_email_id'] = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID);
     $data['display_detailed_stats'] = Installer::getPremiumStatus()['premium_plugin_initialized'];
     $this->wp->wpEnqueueScript('jquery-ui');
