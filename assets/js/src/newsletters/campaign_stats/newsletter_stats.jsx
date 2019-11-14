@@ -85,7 +85,7 @@ const NewsletterGeneralStats = ({ newsletter }) => {
       { newsletter.ga_campaign && (
         <p>
           {MailPoet.I18n.t('googleAnalytics')}
-          :
+          {': '}
           { newsletter.ga_campaign }
         </p>
       ) }
