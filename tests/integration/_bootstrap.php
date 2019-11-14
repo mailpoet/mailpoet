@@ -216,4 +216,21 @@ if (!class_exists(WC_Session::class)) {
   }
 }
 
+if (!function_exists('WC')) {
+  class WC_Mailer {
+    function email_header() {
+    }
+    function email_footer() {
+    }
+  }
+  class WooCommerce {
+    function mailer() {
+      return new WC_Mailer;
+    }
+  }
+  function WC() {
+    return new WooCommerce;
+  }
+}
+
 include '_fixtures.php';

@@ -5,11 +5,14 @@ namespace MailPoet\Config;
 use MailPoet\API\JSON\API;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WooCommerce\TransactionalEmails as WCTransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
@@ -36,6 +39,9 @@ class Initializer {
   /** @var SettingsController */
   private $settings;
 
+  /** @var FeaturesController */
+  private $flags_controller;
+
   /** @var Router\Router */
   private $router;
 
@@ -60,6 +66,12 @@ class Initializer {
   /** @var DatabaseInitializer */
   private $database_initializer;
 
+  /** @var WCTransactionalEmails */
+  private $wc_transactional_emails;
+
+  /** @var WooCommerceHelper */
+  private $wc_helper;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
@@ -75,7 +87,10 @@ class Initializer {
     CronTrigger $cron_trigger,
     PermanentNotices $permanent_notices,
     Shortcodes $shortcodes,
-    DatabaseInitializer $database_initializer
+    DatabaseInitializer $database_initializer,
+    FeaturesController $flags_controller,
+    WCTransactionalEmails $wc_transactional_emails,
+    WooCommerceHelper $wc_helper
   ) {
       $this->renderer_factory = $renderer_factory;
       $this->access_control = $access_control;
@@ -90,6 +105,9 @@ class Initializer {
       $this->permanent_notices = $permanent_notices;
       $this->shortcodes = $shortcodes;
       $this->database_initializer = $database_initializer;
+      $this->flags_controller = $flags_controller;
+      $this->wc_transactional_emails = $wc_transactional_emails;
+      $this->wc_helper = $wc_helper;
   }
 
   function init() {
@@ -172,6 +190,7 @@ class Initializer {
       $this->renderer = $this->renderer_factory->getRenderer();
       $this->setupWidget();
       $this->hooks->init();
+      $this->setupWoocommerceTransactionalEmails();
     } catch (\Exception $e) {
       $this->handleFailedInitialization($e);
     }
@@ -345,6 +364,15 @@ class Initializer {
       'mailpoet_newsletter_editor_after_javascript',
       [$this, 'includeAutomaticEmailsData']
     );
+  }
+
+  private function setupWoocommerceTransactionalEmails() {
+    $feature_enabled = $this->flags_controller->isSupported(FeaturesController::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER);
+    $opt_in_enabled = $this->settings->get('woocommerce.use_mailpoet_editor', false);
+    $wc_enabled = $this->wc_helper->isWooCommerceActive();
+    if ($feature_enabled && $wc_enabled && $opt_in_enabled) {
+      $this->wc_transactional_emails->useTemplateForWoocommerceEmails();
+    }
   }
 
   function includeAutomaticEmailsData() {

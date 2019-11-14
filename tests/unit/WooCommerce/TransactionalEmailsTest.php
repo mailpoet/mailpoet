@@ -4,6 +4,8 @@ namespace MailPoet\WooCommerce;
 
 use Codeception\Stub;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WooCommerce\TransactionalEmails\Renderer;
+use MailPoet\WooCommerce\TransactionalEmails\Template;
 use MailPoet\WP\Functions as WPFunctions;
 
 class TransactionalEmailsTest extends \MailPoetUnitTest {
@@ -32,7 +34,9 @@ class TransactionalEmailsTest extends \MailPoetUnitTest {
       },
     ]);
     $settings = Stub::make(SettingsController::class);
-    $transactional_emails = new TransactionalEmails($wp, $settings);
+    $template = Stub::make(Template::class);
+    $renderer = Stub::make(Renderer::class);
+    $transactional_emails = new TransactionalEmails($wp, $settings, $template, $renderer);
     expect($transactional_emails->getEmailHeadings())->equals([
       'new_account' => 'Test: New Order: #0001',
       'processing_order' => 'Thank you for your order',
@@ -40,5 +44,4 @@ class TransactionalEmailsTest extends \MailPoetUnitTest {
       'customer_note' => 'Note added to order #0001 - ' . date('Y-m-d'),
     ]);
   }
-
 }
