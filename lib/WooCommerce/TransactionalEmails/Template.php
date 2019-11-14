@@ -2,6 +2,8 @@
 
 namespace MailPoet\WooCommerce\TransactionalEmails;
 
+use MailPoet\Config\Env;
+
 class Template {
   public function create($wc_email_settings) {
     $social_icon_url = Env::$assets_url . '/img/newsletter_editor/social-icons';

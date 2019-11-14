@@ -2,9 +2,9 @@
 
 namespace MailPoet\WooCommerce;
 
-use MailPoet\Config\Env;
 use MailPoet\Models\Newsletter;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WooCommerce\TransactionalEmails\Renderer;
 use MailPoet\WooCommerce\TransactionalEmails\Template;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -20,13 +20,17 @@ class TransactionalEmails {
   /** @var Template */
   private $template;
 
+  /** @var Renderer */
+  private $renderer;
+
   /** @var array */
   private $email_headings;
 
-  function __construct(WPFunctions $wp, SettingsController $settings, Template $template) {
+  function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer) {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->template = $template;
+    $this->renderer = $renderer;
     $this->email_headings = [
       'new_account' => [
         'option_name' => 'woocommerce_new_order_settings',
@@ -69,6 +73,21 @@ class TransactionalEmails {
     return $values;
   }
 
+  public function useTemplateForWoocommerceEmails() {
+    $this->wp->addAction('woocommerce_init', function() {
+      $this->wp->removeAction('woocommerce_email_header', [\WC()->mailer(), 'email_header']);
+      $this->wp->removeAction('woocommerce_email_footer', [\WC()->mailer(), 'email_footer']);
+      $this->wp->addAction('woocommerce_email_header', function($email_heading) {
+        $this->renderer->render($this->getNewsletter());
+        echo $this->renderer->getHTMLBeforeContent($email_heading);
+      });
+      $this->wp->addAction('woocommerce_email_footer', function() {
+        echo $this->renderer->getHTMLAfterContent();
+      });
+      $this->wp->addAction('woocommerce_email_styles', [$this->renderer, 'prefixCss']);
+    });
+  }
+
   private function createNewsletter() {
     $wc_email_settings = $this->getWCEmailSettings();
     return Newsletter::createOrUpdate([
@@ -77,6 +96,10 @@ class TransactionalEmails {
       'preheader' => '',
       'body' => json_encode($this->template->create($wc_email_settings)),
     ]);
+  }
+
+  private function getNewsletter() {
+    return Newsletter::findOne($this->settings->get(self::SETTING_EMAIL_ID));
   }
 
   private function replacePlaceholders($text) {
