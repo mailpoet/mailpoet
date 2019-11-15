@@ -66,7 +66,7 @@ class TransactionalEmails {
       if (!$settings) {
         $values[$name] = $this->replacePlaceholders($heading['default']);
       } else {
-        $value = isset($settings['heading']) ? $settings['heading'] : $heading['default'];
+        $value = !empty($settings['heading']) ? $settings['heading'] : $heading['default'];
         $values[$name] = $this->replacePlaceholders($value);
       }
     }
