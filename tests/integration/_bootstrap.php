@@ -217,13 +217,13 @@ if (!class_exists(WC_Session::class)) {
 }
 
 if (!function_exists('WC')) {
-  class WC_Mailer {
-    function email_header() {
+  class WC_Mailer { // phpcs:ignore
+    function email_header() { // phpcs:ignore
     }
-    function email_footer() {
+    function email_footer() { // phpcs:ignore
     }
   }
-  class WooCommerce {
+  class WooCommerce { // phpcs:ignore
     function mailer() {
       return new WC_Mailer;
     }
