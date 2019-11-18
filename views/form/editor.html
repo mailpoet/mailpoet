@@ -15,6 +15,7 @@
 <script>
   <% autoescape 'js' %>
   var mailpoet_form_data = <%= json_encode(form) %>;
+  var mailpoet_form_exports = <%= json_encode(form_exports) %>;
   <% endautoescape %>
 </script>
 <% endblock %>
@@ -27,6 +28,9 @@
 'formPlacement': _x('Form Placement', 'A settings section heading'),
 'customCss': _x('Custom CSS', 'A settings section heading'),
 'formSaved': __('Form saved.'),
+'addFormWidgetHint': __('Add this form to your sidebar or footer on the [link]Widgets page[/link].'),
+'addFormShortcodeHint': __('Copy and paste this [link]shortcode[/link] on to a post or page.'),
+'addFormPhpIframeHint': __('%sPHP%s and %siFrame%s versions are also available.')
 }) %>
 <% endblock %>
 

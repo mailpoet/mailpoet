@@ -6,6 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Form\Util\Export;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 use MailPoet\Settings\Pages;
@@ -31,6 +32,11 @@ class FormEditor {
 
     $data = [
       'form' => $form,
+      'form_exports' => [
+          'php'       => Export::get('php', $form),
+          'iframe'    => Export::get('iframe', $form),
+          'shortcode' => Export::get('shortcode', $form),
+      ],
       'pages' => Pages::getAll(),
       'segments' => Segment::getSegmentsWithSubscriberCount(),
       'styles' => FormRenderer::getStyles($form),

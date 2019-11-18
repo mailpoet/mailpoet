@@ -8,6 +8,9 @@ export default {
   getFormData(state) {
     return state.formData;
   },
+  getFormExports(state) {
+    return state.formExports;
+  },
   getIsFormSaving(state) {
     return state.isFormSaving;
   },
