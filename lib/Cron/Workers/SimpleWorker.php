@@ -93,13 +93,14 @@ abstract class SimpleWorker {
   }
 
   function prepareTask(ScheduledTask $task) {
-    $task->status = null;
-    $task->save();
-
     // abort if execution limit is reached
     $this->cron_helper->enforceExecutionLimit($this->timer);
 
-    return true;
+    $prepare_completed = $this->prepareTaskStrategy($task);
+    if ($prepare_completed) {
+      $task->status = null;
+      $task->save();
+    }
   }
 
   function processTask(ScheduledTask $task) {
@@ -131,6 +132,10 @@ abstract class SimpleWorker {
     $this->stopProgress($task);
 
     return (bool)$completed;
+  }
+
+  function prepareTaskStrategy(ScheduledTask $task) {
+    return true;
   }
 
   function processTaskStrategy(ScheduledTask $task) {

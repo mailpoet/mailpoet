@@ -15,6 +15,9 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MigrationTest extends \MailPoetTest {
+  /** @var Migration */
+  private $worker;
+
   function _before() {
     parent::_before();
     // Alter table to test migration
@@ -63,17 +66,15 @@ class MigrationTest extends \MailPoetTest {
     $this->worker->pauseSending();
     expect(MailerLog::isSendingPaused())->true();
     $task = $this->createScheduledTask();
-    $result = $this->worker->prepareTask($task);
-    expect($result)->false();
+    $this->worker->prepareTask($task);
     expect(MailerLog::isSendingPaused())->false();
   }
 
   function testItCompletesTaskIfThereIsNothingToMigrate() {
     SendingQueue::deleteMany();
     $task = $this->createScheduledTask();
-    $result = $this->worker->prepareTask($task);
+    $this->worker->prepareTask($task);
     expect(ScheduledTask::findOne($task->id)->status)->equals(ScheduledTask::STATUS_COMPLETED);
-    expect($result)->false();
   }
 
   function testItMigratesSendingQueuesAndSubscribers() {

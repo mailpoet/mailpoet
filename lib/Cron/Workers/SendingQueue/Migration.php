@@ -21,7 +21,7 @@ class Migration extends SimpleWorker {
     return empty($completed_tasks);
   }
 
-  function prepareTask(ScheduledTask $task) {
+  function prepareTaskStrategy(ScheduledTask $task) {
     $unmigrated_columns = $this->checkUnmigratedColumnsExist();
     $unmigrated_queues_count = 0;
     $unmigrated_queue_subscribers = [];
@@ -43,8 +43,7 @@ class Migration extends SimpleWorker {
 
     // pause sending while the migration is in process
     $this->pauseSending();
-
-    return parent::prepareTask($task);
+    return true;
   }
 
   function pauseSending() {
@@ -74,13 +73,10 @@ class Migration extends SimpleWorker {
     }
   }
 
-  function processTask(ScheduledTask $task) {
+  function processTaskStrategy(ScheduledTask $task) {
     $this->migrateSendingQueues();
     $this->migrateSubscribers();
-
-    $this->complete($task);
     $this->resumeSending();
-
     return true;
   }
 
