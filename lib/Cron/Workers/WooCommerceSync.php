@@ -32,8 +32,4 @@ class WooCommerceSync extends SimpleWorker {
     $this->woocommerce_segment->synchronizeCustomers();
     return true;
   }
-
-  function complete(ScheduledTask $task) {
-    return parent::complete($task);
-  }
 }
