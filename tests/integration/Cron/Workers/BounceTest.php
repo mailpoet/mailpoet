@@ -53,12 +53,17 @@ class BounceTest extends \MailPoetTest {
     expect($this->worker->checkProcessingRequirements())->true();
   }
 
-  function testItDeletesTaskIfThereAreNoSubscribersWhenPreparingTask() {
+  function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenPreparingTask() {
+    // 1st run - subscribers will be processed
+    $task = $this->createScheduledTask();
+    $this->worker->prepareTask($task);
+    expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->notEmpty();
+
+    // 2nd run - nothing more to process, ScheduledTaskSubscriber will be cleaned up
     Subscriber::deleteMany();
     $task = $this->createScheduledTask();
-    $result = $this->worker->prepareTask($task);
-    expect(ScheduledTask::findOne($task->id))->isEmpty();
-    expect($result)->false();
+    $this->worker->prepareTask($task);
+    expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty();
   }
 
   function testItPreparesTask() {
@@ -69,13 +74,17 @@ class BounceTest extends \MailPoetTest {
     expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->notEmpty();
   }
 
-  function testItDeletesTaskIfThereAreNoSubscribersToProcessWhenProcessingTask() {
+  function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenProcessingTask() {
+    // prepare subscribers
     $task = $this->createScheduledTask();
-    $task->subscribers = null;
-    $task->save();
-    $result = $this->worker->processTask($task);
-    expect(ScheduledTask::findOne($task->id))->isEmpty();
-    expect($result)->false();
+    $this->worker->prepareTask($task);
+    expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->notEmpty();
+
+    // process - no subscribers found, ScheduledTaskSubscriber will be cleaned up
+    Subscriber::deleteMany();
+    $task = $this->createScheduledTask();
+    $this->worker->processTask($task);
+    expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty();
   }
 
   function testItProcessesTask() {
