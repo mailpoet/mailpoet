@@ -47,12 +47,12 @@ abstract class SimpleWorker {
 
     $this->init();
 
-    $scheduled_tasks = self::getDueTasks();
-    $running_tasks = self::getRunningTasks();
+    $scheduled_tasks = $this->getDueTasks();
+    $running_tasks = $this->getRunningTasks();
 
     if (!$scheduled_tasks && !$running_tasks) {
       if (static::AUTOMATIC_SCHEDULING) {
-        self::schedule();
+        $this->schedule();
       }
       return false;
     }
@@ -75,7 +75,7 @@ abstract class SimpleWorker {
     return true;
   }
 
-  static function schedule() {
+  function schedule() {
     $already_scheduled = ScheduledTask::where('type', static::TASK_TYPE)
       ->whereNull('deleted_at')
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
@@ -87,7 +87,7 @@ abstract class SimpleWorker {
     $task->type = static::TASK_TYPE;
     $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->priority = ScheduledTask::PRIORITY_LOW;
-    $task->scheduled_at = static::getNextRunDate();
+    $task->scheduled_at = $this->getNextRunDate();
     $task->save();
     return $task;
   }
@@ -183,7 +183,7 @@ abstract class SimpleWorker {
     return false;
   }
 
-  static function getNextRunDate() {
+  function getNextRunDate() {
     $wp = new WPFunctions();
     $date = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     // Random day of the next week
@@ -192,15 +192,15 @@ abstract class SimpleWorker {
     return $date;
   }
 
-  static function getDueTasks() {
+  function getDueTasks() {
     return ScheduledTask::findDueByType(static::TASK_TYPE, self::TASK_BATCH_SIZE);
   }
 
-  static function getRunningTasks() {
+  function getRunningTasks() {
     return ScheduledTask::findRunningByType(static::TASK_TYPE, self::TASK_BATCH_SIZE);
   }
 
-  static function getCompletedTasks() {
+  function getCompletedTasks() {
     return ScheduledTask::findCompletedByType(static::TASK_TYPE, self::TASK_BATCH_SIZE);
   }
 }

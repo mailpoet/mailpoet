@@ -17,12 +17,12 @@ class Migration extends SimpleWorker {
 
   function checkProcessingRequirements() {
     // if migration was completed, don't run it again
-    $completed_tasks = self::getCompletedTasks();
+    $completed_tasks = $this->getCompletedTasks();
     return empty($completed_tasks);
   }
 
   function prepareTask(ScheduledTask $task) {
-    $unmigrated_columns = self::checkUnmigratedColumnsExist();
+    $unmigrated_columns = $this->checkUnmigratedColumnsExist();
     $unmigrated_queues_count = 0;
     $unmigrated_queue_subscribers = [];
 
@@ -84,7 +84,7 @@ class Migration extends SimpleWorker {
     return true;
   }
 
-  static function checkUnmigratedColumnsExist() {
+  private function checkUnmigratedColumnsExist() {
     global $wpdb;
     $existing_columns = $wpdb->get_col('DESC ' . SendingQueue::$_table);
     return in_array('type', $existing_columns);
@@ -243,7 +243,7 @@ class Migration extends SimpleWorker {
     return true;
   }
 
-  static function getNextRunDate($wp = null) {
+  function getNextRunDate($wp = null) {
     if (is_null($wp)) {
       $wp = new WPFunctions();
     }
