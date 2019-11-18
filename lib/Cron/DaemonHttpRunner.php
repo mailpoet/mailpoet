@@ -109,8 +109,7 @@ class DaemonHttpRunner {
   }
 
   function isCronTriggerMethodWordPress() {
-    $available_methods = CronTrigger::getAvailableMethods();
-    return $this->settings->get(CronTrigger::SETTING_NAME . '.method') === $available_methods['wordpress'];
+    return $this->settings->get(CronTrigger::SETTING_NAME . '.method') === CronTrigger::METHOD_WORDPRESS;
   }
 
   function checkWPTriggerExecutionRequirements() {

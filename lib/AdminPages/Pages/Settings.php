@@ -76,7 +76,7 @@ class Settings {
     $data = [
       'settings' => $settings,
       'segments' => Segment::getSegmentsWithSubscriberCount(),
-      'cron_trigger' => CronTrigger::getAvailableMethods(),
+      'cron_trigger' => CronTrigger::METHODS,
       'total_subscribers' => Subscriber::getTotalSubscribers(),
       'premium_plugin_active' => License::getLicense(),
       'premium_key_valid' => !empty($premium_key_valid),

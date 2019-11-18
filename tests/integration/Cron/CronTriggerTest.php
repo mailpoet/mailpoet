@@ -34,11 +34,6 @@ class CronTriggerTest extends \MailPoetTest {
     );
   }
 
-  function testItCanReturnAvailableMethods() {
-    expect($this->cron_trigger->getAvailableMethods())
-      ->equals(CronTrigger::$available_methods);
-  }
-
   function testItCanInitializeCronTriggerMethod() {
     $settings_mock = Stub::makeEmpty(
       SettingsController::class,

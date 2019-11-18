@@ -30,7 +30,7 @@ class Reporter {
     global $wpdb, $wp_version, $woocommerce;
     $mta = $this->settings->get('mta', []);
     $newsletters = Newsletter::getAnalytics();
-    $isCronTriggerMethodWP = $this->settings->get('cron_trigger.method') === CronTrigger::$available_methods['wordpress'];
+    $isCronTriggerMethodWP = $this->settings->get('cron_trigger.method') === CronTrigger::METHOD_WORDPRESS;
     $checker = new ServicesChecker();
     $bounceAddress = $this->settings->get('bounce.address');
     $segments = Segment::getAnalytics();
