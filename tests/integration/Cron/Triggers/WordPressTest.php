@@ -23,6 +23,9 @@ class WordPressTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var WordPress */
+  private $wordpress_trigger;
+
   function _before() {
     parent::_before();
     // cron trigger is by default set to 'WordPress'; when it runs and does not
@@ -35,6 +38,7 @@ class WordPressTest extends \MailPoetTest {
     ]);
     ScheduledTask::where('type', Beamer::TASK_TYPE)->deleteMany();
     $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, Carbon::createFromTimestamp(current_time('timestamp') + 600));
+    $this->wordpress_trigger = $this->di_container->get(WordPress::class);
   }
 
   function testItDoesNotRunIfRunIntervalIsNotElapsed() {
@@ -45,7 +49,7 @@ class WordPressTest extends \MailPoetTest {
     $current_time = time();
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $current_time);
     $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
-    expect(WordPress::run())->equals(false);
+    expect($this->wordpress_trigger->run())->equals(false);
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->equals($current_time);
     WPFunctions::get()->removeAllFilters('mailpoet_cron_trigger_wordpress_run_interval');
   }
@@ -58,7 +62,7 @@ class WordPressTest extends \MailPoetTest {
     $time_in_the_past = (time() - $run_interval) - 1;
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $time_in_the_past);
     $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
-    expect(WordPress::run())->notEmpty();
+    expect($this->wordpress_trigger->run())->notEmpty();
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->greaterThan($time_in_the_past);
     WPFunctions::get()->removeAllFilters('mailpoet_cron_trigger_wordpress_run_interval');
   }
@@ -69,72 +73,72 @@ class WordPressTest extends \MailPoetTest {
     $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
     WordPress::resetRunInterval();
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->isEmpty();
-    expect(WordPress::run())->notEmpty();
+    expect($this->wordpress_trigger->run())->notEmpty();
   }
 
   function testItRequiresScheduledQueuesToExecute() {
-    expect(WordPress::checkExecutionRequirements())->false();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->false();
     $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
-    expect(WordPress::checkExecutionRequirements())->true();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->true();
   }
 
   function testItRequiresRunningQueuesToExecute() {
-    expect(WordPress::checkExecutionRequirements())->false();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->false();
     // status of 'null' indicates that queue is running
     $this->_addQueue($status = null);
-    expect(WordPress::checkExecutionRequirements())->true();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->true();
   }
 
 
   function testItFailsExecutionRequiremenetsCheckWhenQueueStatusIsCompleted() {
-    expect(WordPress::checkExecutionRequirements())->false();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->false();
     $this->_addQueue($status = 'completed');
-    expect(WordPress::checkExecutionRequirements())->false();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->false();
   }
 
   function testItRequiresSendingLimitNotToBeReachedToExecute() {
     $this->_addQueue($status = null);
     $this->_addMTAConfigAndLog($sent = null);
-    expect(WordPress::checkExecutionRequirements())->true();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->true();
     $this->_addMTAConfigAndLog($sent = 1);
-    expect(WordPress::checkExecutionRequirements())->false();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->false();
   }
 
   function testItRequiresSendingNotToBePausedToExecute() {
     $this->_addQueue($status = null);
     $this->_addMTAConfigAndLog($sent = null);
-    expect(WordPress::checkExecutionRequirements())->true();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->true();
     $this->_addMTAConfigAndLog($sent = 0, $status = MailerLog::STATUS_PAUSED);
-    expect(WordPress::checkExecutionRequirements())->false();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->false();
   }
 
   function testItExecutesWhenMigrationIsNotPresent() {
     $this->_enableMigration();
-    expect(WordPress::checkExecutionRequirements())->true();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->true();
   }
 
   function testItExecutesWhenMigrationIsDue() {
     $this->_enableMigration();
     $this->_addScheduledTask(MigrationWorker::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
-    expect(WordPress::checkExecutionRequirements())->true();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->true();
   }
 
   function testItExecutesWhenAuthorizedEmailsCheckIsDue() {
     $this->_enableMigration();
     $this->_addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
-    expect(WordPress::checkExecutionRequirements())->true();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->true();
   }
 
   function testItExecutesWhenBeamerTaskIsDue() {
     \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->_addScheduledTask(Beamer::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
-    expect(WordPress::checkExecutionRequirements())->true();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->true();
   }
 
   function testItDoesNotExecuteWhenMigrationIsCompleted() {
     $this->_enableMigration();
     $this->_addScheduledTask(MigrationWorker::TASK_TYPE, $status = ScheduledTask::STATUS_COMPLETED);
-    expect(WordPress::checkExecutionRequirements())->false();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->false();
   }
 
   function testItExecutesWhenBounceIsActive() {
@@ -146,13 +150,13 @@ class WordPressTest extends \MailPoetTest {
       ],
     ]);
     $this->_addScheduledTask(BounceWorker::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
-    expect(WordPress::checkExecutionRequirements())->true();
+    expect($this->wordpress_trigger->checkExecutionRequirements())->true();
   }
 
   function testItCanDeactivateRunningDaemon() {
     $this->settings->set(CronHelper::DAEMON_SETTING, ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
     expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
-    WordPress::stop();
+    $this->wordpress_trigger->stop();
     expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
   }
 
@@ -161,14 +165,14 @@ class WordPressTest extends \MailPoetTest {
     $this->_addQueue($status = null);
     // check that cron daemon does not exist
     expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
-    WordPress::run();
+    $this->wordpress_trigger->run();
     expect($this->settings->get(CronHelper::DAEMON_SETTING))->notNull();
   }
 
   function testItDeactivatesCronDaemonWhenExecutionRequirementsAreNotMet() {
     $this->settings->set(CronHelper::DAEMON_SETTING, ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
     expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
-    WordPress::run();
+    $this->wordpress_trigger->run();
     expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
   }
 
