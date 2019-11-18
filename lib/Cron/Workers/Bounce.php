@@ -44,23 +44,22 @@ class Bounce extends SimpleWorker {
     return Bridge::isMPSendingServiceEnabled();
   }
 
-  function prepareTask(ScheduledTask $task) {
+  function prepareTaskStrategy(ScheduledTask $task) {
     BounceTask::prepareSubscribers($task);
 
     if (!ScheduledTaskSubscriber::getUnprocessedCount($task->id)) {
-      $task->delete();
+      ScheduledTaskSubscriber::where('task_id', $task->id)->deleteMany();
       return false;
     }
-
-    return parent::prepareTask($task);
+    return true;
   }
 
-  function processTask(ScheduledTask $task) {
+  function processTaskStrategy(ScheduledTask $task) {
     $subscriber_batches = new BatchIterator($task->id, self::BATCH_SIZE);
 
     if (count($subscriber_batches) === 0) {
-      $task->delete();
-      return false;
+      ScheduledTaskSubscriber::where('task_id', $task->id)->deleteMany();
+      return true; // mark completed
     }
 
     $task_subscribers = new TaskSubscribers($task);
