@@ -31,7 +31,7 @@ class CronTrigger {
     try {
       $trigger_class = __NAMESPACE__ . '\Triggers\\' . $current_method;
       return (class_exists($trigger_class)) ?
-        $trigger_class::run() :
+        (new $trigger_class)->run() :
         false;
     } catch (\Exception $e) {
       // cron exceptions should not prevent the rest of the site from loading
