@@ -11,6 +11,7 @@ import controls from './controls.jsx';
 const defaultState = {
   sidebarOpened: true,
   formData: window.mailpoet_form_data,
+  formExports: window.mailpoet_form_exports,
   isFormSaving: false,
   notices: [],
 };
