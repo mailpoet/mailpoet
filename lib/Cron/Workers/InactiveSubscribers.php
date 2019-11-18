@@ -33,14 +33,14 @@ class InactiveSubscribers extends SimpleWorker {
   function processTaskStrategy(ScheduledTask $task) {
     $tracking_enabled = (bool)$this->settings->get('tracking.enabled');
     if (!$tracking_enabled) {
-      self::schedule();
+      $this->schedule();
       return true;
     }
     $days_to_inactive = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
     // Activate all inactive subscribers in case the feature is turned off
     if ($days_to_inactive === 0) {
       $this->inactive_subscribers_controller->reactivateInactiveSubscribers();
-      self::schedule();
+      $this->schedule();
       return true;
     }
     // Handle activation/deactivation within interval
@@ -60,7 +60,7 @@ class InactiveSubscribers extends SimpleWorker {
     while ($this->inactive_subscribers_controller->markActiveSubscribers($days_to_inactive, self::BATCH_SIZE) === self::BATCH_SIZE) {
       $this->cron_helper->enforceExecutionLimit($this->timer);
     };
-    self::schedule();
+    $this->schedule();
     return true;
   }
 }

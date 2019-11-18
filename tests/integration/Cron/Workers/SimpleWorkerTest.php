@@ -52,49 +52,55 @@ class SimpleWorkerTest extends \MailPoetTest {
 
   function testItSchedulesTask() {
     expect(ScheduledTask::where('type', MockSimpleWorker::TASK_TYPE)->findMany())->isEmpty();
-    MockSimpleWorker::schedule();
+    (new MockSimpleWorker())->schedule();
     expect(ScheduledTask::where('type', MockSimpleWorker::TASK_TYPE)->findMany())->notEmpty();
   }
 
   function testItDoesNotScheduleTaskTwice() {
+    $worker = new MockSimpleWorker();
     expect(count(ScheduledTask::where('type', MockSimpleWorker::TASK_TYPE)->findMany()))->equals(0);
-    MockSimpleWorker::schedule();
+    $worker->schedule();
     expect(count(ScheduledTask::where('type', MockSimpleWorker::TASK_TYPE)->findMany()))->equals(1);
-    MockSimpleWorker::schedule();
+    $worker->schedule();
     expect(count(ScheduledTask::where('type', MockSimpleWorker::TASK_TYPE)->findMany()))->equals(1);
   }
 
   function testItCanGetScheduledTasks() {
-    expect(MockSimpleWorker::getDueTasks())->isEmpty();
+    $worker = new MockSimpleWorker();
+    expect($worker->getDueTasks())->isEmpty();
     $this->createScheduledTask();
-    expect(MockSimpleWorker::getDueTasks())->notEmpty();
+    expect($worker->getDueTasks())->notEmpty();
   }
 
   function testItCanGetABatchOfScheduledTasks() {
+    $worker = new MockSimpleWorker();
     for ($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
       $this->createScheduledTask();
     }
-    expect(count(MockSimpleWorker::getDueTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
+    expect(count($worker->getDueTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
   }
 
   function testItCanGetRunningTasks() {
-    expect(MockSimpleWorker::getRunningTasks())->isEmpty();
+    $worker = new MockSimpleWorker();
+    expect($worker->getRunningTasks())->isEmpty();
     $this->createRunningTask();
-    expect(MockSimpleWorker::getRunningTasks())->notEmpty();
+    expect($worker->getRunningTasks())->notEmpty();
   }
 
   function testItCanGetBatchOfRunningTasks() {
+    $worker = new MockSimpleWorker();
     for ($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
       $this->createRunningTask();
     }
-    expect(count(MockSimpleWorker::getRunningTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
+    expect(count($worker->getRunningTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
   }
 
   function testItCanGetBatchOfCompletedTasks() {
+    $worker = new MockSimpleWorker();
     for ($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
       $this->createCompletedTask();
     }
-    expect(count(MockSimpleWorker::getCompletedTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
+    expect(count($worker->getCompletedTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
   }
 
   function testItFailsToProcessWithoutTasks() {
@@ -264,7 +270,7 @@ class SimpleWorkerTest extends \MailPoetTest {
 
   function testItCalculatesNextRunDateWithinNextWeekBoundaries() {
     $current_date = Carbon::createFromTimestamp(current_time('timestamp'));
-    $next_run_date = MockSimpleWorker::getNextRunDate();
+    $next_run_date = (new MockSimpleWorker())->getNextRunDate();
     $difference = $next_run_date->diffInDays($current_date);
     // Subtract days left in the current week
     $difference -= (Carbon::DAYS_PER_WEEK - $current_date->format('N'));

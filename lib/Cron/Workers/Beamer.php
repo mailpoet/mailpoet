@@ -42,7 +42,7 @@ class Beamer extends SimpleWorker {
     return true;
   }
 
-  static function getNextRunDate() {
+  function getNextRunDate() {
     $wp = new WPFunctions;
     $date = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     return $date->hour(11)->minute(00)->second(00)->addDay();

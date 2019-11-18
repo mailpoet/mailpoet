@@ -31,7 +31,7 @@ class WooCommercePastOrders extends SimpleWorker {
   }
 
   function checkProcessingRequirements() {
-    return $this->woocommerce_helper->isWooCommerceActive() && empty(self::getCompletedTasks()); // run only once
+    return $this->woocommerce_helper->isWooCommerceActive() && empty($this->getCompletedTasks()); // run only once
   }
 
   function processTaskStrategy(ScheduledTask $task) {
@@ -71,7 +71,7 @@ class WooCommercePastOrders extends SimpleWorker {
     return false;
   }
 
-  static function getNextRunDate() {
+  function getNextRunDate() {
     return Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')); // schedule immediately
   }
 }
