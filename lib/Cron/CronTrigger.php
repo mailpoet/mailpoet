@@ -2,12 +2,11 @@
 
 namespace MailPoet\Cron;
 
+use MailPoet\Cron\Triggers\MailPoet;
+use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Settings\SettingsController;
 
 class CronTrigger {
-  /** @var SettingsController */
-  private $settings;
-
   const METHOD_LINUX_CRON = 'Linux Cron';
   const METHOD_MAILPOET = 'MailPoet';
   const METHOD_WORDPRESS = 'WordPress';
@@ -22,17 +21,34 @@ class CronTrigger {
   const DEFAULT_METHOD = 'WordPress';
   const SETTING_NAME = 'cron_trigger';
 
-  function __construct(SettingsController $settings) {
+  /** @var MailPoet */
+  private $mailpoet_trigger;
+
+  /** @var WordPress */
+  private $wordpress_trigger;
+
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct(
+    MailPoet $mailpoet_trigger,
+    WordPress $wordpress_trigger,
+    SettingsController $settings
+  ) {
+    $this->mailpoet_trigger = $mailpoet_trigger;
+    $this->wordpress_trigger = $wordpress_trigger;
     $this->settings = $settings;
   }
 
   function init() {
     $current_method = $this->settings->get(self::SETTING_NAME . '.method');
     try {
-      $trigger_class = __NAMESPACE__ . '\Triggers\\' . $current_method;
-      return (class_exists($trigger_class)) ?
-        (new $trigger_class)->run() :
-        false;
+      if ($current_method === self::METHOD_MAILPOET) {
+        return $this->mailpoet_trigger->run();
+      } elseif ($current_method === self::METHOD_WORDPRESS) {
+        return $this->wordpress_trigger->run();
+      }
+      return false;
     } catch (\Exception $e) {
       // cron exceptions should not prevent the rest of the site from loading
     }

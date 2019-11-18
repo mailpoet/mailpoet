@@ -18,7 +18,6 @@ use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
@@ -34,22 +33,45 @@ class WordPress {
 
   private $tasks_counts;
 
+  /** @var CronHelper */
+  private $cron_helper;
+
+  /** @var MailPoet */
+  private $mailpoet_trigger;
+
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  function __construct(
+    CronHelper $cron_helper,
+    MailPoet $mailpoet_trigger,
+    SettingsController $settings,
+    WPFunctions $wp
+  ) {
+    $this->mailpoet_trigger = $mailpoet_trigger;
+    $this->settings = $settings;
+    $this->wp = $wp;
+    $this->cron_helper = $cron_helper;
+  }
+
   function run() {
     if (!$this->checkRunInterval()) {
       return false;
     }
     return ($this->checkExecutionRequirements()) ?
-      (new MailPoet)->run() :
+      $this->mailpoet_trigger->run() :
       self::stop();
   }
 
   private function checkRunInterval() {
-    $settings = SettingsController::getInstance();
-    $last_run_at = (int)$settings->get(self::LAST_RUN_AT_SETTING, 0);
-    $run_interval = WPFunctions::get()->applyFilters('mailpoet_cron_trigger_wordpress_run_interval', self::RUN_INTERVAL);
+    $last_run_at = (int)$this->settings->get(self::LAST_RUN_AT_SETTING, 0);
+    $run_interval = $this->wp->applyFilters('mailpoet_cron_trigger_wordpress_run_interval', self::RUN_INTERVAL);
     $run_interval_elapsed = (time() - $last_run_at) >= $run_interval;
     if ($run_interval_elapsed) {
-      $settings->set(self::LAST_RUN_AT_SETTING, time());
+      $this->settings->set(self::LAST_RUN_AT_SETTING, time());
       return true;
     }
     return false;
@@ -60,12 +82,11 @@ class WordPress {
     $settings->set(self::LAST_RUN_AT_SETTING, 0);
   }
 
-  function checkExecutionRequirements(WPFunctions $wp = null) {
-    $this->loadTasksCounts($wp ?: new WPFunctions);
+  function checkExecutionRequirements() {
+    $this->loadTasksCounts();
 
     // migration
-    $settings = SettingsController::getInstance();
-    $migration_disabled = $settings->get('cron_trigger.method') === 'none';
+    $migration_disabled = $this->settings->get('cron_trigger.method') === 'none';
     $migration_due_tasks = $this->getTasksCount([
       'type' => MigrationWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
@@ -210,15 +231,14 @@ class WordPress {
     );
   }
 
-  static function stop() {
-    $cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
-    $cron_daemon = $cron_helper->getDaemon();
+  function stop() {
+    $cron_daemon = $this->cron_helper->getDaemon();
     if ($cron_daemon) {
-      $cron_helper->deactivateDaemon($cron_daemon);
+      $this->cron_helper->deactivateDaemon($cron_daemon);
     }
   }
 
-  private function loadTasksCounts(WPFunctions $wp) {
+  private function loadTasksCounts() {
     $query = sprintf(
       "select
         type,
@@ -229,7 +249,7 @@ class WordPress {
       where deleted_at is null
       group by type, status, scheduled_in
       ",
-      date('Y-m-d H:i:s', $wp->currentTime('timestamp')),
+      date('Y-m-d H:i:s', $this->wp->currentTime('timestamp')),
       self::SCHEDULED_IN_THE_PAST,
       self::SCHEDULED_IN_THE_FUTURE,
       ScheduledTask::$_table

@@ -23,13 +23,17 @@ class DaemonHttpRunner {
 
   const PING_SUCCESS_RESPONSE = 'pong';
 
-  function __construct(Daemon $daemon = null, CronHelper $cron_helper, SettingsController $settings) {
+  /** @var WordPress */
+  private $wordpress_trigger;
+
+  function __construct(Daemon $daemon = null, CronHelper $cron_helper, SettingsController $settings, WordPress $wordpress_trigger) {
     $this->cron_helper = $cron_helper;
     $this->settings_daemon_data = $this->cron_helper->getDaemon();
     $this->token = $this->cron_helper->createToken();
     $this->timer = microtime(true);
     $this->daemon = $daemon;
     $this->settings = $settings;
+    $this->wordpress_trigger = $wordpress_trigger;
   }
 
   function ping() {
@@ -113,11 +117,11 @@ class DaemonHttpRunner {
   }
 
   function checkWPTriggerExecutionRequirements() {
-    return WordPress::checkExecutionRequirements();
+    return $this->wordpress_trigger->checkExecutionRequirements();
   }
 
   function stopCron() {
-    return WordPress::stop();
+    return $this->wordpress_trigger->stop();
   }
 
   /**
