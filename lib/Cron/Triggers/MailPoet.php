@@ -3,12 +3,17 @@
 namespace MailPoet\Cron\Triggers;
 
 use MailPoet\Cron\Supervisor;
-use MailPoet\DI\ContainerWrapper;
 
 class MailPoet {
+  /** @var Supervisor */
+  private $supervisor;
+
+  function __construct(Supervisor $supervisor) {
+    $this->supervisor = $supervisor;
+  }
+
   function run() {
-    $supervisor = ContainerWrapper::getInstance()->get(Supervisor::class);
-    $supervisor->init();
-    return $supervisor->checkDaemon();
+    $this->supervisor->init();
+    return $this->supervisor->checkDaemon();
   }
 }
