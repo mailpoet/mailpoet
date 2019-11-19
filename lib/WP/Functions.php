@@ -84,7 +84,8 @@ class Functions {
 
   function addMenuPage($page_title, $menu_title, $capability, $menu_slug, callable $function = null, $icon_url = '', $position = null) {
     if (is_null($function)) {
-      $function = function () {};
+      $function = function () {
+      };
     }
     return add_menu_page($page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position);
   }

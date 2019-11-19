@@ -23,13 +23,13 @@ class Security {
     $length = max(5, (int)$length);
     $string = base_convert(
       bin2hex(
-        random_bytes(
+        random_bytes( // phpcs:ignore
           (int)ceil(3 * $length / 4)
         )
       ),
       16,
       36
-    ); // phpcs:ignore
+    );
     return substr($string, 0, $length);
   }
 
