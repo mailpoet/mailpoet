@@ -83,6 +83,9 @@ class Functions {
   }
 
   function addMenuPage($page_title, $menu_title, $capability, $menu_slug, callable $function = null, $icon_url = '', $position = null) {
+    if (is_null($function)) {
+      $function = function () {};
+    }
     return add_menu_page($page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position);
   }
 
@@ -98,7 +101,7 @@ class Functions {
     return add_shortcode($tag, $callback);
   }
 
-  function addSubmenuPage($parent_slug, $page_title, $menu_title, $capability, $menu_slug, callable $function = null) {
+  function addSubmenuPage($parent_slug, $page_title, $menu_title, $capability, $menu_slug, callable $function) {
     return add_submenu_page($parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function);
   }
 
@@ -256,7 +259,7 @@ class Functions {
   }
 
   /**
-   * @param int|boolean $user_id
+   * @param int|false $user_id
    */
   function getTheAuthorMeta($field = '', $user_id = false) {
     return get_the_author_meta($field, $user_id);
@@ -322,8 +325,8 @@ class Functions {
   }
 
   /**
-   * @param  string|boolean $deprecated
-   * @param  string|boolean $plugin_rel_path
+   * @param  string|false $deprecated
+   * @param  string|false $plugin_rel_path
    */
   function loadPluginTextdomain($domain, $deprecated = false, $plugin_rel_path = false) {
     return load_plugin_textdomain($domain, $deprecated, $plugin_rel_path);
