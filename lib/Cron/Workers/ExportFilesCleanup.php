@@ -13,6 +13,9 @@ class ExportFilesCleanup extends SimpleWorker {
   function processTaskStrategy(ScheduledTask $task) {
     $iterator = new \GlobIterator(Export::getExportPath() . '/' . Export::getFilePrefix() . '*.*');
     foreach ($iterator as $file) {
+      if (is_string($file)) {
+        continue;
+      }
       $name = $file->getPathname();
       $created = $file->getMTime();
       $now = new Carbon();
