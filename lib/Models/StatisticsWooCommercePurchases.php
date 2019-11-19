@@ -25,12 +25,12 @@ class StatisticsWooCommercePurchases extends Model {
       ->where('newsletter_id', $click->newsletter_id)
       ->findOne();
 
-    if (!$statistics) {
+    if (!$statistics instanceof self) {
       $statistics = self::create();
       $statistics->newsletter_id = $click->newsletter_id;
       $statistics->subscriber_id = $click->subscriber_id;
       $statistics->queue_id = $click->queue_id;
-      $statistics->click_id = $click->id;
+      $statistics->click_id = (int)$click->id;
       $statistics->order_id = $order->get_id();
     }
 
