@@ -139,6 +139,23 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\Scheduler::class);
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\StatsNotificationsRepository::class);
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository::class);
+    // Cron workers
+    $container->autowire(\MailPoet\Cron\Workers\Scheduler::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\SendingQueue\SendingQueue::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\Worker::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\Bounce::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\SendingQueue\Migration::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\WooCommerceSync::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\ExportFilesCleanup::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\Beamer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\InactiveSubscribers::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\UnsubscribeTokens::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\SubscriberLinkTokens::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\WooCommercePastOrders::class)->setPublic(true);
     // Custom field
     $container->autowire(\MailPoet\CustomFields\ApiDataSanitizer::class);
     // Features
