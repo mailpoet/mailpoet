@@ -4,6 +4,7 @@ namespace MailPoet\Tasks;
 
 use Carbon\Carbon;
 use MailPoet\Cron\Workers\Scheduler;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Url as NewsletterUrl;
@@ -81,10 +82,10 @@ class State
       'id' => (int)$task->id,
       'type' => $task->type,
       'priority' => (int)$task->priority,
-      'updated_at' => Carbon::createFromTimeString($task->updated_at)->timestamp,
+      'updated_at' => Carbon::createFromTimeString((string)$task->updated_at)->timestamp,
       'scheduled_at' => $task->scheduled_at ? Carbon::createFromTimeString($task->scheduled_at)->timestamp : null,
       'status' => $task->status,
-      'newsletter' => $queue && $newsletter ? [
+      'newsletter' => (($queue instanceof SendingQueue) && ($newsletter instanceof Newsletter)) ? [
         'newsletter_id' => (int)$queue->newsletter_id,
         'queue_id' => (int)$queue->id,
         'subject' => $queue->newsletter_rendered_subject ?: $newsletter->subject,
