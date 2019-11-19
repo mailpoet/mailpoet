@@ -138,10 +138,14 @@ class Model extends \Sudzy\ValidModel {
   }
 
   /**
-   * @return bool|static
+   * @return static
    */
   static function create() {
-    return parent::create();
+    $created = parent::create();
+    if (is_bool($created)) {
+      throw new \Exception('ORM is not initialised');
+    }
+    return $created;
   }
 
   /**
