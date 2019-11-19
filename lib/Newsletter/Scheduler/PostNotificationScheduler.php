@@ -129,11 +129,16 @@ class PostNotificationScheduler {
         $schedule = '* * * * *';
         break;
     }
+    $relation = null;
     $option_field = NewsletterOptionField::where('name', 'schedule')->findOne();
-    $relation = NewsletterOption::where('newsletter_id', $newsletter->id)
-      ->where('option_field_id', $option_field->id)
-      ->findOne();
-    if (!$relation) {
+    if ($option_field instanceof NewsletterOptionField) {
+      $relation = NewsletterOption::where('newsletter_id', $newsletter->id)
+        ->where('option_field_id', $option_field->id)
+        ->findOne();
+    } else {
+      throw new \Exception('NewsletterOptionField for schedule doesn’t exist.');
+    }
+    if (!$relation instanceof NewsletterOption) {
       $relation = NewsletterOption::create();
       $relation->newsletter_id = $newsletter->id;
       $relation->option_field_id = (int)$option_field->id;
