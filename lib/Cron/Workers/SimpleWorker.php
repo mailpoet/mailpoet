@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\WP\Functions as WPFunctions;
@@ -22,6 +23,9 @@ abstract class SimpleWorker {
   /** @var CronHelper */
   protected $cron_helper;
 
+  /** @var CronWorkerScheduler */
+  protected $cron_worker_scheduler;
+
   function __construct($timer = false) {
     if (static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
@@ -31,6 +35,7 @@ abstract class SimpleWorker {
     $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->cron_helper->enforceExecutionLimit($this->timer);
     $this->wp = new WPFunctions();
+    $this->cron_worker_scheduler = ContainerWrapper::getInstance()->get(CronWorkerScheduler::class);
   }
 
   function checkProcessingRequirements() {
@@ -76,20 +81,7 @@ abstract class SimpleWorker {
   }
 
   function schedule() {
-    $already_scheduled = ScheduledTask::where('type', static::TASK_TYPE)
-      ->whereNull('deleted_at')
-      ->where('status', ScheduledTask::STATUS_SCHEDULED)
-      ->findMany();
-    if ($already_scheduled) {
-      return false;
-    }
-    $task = ScheduledTask::create();
-    $task->type = static::TASK_TYPE;
-    $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->priority = ScheduledTask::PRIORITY_LOW;
-    $task->scheduled_at = $this->getNextRunDate();
-    $task->save();
-    return $task;
+    $this->cron_worker_scheduler->schedule(static::TASK_TYPE, static::getNextRunDate());
   }
 
   function prepareTask(ScheduledTask $task) {
@@ -149,11 +141,7 @@ abstract class SimpleWorker {
   }
 
   function reschedule(ScheduledTask $task, $timeout) {
-    $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    $task->scheduled_at = $scheduled_at->addMinutes($timeout);
-    $task->setExpr('updated_at', 'NOW()');
-    $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->save();
+    $this->cron_worker_scheduler->reschedule($task, $timeout);
   }
 
   private function isInProgress(ScheduledTask $task) {
