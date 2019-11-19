@@ -4,7 +4,7 @@ namespace MailPoet\Services\Bridge;
 
 use Carbon\Carbon;
 
-class BridgeTestMockAPI {
+class BridgeTestMockAPI extends API {
   public $api_key;
 
   function __construct($api_key) {
