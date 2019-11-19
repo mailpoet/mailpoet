@@ -8,7 +8,7 @@ use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\SendingQueue;
+use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Migration extends SimpleWorker {
@@ -82,12 +82,12 @@ class Migration extends SimpleWorker {
 
   private function checkUnmigratedColumnsExist() {
     global $wpdb;
-    $existing_columns = $wpdb->get_col('DESC ' . SendingQueue::$_table);
+    $existing_columns = $wpdb->get_col('DESC ' . SendingQueueModel::$_table);
     return in_array('type', $existing_columns);
   }
 
   function getUnmigratedQueues() {
-    return SendingQueue::where('task_id', 0)
+    return SendingQueueModel::where('task_id', 0)
       ->whereNull('type');
   }
 

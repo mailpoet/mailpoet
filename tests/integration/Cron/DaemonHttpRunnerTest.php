@@ -294,6 +294,8 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createAuthorizedSendingEmailsCheckWorker' => $worker,
       'createWooCommercePastOrdersWorker' => $worker,
       'createBeamerkWorker' => $worker,
+      'createUnsubscribeTokensWorker' => $worker,
+      'createSubscriberLinkTokensWorker' => $worker,
     ]);
   }
 }
