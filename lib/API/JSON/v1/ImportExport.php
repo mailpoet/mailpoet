@@ -85,7 +85,7 @@ class ImportExport extends APIEndpoint {
       $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)
         ->whereRaw('status = ? OR status IS NULL', [ScheduledTask::STATUS_SCHEDULED])
         ->findOne();
-      if ($task && $task->status === null) {
+      if (($task instanceof ScheduledTask) && $task->status === null) {
         return $this->successResponse();
       }
       if (!$task) {
