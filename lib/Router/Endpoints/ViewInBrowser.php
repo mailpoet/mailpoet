@@ -105,7 +105,7 @@ class ViewInBrowser {
     ) return false;
 
     // if queue and subscriber exist, subscriber must have received the newsletter
-    if ($data->queue &&
+    if ($data->queue instanceof SendingQueue &&
        $data->subscriber &&
        !$data->queue->isSubscriberProcessed($data->subscriber->id)
     ) return false;

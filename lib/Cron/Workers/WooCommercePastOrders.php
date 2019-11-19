@@ -36,7 +36,7 @@ class WooCommercePastOrders extends SimpleWorker {
 
   function processTaskStrategy(ScheduledTask $task) {
     $oldest_click = StatisticsClicks::orderByAsc('created_at')->limit(1)->findOne();
-    if (!$oldest_click) {
+    if (!$oldest_click instanceof StatisticsClicks) {
       return true;
     }
 

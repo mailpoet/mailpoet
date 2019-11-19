@@ -15,7 +15,9 @@ class Subscriber {
     $newsletter,
     $subscriber
   ) {
-    if ($subscriber !== false && !is_object($subscriber)) return $shortcode_details['shortcode'];
+    if ($subscriber !== false && !($subscriber instanceof SubscriberModel)) {
+      return $shortcode_details['shortcode'];
+    }
     $default_value = ($shortcode_details['action_argument'] === 'default') ?
       $shortcode_details['action_argument_value'] :
       '';
@@ -43,7 +45,7 @@ class Subscriber {
             ::where('subscriber_id', $subscriber->id)
             ->where('custom_field_id', $custom_field[1])
             ->findOne();
-          return ($custom_field) ? $custom_field->value : false;
+          return ($custom_field instanceof SubscriberCustomField) ? $custom_field->value : false;
         }
         return false;
     }

@@ -5,6 +5,7 @@ namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Subscriber;
 
 class ShortcodesTest extends \MailPoetTest {
   function _before() {
@@ -22,11 +23,12 @@ class ShortcodesTest extends \MailPoetTest {
     $queue = $newsletter = (object)[
       'id' => 1,
     ];
-    $subscriber = (object)[
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
       'email' => 'test@xample. com',
       'first_name' => 'John',
       'last_name' => 'Doe',
-    ];
+    ]);
     $rendered_body = '[subscriber:firstname] [subscriber:lastname]';
     $result = Shortcodes::process($rendered_body, null, $newsletter, $subscriber, $queue);
     expect($result)->equals('John Doe');
