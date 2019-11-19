@@ -40,7 +40,11 @@ class DynamicSubscribersGetter extends SubscribersGetter {
       return [];
     }
 
-    $name = Segment::findOne($segment_id)->name;
+    $segment = Segment::findOne($segment_id);
+    if (!$segment instanceof Segment) {
+      return [];
+    }
+    $name = $segment->name;
 
     foreach ($filters as $filter) {
       $subscribers = $filter->toSql($subscribers);
