@@ -6,6 +6,7 @@ import {
 import MailPoet from 'mailpoet';
 
 import FormPlacementPanel from './form_placement_panel.jsx';
+import CustomCssPanel from './custom_css_panel.jsx';
 
 export default () => (
   <>
@@ -15,10 +16,6 @@ export default () => (
       </PanelBody>
     </Panel>
     <FormPlacementPanel />
-    <Panel>
-      <PanelBody title={MailPoet.I18n.t('customCss')} initialOpen={false}>
-        <p>TODO Custom CSS</p>
-      </PanelBody>
-    </Panel>
+    <CustomCssPanel />
   </>
 );

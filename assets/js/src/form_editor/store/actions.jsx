@@ -13,6 +13,13 @@ export function changeFormName(name) {
   };
 }
 
+export function changeFormStyles(styles) {
+  return {
+    type: 'CHANGE_FORM_STYLES',
+    styles,
+  };
+}
+
 export function saveFormDone(result) {
   return {
     type: 'SAVE_FORM_DONE',

@@ -8,6 +8,9 @@ export default {
   getFormData(state) {
     return state.formData;
   },
+  getFormStyles(state) {
+    return state.formData.styles;
+  },
   getFormExports(state) {
     return state.formExports;
   },
