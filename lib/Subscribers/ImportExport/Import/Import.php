@@ -153,6 +153,9 @@ class Import {
       // if this is a custom column
       if (in_array($column, $this->subscribers_custom_fields)) {
         $custom_field = CustomField::findOne($column);
+        if (!$custom_field instanceof CustomField) {
+          continue;
+        }
         // validate date type
         if ($custom_field->type === 'date') {
           $validation_rule = 'datetime';
