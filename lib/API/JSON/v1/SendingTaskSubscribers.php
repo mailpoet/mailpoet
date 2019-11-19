@@ -80,12 +80,22 @@ class SendingTaskSubscribers extends APIEndpoint {
       ->findOne();
     $task = ScheduledTask::findOne($task_id);
     $sending_queue = SendingQueueModel::where('task_id', $task_id)->findOne();
-    if (!$task || !$task_subscriber || !$sending_queue || $task_subscriber->failed != 1) {
+    if (
+      !($task instanceof ScheduledTask)
+      || !($task_subscriber instanceof ScheduledTaskSubscriber)
+      || !($sending_queue instanceof SendingQueueModel)
+      || $task_subscriber->failed != 1
+    ) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('Failed sending task not found!', 'mailpoet'),
       ]);
     }
     $newsletter = Newsletter::findOne($sending_queue->newsletter_id);
+    if (!($newsletter instanceof Newsletter)) {
+      return $this->errorResponse([
+        APIError::NOT_FOUND => __('Newsletter not found!', 'mailpoet'),
+      ]);
+    }
 
     $task_subscriber->error = '';
     $task_subscriber->failed = 0;
