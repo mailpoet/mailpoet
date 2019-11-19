@@ -88,12 +88,12 @@ class ImportExport extends APIEndpoint {
       if (($task instanceof ScheduledTask) && $task->status === null) {
         return $this->successResponse();
       }
-      if (!$task) {
+      if (!($task instanceof ScheduledTask)) {
         $task = ScheduledTask::create();
         $task->type = WooCommerceSync::TASK_TYPE;
         $task->status = ScheduledTask::STATUS_SCHEDULED;
       }
-      $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+      $task->scheduled_at = Carbon::createFromTimestamp((int)current_time('timestamp'));
       $task->save();
       return $this->successResponse();
     } catch (\Exception $e) {
