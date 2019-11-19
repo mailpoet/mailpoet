@@ -100,7 +100,7 @@ class Worker {
 
   private function constructNewsletter(StatsNotificationEntity $stats_notification_entity) {
     $newsletter = $stats_notification_entity->getNewsletter();
-    $link = $this->newsletter_link_repository->findTopLinkForNewsletter($newsletter->getId());
+    $link = $this->newsletter_link_repository->findTopLinkForNewsletter((int)$newsletter->getId());
     $context = $this->prepareContext($newsletter, $link);
     $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
     return [
