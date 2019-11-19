@@ -30,7 +30,11 @@ class WooCommercePurchases {
     }
 
     // limit clicks to 'USE_CLICKS_SINCE_DAYS_AGO' range before order has been created
-    $from = clone $order->get_date_created();
+    $from_date = $order->get_date_created();
+    if (is_null($from_date)) {
+      return;
+    }
+    $from = clone $from_date;
     $from->modify(-self::USE_CLICKS_SINCE_DAYS_AGO . ' days');
     $to = $order->get_date_created();
 
@@ -71,7 +75,7 @@ class WooCommercePurchases {
     }
 
     $click = StatisticsClicks::findOne($cookie_data['statistics_clicks']);
-    if (!$click) {
+    if (!$click instanceof StatisticsClicks) {
       return null;
     }
 
