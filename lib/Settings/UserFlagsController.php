@@ -9,7 +9,7 @@ class UserFlagsController {
 
   /** @var array|null */
   private $data = null;
-  
+
   /** @var array */
   private $defaults;
 
@@ -34,7 +34,11 @@ class UserFlagsController {
 
   function getAll() {
     $this->ensureLoaded();
-    return array_merge($this->defaults, $this->data);
+    $data = $this->data;
+    if (!is_array($data)) {
+      $data = [];
+    }
+    return array_merge($this->defaults, $data);
   }
 
   function set($name, $value) {
