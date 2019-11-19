@@ -775,7 +775,7 @@ class Newsletter extends Model {
       foreach ($data['filter'] as $key => $value) {
         if ($key === 'segment') {
           $segment = Segment::findOne($value);
-          if ($segment !== false) {
+          if ($segment instanceof Segment) {
             $orm = $segment->newsletters();
           }
         }
@@ -1149,7 +1149,7 @@ class Newsletter extends Model {
 
   static function findOneWithOptions($id) {
     $newsletter = self::findOne($id);
-    if ($newsletter === false) {
+    if (!$newsletter instanceof self) {
       return false;
     }
     return self::filter('filterWithOptions', $newsletter->type)->findOne($id);

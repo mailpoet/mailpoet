@@ -58,7 +58,7 @@ class Track {
       return false;
     }
     $data->queue = SendingQueue::findOne($data->queue_id);
-    if ($data->queue) {
+    if ($data->queue instanceof SendingQueue) {
       $data->queue = SendingTask::createFromQueue($data->queue);
     }
     $data->subscriber = Subscriber::findOne($data->subscriber_id) ?: null;

@@ -20,7 +20,7 @@ class StatisticsClicks extends Model {
       ->where('newsletter_id', $newsletter_id)
       ->where('queue_id', $queue_id)
       ->findOne();
-    if (!$statistics) {
+    if (!$statistics instanceof self) {
       $statistics = self::create();
       $statistics->link_id = $link_id;
       $statistics->subscriber_id = $subscriber_id;
