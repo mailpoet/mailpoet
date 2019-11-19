@@ -160,4 +160,44 @@ class ScheduledTask extends Model {
       ->whereNull('tasks.deleted_at')
       ->findOne() ?: null;
   }
+
+  static function findDueByType($type, $limit = null) {
+    return self::findByTypeAndStatus($type, ScheduledTask::STATUS_SCHEDULED, $limit);
+  }
+
+  static function findRunningByType($type, $limit = null) {
+    return self::findByTypeAndStatus($type, null, $limit);
+  }
+
+  static function findFutureScheduledByType($type, $limit = null) {
+    return self::findByTypeAndStatus($type, ScheduledTask::STATUS_SCHEDULED, $limit, true);
+  }
+
+  static function findCompletedByType($type, $limit = null) {
+    return self::findByTypeAndStatus($type, ScheduledTask::STATUS_COMPLETED, $limit);
+  }
+
+  private static function findByTypeAndStatus($type, $status, $limit = null, $future = false) {
+    $query = ScheduledTask::where('type', $type)
+      ->whereNull('deleted_at');
+
+    $now = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    if ($future) {
+      $query->whereGt('scheduled_at', $now);
+    } else {
+      $query->whereLte('scheduled_at', $now);
+    }
+
+    if ($status === null) {
+      $query->whereNull('status');
+    } else {
+      $query->where('status', $status);
+    }
+
+    if ($limit !== null) {
+      $query->limit($limit);
+    }
+
+    return $query->findMany();
+  }
 }

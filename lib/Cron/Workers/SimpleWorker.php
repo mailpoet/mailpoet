@@ -47,7 +47,7 @@ abstract class SimpleWorker {
 
     $this->init();
 
-    $scheduled_tasks = self::getScheduledTasks();
+    $scheduled_tasks = self::getDueTasks();
     $running_tasks = self::getRunningTasks();
 
     if (!$scheduled_tasks && !$running_tasks) {
@@ -192,42 +192,15 @@ abstract class SimpleWorker {
     return $date;
   }
 
-  /**
-   * @param bool $future
-   * @return ScheduledTask[]
-   */
-  static function getScheduledTasks($future = false) {
-    $dateWhere = ($future) ? 'whereGt' : 'whereLte';
-    $wp = new WPFunctions();
-    return ScheduledTask::where('type', static::TASK_TYPE)
-      ->$dateWhere('scheduled_at', Carbon::createFromTimestamp($wp->currentTime('timestamp')))
-      ->whereNull('deleted_at')
-      ->where('status', ScheduledTask::STATUS_SCHEDULED)
-      ->limit(self::TASK_BATCH_SIZE)
-      ->findMany();
+  static function getDueTasks() {
+    return ScheduledTask::findDueByType(static::TASK_TYPE, self::TASK_BATCH_SIZE);
   }
 
   static function getRunningTasks() {
-    $wp = new WPFunctions();
-    return ScheduledTask::where('type', static::TASK_TYPE)
-      ->whereLte('scheduled_at', Carbon::createFromTimestamp($wp->currentTime('timestamp')))
-      ->whereNull('deleted_at')
-      ->whereNull('status')
-      ->limit(self::TASK_BATCH_SIZE)
-      ->findMany();
-  }
-
-  static function getDueTasks() {
-    $scheduled_tasks = self::getScheduledTasks();
-    $running_tasks = self::getRunningTasks();
-    return array_merge((array)$scheduled_tasks, (array)$running_tasks);
+    return ScheduledTask::findRunningByType(static::TASK_TYPE, self::TASK_BATCH_SIZE);
   }
 
   static function getCompletedTasks() {
-    return ScheduledTask::where('type', static::TASK_TYPE)
-      ->whereNull('deleted_at')
-      ->where('status', ScheduledTask::STATUS_COMPLETED)
-      ->limit(self::TASK_BATCH_SIZE)
-      ->findMany();
+    return ScheduledTask::findCompletedByType(static::TASK_TYPE, self::TASK_BATCH_SIZE);
   }
 }

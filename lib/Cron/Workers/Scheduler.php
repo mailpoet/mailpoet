@@ -248,7 +248,7 @@ class Scheduler {
   }
 
   private function reScheduleBounceTask() {
-    $bounce_tasks = Bounce::getScheduledTasks($future = true);
+    $bounce_tasks = ScheduledTask::findFutureScheduledByType(Bounce::TASK_TYPE);
     if (count($bounce_tasks)) {
       $bounce_task = reset($bounce_tasks);
       if (Carbon::createFromTimestamp(current_time('timestamp'))->addHour(42)->lessThan($bounce_task->scheduled_at)) {

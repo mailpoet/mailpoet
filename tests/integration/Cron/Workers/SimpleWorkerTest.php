@@ -65,16 +65,16 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   function testItCanGetScheduledTasks() {
-    expect(MockSimpleWorker::getScheduledTasks())->isEmpty();
+    expect(MockSimpleWorker::getDueTasks())->isEmpty();
     $this->createScheduledTask();
-    expect(MockSimpleWorker::getScheduledTasks())->notEmpty();
+    expect(MockSimpleWorker::getDueTasks())->notEmpty();
   }
 
   function testItCanGetABatchOfScheduledTasks() {
     for ($i = 0; $i < MockSimpleWorker::TASK_BATCH_SIZE + 5; $i += 1) {
       $this->createScheduledTask();
     }
-    expect(count(MockSimpleWorker::getScheduledTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
+    expect(count(MockSimpleWorker::getDueTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
   }
 
   function testItCanGetRunningTasks() {
@@ -95,28 +95,6 @@ class SimpleWorkerTest extends \MailPoetTest {
       $this->createCompletedTask();
     }
     expect(count(MockSimpleWorker::getCompletedTasks()))->equals(MockSimpleWorker::TASK_BATCH_SIZE);
-  }
-
-  function testItCanGetDueTasks() {
-    expect(MockSimpleWorker::getDueTasks())->isEmpty();
-
-    // scheduled for now
-    $this->createScheduledTask();
-
-    // running
-    $this->createRunningTask();
-
-    // scheduled in the future (should not be retrieved)
-    $task = $this->createScheduledTask();
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->addDays(7);
-    $task->save();
-
-    // completed (should not be retrieved)
-    $task = $this->createRunningTask();
-    $task->status = ScheduledTask::STATUS_COMPLETED;
-    $task->save();
-
-    expect(count(MockSimpleWorker::getDueTasks()))->equals(2);
   }
 
   function testItFailsToProcessWithoutTasks() {
