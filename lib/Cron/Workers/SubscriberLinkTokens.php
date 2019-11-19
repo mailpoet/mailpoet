@@ -14,7 +14,7 @@ class SubscriberLinkTokens extends SimpleWorker {
   const BATCH_SIZE = 10000;
   const AUTOMATIC_SCHEDULING = false;
 
-  function processTaskStrategy(ScheduledTask $task) {
+  function processTaskStrategy(ScheduledTask $task, $timer) {
     $count = Subscriber::whereNull('link_token')->count();
     if ($count) {
       $auth_key = defined('AUTH_KEY') ? AUTH_KEY : '';

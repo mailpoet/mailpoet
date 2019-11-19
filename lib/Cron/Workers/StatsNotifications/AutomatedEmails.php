@@ -31,9 +31,6 @@ class AutomatedEmails extends SimpleWorker {
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
-  /** @var float */
-  public $timer;
-
   /** @var NewslettersRepository */
   private $repository;
 
@@ -46,15 +43,13 @@ class AutomatedEmails extends SimpleWorker {
     SettingsController $settings,
     NewslettersRepository $repository,
     NewsletterStatisticsRepository $newsletter_statistics_repository,
-    MetaInfo $mailerMetaInfo,
-    $timer = false
+    MetaInfo $mailerMetaInfo
   ) {
-    parent::__construct($timer);
+    parent::__construct();
     $this->mailer = $mailer;
     $this->settings = $settings;
     $this->renderer = $renderer;
     $this->mailerMetaInfo = $mailerMetaInfo;
-    $this->timer = $timer ?: microtime(true);
     $this->repository = $repository;
     $this->newsletter_statistics_repository = $newsletter_statistics_repository;
   }
@@ -79,7 +74,7 @@ class AutomatedEmails extends SimpleWorker {
     return (bool)$settings['automated'];
   }
 
-  function processTaskStrategy(ScheduledTask $task) {
+  function processTaskStrategy(ScheduledTask $task, $timer) {
     try {
       $settings = $this->settings->get(Worker::SETTINGS_KEY);
       $newsletters = $this->getNewsletters();

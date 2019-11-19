@@ -26,7 +26,7 @@ class Daemon {
     $errors = [];
     foreach ($this->getWorkers() as $worker) {
       try {
-        $worker->process();
+        $worker->process($this->timer);
       } catch (\Exception $e) {
         $worker_class_name_parts = explode('\\', get_class($worker));
         $errors[] = [
@@ -45,21 +45,21 @@ class Daemon {
   }
 
   private function getWorkers() {
-    yield $this->workers_factory->createMigrationWorker($this->timer);
-    yield $this->workers_factory->createStatsNotificationsWorker($this->timer);
-    yield $this->workers_factory->createScheduleWorker($this->timer);
-    yield $this->workers_factory->createQueueWorker($this->timer);
-    yield $this->workers_factory->createSendingServiceKeyCheckWorker($this->timer);
-    yield $this->workers_factory->createPremiumKeyCheckWorker($this->timer);
-    yield $this->workers_factory->createBounceWorker($this->timer);
-    yield $this->workers_factory->createExportFilesCleanupWorker($this->timer);
-    yield $this->workers_factory->createBeamerkWorker($this->timer);
-    yield $this->workers_factory->createInactiveSubscribersWorker($this->timer);
-    yield $this->workers_factory->createUnsubscribeTokensWorker($this->timer);
-    yield $this->workers_factory->createWooCommerceSyncWorker($this->timer);
-    yield $this->workers_factory->createAuthorizedSendingEmailsCheckWorker($this->timer);
-    yield $this->workers_factory->createWooCommercePastOrdersWorker($this->timer);
-    yield $this->workers_factory->createStatsNotificationsWorkerForAutomatedEmails($this->timer);
-    yield $this->workers_factory->createSubscriberLinkTokensWorker($this->timer);
+    yield $this->workers_factory->createMigrationWorker();
+    yield $this->workers_factory->createStatsNotificationsWorker();
+    yield $this->workers_factory->createScheduleWorker();
+    yield $this->workers_factory->createQueueWorker();
+    yield $this->workers_factory->createSendingServiceKeyCheckWorker();
+    yield $this->workers_factory->createPremiumKeyCheckWorker();
+    yield $this->workers_factory->createBounceWorker();
+    yield $this->workers_factory->createExportFilesCleanupWorker();
+    yield $this->workers_factory->createBeamerkWorker();
+    yield $this->workers_factory->createInactiveSubscribersWorker();
+    yield $this->workers_factory->createUnsubscribeTokensWorker();
+    yield $this->workers_factory->createWooCommerceSyncWorker();
+    yield $this->workers_factory->createAuthorizedSendingEmailsCheckWorker();
+    yield $this->workers_factory->createWooCommercePastOrdersWorker();
+    yield $this->workers_factory->createStatsNotificationsWorkerForAutomatedEmails();
+    yield $this->workers_factory->createSubscriberLinkTokensWorker();
   }
 }

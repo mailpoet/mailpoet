@@ -21,7 +21,7 @@ class Migration extends SimpleWorker {
     return empty($completed_tasks);
   }
 
-  function prepareTaskStrategy(ScheduledTask $task) {
+  function prepareTaskStrategy(ScheduledTask $task, $timer) {
     $unmigrated_columns = $this->checkUnmigratedColumnsExist();
     $unmigrated_queues_count = 0;
     $unmigrated_queue_subscribers = [];
@@ -73,9 +73,9 @@ class Migration extends SimpleWorker {
     }
   }
 
-  function processTaskStrategy(ScheduledTask $task) {
-    $this->migrateSendingQueues();
-    $this->migrateSubscribers();
+  function processTaskStrategy(ScheduledTask $task, $timer) {
+    $this->migrateSendingQueues($timer);
+    $this->migrateSubscribers($timer);
     $this->resumeSending();
     return true;
   }
@@ -108,7 +108,7 @@ class Migration extends SimpleWorker {
   /*
    * Migrate all sending queues without converting subscriber data
    */
-  function migrateSendingQueues() {
+  function migrateSendingQueues($timer) {
     global $wpdb;
 
     $queues = $this->getUnmigratedQueues()
@@ -128,7 +128,7 @@ class Migration extends SimpleWorker {
     if (!empty($queues)) {
       foreach (array_chunk($queues, self::BATCH_SIZE) as $queue_batch) {
         // abort if execution limit is reached
-        $this->cron_helper->enforceExecutionLimit($this->timer);
+        $this->cron_helper->enforceExecutionLimit($timer);
 
         foreach ($queue_batch as $queue) {
           // create a new scheduled task of type "sending"
@@ -158,7 +158,7 @@ class Migration extends SimpleWorker {
   /*
    * Migrate subscribers for in-progress sending tasks from the `subscribers` field to a separate table
    */
-  function migrateSubscribers() {
+  function migrateSubscribers($timer) {
     global $wpdb;
 
     // find in-progress queues that have serialized subscribers
@@ -177,16 +177,16 @@ class Migration extends SimpleWorker {
     if (!empty($task_ids)) {
       foreach ($task_ids as $task_id) {
         // abort if execution limit is reached
-        $this->cron_helper->enforceExecutionLimit($this->timer);
+        $this->cron_helper->enforceExecutionLimit($timer);
 
-        $this->migrateTaskSubscribers($task_id);
+        $this->migrateTaskSubscribers($task_id, $timer);
       }
     }
 
     return true;
   }
 
-  function migrateTaskSubscribers($task_id) {
+  function migrateTaskSubscribers($task_id, $timer) {
     global $wpdb;
 
     $migrated_unprocessed_count = ScheduledTaskSubscriber::getUnprocessedCount($task_id);
@@ -212,7 +212,7 @@ class Migration extends SimpleWorker {
       $subscribers_to_migrate = array_slice($subscribers['to_process'], $migrated_unprocessed_count);
       foreach ($subscribers_to_migrate as $sub_id) {
         // abort if execution limit is reached
-        $this->cron_helper->enforceExecutionLimit($this->timer);
+        $this->cron_helper->enforceExecutionLimit($timer);
 
         ScheduledTaskSubscriber::createOrUpdate([
           'task_id' => $task_id,
@@ -226,7 +226,7 @@ class Migration extends SimpleWorker {
       $subscribers_to_migrate = array_slice($subscribers['processed'], $migrated_processed_count);
       foreach ($subscribers_to_migrate as $sub_id) {
         // abort if execution limit is reached
-        $this->cron_helper->enforceExecutionLimit($this->timer);
+        $this->cron_helper->enforceExecutionLimit($timer);
 
         ScheduledTaskSubscriber::createOrUpdate([
           'task_id' => $task_id,

@@ -25,7 +25,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
 
   function testItReturnsTrueOnSuccessfulKeyCheck() {
     $task = $this->createRunningTask();
-    $result = $this->worker->processTaskStrategy($task);
+    $result = $this->worker->processTaskStrategy($task, microtime(true));
     expect($result)->true();
   }
 
@@ -44,7 +44,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       ['rescheduleProgressively' => Expected::once()],
       $this
     );
-    $result = $worker->processTaskStrategy($task);
+    $result = $worker->processTaskStrategy($task, microtime(true));
     expect($result)->false();
   }
 
@@ -61,7 +61,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       ['rescheduleProgressively' => Expected::once()],
       $this
     );
-    $result = $worker->processTaskStrategy($task);
+    $result = $worker->processTaskStrategy($task, microtime(true));
     expect($result)->false();
   }
 

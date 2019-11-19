@@ -136,24 +136,23 @@ class WorkersFactory {
   }
 
   /** @return SchedulerWorker */
-  function createScheduleWorker($timer) {
-    return new SchedulerWorker($this->subscribers_finder, $this->logger_factory, $this->cron_helper, $timer);
+  function createScheduleWorker() {
+    return new SchedulerWorker($this->subscribers_finder, $this->logger_factory, $this->cron_helper);
   }
 
   /** @return SendingQueueWorker */
-  function createQueueWorker($timer) {
+  function createQueueWorker() {
     return new SendingQueueWorker(
       $this->sending_error_handler,
       $this->statsNotificationsScheduler,
       $this->logger_factory,
       $this->newsletters_repository,
-      $this->cron_helper,
-      $timer
+      $this->cron_helper
     );
   }
 
   /** @return StatsNotificationsWorker */
-  function createStatsNotificationsWorker($timer) {
+  function createStatsNotificationsWorker() {
     return new StatsNotificationsWorker(
       $this->mailer,
       $this->renderer,
@@ -163,81 +162,79 @@ class WorkersFactory {
       $this->stats_notifications_repository,
       $this->newsletter_link_repository,
       $this->newsletter_statistics_repository,
-      $this->entity_manager,
-      $timer
+      $this->entity_manager
     );
   }
 
   /** @return StatsNotificationsWorkerForAutomatedEmails */
-  function createStatsNotificationsWorkerForAutomatedEmails($timer) {
+  function createStatsNotificationsWorkerForAutomatedEmails() {
     return new StatsNotificationsWorkerForAutomatedEmails(
       $this->mailer,
       $this->renderer,
       $this->settings,
       $this->newsletters_repository,
       $this->newsletter_statistics_repository,
-      $this->mailerMetaInfo,
-      $timer
+      $this->mailerMetaInfo
     );
   }
 
   /** @return SendingServiceKeyCheckWorker */
-  function createSendingServiceKeyCheckWorker($timer) {
-    return new SendingServiceKeyCheckWorker($this->settings, $timer);
+  function createSendingServiceKeyCheckWorker() {
+    return new SendingServiceKeyCheckWorker($this->settings);
   }
 
   /** @return PremiumKeyCheckWorker */
-  function createPremiumKeyCheckWorker($timer) {
-    return new PremiumKeyCheckWorker($this->settings, $timer);
+  function createPremiumKeyCheckWorker() {
+    return new PremiumKeyCheckWorker($this->settings);
   }
 
   /** @return BounceWorker */
-  function createBounceWorker($timer) {
-    return new BounceWorker($this->settings, $timer);
+  function createBounceWorker() {
+    return new BounceWorker($this->settings);
   }
 
   /** @return MigrationWorker */
-  function createMigrationWorker($timer) {
-    return new MigrationWorker($timer);
+  function createMigrationWorker() {
+    return new MigrationWorker();
   }
 
   /** @return WooCommerceSyncWorker */
-  function createWooCommerceSyncWorker($timer) {
-    return new WooCommerceSyncWorker($this->woocommerce_segment, $this->woocommerce_helper, $timer);
+  function createWooCommerceSyncWorker() {
+    return new WooCommerceSyncWorker($this->woocommerce_segment, $this->woocommerce_helper);
   }
 
   /** @return ExportFilesCleanup */
-  function createExportFilesCleanupWorker($timer) {
-    return new ExportFilesCleanup($timer);
+  function createExportFilesCleanupWorker() {
+    return new ExportFilesCleanup();
   }
 
   /** @return Beamer */
-  function createBeamerkWorker($timer) {
-    return new Beamer($this->settings, WPFunctions::get(), $timer);
+  function createBeamerkWorker() {
+    return new Beamer($this->settings, WPFunctions::get());
   }
 
   /** @return InactiveSubscribers */
-  function createInactiveSubscribersWorker($timer) {
-    return new InactiveSubscribers($this->inactive_subscribers_controller, $this->settings, $timer);
+  function createInactiveSubscribersWorker() {
+    return new InactiveSubscribers($this->inactive_subscribers_controller, $this->settings);
   }
 
     /** @return UnsubscribeTokens */
-  function createUnsubscribeTokensWorker($timer) {
-    return new UnsubscribeTokens($timer);
+  function createUnsubscribeTokensWorker() {
+    return new UnsubscribeTokens();
   }
 
    /** @return SubscriberLinkTokens */
-  function createSubscriberLinkTokensWorker($timer) {
-    return new SubscriberLinkTokens($timer);
+  function createSubscriberLinkTokensWorker() {
+    return new SubscriberLinkTokens();
   }
 
   /** @return AuthorizedSendingEmailsCheck */
-  function createAuthorizedSendingEmailsCheckWorker($timer) {
-    return new AuthorizedSendingEmailsCheck($this->authorized_emails_controller, $timer);
+  function createAuthorizedSendingEmailsCheckWorker() {
+    return new AuthorizedSendingEmailsCheck($this->authorized_emails_controller);
   }
 
   /** @return WooCommercePastOrders */
-  function createWooCommercePastOrdersWorker($timer) {
-    return new WooCommercePastOrders($this->woocommerce_helper, $this->woocommerce_purchases, $timer);
+  function createWooCommercePastOrdersWorker() {
+    return new WooCommercePastOrders($this->woocommerce_helper, $this->woocommerce_purchases);
   }
 }

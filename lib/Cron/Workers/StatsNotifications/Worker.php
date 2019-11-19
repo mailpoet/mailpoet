@@ -24,9 +24,6 @@ class Worker {
   const TASK_TYPE = 'stats_notification';
   const SETTINGS_KEY = 'stats_notifications';
 
-  /** @var float */
-  public $timer;
-
   /** @var Renderer */
   private $renderer;
 
@@ -63,10 +60,8 @@ class Worker {
     StatsNotificationsRepository $repository,
     NewsletterLinkRepository $newsletter_link_repository,
     NewsletterStatisticsRepository $newsletter_statistics_repository,
-    EntityManager $entity_manager,
-    $timer = false
+    EntityManager $entity_manager
   ) {
-    $this->timer = $timer ?: microtime(true);
     $this->renderer = $renderer;
     $this->mailer = $mailer;
     $this->settings = $settings;
@@ -79,7 +74,8 @@ class Worker {
   }
 
   /** @throws \Exception */
-  function process() {
+  function process($timer = false) {
+    $timer = $timer ?: microtime(true);
     $settings = $this->settings->get(self::SETTINGS_KEY);
     foreach ($this->repository->findScheduled(Sending::RESULT_BATCH_SIZE) as $stats_notification_entity) {
       try {
@@ -94,7 +90,7 @@ class Worker {
       } finally {
         $this->markTaskAsFinished($stats_notification_entity->getTask());
       }
-      $this->cron_helper->enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($timer);
     }
   }
 

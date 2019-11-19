@@ -20,8 +20,6 @@ use MailPoetVendor\Monolog\Logger;
 class Scheduler {
   const TASK_BATCH_SIZE = 5;
 
-  public $timer;
-
   /** @var SubscribersFinder */
   private $subscribers_finder;
 
@@ -34,18 +32,19 @@ class Scheduler {
   function __construct(
     SubscribersFinder $subscribers_finder,
     LoggerFactory $logger_factory,
-    CronHelper $cron_helper,
-    $timer = false
+    CronHelper $cron_helper
   ) {
-    $this->timer = ($timer) ? $timer : microtime(true);
-    // abort if execution limit is reached
     $this->cron_helper = $cron_helper;
-    $this->cron_helper->enforceExecutionLimit($this->timer);
     $this->subscribers_finder = $subscribers_finder;
     $this->logger_factory = $logger_factory;
   }
 
-  function process() {
+  function process($timer = false) {
+    $timer = $timer ?: microtime(true);
+
+    // abort if execution limit is reached
+    $this->cron_helper->enforceExecutionLimit($timer);
+
     $scheduled_queues = self::getScheduledQueues();
     if (!count($scheduled_queues)) return false;
     $this->updateTasks($scheduled_queues);
@@ -64,7 +63,7 @@ class Scheduler {
       } elseif ($newsletter->type === Newsletter::TYPE_AUTOMATIC) {
         $this->processScheduledAutomaticEmail($newsletter, $queue);
       }
-      $this->cron_helper->enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($timer);
     }
   }
 

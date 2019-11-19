@@ -29,9 +29,9 @@ class Bounce extends SimpleWorker {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(SettingsController $settings, $timer = false) {
+  function __construct(SettingsController $settings) {
     $this->settings = $settings;
-    parent::__construct($timer);
+    parent::__construct();
   }
 
   function init() {
@@ -44,7 +44,7 @@ class Bounce extends SimpleWorker {
     return Bridge::isMPSendingServiceEnabled();
   }
 
-  function prepareTaskStrategy(ScheduledTask $task) {
+  function prepareTaskStrategy(ScheduledTask $task, $timer) {
     BounceTask::prepareSubscribers($task);
 
     if (!ScheduledTaskSubscriber::getUnprocessedCount($task->id)) {
@@ -54,7 +54,7 @@ class Bounce extends SimpleWorker {
     return true;
   }
 
-  function processTaskStrategy(ScheduledTask $task) {
+  function processTaskStrategy(ScheduledTask $task, $timer) {
     $subscriber_batches = new BatchIterator($task->id, self::BATCH_SIZE);
 
     if (count($subscriber_batches) === 0) {
@@ -66,7 +66,7 @@ class Bounce extends SimpleWorker {
 
     foreach ($subscriber_batches as $subscribers_to_process_ids) {
       // abort if execution limit is reached
-      $this->cron_helper->enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($timer);
 
       $subscriber_emails = Subscriber::select('email')
         ->whereIn('id', $subscribers_to_process_ids)

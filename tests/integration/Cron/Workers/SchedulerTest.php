@@ -34,17 +34,10 @@ class SchedulerTest extends \MailPoetTest {
     $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
   }
 
-  function testItConstructs() {
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->logger_factory, $this->cron_helper);
-    expect($scheduler->timer)->greaterOrEquals(5);
-    $timer = microtime(true) - 2;
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->logger_factory, $this->cron_helper, $timer);
-    expect($scheduler->timer)->equals($timer);
-  }
-
   function testItThrowsExceptionWhenExecutionLimitIsReached() {
     try {
-      $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->logger_factory, $this->cron_helper, microtime(true) - $this->cron_helper->getDaemonExecutionLimit());
+      $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->logger_factory, $this->cron_helper);
+      $scheduler->process(microtime(true) - $this->cron_helper->getDaemonExecutionLimit());
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
@@ -556,15 +549,11 @@ class SchedulerTest extends \MailPoetTest {
     $queue->save();
     $scheduler = Stub::make(Scheduler::class, [
       'processPostNotificationNewsletter' => Expected::exactly(1),
-      'cron_helper' => $this->cron_helper,
+      'cron_helper' => $this->make(CronHelper::class, [
+        'enforceExecutionLimit' => Expected::exactly(2), // call at start + during processing
+      ]),
     ], $this);
-    $scheduler->timer = microtime(true) - $this->cron_helper->getDaemonExecutionLimit();
-    try {
-      $scheduler->process();
-      self::fail('Maximum execution time limit exception was not thrown.');
-    } catch (\Exception $e) {
-      expect($e->getMessage())->equals('Maximum execution time has been reached.');
-    }
+    $scheduler->process();
   }
 
   function testItDoesNotProcessScheduledJobsWhenNewsletterIsNotActive() {

@@ -21,16 +21,15 @@ class InactiveSubscribers extends SimpleWorker {
 
   function __construct(
     InactiveSubscribersController $inactive_subscribers_controller,
-    SettingsController $settings,
-    $timer = false
+    SettingsController $settings
   ) {
     $this->inactive_subscribers_controller = $inactive_subscribers_controller;
     $this->settings = $settings;
-    parent::__construct($timer);
+    parent::__construct();
   }
 
 
-  function processTaskStrategy(ScheduledTask $task) {
+  function processTaskStrategy(ScheduledTask $task, $timer) {
     $tracking_enabled = (bool)$this->settings->get('tracking.enabled');
     if (!$tracking_enabled) {
       $this->schedule();
@@ -55,10 +54,10 @@ class InactiveSubscribers extends SimpleWorker {
       $last_subscriber_id += self::BATCH_SIZE;
       $task->meta = ['last_subscriber_id' => $last_subscriber_id];
       $task->save();
-      $this->cron_helper->enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($timer);
     };
     while ($this->inactive_subscribers_controller->markActiveSubscribers($days_to_inactive, self::BATCH_SIZE) === self::BATCH_SIZE) {
-      $this->cron_helper->enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($timer);
     };
     $this->schedule();
     return true;

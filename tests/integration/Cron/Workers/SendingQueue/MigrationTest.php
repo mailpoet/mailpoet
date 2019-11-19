@@ -56,7 +56,7 @@ class MigrationTest extends \MailPoetTest {
   function testItPausesSendingWhenPreparingATask() {
     $task = $this->createScheduledTask();
     expect(MailerLog::isSendingPaused())->false();
-    $this->worker->prepareTask($task);
+    $this->worker->prepareTask($task, microtime(true));
     expect($task->status)->null();
     expect(MailerLog::isSendingPaused())->true();
   }
@@ -66,14 +66,14 @@ class MigrationTest extends \MailPoetTest {
     $this->worker->pauseSending();
     expect(MailerLog::isSendingPaused())->true();
     $task = $this->createScheduledTask();
-    $this->worker->prepareTask($task);
+    $this->worker->prepareTask($task, microtime(true));
     expect(MailerLog::isSendingPaused())->false();
   }
 
   function testItCompletesTaskIfThereIsNothingToMigrate() {
     SendingQueue::deleteMany();
     $task = $this->createScheduledTask();
-    $this->worker->prepareTask($task);
+    $this->worker->prepareTask($task, microtime(true));
     expect(ScheduledTask::findOne($task->id)->status)->equals(ScheduledTask::STATUS_COMPLETED);
   }
 
@@ -83,7 +83,7 @@ class MigrationTest extends \MailPoetTest {
     expect(ScheduledTaskSubscriber::whereGt('task_id', 0)->count())->equals(0);
 
     $task = $this->createRunningTask();
-    $this->worker->processTask($task);
+    $this->worker->processTask($task, microtime(true));
 
     expect($this->worker->getUnmigratedQueues()->count())->equals(0);
     expect(ScheduledTask::where('type', SendingTask::TASK_TYPE)->findMany())->count(4);
@@ -105,7 +105,7 @@ class MigrationTest extends \MailPoetTest {
     $this->worker->pauseSending();
     expect(MailerLog::isSendingPaused())->true();
     $task = $this->createRunningTask();
-    $this->worker->processTask($task);
+    $this->worker->processTask($task, microtime(true));
     expect(MailerLog::isSendingPaused())->false();
   }
 

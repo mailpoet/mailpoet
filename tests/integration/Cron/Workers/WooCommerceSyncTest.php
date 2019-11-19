@@ -31,7 +31,7 @@ class WooCommerceSyncTest extends \MailPoetTest {
     $this->woocommerce_segment->expects($this->once())
       ->method('synchronizeCustomers');
     $task = $this->createScheduledTask();
-    expect($this->worker->processTaskStrategy($task))->equals(true);
+    expect($this->worker->processTaskStrategy($task, microtime(true)))->equals(true);
   }
 
   private function createScheduledTask() {
