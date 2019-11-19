@@ -44,11 +44,12 @@ class Sending {
   ];
 
   private function __construct(ScheduledTask $task = null, SendingQueue $queue = null) {
-    if (is_null($task) && is_null($queue)) {
+    if (!$task instanceof ScheduledTask) {
       $task = ScheduledTask::create();
       $task->type = self::TASK_TYPE;
       $task->save();
-
+    }
+    if (!$queue instanceof SendingQueue) {
       $queue = SendingQueue::create();
       $queue->newsletter_id = 0;
       $queue->task_id = $task->id;
@@ -105,7 +106,7 @@ class Sending {
     $queue = SendingQueue::where('newsletter_id', $newsletter_id)
       ->orderByDesc('updated_at')
       ->findOne();
-    if (!$queue) {
+    if (!$queue instanceof SendingQueue) {
       return false;
     }
 
