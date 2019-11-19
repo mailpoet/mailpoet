@@ -83,14 +83,26 @@ class Bridge {
     }
   }
 
+  /**
+   * @param string $key
+   * @return API
+   */
+  private function getApi($key) {
+    $this->initApi($key);
+    assert($this->api instanceof API);
+    return $this->api;
+  }
+
   function getAuthorizedEmailAddresses() {
-    $this->initApi($this->settings->get(self::API_KEY_SETTING_NAME));
-    return $this->api->getAuthorizedEmailAddresses();
+    return $this
+      ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
+      ->getAuthorizedEmailAddresses();
   }
 
   function checkMSSKey($api_key) {
-    $this->initApi($api_key);
-    $result = $this->api->checkMSSKey();
+    $result = $this
+      ->getApi($api_key)
+      ->checkMSSKey();
     return $this->processKeyCheckResult($result);
   }
 
@@ -115,8 +127,9 @@ class Bridge {
   }
 
   function checkPremiumKey($key) {
-    $this->initApi($key);
-    $result = $this->api->checkPremiumKey();
+    $result = $this
+      ->getApi($key)
+      ->checkPremiumKey();
     return $this->processKeyCheckResult($result);
   }
 
@@ -177,9 +190,15 @@ class Bridge {
   }
 
   function updateSubscriberCount($result) {
-    if (!empty($result['state'])
-      && ($result['state'] === self::KEY_VALID
-      || $result['state'] === self::KEY_EXPIRING)
+    if (
+      (
+        !empty($result['state'])
+        && (
+          $result['state'] === self::KEY_VALID
+          || $result['state'] === self::KEY_EXPIRING
+        )
+      )
+      && ($this->api instanceof API)
     ) {
       return $this->api->updateSubscriberCount(Subscriber::getTotalSubscribers());
     }
