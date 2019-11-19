@@ -16,14 +16,6 @@ export default () => {
     []
   );
 
-  const addFormWidgetHint = ReactStringReplace(
-    MailPoet.I18n.t('addFormWidgetHint'),
-    /\[link\](.*?)\[\/link\]/g,
-    (match) => (
-      <a key="addFormWidgetHintLink" href="widgets.php" target="_blank">{match}</a>
-    )
-  );
-
   const exportLinkClicked = (event, type) => {
     event.preventDefault();
     if (type === 'php') {
@@ -35,11 +27,19 @@ export default () => {
     return setCopyAreaContent(formExports.shortcode);
   };
 
+  const addFormWidgetHint = ReactStringReplace(
+    MailPoet.I18n.t('addFormWidgetHint'),
+    /\[link\](.*?)\[\/link\]/g,
+    (match) => (
+      <a key="addFormWidgetHintLink" href="widgets.php" target="_blank">{match}</a>
+    )
+  );
+
   const addFormShortcodeHint = ReactStringReplace(
     MailPoet.I18n.t('addFormShortcodeHint'),
     /\[link\](.*?)\[\/link\]/g,
     (match) => (
-      <a key="exportShorcode" href="#" onClick={(e) => exportLinkClicked(e, 'shortcode')}>{match}</a>
+      <a key="exportShortcode" href="#" onClick={(e) => exportLinkClicked(e, 'shortcode')}>{match}</a>
     )
   );
 
@@ -68,25 +68,13 @@ export default () => {
   };
 
   return (
-    <>
-      <Panel>
-        <PanelBody title={MailPoet.I18n.t('formSettings')}>
-          <p>TODO Basic Settings</p>
-        </PanelBody>
-      </Panel>
-      <Panel>
-        <PanelBody title={MailPoet.I18n.t('formPlacement')} initialOpen={false}>
-          <p>{addFormWidgetHint}</p>
-          <p>{addFormShortcodeHint}</p>
-          <p>{addFormPhpIframeHint}</p>
-          {getCopyTextArea()}
-        </PanelBody>
-      </Panel>
-      <Panel>
-        <PanelBody title={MailPoet.I18n.t('customCss')} initialOpen={false}>
-          <p>TODO Custom CSS</p>
-        </PanelBody>
-      </Panel>
-    </>
+    <Panel>
+      <PanelBody title={MailPoet.I18n.t('formPlacement')} initialOpen={false}>
+        <p>{addFormWidgetHint}</p>
+        <p>{addFormShortcodeHint}</p>
+        <p>{addFormPhpIframeHint}</p>
+        {getCopyTextArea()}
+      </PanelBody>
+    </Panel>
   );
 };
