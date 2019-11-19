@@ -121,7 +121,10 @@ class SimpleWorkerTest extends \MailPoetTest {
   function testItCanInitBeforeProcessing() {
     $worker = Stub::make(
       $this->worker,
-      ['init' => Expected::once()],
+      [
+        'init' => Expected::once(),
+        'schedule' => Expected::once(),
+      ],
       $this
     );
     $worker->process();
