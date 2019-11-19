@@ -712,7 +712,7 @@ class MP2Migrator {
    *
    * @param int $subscriber_id
    * @param array $user_list
-   * @return SubscriberSegment
+   * @return SubscriberSegment|null
    */
   private function importSubscriberSegment($subscriber_id, $user_list) {
     $subscriber_segment = null;
@@ -943,7 +943,7 @@ class MP2Migrator {
    * Replace the MP2 shortcodes used in the textarea fields
    *
    * @param string $text Text
-   * @return string Text
+   * @return string|null Text
    */
   private function replaceMP2Shortcodes($text) {
     $text = str_replace('[total_subscribers]', '[mailpoet_subscribers_count]', $text);
@@ -987,7 +987,7 @@ class MP2Migrator {
           $segment_id = $this->segments_mapping[$item_value];
           $mp3_value['id'] = $segment_id;
           $segment = Segment::findOne($segment_id);
-          if ($segment) {
+          if ($segment instanceof Segment) {
             $mp3_value['name'] = $segment->get('name');
           }
         } else {
@@ -1177,7 +1177,7 @@ class MP2Migrator {
           $emails_number /= 8;
           break;
       }
-      $emails_number = round($emails_number);
+      $emails_number = (int)round($emails_number);
     }
     return $emails_number;
   }
