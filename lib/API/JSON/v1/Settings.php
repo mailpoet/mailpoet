@@ -104,7 +104,7 @@ class Settings extends APIEndpoint {
     $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)
       ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
       ->findOne();
-    if (!$task) {
+    if (!($task instanceof ScheduledTask)) {
       $task = ScheduledTask::create();
       $task->type = WooCommerceSync::TASK_TYPE;
       $task->status = ScheduledTask::STATUS_SCHEDULED;
@@ -118,12 +118,12 @@ class Settings extends APIEndpoint {
     $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
       ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
       ->findOne();
-    if (!$task) {
+    if (!($task instanceof ScheduledTask)) {
       $task = ScheduledTask::create();
       $task->type = InactiveSubscribers::TASK_TYPE;
       $task->status = ScheduledTask::STATUS_SCHEDULED;
     }
-    $datetime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
     $task->scheduled_at = $datetime->subMinute();
     $task->save();
   }
