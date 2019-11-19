@@ -136,7 +136,7 @@ class PostNotificationScheduler {
     if (!$relation) {
       $relation = NewsletterOption::create();
       $relation->newsletter_id = $newsletter->id;
-      $relation->option_field_id = $option_field->id;
+      $relation->option_field_id = (int)$option_field->id;
     }
     $relation->value = $schedule;
     $relation->save();
