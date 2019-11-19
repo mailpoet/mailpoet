@@ -182,7 +182,8 @@ class Newsletters extends APIEndpoint {
 
     $old_newsletter = null;
     if (isset($data['id'])) {
-      $old_newsletter = Newsletter::findOne(intval($data['id'])) ?: null;
+      $fetched = Newsletter::findOne(intval($data['id']));
+      $old_newsletter = $fetched instanceof Newsletter ? $fetched : null;
     }
 
     if (!empty($data['body'])) {
