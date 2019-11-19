@@ -54,7 +54,7 @@ class GATracking {
     foreach ($extracted_links as $extracted_link) {
       if ($extracted_link['type'] !== NewsletterLinks::LINK_TYPE_URL) {
         continue;
-      } elseif (strpos(parse_url($extracted_link['link'], PHP_URL_HOST), $internal_host) === false) {
+      } elseif (strpos((string)parse_url($extracted_link['link'], PHP_URL_HOST), $internal_host) === false) {
         // Process only internal links (i.e. pointing to current site)
         continue;
       }
