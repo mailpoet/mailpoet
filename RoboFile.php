@@ -466,7 +466,7 @@ class RoboFile extends \Robo\Tasks {
       'WP_ROOT="' . getenv('WP_ROOT') . '"',
       'php -d memory_limit=2G',
       "$dir/tasks/phpstan/vendor/bin/phpstan analyse ",
-      '--level 5',
+      '--level 7',
     ]);
 
     // PHPStan must be run out of main plugin directory to avoid its autoloading

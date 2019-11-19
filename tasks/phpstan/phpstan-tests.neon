@@ -23,3 +23,5 @@ includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - extensions/PHPUnit5CompatExtension/extension.neon
   - extensions/CodeceptionExtension/extension.neon
+  - phpstan-baseline-tests.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff
+
