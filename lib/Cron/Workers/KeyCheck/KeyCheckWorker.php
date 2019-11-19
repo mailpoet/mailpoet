@@ -15,7 +15,7 @@ abstract class KeyCheckWorker extends SimpleWorker {
     }
   }
 
-  function processTaskStrategy(ScheduledTask $task) {
+  function processTaskStrategy(ScheduledTask $task, $timer) {
     try {
       $result = $this->checkKey();
     } catch (\Exception $e) {

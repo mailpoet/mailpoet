@@ -35,15 +35,9 @@ class SimpleWorkerTest extends \MailPoetTest {
     }
   }
 
-  function testItConstructs() {
-    expect($this->worker->timer)->notEmpty();
-  }
-
   function testItThrowsExceptionWhenExecutionLimitIsReached() {
     try {
-      new MockSimpleWorker(
-        microtime(true) - $this->cron_helper->getDaemonExecutionLimit()
-      );
+      $this->worker->process(microtime(true) - $this->cron_helper->getDaemonExecutionLimit());
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
@@ -115,6 +109,7 @@ class SimpleWorkerTest extends \MailPoetTest {
       ['checkProcessingRequirements' => false],
       $this
     );
+    $worker->__construct();
     expect($worker->process())->false();
   }
 
@@ -127,6 +122,7 @@ class SimpleWorkerTest extends \MailPoetTest {
       ],
       $this
     );
+    $worker->__construct();
     $worker->process();
   }
 
@@ -138,13 +134,13 @@ class SimpleWorkerTest extends \MailPoetTest {
 
   function testItPreparesTask() {
     $task = $this->createScheduledTask();
-    $this->worker->prepareTask($task);
+    $this->worker->prepareTask($task, microtime(true));
     expect($task->status)->null();
   }
 
   function testItProcessesTask() {
     $task = $this->createRunningTask();
-    $result = $this->worker->processTask($task);
+    $result = $this->worker->processTask($task, microtime(true));
     expect($task->status)->equals(ScheduledTask::STATUS_COMPLETED);
     expect($result)->equals(true);
   }
@@ -157,7 +153,7 @@ class SimpleWorkerTest extends \MailPoetTest {
       ['processTaskStrategy' => false],
       $this
     );
-    $result = $worker->processTask($task);
+    $result = $worker->processTask($task, microtime(true));
     expect($task->status)->equals(null);
     expect($result)->equals(false);
   }
@@ -229,9 +225,9 @@ class SimpleWorkerTest extends \MailPoetTest {
       ->willReturn(true);
     $task = $this->createRunningTask();
     expect(empty($task->in_progress))->equals(true);
-    expect($worker->processTask($task))->equals(true);
+    expect($worker->processTask($task, microtime(true)))->equals(true);
     $task->in_progress = true;
-    expect($worker->processTask($task))->equals(false);
+    expect($worker->processTask($task, microtime(true)))->equals(false);
   }
 
   function testItWillResetTheInProgressFlagOnFail() {
@@ -243,7 +239,7 @@ class SimpleWorkerTest extends \MailPoetTest {
       ->willThrowException(new \Exception('test error'));
     $task = $this->createRunningTask();
     try {
-      $worker->processTask($task);
+      $worker->processTask($task, microtime(true));
       $this->fail('An exception should be thrown');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('test error');
@@ -260,11 +256,11 @@ class SimpleWorkerTest extends \MailPoetTest {
       ->willReturn(true);
     $task = $this->createRunningTask();
     $task = ScheduledTask::findOne($task->id); // make sure `updated_at` is set by the DB
-    expect($worker->processTask($task))->equals(true);
+    expect($worker->processTask($task, microtime(true)))->equals(true);
     $scheduled_at = $task->scheduled_at;
     $task->updated_at = Carbon::createFromTimestamp(strtotime($task->updated_at))
       ->subMinutes(MockSimpleWorker::TASK_RUN_TIMEOUT + 1);
-    expect($worker->processTask($task))->equals(false);
+    expect($worker->processTask($task, microtime(true)))->equals(false);
     $task = ScheduledTask::findOne($task->id);
     expect($scheduled_at < $task->scheduled_at)->true();
     expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);

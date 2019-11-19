@@ -15,7 +15,7 @@ class ExportFilesCleanupTest extends \MailPoetTest {
     touch($new_file_path);
 
     $cleanup = new ExportFilesCleanup();
-    $cleanup->processTaskStrategy(ScheduledTask::createOrUpdate([]));
+    $cleanup->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
 
     $this->assertFileExists($new_file_path);
     $this->assertFileNotExists($old_file_path);

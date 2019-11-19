@@ -10,7 +10,6 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\WP\Functions as WPFunctions;
 
 abstract class SimpleWorker {
-  public $timer;
   private $wp;
   const TASK_TYPE = null;
   const TASK_BATCH_SIZE = 5;
@@ -26,15 +25,13 @@ abstract class SimpleWorker {
   /** @var CronWorkerScheduler */
   protected $cron_worker_scheduler;
 
-  function __construct($timer = false) {
+  function __construct() {
     if (static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
     }
-    $this->timer = ($timer) ? $timer : microtime(true);
-    // abort if execution limit is reached
-    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
-    $this->cron_helper->enforceExecutionLimit($this->timer);
+
     $this->wp = new WPFunctions();
+    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->cron_worker_scheduler = ContainerWrapper::getInstance()->get(CronWorkerScheduler::class);
   }
 
@@ -45,7 +42,12 @@ abstract class SimpleWorker {
   function init() {
   }
 
-  function process() {
+  function process($timer = false) {
+    $timer = $timer ?: microtime(true);
+
+    // abort if execution limit is reached
+    $this->cron_helper->enforceExecutionLimit($timer);
+
     if (!$this->checkProcessingRequirements()) {
       return false;
     }
@@ -65,10 +67,10 @@ abstract class SimpleWorker {
     $task = null;
     try {
       foreach ($scheduled_tasks as $i => $task) {
-        $this->prepareTask($task);
+        $this->prepareTask($task, $timer);
       }
       foreach ($running_tasks as $i => $task) {
-        $this->processTask($task);
+        $this->processTask($task, $timer);
       }
     } catch (\Exception $e) {
       if ($task && $e->getCode() !== CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
@@ -84,20 +86,20 @@ abstract class SimpleWorker {
     $this->cron_worker_scheduler->schedule(static::TASK_TYPE, static::getNextRunDate());
   }
 
-  function prepareTask(ScheduledTask $task) {
+  function prepareTask(ScheduledTask $task, $timer) {
     // abort if execution limit is reached
-    $this->cron_helper->enforceExecutionLimit($this->timer);
+    $this->cron_helper->enforceExecutionLimit($timer);
 
-    $prepare_completed = $this->prepareTaskStrategy($task);
+    $prepare_completed = $this->prepareTaskStrategy($task, $timer);
     if ($prepare_completed) {
       $task->status = null;
       $task->save();
     }
   }
 
-  function processTask(ScheduledTask $task) {
+  function processTask(ScheduledTask $task, $timer) {
     // abort if execution limit is reached
-    $this->cron_helper->enforceExecutionLimit($this->timer);
+    $this->cron_helper->enforceExecutionLimit($timer);
 
     if (!static::SUPPORT_MULTIPLE_INSTANCES) {
       if ($this->rescheduleOutdated($task)) {
@@ -111,7 +113,7 @@ abstract class SimpleWorker {
     $this->startProgress($task);
 
     try {
-      $completed = $this->processTaskStrategy($task);
+      $completed = $this->processTaskStrategy($task, $timer);
     } catch (\Exception $e) {
       $this->stopProgress($task);
       throw $e;
@@ -126,11 +128,11 @@ abstract class SimpleWorker {
     return (bool)$completed;
   }
 
-  function prepareTaskStrategy(ScheduledTask $task) {
+  function prepareTaskStrategy(ScheduledTask $task, $timer) {
     return true;
   }
 
-  function processTaskStrategy(ScheduledTask $task) {
+  function processTaskStrategy(ScheduledTask $task, $timer) {
     return true;
   }
 

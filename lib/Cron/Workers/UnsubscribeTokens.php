@@ -15,16 +15,16 @@ class UnsubscribeTokens extends SimpleWorker {
   const BATCH_SIZE = 1000;
   const AUTOMATIC_SCHEDULING = false;
 
-  function processTaskStrategy(ScheduledTask $task) {
+  function processTaskStrategy(ScheduledTask $task, $timer) {
     $meta = $task->getMeta();
     do {
-      $this->cron_helper->enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($timer);
       $subscribers_count = $this->addTokens(Subscriber::class, $meta['last_subscriber_id']);
       $task->meta = $meta;
       $task->save();
     } while ($subscribers_count === self::BATCH_SIZE);
     do {
-      $this->cron_helper->enforceExecutionLimit($this->timer);
+      $this->cron_helper->enforceExecutionLimit($timer);
       $newsletters_count = $this->addTokens(Newsletter::class, $meta['last_newsletter_id']);
       $task->meta = $meta;
       $task->save();

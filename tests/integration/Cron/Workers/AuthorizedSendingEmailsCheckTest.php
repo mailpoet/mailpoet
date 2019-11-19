@@ -22,7 +22,7 @@ class AuthorizedSendingEmailsCheckTest extends \MailPoetTest {
   function testItRunsCheckOnBridge() {
     $bridge_mock = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Stub\Expected::once()]);
     $worker = new AuthorizedSendingEmailsCheck($bridge_mock);
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
+    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
   }
 
   function testItDoesNotScheduleAutomatically() {

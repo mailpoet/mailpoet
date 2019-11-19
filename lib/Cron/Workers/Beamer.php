@@ -18,13 +18,13 @@ class Beamer extends SimpleWorker {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(SettingsController $settings, WPFunctions $wp, $timer = false) {
-    parent::__construct($timer);
+  function __construct(SettingsController $settings, WPFunctions $wp) {
+    parent::__construct();
     $this->settings = $settings;
     $this->wp = $wp;
   }
 
-  function processTaskStrategy(ScheduledTask $task) {
+  function processTaskStrategy(ScheduledTask $task, $timer) {
     return $this->setLastAnnouncementDate();
   }
 

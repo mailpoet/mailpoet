@@ -33,7 +33,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = new InactiveSubscribers($controller_mock, $this->settings);
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
+    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
 
     $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
@@ -53,7 +53,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = new InactiveSubscribers($controller_mock, $this->settings);
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
+    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
   }
 
   function testItSchedulesNextRunWhenFinished() {
@@ -65,7 +65,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = new InactiveSubscribers($controller_mock, $this->settings);
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
+    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
 
     $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
@@ -86,7 +86,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $worker = new InactiveSubscribers($controller_mock, $this->settings);
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate(
       ['meta' => ['max_subscriber_id' => 2001 /* 3 iterations of BATCH_SIZE in markInactiveSubscribers */]]
-    ));
+    ), microtime(true));
 
     expect($controller_mock->markInactiveSubscribers(5, 1000))->equals('ok');
     expect($controller_mock->markActiveSubscribers(5, 1000))->equals('ok');
@@ -103,7 +103,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $task = ScheduledTask::createOrUpdate([]);
 
     $worker = new InactiveSubscribers($controller_mock, $this->settings);
-    $worker->processTaskStrategy($task);
+    $worker->processTaskStrategy($task, microtime(true));
 
     $meta = $task->getMeta();
     expect(isset($meta['last_subscriber_id']))->equals(false);
@@ -117,9 +117,8 @@ class InactiveSubscribersTest extends \MailPoetTest {
       'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
-    $worker = new InactiveSubscribers($controller_mock, $this->settings, microtime(true) - ($this->cron_helper->getDaemonExecutionLimit() - 1));
-    sleep(1);
+    $worker = new InactiveSubscribers($controller_mock, $this->settings);
     $this->setExpectedException(\Exception::class, 'Maximum execution time has been reached.');
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]));
+    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true) - $this->cron_helper->getDaemonExecutionLimit());
   }
 }
