@@ -1,0 +1,27 @@
+.components-panel {
+  .select2-container {
+    width: 100% !important;
+
+    input.select2-search__field:focus {
+      border: 0;
+      box-shadow: none;
+    }
+  }
+}
+
+.components-base-control.mailpoet-form-success-types__control {
+  margin-bottom: 0;
+
+  .components-base-control__label {
+    display: block;
+  }
+
+  .components-radio-control__option {
+    display: inline-block;
+    margin-right: 1em;
+
+    input {
+      margin-right: 6px;
+    }
+  }
+}

@@ -12,6 +12,8 @@ const defaultState = {
   sidebarOpened: true,
   formData: window.mailpoet_form_data,
   formExports: window.mailpoet_form_exports,
+  segments: window.mailpoet_form_segments,
+  pages: window.mailpoet_form_pages,
   isFormSaving: false,
   notices: [],
 };

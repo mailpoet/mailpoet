@@ -14,6 +14,15 @@ export default {
   getFormExports(state) {
     return state.formExports;
   },
+  getFormSettings(state) {
+    return state.formData.settings;
+  },
+  getSegments(state) {
+    return state.segments;
+  },
+  getPages(state) {
+    return state.pages;
+  },
   getIsFormSaving(state) {
     return state.isFormSaving;
   },
