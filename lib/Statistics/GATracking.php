@@ -44,11 +44,7 @@ class GATracking {
 
   private function addParams($extracted_links, $ga_campaign, $internal_host = null) {
     $processed_links = [];
-    $params = [
-      'utm_source' => 'mailpoet',
-      'utm_medium' => 'email',
-      'utm_campaign' => urlencode($ga_campaign),
-    ];
+    $params = 'utm_source=mailpoet&utm_medium=email&utm_campaign=' . urlencode($ga_campaign);
     $internal_host = $internal_host ?: parse_url(home_url(), PHP_URL_HOST);
     $internal_host = $this->secondLevelDomainNames->get($internal_host);
     foreach ($extracted_links as $extracted_link) {
@@ -58,7 +54,9 @@ class GATracking {
         // Process only internal links (i.e. pointing to current site)
         continue;
       }
-      $processed_link = WPFunctions::get()->addQueryArg($params, $extracted_link['link']);
+      list($path, $search, $hash) = $this->splitLink($extracted_link['link']);
+      $search = empty($search) ? $params : $search . '&' . $params;
+      $processed_link = $path . '?' . $search . ($hash ? '#' . $hash : '');
       $link = $extracted_link['link'];
       $processed_links[$link] = [
         'type' => $extracted_link['type'],
@@ -67,5 +65,14 @@ class GATracking {
       ];
     }
     return $processed_links;
+  }
+
+  private function splitLink($link) {
+    $parts = explode('#', $link);
+    $hash = implode('#', array_slice($parts, 1));
+    $parts = explode('?', $parts[0]);
+    $path = $parts[0];
+    $search = implode('?', array_slice($parts, 1));
+    return [$path, $search, $hash];
   }
 }
