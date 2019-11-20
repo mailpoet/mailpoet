@@ -20,6 +20,13 @@ export function changeFormStyles(styles) {
   };
 }
 
+export function changeFormSettings(settings) {
+  return {
+    type: 'CHANGE_FORM_SETTINGS',
+    settings,
+  };
+}
+
 export function saveFormDone(result) {
   return {
     type: 'SAVE_FORM_DONE',
