@@ -75,8 +75,12 @@ class TransactionalEmails {
 
   public function useTemplateForWoocommerceEmails() {
     $this->wp->addAction('woocommerce_init', function() {
-      $this->wp->removeAction('woocommerce_email_header', [\WC()->mailer(), 'email_header']);
-      $this->wp->removeAction('woocommerce_email_footer', [\WC()->mailer(), 'email_footer']);
+      /** @var callable */
+      $email_header_callback = [\WC()->mailer(), 'email_header'];
+      /** @var callable */
+      $email_footer_callback = [\WC()->mailer(), 'email_footer'];
+      $this->wp->removeAction('woocommerce_email_header', $email_header_callback);
+      $this->wp->removeAction('woocommerce_email_footer', $email_footer_callback);
       $this->wp->addAction('woocommerce_email_header', function($email_heading) {
         $this->renderer->render($this->getNewsletter());
         echo $this->renderer->getHTMLBeforeContent($email_heading);

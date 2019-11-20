@@ -361,7 +361,12 @@ class Functions {
     return register_widget($widget);
   }
 
-  function removeAction($tag, callable $function_to_remove, $priority = 10) {
+    /**
+   * @param string $tag
+   * @param callable $function_to_remove
+   * @param int $priority
+   */
+  function removeAction($tag, $function_to_remove, $priority = 10) {
     return remove_action($tag, $function_to_remove, $priority);
   }
 
