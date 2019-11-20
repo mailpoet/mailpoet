@@ -58,6 +58,8 @@ class Renderer {
         $parser->css[$index][$selectors] = $properties;
       }
     }
-    return $parser->print->plain();
+    /** @var \csstidy_print */
+    $print = $parser->print;
+    return $print->plain();
   }
 }
