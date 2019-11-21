@@ -32,4 +32,7 @@ export default {
   getNonDismissibleNotices(state) {
     return state.notices.filter((notice) => notice.isDismissible === false);
   },
+  getNotice(state, id) {
+    return state.notices.find((notice) => notice.id === id);
+  },
 };
