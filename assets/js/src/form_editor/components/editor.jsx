@@ -6,6 +6,7 @@ import Header from './header.jsx';
 import Sidebar from './sidebar.jsx';
 import FormTitle from './form_title.jsx';
 import Notices from './notices.jsx';
+import FormStyles from './form_styles.jsx';
 
 /**
  * This component renders the form editor app.
@@ -19,6 +20,7 @@ export default () => {
     (select) => select('mailpoet-form-editor').getSidebarOpened(),
     []
   );
+
   const layoutClass = classnames('edit-post-layout', {
     'is-sidebar-opened': sidebarOpened,
   });
@@ -29,7 +31,7 @@ export default () => {
         <div className="edit-post-layout__content">
           <Notices />
           <div className="edit-post-visual-editor editor-styles-wrapper">
-            <div className="editor-writing-flow block-editor-writing-flow">
+            <div className="editor-writing-flow block-editor-writing-flow mailpoet_form">
               <FormTitle />
             </div>
           </div>
@@ -39,6 +41,7 @@ export default () => {
         </div>
         <Popover.Slot />
       </SlotFillProvider>
+      <FormStyles />
     </div>
   );
 };
