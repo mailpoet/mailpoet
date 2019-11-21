@@ -47,6 +47,7 @@ class FormEditor {
     ];
 
     if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
+      $data['form']['styles'] = FormRenderer::getStyles($form);
       $this->page_renderer->displayPage('form/editor.html', $data);
     } else {
       $this->page_renderer->displayPage('form/editor_legacy.html', $data);
