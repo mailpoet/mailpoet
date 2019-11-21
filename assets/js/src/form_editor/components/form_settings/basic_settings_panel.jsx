@@ -26,6 +26,11 @@ export default () => {
     []
   );
 
+  const missingListError = useSelect(
+    (select) => select('mailpoet-form-editor').getNotice('missing-lists'),
+    []
+  );
+
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
   const onSegmentsChange = (e) => {
@@ -59,10 +64,17 @@ export default () => {
   const selectedSegments = settings.segments
     ? segments.filter((seg) => (settings.segments.includes(seg.id.toString())))
     : [];
+  const shouldDisplayMissingListError = missingListError && !selectedSegments.length;
   return (
     <Panel>
       <PanelBody title={MailPoet.I18n.t('formSettings')}>
-        <BaseControl label={MailPoet.I18n.t('settingsListLabel')}>
+        <BaseControl
+          label={MailPoet.I18n.t('settingsListLabel')}
+          className={shouldDisplayMissingListError ? 'mailpoet-form-missing-lists' : null}
+        >
+          {shouldDisplayMissingListError ? (
+            <span className="mailpoet-form-lists-error">{MailPoet.I18n.t('settingsPleaseSelectList')}</span>
+          ) : null }
           <Selection
             item={{
               segments: selectedSegments,

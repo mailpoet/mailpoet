@@ -25,3 +25,13 @@
     }
   }
 }
+
+.mailpoet-form-missing-lists {
+  .select2-selection {
+    border-color: red;
+  }
+
+  .mailpoet-form-lists-error {
+    color: red;
+  }
+}
