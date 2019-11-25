@@ -35,8 +35,10 @@ class Migration extends SimpleWorker {
       ($unmigrated_queues_count == 0
       && count($unmigrated_queue_subscribers) == 0)
     ) {
-      // nothing to migrate
-      $this->complete($task);
+      // nothing to migrate, complete task
+      $task->processed_at = WPFunctions::get()->currentTime('mysql');
+      $task->status = ScheduledTask::STATUS_COMPLETED;
+      $task->save();
       $this->resumeSending();
       return false;
     }
