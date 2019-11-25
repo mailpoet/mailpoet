@@ -17,10 +17,10 @@ export default {
   getFormSettings(state) {
     return state.formData.settings;
   },
-  getSegments(state) {
+  getAllAvailableSegments(state) {
     return state.segments;
   },
-  getPages(state) {
+  getAllAvailablePages(state) {
     return state.pages;
   },
   getIsFormSaving(state) {
