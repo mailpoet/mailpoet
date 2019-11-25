@@ -4,6 +4,7 @@ namespace MailPoet\Test\Tasks\Subscribers;
 
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Tasks\Subscribers\BatchIterator;
+use MailPoetVendor\Idiorm\ORM;
 
 class BatchIteratorTest extends \MailPoetTest {
   function _before() {
@@ -61,6 +62,6 @@ class BatchIteratorTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
   }
 }

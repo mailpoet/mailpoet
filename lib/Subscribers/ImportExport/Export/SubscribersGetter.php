@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers\ImportExport\Export;
 
 use MailPoet\Models\Subscriber;
+use MailPoetVendor\Idiorm\ORM;
 
 /**
  * Gets batches of subscribers for export.
@@ -28,7 +29,7 @@ abstract class SubscribersGetter {
   /**
    * Initialize the query by selecting fields and ignoring trashed subscribers.
    *
-   * @return \ORM
+   * @return ORM
    */
   protected function select() {
     return Subscriber::selectMany(
@@ -48,7 +49,7 @@ abstract class SubscribersGetter {
   /**
    * Filters the subscribers query based on the segments, offset and batch size.
    *
-   * @param  \ORM $subscribers
+   * @param  ORM $subscribers
    * @return array
    */
   abstract protected function filter($subscribers);

@@ -10,6 +10,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsRepository;
+use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersController {
 
@@ -50,7 +51,7 @@ class InactiveSubscribersController {
       "UPDATE %s SET status = '%s' WHERE status = '%s';",
       Subscriber::$_table, Subscriber::STATUS_SUBSCRIBED, Subscriber::STATUS_INACTIVE
     );
-    \ORM::rawExecute($reactivate_all_inactive_query);
+    ORM::rawExecute($reactivate_all_inactive_query);
   }
 
   /**
@@ -103,7 +104,7 @@ class InactiveSubscribersController {
         )",
         $threshold_date_iso, $day_ago_iso, $threshold_date_iso
       );
-      \ORM::rawExecute($inactives_task_ids_table);
+      ORM::rawExecute($inactives_task_ids_table);
       $this->inactives_task_ids_table_created = true;
     }
 
@@ -111,7 +112,7 @@ class InactiveSubscribersController {
     $start_id = (int)$start_id;
     $end_id = $start_id + $batch_size;
     $inactive_subscriber_ids_tmp_table = 'inactive_subscriber_ids';
-    \ORM::rawExecute("
+    ORM::rawExecute("
       CREATE TEMPORARY TABLE IF NOT EXISTS $inactive_subscriber_ids_tmp_table
       (UNIQUE subscriber_id (id))
       SELECT DISTINCT s.id FROM $subscribers_table as s
@@ -121,14 +122,14 @@ class InactiveSubscribersController {
       [$threshold_date_iso, Subscriber::STATUS_SUBSCRIBED, $start_id, $end_id]
     );
 
-    $ids_to_deactivate = \ORM::forTable($inactive_subscriber_ids_tmp_table)->rawQuery("
+    $ids_to_deactivate = ORM::forTable($inactive_subscriber_ids_tmp_table)->rawQuery("
       SELECT s.id FROM $inactive_subscriber_ids_tmp_table s
         LEFT OUTER JOIN $statistics_opens_table as so ON s.id = so.subscriber_id AND so.created_at > ?
         WHERE so.id IS NULL",
       [$threshold_date_iso]
     )->findArray();
 
-    \ORM::rawExecute("DROP TABLE $inactive_subscriber_ids_tmp_table");
+    ORM::rawExecute("DROP TABLE $inactive_subscriber_ids_tmp_table");
 
     $ids_to_deactivate = array_map(
       function ($id) {
@@ -139,7 +140,7 @@ class InactiveSubscribersController {
     if (!count($ids_to_deactivate)) {
       return 0;
     }
-    \ORM::rawExecute(sprintf(
+    ORM::rawExecute(sprintf(
       "UPDATE %s SET status='" . Subscriber::STATUS_INACTIVE . "' WHERE id IN (%s);",
       $subscribers_table,
       implode(',', $ids_to_deactivate)
@@ -159,13 +160,13 @@ class InactiveSubscribersController {
     $mp2_migration_date = $this->getMP2MigrationDate();
     if ($mp2_migration_date && $mp2_migration_date > $threshold_date) {
       // If MP2 migration occurred during detection interval re-activate all subscribers created before migration
-      $ids_to_activate = \ORM::forTable($subscribers_table)->select("$subscribers_table.id")
+      $ids_to_activate = ORM::forTable($subscribers_table)->select("$subscribers_table.id")
         ->whereLt("$subscribers_table.created_at", $mp2_migration_date)
         ->where("$subscribers_table.status", Subscriber::STATUS_INACTIVE)
         ->limit($batch_size)
         ->findArray();
     } else {
-      $ids_to_activate = \ORM::forTable($subscribers_table)->select("$subscribers_table.id")
+      $ids_to_activate = ORM::forTable($subscribers_table)->select("$subscribers_table.id")
         ->leftOuterJoin($stats_opens_table, "$subscribers_table.id = $stats_opens_table.subscriber_id AND $stats_opens_table.created_at > '$threshold_date'")
         ->whereLt("$subscribers_table.last_subscribed_at", $threshold_date)
         ->where("$subscribers_table.status", Subscriber::STATUS_INACTIVE)
@@ -183,7 +184,7 @@ class InactiveSubscribersController {
     if (!count($ids_to_activate)) {
       return 0;
     }
-    \ORM::rawExecute(sprintf(
+    ORM::rawExecute(sprintf(
       "UPDATE %s SET status='" . Subscriber::STATUS_SUBSCRIBED . "' WHERE id IN (%s);",
       $subscribers_table,
       implode(',', $ids_to_activate)

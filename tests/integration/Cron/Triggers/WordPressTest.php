@@ -17,6 +17,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Idiorm\ORM;
 
 class WordPressTest extends \MailPoetTest {
 
@@ -130,7 +131,7 @@ class WordPressTest extends \MailPoetTest {
   }
 
   function testItExecutesWhenBeamerTaskIsDue() {
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->_addScheduledTask(Beamer::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
     expect($this->wordpress_trigger->checkExecutionRequirements())->true();
   }
@@ -237,7 +238,7 @@ class WordPressTest extends \MailPoetTest {
 
   function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

@@ -4,6 +4,7 @@ namespace MailPoet\DynamicSegments\Filters;
 
 use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerceCategory implements Filter {
 
@@ -26,7 +27,7 @@ class WooCommerceCategory implements Filter {
     $this->connect = $connect;
   }
 
-  function toSql(\ORM $orm) {
+  function toSql(ORM $orm) {
     global $wpdb;
     $orm->distinct();
     $orm->rawJoin(

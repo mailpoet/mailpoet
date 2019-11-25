@@ -11,6 +11,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
+use MailPoetVendor\Idiorm\ORM;
 
 class WP {
   static function synchronizeUser($wp_user_id, $old_wp_user_data = false) {
@@ -111,7 +112,7 @@ class WP {
     if (!$invalid_wp_user_ids) {
       return;
     }
-    \ORM::for_table(Subscriber::$_table)->whereIn('wp_user_id', $invalid_wp_user_ids)->delete_many();
+    ORM::for_table(Subscriber::$_table)->whereIn('wp_user_id', $invalid_wp_user_ids)->delete_many();
   }
 
   private static function updateSubscribersEmails() {
@@ -126,7 +127,7 @@ class WP {
       SET %1$s.email = wu.user_email;
     ', $subscribers_table, $wpdb->users));
 
-    return \ORM::for_table(Subscriber::$_table)->raw_query(sprintf(
+    return ORM::for_table(Subscriber::$_table)->raw_query(sprintf(
       'SELECT wp_user_id as id, email FROM %s
         WHERE updated_at >= \'%s\';
       ', $subscribers_table, $start_time))->findArray();
@@ -137,7 +138,7 @@ class WP {
     $subscribers_table = Subscriber::$_table;
     $signup_confirmation_enabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
 
-    $inserterd_user_ids = \ORM::for_table($wpdb->users)->raw_query(sprintf(
+    $inserterd_user_ids = ORM::for_table($wpdb->users)->raw_query(sprintf(
       'SELECT %2$s.id, %2$s.user_email as email FROM %2$s
         LEFT JOIN %1$s AS mps ON mps.wp_user_id = %2$s.id
         WHERE mps.wp_user_id IS NULL AND %2$s.user_email != ""

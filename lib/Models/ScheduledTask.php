@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Idiorm\ORM;
 
 /**
  * @property int $id
@@ -117,12 +118,12 @@ class ScheduledTask extends Model {
 
   function delete() {
     try {
-      \ORM::get_db()->beginTransaction();
+      ORM::get_db()->beginTransaction();
       ScheduledTaskSubscriber::where('task_id', $this->id)->deleteMany();
       parent::delete();
-      \ORM::get_db()->commit();
+      ORM::get_db()->commit();
     } catch (\Exception $error) {
-      \ORM::get_db()->rollBack();
+      ORM::get_db()->rollBack();
       throw $error;
     }
   }

@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Models;
 
 use MailPoet\Models\StatisticsUnsubscribes;
+use MailPoetVendor\Idiorm\ORM;
 
 class StatisticsUnsubscribesTest extends \MailPoetTest {
   function testItCanGetExistingStatisticsRecord() {
@@ -26,7 +27,7 @@ class StatisticsUnsubscribesTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::for_table(StatisticsUnsubscribes::$_table)
+    ORM::for_table(StatisticsUnsubscribes::$_table)
       ->deleteMany();
   }
 }

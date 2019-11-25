@@ -15,6 +15,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoetVendor\Idiorm\ORM;
 
 class WooCommercePastRevenues {
 
@@ -247,7 +248,7 @@ class WooCommercePastRevenues {
 
   private function prepareDatabaseTables() {
     // Turn off CURRENT_TIMESTAMP to be able to save generated value
-    \ORM::rawExecute(
+    ORM::rawExecute(
       "ALTER TABLE `" . StatisticsClicks::$_table . "`
       CHANGE `updated_at` `updated_at` timestamp NULL;"
     );
@@ -255,21 +256,21 @@ class WooCommercePastRevenues {
     // Disable keys
     global $wpdb;
     $prefix = $wpdb->prefix;
-    \ORM::rawExecute("ALTER TABLE `{$prefix}posts` DISABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . Subscriber::$_table . "` DISABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . SubscriberSegment::$_table . "` DISABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . NewsletterLink::$_table . "` DISABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` DISABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` DISABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` DISABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . StatisticsOpens::$_table . "` DISABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . StatisticsClicks::$_table . "` DISABLE KEYS");
-    \ORM::rawExecute("SET UNIQUE_CHECKS = 0;");
+    ORM::rawExecute("ALTER TABLE `{$prefix}posts` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . Subscriber::$_table . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . SubscriberSegment::$_table . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . NewsletterLink::$_table . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . StatisticsOpens::$_table . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . StatisticsClicks::$_table . "` DISABLE KEYS");
+    ORM::rawExecute("SET UNIQUE_CHECKS = 0;");
   }
 
   private function restoreDatabaseTables() {
-    \ORM::rawExecute(
+    ORM::rawExecute(
       "ALTER TABLE `" . StatisticsClicks::$_table . "`
       CHANGE `updated_at` `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;"
     );
@@ -277,17 +278,17 @@ class WooCommercePastRevenues {
     // Enable keys
     global $wpdb;
     $prefix = $wpdb->prefix;
-    \ORM::rawExecute("ALTER TABLE `{$prefix}posts` ENABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . Subscriber::$_table . "` ENABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . SubscriberSegment::$_table . "` ENABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . NewsletterLink::$_table . "` ENABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` ENABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` ENABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` ENABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . StatisticsOpens::$_table . "` ENABLE KEYS");
-    \ORM::rawExecute("ALTER TABLE `" . StatisticsClicks::$_table . "` ENABLE KEYS");
-    \ORM::rawExecute("SET UNIQUE_CHECKS = 1;");
+    ORM::rawExecute("ALTER TABLE `{$prefix}posts` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . Subscriber::$_table . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . SubscriberSegment::$_table . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . NewsletterLink::$_table . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . StatisticsOpens::$_table . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . StatisticsClicks::$_table . "` ENABLE KEYS");
+    ORM::rawExecute("SET UNIQUE_CHECKS = 1;");
   }
 
   private function createSubscriber($email, $last_name, $created_at_date, \MailPoet\Models\Segment $segment, $status = Subscriber::STATUS_SUBSCRIBED) {
@@ -336,14 +337,14 @@ class WooCommercePastRevenues {
     foreach ($subscribers_ids as $subscriber_id) {
       $batch_data[] = "({$task->id}, $subscriber_id, 1, '$sent_at')";
       if (count($batch_data) % 1000 === 0) {
-        \ORM::rawExecute(
+        ORM::rawExecute(
           "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batch_data)
         );
         $batch_data = [];
       }
     }
     if ($batch_data) {
-      \ORM::rawExecute(
+      ORM::rawExecute(
         "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batch_data)
       );
     }

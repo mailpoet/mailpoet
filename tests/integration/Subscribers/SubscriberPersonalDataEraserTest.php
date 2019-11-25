@@ -5,6 +5,7 @@ namespace MailPoet\Subscribers;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
+use MailPoetVendor\Idiorm\ORM;
 
 class SubscriberPersonalDataEraserTest extends \MailPoetTest {
 
@@ -14,9 +15,9 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->eraser = new SubscriberPersonalDataEraser();
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
   }
 
   function testExportWorksWhenSubscriberNotFound() {

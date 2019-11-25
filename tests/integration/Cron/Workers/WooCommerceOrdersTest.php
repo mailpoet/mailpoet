@@ -9,6 +9,7 @@ use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsWooCommercePurchases;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerceOrdersTest extends \MailPoetTest {
   /** @var WooCommerceHelper */
@@ -182,7 +183,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
   }
 }

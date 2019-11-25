@@ -8,7 +8,7 @@ parameters:
     - '#Function members_register_.+ not found#'
     - '#Cannot assign offset .path. to array<string, int|string>|false.#' # bug https://github.com/phpstan/phpstan/issues/1791
     - '#MailPoet\\Premium\\DI\\ContainerConfigurator not found#' # this class is not available when premium is not active
-    - '#Call to an undefined method IdiormResultSet::set()#'
+    - '#Call to an undefined method MailPoetVendor\\Idiorm\\IdiormResultSet::set()#'
     - '#Argument of an invalid type pQuery\\IQuery supplied for foreach, only iterables are supported#'
     - '#Parameter \#2 \$prefix of function http_build_query expects string, null given.#'
     - '#Parameter \#1 \$function of function call_user_func_array expects callable(): mixed, .wc_.*. given.#'

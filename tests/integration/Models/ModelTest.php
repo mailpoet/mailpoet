@@ -4,6 +4,7 @@ namespace MailPoet\Test\Models;
 
 use Codeception\Util\Stub;
 use MailPoet\Models\Model as MPModel;
+use MailPoetVendor\Idiorm\ORM;
 
 class ModelTest extends \MailPoetTest {
   function testItRethrowsPDOExceptions() {
@@ -17,7 +18,7 @@ class ModelTest extends \MailPoetTest {
         },
       ]
     );
-    \ORM::setDb($pdo);
+    ORM::setDb($pdo);
     try {
       $model::findMany();
       $this->fail('Exception was not thrown');
@@ -67,7 +68,7 @@ class ModelTest extends \MailPoetTest {
 
   function testSetErrorCodeForDuplicateRecords() {
     $orm = Stub::makeEmpty(
-      'ORM',
+      ORM::class,
       [
         'save' => function() {
           throw new \PDOException("error for key 'name'", MPModel::DUPLICATE_RECORD);
@@ -85,6 +86,6 @@ class ModelTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::setDb($this->connection->getWrappedConnection());
+    ORM::setDb($this->connection->getWrappedConnection());
   }
 }

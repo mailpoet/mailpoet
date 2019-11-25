@@ -12,16 +12,17 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersFinderTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     $this->segment_1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
     $this->segment_2 = Segment::createOrUpdate(['name' => 'Segment 2', 'type' => 'default']);
     $this->segment_3 = Segment::createOrUpdate(['name' => 'Segment 3', 'type' => 'not default']);

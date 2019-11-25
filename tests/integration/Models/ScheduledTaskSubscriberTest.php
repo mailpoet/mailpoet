@@ -6,6 +6,7 @@ use Codeception\Util\Fixtures;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Subscriber;
+use MailPoetVendor\Idiorm\ORM;
 
 class ScheduledTaskSubscriberTest extends \MailPoetTest {
   function _before() {
@@ -201,8 +202,8 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 }

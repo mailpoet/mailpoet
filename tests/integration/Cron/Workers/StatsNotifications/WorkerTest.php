@@ -17,6 +17,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class WorkerTest extends \MailPoetTest {
@@ -50,10 +51,10 @@ class WorkerTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     $this->repository = ContainerWrapper::getInstance()->get(StatsNotificationsRepository::class);
     $this->newsletter_link_repository = ContainerWrapper::getInstance()->get(NewsletterLinkRepository::class);
     $this->repository->truncate();
@@ -91,7 +92,7 @@ class WorkerTest extends \MailPoetTest {
       'processed_at' => null,
     ]);
     $cmd = $this->entity_manager->getClassMetadata(StatsNotificationEntity::class);
-    \ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
+    ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
       . $this->newsletter->id()
       . ','
       . $stats_notifications_task->id()
@@ -288,7 +289,7 @@ class WorkerTest extends \MailPoetTest {
       'processed_at' => null,
     ]);
     $cmd = $this->entity_manager->getClassMetadata(StatsNotificationEntity::class);
-    \ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
+    ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
       . $this->newsletter->id()
       . ','
       . $stats_notifications_task->id()

@@ -1,5 +1,7 @@
 <?php
 
+use MailPoetVendor\Idiorm\ORM;
+
    /**
     *
     * Paris
@@ -57,7 +59,7 @@
      * @method void setClassName($class_name)
      * @method static \ORMWrapper forTable($table_name, $connection_name = parent::DEFAULT_CONNECTION)
      * @method \Model findOne($id=null)
-     * @method Array|\IdiormResultSet findMany()
+     * @method Array|\MailPoetVendor\Idiorm\IdiormResultSet findMany()
      */
     class ORMWrapper extends ORM {
 
@@ -222,7 +224,7 @@
         public static $short_table_names = false;
 
         /**
-         * The ORM instance used by this model 
+         * The ORM instance used by this model
          * instance to communicate with the database.
          *
          * @var ORM $orm
@@ -389,21 +391,21 @@
         protected function _has_one_or_many($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null) {
             $base_table_name = self::_get_table_name(get_class($this));
             $foreign_key_name = self::_build_foreign_key_name($foreign_key_name, $base_table_name);
-            
-            $where_value = ''; //Value of foreign_table.{$foreign_key_name} we're 
-                               //looking for. Where foreign_table is the actual 
+
+            $where_value = ''; //Value of foreign_table.{$foreign_key_name} we're
+                               //looking for. Where foreign_table is the actual
                                //database table in the associated model.
-            
+
             if(is_null($foreign_key_name_in_current_models_table)) {
-                //Match foreign_table.{$foreign_key_name} with the value of 
+                //Match foreign_table.{$foreign_key_name} with the value of
                 //{$this->_table}.{$this->id()}
-                $where_value = $this->id(); 
+                $where_value = $this->id();
             } else {
-                //Match foreign_table.{$foreign_key_name} with the value of 
+                //Match foreign_table.{$foreign_key_name} with the value of
                 //{$this->_table}.{$foreign_key_name_in_current_models_table}
                 $where_value = $this->$foreign_key_name_in_current_models_table;
             }
-            
+
             return self::factory($associated_class_name, $connection_name)->where($foreign_key_name, $where_value);
         }
 
@@ -449,9 +451,9 @@
             $associated_table_name = self::_get_table_name(self::$auto_prefix_models . $associated_class_name);
             $foreign_key_name = self::_build_foreign_key_name($foreign_key_name, $associated_table_name);
             $associated_object_id = $this->$foreign_key_name;
-            
+
             $desired_record = null;
-            
+
             if( is_null($foreign_key_name_in_associated_models_table) ) {
                 //"{$associated_table_name}.primary_key = {$associated_object_id}"
                 //NOTE: primary_key is a placeholder for the actual primary key column's name
@@ -461,7 +463,7 @@
                 //"{$associated_table_name}.{$foreign_key_name_in_associated_models_table} = {$associated_object_id}"
                 $desired_record = self::factory($associated_class_name, $connection_name)->where($foreign_key_name_in_associated_models_table, $associated_object_id);
             }
-            
+
             return $desired_record;
         }
 
@@ -497,7 +499,7 @@
                     $associated_model_name = substr($associated_model_name, strlen(self::$auto_prefix_models), strlen($associated_model_name));
                 }
                 $class_names = array($base_model_name, $associated_model_name);
-                
+
                 sort($class_names, SORT_STRING);
                 $join_class_name = join("", $class_names);
             }
@@ -518,7 +520,7 @@
             // Get the column names for each side of the join table
             $key_to_base_table = self::_build_foreign_key_name($key_to_base_table, $base_table_name);
             $key_to_associated_table = self::_build_foreign_key_name($key_to_associated_table, $associated_table_name);
-    
+
             /*
                 "   SELECT {$associated_table_name}.*
                       FROM {$associated_table_name} JOIN {$join_table_name}

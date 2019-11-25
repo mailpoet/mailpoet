@@ -5,6 +5,7 @@ namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
+use MailPoetVendor\Idiorm\ORM;
 
 class LinksTest extends \MailPoetTest {
   function testItCanSaveLinks() {
@@ -70,7 +71,7 @@ class LinksTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
   }
 }

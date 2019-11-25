@@ -42,6 +42,7 @@ use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
   /** @var SendingErrorHandler */
@@ -797,17 +798,17 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     $this->di_container->get(SettingsRepository::class)->truncate();
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsNewsletters::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsNewsletters::$_table);
   }
 }

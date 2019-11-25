@@ -12,6 +12,7 @@ use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
+use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
   function _before() {
@@ -115,11 +116,11 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
     $this->di_container->get(SettingsRepository::class)->truncate();
-    \ORM::raw_execute('TRUNCATE ' . SendingQueueModel::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueueModel::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

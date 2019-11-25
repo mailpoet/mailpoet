@@ -10,6 +10,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
+use MailPoetVendor\Idiorm\ORM;
 
 class SubscriptionTest extends \MailPoetTest {
   /** @var int */
@@ -182,8 +183,8 @@ class SubscriptionTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     // restore settings
     $this->settings->set('woocommerce', $this->original_settings);
   }

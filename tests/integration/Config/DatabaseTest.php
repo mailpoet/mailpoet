@@ -4,6 +4,7 @@ namespace MailPoet\Test\Config;
 
 use MailPoet\Config\Database;
 use MailPoet\Config\Env;
+use MailPoetVendor\Idiorm\ORM;
 
 class DatabaseTest extends \MailPoetTest {
   public $database;
@@ -15,7 +16,7 @@ class DatabaseTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    \ORM::set_db(null);
+    ORM::set_db(null);
   }
 
   function testItDefinesTables() {
@@ -23,12 +24,12 @@ class DatabaseTest extends \MailPoetTest {
   }
 
   function testItConfiguresLogging() {
-    expect(\ORM::get_config('logging'))->equals(WP_DEBUG);
+    expect(ORM::get_config('logging'))->equals(WP_DEBUG);
   }
 
   function testItSetsDBDriverOptions() {
     $this->database->init($this->connection->getWrappedConnection());
-    $result = \ORM::for_table("")
+    $result = ORM::for_table("")
       ->raw_query(
         'SELECT ' .
         '@@sql_mode as sql_mode, ' .

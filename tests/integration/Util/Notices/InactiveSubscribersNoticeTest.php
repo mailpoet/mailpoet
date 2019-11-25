@@ -8,6 +8,7 @@ use MailPoet\Settings\SettingsRepository;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersNoticeTest extends \MailPoetTest {
   function testItDisplays() {
@@ -60,7 +61,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
 
   private function cleanup() {
     $this->di_container->get(SettingsRepository::class)->truncate();
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 
   private function createSubscribers($count) {

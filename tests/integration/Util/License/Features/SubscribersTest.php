@@ -6,6 +6,7 @@ use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\Models\Subscriber;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersTest extends \MailPoetTest {
 
@@ -34,7 +35,7 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 
 }

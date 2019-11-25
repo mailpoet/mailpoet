@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Models;
 
 use MailPoet\Models\SubscriberCustomField;
+use MailPoetVendor\Idiorm\ORM;
 
 class SubscriberCustomFieldTest extends \MailPoetTest {
   function __construct() {
@@ -75,7 +76,7 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::forTable(SubscriberCustomField::$_table)
+    ORM::forTable(SubscriberCustomField::$_table)
       ->deleteMany();
   }
 }

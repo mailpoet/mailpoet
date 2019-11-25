@@ -16,6 +16,7 @@ use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Form;
 use MailPoet\Util\Security;
 use MailPoet\Util\Url as UrlHelper;
+use MailPoetVendor\Idiorm\ORM;
 
 class FormTest extends \MailPoetTest {
 
@@ -142,9 +143,9 @@ class FormTest extends \MailPoetTest {
 
   function _after() {
     wp_delete_post($this->post);
-    \ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
-    \ORM::raw_execute('TRUNCATE ' . FormModel::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SubscriberModel::$_table);
+    ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
+    ORM::raw_execute('TRUNCATE ' . FormModel::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberModel::$_table);
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

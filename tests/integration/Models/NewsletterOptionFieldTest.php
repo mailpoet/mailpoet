@@ -5,6 +5,7 @@ namespace MailPoet\Test\Models;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
+use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterOptionFieldTest extends \MailPoetTest {
   function _before() {
@@ -117,11 +118,11 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::forTable(NewsletterOption::$_table)
+    ORM::forTable(NewsletterOption::$_table)
       ->deleteMany();
-    \ORM::forTable(NewsletterOptionField::$_table)
+    ORM::forTable(NewsletterOptionField::$_table)
       ->deleteMany();
-    \ORM::forTable(Newsletter::$_table)
+    ORM::forTable(Newsletter::$_table)
       ->deleteMany();
   }
 }

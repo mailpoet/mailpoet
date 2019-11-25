@@ -4,6 +4,7 @@ namespace MailPoet\Subscribers;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
+use MailPoetVendor\Idiorm\ORM;
 
 class RequiredCustomFieldValidatorTest extends \MailPoetTest {
 
@@ -11,7 +12,7 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
     $this->custom_field = CustomField::createOrUpdate([
       'name' => 'custom field',
       'type' => 'text',

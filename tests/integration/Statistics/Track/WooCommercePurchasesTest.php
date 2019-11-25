@@ -13,6 +13,7 @@ use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Tasks\Sending;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoetVendor\Idiorm\ORM;
 use PHPUnit_Framework_MockObject_MockObject;
 use WC_Order;
 
@@ -268,11 +269,11 @@ class WooCommercePurchasesTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsWooCommercePurchases::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsWooCommercePurchases::$_table);
   }
 
   private function createNewsletter() {

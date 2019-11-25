@@ -15,7 +15,6 @@ class RequirementsChecker {
 
   public $display_error_notice;
   public $vendor_classes = [
-    '\ORM',
     '\Model',
     '\Carbon\Carbon',
     '\Sudzy\ValidModel',

@@ -6,6 +6,7 @@ use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoet\DynamicSegments\Mappers\DBMapper;
 use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\DynamicSegmentFilter;
+use MailPoetVendor\Idiorm\ORM;
 
 class SingleSegmentLoaderTest extends \MailPoetTest {
 
@@ -16,8 +17,8 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
 
   function _before() {
     $this->loader = new SingleSegmentLoader(new DBMapper());
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
     $this->segment = DynamicSegment::createOrUpdate([
       'name' => 'segment 1',
       'description' => 'description',
@@ -56,8 +57,8 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
   }
 
 }

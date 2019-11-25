@@ -8,6 +8,7 @@ use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
+use MailPoetVendor\Idiorm\ORM;
 
 class UnsubscribeTokensTest extends \MailPoetTest {
 
@@ -17,9 +18,9 @@ class UnsubscribeTokensTest extends \MailPoetTest {
   private $newsletter_without_token;
 
   function _before() {
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     parent::_before();
     $this->subscriber_with_token = Subscriber::createOrUpdate(['email' => 'subscriber1@test.com']);
     $this->subscriber_with_token->set('unsubscribe_token', 'aaabbbcccdddeee');
@@ -65,8 +66,8 @@ class UnsubscribeTokensTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
   }
 }

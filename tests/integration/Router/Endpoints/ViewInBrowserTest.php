@@ -15,6 +15,7 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions;
+use MailPoetVendor\Idiorm\ORM;
 
 class ViewInBrowserTest extends \MailPoetTest {
   function _before() {
@@ -218,10 +219,10 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     // reset WP user role
     $wp_user = wp_get_current_user();
     $wp_user->add_role('administrator');

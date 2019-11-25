@@ -17,6 +17,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTest extends \MailPoetTest {
   function _before() {
@@ -605,7 +606,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
 
     // bulk trash newsletters and check that relations are trashed
-    Newsletter::bulkTrash(\ORM::forTable(Newsletter::$_table));
+    Newsletter::bulkTrash(ORM::forTable(Newsletter::$_table));
     expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(6);
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
   }
@@ -629,7 +630,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
 
     // bulk trash parent newsletters and check that relations are trashed
-    Newsletter::bulkTrash(\ORM::forTable(Newsletter::$_table));
+    Newsletter::bulkTrash(ORM::forTable(Newsletter::$_table));
     expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(6);
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
   }
@@ -653,7 +654,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(5);
 
     // bulk restore newsletters and check that relations are restored
-    Newsletter::bulkRestore(\ORM::forTable(Newsletter::$_table));
+    Newsletter::bulkRestore(ORM::forTable(Newsletter::$_table));
     // 5 queues/newsletters + 1 of each created in _before() method
     expect(Newsletter::whereNull('deleted_at')->findArray())->count(6);
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
@@ -679,7 +680,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(5);
 
     // bulk restore parent newsletters and check that relations are restored
-    Newsletter::bulkRestore(\ORM::forTable(Newsletter::$_table));
+    Newsletter::bulkRestore(ORM::forTable(Newsletter::$_table));
     // 1 parent and 5 queues/newsletters
     expect(Newsletter::whereNull('deleted_at')->findArray())->count(6);
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
@@ -709,7 +710,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(NewsletterSegment::findArray())->count(7);
 
     // bulk delete newsletters and check that relations are deleted
-    Newsletter::bulkDelete(\ORM::forTable(Newsletter::$_table));
+    Newsletter::bulkDelete(ORM::forTable(Newsletter::$_table));
     expect(Newsletter::findArray())->count(0);
     expect(SendingQueue::findArray())->count(0);
     expect(NewsletterSegment::findArray())->count(0);
@@ -740,7 +741,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(NewsletterSegment::findArray())->count(5);
 
     // bulk delete newsletters and check that relations are deleted
-    Newsletter::bulkDelete(\ORM::forTable(Newsletter::$_table));
+    Newsletter::bulkDelete(ORM::forTable(Newsletter::$_table));
     expect(Newsletter::findArray())->count(0);
     expect(SendingQueue::findArray())->count(0);
     expect(NewsletterSegment::findArray())->count(0);
@@ -928,15 +929,15 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
   }
 }

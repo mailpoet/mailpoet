@@ -7,6 +7,7 @@ use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Idiorm\ORM;
 
 class AuthorizedSendingEmailsCheckTest extends \MailPoetTest {
 
@@ -16,7 +17,7 @@ class AuthorizedSendingEmailsCheckTest extends \MailPoetTest {
   function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 
   function testItRunsCheckOnBridge() {

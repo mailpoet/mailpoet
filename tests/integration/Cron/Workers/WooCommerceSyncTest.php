@@ -7,6 +7,7 @@ use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerceSyncTest extends \MailPoetTest {
   function _before() {
@@ -44,6 +45,6 @@ class WooCommerceSyncTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

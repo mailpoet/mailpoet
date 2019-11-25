@@ -5,6 +5,7 @@ namespace MailPoet\Models;
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 use MailPoet\DynamicSegments\Filters\UserRole;
+use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersInDynamicSegmentTest extends \MailPoetTest {
 
@@ -69,8 +70,8 @@ class SubscribersInDynamicSegmentTest extends \MailPoetTest {
   }
 
   private function cleanData() {
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
     $emails = ['user-role-test1@example.com', 'user-role-test2@example.com', 'user-role-test3@example.com'];
     foreach ($emails as $email) {
       $user = get_user_by('email', $email);

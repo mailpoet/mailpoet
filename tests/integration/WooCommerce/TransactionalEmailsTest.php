@@ -6,6 +6,7 @@ use Codeception\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Idiorm\ORM;
 
 class TransactionalEmailsTest extends \MailPoetTest {
   /** @var WPFunctions */
@@ -57,7 +58,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     $this->settings->set('woocommerce', $this->original_wc_settings);
   }
 }

@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Models;
 
 use MailPoet\Models\NewsletterOption;
+use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterOptionTest extends \MailPoetTest {
   public $data;
@@ -36,6 +37,6 @@ class NewsletterOptionTest extends \MailPoetTest {
 
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
   }
 }
