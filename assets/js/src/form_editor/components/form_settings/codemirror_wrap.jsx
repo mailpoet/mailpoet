@@ -31,12 +31,22 @@ CodemirrorWrap.propTypes = {
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   options: PropTypes.shape({
-    lineNumbers: PropTypes.bool.isRequired,
-    tabMode: PropTypes.string.isRequired,
-    matchBrackets: PropTypes.bool.isRequired,
-    theme: PropTypes.string.isRequired,
-    mode: PropTypes.string.isRequired,
-  }).isRequired,
+    lineNumbers: PropTypes.bool,
+    tabMode: PropTypes.string,
+    matchBrackets: PropTypes.bool,
+    theme: PropTypes.string,
+    mode: PropTypes.string,
+  }),
+};
+
+CodemirrorWrap.defaultProps = {
+  options: {
+    lineNumbers: true,
+    tabMode: 'indent',
+    matchBrackets: true,
+    theme: 'neo',
+    mode: 'css',
+  },
 };
 
 export default CodemirrorWrap;

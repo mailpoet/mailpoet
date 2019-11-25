@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import {
   Panel,
   PanelBody,
@@ -12,24 +12,13 @@ export default () => {
     (select) => select('mailpoet-form-editor').getFormStyles(),
     []
   );
-  const options = useRef({
-    lineNumbers: true,
-    tabMode: 'indent',
-    matchBrackets: true,
-    theme: 'neo',
-    mode: 'css',
-  });
 
   const { changeFormStyles } = useDispatch('mailpoet-form-editor');
 
   return (
     <Panel>
       <PanelBody title={MailPoet.I18n.t('customCss')} initialOpen={false}>
-        <CodeMirror
-          value={styles}
-          options={options.current}
-          onChange={changeFormStyles}
-        />
+        <CodeMirror value={styles} onChange={changeFormStyles} />
       </PanelBody>
     </Panel>
   );
