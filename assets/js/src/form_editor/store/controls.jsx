@@ -7,11 +7,12 @@ export default {
       return;
     }
     dispatch('mailpoet-form-editor').removeNotice('save-form');
-    const formData = select('mailpoet-form-editor').getFormData();
-    if (!formData.settings.segments || formData.settings.segments.length === 0) {
+    const formErrors = select('mailpoet-form-editor').getFormErrors();
+    if (formErrors.includes('missing-lists')) {
       dispatch('mailpoet-form-editor').addDismissibleNotice(MailPoet.I18n.t('settingsPleaseSelectList'), 'error', 'missing-lists');
       return;
     }
+    const formData = select('mailpoet-form-editor').getFormData();
     dispatch('mailpoet-form-editor').saveFormStarted();
     dispatch('mailpoet-form-editor').removeNotice('missing-lists');
     MailPoet.Ajax.post({
