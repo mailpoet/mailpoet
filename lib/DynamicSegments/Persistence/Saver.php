@@ -7,6 +7,7 @@ use MailPoet\DynamicSegments\Filters\Filter;
 use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\DynamicSegmentFilter;
 use MailPoet\Models\Model;
+use MailPoetVendor\Idiorm\ORM;
 
 class Saver {
 
@@ -17,7 +18,7 @@ class Saver {
    * @throws ErrorSavingException
    */
   function save(DynamicSegment $segment) {
-    $db = \ORM::get_db();
+    $db = ORM::get_db();
     $db->beginTransaction();
 
     $data_segment = $this->saveSegment($db, $segment);

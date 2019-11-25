@@ -14,6 +14,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\WooCommerce\TransactionalEmails;
+use MailPoetVendor\Idiorm\ORM;
 
 class SettingsTest extends \MailPoetTest {
 
@@ -25,7 +26,7 @@ class SettingsTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->settings = SettingsController::getInstance();
     $this->settings->set('some.setting.key', true);
     $this->endpoint = new Settings(

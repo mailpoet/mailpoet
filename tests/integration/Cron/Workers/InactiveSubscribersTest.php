@@ -10,6 +10,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\InactiveSubscribersController;
+use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersTest extends \MailPoetTest {
 
@@ -18,7 +19,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
 
   function _before() {
     $this->settings = SettingsController::getInstance();
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->settings->set('tracking.enabled', true);
     $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
     parent::_before();

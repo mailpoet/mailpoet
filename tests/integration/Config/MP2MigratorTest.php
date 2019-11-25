@@ -13,6 +13,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Idiorm\ORM;
 
 class MP2MigratorTest extends \MailPoetTest {
 
@@ -62,7 +63,7 @@ class MP2MigratorTest extends \MailPoetTest {
 
     // Check if the subscribers number is equal to the WordPress users number
     // On multisite environment, there's only 1 users table that's shared by subsites
-    $WPUsersCount = \ORM::for_table($wpdb->base_prefix . 'users')->count();
+    $WPUsersCount = ORM::for_table($wpdb->base_prefix . 'users')->count();
     expect(Subscriber::count())->equals($WPUsersCount);
 
     // Check if the custom fields number is 0

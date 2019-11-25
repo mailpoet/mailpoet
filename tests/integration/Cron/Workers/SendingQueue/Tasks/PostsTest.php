@@ -5,6 +5,7 @@ namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterPost;
+use MailPoetVendor\Idiorm\ORM;
 
 class PostsTest extends \MailPoetTest {
 
@@ -59,6 +60,6 @@ class PostsTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
   }
 }

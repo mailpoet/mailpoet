@@ -8,6 +8,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Router\Router;
+use MailPoetVendor\Idiorm\ORM;
 
 class LinksTest extends \MailPoetTest {
   function testItOnlyExtractsLinksFromAnchorTags() {
@@ -280,8 +281,8 @@ class LinksTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
   }
 }

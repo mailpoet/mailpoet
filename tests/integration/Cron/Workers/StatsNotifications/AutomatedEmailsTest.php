@@ -14,6 +14,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class AutomatedEmailsTest extends \MailPoetTest {
@@ -32,8 +33,8 @@ class AutomatedEmailsTest extends \MailPoetTest {
 
   function _before() {
     parent::_before();
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ScheduledTask::createOrUpdate([
       'type' => AutomatedEmails::TASK_TYPE,
       'status' => null,

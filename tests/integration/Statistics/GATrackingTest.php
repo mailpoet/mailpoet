@@ -3,6 +3,7 @@
 namespace MailPoet\Statistics;
 
 use MailPoet\Models\Newsletter;
+use MailPoetVendor\Idiorm\ORM;
 
 class GATrackingTest extends \MailPoetTest {
 
@@ -70,6 +71,6 @@ class GATrackingTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
   }
 }

@@ -22,7 +22,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @method static static|bool findOne($id=null)
  * @method array findMany()
  * @method static array findMany()
- * @method \IdiormResultSet findResultSet()
+ * @method \MailPoetVendor\Idiorm\IdiormResultSet findResultSet()
  * @method array findArray()
  * @method static array findArray()
  * @method $this forceAllDirty()

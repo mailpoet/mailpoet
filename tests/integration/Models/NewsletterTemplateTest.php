@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Models;
 
 use MailPoet\Models\NewsletterTemplate;
+use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTemplateTest extends \MailPoetTest {
   function _before() {
@@ -87,7 +88,7 @@ class NewsletterTemplateTest extends \MailPoetTest {
     expect($count)->equals($total);
 
     NewsletterTemplate::cleanRecentlySent([
-      'categories' => NewsletterTemplate::RECENTLY_SENT_CATEGORIES,    
+      'categories' => NewsletterTemplate::RECENTLY_SENT_CATEGORIES,
     ]);
     $count = NewsletterTemplate::where(
       'categories', NewsletterTemplate::RECENTLY_SENT_CATEGORIES
@@ -101,7 +102,7 @@ class NewsletterTemplateTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::for_table(NewsletterTemplate::$_table)
+    ORM::for_table(NewsletterTemplate::$_table)
       ->deleteMany();
   }
 }

@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCh
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsRepository;
+use MailPoetVendor\Idiorm\ORM;
 
 require_once('KeyCheckWorkerMockImplementation.php');
 
@@ -76,6 +77,6 @@ class KeyCheckWorkerTest extends \MailPoetTest {
 
   function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

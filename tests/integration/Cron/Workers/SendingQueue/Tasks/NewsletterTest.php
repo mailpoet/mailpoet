@@ -22,6 +22,7 @@ use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTest extends \MailPoetTest {
   /** @var NewsletterTask */
@@ -396,7 +397,7 @@ class NewsletterTest extends \MailPoetTest {
     $queue_mock->id = $queue->id;
     $queue_mock->task_id = $queue->task_id;
 
-    $sending_queue = \ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
+    $sending_queue = ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
     $sending_queue->set('newsletter_rendered_body', 'a:2:{s:4:"html"');
     $sending_queue->save();
     try {
@@ -428,7 +429,7 @@ class NewsletterTest extends \MailPoetTest {
     $queue_mock->task_id = $queue->task_id;
 
     // properly serialized object
-    $sending_queue = \ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
+    $sending_queue = ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
     $sending_queue->set('newsletter_rendered_body', 'a:2:{s:4:"html";s:4:"test";s:4:"text";s:4:"test";}');
     $sending_queue->save();
 
@@ -445,11 +446,11 @@ class NewsletterTest extends \MailPoetTest {
 
   function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
-    \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
   }
 }

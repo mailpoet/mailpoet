@@ -4,6 +4,7 @@ namespace MailPoet\Test\Models;
 
 use Carbon\Carbon;
 use MailPoet\Models\NewsletterPost;
+use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterPostTest extends \MailPoetTest {
   function testItCanGetLatestNewsletterPost() {
@@ -21,7 +22,7 @@ class NewsletterPostTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::for_table(NewsletterPost::$_table)
+    ORM::for_table(NewsletterPost::$_table)
       ->deleteMany();
   }
 }

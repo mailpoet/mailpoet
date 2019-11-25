@@ -4,6 +4,7 @@ namespace MailPoet\Logging;
 
 use Carbon\Carbon;
 use MailPoet\Models\Log;
+use MailPoetVendor\Idiorm\ORM;
 
 class LogHandlerTest extends \MailPoetTest {
 
@@ -76,7 +77,7 @@ class LogHandlerTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Log::$_table);
+    ORM::raw_execute('TRUNCATE ' . Log::$_table);
   }
 
 }

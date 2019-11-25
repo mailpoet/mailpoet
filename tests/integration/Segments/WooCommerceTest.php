@@ -13,6 +13,7 @@ use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Segments\WooCommerce;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
+use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerceTest extends \MailPoetTest  {
 
@@ -525,10 +526,10 @@ class WooCommerceTest extends \MailPoetTest  {
   }
 
   private function cleanData() {
-    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     global $wpdb;
-    $db = \ORM::getDb();
+    $db = ORM::getDb();
     $db->exec(sprintf('
        DELETE FROM
          %s
@@ -587,7 +588,7 @@ class WooCommerceTest extends \MailPoetTest  {
    */
   private function insertRegisteredCustomer($number = null) {
     global $wpdb;
-    $db = \ORM::getDb();
+    $db = ORM::getDb();
     $number_sql = !is_null($number) ? (int)$number : 'rand()';
     // add user
     $db->exec(sprintf('
@@ -651,7 +652,7 @@ class WooCommerceTest extends \MailPoetTest  {
 
   private function deleteOrder($id) {
     global $wpdb;
-    $db = \ORM::getDb();
+    $db = ORM::getDb();
     $db->exec(sprintf('
        DELETE FROM
          %s
@@ -667,7 +668,7 @@ class WooCommerceTest extends \MailPoetTest  {
   }
 
   private function clearEmail($subscriber) {
-    \ORM::raw_execute('
+    ORM::raw_execute('
       UPDATE ' . MP_SUBSCRIBERS_TABLE . '
       SET `email` = "" WHERE `id` = ' . $subscriber->id
     );

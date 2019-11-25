@@ -13,6 +13,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
+use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersControllerTest extends \MailPoetTest {
 
@@ -27,13 +28,13 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
 
   function _before() {
     $this->controller = new InactiveSubscribersController($this->di_container->get(SettingsRepository::class));
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
-    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('DROP TABLE IF EXISTS inactives_task_ids');
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('DROP TABLE IF EXISTS inactives_task_ids');
     $this->newsletter = Newsletter::createOrUpdate([
       'subject' => "Subject ",
       "type" => Newsletter::TYPE_STANDARD,

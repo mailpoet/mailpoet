@@ -6,6 +6,7 @@ use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\DynamicSegmentFilter;
 use MailPoet\Models\Model;
+use MailPoetVendor\Idiorm\ORM;
 
 class SaverTest extends \MailPoetTest {
 
@@ -14,13 +15,13 @@ class SaverTest extends \MailPoetTest {
 
   function _before() {
     $this->saver = new Saver();
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
   }
 
   function testItSavesSegment() {

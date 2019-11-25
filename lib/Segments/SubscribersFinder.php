@@ -7,6 +7,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Idiorm\ORM;
 
 use function MailPoetVendor\array_column;
 
@@ -95,7 +96,7 @@ class SubscribersFinder {
         Subscriber::STATUS_SUBSCRIBED,
       ]
     );
-    return \ORM::getLastStatement()->rowCount();
+    return ORM::getLastStatement()->rowCount();
   }
 
   private function addSubscribersToTaskFromDynamicSegments(ScheduledTask $task, array $segments) {
@@ -134,7 +135,7 @@ class SubscribersFinder {
         Subscriber::STATUS_SUBSCRIBED,
       ]
     );
-    return \ORM::getLastStatement()->rowCount();
+    return ORM::getLastStatement()->rowCount();
   }
 
   private function unique($subscribers) {

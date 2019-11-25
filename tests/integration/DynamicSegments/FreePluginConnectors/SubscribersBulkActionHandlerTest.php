@@ -3,6 +3,7 @@
 namespace MailPoet\DynamicSegments\FreePluginConnectors;
 
 use MailPoet\Models\DynamicSegment;
+use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersBulkActionHandlerTest extends \MailPoetTest {
 
@@ -43,6 +44,6 @@ class SubscribersBulkActionHandlerTest extends \MailPoetTest {
   }
 
   private function cleanData() {
-    \ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
   }
 }

@@ -8,6 +8,7 @@ use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoetVendor\Idiorm\ORM;
 
 class UnsubscribesTest extends \MailPoetTest {
   function _before() {
@@ -53,9 +54,9 @@ class UnsubscribesTest extends \MailPoetTest {
   }
 
   function _after() {
-    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    \ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
   }
 }

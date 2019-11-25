@@ -6,6 +6,7 @@ use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
+use MailPoetVendor\Idiorm\ORM;
 
 class EmailAction implements Filter {
 
@@ -57,7 +58,7 @@ class EmailAction implements Filter {
     $this->action = $action;
   }
 
-  function toSql(\ORM $orm) {
+  function toSql(ORM $orm) {
     if (($this->action === EmailAction::ACTION_CLICKED) || ($this->action === EmailAction::ACTION_NOT_CLICKED)) {
       $table = StatisticsClicks::$_table;
     } else {

@@ -2,6 +2,8 @@
 
 namespace MailPoet\DynamicSegments\Filters;
 
+use MailPoetVendor\Idiorm\ORM;
+
 class UserRole implements Filter {
 
   const SEGMENT_TYPE = 'userRole';
@@ -21,7 +23,7 @@ class UserRole implements Filter {
     $this->connect = $connect;
   }
 
-  function toSql(\ORM $orm) {
+  function toSql(ORM $orm) {
     global $wpdb;
     $orm->join($wpdb->users, ['wpusers.id', '=', MP_SUBSCRIBERS_TABLE . '.wp_user_id'], 'wpusers')
       ->join($wpdb->usermeta, ['wpusers.ID',  '=', 'wpusermeta.user_id'], 'wpusermeta')

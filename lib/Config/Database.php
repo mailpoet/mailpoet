@@ -2,7 +2,7 @@
 
 namespace MailPoet\Config;
 
-use ORM;
+use MailPoetVendor\Idiorm\ORM;
 use PDO;
 
 class Database {

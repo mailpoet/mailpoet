@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Models\Subscriber;
+use MailPoetVendor\Idiorm\ORM;
 
 class LinkTokens {
   const OBSOLETE_LINK_TOKEN_LENGTH = 6;
@@ -12,7 +13,7 @@ class LinkTokens {
     if ($subscriber->link_token === null) {
       $subscriber->link_token = $this->generateToken($subscriber->email);
       // `$subscriber->save()` fails if the subscriber has subscriptions, segments or custom fields
-      \ORM::rawExecute(sprintf('UPDATE %s SET link_token = ? WHERE email = ?', Subscriber::$_table), [$subscriber->link_token, $subscriber->email]);
+      ORM::rawExecute(sprintf('UPDATE %s SET link_token = ? WHERE email = ?', Subscriber::$_table), [$subscriber->link_token, $subscriber->email]);
     }
     return $subscriber->link_token;
   }

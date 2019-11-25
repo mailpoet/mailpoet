@@ -15,6 +15,7 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Notices\AfterMigrationNotice;
 use MailPoet\Util\ProgressBar;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Idiorm\ORM;
 
 class MP2Migrator {
   const IMPORT_TIMEOUT_IN_SECONDS = 7200; // Timeout = 2 hours
@@ -298,17 +299,17 @@ class MP2Migrator {
     $result .= WPFunctions::get()->__('MailPoet 2 data found:', 'mailpoet') . "\n";
 
     // User Lists
-    $users_lists_count = \ORM::for_table($this->mp2_list_table)->count();
+    $users_lists_count = ORM::for_table($this->mp2_list_table)->count();
     $total_count += $users_lists_count;
     $result .= sprintf(_n('%d subscribers list', '%d subscribers lists', $users_lists_count, 'mailpoet'), $users_lists_count) . "\n";
 
     // Users
-    $users_count = \ORM::for_table($this->mp2_user_table)->count();
+    $users_count = ORM::for_table($this->mp2_user_table)->count();
     $total_count += $users_count;
     $result .= sprintf(_n('%d subscriber', '%d subscribers', $users_count, 'mailpoet'), $users_count) . "\n";
 
     // Forms
-    $forms_count = \ORM::for_table($this->mp2_form_table)->count();
+    $forms_count = ORM::for_table($this->mp2_form_table)->count();
     $total_count += $forms_count;
     $result .= sprintf(_n('%d form', '%d forms', $forms_count, 'mailpoet'), $forms_count) . "\n";
 

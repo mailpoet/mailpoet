@@ -10,6 +10,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerce {
   /** @var SettingsController */
@@ -155,7 +156,7 @@ class WooCommerce {
     $subscribers_table = Subscriber::$_table;
     $order_id = !is_null($order_id) ? (int)$order_id : null;
 
-    $inserted_users_emails = \ORM::for_table($wpdb->users)->raw_query(
+    $inserted_users_emails = ORM::for_table($wpdb->users)->raw_query(
       'SELECT DISTINCT wppm.meta_value as email FROM `' . $wpdb->prefix . 'postmeta` wppm
         JOIN `' . $wpdb->prefix . 'posts` p ON wppm.post_id = p.ID AND p.post_type = "shop_order"
         WHERE wppm.meta_key = "_billing_email" AND wppm.meta_value != ""
@@ -185,7 +186,7 @@ class WooCommerce {
     if (!$invalid_is_woocommerce_users) {
       return;
     }
-    \ORM::for_table(Subscriber::$_table)
+    ORM::for_table(Subscriber::$_table)
       ->whereNull('wp_user_id')
       ->where('is_woocommerce_user', 1)
       ->whereIn('email', $invalid_is_woocommerce_users)

@@ -11,6 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Idiorm\ORM;
 
 class WPTest extends \MailPoetTest  {
 
@@ -325,7 +326,7 @@ class WPTest extends \MailPoetTest  {
       'wp_user_id' => $id,
     ]);
     wp_update_user(['ID' => $id, 'user_status' => 2]);
-    $db = \ORM::getDb();
+    $db = ORM::getDb();
     $db->exec(sprintf('UPDATE %s SET `user_status` = 2 WHERE ID = %s', $wpdb->users, $id));
     WP::synchronizeUsers();
     $db_subscriber = Subscriber::findOne($subscriber->id);
@@ -343,10 +344,10 @@ class WPTest extends \MailPoetTest  {
   }
 
   private function cleanData() {
-    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     global $wpdb;
-    $db = \ORM::getDb();
+    $db = ORM::getDb();
     $db->exec(sprintf('
        DELETE FROM
          %s
@@ -387,7 +388,7 @@ class WPTest extends \MailPoetTest  {
    */
   private function insertUser($number = null) {
     global $wpdb;
-    $db = \ORM::getDb();
+    $db = ORM::getDb();
     $number_sql = !is_null($number) ? (int)$number : 'rand()';
     $db->exec(sprintf('
          INSERT INTO
@@ -405,7 +406,7 @@ class WPTest extends \MailPoetTest  {
 
   private function updateWPUserEmail($id, $email) {
     global $wpdb;
-    $db = \ORM::getDb();
+    $db = ORM::getDb();
     $db->exec(sprintf('
        UPDATE
          %s
@@ -417,7 +418,7 @@ class WPTest extends \MailPoetTest  {
 
   private function updateWPUserDisplayName($id, $name) {
     global $wpdb;
-    $db = \ORM::getDb();
+    $db = ORM::getDb();
     $db->exec(sprintf('
        UPDATE
          %s
@@ -429,7 +430,7 @@ class WPTest extends \MailPoetTest  {
 
   private function deleteWPUser($id) {
     global $wpdb;
-    $db = \ORM::getDb();
+    $db = ORM::getDb();
     $db->exec(sprintf('
        DELETE FROM
          %s
@@ -439,7 +440,7 @@ class WPTest extends \MailPoetTest  {
   }
 
   private function clearEmail($subscriber) {
-    \ORM::raw_execute('
+    ORM::raw_execute('
       UPDATE ' . MP_SUBSCRIBERS_TABLE . '
       SET `email` = "" WHERE `id` = ' . $subscriber->id
     );
