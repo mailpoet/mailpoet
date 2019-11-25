@@ -342,7 +342,7 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
    */
   public function selectPaymentMethod($method = 'cod') {
     $I = $this;
-    $I->scrollTo('#payment_method_' . $method);
+    $I->scrollTo('#payment_method_' . $method, 0, -40);
     $I->waitForElementNotVisible('.blockOverlay', 30); // wait for payment method loading overlay to disappear
     $I->click('#payment_method_' . $method);
   }
