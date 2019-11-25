@@ -10,13 +10,17 @@ use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
 class Renderer {
   const CONTENT_CONTAINER_ID = 'mailpoet_woocommerce_container';
 
+  /** @var csstidy */
+  private $css_parser;
+
   /** @var string */
   private $html_before_content;
 
   /** @var string */
   private $html_after_content;
 
-  function __construct() {
+  function __construct(csstidy $css_parser) {
+    $this->css_parser = $css_parser;
     $this->html_before_content = '';
     $this->html_after_content = '';
   }
@@ -44,22 +48,21 @@ class Renderer {
   }
 
   public function prefixCss($css) {
-    $parser = new csstidy();
-    $parser->settings['compress_colors'] = false;
-    $parser->parse($css);
-    foreach ($parser->css as $index => $rules) {
-      $parser->css[$index] = [];
+    $this->css_parser->settings['compress_colors'] = false;
+    $this->css_parser->parse($css);
+    foreach ($this->css_parser->css as $index => $rules) {
+      $this->css_parser->css[$index] = [];
       foreach ($rules as $selectors => $properties) {
         $selectors = explode(',', $selectors);
         $selectors = array_map(function($selector) {
           return '#' . self::CONTENT_CONTAINER_ID . ' ' . $selector;
         }, $selectors);
         $selectors = implode(',', $selectors);
-        $parser->css[$index][$selectors] = $properties;
+        $this->css_parser->css[$index][$selectors] = $properties;
       }
     }
     /** @var \csstidy_print */
-    $print = $parser->print;
+    $print = $this->css_parser->print;
     return $print->plain();
   }
 }

@@ -33,7 +33,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testGetHTMLBeforeContent() {
-    $renderer = new Renderer;
+    $renderer = new Renderer(new \csstidy);
     $renderer->render($this->newsletter);
     $html = $renderer->getHTMLBeforeContent('Heading Text');
     expect($html)->contains('Some text before heading');
@@ -43,7 +43,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testGetHTMLAfterContent() {
-    $renderer = new Renderer;
+    $renderer = new Renderer(new \csstidy);
     $renderer->render($this->newsletter);
     $html = $renderer->getHTMLAfterContent('Heading Text');
     expect($html)->notContains('Some text before heading');
@@ -53,7 +53,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testPrefixCss() {
-    $renderer = new Renderer;
+    $renderer = new Renderer(new \csstidy);
     $css = $renderer->prefixCss('
       #some_id {color: black}
       .some-class {height: 50px; width: 30px}
