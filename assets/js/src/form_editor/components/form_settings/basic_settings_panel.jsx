@@ -17,12 +17,12 @@ export default () => {
     []
   );
   const segments = useSelect(
-    (select) => select('mailpoet-form-editor').getSegments(),
+    (select) => select('mailpoet-form-editor').getAllAvailableSegments(),
     []
   );
 
   const pages = useSelect(
-    (select) => select('mailpoet-form-editor').getPages(),
+    (select) => select('mailpoet-form-editor').getAllAvailablePages(),
     []
   );
 
