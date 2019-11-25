@@ -50,7 +50,7 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
 
   private function waitAlcToReload(\AcceptanceTester $I, $post_title) {
     $I->wait(1); // wait 1s to give request time to start
-    $I->waitForJS("return $.active == 0;", 20);
+    $I->waitForJS("return jQuery.active == 0;", 20);
     $I->waitForText($post_title);
   }
 }
