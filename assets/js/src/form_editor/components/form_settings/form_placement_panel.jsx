@@ -7,6 +7,7 @@ import {
 import { useSelect } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
+import _ from 'underscore';
 
 export default () => {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
@@ -16,7 +17,7 @@ export default () => {
     []
   );
 
-  const exportLinkClicked = (event, type) => {
+  const exportLinkClicked = (type, event) => {
     event.preventDefault();
     if (type === 'php') {
       return setCopyAreaContent(formExports.php);
@@ -39,7 +40,7 @@ export default () => {
     MailPoet.I18n.t('addFormShortcodeHint'),
     /\[link\](.*?)\[\/link\]/g,
     (match) => (
-      <a key="exportShortcode" href="#" onClick={(e) => exportLinkClicked(e, 'shortcode')}>{match}</a>
+      <a key="exportShortcode" href="#" onClick={_.partial(exportLinkClicked, 'shortcode')}>{match}</a>
     )
   );
 
@@ -48,9 +49,9 @@ export default () => {
     /\[link\](.*?)\[\/link\]/g,
     (match) => {
       if (match === 'PHP') {
-        return (<a key="exportPHP" href="#" onClick={(e) => exportLinkClicked(e, 'php')}>{match}</a>);
+        return (<a key="exportPHP" href="#" onClick={_.partial(exportLinkClicked, 'php')}>{match}</a>);
       }
-      return (<a key="exportIframe" href="#" onClick={(e) => exportLinkClicked(e, 'iframe')}>{match}</a>);
+      return (<a key="exportIframe" href="#" onClick={_.partial(exportLinkClicked, 'iframe')}>{match}</a>);
     }
   );
 
