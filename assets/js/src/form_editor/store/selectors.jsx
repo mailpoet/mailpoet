@@ -35,4 +35,7 @@ export default {
   getNotice(state, id) {
     return state.notices.find((notice) => notice.id === id);
   },
+  getFormErrors(state) {
+    return state.formErrors;
+  },
 };

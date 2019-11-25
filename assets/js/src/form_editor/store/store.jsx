@@ -7,11 +7,13 @@ import * as actions from './actions.jsx';
 import createReducer from './reducer.jsx';
 import selectors from './selectors.jsx';
 import controls from './controls.jsx';
+import validateForm from './form_validator.jsx';
 
 const defaultState = {
   sidebarOpened: true,
   formData: window.mailpoet_form_data,
   formExports: window.mailpoet_form_exports,
+  formErrors: validateForm(window.mailpoet_form_data),
   segments: window.mailpoet_form_segments,
   pages: window.mailpoet_form_pages,
   isFormSaving: false,
