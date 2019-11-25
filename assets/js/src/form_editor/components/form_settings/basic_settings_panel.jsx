@@ -9,6 +9,7 @@ import {
 import { useDispatch, useSelect } from '@wordpress/data';
 import React from 'react';
 import MailPoet from 'mailpoet';
+import classnames from 'classnames';
 import Selection from '../../../form/fields/selection.jsx';
 
 export default () => {
@@ -70,7 +71,7 @@ export default () => {
       <PanelBody title={MailPoet.I18n.t('formSettings')}>
         <BaseControl
           label={MailPoet.I18n.t('settingsListLabel')}
-          className={shouldDisplayMissingListError ? 'mailpoet-form-missing-lists' : null}
+          className={classnames({ 'mailpoet-form-missing-lists': shouldDisplayMissingListError })}
         >
           {shouldDisplayMissingListError ? (
             <span className="mailpoet-form-lists-error">{MailPoet.I18n.t('settingsPleaseSelectList')}</span>
