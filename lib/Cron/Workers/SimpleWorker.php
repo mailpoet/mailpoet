@@ -47,15 +47,18 @@ abstract class SimpleWorker {
 
     // abort if execution limit is reached
     $this->cron_helper->enforceExecutionLimit($timer);
+    $scheduled_tasks = $this->getDueTasks();
+    $running_tasks = $this->getRunningTasks();
 
     if (!$this->checkProcessingRequirements()) {
+      foreach (array_merge($scheduled_tasks, $running_tasks) as $task) {
+        $task->delete();
+      }
       return false;
     }
 
     $this->init();
 
-    $scheduled_tasks = $this->getDueTasks();
-    $running_tasks = $this->getRunningTasks();
 
     if (!$scheduled_tasks && !$running_tasks) {
       if (static::AUTOMATIC_SCHEDULING) {
