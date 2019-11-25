@@ -24,6 +24,7 @@ use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceListImport;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -66,7 +67,7 @@ class Menu {
   }
 
   function init() {
-    $subscribers_feature = new SubscribersFeature();
+    $subscribers_feature = new SubscribersFeature($this->container->get(SettingsController::class));
     $this->subscribers_over_limit = $subscribers_feature->check();
     $this->checkMailPoetAPIKey();
     $this->checkPremiumKey();
