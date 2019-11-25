@@ -51,7 +51,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\SubscribersAPIKeyInvalid::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\SubscribersExport::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\SubscribersImport::class)->setPublic(true);
-    $container->autowire(\MailPoet\AdminPages\Pages\SubscribersLimitExceeded::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Update::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\WelcomeWizard::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\WooCommerceListImport::class)->setPublic(true);

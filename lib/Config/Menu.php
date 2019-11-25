@@ -18,14 +18,11 @@ use MailPoet\AdminPages\Pages\Subscribers;
 use MailPoet\AdminPages\Pages\SubscribersAPIKeyInvalid;
 use MailPoet\AdminPages\Pages\SubscribersExport;
 use MailPoet\AdminPages\Pages\SubscribersImport;
-use MailPoet\AdminPages\Pages\SubscribersLimitExceeded;
 use MailPoet\AdminPages\Pages\Update;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceListImport;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
-use MailPoet\Settings\SettingsController;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -50,8 +47,6 @@ class Menu {
   /** @var FeaturesController */
   private $features_controller;
 
-  private $subscribers_over_limit;
-
   function __construct(
     AccessControl $access_control,
     WPFunctions $wp,
@@ -67,8 +62,6 @@ class Menu {
   }
 
   function init() {
-    $subscribers_feature = new SubscribersFeature($this->container->get(SettingsController::class));
-    $this->subscribers_over_limit = $subscribers_feature->check();
     $this->checkMailPoetAPIKey();
     $this->checkPremiumKey();
 
@@ -473,12 +466,10 @@ class Menu {
   }
 
   function forms() {
-    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceeded();
     $this->container->get(Forms::class)->render();
   }
 
   function newsletters() {
-    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceeded();
     if (isset($this->mp_api_key_valid) && $this->mp_api_key_valid === false) {
       return $this->displayMailPoetAPIKeyInvalid();
     }
@@ -499,11 +490,6 @@ class Menu {
 
   function formEditor() {
     $this->container->get(FormEditor::class)->render();
-  }
-
-  private function displaySubscriberLimitExceeded() {
-    $this->container->get(SubscribersLimitExceeded::class)->render();
-    exit;
   }
 
   private function displayMailPoetAPIKeyInvalid() {
