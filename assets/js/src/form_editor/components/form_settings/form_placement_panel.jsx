@@ -45,7 +45,7 @@ export default () => {
 
   const addFormPhpIframeHint = ReactStringReplace(
     MailPoet.I18n.t('addFormPhpIframeHint'),
-    /%s(.*?)%s/g,
+    /\[link\](.*?)\[\/link\]/g,
     (match) => {
       if (match === 'PHP') {
         return (<a key="exportPHP" href="#" onClick={(e) => exportLinkClicked(e, 'php')}>{match}</a>);
