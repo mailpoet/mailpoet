@@ -7,6 +7,7 @@ import saveFormDone from './reducers/saveFormDone.jsx';
 import removeNotice from './reducers/removeNotice.jsx';
 import changeFormSettings from './reducers/changeFormSettings.jsx';
 import switchSidebarTab from './reducers/switchSidebarTab.jsx';
+import toggleSidebarPanel from './reducers/toggleSidebarPanel.jsx';
 
 export default (defaultState) => (state = defaultState, action) => {
   switch (action.type) {
@@ -19,6 +20,7 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'TOGGLE_SIDEBAR': return toggleSidebar(state, action);
     case 'CHANGE_FORM_SETTINGS': return changeFormSettings(state, action);
     case 'SWITCH_SIDEBAR_TAB': return switchSidebarTab(state, action);
+    case 'TOGGLE_SIDEBAR_PANEL': return toggleSidebarPanel(state, action);
     default:
       return state;
   }

@@ -70,6 +70,14 @@ export function switchSidebarTab(id) {
   };
 }
 
+export function toggleSidebarPanel(id, isOpened = undefined) {
+  return {
+    type: 'TOGGLE_SIDEBAR_PANEL',
+    id,
+    isOpened,
+  };
+}
+
 export function* saveForm() {
   yield {
     type: 'SAVE_FORM',

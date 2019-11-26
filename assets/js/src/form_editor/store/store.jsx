@@ -20,6 +20,7 @@ const defaultState = {
   notices: [],
   sidebar: {
     activeTab: 'form',
+    openedPanels: ['basic-settings'],
   },
 };
 
