@@ -16,6 +16,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
@@ -56,6 +57,9 @@ class Worker {
   /** @var SubscribersFeature */
   private $subscribers_feature;
 
+  /** @var SubscribersRepository */
+  private $subscribers_repository;
+
   function __construct(
     Mailer $mailer,
     Renderer $renderer,
@@ -66,7 +70,8 @@ class Worker {
     NewsletterLinkRepository $newsletter_link_repository,
     NewsletterStatisticsRepository $newsletter_statistics_repository,
     EntityManager $entity_manager,
-    SubscribersFeature $subscribers_feature
+    SubscribersFeature $subscribers_feature,
+    SubscribersRepository $subscribers_repository
   ) {
     $this->renderer = $renderer;
     $this->mailer = $mailer;
@@ -78,6 +83,7 @@ class Worker {
     $this->newsletter_link_repository = $newsletter_link_repository;
     $this->newsletter_statistics_repository = $newsletter_statistics_repository;
     $this->subscribers_feature = $subscribers_feature;
+    $this->subscribers_repository = $subscribers_repository;
   }
 
   /** @throws \Exception */
@@ -121,7 +127,7 @@ class Worker {
     $opened = ($statistics->getOpenCount() * 100) / $statistics->getTotalSentCount();
     $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $statistics->getTotalSentCount();
     $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
-    $subscribers_count = Subscriber::getTotalSubscribers();
+    $subscribers_count = $this->subscribers_repository->getTotalSubscribers();
     $context = [
       'subject' => $subject,
       'preheader' => sprintf(_x(
