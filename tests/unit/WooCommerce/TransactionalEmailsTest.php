@@ -3,6 +3,7 @@
 namespace MailPoet\WooCommerce;
 
 use Codeception\Stub;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\TransactionalEmails\Renderer;
 use MailPoet\WooCommerce\TransactionalEmails\Template;
@@ -36,7 +37,8 @@ class TransactionalEmailsTest extends \MailPoetUnitTest {
     $settings = Stub::make(SettingsController::class);
     $template = Stub::make(Template::class);
     $renderer = Stub::make(Renderer::class);
-    $transactional_emails = new TransactionalEmails($wp, $settings, $template, $renderer);
+    $newsletters_repository = Stub::make(NewslettersRepository::class);
+    $transactional_emails = new TransactionalEmails($wp, $settings, $template, $renderer, $newsletters_repository);
     expect($transactional_emails->getEmailHeadings())->equals([
       'new_account' => 'Test: New Order: #0001',
       'processing_order' => 'Thank you for your order',

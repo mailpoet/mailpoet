@@ -3,8 +3,10 @@
 namespace MailPoet\WooCommerce;
 
 use Codeception\Stub;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\TransactionalEmails\Renderer;
 use MailPoet\WooCommerce\TransactionalEmails\Template;
@@ -28,7 +30,13 @@ class TransactionalEmailsTest extends \MailPoetTest {
     $this->wp = new WPFunctions();
     $this->settings = SettingsController::getInstance();
     $this->original_wc_settings = $this->settings->get('woocommerce');
-    $this->transactional_emails = new TransactionalEmails($this->wp, $this->settings, new Template, new Renderer);
+    $this->transactional_emails = new TransactionalEmails(
+      $this->wp,
+      $this->settings,
+      ContainerWrapper::getInstance()->get(Template::class),
+      ContainerWrapper::getInstance()->get(Renderer::class),
+      ContainerWrapper::getInstance()->get(NewslettersRepository::class)
+    );
   }
 
   function testInitCreatesTransactionalEmailAndSavesItsId() {
@@ -53,7 +61,13 @@ class TransactionalEmailsTest extends \MailPoetTest {
         return 'my-awesome-image-url';
       }
     }]);
-    $transactional_emails = new TransactionalEmails($wp, $this->settings, new Template, new Renderer);
+    $transactional_emails = new TransactionalEmails(
+      $wp,
+      $this->settings,
+      ContainerWrapper::getInstance()->get(Template::class),
+      ContainerWrapper::getInstance()->get(Renderer::class),
+      ContainerWrapper::getInstance()->get(NewslettersRepository::class)
+    );
     $transactional_emails->init();
     $email = Newsletter::where('type', Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL)->findOne();
     expect($email)->notEmpty();
@@ -104,7 +118,13 @@ class TransactionalEmailsTest extends \MailPoetTest {
       },
     ]);
 
-    $transactional_emails = new TransactionalEmails($wp, $this->settings, new Template, $renderer);
+    $transactional_emails = new TransactionalEmails(
+      $wp,
+      $this->settings,
+      ContainerWrapper::getInstance()->get(Template::class),
+      $renderer,
+      ContainerWrapper::getInstance()->get(NewslettersRepository::class)
+    );
     $transactional_emails->useTemplateForWoocommerceEmails();
     expect($added_actions)->count(1);
     expect($added_actions['woocommerce_init'])->isCallable();
