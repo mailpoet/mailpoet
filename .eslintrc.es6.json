@@ -2,7 +2,8 @@
   "extends": "airbnb",
   "env": {
     "amd": true,
-    "browser": true
+    "browser": true,
+    "mocha": true
   },
   "parser": "babel-eslint",
   "parserOptions": {
@@ -35,6 +36,14 @@
     "jsx-a11y/label-has-associated-control": [ 2, {
       "either": "either" // control has to be either nested or associated via htmlFor
     }]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.spec.js"],
+      "rules": {
+        "no-unused-expressions": "off"
+      }
+    }
+  ]
 }
 
