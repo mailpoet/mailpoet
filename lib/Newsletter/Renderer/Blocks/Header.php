@@ -4,8 +4,8 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
-use MailPoet\Util\CSS;
 use MailPoet\Util\pQuery\pQuery;
+use MailPoetVendor\CSS;
 
 class Header {
   static function render($element) {

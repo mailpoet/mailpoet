@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Util;
+namespace MailPoetVendor;
 
 use csstidy;
 use MailPoet\Util\pQuery\DomNode;

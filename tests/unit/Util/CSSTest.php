@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Util;
 
-use MailPoet\Util\CSS;
+use MailPoetVendor\CSS;
 
 class CSSTest extends \MailPoetUnitTest {
 
@@ -10,12 +10,12 @@ class CSSTest extends \MailPoetUnitTest {
   private $css;
 
   public function _before() {
-    $this->css = new \MailPoet\Util\CSS();
+    $this->css = new \MailPoetVendor\CSS();
   }
 
   // tests
   public function testItCanBeInstantiated() {
-    expect_that($this->css instanceof \MailPoet\Util\CSS);
+    expect_that($this->css instanceof \MailPoetVendor\CSS);
   }
 
   /**
