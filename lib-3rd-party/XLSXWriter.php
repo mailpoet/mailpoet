@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Util;
+namespace MailPoetVendor;
 
 /*
  * @license MIT License
