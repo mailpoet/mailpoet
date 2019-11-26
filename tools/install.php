@@ -3,7 +3,7 @@
 $tools = [
   'https://github.com/composer/composer/releases/download/1.9.0/composer.phar' => 'composer.phar',
   'https://github.com/humbug/php-scoper/releases/download/0.11.4/php-scoper.phar' => 'php-scoper.phar',
-  'https://github.com/nette/tracy/releases/download/v2.6.4/tracy.phar' => 'tracy.phar',
+  'https://github.com/nette/tracy/releases/download/v2.7.1/tracy.phar' => 'tracy.phar',
 ];
 
 // ensure installation in dev-mode only
