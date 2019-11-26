@@ -6,8 +6,8 @@ use MailPoet\Config\Env;
 use MailPoet\Models\CustomField;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\Security;
-use MailPoet\Util\XLSXWriter;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\XLSXWriter;
 
 use function MailPoetVendor\array_column;
 
