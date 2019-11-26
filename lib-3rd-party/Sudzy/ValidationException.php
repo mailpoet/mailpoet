@@ -1,6 +1,6 @@
 <?php
 
-namespace Sudzy;
+namespace MailPoetVendor\Sudzy;
 
 class ValidationException extends \Exception
 {

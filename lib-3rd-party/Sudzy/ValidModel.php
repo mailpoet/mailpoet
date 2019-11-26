@@ -1,5 +1,5 @@
 <?php
-namespace Sudzy;
+namespace MailPoetVendor\Sudzy;
 
 use MailPoetVendor\Paris\Model;
 
@@ -147,7 +147,7 @@ abstract class ValidModel extends Model {
   // Protected methods
   protected function doValidationError($context) {
     if ($context == $this->_validationOptions['throw']) {
-      throw new \Sudzy\ValidationException($this->_validationErrors);
+      throw new \MailPoetVendor\Sudzy\ValidationException($this->_validationErrors);
     }
   }
 
@@ -171,6 +171,6 @@ abstract class ValidModel extends Model {
   }
 
   protected function setupValidationEngine() {
-    if (null == $this->_validator) $this->_validator = new \Sudzy\Engine(); // Is lazy setup worth it?
+    if (null == $this->_validator) $this->_validator = new \MailPoetVendor\Sudzy\Engine(); // Is lazy setup worth it?
   }
 }
