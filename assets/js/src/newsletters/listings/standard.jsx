@@ -15,6 +15,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
+import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 
@@ -229,6 +230,7 @@ class NewsletterListStandard extends React.Component {
         <ListingHeading />
 
         <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
+        <SubscribersLimitNotice />
 
         <ListingTabs tab="standard" />
 

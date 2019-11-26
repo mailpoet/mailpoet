@@ -15,6 +15,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Util\Installation;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\TransactionalEmails;
@@ -46,6 +47,9 @@ class Newsletters {
   /** @var FeaturesController */
   private $features_controller;
 
+  /** @var SubscribersFeature */
+  private $subscribers_feature;
+
   function __construct(
     PageRenderer $page_renderer,
     PageLimit $listing_page_limit,
@@ -54,7 +58,8 @@ class Newsletters {
     UserFlagsController $user_flags,
     WooCommerceHelper $woocommerce_helper,
     Installation $installation,
-    FeaturesController $features_controller
+    FeaturesController $features_controller,
+    SubscribersFeature $subscribers_feature
   ) {
     $this->page_renderer = $page_renderer;
     $this->listing_page_limit = $listing_page_limit;
@@ -64,6 +69,7 @@ class Newsletters {
     $this->woocommerce_helper = $woocommerce_helper;
     $this->installation = $installation;
     $this->features_controller = $features_controller;
+    $this->subscribers_feature = $subscribers_feature;
   }
 
   function render() {
@@ -89,6 +95,8 @@ class Newsletters {
 
     $installedAtDateTime = new \DateTime($data['settings']['installed_at']);
     $data['installed_days_ago'] = (int)$installedAtDateTime->diff(new \DateTime())->format('%a');
+    $data['subscribers_limit'] = $this->subscribers_feature->getSubscribersLimit();
+    $data['subscribers_limit_reached'] = $this->subscribers_feature->check();
 
     $date_time = new DateTime();
     $data['current_date'] = $date_time->getCurrentDate(DateTime::DEFAULT_DATE_FORMAT);

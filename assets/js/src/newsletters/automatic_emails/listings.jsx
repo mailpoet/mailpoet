@@ -5,6 +5,7 @@ import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 import { checkMailerStatus, addStatsCTAAction } from 'newsletters/listings/utils.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
+import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
@@ -377,6 +378,7 @@ class Listings extends React.Component {
         <ListingHeading />
 
         <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
+        <SubscribersLimitNotice />
 
         <ListingTabs tab="woocommerce" />
 

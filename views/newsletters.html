@@ -8,6 +8,8 @@
       var mailpoet_update_available = <%= is_mailpoet_update_available ? 'true' : 'false' %>
       var mailpoet_listing_per_page = <%= items_per_page %>;
       var mailpoet_display_nps_poll = <%= (sent_newsletters_count > 0 and settings.display_nps_poll) ? 'true' : 'false' %>;
+      var mailpoet_subscribers_limit = <%= subscribers_limit %>;
+      var mailpoet_subscribers_limit_reached = <%= subscribers_limit_reached ? 'true' : 'false' %>;
       var mailpoet_segments = <%= json_encode(segments) %>;
       var mailpoet_show_congratulate_after_first_newsletter = <%= show_congratulate_after_first_newsletter %>;
       var mailpoet_installed_days_ago = <%= installed_days_ago %>;
@@ -391,7 +393,11 @@
     'premiumBannerLink': __('Learn more about Premium', 'mailpoet'),
 
     'gaCampaignLine': __('Google Analytics Campaign'),
-    'gaCampaignTip': __('For example, “Spring email”. [link]Read the guide.[/link]')
+    'gaCampaignTip': __('For example, “Spring email”. [link]Read the guide.[/link]'),
+
+    'subscribersLimitNoticeTitle': __('Congratulations, you now have more than [subscribersLimit] subscribers!'),
+    'subscribersLimitNoticeContent': __('Our free version is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.'),
+    'upgradeNow': __('Upgrade Now')
   }) %>
   <% include('mss_pitch_translations.html') %>
 <% endblock %>

@@ -27,8 +27,11 @@ class Subscribers {
 
   function check() {
     if ($this->license) return false;
+    return $this->subscribers_count > $this->getSubscribersLimit();
+  }
+
+  function getSubscribersLimit() {
     $old_user = $this->installation_time < strtotime(self::NEW_LIMIT_DATE);
-    $subscribers_limit = $old_user ? self::SUBSCRIBERS_OLD_LIMIT : self::SUBSCRIBERS_NEW_LIMIT;
-    return $this->subscribers_count > $subscribers_limit;
+    return $old_user ? self::SUBSCRIBERS_OLD_LIMIT : self::SUBSCRIBERS_NEW_LIMIT;
   }
 }

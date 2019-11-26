@@ -13,6 +13,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
+import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
@@ -354,6 +355,7 @@ class NewsletterListWelcome extends React.Component {
         <ListingHeading />
 
         <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
+        <SubscribersLimitNotice />
 
         <ListingTabs tab="welcome" />
 
