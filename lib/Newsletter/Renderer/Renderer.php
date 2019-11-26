@@ -32,7 +32,7 @@ class Renderer {
     $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
     $this->columns_renderer = new Columns\Renderer();
     $this->preprocessor = new Preprocessor($this->blocks_renderer, WPFunctions::get());
-    $this->CSS_inliner = new \MailPoet\Util\CSS();
+    $this->CSS_inliner = new \MailPoetVendor\CSS();
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
     $this->premium_activated = License::getLicense();
     $bridge = new Bridge();
