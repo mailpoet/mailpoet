@@ -1,3 +1,6 @@
+$gutenberg-control-border-color: #7e8993;
+$gutenberg-control-border-color-focus: #007cba;
+
 .components-panel {
   .select2-container {
     width: 100% !important;
@@ -5,6 +8,27 @@
     input.select2-search__field:focus {
       border: 0;
       box-shadow: none;
+    }
+
+    .select2-selection {
+      border-color: $gutenberg-control-border-color;
+    }
+
+    &.select2-container--focus {
+      .select2-selection {
+        border-color: $gutenberg-control-border-color-focus;
+        box-shadow: 0 0 0 1px $gutenberg-control-border-color-focus;
+      }
+    }
+  }
+
+  .mailpoet-form-missing-lists {
+    .select2-selection {
+      border-color: red;
+    }
+
+    .mailpoet-form-lists-error {
+      color: red;
     }
   }
 }
@@ -23,15 +47,5 @@
     input {
       margin-right: 6px;
     }
-  }
-}
-
-.mailpoet-form-missing-lists {
-  .select2-selection {
-    border-color: red;
-  }
-
-  .mailpoet-form-lists-error {
-    color: red;
   }
 }
