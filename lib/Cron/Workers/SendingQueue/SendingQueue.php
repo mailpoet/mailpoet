@@ -20,7 +20,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
 
-use function MailPoet\Util\array_column;
+use function MailPoetVendor\array_column;
 
 class SendingQueue {
   public $mailer_task;

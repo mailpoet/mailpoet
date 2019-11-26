@@ -14,7 +14,7 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 
-use function MailPoet\Util\array_column;
+use function MailPoetVendor\array_column;
 
 class Import {
   public $subscribers_data;

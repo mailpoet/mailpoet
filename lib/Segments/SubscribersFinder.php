@@ -8,7 +8,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
 
-use function MailPoet\Util\array_column;
+use function MailPoetVendor\array_column;
 
 class SubscribersFinder {
 

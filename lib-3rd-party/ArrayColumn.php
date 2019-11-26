@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Util;
+namespace MailPoetVendor;
 
 /*
  * Using func_get_args() in order to check for proper number of parameters and trigger errors exactly as the built-in array_column()

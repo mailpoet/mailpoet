@@ -4,7 +4,7 @@ namespace MailPoet\Tasks\Subscribers;
 
 use MailPoet\Models\ScheduledTaskSubscriber;
 
-use function MailPoet\Util\array_column;
+use function MailPoetVendor\array_column;
 
 class BatchIterator implements \Iterator, \Countable {
   private $task_id;

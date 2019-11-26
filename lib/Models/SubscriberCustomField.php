@@ -4,7 +4,7 @@ namespace MailPoet\Models;
 
 use MailPoet\Util\Helpers;
 
-use function MailPoet\Util\array_column;
+use function MailPoetVendor\array_column;
 
 /**
  * @property int $subscriber_id

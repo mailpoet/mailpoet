@@ -14,7 +14,7 @@ use MailPoet\Tasks\Bounce as BounceTask;
 use MailPoet\Tasks\Subscribers as TaskSubscribers;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 
-use function MailPoet\Util\array_column;
+use function MailPoetVendor\array_column;
 
 class Bounce extends SimpleWorker {
   const TASK_TYPE = 'bounce';
