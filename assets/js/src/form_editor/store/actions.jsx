@@ -40,20 +40,11 @@ export function saveFormStarted() {
   };
 }
 
-const createAddNoticeAction = (content, status, isDismissible, id) => ({
-  type: 'ADD_NOTICE',
-  content,
-  status,
-  isDismissible,
-  id,
-});
-
-export function addNonDismissibleNotice(content, status, id) {
-  return createAddNoticeAction(content, status, false, id);
-}
-
-export function addDismissibleNotice(content, status, id) {
-  return createAddNoticeAction(content, status, true, id);
+export function saveFormFailed(message = undefined) {
+  return {
+    type: 'SAVE_FORM_FAILED',
+    message,
+  };
 }
 
 export function removeNotice(id) {
