@@ -17,6 +17,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -71,7 +72,8 @@ class WorkerTest extends \MailPoetTest {
       $this->repository,
       $this->newsletter_link_repository,
       ContainerWrapper::getInstance()->get(NewsletterStatisticsRepository::class),
-      $this->entity_manager
+      $this->entity_manager,
+      ContainerWrapper::getInstance()->get(SubscribersFeature::class)
     );
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
