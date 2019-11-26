@@ -5,7 +5,7 @@ namespace MailPoet\Models;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
-class ModelValidator extends \Sudzy\Engine {
+class ModelValidator extends \MailPoetVendor\Sudzy\Engine {
   public $validators;
 
   const EMAIL_MIN_LENGTH = 6;

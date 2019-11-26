@@ -124,7 +124,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property string|null $id
  */
 
-class Model extends \Sudzy\ValidModel {
+class Model extends \MailPoetVendor\Sudzy\ValidModel {
   const DUPLICATE_RECORD = 23000;
 
   public static $_table;
@@ -221,7 +221,7 @@ class Model extends \Sudzy\ValidModel {
     $this->_new_record = $this->isNew();
     try {
       parent::save();
-    } catch (\Sudzy\ValidationException $e) {
+    } catch (\MailPoetVendor\Sudzy\ValidationException $e) {
       $this->setError($e->getValidationErrors());
     } catch (\PDOException $e) {
       switch ($e->getCode()) {

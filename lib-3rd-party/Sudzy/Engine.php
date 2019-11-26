@@ -1,6 +1,6 @@
 <?php
 
-namespace Sudzy;
+namespace MailPoetVendor\Sudzy;
 
 /**
  * Singleton valdation engine
