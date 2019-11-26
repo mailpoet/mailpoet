@@ -7,11 +7,7 @@ use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
-use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
-use MailPoetVendor\Doctrine\Common\Collections\Criteria;
-use MailPoetVendor\Doctrine\ORM\EntityNotFoundException;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
-use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -74,7 +70,7 @@ class SubscriberEntity {
 
   /**
    * @ORM\Column(type="string")
-   * @var string
+   * @var string|null
    */
   private $confirmed_ip;
 
@@ -149,56 +145,56 @@ class SubscriberEntity {
   }
 
   /**
-   * @return string|null
+   * @return string
    */
   public function getFirstName() {
     return $this->first_name;
   }
 
   /**
-   * @param string|null $first_name
+   * @param string $first_name
    */
   public function setFirstName($first_name) {
     $this->first_name = $first_name;
   }
 
   /**
-   * @return string|null
+   * @return string
    */
   public function getLastName() {
     return $this->last_name;
   }
 
   /**
-   * @param string|null $last_name
+   * @param string $last_name
    */
   public function setLastName($last_name) {
     $this->last_name = $last_name;
   }
 
   /**
-   * @return string|null
+   * @return string
    */
   public function getEmail() {
     return $this->email;
   }
 
   /**
-   * @param string|null $email
+   * @param string $email
    */
   public function setEmail($email) {
     $this->email = $email;
   }
 
   /**
-   * @return string|null
+   * @return string
    */
   public function getStatus() {
     return $this->status;
   }
 
   /**
-   * @param string|null $status
+   * @param string $status
    */
   public function setStatus($status) {
     if (!in_array($status, [
@@ -214,14 +210,14 @@ class SubscriberEntity {
   }
 
   /**
-   * @return string|null
+   * @return string
    */
   public function getSubscribedIp() {
     return $this->subscribed_ip;
   }
 
   /**
-   * @param string|null $subscribed_ip
+   * @param string $subscribed_ip
    */
   public function setSubscribedIp($subscribed_ip) {
     $this->subscribed_ip = $subscribed_ip;
