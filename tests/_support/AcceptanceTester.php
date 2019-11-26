@@ -126,6 +126,18 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
   }
 
   /**
+   * Check selected value in select2..
+   *
+   * @param string $value
+   * @param string $element
+   */
+  public function seeSelectedInSelect2($value, $element = '.select2-container') {
+    $I = $this;
+    $I->waitForElement($element);
+    $I->see($value, $element);
+  }
+
+  /**
    * Navigate to the editor for a newsletter.
    *
    * @param int $id

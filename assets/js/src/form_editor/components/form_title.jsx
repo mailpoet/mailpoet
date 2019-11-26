@@ -25,6 +25,7 @@ export default () => {
             id="form-title"
             className="editor-post-title__input"
             placeholder={MailPoet.I18n.t('addFormName')}
+            data-automation-id="form_title_input"
             rows="1"
             onFocus={() => setIsSelected(true)}
             onKeyPress={() => setIsSelected(false)}

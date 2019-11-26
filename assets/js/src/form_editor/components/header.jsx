@@ -24,6 +24,7 @@ export default () => {
           isLarge
           isDefault
           className="editor-post-publish-button"
+          data-automation-id="form_save_button"
           isBusy={isFormSaving}
           onClick={saveForm}
         >

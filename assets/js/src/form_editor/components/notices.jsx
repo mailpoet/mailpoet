@@ -22,7 +22,7 @@ export default () => {
       />
       <NoticeList
         notices={dismissibleNotices}
-        className="components-editor-notices__dismissible"
+        className="components-editor-notices__dismissible automation-dismissible-notices"
         onRemove={removeNotice}
       />
     </>
