@@ -2,13 +2,16 @@
 
 namespace MailPoet\Listing;
 
+use MailPoetVendor\Paris\Model;
+use MailPoetVendor\Paris\ORMWrapper;
+
 class Handler {
   const DEFAULT_LIMIT_PER_PAGE = 20;
 
   function getSelection($model_class, array $data) {
     $data = $this->processData($data);
     $table_name = $model_class::$_table;
-    $model = \Model::factory($model_class);
+    $model = Model::factory($model_class);
 
     if (method_exists($model_class, 'listingQuery')) {
       $custom_query = call_user_func_array(
@@ -34,7 +37,7 @@ class Handler {
   function get($model_class, array $data) {
     $data = $this->processData($data);
     $table_name = $model_class::$_table;
-    $model = \Model::factory($model_class);
+    $model = Model::factory($model_class);
     // get groups
     $groups = [];
     if (method_exists($model_class, 'groups')) {
@@ -91,27 +94,27 @@ class Handler {
     ];
   }
 
-  private function setSearch(\ORMWrapper $model, array $data) {
+  private function setSearch(ORMWrapper $model, array $data) {
     if (empty($data['search'])) {
       return;
     }
     return $model->filter('search', $data['search']);
   }
 
-  private function setOrder(\ORMWrapper $model, array $data, $table_name) {
+  private function setOrder(ORMWrapper $model, array $data, $table_name) {
     return $model
       ->{'order_by_' . $data['sort_order']}(
         $table_name . '.' . $data['sort_by']);
   }
 
-  private function setGroup(\ORMWrapper $model, array $data) {
+  private function setGroup(ORMWrapper $model, array $data) {
     if ($data['group'] === null) {
       return;
     }
     $model->filter('groupBy', $data['group']);
   }
 
-  private function setFilter(\ORMWrapper $model, array $data) {
+  private function setFilter(ORMWrapper $model, array $data) {
     if ($data['filter'] === null) {
       return $model;
     }
