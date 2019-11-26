@@ -7,7 +7,7 @@ import {
 import { useSelect } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
-import _ from 'underscore';
+import { curry } from 'lodash';
 
 export default () => {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
@@ -17,7 +17,7 @@ export default () => {
     []
   );
 
-  const exportLinkClicked = (type, event) => {
+  const exportLinkClicked = curry((type, event) => {
     event.preventDefault();
     if (type === 'php') {
       return setCopyAreaContent(formExports.php);
@@ -26,7 +26,7 @@ export default () => {
       return setCopyAreaContent(formExports.iframe);
     }
     return setCopyAreaContent(formExports.shortcode);
-  };
+  });
 
   const addFormWidgetHint = ReactStringReplace(
     MailPoet.I18n.t('addFormWidgetHint'),
@@ -40,7 +40,7 @@ export default () => {
     MailPoet.I18n.t('addFormShortcodeHint'),
     /\[link\](.*?)\[\/link\]/g,
     (match) => (
-      <a key="exportShortcode" href="#" onClick={_.partial(exportLinkClicked, 'shortcode')}>{match}</a>
+      <a key="exportShortcode" href="#" onClick={exportLinkClicked('shortcode')}>{match}</a>
     )
   );
 
@@ -49,9 +49,9 @@ export default () => {
     /\[link\](.*?)\[\/link\]/g,
     (match) => {
       if (match === 'PHP') {
-        return (<a key="exportPHP" href="#" onClick={_.partial(exportLinkClicked, 'php')}>{match}</a>);
+        return (<a key="exportPHP" href="#" onClick={exportLinkClicked('php')}>{match}</a>);
       }
-      return (<a key="exportIframe" href="#" onClick={_.partial(exportLinkClicked, 'iframe')}>{match}</a>);
+      return (<a key="exportIframe" href="#" onClick={exportLinkClicked('iframe')}>{match}</a>);
     }
   );
 
