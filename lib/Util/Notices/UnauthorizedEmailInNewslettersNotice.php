@@ -11,7 +11,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
-use function MailPoet\Util\array_column;
+use function MailPoetVendor\array_column;
 
 class UnauthorizedEmailInNewslettersNotice {
 
