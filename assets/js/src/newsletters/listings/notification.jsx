@@ -21,6 +21,7 @@ import {
   monthDayValues,
   nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
+import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 
 const messages = {
   onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
@@ -338,6 +339,7 @@ class NewsletterListNotification extends React.Component {
         <ListingHeading />
 
         <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
+        <SubscribersLimitNotice />
 
         <ListingTabs tab="notification" />
 
