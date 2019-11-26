@@ -2,7 +2,9 @@
 
 namespace MailPoet\WooCommerce;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Models\Newsletter;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\TransactionalEmails\Renderer;
 use MailPoet\WooCommerce\TransactionalEmails\Template;
@@ -26,11 +28,15 @@ class TransactionalEmails {
   /** @var array */
   private $email_headings;
 
-  function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer) {
+  /** @var NewslettersRepository */
+  private $newsletters_repository;
+
+  function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer, NewslettersRepository $newsletters_repository) {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->template = $template;
     $this->renderer = $renderer;
+    $this->newsletters_repository = $newsletters_repository;
     $this->email_headings = [
       'new_account' => [
         'option_name' => 'woocommerce_new_order_settings',
@@ -94,12 +100,12 @@ class TransactionalEmails {
 
   private function createNewsletter() {
     $wc_email_settings = $this->getWCEmailSettings();
-    return Newsletter::createOrUpdate([
-      'type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL,
-      'subject' => 'WooCommerce Transactional Email',
-      'preheader' => '',
-      'body' => json_encode($this->template->create($wc_email_settings)),
-    ]);
+    $newsletter = new NewsletterEntity;
+    $newsletter->setType(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
+    $newsletter->setSubject('WooCommerce Transactional Email');
+    $newsletter->setBody(json_encode($this->template->create($wc_email_settings)));
+    $this->newsletters_repository->persist($newsletter);
+    $this->newsletters_repository->flush();
   }
 
   private function getNewsletter() {

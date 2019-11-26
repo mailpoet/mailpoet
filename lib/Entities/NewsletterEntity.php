@@ -63,13 +63,13 @@ class NewsletterEntity {
    * @ORM\Column(type="string")
    * @var string
    */
-  private $sender_address;
+  private $sender_address = '';
 
   /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $sender_name;
+  private $sender_name = '';
 
   /**
    * @ORM\Column(type="string")
@@ -81,19 +81,19 @@ class NewsletterEntity {
    * @ORM\Column(type="string")
    * @var string
    */
-  private $reply_to_address;
+  private $reply_to_address = '';
 
   /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $reply_to_name;
+  private $reply_to_name = '';
 
   /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $preheader;
+  private $preheader = '';
 
   /**
    * @ORM\Column(type="json")
