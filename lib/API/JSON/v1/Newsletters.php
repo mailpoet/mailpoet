@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use Carbon\Carbon;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
@@ -26,6 +27,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -75,6 +77,9 @@ class Newsletters extends APIEndpoint {
   /** @var MailerFactory */
   private $mailer;
 
+  /** @var SubscribersFeature */
+  private $subscribers_feature;
+
   function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
@@ -88,7 +93,8 @@ class Newsletters extends APIEndpoint {
     PostNotificationScheduler $post_notification_scheduler,
     MailerFactory $mailer,
     MetaInfo $mailerMetaInfo,
-    Emoji $emoji
+    Emoji $emoji,
+    SubscribersFeature $subscribers_feature
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
@@ -103,6 +109,7 @@ class Newsletters extends APIEndpoint {
     $this->mailer = $mailer;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->emoji = $emoji;
+    $this->subscribers_feature = $subscribers_feature;
   }
 
   function get($data = []) {
@@ -286,6 +293,12 @@ class Newsletters extends APIEndpoint {
       return $this->badRequest([
         APIError::BAD_REQUEST  => WPFunctions::get()->__('You need to specify a status.', 'mailpoet'),
       ]);
+    }
+
+    if ($status === Newsletter::STATUS_ACTIVE && $this->subscribers_feature->check()) {
+      return $this->errorResponse([
+        APIError::FORBIDDEN => WPFunctions::get()->__('Subscribers limit reached.', 'mailpoet'),
+      ], [], Response::STATUS_FORBIDDEN);
     }
 
     $id = (isset($data['id'])) ? (int)$data['id'] : false;
