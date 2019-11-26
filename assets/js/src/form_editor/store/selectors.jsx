@@ -41,4 +41,7 @@ export default {
   getSidebarActiveTab(state) {
     return state.sidebar.activeTab;
   },
+  getSidebarOpenedPanels(state) {
+    return state.sidebar.openedPanels;
+  },
 };

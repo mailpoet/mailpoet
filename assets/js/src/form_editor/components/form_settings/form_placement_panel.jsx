@@ -8,8 +8,9 @@ import { useSelect } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { curry } from 'lodash';
+import PropTypes from 'prop-types';
 
-export default () => {
+const FormPlacementPanel = ({ onToggle, isOpened }) => {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
 
   const formExports = useSelect(
@@ -70,7 +71,7 @@ export default () => {
 
   return (
     <Panel>
-      <PanelBody title={MailPoet.I18n.t('formPlacement')} initialOpen={false}>
+      <PanelBody title={MailPoet.I18n.t('formPlacement')} opened={isOpened} onToggle={onToggle}>
         <p>{addFormWidgetHint}</p>
         <p>{addFormShortcodeHint}</p>
         <p>{addFormPhpIframeHint}</p>
@@ -79,3 +80,10 @@ export default () => {
     </Panel>
   );
 };
+
+FormPlacementPanel.propTypes = {
+  onToggle: PropTypes.func.isRequired,
+  isOpened: PropTypes.bool.isRequired,
+};
+
+export default FormPlacementPanel;

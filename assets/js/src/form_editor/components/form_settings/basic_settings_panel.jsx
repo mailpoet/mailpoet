@@ -10,9 +10,10 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 import Selection from '../../../form/fields/selection.jsx';
 
-export default () => {
+const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -68,7 +69,7 @@ export default () => {
   const shouldDisplayMissingListError = missingListError && !selectedSegments.length;
   return (
     <Panel>
-      <PanelBody title={MailPoet.I18n.t('formSettings')}>
+      <PanelBody title={MailPoet.I18n.t('formSettings')} opened={isOpened} onToggle={onToggle}>
         <BaseControl
           label={MailPoet.I18n.t('settingsListLabel')}
           className={classnames({ 'mailpoet-form-missing-lists': shouldDisplayMissingListError })}
@@ -125,3 +126,10 @@ export default () => {
     </Panel>
   );
 };
+
+BasicSettingsPanel.propTypes = {
+  onToggle: PropTypes.func.isRequired,
+  isOpened: PropTypes.bool.isRequired,
+};
+
+export default BasicSettingsPanel;
