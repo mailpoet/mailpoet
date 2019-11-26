@@ -3,8 +3,8 @@
 namespace MailPoet\Util\License\Features;
 
 use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Util\License\License;
 
 class Subscribers {
   const SUBSCRIBERS_OLD_LIMIT = 2000;
@@ -19,8 +19,10 @@ class Subscribers {
   /** @var int */
   private $subscribers_count;
 
-  function __construct(SettingsController $settings, $license = false) {
-    $this->license = ($license) ? $license : License::getLicense();
+  function __construct(SettingsController $settings) {
+    $has_mss_key = !empty($settings->get(Bridge::API_KEY_SETTING_NAME));
+    $has_premium_key = !empty($settings->get(Bridge::PREMIUM_KEY_SETTING_NAME));
+    $this->license = $has_mss_key || $has_premium_key;
     $this->installation_time = strtotime($settings->get('installed_at'));
     $this->subscribers_count = SubscriberModel::getTotalSubscribers();
   }
