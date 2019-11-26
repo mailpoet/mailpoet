@@ -18,6 +18,9 @@ const defaultState = {
   pages: window.mailpoet_form_pages,
   isFormSaving: false,
   notices: [],
+  sidebar: {
+    activeTab: 'form',
+  },
 };
 
 const config = {

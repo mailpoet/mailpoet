@@ -38,4 +38,7 @@ export default {
   getFormErrors(state) {
     return state.formErrors;
   },
+  getSidebarActiveTab(state) {
+    return state.sidebar.activeTab;
+  },
 };

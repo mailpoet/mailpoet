@@ -63,6 +63,13 @@ export function removeNotice(id) {
   };
 }
 
+export function switchSidebarTab(id) {
+  return {
+    type: 'SWITCH_SIDEBAR_TAB',
+    id,
+  };
+}
+
 export function* saveForm() {
   yield {
     type: 'SAVE_FORM',

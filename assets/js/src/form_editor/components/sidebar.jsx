@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { IconButton } from '@wordpress/components';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
@@ -29,9 +29,12 @@ SidebarHeader.propTypes = {
 };
 
 export default () => {
-  const [activeTab, setActiveTab] = useState('form');
+  const activeTab = useSelect(
+    (select) => select('mailpoet-form-editor').getSidebarActiveTab(),
+    []
+  );
 
-  const { toggleSidebar } = useDispatch('mailpoet-form-editor');
+  const { toggleSidebar, switchSidebarTab } = useDispatch('mailpoet-form-editor');
 
   return (
     <div className="edit-post-sidebar">
@@ -39,7 +42,7 @@ export default () => {
         <ul>
           <li>
             <button
-              onClick={() => setActiveTab('form')}
+              onClick={() => switchSidebarTab('form')}
               className={classnames('edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'form' })}
               type="button"
             >
@@ -48,7 +51,7 @@ export default () => {
           </li>
           <li>
             <button
-              onClick={() => setActiveTab('block')}
+              onClick={() => switchSidebarTab('block')}
               className={classnames('edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'block' })}
               type="button"
             >
