@@ -61,7 +61,7 @@ class TransactionalEmails {
     $saved_email_id = (bool)$this->settings->get(self::SETTING_EMAIL_ID, false);
     if (!$saved_email_id) {
       $email = $this->createNewsletter();
-      $this->settings->set(self::SETTING_EMAIL_ID, $email->id);
+      $this->settings->set(self::SETTING_EMAIL_ID, $email->getId());
     }
   }
 
@@ -103,9 +103,10 @@ class TransactionalEmails {
     $newsletter = new NewsletterEntity;
     $newsletter->setType(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
     $newsletter->setSubject('WooCommerce Transactional Email');
-    $newsletter->setBody(json_encode($this->template->create($wc_email_settings)));
+    $newsletter->setBody($this->template->create($wc_email_settings));
     $this->newsletters_repository->persist($newsletter);
     $this->newsletters_repository->flush();
+    return $newsletter;
   }
 
   private function getNewsletter() {

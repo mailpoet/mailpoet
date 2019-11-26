@@ -117,7 +117,7 @@ class NewsletterEntity {
    * @ORM\Column(type="string")
    * @var string
    */
-  private $ga_campaign;
+  private $ga_campaign = '';
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
