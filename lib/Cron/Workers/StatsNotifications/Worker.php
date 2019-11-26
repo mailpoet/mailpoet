@@ -13,9 +13,11 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -51,6 +53,9 @@ class Worker {
   /** @var NewsletterStatisticsRepository */
   private $newsletter_statistics_repository;
 
+  /** @var SubscribersFeature */
+  private $subscribers_feature;
+
   function __construct(
     Mailer $mailer,
     Renderer $renderer,
@@ -60,7 +65,8 @@ class Worker {
     StatsNotificationsRepository $repository,
     NewsletterLinkRepository $newsletter_link_repository,
     NewsletterStatisticsRepository $newsletter_statistics_repository,
-    EntityManager $entity_manager
+    EntityManager $entity_manager,
+    SubscribersFeature $subscribers_feature
   ) {
     $this->renderer = $renderer;
     $this->mailer = $mailer;
@@ -71,6 +77,7 @@ class Worker {
     $this->entity_manager = $entity_manager;
     $this->newsletter_link_repository = $newsletter_link_repository;
     $this->newsletter_statistics_repository = $newsletter_statistics_repository;
+    $this->subscribers_feature = $subscribers_feature;
   }
 
   /** @throws \Exception */
@@ -114,6 +121,7 @@ class Worker {
     $opened = ($statistics->getOpenCount() * 100) / $statistics->getTotalSentCount();
     $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $statistics->getTotalSentCount();
     $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
+    $subscribers_count = Subscriber::getTotalSubscribers();
     $context = [
       'subject' => $subject,
       'preheader' => sprintf(_x(
@@ -127,6 +135,9 @@ class Worker {
       'linkStats' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->getId()),
       'clicked' => $clicked,
       'opened' => $opened,
+      'subscribersLimitReached' => $this->subscribers_feature->check(),
+      'subscribersLimit' => $this->subscribers_feature->getSubscribersLimit(),
+      'upgradeNowLink' => 'https://account.mailpoet.com/?s=' . ($subscribers_count + 1),
     ];
     if ($link) {
       $context['topLinkClicks'] = $link->getTotalClicksCount();
