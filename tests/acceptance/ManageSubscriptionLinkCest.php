@@ -45,15 +45,16 @@ class ManageSubscriptionLinkCest {
     $form_status_element = '[data-automation-id="form_status"]';
 
     // set status to unsubscribed
+    $approximate_save_button_height = 50; // Used for scroll offset to ensure that button is not hidden above the top fold
     $I->selectOption($form_status_element, 'Unsubscribed');
-    $I->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -50);
+    $I->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximate_save_button_height);
     $I->click('Save');
     $I->waitForElement($form_status_element);
     $I->seeOptionIsSelected($form_status_element, 'Unsubscribed');
 
     // change status back to subscribed
     $I->selectOption($form_status_element, 'Subscribed');
-    $I->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -50);
+    $I->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximate_save_button_height);
     $I->click('Save');
     $I->waitForElement($form_status_element);
     $I->seeOptionIsSelected($form_status_element, 'Subscribed');
