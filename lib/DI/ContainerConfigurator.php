@@ -200,6 +200,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\SubscriberActions::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\InactiveSubscribersController::class);
     $container->autowire(\MailPoet\Subscribers\LinkTokens::class);
+    $container->autowire(\MailPoet\Subscribers\SubscribersRepository::class);
     // Segments
     $container->autowire(\MailPoet\Segments\SubscribersListings::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\WooCommerce::class)->setPublic(true);
