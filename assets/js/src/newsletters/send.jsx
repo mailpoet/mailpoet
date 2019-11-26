@@ -494,6 +494,7 @@ class NewsletterSend extends React.Component {
                     type="button"
                     onClick={this.handleResume}
                     value={MailPoet.I18n.t('resume')}
+                    disabled={window.mailpoet_subscribers_limit_reached}
                   />
                 )
                 : (
@@ -503,6 +504,7 @@ class NewsletterSend extends React.Component {
                     onClick={this.handleSend}
                     value={MailPoet.I18n.t('send')}
                     {...sendButtonOptions}
+                    disabled={window.mailpoet_subscribers_limit_reached}
                   />
                 )
             }

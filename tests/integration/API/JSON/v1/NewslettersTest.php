@@ -34,6 +34,7 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -150,7 +151,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
       ContainerWrapper::getInstance()->get(Mailer::class),
       ContainerWrapper::getInstance()->get(MetaInfo::class),
-      ContainerWrapper::getInstance()->get(Emoji::class)
+      ContainerWrapper::getInstance()->get(Emoji::class),
+      Stub::make(SubscribersFeature::class)
     );
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -206,7 +208,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
       ContainerWrapper::getInstance()->get(Mailer::class),
       ContainerWrapper::getInstance()->get(MetaInfo::class),
-      $emoji
+      $emoji,
+      Stub::make(SubscribersFeature::class)
     );
 
     $response = $this->endpoint->save($valid_data);
@@ -420,6 +423,30 @@ class NewslettersTest extends \MailPoetTest {
     expect($updated_newsletter->segments[0]['name'])->equals('Segment 1');
   }
 
+  function testItReturnsErrorIfSubscribersLimitReached() {
+    $endpoint = new Newsletters(
+      ContainerWrapper::getInstance()->get(BulkActionController::class),
+      ContainerWrapper::getInstance()->get(Handler::class),
+      ContainerWrapper::getInstance()->get(WPFunctions::class),
+      $this->makeEmpty(WCHelper::class),
+      SettingsController::getInstance(),
+      $this->cron_helper,
+      $this->make(AuthorizedEmailsController::class),
+      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
+      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
+      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
+      ContainerWrapper::getInstance()->get(Mailer::class),
+      ContainerWrapper::getInstance()->get(MetaInfo::class),
+      ContainerWrapper::getInstance()->get(Emoji::class),
+      Stub::make(SubscribersFeature::class, ['check' => true])
+    );
+    $res = $endpoint->setStatus([
+      'id' => $this->newsletter->id,
+      'status' => Newsletter::STATUS_ACTIVE,
+    ]);
+    expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
+  }
+
   function testItCanSetANewsletterStatus() {
     // set status to sending
     $response = $this->endpoint->setStatus
@@ -581,7 +608,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
       ContainerWrapper::getInstance()->get(Mailer::class),
       ContainerWrapper::getInstance()->get(MetaInfo::class),
-      ContainerWrapper::getInstance()->get(Emoji::class)
+      ContainerWrapper::getInstance()->get(Emoji::class),
+      Stub::make(SubscribersFeature::class)
     );
 
     $response = $this->endpoint->duplicate(['id' => $this->newsletter->id]);
@@ -930,7 +958,8 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
       ContainerWrapper::getInstance()->get(Mailer::class),
       ContainerWrapper::getInstance()->get(MetaInfo::class),
-      $emoji
+      $emoji,
+      Stub::make(SubscribersFeature::class)
     );
 
     $response = $this->endpoint->showPreview($data);

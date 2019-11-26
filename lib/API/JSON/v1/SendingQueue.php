@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Models\Newsletter;
@@ -11,6 +12,7 @@ use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SendingQueue extends APIEndpoint {
@@ -18,7 +20,19 @@ class SendingQueue extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
+  /** @var SubscribersFeature */
+  private $subscribers_feature;
+
+  function __construct(SubscribersFeature $subscribers_feature) {
+    $this->subscribers_feature = $subscribers_feature;
+  }
+
   function add($data = []) {
+    if ($this->subscribers_feature->check()) {
+      return $this->errorResponse([
+        APIError::FORBIDDEN => WPFunctions::get()->__('Subscribers limit reached.', 'mailpoet'),
+      ], [], Response::STATUS_FORBIDDEN);
+    }
     $newsletter_id = (isset($data['newsletter_id'])
       ? (int)$data['newsletter_id']
       : false
@@ -131,6 +145,11 @@ class SendingQueue extends APIEndpoint {
   }
 
   function resume($data = []) {
+    if ($this->subscribers_feature->check()) {
+      return $this->errorResponse([
+        APIError::FORBIDDEN => WPFunctions::get()->__('Subscribers limit reached.', 'mailpoet'),
+      ], [], Response::STATUS_FORBIDDEN);
+    }
     $newsletter_id = (isset($data['newsletter_id'])
       ? (int)$data['newsletter_id']
       : false

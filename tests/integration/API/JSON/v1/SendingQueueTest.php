@@ -3,6 +3,8 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Util\Fixtures;
+use Codeception\Util\Stub;
+use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingQueue as SendingQueueAPI;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -12,6 +14,7 @@ use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
@@ -45,12 +48,22 @@ class SendingQueueTest extends \MailPoetTest {
       $newletter_options
     );
 
-    $sending_queue = new SendingQueueAPI();
+    $sending_queue = new SendingQueueAPI(Stub::make(SubscribersFeature::class));
     $result = $sending_queue->add(['newsletter_id' => $newsletter->id]);
     $scheduled_task = ScheduledTask::findOne($result->data['task_id']);
     expect($scheduled_task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     expect($scheduled_task->scheduled_at)->equals($newletter_options['scheduledAt']);
     expect($scheduled_task->type)->equals(Sending::TASK_TYPE);
+  }
+
+  function testItReturnsErrorIfSubscribersLimitReached() {
+    $sending_queue = new SendingQueueAPI(Stub::make(SubscribersFeature::class, [
+      'check' => true,
+    ]));
+    $res = $sending_queue->add(['newsletter_id' => $this->newsletter->id]);
+    expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    $res = $sending_queue->resume(['newsletter_id' => $this->newsletter->id]);
+    expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
   }
 
   function testItReschedulesScheduledSendingQueueTask() {
@@ -66,7 +79,7 @@ class SendingQueueTest extends \MailPoetTest {
       Newsletter::TYPE_STANDARD,
       $newletter_options
     );
-    $sending_queue = new SendingQueueAPI();
+    $sending_queue = new SendingQueueAPI(Stub::make(SubscribersFeature::class));
 
     // add scheduled task
     $result = $sending_queue->add(['newsletter_id' => $newsletter->id]);
