@@ -1,5 +1,8 @@
 <?php
 
+namespace MailPoetVendor\Paris;
+
+use Exception;
 use MailPoetVendor\Idiorm\ORM;
 
    /**

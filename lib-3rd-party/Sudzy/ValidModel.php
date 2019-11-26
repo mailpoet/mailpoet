@@ -1,10 +1,12 @@
 <?php
 namespace Sudzy;
 
+use MailPoetVendor\Paris\Model;
+
 /**
  * @method static static|bool create($data=null)
  */
-abstract class ValidModel extends \Model {
+abstract class ValidModel extends Model {
   protected $_validator = null; // Reference to Sudzy validator object
   protected $_validations = []; // Array of validations
   protected $_validationErrors = []; // Array of error messages
