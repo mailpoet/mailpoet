@@ -46,14 +46,14 @@ class ManageSubscriptionLinkCest {
 
     // set status to unsubscribed
     $I->selectOption($form_status_element, 'Unsubscribed');
-    $I->scrollTo('[data-automation-id="subscribe-submit-button"]');
+    $I->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -50);
     $I->click('Save');
     $I->waitForElement($form_status_element);
     $I->seeOptionIsSelected($form_status_element, 'Unsubscribed');
 
     // change status back to subscribed
     $I->selectOption($form_status_element, 'Subscribed');
-    $I->scrollTo('[data-automation-id="subscribe-submit-button"]');
+    $I->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -50);
     $I->click('Save');
     $I->waitForElement($form_status_element);
     $I->seeOptionIsSelected($form_status_element, 'Subscribed');
