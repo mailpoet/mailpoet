@@ -38,15 +38,15 @@
   },
   "autoload": {
     "classmap": [
+      "lib-3rd-party",
       "vendor-prefixed"
     ],
     "files": [
-      "lib/Util/ArrayColumn.php"
+      "lib-3rd-party/ArrayColumn.php"
     ],
     "psr-4": {
       "MailPoet\\": "lib/",
       "MailPoetVendor\\": "vendor-prefixed/",
-      "Sudzy\\": "lib/Util/Sudzy",
       "MailPoetGenerated\\": "generated/"
     }
   },

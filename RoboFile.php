@@ -373,10 +373,6 @@ class RoboFile extends \Robo\Tasks {
       ->rawArg('--runtime-set testVersion 5.6-7.3')
       ->arg('--ignore=' . implode(',', [
           'lib/Config/PopulatorData/Templates',
-          'lib/Util/CSS.php',
-          'lib/Util/Sudzy',
-          'lib/Util/pQuery',
-          'lib/Util/XLSXWriter.php',
           'tests/_data',
           'tests/_output',
           'tests/_support/_generated',
