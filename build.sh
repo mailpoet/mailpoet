@@ -70,6 +70,7 @@ cp -Rf lang $plugin_name
 cp -RfL assets $plugin_name
 cp -Rf generated $plugin_name
 cp -Rf lib $plugin_name
+cp -Rf lib-3rd-party $plugin_name
 cp -Rf vendor $plugin_name
 cp -Rf vendor-prefixed $plugin_name
 cp -Rf views $plugin_name
