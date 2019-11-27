@@ -15,7 +15,7 @@ npm-debug.log
 temp
 .idea
 mailpoet.zip
-tests/javascript/testBundles
+tests/javascript_newsletter_editor/testBundles
 assets/dist
 .vagrant
 lang

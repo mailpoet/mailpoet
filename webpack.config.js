@@ -297,7 +297,7 @@ const migratorConfig = {
   }
 };
 
-// Test config
+// Newsletter Editor Tests Config
 const testConfig = {
   name: 'test',
   entry: {
@@ -330,7 +330,7 @@ const testConfig = {
     ],
   },
   output: {
-    path: path.join(__dirname, 'tests/javascript/testBundles'),
+    path: path.join(__dirname, 'tests/javascript_newsletter_editor/testBundles'),
     filename: '[name].js',
   },
   plugins: [
@@ -346,7 +346,7 @@ const testConfig = {
     modules: [
       'node_modules',
       'assets/js/src',
-      'tests/javascript/newsletter_editor'
+      'tests/javascript_newsletter_editor/newsletter_editor'
     ],
     alias: {
       'sticky-kit': 'vendor/jquery.sticky-kit.js',

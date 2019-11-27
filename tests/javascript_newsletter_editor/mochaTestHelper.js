@@ -34,7 +34,7 @@ global.jQuery = jQuery;
 global.window.jQuery = jQuery;
 
 
-testHelpers.loadScript('tests/javascript/testBundles/vendor.js', global.window);
+testHelpers.loadScript('tests/javascript_newsletter_editor/testBundles/vendor.js', global.window);
 const Handlebars = global.window.Handlebars;
 global.Handlebars = global.window.Handlebars;
 
