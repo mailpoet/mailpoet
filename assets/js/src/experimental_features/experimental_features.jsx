@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
+import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 
 const ExperimentalFeatures = () => {
   const [flags, setFlags] = useState(null);
+  const contextValue = useGlobalContextValue(window);
 
   useEffect(() => {
     MailPoet.Ajax.post({
@@ -57,30 +59,34 @@ const ExperimentalFeatures = () => {
     return <p>There are no experimental features at the moment.</p>;
   }
 
-  return Object.values(flags).map((flag) => {
-    const id = `experimental-feature-${flag.name}`;
-    return (
-      <div key={flag.name}>
-        <label htmlFor={id}>
-          <input
-            id={id}
-            type="checkbox"
-            name={flag.name}
-            defaultChecked={flag.value}
-            onChange={handleChange}
-          />
-          {' '}
-          {flag.name}
-        </label>
-      </div>
-    );
-  });
+  return (
+    <GlobalContext.Provider value={contextValue}>
+      { Object.values(flags).map((flag) => {
+        const id = `experimental-feature-${flag.name}`;
+        return (
+          <div key={flag.name}>
+            <label htmlFor={id}>
+              <input
+                id={id}
+                type="checkbox"
+                name={flag.name}
+                defaultChecked={flag.value}
+                onChange={handleChange}
+              />
+              {' '}
+              {flag.name}
+            </label>
+          </div>
+        );
+      })}
+    </GlobalContext.Provider>
+  );
 };
 
 const experimentalFeaturesContainer = document.getElementById('experimental_features_container');
 if (experimentalFeaturesContainer) {
   ReactDOM.render(
-    React.createElement(ExperimentalFeatures, {}),
+    <ExperimentalFeatures />,
     experimentalFeaturesContainer
   );
 }
