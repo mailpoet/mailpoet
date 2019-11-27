@@ -178,11 +178,11 @@ jobs:
         name: "JS Newsletter Editor Tests"
         command: |
           mkdir test-results/mocha
-          ./do t:j test-results/mocha/junit.xml
+          ./do t:newsletter-editor test-results/mocha/newsletter_editor_junit.xml
     - run:
-        name: "JS Form Editor Tests"
+        name: "JS Tests"
         command: |
-          npm test
+          ./do t:j test-results/mocha/junit.xml
     - store_test_results:
         path: test-results/mocha
     - store_artifacts:

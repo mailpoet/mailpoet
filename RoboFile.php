@@ -204,14 +204,27 @@ class RoboFile extends \Robo\Tasks {
     return $this->execWithXDebug($command);
   }
 
-  function testJavascript($xml_output_file = null) {
+  function testNewsletterEditor($xml_output_file = null) {
     $this->compileJs();
 
     $command = join(' ', [
       './node_modules/.bin/mocha',
-      '-r tests/javascript/mochaTestHelper.js',
-      'tests/javascript/testBundles/**/*.js',
+      '-r tests/javascript_newsletter_editor/mochaTestHelper.js',
+      'tests/javascript_newsletter_editor/testBundles/**/*.js',
     ]);
+
+    if (!empty($xml_output_file)) {
+      $command .= sprintf(
+        ' --reporter xunit --reporter-options output="%s"',
+        $xml_output_file
+      );
+    }
+
+    return $this->_exec($command);
+  }
+
+  function testJavascript($xml_output_file = null) {
+    $command = './node_modules/.bin/mocha --require @babel/register tests/javascript/**/*.spec.js';
 
     if (!empty($xml_output_file)) {
       $command .= sprintf(
