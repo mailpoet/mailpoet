@@ -4,11 +4,10 @@ import { HashRouter, Switch, Route } from 'react-router-dom';
 
 import SubscriberList from 'subscribers/list.jsx';
 import SubscriberForm from 'subscribers/form.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 
-const container = document.getElementById('subscribers_container');
-
-if (container) {
-  ReactDOM.render((
+const App = () => (
+  <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <HashRouter>
       <Switch>
         <Route path="/new" component={SubscriberForm} />
@@ -16,5 +15,11 @@ if (container) {
         <Route path="*" component={SubscriberList} />
       </Switch>
     </HashRouter>
-  ), container);
+  </GlobalContext.Provider>
+);
+
+const container = document.getElementById('subscribers_container');
+
+if (container) {
+  ReactDOM.render(<App />, container);
 }
