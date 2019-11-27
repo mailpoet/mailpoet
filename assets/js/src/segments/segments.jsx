@@ -4,11 +4,12 @@ import { HashRouter, Switch, Route } from 'react-router-dom';
 
 import SegmentList from 'segments/list.jsx';
 import SegmentForm from 'segments/form.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 
 const container = document.getElementById('segments_container');
 
-if (container) {
-  ReactDOM.render((
+const App = () => (
+  <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <HashRouter>
       <Switch>
         <Route path="/new" component={SegmentForm} />
@@ -16,5 +17,9 @@ if (container) {
         <Route path="*" component={SegmentList} />
       </Switch>
     </HashRouter>
-  ), container);
+  </GlobalContext.Provider>
+);
+
+if (container) {
+  ReactDOM.render(<App />, container);
 }
