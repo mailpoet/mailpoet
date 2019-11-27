@@ -61,11 +61,17 @@ export function switchSidebarTab(id) {
   };
 }
 
-export function toggleSidebarPanel(id, isOpened = undefined) {
+/**
+ * Toggle a panel within the sidebar. Use toggleTo to enforce certain state
+ * @param {string} id
+ * @param {string|undefined} toggleTo - possible values 'opened', 'closed'
+ * @return {{toggleTo: string|undefined, id: string, type: string}}
+ */
+export function toggleSidebarPanel(id, toggleTo = undefined) {
   return {
     type: 'TOGGLE_SIDEBAR_PANEL',
     id,
-    isOpened,
+    toggleTo,
   };
 }
 
