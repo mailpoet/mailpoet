@@ -1675,7 +1675,7 @@ use Serializable;
          */
         protected function _build_select_start() {
             $fragment = 'SELECT ';
-            $result_columns = implode($this->_result_columns, ', ');
+            $result_columns = implode(', ', $this->_result_columns);
 
             if (!is_null($this->_limit) &&
                 self::$_config[$this->_connection_name]['limit_clause_style'] === ORM::LIMIT_STYLE_TOP_N) {
@@ -1702,7 +1702,7 @@ use Serializable;
                 return '';
             }
 
-            return implode($this->_join_sources, ' ');
+            return implode(' ', $this->_join_sources);
         }
 
         /**
@@ -1726,7 +1726,7 @@ use Serializable;
             if (count($this->_group_by) === 0) {
                 return '';
             }
-            return "GROUP BY " . implode($this->_group_by, ', ');
+            return "GROUP BY " . implode(', ', $this->_group_by);
         }
 
         /**
@@ -1747,7 +1747,7 @@ use Serializable;
                 $this->_values = array_merge($this->_values, $condition[self::CONDITION_VALUES]);
             }
 
-            return strtoupper($type) . " " . implode($conditions, ' AND ');
+            return strtoupper($type) . " " . implode(' AND ', $conditions);
         }
 
         /**
@@ -1757,7 +1757,7 @@ use Serializable;
             if (count($this->_order_by) === 0) {
                 return '';
             }
-            return "ORDER BY " . implode($this->_order_by, ', ');
+            return "ORDER BY " . implode(', ', $this->_order_by);
         }
 
         /**
@@ -1805,7 +1805,7 @@ use Serializable;
                     $filtered_pieces[] = $piece;
                 }
             }
-            return implode($filtered_pieces, $glue);
+            return implode($glue, $filtered_pieces);
         }
 
         /**
@@ -1816,7 +1816,7 @@ use Serializable;
         protected function _quote_one_identifier($identifier) {
             $parts = explode('.', $identifier);
             $parts = array_map(array($this, '_quote_identifier_part'), $parts);
-            return implode($parts, '.');
+            return implode('.', $parts);
         }
 
         /**
@@ -1828,7 +1828,7 @@ use Serializable;
         protected function _quote_identifier($identifier) {
             if (is_array($identifier)) {
                 $result = array_map(array($this, '_quote_one_identifier'), $identifier);
-                return implode($result, ', ');
+                return implode(', ', $result);
             } else {
                 return $this->_quote_one_identifier($identifier);
             }
@@ -1860,7 +1860,7 @@ use Serializable;
             if(isset(self::$_config[$connection_name]['create_cache_key']) and is_callable(self::$_config[$connection_name]['create_cache_key'])){
                 return call_user_func_array(self::$_config[$connection_name]['create_cache_key'], array($query, $parameters, $table_name, $connection_name));
             }
-            $parameter_string = implode($parameters, ',');
+            $parameter_string = implode(',', $parameters);
             $key = $query . ':' . $parameter_string;
             return sha1($key);
         }
@@ -2165,9 +2165,9 @@ use Serializable;
                 }
                 $field_list[] = "{$this->_quote_identifier($key)} = $value";
             }
-            $query[] = implode($field_list, ', ');
+            $query[] = implode(', ', $field_list);
             $this->_add_id_column_conditions($query);
-            return implode($query, ' ');
+            return implode(' ', $query);
         }
 
         /**
@@ -2177,7 +2177,7 @@ use Serializable;
             $query[] = "INSERT INTO";
             $query[] = $this->_quote_identifier($this->_table_name);
             $field_list = array_map(array($this, '_quote_identifier'), array_keys($this->_dirty_fields));
-            $query[] = "(" . implode($field_list, ', ') . ")";
+            $query[] = "(" . implode(', ', $field_list) . ")";
             $query[] = "VALUES";
 
             $placeholders = $this->_create_placeholders($this->_dirty_fields);
@@ -2187,7 +2187,7 @@ use Serializable;
                 $query[] = 'RETURNING ' . $this->_quote_identifier($this->_get_id_column_name());
             }
 
-            return implode($query, ' ');
+            return implode(' ', $query);
         }
 
         /**
@@ -2199,7 +2199,7 @@ use Serializable;
                 $this->_quote_identifier($this->_table_name)
             );
             $this->_add_id_column_conditions($query);
-            return self::_execute(implode($query, ' '), is_array($this->id(true)) ? array_values($this->id(true)) : array($this->id(true)), $this->_connection_name);
+            return self::_execute(implode(' ', $query), is_array($this->id(true)) ? array_values($this->id(true)) : array($this->id(true)), $this->_connection_name);
         }
 
         /**
