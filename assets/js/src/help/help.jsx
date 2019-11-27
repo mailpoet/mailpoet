@@ -8,11 +8,10 @@ import KnowledgeBase from 'help/knowledge_base.jsx';
 import SystemInfo from 'help/system_info.jsx';
 import SystemStatus from 'help/system_status.jsx';
 import YourPrivacy from 'help/your_privacy.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 
-const container = document.getElementById('help_container');
-
-if (container) {
-  ReactDOM.render((
+const App = () => (
+  <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <HashRouter>
       <Switch>
         <Route exact path="/" render={() => <Redirect to="/knowledgeBase" />} />
@@ -22,5 +21,11 @@ if (container) {
         <Route path="/yourPrivacy" component={YourPrivacy} />
       </Switch>
     </HashRouter>
-  ), container);
+  </GlobalContext.Provider>
+);
+
+const container = document.getElementById('help_container');
+
+if (container) {
+  ReactDOM.render(<App />, container);
 }
