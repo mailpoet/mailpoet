@@ -12,11 +12,12 @@
   "scripts": {
     "lint": "npm run lint6 && npm run lint5 && npm run lint-tests",
     "lint6": "eslint -c .eslintrc.es6.json --max-warnings 0 'assets/js/src/**/*.jsx'",
-    "lint5": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0 'assets/js/src/**/*.js'",
+    "lint5": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0 'assets/js/src/**/*.js' 'tests/javascript_form_editor/**/*.js'",
     "lint-tests": "eslint -c .eslintrc.tests.json --max-warnings 0 'tests/javascript'",
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
     "scss": "node-sass assets/css/src/ --output assets/dist/css/ --output-style compact",
-    "stylelint": "stylelint --fix"
+    "stylelint": "stylelint --fix",
+    "test": "mocha --compilers js:@babel/register tests/javascript_form_editor/**/*.spec.js"
   },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
@@ -75,6 +76,7 @@
     "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.7.4",
     "autoprefixer": "^9.4.10",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.4",
