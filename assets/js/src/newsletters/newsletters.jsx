@@ -23,7 +23,7 @@ import CampaignStatsPage from 'newsletters/campaign_stats/page.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 
 const getAutomaticEmailsRoutes = () => {
-  if (!window.mailpoet_automatic_emails) return null;
+  if (!window.mailpoet_automatic_emails) return [];
 
   return _.map(window.mailpoet_automatic_emails, (automaticEmail) => ({
     path: `new/${automaticEmail.slug}`,
