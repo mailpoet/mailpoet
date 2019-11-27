@@ -20,6 +20,7 @@ import NewsletterListNotification from 'newsletters/listings/notification.jsx';
 import NewsletterListNotificationHistory from 'newsletters/listings/notification_history.jsx';
 import NewsletterSendingStatus from 'newsletters/sending_status.jsx';
 import CampaignStatsPage from 'newsletters/campaign_stats/page.jsx';
+import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 
 const getAutomaticEmailsRoutes = () => {
   if (!window.mailpoet_automatic_emails) return null;
@@ -98,21 +99,23 @@ const routes = Hooks.applyFilters('mailpoet_newsletters_before_router', [
 ]);
 
 const App = () => (
-  <HashRouter>
-    <Switch>
-      <Route exact path="/" render={() => <Redirect to="/standard" />} />
-      {routes.map((route) => (
-        <Route
-          key={route.path}
-          path={route.path}
-          component={route.component}
-          name={route.name || null}
-          data={route.data || null}
-          render={route.render}
-        />
-      ))}
-    </Switch>
-  </HashRouter>
+  <GlobalContext.Provider value={useGlobalContextValue(window)}>
+    <HashRouter>
+      <Switch>
+        <Route exact path="/" render={() => <Redirect to="/standard" />} />
+        {routes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            component={route.component}
+            name={route.name || null}
+            data={route.data || null}
+            render={route.render}
+          />
+        ))}
+      </Switch>
+    </HashRouter>
+  </GlobalContext.Provider>
 );
 
 const container = document.getElementById('newsletters_container');
