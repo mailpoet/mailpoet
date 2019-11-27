@@ -175,10 +175,14 @@ jobs:
         name: "Preparing test results folder"
         command: mkdir test-results
     - run:
-        name: "JS tests"
+        name: "JS Newsletter Editor Tests"
         command: |
           mkdir test-results/mocha
           ./do t:j test-results/mocha/junit.xml
+    - run:
+        name: "JS Form Editor Tests"
+        command: |
+          npm test
     - store_test_results:
         path: test-results/mocha
     - store_artifacts:
