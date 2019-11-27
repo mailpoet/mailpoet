@@ -15,4 +15,4 @@ export function useGlobalContextValue(data) {
   return { features, segments, users };
 }
 
-export const GlobalContext = React.createContext(useGlobalContextValue(window));
+export const GlobalContext = React.createContext({});
