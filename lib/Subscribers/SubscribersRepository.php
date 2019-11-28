@@ -26,7 +26,7 @@ class SubscribersRepository extends Repository {
       ->select('count(n.id)')
       ->from(SubscriberEntity::class, 'n')
       ->where('n.status IN (:statuses)')
-      ->setParameter(':statuses', [
+      ->setParameter('statuses', [
         SubscriberEntity::STATUS_SUBSCRIBED,
         SubscriberEntity::STATUS_UNCONFIRMED,
         SubscriberEntity::STATUS_INACTIVE,
