@@ -11,21 +11,6 @@ parameters:
 			path: %mailpoetDir%/tests/_support/CleanupExtension.php
 
 		-
-			message: "#^Parameter \\#1 \\$var of function count expects array\\|Countable, array\\<int, string\\>\\|false given\\.$#"
-			count: 1
-			path: %mailpoetDir%/tests/_support/ErrorsExtension.php
-
-		-
-			message: "#^Argument of an invalid type array\\<int, string\\>\\|false supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: %mailpoetDir%/tests/_support/ErrorsExtension.php
-
-		-
-			message: "#^Parameter \\#1 \\$input of function array_slice expects array, array\\<int, string\\>\\|false given\\.$#"
-			count: 1
-			path: %mailpoetDir%/tests/_support/ErrorsExtension.php
-
-		-
 			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|false given\\.$#"
 			count: 1
 			path: %mailpoetDir%/tests/_support/Helper/Database.php
