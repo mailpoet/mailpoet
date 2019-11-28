@@ -30,7 +30,7 @@ class SendingQueue extends APIEndpoint {
   function add($data = []) {
     if ($this->subscribers_feature->check()) {
       return $this->errorResponse([
-        APIError::FORBIDDEN => WPFunctions::get()->__('Subscribers limit reached.', 'mailpoet'),
+        APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
       ], [], Response::STATUS_FORBIDDEN);
     }
     $newsletter_id = (isset($data['newsletter_id'])
@@ -43,7 +43,7 @@ class SendingQueue extends APIEndpoint {
 
     if (!$newsletter instanceof Newsletter) {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
       ]);
     }
 
@@ -65,7 +65,7 @@ class SendingQueue extends APIEndpoint {
 
     if (!empty($queue)) {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter is already being sent.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This newsletter is already being sent.', 'mailpoet'),
       ]);
     }
 
@@ -95,7 +95,7 @@ class SendingQueue extends APIEndpoint {
       $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
       if (!$subscribers_count) {
         return $this->errorResponse([
-          APIError::UNKNOWN => WPFunctions::get()->__('There are no subscribers in that list!', 'mailpoet'),
+          APIError::UNKNOWN => __('There are no subscribers in that list!', 'mailpoet'),
         ]);
       }
       $queue->updateCount();
@@ -129,7 +129,7 @@ class SendingQueue extends APIEndpoint {
 
       if ($queue === false) {
         return $this->errorResponse([
-          APIError::UNKNOWN => WPFunctions::get()->__('This newsletter has not been sent yet.', 'mailpoet'),
+          APIError::UNKNOWN => __('This newsletter has not been sent yet.', 'mailpoet'),
         ]);
       } else {
         $queue->pause();
@@ -139,7 +139,7 @@ class SendingQueue extends APIEndpoint {
       }
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -147,7 +147,7 @@ class SendingQueue extends APIEndpoint {
   function resume($data = []) {
     if ($this->subscribers_feature->check()) {
       return $this->errorResponse([
-        APIError::FORBIDDEN => WPFunctions::get()->__('Subscribers limit reached.', 'mailpoet'),
+        APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
       ], [], Response::STATUS_FORBIDDEN);
     }
     $newsletter_id = (isset($data['newsletter_id'])
@@ -160,7 +160,7 @@ class SendingQueue extends APIEndpoint {
 
       if ($queue === false) {
         return $this->errorResponse([
-          APIError::UNKNOWN => WPFunctions::get()->__('This newsletter has not been sent yet.', 'mailpoet'),
+          APIError::UNKNOWN => __('This newsletter has not been sent yet.', 'mailpoet'),
         ]);
       } else {
         $queue->resume();
@@ -170,7 +170,7 @@ class SendingQueue extends APIEndpoint {
       }
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This newsletter does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
       ]);
     }
   }
