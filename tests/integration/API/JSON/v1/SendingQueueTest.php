@@ -6,6 +6,7 @@ use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingQueue as SendingQueueAPI;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -13,6 +14,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Idiorm\ORM;
@@ -48,7 +50,7 @@ class SendingQueueTest extends \MailPoetTest {
       $newletter_options
     );
 
-    $sending_queue = new SendingQueueAPI(Stub::make(SubscribersFeature::class));
+    $sending_queue = new SendingQueueAPI(new SubscribersFeature(ContainerWrapper::getInstance()->get(SettingsController::class), ContainerWrapper::getInstance()->get(SubscribersRepository::class)));
     $result = $sending_queue->add(['newsletter_id' => $newsletter->id]);
     $scheduled_task = ScheduledTask::findOne($result->data['task_id']);
     expect($scheduled_task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
@@ -79,7 +81,7 @@ class SendingQueueTest extends \MailPoetTest {
       Newsletter::TYPE_STANDARD,
       $newletter_options
     );
-    $sending_queue = new SendingQueueAPI(Stub::make(SubscribersFeature::class));
+    $sending_queue = new SendingQueueAPI(new SubscribersFeature(ContainerWrapper::getInstance()->get(SettingsController::class), ContainerWrapper::getInstance()->get(SubscribersRepository::class)));
 
     // add scheduled task
     $result = $sending_queue->add(['newsletter_id' => $newsletter->id]);
