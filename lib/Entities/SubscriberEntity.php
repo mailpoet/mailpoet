@@ -34,21 +34,21 @@ class SubscriberEntity {
 
   /**
    * @ORM\Column(type="boolean")
-   * @var bool|null
+   * @var bool
    */
-  private $is_woocommerce_user;
+  private $is_woocommerce_user = false;
 
   /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $first_name;
+  private $first_name = '';
 
   /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $last_name;
+  private $last_name = '';
 
   /**
    * @ORM\Column(type="string")
@@ -63,49 +63,49 @@ class SubscriberEntity {
   private $status = self::STATUS_UNCONFIRMED;
 
   /**
-   * @ORM\Column(type="string")
-   * @var string
+   * @ORM\Column(type="string", nullable=true)
+   * @var string|null
    */
   private $subscribed_ip;
 
   /**
-   * @ORM\Column(type="string")
+   * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
   private $confirmed_ip;
 
   /**
-   * @ORM\Column(type="datetimetz")
+   * @ORM\Column(type="datetimetz", nullable=true)
    * @var DateTimeInterface|null
    */
   private $confirmed_at;
 
   /**
-   * @ORM\Column(type="datetimetz")
+   * @ORM\Column(type="datetimetz", nullable=true)
    * @var DateTimeInterface|null
    */
   private $last_subscribed_at;
 
   /**
-   * @ORM\Column(type="text")
+   * @ORM\Column(type="text", nullable=true)
    * @var string|null
    */
   private $unconfirmed_data;
 
   /**
    * @ORM\Column(type="string")
-   * @var string|null
+   * @var string
    */
   private $source = 'unknown';
 
   /**
    * @ORM\Column(type="int")
-   * @var int|null
+   * @var int
    */
-  private $count_confirmations;
+  private $count_confirmations = 0;
 
   /**
-   * @ORM\Column(type="string")
+   * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
   private $unsubscribe_token;
@@ -131,14 +131,14 @@ class SubscriberEntity {
   }
 
   /**
-   * @return bool|null
+   * @return bool
    */
   public function getIsWoocommerceUser() {
     return $this->is_woocommerce_user;
   }
 
   /**
-   * @param bool|null $is_woocommerce_user
+   * @param bool $is_woocommerce_user
    */
   public function setIsWoocommerceUser($is_woocommerce_user) {
     $this->is_woocommerce_user = $is_woocommerce_user;
@@ -210,7 +210,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @return string
+   * @return string|null
    */
   public function getSubscribedIp() {
     return $this->subscribed_ip;
@@ -280,14 +280,14 @@ class SubscriberEntity {
   }
 
   /**
-   * @return string|null
+   * @return string
    */
   public function getSource() {
     return $this->source;
   }
 
   /**
-   * @param string|null $source
+   * @param string $source
    */
   public function setSource($source) {
     if (!in_array($source, [
@@ -306,14 +306,14 @@ class SubscriberEntity {
   }
 
   /**
-   * @return int|null
+   * @return int
    */
   public function getConfirmationsCount() {
     return $this->count_confirmations;
   }
 
   /**
-   * @param int|null $count_confirmations
+   * @param int $count_confirmations
    */
   public function setConfirmationsCount($count_confirmations) {
     $this->count_confirmations = $count_confirmations;
