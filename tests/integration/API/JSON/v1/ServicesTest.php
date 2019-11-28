@@ -37,7 +37,6 @@ class ServicesTest extends \MailPoetTest {
     $response = $services_endpoint->checkSPFRecord([]);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->meta['sender_address'])->equals($email);
-    expect($response->meta['domain_name'])->equals('example.com');
   }
 
   function testItRespondsWithSuccessIfSPFCheckPasses() {

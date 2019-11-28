@@ -84,11 +84,10 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
   'senderEmailAddressWarning3': _x('Read more.'),
   'mailerSendingResumedNotice': __('Sending has been resumed.'),
 
-  'spfCheckTitle': _x('Oops! You might not receive your own emails.', 'DNS SPF Record check'),
-  'spfCheckMsgWhy': _x("Why? You have an SPF entry for %s, but it's incomplete.", 'DNS SPF Record check'),
-  'spfCheckMsgEdit': _x('If you send with MailPoet, edit the SPF record in your DNS and add %s to it, so it looks like this:', 'DNS SPF Record check'),
-  'spfCheckMsgAllow': _x('This will allow MailPoet to send emails from %s addresses.', 'DNS SPF Record check'),
-  'spfCheckReadMore':  _x('Read more about SPF', 'DNS SPF Record check'),
+  'spfCheckTitle': _x('Improve your deliverability!', 'DNS SPF Record check'),
+  'spfCheckMsgWhy': _x("Your email is set to be sent from %s and we noticed that you have an SPF record for this domain. It means some subscribers may not receive your emails.", 'DNS SPF Record check'),
+  'spfCheckMsgEdit': _x("Since you're sending with the MailPoet Sending Service, you need to add %s to the existing SPF entry in your DNS records. This will allow MailPoet to send on your behalf for optimal deliverability.", 'DNS SPF Record check'),
+  'spfCheckReadMore':  _x('Read the Guide', 'DNS SPF Record check'),
 
 }) %>
 <% block translations %><% endblock %>

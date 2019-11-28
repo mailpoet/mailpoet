@@ -50,7 +50,7 @@ class Services extends APIEndpoint {
     if (!$result) {
       return $this->errorResponse(
         [APIError::BAD_REQUEST => WPFunctions::get()->__('SPF check has failed.', 'mailpoet')],
-        ['sender_address' => $sender_address, 'domain_name' => $domain_name]
+        ['sender_address' => $sender_address]
       );
     }
 
