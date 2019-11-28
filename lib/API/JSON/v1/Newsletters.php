@@ -132,7 +132,7 @@ class Newsletters extends APIEndpoint {
       return $this->successResponse($response, ['preview_url' => $preview_url]);
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -159,7 +159,7 @@ class Newsletters extends APIEndpoint {
       return $this->successResponse($newsletter);
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -291,13 +291,13 @@ class Newsletters extends APIEndpoint {
 
     if (!$status) {
       return $this->badRequest([
-        APIError::BAD_REQUEST  => WPFunctions::get()->__('You need to specify a status.', 'mailpoet'),
+        APIError::BAD_REQUEST  => __('You need to specify a status.', 'mailpoet'),
       ]);
     }
 
     if ($status === Newsletter::STATUS_ACTIVE && $this->subscribers_feature->check()) {
       return $this->errorResponse([
-        APIError::FORBIDDEN => WPFunctions::get()->__('Subscribers limit reached.', 'mailpoet'),
+        APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
       ], [], Response::STATUS_FORBIDDEN);
     }
 
@@ -306,7 +306,7 @@ class Newsletters extends APIEndpoint {
 
     if ($newsletter === false) {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
 
@@ -354,7 +354,7 @@ class Newsletters extends APIEndpoint {
       );
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -373,7 +373,7 @@ class Newsletters extends APIEndpoint {
       );
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -386,7 +386,7 @@ class Newsletters extends APIEndpoint {
       return $this->successResponse(null, ['count' => 1]);
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -415,7 +415,7 @@ class Newsletters extends APIEndpoint {
       }
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -423,7 +423,7 @@ class Newsletters extends APIEndpoint {
   function showPreview($data = []) {
     if (empty($data['body'])) {
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__('Newsletter data is missing.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('Newsletter data is missing.', 'mailpoet'),
       ]);
     }
 
@@ -451,7 +451,7 @@ class Newsletters extends APIEndpoint {
       );
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -459,7 +459,7 @@ class Newsletters extends APIEndpoint {
   function sendPreview($data = []) {
     if (empty($data['subscriber'])) {
       return $this->badRequest([
-        APIError::BAD_REQUEST => WPFunctions::get()->__('Please specify receiver information.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('Please specify receiver information.', 'mailpoet'),
       ]);
     }
 
@@ -503,7 +503,7 @@ class Newsletters extends APIEndpoint {
 
         if ($result['response'] === false) {
           $error = sprintf(
-            WPFunctions::get()->__('The email could not be sent: %s', 'mailpoet'),
+            __('The email could not be sent: %s', 'mailpoet'),
             $result['error']->getMessage()
           );
           return $this->errorResponse([APIError::BAD_REQUEST => $error]);
@@ -522,7 +522,7 @@ class Newsletters extends APIEndpoint {
       }
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This email does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
   }
