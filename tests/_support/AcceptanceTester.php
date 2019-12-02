@@ -1,5 +1,6 @@
 <?php
 
+use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
 use MailPoet\Models\Form as FormModel;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
@@ -25,6 +26,7 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
     cli as _cli;
     cliToArray as _cliToArray;
     cliToString as _cliToString;
+    click as _click;
     switchToNextTab as _switchToNextTab;
     waitForElement as _waitForElement;
     waitForElementChange as _waitForElementChange;
@@ -215,6 +217,23 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
 
     // workaround for frozen tabs when opened by clicking on links
     $this->wait(1);
+  }
+
+  public function click($link, $context = null) {
+    // retry click in case of "element click intercepted... Other element would receive the click" error
+    $retries = 3;
+    while (true) {
+      try {
+        $retries--;
+        $this->_click($link, $context);
+        break;
+      } catch (UnrecognizedExceptionException $e) {
+        if ($retries > 0 && strpos($e->getMessage(), 'element click intercepted') !== false) {
+          continue;
+        }
+        throw $e;
+      }
+    }
   }
 
   /**
