@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
 import classnames from 'classnames';
 import MailPoet from 'mailpoet';
+import Textarea from 'react-autosize-textarea';
 
 export default () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -21,12 +22,12 @@ export default () => {
           <label htmlFor="post-title" className="screen-reader-text">
             {MailPoet.I18n.t('addFormName')}
           </label>
-          <textarea
+          <Textarea
             id="form-title"
             className="editor-post-title__input"
             placeholder={MailPoet.I18n.t('addFormName')}
             data-automation-id="form_title_input"
-            rows="1"
+            rows={1}
             onFocus={() => setIsSelected(true)}
             onKeyPress={() => setIsSelected(false)}
             onBlur={() => setIsSelected(false)}
