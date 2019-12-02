@@ -23,6 +23,7 @@
     "@babel/runtime": "^7.4.5",
     "@babel/runtime-corejs3": "^7.5.5",
     "@wordpress/block-editor": "^3.3.0",
+    "@wordpress/blocks": "^6.8.0",
     "@wordpress/components": "^8.4.0",
     "@wordpress/data": "^4.10.0",
     "@wordpress/edit-post": "^3.9.0",
