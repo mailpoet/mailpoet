@@ -2,9 +2,10 @@ import React from 'react';
 import {
   Panel,
 } from '@wordpress/components';
+import { BlockInspector } from '@wordpress/block-editor';
 
 export default () => (
   <Panel>
-    <p>TODO Block Settings</p>
+    <BlockInspector />
   </Panel>
 );
