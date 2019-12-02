@@ -15,11 +15,11 @@ class Renderer {
   }
 
   static function renderStyles($form = [], $prefix = null) {
-    $styles = new Util\Styles(static::getStyles($form));
+    $styles = new Util\Styles();
 
     $html = '<style type="text/css">';
     $html .= '.mailpoet_hp_email_label{display:none;}'; // move honeypot field out of sight
-    $html .= $styles->render($prefix);
+    $html .= $styles->render(static::getStyles($form), $prefix);
     $html .= '</style>';
 
     return $html;
@@ -37,7 +37,8 @@ class Renderer {
     && strlen(trim($form['styles'])) > 0) {
       return strip_tags($form['styles']);
     } else {
-      return Util\Styles::$default_styles;
+      $styles = new Util\Styles();
+      return $styles->getDefaultStyles();
     }
   }
 
