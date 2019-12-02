@@ -357,6 +357,7 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
    */
   public function optInForSubscription() {
     $I = $this;
+    $I->waitForElementClickable('#mailpoet_woocommerce_checkout_optin');
     $I->checkOption('#mailpoet_woocommerce_checkout_optin');
   }
 
@@ -365,6 +366,7 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
    */
   public function optOutOfSubscription() {
     $I = $this;
+    $I->waitForElementClickable('#mailpoet_woocommerce_checkout_optin');
     $I->uncheckOption('#mailpoet_woocommerce_checkout_optin');
   }
 
