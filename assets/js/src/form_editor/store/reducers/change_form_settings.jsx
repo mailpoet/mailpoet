@@ -10,6 +10,6 @@ export default (state, action) => {
   };
   return {
     ...newState,
-    formErrors: validateForm(newState.formData),
+    formErrors: validateForm(newState.formData, newState.formBlocks),
   };
 };
