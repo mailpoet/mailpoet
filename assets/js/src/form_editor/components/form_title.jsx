@@ -14,7 +14,7 @@ export default () => {
     'is-selected': isSelected,
   });
   const { changeFormName } = useDispatch('mailpoet-form-editor');
-
+  const { clearSelectedBlock } = useDispatch('core/block-editor');
   return (
     <div className="editor-post-title">
       <div className={titleClass}>
@@ -28,7 +28,10 @@ export default () => {
             placeholder={MailPoet.I18n.t('addFormName')}
             data-automation-id="form_title_input"
             rows={1}
-            onFocus={() => setIsSelected(true)}
+            onFocus={() => {
+              setIsSelected(true);
+              clearSelectedBlock();
+            }}
             onKeyPress={() => setIsSelected(false)}
             onBlur={() => setIsSelected(false)}
             onChange={(e) => changeFormName(e.target.value)}
