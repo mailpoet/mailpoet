@@ -1,0 +1,31 @@
+// Fix for scrolling within editor
+// This is fixed in Gutenberg's master branch.
+// We should remove this fix after we update @wordpress/edit-post to version newer than 3.9.0
+
+@media (min-width: 600px) {
+  .edit-post-layout__content {
+    overflow-y: auto;
+    overscroll-behavior-y: none;
+    padding-bottom: 0;
+  }
+}
+
+// Fix for broken drag and drop for blocks
+// This is fixed in Gutenberg's master branch
+// https://github.com/WordPress/gutenberg/pull/15054
+// We should remove this fix after we update @wordpress/components to version newer than 8.4.0
+.edit-post-layout__content {
+  .block-editor-block-mover__control-drag-handle {
+    display: none;
+  }
+}
+
+// We don't want to allow user to remove Submit or Email.
+// There is no way to hide the delete button programmatically so we hide last toolbar that contains the delete option
+// There is a feature request for adding that into Gutenberg https://github.com/WordPress/gutenberg/issues/16364
+#block-email,
+#block-submit {
+  .components-toolbar:last-child {
+    display: none;
+  }
+}
