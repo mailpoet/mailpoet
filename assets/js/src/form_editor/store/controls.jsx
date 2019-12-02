@@ -1,5 +1,6 @@
 import { select, dispatch } from '@wordpress/data';
 import MailPoet from 'mailpoet';
+import blocksToFormBody from './blocks_to_form_body.jsx';
 
 export default {
   SAVE_FORM() {
@@ -12,11 +13,16 @@ export default {
       return;
     }
     const formData = select('mailpoet-form-editor').getFormData();
+    const formBlocks = select('mailpoet-form-editor').getFormBlocks();
+    const requestData = {
+      ...formData,
+      body: blocksToFormBody(formBlocks),
+    };
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'forms',
       action: 'saveEditor',
-      data: formData,
+      data: requestData,
     }).done(() => {
       dispatch('mailpoet-form-editor').saveFormDone();
     }).fail((response) => {
