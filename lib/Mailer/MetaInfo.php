@@ -56,7 +56,7 @@ class MetaInfo {
     return [
       'email_type' => $email_type,
       'subscriber_status' => $subscriber_status,
-      'subscriber_source' => $subscriber_source,
+      'subscriber_source' => $subscriber_source ?: 'unknown',
     ];
   }
 }
