@@ -8,28 +8,34 @@ import createReducer from './reducer.jsx';
 import selectors from './selectors.jsx';
 import controls from './controls.jsx';
 import validateForm from './form_validator.jsx';
+import formBodyToBlocks from './form_body_to_blocks.jsx';
 
-const defaultState = {
-  sidebarOpened: true,
-  formData: window.mailpoet_form_data,
-  formExports: window.mailpoet_form_exports,
-  formErrors: validateForm(window.mailpoet_form_data),
-  segments: window.mailpoet_form_segments,
-  pages: window.mailpoet_form_pages,
-  isFormSaving: false,
-  notices: [],
-  sidebar: {
-    activeTab: 'form',
-    openedPanels: ['basic-settings'],
-  },
+export default () => {
+  const formData = { ...window.mailpoet_form_data };
+  const formBlocks = formBodyToBlocks(formData.body);
+  delete formData.body;
+  const defaultState = {
+    formBlocks,
+    formData,
+    sidebarOpened: true,
+    formExports: window.mailpoet_form_exports,
+    formErrors: validateForm(formData, formBlocks),
+    segments: window.mailpoet_form_segments,
+    pages: window.mailpoet_form_pages,
+    isFormSaving: false,
+    notices: [],
+    sidebar: {
+      activeTab: 'form',
+      openedPanels: ['basic-settings'],
+    },
+  };
+
+  const config = {
+    reducer: createReducer(defaultState),
+    actions,
+    selectors,
+    controls,
+    resolvers: {},
+  };
+
 };
-
-const config = {
-  reducer: createReducer(defaultState),
-  actions,
-  selectors,
-  controls,
-  resolvers: {},
-};
-
-export default () => (registerStore('mailpoet-form-editor', config));
