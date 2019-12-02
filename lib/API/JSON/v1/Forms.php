@@ -24,6 +24,9 @@ class Forms extends APIEndpoint {
   /** @var FeaturesController */
   private $features_controller;
 
+  /** @var Util\Styles */
+  private $form_styles_utils;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,
   ];
@@ -31,11 +34,13 @@ class Forms extends APIEndpoint {
   function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
-    FeaturesController $features_controller
+    FeaturesController $features_controller,
+    Util\Styles $form_styles_utils
   ) {
     $this->bulk_action = $bulk_action;
     $this->listing_handler = $listing_handler;
     $this->features_controller = $features_controller;
+    $this->form_styles_utils = $form_styles_utils;
   }
 
   function get($data = []) {
@@ -134,11 +139,11 @@ class Forms extends APIEndpoint {
     $html = WPFunctions::get()->doShortcode($html);
 
     // styles
-    $css = new Util\Styles(FormRenderer::getStyles($data));
+    $css = $this->form_styles_utils->render(FormRenderer::getStyles($data));
 
     return $this->successResponse([
       'html' => $html,
-      'css' => $css->render(),
+      'css' => $css,
     ]);
   }
 

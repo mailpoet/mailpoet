@@ -6,7 +6,7 @@ use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
 
 class Styles {
   public $styles;
-  static $default_styles = <<<EOL
+  private $default_styles = <<<EOL
 /* form */
 .mailpoet_form {
 
@@ -79,15 +79,14 @@ class Styles {
   background-color: #5b5b5b;
 }
 EOL;
-  private $stylesheet;
 
-  function __construct($stylesheet = null) {
-    $this->stylesheet = $stylesheet;
+  function getDefaultStyles() {
+    return $this->default_styles;
   }
 
-  function render($prefix = '') {
-    if (!$this->stylesheet) return;
-    $styles = new CSSParser($this->stylesheet);
+  function render($stylesheet, $prefix = '') {
+    if (!$stylesheet) return;
+    $styles = new CSSParser($stylesheet);
     $styles = $styles->parse();
     $formatted_styles = [];
     foreach ($styles->getAllDeclarationBlocks() as $style_declaration) {
