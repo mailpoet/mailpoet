@@ -6,6 +6,13 @@ export function toggleSidebar(toggleTo) {
   };
 }
 
+export function changeFormBlocks(blocks) {
+  return {
+    type: 'CHANGE_FORM_BLOCKS',
+    blocks,
+  };
+}
+
 export function changeFormName(name) {
   return {
     type: 'CHANGE_FORM_NAME',

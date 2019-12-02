@@ -44,4 +44,7 @@ export default {
   getSidebarOpenedPanels(state) {
     return state.sidebar.openedPanels;
   },
+  getFormBlocks(state) {
+    return state.formBlocks;
+  },
 };

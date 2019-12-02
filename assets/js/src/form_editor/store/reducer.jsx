@@ -8,9 +8,11 @@ import saveFormStarted from './reducers/save_form_started.jsx';
 import switchSidebarTab from './reducers/switch_sidebar_tab.jsx';
 import toggleSidebar from './reducers/toggle_sidebar.jsx';
 import toggleSidebarPanel from './reducers/toggle_sidebar_panel.jsx';
+import changeFormBlocks from './reducers/change_form_blocks.jsx';
 
 export default (defaultState) => (state = defaultState, action) => {
   switch (action.type) {
+    case 'CHANGE_FORM_BLOCKS': return changeFormBlocks(state, action);
     case 'CHANGE_FORM_NAME': return changeFormName(state, action);
     case 'CHANGE_FORM_SETTINGS': return changeFormSettings(state, action);
     case 'CHANGE_FORM_STYLES': return changeFormStyles(state, action);
