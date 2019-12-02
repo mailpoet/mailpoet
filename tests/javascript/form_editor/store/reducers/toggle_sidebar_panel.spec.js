@@ -1,4 +1,3 @@
-import { describe, it, beforeEach } from 'mocha';
 import { expect } from 'chai';
 import reducer from '../../../../../assets/js/src/form_editor/store/reducers/toggle_sidebar_panel.jsx';
 
