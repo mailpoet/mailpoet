@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IconButton } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -34,7 +34,20 @@ export default () => {
     []
   );
 
+  const selectedBlockId = useSelect(
+    (select) => select('core/block-editor').getSelectedBlockClientId(),
+    []
+  );
+
   const { toggleSidebar, switchSidebarTab } = useDispatch('mailpoet-form-editor');
+
+  useEffect(() => {
+    if (selectedBlockId) {
+      switchSidebarTab('block');
+    } else {
+      switchSidebarTab('form');
+    }
+  }, [selectedBlockId, switchSidebarTab]);
 
   return (
     <div className="edit-post-sidebar">
