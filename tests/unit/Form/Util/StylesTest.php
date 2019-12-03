@@ -2,11 +2,27 @@
 
 namespace MailPoet\Test\Form\Util;
 
+use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Util\Styles;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class StylesTest extends \MailPoetUnitTest {
+
+  /** @var FeaturesController&MockObject */
+  private $features_controller;
+
+  function _before() {
+    parent::_before();
+    $this->features_controller = $this->createMock(FeaturesController::class);
+    $this->features_controller
+      ->expects($this->any())
+      ->method('isSupported')
+      ->willReturn(false);
+  }
+
   function testItSetsDefaultCSSStyles() {
-    expect(Styles::$default_styles)->notEmpty();
+    $styles = new Styles($this->features_controller);
+    expect($styles->getDefaultStyles())->notEmpty();
   }
 
   function testItProcessesAndRendersStyles() {
@@ -14,7 +30,7 @@ class StylesTest extends \MailPoetUnitTest {
     /* some comment */
     input[name=first_name]    , input.some_class,     .some_class { color: red  ; background: blue; } .another_style { fonT-siZe: 20px                            }
     ';
-    $style_processer = new Styles();
+    $style_processer = new Styles($this->features_controller);
     $extracted_and_prefixed_styles = $style_processer->render($stylesheet, $prefix = 'mailpoet');
     // 1. comments should be stripped
     // 2. each selector should be refixed

@@ -2,10 +2,11 @@
 
 namespace MailPoet\Form\Util;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Features\FeaturesController;
 use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
 
 class Styles {
-  public $styles;
   private $default_styles = <<<EOL
 /* form */
 .mailpoet_form {
@@ -43,7 +44,7 @@ class Styles {
 
 .mailpoet_text,
 .mailpoet_textarea {
-  width:200px;
+  [TEXT_INPUTS_WIDTH_RULE]
 }
 
 .mailpoet_checkbox {
@@ -80,8 +81,28 @@ class Styles {
 }
 EOL;
 
+  /** @var FeaturesController */
+  private $features_controller;
+
+  /**
+   * @param FeaturesController $features_controller
+   */
+  function __construct(
+    FeaturesController $features_controller = null
+  ) {
+    if ($features_controller === null) {
+      $features_controller = ContainerWrapper::getInstance()->get(FeaturesController::class);
+    }
+    $this->features_controller = $features_controller;
+  }
+
   function getDefaultStyles() {
-    return $this->default_styles;
+    if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
+      $text_input_width = 'width: 100%;';
+    } else {
+      $text_input_width = 'width: 200px;';
+    }
+    return str_replace('[TEXT_INPUTS_WIDTH_RULE]', $text_input_width, $this->default_styles);
   }
 
   function render($stylesheet, $prefix = '') {
