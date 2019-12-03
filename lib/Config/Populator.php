@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Form\Util\Styles;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Form;
 use MailPoet\Models\Newsletter;
@@ -354,7 +355,7 @@ class Populator {
 
   private function createDefaultForm($default_segment) {
     if (Form::count() === 0) {
-      $factory = new DefaultForm();
+      $factory = new DefaultForm(new Styles($this->flags_controller));
       if (!$default_segment) {
         $default_segment = Segment::where('type', 'default')->orderByAsc('id')->limit(1)->findOne();
       }

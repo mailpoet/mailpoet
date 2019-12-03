@@ -8,6 +8,12 @@ use MailPoet\Models\Segment;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DefaultForm {
+  /** @var Styles */
+  private $form_styles;
+
+  function __construct(Styles $form_styles) {
+    $this->form_styles = $form_styles;
+  }
 
   public function getName() {
     return WPFunctions::get()->_x('A GDPR friendly form', 'default name of form (GDPR friendly) to capture emails', 'mailpoet');
@@ -68,7 +74,6 @@ class DefaultForm {
   }
 
   public function getStyles() {
-    return Styles::$default_styles;
+    return $this->form_styles->getDefaultStyles();
   }
-
 }
