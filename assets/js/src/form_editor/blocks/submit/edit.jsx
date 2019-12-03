@@ -1,7 +1,10 @@
 import React from 'react';
-
+import {
+  Panel,
+  PanelBody,
+  TextControl,
+} from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
-import { TextControl, Panel, PanelBody } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
