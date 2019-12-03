@@ -17,6 +17,7 @@ const EmailEdit = ({ attributes, setAttributes }) => {
           <TextControl
             label={MailPoet.I18n.t('label')}
             value={attributes.label}
+            data-automation-id="settings_email_label_input"
             onChange={(label) => (setAttributes({ label }))}
           />
           <ToggleControl
@@ -29,16 +30,27 @@ const EmailEdit = ({ attributes, setAttributes }) => {
 
     </InspectorControls>
   );
+
+  const getTextInput = (placeholder) => (
+    <input
+      id="email"
+      className="mailpoet_text"
+      type="email"
+      name="name"
+      placeholder={placeholder}
+      data-automation-id="editor_email_input"
+    />
+  );
+
   return (
     <>
       {inspectorControls}
-      {attributes.labelWithinInput ? (
-        <input className="mailpoet_text" type="email" name="name" placeholder={attributes.label} />
+      {attributes.labelWithinInput ? (getTextInput(attributes.label)
       ) : (
-        <label className="mailpoet_text_label">
+        <label className="mailpoet_text_label" data-automation-id="editor_email_label" htmlFor="email">
           {attributes.label}
           <br />
-          <input className="mailpoet_text" type="email" name="email" placeholder="" />
+          {getTextInput('')}
         </label>
       )}
     </>

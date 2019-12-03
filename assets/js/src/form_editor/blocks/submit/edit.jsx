@@ -14,6 +14,7 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
             label={MailPoet.I18n.t('label')}
             value={attributes.label}
             onChange={(label) => (setAttributes({ label }))}
+            data-automation-id="settings_submit_label_input"
           />
         </PanelBody>
       </Panel>
@@ -25,7 +26,12 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
     <>
       { inspectorControls }
       <div className="mailpoet_submit">
-        <input className="button" type="submit" value={attributes.label} />
+        <input
+          className="button"
+          type="submit"
+          value={attributes.label}
+          data-automation-id="editor_submit_input"
+        />
       </div>
     </>
   );
