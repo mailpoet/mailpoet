@@ -116,6 +116,10 @@ class Forms extends APIEndpoint {
       ],
     ];
 
+    if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
+      $form_data['body'][0]['params']['label_within'] = true;
+    }
+
     return $this->save($form_data);
   }
 
