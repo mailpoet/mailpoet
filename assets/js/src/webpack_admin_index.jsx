@@ -12,6 +12,7 @@ import 'dynamic_segments/dynamic_segments.jsx'; // side effect - renders ReactDO
 import 'settings/settings.jsx'; // side effect - renders ReactDOM to document
 import 'forms/forms.jsx'; // side effect - renders ReactDOM to document
 import 'settings/tabs.js'; // side effect - assigns to MailPoet.Router, executes code on doc ready
+import 'settings/premium_tab/premium_tab.jsx'; // side effect - renders ReactDOM to document
 import 'help/help.jsx'; // side effect - renders ReactDOM to document
 import 'poll.jsx'; // side effect - assigns to MailPoet.Poll
 import 'settings/reinstall_from_scratch.js'; // side effect - adds event handler to document
