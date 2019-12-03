@@ -8,13 +8,13 @@ export const settings = {
   title: MailPoet.I18n.t('blockSubmit'),
   description: MailPoet.I18n.t('blockSubmitDescription'),
   icon,
+  category: 'obligatory',
   attributes: {
     label: {
       type: 'string',
       default: MailPoet.I18n.t('blockSubmitLabel'),
     },
   },
-  category: 'obligatory',
   supports: {
     html: false,
     customClassName: false,

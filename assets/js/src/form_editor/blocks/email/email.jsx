@@ -3,6 +3,7 @@ import edit from './edit.jsx';
 import icon from './icon.jsx';
 
 export const name = 'mailpoet-form/email-input';
+
 export const settings = {
   title: MailPoet.I18n.t('blockEmail'),
   description: MailPoet.I18n.t('blockEmailDescription'),
