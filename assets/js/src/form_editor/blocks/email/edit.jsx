@@ -45,10 +45,10 @@ const EmailEdit = ({ attributes, setAttributes }) => {
   return (
     <>
       {inspectorControls}
-      {attributes.labelWithinInput ? (getTextInput(attributes.label)
+      {attributes.labelWithinInput ? (getTextInput(`${attributes.label} *`)
       ) : (
         <label className="mailpoet_text_label" data-automation-id="editor_email_label" htmlFor="email">
-          {attributes.label}
+          {`${attributes.label} *`}
           <br />
           {getTextInput('')}
         </label>
