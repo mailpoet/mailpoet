@@ -1,6 +1,4 @@
-import MailPoet from 'mailpoet';
-
-export default (state) => {
+export default (MailPoet) => (state) => {
   // remove all form saving related notices
   const notices = state.notices.filter((notice) => !['save-form', 'missing-lists', 'missing-block'].includes(notice.id));
   const hasMissingLists = state.formErrors.includes('missing-lists');

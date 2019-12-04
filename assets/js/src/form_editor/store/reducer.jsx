@@ -1,14 +1,17 @@
+import MailPoet from 'mailpoet';
 import changeFormName from './reducers/change_form_name.jsx';
 import changeFormSettings from './reducers/change_form_settings.jsx';
 import changeFormStyles from './reducers/change_form_styles.jsx';
 import removeNotice from './reducers/remove_notice.jsx';
 import saveFormDone from './reducers/save_form_done.jsx';
 import saveFormFailed from './reducers/save_form_failed.jsx';
-import saveFormStarted from './reducers/save_form_started.jsx';
+import saveFormStartedFactory from './reducers/save_form_started.jsx';
 import switchSidebarTab from './reducers/switch_sidebar_tab.jsx';
 import toggleSidebar from './reducers/toggle_sidebar.jsx';
 import toggleSidebarPanel from './reducers/toggle_sidebar_panel.jsx';
 import changeFormBlocks from './reducers/change_form_blocks.jsx';
+
+const saveFormStarted = saveFormStartedFactory(MailPoet);
 
 export default (defaultState) => (state = defaultState, action) => {
   switch (action.type) {
