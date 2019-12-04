@@ -7,7 +7,6 @@ const emailBlock = {
   innerBlocks: [],
   name: 'mailpoet-form/email-input',
   attributes: {
-    id: 'email',
     label: 'Email Address',
     labelWithinInput: false,
   },
@@ -18,7 +17,6 @@ const submitBlock = {
   innerBlocks: [],
   name: 'mailpoet-form/submit-button',
   attributes: {
-    id: 'submit',
     label: 'Subscribe!',
   },
 };
