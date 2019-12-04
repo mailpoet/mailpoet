@@ -20,7 +20,7 @@ export const settings = {
     },
     mandatory: {
       type: 'boolean',
-      default: true,
+      default: false,
     },
   },
   supports: {

@@ -25,6 +25,11 @@ const FirstNameEdit = ({ attributes, setAttributes }) => {
             checked={attributes.labelWithinInput}
             onChange={(labelWithinInput) => (setAttributes({ labelWithinInput }))}
           />
+          <ToggleControl
+            label={MailPoet.I18n.t('blockMandatory')}
+            checked={attributes.mandatory}
+            onChange={(mandatory) => (setAttributes({ mandatory }))}
+          />
         </PanelBody>
       </Panel>
 
@@ -61,6 +66,7 @@ FirstNameEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
     labelWithinInput: PropTypes.bool.isRequired,
+    mandatory: PropTypes.bool.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
 };
