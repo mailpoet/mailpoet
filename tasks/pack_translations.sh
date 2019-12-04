@@ -10,8 +10,8 @@ done
 
 echo "Creating german formal translation..."
 if [[ -f ./lang/mailpoet-de.mo && -f ./lang/mailpoet-de.po ]]; then
-	mv ./lang/mailpoet-de.mo ./lang/mailpoet-de_DE-formal.mo
-	mv ./lang/mailpoet-de.po ./lang/mailpoet-de_DE-formal.po
+	mv ./lang/mailpoet-de.mo ./lang/mailpoet-de_DE_formal.mo
+	mv ./lang/mailpoet-de.po ./lang/mailpoet-de_DE_formal.po
 fi
 
 echo "Done"
