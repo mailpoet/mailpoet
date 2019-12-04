@@ -20,6 +20,14 @@ export default (data) => {
           labelWithinInput: !!item.params.label_within,
         };
         return mapped;
+      case 'first_name':
+        mapped.name = 'mailpoet-form/first-name-input';
+        mapped.attributes = {
+          label: item.params.label,
+          labelWithinInput: !!item.params.label_within,
+          mandatory: !!item.params.required,
+        };
+        return mapped;
       case 'submit':
         mapped.name = 'mailpoet-form/submit-button';
         mapped.attributes = {
