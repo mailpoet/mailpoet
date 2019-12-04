@@ -4,11 +4,10 @@ namespace MailPoet\Test\Form\Util;
 
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Util\Styles;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class StylesTest extends \MailPoetUnitTest {
 
-  /** @var FeaturesController&MockObject */
+  /** @var FeaturesController&\PHPUnit_Framework_MockObject_MockObject */
   private $features_controller;
 
   function _before() {
