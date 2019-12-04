@@ -1,5 +1,6 @@
 {{#if isWoocommerceTransactional}}
   <h1><%= _x('Edit template for WooCommerce emails', 'Name of user interface used to customize email template used for eCommerce related emails (for example order confirmation email)') %></h1>
+  <p class="mailpoet_heading_wc_template_description"><%= __('This email template will be used for all your WooCommerce emails. Meaning that any content added to this template will be visible in all WooCommerce emails. If you want to change email-specific content including titles, [link]visit WooCommerce settings[/link].')|replaceLinkTags('?page=wc-settings&tab=email', {'target': '_blank'})|raw %></p>
   <div class="mailpoet_form_field mailpoet_heading_form_field">
     <label for="mailpoet_heading_email_type"><%= _x('Load dummy data for email:', 'Label of a dropdown used to switch between email type: order processing, order completed, ...') %></label>
     <select id="mailpoet_heading_email_type">
