@@ -38,6 +38,20 @@ export default (blocks) => {
           mapped.params.label_within = '1';
         }
         break;
+      case 'mailpoet-form/last-name-input':
+        mapped.id = 'last_name';
+        mapped.type = 'text';
+        mapped.unique = '1';
+        mapped.static = '0';
+        mapped.name = 'Last name';
+        mapped.params.label = block.attributes.label;
+        if (block.attributes.mandatory) {
+          mapped.params.required = '1';
+        }
+        if (block.attributes.labelWithinInput) {
+          mapped.params.label_within = '1';
+        }
+        break;
       case 'mailpoet-form/submit-button':
         mapped.id = 'submit';
         mapped.type = 'submit';
