@@ -47,13 +47,20 @@ const FirstNameEdit = ({ attributes, setAttributes }) => {
     />
   );
 
+  const getLabel = () => {
+    if (attributes.mandatory) {
+      return `${attributes.label} *`;
+    }
+    return attributes.label;
+  };
+
   return (
     <>
       {inspectorControls}
-      {attributes.labelWithinInput ? (getTextInput(attributes.label)
+      {attributes.labelWithinInput ? (getTextInput(getLabel())
       ) : (
         <label className="mailpoet_text_label" data-automation-id="editor_first_name_label" htmlFor="first_name">
-          {attributes.label}
+          {getLabel()}
           <br />
           {getTextInput('')}
         </label>
