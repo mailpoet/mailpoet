@@ -161,6 +161,49 @@
         </p>
       </td>
     </tr>
+    <!-- transactional emails -->
+    <tr>
+      <th scope="row">
+        <label>
+          <%= _x("Send all site's emails with...", 'Transational emails settings title') %>
+        </label>
+        <p class="description">
+          <%= _x('Choose which method to send all your WordPress emails (e.g. password reset, new registration, WooCommerce invoices, etc.).', 'Transational emails settings description') %>
+          <a href="https://kb.mailpoet.com/article/292-choose-how-to-send-your-wordpress-websites-emails"
+            target="_blank"
+            data-beacon-article="5ddbf92504286364bc9228c5"
+          >
+            <%= _x('Read more.', 'Transactional emails settings link') %>
+          </a>
+        </p>
+      </th>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="send_transactional_emails"
+              value="1"
+              <% if(settings.send_transactional_emails) %>
+              checked="checked"
+              <% endif %>
+            /><%= _x("MailPoet's active sending method (recommended)", 'Transactional emails settings option') %>
+          </label>
+        </p>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="send_transactional_emails"
+              value=""
+              <% if not(settings.send_transactional_emails) %>
+              checked="checked"
+              <% endif %>
+            /><%= _x('The default WordPress sending method (default)', 'Transactional emails settings option') %>
+          </label>
+        </p>
+      </td>
+    </tr>
     <!-- inactive subscribers -->
     <tr>
       <th scope="row">
