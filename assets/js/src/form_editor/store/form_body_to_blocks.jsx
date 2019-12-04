@@ -11,37 +11,37 @@ export default (data) => {
       clientId: item.id,
       isValid: true,
       innerBlocks: [],
+      attributes: {
+        label: item.params.label,
+      },
     };
+    if (Object.prototype.hasOwnProperty.call(item.params, 'required')) {
+      mapped.attributes.mandatory = !!item.params.required;
+    }
+    if (Object.prototype.hasOwnProperty.call(item.params, 'label_within')) {
+      mapped.attributes.labelWithinInput = !!item.params.label_within;
+    }
     switch (item.id) {
       case 'email':
-        mapped.name = 'mailpoet-form/email-input';
-        mapped.attributes = {
-          label: item.params.label,
-          labelWithinInput: !!item.params.label_within,
+        return {
+          name: 'mailpoet-form/email-input',
+          ...mapped,
         };
-        return mapped;
       case 'first_name':
-        mapped.name = 'mailpoet-form/first-name-input';
-        mapped.attributes = {
-          label: item.params.label,
-          labelWithinInput: !!item.params.label_within,
-          mandatory: !!item.params.required,
+        return {
+          name: 'mailpoet-form/first-name-input',
+          ...mapped,
         };
-        return mapped;
       case 'last_name':
-        mapped.name = 'mailpoet-form/last-name-input';
-        mapped.attributes = {
-          label: item.params.label,
-          labelWithinInput: !!item.params.label_within,
-          mandatory: !!item.params.required,
+        return {
+          name: 'mailpoet-form/last-name-input',
+          ...mapped,
         };
-        return mapped;
       case 'submit':
-        mapped.name = 'mailpoet-form/submit-button';
-        mapped.attributes = {
-          label: item.params.label,
+        return {
+          name: 'mailpoet-form/submit-button',
+          ...mapped,
         };
-        return mapped;
       default:
         return null;
     }

@@ -6,65 +6,56 @@ export default (blocks) => {
   if (!Array.isArray(blocks)) {
     throw new Error('Mapper expects blocks to be an array.');
   }
-  let position = 1;
-  return blocks.map((block) => {
+  return blocks.map((block, index) => {
     const mapped = {
-      params: {},
+      type: 'text',
+      unique: '0',
+      static: '1',
+      position: (index + 1).toString(),
+      params: {
+        label: block.attributes.label,
+      },
     };
+    if (block.attributes.mandatory) {
+      mapped.params.required = '1';
+    }
+    if (block.attributes.labelWithinInput) {
+      mapped.params.label_within = '1';
+    }
+
     switch (block.name) {
       case 'mailpoet-form/email-input':
-        mapped.id = 'email';
-        mapped.type = 'text';
-        mapped.unique = '0';
-        mapped.static = '1';
-        mapped.name = 'Email';
-        mapped.params.label = block.attributes.label;
-        mapped.params.required = '1';
-        if (block.attributes.labelWithinInput) {
-          mapped.params.label_within = '1';
-        }
-        break;
+        return {
+          id: 'email',
+          name: 'Email',
+          required: '1',
+          ...mapped,
+        };
       case 'mailpoet-form/first-name-input':
-        mapped.id = 'first_name';
-        mapped.type = 'text';
-        mapped.unique = '1';
-        mapped.static = '0';
-        mapped.name = 'First name';
-        mapped.params.label = block.attributes.label;
-        if (block.attributes.mandatory) {
-          mapped.params.required = '1';
-        }
-        if (block.attributes.labelWithinInput) {
-          mapped.params.label_within = '1';
-        }
-        break;
+        return {
+          id: 'first_name',
+          unique: '1',
+          static: '0',
+          name: 'First name',
+          ...mapped,
+        };
       case 'mailpoet-form/last-name-input':
-        mapped.id = 'last_name';
-        mapped.type = 'text';
-        mapped.unique = '1';
-        mapped.static = '0';
-        mapped.name = 'Last name';
-        mapped.params.label = block.attributes.label;
-        if (block.attributes.mandatory) {
-          mapped.params.required = '1';
-        }
-        if (block.attributes.labelWithinInput) {
-          mapped.params.label_within = '1';
-        }
-        break;
+        return {
+          id: 'last_name',
+          unique: '1',
+          static: '0',
+          name: 'Last name',
+          ...mapped,
+        };
       case 'mailpoet-form/submit-button':
-        mapped.id = 'submit';
-        mapped.type = 'submit';
-        mapped.name = 'Submit';
-        mapped.unique = '0';
-        mapped.static = '1';
-        mapped.params.label = block.attributes.label;
-        break;
+        return {
+          id: 'submit',
+          type: 'submit',
+          name: 'Submit',
+          ...mapped,
+        };
       default:
         return null;
     }
-    mapped.position = position.toString();
-    position += 1;
-    return mapped;
   }).filter(Boolean);
 };
