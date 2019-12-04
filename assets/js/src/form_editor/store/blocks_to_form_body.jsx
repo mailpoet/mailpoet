@@ -1,4 +1,11 @@
+/**
+ * Transforms blocks to form.body data structure.
+ * @param blocks - blocks representation taken from @wordpress/block-editor
+ */
 export default (blocks) => {
+  if (!Array.isArray(blocks)) {
+    throw new Error('Mapper expects blocks to be an array.');
+  }
   let position = 1;
   return blocks.map((block) => {
     const mapped = {
