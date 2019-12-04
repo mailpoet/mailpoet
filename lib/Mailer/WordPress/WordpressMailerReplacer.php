@@ -25,7 +25,9 @@ class WordpressMailerReplacer {
 
   public function replaceWordPressMailer() {
     global $phpmailer;
-    $phpmailer = new WordPressMailer($this->mailer, $this->createFallbackMailer(), $this->mailerMetaInfo);
+    if ($this->settings->get('send_transactional_emails', false)) {
+      $phpmailer = new WordPressMailer($this->mailer, $this->createFallbackMailer(), $this->mailerMetaInfo);
+    }
     return $phpmailer;
   }
 
