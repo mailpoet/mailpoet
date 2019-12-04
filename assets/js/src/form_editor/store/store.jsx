@@ -14,6 +14,7 @@ export default () => {
   const formData = { ...window.mailpoet_form_data };
   const formBlocks = formBodyToBlocks(formData.body);
   delete formData.body;
+  formData.settings.segments = formData.settings.segments ? formData.settings.segments : [];
   const defaultState = {
     formBlocks,
     formData,
