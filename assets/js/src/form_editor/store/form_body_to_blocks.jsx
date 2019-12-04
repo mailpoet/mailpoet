@@ -1,5 +1,12 @@
-export default (data) => (
-  data.map((item) => {
+/**
+ * Transforms form body items to array of blocks which can be passed to block editor.
+ * @param data - from form.body property
+ */
+export default (data) => {
+  if (!Array.isArray(data)) {
+    throw new Error('Mapper expects form body to be an array.');
+  }
+  return data.map((item) => {
     const mapped = {
       clientId: item.id,
       isValid: true,
@@ -22,5 +29,5 @@ export default (data) => (
       default:
         return null;
     }
-  }).filter(Boolean)
-);
+  }).filter(Boolean);
+};

@@ -34,6 +34,14 @@ const checkBlockBasics = (block) => {
 };
 
 describe('Form Body To Blocks', () => {
+  it('Should throw an error for wrong input', () => {
+    const error = 'Mapper expects form body to be an array.';
+    expect(() => formBodyToBlocks(null)).to.throw(error);
+    expect(() => formBodyToBlocks('hello')).to.throw(error);
+    expect(() => formBodyToBlocks(undefined)).to.throw(error);
+    expect(() => formBodyToBlocks(1)).to.throw(error);
+  });
+
   it('Should map email input to block', () => {
     const [block] = formBodyToBlocks([{ ...emailInput, position: '1' }]);
     checkBlockBasics(block);
