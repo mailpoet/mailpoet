@@ -36,7 +36,7 @@ const EmailEdit = ({ attributes, setAttributes }) => {
       id="email"
       className="mailpoet_text"
       type="email"
-      name="name"
+      name="email"
       placeholder={placeholder}
       data-automation-id="editor_email_input"
     />
