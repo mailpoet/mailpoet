@@ -13,6 +13,7 @@ export default (data) => {
       innerBlocks: [],
       attributes: {
         labelWithinInput: false,
+        mandatory: false,
       },
     };
     if (item.params && Object.prototype.hasOwnProperty.call(item.params, 'required')) {
