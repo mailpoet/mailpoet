@@ -37,6 +37,11 @@ class FormEditorAddNamesCest {
     $I->click('[data-automation-id="form_save_button"]');
     $I->waitForText('Form saved', 10, '.automation-dismissible-notices');
     $I->seeNoJSErrors();
+    // Reload page and check data were saved
+    $I->reloadPage();
+    $I->waitForElement('[data-automation-id="form_title_input"]');
+    $I->seeElement('[data-automation-id="editor_first_name_input"]');
+    $I->seeElement('[data-automation-id="editor_last_name_input"]');
   }
 
 }
