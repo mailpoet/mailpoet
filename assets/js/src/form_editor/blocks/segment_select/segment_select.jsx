@@ -1,5 +1,6 @@
 import MailPoet from 'mailpoet';
 import icon from './icon.jsx';
+import edit from './edit.jsx';
 
 export const name = 'mailpoet-form/segment-select';
 
@@ -19,7 +20,7 @@ export const settings = {
     customClassName: false,
     multiple: false,
   },
-  edit: () => {},
+  edit,
   save() {
     return null;
   },
