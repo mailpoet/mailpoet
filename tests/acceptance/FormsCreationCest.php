@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Acceptance;
 
 class FormsCreationCest {
-
   function createForm(\AcceptanceTester $I) {
     $I->wantTo('Create a new Form');
 
