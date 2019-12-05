@@ -9,7 +9,7 @@ const MailPoetStub = {
 };
 const reducer = reducerFactory(MailPoetStub);
 
-describe.only('Save Form Started Reducer', () => {
+describe('Save Form Started Reducer', () => {
   let initialState = null;
   beforeEach(() => {
     initialState = {
