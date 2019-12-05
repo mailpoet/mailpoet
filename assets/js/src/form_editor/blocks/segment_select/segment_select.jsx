@@ -14,6 +14,10 @@ export const settings = {
       type: 'string',
       default: MailPoet.I18n.t('blockSegmentSelectLabel'),
     },
+    values: {
+      type: 'array',
+      default: [],
+    },
   },
   supports: {
     html: false,
