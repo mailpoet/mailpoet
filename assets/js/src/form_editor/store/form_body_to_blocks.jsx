@@ -12,35 +12,38 @@ export default (data) => {
       isValid: true,
       innerBlocks: [],
       attributes: {
-        label: item.params.label,
+        labelWithinInput: false,
       },
     };
-    if (Object.prototype.hasOwnProperty.call(item.params, 'required')) {
+    if (item.params && Object.prototype.hasOwnProperty.call(item.params, 'required')) {
       mapped.attributes.mandatory = !!item.params.required;
     }
-    if (Object.prototype.hasOwnProperty.call(item.params, 'label_within')) {
+    if (item.params && Object.prototype.hasOwnProperty.call(item.params, 'label_within')) {
       mapped.attributes.labelWithinInput = !!item.params.label_within;
+    }
+    if (item.params && Object.prototype.hasOwnProperty.call(item.params, 'label')) {
+      mapped.attributes.label = item.params.label;
     }
     switch (item.id) {
       case 'email':
         return {
-          name: 'mailpoet-form/email-input',
           ...mapped,
+          name: 'mailpoet-form/email-input',
         };
       case 'first_name':
         return {
-          name: 'mailpoet-form/first-name-input',
           ...mapped,
+          name: 'mailpoet-form/first-name-input',
         };
       case 'last_name':
         return {
-          name: 'mailpoet-form/last-name-input',
           ...mapped,
+          name: 'mailpoet-form/last-name-input',
         };
       case 'submit':
         return {
-          name: 'mailpoet-form/submit-button',
           ...mapped,
+          name: 'mailpoet-form/submit-button',
         };
       default:
         return null;
