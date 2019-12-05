@@ -29,7 +29,7 @@ const checkBodyInputBasics = (input) => {
   expect(input.params).to.be.a('Object');
 };
 
-describe('Form Body To Blocks', () => {
+describe('Blocks to Form Body', () => {
   it('Should throw an error for wrong input', () => {
     const error = 'Mapper expects blocks to be an array.';
     expect(() => formBlocksToBody(null)).to.throw(error);
@@ -37,6 +37,7 @@ describe('Form Body To Blocks', () => {
     expect(() => formBlocksToBody(undefined)).to.throw(error);
     expect(() => formBlocksToBody(1)).to.throw(error);
   });
+
   it('Should map email block to input data', () => {
     const [input] = formBlocksToBody([emailBlock]);
     checkBodyInputBasics(input);
@@ -79,7 +80,7 @@ describe('Form Body To Blocks', () => {
         id: 'unknowns',
       },
     };
-    const inputs = formBlocksToBody([unknownBlock, submitBlock, emailBlock]);
+    const inputs = formBlocksToBody([submitBlock, emailBlock, unknownBlock]);
     inputs.map(checkBodyInputBasics);
     expect(inputs.length).to.be.equal(2);
     expect(inputs[0].id).to.be.equal('submit');
