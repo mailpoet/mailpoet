@@ -26,33 +26,36 @@ export default (blocks) => {
     switch (block.name) {
       case 'mailpoet-form/email-input':
         return {
+          ...mapped,
           id: 'email',
           name: 'Email',
-          required: '1',
-          ...mapped,
+          params: {
+            ...mapped.params,
+            required: '1',
+          },
         };
       case 'mailpoet-form/first-name-input':
         return {
+          ...mapped,
           id: 'first_name',
           unique: '1',
           static: '0',
           name: 'First name',
-          ...mapped,
         };
       case 'mailpoet-form/last-name-input':
         return {
+          ...mapped,
           id: 'last_name',
           unique: '1',
           static: '0',
           name: 'Last name',
-          ...mapped,
         };
       case 'mailpoet-form/submit-button':
         return {
+          ...mapped,
           id: 'submit',
           type: 'submit',
           name: 'Submit',
-          ...mapped,
         };
       default:
         return null;
