@@ -13,7 +13,8 @@
     }
   },
   "plugins": [
-    "react-hooks"
+    "react-hooks",
+    "no-only-tests"
   ],
   "settings": {
     "import/resolver": "webpack"
@@ -25,6 +26,7 @@
     // Exceptions
     "arrow-parens": ["error", "always"],
     "comma-dangle": ["error", "always-multiline"],
+    "no-only-tests/no-only-tests": 2,
     "no-script-url": 0,
     "import/extensions": 0, // we wouldn't be able to import jQuery without this line
     "react/destructuring-assignment": 0, // that would be too many changes to fix this one
