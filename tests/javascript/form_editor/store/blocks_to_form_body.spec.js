@@ -20,6 +20,28 @@ const submitBlock = {
     label: 'Subscribe!',
   },
 };
+const firstNameBlock = {
+  clientId: 'first_name',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/first-name-input',
+  attributes: {
+    label: 'First Name',
+    labelWithinInput: false,
+    mandatory: false,
+  },
+};
+const lastNameBlock = {
+  clientId: 'last_name',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/last-name-input',
+  attributes: {
+    label: 'Last Name',
+    labelWithinInput: false,
+    mandatory: false,
+  },
+};
 
 const checkBodyInputBasics = (input) => {
   expect(input.id).to.be.a('string');
@@ -57,6 +79,54 @@ describe('Blocks to Form Body', () => {
     block.attributes.labelWithinInput = true;
     const [input] = formBlocksToBody([block]);
     checkBodyInputBasics(input);
+    expect(input.params.label_within).to.be.equal('1');
+  });
+
+  it('Should map last name block to input data', () => {
+    const [input] = formBlocksToBody([lastNameBlock]);
+    checkBodyInputBasics(input);
+    expect(input.id).to.be.equal('last_name');
+    expect(input.name).to.be.equal('Last name');
+    expect(input.type).to.be.equal('text');
+    expect(input.position).to.be.equal('1');
+    expect(input.unique).to.be.equal('1');
+    expect(input.static).to.be.equal('0');
+    expect(input.params.label).to.be.equal('Last Name');
+    expect(input.params.required).to.be.undefined;
+    expect(input.params.label_within).to.be.undefined;
+  });
+
+  it('Should map last name block with mandatory and label', () => {
+    const block = { ...lastNameBlock };
+    block.attributes.labelWithinInput = true;
+    block.attributes.mandatory = true;
+    const [input] = formBlocksToBody([block]);
+    checkBodyInputBasics(input);
+    expect(input.params.required).to.be.equal('1');
+    expect(input.params.label_within).to.be.equal('1');
+  });
+
+  it('Should map first name block to input data', () => {
+    const [input] = formBlocksToBody([firstNameBlock]);
+    checkBodyInputBasics(input);
+    expect(input.id).to.be.equal('first_name');
+    expect(input.name).to.be.equal('First name');
+    expect(input.type).to.be.equal('text');
+    expect(input.position).to.be.equal('1');
+    expect(input.unique).to.be.equal('1');
+    expect(input.static).to.be.equal('0');
+    expect(input.params.label).to.be.equal('First Name');
+    expect(input.params.required).to.be.undefined;
+    expect(input.params.label_within).to.be.undefined;
+  });
+
+  it('Should map first name block with mandatory and label', () => {
+    const block = { ...firstNameBlock };
+    block.attributes.labelWithinInput = true;
+    block.attributes.mandatory = true;
+    const [input] = formBlocksToBody([block]);
+    checkBodyInputBasics(input);
+    expect(input.params.required).to.be.equal('1');
     expect(input.params.label_within).to.be.equal('1');
   });
 
