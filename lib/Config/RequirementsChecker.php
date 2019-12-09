@@ -19,7 +19,6 @@ class RequirementsChecker {
     '\pQuery',
     '\Cron\CronExpression',
     '\Html2Text\Html2Text',
-    '\csstidy',
   ];
 
   function __construct($display_error_notice = true) {

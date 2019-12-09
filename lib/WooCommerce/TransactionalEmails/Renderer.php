@@ -2,10 +2,11 @@
 
 namespace MailPoet\WooCommerce\TransactionalEmails;
 
-use csstidy;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
+use MailPoetVendor\csstidy;
+use MailPoetVendor\csstidy_print;
 
 class Renderer {
   const CONTENT_CONTAINER_ID = 'mailpoet_woocommerce_container';
@@ -61,7 +62,7 @@ class Renderer {
         $this->css_parser->css[$index][$selectors] = $properties;
       }
     }
-    /** @var \csstidy_print */
+    /** @var csstidy_print */
     $print = $this->css_parser->print;
     return $print->plain();
   }

@@ -4,53 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0029bcc47aaca4f855debb73c75e5506",
+    "content-hash": "107833c03ecbceba9b945ec28d1050d1",
     "packages": [
-        {
-            "name": "cerdic/css-tidy",
-            "version": "v1.7.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Cerdic/CSSTidy.git",
-                "reference": "47bc70fc6d78a37cb91f9df4518585a9e62b565a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Cerdic/CSSTidy/zipball/47bc70fc6d78a37cb91f9df4518585a9e62b565a",
-                "reference": "47bc70fc6d78a37cb91f9df4518585a9e62b565a",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.4.0 || ^7"
-            },
-            "require-dev": {
-                "pear/text_diff": "^1.2",
-                "simpletest/simpletest": "^1.1"
-            },
-            "bin": [
-                "bin/pcsstidy"
-            ],
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "class.csstidy_optimise.php",
-                    "class.csstidy_print.php",
-                    "class.csstidy.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.1-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Cédric MORIN",
-                    "email": "changeme@mailinator.com"
-                }
-            ],
-            "description": "CSSTidy is a CSS minifier",
-            "time": "2019-09-14T17:59:23+00:00"
-        },
         {
             "name": "mtdowling/cron-expression",
             "version": "v1.2.1",
@@ -1523,6 +1478,7 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
+            "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
         },
         {
@@ -1810,12 +1766,12 @@
             "version": "v4.6.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/oscarotero/Gettext.git",
+                "url": "https://github.com/php-gettext/Gettext.git",
                 "reference": "70c6ff2fecd275e6ef9cdd542f55939a3d1904d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oscarotero/Gettext/zipball/70c6ff2fecd275e6ef9cdd542f55939a3d1904d6",
+                "url": "https://api.github.com/repos/php-gettext/Gettext/zipball/70c6ff2fecd275e6ef9cdd542f55939a3d1904d6",
                 "reference": "70c6ff2fecd275e6ef9cdd542f55939a3d1904d6",
                 "shasum": ""
             },

@@ -7,7 +7,6 @@
   ],
   "require": {
     "php": ">=5.6",
-    "cerdic/css-tidy": "^1.7",
     "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
     "soundasleep/html2text": "dev-master",

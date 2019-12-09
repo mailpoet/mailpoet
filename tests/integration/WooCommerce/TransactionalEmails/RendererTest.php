@@ -5,6 +5,7 @@ namespace MailPoet\WooCommerce\TransactionalEmails;
 use Codeception\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
+use MailPoetVendor\csstidy;
 
 class RendererTest extends \MailPoetTest {
   /** @var Newsletter */
@@ -33,7 +34,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testGetHTMLBeforeContent() {
-    $renderer = new Renderer(new \csstidy);
+    $renderer = new Renderer(new csstidy);
     $renderer->render($this->newsletter);
     $html = $renderer->getHTMLBeforeContent('Heading Text');
     expect($html)->contains('Some text before heading');
@@ -43,7 +44,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testGetHTMLAfterContent() {
-    $renderer = new Renderer(new \csstidy);
+    $renderer = new Renderer(new csstidy);
     $renderer->render($this->newsletter);
     $html = $renderer->getHTMLAfterContent('Heading Text');
     expect($html)->notContains('Some text before heading');
@@ -53,7 +54,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   function testPrefixCss() {
-    $renderer = new Renderer(new \csstidy);
+    $renderer = new Renderer(new csstidy);
     $css = $renderer->prefixCss('
       #some_id {color: black}
       .some-class {height: 50px; width: 30px}
