@@ -15,7 +15,7 @@ import { useSelect } from '@wordpress/data';
 
 const findSegment = (segments, segmentId) => segments.find((s) => s.id === segmentId);
 
-const Preview = ({ segments, updateSegment }) => {
+const Preview = ({ segments, updateSegment, removeSegment }) => {
   if (segments.length === 0) {
     return null;
   }
@@ -27,12 +27,30 @@ const Preview = ({ segments, updateSegment }) => {
   };
 
   return segments.map((segment) => (
-    <CheckboxControl
-      label={segment.name}
-      checked={!!segment.isChecked}
-      onChange={partial(onCheck, segment.id)}
-      key={segment.id}
-    />
+    <div className="mailpoet-form-segments-settings-list" key={segment.id}>
+      <CheckboxControl
+        label={segment.name}
+        checked={!!segment.isChecked}
+        onChange={partial(onCheck, segment.id)}
+        key={`check-${segment.id}`}
+      />
+      <span
+        role="button"
+        className="mailpoet-form-segments-segment-remove mailpoet_error"
+        onClick={partial(removeSegment, segment.id)}
+        key={`remove-${segment.id}`}
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+          ) {
+            event.preventDefault();
+            partial(removeSegment, segment.id);
+          }
+        }}
+      >
+        ✗
+      </span>
+    </div>
   ));
 };
 
@@ -43,6 +61,7 @@ Preview.propTypes = {
     id: PropTypes.string.isRequired,
   }).isRequired).isRequired,
   updateSegment: PropTypes.func.isRequired,
+  removeSegment: PropTypes.func.isRequired,
 };
 
 const SegmentSelectSettings = ({
@@ -81,6 +100,12 @@ const SegmentSelectSettings = ({
     }));
   };
 
+  const removeSegment = (segmentId) => {
+    setNewSelection(
+      segmentsAddedIntoSelection.filter((segment) => segmentId !== segment.id)
+    );
+  };
+
   return (
     <InspectorControls>
       <Panel>
@@ -96,6 +121,7 @@ const SegmentSelectSettings = ({
           <Preview
             segments={segmentsAddedIntoSelection}
             updateSegment={updateSegment}
+            removeSegment={removeSegment}
           />
           <PanelRow>
             {segmentsListToBeAdded.length ? (
