@@ -56,11 +56,16 @@ $gutenberg-control-border-color-focus: #007cba;
 
   .components-base-control {
     flex-grow: 1;
-    margin-bottom: 16px;
+    margin: 8px 0;
+
+    .components-base-control__field {
+      margin: 0;
+    }
   }
 
   .mailpoet-form-segments-segment-remove {
     cursor: pointer;
     flex-grow: 0;
+    margin: 8px 0;
   }
 }

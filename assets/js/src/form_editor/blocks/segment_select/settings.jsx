@@ -73,6 +73,7 @@ const SegmentSelectSettings = ({
             segments={segmentsAddedIntoSelection}
             updateSegment={updateSegment}
             removeSegment={removeSegment}
+            onSegmentsReorder={setNewSelection}
           />
           <PanelRow>
             {segmentsListToBeAdded.length ? (
