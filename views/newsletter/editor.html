@@ -301,10 +301,6 @@
     'newsletter_editor_template_woocommerce_heading_widget',
     'newsletter/templates/blocks/woocommerceHeading/widget.hbs'
   ) %>
-  <%= partial(
-    'newsletter_editor_template_woocommerce_heading_settings',
-    'newsletter/templates/blocks/woocommerceHeading/settings.hbs'
-  ) %>
 <% endblock %>
 
 <% block content %>
@@ -659,9 +655,6 @@
       ),
       woocommerceHeadingInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_woocommerce_heading_widget').html()
-      ),
-      woocommerceHeadingBlockSettings: Handlebars.compile(
-        jQuery('#newsletter_editor_template_woocommerce_heading_settings').html()
       ),
     };
 
@@ -1453,17 +1446,8 @@
             },
           },
         },
-        woocommerceContent: {
-          styles: {
-            titleColor: '<%= woocommerce.email_base_color %>',
-          },
-        },
         woocommerceHeading: {
           contents: <%= json_encode(woocommerce.email_headings) %>,
-          styles: {
-            fontColor: '<%= woocommerce.email_base_text_color %>',
-            backgroundColor: '<%= woocommerce.email_base_color %>',
-          },
         },
       },
       shortcodes: <%= json_encode(shortcodes) %>,
