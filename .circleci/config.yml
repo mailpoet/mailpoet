@@ -1,5 +1,19 @@
 version: 2.1
 
+anchors:
+  only_master_and_release: &only_master_and_release
+    filters:
+      branches:
+        only:
+          - master
+          - release
+
+  multisite_acceptance_config: &multisite_acceptance_config
+    multisite: 1
+    requires:
+      - php5_unit
+    <<: *only_master_and_release
+
 executors:
   config:
     resource_class: small
@@ -394,68 +408,29 @@ workflows:
           requires:
             - php7_unit
       - acceptance_tests:
+          <<: *multisite_acceptance_config
           index: 1
-          multisite: 1
           name: acceptance_tests_multisite_1
-          requires:
-            - php5_unit
-          filters:
-            branches:
-              only:
-                - master
-                - release
       - acceptance_tests:
+          <<: *multisite_acceptance_config
           index: 2
-          multisite: 1
           name: acceptance_tests_multisite_2
-          requires:
-            - php5_unit
-          filters:
-            branches:
-              only:
-                - master
-                - release
       - acceptance_tests:
+          <<: *multisite_acceptance_config
           index: 3
-          multisite: 1
           name: acceptance_tests_multisite_3
-          requires:
-            - php5_unit
-          filters:
-            branches:
-              only:
-                - master
-                - release
       - acceptance_tests:
+          <<: *multisite_acceptance_config
           index: 4
-          multisite: 1
           name: acceptance_tests_multisite_4
-          requires:
-            - php5_unit
-          filters:
-            branches:
-              only:
-                - master
-                - release
       - acceptance_tests:
+          <<: *multisite_acceptance_config
           index: 5
-          multisite: 1
           name: acceptance_tests_multisite_5
-          requires:
-            - php5_unit
-          filters:
-            branches:
-              only:
-                - master
-                - release
       - php7_integration_multisite:
+          <<: *only_master_and_release
           requires:
             - php7_unit
-          filters:
-            branches:
-              only:
-                - master
-                - release
       - build_release_zip:
           requires:
             - build_and_code_qa
@@ -468,10 +443,6 @@ workflows:
             - php5_integration
             - php7_integration
       - test_deployment:
+          <<: *only_master_and_release
           requires:
             - build_release_zip
-          filters:
-            branches:
-              only:
-                - master
-                - release
