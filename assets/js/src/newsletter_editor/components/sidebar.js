@@ -77,11 +77,6 @@ SidebarView = Marionette.View.extend({
       }
     },
   },
-  templateContext: function () {
-    return {
-      isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
-    };
-  },
   initialize: function () {
     jQuery(window)
       .on('resize', this.updateHorizontalScroll.bind(this))
@@ -97,6 +92,7 @@ SidebarView = Marionette.View.extend({
     this.showChildView('stylesRegion', new Module.SidebarStylesView({
       model: App.getGlobalStyles(),
       availableStyles: App.getAvailableStyles(),
+      isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
     }));
     this.showChildView('previewRegion', new Module.SidebarPreviewView());
   },
@@ -213,16 +209,21 @@ Module.SidebarStylesView = Marionette.View.extend({
       },
       'change #mailpoet_newsletter_background_color': _.partial(this.changeColorField, 'wrapper.backgroundColor'),
       'change #mailpoet_background_color': _.partial(this.changeColorField, 'body.backgroundColor'),
+      // WooCommerce styles
+      'change #mailpoet_wc_heading_font_color': _.partial(this.changeColorField, 'woocommerce.headingFontColor'),
+      'change #mailpoet_wc_branding_color': _.partial(this.changeColorField, 'woocommerce.brandingColor'),
     };
   },
   templateContext: function () {
     return {
       model: this.model.toJSON(),
       availableStyles: this.availableStyles.toJSON(),
+      isWoocommerceTransactional: this.isWoocommerceTransactional,
     };
   },
   initialize: function (options) {
     this.availableStyles = options.availableStyles;
+    this.isWoocommerceTransactional = options.isWoocommerceTransactional;
     App.getChannel().on('historyUpdate', this.render);
   },
   changeField: function (field, event) {

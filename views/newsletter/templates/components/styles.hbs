@@ -34,4 +34,22 @@
     #mailpoet_editor_main_wrapper {
         background-color: {{ body.backgroundColor }};
     }
+    {{#if isWoocommerceTransactional}}
+      .mailpoet_woocommerce_heading {
+        padding: 30px 20px;
+        background: {{ woocommerce.brandingColor }};
+      }
+      .mailpoet_woocommerce_heading h1 {
+        line-height: 1.2em;
+        font-family: 'Source Sans Pro';
+        font-size: 36px;
+        color: {{ woocommerce.headingFontColor }};
+        margin: 0;
+      }
+      .mailpoet_woocommerce_content h1,
+      .mailpoet_woocommerce_content h2,
+      .mailpoet_woocommerce_content h3 {
+          color: {{ styles.titleColor }};
+      }
+    {{/if}}
 </style>

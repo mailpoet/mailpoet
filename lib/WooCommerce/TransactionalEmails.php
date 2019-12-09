@@ -23,6 +23,9 @@ class TransactionalEmails {
   /** @var Template */
   private $template;
 
+  /** @var Helper */
+  private $woocommerce_helper;
+
   /** @var Renderer */
   private $renderer;
 
@@ -32,11 +35,12 @@ class TransactionalEmails {
   /** @var NewslettersRepository */
   private $newsletters_repository;
 
-  function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer, NewslettersRepository $newsletters_repository) {
+  function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer, Helper $woocommerce_helper, NewslettersRepository $newsletters_repository) {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->template = $template;
     $this->renderer = $renderer;
+    $this->woocommerce_helper = $woocommerce_helper;
     $this->newsletters_repository = $newsletters_repository;
     $this->email_headings = [
       'new_account' => [
@@ -140,6 +144,7 @@ class TransactionalEmails {
       $key = preg_replace('/^woocommerce_email_/', '', $name);
       $result[$key] = $value ?: $default;
     }
+    $result['base_text_color'] = $this->woocommerce_helper->wcLightOrDark($result['base_color'], '#202020', '#ffffff');
     $result['footer_text'] = $this->replacePlaceholders($result['footer_text']);
     return $result;
   }

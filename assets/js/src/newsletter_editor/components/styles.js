@@ -57,11 +57,19 @@ Module.StylesModel = SuperModel.extend({
 
 Module.StylesView = Marionette.View.extend({
   getTemplate: function () { return window.templates.styles; }, // eslint-disable-line func-names
+  templateContext: function () { // eslint-disable-line func-names
+    return {
+      isWoocommerceTransactional: this.isWoocommerceTransactional,
+    };
+  },
   modelEvents: {
     change: 'render',
   },
   serializeData: function () { // eslint-disable-line func-names
     return this.model.toJSON();
+  },
+  initialize: function (options) { // eslint-disable-line func-names
+    this.isWoocommerceTransactional = options.isWoocommerceTransactional;
   },
 });
 
@@ -92,7 +100,10 @@ App.on('before:start', function (BeforeStartApp, options) { // eslint-disable-li
 });
 
 App.on('start', function (StartApp) { // eslint-disable-line func-names
-  var stylesView = new Module.StylesView({ model: StartApp.getGlobalStyles() });
+  var stylesView = new Module.StylesView({
+    model: StartApp.getGlobalStyles(),
+    isWoocommerceTransactional: App.getNewsletter().isWoocommerceTransactional(),
+  });
   StartApp._appView.showChildView('stylesRegion', stylesView);
 });
 

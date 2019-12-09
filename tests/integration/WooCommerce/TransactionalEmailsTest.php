@@ -9,6 +9,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\TransactionalEmails\Renderer;
 use MailPoet\WooCommerce\TransactionalEmails\Template;
 use MailPoet\WP\Functions as WPFunctions;
@@ -40,6 +41,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
       $this->settings,
       ContainerWrapper::getInstance()->get(Template::class),
       ContainerWrapper::getInstance()->get(Renderer::class),
+      Stub::makeEmpty(WooCommerceHelper::class),
       $this->newsletters_repository
     );
   }
@@ -71,6 +73,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
       $this->settings,
       ContainerWrapper::getInstance()->get(Template::class),
       ContainerWrapper::getInstance()->get(Renderer::class),
+      Stub::makeEmpty(WooCommerceHelper::class),
       $this->newsletters_repository
     );
     $transactional_emails->init();
@@ -130,6 +133,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
       $this->settings,
       ContainerWrapper::getInstance()->get(Template::class),
       $renderer,
+      Stub::makeEmpty(WooCommerceHelper::class),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class)
     );
     $transactional_emails->useTemplateForWoocommerceEmails();

@@ -2,6 +2,19 @@
 <h3><%= __('Styles') %></h3>
 <div class="mailpoet_region_content">
     <form id="mailpoet_newsletter_styles" action="" method="post" accept-charset="utf-8">
+        {{#if isWoocommerceTransactional}}
+            <div class="mailpoet_form_field">
+                <span>
+                    <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="wc-heading-font-color" value="{{ model.woocommerce.headingFontColor }}" id="mailpoet_wc_heading_font_color"></span>
+                </span><%= __('Heading font color') %>
+            </div>
+            <div class="mailpoet_form_field">
+                <span>
+                    <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="wc-branding-color" value="{{ model.woocommerce.brandingColor }}" id="mailpoet_wc_branding_color"></span>
+                </span><%= __('Branding color') %>
+            </div>
+            <hr />
+        {{/if}}
         <div class="mailpoet_form_field mailpoet_form_narrow_select2">
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="text-color" value="{{ model.text.fontColor }}" id="mailpoet_text_font_color"></span>
