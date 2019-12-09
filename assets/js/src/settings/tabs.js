@@ -65,7 +65,9 @@ if (jQuery('#mailpoet_settings').length > 0) {
       }
 
       // show "save settings" button
-      jQuery('.mailpoet_settings_submit').show();
+      if (tab !== 'premium') {
+        jQuery('.mailpoet_settings_submit').show();
+      }
 
       MailPoet.trackEvent(
         'User has clicked a tab in Settings',
