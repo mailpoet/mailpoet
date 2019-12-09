@@ -1,12 +1,36 @@
 version: 2.1
-jobs:
-  build_and_code_qa:
+
+executors:
+  config:
     resource_class: small
     working_directory: /home/circleci/mailpoet
-    docker:
-      - image: mailpoet/wordpress:7.3_20190705.2
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
+
+  docker:
+    resource_class: small
+    working_directory: /home/circleci/mailpoet
+    environment:
+      TZ: /usr/share/zoneinfo/Etc/UTC
+    docker:
+    - image: mailpoet/wordpress:7.3_20190705.2
+    - image: circleci/mysql:5.7.27-ram
+
+  docker_latest:
+    resource_class: small
+    working_directory: /home/circleci/mailpoet
+    environment:
+      TZ: /usr/share/zoneinfo/Etc/UTC
+    docker:
+      - image: mailpoet/wordpress:7.3_20190705.2
+      - image: circleci/mysql:8.0-ram
+        command: [--default-authentication-plugin=mysql_native_password]
+
+jobs:
+  build_and_code_qa:
+    executor: config
+    docker:
+      - image: mailpoet/wordpress:7.3_20190705.2
     steps:
       - checkout
       - run:
@@ -85,13 +109,7 @@ jobs:
           paths:
             - .
   static_analysis:
-    resource_class: small
-    working_directory: /home/circleci/mailpoet
-    docker:
-    - image: mailpoet/wordpress:7.3_20190705.2
-    - image: circleci/mysql:5.7.27-ram
-    environment:
-      TZ: /usr/share/zoneinfo/Etc/UTC
+    executor: docker
     steps:
     - attach_workspace:
         at: /home/circleci/mailpoet
@@ -104,13 +122,10 @@ jobs:
         command: ./do qa:phpstan
 
   php5_unit:
-    resource_class: small
-    working_directory: /home/circleci/mailpoet
+    executor: config
     docker:
     - image: mailpoet/wordpress:5.6_20190709.3
     - image: circleci/mysql:5.7.27-ram
-    environment:
-      TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
     - attach_workspace:
        at: /home/circleci/mailpoet
@@ -133,13 +148,10 @@ jobs:
         path: /tmp/fake-mailer/
         destination: fake-mailer
   php5_integration:
-    resource_class: small
-    working_directory: /home/circleci/mailpoet
+    executor: config
     docker:
     - image: mailpoet/wordpress:5.6_20190709.3
     - image: circleci/mysql:5.5-ram
-    environment:
-      TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
     - attach_workspace:
        at: /home/circleci/mailpoet
@@ -162,12 +174,9 @@ jobs:
         path: /tmp/fake-mailer/
         destination: fake-mailer
   js_tests:
-    resource_class: small
-    working_directory: /home/circleci/mailpoet
+    executor: config
     docker:
     - image: mailpoet/wordpress:5.6_20190709.3
-    environment:
-      TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
     - attach_workspace:
        at: /home/circleci/mailpoet
@@ -221,13 +230,7 @@ jobs:
       - store_test_results:
           path: tests/_output
   php7_unit:
-    resource_class: small
-    working_directory: /home/circleci/mailpoet
-    docker:
-      - image: mailpoet/wordpress:7.3_20190705.2
-      - image: circleci/mysql:5.7.27-ram
-    environment:
-      TZ: /usr/share/zoneinfo/Etc/UTC
+    executor: docker
     steps:
       - attach_workspace:
          at: /home/circleci/mailpoet
@@ -253,14 +256,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   php7_integration:
-    resource_class: small
-    working_directory: /home/circleci/mailpoet
-    docker:
-      - image: mailpoet/wordpress:7.3_20190705.2
-      - image: circleci/mysql:8.0-ram
-        command: [--default-authentication-plugin=mysql_native_password]
-    environment:
-      TZ: /usr/share/zoneinfo/Etc/UTC
+    executor: docker_latest
     steps:
       - attach_workspace:
          at: /home/circleci/mailpoet
@@ -286,14 +282,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   php7_integration_multisite:
-    resource_class: small
-    working_directory: /home/circleci/mailpoet
-    docker:
-      - image: mailpoet/wordpress:7.3_20190705.2
-      - image: circleci/mysql:8.0-ram
-        command: [--default-authentication-plugin=mysql_native_password]
-    environment:
-      TZ: /usr/share/zoneinfo/Etc/UTC
+    executor: docker_latest
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -319,13 +308,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   build_release_zip:
-    resource_class: small
-    working_directory: /home/circleci/mailpoet
-    docker:
-      - image: mailpoet/wordpress:7.3_20190705.2
-      - image: circleci/mysql:5.7.27-ram
-    environment:
-      TZ: /usr/share/zoneinfo/Etc/UTC
+    executor: docker
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -349,12 +332,9 @@ jobs:
           paths:
           - release_zip_build_number.txt
   test_deployment:
-    resource_class: small
-    working_directory: /home/circleci/mailpoet
+    executor: config
     docker:
       - image: mailpoet/wordpress:7.1_20181009.1
-    environment:
-      TZ: /usr/share/zoneinfo/Etc/UTC
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
