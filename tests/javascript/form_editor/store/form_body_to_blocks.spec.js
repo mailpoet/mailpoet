@@ -34,6 +34,32 @@ const lastNameInput = {
   },
   position: null,
 };
+const segmentsInput = {
+  type: 'segment',
+  name: 'List selection',
+  id: 'segments',
+  unique: '1',
+  static: '0',
+  params: {
+    label: 'Select list(s):',
+    values: [
+      {
+        id: '6',
+        name: 'Unicorn Truthers',
+      },
+      {
+        id: '24',
+        is_checked: '1',
+        name: 'Carrots are lit',
+      },
+      {
+        id: '29',
+        name: 'Daily',
+      },
+    ],
+  },
+  position: null,
+};
 const submitInput = {
   type: 'submit',
   name: 'Submit',
@@ -115,6 +141,28 @@ describe('Form Body To Blocks', () => {
     const [block] = formBodyToBlocks([input]);
     expect(block.attributes.labelWithinInput).to.be.equal(true);
     expect(block.attributes.mandatory).to.be.equal(true);
+  });
+
+  it('Should map segments input to block', () => {
+    const [block] = formBodyToBlocks([{ ...segmentsInput, position: '1' }]);
+    checkBlockBasics(block);
+    expect(block.clientId).to.be.equal('segments');
+    expect(block.name).to.be.equal('mailpoet-form/segment-select');
+    expect(block.attributes.label).to.be.equal('Select list(s):');
+    expect(block.attributes.values).to.be.an('Array');
+    expect(block.attributes.values[0]).to.haveOwnProperty('id', '6');
+    expect(block.attributes.values[0]).to.haveOwnProperty('name', 'Unicorn Truthers');
+    expect(block.attributes.values[1]).to.haveOwnProperty('isChecked', true);
+  });
+
+  it('Should map segments input without values to block', () => {
+    const input = { ...segmentsInput, position: '1' };
+    input.params.values = undefined;
+    const [block] = formBodyToBlocks([input]);
+    checkBlockBasics(block);
+    expect(block.clientId).to.be.equal('segments');
+    expect(block.attributes.values).to.be.an('Array');
+    expect(block.attributes.values).to.have.length(0);
   });
 
   it('Should map submit button to block', () => {

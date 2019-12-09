@@ -41,6 +41,24 @@ export default (data) => {
           ...mapped,
           name: 'mailpoet-form/last-name-input',
         };
+      case 'segments':
+        if (
+          item.params
+          && Object.prototype.hasOwnProperty.call(item.params, 'values')
+          && Array.isArray(item.params.values)
+        ) {
+          mapped.attributes.values = item.params.values.map((value) => ({
+            id: value.id,
+            name: value.name,
+            isChecked: value.is_checked === '1' ? true : undefined,
+          }));
+        } else {
+          mapped.attributes.values = [];
+        }
+        return {
+          ...mapped,
+          name: 'mailpoet-form/segment-select',
+        };
       case 'submit':
         return {
           ...mapped,
