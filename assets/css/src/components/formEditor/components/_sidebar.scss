@@ -49,3 +49,18 @@ $gutenberg-control-border-color-focus: #007cba;
     }
   }
 }
+
+.mailpoet-form-segments-settings-list {
+  display: flex;
+  flex-direction: row;
+
+  .components-base-control {
+    flex-grow: 1;
+    margin-bottom: 16px;
+  }
+
+  .mailpoet-form-segments-segment-remove {
+    cursor: pointer;
+    flex-grow: 0;
+  }
+}
