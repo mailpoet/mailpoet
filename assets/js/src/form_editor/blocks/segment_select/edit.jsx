@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import Settings from './settings.jsx';
 
-
 const SegmentSelectEdit = ({ attributes, setAttributes }) => {
   const renderValues = () => {
     if (attributes.values.length === 0) {
