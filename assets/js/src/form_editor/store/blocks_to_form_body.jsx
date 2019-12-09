@@ -50,6 +50,23 @@ export default (blocks) => {
           static: '0',
           name: 'Last name',
         };
+      case 'mailpoet-form/segment-select':
+        return {
+          ...mapped,
+          id: 'segments',
+          type: 'segment',
+          unique: '1',
+          static: '0',
+          name: 'List selection',
+          params: {
+            ...mapped.params,
+            values: block.attributes.values.map((segment) => ({
+              id: segment.id,
+              is_checked: segment.isChecked ? '1' : undefined,
+              name: segment.name,
+            })),
+          },
+        };
       case 'mailpoet-form/submit-button':
         return {
           ...mapped,

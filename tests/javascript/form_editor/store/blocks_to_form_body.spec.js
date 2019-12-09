@@ -20,6 +20,22 @@ const submitBlock = {
     label: 'Subscribe!',
   },
 };
+const segmentsBlock = {
+  clientId: 'segments',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/segment-select',
+  attributes: {
+    labelWithinInput: false,
+    mandatory: false,
+    label: 'Select list(s):',
+    values: [
+      { id: '6', name: 'Unicorn Truthers' },
+      { id: '24', name: 'Carrots are lit', isChecked: true },
+      { id: '29', name: 'Daily' },
+    ],
+  },
+};
 const firstNameBlock = {
   clientId: 'first_name',
   isValid: true,
@@ -128,6 +144,18 @@ describe('Blocks to Form Body', () => {
     checkBodyInputBasics(input);
     expect(input.params.required).to.be.equal('1');
     expect(input.params.label_within).to.be.equal('1');
+  });
+
+  it('Should map segments', () => {
+    const [input] = formBlocksToBody([segmentsBlock]);
+    checkBodyInputBasics(input);
+    expect(input.id).to.be.equal('segments');
+    expect(input.name).to.be.equal('List selection');
+    expect(input.type).to.be.equal('segment');
+    expect(input.params.values).to.be.an('Array');
+    expect(input.params.values[0]).to.have.property('name', 'Unicorn Truthers');
+    expect(input.params.values[0]).to.have.property('id', '6');
+    expect(input.params.values[1]).to.have.property('is_checked', '1');
   });
 
   it('Should map submit block to input data', () => {
