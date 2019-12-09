@@ -4,8 +4,53 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5df4d675ebafaec652b31e2e1292f695",
+    "content-hash": "3b332f4579bbf0071e8f579853b463de",
     "packages": [
+        {
+            "name": "cerdic/css-tidy",
+            "version": "v1.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Cerdic/CSSTidy.git",
+                "reference": "47bc70fc6d78a37cb91f9df4518585a9e62b565a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Cerdic/CSSTidy/zipball/47bc70fc6d78a37cb91f9df4518585a9e62b565a",
+                "reference": "47bc70fc6d78a37cb91f9df4518585a9e62b565a",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4.0 || ^7"
+            },
+            "require-dev": {
+                "pear/text_diff": "^1.2",
+                "simpletest/simpletest": "^1.1"
+            },
+            "bin": [
+                "bin/pcsstidy"
+            ],
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "class.csstidy_optimise.php",
+                    "class.csstidy_print.php",
+                    "class.csstidy.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Cédric MORIN",
+                    "email": "changeme@mailinator.com"
+                }
+            ],
+            "description": "CSSTidy is a CSS minifier",
+            "time": "2019-09-14T17:59:23+00:00"
+        },
         {
             "name": "doctrine/annotations",
             "version": "v1.4.0",
@@ -1230,7 +1275,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",

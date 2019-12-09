@@ -1,7 +1,6 @@
 <?php
 namespace MailPoetVendor;
 
-use csstidy;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
