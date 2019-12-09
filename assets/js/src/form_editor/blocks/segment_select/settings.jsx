@@ -69,12 +69,6 @@ const SegmentSelectSettings = ({
               onChange={onLabelChanged}
             />
           </PanelRow>
-          <Preview
-            segments={segmentsAddedIntoSelection}
-            updateSegment={updateSegment}
-            removeSegment={removeSegment}
-            onSegmentsReorder={setNewSelection}
-          />
           <PanelRow>
             {segmentsListToBeAdded.length ? (
               <SelectControl
@@ -90,6 +84,12 @@ const SegmentSelectSettings = ({
               />
             ) : null}
           </PanelRow>
+          <Preview
+            segments={segmentsAddedIntoSelection}
+            updateSegment={updateSegment}
+            removeSegment={removeSegment}
+            onSegmentsReorder={setNewSelection}
+          />
         </PanelBody>
       </Panel>
     </InspectorControls>
