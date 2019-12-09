@@ -27,7 +27,7 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracy_path)) {
     }
 
     Debugger::enable(Debugger::PRODUCTION, $log_dir);
-    Debugger::$logSeverity = E_ALL & ~E_USER_NOTICE;
+    Debugger::$logSeverity = E_ALL;
   } else {
     function render_tracy() {
       ob_start();
