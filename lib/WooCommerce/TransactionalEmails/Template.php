@@ -330,6 +330,11 @@ class Template {
          [
           'backgroundColor' => $wc_email_settings['background_color'],
          ],
+        'woocommerce' =>
+         [
+          'brandingColor' => $wc_email_settings['base_color'],
+          'headingFontColor' => $wc_email_settings['base_text_color'],
+         ],
        ],
       'blockDefaults' =>
        [
