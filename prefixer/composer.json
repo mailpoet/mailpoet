@@ -13,7 +13,7 @@
     "symfony/polyfill-mbstring": "^1.11",
     "symfony/polyfill-php72": "^1.11",
     "symfony/validator": "3.4.32",
-    "twig/twig": "1.38.4"
+    "twig/twig": "1.42.4"
   },
   "scripts": {
     "post-update-cmd": "@process",
