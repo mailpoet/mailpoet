@@ -29,6 +29,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
         label={attributes.label}
         onLabelChanged={(label) => (setAttributes({ label }))}
         segmentsAddedIntoSelection={attributes.values}
+        setNewSelection={(selection) => setAttributes({ values: selection })}
         addSegmentIntoSelection={(newSegment) => setAttributes({
           values: [
             ...attributes.values,
