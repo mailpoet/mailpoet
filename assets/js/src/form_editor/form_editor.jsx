@@ -17,7 +17,9 @@ if (appElement) {
   initStore();
   initBlocks();
   ReactDOM.render(
-    <App />,
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
     appElement
   );
 }
