@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CheckboxControl } from '@wordpress/components';
+import { CheckboxControl, Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -79,22 +79,12 @@ const Preview = ({
                       onChange={partial(onCheck, segment.id)}
                       key={`check-${segment.id}`}
                     />
-                    <span
-                      role="button"
-                      className="mailpoet-form-segments-segment-remove mailpoet_error"
+                    <Dashicon
+                      icon="no-alt"
+                      color="#900"
+                      className="mailpoet-form-segments-segment-remove"
                       onClick={partial(removeSegment, segment.id)}
-                      key={`remove-${segment.id}`}
-                      tabIndex={0}
-                      onKeyDown={(event) => {
-                        if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-                        ) {
-                          event.preventDefault();
-                          partial(removeSegment, segment.id);
-                        }
-                      }}
-                    >
-                      ✗
-                    </span>
+                    />
                   </div>
                 )}
               </Draggable>
