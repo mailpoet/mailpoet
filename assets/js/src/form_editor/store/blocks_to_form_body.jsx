@@ -83,6 +83,17 @@ export default (blocks) => {
           static: '0',
           params: '',
         };
+      case 'mailpoet-form/custom-html':
+        return {
+          ...mapped,
+          id: 'html',
+          type: 'html',
+          name: 'Custom text or HTML',
+          static: '0',
+          params: {
+            text: block.attributes && block.attributes.content ? block.attributes.content : '',
+          },
+        };
       default:
         return null;
     }

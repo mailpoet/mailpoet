@@ -82,6 +82,18 @@ const divider = {
   position: null,
 };
 
+const customHtml = {
+  type: 'html,',
+  name: 'Custom text or HTML',
+  id: 'html',
+  unique: '0',
+  static: '0',
+  params: {
+    text: 'test',
+  },
+  position: null,
+};
+
 const checkBlockBasics = (block) => {
   expect(block.clientId).to.be.a('string');
   expect(block.name).to.be.a('string');
@@ -191,8 +203,24 @@ describe('Form Body To Blocks', () => {
     checkBlockBasics(block1);
     expect(block1.clientId).to.be.equal('divider_0');
     expect(block1.name).to.be.equal('mailpoet-form/divider');
+    checkBlockBasics(block2);
     expect(block2.clientId).to.be.equal('divider_1');
     expect(block2.name).to.be.equal('mailpoet-form/divider');
+  });
+
+  it('Should map custom html to blocks', () => {
+    const [block1, block2] = formBodyToBlocks([
+      { ...customHtml, position: '1', params: { text: '123' } },
+      { ...customHtml, position: '2', params: { text: 'nice one' } },
+    ]);
+    checkBlockBasics(block1);
+    expect(block1.clientId).to.be.equal('custom_html_0');
+    expect(block1.name).to.be.equal('mailpoet-form/custom-html');
+    expect(block1.attributes.content).to.be.equal('123');
+    checkBlockBasics(block2);
+    expect(block2.clientId).to.be.equal('custom_html_1');
+    expect(block2.name).to.be.equal('mailpoet-form/custom-html');
+    expect(block2.attributes.content).to.be.equal('nice one');
   });
 
   it('Should ignore unknown input type', () => {

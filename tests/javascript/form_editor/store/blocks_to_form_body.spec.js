@@ -67,6 +67,16 @@ const dividerBlock = {
   attributes: {},
 };
 
+const customHtmlBlock = {
+  clientId: 'some_random_321',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/custom-html',
+  attributes: {
+    content: 'HTML content',
+  },
+};
+
 const checkBodyInputBasics = (input) => {
   expect(input.id).to.be.a('string');
   expect(parseInt(input.position, 10)).to.be.a('number');
@@ -200,6 +210,18 @@ describe('Blocks to Form Body', () => {
     expect(divider2.id).to.be.equal('divider');
     expect(divider1.position).to.be.equal('1');
     expect(divider2.position).to.be.equal('2');
+  });
+
+  it('Should custom html block to form data', () => {
+    const [html] = formBlocksToBody([customHtmlBlock]);
+    checkBodyInputBasics(html);
+    expect(html.id).to.be.equal('html');
+    expect(html.name).to.be.equal('Custom text or HTML');
+    expect(html.type).to.be.equal('html');
+    expect(html.position).to.be.equal('1');
+    expect(html.unique).to.be.equal('0');
+    expect(html.static).to.be.equal('0');
+    expect(html.params.text).to.be.equal('HTML content');
   });
 
   it('Should map multiple blocks at once', () => {
