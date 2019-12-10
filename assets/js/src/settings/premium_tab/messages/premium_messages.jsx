@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
+import { PremiumInstallationMessages } from 'settings/premium_tab/messages/premium_installation_messages.jsx';
 
 const PremiumStatus = {
   KEY_INVALID: 0,
@@ -86,18 +87,25 @@ const PremiumMessages = (props) => {
     return null;
   }
 
-  return <PremiumInstallationMessages installationStatus={props.installationStatus} />;
+  return (
+    <>
+      {message}
+      <PremiumInstallationMessages installationStatus={props.installationStatus} />
+    </>
+  );
 };
 
 PremiumMessages.propTypes = {
   keyStatus: PropTypes.number.isRequired,
   keyMessage: PropTypes.string,
+  installationStatus: PropTypes.number,
   installationCallback: PropTypes.func.isRequired,
   activationCallback: PropTypes.func.isRequired,
 };
 
 PremiumMessages.defaultProps = {
   keyMessage: null,
+  installationStatus: null,
 };
 
 export { PremiumStatus, PremiumMessages };
