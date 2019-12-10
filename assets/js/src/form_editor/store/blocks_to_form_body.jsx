@@ -74,6 +74,15 @@ export default (blocks) => {
           type: 'submit',
           name: 'Submit',
         };
+      case 'mailpoet-form/divider':
+        return {
+          ...mapped,
+          id: 'divider',
+          type: 'divider',
+          name: 'Divider',
+          static: '0',
+          params: '',
+        };
       default:
         return null;
     }

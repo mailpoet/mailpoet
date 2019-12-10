@@ -72,6 +72,16 @@ const submitInput = {
   position: null,
 };
 
+const divider = {
+  type: 'divider',
+  name: 'Divider',
+  id: 'divider',
+  unique: '0',
+  static: '0',
+  params: '',
+  position: null,
+};
+
 const checkBlockBasics = (block) => {
   expect(block.clientId).to.be.a('string');
   expect(block.name).to.be.a('string');
@@ -171,6 +181,18 @@ describe('Form Body To Blocks', () => {
     expect(block.clientId).to.be.equal('submit');
     expect(block.name).to.be.equal('mailpoet-form/submit-button');
     expect(block.attributes.label).to.be.equal('Subscribe!');
+  });
+
+  it('Should map dividers to blocks', () => {
+    const [block1, block2] = formBodyToBlocks([
+      { ...divider, position: '1' },
+      { ...divider, position: '2' },
+    ]);
+    checkBlockBasics(block1);
+    expect(block1.clientId).to.be.equal('divider_0');
+    expect(block1.name).to.be.equal('mailpoet-form/divider');
+    expect(block2.clientId).to.be.equal('divider_1');
+    expect(block2.name).to.be.equal('mailpoet-form/divider');
   });
 
   it('Should ignore unknown input type', () => {
