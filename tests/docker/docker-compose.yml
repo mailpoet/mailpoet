@@ -55,6 +55,10 @@ services:
 
   mysql:
     image: circleci/mysql:${MYSQL_IMAGE_VERSION:-5.7.27-ram}
+    # Command used for MySQL 8+ because it needs default-authentication-plugin
+    # parameter and there needs to be some fallback for other MySQL versions.
+    # --verbose can be changed to any other useless parameter
+    command: ${MYSQL_COMMAND:---verbose}
     environment:
       MYSQL_ROOT_PASSWORD: wordpress
       MYSQL_DATABASE: wordpress
