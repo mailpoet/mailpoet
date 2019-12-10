@@ -1131,7 +1131,7 @@
   function updateMSSActivationUI() {
     var $ = jQuery;
     var group = $('.mailpoet_sending_methods .mailpoet_active').data('group');
-    var key_valid = !$('.mailpoet_mss_key_valid').hasClass('mailpoet_hidden');
+    var key_valid = !!$('.mailpoet_mss_key_valid');
 
     if (group !== 'mailpoet') {
       $('.mailpoet_actions .mailpoet_invalid_key').toggleClass('mailpoet_hidden', key_valid);
