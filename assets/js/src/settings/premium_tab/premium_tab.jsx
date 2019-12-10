@@ -197,7 +197,7 @@ const PremiumTab = (props) => {
               </button>
             </div>
             {keyValid !== null && (
-              <>
+              <div className="key-activation-messages">
                 <KeyMessages keyValid={keyValid} />
                 {mssKeyValid !== null && (
                   <MssMessages
@@ -214,7 +214,7 @@ const PremiumTab = (props) => {
                     activationCallback={() => activatePremiumPlugin()}
                   />
                 )}
-              </>
+              </div>
             )}
           </td>
         </tr>
