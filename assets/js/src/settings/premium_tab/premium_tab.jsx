@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
-import PremiumMessages from 'settings/premium_tab/messages/premium_messages.jsx';
 import MssMessages from 'settings/premium_tab/messages/mss_messages.jsx';
+import { PremiumStatus, PremiumMessages } from 'settings/premium_tab/messages/premium_messages.jsx';
 
 const requestServicesApi = async (key, action) => MailPoet.Ajax.post({
   api_version: window.mailpoet_api_version,
@@ -14,15 +14,27 @@ const requestServicesApi = async (key, action) => MailPoet.Ajax.post({
 
 const PremiumTab = (props) => {
   const [key, setKey] = useState(props.activationKey);
-  const [premiumKeyValid, setPremiumKeyValid] = useState(key ? props.premiumKeyValid : null);
+  const [premiumStatus, setPremiumStatus] = useState(key ? props.premiumStatus : null);
+  const [premiumMessage, setPremiumMessage] = useState(null);
   const [mssKeyValid, setMssKeyValid] = useState(key ? props.mssKeyValid : null);
-  const [premiumKeyMessage, setPremiumKeyMessage] = useState(null);
   const [mssKeyMessage, setMssKeyMessage] = useState(null);
 
   const verifyMailPoetPremiumKey = async () => {
     try {
       const response = await requestServicesApi(key, 'checkPremiumKey');
-      setPremiumKeyMessage(null);
+      setPremiumMessage(null);
+
+      // install/activate Premium plugin
+      if (!response.meta.premium_plugin_installed) {
+        setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_INSTALLED);
+        //TODO
+      } else if (!response.meta.premium_plugin_active) {
+        setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_ACTIVATED);
+        //TODO
+      } else {
+        setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_ACTIVE);
+      }
+
       MailPoet.trackEvent(
         'User has validated a Premium key',
         {
@@ -31,8 +43,8 @@ const PremiumTab = (props) => {
         }
       );
     } catch (error) {
-      setPremiumKeyValid(false);
-      setPremiumKeyMessage(error.errors.map((e) => e.message).join(' ') || null);
+      setPremiumStatus(PremiumStatus.KEY_INVALID);
+      setPremiumMessage(error.errors.map((e) => e.message).join(' ') || null);
       MailPoet.trackEvent(
         'User has failed to validate a Premium key',
         {
@@ -92,24 +104,26 @@ const PremiumTab = (props) => {
                   }
 
                   MailPoet.Modal.loading(true);
-                  await verifyMailPoetPremiumKey();
                   await verifyMailPoetSendingServiceKey();
+                  await verifyMailPoetPremiumKey();
                   MailPoet.Modal.loading(false);
                 }}
               >
                 {MailPoet.I18n.t('premiumTabVerifyButton')}
               </button>
             </div>
-            {premiumKeyValid !== null && (
-              <PremiumMessages
-                keyValid={premiumKeyValid}
-                keyMessage={premiumKeyMessage}
-              />
-            )}
             {mssKeyValid !== null && (
               <MssMessages
                 keyValid={mssKeyValid}
                 keyMessage={mssKeyMessage}
+              />
+            )}
+            {premiumStatus !== null && (
+              <PremiumMessages
+                keyStatus={premiumStatus}
+                keyMessage={premiumMessage}
+                installationCallback="" //TODO
+                activationCallback="" //TODO
               />
             )}
           </td>
@@ -121,7 +135,7 @@ const PremiumTab = (props) => {
 
 PremiumTab.propTypes = {
   activationKey: PropTypes.string,
-  premiumKeyValid: PropTypes.bool.isRequired,
+  premiumStatus: PropTypes.number.isRequired,
   mssKeyValid: PropTypes.bool.isRequired,
   premiumPluginActive: PropTypes.bool.isRequired,
 };
@@ -132,10 +146,25 @@ PremiumTab.defaultProps = {
 
 const container = document.getElementById('settings-premium-tab');
 if (container) {
+  const getPremiumStatus = () => {
+    const keyValid = window.mailpoet_premium_key_valid;
+    const pluginInstalled = window.mailpoet_premium_plugin_installed;
+    const pluginActive = !!window.mailpoet_premium_version;
+    if (!keyValid) {
+      return PremiumStatus.KEY_INVALID;
+    }
+    if (pluginActive) {
+      return PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_ACTIVE;
+    }
+    return pluginInstalled
+      ? PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_NOT_ACTIVE
+      : PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_NOT_INSTALLED;
+  };
+
   ReactDOM.render(
     <PremiumTab
       activationKey={window.mailpoet_activation_key}
-      premiumKeyValid={window.mailpoet_premium_key_valid}
+      premiumStatus={getPremiumStatus()}
       mssKeyValid={window.mailpoet_mss_key_valid}
       premiumPluginActive={!!window.mailpoet_premium_version}
     />,
