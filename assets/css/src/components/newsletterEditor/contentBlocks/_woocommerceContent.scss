@@ -1,5 +1,5 @@
 .mailpoet_woocommerce_content_overlay {
-  background: rgba(0, 0, 0, .5);
+  background: rgba(255, 255, 255, .7);
   height: 100%;
   margin: -10px -20px; // cancel out the mailpoet_block padding
   opacity: 0;
@@ -13,7 +13,7 @@
   }
 
   p {
-    color: #fff;
+    color: black;
     font-size: 20px;
     text-align: center;
   }
