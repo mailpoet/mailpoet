@@ -1,6 +1,7 @@
 import { registerBlockType, setCategories } from '@wordpress/blocks';
 import MailPoet from 'mailpoet';
 
+import * as divider from './divider/divider.jsx';
 import * as email from './email/email.jsx';
 import * as submit from './submit/submit.jsx';
 import * as firstName from './first_name/first_name.jsx';
@@ -13,6 +14,7 @@ export default () => {
     { slug: 'fields', title: MailPoet.I18n.t('fieldsBlocksCategory') },
   ]);
 
+  registerBlockType(divider.name, divider.settings);
   registerBlockType(email.name, email.settings);
   registerBlockType(submit.name, submit.settings);
   registerBlockType(firstName.name, firstName.settings);
