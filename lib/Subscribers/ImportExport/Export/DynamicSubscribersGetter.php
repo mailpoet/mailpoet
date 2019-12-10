@@ -13,6 +13,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
 
   protected $segment_index = 0;
 
+  /** @var WPFunctions */
   private $wp;
 
   function __construct($segments_ids, $batch_size, WPFunctions $wp = null) {

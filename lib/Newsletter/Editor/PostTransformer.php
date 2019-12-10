@@ -6,8 +6,11 @@ class PostTransformer {
   /** @var PostTransformerContentsExtractor */
   private $extractor;
 
+  /** @var array */
   private $args;
+  /** @var bool */
   private $with_layout;
+  /** @var string */
   private $image_position;
 
   function __construct($args, PostTransformerContentsExtractor $extractor = null) {

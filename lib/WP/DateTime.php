@@ -10,6 +10,7 @@ class DateTime {
   const DEFAULT_TIME_FORMAT = 'H:i:s';
   const DEFAULT_DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 
+  /** @var WPFunctions */
   private $wp;
 
   function __construct(WPFunctions $wp = null) {
