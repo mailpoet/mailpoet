@@ -7,6 +7,7 @@ import * as submit from './submit/submit.jsx';
 import * as firstName from './first_name/first_name.jsx';
 import * as lastName from './last_name/last_name.jsx';
 import * as segmentSelect from './segment_select/segment_select.jsx';
+import * as customHtml from './custom_html/custom_html.jsx';
 
 export default () => {
   setCategories([
@@ -20,4 +21,5 @@ export default () => {
   registerBlockType(firstName.name, firstName.settings);
   registerBlockType(lastName.name, lastName.settings);
   registerBlockType(segmentSelect.name, segmentSelect.settings);
+  registerBlockType(customHtml.name, customHtml.settings);
 };
