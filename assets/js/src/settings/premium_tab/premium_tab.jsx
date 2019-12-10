@@ -6,6 +6,15 @@ import MssMessages from 'settings/premium_tab/messages/mss_messages.jsx';
 import { PremiumStatus, PremiumMessages } from 'settings/premium_tab/messages/premium_messages.jsx';
 import { PremiumInstallationStatus } from 'settings/premium_tab/messages/premium_installation_messages.jsx';
 
+const request = async (url) => {
+  try {
+    const response = await fetch(url);
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+};
+
 const requestServicesApi = async (key, action) => MailPoet.Ajax.post({
   api_version: window.mailpoet_api_version,
   endpoint: 'services',
@@ -21,6 +30,40 @@ const PremiumTab = (props) => {
   const [mssKeyValid, setMssKeyValid] = useState(key ? props.mssKeyValid : null);
   const [mssKeyMessage, setMssKeyMessage] = useState(null);
 
+  let premiumActivateUrl = props.premiumActivateUrl;
+
+  const activatePremiumPlugin = async (isAfterInstall = false) => {
+    const status = PremiumInstallationStatus;
+    const activateStatus = isAfterInstall ? status.INSTALL_ACTIVATING : status.ACTIVATE_ACTIVATING;
+    const doneStatus = isAfterInstall ? status.INSTALL_DONE : status.ACTIVATE_DONE;
+    const errorStatus = isAfterInstall ? status.INSTALL_ACTIVATING_ERROR : status.ACTIVATE_ERROR;
+
+    setPremiumInstallationStatus(activateStatus);
+    if (!await request(premiumActivateUrl)) {
+      setPremiumInstallationStatus(errorStatus);
+      return;
+    }
+    setPremiumInstallationStatus(doneStatus);
+  };
+
+  const installPremiumPlugin = async () => {
+    setPremiumInstallationStatus(PremiumInstallationStatus.INSTALL_INSTALLING);
+    if (!await request(props.premiumInstallUrl)) {
+      setPremiumInstallationStatus(PremiumInstallationStatus.INSTALL_INSTALLING_ERROR);
+      return;
+    }
+
+    // refetch 'plugin_activate_url' since it's only set after installation
+    try {
+      const response = await requestServicesApi(key, 'checkPremiumKey');
+      premiumActivateUrl = response.meta.premium_activate_url;
+    } catch (error) {
+      setPremiumInstallationStatus(PremiumInstallationStatus.INSTALL_INSTALLING_ERROR);
+      return;
+    }
+    await activatePremiumPlugin(true);
+  };
+
   const verifyMailPoetPremiumKey = async () => {
     try {
       const response = await requestServicesApi(key, 'checkPremiumKey');
@@ -29,10 +72,10 @@ const PremiumTab = (props) => {
       // install/activate Premium plugin
       if (!response.meta.premium_plugin_installed) {
         setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_INSTALLED);
-        //TODO
+        await installPremiumPlugin();
       } else if (!response.meta.premium_plugin_active) {
         setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_ACTIVATED);
-        //TODO
+        await activatePremiumPlugin();
       } else {
         setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_ACTIVE);
       }
@@ -125,8 +168,8 @@ const PremiumTab = (props) => {
                 keyStatus={premiumStatus}
                 keyMessage={premiumMessage}
                 installationStatus={premiumInstallationStatus}
-                installationCallback="" //TODO
-                activationCallback="" //TODO
+                installationCallback={installPremiumPlugin}
+                activationCallback={() => activatePremiumPlugin()}
               />
             )}
           </td>
@@ -141,10 +184,13 @@ PremiumTab.propTypes = {
   premiumStatus: PropTypes.number.isRequired,
   mssKeyValid: PropTypes.bool.isRequired,
   premiumPluginActive: PropTypes.bool.isRequired,
+  premiumInstallUrl: PropTypes.string.isRequired,
+  premiumActivateUrl: PropTypes.string,
 };
 
 PremiumTab.defaultProps = {
   activationKey: null,
+  premiumActivateUrl: null,
 };
 
 const container = document.getElementById('settings-premium-tab');
@@ -170,6 +216,8 @@ if (container) {
       premiumStatus={getPremiumStatus()}
       mssKeyValid={window.mailpoet_mss_key_valid}
       premiumPluginActive={!!window.mailpoet_premium_version}
+      premiumInstallUrl={window.mailpoet_premium_install_url}
+      premiumActivateUrl={window.mailpoet_premium_activate_url || null}
     />,
     container
   );
