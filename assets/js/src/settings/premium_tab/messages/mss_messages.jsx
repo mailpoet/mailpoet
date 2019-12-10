@@ -3,7 +3,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 
 const validMessage = (
-  <div className="mailpoet_success">
+  <div className="mailpoet_success mailpoet_mss_key_valid">
     {MailPoet.I18n.t('premiumTabMssValidMessage')}
   </div>
 );

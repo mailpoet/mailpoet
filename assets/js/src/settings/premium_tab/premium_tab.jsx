@@ -125,13 +125,15 @@ const PremiumTab = (props) => {
     }
   };
 
-  async function verifyMailPoetSendingServiceKey() {
+  async function verifyMailPoetSendingServiceKey(activateMssIfKeyValid) {
     try {
       const response = await requestServicesApi(key, 'checkMSSKey');
       setMssKeyValid(true);
       setMssKeyMessage(response.data.message || null);
 
-      await activateMss(key);
+      if (activateMssIfKeyValid) {
+        await activateMss(key);
+      }
     } catch (error) {
       setMssKeyValid(false);
       setMssKeyMessage(error.errors.map((e) => e.message).join(' ') || null);
@@ -171,7 +173,7 @@ const PremiumTab = (props) => {
                 type="button"
                 id="mailpoet_premium_key_verify"
                 className="button-secondary"
-                onClick={async () => {
+                onClick={async (event) => {
                   if (!key) {
                     MailPoet.Notice.error(
                       MailPoet.I18n.t('premiumTabNoKeyNotice'),
@@ -185,7 +187,8 @@ const PremiumTab = (props) => {
                   setMssKeyValid(null);
 
                   MailPoet.Modal.loading(true);
-                  await verifyMailPoetSendingServiceKey();
+                  const isUserTriggered = event.isTrusted;
+                  await verifyMailPoetSendingServiceKey(isUserTriggered);
                   await verifyMailPoetPremiumKey();
                   MailPoet.Modal.loading(false);
                 }}
