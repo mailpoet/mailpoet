@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
 import MssMessages from 'settings/premium_tab/messages/mss_messages.jsx';
 import { PremiumStatus, PremiumMessages } from 'settings/premium_tab/messages/premium_messages.jsx';
+import { PremiumInstallationStatus } from 'settings/premium_tab/messages/premium_installation_messages.jsx';
 
 const requestServicesApi = async (key, action) => MailPoet.Ajax.post({
   api_version: window.mailpoet_api_version,
@@ -16,6 +17,7 @@ const PremiumTab = (props) => {
   const [key, setKey] = useState(props.activationKey);
   const [premiumStatus, setPremiumStatus] = useState(key ? props.premiumStatus : null);
   const [premiumMessage, setPremiumMessage] = useState(null);
+  const [premiumInstallationStatus, setPremiumInstallationStatus] = useState(null);
   const [mssKeyValid, setMssKeyValid] = useState(key ? props.mssKeyValid : null);
   const [mssKeyMessage, setMssKeyMessage] = useState(null);
 
@@ -122,6 +124,7 @@ const PremiumTab = (props) => {
               <PremiumMessages
                 keyStatus={premiumStatus}
                 keyMessage={premiumMessage}
+                installationStatus={premiumInstallationStatus}
                 installationCallback="" //TODO
                 activationCallback="" //TODO
               />
