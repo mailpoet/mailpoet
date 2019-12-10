@@ -23,6 +23,22 @@ const requestServicesApi = async (key, action) => MailPoet.Ajax.post({
   data: { key },
 });
 
+const activateMss = async (key) => MailPoet.Ajax.post({
+  api_version: window.mailpoet_api_version,
+  endpoint: 'settings',
+  action: 'set',
+  data: {
+    mta_group: 'mailpoet',
+    mta: {
+      method: 'MailPoet',
+      mailpoet_api_key: key,
+    },
+    signup_confirmation: {
+      enabled: '1',
+    },
+  },
+});
+
 const PremiumTab = (props) => {
   const [key, setKey] = useState(props.activationKey);
   const [premiumStatus, setPremiumStatus] = useState(key ? props.premiumStatus : null);
@@ -114,6 +130,8 @@ const PremiumTab = (props) => {
       const response = await requestServicesApi(key, 'checkMSSKey');
       setMssKeyValid(true);
       setMssKeyMessage(response.data.message || null);
+
+      await activateMss(key);
     } catch (error) {
       setMssKeyValid(false);
       setMssKeyMessage(error.errors.map((e) => e.message).join(' ') || null);
