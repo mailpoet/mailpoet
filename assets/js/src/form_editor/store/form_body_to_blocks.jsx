@@ -6,7 +6,7 @@ export default (data) => {
   if (!Array.isArray(data)) {
     throw new Error('Mapper expects form body to be an array.');
   }
-  return data.map((item) => {
+  return data.map((item, index) => {
     const mapped = {
       clientId: item.id,
       isValid: true,
@@ -63,6 +63,12 @@ export default (data) => {
         return {
           ...mapped,
           name: 'mailpoet-form/submit-button',
+        };
+      case 'divider':
+        return {
+          ...mapped,
+          name: 'mailpoet-form/divider',
+          clientId: `divider_${index}`,
         };
       default:
         return null;

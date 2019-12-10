@@ -59,12 +59,22 @@ const lastNameBlock = {
   },
 };
 
+const dividerBlock = {
+  clientId: 'some_random_123',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/divider',
+  attributes: {},
+};
+
 const checkBodyInputBasics = (input) => {
   expect(input.id).to.be.a('string');
   expect(parseInt(input.position, 10)).to.be.a('number');
   expect(input.type).to.be.a('string');
   expect(input.type).to.be.not.empty;
-  expect(input.params).to.be.a('Object');
+  if (input.id !== 'divider') {
+    expect(input.params).to.be.a('Object');
+  }
 };
 
 describe('Blocks to Form Body', () => {
@@ -168,6 +178,28 @@ describe('Blocks to Form Body', () => {
     expect(input.unique).to.be.equal('0');
     expect(input.static).to.be.equal('1');
     expect(input.params.label).to.be.equal('Subscribe!');
+  });
+
+  it('Should map divider block to input data', () => {
+    const [divider] = formBlocksToBody([dividerBlock]);
+    checkBodyInputBasics(divider);
+    expect(divider.id).to.be.equal('divider');
+    expect(divider.name).to.be.equal('Divider');
+    expect(divider.type).to.be.equal('divider');
+    expect(divider.position).to.be.equal('1');
+    expect(divider.unique).to.be.equal('0');
+    expect(divider.static).to.be.equal('0');
+    expect(divider.params).to.be.equal('');
+  });
+
+  it('Should map multiple dividers', () => {
+    const [divider1, divider2] = formBlocksToBody([dividerBlock, dividerBlock]);
+    checkBodyInputBasics(divider1);
+    checkBodyInputBasics(divider2);
+    expect(divider1.id).to.be.equal('divider');
+    expect(divider2.id).to.be.equal('divider');
+    expect(divider1.position).to.be.equal('1');
+    expect(divider2.position).to.be.equal('2');
   });
 
   it('Should map multiple blocks at once', () => {
