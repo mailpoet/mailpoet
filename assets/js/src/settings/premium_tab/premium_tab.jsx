@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
+import KeyMessages from 'settings/premium_tab/messages/key_messages.jsx';
 import MssMessages from 'settings/premium_tab/messages/mss_messages.jsx';
 import { PremiumStatus, PremiumMessages } from 'settings/premium_tab/messages/premium_messages.jsx';
 import { PremiumInstallationStatus } from 'settings/premium_tab/messages/premium_installation_messages.jsx';
@@ -31,6 +32,14 @@ const PremiumTab = (props) => {
   const [mssKeyMessage, setMssKeyMessage] = useState(null);
 
   let premiumActivateUrl = props.premiumActivateUrl;
+
+  // key is considered valid if either Premium or MSS check passes
+  const keyValid = useMemo(() => {
+    if (premiumStatus > PremiumStatus.KEY_INVALID || mssKeyValid) {
+      return true;
+    }
+    return (premiumStatus === null || mssKeyValid === null) ? null : false;
+  }, [premiumStatus, mssKeyValid]);
 
   const activatePremiumPlugin = async (isAfterInstall = false) => {
     const status = PremiumInstallationStatus;
@@ -157,20 +166,25 @@ const PremiumTab = (props) => {
                 {MailPoet.I18n.t('premiumTabVerifyButton')}
               </button>
             </div>
-            {mssKeyValid !== null && (
-              <MssMessages
-                keyValid={mssKeyValid}
-                keyMessage={mssKeyMessage}
-              />
-            )}
-            {premiumStatus !== null && (
-              <PremiumMessages
-                keyStatus={premiumStatus}
-                keyMessage={premiumMessage}
-                installationStatus={premiumInstallationStatus}
-                installationCallback={installPremiumPlugin}
-                activationCallback={() => activatePremiumPlugin()}
-              />
+            {keyValid !== null && (
+              <>
+                <KeyMessages keyValid={keyValid} />
+                {mssKeyValid !== null && (
+                  <MssMessages
+                    keyValid={mssKeyValid}
+                    keyMessage={mssKeyMessage}
+                  />
+                )}
+                {premiumStatus !== null && (
+                  <PremiumMessages
+                    keyStatus={premiumStatus}
+                    keyMessage={premiumMessage}
+                    installationStatus={premiumInstallationStatus}
+                    installationCallback={installPremiumPlugin}
+                    activationCallback={() => activatePremiumPlugin()}
+                  />
+                )}
+              </>
             )}
           </td>
         </tr>
