@@ -69,6 +69,11 @@ if (jQuery('#mailpoet_settings').length > 0) {
         jQuery('.mailpoet_settings_submit').show();
       }
 
+      // add 'nav-tab-reload' to all tabs when on '#premium'
+      if (tab === 'premium') {
+        jQuery('.nav-tab-wrapper .nav-tab').addClass('nav-tab-reload');
+      }
+
       MailPoet.trackEvent(
         'User has clicked a tab in Settings',
         {
@@ -79,7 +84,26 @@ if (jQuery('#mailpoet_settings').length > 0) {
     },
   }))();
 
+  // force full reload when going from/to '#premium' page
+  window.addEventListener('hashchange', function hashchange(e) {
+    e.preventDefault();
+    const oldHash = e.oldURL.split('#')[1] || null;
+    const newHash = e.newURL.split('#')[1] || null;
+    if (oldHash === 'premium' || newHash === 'premium') {
+      window.location.reload();
+    }
+  });
+
   jQuery(document).ready(function ready() {
     if (!Backbone.History.started) Backbone.history.start();
+
+    // force full tab reload for tabs with 'nav-tab-reload' class
+    jQuery('.nav-tab').click(function click(e) {
+      if (e.target.classList.contains('nav-tab-reload')) {
+        e.preventDefault();
+        window.history.replaceState(null, null, e.target.href);
+        window.location.reload();
+      }
+    });
   });
 }
