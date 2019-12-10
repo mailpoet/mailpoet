@@ -141,7 +141,12 @@ const PremiumTab = (props) => {
                 className="regular-text"
                 name="premium[premium_key]"
                 value={key || ''}
-                onChange={(event) => setKey(event.target.value.trim() || null)}
+                onChange={(event) => {
+                  setKey(event.target.value.trim() || null);
+                  setPremiumStatus(null);
+                  setPremiumInstallationStatus(null);
+                  setMssKeyValid(null);
+                }}
               />
               {' '}
               <button
@@ -156,6 +161,10 @@ const PremiumTab = (props) => {
                     );
                     return;
                   }
+
+                  setPremiumStatus(null);
+                  setPremiumInstallationStatus(null);
+                  setMssKeyValid(null);
 
                   MailPoet.Modal.loading(true);
                   await verifyMailPoetSendingServiceKey();
