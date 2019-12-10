@@ -103,7 +103,7 @@ SegmentSelectSettings.propTypes = {
   setNewSelection: PropTypes.func.isRequired,
   segmentsAddedIntoSelection: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string.isRequired,
-    isChecked: PropTypes.boolean,
+    isChecked: PropTypes.bool,
     id: PropTypes.string.isRequired,
   }).isRequired).isRequired,
 };
