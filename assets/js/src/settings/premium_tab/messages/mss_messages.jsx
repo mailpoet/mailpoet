@@ -10,7 +10,7 @@ const validMessage = (
 
 const notValidMessage = (message) => (
   <div className="mailpoet_error">
-    {message || MailPoet.I18n.t('premiumTabMssNotValidMessage')}
+    {message}
   </div>
 );
 
@@ -18,7 +18,7 @@ const MssMessages = (props) => {
   if (props.keyValid) {
     return validMessage;
   }
-  return notValidMessage(props.keyMessage);
+  return props.keyMessage ? notValidMessage(props.keyMessage) : null;
 };
 
 MssMessages.propTypes = {
