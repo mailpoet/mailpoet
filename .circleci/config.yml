@@ -485,6 +485,13 @@ workflows:
             - build_release_zip
 
   nightly:
+    triggers:
+      - schedule:
+          cron: "0 22 * * 1-5"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
       - build_and_code_qa
       # Latest version - PHP 7.4, MySQL 8.0, WordPress 5.3
