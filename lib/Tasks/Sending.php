@@ -21,8 +21,13 @@ class Sending {
   const TASK_TYPE = 'sending';
   const RESULT_BATCH_SIZE = 5;
 
+  /** @var ScheduledTask */
   private $task;
+
+  /** @var SendingQueue */
   private $queue;
+
+  /** @var Subscribers */
   private $task_subscribers;
 
   private $queue_fields = [

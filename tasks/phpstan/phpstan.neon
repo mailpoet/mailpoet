@@ -2,6 +2,7 @@ parameters:
   mailpoetDir: %rootDir%/../../../../..
   tmpDir: ../../temp/phpstan
   bootstrap: bootstrap.php
+  inferPrivatePropertyTypeFromConstructor: true
   autoload_files:
     - %mailpoetDir%/vendor/autoload.php
   ignoreErrors:

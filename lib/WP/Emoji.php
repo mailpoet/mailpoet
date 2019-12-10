@@ -5,6 +5,7 @@ namespace MailPoet\WP;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Emoji {
+  /** @var WPFunctions */
   private $wp;
 
   function __construct(WPFunctions $wp = null) {
