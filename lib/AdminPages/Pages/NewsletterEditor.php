@@ -86,6 +86,7 @@ class NewsletterEditor {
       'sub_menu' => Menu::MAIN_PAGE_SLUG,
       'mss_active' => Bridge::isMPSendingServiceEnabled(),
       'woocommerce' => $woocommerce_data,
+      'is_wc_transactional_email' => $newsletter_id === $woocommerce_template_id,
       'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
       'site_address' => $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST),
     ];

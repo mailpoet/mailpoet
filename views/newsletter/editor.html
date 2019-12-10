@@ -1458,7 +1458,7 @@
         previewTypeLocalStorageKey: 'newsletter_editor.preview_type'
       },
       validation: {
-        validateUnsubscribeLinkPresent: <%= mss_active ? 'true' : 'false' %>,
+        validateUnsubscribeLinkPresent: <%= mss_active and is_wc_transactional_email != true ? 'true' : 'false' %>,
         validateSPFRecord: <%= mss_active ? 'true' : 'false' %>,
       },
       urls: {
