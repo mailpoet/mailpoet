@@ -497,6 +497,7 @@ workflows:
             - build_and_code_qa
       # Oldest supported version - PHP 5.6, MySQL 5.5, WordPress 4.9
       - nightly_acceptance_tests:
+          mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
           wordpress_image_version: wp-4.9_php5.6_20191209.1
           name: acceptance_php56_mysql55_wp49
