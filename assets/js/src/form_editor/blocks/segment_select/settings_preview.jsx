@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { CheckboxControl, Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
@@ -11,6 +11,7 @@ const PreviewItem = ({
   moveItem,
   removeSegment,
   onCheck,
+  dragFinished,
 }) => {
   const ref = useRef(null);
   const [, drop] = useDrop({
@@ -59,6 +60,9 @@ const PreviewItem = ({
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
+    end() {
+      dragFinished();
+    },
   });
   const opacity = isDragging ? 0.2 : 1;
   drag(drop(ref));
@@ -95,6 +99,7 @@ PreviewItem.propTypes = {
   moveItem: PropTypes.func.isRequired,
   removeSegment: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
+  dragFinished: PropTypes.func.isRequired,
 };
 
 const Preview = ({
@@ -103,30 +108,31 @@ const Preview = ({
   removeSegment,
   onSegmentsReorder,
 }) => {
+  const [segmentsWhileMoved, setSegments] = useState(segments);
   const moveItem = useCallback(
     (dragIndex, hoverIndex) => {
-      const result = Array.from(segments);
+      const result = Array.from(segmentsWhileMoved);
       const [removed] = result.splice(dragIndex, 1);
       result.splice(hoverIndex, 0, removed);
 
-      onSegmentsReorder(result);
+      setSegments(result);
     },
-    [segments, onSegmentsReorder],
+    [segmentsWhileMoved, setSegments],
   );
 
-  if (segments.length === 0) {
+  if (segmentsWhileMoved.length === 0) {
     return null;
   }
 
   const onCheck = (segmentId, isChecked) => {
-    const segment = segments.find((s) => s.id === segmentId);
+    const segment = segmentsWhileMoved.find((s) => s.id === segmentId);
     segment.isChecked = isChecked;
     updateSegment(segment);
   };
 
   return (
     <DndProvider backend={Backend}>
-      {segments.map((segment, index) => (
+      {segmentsWhileMoved.map((segment, index) => (
         <PreviewItem
           key={segment.id}
           index={index}
@@ -134,6 +140,7 @@ const Preview = ({
           moveItem={moveItem}
           onCheck={onCheck}
           removeSegment={removeSegment}
+          dragFinished={() => onSegmentsReorder(segmentsWhileMoved)}
         />
       ))}
     </DndProvider>
