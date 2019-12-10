@@ -1480,6 +1480,9 @@
       installedAt: '<%= settings["installed_at"] %>',
       mtaMethod: '<%= settings["mta"]["method"] %>',
       woocommerceCustomizerEnabled: <%= woocommerce.customizer_enabled ? 'true' : 'false' %>,
+      <% if is_wc_transactional_email %>
+      hiddenWidgets: ['automatedLatestContentLayout', 'header', 'footer', 'posts', 'products'],
+      <% endif %>
     };
     wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
 

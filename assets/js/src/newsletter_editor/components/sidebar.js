@@ -22,7 +22,13 @@ Module._contentWidgets = new (Backbone.Collection.extend({
   }),
   comparator: 'priority',
 }))();
-Module.registerWidget = function (widget) { return Module._contentWidgets.add(widget); };
+Module.registerWidget = function (widget) {
+  var hiddenWidgets = App.getConfig().get('hiddenWidgets');
+  if (hiddenWidgets && hiddenWidgets.includes(widget.name)) {
+    return false;
+  }
+  return Module._contentWidgets.add(widget);
+};
 Module.getWidgets = function () { return Module._contentWidgets; };
 
 // Layout widget handlers for use to create new layout blocks via drag&drop
