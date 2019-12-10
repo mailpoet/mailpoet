@@ -9,10 +9,26 @@
     padding: 0;
   }
 
-  .button.mailpoet-button-bigger {
+  .premium-button {
+    background: #0085ba;
+    border: 1px solid #006799;
+    border-radius: 3px;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
     display: inline-block;
+    font-size: 1.5em;
     line-height: normal;
     margin: 1em 0;
+    padding: 8px 18px 9px;
+    text-decoration: none;
+    vertical-align: top;
+    white-space: nowrap;
+
+    &:hover,
+    &:focus {
+      background: #008ec2;
+    }
   }
 
   .mailpoet-premium-page-intro {
