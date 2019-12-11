@@ -4,7 +4,7 @@ import {
   PanelBody,
   TextareaControl,
   ToggleControl,
-  SandBox
+  SandBox,
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
@@ -32,11 +32,13 @@ const CustomHtmlEdit = ({ attributes, setAttributes }) => {
 
     </InspectorControls>
   );
+  const styles = attributes.nl2br ? ['body { white-space: pre-line; }'] : [];
+  const key = `${attributes.content}_${styles}`;
   return (
     <>
       {inspectorControls}
       <div>
-        <SandBox html={attributes.content} key={attributes.content} />
+        <SandBox html={attributes.content} styles={styles} key={key} />
       </div>
     </>
   );
