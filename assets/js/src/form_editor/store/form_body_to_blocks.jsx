@@ -1,10 +1,42 @@
+import slugify from 'slugify';
+
+export function getCustomFieldName(blockName, customField) {
+  // TODO move this function elsewhere, it is also used in the blocks.jsx
+  const name = slugify(customField.name, { lower: true })
+    .replace(/[^a-z0-9]+/g, '')
+    .replace(/-$/, '');
+  return `mailpoet-form/custom-text-${name}`;
+}
+
+const mapCustomField = (item, customFields, mappedCommonProperties) => {
+  const customField = customFields.find((cf) => cf.id === parseInt(item.id, 10));
+  if (!customField) return null;
+  if (customField.type !== 'text') return null; // TODO debug, for now, remove later
+  const mapped = {
+    ...mappedCommonProperties,
+    name: getCustomFieldName('mailpoet-form/custom-text', customField),
+  };
+  if (
+    item.params
+    && Object.prototype.hasOwnProperty.call(item.params, 'validate')
+    && !!item.params.validate
+  ) {
+    mapped.attributes.validate = item.params.validate;
+  }
+  return mapped;
+};
+
 /**
  * Transforms form body items to array of blocks which can be passed to block editor.
- * @param data - from form.body property
+ * @param {array} data - from form.body property
+ * @param {array} customFields - list of all custom fields
  */
-export default (data) => {
+export default (data, customFields = []) => {
   if (!Array.isArray(data)) {
     throw new Error('Mapper expects form body to be an array.');
+  }
+  if (!Array.isArray(customFields)) {
+    throw new Error('Mapper expects customFields to be an array.');
   }
   return data.map((item, index) => {
     const mapped = {
@@ -79,6 +111,9 @@ export default (data) => {
           },
         };
       default:
+        if (Number.isInteger(parseInt(item.id, 10))) {
+          return mapCustomField(item, customFields, mapped);
+        }
         return null;
     }
   }).filter(Boolean);

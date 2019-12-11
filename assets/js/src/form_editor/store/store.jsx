@@ -12,7 +12,7 @@ import formBodyToBlocks from './form_body_to_blocks.jsx';
 
 export default () => {
   const formData = { ...window.mailpoet_form_data };
-  const formBlocks = formBodyToBlocks(formData.body);
+  const formBlocks = formBodyToBlocks(formData.body, window.mailpoet_custom_fields);
   delete formData.body;
   formData.settings.segments = formData.settings.segments ? formData.settings.segments : [];
   const defaultState = {

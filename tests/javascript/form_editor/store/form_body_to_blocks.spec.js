@@ -71,6 +71,20 @@ const submitInput = {
   },
   position: null,
 };
+const customTextInput = {
+  type: 'text',
+  name: 'Street name',
+  id: '1',
+  unique: '1',
+  static: '0',
+  params: {
+    required: '',
+    validate: 'alphanum',
+    label: 'Name of the street',
+    label_within: '1',
+  },
+  position: null,
+};
 
 const divider = {
   type: 'divider',
@@ -110,6 +124,14 @@ describe('Form Body To Blocks', () => {
     expect(() => formBodyToBlocks('hello')).to.throw(error);
     expect(() => formBodyToBlocks(undefined)).to.throw(error);
     expect(() => formBodyToBlocks(1)).to.throw(error);
+  });
+
+  it('Should throw an error for wrong custom fields input', () => {
+    const error = 'Mapper expects customFields to be an array.';
+    expect(() => formBodyToBlocks([], null)).to.throw(error);
+    expect(() => formBodyToBlocks([], 'hello')).to.throw(error);
+    expect(() => formBodyToBlocks([], () => {})).to.throw(error);
+    expect(() => formBodyToBlocks([], 1)).to.throw(error);
   });
 
   it('Should map email input to block', () => {
@@ -196,6 +218,7 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.label).to.be.equal('Subscribe!');
   });
 
+<<<<<<< HEAD
   it('Should map dividers to blocks', () => {
     const [block1, block2] = formBodyToBlocks([
       { ...divider, position: '1' },
@@ -224,6 +247,29 @@ describe('Form Body To Blocks', () => {
     expect(block2.name).to.be.equal('mailpoet-form/custom-html');
     expect(block2.attributes.content).to.be.equal('nice one');
     expect(block2.attributes.nl2br).to.be.false;
+=======
+  it.only('Should map custom text input to block', () => {
+    const customField = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 1,
+      name: 'Custom Field ^name',
+      params: {
+        label: 'Street name',
+        required: '1',
+        validate: '',
+      },
+      type: 'text',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+    const [block] = formBodyToBlocks([{ ...customTextInput, position: '1' }], [customField]);
+    checkBlockBasics(block);
+    expect(block.clientId).to.be.equal('1');
+    expect(block.name).to.be.equal('mailpoet-form/custom-text-customfieldname');
+    expect(block.attributes.label).to.be.equal('Name of the street');
+    expect(block.attributes.mandatory).to.be.equal(false);
+    expect(block.attributes.labelWithinInput).to.be.equal(true);
+    expect(block.attributes.validate).to.be.equal('alphanum');
+>>>>>>> Map custom fields to blocks
   });
 
   it('Should ignore unknown input type', () => {
