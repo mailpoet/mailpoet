@@ -42,6 +42,7 @@ const FirstNameEdit = ({ attributes, setAttributes }) => {
       className="mailpoet_text"
       type="text"
       name="first_name"
+      disabled
       placeholder={placeholder}
       data-automation-id="editor_first_name_input"
     />
