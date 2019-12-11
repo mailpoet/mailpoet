@@ -1,10 +1,29 @@
+
+const mapCustomField = (block, customFields, mappedCommonProperties) => {
+  const customField = customFields.find((cf) => cf.id === block.attributes.customFieldId);
+  if (!customField) return null;
+  return {
+    ...mappedCommonProperties,
+    id: block.attributes.customFieldId.toString(),
+    name: customField.name,
+    params: {
+      ...mappedCommonProperties.params,
+      validate: block.attributes.validate,
+    },
+  };
+};
+
 /**
  * Transforms blocks to form.body data structure.
  * @param blocks - blocks representation taken from @wordpress/block-editor
+ * @param customFields - list of all custom Fields
  */
-export default (blocks) => {
+export default (blocks, customFields = []) => {
   if (!Array.isArray(blocks)) {
     throw new Error('Mapper expects blocks to be an array.');
+  }
+  if (!Array.isArray(customFields)) {
+    throw new Error('Mapper expects customFields to be an array.');
   }
   return blocks.map((block, index) => {
     const mapped = {
@@ -96,6 +115,9 @@ export default (blocks) => {
           },
         };
       default:
+        if (block.name.startsWith('mailpoet-form/custom-')) {
+          return mapCustomField(block, customFields, mapped);
+        }
         return null;
     }
   }).filter(Boolean);
