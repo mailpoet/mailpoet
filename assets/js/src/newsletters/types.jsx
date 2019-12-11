@@ -245,7 +245,7 @@ class NewsletterTypes extends React.Component {
     return (
       <div>
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
-        <h1>{MailPoet.I18n.t('pickCampaignType')}</h1>
+        <h1>{MailPoet.I18n.t(window.mailpoet_newsletters_count === 0 ? 'createFirstEmailTitle' : 'pickCampaignType')}</h1>
 
         <Breadcrumb step="type" />
 
