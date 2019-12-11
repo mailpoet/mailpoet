@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Panel,
-  PanelBody,
+  PanelBody, SelectControl,
   TextControl,
   ToggleControl,
 } from '@wordpress/components';
@@ -29,6 +29,28 @@ const FirstNameEdit = ({ attributes, setAttributes }) => {
             label={MailPoet.I18n.t('blockMandatory')}
             checked={attributes.mandatory}
             onChange={(mandatory) => (setAttributes({ mandatory }))}
+          />
+          <SelectControl
+            label={`${MailPoet.I18n.t('customFieldValidateFor')}:`}
+            options={[
+              {
+                label: MailPoet.I18n.t('customFieldValidateNothing'),
+                value: '',
+              },
+              {
+                label: MailPoet.I18n.t('customFieldValidateNumbersOnly'),
+                value: 'alphanum',
+              },
+              {
+                label: MailPoet.I18n.t('customFieldValidateAlphanumerical'),
+                value: 'number',
+              },
+              {
+                label: MailPoet.I18n.t('customFieldValidatePhoneNumber'),
+                value: 'phone',
+              },
+            ]}
+            onChange={(validate) => (setAttributes({ validate }))}
           />
         </PanelBody>
       </Panel>
