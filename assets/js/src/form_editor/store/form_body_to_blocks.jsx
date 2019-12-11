@@ -7,6 +7,7 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
   const mapped = {
     ...mappedCommonProperties,
     name: formatCustomFieldBlockName('mailpoet-form/custom-text', customField),
+    customFieldId: customField.id,
   };
   if (
     item.params
