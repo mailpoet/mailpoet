@@ -50,7 +50,6 @@ class UnsubscribeTokens extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    $wp = new WPFunctions;
-    return Carbon::createFromTimestamp($wp->currentTime('timestamp'));
+    return Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
   }
 }

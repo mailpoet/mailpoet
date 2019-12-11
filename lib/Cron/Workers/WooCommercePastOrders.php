@@ -71,6 +71,6 @@ class WooCommercePastOrders extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    return Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')); // schedule immediately
+    return Carbon::createFromTimestamp($this->wp->currentTime('timestamp')); // schedule immediately
   }
 }

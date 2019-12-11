@@ -18,21 +18,22 @@ abstract class SimpleWorker implements CronWorkerInterface {
 
   public $timer;
 
-  /** @var WPFunctions */
-  private $wp;
-
   /** @var CronHelper */
   protected $cron_helper;
 
   /** @var CronWorkerScheduler */
   protected $cron_worker_scheduler;
 
-  public function __construct() {
+  /** @var WPFunctions */
+  protected $wp;
+
+  public function __construct(WPFunctions $wp = null) {
     if (static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
     }
 
-    $this->wp = new WPFunctions();
+    if ($wp === null) $wp = ContainerWrapper::getInstance()->get(WPFunctions::class);
+    $this->wp = $wp;
     $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->cron_worker_scheduler = ContainerWrapper::getInstance()->get(CronWorkerScheduler::class);
   }
