@@ -1,4 +1,5 @@
 import { registerBlockType, setCategories } from '@wordpress/blocks';
+import { select } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 
 import * as divider from './divider/divider.jsx';
@@ -10,10 +11,16 @@ import * as segmentSelect from './segment_select/segment_select.jsx';
 import * as customHtml from './custom_html/custom_html.jsx';
 
 export default () => {
-  setCategories([
+  const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields()
+
+  const categories = [
     { slug: 'obligatory', title: '' }, // Blocks from this category are not in block insert popup
-    { slug: 'fields', title: MailPoet.I18n.t('fieldsBlocksCategory') },
-  ]);
+  ];
+  if (Array.isArray(customFields) && customFields.length) {
+    categories.push({ slug: 'custom-fields', title: MailPoet.I18n.t('customFieldsBlocksCategory') });
+  }
+  categories.push({ slug: 'fields', title: MailPoet.I18n.t('fieldsBlocksCategory') });
+  setCategories(categories);
 
   registerBlockType(divider.name, divider.settings);
   registerBlockType(email.name, email.settings);
