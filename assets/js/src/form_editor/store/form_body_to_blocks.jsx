@@ -8,7 +8,7 @@ export default (data) => {
   }
   return data.map((item, index) => {
     const mapped = {
-      clientId: item.id,
+      clientId: `${item.id}_${index}`,
       isValid: true,
       innerBlocks: [],
       attributes: {
@@ -68,13 +68,11 @@ export default (data) => {
         return {
           ...mapped,
           name: 'mailpoet-form/divider',
-          clientId: `divider_${index}`,
         };
       case 'html':
         return {
           ...mapped,
           name: 'mailpoet-form/custom-html',
-          clientId: `custom_html_${index}`,
           attributes: {
             content: item.params && item.params.text ? item.params.text : '',
           },

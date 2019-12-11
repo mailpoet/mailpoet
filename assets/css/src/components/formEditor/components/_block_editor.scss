@@ -23,8 +23,8 @@
 // We don't want to allow user to remove Submit or Email.
 // There is no way to hide the delete button programmatically so we hide last toolbar that contains the delete option
 // There is a feature request for adding that into Gutenberg https://github.com/WordPress/gutenberg/issues/16364
-#block-email,
-#block-submit {
+.wp-block[data-type='mailpoet-form/email-input'],
+.wp-block[data-type='mailpoet-form/submit-button'] {
   .components-toolbar:last-child {
     display: none;
   }
