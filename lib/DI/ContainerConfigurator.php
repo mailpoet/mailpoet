@@ -76,6 +76,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\v1\Newsletters::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\NewsletterLinks::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\NewsletterTemplates::class)->setPublic(true);
+    $container->autowire(\MailPoet\API\JSON\v1\Premium::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Segments::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\SendingQueue::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\v1\Services::class)->setPublic(true);

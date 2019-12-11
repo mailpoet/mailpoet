@@ -2,6 +2,8 @@
 
 namespace MailPoet\WP;
 
+use Plugin_Upgrader;
+use WP_Ajax_Upgrader_Skin;
 use WP_Error;
 
 class Functions {
@@ -560,6 +562,40 @@ class Functions {
 
   public function wpautop($pee, $br = true) {
     return wpautop($pee, $br);
+  }
+
+  /**
+   * @param string $action
+   * @param array|object $args
+   * @return object|array|WP_Error
+   */
+  public function pluginsApi($action, $args = []) {
+    require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+    return plugins_api($action, $args);
+  }
+
+  /**
+   * @param string $package
+   * @param array $args
+   * @return bool|WP_Error
+   */
+  public function installPlugin($package, $args = []) {
+    require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+    require_once ABSPATH . 'wp-admin/includes/class-plugin-upgrader.php';
+    require_once ABSPATH . 'wp-admin/includes/class-wp-ajax-upgrader-skin.php';
+    $upgrader = new Plugin_Upgrader(new WP_Ajax_Upgrader_Skin());
+    return $upgrader->install($package, $args);
+  }
+
+  /**
+   * @param string $plugin
+   * @param string $redirect
+   * @param bool $network_wide
+   * @param bool $silent
+   * @return WP_Error|null
+   */
+  public function activatePlugin($plugin, $redirect = '', $network_wide = false, $silent = false) {
+    return activate_plugin($plugin, $redirect, $network_wide, $silent);
   }
 
   /**
