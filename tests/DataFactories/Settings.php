@@ -3,6 +3,7 @@
 namespace MailPoet\Test\DataFactories;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
 class Settings {
@@ -99,6 +100,12 @@ class Settings {
     $this->settings->set('mta.mailpoet_api_key', $mailPoetSendingKey);
     $this->settings->set('mta.mailpoet_api_key_state.state', 'valid');
     $this->settings->set('mta.mailpoet_api_key_state.code', 200);
+    return $this;
+  }
+
+  public function withValidPremiumKey($key) {
+    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, $key);
+    $this->settings->set(Bridge::PREMIUM_KEY_STATE_SETTING_NAME, ['state' => Bridge::PREMIUM_KEY_VALID]);
     return $this;
   }
 
