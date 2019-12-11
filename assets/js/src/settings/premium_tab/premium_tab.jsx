@@ -7,20 +7,17 @@ import MssMessages from 'settings/premium_tab/messages/mss_messages.jsx';
 import { PremiumStatus, PremiumMessages } from 'settings/premium_tab/messages/premium_messages.jsx';
 import { PremiumInstallationStatus } from 'settings/premium_tab/messages/premium_installation_messages.jsx';
 
-const request = async (url) => {
-  try {
-    const response = await fetch(url);
-    return response.ok;
-  } catch (error) {
-    return false;
-  }
-};
-
 const requestServicesApi = async (key, action) => MailPoet.Ajax.post({
   api_version: window.mailpoet_api_version,
   endpoint: 'services',
   action,
   data: { key },
+});
+
+const requestPremiumApi = async (action) => MailPoet.Ajax.post({
+  api_version: window.mailpoet_api_version,
+  endpoint: 'premium',
+  action,
 });
 
 const activateMss = async (key) => MailPoet.Ajax.post({
@@ -47,8 +44,6 @@ const PremiumTab = (props) => {
   const [mssKeyValid, setMssKeyValid] = useState(key ? props.mssKeyValid : null);
   const [mssKeyMessage, setMssKeyMessage] = useState(null);
 
-  let premiumActivateUrl = props.premiumActivateUrl;
-
   // key is considered valid if either Premium or MSS check passes
   const keyValid = useMemo(() => {
     if (premiumStatus > PremiumStatus.KEY_INVALID || mssKeyValid) {
@@ -64,7 +59,9 @@ const PremiumTab = (props) => {
     const errorStatus = isAfterInstall ? status.INSTALL_ACTIVATING_ERROR : status.ACTIVATE_ERROR;
 
     setPremiumInstallationStatus(activateStatus);
-    if (!await request(premiumActivateUrl)) {
+    try {
+      await requestPremiumApi('activatePlugin');
+    } catch (error) {
       setPremiumInstallationStatus(errorStatus);
       return;
     }
@@ -73,15 +70,8 @@ const PremiumTab = (props) => {
 
   const installPremiumPlugin = async () => {
     setPremiumInstallationStatus(PremiumInstallationStatus.INSTALL_INSTALLING);
-    if (!await request(props.premiumInstallUrl)) {
-      setPremiumInstallationStatus(PremiumInstallationStatus.INSTALL_INSTALLING_ERROR);
-      return;
-    }
-
-    // refetch 'plugin_activate_url' since it's only set after installation
     try {
-      const response = await requestServicesApi(key, 'checkPremiumKey');
-      premiumActivateUrl = response.meta.premium_activate_url;
+      await requestPremiumApi('installPlugin');
     } catch (error) {
       setPremiumInstallationStatus(PremiumInstallationStatus.INSTALL_INSTALLING_ERROR);
       return;
@@ -228,13 +218,10 @@ PremiumTab.propTypes = {
   premiumStatus: PropTypes.number.isRequired,
   mssKeyValid: PropTypes.bool.isRequired,
   premiumPluginActive: PropTypes.bool.isRequired,
-  premiumInstallUrl: PropTypes.string.isRequired,
-  premiumActivateUrl: PropTypes.string,
 };
 
 PremiumTab.defaultProps = {
   activationKey: null,
-  premiumActivateUrl: null,
 };
 
 const container = document.getElementById('settings-premium-tab');
@@ -260,8 +247,6 @@ if (container) {
       premiumStatus={getPremiumStatus()}
       mssKeyValid={window.mailpoet_mss_key_valid}
       premiumPluginActive={!!window.mailpoet_premium_version}
-      premiumInstallUrl={window.mailpoet_premium_install_url}
-      premiumActivateUrl={window.mailpoet_premium_activate_url || null}
     />,
     container
   );
