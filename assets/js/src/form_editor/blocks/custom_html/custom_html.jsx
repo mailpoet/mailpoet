@@ -14,6 +14,10 @@ export const settings = {
       type: 'string',
       default: MailPoet.I18n.t('blockCustomHtmlDefault'),
     },
+    nl2br: {
+      type: 'boolean',
+      default: true,
+    },
   },
   supports: {
     html: false,

@@ -75,6 +75,7 @@ export default (data) => {
           name: 'mailpoet-form/custom-html',
           attributes: {
             content: item.params && item.params.text ? item.params.text : '',
+            nl2br: item.params && item.params.nl2br ? !!item.params.nl2br : false,
           },
         };
       default:

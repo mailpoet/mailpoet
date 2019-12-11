@@ -92,6 +92,7 @@ export default (blocks) => {
           static: '0',
           params: {
             text: block.attributes && block.attributes.content ? block.attributes.content : '',
+            nl2br: block.attributes && block.attributes.nl2br ? '1' : '0',
           },
         };
       default:

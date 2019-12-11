@@ -3,6 +3,7 @@ import {
   Panel,
   PanelBody,
   TextareaControl,
+  ToggleControl,
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
@@ -19,6 +20,11 @@ const CustomHtmlEdit = ({ attributes, setAttributes }) => {
             data-automation-id="settings_custom_html_content"
             rows={4}
             onChange={(content) => setAttributes({ content })}
+          />
+          <ToggleControl
+            label={MailPoet.I18n.t('blockCustomHtmlNl2br')}
+            checked={attributes.nl2br}
+            onChange={(nl2br) => (setAttributes({ nl2br }))}
           />
         </PanelBody>
       </Panel>
