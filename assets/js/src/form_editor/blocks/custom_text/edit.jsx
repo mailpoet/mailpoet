@@ -1,7 +1,8 @@
 import React from 'react';
 import {
   Panel,
-  PanelBody, SelectControl,
+  PanelBody,
+  SelectControl,
   TextControl,
   ToggleControl,
 } from '@wordpress/components';
@@ -9,7 +10,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
-const FirstNameEdit = ({ attributes, setAttributes }) => {
+const CustomTextEdit = ({ attributes, setAttributes }) => {
   const inspectorControls = (
     <InspectorControls>
       <Panel>
@@ -92,7 +93,7 @@ const FirstNameEdit = ({ attributes, setAttributes }) => {
   );
 };
 
-FirstNameEdit.propTypes = {
+CustomTextEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
     labelWithinInput: PropTypes.bool.isRequired,
@@ -101,4 +102,4 @@ FirstNameEdit.propTypes = {
   setAttributes: PropTypes.func.isRequired,
 };
 
-export default FirstNameEdit;
+export default CustomTextEdit;
