@@ -41,4 +41,4 @@ export function getSettings(customField) {
       return null;
     },
   };
-};
+}
