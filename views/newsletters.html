@@ -10,6 +10,7 @@
       var mailpoet_display_nps_poll = <%= (sent_newsletters_count > 0 and settings.display_nps_poll) ? 'true' : 'false' %>;
       var mailpoet_subscribers_limit = <%= subscribers_limit %>;
       var mailpoet_subscribers_limit_reached = <%= subscribers_limit_reached ? 'true' : 'false' %>;
+      var mailpoet_has_api_key = <%= has_api_key ? 'true' : 'false' %>;
       var mailpoet_segments = <%= json_encode(segments) %>;
       var mailpoet_show_congratulate_after_first_newsletter = <%= show_congratulate_after_first_newsletter %>;
       var mailpoet_installed_days_ago = <%= installed_days_ago %>;
@@ -399,8 +400,11 @@
     'gaCampaignTip': __('For example, “Spring email”. [link]Read the guide.[/link]'),
 
     'subscribersLimitNoticeTitle': __('Congratulations, you now have more than [subscribersLimit] subscribers!'),
-    'subscribersLimitNoticeContent': __('Our free version is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.'),
-    'upgradeNow': __('Upgrade Now')
+    'freeVersionLimit': __('Our free version is limited to [subscribersLimit] subscribers.'),
+    'yourPlanLimit': __('Your plan is limited to [subscribersLimit] subscribers.'),
+    'youNeedToUpgrade': __('You need to upgrade now to be able to continue using MailPoet.'),
+    'upgradeNow': __('Upgrade Now'),
+    'refreshMySubscribers': __('I’ve upgraded my subscription, refresh subscriber limit'),
   }) %>
   <% include('mss_pitch_translations.html') %>
 <% endblock %>
