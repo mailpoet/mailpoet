@@ -22,6 +22,10 @@ export function getSettings(customField) {
         type: 'boolean',
         default: false,
       },
+      validate: {
+        type: 'string',
+        default: '',
+      },
       customFieldId: {
         type: 'string',
         default: customField.id,
