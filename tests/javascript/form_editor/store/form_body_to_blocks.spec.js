@@ -218,7 +218,6 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.label).to.be.equal('Subscribe!');
   });
 
-<<<<<<< HEAD
   it('Should map dividers to blocks', () => {
     const [block1, block2] = formBodyToBlocks([
       { ...divider, position: '1' },
@@ -234,8 +233,8 @@ describe('Form Body To Blocks', () => {
 
   it('Should map custom html to blocks', () => {
     const [block1, block2] = formBodyToBlocks([
-      { ...customHtml, position: '1', params: { text: '123', nl2br: '1' } },
-      { ...customHtml, position: '2', params: { text: 'nice one' } },
+      {...customHtml, position: '1', params: {text: '123', nl2br: '1'}},
+      {...customHtml, position: '2', params: {text: 'nice one'}},
     ]);
     checkBlockBasics(block1);
     expect(block1.clientId).to.be.equal('html_0');
@@ -247,8 +246,9 @@ describe('Form Body To Blocks', () => {
     expect(block2.name).to.be.equal('mailpoet-form/custom-html');
     expect(block2.attributes.content).to.be.equal('nice one');
     expect(block2.attributes.nl2br).to.be.false;
-=======
-  it.only('Should map custom text input to block', () => {
+  });
+
+  it('Should map custom text input to block', () => {
     const customField = {
       created_at: '2019-12-10T15:05:06+00:00',
       id: 1,
@@ -269,7 +269,6 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.mandatory).to.be.equal(false);
     expect(block.attributes.labelWithinInput).to.be.equal(true);
     expect(block.attributes.validate).to.be.equal('alphanum');
->>>>>>> Map custom fields to blocks
   });
 
   it('Should ignore unknown input type', () => {
