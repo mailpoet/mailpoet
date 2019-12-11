@@ -23,6 +23,7 @@ export default () => {
     formErrors: validateForm(formData, formBlocks),
     segments: window.mailpoet_form_segments,
     pages: window.mailpoet_form_pages,
+    customFields: window.mailpoet_custom_fields,
     isFormSaving: false,
     notices: [],
     sidebar: {

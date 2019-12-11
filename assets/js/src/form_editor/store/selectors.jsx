@@ -20,6 +20,9 @@ export default {
   getAllAvailableSegments(state) {
     return state.segments;
   },
+  getAllAvailableCustomFields(state) {
+    return state.customFields;
+  },
   getAllAvailablePages(state) {
     return state.pages;
   },
