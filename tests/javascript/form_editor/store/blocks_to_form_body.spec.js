@@ -58,6 +58,19 @@ const lastNameBlock = {
     mandatory: false,
   },
 };
+const customTextBlock = {
+  clientId: '2',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/custom-text',
+  attributes: {
+    label: 'Name of the street',
+    labelWithinInput: false,
+    mandatory: false,
+    validate: 'alphanum',
+    customFieldId: 1,
+  },
+};
 
 const dividerBlock = {
   clientId: 'some_random_123',
@@ -221,6 +234,30 @@ describe('Blocks to Form Body', () => {
     expect(html.static).to.be.equal('0');
     expect(html.params.text).to.be.equal('HTML content');
     expect(html.params.nl2br).to.be.equal('1');
+
+  it('Should map custom text field', () => {
+    const customField = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 1,
+      name: 'Custom Field name',
+      params: {
+        label: 'Street name',
+        required: '1',
+        validate: '',
+      },
+      type: 'text',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+    const [input] = formBlocksToBody([customTextBlock], [customField]);
+    checkBodyInputBasics(input);
+    expect(input.id).to.be.equal('1');
+    expect(input.name).to.be.equal('Custom Field name');
+    expect(input.type).to.be.equal('text');
+    expect(input.position).to.be.equal('1');
+    expect(input.params.label).to.be.equal('Name of the street');
+    expect(input.params.required).to.be.undefined;
+    expect(input.params.label_within).to.be.undefined;
+    expect(input.params.validate).to.eq('alphanum');
   });
 
   it('Should map multiple blocks at once', () => {

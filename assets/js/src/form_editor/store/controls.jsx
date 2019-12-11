@@ -14,9 +14,10 @@ export default {
     }
     const formData = select('mailpoet-form-editor').getFormData();
     const formBlocks = select('mailpoet-form-editor').getFormBlocks();
+    const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
     const requestData = {
       ...formData,
-      body: blocksToFormBody(formBlocks),
+      body: blocksToFormBody(formBlocks, customFields),
     };
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
