@@ -63,9 +63,10 @@ const PremiumTab = (props) => {
       await requestPremiumApi('activatePlugin');
     } catch (error) {
       setPremiumInstallationStatus(errorStatus);
-      return;
+      return false;
     }
     setPremiumInstallationStatus(doneStatus);
+    return true;
   };
 
   const installPremiumPlugin = async () => {
@@ -74,9 +75,9 @@ const PremiumTab = (props) => {
       await requestPremiumApi('installPlugin');
     } catch (error) {
       setPremiumInstallationStatus(PremiumInstallationStatus.INSTALL_INSTALLING_ERROR);
-      return;
+      return false;
     }
-    await activatePremiumPlugin(true);
+    return activatePremiumPlugin(true);
   };
 
   const verifyMailPoetPremiumKey = async () => {
@@ -85,12 +86,13 @@ const PremiumTab = (props) => {
       setPremiumMessage(null);
 
       // install/activate Premium plugin
+      let pluginActive = response.meta.premium_plugin_active;
       if (!response.meta.premium_plugin_installed) {
         setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_INSTALLED);
-        await installPremiumPlugin();
+        pluginActive = await installPremiumPlugin();
       } else if (!response.meta.premium_plugin_active) {
         setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_ACTIVATED);
-        await activatePremiumPlugin();
+        pluginActive = await activatePremiumPlugin();
       } else {
         setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_ACTIVE);
       }
@@ -99,7 +101,7 @@ const PremiumTab = (props) => {
         'User has validated a Premium key',
         {
           'MailPoet Free version': window.mailpoet_version,
-          'Premium plugin is active': response.meta.premium_plugin_active,
+          'Premium plugin is active': pluginActive,
         }
       );
     } catch (error) {
