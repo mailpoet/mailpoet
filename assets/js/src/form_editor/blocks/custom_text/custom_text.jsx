@@ -1,5 +1,5 @@
-import MailPoet from 'mailpoet';
 import Icon from './icon.jsx';
+import Edit from './edit.jsx';
 
 export const name = 'mailpoet-form/custom-text';
 
@@ -12,7 +12,7 @@ export function getSettings(customField) {
     attributes: {
       label: {
         type: 'string',
-        default: MailPoet.I18n.t('blockFirstName'),
+        default: customField.name,
       },
       labelWithinInput: {
         type: 'boolean',
@@ -28,9 +28,7 @@ export function getSettings(customField) {
       customClassName: false,
       multiple: false,
     },
-    edit() {
-      return null;
-    }, // TODO
+    edit: Edit,
     save() {
       return null;
     },
