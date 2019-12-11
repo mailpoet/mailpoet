@@ -8,7 +8,12 @@
 <% if subscribersLimitReached %>
 <%= __('Congratulations, you now have more than [subscribersLimit] subscribers!')|replace({'[subscribersLimit]': subscribersLimit}) %>
 
-<%= __('Our free version is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.')|replace({'[subscribersLimit]': subscribersLimit}) %>
+<% if hasKey %>
+<%= __('Your plan is limited to [subscribersLimit] subscribers.')|replace({'[subscribersLimit]': subscribersLimit}) %>
+<% else %>
+<%= __('Our free version is limited to [subscribersLimit] subscribers.')|replace({'[subscribersLimit]': subscribersLimit}) %>
+<% endif %>
+<%= __('You need to upgrade now to be able to continue using MailPoet.') %>
 
 <%= __('Upgrade Now') %>
   <%= upgradeNowLink %>
