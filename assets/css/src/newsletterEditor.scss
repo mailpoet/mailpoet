@@ -1,13 +1,9 @@
 @import '../../../node_modules/select2/dist/css/select2';
 @import '../../../node_modules/spectrum-colorpicker/spectrum';
-
 @import 'components/newsletterEditor/mixins/transitions';
-
 @import 'components/newsletterEditor/variables';
 @import 'components/newsletterEditor/common';
 @import 'components/newsletterEditor/layout';
-
-
 @import 'components/newsletterEditor/components/forms';
 @import 'components/newsletterEditor/components/heading';
 @import 'components/newsletterEditor/components/history';
@@ -18,8 +14,6 @@
 @import 'components/newsletterEditor/components/layers';
 @import 'components/newsletterEditor/components/dragAndDrop';
 @import 'components/newsletterEditor/components/resize';
-
-
 @import 'components/newsletterEditor/contentBlocks/base';
 @import 'components/newsletterEditor/contentBlocks/container';
 @import 'components/newsletterEditor/contentBlocks/automatedLatestContent';
@@ -35,5 +29,4 @@
 @import 'components/newsletterEditor/contentBlocks/footer';
 @import 'components/newsletterEditor/contentBlocks/woocommerceHeading';
 @import 'components/newsletterEditor/contentBlocks/woocommerceContent';
-
 @import 'components/newsletterEditor/libraryOverrides';
