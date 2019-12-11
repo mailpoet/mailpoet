@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers\KeyCheck;
 
+use Carbon\Carbon;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;

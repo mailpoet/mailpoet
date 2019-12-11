@@ -15,13 +15,9 @@ class Beamer extends SimpleWorker {
   /** @var SettingsController */
   private $settings;
 
-  /** @var WPFunctions */
-  private $wp;
-
   public function __construct(SettingsController $settings, WPFunctions $wp) {
-    parent::__construct();
+    parent::__construct($wp);
     $this->settings = $settings;
-    $this->wp = $wp;
   }
 
   public function processTaskStrategy(ScheduledTask $task, $timer) {
@@ -43,8 +39,7 @@ class Beamer extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    $wp = new WPFunctions;
-    $date = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
+    $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     return $date->hour(11)->minute(00)->second(00)->addDay();
   }
 }
