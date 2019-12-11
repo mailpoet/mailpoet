@@ -74,6 +74,7 @@ const customHtmlBlock = {
   name: 'mailpoet-form/custom-html',
   attributes: {
     content: 'HTML content',
+    nl2br: true,
   },
 };
 
@@ -222,6 +223,7 @@ describe('Blocks to Form Body', () => {
     expect(html.unique).to.be.equal('0');
     expect(html.static).to.be.equal('0');
     expect(html.params.text).to.be.equal('HTML content');
+    expect(html.params.nl2br).to.be.equal('1');
   });
 
   it('Should map multiple blocks at once', () => {

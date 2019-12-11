@@ -90,6 +90,7 @@ const customHtml = {
   static: '0',
   params: {
     text: 'test',
+    nl2br: '1',
   },
   position: null,
 };
@@ -210,17 +211,19 @@ describe('Form Body To Blocks', () => {
 
   it('Should map custom html to blocks', () => {
     const [block1, block2] = formBodyToBlocks([
-      { ...customHtml, position: '1', params: { text: '123' } },
+      { ...customHtml, position: '1', params: { text: '123', nl2br: '1' } },
       { ...customHtml, position: '2', params: { text: 'nice one' } },
     ]);
     checkBlockBasics(block1);
     expect(block1.clientId).to.be.equal('html_0');
     expect(block1.name).to.be.equal('mailpoet-form/custom-html');
     expect(block1.attributes.content).to.be.equal('123');
+    expect(block1.attributes.nl2br).to.be.true;
     checkBlockBasics(block2);
     expect(block2.clientId).to.be.equal('html_1');
     expect(block2.name).to.be.equal('mailpoet-form/custom-html');
     expect(block2.attributes.content).to.be.equal('nice one');
+    expect(block2.attributes.nl2br).to.be.false;
   });
 
   it('Should ignore unknown input type', () => {
