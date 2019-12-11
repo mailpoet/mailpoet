@@ -104,7 +104,7 @@ const App = () => (
     <HashRouter>
       <Notices />
       <Switch>
-        <Route exact path="/" render={() => <Redirect to="/standard" />} />
+        <Route exact path="/" render={() => <Redirect to={window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'} />} />
         {routes.map((route) => (
           <Route
             key={route.path}
