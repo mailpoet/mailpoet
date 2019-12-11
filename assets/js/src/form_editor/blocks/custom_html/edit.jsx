@@ -4,6 +4,7 @@ import {
   PanelBody,
   TextareaControl,
   ToggleControl,
+  SandBox
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
@@ -35,7 +36,7 @@ const CustomHtmlEdit = ({ attributes, setAttributes }) => {
     <>
       {inspectorControls}
       <div>
-        {attributes.content}
+        <SandBox html={attributes.content} key={attributes.content} />
       </div>
     </>
   );
