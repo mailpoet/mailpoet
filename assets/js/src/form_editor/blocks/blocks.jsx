@@ -1,3 +1,4 @@
+import slugify from 'slugify';
 import { registerBlockType, setCategories } from '@wordpress/blocks';
 import { select } from '@wordpress/data';
 import MailPoet from 'mailpoet';
@@ -12,12 +13,22 @@ import * as customHtml from './custom_html/custom_html.jsx';
 
 import * as customText from './custom_text/custom_text.jsx';
 
+export function getCustomFieldName(blockName, customField) {
+  const name = slugify(customField.name, { lower: true })
+    .replace(/[^a-z0-9]+/g, '')
+    .replace(/-$/, '');
+  return `${blockName}-${name}`;
+}
+
 const registerCustomFieldBlock = (customField) => {
   console.log('custom Field', customField);
   // eslint-disable-next-line default-case
   switch (customField.type) {
     case 'text':
-      registerBlockType(customText.name, customText.getSettings(customField));
+      registerBlockType(
+        getCustomFieldName(customText.name, customField),
+        customText.getSettings(customField)
+      );
       break;
   }
 };
