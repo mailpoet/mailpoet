@@ -10,8 +10,20 @@ import * as lastName from './last_name/last_name.jsx';
 import * as segmentSelect from './segment_select/segment_select.jsx';
 import * as customHtml from './custom_html/custom_html.jsx';
 
+import * as customText from './custom_text/custom_text.jsx';
+
+const registerCustomFieldBlock = (customField) => {
+  console.log('custom Field', customField);
+  // eslint-disable-next-line default-case
+  switch (customField.type) {
+    case 'text':
+      registerBlockType(customText.name, customText.getSettings(customField));
+      break;
+  }
+};
+
 export default () => {
-  const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields()
+  const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
 
   const categories = [
     { slug: 'obligatory', title: '' }, // Blocks from this category are not in block insert popup
@@ -29,4 +41,8 @@ export default () => {
   registerBlockType(lastName.name, lastName.settings);
   registerBlockType(segmentSelect.name, segmentSelect.settings);
   registerBlockType(customHtml.name, customHtml.settings);
+
+  if (Array.isArray(customFields)) {
+    customFields.forEach(registerCustomFieldBlock);
+  }
 };
