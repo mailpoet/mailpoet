@@ -1,4 +1,5 @@
 import MailPoet from 'mailpoet';
+import Icon from './icon.jsx';
 
 export const name = 'mailpoet-form/custom-text';
 
@@ -6,7 +7,7 @@ export function getSettings(customField) {
   return {
     title: customField.name,
     description: '',
-    icon: 'admin-site', // TODO
+    icon: Icon,
     category: 'custom-fields',
     attributes: {
       label: {
