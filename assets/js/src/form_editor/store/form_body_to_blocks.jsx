@@ -1,12 +1,4 @@
-import slugify from 'slugify';
-
-export function getCustomFieldName(blockName, customField) {
-  // TODO move this function elsewhere, it is also used in the blocks.jsx
-  const name = slugify(customField.name, { lower: true })
-    .replace(/[^a-z0-9]+/g, '')
-    .replace(/-$/, '');
-  return `mailpoet-form/custom-text-${name}`;
-}
+import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 
 const mapCustomField = (item, customFields, mappedCommonProperties) => {
   const customField = customFields.find((cf) => cf.id === parseInt(item.id, 10));
@@ -14,7 +6,7 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
   if (customField.type !== 'text') return null; // TODO debug, for now, remove later
   const mapped = {
     ...mappedCommonProperties,
-    name: getCustomFieldName('mailpoet-form/custom-text', customField),
+    name: formatCustomFieldBlockName('mailpoet-form/custom-text', customField),
   };
   if (
     item.params
