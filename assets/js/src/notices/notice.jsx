@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
+import MailPoet from 'mailpoet';
 
 const Notice = (props) => {
   const [hidden, setHidden] = React.useState(false);
@@ -37,7 +38,7 @@ const Notice = (props) => {
       {props.children}
       {props.closable && (
         <button type="button" className="notice-dismiss" onClick={close}>
-          <span className="screen-reader-text">Dismiss this notice.</span>
+          <span className="screen-reader-text">{MailPoet.I18n.t('dismissNotice')}</span>
         </button>
       )}
     </div>,
