@@ -6,6 +6,7 @@ import {
 import ScrollToTop from 'common/scroll_to_top.jsx';
 
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import Notices from 'notices/notices.jsx';
 import StepMethodSelection from './import/step_method_selection.jsx';
 import StepInputValidation from './import/step_input_validation.jsx';
 import StepDataManipulation from './import/step_data_manipulation.jsx';
@@ -22,6 +23,7 @@ const ImportSubscribers = () => {
   return (
     <GlobalContext.Provider value={contextValue}>
       <HashRouter>
+        <Notices />
         <ScrollToTop>
           <Switch>
             <Route

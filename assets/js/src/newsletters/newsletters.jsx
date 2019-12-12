@@ -21,6 +21,7 @@ import NewsletterListNotificationHistory from 'newsletters/listings/notification
 import NewsletterSendingStatus from 'newsletters/sending_status.jsx';
 import CampaignStatsPage from 'newsletters/campaign_stats/page.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import Notices from 'notices/notices.jsx';
 
 const getAutomaticEmailsRoutes = () => {
   if (!window.mailpoet_automatic_emails) return [];
@@ -101,6 +102,7 @@ const routes = Hooks.applyFilters('mailpoet_newsletters_before_router', [
 const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <HashRouter>
+      <Notices />
       <Switch>
         <Route exact path="/" render={() => <Redirect to="/standard" />} />
         {routes.map((route) => (

@@ -9,10 +9,12 @@ import SystemInfo from 'help/system_info.jsx';
 import SystemStatus from 'help/system_status.jsx';
 import YourPrivacy from 'help/your_privacy.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import Notices from 'notices/notices.jsx';
 
 const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <HashRouter>
+      <Notices />
       <Switch>
         <Route exact path="/" render={() => <Redirect to="/knowledgeBase" />} />
         <Route path="/knowledgeBase" component={KnowledgeBase} />
