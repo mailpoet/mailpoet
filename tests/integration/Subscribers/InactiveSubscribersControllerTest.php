@@ -2,7 +2,6 @@
 
 namespace MailPoet\Subscribers;
 
-use Carbon\Carbon;
 use MailPoet\Config\MP2Migrator;
 use MailPoet\Entities\SettingEntity;
 use MailPoet\Models\Newsletter;
@@ -13,6 +12,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersControllerTest extends \MailPoetTest {

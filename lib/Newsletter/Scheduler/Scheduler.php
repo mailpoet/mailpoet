@@ -2,9 +2,9 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
-use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Scheduler {
 

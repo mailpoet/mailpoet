@@ -2,10 +2,10 @@
 
 namespace MailPoet\Doctrine\EventListeners;
 
-use Carbon\Carbon;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\Event\LifecycleEventArgs;
 use ReflectionObject;
 

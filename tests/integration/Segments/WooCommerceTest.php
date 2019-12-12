@@ -4,7 +4,6 @@ namespace MailPoet\Test\Segments;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
-use Carbon\Carbon;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -13,6 +12,7 @@ use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Segments\WooCommerce;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerceTest extends \MailPoetTest  {

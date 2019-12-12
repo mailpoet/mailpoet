@@ -2,7 +2,7 @@
 
 namespace MailPoet\Services\Bridge;
 
-use Carbon\Carbon;
+use MailPoetVendor\Carbon\Carbon;
 
 class BridgeTestMockAPI extends API {
   public $api_key;

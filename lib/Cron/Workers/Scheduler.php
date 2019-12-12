@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron\Workers;
 
-use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
@@ -15,6 +14,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Monolog\Logger;
 
 class Scheduler {

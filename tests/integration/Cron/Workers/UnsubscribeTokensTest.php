@@ -2,12 +2,12 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
-use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class UnsubscribeTokensTest extends \MailPoetTest {

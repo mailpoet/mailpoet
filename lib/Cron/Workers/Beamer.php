@@ -2,10 +2,10 @@
 
 namespace MailPoet\Cron\Workers;
 
-use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Beamer extends SimpleWorker {
   const TASK_TYPE = 'beamer';

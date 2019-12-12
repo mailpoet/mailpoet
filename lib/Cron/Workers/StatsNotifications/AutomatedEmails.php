@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
-use Carbon\Carbon;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Entities\NewsletterEntity;
@@ -15,6 +14,7 @@ use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class AutomatedEmails extends SimpleWorker {
   const TASK_TYPE = 'stats_notification_automated_emails';

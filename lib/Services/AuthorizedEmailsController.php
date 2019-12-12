@@ -2,11 +2,11 @@
 
 namespace MailPoet\Services;
 
-use Carbon\Carbon;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedEmailsController {
   const AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING = 'authorized_emails_addresses_check';

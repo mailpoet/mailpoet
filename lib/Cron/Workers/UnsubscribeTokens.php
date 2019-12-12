@@ -2,13 +2,13 @@
 
 namespace MailPoet\Cron\Workers;
 
-use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class UnsubscribeTokens extends SimpleWorker {
   const TASK_TYPE = 'unsubscribe_tokens';

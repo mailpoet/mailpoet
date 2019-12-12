@@ -2,9 +2,9 @@
 
 namespace MailPoet\Cron;
 
-use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class CronWorkerScheduler {
   /** @var WPFunctions */

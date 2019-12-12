@@ -2,11 +2,11 @@
 
 namespace MailPoet\Tasks;
 
-use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 use function MailPoetVendor\array_column;
 

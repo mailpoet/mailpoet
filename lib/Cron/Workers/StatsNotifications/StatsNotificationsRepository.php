@@ -2,11 +2,11 @@
 
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
-use Carbon\Carbon;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
+use MailPoetVendor\Carbon\Carbon;
 
 class StatsNotificationsRepository extends Repository {
   protected function getEntityClassName() {

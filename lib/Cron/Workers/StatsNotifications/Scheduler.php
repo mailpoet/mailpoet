@@ -2,11 +2,11 @@
 
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
-use Carbon\Carbon;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Scheduler {

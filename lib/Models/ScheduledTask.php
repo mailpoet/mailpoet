@@ -2,10 +2,10 @@
 
 namespace MailPoet\Models;
 
-use Carbon\Carbon;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 /**

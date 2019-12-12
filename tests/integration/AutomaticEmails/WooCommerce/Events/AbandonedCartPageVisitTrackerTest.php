@@ -2,10 +2,10 @@
 
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
-use Carbon\Carbon;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 use WC_Session;
 use WooCommerce;

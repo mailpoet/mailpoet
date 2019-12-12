@@ -2,12 +2,12 @@
 
 namespace MailPoet\Cron\Workers;
 
-use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 abstract class SimpleWorker {
   private $wp;

@@ -2,13 +2,13 @@
 
 namespace MailPoet\Test\Tasks;
 
-use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingTest extends \MailPoetTest {

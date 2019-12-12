@@ -2,7 +2,6 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
-use Carbon\Carbon;
 use MailPoet\Config\Hooks;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
@@ -15,6 +14,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Posts as WPPosts;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class PostNotificationTest extends \MailPoetTest {

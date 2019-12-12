@@ -2,13 +2,13 @@
 
 namespace MailPoet\AdminPages\Pages;
 
-use Carbon\Carbon;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Env;
 use MailPoet\Config\Menu;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Readme;
+use MailPoetVendor\Carbon\Carbon;
 
 class Update {
   /** @var PageRenderer */

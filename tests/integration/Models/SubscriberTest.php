@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Models;
 
-use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Newsletter;
@@ -16,6 +15,7 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscriberTest extends \MailPoetTest {

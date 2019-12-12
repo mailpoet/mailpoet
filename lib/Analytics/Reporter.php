@@ -2,7 +2,6 @@
 
 namespace MailPoet\Analytics;
 
-use Carbon\Carbon;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Models\Newsletter;
@@ -13,6 +12,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Reporter {
   /** @var SettingsController */

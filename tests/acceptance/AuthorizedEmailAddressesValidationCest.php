@@ -2,10 +2,10 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use Carbon\Carbon;
 use Codeception\Scenario;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
+use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedEmailAddressesValidationCest {
   function _before(\AcceptanceTester $I, Scenario $scenario) {

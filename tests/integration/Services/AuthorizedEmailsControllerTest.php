@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Services;
 
-use Carbon\Carbon;
 use Codeception\Stub\Expected;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
@@ -12,6 +11,7 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class AuthorizedEmailsControllerTest extends \MailPoetTest {

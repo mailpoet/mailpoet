@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\API\JSON\v1;
 
-use Carbon\Carbon;
 use Codeception\Stub\Expected;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
@@ -14,6 +13,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\WooCommerce\TransactionalEmails;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SettingsTest extends \MailPoetTest {

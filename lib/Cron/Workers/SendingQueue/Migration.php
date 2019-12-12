@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue;
 
-use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Mailer\MailerLog;
@@ -10,6 +9,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Migration extends SimpleWorker {
   const TASK_TYPE = 'migration';

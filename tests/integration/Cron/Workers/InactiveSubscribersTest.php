@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
-use Carbon\Carbon;
 use Codeception\Stub;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\InactiveSubscribers;
@@ -10,6 +9,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\InactiveSubscribersController;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersTest extends \MailPoetTest {

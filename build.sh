@@ -110,7 +110,7 @@ rm -rf $plugin_name/vendor/cerdic/css-tidy/COPYING
 rm -rf $plugin_name/vendor/cerdic/css-tidy/NEWS
 rm -rf $plugin_name/vendor/cerdic/css-tidy/testing
 rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
-rm -rf $plugin_name/vendor/nesbot/Carbon/Laravel
+rm -rf $plugin_name/vendor-prefixed/nesbot/Carbon/Laravel
 rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
 rm -rf $plugin_name/vendor/psr/log/Psr/Log/Test
 rm -rf $plugin_name/vendor/sabberworm/php-css-parser/tests

@@ -2,13 +2,13 @@
 
 namespace MailPoet\Cron\Workers;
 
-use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsWooCommercePurchases;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class WooCommercePastOrders extends SimpleWorker {
   const TASK_TYPE = 'woocommerce_past_orders';

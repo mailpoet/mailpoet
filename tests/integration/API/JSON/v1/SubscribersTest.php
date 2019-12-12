@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\API\JSON\v1;
 
-use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Subscribers;
@@ -33,6 +32,7 @@ use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersTest extends \MailPoetTest {

@@ -2,13 +2,13 @@
 
 namespace MailPoet\API\JSON\v1;
 
-use Carbon\Carbon;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
+use MailPoetVendor\Carbon\Carbon;
 
 class ImportExport extends APIEndpoint {
   public $permissions = [

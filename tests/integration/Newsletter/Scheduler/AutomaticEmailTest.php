@@ -2,7 +2,6 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
-use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -13,6 +12,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class AutomaticEmailTest extends \MailPoetTest {

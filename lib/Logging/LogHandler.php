@@ -2,8 +2,8 @@
 
 namespace MailPoet\Logging;
 
-use Carbon\Carbon;
 use MailPoet\Models\Log;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Monolog\Handler\AbstractProcessingHandler;
 
 class LogHandler extends AbstractProcessingHandler {
