@@ -41,15 +41,21 @@
       }
       .mailpoet_woocommerce_heading h1 {
         line-height: 1.2em;
-        font-family: 'Source Sans Pro';
+        font-family: {{fontWithFallback text.fontFamily }};
         font-size: 36px;
         color: {{ woocommerce.headingFontColor }};
         margin: 0;
       }
+      .mailpoet_woocommerce_content {
+        color: {{ text.fontColor }};
+      }
+      .mailpoet_woocommerce_content a {
+        color: {{ link.fontColor }};
+      }
       .mailpoet_woocommerce_content h1,
       .mailpoet_woocommerce_content h2,
       .mailpoet_woocommerce_content h3 {
-          color: {{ styles.titleColor }};
+        color: {{ woocommerce.brandingColor }};
       }
     {{/if}}
 </style>
