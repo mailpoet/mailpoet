@@ -153,8 +153,10 @@ class StylesHelper {
     if (!count($links)) {
       return '';
     }
-    return '<!--[if !mso]><link href="https://fonts.googleapis.com/css?family='
+
+    // see https://stackoverflow.com/a/48214207
+    return '<!--[if !mso]><!-- --><link href="https://fonts.googleapis.com/css?family='
       . implode("|", $links)
-      . '" rel="stylesheet"><![endif]-->';
+      . '" rel="stylesheet"><!--<![endif]-->';
   }
 }

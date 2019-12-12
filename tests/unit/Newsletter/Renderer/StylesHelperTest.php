@@ -62,7 +62,7 @@ class StylesHelperTest extends \MailPoetUnitTest {
     ];
 
     expect(StylesHelper::getCustomFontsLinks($styles_with_custom_fonts))
-      ->equals('<!--[if !mso]><link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i|Source+Sans+Pro:400,400i,700,700i" rel="stylesheet"><![endif]-->');
+      ->equals('<!--[if !mso]><!-- --><link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i|Source+Sans+Pro:400,400i,700,700i" rel="stylesheet"><!--<![endif]-->');
 
     expect(StylesHelper::getCustomFontsLinks($styles_without_custom_fonts))
       ->equals('');
