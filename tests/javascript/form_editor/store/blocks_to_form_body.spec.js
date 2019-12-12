@@ -83,9 +83,6 @@ const checkBodyInputBasics = (input) => {
   expect(parseInt(input.position, 10)).to.be.a('number');
   expect(input.type).to.be.a('string');
   expect(input.type).to.be.not.empty;
-  if (input.id !== 'divider') {
-    expect(input.params).to.be.a('Object');
-  }
 };
 
 describe('Blocks to Form Body', () => {
