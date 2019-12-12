@@ -26,6 +26,10 @@ export function getSettings(customField) {
         type: 'string',
         default: '',
       },
+      lines: {
+        type: 'string',
+        default: '1',
+      },
       customFieldId: {
         type: 'string',
         default: customField.id,
