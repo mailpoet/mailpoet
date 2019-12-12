@@ -40,6 +40,10 @@ class Helper {
     return wc_light_or_dark($color, $dark, $light);
   }
 
+  function wcHexIsLight($color) {
+    return wc_hex_is_light($color);
+  }
+
   function getOrdersCountCreatedBefore($date_time) {
     global $wpdb;
     $result = $wpdb->get_var( "

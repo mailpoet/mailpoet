@@ -47,6 +47,10 @@ function wc_light_or_dark(string $color, string $dark, string $light) {
   return '';
 }
 
+function wc_hex_is_light(string $color) {
+  return false;
+}
+
 function wc_get_product($the_product = false, $deprecated = []) {
   return null;
 }
