@@ -15,7 +15,6 @@ import * as customText from './custom_text/custom_text.jsx';
 import * as customTextArea from './custom_textarea/custom_textarea.jsx';
 
 const registerCustomFieldBlock = (customField) => {
-  console.log('custom Field', customField);// TODO temporary, remove when all custom fields are implemented
   const namesMap = {
     text: {
       name: customText.name,
@@ -27,7 +26,6 @@ const registerCustomFieldBlock = (customField) => {
     },
   };
 
-  if (!namesMap[customField.type]) return;// TODO temporary, remove when all custom fields are implemented
   registerBlockType(
     formatCustomFieldBlockName(namesMap[customField.type].name, customField),
     namesMap[customField.type].settings
