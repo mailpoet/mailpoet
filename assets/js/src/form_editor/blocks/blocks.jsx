@@ -12,6 +12,7 @@ import * as segmentSelect from './segment_select/segment_select.jsx';
 import * as customHtml from './custom_html/custom_html.jsx';
 
 import * as customText from './custom_text/custom_text.jsx';
+import * as customTextArea from './custom_textarea/custom_textarea.jsx';
 
 const registerCustomFieldBlock = (customField) => {
   console.log('custom Field', customField);
@@ -21,6 +22,12 @@ const registerCustomFieldBlock = (customField) => {
       registerBlockType(
         formatCustomFieldBlockName(customText.name, customField),
         customText.getSettings(customField)
+      );
+      break;
+    case 'textarea':
+      registerBlockType(
+        formatCustomFieldBlockName(customTextArea.name, customField),
+        customTextArea.getSettings(customField)
       );
       break;
   }
