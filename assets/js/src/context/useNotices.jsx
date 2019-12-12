@@ -26,4 +26,3 @@ export default () => {
     items, success, info, warning, error, remove,
   };
 };
-
