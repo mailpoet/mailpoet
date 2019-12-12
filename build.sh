@@ -106,23 +106,22 @@ rm -rf $plugin_name/lib/Tracy
 
 # Remove unit tests from 3rd party extensions
 echo '[BUILD] Removing unit tests from vendor libraries'
-rm -rf $plugin_name/vendor/cerdic/css-tidy/COPYING
-rm -rf $plugin_name/vendor/cerdic/css-tidy/NEWS
-rm -rf $plugin_name/vendor/cerdic/css-tidy/testing
+rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/COPYING
+rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/NEWS
+rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/testing
 rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
 rm -rf $plugin_name/vendor-prefixed/nesbot/Carbon/Laravel
 rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
-rm -rf $plugin_name/vendor/psr/log/Psr/Log/Test
-rm -rf $plugin_name/vendor/sabberworm/php-css-parser/tests
+rm -rf $plugin_name/vendor-prefixed/psr/log/Psr/Log/Test
+rm -rf $plugin_name/vendor-prefixed/sabberworm/php-css-parser/tests
 rm -rf $plugin_name/vendor/soundasleep/html2text/tests
-rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
-rm -rf $plugin_name/vendor/symfony/translation/Tests
-rm -rf $plugin_name/vendor/twig/twig/test
+rm -rf $plugin_name/vendor-prefixed/swiftmailer/swiftmailer/tests
+rm -rf $plugin_name/vendor-prefixed/symfony/translation/Tests
+rm -rf $plugin_name/vendor-prefixed/twig/twig/test
 
 # Remove risky files from 3rd party extensions
 echo '[BUILD] Removing risky and demo files from vendor libraries'
-rm -f $plugin_name/vendor/j4mie/idiorm/demo.php
-rm -f $plugin_name/vendor/cerdic/css-tidy/css_optimiser.php
+rm -f $plugin_name/vendor-prefixed/cerdic/css-tidy/css_optimiser.php
 rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/demo
 rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font/captcha4.ttf # big font
 
