@@ -15,22 +15,23 @@ import * as customText from './custom_text/custom_text.jsx';
 import * as customTextArea from './custom_textarea/custom_textarea.jsx';
 
 const registerCustomFieldBlock = (customField) => {
-  console.log('custom Field', customField);
-  // eslint-disable-next-line default-case
-  switch (customField.type) {
-    case 'text':
-      registerBlockType(
-        formatCustomFieldBlockName(customText.name, customField),
-        customText.getSettings(customField)
-      );
-      break;
-    case 'textarea':
-      registerBlockType(
-        formatCustomFieldBlockName(customTextArea.name, customField),
-        customTextArea.getSettings(customField)
-      );
-      break;
-  }
+  console.log('custom Field', customField);// TODO temporary, remove when all custom fields are implemented
+  const namesMap = {
+    text: {
+      name: customText.name,
+      settings: customText.getSettings(customField),
+    },
+    textarea: {
+      name: customTextArea.name,
+      settings: customTextArea.getSettings(customField),
+    },
+  };
+
+  if (!namesMap[customField.type]) return;// TODO temporary, remove when all custom fields are implemented
+  registerBlockType(
+    formatCustomFieldBlockName(namesMap[customField.type].name, customField),
+    namesMap[customField.type].settings
+  );
 };
 
 export default () => {
