@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\DataGenerator\Generators;
 
-use Carbon\Carbon;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
@@ -15,6 +14,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class WooCommercePastRevenues {

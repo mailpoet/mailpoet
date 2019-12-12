@@ -2,11 +2,11 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
-use Carbon\Carbon;
 use Codeception\Stub;
 use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class BeamerTest extends \MailPoetTest {
 

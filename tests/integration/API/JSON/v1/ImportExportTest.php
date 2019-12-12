@@ -2,11 +2,11 @@
 
 namespace MailPoet\Test\API\JSON\v1;
 
-use Carbon\Carbon;
 use MailPoet\API\JSON\v1\ImportExport;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
+use MailPoetVendor\Carbon\Carbon;
 
 class ImportExportTest extends \MailPoetTest {
 

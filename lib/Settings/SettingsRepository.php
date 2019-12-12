@@ -2,10 +2,10 @@
 
 namespace MailPoet\Settings;
 
-use Carbon\Carbon;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SettingEntity;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 /**
  * @method SettingEntity[] findBy(array $criteria, array $order_by = null, int $limit = null, int $offset = null)

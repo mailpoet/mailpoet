@@ -2,7 +2,6 @@
 
 namespace MailPoet\Config;
 
-use Carbon\Carbon;
 use MailPoet\Config\PopulatorData\DefaultForm;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
@@ -33,6 +32,7 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Populator {
   public $prefix;

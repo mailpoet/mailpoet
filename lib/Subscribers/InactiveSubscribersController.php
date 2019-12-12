@@ -2,7 +2,6 @@
 
 namespace MailPoet\Subscribers;
 
-use Carbon\Carbon;
 use MailPoet\Config\MP2Migrator;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
@@ -10,6 +9,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsRepository;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersController {

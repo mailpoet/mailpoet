@@ -2,9 +2,9 @@
 
 namespace MailPoet\Cron\Workers;
 
-use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Subscribers\ImportExport\Export\Export;
+use MailPoetVendor\Carbon\Carbon;
 
 class ExportFilesCleanup extends SimpleWorker {
   const TASK_TYPE = 'export_files_cleanup';

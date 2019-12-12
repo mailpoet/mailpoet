@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\DataFactories;
 
-use Carbon\Carbon;
 use MailPoet\Models\Form as FormModel;
+use MailPoetVendor\Carbon\Carbon;
 
 class Form {
 

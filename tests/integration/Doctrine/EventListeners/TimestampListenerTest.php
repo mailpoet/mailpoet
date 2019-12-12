@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Doctrine\EventListeners;
 
-use Carbon\Carbon;
 use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
 use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\EntityManagerFactory;
@@ -10,6 +9,7 @@ use MailPoet\Doctrine\EventListeners\TimestampListener;
 use MailPoet\Doctrine\EventListeners\ValidationListener;
 use MailPoet\Doctrine\Validator\ValidatorFactory;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 
 require_once __DIR__ . '/TimestampEntity.php';

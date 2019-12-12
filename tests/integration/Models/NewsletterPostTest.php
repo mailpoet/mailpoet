@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\Models;
 
-use Carbon\Carbon;
 use MailPoet\Models\NewsletterPost;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterPostTest extends \MailPoetTest {

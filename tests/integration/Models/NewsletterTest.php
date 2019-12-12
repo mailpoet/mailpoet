@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Models;
 
-use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -17,6 +16,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTest extends \MailPoetTest {

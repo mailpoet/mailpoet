@@ -2,9 +2,9 @@
 
 namespace MailPoet\Analytics;
 
-use Carbon\Carbon;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Analytics {
 

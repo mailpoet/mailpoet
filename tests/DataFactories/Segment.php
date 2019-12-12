@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\DataFactories;
 
-use Carbon\Carbon;
+use MailPoetVendor\Carbon\Carbon;
 
 class Segment {
 

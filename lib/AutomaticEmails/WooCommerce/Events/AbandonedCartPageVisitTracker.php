@@ -2,11 +2,11 @@
 
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
-use Carbon\Carbon;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class AbandonedCartPageVisitTracker {
   const LAST_VISIT_TIMESTAMP_OPTION_NAME = 'mailpoet_last_visit_timestamp';

@@ -2,7 +2,6 @@
 
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
-use Carbon\Carbon;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -16,6 +15,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 use WC_Cart;

@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
-use Carbon\Carbon;
 use Codeception\Stub;
 use MailPoet\Cron\Workers\SendingQueue\Migration;
 use MailPoet\Mailer\MailerLog;
@@ -13,6 +12,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class MigrationTest extends \MailPoetTest {

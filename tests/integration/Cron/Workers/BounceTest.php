@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
-use Carbon\Carbon;
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
 use MailPoet\Mailer\Mailer;
@@ -12,6 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 require_once('BounceTestMockAPI.php');

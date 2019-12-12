@@ -2,13 +2,13 @@
 
 namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
-use Carbon\Carbon;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCheckWorker;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsRepository;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 require_once('KeyCheckWorkerMockImplementation.php');

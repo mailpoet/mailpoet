@@ -2,10 +2,10 @@
 
 namespace MailPoet\Test\Subscription;
 
-use Carbon\Carbon;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Subscription\Throttling;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class ThrottlingTest extends \MailPoetTest {
   function testItProgressivelyThrottlesSubscriptions() {

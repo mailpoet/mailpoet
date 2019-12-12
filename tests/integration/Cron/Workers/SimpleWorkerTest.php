@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
-use Carbon\Carbon;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
@@ -10,6 +9,7 @@ use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Settings\SettingsRepository;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 require_once('SimpleWorkerMockImplementation.php');

@@ -2,7 +2,6 @@
 
 namespace MailPoet\Models;
 
-use Carbon\Carbon;
 use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
@@ -15,6 +14,7 @@ use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 use function MailPoetVendor\array_column;
 

@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
-use Carbon\Carbon;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\NewsletterEntity;
@@ -20,6 +19,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Worker {

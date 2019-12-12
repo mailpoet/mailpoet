@@ -2,8 +2,8 @@
 
 namespace MailPoet\Form\Block;
 
-use Carbon\Carbon;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Date extends Base {
 

@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Subscription;
 
-use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
@@ -11,6 +10,7 @@ use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Functions;
+use MailPoetVendor\Carbon\Carbon;
 
 class CaptchaTest extends \MailPoetTest {
   const CAPTCHA_SESSION_ID = 'ABC';

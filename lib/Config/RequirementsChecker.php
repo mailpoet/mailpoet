@@ -15,7 +15,6 @@ class RequirementsChecker {
 
   public $display_error_notice;
   public $vendor_classes = [
-    '\Carbon\Carbon',
     '\pQuery',
     '\Cron\CronExpression',
     '\Html2Text\Html2Text',

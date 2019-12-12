@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\API\JSON\v1;
 
-use Carbon\Carbon;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
@@ -38,6 +37,7 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewslettersTest extends \MailPoetTest {

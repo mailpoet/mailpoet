@@ -2,7 +2,6 @@
 
 namespace MailPoet\API\JSON\v1;
 
-use Carbon\Carbon;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
@@ -15,6 +14,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Settings extends APIEndpoint {
 

@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron\Triggers;
 
-use Carbon\Carbon;
 use MailPoet\API\JSON\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
@@ -17,6 +16,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class WordPressTest extends \MailPoetTest {

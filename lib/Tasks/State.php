@@ -2,12 +2,12 @@
 
 namespace MailPoet\Tasks;
 
-use Carbon\Carbon;
 use MailPoet\Cron\Workers\Scheduler;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoetVendor\Carbon\Carbon;
 
 class State
 {
