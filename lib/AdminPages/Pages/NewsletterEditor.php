@@ -69,14 +69,12 @@ class NewsletterEditor {
     $subscriber_data = $subscriber ? $subscriber->asArray() : [];
     $woocommerce_data = [];
     if ($this->woocommerce_helper->isWooCommerceActive()) {
-      $email_base_color = $this->wp->getOption('woocommerce_email_base_color', '#ffffff');
+      $wc_email_settings = $this->wc_transactional_emails->getWCEmailSettings();
       $woocommerce_data = [
         'email_headings' => $this->wc_transactional_emails->getEmailHeadings(),
-        'email_base_color' => $email_base_color,
-        'email_base_text_color' => $this->woocommerce_helper->wcLightOrDark($email_base_color, '#202020', '#ffffff'),
-        'email_text_color' => $this->wp->getOption('woocommerce_email_text_color', '#000000'),
         'customizer_enabled' => (bool)$this->settings->get('woocommerce.use_mailpoet_editor'),
       ];
+      $woocommerce_data = array_merge($wc_email_settings, $woocommerce_data);
     }
     $data = [
       'shortcodes' => ShortcodesHelper::getShortcodes(),

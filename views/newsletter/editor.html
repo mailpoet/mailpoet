@@ -1481,6 +1481,33 @@
       mtaMethod: '<%= settings["mta"]["method"] %>',
       woocommerceCustomizerEnabled: <%= woocommerce.customizer_enabled ? 'true' : 'false' %>,
       <% if is_wc_transactional_email %>
+      overrideGlobalStyles: {
+        text: {
+          fontColor: <%= json_encode(woocommerce.text_color) %>,
+        },
+        h1: {
+          fontColor: <%= json_encode(woocommerce.base_color) %>,
+        },
+        h2: {
+          fontColor: <%= json_encode(woocommerce.base_color) %>,
+        },
+        h3: {
+          fontColor: <%= json_encode(woocommerce.base_color) %>,
+        },
+        link: {
+          fontColor: <%= json_encode(woocommerce.link_color) %>,
+        },
+        wrapper: {
+          backgroundColor: <%= json_encode(woocommerce.body_background_color) %>,
+        },
+        body: {
+          backgroundColor: <%= json_encode(woocommerce.background_color) %>,
+        },
+        woocommerce: {
+          brandingColor: <%= json_encode(woocommerce.base_color) %>,
+          headingFontColor: <%= json_encode(woocommerce.base_text_color) %>,
+        },
+      },
       hiddenWidgets: ['automatedLatestContentLayout', 'header', 'footer', 'posts', 'products'],
       <% endif %>
     };

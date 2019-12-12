@@ -319,7 +319,7 @@ class Template {
          ],
         'link' =>
          [
-          'fontColor' => '#21759B',
+          'fontColor' => $wc_email_settings['link_color'],
           'textDecoration' => 'underline',
          ],
         'wrapper' =>

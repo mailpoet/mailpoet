@@ -89,6 +89,7 @@ App.on('before:start', function (BeforeStartApp, options) { // eslint-disable-li
   var Application = BeforeStartApp;
   var body;
   var globalStyles;
+  var overriddenGlobalStyles;
   // Expose style methods to global application
   Application.getGlobalStyles = Module.getGlobalStyles;
   Application.setGlobalStyles = Module.setGlobalStyles;
@@ -96,7 +97,8 @@ App.on('before:start', function (BeforeStartApp, options) { // eslint-disable-li
 
   body = options.newsletter.body;
   globalStyles = (_.has(body, 'globalStyles')) ? body.globalStyles : {};
-  this.setGlobalStyles(globalStyles);
+  overriddenGlobalStyles = (_.has(options.config, 'overrideGlobalStyles')) ? options.config.overrideGlobalStyles : {};
+  this.setGlobalStyles(jQuery.extend(true, {}, globalStyles, overriddenGlobalStyles));
 });
 
 App.on('start', function (StartApp) { // eslint-disable-line func-names

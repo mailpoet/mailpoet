@@ -145,6 +145,11 @@ class TransactionalEmails {
       $result[$key] = $value ?: $default;
     }
     $result['base_text_color'] = $this->woocommerce_helper->wcLightOrDark($result['base_color'], '#202020', '#ffffff');
+    if ($this->woocommerce_helper->wcHexIsLight($result['body_background_color'])) {
+      $result['link_color'] = $this->woocommerce_helper->wcHexIsLight($result['base_color']) ? $result['base_text_color'] : $result['base_color'];
+    } else {
+      $result['link_color'] = $this->woocommerce_helper->wcHexIsLight($result['base_color']) ? $result['base_color'] : $result['base_text_color'];
+    }
     $result['footer_text'] = $this->replacePlaceholders($result['footer_text']);
     return $result;
   }
