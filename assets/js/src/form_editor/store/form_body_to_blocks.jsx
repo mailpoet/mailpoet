@@ -3,10 +3,17 @@ import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name
 const mapCustomField = (item, customFields, mappedCommonProperties) => {
   const customField = customFields.find((cf) => cf.id === parseInt(item.id, 10));
   if (!customField) return null;
-  if (customField.type !== 'text') return null; // TODO debug, for now, remove later
+
+  const namesMap = {
+    text: 'mailpoet-form/custom-text',
+    textarea: 'mailpoet-form/custom-textarea',
+  };
+
+  if (!namesMap[customField.type]) return null;// TODO temporary, remove when all custom fields are implemented
+
   const mapped = {
     ...mappedCommonProperties,
-    name: formatCustomFieldBlockName('mailpoet-form/custom-text', customField),
+    name: formatCustomFieldBlockName(namesMap[customField.type], customField),
     customFieldId: customField.id,
   };
   if (
