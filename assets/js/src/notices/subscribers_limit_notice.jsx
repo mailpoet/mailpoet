@@ -5,7 +5,7 @@ import Notice from 'notices/notice.jsx';
 const SubscribersLimitNotice = () => {
   if (!window.mailpoet_subscribers_limit_reached) return null;
   return (
-    <Notice type="error" timeout={false}>
+    <Notice type="error" timeout={false} closable={false}>
       <h3>
         {
           MailPoet.I18n.t('subscribersLimitNoticeTitle')
