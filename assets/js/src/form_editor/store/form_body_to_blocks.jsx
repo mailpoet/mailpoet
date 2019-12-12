@@ -9,8 +9,6 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
     textarea: 'mailpoet-form/custom-textarea',
   };
 
-  if (!namesMap[customField.type]) return null;// TODO temporary, remove when all custom fields are implemented
-
   const mapped = {
     ...mappedCommonProperties,
     name: formatCustomFieldBlockName(namesMap[customField.type], customField),
