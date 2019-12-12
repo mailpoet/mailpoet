@@ -130,7 +130,7 @@ class ScheduledTask extends Model {
 
   function rescheduleProgressively() {
     $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    $timeout = min(self::BASIC_RESCHEDULE_TIMEOUT * pow(2, $this->reschedule_count), self::MAX_RESCHEDULE_TIMEOUT);
+    $timeout = (int)min(self::BASIC_RESCHEDULE_TIMEOUT * pow(2, $this->reschedule_count), self::MAX_RESCHEDULE_TIMEOUT);
     $this->scheduled_at = $scheduled_at->addMinutes($timeout);
     $this->reschedule_count++;
     $this->status = ScheduledTask::STATUS_SCHEDULED;

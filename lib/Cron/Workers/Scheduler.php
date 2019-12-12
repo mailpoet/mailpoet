@@ -250,9 +250,9 @@ class Scheduler {
     $bounce_tasks = ScheduledTask::findFutureScheduledByType(Bounce::TASK_TYPE);
     if (count($bounce_tasks)) {
       $bounce_task = reset($bounce_tasks);
-      if (Carbon::createFromTimestamp(current_time('timestamp'))->addHour(42)->lessThan($bounce_task->scheduled_at)) {
+      if (Carbon::createFromTimestamp((int)current_time('timestamp'))->addHour(42)->lessThan($bounce_task->scheduled_at)) {
         $random_offset = rand(-6 * 60 * 60, 6 * 60 * 60);
-        $bounce_task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->addSecond((36 * 60 * 60) + $random_offset);
+        $bounce_task->scheduled_at = Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond((36 * 60 * 60) + $random_offset);
         $bounce_task->save();
       }
     }
