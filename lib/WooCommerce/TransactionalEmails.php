@@ -129,7 +129,28 @@ class TransactionalEmails {
     );
   }
 
-  private function getWCEmailSettings() {
+  public function enableEmailSettingsSyncToWooCommerce() {
+    $this->wp->addAction('mailpoet_api_newsletters_save_after', [$this, 'syncEmailSettingsToWooCommerce']);
+  }
+
+  public function syncEmailSettingsToWooCommerce(Newsletter $newsletter) {
+    if ($newsletter->type !== NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL) {
+      return false;
+    }
+    $newsletter_array = $newsletter->asArray();
+    $styles = $newsletter_array['body']['globalStyles'];
+    $options_to_sync = [
+      'woocommerce_email_background_color' => $styles['body']['backgroundColor'],
+      'woocommerce_email_base_color' => $styles['woocommerce']['brandingColor'],
+      'woocommerce_email_body_background_color' => $styles['wrapper']['backgroundColor'],
+      'woocommerce_email_text_color' => $styles['text']['fontColor'],
+    ];
+    foreach ($options_to_sync as $wc_name => $value) {
+      $this->wp->updateOption($wc_name, $value);
+    }
+  }
+
+  public function getWCEmailSettings() {
     $wc_email_settings = [
       'woocommerce_email_background_color' => '#f7f7f7',
       'woocommerce_email_base_color' => '#333333',
