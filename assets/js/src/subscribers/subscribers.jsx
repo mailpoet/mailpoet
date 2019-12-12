@@ -5,10 +5,12 @@ import { HashRouter, Switch, Route } from 'react-router-dom';
 import SubscriberList from 'subscribers/list.jsx';
 import SubscriberForm from 'subscribers/form.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import Notices from 'notices/notices.jsx';
 
 const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <HashRouter>
+      <Notices />
       <Switch>
         <Route path="/new" component={SubscriberForm} />
         <Route path="/edit/:id" component={SubscriberForm} />

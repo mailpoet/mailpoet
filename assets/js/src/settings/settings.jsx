@@ -2,9 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import DefaultSender from 'settings/default_sender.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import Notices from 'notices/notices.jsx';
 
 const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
+    <Notices />
     <DefaultSender
       senderAddress={window.mailpoet_settings_sender_adddress}
       senderName={window.mailpoet_settings_sender_name}

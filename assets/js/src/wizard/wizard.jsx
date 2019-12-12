@@ -7,6 +7,7 @@ import {
   Switch,
 } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import Notices from 'notices/notices.jsx';
 import WelcomeWizardStepsController from './welcome_wizard_controller.jsx';
 import WooCommerceImportController from './woocommerce_import_controller.jsx';
 import RevenueTrackingPermissionController from './revenue_tracking_permission.jsx';
@@ -22,6 +23,7 @@ const App = () => {
   return (
     <GlobalContext.Provider value={contextValue}>
       <HashRouter>
+        <Notices />
         <Switch>
           <Route path="/steps/:step" component={WelcomeWizardStepsController} />
           <Route path="/import" component={WooCommerceImportController} />

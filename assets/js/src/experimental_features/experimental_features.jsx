@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import Notices from 'notices/notices.jsx';
 
 const ExperimentalFeatures = () => {
   const [flags, setFlags] = useState(null);
@@ -61,24 +62,27 @@ const ExperimentalFeatures = () => {
 
   return (
     <GlobalContext.Provider value={contextValue}>
-      { Object.values(flags).map((flag) => {
-        const id = `experimental-feature-${flag.name}`;
-        return (
-          <div key={flag.name}>
-            <label htmlFor={id}>
-              <input
-                id={id}
-                type="checkbox"
-                name={flag.name}
-                defaultChecked={flag.value}
-                onChange={handleChange}
-              />
-              {' '}
-              {flag.name}
-            </label>
-          </div>
-        );
-      })}
+      <>
+        <Notices />
+        { Object.values(flags).map((flag) => {
+          const id = `experimental-feature-${flag.name}`;
+          return (
+            <div key={flag.name}>
+              <label htmlFor={id}>
+                <input
+                  id={id}
+                  type="checkbox"
+                  name={flag.name}
+                  defaultChecked={flag.value}
+                  onChange={handleChange}
+                />
+                {' '}
+                {flag.name}
+              </label>
+            </div>
+          );
+        })}
+      </>
     </GlobalContext.Provider>
   );
 };

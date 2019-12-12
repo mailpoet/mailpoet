@@ -16,6 +16,7 @@ import {
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
+import { GlobalContext } from 'context/index.jsx';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 
@@ -172,6 +173,8 @@ newsletterActions = addStatsCTAAction(newsletterActions);
 
 class NewsletterListStandard extends React.Component {
   static displayName = 'NewsletterListStandard';
+
+  static contextType = GlobalContext;
 
   static propTypes = {
     location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
