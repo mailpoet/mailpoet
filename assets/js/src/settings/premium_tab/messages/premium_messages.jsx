@@ -12,19 +12,19 @@ const PremiumStatus = {
   KEY_VALID_PREMIUM_PLUGIN_BEING_ACTIVATED: 5,
 };
 
-const activeMessage = (
+const activeMessage = () => (
   <div className="mailpoet_success">
     {MailPoet.I18n.t('premiumTabPremiumActiveMessage')}
   </div>
 );
 
-const installingMessage = (
+const installingMessage = () => (
   <div className="mailpoet_success">
     {MailPoet.I18n.t('premiumTabPremiumInstallingMessage')}
   </div>
 );
 
-const activatingMessage = (
+const activatingMessage = () => (
   <div className="mailpoet_success">
     {MailPoet.I18n.t('premiumTabPremiumActivatingMessage')}
   </div>
@@ -59,15 +59,15 @@ const notValidMessage = (message) => (
 const getMessageFromStatus = (status, message, installationCallback, activationCallback) => {
   switch (status) {
     case PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_ACTIVE:
-      return activeMessage;
+      return activeMessage();
     case PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_NOT_ACTIVE:
       return premiumNotActiveMessage(activationCallback);
     case PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_NOT_INSTALLED:
       return premiumNotInstalledMessage(installationCallback);
     case PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_INSTALLED:
-      return installingMessage;
+      return installingMessage();
     case PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_ACTIVATED:
-      return activatingMessage;
+      return activatingMessage();
     case PremiumStatus.KEY_INVALID:
       return message ? notValidMessage(message) : null;
     default:
