@@ -16,19 +16,19 @@ const PremiumInstallationStatus = {
 
 const keyPrefix = 'premium-installation-message';
 
-const installingMessage = (
+const installingMessage = () => (
   <div className="mailpoet_subitem" key={`${keyPrefix}-installing`}>
     {MailPoet.I18n.t('premiumTabPremiumInstallationInstallingMessage')}
   </div>
 );
 
-const activatingMessage = (
+const activatingMessage = () => (
   <div className="mailpoet_subitem" key={`${keyPrefix}-activating`}>
     {MailPoet.I18n.t('premiumTabPremiumInstallationActivatingMessage')}
   </div>
 );
 
-const doneMessage = (
+const doneMessage = () => (
   <div className="mailpoet_subitem" key={`${keyPrefix}-done`}>
     <strong>{MailPoet.I18n.t('premiumTabPremiumInstallationActiveMessage')}</strong>
   </div>
@@ -61,21 +61,21 @@ const errorMessage = () => {
 const PremiumInstallationMessages = (props) => {
   switch (props.installationStatus) {
     case PremiumInstallationStatus.INSTALL_INSTALLING:
-      return installingMessage;
+      return installingMessage();
     case PremiumInstallationStatus.INSTALL_ACTIVATING:
-      return [installingMessage, activatingMessage];
+      return [installingMessage(), activatingMessage()];
     case PremiumInstallationStatus.INSTALL_DONE:
-      return [installingMessage, activatingMessage, doneMessage];
+      return [installingMessage(), activatingMessage(), doneMessage()];
     case PremiumInstallationStatus.INSTALL_INSTALLING_ERROR:
-      return [installingMessage, errorMessage()];
+      return [installingMessage(), errorMessage()];
     case PremiumInstallationStatus.INSTALL_ACTIVATING_ERROR:
-      return [installingMessage, activatingMessage, errorMessage()];
+      return [installingMessage(), activatingMessage(), errorMessage()];
     case PremiumInstallationStatus.ACTIVATE_ACTIVATING:
-      return activatingMessage;
+      return activatingMessage();
     case PremiumInstallationStatus.ACTIVATE_DONE:
-      return [activatingMessage, doneMessage];
+      return [activatingMessage(), doneMessage()];
     case PremiumInstallationStatus.ACTIVATE_ERROR:
-      return [activatingMessage, errorMessage()];
+      return [activatingMessage(), errorMessage()];
     default:
       return null;
   }

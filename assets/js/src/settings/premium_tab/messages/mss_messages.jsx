@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-const validMessage = (
+const validMessage = () => (
   <div className="mailpoet_success mailpoet_mss_key_valid">
     {MailPoet.I18n.t('premiumTabMssValidMessage')}
   </div>
@@ -16,7 +16,7 @@ const notValidMessage = (message) => (
 
 const MssMessages = (props) => {
   if (props.keyValid) {
-    return validMessage;
+    return validMessage();
   }
   return props.keyMessage ? notValidMessage(props.keyMessage) : null;
 };
