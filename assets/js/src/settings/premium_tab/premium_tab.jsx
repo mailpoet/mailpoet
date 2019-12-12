@@ -160,7 +160,6 @@ const PremiumTab = (props) => {
                   setMssKeyValid(null);
                 }}
               />
-              {' '}
               <button
                 type="button"
                 id="mailpoet_premium_key_verify"
