@@ -8,7 +8,7 @@
  * Author: MailPoet
  * Author URI: http://www.mailpoet.com
  * Requires at least: 4.7
- * Tested up to: 5.1
+ * Tested up to: 5.3
  *
  * @package WordPress
  * @author MailPoet
