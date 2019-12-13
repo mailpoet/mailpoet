@@ -12,9 +12,15 @@ const SubscribersLimitNotice = () => {
   const upgradeLink = hasKey
     ? 'https://account.mailpoet.com/upgrade'
     : `https://account.mailpoet.com/?s=${window.mailpoet_subscribers_count + 1}`;
-  const refreshSubscribers = () => {
-    console.log('Refresh subscribers ...');
+  const refreshSubscribers = async () => {
+    await MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'services',
+      action: 'recheckKeys',
+    });
+    window.location.reload();
   };
+
   return (
     <Notice type="error" timeout={false} closable={false}>
       <h3>{title}</h3>
@@ -33,13 +39,16 @@ const SubscribersLimitNotice = () => {
           {MailPoet.I18n.t('upgradeNow')}
         </a>
         {hasKey && (
-        <button
-          type="button"
-          className="button button-primary"
-          onClick={refreshSubscribers}
-        >
-          {MailPoet.I18n.t('refreshMySubscribers')}
-        </button>
+        <>
+          {' '}
+          <button
+            type="button"
+            className="button"
+            onClick={refreshSubscribers}
+          >
+            {MailPoet.I18n.t('refreshMySubscribers')}
+          </button>
+        </>
         )}
       </p>
     </Notice>

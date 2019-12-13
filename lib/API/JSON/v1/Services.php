@@ -7,6 +7,8 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Installer;
+use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
+use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\SPFCheck;
 use MailPoet\Settings\SettingsController;
@@ -29,15 +31,23 @@ class Services extends APIEndpoint {
   /** @var DateTime */
   public $date_time;
 
+  /** @var SendingServiceKeyCheck */
+  private $mss_worker;
+
+  /** @var PremiumKeyCheck */
+  private $premium_worker;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
 
-  public function __construct(Bridge $bridge, SettingsController $settings, AnalyticsHelper $analytics, SPFCheck $spf_check) {
+  public function __construct(Bridge $bridge, SettingsController $settings, AnalyticsHelper $analytics, SPFCheck $spf_check, SendingServiceKeyCheck $mss_worker, PremiumKeyCheck $premium_worker) {
     $this->bridge = $bridge;
     $this->settings = $settings;
     $this->analytics = $analytics;
     $this->spf_check = $spf_check;
+    $this->mss_worker = $mss_worker;
+    $this->premium_worker = $premium_worker;
     $this->date_time = new DateTime();
   }
 
@@ -177,6 +187,14 @@ class Services extends APIEndpoint {
     }
 
     return $this->errorResponse([APIError::BAD_REQUEST => $error]);
+  }
+
+  public function recheckKeys() {
+    $this->mss_worker->init();
+    $this->mss_worker->checkKey();
+    $this->premium_worker->init();
+    $this->premium_worker->checkKey();
+    return $this->successResponse();
   }
 
   private function getErrorDescriptionByCode($code) {
