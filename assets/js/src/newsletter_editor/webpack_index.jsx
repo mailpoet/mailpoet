@@ -33,6 +33,7 @@ import 'newsletter_editor/behaviors/ResizableBehavior.js'; // side effect - assi
 import 'newsletter_editor/behaviors/SortableBehavior.js'; // side effect - assigns to BehaviorsLookup
 import 'newsletter_editor/behaviors/ShowSettingsBehavior.js'; // side effect - assigns to BehaviorsLookup
 import 'newsletter_editor/behaviors/TextEditorBehavior.js'; // side effect - assigns to BehaviorsLookup
+import 'newsletter_editor/behaviors/WooCommerceStylesBehavior.js'; // side effect - assigns to BehaviorsLookup
 
 // blocks
 import 'newsletter_editor/blocks/container.js'; // side effect - calls App.on()
