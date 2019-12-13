@@ -8,6 +8,8 @@ use MailPoet\Analytics\Analytics;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Services;
 use MailPoet\Config\Installer;
+use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
+use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\SPFCheck;
 use MailPoet\Settings\SettingsController;
@@ -404,7 +406,9 @@ class ServicesTest extends \MailPoetTest {
       $this->di_container->get(Bridge::class),
       $this->di_container->get(SettingsController::class),
       $this->di_container->get(Analytics::class),
-      $spf_check
+      $spf_check,
+      $this->di_container->get(SendingServiceKeyCheck::class),
+      $this->di_container->get(PremiumKeyCheck::class)
     );
   }
 
@@ -413,7 +417,9 @@ class ServicesTest extends \MailPoetTest {
       $bridge,
       $this->di_container->get(SettingsController::class),
       $this->di_container->get(Analytics::class),
-      $this->di_container->get(SPFCheck::class)
+      $this->di_container->get(SPFCheck::class),
+      $this->di_container->get(SendingServiceKeyCheck::class),
+      $this->di_container->get(PremiumKeyCheck::class)
     );
   }
 }
