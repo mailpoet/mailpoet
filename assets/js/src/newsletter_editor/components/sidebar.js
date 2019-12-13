@@ -170,6 +170,7 @@ Module.SidebarStylesView = Marionette.View.extend({
   getTemplate: function () { return window.templates.sidebarStyles; },
   behaviors: {
     ColorPickerBehavior: {},
+    WooCommerceStylesBehavior: {},
   },
   events: function () {
     return {
@@ -215,9 +216,6 @@ Module.SidebarStylesView = Marionette.View.extend({
       },
       'change #mailpoet_newsletter_background_color': _.partial(this.changeColorField, 'wrapper.backgroundColor'),
       'change #mailpoet_background_color': _.partial(this.changeColorField, 'body.backgroundColor'),
-      // WooCommerce styles
-      'change #mailpoet_wc_heading_font_color': _.partial(this.changeColorField, 'woocommerce.headingFontColor'),
-      'change #mailpoet_wc_branding_color': _.partial(this.changeColorField, 'woocommerce.brandingColor'),
     };
   },
   templateContext: function () {
