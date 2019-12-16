@@ -11,6 +11,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
+import NewsletterTypes from 'newsletters/types.jsx';
 
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
@@ -170,6 +171,13 @@ class NewsletterListNotification extends React.Component {
       params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     }).isRequired,
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      newslettersCount: undefined,
+    };
+  }
 
   updateStatus = (e) => {
     // make the event persist so that we can still override the selected value
@@ -343,23 +351,38 @@ class NewsletterListNotification extends React.Component {
 
         <ListingTabs tab="notification" />
 
-        <Listing
-          limit={window.mailpoet_listing_per_page}
-          location={this.props.location}
-          params={this.props.match.params}
-          endpoint="newsletters"
-          type="notification"
-          base_url="notification"
-          onRenderItem={this.renderItem}
-          columns={columns}
-          bulk_actions={bulkActions}
-          item_actions={newsletterActions}
-          messages={messages}
-          auto_refresh
-          sort_by="updated_at"
-          sort_order="desc"
-          afterGetItems={(state) => { checkMailerStatus(state); checkCronStatus(state); }}
-        />
+        {this.state.newslettersCount === 0 && (
+          <NewsletterTypes
+            filter={(type) => type.slug === 'notification'}
+            showHeader={false}
+          />
+        )}
+        {this.state.newslettersCount !== 0 && (
+          <Listing
+            limit={window.mailpoet_listing_per_page}
+            location={this.props.location}
+            params={this.props.match.params}
+            endpoint="newsletters"
+            type="notification"
+            base_url="notification"
+            onRenderItem={this.renderItem}
+            columns={columns}
+            bulk_actions={bulkActions}
+            item_actions={newsletterActions}
+            messages={messages}
+            auto_refresh
+            sort_by="updated_at"
+            sort_order="desc"
+            afterGetItems={(state) => {
+              if (!state.loading) {
+                const total = state.groups.reduce((count, group) => (count + group.count), 0);
+                this.setState({ newslettersCount: total });
+              }
+              checkMailerStatus(state);
+              checkCronStatus(state);
+            }}
+          />
+        )}
       </div>
     );
   }
