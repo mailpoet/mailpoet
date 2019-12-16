@@ -2,7 +2,9 @@
 
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
+use Codeception\Stub;
 use MailPoet\Config\Renderer;
+use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
@@ -31,6 +33,9 @@ class AutomatedEmailsTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var CronWorkerRunner */
+  private $cron_worker_runner;
+
   function _before() {
     parent::_before();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
@@ -52,6 +57,9 @@ class AutomatedEmailsTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(NewsletterStatisticsRepository::class),
       new MetaInfo
     );
+    $this->cron_worker_runner = Stub::copy($this->di_container->get(CronWorkerRunner::class), [
+      'timer' => microtime(true), // reset timer to avoid timeout during full test suite run
+    ]);
 
     $this->settings->set(Worker::SETTINGS_KEY, [
       'automated' => true,
@@ -91,7 +99,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
     $this->mailer->expects($this->never())
       ->method('send');
 
-    $result = $this->stats_notifications->process();
+    $result = $this->cron_worker_runner->run($this->stats_notifications);
 
     expect($result)->equals(true);
   }
@@ -119,7 +127,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
     $this->mailer->expects($this->once())
       ->method('send');
 
-    $result = $this->stats_notifications->process();
+    $result = $this->cron_worker_runner->run($this->stats_notifications);
 
     expect($result)->equals(true);
   }
@@ -149,7 +157,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
         $this->equalTo('email@example.com')
       );
 
-    $result = $this->stats_notifications->process();
+    $result = $this->cron_worker_runner->run($this->stats_notifications);
 
     expect($result)->equals(true);
   }
@@ -172,7 +180,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
           return strpos($context['linkSettings'], 'mailpoet-settings');
         }));
 
-    $this->stats_notifications->process();
+    $this->cron_worker_runner->run($this->stats_notifications);
   }
 
   function testItAddsNewsletterStatsToContext() {
@@ -197,7 +205,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
             && $context['newsletters'][0]['subject'] === 'Subject';
         }));
 
-    $this->stats_notifications->process();
+    $this->cron_worker_runner->run($this->stats_notifications);
   }
 
   private function createClicks($newsletter_id, $count) {
