@@ -45,7 +45,9 @@ class CustomFields extends APIEndpoint {
     }
     $custom_field = CustomField::findOne($custom_field->id);
     if(!$custom_field instanceof CustomField) return $this->errorResponse();
-    return $this->successResponse($custom_field->asArray());
+    $response = $custom_field->asArray();
+    $response['id'] = (int)$response['id'];
+    return $this->successResponse($response);
   }
 
   function get($data = []) {

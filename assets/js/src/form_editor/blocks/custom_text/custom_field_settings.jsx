@@ -31,7 +31,7 @@ const CustomFieldSettings = ({
           customFieldId,
           data: {
             params: {
-              required: '1',
+              required: localMandatory ? '1' : undefined,
               validate: localValidate,
             },
           },
