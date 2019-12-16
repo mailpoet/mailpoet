@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Panel,
   PanelBody,
-  SelectControl,
   TextControl,
   ToggleControl,
 } from '@wordpress/components';
@@ -10,9 +9,21 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
+import CustomFieldSettings from './custom_field_settings.jsx';
+
 const CustomTextAreaEdit = ({ attributes, setAttributes }) => {
   const inspectorControls = (
     <InspectorControls>
+      <Panel>
+        <PanelBody title={MailPoet.I18n.t('customFieldSettings')} initialOpen>
+          <CustomFieldSettings
+            updateAttributes={(attrs) => (setAttributes(attrs))}
+            customFieldId={attributes.customFieldId}
+            mandatory={attributes.mandatory}
+            validate={attributes.validate}
+          />
+        </PanelBody>
+      </Panel>
       <Panel>
         <PanelBody title={MailPoet.I18n.t('formSettings')} initialOpen>
           <TextControl
@@ -25,60 +36,6 @@ const CustomTextAreaEdit = ({ attributes, setAttributes }) => {
             label={MailPoet.I18n.t('displayLabelWithinInput')}
             checked={attributes.labelWithinInput}
             onChange={(labelWithinInput) => (setAttributes({ labelWithinInput }))}
-          />
-          <ToggleControl
-            label={MailPoet.I18n.t('blockMandatory')}
-            checked={attributes.mandatory}
-            onChange={(mandatory) => (setAttributes({ mandatory }))}
-          />
-          <SelectControl
-            label={`${MailPoet.I18n.t('customFieldValidateFor')}:`}
-            options={[
-              {
-                label: MailPoet.I18n.t('customFieldValidateNothing'),
-                value: '',
-              },
-              {
-                label: MailPoet.I18n.t('customFieldValidateNumbersOnly'),
-                value: 'alphanum',
-              },
-              {
-                label: MailPoet.I18n.t('customFieldValidateAlphanumerical'),
-                value: 'number',
-              },
-              {
-                label: MailPoet.I18n.t('customFieldValidatePhoneNumber'),
-                value: 'phone',
-              },
-            ]}
-            onChange={(validate) => (setAttributes({ validate }))}
-          />
-          <SelectControl
-            label={`${MailPoet.I18n.t('customFieldNumberOfLines')}:`}
-            value={attributes.lines}
-            options={[
-              {
-                label: MailPoet.I18n.t('customField1Line'),
-                value: '1',
-              },
-              {
-                label: MailPoet.I18n.t('customField2Lines'),
-                value: '2',
-              },
-              {
-                label: MailPoet.I18n.t('customField3Lines'),
-                value: '3',
-              },
-              {
-                label: MailPoet.I18n.t('customField4Lines'),
-                value: '4',
-              },
-              {
-                label: MailPoet.I18n.t('customField5Lines'),
-                value: '5',
-              },
-            ]}
-            onChange={(lines) => (setAttributes({ lines }))}
           />
         </PanelBody>
       </Panel>
@@ -93,7 +50,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes }) => {
       name="custom_text"
       disabled
       data-automation-id="editor_custom_text_input"
-      defaultValue={placeholder}
+      value={placeholder}
       rows={attributes.lines}
     />
   );
