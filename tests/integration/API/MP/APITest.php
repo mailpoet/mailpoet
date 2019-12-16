@@ -471,12 +471,24 @@ class APITest extends \MailPoetTest {
     'cf_' . $custom_field->id => 'test',
     ];
 
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $result = $this->getApi()->addSubscriber($subscriber);
     expect($result['id'])->greaterThan(0);
     expect($result['email'])->equals($subscriber['email']);
     expect($result['cf_' . $custom_field->id])->equals('test');
     expect($result['source'])->equals('api');
+    expect($result['subscribed_ip'])->equals($_SERVER['REMOTE_ADDR']);
     expect(strlen($result['unsubscribe_token']))->equals(15);
+  }
+
+  function testItAllowsToOverrideSubscriberIPAddress() {
+    $subscriber = [
+      'email' => 'test-ip-2@example.com',
+      'subscribed_ip' => '1.2.3.4',
+    ];
+
+    $result = $this->getApi()->addSubscriber($subscriber);
+    expect($result['subscribed_ip'])->equals($subscriber['subscribed_ip']);
   }
 
   function testItChecksForMandatoryCustomFields() {

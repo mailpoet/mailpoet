@@ -13,6 +13,7 @@ use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Tasks\Sending;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class API {
@@ -262,11 +263,15 @@ class API {
       );
     }
 
+    if (empty($subscriber['subscribed_ip'])) {
+      $subscriber['subscribed_ip'] = Helpers::getIP();
+    }
+
     // separate data into default and custom fields
     list($default_fields, $custom_fields) = Subscriber::extractCustomFieldsFromFromObject($subscriber);
 
-    // filter out all incoming data that we don't want to change, like status, ip address, ...
-    $default_fields = array_intersect_key($default_fields, array_flip(['email', 'first_name', 'last_name']));
+    // filter out all incoming data that we don't want to change, like status ...
+    $default_fields = array_intersect_key($default_fields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip']));
 
     // if some required default fields are missing, set their values
     $default_fields = Subscriber::setRequiredFieldsDefaultValues($default_fields);
