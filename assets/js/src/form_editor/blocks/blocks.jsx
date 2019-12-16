@@ -26,6 +26,8 @@ const registerCustomFieldBlock = (customField) => {
     },
   };
 
+  if (!namesMap[customField.type]) return;
+
   registerBlockType(
     formatCustomFieldBlockName(namesMap[customField.type].name, customField),
     namesMap[customField.type].settings

@@ -29,6 +29,9 @@ export default {
   getIsFormSaving(state) {
     return state.isFormSaving;
   },
+  getIsCustomFieldSaving(state) {
+    return state.isCustomFieldSaving;
+  },
   getDismissibleNotices(state) {
     return state.notices.filter((notice) => notice.isDismissible === true);
   },
