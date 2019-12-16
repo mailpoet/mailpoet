@@ -24,8 +24,8 @@ class CustomFieldsResponseBuilder {
       'name' => $custom_field->getName(),
       'type' => $custom_field->getType(),
       'params' => $custom_field->getParams(),
-      'created_at' => $custom_field->getCreatedAt()->format(DATE_ATOM),
-      'updated_at' => $custom_field->getUpdatedAt()->format(DATE_ATOM),
+      'created_at' => $custom_field->getCreatedAt()->format('Y-m-d H:i:s'),
+      'updated_at' => $custom_field->getUpdatedAt()->format('Y-m-d H:i:s'),
     ];
   }
 }
