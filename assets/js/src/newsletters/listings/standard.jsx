@@ -15,6 +15,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
+import NewsletterTypes from 'newsletters/types.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import { GlobalContext } from 'context/index.jsx';
 
@@ -183,6 +184,13 @@ class NewsletterListStandard extends React.Component {
     }).isRequired,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      newslettersCount: undefined,
+    };
+  }
+
   renderItem = (newsletter, actions, meta) => {
     const rowClasses = classNames(
       'manage-column',
@@ -237,23 +245,38 @@ class NewsletterListStandard extends React.Component {
 
         <ListingTabs tab="standard" />
 
-        <Listing
-          limit={window.mailpoet_listing_per_page}
-          location={this.props.location}
-          params={this.props.match.params}
-          endpoint="newsletters"
-          type="standard"
-          base_url="standard"
-          onRenderItem={this.renderItem}
-          columns={columns}
-          bulk_actions={bulkActions}
-          item_actions={newsletterActions}
-          messages={messages}
-          auto_refresh
-          sort_by="sent_at"
-          sort_order="desc"
-          afterGetItems={(state) => { checkMailerStatus(state); checkCronStatus(state); }}
-        />
+        {this.state.newslettersCount === 0 && (
+          <NewsletterTypes
+            filter={(type) => type.slug === 'standard'}
+            showHeader={false}
+          />
+        )}
+        {this.state.newslettersCount !== 0 && (
+          <Listing
+            limit={window.mailpoet_listing_per_page}
+            location={this.props.location}
+            params={this.props.match.params}
+            endpoint="newsletters"
+            type="standard"
+            base_url="standard"
+            onRenderItem={this.renderItem}
+            columns={columns}
+            bulk_actions={bulkActions}
+            item_actions={newsletterActions}
+            messages={messages}
+            auto_refresh
+            sort_by="sent_at"
+            sort_order="desc"
+            afterGetItems={(state) => {
+              if (!state.loading) {
+                const total = state.groups.reduce((count, group) => (count + group.count), 0);
+                this.setState({ newslettersCount: total });
+              }
+              checkMailerStatus(state);
+              checkCronStatus(state);
+            }}
+          />
+        )}
       </div>
     );
   }

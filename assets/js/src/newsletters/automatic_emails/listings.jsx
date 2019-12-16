@@ -5,6 +5,7 @@ import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 import { checkMailerStatus, addStatsCTAAction } from 'newsletters/listings/utils.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
+import NewsletterTypes from 'newsletters/types.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
@@ -165,6 +166,7 @@ class Listings extends React.Component {
     super(props);
     this.state = {
       eventCounts: {},
+      newslettersCount: undefined,
     };
     this.afterGetItems = this.afterGetItems.bind(this);
   }
@@ -384,23 +386,37 @@ class Listings extends React.Component {
 
         {this.renderWarning()}
 
-        <Listing
-          limit={window.mailpoet_listing_per_page}
-          location={location}
-          params={match.params}
-          endpoint="newsletters"
-          type="automatic"
-          base_url="woocommerce"
-          onRenderItem={this.renderItem}
-          columns={columns}
-          bulk_actions={bulkActions}
-          item_actions={newsletterActions}
-          messages={messages}
-          auto_refresh
-          sort_by="updated_at"
-          sort_order="desc"
-          afterGetItems={this.afterGetItems}
-        />
+        {this.state.newslettersCount === 0 && (
+          <NewsletterTypes
+            filter={(type) => type.slug === 'woocommerce'}
+            showHeader={false}
+          />
+        )}
+        {this.state.newslettersCount !== 0 && (
+          <Listing
+            limit={window.mailpoet_listing_per_page}
+            location={location}
+            params={match.params}
+            endpoint="newsletters"
+            type="automatic"
+            base_url="woocommerce"
+            onRenderItem={this.renderItem}
+            columns={columns}
+            bulk_actions={bulkActions}
+            item_actions={newsletterActions}
+            messages={messages}
+            auto_refresh
+            sort_by="updated_at"
+            sort_order="desc"
+            afterGetItems={(state) => {
+              if (!state.loading) {
+                const total = state.groups.reduce((count, group) => (count + group.count), 0);
+                this.setState({ newslettersCount: total });
+              }
+              this.afterGetItems(state);
+            }}
+          />
+        )}
       </div>
     );
   }
