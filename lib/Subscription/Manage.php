@@ -5,6 +5,7 @@ namespace MailPoet\Subscription;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Subscriber;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Util\Url as UrlHelper;
 
@@ -19,10 +20,14 @@ class Manage {
   /** @var LinkTokens */
   private $linkTokens;
 
-  public function __construct(UrlHelper $urlHelper, FieldNameObfuscator $fieldNameObfuscator, LinkTokens $linkTokens) {
+  /** @var SettingsController */
+  private $settings;
+
+  public function __construct(UrlHelper $urlHelper, FieldNameObfuscator $fieldNameObfuscator, LinkTokens $linkTokens, SettingsController $settings) {
     $this->urlHelper = $urlHelper;
     $this->fieldNameObfuscator = $fieldNameObfuscator;
     $this->linkTokens = $linkTokens;
+    $this->settings = $settings;
   }
 
   public function onSave() {
@@ -39,6 +44,7 @@ class Manage {
       $subscriber = Subscriber::where('email', $subscriberData['email'])->findOne();
       if ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) {
         if ($subscriberData['email'] !== Pages::DEMO_EMAIL) {
+          $subscriberData = $this->addHiddenSegments($subscriber, $subscriberData);
           $subscriber = Subscriber::createOrUpdate($this->filterOutEmptyMandatoryFields($subscriberData));
           $subscriber->getErrors();
         }
@@ -46,6 +52,19 @@ class Manage {
     }
 
     $this->urlHelper->redirectBack();
+  }
+
+  private function addHiddenSegments(Subscriber $subscriber, array $data) {
+    $shownSegments = $this->settings->get('subscription.segments');
+    if (empty($shownSegments)) return $data;
+    if (empty($data['segments'])) $data['segments'] = [];
+    $subscriber->withSubscriptions();
+    foreach ($subscriber->subscriptions as $subscription) {
+      if ($subscription['status'] === Subscriber::STATUS_SUBSCRIBED && !in_array($subscription['segment_id'], $shownSegments)) {
+        $data['segments'][] = $subscription['segment_id'];
+      }
+    }
+    return $data;
   }
 
   private function filterOutEmptyMandatoryFields(array $subscriberData) {
