@@ -8,6 +8,7 @@ import { withRouter } from 'react-router-dom';
 
 class NewsletterTypes extends React.Component {
   static propTypes = {
+    filter: PropTypes.func,
     history: PropTypes.shape({
       push: PropTypes.func.isRequired,
     }).isRequired,
@@ -15,6 +16,7 @@ class NewsletterTypes extends React.Component {
   };
 
   static defaultProps = {
+    filter: null,
     showHeader: true,
   };
 
@@ -239,6 +241,9 @@ class NewsletterTypes extends React.Component {
       ...this.getAutomaticEmails(),
     ], this);
     types = types.concat(this.getAdditionalTypes());
+    if (this.props.filter) {
+      types = types.filter(this.props.filter);
+    }
 
     const badgeClassName = (window.mailpoet_is_new_user === true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
     const templatesGETUrl = MailPoet.Ajax.constructGetUrl({
