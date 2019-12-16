@@ -2,7 +2,9 @@
 
 namespace MailPoet\Test\Cron\Workers;
 
+use Codeception\Util\Stub;
 use DateTime;
+use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatisticsClicks;
@@ -21,19 +23,25 @@ class WooCommerceOrdersTest extends \MailPoetTest {
   /** @var WooCommercePastOrders */
   private $worker;
 
+  /** @var CronWorkerRunner */
+  private $cron_worker_runner;
+
   function _before() {
     $this->cleanup();
     $this->woocommerce_helper = $this->createMock(WooCommerceHelper::class);
     $this->woocommerce_purchases = $this->createMock(WooCommercePurchases::class);
 
     $this->worker = new WooCommercePastOrders($this->woocommerce_helper, $this->woocommerce_purchases, microtime(true));
+    $this->cron_worker_runner = Stub::copy($this->di_container->get(CronWorkerRunner::class), [
+      'timer' => microtime(true), // reset timer to avoid timeout during full test suite run
+    ]);
   }
 
   function testItDoesNotRunIfWooCommerceIsDisabled() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(false);
     expect($this->worker->checkProcessingRequirements())->false();
 
-    $this->worker->process();
+    $this->cron_worker_runner->run($this->worker);
     $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
     expect($tasks)->isEmpty();
   }
@@ -42,7 +50,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(true);
     expect($this->worker->checkProcessingRequirements())->true();
 
-    $this->worker->process();
+    $this->cron_worker_runner->run($this->worker);
     $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
     expect($tasks)->count(1);
   }
@@ -53,25 +61,25 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
     // 1. schedule
     expect($this->worker->checkProcessingRequirements())->true();
-    $this->worker->process();
+    $this->cron_worker_runner->run($this->worker);
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
 
     // 2. prepare
     expect($this->worker->checkProcessingRequirements())->true();
-    $this->worker->process();
+    $this->cron_worker_runner->run($this->worker);
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->status)->null(); // null means 'running'
 
     // 3. run
     expect($this->worker->checkProcessingRequirements())->true();
-    $this->worker->process();
+    $this->cron_worker_runner->run($this->worker);
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->status)->equals(ScheduledTask::STATUS_COMPLETED);
 
     // 4. complete (do not schedule again)
     expect($this->worker->checkProcessingRequirements())->false();
-    $this->worker->process();
+    $this->cron_worker_runner->run($this->worker);
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->status)->equals(ScheduledTask::STATUS_COMPLETED);
 
@@ -86,9 +94,9 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
     $this->woocommerce_purchases->expects($this->exactly(3))->method('trackPurchase');
 
-    $this->worker->process(); // schedule
-    $this->worker->process(); // prepare
-    $this->worker->process(); // run
+    $this->cron_worker_runner->run($this->worker); // schedule
+    $this->cron_worker_runner->run($this->worker); // prepare
+    $this->cron_worker_runner->run($this->worker); // run
 
     $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
     expect($tasks)->count(1);
@@ -103,19 +111,19 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
     $this->woocommerce_purchases->expects($this->exactly(5))->method('trackPurchase');
 
-    $this->worker->process(); // schedule
-    $this->worker->process(); // prepare
-    $this->worker->process(); // run for 1, 2, 3
+    $this->cron_worker_runner->run($this->worker); // schedule
+    $this->cron_worker_runner->run($this->worker); // prepare
+    $this->cron_worker_runner->run($this->worker); // run for 1, 2, 3
 
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->getMeta())->equals(['last_processed_id' => 3]);
 
-    $this->worker->process(); // run for 4, 5
+    $this->cron_worker_runner->run($this->worker); // run for 4, 5
 
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
     expect($task->getMeta())->equals(['last_processed_id' => 5]);
 
-    $this->worker->process(); // complete
+    $this->cron_worker_runner->run($this->worker); // complete
 
     $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
     expect($tasks)->count(1);
@@ -133,21 +141,21 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     // nothing new is inserted because we don't fully mock WC_Order (expect count 0)
     $this->createOrder(1, $click);
     $this->createOrder(2, $click);
-    $this->worker->process(); // schedule
-    $this->worker->process(); // prepare
-    $this->worker->process(); // run for 1, 2
+    $this->cron_worker_runner->run($this->worker); // schedule
+    $this->cron_worker_runner->run($this->worker); // prepare
+    $this->cron_worker_runner->run($this->worker); // run for 1, 2
     expect(StatisticsWooCommercePurchases::findMany())->count(0);
 
     // don't remove data for unrelated orders (for order ID 4 row should not be removed)
     $this->createOrder(3, $click);
     $this->createOrder(4, $click);
-    $this->worker->process(); // run for 3
+    $this->cron_worker_runner->run($this->worker); // run for 3
     $purchase_stats = StatisticsWooCommercePurchases::findMany();
     expect($purchase_stats)->count(1);
     expect($purchase_stats[0]->order_id)->equals(4);
 
     // now row for order ID 4 should be removed as well
-    $this->worker->process(); // run for 4
+    $this->cron_worker_runner->run($this->worker); // run for 4
     expect(StatisticsWooCommercePurchases::findMany())->count(0);
   }
 
