@@ -57,42 +57,42 @@ class BounceTest extends \MailPoetTest {
   function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenPreparingTask() {
     // 1st run - subscribers will be processed
     $task = $this->createScheduledTask();
-    $this->worker->prepareTask($task, microtime(true));
+    $this->worker->prepareTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->notEmpty();
 
     // 2nd run - nothing more to process, ScheduledTaskSubscriber will be cleaned up
     Subscriber::deleteMany();
     $task = $this->createScheduledTask();
-    $this->worker->prepareTask($task, microtime(true));
+    $this->worker->prepareTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty();
   }
 
   function testItPreparesTask() {
     $task = $this->createScheduledTask();
     expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->isEmpty();
-    $this->worker->prepareTask($task, microtime(true));
-    expect($task->status)->null();
+    $result = $this->worker->prepareTaskStrategy($task, microtime(true));
+    expect($result)->true();
     expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->notEmpty();
   }
 
   function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenProcessingTask() {
     // prepare subscribers
     $task = $this->createScheduledTask();
-    $this->worker->prepareTask($task, microtime(true));
+    $this->worker->prepareTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->notEmpty();
 
     // process - no subscribers found, ScheduledTaskSubscriber will be cleaned up
     Subscriber::deleteMany();
     $task = $this->createScheduledTask();
-    $this->worker->processTask($task, microtime(true));
+    $this->worker->processTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty();
   }
 
   function testItProcessesTask() {
     $task = $this->createRunningTask();
-    $this->worker->prepareTask($task, microtime(true));
+    $this->worker->prepareTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->notEmpty();
-    $this->worker->processTask($task, microtime(true));
+    $this->worker->processTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::getProcessedCount($task->id))->notEmpty();
   }
 
