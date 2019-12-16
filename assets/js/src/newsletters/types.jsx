@@ -11,6 +11,11 @@ class NewsletterTypes extends React.Component {
     history: PropTypes.shape({
       push: PropTypes.func.isRequired,
     }).isRequired,
+    showHeader: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    showHeader: true,
   };
 
   constructor(props) {
@@ -245,9 +250,11 @@ class NewsletterTypes extends React.Component {
     return (
       <div>
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
-        <h1>{MailPoet.I18n.t(window.mailpoet_newsletters_count === 0 ? 'createFirstEmailTitle' : 'pickCampaignType')}</h1>
 
-        <Breadcrumb step="type" />
+        {this.props.showHeader
+          && <h1>{MailPoet.I18n.t(window.mailpoet_newsletters_count === 0 ? 'createFirstEmailTitle' : 'pickCampaignType')}</h1>
+          && <Breadcrumb step="type" />
+        }
 
         <ul className="mailpoet_boxes mailpoet_boxes_types">
           {types.map((type) => (
