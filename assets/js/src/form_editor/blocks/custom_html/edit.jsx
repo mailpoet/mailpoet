@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Panel,
   PanelBody,
@@ -9,8 +9,19 @@ import {
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+import { debounce } from 'lodash';
 
 const CustomHtmlEdit = ({ attributes, setAttributes }) => {
+  const [renderedContent, setRenderedContent] = useState(attributes.content);
+  const setRenderedContentDebounced = useCallback(debounce((content) => {
+    setRenderedContent(content);
+  }, 300), []);
+
+  const handleContentChange = (content) => {
+    setAttributes({ content });
+    setRenderedContentDebounced(content);
+  };
+
   const inspectorControls = (
     <InspectorControls>
       <Panel>
@@ -20,7 +31,7 @@ const CustomHtmlEdit = ({ attributes, setAttributes }) => {
             value={attributes.content}
             data-automation-id="settings_custom_html_content"
             rows={4}
-            onChange={(content) => setAttributes({ content })}
+            onChange={handleContentChange}
           />
           <ToggleControl
             label={MailPoet.I18n.t('blockCustomHtmlNl2br')}
@@ -33,12 +44,12 @@ const CustomHtmlEdit = ({ attributes, setAttributes }) => {
     </InspectorControls>
   );
   const styles = attributes.nl2br ? ['body { white-space: pre-line; }'] : [];
-  const key = `${attributes.content}_${styles}`;
+  const key = `${renderedContent}_${styles}`;
   return (
     <>
       {inspectorControls}
       <div>
-        <SandBox html={attributes.content} styles={styles} key={key} />
+        <SandBox html={renderedContent} styles={styles} key={key} />
       </div>
     </>
   );
