@@ -1,4 +1,9 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, {
+  useRef,
+  useCallback,
+  useState,
+  useEffect,
+} from 'react';
 import PropTypes from 'prop-types';
 import { CheckboxControl, Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
@@ -119,6 +124,10 @@ const Preview = ({
     },
     [segmentsWhileMoved, setSegments],
   );
+
+  useEffect(() => {
+    setSegments(segments);
+  }, [segments]);
 
   if (segmentsWhileMoved.length === 0) {
     return null;
