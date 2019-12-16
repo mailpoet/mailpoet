@@ -4,6 +4,7 @@ namespace MailPoet\Test\Cron;
 
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
@@ -23,11 +24,14 @@ class DaemonTest extends \MailPoetTest {
   }
 
   function testItCanRun() {
+    $cron_worker_runner = $this->make(CronWorkerRunner::class, [
+      'run' => null,
+    ]);
     $data = [
       'token' => 123,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon = new Daemon($this->createWorkersFactoryMock(), $this->cron_helper);
+    $daemon = new Daemon($this->cron_helper, $cron_worker_runner, $this->createWorkersFactoryMock());
     $daemon->run($data);
   }
 
