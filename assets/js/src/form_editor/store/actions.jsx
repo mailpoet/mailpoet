@@ -27,6 +27,27 @@ export function changeFormStyles(styles) {
   };
 }
 
+export function saveCustomFieldDone(customFieldId, response) {
+  return {
+    type: 'SAVE_CUSTOM_FIELD_DONE',
+    customFieldId,
+    response,
+  };
+}
+
+export function saveCustomFieldStarted() {
+  return {
+    type: 'SAVE_CUSTOM_FIELD_STARTED',
+  };
+}
+
+export function saveCustomFieldFailed(message = undefined) {
+  return {
+    type: 'SAVE_CUSTOM_FIELD_FAILED',
+    message,
+  };
+}
+
 export function changeFormSettings(settings) {
   return {
     type: 'CHANGE_FORM_SETTINGS',
@@ -85,5 +106,12 @@ export function toggleSidebarPanel(id, toggleTo = undefined) {
 export function* saveForm() {
   yield {
     type: 'SAVE_FORM',
+  };
+}
+
+export function* saveCustomField(data) {
+  yield {
+    type: 'SAVE_CUSTOM_FIELD',
+    ...data,
   };
 }

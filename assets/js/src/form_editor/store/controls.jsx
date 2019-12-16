@@ -1,5 +1,6 @@
 import { select, dispatch } from '@wordpress/data';
 import MailPoet from 'mailpoet';
+import { merge } from 'lodash';
 import blocksToFormBody from './blocks_to_form_body.jsx';
 
 export default {
@@ -32,6 +33,29 @@ export default {
         errorMessage = response.errors.map((error) => (error.message));
       }
       dispatch('mailpoet-form-editor').saveFormFailed(errorMessage);
+    });
+  },
+
+  SAVE_CUSTOM_FIELD(actionData) {
+    dispatch('mailpoet-form-editor').saveCustomFieldStarted();
+    const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
+    const customField = customFields.find((cf) => cf.id === actionData.customFieldId);
+    const requestData = {};
+    merge(requestData, customField, actionData.data);
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'customFields',
+      action: 'save',
+      data: requestData,
+    }).done((response) => {
+      dispatch('mailpoet-form-editor').saveCustomFieldDone(customField.id, response.data);
+      if (typeof actionData.onFinish === 'function') actionData.onFinish();
+    }).fail((response) => {
+      let errorMessage = null;
+      if (response.errors.length > 0) {
+        errorMessage = response.errors.map((error) => (error.message));
+      }
+      dispatch('mailpoet-form-editor').saveCustomFieldFailed(errorMessage);
     });
   },
 };
