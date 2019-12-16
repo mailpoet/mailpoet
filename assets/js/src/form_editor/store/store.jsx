@@ -25,6 +25,7 @@ export default () => {
     pages: window.mailpoet_form_pages,
     customFields: window.mailpoet_custom_fields,
     isFormSaving: false,
+    isCustomFieldSaving: false,
     notices: [],
     sidebar: {
       activeTab: 'form',
