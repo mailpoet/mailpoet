@@ -41,9 +41,13 @@ const initializeEditor = (config) => {
       const newsletter = response.data;
 
       Promise.resolve(Hooks.applyFilters('mailpoet_newsletters_editor_extend_config', config, newsletter)).then((extendedConfig) => {
+        const blockDefaults = {
+          ...extendedConfig.blockDefaults,
+          container: {},
+        };
         window.EditorApplication.start({
           newsletter,
-          config: extendedConfig,
+          config: { ...extendedConfig, blockDefaults },
         });
       }).catch(() => {
         window.EditorApplication.start({
