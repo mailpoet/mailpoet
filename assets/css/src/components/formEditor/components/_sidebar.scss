@@ -50,8 +50,21 @@ $gutenberg-control-border-color-focus: #007cba;
   }
 }
 
-.button-on-top {
+.button-on-top,
+.button-on-top.components-button.is-link {
   margin-bottom: 12px;
+}
+
+.custom-field-settings {
+  align-content: flex-start;
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    align-items: center;
+    margin-bottom: 12px
+  }
 }
 
 .mailpoet-form-segments-settings-list {
