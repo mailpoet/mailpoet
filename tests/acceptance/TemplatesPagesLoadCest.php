@@ -9,7 +9,6 @@ class TemplatesPagesLoadCest {
     $I->activateWooCommerce();
     //get to Template Selection page
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
     $I->click('[data-automation-id="create_standard"]');
     $I->waitForText('Select a responsive template');
     //Standard email templates tab

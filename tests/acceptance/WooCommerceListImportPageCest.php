@@ -42,7 +42,7 @@ class WooCommerceListImportPageCest {
     $I->selectOption($subscribed_radio, 'subscribed');
     $I->click($submit_button);
     $I->seeNoJSErrors();
-    $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
+    $I->waitForElement('[data-automation-id="create_standard"]');
     $I->amOnMailpoetPage('Lists');
     $I->waitForText('WooCommerce Customers');
     $I->moveMouseOver('[data-automation-id="segment_name_WooCommerce Customers"]');
@@ -81,7 +81,7 @@ class WooCommerceListImportPageCest {
     $I->seeNoJSErrors();
     $I->click($submit_button);
     $I->seeNoJSErrors();
-    $I->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
+    $I->waitForElement('[data-automation-id="create_standard"]');
   }
 
   /**

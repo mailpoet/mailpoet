@@ -42,6 +42,8 @@ class NewslettersListingCest {
   }
 
   function statisticsColumn(\AcceptanceTester $I) {
+    (new Newsletter())->create();
+
     $I->wantTo('Check if statistics column is visible depending on tracking option');
 
     $I->login();

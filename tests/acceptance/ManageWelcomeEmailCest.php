@@ -26,7 +26,6 @@ class ManageWelcomeEmailCest {
     $newsletterTitle = 'Save Welcome Email As Draft Test Email';
     $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
     $I->seeInCurrentUrl('#/new');
     $I->click('[data-automation-id="create_welcome"]');
     $I->waitForText('Welcome Email');

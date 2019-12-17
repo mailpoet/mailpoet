@@ -3,10 +3,13 @@
 namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
 
 class NewsletterSendingErrorCest {
   function generalErrorNotice(\AcceptanceTester $I) {
+    (new Newsletter())->create();
+
     $I->wantTo('See proper sending error when sending failed');
     $I->login();
 
@@ -29,6 +32,8 @@ class NewsletterSendingErrorCest {
   }
 
   function phpMailErrorNotice(\AcceptanceTester $I) {
+    (new Newsletter())->create();
+
     $I->wantTo('See proper sending error when sending failed with PHPMail');
     $I->login();
 

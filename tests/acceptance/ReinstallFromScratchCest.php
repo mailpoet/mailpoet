@@ -43,8 +43,7 @@ class ReinstallFromScratchCest {
     // Step 4 - check if data are emptied and repopulated
     // Check emails
     $I->amOnMailpoetPage('Emails');
-    $I->waitForText('Nothing here yet!');
-    $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 0);
+    $I->seeInCurrentUrl('#/new');
     // Check forms
     $I->amOnMailpoetPage('Forms');
     $I->waitForText('A GDPR friendly form', 30, '[data-automation-id="listing_item_1"]');
