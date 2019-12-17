@@ -14,9 +14,9 @@ export function getSettings(customField) {
         type: 'string',
         default: customField.name,
       },
-      displayLabel: {
+      hideLabel: {
         type: 'boolean',
-        default: true,
+        default: false,
       },
       mandatory: {
         type: 'boolean',

@@ -78,7 +78,7 @@ const customRadioBlock = {
   name: 'mailpoet-form/custom-radio',
   attributes: {
     label: 'Options',
-    displayLabel: true,
+    hideLabel: true,
     mandatory: true,
     customFieldId: 2,
     values: [
@@ -300,7 +300,7 @@ describe('Blocks to Form Body', () => {
     expect(input.position).to.be.equal('1');
     expect(input.params.label).to.be.equal('Options');
     expect(input.params.required).to.be.eq('1');
-    expect(input.params.display_label).to.eq('1');
+    expect(input.params.hide_label).to.eq('1');
     expect(input.params.values).to.be.an('Array').that.has.length(2);
     expect(input.params.values[0]).to.have.property('value', 'option 1');
     expect(input.params.values[1]).to.have.property('value', 'option 2');

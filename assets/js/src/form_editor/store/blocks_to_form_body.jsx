@@ -16,8 +16,8 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
   if (Object.prototype.hasOwnProperty.call(block.attributes, 'validate')) {
     mapped.params.validate = block.attributes.validate;
   }
-  if (Object.prototype.hasOwnProperty.call(block.attributes, 'displayLabel') && block.attributes.displayLabel) {
-    mapped.params.display_label = '1';
+  if (Object.prototype.hasOwnProperty.call(block.attributes, 'hideLabel') && block.attributes.hideLabel) {
+    mapped.params.hide_label = '1';
   }
   if (Object.prototype.hasOwnProperty.call(block.attributes, 'values')) {
     mapped.params.values = block.attributes.values.map((value) => ({
