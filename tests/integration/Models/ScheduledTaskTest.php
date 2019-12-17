@@ -157,6 +157,142 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($timeout)->equals(ScheduledTask::MAX_RESCHEDULE_TIMEOUT);
   }
 
+  function testItCanGetDueTasks() {
+    // due (scheduled in past)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => Carbon::now()->subDay(),
+    ]);
+
+    // deleted (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => Carbon::now()->subDay(),
+      'deleted_at' => Carbon::now(),
+    ]);
+
+    // scheduled in future (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => Carbon::now()->addDay(),
+    ]);
+
+    // wrong status (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => null,
+      'scheduled_at' => Carbon::now()->subDay(),
+    ]);
+
+    $tasks = ScheduledTask::findDueByType('test', 10);
+    expect($tasks)->count(1);
+  }
+
+  function testItCanGetRunningTasks() {
+    // running (scheduled in past)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => null,
+      'scheduled_at' => Carbon::now()->subDay(),
+    ]);
+
+    // deleted (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => null,
+      'scheduled_at' => Carbon::now()->subDay(),
+      'deleted_at' => Carbon::now(),
+    ]);
+
+    // scheduled in future (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => null,
+      'scheduled_at' => Carbon::now()->addDay(),
+    ]);
+
+    // wrong status (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_COMPLETED,
+      'scheduled_at' => Carbon::now()->subDay(),
+    ]);
+
+    $tasks = ScheduledTask::findRunningByType('test', 10);
+    expect($tasks)->count(1);
+  }
+
+  function testItCanGetCompletedTasks() {
+    // completed (scheduled in past)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_COMPLETED,
+      'scheduled_at' => Carbon::now()->subDay(),
+    ]);
+
+    // deleted (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_COMPLETED,
+      'scheduled_at' => Carbon::now()->subDay(),
+      'deleted_at' => Carbon::now(),
+    ]);
+
+    // scheduled in future (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_COMPLETED,
+      'scheduled_at' => Carbon::now()->addDay(),
+    ]);
+
+    // wrong status (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => Carbon::now()->subDay(),
+    ]);
+
+    $tasks = ScheduledTask::findCompletedByType('test', 10);
+    expect($tasks)->count(1);
+  }
+
+  function testItCanGetFutureScheduledTasks() {
+    // scheduled (in future)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => Carbon::now()->addDay(),
+    ]);
+
+    // deleted (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => Carbon::now()->addDay(),
+      'deleted_at' => Carbon::now(),
+    ]);
+
+    // scheduled in past (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => Carbon::now()->subDay(),
+    ]);
+
+    // wrong status (should not be fetched)
+    ScheduledTask::createOrUpdate([
+      'type' => 'test',
+      'status' => null,
+      'scheduled_at' => Carbon::now()->addDay(),
+    ]);
+
+    $tasks = ScheduledTask::findDueByType('test', 10);
+    expect($tasks)->count(1);
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
