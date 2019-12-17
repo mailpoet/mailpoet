@@ -11,7 +11,7 @@ class WordpressMailerTest extends \MailPoetTest {
   function testItdoesNotSendWhenPreSendCheckFails() {
     $mailer = $this->createMock(Mailer::class);
     $mailer->expects($this->never())->method('send');
-    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer = $this->createMock(FallbackMailer::class);
     $fallback_mailer->expects($this->never())->method('send');
 
     $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
@@ -31,7 +31,7 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer = $this->createMock(FallbackMailer::class);
     $fallback_mailer->expects($this->never())->method('send');
 
     $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
@@ -52,7 +52,7 @@ class WordpressMailerTest extends \MailPoetTest {
         'address' => 'email@example.com',
       ])
       ->willReturn(['response' => true]);
-    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer = $this->createMock(FallbackMailer::class);
     $fallback_mailer->expects($this->never())->method('send');
 
     $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
@@ -76,7 +76,7 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer = $this->createMock(FallbackMailer::class);
     $fallback_mailer->expects($this->never())->method('send');
 
     $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
@@ -93,7 +93,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => true]);
-    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer = $this->createMock(FallbackMailer::class);
     $fallback_mailer->expects($this->never())->method('send');
 
     $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
@@ -109,7 +109,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->method('send')
       ->willThrowException(new \Exception());
 
-    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer = $this->createMock(FallbackMailer::class);
     $fallback_mailer
       ->expects($this->once())
       ->method('send')
@@ -127,7 +127,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => false, 'error' => new MailerError('send', 1, 'Error from primary mailer')]);
-    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer = $this->createMock(FallbackMailer::class);
     $fallback_mailer
       ->expects($this->once())
       ->method('send')
@@ -153,7 +153,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $mailer
       ->expects($this->never())
       ->method('send');
-    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer = $this->createMock(FallbackMailer::class);
     $fallback_mailer->expects($this->never())->method('send');
 
     $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo);
@@ -170,7 +170,7 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willThrowException(new \Exception('Exception from primary mailer'));
-    $fallback_mailer = $this->createMock(Mailer::class);
+    $fallback_mailer = $this->createMock(FallbackMailer::class);
     $fallback_mailer
       ->expects($this->once())
       ->method('send')

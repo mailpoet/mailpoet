@@ -26,19 +26,8 @@ class WordpressMailerReplacer {
   public function replaceWordPressMailer() {
     global $phpmailer;
     if ($this->settings->get('send_transactional_emails', false)) {
-      $phpmailer = new WordPressMailer($this->mailer, $this->createFallbackMailer(), $this->mailerMetaInfo);
+      $phpmailer = new WordPressMailer($this->mailer, new FallbackMailer($this->settings), $this->mailerMetaInfo);
     }
     return $phpmailer;
-  }
-
-  private function createFallbackMailer() {
-    $fallback_mailer = new Mailer($this->settings);
-    $fallback_mailer->init(
-      ['method' => Mailer::METHOD_PHPMAIL],
-      $this->mailer->sender,
-      $this->mailer->reply_to,
-      $this->mailer->return_path
-    );
-    return $fallback_mailer;
   }
 }
