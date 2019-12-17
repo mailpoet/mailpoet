@@ -19,6 +19,9 @@
   var mailpoet_form_segments = <%= json_encode(segments) %>;
   var mailpoet_form_pages = <%= json_encode(pages) %>;
   var mailpoet_custom_fields = <%= json_encode(custom_fields) %>;
+  var mailpoet_date_types = <%= json_encode(date_types) %>;
+  var mailpoet_date_formats = <%= json_encode(date_formats) %>;
+  var mailpoet_date_months = <%= json_encode(months) %>;
   <% endautoescape %>
 </script>
 
@@ -48,7 +51,12 @@
   'customFieldsBlocksCategory': __('Custom Fields'),
   'customFieldNumberOfLines': __('Number of lines'),
   'customFieldSaveCTA': _x('Update custom field', 'Text on the save button'),
-  'customFieldSaveCTA': _x('Update custom field', 'Text on the save button'),
+  'customFieldDateType': __('Type of date'),
+  'customFieldDateFormat': __('Order'),
+  'customFieldDefaultToday': __('Preselect today’s date'),
+  'customFieldDay': __('Day'),
+  'customFieldMonth': __('Month'),
+  'customFieldYear': __('Year'),
   'customField1Line': _x('1 line', 'Number of rows in textarea'),
   'customField2Lines': _x('2 lines', 'Number of rows in textarea'),
   'customField3Lines': _x('3 lines', 'Number of rows in textarea'),
