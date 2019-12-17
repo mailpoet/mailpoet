@@ -238,12 +238,12 @@ describe('Form Body To Blocks', () => {
     ]);
     checkBlockBasics(block1);
     expect(block1.clientId).to.be.equal('html_0');
-    expect(block1.name).to.be.equal('mailpoet-form/custom-html');
+    expect(block1.name).to.be.equal('mailpoet-form/html');
     expect(block1.attributes.content).to.be.equal('123');
     expect(block1.attributes.nl2br).to.be.true;
     checkBlockBasics(block2);
     expect(block2.clientId).to.be.equal('html_1');
-    expect(block2.name).to.be.equal('mailpoet-form/custom-html');
+    expect(block2.name).to.be.equal('mailpoet-form/html');
     expect(block2.attributes.content).to.be.equal('nice one');
     expect(block2.attributes.nl2br).to.be.false;
   });
