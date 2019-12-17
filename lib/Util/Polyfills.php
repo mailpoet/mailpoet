@@ -1,6 +1,6 @@
 <?php
 
-use Symfony\Polyfill\Mbstring\Mbstring as MbstringPolyfill;
+use MailPoetVendor\Symfony\Polyfill\Mbstring\Mbstring as MbstringPolyfill;
 
 if (!function_exists('mb_detect_encoding')) {
   function mb_detect_encoding($str, $encodingList = null, $strict = false) {
