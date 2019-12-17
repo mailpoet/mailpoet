@@ -3,6 +3,7 @@ import {
   Panel,
   PanelBody,
   TextControl,
+  ToggleControl,
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
@@ -24,16 +25,19 @@ const CustomRadioEdit = ({ attributes, setAttributes }) => {
         <PanelBody title={MailPoet.I18n.t('customFieldSettings')} initialOpen>
           <CustomFieldSettings
             mandatory={attributes.mandatory}
+            values={attributes.values}
             isSaving={isSaving}
             onSave={(params) => saveCustomField({
               customFieldId: attributes.customFieldId,
               data: {
                 params: {
                   required: params.mandatory ? '1' : undefined,
+                  values: params.values.map((value) => ({ value: value.name })),
                 },
               },
               onFinish: () => setAttributes({
                 mandatory: params.mandatory,
+                values: params.values,
               }),
             })}
           />
@@ -69,6 +73,17 @@ const CustomRadioEdit = ({ attributes, setAttributes }) => {
     <>
       {inspectorControls}
       {getLabel()}
+      {Array.isArray(attributes.values) && attributes.values.map((value) => (
+        <div key={value.id}>
+          <label>
+            <input
+              type="radio"
+              disabled
+            />
+            {value.name}
+          </label>
+        </div>
+      ))}
     </>
   );
 };
@@ -76,8 +91,12 @@ const CustomRadioEdit = ({ attributes, setAttributes }) => {
 CustomRadioEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
-    labelWithinInput: PropTypes.bool.isRequired,
+    values: PropTypes.arrayOf(PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+    })),
     mandatory: PropTypes.bool.isRequired,
+    hideLabel: PropTypes.bool,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
 };

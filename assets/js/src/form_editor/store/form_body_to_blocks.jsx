@@ -22,7 +22,10 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
       mapped.attributes.hideLabel = !!item.params.hide_label;
     }
     if (Object.prototype.hasOwnProperty.call(item.params, 'values') && Array.isArray(item.params.values)) {
-      mapped.attributes.values = item.params.values.map((value) => ({ name: value.value }));
+      mapped.attributes.values = item.params.values.map((value) => ({
+        name: value.value,
+        id: `${Math.random().toString()}-${Date.now()}`,
+      }));
     }
   }
   return mapped;
