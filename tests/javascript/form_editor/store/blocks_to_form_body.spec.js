@@ -71,6 +71,22 @@ const customTextBlock = {
     customFieldId: 1,
   },
 };
+const customRadioBlock = {
+  clientId: '4',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/custom-radio',
+  attributes: {
+    label: 'Options',
+    displayLabel: true,
+    mandatory: true,
+    customFieldId: 2,
+    values: [
+      { name: 'option 1' },
+      { name: 'option 2' },
+    ],
+  },
+};
 
 const dividerBlock = {
   clientId: 'some_random_123',
@@ -259,6 +275,35 @@ describe('Blocks to Form Body', () => {
     expect(input.params.required).to.be.undefined;
     expect(input.params.label_within).to.be.undefined;
     expect(input.params.validate).to.eq('alphanum');
+  });
+
+  it('Should map custom radio field', () => {
+    const customField = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 2,
+      name: 'Custom Field name',
+      params: {
+        label: 'Options',
+        required: '1',
+        values: [
+          { value: 'option 1' },
+        ],
+      },
+      type: 'radio',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+    const [input] = formBlocksToBody([customRadioBlock], [customField]);
+    checkBodyInputBasics(input);
+    expect(input.id).to.be.equal('2');
+    expect(input.name).to.be.equal('Custom Field name');
+    expect(input.type).to.be.equal('radio');
+    expect(input.position).to.be.equal('1');
+    expect(input.params.label).to.be.equal('Options');
+    expect(input.params.required).to.be.eq('1');
+    expect(input.params.display_label).to.eq('1');
+    expect(input.params.values).to.be.an('Array').that.has.length(2);
+    expect(input.params.values[0]).to.have.property('value', 'option 1');
+    expect(input.params.values[1]).to.have.property('value', 'option 2');
   });
 
   it('Should map multiple blocks at once', () => {
