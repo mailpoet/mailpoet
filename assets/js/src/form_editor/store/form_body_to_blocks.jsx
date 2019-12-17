@@ -101,7 +101,7 @@ export default (data, customFields = []) => {
       case 'html':
         return {
           ...mapped,
-          name: 'mailpoet-form/custom-html',
+          name: 'mailpoet-form/html',
           attributes: {
             content: item.params && item.params.text ? item.params.text : '',
             nl2br: item.params && item.params.nl2br ? !!item.params.nl2br : false,

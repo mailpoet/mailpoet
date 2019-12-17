@@ -84,7 +84,7 @@ const customHtmlBlock = {
   clientId: 'some_random_321',
   isValid: true,
   innerBlocks: [],
-  name: 'mailpoet-form/custom-html',
+  name: 'mailpoet-form/html',
   attributes: {
     content: 'HTML content',
     nl2br: true,
