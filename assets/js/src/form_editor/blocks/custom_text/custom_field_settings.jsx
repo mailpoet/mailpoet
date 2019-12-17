@@ -6,39 +6,24 @@ import {
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
-import { useDispatch, useSelect } from '@wordpress/data';
 
 const CustomFieldSettings = ({
   mandatory,
   validate,
-  customFieldId,
-  updateAttributes,
+  isSaving,
+  onSave,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValidate, setLocalValidate] = useState(validate);
-  const { saveCustomField } = useDispatch('mailpoet-form-editor');
-  const isSaving = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
-    []
-  );
 
   return (
     <>
       <Button
         isPrimary
         isDefault
-        onClick={() => saveCustomField({
-          customFieldId,
-          data: {
-            params: {
-              required: localMandatory ? '1' : undefined,
-              validate: localValidate,
-            },
-          },
-          onFinish: () => updateAttributes({
-            mandatory: localMandatory,
-            validate: localValidate,
-          }),
+        onClick={() => onSave({
+          mandatory: localMandatory,
+          validate: localValidate,
         })}
         isBusy={isSaving}
         disabled={isSaving}
@@ -81,12 +66,13 @@ const CustomFieldSettings = ({
 CustomFieldSettings.propTypes = {
   mandatory: PropTypes.bool,
   validate: PropTypes.string,
-  customFieldId: PropTypes.number.isRequired,
-  updateAttributes: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  isSaving: PropTypes.bool,
 };
 
 CustomFieldSettings.defaultProps = {
   mandatory: false,
+  isSaving: false,
   validate: '',
 };
 
