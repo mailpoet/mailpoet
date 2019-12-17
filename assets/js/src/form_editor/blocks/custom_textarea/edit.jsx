@@ -8,19 +8,39 @@ import {
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+import { useDispatch, useSelect } from '@wordpress/data';
 
 import CustomFieldSettings from './custom_field_settings.jsx';
 
 const CustomTextAreaEdit = ({ attributes, setAttributes }) => {
+  const isSaving = useSelect(
+    (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
+    []
+  );
+  const { saveCustomField } = useDispatch('mailpoet-form-editor');
   const inspectorControls = (
     <InspectorControls>
       <Panel>
         <PanelBody title={MailPoet.I18n.t('customFieldSettings')} initialOpen>
           <CustomFieldSettings
-            updateAttributes={(attrs) => (setAttributes(attrs))}
-            customFieldId={attributes.customFieldId}
             mandatory={attributes.mandatory}
             validate={attributes.validate}
+            isSaving={isSaving}
+            onSave={(params) => saveCustomField({
+              customFieldId: attributes.customFieldId,
+              data: {
+                params: {
+                  required: params.mandatory ? '1' : undefined,
+                  validate: params.validate,
+                  lines: params.lines,
+                },
+              },
+              onFinish: () => setAttributes({
+                mandatory: params.mandatory,
+                validate: params.validate,
+                lines: params.lines,
+              }),
+            })}
           />
         </PanelBody>
       </Panel>
@@ -39,7 +59,6 @@ const CustomTextAreaEdit = ({ attributes, setAttributes }) => {
           />
         </PanelBody>
       </Panel>
-
     </InspectorControls>
   );
 
