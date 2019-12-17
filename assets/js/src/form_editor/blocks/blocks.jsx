@@ -13,6 +13,7 @@ import * as html from './html/html.jsx';
 
 import * as customText from './custom_text/custom_text.jsx';
 import * as customTextArea from './custom_textarea/custom_textarea.jsx';
+import * as customRadio from './custom_radio/custom_radio.jsx';
 
 const registerCustomFieldBlock = (customField) => {
   const namesMap = {
@@ -23,6 +24,10 @@ const registerCustomFieldBlock = (customField) => {
     textarea: {
       name: customTextArea.name,
       settings: customTextArea.getSettings(customField),
+    },
+    radio: {
+      name: customRadio.name,
+      settings: customRadio.getSettings(customField),
     },
   };
 
