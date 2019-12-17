@@ -10,7 +10,6 @@ class FeaturesController {
   //   const FEATURE_NAME_OF_FEATURE = 'name-of-feature';
   const NEW_DEFAULT_LIST_NAME = 'new-default-list-name';
   const WC_TRANSACTIONAL_EMAILS_CUSTOMIZER = 'wc-transactional-emails-customizer';
-  const DISPLAY_MSS_PITCH = 'display-mss-pitch';
   const NEW_FORM_EDITOR = 'new-form-editor';
 
   // Define feature defaults in the array below in the following form:
@@ -18,7 +17,6 @@ class FeaturesController {
   private $defaults = [
     self::NEW_DEFAULT_LIST_NAME => false,
     self::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER => false,
-    self::DISPLAY_MSS_PITCH => false,
     self::NEW_FORM_EDITOR => false,
   ];
 

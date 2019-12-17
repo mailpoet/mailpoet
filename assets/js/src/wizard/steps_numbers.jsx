@@ -1,11 +1,9 @@
-import MailPoet from 'mailpoet';
-
 export const getStepsCount = () => {
   let stepsCount = 3;
   if (window.is_woocommerce_active) {
     stepsCount += 1;
   }
-  if (!window.has_mss_key_specified && MailPoet.FeaturesController.isSupported('display-mss-pitch')) {
+  if (!window.has_mss_key_specified) {
     stepsCount += 1;
   }
   return stepsCount;
