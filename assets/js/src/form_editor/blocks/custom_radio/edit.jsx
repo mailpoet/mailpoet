@@ -47,12 +47,18 @@ const CustomRadioEdit = ({ attributes, setAttributes }) => {
             data-automation-id="settings_custom_text_label_input"
             onChange={(label) => (setAttributes({ label }))}
           />
+          <ToggleControl
+            label={MailPoet.I18n.t('displayLabel')}
+            checked={!attributes.hideLabel}
+            onChange={(hideLabel) => (setAttributes({ hideLabel: !hideLabel }))}
+          />
         </PanelBody>
       </Panel>
     </InspectorControls>
   );
 
   const getLabel = () => {
+    if (attributes.hideLabel) return null;
     if (attributes.mandatory) {
       return `${attributes.label} *`;
     }
