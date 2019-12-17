@@ -71,17 +71,15 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'token' => 123,
     ];
 
-    $run = 0;
-    $cron_worker_runner_mock = $this->make(CronWorkerRunner::class, [
-      'run' => function () use (&$run) {
-        $run++;
-        if ($run === 1) {
-          throw new \Exception('Message');
-        } elseif ($run === 2) {
-          throw new \Exception();
-        }
-      },
-    ]);
+    $cron_worker_runner_mock = $this->createMock(CronWorkerRunner::class);
+    $cron_worker_runner_mock
+      ->expects($this->at(0))
+      ->method('run')
+      ->willThrowException(new \Exception('Message'));
+    $cron_worker_runner_mock
+      ->expects($this->at(1))
+      ->method('run')
+      ->willThrowException(new \Exception());
 
     $daemon = new Daemon($this->cron_helper, $cron_worker_runner_mock, $this->createWorkersFactoryMock());
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
@@ -218,17 +216,17 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   function testItUpdatesTimestampsDuringExecution() {
-    $run = 0;
-    $cron_worker_runner_mock = $this->make(CronWorkerRunner::class, [
-      'run' => function () use (&$run) {
-        $run++;
-        if ($run === 1) {
-          sleep(2);
-        } elseif ($run === 2) {
-          throw new \Exception();
-        }
-      },
-    ]);
+    $cron_worker_runner_mock = $this->createMock(CronWorkerRunner::class);
+    $cron_worker_runner_mock
+      ->expects($this->at(0))
+      ->method('run')
+      ->willReturnCallback(function () {
+        sleep(2);
+      });
+    $cron_worker_runner_mock
+      ->expects($this->at(1))
+      ->method('run')
+      ->willThrowException(new \Exception());
 
     $daemon = new Daemon($this->cron_helper, $cron_worker_runner_mock, $this->createWorkersFactoryMock());
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
