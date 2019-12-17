@@ -20,19 +20,20 @@ class CustomFieldEntity {
 
   /**
    * @ORM\Column(type="string", nullable=false, unique=true)
+   * @Assert\NotBlank()
    * @var string
    */
   private $name;
 
   /**
    * @ORM\Column(type="string", nullable=false)
+   * @Assert\NotBlank()
    * @var string
    */
   private $type;
 
   /**
    * @ORM\Column(type="json_or_serialized")
-   * @Assert\NotBlank()
    * @var array
    */
   private $params;
@@ -56,5 +57,26 @@ class CustomFieldEntity {
    */
   public function getParams() {
     return $this->params;
+  }
+
+  /**
+   * @param string $name
+   */
+  public function setName($name) {
+    $this->name = $name;
+  }
+
+  /**
+   * @param string $type
+   */
+  public function setType($type) {
+    $this->type = $type;
+  }
+
+  /**
+   * @param array $params
+   */
+  public function setParams($params) {
+    $this->params = $params;
   }
 }
