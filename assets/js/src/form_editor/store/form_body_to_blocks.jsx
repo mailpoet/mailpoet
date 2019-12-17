@@ -7,18 +7,23 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
   const namesMap = {
     text: 'mailpoet-form/custom-text',
     textarea: 'mailpoet-form/custom-textarea',
+    radio: 'mailpoet-form/custom-radio',
   };
   const mapped = {
     ...mappedCommonProperties,
     name: formatCustomFieldBlockName(namesMap[customField.type], customField),
   };
   mapped.attributes.customFieldId = customField.id;
-  if (
-    item.params
-    && Object.prototype.hasOwnProperty.call(item.params, 'validate')
-    && !!item.params.validate
-  ) {
-    mapped.attributes.validate = item.params.validate;
+  if (item.params) {
+    if (Object.prototype.hasOwnProperty.call(item.params, 'validate') && !!item.params.validate) {
+      mapped.attributes.validate = item.params.validate;
+    }
+    if (Object.prototype.hasOwnProperty.call(item.params, 'display_label')) {
+      mapped.attributes.displayLabel = !!item.params.display_label;
+    }
+    if (Object.prototype.hasOwnProperty.call(item.params, 'values') && Array.isArray(item.params.values)) {
+      mapped.attributes.values = item.params.values.map((value) => ({ name: value.value }));
+    }
   }
   return mapped;
 };

@@ -85,7 +85,24 @@ const customTextInput = {
   },
   position: null,
 };
-
+const customRadioInput = {
+  type: 'radio',
+  name: 'Options',
+  id: '3',
+  unique: '1',
+  static: '0',
+  params: {
+    required: '',
+    label: 'Options',
+    display_label: '1',
+    values: [
+      {
+        value: 'option 1',
+      },
+    ],
+  },
+  position: null,
+};
 const divider = {
   type: 'divider',
   name: 'Divider',
@@ -269,6 +286,34 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.mandatory).to.be.equal(false);
     expect(block.attributes.labelWithinInput).to.be.equal(true);
     expect(block.attributes.validate).to.be.equal('alphanum');
+  });
+
+  it('Should map custom radio input to block', () => {
+    const customField = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 3,
+      name: 'Name',
+      params: {
+        required: '1',
+        label: 'Options 123',
+        display_label: '',
+        values: [
+          { value: 'option 1' },
+          { value: 'option 2' },
+        ],
+      },
+      type: 'radio',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+    const [block] = formBodyToBlocks([{ ...customRadioInput, position: '1' }], [customField]);
+    checkBlockBasics(block);
+    expect(block.clientId).to.be.equal('3_0');
+    expect(block.name).to.be.equal('mailpoet-form/custom-radio-name');
+    expect(block.attributes.label).to.be.equal('Options');
+    expect(block.attributes.mandatory).to.be.equal(false);
+    expect(block.attributes.displayLabel).to.be.equal(true);
+    expect(block.attributes.values).to.be.an('Array').that.has.length(1);
+    expect(block.attributes.values[0]).to.have.property('name', 'option 1');
   });
 
   it('Should ignore unknown input type', () => {
