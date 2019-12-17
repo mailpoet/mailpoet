@@ -9,7 +9,7 @@ import * as submit from './submit/submit.jsx';
 import * as firstName from './first_name/first_name.jsx';
 import * as lastName from './last_name/last_name.jsx';
 import * as segmentSelect from './segment_select/segment_select.jsx';
-import * as customHtml from './custom_html/custom_html.jsx';
+import * as html from './html/html.jsx';
 
 import * as customText from './custom_text/custom_text.jsx';
 import * as customTextArea from './custom_textarea/custom_textarea.jsx';
@@ -52,7 +52,7 @@ export default () => {
   registerBlockType(firstName.name, firstName.settings);
   registerBlockType(lastName.name, lastName.settings);
   registerBlockType(segmentSelect.name, segmentSelect.settings);
-  registerBlockType(customHtml.name, customHtml.settings);
+  registerBlockType(html.name, html.settings);
 
   if (Array.isArray(customFields)) {
     customFields.forEach(registerCustomFieldBlock);

@@ -102,7 +102,7 @@ export default (blocks, customFields = []) => {
           static: '0',
           params: '',
         };
-      case 'mailpoet-form/custom-html':
+      case 'mailpoet-form/html':
         return {
           ...mapped,
           id: 'html',
