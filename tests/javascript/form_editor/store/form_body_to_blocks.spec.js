@@ -94,7 +94,7 @@ const customRadioInput = {
   params: {
     required: '',
     label: 'Options',
-    display_label: '1',
+    hide_label: '1',
     values: [
       {
         value: 'option 1',
@@ -296,7 +296,7 @@ describe('Form Body To Blocks', () => {
       params: {
         required: '1',
         label: 'Options 123',
-        display_label: '',
+        hide_label: '',
         values: [
           { value: 'option 1' },
           { value: 'option 2' },
@@ -311,7 +311,7 @@ describe('Form Body To Blocks', () => {
     expect(block.name).to.be.equal('mailpoet-form/custom-radio-name');
     expect(block.attributes.label).to.be.equal('Options');
     expect(block.attributes.mandatory).to.be.equal(false);
-    expect(block.attributes.displayLabel).to.be.equal(true);
+    expect(block.attributes.hideLabel).to.be.equal(true);
     expect(block.attributes.values).to.be.an('Array').that.has.length(1);
     expect(block.attributes.values[0]).to.have.property('name', 'option 1');
   });
