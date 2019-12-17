@@ -233,8 +233,8 @@ describe('Form Body To Blocks', () => {
 
   it('Should map custom html to blocks', () => {
     const [block1, block2] = formBodyToBlocks([
-      {...customHtml, position: '1', params: {text: '123', nl2br: '1'}},
-      {...customHtml, position: '2', params: {text: 'nice one'}},
+      { ...customHtml, position: '1', params: { text: '123', nl2br: '1' } },
+      { ...customHtml, position: '2', params: { text: 'nice one' } },
     ]);
     checkBlockBasics(block1);
     expect(block1.clientId).to.be.equal('html_0');
@@ -263,7 +263,7 @@ describe('Form Body To Blocks', () => {
     };
     const [block] = formBodyToBlocks([{ ...customTextInput, position: '1' }], [customField]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('1');
+    expect(block.clientId).to.be.equal('1_0');
     expect(block.name).to.be.equal('mailpoet-form/custom-text-customfieldname');
     expect(block.attributes.label).to.be.equal('Name of the street');
     expect(block.attributes.mandatory).to.be.equal(false);

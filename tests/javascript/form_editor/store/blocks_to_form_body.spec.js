@@ -234,6 +234,7 @@ describe('Blocks to Form Body', () => {
     expect(html.static).to.be.equal('0');
     expect(html.params.text).to.be.equal('HTML content');
     expect(html.params.nl2br).to.be.equal('1');
+  });
 
   it('Should map custom text field', () => {
     const customField = {
