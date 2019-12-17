@@ -88,7 +88,6 @@ class ManageSubscriptionLinkCest {
 
     $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
 
     // step 1 - select type
     $I->click('[data-automation-id="create_standard"]');

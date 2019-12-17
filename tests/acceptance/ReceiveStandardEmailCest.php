@@ -32,8 +32,7 @@ class ReceiveStandardEmailCest {
     //Create a newsletter with template
     $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id=\'new_email\']');
-    $I->click('[data-automation-id=\'create_standard\']');
+    $I->click('[data-automation-id="create_standard"]');
     $I->waitForElement($standard_template);
     $I->see('Newsletters', ['css' => 'a.current']);
     $I->click($standard_template);

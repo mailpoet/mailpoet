@@ -79,9 +79,7 @@ class WooCommerceEmailCustomizationCest {
   private function createEmailTemplate(\AcceptanceTester $I) {
     $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
-    $button_selector = '[data-automation-id="customize_woocommerce"]';
-    $I->click($button_selector);
+    $I->click('[data-automation-id="customize_woocommerce"]');
     $I->waitForText('Edit template for WooCommerce emails');
   }
 

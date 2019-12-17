@@ -11,7 +11,6 @@ class ConfirmNewsletterAutosaveCest {
 
     $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
 
     // step 1 - select notification type
     $I->click('[data-automation-id="create_standard"]');

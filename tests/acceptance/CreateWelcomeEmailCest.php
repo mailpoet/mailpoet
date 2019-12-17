@@ -8,7 +8,6 @@ class CreateWelcomeEmailCest {
     $newsletter_title = 'Create Welcome Email';
     $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
     $I->click('[data-automation-id="create_welcome"]');
     $I->waitForText('Welcome Email');
     $I->click('Next');

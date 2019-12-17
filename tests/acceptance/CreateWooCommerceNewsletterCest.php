@@ -15,7 +15,6 @@ class CreateWooCommerceNewsletterCest {
 
     $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
     $I->click('[data-automation-id="create_woocommerce"]');
     $I->click('[data-automation-id="create_woocommerce_first_purchase"]');
 
@@ -49,7 +48,6 @@ class CreateWooCommerceNewsletterCest {
 
     $I->login();
     $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
     $I->click('[data-automation-id="create_woocommerce"]');
     $I->scrollToTop();
     $I->click('[data-automation-id="create_woocommerce_abandoned_shopping_cart"]');
