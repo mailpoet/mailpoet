@@ -12,7 +12,6 @@ function SuccessContent(props) {
       <PitchMss
         MSSPitchIllustrationUrl={props.MSSPitchIllustrationUrl}
         onFinish={props.successClicked}
-        isWoocommerceActive={props.isWoocommerceActive}
         subscribersCount={props.subscribersCount}
         mailpoetAccountUrl={props.mailpoetAccountUrl}
       />
@@ -45,7 +44,6 @@ Success.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   }).isRequired,
-  isWoocommerceActive: PropTypes.bool.isRequired,
   subscribersCount: PropTypes.number.isRequired,
   mailpoetAccountUrl: PropTypes.string.isRequired,
 };
@@ -58,7 +56,6 @@ SuccessContent.propTypes = {
     status: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   }).isRequired,
-  isWoocommerceActive: PropTypes.bool.isRequired,
   subscribersCount: PropTypes.number.isRequired,
   mailpoetAccountUrl: PropTypes.string.isRequired,
   isSupported: PropTypes.func.isRequired,
