@@ -69,6 +69,12 @@ abstract class Base {
   protected static function renderLabel($block) {
     $html = '';
     if (
+      isset($block['params']['hide_label'])
+      && $block['params']['hide_label']
+    ) {
+      return $html;
+    }
+    if (
       isset($block['params']['label_within'])
       && $block['params']['label_within']
     ) {
