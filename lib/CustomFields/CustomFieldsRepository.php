@@ -17,4 +17,25 @@ class CustomFieldsRepository extends Repository {
   protected function getEntityClassName() {
     return CustomFieldEntity::class;
   }
+
+  /**
+   * @param array $data
+   * @return CustomFieldEntity
+   */
+  public function createOrUpdate($data) {
+    if (isset($data['id'])) {
+      $field = $this->findOneById((int)$data['id']);
+    } elseif (isset($data['name'])) {
+      $field = $this->findOneBy(['name' => $data['name']]);
+    }
+    if (!isset($field)) {
+      $field = new CustomFieldEntity();
+      $this->entity_manager->persist($field);
+    }
+    if (isset($data['name'])) $field->setName($data['name']);
+    if (isset($data['type'])) $field->setType($data['type']);
+    if (isset($data['params'])) $field->setParams($data['params']);
+    $this->entity_manager->flush();
+    return $field;
+  }
 }
