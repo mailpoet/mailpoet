@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { GlobalContext } from 'context/index.jsx';
 import MSSUserSuccess from './success_for_mss_users.jsx';
 import PitchMss from './success_pitch_mss.jsx';
 
 
 function SuccessContent(props) {
-  if (!window.has_mss_key_specified && props.isSupported('display-mss-pitch')) {
+  if (!window.has_mss_key_specified) {
     return (
       <PitchMss
         MSSPitchIllustrationUrl={props.MSSPitchIllustrationUrl}
@@ -28,11 +27,9 @@ function SuccessContent(props) {
 }
 
 function Success(props) {
-  const { features } = React.useContext(GlobalContext);
   return (
     <SuccessContent
       {...props}
-      isSupported={features.isSupported}
     />
   );
 }
@@ -61,7 +58,6 @@ SuccessContent.propTypes = {
   isWoocommerceActive: PropTypes.bool.isRequired,
   subscribersCount: PropTypes.number.isRequired,
   mailpoetAccountUrl: PropTypes.string.isRequired,
-  isSupported: PropTypes.func.isRequired,
 };
 
 export default Success;
