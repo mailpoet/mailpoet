@@ -1,3 +1,4 @@
+import { has } from 'lodash';
 
 const mapCustomField = (block, customFields, mappedCommonProperties) => {
   const customField = customFields.find((cf) => cf.id === block.attributes.customFieldId);
@@ -16,16 +17,25 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
   if (block.name.startsWith('mailpoet-form/custom-radio')) {
     mapped.type = 'radio';
   }
-  if (Object.prototype.hasOwnProperty.call(block.attributes, 'validate')) {
+  if (block.name.startsWith('mailpoet-form/custom-checkbox')) {
+    mapped.type = 'checkbox';
+  }
+  if (has(block.attributes, 'validate')) {
     mapped.params.validate = block.attributes.validate;
   }
-  if (Object.prototype.hasOwnProperty.call(block.attributes, 'hideLabel') && block.attributes.hideLabel) {
+  if (has(block.attributes, 'hideLabel') && block.attributes.hideLabel) {
     mapped.params.hide_label = '1';
   }
-  if (Object.prototype.hasOwnProperty.call(block.attributes, 'values')) {
-    mapped.params.values = block.attributes.values.map((value) => ({
-      value: value.name,
-    }));
+  if (has(block.attributes, 'values')) {
+    mapped.params.values = block.attributes.values.map((value) => {
+      const mappedValue = {
+        value: value.name,
+      };
+      if (has(value, 'isChecked') && value.isChecked) {
+        mappedValue.is_checked = '1';
+      }
+      return mappedValue;
+    });
   }
   return mapped;
 };

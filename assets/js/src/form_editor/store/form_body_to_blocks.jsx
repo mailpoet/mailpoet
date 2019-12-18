@@ -1,3 +1,4 @@
+import { has } from 'lodash';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 
 const mapCustomField = (item, customFields, mappedCommonProperties) => {
@@ -8,6 +9,7 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
     text: 'mailpoet-form/custom-text',
     textarea: 'mailpoet-form/custom-textarea',
     radio: 'mailpoet-form/custom-radio',
+    checkbox: 'mailpoet-form/custom-checkbox',
   };
   const mapped = {
     ...mappedCommonProperties,
@@ -15,17 +17,23 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
   };
   mapped.attributes.customFieldId = customField.id;
   if (item.params) {
-    if (Object.prototype.hasOwnProperty.call(item.params, 'validate') && !!item.params.validate) {
+    if (has(item.params, 'validate') && !!item.params.validate) {
       mapped.attributes.validate = item.params.validate;
     }
-    if (Object.prototype.hasOwnProperty.call(item.params, 'hide_label')) {
+    if (has(item.params, 'hide_label')) {
       mapped.attributes.hideLabel = !!item.params.hide_label;
     }
-    if (Object.prototype.hasOwnProperty.call(item.params, 'values') && Array.isArray(item.params.values)) {
-      mapped.attributes.values = item.params.values.map((value) => ({
-        name: value.value,
-        id: `${Math.random().toString()}-${Date.now()}`,
-      }));
+    if (has(item.params, 'values') && Array.isArray(item.params.values)) {
+      mapped.attributes.values = item.params.values.map((value) => {
+        const mappedValue = {
+          name: value.value,
+          id: `${Math.random().toString()}-${Date.now()}`,
+        };
+        if (has(value, 'is_checked') && value.is_checked) {
+          mappedValue.isChecked = true;
+        }
+        return mappedValue;
+      });
     }
   }
   return mapped;
@@ -53,13 +61,13 @@ export default (data, customFields = []) => {
         mandatory: false,
       },
     };
-    if (item.params && Object.prototype.hasOwnProperty.call(item.params, 'required')) {
+    if (item.params && has(item.params, 'required')) {
       mapped.attributes.mandatory = !!item.params.required;
     }
-    if (item.params && Object.prototype.hasOwnProperty.call(item.params, 'label_within')) {
+    if (item.params && has(item.params, 'label_within')) {
       mapped.attributes.labelWithinInput = !!item.params.label_within;
     }
-    if (item.params && Object.prototype.hasOwnProperty.call(item.params, 'label')) {
+    if (item.params && has(item.params, 'label')) {
       mapped.attributes.label = item.params.label;
     }
     switch (item.id) {
@@ -81,7 +89,7 @@ export default (data, customFields = []) => {
       case 'segments':
         if (
           item.params
-          && Object.prototype.hasOwnProperty.call(item.params, 'values')
+          && has(item.params, 'values')
           && Array.isArray(item.params.values)
         ) {
           mapped.attributes.values = item.params.values.map((value) => ({
