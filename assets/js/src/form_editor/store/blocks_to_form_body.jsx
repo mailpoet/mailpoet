@@ -8,6 +8,9 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
     id: block.attributes.customFieldId.toString(),
     name: customField.name,
   };
+  if (block.name.startsWith('mailpoet-form/custom-date')) {
+    mapped.type = 'date';
+  }
   if (block.name.startsWith('mailpoet-form/custom-text')) {
     mapped.type = 'text';
   }
@@ -28,6 +31,15 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
   }
   if (has(block.attributes, 'hideLabel') && block.attributes.hideLabel) {
     mapped.params.hide_label = '1';
+  }
+  if (has(block.attributes, 'defaultToday') && block.attributes.defaultToday) {
+    mapped.params.is_default_today = '1';
+  }
+  if (has(block.attributes, 'dateType')) {
+    mapped.params.date_type = block.attributes.dateType;
+  }
+  if (has(block.attributes, 'dateFormat')) {
+    mapped.params.date_format = block.attributes.dateFormat;
   }
   if (has(block.attributes, 'values')) {
     mapped.params.values = block.attributes.values.map((value) => {

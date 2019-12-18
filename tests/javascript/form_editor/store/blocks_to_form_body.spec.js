@@ -130,6 +130,21 @@ const customSelectBlock = {
   },
 };
 
+const customDateBlock = {
+  clientId: '5',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/custom-date',
+  attributes: {
+    label: 'Date',
+    mandatory: false,
+    customFieldId: 6,
+    dateType: 'month_year',
+    dateFormat: 'MM/YYYY',
+    defaultToday: true,
+  },
+};
+
 const dividerBlock = {
   clientId: 'some_random_123',
   isValid: true,
@@ -402,6 +417,33 @@ describe('Blocks to Form Body', () => {
     expect(input.params.values).to.be.an('Array').that.has.length(1);
     expect(input.params.values[0]).to.have.property('value', 'Check this');
     expect(input.params.values[0]).to.have.property('is_checked', '1');
+  });
+
+  it('Should map custom date field', () => {
+    const customField = {
+      created_at: '2019-12-13T15:22:07+00:00',
+      id: 6,
+      name: 'Custom Date',
+      params: {
+        required: '1',
+        is_default_today: '1',
+        date_type: 'month_year',
+        date_format: 'YYYY/MM',
+      },
+      type: 'date',
+      updated_at: '2019-12-13T15:22:07+00:00',
+    };
+    const [input] = formBlocksToBody([customDateBlock], [customField]);
+    checkBodyInputBasics(input);
+    expect(input.id).to.be.equal('6');
+    expect(input.name).to.be.equal('Custom Date');
+    expect(input.type).to.be.equal('date');
+    expect(input.position).to.be.equal('1');
+    expect(input.params.label).to.be.equal('Date');
+    expect(input.params.required).to.be.undefined;
+    expect(input.params.date_type).to.be.equal('month_year');
+    expect(input.params.date_format).to.be.equal('MM/YYYY');
+    expect(input.params.is_default_today).to.be.equal('1');
   });
 
   it('Should map multiple blocks at once', () => {
