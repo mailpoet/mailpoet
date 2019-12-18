@@ -140,6 +140,21 @@ const customCheckboxInput = {
   },
   position: null,
 };
+const customDateInput = {
+  type: 'date',
+  name: 'Custom date',
+  id: '6',
+  unique: '1',
+  static: '0',
+  params: {
+    required: '1',
+    label: 'Date',
+    date_type: 'month_year',
+    date_format: 'MM/YYYY',
+    is_default_today: true,
+  },
+  position: null,
+};
 const divider = {
   type: 'divider',
   name: 'Divider',
@@ -408,6 +423,31 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.labelWithinInput).to.be.equal(true);
     expect(block.attributes.values).to.be.an('Array').that.has.length(1);
     expect(block.attributes.values[0]).to.have.property('name', 'option 1');
+  });
+
+  it('Should map custom date input to block', () => {
+    const customField = {
+      created_at: '2019-12-13T15:22:07+00:00',
+      id: 6,
+      name: 'Custom Date',
+      params: {
+        required: '1',
+        is_default_today: '1',
+        date_type: 'month_year',
+        date_format: 'YYYY/MM',
+      },
+      type: 'date',
+      updated_at: '2019-12-13T15:22:07+00:00',
+    };
+    const [block] = formBodyToBlocks([{ ...customDateInput, position: '1' }], [customField]);
+    checkBlockBasics(block);
+    expect(block.clientId).to.be.equal('6_0');
+    expect(block.name).to.be.equal('mailpoet-form/custom-date-customdate');
+    expect(block.attributes.label).to.be.equal('Date');
+    expect(block.attributes.mandatory).to.be.true;
+    expect(block.attributes.dateFormat).to.be.equal('MM/YYYY');
+    expect(block.attributes.dateType).to.be.equal('month_year');
+    expect(block.attributes.defaultToday).to.be.true;
   });
 
   it('Should ignore unknown input type', () => {
