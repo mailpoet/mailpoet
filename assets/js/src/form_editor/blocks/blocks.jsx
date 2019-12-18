@@ -15,6 +15,7 @@ import * as customText from './custom_text/custom_text.jsx';
 import * as customTextArea from './custom_textarea/custom_textarea.jsx';
 import * as customRadio from './custom_radio/custom_radio.jsx';
 import * as customCheckbox from './custom_checkbox/custom_checkbox.jsx';
+import * as customSelect from './custom_select/custom_select.jsx';
 
 const registerCustomFieldBlock = (customField) => {
   const namesMap = {
@@ -33,6 +34,10 @@ const registerCustomFieldBlock = (customField) => {
     checkbox: {
       name: customCheckbox.name,
       settings: customCheckbox.getSettings(customField),
+    },
+    select: {
+      name: customSelect.name,
+      settings: customSelect.getSettings(customField),
     },
   };
 

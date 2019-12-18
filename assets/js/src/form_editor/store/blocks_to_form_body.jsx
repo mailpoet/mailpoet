@@ -20,6 +20,9 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
   if (block.name.startsWith('mailpoet-form/custom-checkbox')) {
     mapped.type = 'checkbox';
   }
+  if (block.name.startsWith('mailpoet-form/custom-select')) {
+    mapped.type = 'select';
+  }
   if (has(block.attributes, 'validate')) {
     mapped.params.validate = block.attributes.validate;
   }

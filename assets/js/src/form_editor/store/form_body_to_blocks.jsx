@@ -10,6 +10,7 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
     textarea: 'mailpoet-form/custom-textarea',
     radio: 'mailpoet-form/custom-radio',
     checkbox: 'mailpoet-form/custom-checkbox',
+    select: 'mailpoet-form/custom-select',
   };
   const mapped = {
     ...mappedCommonProperties,
