@@ -66,10 +66,15 @@ class FormEditor {
       $data['form']['styles'] = FormRenderer::getStyles($form);
       $custom_fields = $this->custom_fields_repository->findAll();
       $data['custom_fields'] = $this->custom_fields_response_builder->buildBatch($custom_fields);
+      $data['date_types'] = array_map(function ($label, $value) {
+        return [
+          'label' => $label,
+          'value' => $value,
+        ];
+      }, $data['date_types'], array_keys($data['date_types']));
       $this->page_renderer->displayPage('form/editor.html', $data);
     } else {
       $this->page_renderer->displayPage('form/editor_legacy.html', $data);
     }
-
   }
 }
