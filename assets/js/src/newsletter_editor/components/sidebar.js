@@ -83,6 +83,11 @@ SidebarView = Marionette.View.extend({
       }
     },
   },
+  templateContext: function () {
+    return {
+      isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
+    };
+  },
   initialize: function () {
     jQuery(window)
       .on('resize', this.updateHorizontalScroll.bind(this))
