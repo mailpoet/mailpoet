@@ -54,6 +54,6 @@ export default {
     return state.formBlocks;
   },
   getDateSettingsData(state) {
-    return state.dateSettingsData;
+    return state.dateSettingData;
   },
 };
