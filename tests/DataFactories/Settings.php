@@ -109,6 +109,12 @@ class Settings {
     return $this;
   }
 
+  public function withValidMssKey($key) {
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, $key);
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => Bridge::KEY_VALID]);
+    return $this;
+  }
+
   public function withSendingMethodSmtpMailhog() {
     $this->settings->set('mta_group', 'smtp');
     $this->settings->set('mta.method', Mailer::METHOD_SMTP);

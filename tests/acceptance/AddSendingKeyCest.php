@@ -83,4 +83,29 @@ class AddSendingKeyCest {
     $i->waitForText('MailPoet Premium is active!');
     $i->dontSee('downloading MailPoet Premium…');
   }
+
+  public function activateMss(\AcceptanceTester $i, Scenario $scenario) {
+    $i->wantTo('Activate MSS');
+
+    $mailPoetSendingKey = getenv('WP_TEST_MAILER_MAILPOET_API');
+    if (!$mailPoetSendingKey) {
+      $scenario->skip("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
+    }
+
+    $settings = new Settings();
+    $settings->withValidMssKey($mailPoetSendingKey);
+
+    $keyActivationTab = '[data-automation-id="activation_settings_tab"]';
+    $i->login();
+    $i->amOnMailPoetPage('Settings');
+    $i->click($keyActivationTab);
+
+    // MSS not activated
+    $i->waitForText('Your key is valid');
+    $i->waitForText('MailPoet Sending Service is not active. Activate MailPoet Sending Service');
+
+    // activate MSS
+    $i->click('Activate MailPoet Sending Service');
+    $i->waitForText('MailPoet Sending Service is active');
+  }
 }
