@@ -306,7 +306,7 @@ Module.SaveView = Marionette.View.extend({
     this.$('.mailpoet_save_next').removeClass('button-disabled');
   },
   activateWooCommerceCustomizer: function () {
-    var $el = this.$('.mailpoet_save_woocommerce_customizer_disabled');
+    var $el = $('.mailpoet_save_woocommerce_customizer_disabled');
     return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'settings',
