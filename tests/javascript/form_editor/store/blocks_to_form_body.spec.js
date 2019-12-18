@@ -107,6 +107,22 @@ const customCheckBox = {
   },
 };
 
+const customSelectBlock = {
+  clientId: '5',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/custom-select',
+  attributes: {
+    label: 'Select',
+    labelWithinInput: false,
+    mandatory: false,
+    customFieldId: 6,
+    values: [
+      { name: 'option 1' },
+      { name: 'option 2' },
+    ],
+  },
+};
 
 const dividerBlock = {
   clientId: 'some_random_123',
@@ -295,6 +311,33 @@ describe('Blocks to Form Body', () => {
     expect(input.params.required).to.be.undefined;
     expect(input.params.label_within).to.be.undefined;
     expect(input.params.validate).to.eq('alphanum');
+  });
+
+  it('Should map custom select field', () => {
+    const customField = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 6,
+      name: 'Custom Select',
+      params: {
+        label: 'Select',
+        required: '1',
+        values: [
+          { value: 'option 1' },
+        ],
+      },
+      type: 'select',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+    const [input] = formBlocksToBody([customSelectBlock], [customField]);
+    checkBodyInputBasics(input);
+    expect(input.id).to.be.equal('6');
+    expect(input.name).to.be.equal('Custom Select');
+    expect(input.type).to.be.equal('select');
+    expect(input.position).to.be.equal('1');
+    expect(input.params.label).to.be.equal('Select');
+    expect(input.params.values).to.be.an('Array').that.has.length(2);
+    expect(input.params.values[0]).to.have.property('value', 'option 1');
+    expect(input.params.values[1]).to.have.property('value', 'option 2');
   });
 
   it('Should map custom radio field', () => {

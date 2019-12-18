@@ -103,6 +103,24 @@ const customRadioInput = {
   },
   position: null,
 };
+const customSelectInput = {
+  type: 'select',
+  name: 'Custom select',
+  id: '5',
+  unique: '1',
+  static: '0',
+  params: {
+    required: '',
+    label: 'Select',
+    label_within: '1',
+    values: [
+      {
+        value: 'option 1',
+      },
+    ],
+  },
+  position: null,
+};
 const customCheckboxInput = {
   type: 'checkbox',
   name: 'Custom check',
@@ -363,6 +381,33 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.values).to.be.an('Array').that.has.length(1);
     expect(block.attributes.values[0]).to.have.property('name', 'Check');
     expect(block.attributes.values[0]).to.have.property('isChecked', true);
+  });
+
+  it('Should map custom select input to block', () => {
+    const customField = {
+      type: 'select',
+      name: 'Custom select',
+      id: 5,
+      params: {
+        required: '',
+        label: 'Select',
+        values: [
+          {
+            value: 'option 1',
+          },
+        ],
+      },
+      position: null,
+    };
+    const [block] = formBodyToBlocks([{ ...customSelectInput, position: '1' }], [customField]);
+    checkBlockBasics(block);
+    expect(block.clientId).to.be.equal('5_0');
+    expect(block.name).to.be.equal('mailpoet-form/custom-select-customselect');
+    expect(block.attributes.label).to.be.equal('Select');
+    expect(block.attributes.mandatory).to.be.equal(false);
+    expect(block.attributes.labelWithinInput).to.be.equal(true);
+    expect(block.attributes.values).to.be.an('Array').that.has.length(1);
+    expect(block.attributes.values[0]).to.have.property('name', 'option 1');
   });
 
   it('Should ignore unknown input type', () => {
