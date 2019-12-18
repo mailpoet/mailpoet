@@ -33,7 +33,7 @@ class CustomFieldEntity {
   private $type;
 
   /**
-   * @ORM\Column(type="json_or_serialized")
+   * @ORM\Column(type="array")
    * @var array
    */
   private $params;
@@ -76,7 +76,7 @@ class CustomFieldEntity {
   /**
    * @param array $params
    */
-  public function setParams($params) {
+  public function setParams(array $params) {
     $this->params = $params;
   }
 }
