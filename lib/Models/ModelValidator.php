@@ -27,6 +27,7 @@ class ModelValidator extends \MailPoetVendor\Sudzy\Engine {
     'noc',
     'no-reply',
     'noreply',
+    'nospam',
     'null',
     'phish',
     'phishing',
