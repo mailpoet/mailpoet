@@ -16,6 +16,7 @@ const PreviewItem = ({
   moveItem,
   remove,
   onUpdate,
+  onCheck,
   dragFinished,
 }) => {
   const ref = useRef(null);
@@ -80,7 +81,7 @@ const PreviewItem = ({
     >
       <input
         type="radio"
-        disabled
+        onChange={(event) => onCheck(value.id, event.target.value)}
         key={`check-${value.id}`}
       />
       <input
@@ -104,6 +105,7 @@ PreviewItem.propTypes = {
     id: PropTypes.string.isRequired,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
+  onCheck: PropTypes.func.isRequired,
   moveItem: PropTypes.func.isRequired,
   remove: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
@@ -142,6 +144,12 @@ const Preview = ({
     update(value);
   };
 
+  const onCheck = (valueId, checked) => {
+    const value = valuesWhileMoved.find((v) => v.id === valueId);
+    value.isChecked = checked;
+    update(value);
+  };
+
   return (
     <DndProvider backend={Backend}>
       {valuesWhileMoved.map((value, index) => (
@@ -151,6 +159,7 @@ const Preview = ({
           value={value}
           moveItem={moveItem}
           remove={remove}
+          onCheck={onCheck}
           onUpdate={onUpdate}
           dragFinished={() => onReorder(valuesWhileMoved)}
         />
