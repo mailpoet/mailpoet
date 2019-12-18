@@ -16,6 +16,11 @@ const CustomDateEdit = ({ attributes, setAttributes }) => {
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
   );
+  const dateSettings = useSelect(
+    (sel) => sel('mailpoet-form-editor').getDateSettingsData(),
+    []
+  );
+
   const { saveCustomField } = useDispatch('mailpoet-form-editor');
   const inspectorControls = (
     <InspectorControls>
@@ -23,6 +28,7 @@ const CustomDateEdit = ({ attributes, setAttributes }) => {
         <PanelBody title={MailPoet.I18n.t('customFieldSettings')} initialOpen>
           <CustomFieldSettings
             mandatory={attributes.mandatory}
+            dateSettings={dateSettings}
             defaultToday={attributes.defaultToday}
             dateFormat={attributes.dateFormat}
             dateType={attributes.dateType}

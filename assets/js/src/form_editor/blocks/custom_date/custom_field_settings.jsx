@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Button,
   ToggleControl,
-  TextControl,
+  SelectControl,
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
@@ -12,6 +12,7 @@ const CustomFieldSettings = ({
   dateType,
   dateFormat,
   defaultToday,
+  dateSettings,
   isSaving,
   onSave,
 }) => {
@@ -19,6 +20,24 @@ const CustomFieldSettings = ({
   const [localDefaultToday, setLocalLocalDefaultToday] = useState(defaultToday);
   const [localDateType, setLocalLocalDateType] = useState(dateType);
   const [localDateFormat, setLocalLocalDateFormat] = useState(dateFormat);
+
+  const createDateFormatsSelect = () => {
+    const dateFormats = dateSettings.dateFormats[localDateType];
+    if (Array.isArray(dateFormats) && dateFormats.length === 1) {
+      return null;
+    }
+    return (
+      <SelectControl
+        label={MailPoet.I18n.t('customFieldDateFormat')}
+        value={localDateFormat}
+        onChange={(value) => setLocalLocalDateFormat(value)}
+        options={dateFormats.map((format) => ({
+          value: format,
+          label: format,
+        }))}
+      />
+    );
+  };
 
   return (
     <div className="custom-field-settings">
@@ -47,16 +66,19 @@ const CustomFieldSettings = ({
         checked={localDefaultToday}
         onChange={setLocalLocalDefaultToday}
       />
-      <TextControl
+      <SelectControl
         label={MailPoet.I18n.t('customFieldDateType')}
         value={localDateType}
-        onChange={setLocalLocalDateType}
+        onChange={(value) => {
+          setLocalLocalDateType(value);
+          const dateFormats = dateSettings.dateFormats[value];
+          if (dateFormats.length === 1) {
+            setLocalLocalDateFormat(dateFormats[0]);
+          }
+        }}
+        options={dateSettings.dateTypes}
       />
-      <TextControl
-        label={MailPoet.I18n.t('customFieldDateFormat')}
-        value={localDateFormat}
-        onChange={setLocalLocalDateFormat}
-      />
+      {createDateFormatsSelect()}
     </div>
   );
 };
@@ -68,6 +90,14 @@ CustomFieldSettings.propTypes = {
   defaultToday: PropTypes.bool,
   onSave: PropTypes.func.isRequired,
   isSaving: PropTypes.bool,
+  dateSettings: PropTypes.shape({
+    dateTypes: PropTypes.arrayOf(PropTypes.shape({
+      label: PropTypes.string,
+      value: PropTypes.string,
+    })),
+    dateFormats: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
+    months: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
 };
 
 CustomFieldSettings.defaultProps = {
