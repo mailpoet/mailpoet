@@ -11,6 +11,7 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
     radio: 'mailpoet-form/custom-radio',
     checkbox: 'mailpoet-form/custom-checkbox',
     select: 'mailpoet-form/custom-select',
+    date: 'mailpoet-form/custom-date',
   };
   const mapped = {
     ...mappedCommonProperties,
@@ -23,6 +24,15 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
     }
     if (has(item.params, 'hide_label')) {
       mapped.attributes.hideLabel = !!item.params.hide_label;
+    }
+    if (has(item.params, 'date_type')) {
+      mapped.attributes.dateType = item.params.date_type;
+    }
+    if (has(item.params, 'date_format')) {
+      mapped.attributes.dateFormat = item.params.date_format;
+    }
+    if (has(item.params, 'is_default_today')) {
+      mapped.attributes.defaultToday = !!item.params.is_default_today;
     }
     if (has(item.params, 'values') && Array.isArray(item.params.values)) {
       mapped.attributes.values = item.params.values.map((value) => {
