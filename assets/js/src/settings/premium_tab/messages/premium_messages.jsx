@@ -52,7 +52,7 @@ const premiumNotActiveMessage = (activationCallback) => (
 
 const notValidMessage = (message) => (
   <div className="mailpoet_error">
-    {message}
+    {message || MailPoet.I18n.t('premiumTabPremiumKeyNotValidMessage')}
   </div>
 );
 
@@ -69,7 +69,7 @@ const getMessageFromStatus = (status, message, installationCallback, activationC
     case PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_ACTIVATED:
       return activatingMessage();
     case PremiumStatus.KEY_INVALID:
-      return message ? notValidMessage(message) : null;
+      return notValidMessage(message);
     default:
       return null;
   }

@@ -16,7 +16,7 @@ const activeMessage = () => (
 
 const notValidMessage = (message) => (
   <div className="mailpoet_error">
-    {message}
+    {message || MailPoet.I18n.t('premiumTabMssKeyNotValidMessage')}
   </div>
 );
 
@@ -38,7 +38,7 @@ const MssMessages = (props) => {
     case MssStatus.KEY_VALID_MSS_NOT_ACTIVE:
       return mssNotActiveMessage(props.activationCallback);
     case MssStatus.KEY_INVALID:
-      return props.keyMessage ? notValidMessage(props.keyMessage) : null;
+      return notValidMessage(props.keyMessage);
     default:
       return null;
   }
