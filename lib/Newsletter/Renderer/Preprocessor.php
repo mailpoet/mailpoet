@@ -4,7 +4,7 @@ namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Newsletter\Editor\LayoutHelper;
 use MailPoet\Newsletter\Renderer\Blocks\Renderer as BlocksRenderer;
-use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WooCommerce\TransactionalEmails;
 
 class Preprocessor {
   const WC_HEADING_PLACEHOLDER = '[mailpet_woocommerce_heading_placeholder]';
@@ -13,12 +13,12 @@ class Preprocessor {
   /** @var BlocksRenderer */
   private $blocks_renderer;
 
-  /** @var WPFunctions */
-  private $wp;
+  /** @var TransactionalEmails */
+  private $transactional_emails;
 
-  public function __construct(BlocksRenderer $blocks_renderer, WPFunctions $wp) {
+  public function __construct(BlocksRenderer $blocks_renderer, TransactionalEmails $transactional_emails) {
     $this->blocks_renderer = $blocks_renderer;
-    $this->wp = $wp;
+    $this->transactional_emails = $transactional_emails;
   }
 
   /**
@@ -46,10 +46,9 @@ class Preprocessor {
       case 'automatedLatestContentLayout':
         return $this->blocks_renderer->automatedLatestContentTransformedPosts($block);
       case 'woocommerceHeading':
-        $base_color = $this->wp->getOption('woocommerce_email_base_color');
-        $text_color = $this->wp->getOption('woocommerce_email_text_color');
-        $content = '<h1 style="color:' . $text_color . ';">' . self::WC_HEADING_PLACEHOLDER . '</h1>';
-        return $this->placeholder($content, ['backgroundColor' => $base_color]);
+        $wc_email_settings = $this->transactional_emails->getWCEmailSettings();
+        $content = '<h1 style="color:' . $wc_email_settings['base_text_color'] . ';">' . self::WC_HEADING_PLACEHOLDER . '</h1>';
+        return $this->placeholder($content, ['backgroundColor' => $wc_email_settings['base_color']]);
       case 'woocommerceContent':
         return $this->placeholder(self::WC_CONTENT_PLACEHOLDER);
     }

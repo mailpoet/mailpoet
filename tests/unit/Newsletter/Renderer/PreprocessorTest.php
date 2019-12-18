@@ -5,21 +5,19 @@ namespace MailPoet\Test\Newsletter;
 use Codeception\Stub;
 use MailPoet\Newsletter\Renderer\Blocks\Renderer;
 use MailPoet\Newsletter\Renderer\Preprocessor;
-use MailPoet\WP\Functions;
+use MailPoet\WooCommerce\TransactionalEmails;
 
 class PreprocessorTest extends \MailPoetUnitTest {
 
   function testProcessWooCommerceHeadingBlock() {
     $renderer = Stub::make(Renderer::class);
-    $wp = Stub::make(new Functions, [
-      'getOption' => function($name) {
-        if ($name === 'woocommerce_email_base_color')
-          return '{base_color}';
-        if ($name === 'woocommerce_email_text_color')
-          return '{text_color}';
-      },
+    $transactional_emails = Stub::make(TransactionalEmails::class, [
+      'getWCEmailSettings' => [
+        'base_color' => '{base_color}',
+        'base_text_color' => '{base_text_color}',
+      ],
     ]);
-    $preprocessor = new Preprocessor($renderer, $wp);
+    $preprocessor = new Preprocessor($renderer, $transactional_emails);
     expect($preprocessor->processBlock(['type' => 'woocommerceHeading']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
@@ -34,7 +32,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
           'blocks' => [
             [
               'type' => 'text',
-              'text' => '<h1 style="color:{text_color};">[mailpet_woocommerce_heading_placeholder]</h1>',
+              'text' => '<h1 style="color:{base_text_color};">[mailpet_woocommerce_heading_placeholder]</h1>',
             ],
           ],
         ],
@@ -44,7 +42,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
 
   function testProcessWooCommerceContentBlock() {
     $renderer = Stub::make(Renderer::class);
-    $preprocessor = new Preprocessor($renderer, new Functions);
+    $preprocessor = new Preprocessor($renderer, Stub::make(TransactionalEmails::class));
     expect($preprocessor->processBlock(['type' => 'woocommerceContent']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
