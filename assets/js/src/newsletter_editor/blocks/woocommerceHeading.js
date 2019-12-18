@@ -7,7 +7,7 @@ const BlockModel = BaseBlock.BlockModel.extend({
   defaults() {
     return this._getDefaults({
       type: 'woocommerceHeading',
-      selected: 'new_account',
+      selected: 'completed_order',
     }, App.getConfig().get('blockDefaults.woocommerceHeading'));
   },
 });
