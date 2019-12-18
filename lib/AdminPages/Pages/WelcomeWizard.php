@@ -50,7 +50,8 @@ class WelcomeWizard {
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG),
       'sender' => $this->settings->get('sender'),
       'admin_email' => $this->wp->getOption('admin_email'),
-      'subscribers_count' => Subscriber::getTotalSubscribers(),
+      'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
+      'subscriber_count' => Subscriber::getTotalSubscribers(),
       'has_mss_key_specified' => Bridge::isMSSKeySpecified(),
     ];
     $data['mailpoet_feature_flags'] = $this->features_controller->getAllFlags();
