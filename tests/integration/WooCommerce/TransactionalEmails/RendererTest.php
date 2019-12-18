@@ -5,6 +5,8 @@ namespace MailPoet\WooCommerce\TransactionalEmails;
 use Codeception\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
+use MailPoet\Newsletter\Renderer\Preprocessor;
+use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
 use MailPoetVendor\csstidy;
 
 class RendererTest extends \MailPoetTest {
@@ -35,7 +37,20 @@ class RendererTest extends \MailPoetTest {
 
   function testGetHTMLBeforeContent() {
     $renderer = new Renderer(new csstidy);
-    $renderer->render($this->newsletter);
+    $newsletter_renderer = new NewsletterRenderer($this->newsletter, true);
+    $newsletter_renderer->preprocessor = new Preprocessor(
+      $newsletter_renderer->blocks_renderer,
+      Stub::make(
+        \MailPoet\WooCommerce\TransactionalEmails::class,
+        [
+          'getWCEmailSettings' => [
+            'base_text_color' => '',
+            'base_color' => '',
+          ],
+        ]
+      )
+    );
+    $renderer->render($this->newsletter, $newsletter_renderer);
     $html = $renderer->getHTMLBeforeContent('Heading Text');
     expect($html)->contains('Some text before heading');
     expect($html)->contains('Heading Text');
@@ -45,7 +60,20 @@ class RendererTest extends \MailPoetTest {
 
   function testGetHTMLAfterContent() {
     $renderer = new Renderer(new csstidy);
-    $renderer->render($this->newsletter);
+    $newsletter_renderer = new NewsletterRenderer($this->newsletter, true);
+    $newsletter_renderer->preprocessor = new Preprocessor(
+      $newsletter_renderer->blocks_renderer,
+      Stub::make(
+        \MailPoet\WooCommerce\TransactionalEmails::class,
+        [
+          'getWCEmailSettings' => [
+            'base_text_color' => '',
+            'base_color' => '',
+          ],
+        ]
+      )
+    );
+    $renderer->render($this->newsletter, $newsletter_renderer);
     $html = $renderer->getHTMLAfterContent('Heading Text');
     expect($html)->notContains('Some text before heading');
     expect($html)->notContains('Heading Text');

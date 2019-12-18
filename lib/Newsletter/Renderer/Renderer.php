@@ -3,17 +3,19 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\DomNode;
+use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
   public $blocks_renderer;
   public $columns_renderer;
-  private $preprocessor;
+  public $preprocessor;
   public $CSS_inliner;
   public $newsletter;
   public $preview;
@@ -31,7 +33,10 @@ class Renderer {
     $this->preview = $preview;
     $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
     $this->columns_renderer = new Columns\Renderer();
-    $this->preprocessor = new Preprocessor($this->blocks_renderer, WPFunctions::get());
+    $this->preprocessor = new Preprocessor(
+      $this->blocks_renderer,
+      ContainerWrapper::getInstance()->get(TransactionalEmails::class)
+    );
     $this->CSS_inliner = new \MailPoetVendor\CSS();
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
     $this->premium_activated = License::getLicense();
