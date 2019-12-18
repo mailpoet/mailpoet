@@ -11,6 +11,7 @@ const emailBlock = {
     labelWithinInput: false,
   },
 };
+
 const submitBlock = {
   clientId: 'submit',
   isValid: true,
@@ -20,6 +21,7 @@ const submitBlock = {
     label: 'Subscribe!',
   },
 };
+
 const segmentsBlock = {
   clientId: 'segments',
   isValid: true,
@@ -36,6 +38,7 @@ const segmentsBlock = {
     ],
   },
 };
+
 const firstNameBlock = {
   clientId: 'first_name',
   isValid: true,
@@ -47,6 +50,7 @@ const firstNameBlock = {
     mandatory: false,
   },
 };
+
 const lastNameBlock = {
   clientId: 'last_name',
   isValid: true,
@@ -58,6 +62,7 @@ const lastNameBlock = {
     mandatory: false,
   },
 };
+
 const customTextBlock = {
   clientId: '2',
   isValid: true,
@@ -71,6 +76,7 @@ const customTextBlock = {
     customFieldId: 1,
   },
 };
+
 const customRadioBlock = {
   clientId: '4',
   isValid: true,
