@@ -256,10 +256,12 @@ class NewsletterTypes extends React.Component {
       <div>
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
 
-        {this.props.showHeader
-          && <h1>{MailPoet.I18n.t(window.mailpoet_newsletters_count === 0 ? 'createFirstEmailTitle' : 'pickCampaignType')}</h1>
-          && <Breadcrumb step="type" />
-        }
+        {this.props.showHeader && (
+          <>
+            <h1>{MailPoet.I18n.t(window.mailpoet_newsletters_count === 0 ? 'createFirstEmailTitle' : 'pickCampaignType')}</h1>
+            <Breadcrumb step="type" />
+          </>
+        )}
 
         <ul className="mailpoet_boxes mailpoet_boxes_types">
           {types.map((type) => (
