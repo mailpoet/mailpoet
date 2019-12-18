@@ -34,7 +34,7 @@ const CustomDateEdit = ({ attributes, setAttributes }) => {
                   required: params.mandatory ? '1' : undefined,
                   date_type: params.dateType,
                   date_format: params.dateFormat,
-                  is_default_today: params.defaultToday,
+                  is_default_today: params.defaultToday ? '1' : undefined,
                 },
               },
               onFinish: () => setAttributes({
@@ -91,7 +91,7 @@ CustomDateEdit.propTypes = {
     label: PropTypes.string.isRequired,
     dateFormat: PropTypes.string.isRequired,
     dateType: PropTypes.string.isRequired,
-    defaultToday:  PropTypes.bool.isRequired,
+    defaultToday: PropTypes.bool,
     mandatory: PropTypes.bool.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,

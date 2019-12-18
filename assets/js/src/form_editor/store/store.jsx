@@ -17,7 +17,7 @@ export default () => {
   const dateSettingData = {
     dateTypes: window.mailpoet_date_types,
     dateFormats: window.mailpoet_date_formats,
-    moths: window.mailpoet_months,
+    months: window.mailpoet_date_months,
   };
   formData.settings.segments = formData.settings.segments ? formData.settings.segments : [];
   const defaultState = {
