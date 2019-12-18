@@ -14,10 +14,16 @@ export default () => {
   const formData = { ...window.mailpoet_form_data };
   const formBlocks = formBodyToBlocks(formData.body, window.mailpoet_custom_fields);
   delete formData.body;
+  const dateSettingData = {
+    dateTypes: window.mailpoet_date_types,
+    dateFormats: window.mailpoet_date_formats,
+    moths: window.mailpoet_months,
+  };
   formData.settings.segments = formData.settings.segments ? formData.settings.segments : [];
   const defaultState = {
     formBlocks,
     formData,
+    dateSettingData,
     sidebarOpened: true,
     formExports: window.mailpoet_form_exports,
     formErrors: validateForm(formData, formBlocks),
