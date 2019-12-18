@@ -88,6 +88,26 @@ const customRadioBlock = {
   },
 };
 
+const customCheckBox = {
+  clientId: '5',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/custom-checkbox',
+  attributes: {
+    label: 'Checkbox',
+    hideLabel: false,
+    mandatory: false,
+    customFieldId: 3,
+    values: [
+      {
+        name: 'Check this',
+        isChecked: true,
+      },
+    ],
+  },
+};
+
+
 const dividerBlock = {
   clientId: 'some_random_123',
   isValid: true,
@@ -304,6 +324,35 @@ describe('Blocks to Form Body', () => {
     expect(input.params.values).to.be.an('Array').that.has.length(2);
     expect(input.params.values[0]).to.have.property('value', 'option 1');
     expect(input.params.values[1]).to.have.property('value', 'option 2');
+  });
+
+  it('Should map custom checkbox field', () => {
+    const customField = {
+      created_at: '2019-12-13T15:22:07+00:00',
+      id: 3,
+      name: 'Custom Checkbox',
+      params: {
+        label: 'Check',
+        required: '1',
+        values: [
+          { value: 'option 1' },
+        ],
+      },
+      type: 'checkbox',
+      updated_at: '2019-12-13T15:22:07+00:00',
+    };
+    const [input] = formBlocksToBody([customCheckBox], [customField]);
+    checkBodyInputBasics(input);
+    expect(input.id).to.be.equal('3');
+    expect(input.name).to.be.equal('Custom Checkbox');
+    expect(input.type).to.be.equal('checkbox');
+    expect(input.position).to.be.equal('1');
+    expect(input.params.label).to.be.equal('Checkbox');
+    expect(input.params.required).to.be.be.undefined;
+    expect(input.params.hide_label).to.be.undefined;
+    expect(input.params.values).to.be.an('Array').that.has.length(1);
+    expect(input.params.values[0]).to.have.property('value', 'Check this');
+    expect(input.params.values[0]).to.have.property('is_checked', '1');
   });
 
   it('Should map multiple blocks at once', () => {
