@@ -38,8 +38,8 @@ class AddSendingKeyCest {
     // try invalid key
     $i->fillField(['name' => 'premium[premium_key]'], 'invalid-key');
     $i->click('Verify');
-    $i->waitForText('Your MailPoet Sending Service key is invalid.');
-    $i->waitForText('Your Premium key is invalid.');
+    $i->waitForText('Your key is not valid for the MailPoet Sending Service');
+    $i->waitForText('Your key is not valid for MailPoet Premium');
   }
 
   public function installAndActivatePremiumPlugin(\AcceptanceTester $i, Scenario $scenario) {
