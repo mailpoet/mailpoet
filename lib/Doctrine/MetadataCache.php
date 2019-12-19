@@ -60,10 +60,12 @@ class MetadataCache extends CacheProvider {
     if ($result === false) {
       throw new \RuntimeException("Error while writing to '$filename'");
     }
+    return true;
   }
 
   protected function doDelete($id) {
     @unlink($this->getFilename($id));
+    return true;
   }
 
   protected function doFlush() {
@@ -72,6 +74,7 @@ class MetadataCache extends CacheProvider {
         @unlink($filename);
       }
     }
+    return true;
   }
 
   protected function doGetStats() {

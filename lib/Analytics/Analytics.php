@@ -27,13 +27,14 @@ class Analytics {
     $this->wp = new WPFunctions;
   }
 
-  /** @return array */
+  /** @return array|null */
   function generateAnalytics() {
     if ($this->shouldSend()) {
       $data = $this->wp->applyFilters(self::ANALYTICS_FILTER, $this->reporter->getData());
       $this->recordDataSent();
       return $data;
     }
+    return null;
   }
 
   /** @return boolean */

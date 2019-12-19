@@ -41,7 +41,7 @@ class DoctrinePanel implements IBarPanel {
   }
 
   static function init(EntityManagerInterface $entity_manager) {
-    Debugger::getBar()->addPanel(new static($entity_manager->getConnection()->getConfiguration()));
+    Debugger::getBar()->addPanel(new DoctrinePanel($entity_manager->getConnection()->getConfiguration()));
   }
 
   protected function formatSql($sql) {
