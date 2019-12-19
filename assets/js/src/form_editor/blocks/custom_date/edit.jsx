@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import {
   Panel,
   PanelBody,
@@ -10,6 +11,7 @@ import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import CustomFieldSettings from './custom_field_settings.jsx';
+import FormFieldDate from '../../../form/fields/date.jsx';
 
 const CustomDateEdit = ({ attributes, setAttributes }) => {
   const isSaving = useSelect(
@@ -47,7 +49,7 @@ const CustomDateEdit = ({ attributes, setAttributes }) => {
                 mandatory: params.mandatory,
                 dateType: params.dateType,
                 dateFormat: params.dateFormat,
-                dateDefaultToday: params.defaultToday,
+                defaultToday: params.defaultToday,
               }),
             })}
           />
@@ -76,16 +78,24 @@ const CustomDateEdit = ({ attributes, setAttributes }) => {
   return (
     <>
       {inspectorControls}
-      <label className="mailpoet_text_label" data-automation-id="editor_custom_text_label" htmlFor="custom_text">
+      <label className="mailpoet_text_label mailpoet_custom_date" data-automation-id="editor_custom_date_label" htmlFor="custom_text">
         {getLabel()}
         <br />
-        <input
-          id="custom_date"
-          className="mailpoet_date"
-          type="text"
-          name="custom_date"
-          disabled
-          data-automation-id="editor_custom_date_input"
+        <FormFieldDate
+          field={{
+            name: 'field',
+            day_placeholder: MailPoet.I18n.t('customFieldDay'),
+            month_placeholder: MailPoet.I18n.t('customFieldMonth'),
+            year_placeholder: MailPoet.I18n.t('customFieldYear'),
+            params: {
+              date_type: attributes.dateType,
+              date_format: attributes.dateFormat,
+            },
+          }}
+          item={{
+            field: attributes.defaultToday ? moment().format('YYYY-MM-DD') : '',
+          }}
+          onValueChange={() => {}}
         />
       </label>
     </>
