@@ -1,10 +1,9 @@
 parameters:
-  mailpoetDir: %rootDir%/../../../../..
   tmpDir: ../../temp/phpstan
   bootstrap: bootstrap.php
   inferPrivatePropertyTypeFromConstructor: true
   autoload_files:
-    - %mailpoetDir%/vendor/autoload.php
+    - ../../vendor/autoload.php
   ignoreErrors:
     - '#Function members_register_.+ not found#'
     - '#Cannot assign offset .path. to array<string, int|string>|false.#' # bug https://github.com/phpstan/phpstan/issues/1791
