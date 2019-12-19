@@ -5,7 +5,7 @@ namespace MailPoet\Mailer\WordPress;
 use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscribersRepository;
 
 if (!class_exists('PHPMailer')) {
   require_once ABSPATH . WPINC . '/class-phpmailer.php';
@@ -22,11 +22,20 @@ class WordPressMailer extends \PHPMailer {
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
-  function __construct(Mailer $mailer, Mailer $fallback_mailer, MetaInfo $mailerMetaInfo) {
+  /** @var SubscribersRepository */
+  private $subscribers_repository;
+
+  function __construct(
+    Mailer $mailer,
+    Mailer $fallback_mailer,
+    MetaInfo $mailerMetaInfo,
+    SubscribersRepository $subscribers_repository
+  ) {
     parent::__construct(true);
     $this->mailer = $mailer;
     $this->fallback_mailer = $fallback_mailer;
     $this->mailerMetaInfo = $mailerMetaInfo;
+    $this->subscribers_repository = $subscribers_repository;
   }
 
   function send() {
@@ -36,11 +45,12 @@ class WordPressMailer extends \PHPMailer {
     // Prepare everything (including the message) for sending.
     $this->preSend();
 
-    $extra_params = [
-      'meta' => $this->mailerMetaInfo->getWordPressTransactionalMetaInfo(),
-    ];
     $email = $this->getEmail();
     $address = $this->formatAddress($this->getToAddresses());
+    $subscriber = $this->subscribers_repository->findOneBy(['email' => $address]);
+    $extra_params = [
+      'meta' => $this->mailerMetaInfo->getWordPressTransactionalMetaInfo($subscriber),
+    ];
 
     $send_with_mailer = function ($mailer) use ($email, $address, $extra_params) {
       $result = $mailer->send($email, $address, $extra_params);
