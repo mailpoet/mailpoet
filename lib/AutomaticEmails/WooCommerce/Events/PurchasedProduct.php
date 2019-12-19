@@ -118,7 +118,7 @@ class PurchasedProduct {
     }
 
     $ordered_products = array_map(function($product) {
-      return is_callable([$product, 'get_product_id']) ? $product->get_product_id() : null;
+      return ($product instanceof \WC_Order_Item_Product) ? $product->get_product_id() : null;
     }, $order_details->get_items());
     $ordered_products = array_values(array_filter($ordered_products));
 

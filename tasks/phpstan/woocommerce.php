@@ -64,3 +64,15 @@ class WC_DateTime extends \DateTime {
 */
 class WC_Order { // phpcs:ignore
 }
+
+/**
+ * @method int get_product_id(string $context = 'view')
+ */
+class WC_Order_Item_Product { // phpcs:ignore
+}
+
+/**
+ * @method int[] get_category_ids(string $context = 'view')
+ */
+class WC_Product { // phpcs:ignore
+}

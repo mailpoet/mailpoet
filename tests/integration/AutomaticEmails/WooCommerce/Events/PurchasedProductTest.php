@@ -221,13 +221,13 @@ class PurchasedProductTest extends \MailPoetTest {
         'get_items' => function() use ($incorrect_product_id, $product_id) {
           return [
             Stub::make(
-              new ItemDetails(),
+              \WC_Order_Item_Product::class,
               [
                 'get_product_id' => $incorrect_product_id,
               ]
             ),
             Stub::make(
-              new ItemDetails(),
+              \WC_Order_Item_Product::class,
               [
                 'get_product_id' => $product_id,
               ]
