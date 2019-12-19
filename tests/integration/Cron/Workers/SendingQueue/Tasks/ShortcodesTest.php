@@ -9,6 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoetVendor\Idiorm\ORM;
 
 class ShortcodesTest extends \MailPoetTest {
+  public $WP_post;
   public function _before() {
     parent::_before();
     $this->WP_post = wp_insert_post(

@@ -10,6 +10,8 @@ use MailPoet\Subscription\Pages;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriptionTest extends \MailPoetTest {
+  public $data;
+  public $subscription;
   public function _before() {
     $this->data = [];
     // instantiate class

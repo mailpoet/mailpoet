@@ -12,6 +12,10 @@ use MailPoetVendor\Idiorm\ORM;
 require_once('SubscribersBulkActionHandlerMock.php');
 
 class BulkActionTest extends \MailPoetTest {
+  public $subscriber_2;
+  public $subscriber_1;
+  public $segment_2;
+  public $segment_1;
 
   public function _before() {
     parent::_before();

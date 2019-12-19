@@ -19,6 +19,11 @@ use MailPoet\Util\Cookies;
 use MailPoetVendor\Idiorm\ORM;
 
 class ClicksTest extends \MailPoetTest {
+  public $track_data;
+  public $link;
+  public $queue;
+  public $subscriber;
+  public $newsletter;
 
   /** @var Clicks */
   private $clicks;

@@ -14,6 +14,7 @@ use MailPoetVendor\Idiorm\ORM;
 require_once('KeyCheckWorkerMockImplementation.php');
 
 class KeyCheckWorkerTest extends \MailPoetTest {
+  public $worker;
   public function _before() {
     parent::_before();
     $this->worker = new MockKeyCheckWorker();

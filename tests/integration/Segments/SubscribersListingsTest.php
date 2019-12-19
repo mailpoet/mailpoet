@@ -13,6 +13,10 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersListingsTest extends \MailPoetTest {
+  public $subscriber_2;
+  public $subscriber_1;
+  public $segment_2;
+  public $segment_1;
 
   /** @var SubscribersListings */
   private $finder;

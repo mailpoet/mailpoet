@@ -16,6 +16,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Idiorm\ORM;
 
 class MP2MigratorTest extends \MailPoetTest {
+  public $MP2Migrator;
 
   /** @var SettingsController */
   private $settings;

@@ -10,6 +10,10 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoetVendor\Idiorm\ORM;
 
 class SegmentTest extends \MailPoetTest {
+  public $segment;
+  public $newsletters_data;
+  public $subscribers_data;
+  public $segment_data;
   public function _before() {
     parent::_before();
     $this->segment_data = [

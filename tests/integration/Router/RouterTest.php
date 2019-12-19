@@ -15,6 +15,7 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 require_once('RouterTestMockEndpoint.php');
 
 class RouterTest extends \MailPoetTest {
+  public $router;
   public $access_control;
   public $router_data;
   /** @var Container */

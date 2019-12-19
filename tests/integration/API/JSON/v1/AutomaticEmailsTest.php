@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomaticEmailsTest extends \MailPoetTest {
+  public $wp;
   public function _before() {
     $this->wp = new WPFunctions;
   }

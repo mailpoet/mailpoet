@@ -9,6 +9,13 @@ use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\PHPMail;
 
 class PHPMailTest extends \MailPoetTest {
+  public $extra_params;
+  public $newsletter;
+  public $subscriber;
+  public $mailer;
+  public $return_path;
+  public $reply_to;
+  public $sender;
   public function _before() {
     parent::_before();
     $this->sender = [

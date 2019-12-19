@@ -16,6 +16,7 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerceTest extends \MailPoetTest  {
+  public $customerRoleAdded;
 
   private $userEmails = [];
 

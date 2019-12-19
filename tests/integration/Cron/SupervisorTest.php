@@ -9,6 +9,8 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 
 class SupervisorTest extends \MailPoetTest {
+  public $supervisor;
+  public $cron_helper;
   /** @var SettingsController */
   private $settings;
 

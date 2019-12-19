@@ -13,6 +13,13 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge\API;
 
 class MailPoetAPITest extends \MailPoetTest {
+  public $metaInfo;
+  public $newsletter;
+  public $subscriber;
+  public $mailer;
+  public $reply_to;
+  public $sender;
+  public $settings;
   public function _before() {
     parent::_before();
     $this->settings = [

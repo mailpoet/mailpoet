@@ -16,6 +16,13 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class MigrationTest extends \MailPoetTest {
+  public $altered;
+  public $queue_scheduled;
+  public $queue_completed;
+  public $queue_paused;
+  public $queue_running;
+  public $subscriber_processed;
+  public $subscriber_to_process;
   /** @var Migration */
   private $worker;
 

@@ -14,6 +14,8 @@ use MailPoetVendor\Idiorm\ORM;
 require_once __DIR__ . '/SimpleWorkerMockImplementation.php';
 
 class SimpleWorkerTest extends \MailPoetTest {
+  public $worker;
+  public $cron_helper;
   public function _before() {
     parent::_before();
     $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);

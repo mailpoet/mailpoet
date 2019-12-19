@@ -6,6 +6,7 @@ use MailPoet\Models\Form;
 use MailPoet\Settings\SettingsController;
 
 class FormTest extends \MailPoetTest {
+  public $form;
   /** @var SettingsController */
   private $settings;
 

@@ -13,6 +13,7 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersTest extends \MailPoetTest {
+  public $cron_helper;
 
   /** @var SettingsController */
   private $settings;

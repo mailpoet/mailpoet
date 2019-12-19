@@ -14,6 +14,14 @@ use MailPoet\WP\Functions as WPFunctions;
 require_once('BridgeTestMockAPI.php');
 
 class BridgeTest extends \MailPoetTest {
+  public $used_premium_key;
+  public $expiring_premium_key;
+  public $uncheckable_key;
+  public $forbidden_endpoint_key;
+  public $used_key;
+  public $expiring_key;
+  public $invalid_key;
+  public $valid_key;
 
   /** @var SettingsController */
   private $settings;

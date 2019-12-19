@@ -5,6 +5,8 @@ namespace MailPoet\AutomaticEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomaticEmailsTest extends \MailPoetTest {
+  public $wp;
+  public $AM;
   public function _before() {
     $this->AM = new AutomaticEmails();
     $this->wp = new WPFunctions();

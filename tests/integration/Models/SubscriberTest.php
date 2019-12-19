@@ -19,6 +19,8 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscriberTest extends \MailPoetTest {
+  public $saved;
+  public $subscriber;
 
   /** @var array */
   private $test_data;

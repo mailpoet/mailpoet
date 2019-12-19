@@ -9,6 +9,9 @@ use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 
 class FormsTest extends \MailPoetTest {
+  public $form_3;
+  public $form_2;
+  public $form_1;
 
   /** @var Forms */
   private $endpoint;

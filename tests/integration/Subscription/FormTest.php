@@ -19,6 +19,11 @@ use MailPoet\Util\Url as UrlHelper;
 use MailPoetVendor\Idiorm\ORM;
 
 class FormTest extends \MailPoetTest {
+  public $post;
+  public $request_data;
+  public $form;
+  public $segment;
+  public $testEmail;
 
   /** @var SettingsController */
   private $settings;

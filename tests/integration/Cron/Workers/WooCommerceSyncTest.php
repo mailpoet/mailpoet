@@ -10,6 +10,9 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerceSyncTest extends \MailPoetTest {
+  public $worker;
+  public $woocommerce_helper;
+  public $woocommerce_segment;
   public function _before() {
     $this->woocommerce_segment = $this->createMock(WooCommerceSegment::class);
     $this->woocommerce_helper = $this->createMock(WooCommerceHelper::class);

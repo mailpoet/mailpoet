@@ -19,6 +19,7 @@ use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DaemonHttpRunnerTest extends \MailPoetTest {
+  public $cron_helper;
 
   /** @var SettingsController */
   private $settings;
