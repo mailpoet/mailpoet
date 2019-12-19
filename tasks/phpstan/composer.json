@@ -1,7 +1,7 @@
 {
     "require": {
-        "phpstan/phpstan-phpunit": "0.11.2",
-        "phpstan/phpstan-shim": "0.11.19"
+        "phpstan/phpstan": "0.12.3",
+        "phpstan/phpstan-phpunit": "0.12.2"
     },
     "autoload": {
         "psr-4": {
