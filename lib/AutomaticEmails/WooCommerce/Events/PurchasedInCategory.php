@@ -110,6 +110,9 @@ class PurchasedInCategory {
     $ordered_product_categories = [];
     foreach ($order_details->get_items() as $order_item_product) {
       $product = $order_item_product->get_product();
+      if (!$product || !is_callable([$product, 'get_category_ids'])) {
+        continue;
+      }
       $ordered_product_categories = array_merge($ordered_product_categories, $product->get_category_ids());
     }
 
