@@ -16,6 +16,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscription\Pages;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class PagesTest extends \MailPoetTest {
@@ -45,6 +46,8 @@ class PagesTest extends \MailPoetTest {
     $subscription->confirm();
     $confirmed_subscriber = Subscriber::findOne($this->subscriber->id);
     expect($confirmed_subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($confirmed_subscriber->last_subscribed_at)->greaterOrEquals(Carbon::createFromTimestamp(current_time('timestamp'))->subSecond(1));
+    expect($confirmed_subscriber->last_subscribed_at)->lessOrEquals(Carbon::createFromTimestamp(current_time('timestamp'))->addSecond(1));
   }
 
   public function testItDoesNotConfirmSubscriptionOnDuplicateAttempt() {
