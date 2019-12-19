@@ -3,61 +3,61 @@ parameters:
 		-
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/DataFactories/Newsletter.php
+			path: ../../tests/DataFactories/Newsletter.php
 
 		-
 			message: "#^Parameter \\#1 \\$query of method PDO\\:\\:exec\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/_support/CleanupExtension.php
+			path: ../../tests/_support/CleanupExtension.php
 
 		-
 			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|false given\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/_support/Helper/Database.php
+			path: ../../tests/_support/Helper/Database.php
 
 		-
 			message: "#^Parameter \\#1 \\$query of method PDO\\:\\:exec\\(\\) expects string, string\\|null given\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/_support/Helper/Database.php
+			path: ../../tests/_support/Helper/Database.php
 
 		-
 			message: "#^Parameter \\#1 \\$function of function call_user_func_array expects callable\\(\\)\\: mixed, string given\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/_support/Helper/WordPress.php
+			path: ../../tests/_support/Helper/WordPress.php
 
 		-
 			message: "#^Parameter \\#2 \\$value of function get_user_by expects int\\|string, int\\|WP_Error given\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/acceptance/ViewSegmentSubscribersCest.php
+			path: ../../tests/acceptance/ViewSegmentSubscribersCest.php
 
 		-
 			message: "#^Cannot access property \\$roles on WP_User\\|false\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/acceptance/ViewSegmentSubscribersCest.php
+			path: ../../tests/acceptance/ViewSegmentSubscribersCest.php
 
 		-
 			message: "#^Cannot call method remove_role\\(\\) on WP_User\\|false\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/acceptance/ViewSegmentSubscribersCest.php
+			path: ../../tests/acceptance/ViewSegmentSubscribersCest.php
 
 		-
 			message: "#^Cannot call method add_role\\(\\) on WP_User\\|false\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/acceptance/ViewSegmentSubscribersCest.php
+			path: ../../tests/acceptance/ViewSegmentSubscribersCest.php
 
 		-
 			message: "#^Property MailPoet\\\\Test\\\\Subscribers\\\\ImportExport\\\\Import\\\\MailChimpTest\\:\\:\\$api_key \\(string\\) does not accept string\\|false\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/unit/Subscribers/ImportExport/Import/MailChimpTest.php
+			path: ../../tests/unit/Subscribers/ImportExport/Import/MailChimpTest.php
 
 		-
 			message: "#^Parameter \\#2 \\$str of function explode expects string, string\\|false given\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/unit/Subscribers/ImportExport/Import/MailChimpTest.php
+			path: ../../tests/unit/Subscribers/ImportExport/Import/MailChimpTest.php
 
 		-
 			message: "#^Property MailPoet\\\\Test\\\\WP\\\\ReadmeTest\\:\\:\\$data \\(string\\) does not accept string\\|false\\.$#"
 			count: 1
-			path: %mailpoetDir%/tests/unit/WP/ReadmeTest.php
+			path: ../../tests/unit/WP/ReadmeTest.php
 
 
