@@ -493,6 +493,7 @@ class RoboFile extends \Robo\Tasks {
           "$dir/tests/_support",
           "$dir/tests/DataFactories",
           "$dir/tests/acceptance",
+          "$dir/tests/integration",
           "$dir/tests/unit",
         ])
       )

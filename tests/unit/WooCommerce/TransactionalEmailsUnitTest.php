@@ -10,7 +10,7 @@ use MailPoet\WooCommerce\TransactionalEmails\Renderer;
 use MailPoet\WooCommerce\TransactionalEmails\Template;
 use MailPoet\WP\Functions as WPFunctions;
 
-class TransactionalEmailsTest extends \MailPoetUnitTest {
+class TransactionalEmailsUnitTest extends \MailPoetUnitTest {
 
   public function testGetEmailHeadings() {
     $wp = Stub::make(new WPFunctions, [
