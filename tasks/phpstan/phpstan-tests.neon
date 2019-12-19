@@ -11,6 +11,7 @@ parameters:
     - ../../tests/_support/_generated # without this line PHPStan segfaults ¯\_(ツ)_/¯
     - ../../tests/_support
     - ../../tests/acceptance
+    - ../../tests/integration
     - ../../tests/unit
   dynamicConstantNames:
     - WP_DEBUG
