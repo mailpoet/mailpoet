@@ -118,9 +118,9 @@ class PurchasedProduct {
     }
 
     $ordered_products = array_map(function($product) {
-      return $product->get_product_id();
+      return is_callable([$product, 'get_product_id']) ? $product->get_product_id() : null;
     }, $order_details->get_items());
-
+    $ordered_products = array_filter($ordered_products);
 
     $scheduling_condition = function($automatic_email) use ($ordered_products, $subscriber) {
       $meta = $automatic_email->getMeta();
