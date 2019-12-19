@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Mailer;
 
 use Codeception\Stub;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
@@ -44,7 +45,17 @@ class MetaInfoTest extends \MailPoetTest {
     expect($this->meta->getWordPressTransactionalMetaInfo())->equals([
       'email_type' => 'transactional',
       'subscriber_status' => 'unknown',
-      'subscriber_source' => 'administrator',
+      'subscriber_source' => 'unknown',
+    ]);
+
+    $subscriber = $this->make(SubscriberEntity::class, [
+      'getStatus' => 'subscribed',
+      'getSource' => 'form',
+    ]);
+    expect($this->meta->getWordPressTransactionalMetaInfo($subscriber))->equals([
+      'email_type' => 'transactional',
+      'subscriber_status' => 'subscribed',
+      'subscriber_source' => 'form',
     ]);
   }
 

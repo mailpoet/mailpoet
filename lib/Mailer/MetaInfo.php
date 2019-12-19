@@ -2,6 +2,7 @@
 
 namespace MailPoet\Mailer;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 
@@ -18,8 +19,12 @@ class MetaInfo {
     return $this->makeMetaInfo('email_stats_notification', 'unknown', 'administrator');
   }
 
-  function getWordPressTransactionalMetaInfo() {
-    return $this->makeMetaInfo('transactional', 'unknown', 'administrator');
+  function getWordPressTransactionalMetaInfo(SubscriberEntity $subscriber = null) {
+    return $this->makeMetaInfo(
+      'transactional',
+      $subscriber ? $subscriber->getStatus() : 'unknown',
+      $subscriber ? $subscriber->getSource() : 'unknown'
+    );
   }
 
   function getConfirmationMetaInfo(Subscriber $subscriber) {
