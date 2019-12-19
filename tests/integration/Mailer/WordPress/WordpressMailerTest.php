@@ -2,6 +2,7 @@
 
 namespace MailPoet\Mailer\WordPress;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MetaInfo;
@@ -13,6 +14,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
   function _before() {
     $this->subscribers_repository = $this->di_container->get(SubscribersRepository::class);
+    $this->subscribers_repository->truncate();
   }
 
   function testItdoesNotSendWhenPreSendCheckFails() {
@@ -198,4 +200,37 @@ class WordpressMailerTest extends \MailPoetTest {
     expect($error_message)->same('Exception from primary mailer');
   }
 
+  function testItAddSubscriberMetaInfo() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer
+      ->expects($this->once())
+      ->method('send')
+      ->with($this->anything(), $this->anything(), [
+        'meta' => [
+          'email_type' => 'transactional',
+          'subscriber_status' => 'subscribed',
+          'subscriber_source' => 'form',
+        ],
+      ])
+      ->willReturn(['response' => true]);
+    $fallback_mailer = $this->createMock(FallbackMailer::class);
+    $fallback_mailer->expects($this->never())->method('send');
+
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('email@example.com');
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscriber->setSource('form');
+    $this->subscribers_repository->persist($subscriber);
+    $this->subscribers_repository->flush();
+
+    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer->addAddress('email@example.com', 'Full Name');
+    $wpMailer->Subject = 'Subject';
+    $wpMailer->Body = 'Body';
+    $wpMailer->send();
+  }
+
+  function _after() {
+    $this->subscribers_repository->truncate();
+  }
 }
