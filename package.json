@@ -88,7 +88,7 @@
     "chai": "2.2.0",
     "chai-jq": "0.0.8",
     "clean-webpack-plugin": "^1.0.0",
-    "copy-webpack-plugin": "^5.0.3",
+    "copy-webpack-plugin": "^5.1.1",
     "cross-env": "^5.1.5",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
@@ -116,7 +116,7 @@
     "stylelint": "^10.1.0",
     "stylelint-order": "^3.0.0",
     "stylelint-scss": "^3.8.0",
-    "terser-webpack-plugin": "^1.2.2",
+    "terser-webpack-plugin": "^1.4.3",
     "webpack": "^4.28.1",
     "webpack-cli": "^3.2.1",
     "webpack-manifest-plugin": "^2.0.4"
