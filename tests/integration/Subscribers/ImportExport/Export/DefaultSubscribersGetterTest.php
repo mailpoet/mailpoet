@@ -11,6 +11,10 @@ use MailPoet\Subscribers\ImportExport\Export\DefaultSubscribersGetter;
 use MailPoetVendor\Idiorm\ORM;
 
 class DefaultSubscribersGetterTest extends \MailPoetTest {
+  public $segments_data;
+  public $custom_fields_data;
+  public $subscribers_data;
+  public $subscriber_fields;
   public function _before() {
     parent::_before();
     $this->subscriber_fields = [

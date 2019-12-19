@@ -9,6 +9,13 @@ use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\SendGrid;
 
 class SendGridTest extends \MailPoetTest {
+  public $extra_params;
+  public $newsletter;
+  public $subscriber;
+  public $mailer;
+  public $reply_to;
+  public $sender;
+  public $settings;
   public function _before() {
     parent::_before();
     $this->settings = [

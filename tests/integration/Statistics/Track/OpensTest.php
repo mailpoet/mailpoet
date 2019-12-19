@@ -15,6 +15,11 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoetVendor\Idiorm\ORM;
 
 class OpensTest extends \MailPoetTest {
+  public $opens;
+  public $track_data;
+  public $queue;
+  public $subscriber;
+  public $newsletter;
   public function _before() {
     parent::_before();
     // create newsletter

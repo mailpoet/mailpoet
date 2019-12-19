@@ -6,6 +6,7 @@ use MailPoet\Form\Block\Select;
 use MailPoet\Models\Subscriber;
 
 class SelectTest extends \MailPoetTest {
+  public $block;
   public function _before() {
     parent::_before();
     $this->block = [

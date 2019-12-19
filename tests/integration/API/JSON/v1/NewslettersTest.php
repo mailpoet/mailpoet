@@ -41,6 +41,8 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewslettersTest extends \MailPoetTest {
+  public $post_notification;
+  public $newsletter;
   /** @var Newsletters */
   private $endpoint;
 

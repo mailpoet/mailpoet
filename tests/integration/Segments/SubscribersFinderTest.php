@@ -15,6 +15,13 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersFinderTest extends \MailPoetTest {
+  public $sending;
+  public $subscriber_3;
+  public $subscriber_2;
+  public $subscriber_1;
+  public $segment_3;
+  public $segment_2;
+  public $segment_1;
 
   public function _before() {
     parent::_before();

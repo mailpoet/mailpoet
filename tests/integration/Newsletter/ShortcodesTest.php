@@ -23,6 +23,10 @@ use MailPoetVendor\Idiorm\ORM;
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 class ShortcodesTest extends \MailPoetTest {
+  public $newsletter_id;
+  public $shortcodes_object;
+  public $WP_post;
+  public $WP_user;
   public $rendered_newsletter;
   public $newsletter;
   public $subscriber;

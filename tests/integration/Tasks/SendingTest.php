@@ -12,6 +12,10 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingTest extends \MailPoetTest {
+  public $sending;
+  public $queue;
+  public $task;
+  public $newsletter;
   public function _before() {
     parent::_before();
     $this->newsletter = $this->createNewNewsletter();

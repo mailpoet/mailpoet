@@ -36,6 +36,13 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersTest extends \MailPoetTest {
+  public $form;
+  public $subscriber_2;
+  public $subscriber_1;
+  public $segment_2;
+  public $segment_1;
+  public $obfuscatedSegments;
+  public $obfuscatedEmail;
 
   /** @var Subscribers */
   private $endpoint;

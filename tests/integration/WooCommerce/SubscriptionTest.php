@@ -13,6 +13,7 @@ use MailPoet\Subscribers\Source;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscriptionTest extends \MailPoetTest {
+  public $original_settings;
   /** @var int */
   private $order_id;
 

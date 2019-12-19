@@ -20,6 +20,10 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTest extends \MailPoetTest {
+  public $sending_queue;
+  public $segment_2;
+  public $segment_1;
+  public $newsletter;
   public function _before() {
     parent::_before();
     $this->newsletter = Newsletter::createOrUpdate([

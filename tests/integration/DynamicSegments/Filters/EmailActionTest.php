@@ -9,6 +9,11 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 
 class EmailActionTest extends \MailPoetTest {
+  public $subscriber_opened_not_clicked;
+  public $subscriber_not_sent;
+  public $subscriber_not_opened;
+  public $subscriber_opened_clicked;
+  public $newsletter;
 
   public function _before() {
     $this->newsletter = Newsletter::createOrUpdate([

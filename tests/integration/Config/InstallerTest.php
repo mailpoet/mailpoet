@@ -8,6 +8,8 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 
 class InstallerTest extends \MailPoetTest {
+  public $installer;
+  public $slug;
   public function _before() {
     parent::_before();
     $this->slug = 'some-plugin';

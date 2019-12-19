@@ -24,6 +24,8 @@ require_once('APITestNamespacedEndpointStubV1.php');
 require_once('APITestNamespacedEndpointStubV2.php');
 
 class APITest extends \MailPoetTest {
+  public $api;
+  public $wp_user_id;
   /** @var Container */
   private $container;
 

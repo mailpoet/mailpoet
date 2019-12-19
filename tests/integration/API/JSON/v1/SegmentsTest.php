@@ -10,6 +10,9 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 
 class SegmentsTest extends \MailPoetTest {
+  public $segment_3;
+  public $segment_2;
+  public $segment_1;
 
   /** @var Segments */
   private $endpoint;

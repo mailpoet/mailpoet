@@ -11,6 +11,13 @@ use MailPoet\Subscribers\ImportExport\Import\Import;
 use MailPoetVendor\Idiorm\ORM;
 
 class ImportTest extends \MailPoetTest {
+  public $subscribers_custom_fields;
+  public $subscribers_data;
+  public $import;
+  public $subscribers_fields;
+  public $test_data;
+  public $segment_2;
+  public $segment_1;
   public function _before() {
     $custom_field = CustomField::create();
     $custom_field->name = 'country';

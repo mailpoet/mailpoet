@@ -13,6 +13,8 @@ use MailPoet\Services\SPFCheck;
 use MailPoet\Settings\SettingsController;
 
 class ServicesTest extends \MailPoetTest {
+  public $data;
+  public $services_endpoint;
   /** @var SettingsController */
   private $settings;
 

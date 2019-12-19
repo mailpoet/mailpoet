@@ -11,6 +11,8 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 
 class SendingServiceKeyCheckTest extends \MailPoetTest {
+  public $worker;
+  public $mss_key;
   public function _before() {
     parent::_before();
     $this->mss_key = 'some_key';

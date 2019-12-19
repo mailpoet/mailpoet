@@ -19,6 +19,7 @@ use MailPoet\Subscription\Pages;
 use MailPoetVendor\Idiorm\ORM;
 
 class PagesTest extends \MailPoetTest {
+  public $pages;
 
   private $test_data = [];
 

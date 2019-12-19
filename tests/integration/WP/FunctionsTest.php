@@ -5,6 +5,11 @@ namespace MailPoet\Test\WP;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FunctionsTest extends \MailPoetTest {
+  public $ids;
+  public $wp;
+  public $filter;
+  public $action;
+  public $_content_width;
   public function _before() {
     parent::_before();
     global $content_width;

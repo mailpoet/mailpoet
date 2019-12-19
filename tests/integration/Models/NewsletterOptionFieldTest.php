@@ -8,6 +8,9 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterOptionFieldTest extends \MailPoetTest {
+  public $data;
+  public $newsletter_data;
+  public $option_field;
   public function _before() {
     parent::_before();
     $this->data = [

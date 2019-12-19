@@ -14,6 +14,12 @@ use MailPoet\Models\Subscriber;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingTaskSubscribersTest extends \MailPoetTest {
+  public $unprocessed_subscriber;
+  public $failed_subscriber;
+  public $sent_subscriber;
+  public $task_id;
+  public $newsletter_id;
+  public $endpoint;
 
   public function _before() {
     parent::_before();

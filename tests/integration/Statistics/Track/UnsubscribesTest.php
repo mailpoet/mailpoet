@@ -11,6 +11,10 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoetVendor\Idiorm\ORM;
 
 class UnsubscribesTest extends \MailPoetTest {
+  public $unsubscribes;
+  public $queue;
+  public $subscriber;
+  public $newsletter;
   public function _before() {
     parent::_before();
     // create newsletter

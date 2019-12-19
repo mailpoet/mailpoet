@@ -9,6 +9,8 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 
 class PremiumKeyCheckTest extends \MailPoetTest {
+  public $worker;
+  public $premium_key;
 
   /** @var SettingsController */
   private $settings;

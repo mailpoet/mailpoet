@@ -19,6 +19,12 @@ use MailPoet\Util\Cookies;
 use MailPoetVendor\Idiorm\ORM;
 
 class TrackTest extends \MailPoetTest {
+  public $track;
+  public $track_data;
+  public $link;
+  public $queue;
+  public $subscriber;
+  public $newsletter;
   public function _before() {
     parent::_before();
     // create newsletter
