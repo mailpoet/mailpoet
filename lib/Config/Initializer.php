@@ -111,14 +111,6 @@ class Initializer {
   }
 
   function init() {
-    $requirements_check_results = $this->checkRequirements();
-
-    if (!$requirements_check_results[RequirementsChecker::TEST_PDO_EXTENSION] ||
-      !$requirements_check_results[RequirementsChecker::TEST_VENDOR_SOURCE]
-    ) {
-      return;
-    }
-
     // load translations
     $this->setupLocalizer();
 
@@ -174,11 +166,6 @@ class Initializer {
       'printAndClean',
     ]);
     $this->hooks->initEarlyHooks();
-  }
-
-  function checkRequirements() {
-    $requirements = new RequirementsChecker();
-    return $requirements->checkAllRequirements();
   }
 
   function runActivator() {
