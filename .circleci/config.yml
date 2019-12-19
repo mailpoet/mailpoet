@@ -366,6 +366,7 @@ jobs:
           destination: fake-mailer
   build_release_zip:
     executor: wordpress_mysql57_php73
+    resource_class: medium
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
