@@ -342,8 +342,8 @@ class NewsletterEntity {
       }
     } catch (EntityNotFoundException $enf) {
       $this->setParent(null);
-      return null;
     }
+    return null;
   }
 
   /**

@@ -42,7 +42,7 @@ class ApiPanel implements IBarPanel {
   }
 
   static function init($endpoint, $request_method, $request_data) {
-    Debugger::getBar()->addPanel(new static($endpoint, $request_method, $request_data));
+    Debugger::getBar()->addPanel(new ApiPanel($endpoint, $request_method, $request_data));
   }
 
   private function getEndpointName() {

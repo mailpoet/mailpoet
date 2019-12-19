@@ -89,6 +89,7 @@ class Subscriber extends Model {
       SubscriberCustomField::deleteSubscriberRelations($this);
       return parent::delete();
     }
+    return null;
   }
 
   function trash() {

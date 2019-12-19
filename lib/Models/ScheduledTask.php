@@ -126,6 +126,7 @@ class ScheduledTask extends Model {
       ORM::get_db()->rollBack();
       throw $error;
     }
+    return null;
   }
 
   function rescheduleProgressively() {

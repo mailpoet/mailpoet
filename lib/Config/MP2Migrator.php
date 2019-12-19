@@ -770,7 +770,7 @@ class MP2Migrator {
    * Import a subscriber custom field
    *
    * @param int $subscriber_id Subscriber ID
-   * @param int $custom_field Custom field
+   * @param array $custom_field Custom field
    * @param string $custom_field_value Custom field value
    * @return SubscriberCustomField
    */

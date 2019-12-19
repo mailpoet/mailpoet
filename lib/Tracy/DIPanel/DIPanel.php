@@ -38,7 +38,7 @@ class DIPanel implements IBarPanel {
   }
 
   static function init() {
-    Debugger::getBar()->addPanel(new static());
+    Debugger::getBar()->addPanel(new DIPanel());
   }
 
   private function loadServices() {
