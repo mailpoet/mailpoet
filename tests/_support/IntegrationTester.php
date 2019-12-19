@@ -49,14 +49,14 @@ class IntegrationTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classe
     $charset = $specials . $alphabet;
 
     // pick first letter in alphabet
-    $name .= $alphabet{mt_rand(0, strlen($alphabet) - 1)};
+    $name .= $alphabet[mt_rand(0, strlen($alphabet) - 1)];
 
     for ($i = 0; $i < $length; $i++) {
-      $name .= $charset{mt_rand(0, strlen($charset) - 1)};
+      $name .= $charset[mt_rand(0, strlen($charset) - 1)];
     }
 
     // pick last letter in alphabet
-    $name .= $alphabet{mt_rand(0, strlen($alphabet) - 1)};
+    $name .= $alphabet[mt_rand(0, strlen($alphabet) - 1)];
 
     return ucfirst($name);
   }
