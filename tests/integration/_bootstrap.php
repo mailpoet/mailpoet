@@ -231,6 +231,10 @@ if (!function_exists('WC')) {
   function WC() {
     return new WooCommerce;
   }
+  class WC_Order_Item_Product { // phpcs:ignore
+    function get_product_id() { // phpcs:ignore
+    }
+  }
 }
 
 include '_fixtures.php';
