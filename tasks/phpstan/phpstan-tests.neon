@@ -16,6 +16,7 @@ parameters:
     - WP_DEBUG
   ignoreErrors:
     - '/Parameter #1 $cssOrXPath of method AcceptanceTester::moveMouseOver() expects string|null, array<string, string> given./'
+    - '/Function expect invoked with 1 parameter, 0 required\./'
     - '/(with|has) no (return )?typehint specified/' # exclude level 6 errors
   excludes_analyse:
     - ../../tests/_support/_generated
