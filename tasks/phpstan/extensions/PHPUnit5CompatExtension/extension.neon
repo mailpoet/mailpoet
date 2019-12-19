@@ -4,16 +4,13 @@ parameters:
       - fail
       - markTestIncomplete
       - markTestSkipped
+  stubFiles:
+    - stubs/MockBuilder.php
+    - stubs/MockObject.php
+    - stubs/TestCase.php
 
 services:
-  # resolves return type from $this->createMock(SomeMockedClass::class) and other methods in PHPUnit_Framework_TestCase
   -
-    class: MailPoet\PHPStan\Extensions\PHPUnit5CompatExtension\Type\CreateMockDynamicReturnTypeExtension
-    tags:
-      - phpstan.broker.dynamicMethodReturnTypeExtension
-
-  # resolves return type from $this->getMockBuilder(SomeMockedClass::class) in PHPUnit_Framework_TestCase
-  -
-    class: MailPoet\PHPStan\Extensions\PHPUnit5CompatExtension\Type\GetMockBuilderDynamicReturnTypeExtension
+    class: MailPoet\PHPStan\Extensions\PHPUnit5CompatExtension\Type\MockBuilderDynamicReturnTypeExtension
     tags:
       - phpstan.broker.dynamicMethodReturnTypeExtension
