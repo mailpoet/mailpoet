@@ -1,6 +1,7 @@
 <?php
 
 use MailPoet\Config\Env;
+use MailPoet\Config\RequirementsChecker;
 use Tracy\Debugger;
 
 if (empty($mailpoet_plugin)) exit;
@@ -60,6 +61,14 @@ Env::init(
   DB_PASSWORD,
   DB_NAME
 );
+
+$requirements = new RequirementsChecker();
+$requirements_check_results = $requirements->checkAllRequirements();
+if (!$requirements_check_results[RequirementsChecker::TEST_PDO_EXTENSION] ||
+  !$requirements_check_results[RequirementsChecker::TEST_VENDOR_SOURCE]
+) {
+  return;
+}
 
 $initializer = MailPoet\DI\ContainerWrapper::getInstance()->get(MailPoet\Config\Initializer::class);
 $initializer->init();
