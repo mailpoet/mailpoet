@@ -1,4 +1,5 @@
 parameters:
+  level: 8
   tmpDir: ../../temp/phpstan
   bootstrap: bootstrap.php
   autoload_files:
@@ -15,8 +16,15 @@ parameters:
     - WP_DEBUG
   ignoreErrors:
     - '/Parameter #1 $cssOrXPath of method AcceptanceTester::moveMouseOver() expects string|null, array<string, string> given./'
+    - '/(with|has) no (return )?typehint specified/' # exclude level 6 errors
   excludes_analyse:
     - ../../tests/_support/_generated
+
+  # exclude level 6 errors
+  checkGenericClassInNonGenericObjectType: false
+  checkMissingIterableValueType: false
+  checkMissingVarTagTypehint: false
+  checkMissingTypehints: false
 
 includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon

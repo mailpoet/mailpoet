@@ -1,4 +1,5 @@
 parameters:
+  level: 8
   tmpDir: ../../temp/phpstan
   bootstrap: bootstrap.php
   inferPrivatePropertyTypeFromConstructor: true
@@ -13,9 +14,16 @@ parameters:
     - '#Parameter \#2 \$prefix of function http_build_query expects string, null given.#'
     - '#Parameter \#1 \$function of function call_user_func_array expects callable(): mixed, .wc_.*. given.#'
     - '#Parameter \#1 \$reader of class MailPoetVendor\\Doctrine\\ORM\\Mapping\\Driver\\AnnotationDriver constructor expects MailPoetVendor\\Doctrine\\Common\\Annotations\\AnnotationReader, MailPoetVendor\\Doctrine\\Common\\Annotations\\CachedReader given#'
+    - '/(with|has) no (return )?typehint specified/' # exclude level 6 errors
   reportUnmatchedIgnoredErrors: false
   dynamicConstantNames:
     - WP_DEBUG
     - MAILPOET_PREMIUM_INITIALIZED
+
+  # exclude level 6 errors
+  checkGenericClassInNonGenericObjectType: false
+  checkMissingIterableValueType: false
+  checkMissingVarTagTypehint: false
+  checkMissingTypehints: false
 includes:
   - phpstan-baseline.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff
