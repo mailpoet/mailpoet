@@ -514,7 +514,6 @@ class SchedulerTest extends \MailPoetTest {
       'processWelcomeNewsletter' => Expected::exactly(1),
       'cron_helper' => $this->cron_helper,
     ], $this);
-    $scheduler->timer = microtime(true);
     $scheduler->process();
   }
 
@@ -527,7 +526,6 @@ class SchedulerTest extends \MailPoetTest {
       'processPostNotificationNewsletter' => Expected::exactly(1),
       'cron_helper' => $this->cron_helper,
     ], $this);
-    $scheduler->timer = microtime(true);
     $scheduler->process();
   }
 
@@ -540,7 +538,6 @@ class SchedulerTest extends \MailPoetTest {
       'processScheduledStandardNewsletter' => Expected::exactly(1),
       'cron_helper' => $this->cron_helper,
     ], $this);
-    $scheduler->timer = microtime(true);
     $scheduler->process();
   }
 
@@ -569,7 +566,6 @@ class SchedulerTest extends \MailPoetTest {
       'cron_helper' => $this->cron_helper,
     ], $this);
     // scheduled job is not processed
-    $scheduler->timer = microtime(true);
     $scheduler->process();
   }
 
@@ -584,7 +580,6 @@ class SchedulerTest extends \MailPoetTest {
       'cron_helper' => $this->cron_helper,
     ], $this);
     // scheduled job is processed
-    $scheduler->timer = microtime(true);
     $scheduler->process();
   }
 
@@ -631,7 +626,6 @@ class SchedulerTest extends \MailPoetTest {
       'cron_helper' => $this->cron_helper,
     ], $this);
     // scheduled job is processed
-    $scheduler->timer = microtime(true);
     $scheduler->process();
   }
 
@@ -722,7 +716,6 @@ class SchedulerTest extends \MailPoetTest {
     $queue->updated_at = $originalUpdated;
     $queue->save();
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->logger_factory, $this->cron_helper);
-    $scheduler->timer = microtime(true);
     $scheduler->process();
     $newQueue = ScheduledTask::findOne($queue->task_id);
     expect($newQueue->updated_at)->notEquals($originalUpdated);

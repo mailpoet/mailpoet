@@ -16,6 +16,9 @@ use function MailPoetVendor\array_column;
  * @property int $task_id
  * @property int $id
  * @property int $newsletter_id
+ * @property string $newsletter_rendered_subject
+ * @property string $newsletter_rendered_body
+ * @property bool $non_existent_column
  */
 class Sending {
   const TASK_TYPE = 'sending';

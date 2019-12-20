@@ -6,6 +6,7 @@ use MailPoet\Form\Block\Date;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
+ * @property string $name
  * @property string $type
  * @property string|array|null $params
  */

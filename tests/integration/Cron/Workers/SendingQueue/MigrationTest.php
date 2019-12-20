@@ -129,7 +129,7 @@ class MigrationTest extends \MailPoetTest {
     ]);
 
     $next_run_date = $this->worker->getNextRunDate($wp);
-    expect($next_run_date->timestamp)->equals($timestamp);
+    expect($next_run_date->getTimestamp())->equals($timestamp);
   }
 
   private function createScheduledTask() {
