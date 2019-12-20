@@ -34,9 +34,9 @@ class BounceTest extends \MailPoetTest {
         ]);
     }
 
-    $this->worker = new Bounce($this->di_container->get(SettingsController::class), microtime(true));
+    $this->worker = new Bounce($this->di_container->get(SettingsController::class));
 
-    $this->worker->api = new MockAPI('key');
+    $this->worker->api = new MockAPI();
   }
 
   public function testItDefinesConstants() {
@@ -45,7 +45,7 @@ class BounceTest extends \MailPoetTest {
 
   public function testItCanInitializeBridgeAPI() {
     $this->setMailPoetSendingMethod();
-    $worker = new Bounce($this->di_container->get(SettingsController::class), microtime(true));
+    $worker = new Bounce($this->di_container->get(SettingsController::class));
     $worker->init();
     expect($worker->api instanceof API)->true();
   }

@@ -48,7 +48,7 @@ class MigrationTest extends \MailPoetTest {
     $this->queue_completed = $this->createSendingQueue(SendingQueue::STATUS_COMPLETED);
     $this->queue_scheduled = $this->createSendingQueue(SendingQueue::STATUS_SCHEDULED);
 
-    $this->worker = new Migration(microtime(true));
+    $this->worker = new Migration();
   }
 
   public function testItDefinesConstants() {

@@ -58,7 +58,7 @@ class SendingQueueTest extends \MailPoetTest {
   private $sending_error_handler;
   /** @var SettingsController */
   private $settings;
-  /** @var Scheduler */
+  /** @var StatsNotificationsScheduler */
   private $stats_notifications_worker;
   /** @var LoggerFactory */
   private $logger_factory;

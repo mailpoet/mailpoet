@@ -31,7 +31,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->woocommerce_helper = $this->createMock(WooCommerceHelper::class);
     $this->woocommerce_purchases = $this->createMock(WooCommercePurchases::class);
 
-    $this->worker = new WooCommercePastOrders($this->woocommerce_helper, $this->woocommerce_purchases, microtime(true));
+    $this->worker = new WooCommercePastOrders($this->woocommerce_helper, $this->woocommerce_purchases);
     $this->cron_worker_runner = Stub::copy($this->di_container->get(CronWorkerRunner::class), [
       'timer' => microtime(true), // reset timer to avoid timeout during full test suite run
     ]);
