@@ -530,7 +530,7 @@ class RendererTest extends \MailPoetTest {
         'iconType' => 'custom',
       ],
     ];
-    $rendered_block = Social::render($block, self::COLUMN_BASE_WIDTH);
+    $rendered_block = Social::render($block);
     expect($rendered_block)->equals('');
   }
 

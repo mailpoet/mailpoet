@@ -57,7 +57,7 @@ class FirstPurchaseTest extends \MailPoetTest {
   public function testDateShortcodeHandlerReturnsCurrentDateWhenDateIsMissingInQueueMeta() {
     $event = new FirstPurchase();
     $shortcode = $event::ORDER_DATE_SHORTCODE;
-    $queue = SendingQueue::create(['task_id' => 1]);
+    $queue = SendingQueue::create();
 
     WPFunctions::set(Stub::make(new WPFunctions, [
       'dateI18n' => 'success',
@@ -69,7 +69,7 @@ class FirstPurchaseTest extends \MailPoetTest {
   public function testDateShortcodeHandlerReturnsSystemFormattedDate() {
     $event = new FirstPurchase();
     $shortcode = $event::ORDER_DATE_SHORTCODE;
-    $queue = SendingQueue::create(['task_id' => 1]);
+    $queue = SendingQueue::create();
     WPFunctions::set(Stub::make(new WPFunctions, [
       'dateI18n' => 'success',
     ]));
@@ -105,7 +105,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     ]);
     $event = new FirstPurchase($helper);
     $shortcode = $event::ORDER_TOTAL_SHORTCODE;
-    $queue = SendingQueue::create(['task_id' => 1]);
+    $queue = SendingQueue::create();
     $result = $event->handleOrderTotalShortcode($shortcode, true, true, $queue);
     expect($result)->equals(0);
   }
@@ -118,7 +118,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     ]);
     $event = new FirstPurchase($helper);
     $shortcode = $event::ORDER_TOTAL_SHORTCODE;
-    $queue = SendingQueue::create(['task_id' => 1]);
+    $queue = SendingQueue::create();
     $queue->meta = ['order_amount' => 15];
     $result = $event->handleOrderTotalShortcode($shortcode, true, true, $queue);
     expect($result)->equals(15);

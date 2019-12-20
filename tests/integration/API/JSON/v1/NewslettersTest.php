@@ -189,8 +189,7 @@ class NewslettersTest extends \MailPoetTest {
       Emoji::class,
       ['encodeForUTF8Column' => Expected::once(function ($params) {
         return $params;
-      })],
-      $this
+      })]
     );
 
     $wp = Stub::make(new WPFunctions, [
@@ -939,8 +938,7 @@ class NewslettersTest extends \MailPoetTest {
       Emoji::class,
       ['encodeForUTF8Column' => Expected::once(function ($params) {
         return $params;
-      })],
-      $this
+      })]
     );
 
     $wp = Stub::make(new WPFunctions, [

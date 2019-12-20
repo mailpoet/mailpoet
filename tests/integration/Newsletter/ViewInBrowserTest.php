@@ -132,8 +132,7 @@ class ViewInBrowserTest extends \MailPoetTest {
       Emoji::class,
       ['decodeEmojisInBody' => Expected::once(function ($params) {
         return $params;
-      })],
-      $this
+      })]
     );
     $view_in_browser = new ViewInBrowser($emoji, false);
     $rendered_body = $view_in_browser->renderNewsletter(
