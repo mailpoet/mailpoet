@@ -135,12 +135,12 @@ class WordpressMailerTest extends \MailPoetTest {
     $mailer
       ->expects($this->once())
       ->method('send')
-      ->willReturn(['response' => false, 'error' => new MailerError('send', 1, 'Error from primary mailer')]);
+      ->willReturn(['response' => false, 'error' => new MailerError('send', MailerError::LEVEL_HARD, 'Error from primary mailer')]);
     $fallback_mailer = $this->createMock(FallbackMailer::class);
     $fallback_mailer
       ->expects($this->once())
       ->method('send')
-      ->willReturn(['response' => false, 'error' => new MailerError('send', 1, 'Error from fallback mailer')]);
+      ->willReturn(['response' => false, 'error' => new MailerError('send', MailerError::LEVEL_HARD, 'Error from fallback mailer')]);
 
     $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
     $wpMailer->addAddress('email@example.com');

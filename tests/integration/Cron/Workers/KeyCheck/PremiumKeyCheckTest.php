@@ -19,7 +19,7 @@ class PremiumKeyCheckTest extends \MailPoetTest {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->premium_key = '123457890abcdef';
-    $this->worker = new PremiumKeyCheck($this->settings, microtime(true));
+    $this->worker = new PremiumKeyCheck($this->settings);
   }
 
   public function testItRequiresPremiumKeyToBeSpecified() {
