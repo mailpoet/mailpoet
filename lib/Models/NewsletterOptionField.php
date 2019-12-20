@@ -4,6 +4,11 @@ namespace MailPoet\Models;
 
 use MailPoet\WP\Functions as WPFunctions;
 
+/**
+ * @property string $name
+ * @property string $newsletter_type
+ */
+
 class NewsletterOptionField extends Model {
   public static $_table = MP_NEWSLETTER_OPTION_FIELDS_TABLE;
 

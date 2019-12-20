@@ -20,6 +20,7 @@ use function MailPoetVendor\array_column;
 
 /**
  * @property int $id
+ * @property int $parent_id
  * @property string $type
  * @property object|array|boolean $queue
  * @property string $hash
@@ -29,11 +30,13 @@ use function MailPoetVendor\array_column;
  * @property array $options
  * @property int $children_count
  * @property bool|array $statistics
+ * @property string $sent_at
  * @property string $deleted_at
  * @property int $total_sent
  * @property int $total_scheduled
  * @property array $segments
  * @property string $subject
+ * @property string $preheader
  * @property string $body
  * @property string|null $schedule
  * @property boolean|null $isScheduled

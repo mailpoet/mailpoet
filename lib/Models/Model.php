@@ -123,6 +123,8 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property string|null $created_at
  * @property string|null $updated_at
  * @property string|null $id
+ * @property string|null $first
+ * @property string|null $last
  */
 
 class Model extends \MailPoetVendor\Sudzy\ValidModel {
