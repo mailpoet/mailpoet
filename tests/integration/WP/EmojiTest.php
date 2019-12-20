@@ -26,8 +26,7 @@ class EmojiTest extends \MailPoetTest {
       Emoji::class,
       ['encodeForUTF8Column' => Expected::exactly(3, function ($params) {
         return $params;
-      })],
-      $this
+      })]
     );
     $emoji->encodeEmojisInBody(['text' => 'call 1', 'html' => 'call 2']);
     $emoji->encodeEmojisInBody('string, call 3');
@@ -38,8 +37,7 @@ class EmojiTest extends \MailPoetTest {
       Emoji::class,
       ['decodeEntities' => Expected::exactly(3, function ($params) {
         return $params;
-      })],
-      $this
+      })]
     );
     $emoji->decodeEmojisInBody(['text' => 'call 1', 'html' => 'call 2']);
     $emoji->decodeEmojisInBody('string, call 3');

@@ -100,6 +100,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @method bool setExpr($key, $value = null)
  * @method bool isDirty($key)
  * @method static static filter(...$args)
+ * @method array asArray(...$args)
  * @method $this hasMany($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)
  * @method $this hasManyThrough($associated_class_name, $join_class_name=null, $key_to_base_table=null, $key_to_associated_table=null,  $key_in_base_table=null, $key_in_associated_table=null, $connection_name=null)
  * @method mixed hasOne($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null)

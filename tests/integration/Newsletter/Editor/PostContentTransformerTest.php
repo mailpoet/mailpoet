@@ -248,8 +248,7 @@ class PostContentTransformerTest extends \MailPoetTest {
         'getContent' => Expected::once($this->content_mock),
         'getFeaturedImage' => null,
         'getTitle' => 'Title',
-      ],
-      $this
+      ]
     );
     $extractor->expects($this->once())
       ->method('getContent')
@@ -279,8 +278,7 @@ class PostContentTransformerTest extends \MailPoetTest {
         'getContent' => Expected::once($this->content_mock),
         'getFeaturedImage' => null,
         'getTitle' => 'Title',
-      ],
-      $this
+      ]
     );
     $extractor->expects($this->once())
       ->method('getContent')
@@ -305,8 +303,7 @@ class PostContentTransformerTest extends \MailPoetTest {
         'getFeaturedImage' => $image,
         'getTitle' => $title,
         'isProduct' => false,
-      ],
-      $this
+      ]
     );
     $transformer = new PostTransformer($args, $extractor);
     return $transformer;

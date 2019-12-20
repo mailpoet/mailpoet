@@ -74,7 +74,7 @@ class RendererTest extends \MailPoetTest {
       )
     );
     $renderer->render($this->newsletter, $newsletter_renderer);
-    $html = $renderer->getHTMLAfterContent('Heading Text');
+    $html = $renderer->getHTMLAfterContent();
     expect($html)->notContains('Some text before heading');
     expect($html)->notContains('Heading Text');
     expect($html)->notContains('Some text between heading and content');

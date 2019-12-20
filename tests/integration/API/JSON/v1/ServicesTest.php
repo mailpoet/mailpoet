@@ -31,8 +31,7 @@ class ServicesTest extends \MailPoetTest {
 
     $spf_check = $this->make(
       SPFCheck::class,
-      ['checkSPFRecord' => false],
-      $this
+      ['checkSPFRecord' => false]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedSPFCheck($spf_check);
@@ -44,8 +43,7 @@ class ServicesTest extends \MailPoetTest {
   public function testItRespondsWithSuccessIfSPFCheckPasses() {
     $spf_check = $this->make(
       SPFCheck::class,
-      ['checkSPFRecord' => true],
-      $this
+      ['checkSPFRecord' => true]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedSPFCheck($spf_check);
@@ -65,8 +63,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkMSSKey' => ['state' => Bridge::KEY_VALID],
         'storeMSSKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -80,8 +77,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkMSSKey' => ['state' => Bridge::KEY_INVALID],
         'storeMSSKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
     $response = $services_endpoint->checkMSSKey($this->data);
@@ -98,8 +94,7 @@ class ServicesTest extends \MailPoetTest {
           'data' => ['expire_at' => $date->format('c')],
         ],
         'storeMSSKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -115,8 +110,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkMSSKey' => ['code' => Bridge::CHECK_ERROR_UNAVAILABLE],
         'storeMSSKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -135,8 +129,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkMSSKey' => null,
         'storeMSSKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -155,8 +148,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkMSSKey' => ['code' => 404],
         'storeMSSKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -173,8 +165,7 @@ class ServicesTest extends \MailPoetTest {
           throw new \Exception('test');
         },
         'storeMSSKeyAndState' => Expected::never(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -195,8 +186,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkPremiumKey' => ['state' => Bridge::KEY_VALID],
         'storePremiumKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -213,8 +203,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkPremiumKey' => ['state' => Bridge::KEY_INVALID],
         'storePremiumKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -228,8 +217,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkPremiumKey' => ['state' => Bridge::KEY_ALREADY_USED],
         'storePremiumKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -247,8 +235,7 @@ class ServicesTest extends \MailPoetTest {
           'data' => ['expire_at' => $date->format('c')],
         ],
         'storePremiumKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -264,8 +251,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkPremiumKey' => ['code' => Bridge::CHECK_ERROR_UNAVAILABLE],
         'storePremiumKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -284,8 +270,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkPremiumKey' => null,
         'storePremiumKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -304,8 +289,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkPremiumKey' => ['code' => 404],
         'storePremiumKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -322,8 +306,7 @@ class ServicesTest extends \MailPoetTest {
           throw new \Exception('test');
         },
         'storePremiumKeyAndState' => Expected::never(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -345,8 +328,7 @@ class ServicesTest extends \MailPoetTest {
           'data' => [ 'public_id' => $fake_public_id ],
         ],
         'storeMSSKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -365,8 +347,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkMSSKey' => [ 'state' => Bridge::KEY_VALID ],
         'storeMSSKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -389,8 +370,7 @@ class ServicesTest extends \MailPoetTest {
           'data' => [ 'public_id' => $fake_public_id ],
         ],
         'storePremiumKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
@@ -409,8 +389,7 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkPremiumKey' => ['state' => Bridge::KEY_VALID],
         'storePremiumKeyAndState' => Expected::once(),
-      ],
-      $this
+      ]
     );
 
     $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);

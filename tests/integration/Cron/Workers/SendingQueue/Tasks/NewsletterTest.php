@@ -290,8 +290,7 @@ class NewsletterTest extends \MailPoetTest {
       Emoji::class,
       ['decodeEmojisInBody' => Expected::once(function ($params) {
         return $params;
-      })],
-      $this
+      })]
     );
     $newsletter_task = new NewsletterTask(null, null, null, $emoji);
     $result = $newsletter_task->prepareNewsletterForSending(
@@ -437,8 +436,7 @@ class NewsletterTest extends \MailPoetTest {
       Emoji::class,
       ['encodeEmojisInBody' => Expected::once(function ($params) {
         return $params;
-      })],
-      $this
+      })]
     );
     $newsletter_task = new NewsletterTask(null, null, null, $emoji);
     expect($newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock))->equals($this->newsletter);

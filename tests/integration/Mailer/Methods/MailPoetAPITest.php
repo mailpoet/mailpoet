@@ -264,8 +264,7 @@ class MailPoetAPITest extends \MailPoetTest {
         'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
         'status' => API::SENDING_STATUS_SEND_ERROR,
         'message' => MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED,
-      ]],
-      $this
+      ]]
     );
     $mailer->send([$this->newsletter], [$this->subscriber]);
   }
