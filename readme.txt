@@ -57,7 +57,9 @@ Please note:
 
 = WooCommerce emails =
 
-Increase your sales and stay in touch with your customers with our emails for WooCommerce!
+With the MailPoet email designer, you can easily design the transactional emails sent by WooCommerce, like automatic emails for new account, new order, order processed, etc.
+
+Increase your sales and stay in touch with your customers with our automatic emails for WooCommerce!
 
 With our WooCommerce emails, you can :
 
