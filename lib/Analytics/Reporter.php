@@ -101,6 +101,7 @@ class Reporter {
       $result['Number of WooCommerce subscribers'] = isset($segments['woocommerce_users']) ? (int)$segments['woocommerce_users'] : 0;
       $result['WooCommerce: opt-in on checkout is active'] = $this->settings->get('woocommerce.optin_on_checkout.enabled') ?: false;
       $result['WooCommerce: set old customers as subscribed'] = $this->settings->get('mailpoet_subscribe_old_woocommerce_customers.enabled') ?: false;
+      $result['WooCommerce email customizer is active'] = $this->settings->get('woocommerce.use_mailpoet_editor') ?: false;
 
       $result['Number of active WooCommerce first purchase emails'] = $newsletters['first_purchase_emails_count'];
       $result['Number of active WooCommerce purchased this product emails'] = $newsletters['product_purchased_emails_count'];

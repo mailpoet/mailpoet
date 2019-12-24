@@ -117,6 +117,9 @@ class NewsletterTypes extends React.Component {
           },
         });
         emailId = response.data.woocommerce.transactional_email_id;
+        MailPoet.trackEvent('Emails > WooCommerce email customizer enabled', {
+          'MailPoet Free version': window.mailpoet_version,
+        });
       } catch (response) {
         MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
         return;

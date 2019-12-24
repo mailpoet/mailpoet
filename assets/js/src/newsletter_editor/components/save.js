@@ -316,6 +316,9 @@ Module.SaveView = Marionette.View.extend({
       },
     }).done(function () {
       $el.addClass('mailpoet_hidden');
+      MailPoet.trackEvent('Editor > WooCommerce email customizer enabled', {
+        'MailPoet Free version': window.mailpoet_version,
+      });
     }).fail(function (response) {
       MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
     });
