@@ -56,7 +56,9 @@ class Manage {
 
   private function addHiddenSegments(Subscriber $subscriber, array $data) {
     $shownSegments = $this->settings->get('subscription.segments');
-    if (empty($shownSegments)) return $data;
+    if (empty($shownSegments)) {
+      return $data;
+    }
     if (empty($data['segments'])) $data['segments'] = [];
     $subscriber->withSubscriptions();
     foreach ($subscriber->subscriptions as $subscription) {
