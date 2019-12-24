@@ -2,17 +2,12 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Settings;
 
 class WooCommerceEmailCustomizationCest {
 
   /** @var Settings */
   private $settings;
-
-  /** @var Features */
-  private $features;
 
   /** @var int */
   private $woocommerce_email_template_id;
@@ -22,15 +17,7 @@ class WooCommerceEmailCustomizationCest {
 
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
-    $this->features = new Features;
     $this->settings = new Settings();
-    $this->features->withFeatureEnabled(FeaturesController::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER);
-
-    // TODO: remove next 4 lines when WC_TRANSACTIONAL_EMAILS_CUSTOMIZER flag is removed
-    $I->login();
-    $I->amOnPluginsPage();
-    $I->deactivatePlugin('mailpoet');
-    $I->activatePlugin('mailpoet');
 
     $this->wc_customizer_disabled_message = 'The usage of this email template for your WooCommerce emails is not yet activated.';
   }

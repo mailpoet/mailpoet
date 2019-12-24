@@ -69,7 +69,7 @@ class NewsletterTypes extends React.Component {
   }
 
   getAdditionalTypes = () => {
-    const show = window.mailpoet_woocommerce_active && MailPoet.FeaturesController.isSupported('wc-transactional-emails-customizer');
+    const show = window.mailpoet_woocommerce_active;
     if (!show) {
       return [];
     }

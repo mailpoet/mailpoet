@@ -3,14 +3,10 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Config\Renderer;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\TransactionalEmails;
 
 class Settings {
-
-  /** @var FeaturesController */
-  private $features_controller;
 
   /** @var Renderer */
   private $renderer;
@@ -19,11 +15,9 @@ class Settings {
   private $settings;
 
   function __construct(
-    FeaturesController $features_controller,
     Renderer $renderer,
     SettingsController $settings
   ) {
-    $this->features_controller = $features_controller;
     $this->renderer = $renderer;
     $this->settings = $settings;
   }
@@ -34,9 +28,6 @@ class Settings {
       || $_GET['tab'] !== 'email'
       || isset($_GET['section'])
     ) {
-      return;
-    }
-    if (!$this->features_controller->isSupported(FeaturesController::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER)) {
       return;
     }
     if (!(bool)$this->settings->get('woocommerce.use_mailpoet_editor')) {
