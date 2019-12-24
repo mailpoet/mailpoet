@@ -5,7 +5,6 @@ namespace MailPoet\Config;
 use MailPoet\API\JSON\API;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\ConflictResolver;
@@ -38,9 +37,6 @@ class Initializer {
 
   /** @var SettingsController */
   private $settings;
-
-  /** @var FeaturesController */
-  private $flags_controller;
 
   /** @var Router\Router */
   private $router;
@@ -88,7 +84,6 @@ class Initializer {
     PermanentNotices $permanent_notices,
     Shortcodes $shortcodes,
     DatabaseInitializer $database_initializer,
-    FeaturesController $flags_controller,
     WCTransactionalEmails $wc_transactional_emails,
     WooCommerceHelper $wc_helper
   ) {
@@ -105,7 +100,6 @@ class Initializer {
       $this->permanent_notices = $permanent_notices;
       $this->shortcodes = $shortcodes;
       $this->database_initializer = $database_initializer;
-      $this->flags_controller = $flags_controller;
       $this->wc_transactional_emails = $wc_transactional_emails;
       $this->wc_helper = $wc_helper;
   }
@@ -354,10 +348,9 @@ class Initializer {
   }
 
   private function setupWoocommerceTransactionalEmails() {
-    $feature_enabled = $this->flags_controller->isSupported(FeaturesController::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER);
-    $opt_in_enabled = $this->settings->get('woocommerce.use_mailpoet_editor', false);
     $wc_enabled = $this->wc_helper->isWooCommerceActive();
-    if ($feature_enabled && $wc_enabled) {
+    $opt_in_enabled = $this->settings->get('woocommerce.use_mailpoet_editor', false);
+    if ($wc_enabled) {
       $this->wc_transactional_emails->enableEmailSettingsSyncToWooCommerce();
       if ($opt_in_enabled) {
         $this->wc_transactional_emails->useTemplateForWoocommerceEmails();

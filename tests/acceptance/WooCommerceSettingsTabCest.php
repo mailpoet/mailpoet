@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Settings;
 
 class WooCommerceSettingsTabCest {
@@ -11,15 +9,8 @@ class WooCommerceSettingsTabCest {
   const CUSTOMIZE_SELECTOR = '[data-automation-id="mailpoet_woocommerce_customize"]';
   const DISABLE_SELECTOR = '[data-automation-id="mailpoet_woocommerce_disable"]';
 
-  /** @var Features */
-  private $features;
-
   /** @var Settings */
   private $settings_factory;
-
-  protected function _inject(Features $features) {
-    $this->features = $features;
-  }
 
   function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
@@ -46,7 +37,6 @@ class WooCommerceSettingsTabCest {
   }
 
   function checkWooCommercePluginSettingsAreDisabled(\AcceptanceTester $I) {
-    $this->features->withFeatureEnabled(FeaturesController::WC_TRANSACTIONAL_EMAILS_CUSTOMIZER);
     $this->settings_factory->withWooCommerceEmailCustomizerEnabled();
 
     $I->wantTo('Check WooCommerce plugin email settings are overlayed with link to MailPoet');
