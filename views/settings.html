@@ -177,6 +177,9 @@
                 'Sending provider': settings_data.mta_group == 'smtp' && settings_data.smtp_provider,
                 'Sign-up confirmation enabled': (settings_data.signup_confirmation && settings_data.signup_confirmation.enabled == true),
                 'Bounce email is present': (settings_data.bounce && settings_data.bounce.address != ""),
+                <% if is_woocommerce_active %>
+                'WooCommerce email customizer enabled': (settings_data.woocommerce && settings_data.woocommerce.use_mailpoet_editor),
+                <% endif %>
                 'Newsletter task scheduler method': (settings_data.cron_trigger && settings_data.cron_trigger.method)
               }
             );
