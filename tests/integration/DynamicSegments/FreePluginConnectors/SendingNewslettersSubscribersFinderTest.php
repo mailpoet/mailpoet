@@ -8,13 +8,14 @@ use MailPoet\DynamicSegments\Persistence\Loading\SubscribersIds;
 use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
 
-  /** @var SingleSegmentLoader */
+  /** @var SingleSegmentLoader|MockObject */
   private $single_segment_loader;
 
-  /** @var SubscribersIds */
+  /** @var SubscribersIds|MockObject */
   private $subscribers_ids_loader;
 
   /** @var SendingNewslettersSubscribersFinder */

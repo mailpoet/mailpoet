@@ -13,6 +13,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class SubscribersFinderTest extends \MailPoetTest {
   public $sending;
@@ -71,6 +72,7 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testFindSubscribersInSegmentUsingFinder() {
+    /** @var MockObject $mock */
     $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['findSubscribersInSegment']);
     $mock
       ->expects($this->once())
@@ -89,6 +91,7 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testFindSubscribersInSegmentUsingFinderMakesResultUnique() {
+    /** @var MockObject $mock */
     $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['findSubscribersInSegment']);
     $mock
       ->expects($this->exactly(2))
@@ -130,6 +133,7 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testItAddsSubscribersToTaskFromDynamicSegments() {
+    /** @var MockObject $mock */
     $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['getSubscriberIdsInSegment']);
     $mock
       ->expects($this->once())
@@ -155,6 +159,7 @@ class SubscribersFinderTest extends \MailPoetTest {
   public function testItAddsSubscribersToTaskFromStaticAndDynamicSegments() {
     $finder = new SubscribersFinder();
 
+    /** @var MockObject $mock */
     $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['getSubscriberIdsInSegment']);
     $mock
       ->expects($this->once())
