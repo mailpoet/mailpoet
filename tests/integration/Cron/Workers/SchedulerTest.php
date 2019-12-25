@@ -22,6 +22,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -51,7 +52,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue = SendingTask::create();
     $queue->newsletter_id = 1;
     $queue->status = SendingQueue::STATUS_SCHEDULED;
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
     expect(Scheduler::getScheduledQueues())->notEmpty();
   }
@@ -310,7 +311,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItReschedulesQueueDeliveryWhenMailpoetSubscriberHasNotConfirmedSubscription() {
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     $subscriber = $this->_createSubscriber($wp_user_id = null, 'unconfirmed');
     $segment = $this->_createSegment();
@@ -333,13 +334,13 @@ class SchedulerTest extends \MailPoetTest {
     // update the time queue is scheduled to run at
     $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->id));
     expect(Carbon::parse($updated_queue->scheduled_at))->equals(
-      Carbon::createFromTimestamp(current_time('timestamp'))
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
         ->addMinutes(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT)
     );
   }
 
   public function testItDoesntRunQueueDeliveryWhenMailpoetSubscriberHasUnsubscribed() {
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     $subscriber = $this->_createSubscriber($wp_user_id = null, 'unsubscribed');
     $segment = $this->_createSegment();
@@ -486,7 +487,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItDeletesQueueDuringProcessingWhenNewsletterNotFound() {
     $queue = $this->_createQueue(1);
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->logger_factory, $this->cron_helper);
     $scheduler->process();
@@ -495,10 +496,10 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItDeletesQueueDuringProcessingWhenNewsletterIsSoftDeleted() {
     $newsletter = $this->_createNewsletter();
-    $newsletter->deleted_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $newsletter->deleted_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $newsletter->save();
     $queue = $this->_createQueue($newsletter->id);
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->logger_factory, $this->cron_helper);
     $scheduler->process();
@@ -508,7 +509,7 @@ class SchedulerTest extends \MailPoetTest {
   public function testItProcessesWelcomeNewsletters() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_WELCOME);
     $queue = $this->_createQueue($newsletter->id);
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
     $scheduler = Stub::make(Scheduler::class, [
       'processWelcomeNewsletter' => Expected::exactly(1),
@@ -520,7 +521,7 @@ class SchedulerTest extends \MailPoetTest {
   public function testItProcessesNotificationNewsletters() {
     $newsletter = $this->_createNewsletter();
     $queue = $this->_createQueue($newsletter->id);
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
     $scheduler = Stub::make(Scheduler::class, [
       'processPostNotificationNewsletter' => Expected::exactly(1),
@@ -532,7 +533,7 @@ class SchedulerTest extends \MailPoetTest {
   public function testItProcessesStandardScheduledNewsletters() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD);
     $queue = $this->_createQueue($newsletter->id);
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
     $scheduler = Stub::make(Scheduler::class, [
       'processScheduledStandardNewsletter' => Expected::exactly(1),
@@ -544,7 +545,7 @@ class SchedulerTest extends \MailPoetTest {
   public function testItEnforcesExecutionLimitDuringProcessing() {
     $newsletter = $this->_createNewsletter();
     $queue = $this->_createQueue($newsletter->id);
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
     $scheduler = Stub::make(Scheduler::class, [
       'processPostNotificationNewsletter' => Expected::exactly(1),
@@ -558,7 +559,7 @@ class SchedulerTest extends \MailPoetTest {
   public function testItDoesNotProcessScheduledJobsWhenNewsletterIsNotActive() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_DRAFT);
     $queue = $this->_createQueue($newsletter->id);
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
 
     $scheduler = Stub::make(Scheduler::class, [
@@ -572,7 +573,7 @@ class SchedulerTest extends \MailPoetTest {
   public function testItProcessesScheduledJobsWhenNewsletterIsActive() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_ACTIVE);
     $queue = $this->_createQueue($newsletter->id);
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
 
     $scheduler = Stub::make(Scheduler::class, [
@@ -587,7 +588,7 @@ class SchedulerTest extends \MailPoetTest {
     $task = ScheduledTask::createOrUpdate([
       'type' => 'bounce',
       'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addMonths(1),
+      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMonths(1),
     ]);
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_DRAFT);
     $queue = $this->_createQueue($newsletter->id);
@@ -596,14 +597,14 @@ class SchedulerTest extends \MailPoetTest {
 
     $scheduler->processScheduledStandardNewsletter($newsletter, $queue);
     $refetched_task = ScheduledTask::where('id', $task->id)->findOne();
-    expect($refetched_task->scheduled_at)->lessThan(Carbon::createFromTimestamp(current_time('timestamp'))->addHours(42));
+    expect($refetched_task->scheduled_at)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(42));
   }
 
   public function testItDoesNotReSchedulesBounceTaskWhenSoon() {
     $task = ScheduledTask::createOrUpdate([
       'type' => 'bounce',
       'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addMinute(5),
+      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMinute(5),
     ]);
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_DRAFT);
     $queue = $this->_createQueue($newsletter->id);
@@ -612,13 +613,13 @@ class SchedulerTest extends \MailPoetTest {
 
     $scheduler->processScheduledStandardNewsletter($newsletter, $queue);
     $refetched_task = ScheduledTask::where('id', $task->id)->findOne();
-    expect($refetched_task->scheduled_at)->lessThan(Carbon::createFromTimestamp(current_time('timestamp'))->addHours(1));
+    expect($refetched_task->scheduled_at)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1));
   }
 
   public function testItProcessesScheduledJobsWhenNewsletterIsScheduled() {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_SCHEDULED);
     $queue = $this->_createQueue($newsletter->id);
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
 
     $scheduler = Stub::make(Scheduler::class, [
@@ -709,10 +710,10 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItUpdatesUpdateTime() {
-    $originalUpdated = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(5)->toDateTimeString();
+    $originalUpdated = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(5)->toDateTimeString();
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_WELCOME, Newsletter::STATUS_DRAFT);
     $queue = $this->_createQueue($newsletter->id);
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->updated_at = $originalUpdated;
     $queue->save();
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->logger_factory, $this->cron_helper);

@@ -11,6 +11,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -56,7 +57,7 @@ class WelcomeTest extends \MailPoetTest {
     $this->welcome_scheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
@@ -73,7 +74,7 @@ class WelcomeTest extends \MailPoetTest {
     // queue is scheduled for delivery in 2 days
     $newsletter->afterTimeType = 'days';
     $this->welcome_scheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
@@ -92,7 +93,7 @@ class WelcomeTest extends \MailPoetTest {
     // queue is scheduled for delivery in 2 weeks
     $newsletter->afterTimeType = 'weeks';
     $this->welcome_scheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
@@ -111,7 +112,7 @@ class WelcomeTest extends \MailPoetTest {
     // queue is scheduled for immediate delivery
     $newsletter->afterTimeType = null;
     $this->welcome_scheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId(1)->findOne();
     expect($queue->id)->greaterOrEquals(1);
@@ -155,7 +156,7 @@ class WelcomeTest extends \MailPoetTest {
         1,
       ]
     );
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
@@ -242,7 +243,7 @@ class WelcomeTest extends \MailPoetTest {
       $subscriber_id = 10,
       $wp_user = ['roles' => ['administrator']]
     );
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     // queue is created and scheduled for delivery one day later
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
@@ -266,7 +267,7 @@ class WelcomeTest extends \MailPoetTest {
       $subscriber_id = 10,
       $wp_user = ['roles' => ['administrator']]
     );
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     // queue is created and scheduled for delivery one day later
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)

@@ -16,6 +16,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -909,7 +910,7 @@ class NewsletterTest extends \MailPoetTest {
       ]);
       $task = ScheduledTask::createOrUpdate([
         'status' => ScheduledTask::STATUS_PAUSED,
-        'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
+        'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
       ]);
       SendingQueue::createOrUpdate([
         'newsletter_id' => $newsletter->id(),

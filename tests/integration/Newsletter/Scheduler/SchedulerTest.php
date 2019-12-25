@@ -15,6 +15,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -46,7 +47,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItCanGetNextRunDate() {
     // it accepts cron syntax and returns next run date
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     expect(Scheduler::getNextRunDate('* * * * *'))
       ->equals($current_time->addMinute()->format('Y-m-d H:i:00'));
@@ -56,7 +57,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItCanGetPreviousRunDate() {
     // it accepts cron syntax and returns previous run date
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     expect(Scheduler::getPreviousRunDate('* * * * *'))
       ->equals($current_time->subMinute()->format('Y-m-d H:i:00'));

@@ -13,6 +13,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -91,7 +92,7 @@ class PostNotificationTest extends \MailPoetTest {
 
     // queue is created and scheduled for delivery one day later at 5 a.m.
     $this->post_notification_scheduler->schedulePostNotification($post_id = 10);
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     $next_run_date = ($current_time->hour < 5) ?
       $current_time :
