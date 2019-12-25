@@ -175,4 +175,7 @@
 
   <!-- Run against the PHPCompatibility ruleset -->
   <rule ref="PHPCompatibility" />
+
+  <!-- Visibility MUST be declared on all methods. -->
+  <rule ref="Squiz.Scope.MethodScope"/>
 </ruleset>
