@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-const BenefitsList = () => (
+export const BenefitsList = () => (
   <ul className="welcome_wizard_tracking_list">
     <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
     <li>{MailPoet.I18n.t('welcomeWizardMSSList2')}</li>
@@ -11,7 +11,7 @@ const BenefitsList = () => (
   </ul>
 );
 
-const Controls = (props) => (
+export const Controls = (props) => (
   <div className="mailpoet_welcome_wizard_step_controls">
     <p>
       <a
@@ -77,7 +77,7 @@ FreePlanSubscribers.propTypes = {
 
 const NotFreePlanSubscribers = (props) => (
   <>
-    <h>{MailPoet.I18n.t('welcomeWizardMSSNotFreeTitle')}</h>
+    <h1>{MailPoet.I18n.t('welcomeWizardMSSNotFreeTitle')}</h1>
     <p>
       {MailPoet.I18n.t('welcomeWizardMSSNotFreeSubtitle')}
       :
