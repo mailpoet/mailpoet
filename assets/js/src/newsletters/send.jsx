@@ -13,6 +13,7 @@ import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
+import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import slugify from 'slugify';
 
 const generateGaTrackingCampaignName = (id, subject) => {
@@ -472,6 +473,7 @@ class NewsletterSend extends React.Component {
 
     return (
       <div>
+        <SubscribersLimitNotice />
         <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
 
         {breadcrumb}
