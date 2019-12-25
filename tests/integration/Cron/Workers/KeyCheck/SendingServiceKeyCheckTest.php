@@ -9,6 +9,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class SendingServiceKeyCheckTest extends \MailPoetTest {
   public $worker;
@@ -27,7 +28,8 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
 
   public function testItChecksMSSKey() {
     $response = ['code' => Bridge::KEY_VALID];
-    $this->worker->bridge = Stub::make(
+    /** @var MockObject $bridge */
+    $bridge = Stub::make(
       new Bridge,
       [
         'checkMSSKey' => $response,
@@ -36,6 +38,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
       ],
       $this
     );
+    $this->worker->bridge = $bridge;
     $this->worker->bridge->expects($this->once())
       ->method('checkMSSKey')
       ->with($this->equalTo($this->mss_key));

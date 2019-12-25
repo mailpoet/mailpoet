@@ -7,6 +7,7 @@ use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class PremiumKeyCheckTest extends \MailPoetTest {
   public $worker;
@@ -30,7 +31,8 @@ class PremiumKeyCheckTest extends \MailPoetTest {
 
   public function testItChecksPremiumKey() {
     $response = ['code' => Bridge::KEY_VALID];
-    $this->worker->bridge = Stub::make(
+    /** @var MockObject $bridge */
+    $bridge = Stub::make(
       new Bridge,
       [
         'checkPremiumKey' => $response,
@@ -38,6 +40,7 @@ class PremiumKeyCheckTest extends \MailPoetTest {
       ],
       $this
     );
+    $this->worker->bridge = $bridge;
     $this->worker->bridge->expects($this->once())
       ->method('checkPremiumKey')
       ->with($this->equalTo($this->premium_key));

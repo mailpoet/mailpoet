@@ -11,6 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class SubscribersListingsTest extends \MailPoetTest {
   public $subscriber_2;
@@ -75,6 +76,7 @@ class SubscribersListingsTest extends \MailPoetTest {
   }
 
   public function testGetListingsUsingFilter() {
+    /** @var MockObject $mock */
     $mock = Stub::makeEmpty('MailPoet\Test\Segments\DynamicListingsHandlerMock', ['get']);
     $mock
       ->expects($this->once())

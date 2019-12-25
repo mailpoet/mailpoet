@@ -5,6 +5,7 @@ namespace MailPoet\DynamicSegments\FreePluginConnectors;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Models\DynamicSegment;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class AddToNewslettersSegmentsTest extends \MailPoetTest {
 
@@ -38,6 +39,7 @@ class AddToNewslettersSegmentsTest extends \MailPoetTest {
       return [$dynamic_segment];
     })]);
 
+    /** @var \MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount|MockObject $subscribers_count_loader */
     $subscribers_count_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount']);
     $subscribers_count_loader
       ->expects($this->once())

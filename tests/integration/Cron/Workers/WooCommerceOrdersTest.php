@@ -12,12 +12,13 @@ use MailPoet\Models\StatisticsWooCommercePurchases;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoetVendor\Idiorm\ORM;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class WooCommerceOrdersTest extends \MailPoetTest {
-  /** @var WooCommerceHelper */
+  /** @var MockObject */
   private $woocommerce_helper;
 
-  /** @var WooCommercePurchases */
+  /** @var MockObject */
   private $woocommerce_purchases;
 
   /** @var WooCommercePastOrders */

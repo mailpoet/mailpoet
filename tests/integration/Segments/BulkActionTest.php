@@ -8,6 +8,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 require_once('SubscribersBulkActionHandlerMock.php');
 
@@ -89,6 +90,7 @@ class BulkActionTest extends \MailPoetTest {
   }
 
   public function testBulkActionUsingFilter() {
+    /** @var MockObject $mock */
     $mock = Stub::makeEmpty('\MailPoet\Test\Segments\SubscribersBulkActionHandlerMock', ['apply']);
     $mock
       ->expects($this->once())
