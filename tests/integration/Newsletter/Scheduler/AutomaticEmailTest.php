@@ -12,6 +12,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -42,7 +43,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->automatic_email_scheduler->createAutomaticEmailSendingTask($newsletter, $subscriber->id, $meta = null);
     // new scheduled task should be created
     $task = SendingTask::getByNewsletterId($newsletter->id);
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     expect($task->id)->greaterOrEquals(1);
     expect($task->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
@@ -92,7 +93,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->automatic_email_scheduler->createAutomaticEmailSendingTask($newsletter, $subscriber = null, $meta = null);
     // new scheduled task should be created
     $task = SendingTask::getByNewsletterId($newsletter->id);
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     expect($task->id)->greaterOrEquals(1);
     expect($task->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
@@ -141,7 +142,7 @@ class AutomaticEmailTest extends \MailPoetTest {
   }
 
   public function testItSchedulesAutomaticEmailWhenConditionMatches() {
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     $newsletter_1 = $this->_createNewsletter();
     $this->_createNewsletterOptions(

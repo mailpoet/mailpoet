@@ -8,6 +8,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -130,7 +131,7 @@ class SendingTest extends \MailPoetTest {
 
   public function testItGetsScheduledQueues() {
     $this->sending->status = ScheduledTask::STATUS_SCHEDULED;
-    $this->sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
+    $this->sending->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     $this->sending->save();
     $tasks = SendingTask::getScheduledQueues();
     expect($tasks)->notEmpty();
@@ -161,7 +162,7 @@ class SendingTest extends \MailPoetTest {
 
   public function testItGetsRunningQueues() {
     $this->sending->status = null;
-    $this->sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
+    $this->sending->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     $this->sending->save();
     $tasks = SendingTask::getRunningQueues();
     expect($tasks)->notEmpty();
@@ -252,7 +253,7 @@ class SendingTest extends \MailPoetTest {
     $sending = SendingTask::create($task, $queue);
     $sending->setSubscribers([123, 456]); // random IDs
     $sending->status = $status;
-    $sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
+    $sending->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     return $sending->save();
   }
 

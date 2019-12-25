@@ -6,6 +6,7 @@ use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -42,7 +43,7 @@ class WooCommerceSyncTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = WooCommerceSync::TASK_TYPE;
     $task->status = null;
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }

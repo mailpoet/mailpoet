@@ -103,20 +103,20 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItCanProcessDateShortcodes() {
     $shortcode_details = ['action' => 'd'];
-    expect(Date::process($shortcode_details))->equals(date_i18n('d', current_time('timestamp')));
+    expect(Date::process($shortcode_details))->equals(date_i18n('d', WPFunctions::get()->currentTime('timestamp')));
     $shortcode_details = ['action' => 'dordinal'];
-    expect(Date::process($shortcode_details))->equals(date_i18n('jS', current_time('timestamp')));
+    expect(Date::process($shortcode_details))->equals(date_i18n('jS', WPFunctions::get()->currentTime('timestamp')));
     $shortcode_details = ['action' => 'dtext'];
-    expect(Date::process($shortcode_details))->equals(date_i18n('l', current_time('timestamp')));
+    expect(Date::process($shortcode_details))->equals(date_i18n('l', WPFunctions::get()->currentTime('timestamp')));
     $shortcode_details = ['action' => 'm'];
-    expect(Date::process($shortcode_details))->equals(date_i18n('m', current_time('timestamp')));
+    expect(Date::process($shortcode_details))->equals(date_i18n('m', WPFunctions::get()->currentTime('timestamp')));
     $shortcode_details = ['action' => 'mtext'];
-    expect(Date::process($shortcode_details))->equals(date_i18n('F', current_time('timestamp')));
+    expect(Date::process($shortcode_details))->equals(date_i18n('F', WPFunctions::get()->currentTime('timestamp')));
     $shortcode_details = ['action' => 'y'];
-    expect(Date::process($shortcode_details))->equals(date_i18n('Y', current_time('timestamp')));
+    expect(Date::process($shortcode_details))->equals(date_i18n('Y', WPFunctions::get()->currentTime('timestamp')));
     // allow custom date formats (http://php.net/manual/en/function.date.php)
     $shortcode_details = ['action' => 'custom', 'action_argument' => 'format', 'action_argument_value' => 'U F'];
-    expect(Date::process($shortcode_details))->equals(date_i18n('U F', current_time('timestamp')));
+    expect(Date::process($shortcode_details))->equals(date_i18n('U F', WPFunctions::get()->currentTime('timestamp')));
   }
 
   public function testItCanProcessNewsletterShortcodes() {

@@ -8,6 +8,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Cron\Workers\SimpleWorkerMockImplementation;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -109,7 +110,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect($result)->true();
 
     $scheduled_at = $task->scheduled_at;
-    $task->updated_at = Carbon::createFromTimestamp(strtotime($task->updated_at))
+    $task->updated_at = Carbon::createFromTimestamp((int)strtotime($task->updated_at))
       ->subMinutes(CronWorkerRunner::TASK_RUN_TIMEOUT + 1);
     $task->save();
 
@@ -198,7 +199,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = SimpleWorkerMockImplementation::TASK_TYPE;
     $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
@@ -207,7 +208,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = SimpleWorkerMockImplementation::TASK_TYPE;
     $task->status = null;
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }

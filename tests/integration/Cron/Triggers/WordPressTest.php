@@ -38,7 +38,7 @@ class WordPressTest extends \MailPoetTest {
       'method' => 'none',
     ]);
     ScheduledTask::where('type', Beamer::TASK_TYPE)->deleteMany();
-    $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, Carbon::createFromTimestamp(current_time('timestamp') + 600));
+    $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 600));
     $this->wordpress_trigger = $this->di_container->get(WordPress::class);
   }
 
@@ -206,7 +206,7 @@ class WordPressTest extends \MailPoetTest {
         'newsletter_id' => 1,
         'status' => $status,
         'scheduled_at' => ($status === SendingQueue::STATUS_SCHEDULED) ?
-          Carbon::createFromTimestamp(current_time('timestamp')) :
+          Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')) :
           null,
       ]
     );
@@ -215,7 +215,7 @@ class WordPressTest extends \MailPoetTest {
 
   public function _addScheduledTask($type, $status, $scheduled_at = null) {
     if (!$scheduled_at && $status === ScheduledTask::STATUS_SCHEDULED) {
-      $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+      $scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     }
     $task = ScheduledTask::create();
     $task->hydrate(

@@ -8,6 +8,7 @@ use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCh
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -71,7 +72,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = MockKeyCheckWorker::TASK_TYPE;
     $task->status = null;
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }

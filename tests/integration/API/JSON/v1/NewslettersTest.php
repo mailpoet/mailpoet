@@ -495,8 +495,8 @@ class NewslettersTest extends \MailPoetTest {
     $newsletter_option_field->name = 'schedule';
     $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
     $newsletter_option_field->save();
-    $schedule = sprintf('0 %d * * *', Carbon::createFromTimestamp(current_time('timestamp'))->hour); // every day at current hour
-    $random_future_date = Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'); // 10 days from now
+    $schedule = sprintf('0 %d * * *', Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->hour); // every day at current hour
+    $random_future_date = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addDays(10)->format('Y-m-d H:i:s'); // 10 days from now
     $newsletter_option = NewsletterOption::createOrUpdate(
       [
         'newsletter_id' => $this->post_notification->id,

@@ -7,6 +7,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -36,15 +37,15 @@ class ScheduledTaskTest extends \MailPoetTest {
     ]);
     $task1 = ScheduledTask::createOrUpdate([
       'status' => ScheduledTask::STATUS_PAUSED,
-      'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
+      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
     ]);
     $task2 = ScheduledTask::createOrUpdate([
       'status' => ScheduledTask::STATUS_COMPLETED,
-      'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
+      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addDays(10)->format('Y-m-d H:i:s'),
     ]);
     $task3 = ScheduledTask::createOrUpdate([
       'status' => ScheduledTask::STATUS_PAUSED,
-      'scheduled_at' => Carbon::createFromTimestamp(current_time('timestamp'))->subDays(10)->format('Y-m-d H:i:s'),
+      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subDays(10)->format('Y-m-d H:i:s'),
     ]);
     SendingQueue::createOrUpdate([
       'newsletter_id' => $newsletter->id(),

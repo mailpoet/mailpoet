@@ -476,9 +476,9 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItUpdatesUpdateTime() {
-    $originalUpdated = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(5)->toDateTimeString();
+    $originalUpdated = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(5)->toDateTimeString();
 
-    $this->queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $this->queue->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $this->queue->updated_at = $originalUpdated;
     $this->queue->save();
 

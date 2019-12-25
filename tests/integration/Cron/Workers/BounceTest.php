@@ -11,6 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -126,7 +127,7 @@ class BounceTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = 'bounce';
     $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
@@ -135,7 +136,7 @@ class BounceTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = 'bounce';
     $task->status = null;
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }

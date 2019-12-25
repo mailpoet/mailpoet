@@ -136,7 +136,7 @@ class MigrationTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = Migration::TASK_TYPE;
     $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
@@ -145,7 +145,7 @@ class MigrationTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = Migration::TASK_TYPE;
     $task->status = null;
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
@@ -154,7 +154,7 @@ class MigrationTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = Migration::TASK_TYPE;
     $task->status = ScheduledTask::STATUS_COMPLETED;
-    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
