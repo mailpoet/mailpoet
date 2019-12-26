@@ -12,7 +12,7 @@ use MailPoet\Settings\UserFlagsRepository;
 
 class UserFlagsTest extends \MailPoetTest {
 
-  /** @var Settings */
+  /** @var UserFlags */
   private $endpoint;
 
   /** @var UserFlagsController */

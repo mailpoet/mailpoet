@@ -162,7 +162,7 @@ class Mailer {
   }
 
   /**
-   * @param  \MailPoet\Models\Subscriber|array $subscriber
+   * @param  \MailPoet\Models\Subscriber|array|string $subscriber
    */
   public function formatSubscriberNameAndEmailAddress($subscriber) {
     $subscriber = (is_object($subscriber)) ? $subscriber->asArray() : $subscriber;

@@ -11,7 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property int $count_processed
  * @property int $count_to_process
  * @property int $count_total
- * @property string $newsletter_rendered_body
+ * @property string|array $newsletter_rendered_body
  * @property string $newsletter_rendered_subject
  * @property int $task_id
  * @property int $newsletter_id
