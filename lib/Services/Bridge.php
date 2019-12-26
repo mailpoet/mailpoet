@@ -87,7 +87,7 @@ class Bridge {
    * @param string $key
    * @return API
    */
-  private function getApi($key) {
+  public function getApi($key) {
     $this->initApi($key);
     assert($this->api instanceof API);
     return $this->api;

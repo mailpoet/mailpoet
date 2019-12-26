@@ -80,7 +80,7 @@ class ClicksTest extends \MailPoetTest {
     ], $this);
     $data = $this->track_data;
     // 1. when tracking data does not exist
-    $clicks->track(false);
+    $clicks->track(null);
     // 2. when link model object is missing
     unset($data->link);
     $clicks->track($data);

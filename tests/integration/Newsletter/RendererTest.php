@@ -75,6 +75,7 @@ class RendererTest extends \MailPoetTest {
         $column_content
       )
     );
+    $rendered_column_content = [];
     foreach ($DOM('table.mailpoet_cols-one > tbody') as $column) {
       $rendered_column_content[] = trim($column->text());
     };
@@ -101,6 +102,7 @@ class RendererTest extends \MailPoetTest {
         $column_content
       )
     );
+    $rendered_column_content = [];
     foreach ($DOM('table.mailpoet_cols-two > tbody') as $column) {
       $rendered_column_content[] = trim($column->text());
     };
@@ -128,6 +130,7 @@ class RendererTest extends \MailPoetTest {
         $column_content
       )
     );
+    $rendered_column_content = [];
     foreach ($DOM('table.mailpoet_cols-three > tbody') as $column) {
       $rendered_column_content[] = trim($column->text());
     };

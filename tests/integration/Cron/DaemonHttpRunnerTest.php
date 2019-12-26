@@ -249,8 +249,8 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
   public function testItCanRun() {
-    ignore_user_abort(0);
-    expect(ignore_user_abort())->equals(0);
+    ignore_user_abort(false);
+    expect(ignore_user_abort())->equals(false);
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,
       // daemon should call itself
@@ -268,7 +268,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon = new Daemon($this->cron_helper, $cron_worker_runner_mock, $this->createWorkersFactoryMock());
     $daemon_http_runner->__construct($daemon, $this->cron_helper, SettingsController::getInstance(), $this->di_container->get(WordPress::class));
     $daemon_http_runner->run($data);
-    expect(ignore_user_abort())->equals(1);
+    expect(ignore_user_abort())->equals(true);
   }
 
   public function testItRespondsToPingRequest() {

@@ -71,7 +71,7 @@ class ConflictResolverTest extends \MailPoetTest {
     $permitted_asset_location = $this->conflict_resolver->permitted_assets_locations['scripts'][array_rand($this->conflict_resolver->permitted_assets_locations['scripts'], 1)];
     // enqueue scripts
     wp_enqueue_script('select2', '/wp-content/some/offending/plugin/select2.js');
-    wp_enqueue_script('some_random_script', 'http://example.com/some_script.js', null, null, $in_footer = true); // test inside footer
+    wp_enqueue_script('some_random_script', 'http://example.com/some_script.js', [], null, $in_footer = true); // test inside footer
     wp_enqueue_script('permitted_script', trim($permitted_asset_location, '^'));
     $this->conflict_resolver->resolveScriptsConflict();
     do_action('wp_print_scripts');

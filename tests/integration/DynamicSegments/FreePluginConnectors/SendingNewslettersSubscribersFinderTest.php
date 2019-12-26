@@ -36,7 +36,7 @@ class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
       ->method('load');
     $segment = Segment::create();
     $segment->type = Segment::TYPE_DEFAULT;
-    $segment->id = 3;
+    $segment->id = '3';
     $result = $this->subscribers_in_segments_finder->findSubscribersInSegment($segment, []);
     expect($result)->count(0);
   }
