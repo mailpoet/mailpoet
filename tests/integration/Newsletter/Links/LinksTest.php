@@ -39,7 +39,7 @@ class LinksTest extends \MailPoetTest {
     $link = NewsletterLink::create();
     $link->newsletter_id = 3;
     $link->queue_id = 3;
-    $link->hash = 123;
+    $link->hash = '123';
     $link->url = 'http://example.com';
     $link->save();
 
@@ -174,7 +174,7 @@ class LinksTest extends \MailPoetTest {
     $links = [
       [
         'link' => 'http://example.com',
-        'hash' => 123,
+        'hash' => '123',
       ],
     ];
     Links::save(
@@ -187,7 +187,7 @@ class LinksTest extends \MailPoetTest {
     $newsltter_link = NewsletterLink::where('newsletter_id', 1)
       ->where('queue_id', 1)
       ->findOne();
-    expect($newsltter_link->hash)->equals(123);
+    expect($newsltter_link->hash)->equals('123');
     expect($newsltter_link->url)->equals('http://example.com');
   }
 
@@ -195,21 +195,21 @@ class LinksTest extends \MailPoetTest {
     $link = NewsletterLink::create();
     $link->newsletter_id = 1;
     $link->queue_id = 2;
-    $link->hash = 123;
+    $link->hash = '123';
     $link->url = 'http://example.com';
     $link->save();
 
     $link = NewsletterLink::create();
     $link->newsletter_id = 1;
     $link->queue_id = 3;
-    $link->hash = 456;
+    $link->hash = '456';
     $link->url = 'http://demo.com';
     $link->save();
 
     list($content, $links) = Links::process('<a href="http://example.com">x</a>', 1, 2);
     expect(is_array($links))->true();
     expect(count($links))->equals(1);
-    expect($links[0]['hash'])->equals(123);
+    expect($links[0]['hash'])->equals('123');
     expect($links[0]['url'])->equals('http://example.com');
   }
 

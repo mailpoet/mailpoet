@@ -67,8 +67,7 @@ class BridgeTest extends \MailPoetTest {
 
   public function testItInstantiatesDefaultAPI() {
     $this->bridge->api = null;
-    $this->bridge->initApi(null);
-    expect($this->bridge->api instanceof API)->true();
+    expect($this->bridge->getApi('key') instanceof API)->true();
   }
 
   public function testItChecksValidMSSKey() {

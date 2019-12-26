@@ -194,6 +194,7 @@ class MailerLogTest extends \MailPoetTest {
   public function testItPausesSendingAfterProcessingSendingError() {
     $mailer_log = MailerLog::getMailerLog();
     expect($mailer_log['error'])->null();
+    $error = null;
     try {
       MailerLog::processError($operation = 'send', $error = 'email rejected - sending paused', $error_code = null, $pause_sending = true);
       $this->fail('Paused sending exception was not thrown.');

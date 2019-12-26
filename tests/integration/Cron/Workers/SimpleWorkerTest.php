@@ -29,8 +29,8 @@ class SimpleWorkerTest extends \MailPoetTest {
       [],
       $this
     );
+    $worker_class = get_class($worker);
     try {
-      $worker_class = get_class($worker);
       new $worker_class();
       $this->fail('SimpleWorker did not throw an exception');
     } catch (\Exception $e) {

@@ -132,7 +132,7 @@ class JsonTypesTest extends \MailPoetTest {
 
   public function testItDoesNotSaveInvalidData() {
     $entity = new JsonEntity();
-    $entity->setJsonData("\xB1\x31"); // invalid unicode sequence
+    $entity->setJsonData(["\xB1\x31"]); // invalid unicode sequence
     $this->entity_manager->persist($entity);
 
     $exception = null;
