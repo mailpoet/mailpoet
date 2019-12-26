@@ -8,7 +8,7 @@ use MailPoet\Features\FeaturesController;
 
 class FeaturesControllerTest extends \MailPoetUnitTest {
 
-  function testItWorksWithDefaults() {
+  public function testItWorksWithDefaults() {
     $repository = $this->makeEmpty(
       FeatureFlagsRepository::class,
       [
@@ -34,7 +34,7 @@ class FeaturesControllerTest extends \MailPoetUnitTest {
     ]);
   }
 
-  function testItWorksWithDatabaseValues() {
+  public function testItWorksWithDatabaseValues() {
     $repository = $this->makeEmpty(
       FeatureFlagsRepository::class,
       [
@@ -54,7 +54,7 @@ class FeaturesControllerTest extends \MailPoetUnitTest {
     ]);
   }
 
-  function testItDoesNotReturnUnknownFlag() {
+  public function testItDoesNotReturnUnknownFlag() {
     $repository = $this->makeEmpty(
       FeatureFlagsRepository::class,
       [

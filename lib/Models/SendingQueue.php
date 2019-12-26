@@ -30,7 +30,7 @@ class SendingQueue extends Model {
   const PRIORITY_MEDIUM = SendingQueueEntity::PRIORITY_MEDIUM;
   const PRIORITY_LOW = SendingQueueEntity::PRIORITY_LOW;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
 
     $this->addValidations('newsletter_rendered_body', [
@@ -38,15 +38,15 @@ class SendingQueue extends Model {
     ]);
   }
 
-  function task() {
+  public function task() {
     return $this->hasOne(__NAMESPACE__ . '\ScheduledTask', 'id', 'task_id');
   }
 
-  function newsletter() {
+  public function newsletter() {
     return $this->has_one(__NAMESPACE__ . '\Newsletter', 'id', 'newsletter_id');
   }
 
-  function pause() {
+  public function pause() {
     if ($this->count_processed === $this->count_total) {
       return false;
     } else {
@@ -54,7 +54,7 @@ class SendingQueue extends Model {
     }
   }
 
-  function resume() {
+  public function resume() {
     if ($this->count_processed === $this->count_total) {
       return $this->complete();
     } else {
@@ -62,11 +62,11 @@ class SendingQueue extends Model {
     }
   }
 
-  function complete() {
+  public function complete() {
     return $this->task()->findOne()->complete();
   }
 
-  function save() {
+  public function save() {
     $this->newsletter_rendered_body = $this->getNewsletterRenderedBody();
     if (!Helpers::isJson($this->newsletter_rendered_body) && !is_null($this->newsletter_rendered_body)) {
       $this->set(
@@ -99,18 +99,18 @@ class SendingQueue extends Model {
     return $subscribers;
   }
 
-  function getNewsletterRenderedBody($type = false) {
+  public function getNewsletterRenderedBody($type = false) {
     $rendered_newsletter = $this->decodeRenderedNewsletterBodyObject($this->newsletter_rendered_body);
     return ($type && !empty($rendered_newsletter[$type])) ?
       $rendered_newsletter[$type] :
       $rendered_newsletter;
   }
 
-  function getMeta() {
+  public function getMeta() {
     return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
   }
 
-  function isSubscriberProcessed($subscriber_id) {
+  public function isSubscriberProcessed($subscriber_id) {
     if (!empty($this->subscribers)
       && ScheduledTaskSubscriber::getTotalCount($this->task_id) === 0
     ) {
@@ -126,7 +126,7 @@ class SendingQueue extends Model {
     }
   }
 
-  function asArray() {
+  public function asArray() {
     $model = parent::asArray();
     $model['newsletter_rendered_body'] = $this->getNewsletterRenderedBody();
     $model['meta'] = $this->getMeta();
@@ -143,7 +143,7 @@ class SendingQueue extends Model {
     return $rendered_body;
   }
 
-  static function getTasks() {
+  public static function getTasks() {
     return ScheduledTask::tableAlias('tasks')
     ->selectExpr('tasks.*')
     ->join(
@@ -153,7 +153,7 @@ class SendingQueue extends Model {
     );
   }
 
-  static function joinWithTasks() {
+  public static function joinWithTasks() {
     return static::tableAlias('queues')
     ->join(
       MP_SCHEDULED_TASKS_TABLE,
@@ -162,7 +162,7 @@ class SendingQueue extends Model {
     );
   }
 
-  static function joinWithSubscribers() {
+  public static function joinWithSubscribers() {
     return static::joinWithTasks()
     ->join(
       MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE,
@@ -171,7 +171,7 @@ class SendingQueue extends Model {
     );
   }
 
-  static function findTaskByNewsletterId($newsletter_id) {
+  public static function findTaskByNewsletterId($newsletter_id) {
     return static::getTasks()
     ->where('queues.newsletter_id', $newsletter_id);
   }

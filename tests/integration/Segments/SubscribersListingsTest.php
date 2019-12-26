@@ -17,7 +17,7 @@ class SubscribersListingsTest extends \MailPoetTest {
   /** @var SubscribersListings */
   private $finder;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->finder = ContainerWrapper::getInstance()->get(SubscribersListings::class);
     $this->cleanData();
@@ -45,7 +45,7 @@ class SubscribersListingsTest extends \MailPoetTest {
     SubscriberSegment::resubscribeToAllSegments($this->subscriber_2);
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanData();
   }
 
@@ -55,22 +55,22 @@ class SubscribersListingsTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 
-  function testTryToGetListingsWithoutPassingSegment() {
+  public function testTryToGetListingsWithoutPassingSegment() {
     $this->setExpectedException('InvalidArgumentException');
     $this->finder->getListingsInSegment([]);
   }
 
-  function testGetListingsForDefaultSegment() {
+  public function testGetListingsForDefaultSegment() {
     $listings = $this->finder->getListingsInSegment(['filter' => ['segment' => $this->segment_1->id]]);
     expect($listings['items'])->count(1);
   }
 
-  function testGetListingsForNonExistingSegmen() {
+  public function testGetListingsForNonExistingSegmen() {
     $listings = $this->finder->getListingsInSegment(['filter' => ['segment' => 'non-existing-id']]);
     expect($listings['items'])->notEmpty();
   }
 
-  function testGetListingsUsingFilter() {
+  public function testGetListingsUsingFilter() {
     $mock = Stub::makeEmpty('MailPoet\Test\Segments\DynamicListingsHandlerMock', ['get']);
     $mock
       ->expects($this->once())
@@ -86,7 +86,7 @@ class SubscribersListingsTest extends \MailPoetTest {
     expect($listings)->equals('dynamic listings');
   }
 
-  function testTryToGetListingsForSegmentWithoutHandler() {
+  public function testTryToGetListingsForSegmentWithoutHandler() {
     $this->setExpectedException('InvalidArgumentException');
     remove_all_filters('mailpoet_get_subscribers_listings_in_segment_handlers');
     $this->finder->getListingsInSegment(['filter' => ['segment' => $this->segment_2->id]]);

@@ -8,7 +8,7 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\Util\pQuery\pQuery;
 
 class Text {
-  static function render($element) {
+  public static function render($element) {
     $html = $element['text'];
     // replace &nbsp; with spaces
     $html = str_replace('&nbsp;', ' ', $html);
@@ -27,7 +27,7 @@ class Text {
     return $template;
   }
 
-  static function convertBlockquotesToTables($html) {
+  public static function convertBlockquotesToTables($html) {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $blockquotes = $DOM->query('blockquote');
@@ -72,7 +72,7 @@ class Text {
     return $DOM->__toString();
   }
 
-  static function convertParagraphsToTables($html) {
+  public static function convertParagraphsToTables($html) {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $paragraphs = $DOM->query('p');
@@ -136,7 +136,7 @@ class Text {
     return $DOM->__toString();
   }
 
-  static function styleLists($html) {
+  public static function styleLists($html) {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $lists = $DOM->query('ol, ul, li');
@@ -156,7 +156,7 @@ class Text {
     return $DOM->__toString();
   }
 
-  static function styleHeadings($html) {
+  public static function styleHeadings($html) {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $headings = $DOM->query('h1, h2, h3, h4');
@@ -169,11 +169,11 @@ class Text {
     return $DOM->__toString();
   }
 
-  static function removeLastLineBreak($html) {
+  public static function removeLastLineBreak($html) {
     return preg_replace('/(^)?(<br[^>]*?\/?>)+$/i', '', $html);
   }
 
-  static function insertLineBreak($element) {
+  public static function insertLineBreak($element) {
     $element->parent->insertChild(
       [
         'tag_name' => 'br',

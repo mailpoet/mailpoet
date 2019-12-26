@@ -158,7 +158,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
   /** @var EntityManager */
   protected $entity_manager;
 
-  function setUp() {
+  public function setUp() {
     $this->di_container = ContainerWrapper::getInstance(WP_DEBUG);
     $this->connection = $this->di_container->get(Connection::class);
     $this->entity_manager = $this->di_container->get(EntityManager::class);
@@ -167,7 +167,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
     parent::setUp();
   }
 
-  function tearDown() {
+  public function tearDown() {
     $this->entity_manager->clear();
     parent::tearDown();
   }
@@ -211,20 +211,20 @@ function asCallable($fn) {
 if (!class_exists(WC_Session::class)) {
   // phpcs:ignore
   class WC_Session {
-    function __unset($name) {
+    public function __unset($name) {
     }
   }
 }
 
 if (!function_exists('WC')) {
   class WC_Mailer { // phpcs:ignore
-    function email_header() { // phpcs:ignore
+    public function email_header() { // phpcs:ignore
     }
-    function email_footer() { // phpcs:ignore
+    public function email_footer() { // phpcs:ignore
     }
   }
   class WooCommerce { // phpcs:ignore
-    function mailer() {
+    public function mailer() {
       return new WC_Mailer;
     }
   }
@@ -232,7 +232,7 @@ if (!function_exists('WC')) {
     return new WooCommerce;
   }
   class WC_Order_Item_Product { // phpcs:ignore
-    function get_product_id() { // phpcs:ignore
+    public function get_product_id() { // phpcs:ignore
     }
   }
 }

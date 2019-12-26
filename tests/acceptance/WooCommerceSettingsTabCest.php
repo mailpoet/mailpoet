@@ -12,14 +12,14 @@ class WooCommerceSettingsTabCest {
   /** @var Settings */
   private $settings_factory;
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->settings_factory = new Settings();
     $this->settings_factory->withCookieRevenueTrackingDisabled();
     $this->settings_factory->withWooCommerceListImportPageDisplayed(true);
   }
 
-  function checkWooCommerceTabExists(\AcceptanceTester $I) {
+  public function checkWooCommerceTabExists(\AcceptanceTester $I) {
     $I->wantTo('Check WooCommerce settings tab exists when the WooCommerce plugin is active');
 
     $I->login();
@@ -36,7 +36,7 @@ class WooCommerceSettingsTabCest {
     $I->seeNoJSErrors();
   }
 
-  function checkWooCommercePluginSettingsAreDisabled(\AcceptanceTester $I) {
+  public function checkWooCommercePluginSettingsAreDisabled(\AcceptanceTester $I) {
     $this->settings_factory->withWooCommerceEmailCustomizerEnabled();
 
     $I->wantTo('Check WooCommerce plugin email settings are overlayed with link to MailPoet');

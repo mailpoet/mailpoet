@@ -13,7 +13,7 @@ class SendGridMapper {
 
   const METHOD = Mailer::METHOD_SENDGRID;
 
-  function getErrorFromResponse($response, $subscriber) {
+  public function getErrorFromResponse($response, $subscriber) {
     $response = (!empty($response['errors'][0])) ?
       $response['errors'][0] :
       sprintf(WPFunctions::get()->__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SENDGRID);

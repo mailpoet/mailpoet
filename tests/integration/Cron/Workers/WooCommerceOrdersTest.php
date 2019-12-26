@@ -26,7 +26,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
   /** @var CronWorkerRunner */
   private $cron_worker_runner;
 
-  function _before() {
+  public function _before() {
     $this->cleanup();
     $this->woocommerce_helper = $this->createMock(WooCommerceHelper::class);
     $this->woocommerce_purchases = $this->createMock(WooCommercePurchases::class);
@@ -37,7 +37,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     ]);
   }
 
-  function testItDoesNotRunIfWooCommerceIsDisabled() {
+  public function testItDoesNotRunIfWooCommerceIsDisabled() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(false);
     expect($this->worker->checkProcessingRequirements())->false();
 
@@ -46,7 +46,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     expect($tasks)->isEmpty();
   }
 
-  function testItRunsIfWooCommerceIsEnabled() {
+  public function testItRunsIfWooCommerceIsEnabled() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(true);
     expect($this->worker->checkProcessingRequirements())->true();
 
@@ -55,7 +55,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     expect($tasks)->count(1);
   }
 
-  function testItRunsOnlyOnce() {
+  public function testItRunsOnlyOnce() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(true);
     $this->woocommerce_helper->method('wcGetOrders')->willReturn([]);
 
@@ -87,7 +87,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     expect($tasks)->count(1);
   }
 
-  function testItTracksOrders() {
+  public function testItTracksOrders() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(true);
     $this->woocommerce_helper->method('wcGetOrders')->willReturn([1, 2, 3]);
     $this->createClick();
@@ -104,7 +104,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
   }
 
 
-  function testItContinuesFromLastId() {
+  public function testItContinuesFromLastId() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(true);
     $this->woocommerce_helper->method('wcGetOrders')->willReturnOnConsecutiveCalls([1, 2, 3], [4, 5], []);
     $this->createClick();
@@ -130,7 +130,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     expect($tasks[0]->status)->equals(ScheduledTask::STATUS_COMPLETED);
   }
 
-  function testItResetsPreviouslyTrackedOrders() {
+  public function testItResetsPreviouslyTrackedOrders() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(true);
     $this->woocommerce_helper->method('wcGetOrders')->willReturnOnConsecutiveCalls([1, 2], [3], [4]);
     $click = $this->createClick();
@@ -159,7 +159,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     expect(StatisticsWooCommercePurchases::findMany())->count(0);
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanup();
   }
 

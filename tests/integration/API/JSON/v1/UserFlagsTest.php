@@ -18,7 +18,7 @@ class UserFlagsTest extends \MailPoetTest {
   /** @var UserFlagsController */
   private $user_flags;
 
-  function _before() {
+  public function _before() {
     $this->cleanup();
     $this->user_flags = Stub::make(UserFlagsController::class, [
       'user_flags_repository' => $this->di_container->get(UserFlagsRepository::class),
@@ -26,12 +26,12 @@ class UserFlagsTest extends \MailPoetTest {
         'flag_1' => 'default_value_1',
         'flag_2' => 'default_value_2',
       ],
-    ]);    
+    ]);
     $this->user_flags->set('flag_1', 'value_1');
     $this->endpoint = new UserFlags($this->user_flags);
   }
 
-  function testItCanSetUserFlags() {
+  public function testItCanSetUserFlags() {
     $new_flags = [
       'flag_1' => 'new_value_1',
       'flag_3' => 'new_value_3',
@@ -56,7 +56,7 @@ class UserFlagsTest extends \MailPoetTest {
     ]);
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanup();
   }
 

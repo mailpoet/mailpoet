@@ -173,7 +173,7 @@ Fixtures::add(
 class DynamicSegmentFilter { // phpcs:ignore PSR1.Classes.ClassDeclaration, Squiz.Classes.ClassFileName
   protected $ids;
 
-  function __construct($ids) {
+  public function __construct($ids) {
     $this->ids = $ids;
   }
 

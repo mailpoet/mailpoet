@@ -10,7 +10,7 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
 class SubscribersTest extends \MailPoetUnitTest {
 
-  function testCheckReturnsTrueIfOldUserReachedLimit() {
+  public function testCheckReturnsTrueIfOldUserReachedLimit() {
     $subscribers_feature = $this->constructWith([
       'has_mss_key' => false,
       'has_premium_key' => false,
@@ -20,7 +20,7 @@ class SubscribersTest extends \MailPoetUnitTest {
     expect($subscribers_feature->check())->true();
   }
 
-  function testCheckReturnsFalseIfOldUserDidntReachLimit() {
+  public function testCheckReturnsFalseIfOldUserDidntReachLimit() {
     $subscribers_feature = $this->constructWith([
       'has_mss_key' => false,
       'has_premium_key' => false,
@@ -30,7 +30,7 @@ class SubscribersTest extends \MailPoetUnitTest {
     expect($subscribers_feature->check())->false();
   }
 
-  function testCheckReturnsTrueIfNewUserReachedLimit() {
+  public function testCheckReturnsTrueIfNewUserReachedLimit() {
     $subscribers_feature = $this->constructWith([
       'has_mss_key' => false,
       'has_premium_key' => false,
@@ -40,7 +40,7 @@ class SubscribersTest extends \MailPoetUnitTest {
     expect($subscribers_feature->check())->true();
   }
 
-  function testCheckReturnsFalseIfNewUserDidntReachLimit() {
+  public function testCheckReturnsFalseIfNewUserDidntReachLimit() {
     $subscribers_feature = $this->constructWith([
       'has_mss_key' => false,
       'has_premium_key' => false,
@@ -50,7 +50,7 @@ class SubscribersTest extends \MailPoetUnitTest {
     expect($subscribers_feature->check())->false();
   }
 
-  function testCheckReturnsFalseIfMSSKeyExists() {
+  public function testCheckReturnsFalseIfMSSKeyExists() {
     $subscribers_feature = $this->constructWith([
       'has_mss_key' => true,
       'has_premium_key' => false,
@@ -60,7 +60,7 @@ class SubscribersTest extends \MailPoetUnitTest {
     expect($subscribers_feature->check())->false();
   }
 
-  function testCheckReturnsFalseIfPremiumKeyExists() {
+  public function testCheckReturnsFalseIfPremiumKeyExists() {
     $subscribers_feature = $this->constructWith([
       'has_mss_key' => false,
       'has_premium_key' => true,

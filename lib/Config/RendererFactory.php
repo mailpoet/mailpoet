@@ -7,7 +7,7 @@ class RendererFactory {
   /** @var Renderer|null */
   private $renderer;
 
-  function getRenderer() {
+  public function getRenderer() {
     if (!$this->renderer) {
       $caching = !WP_DEBUG;
       $debugging = WP_DEBUG;

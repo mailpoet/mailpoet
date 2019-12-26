@@ -8,7 +8,7 @@ class Security {
   const HASH_LENGTH = 12;
   const UNSUBSCRIBE_TOKEN_LENGTH = 15;
 
-  static function generateToken($action = 'mailpoet_token') {
+  public static function generateToken($action = 'mailpoet_token') {
     return WPFunctions::get()->wpCreateNonce($action);
   }
 
@@ -19,7 +19,7 @@ class Security {
    * @param int $length Minimal lenght is 5
    * @return string
    */
-  static function generateRandomString($length = 5) {
+  public static function generateRandomString($length = 5) {
     $length = max(5, (int)$length);
     $string = base_convert(
       bin2hex(
@@ -37,7 +37,7 @@ class Security {
    * @param int $length Maximal length is 32
    * @return string
    */
-  static function generateHash($length = null) {
+  public static function generateHash($length = null) {
     $length = ($length) ? $length : self::HASH_LENGTH;
     $auth_key = '';
     if (defined('AUTH_KEY')) {

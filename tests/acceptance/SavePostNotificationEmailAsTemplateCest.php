@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class SavePostNotificationEmailAsTemplateCest {
 
-  function saveAsTemplate(\AcceptanceTester $I) {
+  public function saveAsTemplate(\AcceptanceTester $I) {
     $I->wantTo('Save post notification email as template');
 
     $newsletter_title = 'Template Test Post Notification';

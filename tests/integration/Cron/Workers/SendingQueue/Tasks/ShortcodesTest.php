@@ -9,7 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoetVendor\Idiorm\ORM;
 
 class ShortcodesTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->WP_post = wp_insert_post(
       [
@@ -20,7 +20,7 @@ class ShortcodesTest extends \MailPoetTest {
     );
   }
 
-  function testItCanReplaceShortcodes() {
+  public function testItCanReplaceShortcodes() {
     $queue = $newsletter = (object)[
       'id' => 1,
     ];
@@ -35,7 +35,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->equals('John Doe');
   }
 
-  function testItCanReplaceShortcodesInOneStringUsingContentsFromAnother() {
+  public function testItCanReplaceShortcodesInOneStringUsingContentsFromAnother() {
     $wp_post = get_post($this->WP_post);
     $content = 'Subject line with one shortcode: [newsletter:post_title]';
     $content_source = '<a data-post-id="' . $this->WP_post . '" href="#">latest post</a>';
@@ -48,7 +48,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect(Shortcodes::process($content, $content_source))->equals('Subject line with one shortcode: ' . $wp_post->post_title);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     wp_delete_post($this->WP_post, true);

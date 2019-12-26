@@ -13,7 +13,7 @@ class FormsTest extends \MailPoetTest {
   /** @var Forms */
   private $endpoint;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Forms::class);
     $this->form_1 = Form::createOrUpdate(['name' => 'Form 1']);
@@ -23,7 +23,7 @@ class FormsTest extends \MailPoetTest {
     Segment::createOrUpdate(['name' => 'Segment 2']);
   }
 
-  function testItCanGetAForm() {
+  public function testItCanGetAForm() {
     $response = $this->endpoint->get(/* missing id */);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('This form does not exist.');
@@ -39,7 +39,7 @@ class FormsTest extends \MailPoetTest {
     );
   }
 
-  function testItCanGetListingData() {
+  public function testItCanGetListingData() {
     $response = $this->endpoint->listing();
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -54,7 +54,7 @@ class FormsTest extends \MailPoetTest {
     expect($response->data[2]['name'])->equals('Form 3');
   }
 
-  function testItCanCreateANewForm() {
+  public function testItCanCreateANewForm() {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -63,7 +63,7 @@ class FormsTest extends \MailPoetTest {
     expect($response->data['name'])->equals('New form');
   }
 
-  function testItCanSaveAForm() {
+  public function testItCanSaveAForm() {
     $form_data = [
       'name' => 'My first form',
     ];
@@ -75,7 +75,7 @@ class FormsTest extends \MailPoetTest {
     );
   }
 
-  function testItCanPreviewAForm() {
+  public function testItCanPreviewAForm() {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -88,7 +88,7 @@ class FormsTest extends \MailPoetTest {
     expect($response->data['css'])->notEmpty();
   }
 
-  function testItCanExportAForm() {
+  public function testItCanExportAForm() {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
@@ -99,7 +99,7 @@ class FormsTest extends \MailPoetTest {
     expect($response->data['shortcode'])->notEmpty();
   }
 
-  function testItCanSaveFormEditor() {
+  public function testItCanSaveFormEditor() {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
@@ -112,7 +112,7 @@ class FormsTest extends \MailPoetTest {
     expect($response->data['name'])->equals('Updated form');
   }
 
-  function testItCanRestoreAForm() {
+  public function testItCanRestoreAForm() {
     $this->form_1->trash();
 
     $trashed_form = Form::findOne($this->form_1->id);
@@ -127,7 +127,7 @@ class FormsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanTrashAForm() {
+  public function testItCanTrashAForm() {
     $response = $this->endpoint->trash(['id' => $this->form_2->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -137,14 +137,14 @@ class FormsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanDeleteAForm() {
+  public function testItCanDeleteAForm() {
     $response = $this->endpoint->delete(['id' => $this->form_3->id]);
     expect($response->data)->isEmpty();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanDuplicateAForm() {
+  public function testItCanDuplicateAForm() {
     $response = $this->endpoint->duplicate(['id' => $this->form_1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -153,7 +153,7 @@ class FormsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanBulkDeleteForms() {
+  public function testItCanBulkDeleteForms() {
     $response = $this->endpoint->bulkAction([
       'action' => 'trash',
       'listing' => ['group' => 'all'],
@@ -176,7 +176,7 @@ class FormsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(0);
   }
 
-  function _after() {
+  public function _after() {
     Form::deleteMany();
     Segment::deleteMany();
   }

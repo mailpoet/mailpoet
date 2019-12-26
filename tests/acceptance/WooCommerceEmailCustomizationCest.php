@@ -15,14 +15,14 @@ class WooCommerceEmailCustomizationCest {
   /** @var string */
   private $wc_customizer_disabled_message;
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->settings = new Settings();
 
     $this->wc_customizer_disabled_message = 'The usage of this email template for your WooCommerce emails is not yet activated.';
   }
 
-  function openEmailCustomizerWhenSettingIsEnabled(\AcceptanceTester $I) {
+  public function openEmailCustomizerWhenSettingIsEnabled(\AcceptanceTester $I) {
     $I->wantTo('Open WooCommerce email customizer while setting is enabled');
 
     $this->createEmailTemplate($I);
@@ -45,7 +45,7 @@ class WooCommerceEmailCustomizationCest {
     $I->dontSee($this->wc_customizer_disabled_message);
   }
 
-  function openEmailCustomizerWhenSettingIsDisabled(\AcceptanceTester $I) {
+  public function openEmailCustomizerWhenSettingIsDisabled(\AcceptanceTester $I) {
     $I->wantTo('Open WooCommerce email customizer while setting is disabled');
 
     $this->createEmailTemplate($I);

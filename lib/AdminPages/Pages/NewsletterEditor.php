@@ -32,7 +32,7 @@ class NewsletterEditor {
   /** @var TransactionalEmails */
   private $wc_transactional_emails;
 
-  function __construct(
+  public function __construct(
     PageRenderer $page_renderer,
     SettingsController $settings,
     UserFlagsController $user_flags,
@@ -48,7 +48,7 @@ class NewsletterEditor {
     $this->wc_transactional_emails = $wc_transactional_emails;
   }
 
-  function render() {
+  public function render() {
     $newsletter_id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     $woocommerce_template_id = (int)$this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
     if (

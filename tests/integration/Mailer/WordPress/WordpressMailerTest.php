@@ -12,12 +12,12 @@ class WordpressMailerTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribers_repository;
 
-  function _before() {
+  public function _before() {
     $this->subscribers_repository = $this->di_container->get(SubscribersRepository::class);
     $this->subscribers_repository->truncate();
   }
 
-  function testItdoesNotSendWhenPreSendCheckFails() {
+  public function testItdoesNotSendWhenPreSendCheckFails() {
     $mailer = $this->createMock(Mailer::class);
     $mailer->expects($this->never())->method('send');
     $fallback_mailer = $this->createMock(FallbackMailer::class);
@@ -28,7 +28,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
-  function testItFormatsTextNewsletterForMailer() {
+  public function testItFormatsTextNewsletterForMailer() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
       ->expects($this->once())
@@ -51,7 +51,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
-  function testItFormatsSubscriberForMailer() {
+  public function testItFormatsSubscriberForMailer() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
       ->expects($this->once())
@@ -72,7 +72,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
-  function testItFormatsHtmlNewsletterForMailer() {
+  public function testItFormatsHtmlNewsletterForMailer() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
       ->expects($this->once())
@@ -96,7 +96,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
-  function testItReturnsOnSuccess() {
+  public function testItReturnsOnSuccess() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
       ->expects($this->once())
@@ -111,7 +111,7 @@ class WordpressMailerTest extends \MailPoetTest {
     expect($wpMailer->send())->true();
   }
 
-  function testItUsesBackupMailerWhenPrimaryFails() {
+  public function testItUsesBackupMailerWhenPrimaryFails() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
       ->expects($this->once())
@@ -130,7 +130,7 @@ class WordpressMailerTest extends \MailPoetTest {
     expect($wpMailer->send())->true();
   }
 
-  function testItThrowsOnError() {
+  public function testItThrowsOnError() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
       ->expects($this->once())
@@ -157,7 +157,7 @@ class WordpressMailerTest extends \MailPoetTest {
     expect($error_message)->same('Error from primary mailer');
   }
 
-  function testItThrowsOnUnknownContentType() {
+  public function testItThrowsOnUnknownContentType() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
       ->expects($this->never())
@@ -173,7 +173,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
-  function testItTranslateExeceptionsToPhpmailerException() {
+  public function testItTranslateExeceptionsToPhpmailerException() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
       ->expects($this->once())
@@ -200,7 +200,7 @@ class WordpressMailerTest extends \MailPoetTest {
     expect($error_message)->same('Exception from primary mailer');
   }
 
-  function testItAddSubscriberMetaInfo() {
+  public function testItAddSubscriberMetaInfo() {
     $mailer = $this->createMock(Mailer::class);
     $mailer
       ->expects($this->once())
@@ -230,7 +230,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->send();
   }
 
-  function _after() {
+  public function _after() {
     $this->subscribers_repository->truncate();
   }
 }

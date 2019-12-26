@@ -15,7 +15,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoetVendor\Idiorm\ORM;
 
 class OpensTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     // create newsletter
     $newsletter = Newsletter::create();
@@ -46,7 +46,7 @@ class OpensTest extends \MailPoetTest {
     $this->opens = new Opens();
   }
 
-  function testItReturnsImageWhenTrackDataIsEmpty() {
+  public function testItReturnsImageWhenTrackDataIsEmpty() {
     $opens = Stub::make($this->opens, [
       'returnResponse' => Expected::exactly(1),
     ], $this);
@@ -54,7 +54,7 @@ class OpensTest extends \MailPoetTest {
     expect(StatisticsOpens::findMany())->isEmpty();
   }
 
-  function testItDoesNotTrackOpenEventFromWpUserWhenPreviewIsEnabled() {
+  public function testItDoesNotTrackOpenEventFromWpUserWhenPreviewIsEnabled() {
     $data = $this->track_data;
     $data->subscriber->wp_user_id = 99;
     $data->preview = true;
@@ -65,11 +65,11 @@ class OpensTest extends \MailPoetTest {
     expect(StatisticsOpens::findMany())->isEmpty();
   }
 
-  function testItReturnsNothingWhenImageDisplayIsDisabled() {
+  public function testItReturnsNothingWhenImageDisplayIsDisabled() {
     expect($this->opens->track($this->track_data, $display_image = false))->isEmpty();
   }
 
-  function testItTracksOpenEvent() {
+  public function testItTracksOpenEvent() {
     $opens = Stub::make($this->opens, [
       'returnResponse' => null,
     ], $this);
@@ -77,7 +77,7 @@ class OpensTest extends \MailPoetTest {
     expect(StatisticsOpens::findMany())->notEmpty();
   }
 
-  function testItDoesNotTrackRepeatedOpenEvents() {
+  public function testItDoesNotTrackRepeatedOpenEvents() {
     $opens = Stub::make($this->opens, [
       'returnResponse' => null,
     ], $this);
@@ -87,14 +87,14 @@ class OpensTest extends \MailPoetTest {
     expect(count(StatisticsOpens::findMany()))->equals(1);
   }
 
-  function testItReturnsImageAfterTracking() {
+  public function testItReturnsImageAfterTracking() {
     $opens = Stub::make($this->opens, [
       'returnResponse' => Expected::exactly(1),
     ], $this);
     $opens->track($this->track_data);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);

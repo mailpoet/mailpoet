@@ -9,7 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoetVendor\Idiorm\ORM;
 
 class ScheduledTaskSubscriberTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $task = ScheduledTask::create();
     $task->hydrate([
@@ -28,13 +28,13 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
     $this->subscribers_counter = 0;
   }
 
-  function testItCanBeCreated() {
+  public function testItCanBeCreated() {
     expect($this->task_subscriber->task_id)->equals($this->task->id);
     expect($this->task_subscriber->subscriber_id)->equals($this->subscriber->id);
     expect($this->task_subscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
   }
 
-  function testItCanBeUpdated() {
+  public function testItCanBeUpdated() {
     $task_subscriber = ScheduledTaskSubscriber::createOrUpdate([
       'task_id' => $this->task->id,
       'subscriber_id' => $this->subscriber->id,
@@ -43,7 +43,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
     expect($task_subscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
   }
 
-  function testItCanAddMultipleSubscribers() {
+  public function testItCanAddMultipleSubscribers() {
     ScheduledTaskSubscriber::deleteMany();
     $subscriber_ids = [321, 654, 987]; // sorted random ids
     ScheduledTaskSubscriber::addSubscribers($this->task->id, $subscriber_ids);
@@ -56,7 +56,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
     expect($task_subscribers[2]->subscriber_id)->equals($subscriber_ids[2]);
   }
 
-  function testItCangetUnprocessedCount() {
+  public function testItCangetUnprocessedCount() {
     $count = ScheduledTaskSubscriber::getUnprocessedCount($this->task->id);
     expect($count)->equals(1);
     $this->task_subscriber->processed = ScheduledTaskSubscriber::STATUS_PROCESSED;
@@ -65,7 +65,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
     expect($count)->equals(0);
   }
 
-  function testItCanGetProcessedCount() {
+  public function testItCanGetProcessedCount() {
     $count = ScheduledTaskSubscriber::getProcessedCount($this->task->id);
     expect($count)->equals(0);
     $this->task_subscriber->processed = ScheduledTaskSubscriber::STATUS_PROCESSED;
@@ -74,7 +74,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
     expect($count)->equals(1);
   }
 
-  function testItCanGetTotalCount() {
+  public function testItCanGetTotalCount() {
     ScheduledTaskSubscriber::createOrUpdate([
       'task_id' => $this->task->id,
       'subscriber_id' => 555, // random new ID
@@ -84,7 +84,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
     expect($count)->equals(2);
   }
 
-  function testItCanQueryListing() {
+  public function testItCanQueryListing() {
     $task_ids = $this->makeTasksWithSubscribers();
 
     $all = ScheduledTaskSubscriber::listingQuery([
@@ -124,7 +124,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
 
   }
 
-  function testItCanGetGroupsWithCounts() {
+  public function testItCanGetGroupsWithCounts() {
     $task_ids = $this->makeTasksWithSubscribers();
     $groups = ScheduledTaskSubscriber::groups([
       'params' => ['task_ids' => $task_ids],
@@ -201,7 +201,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
     ]);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);

@@ -8,7 +8,7 @@ use pQuery\DomNode;
 
 class StructureTransformer {
 
-  function transform($content, $image_full_width) {
+  public function transform($content, $image_full_width) {
     $root = pQuery::parseStr($content);
 
     $this->hoistImagesToRoot($root);

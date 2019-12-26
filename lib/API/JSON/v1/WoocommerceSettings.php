@@ -18,11 +18,11 @@ class WoocommerceSettings extends APIEndpoint {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp) {
+  public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
   }
 
-  function set($data = []) {
+  public function set($data = []) {
     foreach ($data as $option => $value) {
       if (in_array($option, $this->allowed_settings)) {
         $this->wp->updateOption($option, $value);

@@ -13,7 +13,7 @@ class WooCommerceCheckoutOptinCest {
   /** @var WooCommerceProduct */
   private $product_factory;
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->product_factory = new WooCommerceProduct($I);
     $this->settings_factory = new Settings();
@@ -22,7 +22,7 @@ class WooCommerceCheckoutOptinCest {
     $this->settings_factory->withWooCommerceCheckoutOptinEnabled();
   }
 
-  function checkoutWithOptinCheckboxChecked(\AcceptanceTester $I) {
+  public function checkoutWithOptinCheckboxChecked(\AcceptanceTester $I) {
     $customer_email = 'wc_customer_checked@example.com';
     $product = $this->product_factory->create();
     $I->orderProduct($product, $customer_email);
@@ -36,7 +36,7 @@ class WooCommerceCheckoutOptinCest {
     $I->see('WooCommerce Customers', 'td[data-colname="Lists"]');
   }
 
-  function checkoutWithOptinCheckboxUnchecked(\AcceptanceTester $I) {
+  public function checkoutWithOptinCheckboxUnchecked(\AcceptanceTester $I) {
     $customer_email = 'wc_customer_unchecked@example.com';
     $product = $this->product_factory->create();
     $I->orderProduct($product, $customer_email, true, false);

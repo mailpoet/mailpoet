@@ -7,7 +7,7 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterPostTest extends \MailPoetTest {
-  function testItCanGetLatestNewsletterPost() {
+  public function testItCanGetLatestNewsletterPost() {
     foreach (range(1, 5) as $index) {
       $newsletter_post = NewsletterPost::create();
       $newsletter_post->newsletter_id = 1;
@@ -21,7 +21,7 @@ class NewsletterPostTest extends \MailPoetTest {
     expect($latest_newsletter_post->post_id)->equals(5);
   }
 
-  function _after() {
+  public function _after() {
     ORM::for_table(NewsletterPost::$_table)
       ->deleteMany();
   }

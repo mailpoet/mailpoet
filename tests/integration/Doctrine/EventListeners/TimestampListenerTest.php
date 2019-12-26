@@ -24,7 +24,7 @@ class TimestampListenerTest extends \MailPoetTest {
   /** @var string */
   private $table_name;
 
-  function _before() {
+  public function _before() {
     $timestamp = time();
     $this->now = Carbon::createFromTimestamp($timestamp);
     $this->wp = $this->make(WPFunctions::class, [
@@ -44,7 +44,7 @@ class TimestampListenerTest extends \MailPoetTest {
     ");
   }
 
-  function testItSetsTimestampsOnCreate() {
+  public function testItSetsTimestampsOnCreate() {
     $entity = new TimestampEntity();
     $entity->setName('Created');
 
@@ -55,7 +55,7 @@ class TimestampListenerTest extends \MailPoetTest {
     expect($entity->getUpdatedAt())->equals($this->now);
   }
 
-  function testItSetsTimestampOnUpdate() {
+  public function testItSetsTimestampOnUpdate() {
     $this->connection->executeUpdate("
       INSERT INTO $this->table_name (id, created_at, updated_at, name) VALUES (
         123,
@@ -73,7 +73,7 @@ class TimestampListenerTest extends \MailPoetTest {
     expect($entity->getUpdatedAt())->equals($this->now);
   }
 
-  function _after() {
+  public function _after() {
     parent::_after();
     $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
   }

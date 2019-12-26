@@ -10,7 +10,7 @@ use MailPoetVendor\Carbon\Carbon;
 
 class BeamerTest extends \MailPoetTest {
 
-  function testItSetsLastAnnouncementDate() {
+  public function testItSetsLastAnnouncementDate() {
     $oldDate = '2019-05-18T10:25:00.000Z';
     $newDate = '2019-05-22T10:25:00.000Z';
     $settings = SettingsController::getInstance();
@@ -27,7 +27,7 @@ class BeamerTest extends \MailPoetTest {
     expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($newDate)->getTimestamp());
   }
 
-  function testItDoesNothingIfNoResponse() {
+  public function testItDoesNothingIfNoResponse() {
     $oldDate = '2019-05-18T10:25:00.000Z';
     $settings = SettingsController::getInstance();
     $settings->set('last_announcement_date', Carbon::createFromTimeString($oldDate)->getTimestamp());
@@ -41,7 +41,7 @@ class BeamerTest extends \MailPoetTest {
     expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
   }
 
-  function testItDoesNothingIfWrongResponse() {
+  public function testItDoesNothingIfWrongResponse() {
     $oldDate = '2019-05-18T10:25:00.000Z';
     $settings = SettingsController::getInstance();
     $settings->set('last_announcement_date', Carbon::createFromTimeString($oldDate)->getTimestamp());
@@ -55,7 +55,7 @@ class BeamerTest extends \MailPoetTest {
     expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
   }
 
-  function testItDoesNothingIfEmptyList() {
+  public function testItDoesNothingIfEmptyList() {
     $oldDate = '2019-05-18T10:25:00.000Z';
     $settings = SettingsController::getInstance();
     $settings->set('last_announcement_date', Carbon::createFromTimeString($oldDate)->getTimestamp());

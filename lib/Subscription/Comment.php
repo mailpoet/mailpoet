@@ -17,7 +17,7 @@ class Comment {
   /** @var SubscriberActions */
   private $subscriber_actions;
 
-  function __construct(
+  public function __construct(
     SettingsController $settings,
     SubscriberActions $subscriber_actions
   ) {
@@ -25,12 +25,12 @@ class Comment {
     $this->subscriber_actions = $subscriber_actions;
   }
 
-  function extendLoggedInForm($field) {
+  public function extendLoggedInForm($field) {
     $field .= $this->getSubscriptionField();
     return $field;
   }
 
-  function extendLoggedOutForm() {
+  public function extendLoggedOutForm() {
     echo $this->getSubscriptionField();
   }
 
@@ -52,7 +52,7 @@ class Comment {
     </p>';
   }
 
-  function onSubmit($comment_id, $comment_status) {
+  public function onSubmit($comment_id, $comment_status) {
     if ($comment_status === Comment::SPAM) return;
 
     if (
@@ -74,7 +74,7 @@ class Comment {
     }
   }
 
-  function onStatusUpdate($comment_id, $action) {
+  public function onStatusUpdate($comment_id, $action) {
     if ($action === 'approve') {
       // check if the comment's author wants to subscribe
       $do_subscribe = (

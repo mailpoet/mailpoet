@@ -8,15 +8,15 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Reference;
 
 class ContainerConfigurator implements IContainerConfigurator {
 
-  function getDumpNamespace() {
+  public function getDumpNamespace() {
     return 'MailPoetGenerated';
   }
 
-  function getDumpClassname() {
+  public function getDumpClassname() {
     return 'FreeCachedContainer';
   }
 
-  function configure(ContainerBuilder $container) {
+  public function configure(ContainerBuilder $container) {
     // Every service must be registered
     // Strict mode disables magical loading services by looking for an instance within other services
     // see https://symfonycasts.com/screencast/symfony4-upgrade/service-deprecations#strict-autowiring-mode
@@ -272,7 +272,7 @@ class ContainerConfigurator implements IContainerConfigurator {
       ]);
   }
 
-  static function getPremiumService($id, ContainerInterface $container = null) {
+  public static function getPremiumService($id, ContainerInterface $container = null) {
     if (!$container->has(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG)) {
       return null;
     }

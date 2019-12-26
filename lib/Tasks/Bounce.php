@@ -7,7 +7,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Subscriber;
 
 class Bounce {
-  static function prepareSubscribers(ScheduledTask $task) {
+  public static function prepareSubscribers(ScheduledTask $task) {
     // Prepare subscribers on the DB side for performance reasons
     Subscriber::rawExecute(
       'INSERT IGNORE INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '

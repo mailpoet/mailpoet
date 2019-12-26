@@ -18,7 +18,7 @@ class SMTPMapper {
    * @see https://swiftmailer.symfony.com/docs/sending.html
    * @return MailerError
    */
-  function getErrorFromException(\Exception $e, $subscriber) {
+  public function getErrorFromException(\Exception $e, $subscriber) {
     // remove redundant information appended by Swift logger to exception messages
     $message = explode(PHP_EOL, $e->getMessage());
 
@@ -30,7 +30,7 @@ class SMTPMapper {
     return new MailerError(MailerError::OPERATION_SEND, $level, $message[0], null, $subscriber_errors);
   }
 
-  function getErrorFromLog($log, $subscriber) {
+  public function getErrorFromLog($log, $subscriber) {
     // extract error message from log
     preg_match('/!! (.*?)>>/ism', $log, $message);
     if (!empty($message[1])) {

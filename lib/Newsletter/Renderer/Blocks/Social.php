@@ -5,7 +5,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Social {
-  static function render($element) {
+  public static function render($element) {
     $icons_block = '';
     if (is_array($element['icons'])) {
       foreach ($element['icons'] as $index => $icon) {
@@ -15,10 +15,10 @@ class Social {
 
         $style = 'width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;';
         $icons_block .= '<a href="' . EHelper::escapeHtmlLinkAttr($icon['link']) . '" style="text-decoration:none!important;"
-        ><img 
+        ><img
           src="' . EHelper::escapeHtmlLinkAttr($icon['image']) . '"
-          width="' . (int)$icon['width'] . '" 
-          height="' . (int)$icon['height'] . '" 
+          width="' . (int)$icon['width'] . '"
+          height="' . (int)$icon['height'] . '"
           style="' . EHelper::escapeHtmlStyleAttr($style) . '"
           alt="' . EHelper::escapeHtmlAttr($icon['iconType']) . '"
         ></a>&nbsp;';

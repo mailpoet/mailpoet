@@ -7,7 +7,7 @@ use MailPoet\Form\Widget;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Export {
-  static function getAll($form = null) {
+  public static function getAll($form = null) {
     return [
       'html'      => static::get('html', $form),
       'php'       => static::get('php', $form),
@@ -16,7 +16,7 @@ class Export {
     ];
   }
 
-  static function get($type = 'html', $form = null) {
+  public static function get($type = 'html', $form = null) {
     switch ($type) {
       case 'iframe':
         // generate url to load iframe's content

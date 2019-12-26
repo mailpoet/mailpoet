@@ -31,7 +31,7 @@ class ShortcodesTest extends \MailPoetTest {
   /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
@@ -50,13 +50,13 @@ class ShortcodesTest extends \MailPoetTest {
     $this->subscription_url_factory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, new LinkTokens);
   }
 
-  function testItCanExtractShortcodes() {
+  public function testItCanExtractShortcodes() {
     $content = '[category:action] [notshortcode]';
     $shortcodes = $this->shortcodes_object->extract($content);
     expect(count($shortcodes))->equals(1);
   }
 
-  function testItCanExtractOnlySelectShortcodes() {
+  public function testItCanExtractOnlySelectShortcodes() {
     $content = '[link:action] [newsletter:action]';
     $limit = ['link'];
     $shortcodes = $this->shortcodes_object->extract($content, $limit);
@@ -64,7 +64,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect(preg_match('/link/', $shortcodes[0]))->equals(1);
   }
 
-  function testItCanMatchShortcodeDetails() {
+  public function testItCanMatchShortcodeDetails() {
     $shortcodes_object = $this->shortcodes_object;
     $content = '[category:action]';
     $details = $shortcodes_object->match($content);
@@ -84,7 +84,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($details)->isEmpty();
   }
 
-  function testItCanProcessCustomShortcodes() {
+  public function testItCanProcessCustomShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $shortcode = ['[some:shortcode]'];
     $result = $shortcodes_object->process($shortcode);
@@ -97,7 +97,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals('success');
   }
 
-  function testItCanProcessDateShortcodes() {
+  public function testItCanProcessDateShortcodes() {
     $shortcode_details = ['action' => 'd'];
     expect(Date::process($shortcode_details))->equals(date_i18n('d', current_time('timestamp')));
     $shortcode_details = ['action' => 'dordinal'];
@@ -115,7 +115,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect(Date::process($shortcode_details))->equals(date_i18n('U F', current_time('timestamp')));
   }
 
-  function testItCanProcessNewsletterShortcodes() {
+  public function testItCanProcessNewsletterShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $content =
       '<a data-post-id="' . $this->WP_post . '" href="#">latest post</a>' .
@@ -133,7 +133,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result['0'])->equals($wp_post->post_title);
   }
 
-  function itCanProcessPostNotificationNewsletterNumberShortcode() {
+  public function itCanProcessPostNotificationNewsletterNumberShortcode() {
     // create first post notification
     $post_notification_history = $this->_createNewsletter(
       $parent_id = $this->newsletter_id,
@@ -159,7 +159,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result['0'])->equals(2);
   }
 
-  function testSubscriberShortcodesRequireSubscriberObjectOrFalseValue() {
+  public function testSubscriberShortcodesRequireSubscriberObjectOrFalseValue() {
     // when subscriber is empty, default value is returned
     $shortcodes_object = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
@@ -183,7 +183,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals('[subscriber:firstname | default:test]');
   }
 
-  function testSubscriberFirstAndLastNameShortcodesReturnDefaultValueWhenDataIsEmpty() {
+  public function testSubscriberFirstAndLastNameShortcodesReturnDefaultValueWhenDataIsEmpty() {
     // when subscriber exists but first or last names are empty, default value is returned
     $subscriber = $this->subscriber;
     $subscriber->first_name = '';
@@ -198,7 +198,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals('test');
   }
 
-  function testItCanProcessSubscriberShortcodes() {
+  public function testItCanProcessSubscriberShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $result =
       $shortcodes_object->process(['[subscriber:firstname]']);
@@ -227,7 +227,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals($subscriber_count - 1);
   }
 
-  function testItCanProcessSubscriberCustomFieldShortcodes() {
+  public function testItCanProcessSubscriberCustomFieldShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $subscriber = $this->subscriber;
     $custom_field = CustomField::create();
@@ -249,7 +249,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals($subscriber_custom_field->value);
   }
 
-  function testItCanProcessLinkShortcodes() {
+  public function testItCanProcessLinkShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $result =
       $shortcodes_object->process(['[link:subscription_unsubscribe_url]']);
@@ -263,7 +263,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result['0'])->regExp('/^http.*?endpoint=view_in_browser/');
   }
 
-  function testItReturnsShortcodeWhenTrackingEnabled() {
+  public function testItReturnsShortcodeWhenTrackingEnabled() {
     $shortcodes_object = $this->shortcodes_object;
     $shortcode = '[link:subscription_unsubscribe_url]';
     $result =
@@ -294,7 +294,7 @@ class ShortcodesTest extends \MailPoetTest {
     }
   }
 
-  function testItReturnsDefaultLinksWhenPreviewIsEnabled() {
+  public function testItReturnsDefaultLinksWhenPreviewIsEnabled() {
     $shortcodes_object = $this->shortcodes_object;
     $shortcodes_object->wp_user_preview = true;
     $shortcodes = [
@@ -314,7 +314,7 @@ class ShortcodesTest extends \MailPoetTest {
     }
   }
 
-  function testItCanProcessCustomLinkShortcodes() {
+  public function testItCanProcessCustomLinkShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $shortcode = '[link:shortcode]';
     $result = $shortcodes_object->process([$shortcode]);
@@ -332,7 +332,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals($shortcode);
   }
 
-  function _createWPPost() {
+  public function _createWPPost() {
     $data = [
       'post_title' => 'Sample Post',
       'post_content' => 'contents',
@@ -341,13 +341,13 @@ class ShortcodesTest extends \MailPoetTest {
     return wp_insert_post($data);
   }
 
-  function _createWPUser() {
+  public function _createWPUser() {
     $WP_user = wp_create_user('phoenix_test_user', 'pass', 'phoenix@test.com');
     $WP_user = get_user_by('login', 'phoenix_test_user');
     return $WP_user;
   }
 
-  function _createSubscriber() {
+  public function _createSubscriber() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(
       [
@@ -362,7 +362,7 @@ class ShortcodesTest extends \MailPoetTest {
     return Subscriber::findOne($subscriber->id);
   }
 
-  function _createNewsletter($parent_id = null, $type = Newsletter::TYPE_NOTIFICATION) {
+  public function _createNewsletter($parent_id = null, $type = Newsletter::TYPE_NOTIFICATION) {
     $newsletter = Newsletter::create();
     $newsletter->hydrate(
       [
@@ -376,7 +376,7 @@ class ShortcodesTest extends \MailPoetTest {
     return Newsletter::findOne($newsletter->id);
   }
 
-  function _createQueue() {
+  public function _createQueue() {
     $queue = SendingQueue::create();
     $queue->newsletter_id = $this->newsletter['id'];
     $queue->status = 'completed';
@@ -384,7 +384,7 @@ class ShortcodesTest extends \MailPoetTest {
     return SendingQueue::findOne($queue->id);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);

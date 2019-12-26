@@ -23,7 +23,7 @@ class UserRole implements Filter {
     $this->connect = $connect;
   }
 
-  function toSql(ORM $orm) {
+  public function toSql(ORM $orm) {
     global $wpdb;
     $orm->join($wpdb->users, ['wpusers.id', '=', MP_SUBSCRIBERS_TABLE . '.wp_user_id'], 'wpusers')
       ->join($wpdb->usermeta, ['wpusers.ID',  '=', 'wpusermeta.user_id'], 'wpusermeta')
@@ -40,7 +40,7 @@ class UserRole implements Filter {
     ];
   }
 
-  function getRole() {
+  public function getRole() {
     return $this->role;
   }
 }

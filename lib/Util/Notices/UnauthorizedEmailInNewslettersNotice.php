@@ -23,19 +23,19 @@ class UnauthorizedEmailInNewslettersNotice {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(SettingsController $settings, WPFunctions $wp) {
+  public function __construct(SettingsController $settings, WPFunctions $wp) {
     $this->settings = $settings;
     $this->wp = $wp;
   }
 
-  function init($should_display) {
+  public function init($should_display) {
     $validation_error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
     if ($should_display && isset($validation_error['invalid_senders_in_newsletters'])) {
       return $this->display($validation_error);
     }
   }
 
-  function display($validation_error) {
+  public function display($validation_error) {
     $message = $this->getMessageText();
     $message .= $this->getNewslettersLinks($validation_error);
     $message .= $this->getAuthorizationLink($validation_error);

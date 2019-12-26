@@ -10,11 +10,11 @@ class BulkActionFactoryTest extends \MailPoetTest {
   /** @var BulkActionFactory */
   private $bulk_action_factory;
 
-  function _before() {
+  public function _before() {
     $this->bulk_action_factory = new BulkActionFactory();
   }
 
-  function testItReturnsCustomActionClass() {
+  public function testItReturnsCustomActionClass() {
     $model_class = Subscriber::class;
     $method = 'bulkTestAction';
     $action_class = new BulkActionClassStub;
@@ -23,7 +23,7 @@ class BulkActionFactoryTest extends \MailPoetTest {
     expect($resulting_class)->equals($action_class);
   }
 
-  function testItThrowsIfANonExistentActionMethodIsBeingRegistered() {
+  public function testItThrowsIfANonExistentActionMethodIsBeingRegistered() {
     $model_class = Subscriber::class;
     $method = 'bulkDoesNotExist';
     $action_class = new BulkActionClassStub;
@@ -35,7 +35,7 @@ class BulkActionFactoryTest extends \MailPoetTest {
     }
   }
 
-  function testItThrowsIfANonExistentActionClassIsBeingRegistered() {
+  public function testItThrowsIfANonExistentActionClassIsBeingRegistered() {
     $model_class = Subscriber::class;
     $method = 'bulkDoesNotExist';
     $action_class = '\MailPoet\Some\Non\Existent\Class';
@@ -47,14 +47,14 @@ class BulkActionFactoryTest extends \MailPoetTest {
     }
   }
 
-  function testItReturnsModelClassByDefault() {
+  public function testItReturnsModelClassByDefault() {
     $model_class = Subscriber::class;
     $method = 'bulkTrash';
     $resulting_class = $this->bulk_action_factory->getActionClass($model_class, $method);
     expect($resulting_class)->equals($model_class);
   }
 
-  function testItThrowsIfANonExistentModelMethodIsProvided() {
+  public function testItThrowsIfANonExistentModelMethodIsProvided() {
     $model_class = Subscriber::class;
     $method = 'bulkDoesNotExist';
     try {

@@ -20,11 +20,11 @@ class RequirementsChecker {
     '\Html2Text\Html2Text',
   ];
 
-  function __construct($display_error_notice = true) {
+  public function __construct($display_error_notice = true) {
     $this->display_error_notice = $display_error_notice;
   }
 
-  function checkAllRequirements() {
+  public function checkAllRequirements() {
     $available_tests = [
       self::TEST_PDO_EXTENSION,
       self::TEST_FOLDER_PERMISSIONS,
@@ -42,7 +42,7 @@ class RequirementsChecker {
     return $results;
   }
 
-  function checkTempAndCacheFolderCreation() {
+  public function checkTempAndCacheFolderCreation() {
     $paths = [
       'temp_path' => Env::$temp_path,
       'cache_path' => Env::$cache_path,
@@ -67,7 +67,7 @@ class RequirementsChecker {
     return true;
   }
 
-  function checkPDOExtension() {
+  public function checkPDOExtension() {
     if (extension_loaded('pdo') && extension_loaded('pdo_mysql')) return true;
     $error = Helpers::replaceLinkTags(
       WPFunctions::get()->__('MailPoet requires a PDO_MYSQL PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
@@ -77,14 +77,14 @@ class RequirementsChecker {
     return $this->processError($error);
   }
 
-  function checkMbstringExtension() {
+  public function checkMbstringExtension() {
     if (!extension_loaded('mbstring')) {
       require_once Env::$util_path . '/Polyfills.php';
     }
     return true;
   }
 
-  function checkXmlExtension() {
+  public function checkXmlExtension() {
     if (extension_loaded('xml')) return true;
     $error = Helpers::replaceLinkTags(
       WPFunctions::get()->__('MailPoet requires an XML PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
@@ -94,7 +94,7 @@ class RequirementsChecker {
     return $this->processError($error);
   }
 
-  function checkVendorSource() {
+  public function checkVendorSource() {
     foreach ($this->vendor_classes as $dependency) {
       $dependency_path = $this->getDependencyPath($dependency);
       if (!$dependency_path) {
@@ -131,7 +131,7 @@ class RequirementsChecker {
     }
   }
 
-  function processError($error) {
+  public function processError($error) {
     if ($this->display_error_notice) {
       WPNotice::displayError($error);
     }

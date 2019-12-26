@@ -16,14 +16,14 @@ class ServicesTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->services_endpoint = $this->di_container->get(Services::class);
     $this->data = ['key' => '1234567890abcdef'];
     $this->settings = SettingsController::getInstance();
   }
 
-  function testItRespondsWithErrorIfSPFCheckFails() {
+  public function testItRespondsWithErrorIfSPFCheckFails() {
     $email = 'spf_test@example.com';
     $this->settings->set('sender.address', $email);
 
@@ -39,7 +39,7 @@ class ServicesTest extends \MailPoetTest {
     expect($response->meta['sender_address'])->equals($email);
   }
 
-  function testItRespondsWithSuccessIfSPFCheckPasses() {
+  public function testItRespondsWithSuccessIfSPFCheckPasses() {
     $spf_check = $this->make(
       SPFCheck::class,
       ['checkSPFRecord' => true],
@@ -51,13 +51,13 @@ class ServicesTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
-  function testItRespondsWithErrorIfNoMSSKeyIsGiven() {
+  public function testItRespondsWithErrorIfNoMSSKeyIsGiven() {
     $response = $this->di_container->get(Services::class)->checkMSSKey(['key' => '']);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])->equals('Please specify a key.');
   }
 
-  function testItRespondsWithSuccessIfMSSKeyIsValid() {
+  public function testItRespondsWithSuccessIfMSSKeyIsValid() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -72,7 +72,7 @@ class ServicesTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
-  function testItRespondsWithErrorIfMSSKeyIsInvalid() {
+  public function testItRespondsWithErrorIfMSSKeyIsInvalid() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -86,7 +86,7 @@ class ServicesTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
-  function testItRespondsWithErrorIfMSSKeyIsExpiring() {
+  public function testItRespondsWithErrorIfMSSKeyIsExpiring() {
     $date = new \DateTime;
     $bridge = $this->make(
       new Bridge(),
@@ -107,7 +107,7 @@ class ServicesTest extends \MailPoetTest {
       ->contains($date->format($services_endpoint->date_time->getDateFormat()));
   }
 
-  function testItRespondsWithErrorIfServiceIsUnavailableDuringMSSCheck() {
+  public function testItRespondsWithErrorIfServiceIsUnavailableDuringMSSCheck() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -127,7 +127,7 @@ class ServicesTest extends \MailPoetTest {
     );
   }
 
-  function testItRespondsWithErrorIfServiceDidNotReturnAResponseCodeDuringMSSCheck() {
+  public function testItRespondsWithErrorIfServiceDidNotReturnAResponseCodeDuringMSSCheck() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -147,7 +147,7 @@ class ServicesTest extends \MailPoetTest {
     );
   }
 
-  function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringMSSCheck() {
+  public function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringMSSCheck() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -163,7 +163,7 @@ class ServicesTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->contains('404');
   }
 
-  function testItRespondsWithErrorIfMSSCheckThrowsAnException() {
+  public function testItRespondsWithErrorIfMSSCheckThrowsAnException() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -181,13 +181,13 @@ class ServicesTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('test');
   }
 
-  function testItRespondsWithErrorIfNoPremiumKeyIsGiven() {
+  public function testItRespondsWithErrorIfNoPremiumKeyIsGiven() {
     $response = $response = $this->di_container->get(Services::class)->checkPremiumKey(['key' => '']);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])->equals('Please specify a key.');
   }
 
-  function testItRespondsWithSuccessIfPremiumKeyIsValid() {
+  public function testItRespondsWithSuccessIfPremiumKeyIsValid() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -205,7 +205,7 @@ class ServicesTest extends \MailPoetTest {
     }
   }
 
-  function testItRespondsWithErrorIfPremiumKeyIsInvalid() {
+  public function testItRespondsWithErrorIfPremiumKeyIsInvalid() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -220,7 +220,7 @@ class ServicesTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
-  function testItRespondsWithErrorIfPremiumKeyIsUsed() {
+  public function testItRespondsWithErrorIfPremiumKeyIsUsed() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -235,7 +235,7 @@ class ServicesTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
-  function testItRespondsWithErrorIfPremiumKeyIsExpiring() {
+  public function testItRespondsWithErrorIfPremiumKeyIsExpiring() {
     $date = new \DateTime;
     $bridge = $this->make(
       new Bridge(),
@@ -256,7 +256,7 @@ class ServicesTest extends \MailPoetTest {
       ->contains($date->format($services_endpoint->date_time->getDateFormat()));
   }
 
-  function testItRespondsWithErrorIfServiceIsUnavailableDuringPremiumCheck() {
+  public function testItRespondsWithErrorIfServiceIsUnavailableDuringPremiumCheck() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -276,7 +276,7 @@ class ServicesTest extends \MailPoetTest {
     );
   }
 
-  function testItRespondsWithErrorIfServiceDidNotReturnAResponseCodeDuringPremiumCheck() {
+  public function testItRespondsWithErrorIfServiceDidNotReturnAResponseCodeDuringPremiumCheck() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -296,7 +296,7 @@ class ServicesTest extends \MailPoetTest {
     );
   }
 
-  function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringPremiumCheck() {
+  public function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringPremiumCheck() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -312,7 +312,7 @@ class ServicesTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->contains('404');
   }
 
-  function testItRespondsWithErrorIfPremiumCheckThrowsAnException() {
+  public function testItRespondsWithErrorIfPremiumCheckThrowsAnException() {
     $bridge = $this->make(
       new Bridge(),
       [
@@ -330,7 +330,7 @@ class ServicesTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('test');
   }
 
-  function testItRespondsWithPublicIdForMSS() {
+  public function testItRespondsWithPublicIdForMSS() {
     $fake_public_id = 'a-fake-public_id';
     $this->settings->delete('public_id');
     $this->settings->delete('new_public_id');
@@ -354,7 +354,7 @@ class ServicesTest extends \MailPoetTest {
     expect($this->settings->get('new_public_id'))->equals('true');
   }
 
-  function testItRespondsWithoutPublicIdForMSS() {
+  public function testItRespondsWithoutPublicIdForMSS() {
     $this->settings->delete('public_id');
     $this->settings->delete('new_public_id');
 
@@ -374,7 +374,7 @@ class ServicesTest extends \MailPoetTest {
     expect($this->settings->get('new_public_id', null))->null();
   }
 
-  function testItRespondsWithPublicIdForPremium() {
+  public function testItRespondsWithPublicIdForPremium() {
     $fake_public_id = 'another-fake-public_id';
     $this->settings->delete('public_id');
     $this->settings->delete('new_public_id');
@@ -398,7 +398,7 @@ class ServicesTest extends \MailPoetTest {
     expect($this->settings->get('new_public_id'))->equals('true');
   }
 
-  function testItRespondsWithoutPublicIdForPremium() {
+  public function testItRespondsWithoutPublicIdForPremium() {
     $this->settings->delete('public_id');
     $this->settings->delete('new_public_id');
 

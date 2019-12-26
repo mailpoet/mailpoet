@@ -60,7 +60,7 @@ class Worker {
   /** @var SubscribersRepository */
   private $subscribers_repository;
 
-  function __construct(
+  public function __construct(
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
@@ -87,7 +87,7 @@ class Worker {
   }
 
   /** @throws \Exception */
-  function process($timer = false) {
+  public function process($timer = false) {
     $timer = $timer ?: microtime(true);
     $settings = $this->settings->get(self::SETTINGS_KEY);
     foreach ($this->repository->findScheduled(Sending::RESULT_BATCH_SIZE) as $stats_notification_entity) {

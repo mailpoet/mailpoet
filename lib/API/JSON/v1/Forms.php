@@ -31,7 +31,7 @@ class Forms extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,
   ];
 
-  function __construct(
+  public function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
     FeaturesController $features_controller,
@@ -43,7 +43,7 @@ class Forms extends APIEndpoint {
     $this->form_styles_utils = $form_styles_utils;
   }
 
-  function get($data = []) {
+  public function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
     if ($form instanceof Form) {
@@ -54,7 +54,7 @@ class Forms extends APIEndpoint {
     ]);
   }
 
-  function listing($data = []) {
+  public function listing($data = []) {
     $listing_data = $this->listing_handler->get('\MailPoet\Models\Form', $data);
 
     $data = [];
@@ -79,7 +79,7 @@ class Forms extends APIEndpoint {
     ]);
   }
 
-  function create() {
+  public function create() {
     $form_name = WPFunctions::get()->__('New form', 'mailpoet');
     if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
       $form_name = '';
@@ -123,7 +123,7 @@ class Forms extends APIEndpoint {
     return $this->save($form_data);
   }
 
-  function save($data = []) {
+  public function save($data = []) {
     $form = Form::createOrUpdate($data);
     $errors = $form->getErrors();
 
@@ -135,7 +135,7 @@ class Forms extends APIEndpoint {
     return $this->badRequest($errors);
   }
 
-  function previewEditor($data = []) {
+  public function previewEditor($data = []) {
     // html
     $html = FormRenderer::renderHTML($data);
 
@@ -151,7 +151,7 @@ class Forms extends APIEndpoint {
     ]);
   }
 
-  function exportsEditor($data = []) {
+  public function exportsEditor($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
     if ($form instanceof Form) {
@@ -163,7 +163,7 @@ class Forms extends APIEndpoint {
     ]);
   }
 
-  function saveEditor($data = []) {
+  public function saveEditor($data = []) {
     $form_id = (isset($data['id']) ? (int)$data['id'] : 0);
     $name = (isset($data['name']) ? $data['name'] : WPFunctions::get()->__('New form', 'mailpoet'));
     $body = (isset($data['body']) ? $data['body'] : []);
@@ -232,7 +232,7 @@ class Forms extends APIEndpoint {
     );
   }
 
-  function restore($data = []) {
+  public function restore($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
     if ($form instanceof Form) {
@@ -250,7 +250,7 @@ class Forms extends APIEndpoint {
     }
   }
 
-  function trash($data = []) {
+  public function trash($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
     if ($form instanceof Form) {
@@ -268,7 +268,7 @@ class Forms extends APIEndpoint {
     }
   }
 
-  function delete($data = []) {
+  public function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
     if ($form instanceof Form) {
@@ -282,7 +282,7 @@ class Forms extends APIEndpoint {
     }
   }
 
-  function duplicate($data = []) {
+  public function duplicate($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
 
@@ -311,7 +311,7 @@ class Forms extends APIEndpoint {
     }
   }
 
-  function bulkAction($data = []) {
+  public function bulkAction($data = []) {
     try {
       $meta = $this->bulk_action->apply('\MailPoet\Models\Form', $data);
       return $this->successResponse(null, $meta);

@@ -8,12 +8,12 @@ class StructureTransformerTest extends \MailPoetUnitTest {
   /** @var StructureTransformer */
   private $transformer;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->transformer = new StructureTransformer();
   }
 
-  function testItExtractsImagesAsImageBlocks() {
+  public function testItExtractsImagesAsImageBlocks() {
     $html = '<p><i>italic</i><em>previous text<a href="#mylink"><img src="#myimage" /></a>next text</em><b>bolded</b></p>';
 
     $blocks = $this->transformer->transform($html, false);

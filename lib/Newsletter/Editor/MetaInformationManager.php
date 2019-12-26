@@ -6,7 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class MetaInformationManager {
 
-  function appendMetaInformation($content, $post, $args) {
+  public function appendMetaInformation($content, $post, $args) {
     // Append author and categories above and below contents
     foreach (['above', 'below'] as $position) {
       $position_field = $position . 'Text';

@@ -7,7 +7,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 
 class CustomFieldTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->data = [
       'name' => 'City',
@@ -32,12 +32,12 @@ class CustomFieldTest extends \MailPoetTest {
     ];
   }
 
-  function testItCanBeCreated() {
+  public function testItCanBeCreated() {
     expect($this->custom_field->id() > 0)->true();
     expect($this->custom_field->getErrors())->false();
   }
 
-  function testItCanBeUpdated() {
+  public function testItCanBeUpdated() {
     expect($this->custom_field->name)->equals($this->data['name']);
 
     $updated_custom_field = CustomField::createOrUpdate([
@@ -50,25 +50,25 @@ class CustomFieldTest extends \MailPoetTest {
     expect($updated_custom_field->id)->equals($this->custom_field->id);
   }
 
-  function testItHasAName() {
+  public function testItHasAName() {
     expect($this->custom_field->name)->equals($this->data['name']);
   }
 
-  function testItHasAType() {
+  public function testItHasAType() {
     expect($this->custom_field->type)->equals($this->data['type']);
   }
 
-  function testItHasSerializedParams() {
+  public function testItHasSerializedParams() {
     $params = unserialize($this->custom_field->params);
     expect($params)->equals($this->data['params']);
   }
 
-  function testItCanDecodeParams() {
+  public function testItCanDecodeParams() {
     $custom_field = $this->custom_field->asArray();
     expect($custom_field['params'])->equals($this->data['params']);
   }
 
-  function testItHasToBeValid() {
+  public function testItHasToBeValid() {
     $invalid_custom_field = CustomField::create();
 
     $result = $invalid_custom_field->save();
@@ -79,18 +79,18 @@ class CustomFieldTest extends \MailPoetTest {
     expect($errors[1])->equals('Please specify a type.');
   }
 
-  function testItHasACreatedAtOnCreation() {
+  public function testItHasACreatedAtOnCreation() {
     $custom_field = CustomField::findOne($this->custom_field->id);
     expect($custom_field->created_at)->notNull();
   }
 
-  function testItHasAnUpdatedAtOnCreation() {
+  public function testItHasAnUpdatedAtOnCreation() {
     $custom_field = CustomField::findOne($this->custom_field->id);
     expect($custom_field->updated_at)
       ->equals($custom_field->created_at);
   }
 
-  function testItUpdatesTheUpdatedAtOnUpdate() {
+  public function testItUpdatesTheUpdatedAtOnUpdate() {
     $custom_field = CustomField::findOne($this->custom_field->id);
     $created_at = $custom_field->created_at;
 
@@ -107,7 +107,7 @@ class CustomFieldTest extends \MailPoetTest {
     expect($is_time_updated)->true();
   }
 
-  function testItCanHaveManySubscribers() {
+  public function testItCanHaveManySubscribers() {
     foreach ($this->subscribers as $subscriber) {
       $subscriber = Subscriber::createOrUpdate($subscriber);
 
@@ -122,7 +122,7 @@ class CustomFieldTest extends \MailPoetTest {
     expect(count($subscribers))->equals(2);
   }
 
-  function testItCanHaveAValue() {
+  public function testItCanHaveAValue() {
     $subscriber = Subscriber::createOrUpdate($this->subscribers[0]);
 
     $association = SubscriberCustomField::create();
@@ -135,7 +135,7 @@ class CustomFieldTest extends \MailPoetTest {
     expect($subscriber->value)->equals($association->value);
   }
 
-  function _after() {
+  public function _after() {
     CustomField::deleteMany();
     Subscriber::deleteMany();
     SubscriberCustomField::deleteMany();

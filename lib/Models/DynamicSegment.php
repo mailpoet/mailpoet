@@ -34,23 +34,23 @@ class DynamicSegment extends MailPoetSegment {
     $this->filters = $filters;
   }
 
-  function save() {
+  public function save() {
     $this->set('type', DynamicSegment::TYPE_DYNAMIC);
     return parent::save();
   }
 
-  function dynamicSegmentFilters() {
+  public function dynamicSegmentFilters() {
     return $this->has_many(__NAMESPACE__ . '\DynamicSegmentFilter', 'segment_id');
   }
 
-  static function findAll() {
+  public static function findAll() {
     $query = self::select('*');
     return $query->where('type', DynamicSegment::TYPE_DYNAMIC)
       ->whereNull('deleted_at')
       ->findMany();
   }
 
-  static function listingQuery(array $data = []) {
+  public static function listingQuery(array $data = []) {
     $query = self::select('*');
     $query->where('type', DynamicSegment::TYPE_DYNAMIC);
     if (isset($data['group'])) {
@@ -62,7 +62,7 @@ class DynamicSegment extends MailPoetSegment {
     return $query;
   }
 
-  static function groups() {
+  public static function groups() {
     return [
       [
         'name' => 'all',
@@ -77,12 +77,12 @@ class DynamicSegment extends MailPoetSegment {
     ];
   }
 
-  function delete() {
+  public function delete() {
     DynamicSegmentFilter::where('segment_id', $this->id)->deleteMany();
     return parent::delete();
   }
 
-  static function bulkTrash($orm) {
+  public static function bulkTrash($orm) {
     $count = parent::bulkAction($orm, function($ids) {
       $placeholders = join(',', array_fill(0, count($ids), '?'));
       DynamicSegment::rawExecute(join(' ', [
@@ -95,7 +95,7 @@ class DynamicSegment extends MailPoetSegment {
     return ['count' => $count];
   }
 
-  static function bulkDelete($orm) {
+  public static function bulkDelete($orm) {
     $count = parent::bulkAction($orm, function($ids) {
       $placeholders = join(',', array_fill(0, count($ids), '?'));
       DynamicSegmentFilter::rawExecute(join(' ', [

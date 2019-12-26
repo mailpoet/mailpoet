@@ -15,7 +15,7 @@ class LoaderTest extends \MailPoetTest {
   /** @var Loader */
   private $loader;
 
-  function _before() {
+  public function _before() {
     $this->loader = new Loader(new DBMapper());
     ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
@@ -43,14 +43,14 @@ class LoaderTest extends \MailPoetTest {
     $filter_data->save();
   }
 
-  function testItLoadsSegments() {
+  public function testItLoadsSegments() {
     $data = $this->loader->load();
     expect($data)->count(2);
     expect($data[0])->isInstanceOf('\MailPoet\Models\DynamicSegment');
     expect($data[1])->isInstanceOf('\MailPoet\Models\DynamicSegment');
   }
 
-  function testItDoesNotLoadTrashedSegments() {
+  public function testItDoesNotLoadTrashedSegments() {
     $this->segments[0]->trash();
     $data = $this->loader->load();
     expect($data)->count(1);
@@ -58,7 +58,7 @@ class LoaderTest extends \MailPoetTest {
     expect($data[0]->name)->equals('segment 2');
   }
 
-  function testItPopulatesCommonData() {
+  public function testItPopulatesCommonData() {
     $data = $this->loader->load();
     expect($data[0]->name)->equals('segment 1');
     expect($data[1]->name)->equals('segment 2');
@@ -66,7 +66,7 @@ class LoaderTest extends \MailPoetTest {
     expect($data[1]->description)->equals('description');
   }
 
-  function testItPopulatesFilters() {
+  public function testItPopulatesFilters() {
     $data = $this->loader->load();
     $filters0 = $data[0]->getFilters();
     $filters1 = $data[1]->getFilters();
@@ -78,7 +78,7 @@ class LoaderTest extends \MailPoetTest {
     expect($filters1[0]->getRole())->equals('Administrator');
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
   }

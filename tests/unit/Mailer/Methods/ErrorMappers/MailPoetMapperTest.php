@@ -13,13 +13,13 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
   /** @var array */
   private $subscribers;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->mapper = new MailPoetMapper();
     $this->subscribers = ['a@example.com', 'c d <b@example.com>'];
   }
 
-  function testCreateBlacklistError() {
+  public function testCreateBlacklistError() {
     $error = $this->mapper->getBlacklistError($this->subscribers[1]);
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
@@ -28,7 +28,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getMessage())->contains('MailPoet');
   }
 
-  function testCreateConnectionError() {
+  public function testCreateConnectionError() {
     $error = $this->mapper->getConnectionError('connection error');
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_CONNECT);
@@ -36,7 +36,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getMessage())->equals('connection error');
   }
 
-  function testGetErrorNotArray() {
+  public function testGetErrorNotArray() {
     $api_result = [
       'code' => API::RESPONSE_CODE_NOT_ARRAY,
       'status' => API::SENDING_STATUS_SEND_ERROR,
@@ -50,7 +50,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getMessage())->equals('JSON input is not an array');
   }
 
-  function testGetErrorBannedAccount() {
+  public function testGetErrorBannedAccount() {
     $api_result = [
       'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
       'status' => API::SENDING_STATUS_SEND_ERROR,
@@ -64,7 +64,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getMessage())->contains('The MailPoet Sending Service has stopped sending your emails for one of the following reasons');
   }
 
-  function testGetErrorUnauthorizedEmail() {
+  public function testGetErrorUnauthorizedEmail() {
     $api_result = [
       'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
       'status' => API::SENDING_STATUS_SEND_ERROR,
@@ -78,7 +78,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getMessage())->contains('The MailPoet Sending Service did not send your latest email because the address');
   }
 
-  function testGetErrorPayloadTooBig() {
+  public function testGetErrorPayloadTooBig() {
     $api_result = [
       'code' => API::RESPONSE_CODE_PAYLOAD_TOO_BIG,
       'status' => API::SENDING_STATUS_SEND_ERROR,
@@ -91,7 +91,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getMessage())->equals('error too big');
   }
 
-  function testGetPayloadError() {
+  public function testGetPayloadError() {
     $api_result = [
       'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
       'status' => API::SENDING_STATUS_SEND_ERROR,
@@ -104,7 +104,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getMessage())->equals('Error while sending. Api Error');
   }
 
-  function testGetPayloadErrorWithErrorMessage() {
+  public function testGetPayloadErrorWithErrorMessage() {
     $api_result = [
       'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
       'status' => API::SENDING_STATUS_SEND_ERROR,
@@ -122,7 +122,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($subscriber_errors[1]->getMessage())->equals('subject is missing');
   }
 
-  function testGetPayloadErrorForMalformedMSSResponse() {
+  public function testGetPayloadErrorForMalformedMSSResponse() {
     $api_result = [
       'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
       'status' => API::SENDING_STATUS_SEND_ERROR,

@@ -51,15 +51,15 @@ class Export {
     $this->export_file_URL = $this->getExportFileURL($this->export_file);
   }
 
-  static function getFilePrefix() {
+  public static function getFilePrefix() {
     return 'MailPoet_export_';
   }
 
-  static function getExportPath() {
+  public static function getExportPath() {
     return Env::$temp_path;
   }
 
-  function process() {
+  public function process() {
     $processed_subscribers = 0;
     $this->default_subscribers_getter->reset();
     try {
@@ -85,7 +85,7 @@ class Export {
     ];
   }
 
-  function generateCSV() {
+  public function generateCSV() {
     $processed_subscribers = 0;
     $formatted_subscriber_fields = $this->formatted_subscriber_fields;
     $CSV_file = fopen($this->export_file, 'w');
@@ -121,7 +121,7 @@ class Export {
     return $processed_subscribers;
   }
 
-  function generateXLSX() {
+  public function generateXLSX() {
     $processed_subscribers = 0;
     $XLSX_writer = new XLSXWriter();
     $XLSX_writer->setAuthor('MailPoet (www.mailpoet.com)');
@@ -172,11 +172,11 @@ class Export {
     return $processed_subscribers;
   }
 
-  function writeXLSX($XLSX_writer, $segment, $data) {
+  public function writeXLSX($XLSX_writer, $segment, $data) {
     return $XLSX_writer->writeSheetRow(ucwords($segment), $data);
   }
 
-  function getSubscribers() {
+  public function getSubscribers() {
     $subscribers = $this->default_subscribers_getter->get();
     if ($subscribers === false) {
       $subscribers = $this->dynamic_subscribers_getter->get();
@@ -184,7 +184,7 @@ class Export {
     return $subscribers;
   }
 
-  function getExportFileURL($file) {
+  public function getExportFileURL($file) {
     return sprintf(
       '%s/%s',
       Env::$temp_url,
@@ -192,7 +192,7 @@ class Export {
     );
   }
 
-  function getExportFile($format) {
+  public function getExportFile($format) {
     return sprintf(
       $this->export_path . '/' . self::getFilePrefix() . '%s.%s',
       Security::generateRandomString(15),
@@ -200,7 +200,7 @@ class Export {
     );
   }
 
-  function getSubscriberCustomFields() {
+  public function getSubscriberCustomFields() {
     return array_column(
       CustomField::findArray(),
       'name',
@@ -208,7 +208,7 @@ class Export {
     );
   }
 
-  function formatSubscriberFields($subscriber_fields, $subscriber_custom_fields) {
+  public function formatSubscriberFields($subscriber_fields, $subscriber_custom_fields) {
     $export_factory = new ImportExportFactory('export');
     $translated_fields = $export_factory->getSubscriberFields();
     return array_map(function($field) use (
@@ -222,7 +222,7 @@ class Export {
     }, $subscriber_fields);
   }
 
-  function formatSubscriberData($subscriber) {
+  public function formatSubscriberData($subscriber) {
     return array_map(function($field) use ($subscriber) {
       return $subscriber[$field];
     }, $this->subscriber_fields);

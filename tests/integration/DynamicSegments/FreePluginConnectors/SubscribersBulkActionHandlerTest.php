@@ -7,7 +7,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersBulkActionHandlerTest extends \MailPoetTest {
 
-  function testItReturnsNullWithUnknownSegment() {
+  public function testItReturnsNullWithUnknownSegment() {
     $segment = [
       'name' => 'name',
       'description' => 'desc',
@@ -21,7 +21,7 @@ class SubscribersBulkActionHandlerTest extends \MailPoetTest {
     expect($result)->null();
   }
 
-  function testItReturnsDataForDynamicSegment() {
+  public function testItReturnsDataForDynamicSegment() {
     $segment = DynamicSegment::createOrUpdate([
       'name' => 'name',
       'description' => 'desc',
@@ -35,11 +35,11 @@ class SubscribersBulkActionHandlerTest extends \MailPoetTest {
     expect($result)->notNull();
   }
 
-  function _before() {
+  public function _before() {
     $this->cleanData();
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanData();
   }
 

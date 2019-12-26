@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Form;
 
 class FormsListingCest {
 
-  function formsListing(\AcceptanceTester $I) {
+  public function formsListing(\AcceptanceTester $I) {
     $form = new Form();
     $form->withName('Test Form');
     $form->create();

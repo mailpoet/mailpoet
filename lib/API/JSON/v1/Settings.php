@@ -47,11 +47,11 @@ class Settings extends APIEndpoint {
     $this->wc_transactional_emails = $wc_transactional_emails;
   }
 
-  function get() {
+  public function get() {
     return $this->successResponse($this->settings->getAll());
   }
 
-  function set($settings = []) {
+  public function set($settings = []) {
     if (empty($settings)) {
       return $this->badRequest(
         [

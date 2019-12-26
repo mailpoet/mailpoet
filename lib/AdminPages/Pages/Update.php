@@ -20,13 +20,13 @@ class Update {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(PageRenderer $page_renderer, WPFunctions $wp, SettingsController $settings) {
+  public function __construct(PageRenderer $page_renderer, WPFunctions $wp, SettingsController $settings) {
     $this->page_renderer = $page_renderer;
     $this->wp = $wp;
     $this->settings = $settings;
   }
 
-  function render() {
+  public function render() {
     global $wp;
     $current_url = $this->wp->homeUrl(add_query_arg($wp->query_string, $wp->request));
     $redirect_url =

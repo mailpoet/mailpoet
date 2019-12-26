@@ -6,7 +6,7 @@ use MailPoet\Models\NewsletterTemplate;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTemplateTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->data = [
       'name' => 'Some template',
@@ -18,12 +18,12 @@ class NewsletterTemplateTest extends \MailPoetTest {
     $this->saved = $template->save();
   }
 
-  function testItCanBeCreated() {
+  public function testItCanBeCreated() {
     expect($this->saved->id() > 0)->true();
     expect($this->saved->getErrors())->false();
   }
 
-  function testItHasToBeValid() {
+  public function testItHasToBeValid() {
     $invalid_newsletter_template = NewsletterTemplate::create();
     $result = $invalid_newsletter_template->save();
     $errors = $result->getErrors();
@@ -33,19 +33,19 @@ class NewsletterTemplateTest extends \MailPoetTest {
     expect($errors[1])->equals('The template body cannot be empty.');
   }
 
-  function testItHasName() {
+  public function testItHasName() {
     $template = NewsletterTemplate::where('name', $this->data['name'])
       ->findOne();
     expect($template->name)->equals($this->data['name']);
   }
 
-  function testItHasBody() {
+  public function testItHasBody() {
     $template = NewsletterTemplate::where('body', $this->data['body'])
       ->findOne();
     expect($template->body)->equals($this->data['body']);
   }
 
-  function testItCanCreateOrUpdate() {
+  public function testItCanCreateOrUpdate() {
     $created_template = NewsletterTemplate::createOrUpdate(
       [
         'name' => 'Another template',
@@ -71,7 +71,7 @@ class NewsletterTemplateTest extends \MailPoetTest {
     expect($template->name)->equals('Another template updated');
   }
 
-  function testItCanCleanRecentlySent() {
+  public function testItCanCleanRecentlySent() {
     $total = NewsletterTemplate::RECENTLY_SENT_COUNT + 5;
     for ($i = 0; $i < $total; $i++) {
       NewsletterTemplate::createOrUpdate([
@@ -101,7 +101,7 @@ class NewsletterTemplateTest extends \MailPoetTest {
     expect($first->name)->equals('Testing template 5');
   }
 
-  function _after() {
+  public function _after() {
     ORM::for_table(NewsletterTemplate::$_table)
       ->deleteMany();
   }

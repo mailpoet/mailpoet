@@ -8,11 +8,11 @@ use MailPoet\Mailer\MailerLog;
 class Mailer {
   public $mailer;
 
-  function __construct($mailer = false) {
+  public function __construct($mailer = false) {
     $this->mailer = ($mailer) ? $mailer : $this->configureMailer();
   }
 
-  function configureMailer($newsletter = null) {
+  public function configureMailer($newsletter = null) {
     $sender['address'] = (!empty($newsletter->sender_address)) ?
       $newsletter->sender_address :
       false;
@@ -36,25 +36,25 @@ class Mailer {
     return $this->mailer;
   }
 
-  function getMailerLog() {
+  public function getMailerLog() {
     return MailerLog::getMailerLog();
   }
 
-  function updateSentCount() {
+  public function updateSentCount() {
     return MailerLog::incrementSentCount();
   }
 
-  function getProcessingMethod() {
+  public function getProcessingMethod() {
     return ($this->mailer->mailer_config['method'] === MailerFactory::METHOD_MAILPOET) ?
       'bulk' :
       'individual';
   }
 
-  function prepareSubscriberForSending($subscriber) {
+  public function prepareSubscriberForSending($subscriber) {
     return $this->mailer->formatSubscriberNameAndEmailAddress($subscriber);
   }
 
-  function sendBulk($prepared_newsletters, $prepared_subscribers, $extra_params = []) {
+  public function sendBulk($prepared_newsletters, $prepared_subscribers, $extra_params = []) {
     if ($this->getProcessingMethod() === 'individual') {
       throw new \LogicException('Trying to send a batch with individual processing method');
     }
@@ -65,7 +65,7 @@ class Mailer {
     );
   }
 
-  function send($prepared_newsletter, $prepared_subscriber, $extra_params = []) {
+  public function send($prepared_newsletter, $prepared_subscriber, $extra_params = []) {
     if ($this->getProcessingMethod() === 'bulk') {
       throw new \LogicException('Trying to send an individual email with a bulk processing method');
     }

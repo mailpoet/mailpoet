@@ -25,7 +25,7 @@ class EntityManagerFactory {
   /** @var ValidationListener */
   private $validation_listener;
 
-  function __construct(
+  public function __construct(
     Connection $connection,
     Configuration $configuration,
     TimestampListener $timestamp_listener,
@@ -37,7 +37,7 @@ class EntityManagerFactory {
     $this->validation_listener = $validation_listener;
   }
 
-  function createEntityManager() {
+  public function createEntityManager() {
     $entity_manager = EntityManager::create($this->connection, $this->configuration);
     $this->setupListeners($entity_manager);
     if (class_exists(Debugger::class)) {

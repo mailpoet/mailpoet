@@ -9,25 +9,25 @@ use MailPoetVendor\Idiorm\ORM;
 class DatabaseTest extends \MailPoetTest {
   public $database;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
     $this->database = new Database();
   }
 
-  function _before() {
+  public function _before() {
     parent::_before();
     ORM::set_db(null);
   }
 
-  function testItDefinesTables() {
+  public function testItDefinesTables() {
     expect(defined('MP_SETTINGS_TABLE'))->true();
   }
 
-  function testItConfiguresLogging() {
+  public function testItConfiguresLogging() {
     expect(ORM::get_config('logging'))->equals(WP_DEBUG);
   }
 
-  function testItSetsDBDriverOptions() {
+  public function testItSetsDBDriverOptions() {
     $this->database->init($this->connection->getWrappedConnection());
     $result = ORM::for_table("")
       ->raw_query(

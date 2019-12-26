@@ -45,7 +45,7 @@ class WordPress {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(
+  public function __construct(
     CronHelper $cron_helper,
     MailPoet $mailpoet_trigger,
     SettingsController $settings,
@@ -57,7 +57,7 @@ class WordPress {
     $this->cron_helper = $cron_helper;
   }
 
-  function run() {
+  public function run() {
     if (!$this->checkRunInterval()) {
       return false;
     }
@@ -77,12 +77,12 @@ class WordPress {
     return false;
   }
 
-  static function resetRunInterval() {
+  public static function resetRunInterval() {
     $settings = SettingsController::getInstance();
     $settings->set(self::LAST_RUN_AT_SETTING, 0);
   }
 
-  function checkExecutionRequirements() {
+  public function checkExecutionRequirements() {
     $this->loadTasksCounts();
 
     // migration
@@ -231,7 +231,7 @@ class WordPress {
     );
   }
 
-  function stop() {
+  public function stop() {
     $cron_daemon = $this->cron_helper->getDaemon();
     if ($cron_daemon) {
       $this->cron_helper->deactivateDaemon($cron_daemon);

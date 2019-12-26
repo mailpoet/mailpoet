@@ -11,7 +11,7 @@ class DOM {
    * ancestor and splitting left and right siblings into subtrees along
    * the way, retaining order and nesting level.
    */
-  static function splitOn(DomNode $bound, DomNode $cut_element) {
+  public static function splitOn(DomNode $bound, DomNode $cut_element) {
     $ignore_text_and_comment_nodes = false;
     for ($parent = $cut_element->parent; $bound != $parent; $parent = $grandparent) {
       // Clone parent node without children, but with attributes
@@ -32,7 +32,7 @@ class DOM {
     }
   }
 
-  static function findTopAncestor(DomNode $item) {
+  public static function findTopAncestor(DomNode $item) {
     while ($item->parent->parent !== null) {
       $item = $item->parent;
     }

@@ -38,7 +38,7 @@ class AmazonSES {
 
   private $wp;
 
-  function __construct(
+  public function __construct(
     $region,
     $access_key,
     $secret_key,
@@ -71,7 +71,7 @@ class AmazonSES {
     $this->blacklist = new BlacklistCheck();
   }
 
-  function send($newsletter, $subscriber, $extra_params = []) {
+  public function send($newsletter, $subscriber, $extra_params = []) {
     if ($this->blacklist->isBlacklisted($subscriber)) {
       $error = $this->error_mapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
@@ -97,7 +97,7 @@ class AmazonSES {
     return Mailer::formatMailerSendSuccessResult();
   }
 
-  function getBody($newsletter, $subscriber, $extra_params = []) {
+  public function getBody($newsletter, $subscriber, $extra_params = []) {
     $this->message = $this->createMessage($newsletter, $subscriber, $extra_params);
     $body = [
       'Action' => 'SendRawEmail',
@@ -108,7 +108,7 @@ class AmazonSES {
     return $body;
   }
 
-  function createMessage($newsletter, $subscriber, $extra_params = []) {
+  public function createMessage($newsletter, $subscriber, $extra_params = []) {
     $message = Swift_Message::newInstance()
       ->setTo($this->processSubscriber($subscriber))
       ->setFrom([
@@ -133,11 +133,11 @@ class AmazonSES {
     return $message;
   }
 
-  function encodeMessage(Swift_Message $message) {
+  public function encodeMessage(Swift_Message $message) {
     return base64_encode($message->toString());
   }
 
-  function processSubscriber($subscriber) {
+  public function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
     if (!isset($subscriber_data['email'])) {
       $subscriber_data = [
@@ -150,7 +150,7 @@ class AmazonSES {
     ];
   }
 
-  function request($newsletter, $subscriber, $extra_params = []) {
+  public function request($newsletter, $subscriber, $extra_params = []) {
     $body = array_map('urlencode', $this->getBody($newsletter, $subscriber, $extra_params));
     return [
       'timeout' => 10,
@@ -165,7 +165,7 @@ class AmazonSES {
     ];
   }
 
-  function signRequest($body) {
+  public function signRequest($body) {
     $string_to_sign = $this->createStringToSign(
       $this->getCredentialScope(),
       $this->getCanonicalRequest($body)
@@ -184,7 +184,7 @@ class AmazonSES {
       $signature);
   }
 
-  function getCredentialScope() {
+  public function getCredentialScope() {
     return sprintf(
       '%s/%s/%s/%s',
       $this->date_without_time,
@@ -193,7 +193,7 @@ class AmazonSES {
       $this->aws_termination_string);
   }
 
-  function getCanonicalRequest($body) {
+  public function getCanonicalRequest($body) {
     return implode("\n", [
       'POST',
       '/',
@@ -206,7 +206,7 @@ class AmazonSES {
     ]);
   }
 
-  function createStringToSign($credential_scope, $canonical_request) {
+  public function createStringToSign($credential_scope, $canonical_request) {
     return implode("\n", [
       $this->aws_signing_algorithm,
       $this->date,
@@ -215,7 +215,7 @@ class AmazonSES {
     ]);
   }
 
-  function getSigningKey() {
+  public function getSigningKey() {
     $date_key = hash_hmac(
       $this->hash_algorithm,
       $this->date_without_time,

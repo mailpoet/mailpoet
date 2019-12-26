@@ -7,12 +7,12 @@ class PostListTransformer {
   private $args;
   private $transformer;
 
-  function __construct($args) {
+  public function __construct($args) {
     $this->args = $args;
     $this->transformer = new PostTransformer($args);
   }
 
-  function transform($posts) {
+  public function transform($posts) {
     $results = [];
     $use_divider = filter_var($this->args['showDivider'], FILTER_VALIDATE_BOOLEAN);
 

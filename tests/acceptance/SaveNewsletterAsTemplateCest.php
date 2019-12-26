@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class SaveNewsletterAsTemplateCest {
 
-  function saveStandardNewsletterAsTemplate(\AcceptanceTester $I) {
+  public function saveStandardNewsletterAsTemplate(\AcceptanceTester $I) {
     $I->wantTo('Create standard newsletter and save as a template');
 
     $newsletter_title = 'Testing Templates ' . \MailPoet\Util\Security::generateRandomString();

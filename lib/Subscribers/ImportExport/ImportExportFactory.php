@@ -15,12 +15,12 @@ class ImportExportFactory {
 
   private $wp;
 
-  function __construct($action = null) {
+  public function __construct($action = null) {
     $this->action = $action;
     $this->wp = new WPFunctions;
   }
 
-  function getSegments() {
+  public function getSegments() {
     if ($this->action === self::IMPORT_ACTION) {
       $segments = Segment::getSegmentsForImport();
     } else {
@@ -42,7 +42,7 @@ class ImportExportFactory {
     }, $segments);
   }
 
-  function getSubscriberFields() {
+  public function getSubscriberFields() {
     $fields = [
       'email' => WPFunctions::get()->__('Email', 'mailpoet'),
       'first_name' => WPFunctions::get()->__('First name', 'mailpoet'),
@@ -61,7 +61,7 @@ class ImportExportFactory {
     return $fields;
   }
 
-  function formatSubscriberFields($subscriber_fields) {
+  public function formatSubscriberFields($subscriber_fields) {
     return array_map(function($field_id, $field_name) {
       return [
         'id' => $field_id,
@@ -72,11 +72,11 @@ class ImportExportFactory {
     }, array_keys($subscriber_fields), $subscriber_fields);
   }
 
-  function getSubscriberCustomFields() {
+  public function getSubscriberCustomFields() {
     return CustomField::findArray();
   }
 
-  function formatSubscriberCustomFields($subscriber_custom_fields) {
+  public function formatSubscriberCustomFields($subscriber_custom_fields) {
     return array_map(function($field) {
       return [
         'id' => $field['id'],
@@ -88,7 +88,7 @@ class ImportExportFactory {
     }, $subscriber_custom_fields);
   }
 
-  function formatFieldsForSelect2(
+  public function formatFieldsForSelect2(
     $subscriber_fields,
     $subscriber_custom_fields) {
     $actions = ($this->action === 'import') ?
@@ -133,7 +133,7 @@ class ImportExportFactory {
     return $select2Fields;
   }
 
-  function bootstrap() {
+  public function bootstrap() {
     $subscriber_fields = $this->getSubscriberFields();
     $subscriber_custom_fields = $this->getSubscriberCustomFields();
     $data['segments'] = json_encode($this->getSegments());

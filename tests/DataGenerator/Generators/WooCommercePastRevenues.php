@@ -30,7 +30,7 @@ class WooCommercePastRevenues {
   const POST_NOTIFICATIONS_HISTORY = 30;
   const STANDARD_NEWSLETTER = 30;
 
-  function generate() {
+  public function generate() {
     $this->prepareDatabaseTables();
     // Reset hooks to prevent revenues calculation during generating
     remove_all_actions('woocommerce_order_status_completed');

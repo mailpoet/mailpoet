@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditorSocialBlockCest {
-  function addSocialBlock(\AcceptanceTester $I) {
+  public function addSocialBlock(\AcceptanceTester $I) {
     $I->wantTo('add social block to newsletter');
     $socialBlockInEditor = ('[data-automation-id="socialBlock"]');
     $socialBlockSettingsAssertion = ('[data-automation-id="social_select_another_network"]');

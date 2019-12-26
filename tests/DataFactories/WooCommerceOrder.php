@@ -19,7 +19,7 @@ class WooCommerceOrder {
   const STATUS_COMPLETED = 'completed';
   const STATUS_REFUNDED = 'refunded';
 
-  function __construct(\AcceptanceTester $tester) {
+  public function __construct(\AcceptanceTester $tester) {
     $unique_id = bin2hex(random_bytes(7)); // phpcs:ignore
     $this->tester = $tester;
     $this->data = [
@@ -38,11 +38,11 @@ class WooCommerceOrder {
     ];
   }
 
-  function withStatus($status) {
+  public function withStatus($status) {
     return $this->update(['status' => $status]);
   }
 
-  function withDateCreated($date) {
+  public function withDateCreated($date) {
     return $this->update(['date_created' => $date]);
   }
 
@@ -50,7 +50,7 @@ class WooCommerceOrder {
    * @param array $customer_data Customer created via WooCommerceCustomer factory
    * @return $this
    */
-  function withCustomer($customer_data) {
+  public function withCustomer($customer_data) {
     $billing = $this->data['billing'];
     $billing['first_name'] = $customer_data['first_name'];
     $billing['last_name'] = $customer_data['last_name'];
@@ -58,7 +58,7 @@ class WooCommerceOrder {
     return $this->update(['customer_id' => $customer_data['id'], 'billing' => $billing]);
   }
 
-  function withCurrency($currency) {
+  public function withCurrency($currency) {
     return $this->update(['currency' => $currency]);
   }
 
@@ -67,7 +67,7 @@ class WooCommerceOrder {
    * @param int[] $quantities
    * @return $this
    */
-  function withProducts($products, $quantities = null) {
+  public function withProducts($products, $quantities = null) {
     $products_data = [];
     foreach ($products as $key => $product) {
       $products_data[] = [
@@ -81,7 +81,7 @@ class WooCommerceOrder {
   }
 
 
-  function create() {
+  public function create() {
     $cmd = ['wc', 'shop_order', 'create', '--porcelain', '--user=admin'];
     $cmd[] = '--status=' . $this->data['status'];
     $cmd[] = '--customer_id=' . $this->data['customer_id'];
@@ -106,11 +106,11 @@ class WooCommerceOrder {
   /**
    * @param int $id
    */
-  function delete($id) {
+  public function delete($id) {
     $this->tester->cliToArray(['wc', 'shop_order', 'delete', $id, '--force=1', '--user=admin']);
   }
 
-  function deleteAll() {
+  public function deleteAll() {
     $list = $this->tester->cliToArray(['wc', 'shop_order', 'list', '--format=json', '--user=admin', '--fields=id']);
     foreach (json_decode($list[0], true) as $item) {
       $this->delete($item['id']);

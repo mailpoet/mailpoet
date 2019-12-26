@@ -4,12 +4,12 @@ namespace MailPoet\Segments;
 
 class FinderMock {
 
-  function getSubscriberIdsInSegment() {
+  public function getSubscriberIdsInSegment() {
 
   }
 
-  function findSubscribersInSegment() {
-    
+  public function findSubscribersInSegment() {
+
   }
 
 }

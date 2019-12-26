@@ -16,13 +16,13 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SetupTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $settings = SettingsController::getInstance();
     $settings->set('signup_confirmation.enabled', false);
   }
 
-  function testItCanReinstall() {
+  public function testItCanReinstall() {
     $wp = Stub::make(new WPFunctions, [
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
@@ -54,7 +54,7 @@ class SetupTest extends \MailPoetTest {
     expect(WPHooksHelper::isActionDone($hook_name))->true();
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

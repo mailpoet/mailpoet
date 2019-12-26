@@ -12,7 +12,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
 class MailerTest extends \MailPoetTest {
-  function testItResumesSending() {
+  public function testItResumesSending() {
     // create mailer log with a "paused" status
     $mailer_log = ['status' => MailerLog::STATUS_PAUSED];
     MailerLog::updateMailerLog($mailer_log);
@@ -29,7 +29,7 @@ class MailerTest extends \MailPoetTest {
     expect($mailer_log['status'])->null();
   }
 
-  function testItRunsAuhtorizedEmailsCheckIfErrorIsPresent() {
+  public function testItRunsAuhtorizedEmailsCheckIfErrorIsPresent() {
     $settings = SettingsController::getInstance();
     $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_sender_address' => 'a@b.c']);
     $authorized_emails_controller = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()]);

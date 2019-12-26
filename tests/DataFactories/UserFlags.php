@@ -13,21 +13,21 @@ class UserFlags {
   /** @var UserFlagsRepository */
   private $user_flags_repository;
 
-  function __construct($user_id) {
+  public function __construct($user_id) {
     $this->user_id = $user_id;
     $this->user_flags_repository = ContainerWrapper::getInstance()->get(UserFlagsRepository::class);
   }
 
-  function withDefaultFlags() {
+  public function withDefaultFlags() {
     $this->withEditorTutorialSeen();
   }
 
-  function withEditorTutorialSeen() {
+  public function withEditorTutorialSeen() {
     $this->withFlag('editor_tutorial_seen', 1);
     return $this;
   }
 
-  function withFlag($name, $value) {
+  public function withFlag($name, $value) {
     $user_flag = $this->user_flags_repository->findOneBy([
       'user_id' => $this->user_id,
       'name' => $name,

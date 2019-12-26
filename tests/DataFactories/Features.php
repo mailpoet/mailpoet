@@ -10,11 +10,11 @@ class Features {
   /** @var FeatureFlagsRepository */
   private $flags;
 
-  function __construct() {
+  public function __construct() {
     $this->flags = ContainerWrapper::getInstance(WP_DEBUG)->get(FeatureFlagsRepository::class);
   }
 
-  function withFeatureEnabled($name) {
+  public function withFeatureEnabled($name) {
     $this->flags->createOrUpdate([
       'name' => $name,
       'value' => true,
@@ -22,7 +22,7 @@ class Features {
     return $this;
   }
 
-  function withFeatureDisabled($name) {
+  public function withFeatureDisabled($name) {
     $this->flags->createOrUpdate([
       'name' => $name,
       'value' => false,

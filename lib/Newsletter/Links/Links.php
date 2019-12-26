@@ -21,14 +21,14 @@ class Links {
   const LINK_TYPE_SHORTCODE = 'shortcode';
   const LINK_TYPE_URL = 'link';
 
-  static function process($content, $newsletter_id, $queue_id) {
+  public static function process($content, $newsletter_id, $queue_id) {
     $extracted_links = self::extract($content);
     $saved_links = self::load($newsletter_id, $queue_id);
     $processed_links = self::hash($extracted_links, $saved_links);
     return self::replace($content, $processed_links);
   }
 
-  static function extract($content) {
+  public static function extract($content) {
     $extracted_links = [];
     // extract link shortcodes
     $shortcodes = new Shortcodes();
@@ -56,7 +56,7 @@ class Links {
     return array_unique($extracted_links, SORT_REGULAR);
   }
 
-  static function replace($content, $processed_links) {
+  public static function replace($content, $processed_links) {
     // replace HTML anchor tags
     $DOM = DomParser::parseStr($content);
     foreach ($DOM->query('a') as $link) {
@@ -87,7 +87,7 @@ class Links {
     ];
   }
 
-  static function replaceSubscriberData(
+  public static function replaceSubscriberData(
     $subscriber_id,
     $queue_id,
     $content,
@@ -122,7 +122,7 @@ class Links {
     return $content;
   }
 
-  static function save(array $links, $newsletter_id, $queue_id) {
+  public static function save(array $links, $newsletter_id, $queue_id) {
     foreach ($links as $link) {
       if (isset($link['id']))
         continue;
@@ -136,7 +136,7 @@ class Links {
     }
   }
 
-  static function ensureUnsubscribeLink(array $processed_links) {
+  public static function ensureUnsubscribeLink(array $processed_links) {
     if (in_array(
       NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
       array_column($processed_links, 'link'))
@@ -150,7 +150,7 @@ class Links {
     return $processed_links;
   }
 
-  static function convertHashedLinksToShortcodesAndUrls($content, $queue_id, $convert_all = false) {
+  public static function convertHashedLinksToShortcodesAndUrls($content, $queue_id, $convert_all = false) {
     preg_match_all(self::getLinkRegex(), $content, $links);
     $links = array_unique(Helpers::flattenArray($links));
     foreach ($links as $link) {
@@ -170,7 +170,7 @@ class Links {
     return $content;
   }
 
-  static function getLinkRegex() {
+  public static function getLinkRegex() {
     return sprintf(
       '/((%s|%s)(?:-\w+)?)/',
       preg_quote(self::DATA_TAG_CLICK),
@@ -178,7 +178,7 @@ class Links {
     );
   }
 
-  static function createUrlDataObject(
+  public static function createUrlDataObject(
     $subscriber_id, $subscriber_link_token, $queue_id, $link_hash, $preview
   ) {
     return [
@@ -190,7 +190,7 @@ class Links {
     ];
   }
 
-  static function transformUrlDataObject($data) {
+  public static function transformUrlDataObject($data) {
     reset($data);
     if (!is_int(key($data))) return $data;
     $transformed_data = [];

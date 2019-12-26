@@ -3,7 +3,7 @@
 namespace MailPoet\Cron\Workers\Bounce;
 
 class BounceTestMockAPI {
-  function checkBounces(array $emails) {
+  public function checkBounces(array $emails) {
     return array_map(
       function ($email) {
         return [

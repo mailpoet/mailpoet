@@ -3,7 +3,7 @@
  namespace MailPoet\Test\Acceptance;
 
 class ConfirmConfirmationPageCest {
-  function confirmDefaultConfirmationPage(\AcceptanceTester $I) {
+  public function confirmDefaultConfirmationPage(\AcceptanceTester $I) {
     $I->wantTo('Confirm link to default confirmation page works correctly');
     $I->login();
     $I->amOnMailPoetPage('Settings');

@@ -26,7 +26,7 @@ class FirstPurchase {
   /** @var LoggerFactory */
   private $logger_factory;
 
-  function __construct(WCHelper $helper = null) {
+  public function __construct(WCHelper $helper = null) {
     if ($helper === null) {
       $helper = new WCHelper();
     }
@@ -35,7 +35,7 @@ class FirstPurchase {
     $this->logger_factory = LoggerFactory::getInstance();
   }
 
-  function init() {
+  public function init() {
     WPFunctions::get()->addFilter('mailpoet_newsletter_shortcode', [
       $this,
       'handleOrderTotalShortcode',
@@ -56,7 +56,7 @@ class FirstPurchase {
     }
   }
 
-  function getEventDetails() {
+  public function getEventDetails() {
     return [
       'slug' => self::SLUG,
       'title' => WPFunctions::get()->__('First Purchase', 'mailpoet'),
@@ -79,7 +79,7 @@ class FirstPurchase {
     ];
   }
 
-  function handleOrderDateShortcode($shortcode, $newsletter, $subscriber, $queue) {
+  public function handleOrderDateShortcode($shortcode, $newsletter, $subscriber, $queue) {
     $result = $shortcode;
     if ($shortcode === self::ORDER_DATE_SHORTCODE) {
       $default_value = WPFunctions::get()->dateI18n(get_option('date_format'));
@@ -102,7 +102,7 @@ class FirstPurchase {
     return $result;
   }
 
-  function handleOrderTotalShortcode($shortcode, $newsletter, $subscriber, $queue) {
+  public function handleOrderTotalShortcode($shortcode, $newsletter, $subscriber, $queue) {
     $result = $shortcode;
     if ($shortcode === self::ORDER_TOTAL_SHORTCODE) {
       $default_value = $this->helper->wcPrice(0);
@@ -125,7 +125,7 @@ class FirstPurchase {
     return $result;
   }
 
-  function scheduleEmailWhenOrderIsPlaced($order_id) {
+  public function scheduleEmailWhenOrderIsPlaced($order_id) {
     $order_details = $this->helper->wcGetOrder($order_id);
     if (!$order_details || !$order_details->get_billing_email()) {
       $this->logger_factory->getLogger(self::SLUG)->addInfo(
@@ -178,7 +178,7 @@ class FirstPurchase {
     $this->scheduler->scheduleAutomaticEmail(WooCommerce::SLUG, self::SLUG, $check_email_was_not_scheduled, $subscriber->id, $meta);
   }
 
-  function getCustomerOrderCount($customer_email) {
+  public function getCustomerOrderCount($customer_email) {
     // registered user
     $user = WPFunctions::get()->getUserBy('email', $customer_email);
     if ($user) {

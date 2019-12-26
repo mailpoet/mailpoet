@@ -16,7 +16,7 @@ class SubscribersIdsTest extends \MailPoetTest {
   /** @var RequirementsChecker|\PHPUnit_Framework_MockObject_MockObject */
   private $requirement_checker;
 
-  function _before() {
+  public function _before() {
     $this->cleanData();
     $this->editors_wp_ids[] = wp_insert_user([
       'user_login' => 'user-role-test1',
@@ -42,7 +42,7 @@ class SubscribersIdsTest extends \MailPoetTest {
       ->getMock();
   }
 
-  function testItConstructsSubscribersIdQueryForAnyDynamicSegment() {
+  public function testItConstructsSubscribersIdQueryForAnyDynamicSegment() {
     $this->requirement_checker->method('shouldSkipSegment')->willReturn(false);
     $userRole = DynamicSegment::create();
     $userRole->hydrate([
@@ -59,7 +59,7 @@ class SubscribersIdsTest extends \MailPoetTest {
     $this->assertEquals($wp_ids, $this->editors_wp_ids, $message = '', $delta = 0.0, $maxDepth = 10, $canonicalize = true);
   }
 
-  function testItSkipsConstructingSubscribersIdQueryForAnyDynamicSegmentIfRequirementsNotMet() {
+  public function testItSkipsConstructingSubscribersIdQueryForAnyDynamicSegmentIfRequirementsNotMet() {
     $this->requirement_checker->method('shouldSkipSegment')->willReturn(true);
     $userRole = DynamicSegment::create();
     $userRole->hydrate([
@@ -72,7 +72,7 @@ class SubscribersIdsTest extends \MailPoetTest {
     expect($result)->isEmpty();
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanData();
   }
 

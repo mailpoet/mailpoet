@@ -34,28 +34,28 @@ class NewsletterOptionFieldEntity {
   /**
    * @return string
    */
-  function getName() {
+  public function getName() {
     return $this->name;
   }
 
   /**
    * @param string $name
    */
-  function setName($name) {
+  public function setName($name) {
     $this->name = $name;
   }
 
   /**
    * @return string
    */
-  function getNewsletterType() {
+  public function getNewsletterType() {
     return $this->newsletter_type;
   }
 
   /**
    * @param string $newsletter_type
    */
-  function setNewsletterType($newsletter_type) {
+  public function setNewsletterType($newsletter_type) {
     $this->newsletter_type = $newsletter_type;
   }
 }

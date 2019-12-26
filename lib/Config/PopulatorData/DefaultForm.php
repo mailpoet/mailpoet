@@ -11,7 +11,7 @@ class DefaultForm {
   /** @var Styles */
   private $form_styles;
 
-  function __construct(Styles $form_styles) {
+  public function __construct(Styles $form_styles) {
     $this->form_styles = $form_styles;
   }
 

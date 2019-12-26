@@ -6,7 +6,7 @@ use Codeception\Stub;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FieldNameObfuscatorTest extends \MailPoetUnitTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     WPFunctions::set(
       Stub::make(WPFunctions::class, [
@@ -40,7 +40,7 @@ class FieldNameObfuscatorTest extends \MailPoetUnitTest {
     ]);
   }
 
-  function _after() {
+  public function _after() {
     parent::_after();
     WPFunctions::set(new WPFunctions());
   }

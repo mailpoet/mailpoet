@@ -19,7 +19,7 @@ class GATrackingTest extends \MailPoetTest {
   /** @var string[] */
   private $rendered_newsletter;
 
-  function _before() {
+  public function _before() {
     $this->internal_host = 'newsletters.mailpoet.com';
     $this->ga_campaign = 'Spring email';
     $this->link = add_query_arg(['foo' => 'bar', 'baz' => 'xyz'], 'http://www.mailpoet.com/');
@@ -29,7 +29,7 @@ class GATrackingTest extends \MailPoetTest {
     ];
   }
 
-  function testItConditionallyAppliesGATracking() {
+  public function testItConditionallyAppliesGATracking() {
     // No process (empty GA campaign)
     $newsletter = Newsletter::createOrUpdate(['id' => 123]);
     $tracking = new GATracking();
@@ -42,7 +42,7 @@ class GATrackingTest extends \MailPoetTest {
     expect($result)->notEquals($this->rendered_newsletter);
   }
 
-  function testItGetsGACampaignFromParentNewsletterForPostNotifications() {
+  public function testItGetsGACampaignFromParentNewsletterForPostNotifications() {
     $tracking = new GATracking();
     $notification = Newsletter::create();
     $notification->hydrate([
@@ -60,7 +60,7 @@ class GATrackingTest extends \MailPoetTest {
     expect($result)->notEquals($this->rendered_newsletter);
   }
 
-  function testItCanAddGAParamsToLinks() {
+  public function testItCanAddGAParamsToLinks() {
     $tracking = new GATracking();
     $newsletter = Newsletter::createOrUpdate([
       'ga_campaign' => $this->ga_campaign,
@@ -70,7 +70,7 @@ class GATrackingTest extends \MailPoetTest {
     expect($result['html'])->contains('utm_campaign=' . urlencode($this->ga_campaign));
   }
 
-  function testItKeepsShorcodes() {
+  public function testItKeepsShorcodes() {
     $tracking = new GATracking();
     $newsletter = Newsletter::createOrUpdate([
       'ga_campaign' => $this->ga_campaign,
@@ -80,7 +80,7 @@ class GATrackingTest extends \MailPoetTest {
     expect($result['html'])->contains('email=[subscriber:email]');
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
   }
 }

@@ -83,7 +83,7 @@ class NewsletterLinkEntity {
   /**
    * @return int
    */
-  function getTotalClicksCount() {
+  public function getTotalClicksCount() {
     return $this->clicks->count();
   }
 }

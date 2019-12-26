@@ -9,7 +9,7 @@ class LinkTokens {
   const OBSOLETE_LINK_TOKEN_LENGTH = 6;
   const LINK_TOKEN_LENGTH = 32;
 
-  function getToken(Subscriber $subscriber) {
+  public function getToken(Subscriber $subscriber) {
     if ($subscriber->link_token === null) {
       $subscriber->link_token = $this->generateToken($subscriber->email);
       // `$subscriber->save()` fails if the subscriber has subscriptions, segments or custom fields
@@ -18,7 +18,7 @@ class LinkTokens {
     return $subscriber->link_token;
   }
 
-  function verifyToken(Subscriber $subscriber, $token) {
+  public function verifyToken(Subscriber $subscriber, $token) {
     $database_token = $this->getToken($subscriber);
     $request_token = substr($token, 0, strlen($database_token));
     return call_user_func(

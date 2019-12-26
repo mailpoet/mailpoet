@@ -14,7 +14,7 @@ use MailPoet\Subscribers\Source;
 use MailPoetVendor\Idiorm\ORM;
 
 class WP {
-  static function synchronizeUser($wp_user_id, $old_wp_user_data = false) {
+  public static function synchronizeUser($wp_user_id, $old_wp_user_data = false) {
     $wp_user = \get_userdata($wp_user_id);
     $wp_segment = Segment::getWPSegment();
 
@@ -85,7 +85,7 @@ class WP {
     }
   }
 
-  static function synchronizeUsers() {
+  public static function synchronizeUsers() {
 
     $updated_users_emails = self::updateSubscribersEmails();
     $inserted_users_emails = self::insertSubscribers();
@@ -238,8 +238,8 @@ class WP {
     global $wpdb;
     $query = '
       UPDATE %s as subscribers
-      LEFT JOIN %s as clicks ON subscribers.id=clicks.subscriber_id 
-      LEFT JOIN %s as opens ON subscribers.id=opens.subscriber_id 
+      LEFT JOIN %s as clicks ON subscribers.id=clicks.subscriber_id
+      LEFT JOIN %s as opens ON subscribers.id=opens.subscriber_id
       JOIN %s as usermeta ON usermeta.user_id=subscribers.wp_user_id AND usermeta.meta_key = "default_password_nag" AND usermeta.meta_value = "1"
       SET `status` = "unconfirmed"
       WHERE `wp_user_id` IS NOT NULL AND `status` = "subscribed" AND `confirmed_at` IS NULL AND clicks.id IS NULL AND opens.id IS NULL

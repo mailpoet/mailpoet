@@ -15,12 +15,12 @@ class AutomatedLatestContent extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
-  function __construct(\MailPoet\Newsletter\AutomatedLatestContent $alc, WPFunctions $wp) {
+  public function __construct(\MailPoet\Newsletter\AutomatedLatestContent $alc, WPFunctions $wp) {
     $this->ALC = $alc;
     $this->wp = $wp;
   }
 
-  function getPostTypes() {
+  public function getPostTypes() {
     $post_types = array_map(function($post_type) {
       return [
         'name' => $post_type->name,
@@ -32,7 +32,7 @@ class AutomatedLatestContent extends APIEndpoint {
     );
   }
 
-  function getTaxonomies($data = []) {
+  public function getTaxonomies($data = []) {
     $post_type = (isset($data['postType'])) ? $data['postType'] : 'post';
     $all_taxonomies = WPFunctions::get()->getObjectTaxonomies($post_type, 'objects');
     $taxonomies_with_label = array_filter($all_taxonomies, function($taxonomy) {
@@ -41,7 +41,7 @@ class AutomatedLatestContent extends APIEndpoint {
     return $this->successResponse($taxonomies_with_label);
   }
 
-  function getTerms($data = []) {
+  public function getTerms($data = []) {
     $taxonomies = (isset($data['taxonomies'])) ? $data['taxonomies'] : [];
     $search = (isset($data['search'])) ? $data['search'] : '';
     $limit = (isset($data['limit'])) ? (int)$data['limit'] : 100;
@@ -62,20 +62,20 @@ class AutomatedLatestContent extends APIEndpoint {
     return $this->successResponse(array_values($terms));
   }
 
-  function getPosts($data = []) {
+  public function getPosts($data = []) {
     return $this->successResponse(
       $this->ALC->getPosts($data)
     );
   }
 
-  function getTransformedPosts($data = []) {
+  public function getTransformedPosts($data = []) {
     $posts = $this->ALC->getPosts($data);
     return $this->successResponse(
       $this->ALC->transformPosts($data, $posts)
     );
   }
 
-  function getBulkTransformedPosts($data = []) {
+  public function getBulkTransformedPosts($data = []) {
     $used_posts = [];
     $rendered_posts = [];
 

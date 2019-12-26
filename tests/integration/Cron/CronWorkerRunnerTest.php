@@ -20,13 +20,13 @@ class CronWorkerRunnerTest extends \MailPoetTest {
   /** @var CronHelper */
   private $cron_helper;
 
-  function _before() {
+  public function _before() {
     $this->cron_worker_runner = $this->di_container->get(CronWorkerRunner::class);
     $this->cron_helper = $this->di_container->get(CronHelper::class);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 
-  function testItCanInitBeforeProcessing() {
+  public function testItCanInitBeforeProcessing() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'init' => Expected::once(),
       'scheduleAutomatically' => Expected::once(false),
@@ -34,7 +34,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $this->cron_worker_runner->run($worker);
   }
 
-  function testItPreparesTask() {
+  public function testItPreparesTask() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'prepareTaskStrategy' => Expected::once(true),
       'processTaskStrategy' => Expected::never(),
@@ -46,7 +46,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect(ScheduledTask::findOne($task->id)->status)->null();
   }
 
-  function testItProcessesTask() {
+  public function testItProcessesTask() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'prepareTaskStrategy' => Expected::never(),
       'processTaskStrategy' => Expected::once(true),
@@ -58,7 +58,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect(ScheduledTask::findOne($task->id)->status)->same(ScheduledTask::STATUS_COMPLETED);
   }
 
-  function testItFailsToProcessWithoutTasks() {
+  public function testItFailsToProcessWithoutTasks() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'scheduleAutomatically' => Expected::once(false),
       'prepareTaskStrategy' => Expected::never(),
@@ -69,7 +69,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect($result)->false();
   }
 
-  function testItFailsToProcessWithoutProcessingRequirementsMet() {
+  public function testItFailsToProcessWithoutProcessingRequirementsMet() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'checkProcessingRequirements' => Expected::once(false),
       'prepareTaskStrategy' => Expected::never(),
@@ -83,7 +83,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect($result)->false();
   }
 
-  function testItCanScheduleTaskAutomatically() {
+  public function testItCanScheduleTaskAutomatically() {
     $in_one_week = Carbon::now()->addWeek()->startOfDay();
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'scheduleAutomatically' => Expected::once(true),
@@ -96,7 +96,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect(ScheduledTask::findOne()->scheduled_at)->same($in_one_week->format('Y-m-d H:i:s'));
   }
 
-  function testItWillRescheduleTaskIfItIsRunningForTooLong() {
+  public function testItWillRescheduleTaskIfItIsRunningForTooLong() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'processTaskStrategy' => Expected::once(false),
     ]);
@@ -122,7 +122,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect($task->in_progress)->isEmpty();
   }
 
-  function testItWillRescheduleATaskIfItFails() {
+  public function testItWillRescheduleATaskIfItFails() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'processTaskStrategy' => Expected::once(function () {
         throw new \Exception('test error');
@@ -144,7 +144,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     }
   }
 
-  function testWillNotRescheduleATaskOnCronTimeout() {
+  public function testWillNotRescheduleATaskOnCronTimeout() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'processTaskStrategy' => Expected::once(function () {
         $this->cron_helper->enforceExecutionLimit(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT - 1);
@@ -165,7 +165,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     }
   }
 
-  function testItWillNotRunInMultipleInstances() {
+  public function testItWillNotRunInMultipleInstances() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'supportsMultipleInstances' => Expected::once(false),
       'processTaskStrategy' => Expected::never(),
@@ -178,7 +178,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $this->cron_worker_runner->run($worker);
   }
 
-  function testItThrowsExceptionWhenExecutionLimitIsReached() {
+  public function testItThrowsExceptionWhenExecutionLimitIsReached() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'processTaskStrategy' => Expected::never(),
     ]);
@@ -212,7 +212,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     return $task;
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

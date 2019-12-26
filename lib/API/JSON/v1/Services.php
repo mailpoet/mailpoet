@@ -33,7 +33,7 @@ class Services extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
 
-  function __construct(Bridge $bridge, SettingsController $settings, AnalyticsHelper $analytics, SPFCheck $spf_check) {
+  public function __construct(Bridge $bridge, SettingsController $settings, AnalyticsHelper $analytics, SPFCheck $spf_check) {
     $this->bridge = $bridge;
     $this->settings = $settings;
     $this->analytics = $analytics;
@@ -41,7 +41,7 @@ class Services extends APIEndpoint {
     $this->date_time = new DateTime();
   }
 
-  function checkSPFRecord($data = []) {
+  public function checkSPFRecord($data = []) {
     $sender_address = $this->settings->get('sender.address');
     $domain_name = mb_substr($sender_address, mb_strpos($sender_address, '@') + 1);
 
@@ -57,7 +57,7 @@ class Services extends APIEndpoint {
     return $this->successResponse();
   }
 
-  function checkMSSKey($data = []) {
+  public function checkMSSKey($data = []) {
     $key = isset($data['key']) ? trim($data['key']) : null;
 
     if (!$key) {
@@ -119,7 +119,7 @@ class Services extends APIEndpoint {
     return $this->errorResponse([APIError::BAD_REQUEST => $error]);
   }
 
-  function checkPremiumKey($data = []) {
+  public function checkPremiumKey($data = []) {
     $key = isset($data['key']) ? trim($data['key']) : null;
 
     if (!$key) {

@@ -26,7 +26,7 @@ class SubscriberTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->test_data = [
       'first_name' => 'John',
@@ -43,12 +43,12 @@ class SubscriberTest extends \MailPoetTest {
     ]);
   }
 
-  function testItCanBeCreated() {
+  public function testItCanBeCreated() {
     expect($this->saved->id() > 0)->true();
     expect($this->saved->getErrors())->false();
   }
 
-  function testItHasFirstName() {
+  public function testItHasFirstName() {
     $subscriber =
       Subscriber::where('email', $this->test_data['email'])
         ->findOne();
@@ -56,7 +56,7 @@ class SubscriberTest extends \MailPoetTest {
       ->equals($this->test_data['first_name']);
   }
 
-  function testItHasLastName() {
+  public function testItHasLastName() {
     $subscriber =
       Subscriber::where('email', $this->test_data['email'])
         ->findOne();
@@ -64,7 +64,7 @@ class SubscriberTest extends \MailPoetTest {
       ->equals($this->test_data['last_name']);
   }
 
-  function testItHasEmail() {
+  public function testItHasEmail() {
     $subscriber =
       Subscriber::where('email', $this->test_data['email'])
         ->findOne();
@@ -72,7 +72,7 @@ class SubscriberTest extends \MailPoetTest {
       ->equals($this->test_data['email']);
   }
 
-  function testItShouldSetErrors() {
+  public function testItShouldSetErrors() {
     // pdo error
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
@@ -84,7 +84,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($errors[0])->contains("Unknown column 'invalid_column' in 'field list'");
   }
 
-  function testItValidatesEmailAndSetsErrors() {
+  public function testItValidatesEmailAndSetsErrors() {
     // email is required
     $subscriber = Subscriber::create();
     $subscriber->save();
@@ -105,21 +105,21 @@ class SubscriberTest extends \MailPoetTest {
     expect($errors)->contains("Your email address is invalid!");
   }
 
-  function emailMustBeUnique() {
+  public function emailMustBeUnique() {
     $conflict_subscriber = Subscriber::create();
     $conflict_subscriber->hydrate($this->test_data);
     $saved = $conflict_subscriber->save();
     expect($saved)->notEquals(true);
   }
 
-  function testItHasStatusDefaultStatusOfUnconfirmed() {
+  public function testItHasStatusDefaultStatusOfUnconfirmed() {
     $subscriber =
       Subscriber::where('email', $this->test_data['email'])
         ->findOne();
     expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
-  function testItCanChangeStatus() {
+  public function testItCanChangeStatus() {
     $subscriber = Subscriber::where('email', $this->test_data['email'])->findOne();
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
@@ -131,7 +131,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber_updated->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItUpdateLastSubscribedAtCorrectly() {
+  public function testItUpdateLastSubscribedAtCorrectly() {
     $subscriber = Subscriber::where('email', $this->test_data['email'])->findOne();
     $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
     $subscriber->last_subscribed_at = null;
@@ -160,7 +160,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber_updated->last_subscribed_at)->equals($last_subscribed_at->toDateTimeString());
   }
 
-  function testItHasSearchFilter() {
+  public function testItHasSearchFilter() {
     $subscriber = Subscriber::filter('search', 'john')
       ->findOne();
     expect($subscriber->first_name)->equals($this->test_data['first_name']);
@@ -172,7 +172,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->email)->equals($this->test_data['email']);
   }
 
-  function testItHasGroupFilter() {
+  public function testItHasGroupFilter() {
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_UNCONFIRMED)
       ->findMany();
     foreach ($subscribers as $subscriber) {
@@ -204,7 +204,7 @@ class SubscriberTest extends \MailPoetTest {
     }
   }
 
-  function testItProvidesSegmentFilter() {
+  public function testItProvidesSegmentFilter() {
     $segment = Segment::createOrUpdate([
       'name' => 'Test segment',
     ]);
@@ -227,7 +227,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($filters['segment'])->count(3);
   }
 
-  function testItAppliesSegmentFilter() {
+  public function testItAppliesSegmentFilter() {
     // remove all subscribers
     Subscriber::deleteMany();
 
@@ -286,7 +286,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscribers)->count(1);
   }
 
-  function testItCanHaveSegment() {
+  public function testItCanHaveSegment() {
     $segment = Segment::createOrUpdate([
       'name' => 'some name',
     ]);
@@ -303,7 +303,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber_segment->id)->equals($segment->id);
   }
 
-  function testItCanHaveCustomFields() {
+  public function testItCanHaveCustomFields() {
     $custom_field = CustomField::createOrUpdate([
       'name' => 'DOB',
       'type' => 'date',
@@ -320,7 +320,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->DOB)->equals($association->value);
   }
 
-  function testItCanCreateSubscriberWithCustomFields() {
+  public function testItCanCreateSubscriberWithCustomFields() {
     $custom_field = CustomField::createOrUpdate([
       'name' => 'City',
       'type' => 'text',
@@ -367,7 +367,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->{'cf_' . $custom_field_3->id})->equals('2013-07');
   }
 
-  function testItShouldUnsubscribeFromAllSegments() {
+  public function testItShouldUnsubscribeFromAllSegments() {
     $segment_1 = Segment::createOrUpdate(['name' => 'Segment 1']);
     $segment_2 = Segment::createOrUpdate(['name' => 'Segment 2']);
 
@@ -397,7 +397,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscribed_segments)->count(0);
   }
 
-  function testItCanCreateOrUpdate() {
+  public function testItCanCreateOrUpdate() {
     $data = [
       'email' => 'john.doe@mailpoet.com',
       'first_name' => 'John',
@@ -420,7 +420,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($record->last_name)->equals('Mailer');
   }
 
-  function testItCanCreateOrUpdateMultipleRecords() {
+  public function testItCanCreateOrUpdateMultipleRecords() {
     ORM::forTable(Subscriber::$_table)->deleteMany();
     $columns = [
       'first_name',
@@ -456,7 +456,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscribers[0]['status'])->equals('unsubscribed');
   }
 
-  function testItCanBeUpdatedByEmail() {
+  public function testItCanBeUpdatedByEmail() {
     $subscriber_updated = Subscriber::createOrUpdate([
       'email' => $this->test_data['email'],
       'first_name' => 'JoJo',
@@ -471,7 +471,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->last_name)->equals('DoDo');
   }
 
-  function testItCanSetCustomField() {
+  public function testItCanSetCustomField() {
     $custom_field = CustomField::createOrUpdate([
       'name' => 'Date of Birth',
       'type' => 'date',
@@ -495,7 +495,7 @@ class SubscriberTest extends \MailPoetTest {
     );
   }
 
-  function testItCanGetCustomField() {
+  public function testItCanGetCustomField() {
     $subscriber = Subscriber::findOne($this->subscriber->id());
 
     expect($subscriber->getCustomField(9999, 'default_value'))
@@ -512,7 +512,7 @@ class SubscriberTest extends \MailPoetTest {
       ->equals('non_default_value');
   }
 
-  function testItCanGetOnlySubscribedAndNonTrashedSubscribersInSegments() {
+  public function testItCanGetOnlySubscribedAndNonTrashedSubscribersInSegments() {
     $subscriber_1 = Subscriber::createOrUpdate([
       'first_name' => 'Adam',
       'last_name' => 'Smith',
@@ -561,7 +561,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscribed_subscribers_in_segment)->count(2);
   }
 
-  function testItCannotTrashWpUser() {
+  public function testItCannotTrashWpUser() {
     $wp_subscriber = Subscriber::createOrUpdate([
       'email' => 'some.wp.user@mailpoet.com',
       'first_name' => 'Some',
@@ -575,7 +575,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->deleted_at)->equals(null);
   }
 
-  function testItCannotDeleteWpUser() {
+  public function testItCannotDeleteWpUser() {
     $wp_subscriber = Subscriber::createOrUpdate([
       'email' => 'some.wp.user@mailpoet.com',
       'first_name' => 'Some',
@@ -588,7 +588,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber)->notEquals(false);
   }
 
-  function testItCannotTrashWooCommerceCustomer() {
+  public function testItCannotTrashWooCommerceCustomer() {
     $wp_subscriber = Subscriber::createOrUpdate([
       'email' => 'some.woocommerce.customer@mailpoet.com',
       'first_name' => 'Some',
@@ -602,7 +602,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->deleted_at)->equals(null);
   }
 
-  function testItCannotDeleteWooCommerceCustomer() {
+  public function testItCannotDeleteWooCommerceCustomer() {
     $wp_subscriber = Subscriber::createOrUpdate([
       'email' => 'some.woocommerce.customer@mailpoet.com',
       'first_name' => 'Some',
@@ -615,7 +615,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber)->notEquals(false);
   }
 
-  function testItCanDeleteCustomFieldRelations() {
+  public function testItCanDeleteCustomFieldRelations() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -633,7 +633,7 @@ class SubscriberTest extends \MailPoetTest {
     expect(SubscriberCustomField::findMany())->count(1);
   }
 
-  function testItCanGetTheTotalNumberOfSubscribers() {
+  public function testItCanGetTheTotalNumberOfSubscribers() {
     // remove all subscribers
     Subscriber::deleteMany();
 
@@ -674,7 +674,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($total)->equals(1);
   }
 
-  function testItBulkTrashesSubscribers() {
+  public function testItBulkTrashesSubscribers() {
     $subscriber_with_wp_user_id_zero = Subscriber::createOrUpdate([
       'email' => 'some.wp.user0@mailpoet.com',
       'first_name' => 'Some',
@@ -693,7 +693,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($not_trashed_subscribers[0]['wp_user_id'])->equals(1);
   }
 
-  function testItBulkDeletesSubscribers() {
+  public function testItBulkDeletesSubscribers() {
     $segment = Segment::createOrUpdate(
       [
         'name' => 'test',
@@ -746,7 +746,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($not_deleted_subscribers[0]['wp_user_id'])->equals(1);
   }
 
-  function testItCanFindSubscribersInSegments() {
+  public function testItCanFindSubscribersInSegments() {
     // create 3 subscribers, segments and subscriber-segment relations
     $prepare_data = function() {
       $this->_after();
@@ -838,7 +838,7 @@ class SubscriberTest extends \MailPoetTest {
     );
   }
 
-  function testItSetsDefaultValuesForRequiredFields() {
+  public function testItSetsDefaultValuesForRequiredFields() {
     // MySQL running in strict mode requires a value to be set for certain fields
     $values = Subscriber::setRequiredFieldsDefaultValues([]);
     expect($values['first_name'])->equals('');
@@ -848,7 +848,7 @@ class SubscriberTest extends \MailPoetTest {
     expect(strlen($values['link_token']))->equals(32);
   }
 
-  function testItSetsDefaultStatusDependingOnSingupConfirmationOption() {
+  public function testItSetsDefaultStatusDependingOnSingupConfirmationOption() {
     // when signup confirmation is disabled, status should be 'subscribed'
     $this->settings->set('signup_confirmation.enabled', false);
     $values = Subscriber::setRequiredFieldsDefaultValues([]);
@@ -868,7 +868,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($values['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItSetsDefaultValuesForNewSubscribers() {
+  public function testItSetsDefaultValuesForNewSubscribers() {
     $result = Subscriber::createOrUpdate(
       [
         'email' => 'new.subscriber@example.com',
@@ -880,7 +880,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($result->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
-  function testItDoesNotSetDefaultValuesForExistingSubscribers() {
+  public function testItDoesNotSetDefaultValuesForExistingSubscribers() {
     $existing_subscriber_data = $this->test_data;
     $result = Subscriber::createOrUpdate(
       [
@@ -892,7 +892,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($result->last_name)->equals($this->test_data['last_name']);
   }
 
-  function testItExtractsCustomFieldsFromObject() {
+  public function testItExtractsCustomFieldsFromObject() {
     $data = [
       'email' => 'test@example.com',
       'cf_1' => 'Paris',
@@ -916,7 +916,7 @@ class SubscriberTest extends \MailPoetTest {
     );
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);

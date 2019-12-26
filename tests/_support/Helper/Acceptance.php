@@ -17,7 +17,7 @@ class Acceptance extends \Codeception\Module
    * Note: Selenium JS error log buffer is cleared after logs retrieval:
    * https://github.com/SeleniumHQ/selenium/wiki/Logging#retrieval-of-logs
    */
-  function seeNoJSErrors() {
+  public function seeNoJSErrors() {
     $wd = $this->getModule('WPWebDriver');
     assert($wd instanceof WebDriver);
 
@@ -46,7 +46,7 @@ class Acceptance extends \Codeception\Module
     $this->assertEquals('', join(PHP_EOL, $this->js_errors), 'JS errors are present');
   }
 
-  function getCurrentUrl() {
+  public function getCurrentUrl() {
     $wd = $this->getModule('WPWebDriver');
     assert($wd instanceof WebDriver);
     return $wd->_getCurrentUri();
@@ -62,7 +62,7 @@ class Acceptance extends \Codeception\Module
       );
   }
 
-  function _after(TestInterface $test) {
+  public function _after(TestInterface $test) {
     $this->js_errors = [];
   }
 }

@@ -23,7 +23,7 @@ class MailerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
@@ -36,11 +36,11 @@ class MailerTest extends \MailPoetTest {
     $this->sender = $this->settings->get('sender');
   }
 
-  function testConfiguresMailerWhenItConstructs() {
+  public function testConfiguresMailerWhenItConstructs() {
     expect($this->mailer_task->mailer instanceof \MailPoet\Mailer\Mailer)->true();
   }
 
-  function testItCanConfigureMailerWithSenderAndReplyToAddresses() {
+  public function testItCanConfigureMailerWithSenderAndReplyToAddresses() {
     $newsletter = new \stdClass();
 
     // when no sender/reply-to information is set, use the sender information
@@ -64,19 +64,19 @@ class MailerTest extends \MailPoetTest {
     expect($mailer->reply_to['reply_to_email'])->equals($newsletter->reply_to_address);
   }
 
-  function testItGetsMailerLog() {
+  public function testItGetsMailerLog() {
     $mailer_log = $this->mailer_task->getMailerLog();
     expect(is_array($mailer_log))->true();
   }
 
-  function testItUpdatesMailerLogSentCount() {
+  public function testItUpdatesMailerLogSentCount() {
     $mailer_log = $this->mailer_task->getMailerLog();
     expect($mailer_log['sent'])->equals(0);
     $mailer_log = $this->mailer_task->updateSentCount();
     expect($mailer_log['sent'])->equals(1);
   }
 
-  function testItGetsProcessingMethod() {
+  public function testItGetsProcessingMethod() {
     // when using MailPoet method, newsletters should be processed in bulk
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
@@ -99,7 +99,7 @@ class MailerTest extends \MailPoetTest {
     expect($mailer_task->getProcessingMethod())->equals('individual');
   }
 
-  function testItCanPrepareSubscriberForSending() {
+  public function testItCanPrepareSubscriberForSending() {
     $subscriber = Subscriber::create();
     $subscriber->email = 'test@example.com';
     $subscriber->first_name = 'John';
@@ -109,7 +109,7 @@ class MailerTest extends \MailPoetTest {
     expect($prepared_subscriber)->equals('John Doe <test@example.com>');
   }
 
-  function testItCanSend() {
+  public function testItCanSend() {
     $php_mail_class = 'MailPoet\Mailer\Methods\PHPMail';
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
@@ -139,7 +139,7 @@ class MailerTest extends \MailPoetTest {
     expect($mailer_task->send('Newsletter', 'Subscriber'))->true();
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }

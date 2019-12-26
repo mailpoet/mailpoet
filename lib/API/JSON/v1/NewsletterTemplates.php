@@ -17,7 +17,7 @@ class NewsletterTemplates extends APIEndpoint {
     'getAll',
   ];
 
-  function get($data = []) {
+  public function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
     if ($template instanceof NewsletterTemplate) {
@@ -31,7 +31,7 @@ class NewsletterTemplates extends APIEndpoint {
     }
   }
 
-  function getAll() {
+  public function getAll() {
     $collection = NewsletterTemplate
       ::selectExpr('id, categories, thumbnail, name, description, readonly')
       ->orderByAsc('readonly')
@@ -45,7 +45,7 @@ class NewsletterTemplates extends APIEndpoint {
     return $this->successResponse($templates);
   }
 
-  function save($data = []) {
+  public function save($data = []) {
     ignore_user_abort(true);
     if (!empty($data['newsletter_id'])) {
       $template = NewsletterTemplate::whereEqual('newsletter_id', $data['newsletter_id'])->findOne();
@@ -70,7 +70,7 @@ class NewsletterTemplates extends APIEndpoint {
     }
   }
 
-  function delete($data = []) {
+  public function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
     if ($template instanceof NewsletterTemplate) {

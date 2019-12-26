@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditorFooterBlockCest {
-  function addFooter(\AcceptanceTester $I) {
+  public function addFooter(\AcceptanceTester $I) {
     $I->wantTo('add Footer block to newsletter');
     $footerInEditor = ('[data-automation-id="footer"]');
     $footerSettingsIcon = ('[data-automation-id="settings_tool"]');

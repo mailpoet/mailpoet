@@ -26,7 +26,7 @@ class Reporter {
     $this->woocommerce_helper = $woocommerce_helper;
   }
 
-  function getData() {
+  public function getData() {
     global $wpdb, $wp_version, $woocommerce;
     $mta = $this->settings->get('mta', []);
     $newsletters = Newsletter::getAnalytics();
@@ -111,7 +111,7 @@ class Reporter {
     return $result;
   }
 
-  function getTrackingData() {
+  public function getTrackingData() {
     $newsletters = Newsletter::getAnalytics();
     $segments = Segment::getAnalytics();
     $mta = $this->settings->get('mta', []);

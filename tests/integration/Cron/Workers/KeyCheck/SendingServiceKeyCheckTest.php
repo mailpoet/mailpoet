@@ -11,19 +11,19 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 
 class SendingServiceKeyCheckTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->mss_key = 'some_key';
     $this->worker = new SendingServiceKeyCheck($this->di_container->get(SettingsController::class), microtime(true));
   }
 
-  function testItRequiresMailPoetMethodToBeSetUp() {
+  public function testItRequiresMailPoetMethodToBeSetUp() {
     expect($this->worker->checkProcessingRequirements())->false();
     $this->setMailPoetSendingMethod();
     expect($this->worker->checkProcessingRequirements())->true();
   }
 
-  function testItChecksMSSKey() {
+  public function testItChecksMSSKey() {
     $response = ['code' => Bridge::KEY_VALID];
     $this->worker->bridge = Stub::make(
       new Bridge,
@@ -58,7 +58,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     );
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

@@ -16,7 +16,7 @@ class NewsletterStatistics {
   /** @var int */
   private $total_sent_count;
 
-  function __construct($click_count, $open_count, $unsubscribe_count, $total_sent_count) {
+  public function __construct($click_count, $open_count, $unsubscribe_count, $total_sent_count) {
     $this->click_count = $click_count;
     $this->open_count = $open_count;
     $this->unsubscribe_count = $unsubscribe_count;

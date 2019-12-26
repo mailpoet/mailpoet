@@ -5,7 +5,7 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Date {
-  static function process(
+  public static function process(
     $shortcode_details
   ) {
     $action_mapping = [

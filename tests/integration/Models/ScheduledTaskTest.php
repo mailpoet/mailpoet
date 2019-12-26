@@ -11,7 +11,7 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class ScheduledTaskTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->task = ScheduledTask::create();
     $this->task->hydrate([
@@ -20,16 +20,16 @@ class ScheduledTaskTest extends \MailPoetTest {
     $this->task->save();
   }
 
-  function testItCanBeCompleted() {
+  public function testItCanBeCompleted() {
     $this->task->complete();
     expect($this->task->status)->equals(ScheduledTask::STATUS_COMPLETED);
   }
 
-  function testItSetsDefaultPriority() {
+  public function testItSetsDefaultPriority() {
     expect($this->task->priority)->equals(ScheduledTask::PRIORITY_MEDIUM);
   }
 
-  function testItUnPauseAllByNewsletters() {
+  public function testItUnPauseAllByNewsletters() {
     $newsletter = Newsletter::createOrUpdate([
       'type' => Newsletter::TYPE_NOTIFICATION,
     ]);
@@ -66,7 +66,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($task3_found->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
-  function testItPauseAllByNewsletters() {
+  public function testItPauseAllByNewsletters() {
     $newsletter = Newsletter::createOrUpdate([
       'type' => Newsletter::TYPE_NOTIFICATION,
     ]);
@@ -91,7 +91,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($task2_found->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
-  function testItDeletesRelatedScheduledTaskSubscriber() {
+  public function testItDeletesRelatedScheduledTaskSubscriber() {
     $task_id = $this->task->id;
     ScheduledTaskSubscriber::createOrUpdate([
       'task_id' => $task_id,
@@ -113,7 +113,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($count)->equals(0);
   }
 
-  function testItJsonEncodesMetaWhenSaving() {
+  public function testItJsonEncodesMetaWhenSaving() {
     $task = ScheduledTask::create();
     $meta = [
       'some' => 'value',
@@ -127,7 +127,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect(json_decode($task->meta, true))->equals($meta);
   }
 
-  function testItDoesNotJsonEncodesMetaEqualToNull() {
+  public function testItDoesNotJsonEncodesMetaEqualToNull() {
     $task = ScheduledTask::create();
     $meta = null;
     $task->meta = $meta;
@@ -139,7 +139,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($task->meta)->equals($meta);
   }
 
-  function testItCanRescheduleTasksProgressively() {
+  public function testItCanRescheduleTasksProgressively() {
     $task = $this->task;
     $task->status = null;
     $scheduled_at = $task->scheduled_at;
@@ -157,7 +157,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($timeout)->equals(ScheduledTask::MAX_RESCHEDULE_TIMEOUT);
   }
 
-  function testItCanGetDueTasks() {
+  public function testItCanGetDueTasks() {
     // due (scheduled in past)
     ScheduledTask::createOrUpdate([
       'type' => 'test',
@@ -191,7 +191,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($tasks)->count(1);
   }
 
-  function testItCanGetRunningTasks() {
+  public function testItCanGetRunningTasks() {
     // running (scheduled in past)
     ScheduledTask::createOrUpdate([
       'type' => 'test',
@@ -225,7 +225,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($tasks)->count(1);
   }
 
-  function testItCanGetCompletedTasks() {
+  public function testItCanGetCompletedTasks() {
     // completed (scheduled in past)
     ScheduledTask::createOrUpdate([
       'type' => 'test',
@@ -259,7 +259,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($tasks)->count(1);
   }
 
-  function testItCanGetFutureScheduledTasks() {
+  public function testItCanGetFutureScheduledTasks() {
     // scheduled (in future)
     ScheduledTask::createOrUpdate([
       'type' => 'test',
@@ -293,7 +293,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($tasks)->count(1);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
   }

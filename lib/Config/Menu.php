@@ -47,7 +47,7 @@ class Menu {
   /** @var FeaturesController */
   private $features_controller;
 
-  function __construct(
+  public function __construct(
     AccessControl $access_control,
     WPFunctions $wp,
     ServicesChecker $services_checker,
@@ -61,7 +61,7 @@ class Menu {
     $this->container = $container;
   }
 
-  function init() {
+  public function init() {
     $this->checkMailPoetAPIKey();
     $this->checkPremiumKey();
 
@@ -74,7 +74,7 @@ class Menu {
     );
   }
 
-  function setup() {
+  public function setup() {
     if (!$this->access_control->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) return;
     if (self::isOnMailPoetAdminPage()) {
       $this->wp->doAction('mailpoet_conflict_resolver_styles');
@@ -412,83 +412,83 @@ class Menu {
     );
   }
 
-  function disableWPEmojis() {
+  public function disableWPEmojis() {
     $this->wp->removeAction('admin_print_scripts', 'print_emoji_detection_script');
     $this->wp->removeAction('admin_print_styles', 'print_emoji_styles');
   }
 
-  function migration() {
+  public function migration() {
     $this->container->get(MP2Migration::class)->render();
   }
 
-  function welcomeWizard() {
+  public function welcomeWizard() {
     $this->container->get(WelcomeWizard::class)->render();
   }
 
-  function wooCommerceListImport() {
+  public function wooCommerceListImport() {
     $this->container->get(WooCommerceListImport::class)->render();
   }
 
-  function revenueTrackingPermission() {
+  public function revenueTrackingPermission() {
     $this->container->get(RevenueTrackingPermission::class)->render();
   }
 
-  function update() {
+  public function update() {
     $this->container->get(Update::class)->render();
   }
 
-  function premium() {
+  public function premium() {
     $this->container->get(Premium::class)->render();
   }
 
-  function settings() {
+  public function settings() {
     $this->container->get(Settings::class)->render();
   }
 
-  function help() {
+  public function help() {
     $this->container->get(Help::class)->render();
   }
 
-  function experimentalFeatures() {
+  public function experimentalFeatures() {
     $this->container->get(ExperimentalFeatures::class)->render();
   }
 
-  function subscribers() {
+  public function subscribers() {
     $this->container->get(Subscribers::class)->render();
   }
 
-  function segments() {
+  public function segments() {
     $this->container->get(Segments::class)->render();
   }
 
-  function dynamicSegments() {
+  public function dynamicSegments() {
     $this->container->get(DynamicSegments::class)->render();
   }
 
-  function forms() {
+  public function forms() {
     $this->container->get(Forms::class)->render();
   }
 
-  function newsletters() {
+  public function newsletters() {
     if (isset($this->mp_api_key_valid) && $this->mp_api_key_valid === false) {
       return $this->displayMailPoetAPIKeyInvalid();
     }
     $this->container->get(Newsletters::class)->render();
   }
 
-  function newletterEditor() {
+  public function newletterEditor() {
     $this->container->get(NewsletterEditor::class)->render();
   }
 
-  function import() {
+  public function import() {
     $this->container->get(SubscribersImport::class)->render();
   }
 
-  function export() {
+  public function export() {
     $this->container->get(SubscribersExport::class)->render();
   }
 
-  function formEditor() {
+  public function formEditor() {
     $this->container->get(FormEditor::class)->render();
   }
 
@@ -497,7 +497,7 @@ class Menu {
     exit;
   }
 
-  function setPageTitle($title) {
+  public function setPageTitle($title) {
     return sprintf(
       '%s - %s',
       $this->wp->__('MailPoet', 'mailpoet'),
@@ -505,7 +505,7 @@ class Menu {
     );
   }
 
-  static function isOnMailPoetAdminPage(array $exclude = null, $screen_id = null) {
+  public static function isOnMailPoetAdminPage(array $exclude = null, $screen_id = null) {
     if (is_null($screen_id)) {
       if (empty($_REQUEST['page'])) {
         return false;
@@ -526,7 +526,7 @@ class Menu {
    * This error page is used when the initialization is failed
    * to display admin notices only
    */
-  static function addErrorPage(AccessControl $access_control) {
+  public static function addErrorPage(AccessControl $access_control) {
     if (!self::isOnMailPoetAdminPage()) {
       return false;
     }
@@ -549,11 +549,11 @@ class Menu {
     );
   }
 
-  static function errorPageCallback() {
+  public static function errorPageCallback() {
     // Used for displaying admin notices only
   }
 
-  function checkMailPoetAPIKey(ServicesChecker $checker = null) {
+  public function checkMailPoetAPIKey(ServicesChecker $checker = null) {
     if (self::isOnMailPoetAdminPage()) {
       $show_notices = isset($_REQUEST['page'])
         && stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) === false;
@@ -562,7 +562,7 @@ class Menu {
     }
   }
 
-  function checkPremiumKey(ServicesChecker $checker = null) {
+  public function checkPremiumKey(ServicesChecker $checker = null) {
     $show_notices = isset($_SERVER['SCRIPT_NAME'])
       && stripos($_SERVER['SCRIPT_NAME'], 'plugins.php') !== false;
     $checker = $checker ?: $this->services_checker;

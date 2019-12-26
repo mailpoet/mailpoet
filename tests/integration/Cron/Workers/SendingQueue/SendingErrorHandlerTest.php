@@ -14,12 +14,12 @@ class SendingErrorHandlerTest extends \MailPoetTest {
   /** @var SendingErrorHandler */
   private $error_handler;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->error_handler = new SendingErrorHandler();
   }
 
-  function testItShouldProcessSoftErrorCorrectly() {
+  public function testItShouldProcessSoftErrorCorrectly() {
     $subscribers = [
       'john@doe.com',
       'john@rambo.com',

@@ -25,7 +25,7 @@ class WordPressMailer extends \PHPMailer {
   /** @var SubscribersRepository */
   private $subscribers_repository;
 
-  function __construct(
+  public function __construct(
     Mailer $mailer,
     Mailer $fallback_mailer,
     MetaInfo $mailerMetaInfo,
@@ -38,7 +38,7 @@ class WordPressMailer extends \PHPMailer {
     $this->subscribers_repository = $subscribers_repository;
   }
 
-  function send() {
+  public function send() {
     // We need this so that the \PHPMailer class will correctly prepare all the headers.
     $this->Mailer = 'mail';
 

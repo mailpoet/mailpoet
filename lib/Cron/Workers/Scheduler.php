@@ -29,7 +29,7 @@ class Scheduler {
   /** @var CronHelper */
   private $cron_helper;
 
-  function __construct(
+  public function __construct(
     SubscribersFinder $subscribers_finder,
     LoggerFactory $logger_factory,
     CronHelper $cron_helper
@@ -39,7 +39,7 @@ class Scheduler {
     $this->logger_factory = $logger_factory;
   }
 
-  function process($timer = false) {
+  public function process($timer = false) {
     $timer = $timer ?: microtime(true);
 
     // abort if execution limit is reached
@@ -67,7 +67,7 @@ class Scheduler {
     }
   }
 
-  function processWelcomeNewsletter($newsletter, $queue) {
+  public function processWelcomeNewsletter($newsletter, $queue) {
     $subscribers = $queue->getSubscribers();
     if (empty($subscribers[0])) {
       $queue->delete();
@@ -90,7 +90,7 @@ class Scheduler {
     return true;
   }
 
-  function processPostNotificationNewsletter($newsletter, $queue) {
+  public function processPostNotificationNewsletter($newsletter, $queue) {
     $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'process post notification in scheduler',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
@@ -135,7 +135,7 @@ class Scheduler {
     return true;
   }
 
-  function processScheduledAutomaticEmail($newsletter, $queue) {
+  public function processScheduledAutomaticEmail($newsletter, $queue) {
     if ($newsletter->sendTo === 'segment') {
       $segment = Segment::findOne($newsletter->segment);
       $result = $this->subscribers_finder->addSubscribersToTaskFromSegments($queue->task(), [$segment]);
@@ -159,7 +159,7 @@ class Scheduler {
     return true;
   }
 
-  function processScheduledStandardNewsletter($newsletter, SendingTask $task) {
+  public function processScheduledStandardNewsletter($newsletter, SendingTask $task) {
     $segments = $newsletter->segments()->findMany();
     $this->subscribers_finder->addSubscribersToTaskFromSegments($task->task(), $segments);
     // update current queue
@@ -172,7 +172,7 @@ class Scheduler {
     return true;
   }
 
-  function verifyMailpoetSubscriber($subscriber_id, $newsletter, $queue) {
+  public function verifyMailpoetSubscriber($subscriber_id, $newsletter, $queue) {
     $subscriber = Subscriber::findOne($subscriber_id);
     // check if subscriber is in proper segment
     $subscriber_in_segment =
@@ -187,7 +187,7 @@ class Scheduler {
     return $this->verifySubscriber($subscriber, $queue);
   }
 
-  function verifyWPSubscriber($subscriber_id, $newsletter, $queue) {
+  public function verifyWPSubscriber($subscriber_id, $newsletter, $queue) {
     // check if user has the proper role
     $subscriber = Subscriber::findOne($subscriber_id);
     if (!$subscriber || $subscriber->isWPUser() === false) {
@@ -204,7 +204,7 @@ class Scheduler {
     return $this->verifySubscriber($subscriber, $queue);
   }
 
-  function verifySubscriber($subscriber, $queue) {
+  public function verifySubscriber($subscriber, $queue) {
     if ($subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
       // reschedule delivery
       $queue->rescheduleProgressively();
@@ -216,7 +216,7 @@ class Scheduler {
     return true;
   }
 
-  function deleteQueueOrUpdateNextRunDate($queue, $newsletter) {
+  public function deleteQueueOrUpdateNextRunDate($queue, $newsletter) {
     if ($newsletter->intervalType === PostNotificationScheduler::INTERVAL_IMMEDIATELY) {
       $queue->delete();
       return;
@@ -231,7 +231,7 @@ class Scheduler {
     }
   }
 
-  function createNotificationHistory($newsletter_id) {
+  public function createNotificationHistory($newsletter_id) {
     $newsletter = Newsletter::findOne($newsletter_id);
     $notification_history = $newsletter->createNotificationHistory();
     return ($notification_history->getErrors() === false) ?
@@ -258,7 +258,7 @@ class Scheduler {
     }
   }
 
-  static function getScheduledQueues() {
+  public static function getScheduledQueues() {
     return SendingTask::getScheduledQueues(self::TASK_BATCH_SIZE);
   }
 }

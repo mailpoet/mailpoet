@@ -53,7 +53,7 @@ class SubscriberManagementCest {
     }
   }
 
-  function viewSubscriberList(\AcceptanceTester $I) {
+  public function viewSubscriberList(\AcceptanceTester $I) {
     $I->wantTo('View list of subscribers');
     $this->generateWPUsersList($I);
     $I->searchFor('Alec Saunders');
@@ -61,7 +61,7 @@ class SubscriberManagementCest {
     $I->seeNoJSErrors();
   }
 
-  function addGlobalSubscriber(\AcceptanceTester $I) {
+  public function addGlobalSubscriber(\AcceptanceTester $I) {
     $I->wantTo('Add a user to global subscribers list');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');
@@ -77,7 +77,7 @@ class SubscriberManagementCest {
     $I->seeNoJSErrors();
   }
 
-  function deleteGlobalSubscriber(\AcceptanceTester $I) {
+  public function deleteGlobalSubscriber(\AcceptanceTester $I) {
     $I->wantTo('Delete a user from global subscribers list');
     $new_subscriber_email = 'deleteglobaluser99@fakemail.fake';
     $this->generateSingleSubscriber('deleteglobaluser99@fakemail.fake', 'Delete', 'ThisGlobalUser');
@@ -94,7 +94,7 @@ class SubscriberManagementCest {
     $I->seeNoJSErrors();
   }
 
-  function addSubscriberToList(\AcceptanceTester $I) {
+  public function addSubscriberToList(\AcceptanceTester $I) {
     $I->wantTo('Add a subscriber to a list');
     $new_subscriber_email = 'addtolistuser99@fakemail.fake';
     $this->generateMultipleLists();
@@ -110,7 +110,7 @@ class SubscriberManagementCest {
     $I->seeNoJSErrors();
   }
 
-  function deleteSubscriberFromList(\AcceptanceTester $I) {
+  public function deleteSubscriberFromList(\AcceptanceTester $I) {
     $I->wantTo('Delete a subscriber from a list');
     $new_subscriber_email = 'deletefromlistuser99@fakemail.fake';
     $this->generateMultipleLists();
@@ -127,7 +127,7 @@ class SubscriberManagementCest {
     $I->waitForText('Subscriber was updated');
   }
 
-  function editSubscriber(\AcceptanceTester $I) {
+  public function editSubscriber(\AcceptanceTester $I) {
     $I->wantTo('Edit a subscriber');
     $new_subscriber_email = 'editglobaluser99@fakemail.fake';
     $this->generateSingleSubscriber('editglobaluser99@fakemail.fake', 'Edit', 'ThisGlobalUser');
@@ -138,7 +138,7 @@ class SubscriberManagementCest {
     $I->waitForText('Subscriber');
   }
 
-  function inactiveSubscribers(\AcceptanceTester $I) {
+  public function inactiveSubscribers(\AcceptanceTester $I) {
     $I->wantTo('Check inactive subscribers');
     $this->prepareInactiveSubscribersData();
     $I->login();

@@ -13,11 +13,11 @@ class SubscriptionFormCest {
   /** @var string */
   private $subscriber_email;
 
-  function __construct() {
+  public function __construct() {
     $this->subscriber_email = 'test-form@example.com';
   }
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $settings = new Settings();
     $settings
       ->withConfirmationEmailSubject()
@@ -39,7 +39,7 @@ class SubscriptionFormCest {
     ]);
   }
 
-  function subscriptionFormWidget(\AcceptanceTester $I) {
+  public function subscriptionFormWidget(\AcceptanceTester $I) {
     $form_name = 'Subscription Acceptance Test Form';
     $form_factory = new Form();
     $form = $form_factory->withName($form_name)->create();
@@ -55,7 +55,7 @@ class SubscriptionFormCest {
     $I->seeNoJSErrors();
   }
 
-  function subscriptionFormShortcode(\AcceptanceTester $I) {
+  public function subscriptionFormShortcode(\AcceptanceTester $I) {
     $I->wantTo('Subscribe using form shortcode');
 
     $I->amOnPage('/form-test');
@@ -67,7 +67,7 @@ class SubscriptionFormCest {
     $I->seeCurrentUrlEquals('/form-test/');
   }
 
-  function subscriptionFormIframe(\AcceptanceTester $I) {
+  public function subscriptionFormIframe(\AcceptanceTester $I) {
     $I->wantTo('Subscribe using iframe form');
 
     $I->amOnPage('/form-test');
@@ -81,7 +81,7 @@ class SubscriptionFormCest {
   /**
    * @depends subscriptionFormWidget
    */
-  function subscriptionConfirmation(\AcceptanceTester $I) {
+  public function subscriptionConfirmation(\AcceptanceTester $I) {
     $I->amOnPage('/form-test');
     $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
     $I->scrollTo('.mailpoet_submit');
@@ -104,7 +104,7 @@ class SubscriptionFormCest {
     $I->see('Subscribed', Locator::contains('tr', $this->subscriber_email));
   }
 
-  function subscriptionAfterDisablingConfirmation(\AcceptanceTester $I) {
+  public function subscriptionAfterDisablingConfirmation(\AcceptanceTester $I) {
     $I->wantTo('Disable sign-up confirmation then subscribe and see a different message');
     $I->login();
     $I->amOnMailPoetPage('Settings');

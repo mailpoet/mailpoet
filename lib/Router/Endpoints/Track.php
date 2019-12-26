@@ -41,15 +41,15 @@ class Track {
     $this->link_tokens = $link_tokens;
   }
 
-  function click($data) {
+  public function click($data) {
     return $this->clicks->track($this->_processTrackData($data));
   }
 
-  function open($data) {
+  public function open($data) {
     return $this->opens->track($this->_processTrackData($data));
   }
 
-  function _processTrackData($data) {
+  public function _processTrackData($data) {
     $data = (object)Links::transformUrlDataObject($data);
     if (empty($data->queue_id) ||
       empty($data->subscriber_id) ||
@@ -73,7 +73,7 @@ class Track {
     return $this->_validateTrackData($data);
   }
 
-  function _validateTrackData($data) {
+  public function _validateTrackData($data) {
     if (!$data->subscriber || !$data->queue || !$data->newsletter) return false;
     $subscriber_token_match = $this->link_tokens->verifyToken($data->subscriber, $data->subscriber_token);
     if (!$subscriber_token_match) {
@@ -89,7 +89,7 @@ class Track {
       false;
   }
 
-  function terminate($code) {
+  public function terminate($code) {
     WPFunctions::get()->statusHeader($code);
     WPFunctions::get()->getTemplatePart((string)$code);
     exit;

@@ -9,7 +9,7 @@ class VersionHelper {
   const MINOR = 'Minor';
   const PATCH = 'Patch';
 
-  static function incrementVersion($version, $part_to_increment = self::PATCH) {
+  public static function incrementVersion($version, $part_to_increment = self::PATCH) {
     $parsed_version = is_array($version) ? $version : self::parseVersion($version);
 
     switch ($part_to_increment) {
@@ -26,7 +26,7 @@ class VersionHelper {
     return is_array($version) ? $parsed_version : self::buildVersion($parsed_version);
   }
 
-  static function parseVersion($version) {
+  public static function parseVersion($version) {
     if (!preg_match(self::VERSION_REGEXP, $version, $matches)) {
       throw new \Exception('Incorrect version format');
     }
@@ -37,15 +37,15 @@ class VersionHelper {
     ];
   }
 
-  static function buildVersion(array $parts) {
+  public static function buildVersion(array $parts) {
     return sprintf('%d.%d.%d', $parts[self::MAJOR], $parts[self::MINOR], $parts[self::PATCH]);
   }
 
-  static function buildMinorVersion(array $parts) {
+  public static function buildMinorVersion(array $parts) {
     return sprintf('%d.%d', $parts[self::MAJOR], $parts[self::MINOR]);
   }
 
-  static function validateVersion($version) {
+  public static function validateVersion($version) {
     return preg_match(self::VERSION_REGEXP, $version);
   }
 }

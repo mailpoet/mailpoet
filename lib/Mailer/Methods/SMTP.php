@@ -34,7 +34,7 @@ class SMTP {
 
   private $wp;
 
-  function __construct(
+  public function __construct(
     $host, $port, $authentication, $login = null, $password = null, $encryption,
     $sender, $reply_to, $return_path, SMTPMapper $error_mapper) {
     $this->wp = new WPFunctions;
@@ -56,7 +56,7 @@ class SMTP {
     $this->blacklist = new BlacklistCheck();
   }
 
-  function send($newsletter, $subscriber, $extra_params = []) {
+  public function send($newsletter, $subscriber, $extra_params = []) {
     if ($this->blacklist->isBlacklisted($subscriber)) {
       $error = $this->error_mapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
@@ -77,7 +77,7 @@ class SMTP {
     }
   }
 
-  function buildMailer() {
+  public function buildMailer() {
     $transport = Swift_SmtpTransport::newInstance(
       $this->host, $this->port, $this->encryption);
     $connection_timeout = $this->wp->applyFilters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT);
@@ -91,7 +91,7 @@ class SMTP {
     return Swift_Mailer::newInstance($transport);
   }
 
-  function createMessage($newsletter, $subscriber, $extra_params = []) {
+  public function createMessage($newsletter, $subscriber, $extra_params = []) {
     $message = Swift_Message::newInstance()
       ->setTo($this->processSubscriber($subscriber))
       ->setFrom(
@@ -120,7 +120,7 @@ class SMTP {
     return $message;
   }
 
-  function processSubscriber($subscriber) {
+  public function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
     if (!isset($subscriber_data['email'])) {
       $subscriber_data = [

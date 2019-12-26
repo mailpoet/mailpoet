@@ -20,7 +20,7 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->newsletter = Newsletter::createOrUpdate(
       [
@@ -36,7 +36,7 @@ class SendingQueueTest extends \MailPoetTest {
     ]);
   }
 
-  function testItCreatesNewScheduledSendingQueueTask() {
+  public function testItCreatesNewScheduledSendingQueueTask() {
     $newsletter = $this->newsletter;
     $newsletter->status = Newsletter::STATUS_SCHEDULED;
     $newsletter->save();
@@ -58,7 +58,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($scheduled_task->type)->equals(Sending::TASK_TYPE);
   }
 
-  function testItReturnsErrorIfSubscribersLimitReached() {
+  public function testItReturnsErrorIfSubscribersLimitReached() {
     $sending_queue = new SendingQueueAPI(Stub::make(SubscribersFeature::class, [
       'check' => true,
     ]));
@@ -68,7 +68,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
   }
 
-  function testItReschedulesScheduledSendingQueueTask() {
+  public function testItReschedulesScheduledSendingQueueTask() {
     $newsletter = $this->newsletter;
     $newsletter->status = Newsletter::STATUS_SCHEDULED;
     $newsletter->save();
@@ -130,7 +130,7 @@ class SendingQueueTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);

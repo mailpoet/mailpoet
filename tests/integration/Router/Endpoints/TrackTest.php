@@ -19,7 +19,7 @@ use MailPoet\Util\Cookies;
 use MailPoetVendor\Idiorm\ORM;
 
 class TrackTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     // create newsletter
     $newsletter = Newsletter::create();
@@ -58,7 +58,7 @@ class TrackTest extends \MailPoetTest {
     $this->track = new Track(new Clicks(SettingsController::getInstance(), new Cookies()), new Opens(), new LinkTokens());
   }
 
-  function testItReturnsFalseWhenTrackDataIsMissing() {
+  public function testItReturnsFalseWhenTrackDataIsMissing() {
     // queue ID is required
     $data = $this->track_data;
     unset($data['queue_id']);
@@ -73,7 +73,7 @@ class TrackTest extends \MailPoetTest {
     expect($this->track->_processTrackData($data))->false();
   }
 
-  function testItFailsWhenSubscriberTokenDoesNotMatch() {
+  public function testItFailsWhenSubscriberTokenDoesNotMatch() {
     $data = (object)array_merge(
       $this->track_data,
       [
@@ -92,7 +92,7 @@ class TrackTest extends \MailPoetTest {
     $track->_validateTrackData($data);
   }
 
-  function testItFailsWhenSubscriberIsNotOnProcessedList() {
+  public function testItFailsWhenSubscriberIsNotOnProcessedList() {
     $data = (object)array_merge(
       $this->track_data,
       [
@@ -105,7 +105,7 @@ class TrackTest extends \MailPoetTest {
     expect($this->track->_validateTrackData($data))->false();
   }
 
-  function testItDoesNotRequireWpUsersToBeOnProcessedListWhenPreviewIsEnabled() {
+  public function testItDoesNotRequireWpUsersToBeOnProcessedListWhenPreviewIsEnabled() {
     $data = (object)array_merge(
       $this->track_data,
       [
@@ -119,7 +119,7 @@ class TrackTest extends \MailPoetTest {
     expect($this->track->_validateTrackData($data))->equals($data);
   }
 
-  function testItRequiresValidQueueToGetNewsletter() {
+  public function testItRequiresValidQueueToGetNewsletter() {
     $data = $this->track_data;
     $data['newsletter_id'] = false;
     $data['queue_id'] = 99;
@@ -127,14 +127,14 @@ class TrackTest extends \MailPoetTest {
     expect($processed_data)->false();
   }
 
-  function testItGetsNewsletterFromQueue() {
+  public function testItGetsNewsletterFromQueue() {
     $data = $this->track_data;
     $data['newsletter_id'] = false;
     $processed_data = $this->track->_processTrackData($data);
     expect($processed_data->newsletter->id)->equals($this->newsletter->id);
   }
 
-  function testItProcessesTrackData() {
+  public function testItProcessesTrackData() {
     $processed_data = $this->track->_processTrackData($this->track_data);
     expect($processed_data->queue->id)->equals($this->queue->id);
     expect($processed_data->subscriber->id)->equals($this->subscriber->id);
@@ -142,7 +142,7 @@ class TrackTest extends \MailPoetTest {
     expect($processed_data->link->id)->equals($this->link->id);
   }
 
-  function testItGetsProperHashWhenDuplicateHashesExist() {
+  public function testItGetsProperHashWhenDuplicateHashesExist() {
     // create another newsletter and queue
     $newsletter = Newsletter::create();
     $newsletter->type = 'type';
@@ -171,7 +171,7 @@ class TrackTest extends \MailPoetTest {
     expect($processed_data->link->id)->equals($link->id);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);

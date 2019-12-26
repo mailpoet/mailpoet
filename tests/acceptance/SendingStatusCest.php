@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Subscriber;
 
 class SendingStatusCest {
-  function newsletterSendingStatus(\AcceptanceTester $I) {
+  public function newsletterSendingStatus(\AcceptanceTester $I) {
     $I->wantTo('Check the sending status page for a standard newsletter');
     // Having a standard newsletter sent to 2 subscribers
     $lucky_subscriber = (new Subscriber)

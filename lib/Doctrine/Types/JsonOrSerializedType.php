@@ -7,7 +7,7 @@ use MailPoetVendor\Doctrine\DBAL\Platforms\AbstractPlatform;
 class JsonOrSerializedType extends JsonType {
   const NAME = 'json_or_serialized';
 
-  function convertToPHPValue($value, AbstractPlatform $platform) {
+  public function convertToPHPValue($value, AbstractPlatform $platform) {
     if ($value === null) {
       return null;
     }
@@ -22,7 +22,7 @@ class JsonOrSerializedType extends JsonType {
     return parent::convertToPHPValue($value, $platform);
   }
 
-  function getName() {
+  public function getName() {
     return self::NAME;
   }
 }

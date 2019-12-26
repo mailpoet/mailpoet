@@ -20,11 +20,11 @@ class AutomaticEmailTest extends \MailPoetTest {
   /** @var AutomaticEmailScheduler */
   private $automatic_email_scheduler;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->automatic_email_scheduler = new AutomaticEmailScheduler;
   }
-  function testItCreatesScheduledAutomaticEmailSendingTaskForUser() {
+  public function testItCreatesScheduledAutomaticEmailSendingTaskForUser() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -55,7 +55,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     expect($subscribers[0]->id)->equals($subscriber->id);
   }
 
-  function testItAddsMetaToSendingQueueWhenCreatingAutomaticEmailSendingTask() {
+  public function testItAddsMetaToSendingQueueWhenCreatingAutomaticEmailSendingTask() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -77,7 +77,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     expect($queue->getMeta())->equals($meta);
   }
 
-  function testItCreatesAutomaticEmailSendingTaskForSegment() {
+  public function testItCreatesAutomaticEmailSendingTaskForSegment() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -104,7 +104,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     expect($subscribers)->count(0);
   }
 
-  function testItDoesNotScheduleAutomaticEmailWhenGroupDoesNotMatch() {
+  public function testItDoesNotScheduleAutomaticEmailWhenGroupDoesNotMatch() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -122,7 +122,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(0);
   }
 
-  function testItDoesNotScheduleAutomaticEmailWhenEventDoesNotMatch() {
+  public function testItDoesNotScheduleAutomaticEmailWhenEventDoesNotMatch() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -140,7 +140,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(0);
   }
 
-  function testItSchedulesAutomaticEmailWhenConditionMatches() {
+  public function testItSchedulesAutomaticEmailWhenConditionMatches() {
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
     $newsletter_1 = $this->_createNewsletter();
@@ -212,7 +212,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     Carbon::setTestNow();
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);

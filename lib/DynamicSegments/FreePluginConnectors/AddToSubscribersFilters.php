@@ -23,7 +23,7 @@ class AddToSubscribersFilters {
    *
    * @return array
    */
-  function add(array $segment_filters) {
+  public function add(array $segment_filters) {
     $dynamic_segments = $this->getListings();
     return $this->sort(array_merge($segment_filters, $dynamic_segments));
   }

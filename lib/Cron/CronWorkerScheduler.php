@@ -10,11 +10,11 @@ class CronWorkerScheduler {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp) {
+  public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
   }
 
-  function schedule($task_type, $next_run_date) {
+  public function schedule($task_type, $next_run_date) {
     $already_scheduled = ScheduledTask::where('type', $task_type)
       ->whereNull('deleted_at')
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
@@ -31,7 +31,7 @@ class CronWorkerScheduler {
     return $task;
   }
 
-  function reschedule(ScheduledTask $task, $timeout) {
+  public function reschedule(ScheduledTask $task, $timeout) {
     $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     $task->scheduled_at = $scheduled_at->addMinutes($timeout);
     $task->setExpr('updated_at', 'NOW()');

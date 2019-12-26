@@ -19,7 +19,7 @@ class Captcha {
   /** @var CaptchaSession  */
   private $captcha_session;
 
-  function __construct(WPFunctions $wp = null, CaptchaSession $captcha_session = null) {
+  public function __construct(WPFunctions $wp = null, CaptchaSession $captcha_session = null) {
     if ($wp === null) {
       $wp = new WPFunctions;
     }
@@ -30,11 +30,11 @@ class Captcha {
     $this->captcha_session = $captcha_session;
   }
 
-  function isSupported() {
+  public function isSupported() {
     return extension_loaded('gd') && function_exists('imagettftext');
   }
 
-  function isRequired($subscriber_email = null) {
+  public function isRequired($subscriber_email = null) {
     if ($this->isUserExemptFromCaptcha()) {
       return false;
     }
@@ -81,7 +81,7 @@ class Captcha {
     return !empty(array_intersect($roles, (array)$user->roles));
   }
 
-  function renderImage($width = null, $height = null, $session_id = null, $return = false) {
+  public function renderImage($width = null, $height = null, $session_id = null, $return = false) {
     if (!$this->isSupported()) {
       return false;
     }

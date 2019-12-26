@@ -17,7 +17,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     $this->settings = SettingsController::getInstance();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->settings->set('tracking.enabled', true);
@@ -25,7 +25,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     parent::_before();
   }
 
-  function testItReactivateInactiveSubscribersWhenIntervalIsSetToNever() {
+  public function testItReactivateInactiveSubscribersWhenIntervalIsSetToNever() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 0);
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
       'markInactiveSubscribers' => Stub\Expected::never(),
@@ -44,7 +44,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     expect($task->scheduled_at)->greaterThan(new Carbon());
   }
 
-  function testItDoesNotRunWhenTrackingIsDisabled() {
+  public function testItDoesNotRunWhenTrackingIsDisabled() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 10);
     $this->settings->set('tracking.enabled', false);
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
@@ -57,7 +57,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
   }
 
-  function testItSchedulesNextRunWhenFinished() {
+  public function testItSchedulesNextRunWhenFinished() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 5);
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
       'markInactiveSubscribers' => Stub\Expected::once(1),
@@ -76,7 +76,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     expect($task->scheduled_at)->greaterThan(new Carbon());
   }
 
-  function testRunBatchesUntilItIsFinished() {
+  public function testRunBatchesUntilItIsFinished() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 5);
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
       'markInactiveSubscribers' => Stub::consecutive(InactiveSubscribers::BATCH_SIZE, InactiveSubscribers::BATCH_SIZE, 1, 'ok'),
@@ -93,7 +93,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     expect($controller_mock->markActiveSubscribers(5, 1000))->equals('ok');
   }
 
-  function testItCanStopDeactivationIfMarkInactiveSubscribersReturnsFalse() {
+  public function testItCanStopDeactivationIfMarkInactiveSubscribersReturnsFalse() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 5);
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
       'markInactiveSubscribers' => Stub\Expected::once(false),
@@ -110,7 +110,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     expect(isset($meta['last_subscriber_id']))->equals(false);
   }
 
-  function testThrowsAnExceptionWhenTimeIsOut() {
+  public function testThrowsAnExceptionWhenTimeIsOut() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 5);
     $controller_mock = Stub::make(InactiveSubscribersController::class, [
       'markInactiveSubscribers' => Stub\Expected::once(InactiveSubscribers::BATCH_SIZE),

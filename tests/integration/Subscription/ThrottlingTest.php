@@ -8,7 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class ThrottlingTest extends \MailPoetTest {
-  function testItProgressivelyThrottlesSubscriptions() {
+  public function testItProgressivelyThrottlesSubscriptions() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     expect(Throttling::throttle())->equals(false);
     expect(Throttling::throttle())->equals(60);
@@ -21,7 +21,7 @@ class ThrottlingTest extends \MailPoetTest {
     expect(Throttling::throttle())->equals(MINUTE_IN_SECONDS * pow(2, 10));
   }
 
-  function testItDoesNotThrottleIfDisabledByAHook() {
+  public function testItDoesNotThrottleIfDisabledByAHook() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $wp = new WPFunctions;
     $wp->addFilter('mailpoet_subscription_limit_enabled', '__return_false');
@@ -31,7 +31,7 @@ class ThrottlingTest extends \MailPoetTest {
     expect(Throttling::throttle())->greaterThan(0);
   }
 
-  function testItDoesNotThrottleForLoggedInUsers() {
+  public function testItDoesNotThrottleForLoggedInUsers() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
@@ -41,7 +41,7 @@ class ThrottlingTest extends \MailPoetTest {
     expect(Throttling::throttle())->greaterThan(0);
   }
 
-  function testItPurgesOldSubscriberIps() {
+  public function testItPurgesOldSubscriberIps() {
     $ip = SubscriberIP::create();
     $ip->ip = '127.0.0.1';
     $ip->save();
@@ -56,7 +56,7 @@ class ThrottlingTest extends \MailPoetTest {
     expect(SubscriberIP::count())->equals(1);
   }
 
-  function testItConvertsSecondsToTimeString() {
+  public function testItConvertsSecondsToTimeString() {
     expect(Throttling::secondsToTimeString(122885))->equals('34 hours 8 minutes 5 seconds');
     expect(Throttling::secondsToTimeString(3660))->equals('1 hours 1 minutes');
     expect(Throttling::secondsToTimeString(3601))->equals('1 hours 1 seconds');
@@ -66,7 +66,7 @@ class ThrottlingTest extends \MailPoetTest {
     expect(Throttling::secondsToTimeString(59))->equals('59 seconds');
   }
 
-  function _after() {
+  public function _after() {
     SubscriberIP::deleteMany();
   }
 }

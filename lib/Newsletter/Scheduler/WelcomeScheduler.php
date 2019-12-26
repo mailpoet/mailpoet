@@ -10,7 +10,7 @@ class WelcomeScheduler {
 
   const WORDPRESS_ALL_ROLES = 'mailpoet_all';
 
-  function scheduleSubscriberWelcomeNotification($subscriber_id, $segments) {
+  public function scheduleSubscriberWelcomeNotification($subscriber_id, $segments) {
     $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_WELCOME);
     if (empty($newsletters)) return false;
     $result = [];
@@ -24,7 +24,7 @@ class WelcomeScheduler {
     return $result;
   }
 
-  function scheduleWPUserWelcomeNotification(
+  public function scheduleWPUserWelcomeNotification(
     $subscriber_id,
     $wp_user,
     $old_user_data = false
@@ -52,7 +52,7 @@ class WelcomeScheduler {
     }
   }
 
-  function createWelcomeNotificationSendingTask($newsletter, $subscriber_id) {
+  public function createWelcomeNotificationSendingTask($newsletter, $subscriber_id) {
     $previously_scheduled_notification = SendingQueue::joinWithSubscribers()
       ->where('queues.newsletter_id', $newsletter->id)
       ->where('subscribers.subscriber_id', $subscriber_id)

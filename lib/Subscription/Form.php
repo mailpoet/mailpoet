@@ -15,12 +15,12 @@ class Form {
   /** @var UrlHelper */
   private $url_helper;
 
-  function __construct(API $api, UrlHelper $url_helper) {
+  public function __construct(API $api, UrlHelper $url_helper) {
     $this->api = $api;
     $this->url_helper = $url_helper;
   }
 
-  function onSubmit($request_data = false) {
+  public function onSubmit($request_data = false) {
     $request_data = ($request_data) ? $request_data : $_REQUEST;
     $this->api->setRequestData($request_data, Endpoint::TYPE_POST);
     $form_id = (!empty($request_data['data']['form_id'])) ? (int)$request_data['data']['form_id'] : false;

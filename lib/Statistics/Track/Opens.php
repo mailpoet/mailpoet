@@ -5,7 +5,7 @@ namespace MailPoet\Statistics\Track;
 use MailPoet\Models\StatisticsOpens;
 
 class Opens {
-  function track($data, $display_image = true) {
+  public function track($data, $display_image = true) {
     if (!$data) {
       return $this->returnResponse($display_image);
     }
@@ -25,7 +25,7 @@ class Opens {
     return $this->returnResponse($display_image);
   }
 
-  function returnResponse($display_image) {
+  public function returnResponse($display_image) {
     if (!$display_image) return;
     // return 1x1 pixel transparent gif image
     header('Content-Type: image/gif');

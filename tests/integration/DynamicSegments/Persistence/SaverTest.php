@@ -13,18 +13,18 @@ class SaverTest extends \MailPoetTest {
   /** @var  Saver */
   private $saver;
 
-  function _before() {
+  public function _before() {
     $this->saver = new Saver();
     ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
   }
 
-  function testItSavesSegment() {
+  public function testItSavesSegment() {
     $dynamic_segment = DynamicSegment::create();
     $dynamic_segment->hydrate([
       'name' => 'segment 1',
@@ -36,7 +36,7 @@ class SaverTest extends \MailPoetTest {
     expect($loaded->description)->equals('desc');
   }
 
-  function testItThrowsOnDuplicateSegment() {
+  public function testItThrowsOnDuplicateSegment() {
     $dynamic_segment1 = DynamicSegment::createOrUpdate([
       'name' => 'segment 1',
       'description' => 'description',
@@ -51,7 +51,7 @@ class SaverTest extends \MailPoetTest {
     $this->saver->save($dynamic_segment2);
   }
 
-  function testItSavesFilters() {
+  public function testItSavesFilters() {
     $dynamic_segment = DynamicSegment::create();
     $dynamic_segment->hydrate([
       'name' => 'segment 1',

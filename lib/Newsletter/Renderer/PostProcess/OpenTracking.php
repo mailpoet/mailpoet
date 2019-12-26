@@ -8,7 +8,7 @@ use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 
 class OpenTracking {
-  static function process($template) {
+  public static function process($template) {
     $DOM = new pQuery();
     $DOM = $DOM->parseStr($template);
     $template = $DOM->query('body');
@@ -23,7 +23,7 @@ class OpenTracking {
     return $DOM->__toString();
   }
 
-  static function addTrackingImage() {
+  public static function addTrackingImage() {
     WPFunctions::get()->addFilter(Renderer::FILTER_POST_PROCESS, function ($template) {
       return OpenTracking::process($template);
     });

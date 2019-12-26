@@ -11,7 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class Link {
   const CATEGORY_NAME = 'link';
 
-  static function process(
+  public static function process(
     $shortcode_details,
     $newsletter,
     $subscriber,
@@ -63,7 +63,7 @@ class Link {
     }
   }
 
-  static function processUrl($action, $url, $queue, $wp_user_preview = false) {
+  public static function processUrl($action, $url, $queue, $wp_user_preview = false) {
     if ($wp_user_preview) return $url;
     $settings = SettingsController::getInstance();
     return ($queue !== false && (boolean)$settings->get('tracking.enabled')) ?
@@ -71,7 +71,7 @@ class Link {
       $url;
   }
 
-  static function processShortcodeAction(
+  public static function processShortcodeAction(
     $shortcode_action, $newsletter, $subscriber, $queue, $wp_user_preview
   ) {
     $subscription_url_factory = SubscriptionUrlFactory::getInstance();

@@ -32,20 +32,20 @@ class ViewInBrowser {
   /** @var Emoji */
   private $emoji;
 
-  function __construct(AccessControl $access_control, SettingsController $settings, LinkTokens $link_tokens, Emoji $emoji) {
+  public function __construct(AccessControl $access_control, SettingsController $settings, LinkTokens $link_tokens, Emoji $emoji) {
     $this->access_control = $access_control;
     $this->settings = $settings;
     $this->link_tokens = $link_tokens;
     $this->emoji = $emoji;
   }
 
-  function view($data) {
+  public function view($data) {
     $data = $this->_processBrowserPreviewData($data);
     $view_in_browser = new NewsletterViewInBrowser($this->emoji, (bool)$this->settings->get('tracking.enabled'));
     return $this->_displayNewsletter($view_in_browser->view($data));
   }
 
-  function _processBrowserPreviewData($data) {
+  public function _processBrowserPreviewData($data) {
     $data = (object)NewsletterUrl::transformUrlDataObject($data);
     return ($this->_validateBrowserPreviewData($data)) ?
       $data :
@@ -56,7 +56,7 @@ class ViewInBrowser {
    * @param \stdClass $data
    * @return bool|\stdClass
    */
-  function _validateBrowserPreviewData($data) {
+  public function _validateBrowserPreviewData($data) {
     // either newsletter ID or hash must be defined, and newsletter must exist
     if (empty($data->newsletter_id) && empty($data->newsletter_hash)) return false;
     $data->newsletter = (!empty($data->newsletter_hash)) ?
@@ -113,13 +113,13 @@ class ViewInBrowser {
     return $data;
   }
 
-  function _displayNewsletter($result) {
+  public function _displayNewsletter($result) {
     header('Content-Type: text/html; charset=utf-8');
     echo $result;
     exit;
   }
 
-  function _abort() {
+  public function _abort() {
     WPFunctions::get()->statusHeader(404);
     exit;
   }

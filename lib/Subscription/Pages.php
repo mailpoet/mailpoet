@@ -55,7 +55,7 @@ class Pages {
   /** @var AssetsController */
   private $assets_controller;
 
-  function __construct(
+  public function __construct(
     NewSubscriberNotificationMailer $new_subscriber_notification_sender,
     WPFunctions $wp,
     SettingsController $settings,
@@ -77,7 +77,7 @@ class Pages {
     $this->assets_controller = $assets_controller;
   }
 
-  function init($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false) {
+  public function init($action = false, $data = [], $init_shortcodes = false, $init_page_filters = false) {
     $this->action = $action;
     $this->data = $data;
     $this->subscriber = $this->getSubscriber();
@@ -90,14 +90,14 @@ class Pages {
     return (array_key_exists('preview', $_GET) || array_key_exists('preview', $this->data));
   }
 
-  function initPageFilters() {
+  public function initPageFilters() {
     $this->wp->addFilter('wp_title', [$this,'setWindowTitle'], 10, 3);
     $this->wp->addFilter('document_title_parts', [$this,'setWindowTitleParts'], 10, 1);
     $this->wp->addFilter('the_title', [$this,'setPageTitle'], 10, 1);
     $this->wp->addFilter('the_content', [$this,'setPageContent'], 10, 1);
   }
 
-  function initShortcodes() {
+  public function initShortcodes() {
     $this->wp->addShortcode('mailpoet_manage', [$this, 'getManageLink']);
     $this->wp->addShortcode('mailpoet_manage_subscription', [$this, 'getManageContent']);
   }
@@ -123,7 +123,7 @@ class Pages {
     return ($subscriber && $this->link_tokens->verifyToken($subscriber, $token)) ? $subscriber : false;
   }
 
-  function confirm() {
+  public function confirm() {
     $this->subscriber = $this->getSubscriber();
     if ($this->subscriber === false || $this->subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
       return false;
@@ -158,7 +158,7 @@ class Pages {
     }
   }
 
-  function unsubscribe() {
+  public function unsubscribe() {
     if (!$this->isPreview()
       && ($this->subscriber !== false)
       && ($this->subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED)
@@ -169,7 +169,7 @@ class Pages {
     }
   }
 
-  function setPageTitle($page_title = '') {
+  public function setPageTitle($page_title = '') {
     global $post;
 
     if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === false) {
@@ -201,7 +201,7 @@ class Pages {
     }
   }
 
-  function setPageContent($page_content = '[mailpoet_page]') {
+  public function setPageContent($page_content = '[mailpoet_page]') {
     // if we're not in preview mode or captcha page and the subscriber does not exist
     if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === false) {
       return $this->wp->__("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
@@ -234,7 +234,7 @@ class Pages {
     }
   }
 
-  function setWindowTitle($title, $separator, $separator_location = 'right') {
+  public function setWindowTitle($title, $separator, $separator_location = 'right') {
     $title_parts = explode(" $separator ", $title);
     if ($separator_location === 'right') {
       // first part
@@ -247,7 +247,7 @@ class Pages {
     return implode(" $separator ", $title_parts);
   }
 
-  function setWindowTitleParts($meta = []) {
+  public function setWindowTitleParts($meta = []) {
     $meta['title'] = $this->setPageTitle($meta['title']);
     return $meta;
   }
@@ -501,7 +501,7 @@ class Pages {
     return $content;
   }
 
-  function getManageLink($params) {
+  public function getManageLink($params) {
     if (!$this->subscriber) return $this->wp->__('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
 
     // get label or display default label

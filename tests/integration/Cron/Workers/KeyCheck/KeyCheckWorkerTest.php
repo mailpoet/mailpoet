@@ -14,23 +14,23 @@ use MailPoetVendor\Idiorm\ORM;
 require_once('KeyCheckWorkerMockImplementation.php');
 
 class KeyCheckWorkerTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->worker = new MockKeyCheckWorker();
   }
 
-  function testItCanInitializeBridgeAPI() {
+  public function testItCanInitializeBridgeAPI() {
     $this->worker->init();
     expect($this->worker->bridge instanceof Bridge)->true();
   }
 
-  function testItReturnsTrueOnSuccessfulKeyCheck() {
+  public function testItReturnsTrueOnSuccessfulKeyCheck() {
     $task = $this->createRunningTask();
     $result = $this->worker->processTaskStrategy($task, microtime(true));
     expect($result)->true();
   }
 
-  function testItReschedulesCheckOnException() {
+  public function testItReschedulesCheckOnException() {
     $worker = Stub::make(
       $this->worker,
       [
@@ -49,7 +49,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
     expect($result)->false();
   }
 
-  function testItReschedulesCheckOnError() {
+  public function testItReschedulesCheckOnError() {
     $worker = Stub::make(
       $this->worker,
       [
@@ -75,7 +75,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
     return $task;
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }

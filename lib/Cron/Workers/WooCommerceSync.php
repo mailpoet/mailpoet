@@ -18,17 +18,17 @@ class WooCommerceSync extends SimpleWorker {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
-  function __construct(WooCommerceSegment $woocommerce_segment, WooCommerceHelper $woocommerce_helper) {
+  public function __construct(WooCommerceSegment $woocommerce_segment, WooCommerceHelper $woocommerce_helper) {
     $this->woocommerce_segment = $woocommerce_segment;
     $this->woocommerce_helper = $woocommerce_helper;
     parent::__construct();
   }
 
-  function checkProcessingRequirements() {
+  public function checkProcessingRequirements() {
     return $this->woocommerce_helper->isWooCommerceActive();
   }
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     $this->woocommerce_segment->synchronizeCustomers();
     return true;
   }

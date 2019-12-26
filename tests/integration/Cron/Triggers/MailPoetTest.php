@@ -11,7 +11,7 @@ class MailPoetTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     // cron trigger is by default set to 'WordPress'; when it runs and does not
     // detect any queues to process, it deletes the daemon setting, so Supervisor that's
@@ -23,13 +23,13 @@ class MailPoetTest extends \MailPoetTest {
     ]);
   }
 
-  function testItCanRun() {
+  public function testItCanRun() {
     expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $this->di_container->get(MailPoet::class)->run();
     expect($this->settings->get(CronHelper::DAEMON_SETTING))->notEmpty();
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

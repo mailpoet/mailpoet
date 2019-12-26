@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class DeleteNotificationCest {
 
-  function deleteNotification(\AcceptanceTester $I) {
+  public function deleteNotification(\AcceptanceTester $I) {
     // step 1 - Prepare post notification data
     $I->wantTo('delete a notification');
     $newsletter_name = 'Deletion Test Post Notification';
@@ -26,7 +26,7 @@ class DeleteNotificationCest {
     $I->waitForText($newsletter_name);
   }
 
-  function restoreNotificationFromTrash(\AcceptanceTester $I) {
+  public function restoreNotificationFromTrash(\AcceptanceTester $I) {
     // step 1 - Prepare post notification data
     $I->wantTo('Restore a newsletter from trash');
     $newsletter_name = 'Restore from Trash Test Post Notification';
@@ -49,7 +49,7 @@ class DeleteNotificationCest {
     $I->waitForText($newsletter_name);
   }
 
-  function deleteNotificationPermanently(\AcceptanceTester $I) {
+  public function deleteNotificationPermanently(\AcceptanceTester $I) {
     // step 1 - Prepare post notification data
     $I->wantTo('Permanently delete a notification');
     $newsletter_name = 'Goodbye Forever Notification Test';

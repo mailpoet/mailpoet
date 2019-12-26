@@ -21,7 +21,7 @@ class DynamicSegments {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
-  function __construct(
+  public function __construct(
     PageRenderer $page_renderer,
     PageLimit $listing_page_limit,
     WPFunctions $wp,
@@ -33,7 +33,7 @@ class DynamicSegments {
     $this->woocommerce_helper = $woocommerce_helper;
   }
 
-  function render() {
+  public function render() {
     $data = [];
     $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('dynamic_segments');
 

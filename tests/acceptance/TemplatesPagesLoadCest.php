@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class TemplatesPagesLoadCest {
-  function loadTemplatesPage(\AcceptanceTester $I) {
+  public function loadTemplatesPage(\AcceptanceTester $I) {
     $I->wantTo('Confirm template page loads and tabs can be clicked through');
     $I->login();
     $I->activateWooCommerce();

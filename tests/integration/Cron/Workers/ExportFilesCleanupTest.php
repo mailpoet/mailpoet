@@ -7,7 +7,7 @@ use MailPoet\Models\ScheduledTask;
 
 class ExportFilesCleanupTest extends \MailPoetTest {
 
-  function testItWorks() {
+  public function testItWorks() {
     $wp_upload_dir = wp_upload_dir();
     $old_file_path = $wp_upload_dir['basedir'] . '/mailpoet/MailPoet_export_old_file.csv';
     $new_file_path = $wp_upload_dir['basedir'] . '/mailpoet/MailPoet_export_new_file.csv';

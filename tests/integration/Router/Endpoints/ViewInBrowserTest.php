@@ -18,7 +18,7 @@ use MailPoet\WP\Functions;
 use MailPoetVendor\Idiorm\ORM;
 
 class ViewInBrowserTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     // create newsletter
     $newsletter = Newsletter::create();
@@ -49,7 +49,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     $this->view_in_browser = new ViewInBrowser(new AccessControl(new Functions()), SettingsController::getInstance(), new LinkTokens(), new Emoji());
   }
 
-  function testItAbortsWhenBrowserPreviewDataIsMissing() {
+  public function testItAbortsWhenBrowserPreviewDataIsMissing() {
     $view_in_browser = Stub::make($this->view_in_browser, [
       '_abort' => Expected::exactly(2),
     ], $this);
@@ -63,7 +63,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     $view_in_browser->_processBrowserPreviewData($data);
   }
 
-  function testItAbortsWhenBrowserPreviewDataIsInvalid() {
+  public function testItAbortsWhenBrowserPreviewDataIsInvalid() {
     $view_in_browser = Stub::make($this->view_in_browser, [
       'link_tokens' => new LinkTokens,
       '_abort' => Expected::exactly(3),
@@ -83,7 +83,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     // subscriber has not received the newsletter
   }
 
-  function testItFailsValidationWhenSubscriberTokenDoesNotMatch() {
+  public function testItFailsValidationWhenSubscriberTokenDoesNotMatch() {
     $subscriber = $this->subscriber;
     $subscriber->email = 'random@email.com';
     $subscriber->save();
@@ -99,13 +99,13 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
 
-  function testItFailsValidationWhenNewsletterIdIsProvidedButSubscriberDoesNotExist() {
+  public function testItFailsValidationWhenNewsletterIdIsProvidedButSubscriberDoesNotExist() {
     $data = (object)$this->browser_preview_data;
     $data->subscriber_id = false;
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
 
-  function testItValidatesThatNewsletterExistsByCheckingHashFirst() {
+  public function testItValidatesThatNewsletterExistsByCheckingHashFirst() {
     $newsletter_1 = $this->newsletter;
     $newsletter_2 = Newsletter::create();
     $newsletter_2->type = 'type';
@@ -119,14 +119,14 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($result->newsletter->id)->equals($newsletter_1->id);
   }
 
-  function testItFailsValidationWhenPreviewIsEnabledButNewsletterHashNotProvided() {
+  public function testItFailsValidationWhenPreviewIsEnabledButNewsletterHashNotProvided() {
     $data = (object)$this->browser_preview_data;
     $data->newsletter_hash = false;
     $data->preview = true;
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
 
-  function testItFailsValidationWhenSubscriberIsNotOnProcessedList() {
+  public function testItFailsValidationWhenSubscriberIsNotOnProcessedList() {
     $data = (object)$this->browser_preview_data;
     $result = $this->view_in_browser->_validateBrowserPreviewData($data);
     expect($result)->notEmpty();
@@ -138,7 +138,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($result)->false();
   }
 
-  function testItDoesNotRequireWpAdministratorToBeOnProcessedListWhenPreviewIsEnabled() {
+  public function testItDoesNotRequireWpAdministratorToBeOnProcessedListWhenPreviewIsEnabled() {
     $view_in_browser = $this->view_in_browser;
     $data = (object)array_merge(
       $this->browser_preview_data,
@@ -165,7 +165,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($view_in_browser->_validateBrowserPreviewData($data))->equals($data);
   }
 
-  function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
+  public function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
     $view_in_browser = $this->view_in_browser;
     $data = (object)array_merge(
       $this->browser_preview_data,
@@ -182,7 +182,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($result->subscriber->id)->equals(1);
   }
 
-  function testItGetsOrFindsQueueWhenItIsNotAWelcomeEmail() {
+  public function testItGetsOrFindsQueueWhenItIsNotAWelcomeEmail() {
     $data = (object)$this->browser_preview_data;
     // queue will be found when not defined
     $data->queue_id = null;
@@ -201,14 +201,14 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($result->queue)->false();
   }
 
-  function testItProcessesBrowserPreviewData() {
+  public function testItProcessesBrowserPreviewData() {
     $processed_data = $this->view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
     expect($processed_data->queue->id)->equals($this->queue->id);
     expect($processed_data->subscriber->id)->equals($this->subscriber->id);
     expect($processed_data->newsletter->id)->equals($this->newsletter->id);
   }
 
-  function testItReturnsViewActionResult() {
+  public function testItReturnsViewActionResult() {
     $view_in_browser = Stub::make($this->view_in_browser, [
       'link_tokens' => new LinkTokens,
       '_displayNewsletter' => Expected::exactly(1),
@@ -218,7 +218,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     $view_in_browser->view($this->browser_preview_data);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);

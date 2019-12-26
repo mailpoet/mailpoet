@@ -17,7 +17,7 @@ use MailPoet\WP\Emoji;
 use MailPoetVendor\Idiorm\ORM;
 
 class ViewInBrowserTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->newsletter =
       [
@@ -108,7 +108,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     $this->newsletter_link_2 = $newsletter_link_2->save();
   }
 
-  function testItRendersNewsletter() {
+  public function testItRendersNewsletter() {
     $rendered_body = $this->view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
@@ -118,7 +118,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($rendered_body)->regExp('/Rendered newsletter/');
   }
 
-  function testItReusesRenderedNewsletterBodyWhenQueueExists() {
+  public function testItReusesRenderedNewsletterBodyWhenQueueExists() {
     $emoji = $this->make(
       Emoji::class,
       ['decodeEmojisInBody' => Expected::once(function ($params) {
@@ -136,7 +136,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($rendered_body)->regExp('/Newsletter from queue/');
   }
 
-  function testItConvertsShortcodes() {
+  public function testItConvertsShortcodes() {
     $settings = SettingsController::getInstance();
     $settings->set('tracking.enabled', false);
     $rendered_body = $this->view_in_browser->renderNewsletter(
@@ -149,7 +149,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($rendered_body)->contains(Router::NAME . '&endpoint=view_in_browser');
   }
 
-  function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
+  public function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
     $settings = SettingsController::getInstance();
     $settings->set('tracking.enabled', true);
     $view_in_browser = new ViewInBrowser($this->emoji, true);
@@ -164,7 +164,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($rendered_body)->contains(Router::NAME . '&endpoint=track');
   }
 
-  function testItConvertsHashedLinksToUrlsWhenPreviewIsEnabledAndNewsletterWasSent() {
+  public function testItConvertsHashedLinksToUrlsWhenPreviewIsEnabledAndNewsletterWasSent() {
     $queue = $this->queue;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
     $rendered_body = $this->view_in_browser->renderNewsletter(
@@ -178,7 +178,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($rendered_body)->contains('<a href="http://google.com">');
   }
 
-  function testRemovesOpenTrackingTagWhenPreviewIsEnabledAndNewsletterWasSent() {
+  public function testRemovesOpenTrackingTagWhenPreviewIsEnabledAndNewsletterWasSent() {
     $queue = $this->queue;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
     $rendered_body = $this->view_in_browser->renderNewsletter(
@@ -192,7 +192,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     expect($rendered_body)->contains('<img alt="" class="" src="">');
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);

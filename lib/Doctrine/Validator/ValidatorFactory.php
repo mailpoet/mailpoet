@@ -13,11 +13,11 @@ class ValidatorFactory {
   /** @var AnnotationReaderProvider */
   private $annotation_reader_provider;
 
-  function __construct(AnnotationReaderProvider $annotation_reader_provider) {
+  public function __construct(AnnotationReaderProvider $annotation_reader_provider) {
     $this->annotation_reader_provider = $annotation_reader_provider;
   }
 
-  function createValidator() {
+  public function createValidator() {
     $builder = Validation::createValidatorBuilder();
 
     // annotation reader exists only in dev environment, on production cache is pre-generated

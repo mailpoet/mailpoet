@@ -13,7 +13,7 @@ require_once('SubscribersBulkActionHandlerMock.php');
 
 class BulkActionTest extends \MailPoetTest {
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->cleanData();
     $this->segment_1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
@@ -40,7 +40,7 @@ class BulkActionTest extends \MailPoetTest {
     SubscriberSegment::resubscribeToAllSegments($this->subscriber_2);
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanData();
   }
 
@@ -50,13 +50,13 @@ class BulkActionTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 
-  function testBulkActionWithoutSegment() {
+  public function testBulkActionWithoutSegment() {
     $handler = new BulkAction([]);
     $this->setExpectedException('InvalidArgumentException');
     $handler->apply();
   }
 
-  function testBulkActionForDefaultSegment() {
+  public function testBulkActionForDefaultSegment() {
     $handler = new BulkAction([
       'listing' => ['filter' => ['segment' => $this->segment_1->id]],
       'action' => 'trash',
@@ -65,7 +65,7 @@ class BulkActionTest extends \MailPoetTest {
     expect($result['count'])->equals(1);
   }
 
-  function testBulkActionForUnknownSegment() {
+  public function testBulkActionForUnknownSegment() {
     $handler = new BulkAction([
       'listing' => ['filter' => ['segment' => 'this-segment-doesnt-exist']],
       'action' => 'trash',
@@ -74,7 +74,7 @@ class BulkActionTest extends \MailPoetTest {
     expect($result)->notEmpty();
   }
 
-  function testForUnknownSegmentTypeWithoutHandler() {
+  public function testForUnknownSegmentTypeWithoutHandler() {
     $handler = new BulkAction([
       'listing' => ['filter' => ['segment' => $this->segment_2->id]],
       'action' => 'trash',
@@ -84,7 +84,7 @@ class BulkActionTest extends \MailPoetTest {
     $handler->apply();
   }
 
-  function testBulkActionUsingFilter() {
+  public function testBulkActionUsingFilter() {
     $mock = Stub::makeEmpty('\MailPoet\Test\Segments\SubscribersBulkActionHandlerMock', ['apply']);
     $mock
       ->expects($this->once())

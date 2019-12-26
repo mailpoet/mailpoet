@@ -15,18 +15,18 @@ class Updater {
   /** @var SettingsController */
   private $settings;
 
-  function __construct($plugin_name, $slug, $version) {
+  public function __construct($plugin_name, $slug, $version) {
     $this->plugin = WPFunctions::get()->pluginBasename($plugin_name);
     $this->slug = $slug;
     $this->version = $version;
     $this->settings = SettingsController::getInstance();
   }
 
-  function init() {
+  public function init() {
     WPFunctions::get()->addFilter('pre_set_site_transient_update_plugins', [$this, 'checkForUpdate']);
   }
 
-  function checkForUpdate($update_transient) {
+  public function checkForUpdate($update_transient) {
     if (!$update_transient instanceof \stdClass) {
       $update_transient = new \stdClass;
     }
@@ -44,7 +44,7 @@ class Updater {
     return $update_transient;
   }
 
-  function getLatestVersion() {
+  public function getLatestVersion() {
     $key = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
     $api = new API($key);
     $data = $api->getPluginInformation($this->slug . '/latest');

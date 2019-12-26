@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class SentNewsletterCest {
 
-  function disableLastStep(\AcceptanceTester $I) {
+  public function disableLastStep(\AcceptanceTester $I) {
     $I->wantTo('See that last step is disabled fot sent standard email');
 
     $newsletter = (new Newsletter())

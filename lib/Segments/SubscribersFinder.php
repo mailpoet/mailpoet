@@ -16,14 +16,14 @@ class SubscribersFinder {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp = null) {
+  public function __construct(WPFunctions $wp = null) {
     if (!$wp) {
       $wp = new WPFunctions;
     }
     $this->wp = $wp;
   }
 
-  function findSubscribersInSegments($subscribers_to_process_ids, $newsletter_segments_ids) {
+  public function findSubscribersInSegments($subscribers_to_process_ids, $newsletter_segments_ids) {
     $result = [];
     foreach ($newsletter_segments_ids as $segment_id) {
       $segment = Segment::findOne($segment_id);
@@ -54,7 +54,7 @@ class SubscribersFinder {
     return in_array($segment->type, [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS], true);
   }
 
-  function addSubscribersToTaskFromSegments(ScheduledTask $task, array $segments) {
+  public function addSubscribersToTaskFromSegments(ScheduledTask $task, array $segments) {
     // Prepare subscribers on the DB side for performance reasons
     $staticSegments = [];
     $dynamicSegments = [];

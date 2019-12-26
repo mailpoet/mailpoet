@@ -10,7 +10,7 @@ class NewsletterClicksExporter {
 
   const LIMIT = 100;
 
-  function export($email, $page = 1) {
+  public function export($email, $page = 1) {
     $data = $this->exportSubscriber(Subscriber::findOne(trim($email)), $page);
     return [
       'data' => $data,

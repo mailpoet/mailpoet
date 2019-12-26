@@ -12,7 +12,7 @@ class NewsletterLinks extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS,
   ];
 
-  function get($data = []) {
+  public function get($data = []) {
     $links = NewsletterLink::select(['id', 'url'])->where('newsletter_id', $data['newsletterId'])->findArray();
     return $this->successResponse($links);
   }

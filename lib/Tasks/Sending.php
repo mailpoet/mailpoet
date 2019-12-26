@@ -70,11 +70,11 @@ class Sending {
     $this->task_subscribers = new Subscribers($task);
   }
 
-  static function create(ScheduledTask $task = null, SendingQueue $queue = null) {
+  public static function create(ScheduledTask $task = null, SendingQueue $queue = null) {
     return new self($task, $queue);
   }
 
-  static function createManyFromTasks($tasks) {
+  public static function createManyFromTasks($tasks) {
     if (empty($tasks)) {
       return [];
     }
@@ -98,7 +98,7 @@ class Sending {
     return $result;
   }
 
-  static function createFromQueue(SendingQueue $queue) {
+  public static function createFromQueue(SendingQueue $queue) {
     $task = $queue->task()->findOne();
     if (!$task) {
       return false;
@@ -107,7 +107,7 @@ class Sending {
     return self::create($task, $queue);
   }
 
-  static function getByNewsletterId($newsletter_id) {
+  public static function getByNewsletterId($newsletter_id) {
     $queue = SendingQueue::where('newsletter_id', $newsletter_id)
       ->orderByDesc('updated_at')
       ->findOne();
@@ -195,7 +195,7 @@ class Sending {
     return $this->updateCount()->getErrors() === false;
   }
 
-  function updateCount() {
+  public function updateCount() {
     $this->queue->count_processed = ScheduledTaskSubscriber::getProcessedCount($this->task->id);
     $this->queue->count_to_process = ScheduledTaskSubscriber::getUnprocessedCount($this->task->id);
     $this->queue->count_total = $this->queue->count_processed + $this->queue->count_to_process;
@@ -255,7 +255,7 @@ class Sending {
     return in_array($prop, $this->common_fields);
   }
 
-  static function getScheduledQueues($amount = self::RESULT_BATCH_SIZE) {
+  public static function getScheduledQueues($amount = self::RESULT_BATCH_SIZE) {
     $wp = new WPFunctions();
     $tasks = ScheduledTask::tableAlias('tasks')
       ->select('tasks.*')
@@ -270,7 +270,7 @@ class Sending {
     return static::createManyFromTasks($tasks);
   }
 
-  static function getRunningQueues($amount = self::RESULT_BATCH_SIZE) {
+  public static function getRunningQueues($amount = self::RESULT_BATCH_SIZE) {
     $tasks = ScheduledTask::orderByAsc('priority')
       ->orderByAsc('updated_at')
       ->whereNull('deleted_at')

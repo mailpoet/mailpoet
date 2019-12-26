@@ -17,11 +17,11 @@ class UserFlags extends APIEndpoint {
     'global' => AccessControl::ALL_ROLES_ACCESS,
   ];
 
-  function __construct(UserFlagsController $user_flags) {
+  public function __construct(UserFlagsController $user_flags) {
     $this->user_flags = $user_flags;
   }
 
-  function set(array $flags = []) {
+  public function set(array $flags = []) {
     if (empty($flags)) {
       return $this->badRequest(
         [

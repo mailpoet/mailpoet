@@ -31,7 +31,7 @@ class SendingTaskSubscribers extends APIEndpoint {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(
+  public function __construct(
     Listing\Handler $listing_handler,
     SettingsController $settings,
     CronHelper $cron_helper,
@@ -43,7 +43,7 @@ class SendingTaskSubscribers extends APIEndpoint {
     $this->wp = $wp;
   }
 
-  function listing($data = []) {
+  public function listing($data = []) {
     $newsletter_id = !empty($data['params']['id']) ? (int)$data['params']['id'] : false;
     $tasks_ids = SendingQueueModel::select('task_id')
       ->where('newsletter_id', $newsletter_id)
@@ -72,7 +72,7 @@ class SendingTaskSubscribers extends APIEndpoint {
     ]);
   }
 
-  function resend($data = []) {
+  public function resend($data = []) {
     $task_id = !empty($data['taskId']) ? (int)$data['taskId'] : false;
     $subscriber_id = !empty($data['subscriberId']) ? (int)$data['subscriberId'] : false;
     $task_subscriber = ScheduledTaskSubscriber::where('task_id', $task_id)

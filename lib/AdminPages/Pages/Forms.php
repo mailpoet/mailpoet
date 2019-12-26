@@ -17,7 +17,7 @@ class Forms {
   /** @var Installation */
   private $installation;
 
-  function __construct(
+  public function __construct(
     PageRenderer $page_renderer,
     PageLimit $listing_page_limit,
     Installation $installation
@@ -27,7 +27,7 @@ class Forms {
     $this->installation = $installation;
   }
 
-  function render() {
+  public function render() {
     $data = [];
     $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('forms');
     $data['segments'] = Segment::findArray();

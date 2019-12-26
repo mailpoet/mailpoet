@@ -9,107 +9,107 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
   /** @var ApiDataSanitizer */
   private $sanitizer;
 
-  function _before() {
+  public function _before() {
     $this->sanitizer = new ApiDataSanitizer();
   }
 
-  function testItThrowsIfNameIsMissing() {
+  public function testItThrowsIfNameIsMissing() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize(['type' => 'text']);
   }
 
-  function testItThrowsIfNameIsEmpty() {
+  public function testItThrowsIfNameIsEmpty() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize(['name' => '', 'type' => 'text']);
   }
 
-  function testItThrowsIfNameIsWrongType() {
+  public function testItThrowsIfNameIsWrongType() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize(['name' => ['x'], 'type' => 'text']);
   }
 
-  function testItThrowsIfTypeIsMissing() {
+  public function testItThrowsIfTypeIsMissing() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize(['name' => 'Name']);
   }
 
-  function testItThrowsIfTypeIsEmpty() {
+  public function testItThrowsIfTypeIsEmpty() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize(['name' => 'Name', 'type' => '']);
   }
 
-  function testItThrowsIfTypeIsWrongType() {
+  public function testItThrowsIfTypeIsWrongType() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize(['name' => 'Name', 'type' => ['y']]);
   }
 
-  function testItThrowsIfTypeIsInvalid() {
+  public function testItThrowsIfTypeIsInvalid() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'Invalid Type']);
   }
 
-  function testItThrowsIfParamsIsInvalidType() {
+  public function testItThrowsIfParamsIsInvalidType() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => 'xyz']);
   }
 
-  function testItReturnsArray() {
+  public function testItReturnsArray() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text']);
     expect($result)->internalType('array');
   }
 
-  function testItReturnsName() {
+  public function testItReturnsName() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text']);
     expect($result)->hasKey('name');
     expect($result['name'])->same('Name');
   }
 
-  function testItReturnsType() {
+  public function testItReturnsType() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'Text']);
     expect($result)->hasKey('type');
     expect($result['type'])->same('text');
   }
 
-  function testItIgnoresUnknownProperties() {
+  public function testItIgnoresUnknownProperties() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'unknown' => 'Unknown property']);
     expect($result)->hasntKey('unknown');
   }
 
-  function testItReturnsParamsIfPassed() {
+  public function testItReturnsParamsIfPassed() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['required' => '1']]);
     expect($result)->hasKey('params');
   }
 
-  function testItReturnsCorrectRequiredForm() {
+  public function testItReturnsCorrectRequiredForm() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['required' => true]]);
     expect($result['params']['required'])->same('1');
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['required' => false]]);
     expect($result['params']['required'])->same('');
   }
 
-  function testItIgnoresUnknownParams() {
+  public function testItIgnoresUnknownParams() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['unknown' => 'Unknown property']]);
     expect($result)->hasKey('params');
     expect($result['params'])->hasntKey('unknown');
   }
 
-  function testItFillsLabel() {
+  public function testItFillsLabel() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text']);
     expect($result['params'])->hasKey('label');
     expect($result['params']['label'])->same('Name');
   }
 
-  function testItThrowsForInvalidValidate() {
+  public function testItThrowsForInvalidValidate() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['validate' => 'unknown']]);
   }
 
-  function testItReturnsSanitizedValidate() {
+  public function testItReturnsSanitizedValidate() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['validate' => 'alphanuM']]);
     expect($result['params']['validate'])->same('alphanum');
   }
 
-  function testItThrowsIfNoValuesInRadio() {
+  public function testItThrowsIfNoValuesInRadio() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize([
       'name' => 'Name',
@@ -117,7 +117,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     ]);
   }
 
-  function testItReturnsSanitizedValuesForRadio() {
+  public function testItReturnsSanitizedValuesForRadio() {
     $result = $this->sanitizer->sanitize([
       'name' => 'Name',
       'type' => 'radio',
@@ -141,7 +141,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     expect($values[1])->same(['value' => 'value 2', 'is_checked' => '1']);
   }
 
-  function testItThrowsIfNoValuesInCheckbox() {
+  public function testItThrowsIfNoValuesInCheckbox() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize([
       'name' => 'Name',
@@ -149,7 +149,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     ]);
   }
 
-  function testItThrowsIfMoreValuesInCheckbox() {
+  public function testItThrowsIfMoreValuesInCheckbox() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize([
       'name' => 'Name',
@@ -167,7 +167,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     ]);
   }
 
-  function testItThrowsIfNameValueMissingInCheckbox() {
+  public function testItThrowsIfNameValueMissingInCheckbox() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize([
       'name' => 'Name',
@@ -182,7 +182,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     ]);
   }
 
-  function testItSanitizeCheckbox() {
+  public function testItSanitizeCheckbox() {
     $result = $this->sanitizer->sanitize([
       'name' => 'Name',
       'type' => 'checkbox',
@@ -201,7 +201,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     expect($values[0])->same(['value' => 'value 1', 'is_checked' => '1']);
   }
 
-  function testDateThrowsIfNoDateFormat() {
+  public function testDateThrowsIfNoDateFormat() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize([
       'name' => 'Name',
@@ -210,7 +210,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     ]);
   }
 
-  function testDateThrowsIfInvalidDateFormat() {
+  public function testDateThrowsIfInvalidDateFormat() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize([
       'name' => 'Name',
@@ -219,7 +219,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     ]);
   }
 
-  function testDateThrowsIfInvalidDateType() {
+  public function testDateThrowsIfInvalidDateType() {
     $this->expectException(InvalidArgumentException::class);
     $this->sanitizer->sanitize([
       'name' => 'Name',
@@ -228,7 +228,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     ]);
   }
 
-  function testSanitizeDate() {
+  public function testSanitizeDate() {
     $result = $this->sanitizer->sanitize([
       'name' => 'Name',
       'type' => 'date',

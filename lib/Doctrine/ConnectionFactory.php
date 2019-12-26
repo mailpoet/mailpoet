@@ -21,7 +21,7 @@ class ConnectionFactory {
     JsonOrSerializedType::NAME => JsonOrSerializedType::class,
   ];
 
-  function createConnection() {
+  public function createConnection() {
     $platform_class = self::PLATFORM_CLASS;
     $connection_params = [
       'wrapperClass' => SerializableConnection::class,

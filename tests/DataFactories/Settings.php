@@ -14,7 +14,7 @@ class Settings {
     $this->settings->resetCache();
   }
 
-  function withDefaultSettings() {
+  public function withDefaultSettings() {
     $this->withCronTriggerMethod('Linux Cron');
     $this->withSendingMethodSmtpMailhog();
     $this->withSender('admin', 'wp@example.com');
@@ -23,23 +23,23 @@ class Settings {
     $this->withEmailNotificationsDisabled();
   }
 
-  function withCronTriggerMethod($method) {
+  public function withCronTriggerMethod($method) {
     $this->settings->set('cron_trigger.method', $method);
     return $this;
   }
 
-  function withSender($name, $address) {
+  public function withSender($name, $address) {
     $this->settings->set('sender.name', $name);
     $this->settings->set('sender.address', $address);
   }
 
-  function withEmailNotificationsDisabled() {
+  public function withEmailNotificationsDisabled() {
     $this->settings->set('stats_notifications.enabled', 0);
     $this->settings->set('subscriber_email_notification.enabled', 0);
     return $this;
   }
 
-  function withConfirmationEmailSubject($subject = null) {
+  public function withConfirmationEmailSubject($subject = null) {
     if ($subject === null) {
       $subject = sprintf('Confirm your subscription to %1$s', get_option('blogname'));
     }
@@ -47,7 +47,7 @@ class Settings {
     return $this;
   }
 
-  function withConfirmationEmailBody($body = null) {
+  public function withConfirmationEmailBody($body = null) {
     if ($body === null) {
       $body = "Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to our list by clicking the link below: \n\n[activation_link]I confirm my subscription![/activation_link]\n\nThank you,\n\nThe Team";
     }
@@ -55,44 +55,44 @@ class Settings {
     return $this;
   }
 
-  function withConfirmationEmailEnabled() {
+  public function withConfirmationEmailEnabled() {
     $this->settings->set('signup_confirmation.enabled', '1');
     return $this;
   }
 
-  function withConfirmationEmailDisabled() {
+  public function withConfirmationEmailDisabled() {
     $this->settings->set('signup_confirmation.enabled', '');
     return $this;
   }
 
-  function withTrackingDisabled() {
+  public function withTrackingDisabled() {
     $this->settings->set('tracking.enabled', false);
     return $this;
   }
 
-  function withTrackingEnabled() {
+  public function withTrackingEnabled() {
     $this->settings->set('tracking.enabled', true);
     return $this;
   }
 
-  function withTodayInstallationDate() {
+  public function withTodayInstallationDate() {
     $this->settings->set('installed_at', date("Y-m-d H:i:s"));
   }
 
-  function withSkippedTutorials() {
+  public function withSkippedTutorials() {
     $this->settings->set('show_intro', 0);
     $this->settings->set('display_nps_poll', 0);
     $this->settings->set('show_congratulate_after_first_newsletter', 0);
     return $this;
   }
 
-  function withSendingMethod($sending_method) {
+  public function withSendingMethod($sending_method) {
     $this->settings->set('mta.method', $sending_method);
     $this->settings->set('mta_group', $sending_method === Mailer::METHOD_SMTP ? 'smtp' : 'website');
     return $this;
   }
 
-  function withSendingMethodMailPoet() {
+  public function withSendingMethodMailPoet() {
     $mailPoetSendingKey = getenv('WP_TEST_MAILER_MAILPOET_API');
     $this->settings->set('mta_group', 'mailpoet');
     $this->settings->set('mta.method', 'MailPoet');
@@ -102,7 +102,7 @@ class Settings {
     return $this;
   }
 
-  function withSendingMethodSmtpMailhog() {
+  public function withSendingMethodSmtpMailhog() {
     $this->settings->set('mta_group', 'smtp');
     $this->settings->set('mta.method', Mailer::METHOD_SMTP);
     $this->settings->set('mta.port', 1025);
@@ -116,68 +116,68 @@ class Settings {
     $this->settings->set('smtp_provider', 'manual');
   }
 
-  function withSendingError($error_message, $operation = 'send') {
+  public function withSendingError($error_message, $operation = 'send') {
     $this->settings->set('mta_log.status', 'paused');
     $this->settings->set('mta_log.error.operation', $operation);
     $this->settings->set('mta_log.error.error_message', $error_message);
     return $this;
   }
 
-  function withCookieRevenueTracking() {
+  public function withCookieRevenueTracking() {
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "1");
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.set', "1");
     return $this;
   }
 
-  function withCookieRevenueTrackingDisabled() {
+  public function withCookieRevenueTrackingDisabled() {
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "0");
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.set', "1");
     return $this;
   }
 
-  function withWooCommerceListImportPageDisplayed($was_shown) {
+  public function withWooCommerceListImportPageDisplayed($was_shown) {
     $this->settings->set('woocommerce_import_screen_displayed', $was_shown ? 1 : 0);
     return $this;
   }
 
-  function withWooCommerceCheckoutOptinEnabled() {
+  public function withWooCommerceCheckoutOptinEnabled() {
     $this->settings->set('woocommerce.optin_on_checkout.enabled', true);
     $this->settings->set('woocommerce.optin_on_checkout.message', 'Yes, I would like to be added to your mailing list');
     return $this;
   }
 
-  function withWooCommerceCheckoutOptinDisabled() {
+  public function withWooCommerceCheckoutOptinDisabled() {
     $this->settings->set('woocommerce.optin_on_checkout.enabled', false);
     $this->settings->set('woocommerce.optin_on_checkout.message', '');
     return $this;
   }
 
-  function withWooCommerceEmailCustomizerEnabled() {
+  public function withWooCommerceEmailCustomizerEnabled() {
     $this->settings->set('woocommerce.use_mailpoet_editor', true);
     return $this;
   }
 
-  function withWooCommerceEmailCustomizerDisabled() {
+  public function withWooCommerceEmailCustomizerDisabled() {
     $this->settings->set('woocommerce.use_mailpoet_editor', false);
     return $this;
   }
 
-  function withDeactivateSubscriberAfter3Months() {
+  public function withDeactivateSubscriberAfter3Months() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 90);
     return $this;
   }
 
-  function withDeactivateSubscriberAfter6Months() {
+  public function withDeactivateSubscriberAfter6Months() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 180);
     return $this;
   }
 
-  function withCaptchaType($type = null) {
+  public function withCaptchaType($type = null) {
     $this->settings->set('captcha.type', $type);
     return $this;
   }
 
-  function withInstalledAt(\DateTime $date) {
+  public function withInstalledAt(\DateTime $date) {
     $this->settings->set('installed_at', $date);
     return $this;
   }

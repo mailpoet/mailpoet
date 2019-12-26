@@ -26,7 +26,7 @@ class SubscriberActionsTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->test_data = [
       'first_name' => 'John',
@@ -41,7 +41,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     ]);
   }
 
-  function testItCanSubscribe() {
+  public function testItCanSubscribe() {
     $segment = Segment::create();
     $segment->hydrate(['name' => 'List #1']);
     $segment->save();
@@ -65,7 +65,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     expect($subscriber->deleted_at)->equals(null);
   }
 
-  function testItSchedulesWelcomeNotificationUponSubscriptionWhenSubscriptionConfirmationIsDisabled() {
+  public function testItSchedulesWelcomeNotificationUponSubscriptionWhenSubscriptionConfirmationIsDisabled() {
     // create segment
     $segment = Segment::create();
     $segment->hydrate(['name' => 'List #1']);
@@ -110,7 +110,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     expect($scheduled_notification)->notEmpty();
   }
 
-  function testItDoesNotScheduleWelcomeNotificationUponSubscriptionWhenSubscriptionConfirmationIsEnabled() {
+  public function testItDoesNotScheduleWelcomeNotificationUponSubscriptionWhenSubscriptionConfirmationIsEnabled() {
     // create segment
     $segment = Segment::create();
     $segment->hydrate(['name' => 'List #1']);
@@ -155,7 +155,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     expect($scheduled_notification)->isEmpty();
   }
 
-  function testItCannotSubscribeWithReservedColumns() {
+  public function testItCannotSubscribeWithReservedColumns() {
     $segment = Segment::create();
     $segment->hydrate(['name' => 'List #1']);
     $segment->save();
@@ -193,7 +193,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     expect($subscriber->deleted_at)->equals(null);
   }
 
-  function testItOverwritesSubscriberDataWhenConfirmationIsDisabled() {
+  public function testItOverwritesSubscriberDataWhenConfirmationIsDisabled() {
     $original_setting_value = $this->settings->get('signup_confirmation.enabled');
     $this->settings->set('signup_confirmation.enabled', false);
 
@@ -240,7 +240,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation.enabled', $original_setting_value);
   }
 
-  function testItStoresUnconfirmedSubscriberDataWhenConfirmationIsEnabled() {
+  public function testItStoresUnconfirmedSubscriberDataWhenConfirmationIsEnabled() {
     $original_setting_value = $this->settings->get('signup_confirmation.enabled');
     $this->settings->set('signup_confirmation.enabled', true);
 
@@ -309,7 +309,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation.enabled', $original_setting_value);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);

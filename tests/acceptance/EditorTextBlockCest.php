@@ -9,7 +9,7 @@ class EditorTextBlockCest {
   const TEXT_BLOCK_SELECTOR = '.mailpoet_text_block';
   const CONTAINER_SELECTOR = '.mailpoet_container_horizontal';
 
-  function addText(\AcceptanceTester $I) {
+  public function addText(\AcceptanceTester $I) {
     $I->wantTo('add Text block to newsletter');
     $textInEditor = ('[data-automation-id="text_block_in_editor"]');
     $newsletter = (new Newsletter())
@@ -22,7 +22,7 @@ class EditorTextBlockCest {
     $I->waitForText('Edit this to insert text.');
   }
 
-  function toolbarIsClosing(\AcceptanceTester $I) {
+  public function toolbarIsClosing(\AcceptanceTester $I) {
     $I->wantTo('Automatically close TinyMCE toolbar when clicked outside textarea');
     $textInEditor = ('[data-automation-id="text_block_in_editor"]');
     $newsletter = (new Newsletter())

@@ -11,7 +11,7 @@ namespace MailPoet\Models;
 class NewsletterOption extends Model {
   public static $_table = MP_NEWSLETTER_OPTION_TABLE;
 
-  static function createOrUpdate($data = []) {
+  public static function createOrUpdate($data = []) {
     if (!is_array($data) || empty($data['newsletter_id']) || empty($data['option_field_id'])) {
       return;
     }

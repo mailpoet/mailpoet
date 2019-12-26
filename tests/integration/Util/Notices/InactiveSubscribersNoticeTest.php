@@ -11,7 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersNoticeTest extends \MailPoetTest {
-  function testItDisplays() {
+  public function testItDisplays() {
     $this->createSubscribers(50);
 
     $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
@@ -21,7 +21,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     expect($result)->contains('<a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">Go to the Advanced Settings</a>');
   }
 
-  function testItDoesntDisplayWhenDisabled() {
+  public function testItDoesntDisplayWhenDisabled() {
     $this->createSubscribers(50);
 
     $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
@@ -30,7 +30,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     expect($result)->null();
   }
 
-  function testItDoesntDisplayWhenInactiveTimeRangeChanged() {
+  public function testItDoesntDisplayWhenInactiveTimeRangeChanged() {
     $this->createSubscribers(50);
 
     $settings_factory = new Settings();
@@ -41,7 +41,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     expect($result)->null();
   }
 
-  function testItDoesntDisplayWhenNotEnoughInactiveSubscribers() {
+  public function testItDoesntDisplayWhenNotEnoughInactiveSubscribers() {
     $this->createSubscribers(49);
 
     $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
@@ -49,12 +49,12 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     expect($result)->null();
   }
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->cleanup();
   }
 
-  function _after() {
+  public function _after() {
     parent::_after();
     $this->cleanup();
   }

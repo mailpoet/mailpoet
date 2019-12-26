@@ -11,7 +11,7 @@ use MailPoet\Router\Router;
 use MailPoetVendor\Idiorm\ORM;
 
 class LinksTest extends \MailPoetTest {
-  function testItOnlyExtractsLinksFromAnchorTags() {
+  public function testItOnlyExtractsLinksFromAnchorTags() {
     $template = '<a href="http://example.com">some site</a> http://link2.com <img src="http://link3.com">';
     $result = Links::extract($template);
 
@@ -23,7 +23,7 @@ class LinksTest extends \MailPoetTest {
     );
   }
 
-  function testItOnlyHashesAndReplacesLinksInAnchorTags() {
+  public function testItOnlyHashesAndReplacesLinksInAnchorTags() {
     $template = '<a href="http://example.com"><img src="http://example.com" /></a>';
     $result = Links::process($template, 0, 0);
     expect($result[0])->equals(
@@ -35,7 +35,7 @@ class LinksTest extends \MailPoetTest {
     );
   }
 
-  function testItDoesNotRehashExistingLinks() {
+  public function testItDoesNotRehashExistingLinks() {
     $link = NewsletterLink::create();
     $link->newsletter_id = 3;
     $link->queue_id = 3;
@@ -54,7 +54,7 @@ class LinksTest extends \MailPoetTest {
     );
   }
 
-  function testItCanExtactLinkShortcodes() {
+  public function testItCanExtactLinkShortcodes() {
     $template = '[notlink:shortcode] [link:some_link_shortcode]';
     $result = Links::extract($template);
 
@@ -66,7 +66,7 @@ class LinksTest extends \MailPoetTest {
     );
   }
 
-  function testItHashesAndReplacesLinks() {
+  public function testItHashesAndReplacesLinks() {
     $template = '<a href="http://example.com">some site</a> [link:some_link_shortcode]';
     list($updated_content, $hashed_links) = Links::process($template, 0, 0);
 
@@ -81,7 +81,7 @@ class LinksTest extends \MailPoetTest {
   }
 
 
-  function testItHashesAndReplacesLinksWithSpecialCharacters() {
+  public function testItHashesAndReplacesLinksWithSpecialCharacters() {
     $template = '<a href="http://сайт.cóm/彌撒時間">some site</a>';
     $result = Links::process($template, 0, 0);
     expect($result[0])->equals(
@@ -93,7 +93,7 @@ class LinksTest extends \MailPoetTest {
     );
   }
 
-  function testItDoesNotReplaceUnprocessedLinks() {
+  public function testItDoesNotReplaceUnprocessedLinks() {
     $template = '<a href="http://example.com">some site</a> [link:some_link_shortcode]';
 
     $processed_links = [
@@ -116,7 +116,7 @@ class LinksTest extends \MailPoetTest {
     expect($updated_content)->notContains('http://example.com');
   }
 
-  function testItCreatesAndTransformsUrlDataObject() {
+  public function testItCreatesAndTransformsUrlDataObject() {
     $subscriber_email = 'test@example.com';
     $data = [
       'subscriber_id' => 1,
@@ -139,7 +139,7 @@ class LinksTest extends \MailPoetTest {
     expect($transformed_url_data_object)->equals($data);
   }
 
-  function testItReplacesHashedLinksWithSubscriberData() {
+  public function testItReplacesHashedLinksWithSubscriberData() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -170,7 +170,7 @@ class LinksTest extends \MailPoetTest {
     }
   }
 
-  function testItCanSaveLinks() {
+  public function testItCanSaveLinks() {
     $links = [
       [
         'link' => 'http://example.com',
@@ -191,7 +191,7 @@ class LinksTest extends \MailPoetTest {
     expect($newsltter_link->url)->equals('http://example.com');
   }
 
-  function testItCanReuseAlreadySavedLinks() {
+  public function testItCanReuseAlreadySavedLinks() {
     $link = NewsletterLink::create();
     $link->newsletter_id = 1;
     $link->queue_id = 2;
@@ -213,7 +213,7 @@ class LinksTest extends \MailPoetTest {
     expect($links[0]['url'])->equals('http://example.com');
   }
 
-  function testItMatchesHashedLinks() {
+  public function testItMatchesHashedLinks() {
     $regex = Links::getLinkRegex();
     expect((boolean)preg_match($regex, '[some_tag]-123'))->false();
     expect((boolean)preg_match($regex, '[some_tag]'))->false();
@@ -221,7 +221,7 @@ class LinksTest extends \MailPoetTest {
     expect((boolean)preg_match($regex, '[mailpoet_open_data]'))->true();
   }
 
-  function testItCanConvertOnlyHashedLinkShortcodes() {
+  public function testItCanConvertOnlyHashedLinkShortcodes() {
     // create newsletter link association
     $queue_id = 1;
     $newsletter_link = NewsletterLink::create();
@@ -238,7 +238,7 @@ class LinksTest extends \MailPoetTest {
     expect($result)->contains('[mailpoet_click_data]-123');
   }
 
-  function testItCanEnsureThatUnsubscribeLinkIsAmongProcessedLinks() {
+  public function testItCanEnsureThatUnsubscribeLinkIsAmongProcessedLinks() {
     $links = [
       [
         'link' => 'http://example.com',
@@ -257,7 +257,7 @@ class LinksTest extends \MailPoetTest {
     expect(count($links))->equals(2);
   }
 
-  function testItCanConvertAllHashedLinksToUrls() {
+  public function testItCanConvertAllHashedLinksToUrls() {
     // create newsletter link associations
     $queue_id = 1;
     $newsletter_link_1 = NewsletterLink::create();
@@ -280,7 +280,7 @@ class LinksTest extends \MailPoetTest {
     expect($result)->contains($newsletter_link_2->url);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);

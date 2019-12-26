@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Form;
 
 class FormsDeletingCest {
 
-  function moveFormToTrash(\AcceptanceTester $I) {
+  public function moveFormToTrash(\AcceptanceTester $I) {
     $form_name = 'Move to trash form';
     $form = new Form();
     $form->withName($form_name)->create();
@@ -25,7 +25,7 @@ class FormsDeletingCest {
     $I->waitForText($form_name);
   }
 
-  function restoreFormFromTrash(\AcceptanceTester $I) {
+  public function restoreFormFromTrash(\AcceptanceTester $I) {
     $form_name = 'Restore from trash form';
     $form = new Form();
     $form->withName($form_name)->withDeleted()->create();
@@ -46,7 +46,7 @@ class FormsDeletingCest {
     $I->waitForText($form_name);
   }
 
-  function deleteFormPermanently(\AcceptanceTester $I) {
+  public function deleteFormPermanently(\AcceptanceTester $I) {
     $form_name = 'Delete form permanently';
     $form = new Form();
     $form->withName($form_name)->withDeleted()->create();

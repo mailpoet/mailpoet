@@ -6,7 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Select extends Base {
 
-  static function render($block) {
+  public static function render($block) {
     $html = '';
 
     $field_name = 'data[' . static::getFieldName($block) . ']';

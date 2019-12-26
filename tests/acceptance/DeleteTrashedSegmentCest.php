@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\DynamicSegment;
 
 class DeleteTrashedSegmentCest {
-  function deleteSegmentFromTrash(\AcceptanceTester $I) {
+  public function deleteSegmentFromTrash(\AcceptanceTester $I) {
     $I->wantTo('Delete a segment from trash');
 
     $segment_title = 'Delete Segment From Trash Test';

@@ -6,8 +6,8 @@ use MailPoetVendor\Idiorm\ORM;
 
 interface Filter {
 
-  function toSql(ORM $orm);
+  public function toSql(ORM $orm);
 
-  function toArray();
+  public function toArray();
 
 }

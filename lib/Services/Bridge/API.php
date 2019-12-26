@@ -32,7 +32,7 @@ class API {
   public $url_stats = 'https://bridge.mailpoet.com/api/v0/stats';
   public $url_authorized_email_addresses = 'https://bridge.mailpoet.com/api/v0/authorized_email_addresses';
 
-  function __construct($api_key, $wp = null) {
+  public function __construct($api_key, $wp = null) {
     $this->setKey($api_key);
     if (is_null($wp)) {
       $this->wp = new WPFunctions();
@@ -42,7 +42,7 @@ class API {
     $this->logger_factory = LoggerFactory::getInstance();
   }
 
-  function checkMSSKey() {
+  public function checkMSSKey() {
     $result = $this->request(
       $this->url_me,
       ['site' => WPFunctions::get()->homeUrl()]
@@ -61,7 +61,7 @@ class API {
     return ['code' => $code, 'data' => $body];
   }
 
-  function checkPremiumKey() {
+  public function checkPremiumKey() {
     $result = $this->request(
       $this->url_premium,
       ['site' => WPFunctions::get()->homeUrl()]
@@ -83,14 +83,14 @@ class API {
     return ['code' => $code, 'data' => $body];
   }
 
-  function logCurlInformation($headers, $info) {
+  public function logCurlInformation($headers, $info) {
     $this->logger_factory->getLogger(LoggerFactory::TOPIC_MSS)->addInfo(
       'requests-curl.after_request',
       ['headers' => $headers, 'curl_info' => $info]
     );
   }
 
-  function sendMessages($message_body) {
+  public function sendMessages($message_body) {
     add_action('requests-curl.after_request', [$this, 'logCurlInformation'], 10, 2);
     $result = $this->request(
       $this->url_messages,
@@ -118,7 +118,7 @@ class API {
     return ['status' => self::SENDING_STATUS_OK];
   }
 
-  function checkBounces(array $emails) {
+  public function checkBounces(array $emails) {
     $result = $this->request(
       $this->url_bounces,
       $emails
@@ -129,7 +129,7 @@ class API {
     return false;
   }
 
-  function updateSubscriberCount($count) {
+  public function updateSubscriberCount($count) {
     $result = $this->request(
       $this->url_stats,
       ['subscriber_count' => (int)$count],
@@ -138,7 +138,7 @@ class API {
     return $this->wp->wpRemoteRetrieveResponseCode($result) === self::RESPONSE_CODE_STATS_SAVED;
   }
 
-  function getAuthorizedEmailAddresses() {
+  public function getAuthorizedEmailAddresses() {
     $result = $this->request(
       $this->url_authorized_email_addresses,
       null,
@@ -150,11 +150,11 @@ class API {
     return false;
   }
 
-  function setKey($api_key) {
+  public function setKey($api_key) {
     $this->api_key = $api_key;
   }
 
-  function getKey() {
+  public function getKey() {
     return $this->api_key;
   }
 

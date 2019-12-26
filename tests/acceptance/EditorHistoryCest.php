@@ -11,7 +11,7 @@ class EditorHistoryCest {
   const UNDO_SELECTOR = '#mailpoet-history-arrow-undo';
   const INACTIVE_SELECTOR = '.mailpoet_history_arrow_inactive';
 
-  function undoRedo(\AcceptanceTester $I) {
+  public function undoRedo(\AcceptanceTester $I) {
     $I->wantTo('Undo and redo');
     $newsletter = (new Newsletter())
         ->loadBodyFrom('newsletterWithText.json')

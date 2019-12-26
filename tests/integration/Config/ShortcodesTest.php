@@ -17,7 +17,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 class ShortcodesTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
@@ -29,7 +29,7 @@ class ShortcodesTest extends \MailPoetTest {
     $this->queue = $queue->save();
   }
 
-  function testItGetsArchives() {
+  public function testItGetsArchives() {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
       $args = func_get_args();
@@ -59,7 +59,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($request_data['newsletter_hash'])->equals($this->newsletter->hash);
   }
 
-  function testItDisplaysManageSubscriptionFormForLoggedinExistingUsers() {
+  public function testItDisplaysManageSubscriptionFormForLoggedinExistingUsers() {
     $wp_user = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
@@ -75,7 +75,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->contains($subscriber->email);
   }
 
-  function testItDoesNotDisplayManageSubscriptionFormForLoggedinNonexistentSubscribers() {
+  public function testItDoesNotDisplayManageSubscriptionFormForLoggedinNonexistentSubscribers() {
     $wp_user = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
     expect(Subscriber::findOne($wp_user->data->user_email))->false();
@@ -86,7 +86,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->contains('Subscription management form is only available to mailing lists subscribers.');
   }
 
-  function testItDoesNotDisplayManageSubscriptionFormForLoggedOutUsers() {
+  public function testItDoesNotDisplayManageSubscriptionFormForLoggedOutUsers() {
     wp_set_current_user(0);
     expect((new WPFunctions)->isUserLoggedIn())->false();
 
@@ -96,7 +96,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->contains('Subscription management form is only available to mailing lists subscribers.');
   }
 
-  function testItDisplaysLinkToManageSubscriptionPageForLoggedinExistingUsers() {
+  public function testItDisplaysLinkToManageSubscriptionPageForLoggedinExistingUsers() {
     $wp_user = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
@@ -111,7 +111,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->contains('Manage your subscription');
   }
 
-  function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
+  public function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
     $wp_user = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
     expect(Subscriber::findOne($wp_user->data->user_email))->false();
@@ -122,7 +122,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->contains('Link to subscription management page is only available to mailing lists subscribers.');
   }
 
-  function testItDoesNotDisplayManageSubscriptionPageForLoggedOutUsers() {
+  public function testItDoesNotDisplayManageSubscriptionPageForLoggedOutUsers() {
     wp_set_current_user(0);
     expect((new WPFunctions)->isUserLoggedIn())->false();
 
@@ -132,7 +132,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->contains('Link to subscription management page is only available to mailing lists subscribers.');
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);

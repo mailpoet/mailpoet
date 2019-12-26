@@ -11,7 +11,7 @@ class Shortcodes {
   public $wp_user_preview;
   const SHORTCODE_CATEGORY_NAMESPACE = 'MailPoet\Newsletter\Shortcodes\Categories\\';
 
-  function __construct(
+  public function __construct(
     $newsletter = false,
     $subscriber = false,
     $queue = false,
@@ -23,7 +23,7 @@ class Shortcodes {
     $this->wp_user_preview = $wp_user_preview;
   }
 
-  function extract($content, $categories = false) {
+  public function extract($content, $categories = false) {
     $categories = (is_array($categories)) ? implode('|', $categories) : false;
     // match: [category:shortcode] or [category|category|...:shortcode]
     // dot not match: [category://shortcode] - avoids matching http/ftp links
@@ -38,7 +38,7 @@ class Shortcodes {
       false;
   }
 
-  function match($shortcode) {
+  public function match($shortcode) {
     preg_match(
       '/\[(?P<category>\w+)?:(?P<action>\w+)(?:.*?\|.*?(?P<argument>\w+):(?P<argument_value>.*?))?\]/',
       $shortcode,
@@ -47,7 +47,7 @@ class Shortcodes {
     return $match;
   }
 
-  function process($shortcodes, $content = false) {
+  public function process($shortcodes, $content = false) {
     $_this = $this;
     $processed_shortcodes = array_map(
       function($shortcode) use ($content, $_this) {
@@ -93,7 +93,7 @@ class Shortcodes {
     return $processed_shortcodes;
   }
 
-  function replace($content, $content_source = null, $categories = null) {
+  public function replace($content, $content_source = null, $categories = null) {
     $shortcodes = $this->extract($content, $categories);
     if (!$shortcodes) {
       return $content;

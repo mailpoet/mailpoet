@@ -15,7 +15,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class SendingTaskSubscribersTest extends \MailPoetTest {
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(SendingTaskSubscribers::class);
     $this->newsletter_id = Newsletter::createOrUpdate([
@@ -66,7 +66,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     ]);
   }
 
-  function testListingReturnsErrorIfMissingNewsletter() {
+  public function testListingReturnsErrorIfMissingNewsletter() {
     $res = $this->endpoint->listing([
       'sort_by' => 'created_at',
       'params' => ['id' => $this->newsletter_id + 1],
@@ -76,7 +76,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       ->equals('This email has not been sent yet.');
   }
 
-  function testListingReturnsErrorIfNewsletterNotBeingSent() {
+  public function testListingReturnsErrorIfNewsletterNotBeingSent() {
     $newsletter = Newsletter::createOrUpdate([
       'type' => Newsletter::TYPE_STANDARD,
       'subject' => 'Draft',
@@ -91,7 +91,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       ->equals('This email has not been sent yet.');
   }
 
-  function testItReturnsListing() {
+  public function testItReturnsListing() {
     $sent_subscriber_status = [
       'error' => '',
       'failed' => 0,
@@ -165,7 +165,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     ]);
   }
 
-  function testResendReturnsErrorIfWrongData() {
+  public function testResendReturnsErrorIfWrongData() {
     $res = $this->endpoint->resend([
       'taskId' => $this->task_id + 1,
       'subscriberId' => $this->sent_subscriber->id,
@@ -183,7 +183,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       ->equals('Failed sending task not found!');
   }
 
-  function testItCanResend() {
+  public function testItCanResend() {
     $res = $this->endpoint->resend([
       'taskId' => $this->task_id,
       'subscriberId' => $this->failed_subscriber->id,
@@ -204,7 +204,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     expect($newsletter->status)->equals(Newsletter::STATUS_SENDING);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);

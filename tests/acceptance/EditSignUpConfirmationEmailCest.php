@@ -8,7 +8,7 @@ use MailPoet\Test\DataFactories\Settings;
 
 class EditSignUpConfirmationEmailCest {
 
-  function edit(\AcceptanceTester $I) {
+  public function edit(\AcceptanceTester $I) {
     $I->wantTo('Edit sign up confirmation email');
 
     // make sure sign up confirmation is enabled

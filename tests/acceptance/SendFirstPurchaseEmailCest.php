@@ -11,7 +11,7 @@ class SendFirstPurchaseEmailCest {
   /** @var Settings */
   private $settings_factory;
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->settings_factory = new Settings();
     $this->settings_factory->withWooCommerceListImportPageDisplayed(true);
@@ -19,7 +19,7 @@ class SendFirstPurchaseEmailCest {
     $this->settings_factory->withCronTriggerMethod('WordPress');
   }
 
-  function sendFirstPurchaseEmail(\AcceptanceTester $I) {
+  public function sendFirstPurchaseEmail(\AcceptanceTester $I) {
     $I->wantTo('Send a "First purchase email"');
 
     $product_name = 'First Purchase Product';
@@ -43,7 +43,7 @@ class SendFirstPurchaseEmailCest {
     $I->waitForText($user_email, 20);
   }
 
-  function doNotSendFirstPurchaseEmailIfUserHasNotOptedIn(\AcceptanceTester $I) {
+  public function doNotSendFirstPurchaseEmailIfUserHasNotOptedIn(\AcceptanceTester $I) {
     $I->wantTo('Buy a product, do not opt-in and don\'t receive a "First purchase email"');
 
     $product_name = 'First Purchase Product';

@@ -18,39 +18,39 @@ class CaptchaSession {
   /** @var string */
   private $id;
 
-  function __construct(WPFunctions $wp) {
+  public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
   }
 
-  function init($id = null) {
+  public function init($id = null) {
     $this->id = $id ?: Security::generateRandomString(self::ID_LENGTH);
   }
 
-  function getId() {
+  public function getId() {
     if ($this->id === null) {
       throw new \Exception("MailPoet captcha session not initialized.");
     }
     return $this->id;
   }
 
-  function reset() {
+  public function reset() {
     $this->wp->deleteTransient($this->getKey(self::SESSION_FORM_KEY));
     $this->wp->deleteTransient($this->getKey(self::SESSION_HASH_KEY));
   }
 
-  function setFormData(array $data) {
+  public function setFormData(array $data) {
     $this->wp->setTransient($this->getKey(self::SESSION_FORM_KEY), $data, self::EXPIRATION);
   }
 
-  function getFormData() {
+  public function getFormData() {
     return $this->wp->getTransient($this->getKey(self::SESSION_FORM_KEY));
   }
 
-  function setCaptchaHash($hash) {
+  public function setCaptchaHash($hash) {
     $this->wp->setTransient($this->getKey(self::SESSION_HASH_KEY), $hash, self::EXPIRATION);
   }
 
-  function getCaptchaHash() {
+  public function getCaptchaHash() {
     return $this->wp->getTransient($this->getKey(self::SESSION_HASH_KEY));
   }
 

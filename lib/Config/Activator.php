@@ -12,12 +12,12 @@ class Activator {
   /** @var Populator */
   private $populator;
 
-  function __construct(SettingsController $settings, Populator $populator) {
+  public function __construct(SettingsController $settings, Populator $populator) {
     $this->settings = $settings;
     $this->populator = $populator;
   }
 
-  function activate() {
+  public function activate() {
     $migrator = new Migrator();
     $migrator->up();
 
@@ -28,7 +28,7 @@ class Activator {
     $caps->setupWPCapabilities();
   }
 
-  function deactivate() {
+  public function deactivate() {
     $migrator = new Migrator();
     $migrator->down();
 
@@ -36,7 +36,7 @@ class Activator {
     $caps->removeWPCapabilities();
   }
 
-  function updateDbVersion() {
+  public function updateDbVersion() {
     try {
       $current_db_version = $this->settings->get('db_version');
     } catch (\Exception $e) {

@@ -32,7 +32,7 @@ class ConflictResolver {
     ],
   ];
 
-  function init() {
+  public function init() {
     WPFunctions::get()->addAction(
       'mailpoet_conflict_resolver_router_url_query_parameters',
       [
@@ -70,12 +70,12 @@ class ConflictResolver {
     );
   }
 
-  function resolveRouterUrlQueryParametersConflict() {
+  public function resolveRouterUrlQueryParametersConflict() {
     // prevents other plugins from overtaking URL query parameters 'action=' and 'endpoint='
     unset($_GET['endpoint'], $_GET['action']);
   }
 
-  function resolveStylesConflict() {
+  public function resolveStylesConflict() {
     $_this = $this;
     $_this->permitted_assets_locations['styles'] = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_style', $_this->permitted_assets_locations['styles']);
     // unload all styles except from the list of allowed
@@ -106,7 +106,7 @@ class ConflictResolver {
     WPFunctions::get()->addAction('admin_print_footer_scripts', $dequeue_styles, $execute_first);
   }
 
-  function resolveScriptsConflict() {
+  public function resolveScriptsConflict() {
     $_this = $this;
     $_this->permitted_assets_locations['scripts'] = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_script', $_this->permitted_assets_locations['scripts']);
     // unload all scripts except from the list of allowed
@@ -135,7 +135,7 @@ class ConflictResolver {
     WPFunctions::get()->addAction('admin_print_footer_scripts', $dequeue_scripts, $execute_first);
   }
 
-  function resolveEditorConflict() {
+  public function resolveEditorConflict() {
 
     // mark editor as already enqueued to prevent loading its assets
     // when wp_enqueue_editor() used by some other plugin
@@ -161,7 +161,7 @@ class ConflictResolver {
     });
   }
 
-  function resolveTinyMceConflict() {
+  public function resolveTinyMceConflict() {
     // WordPress TinyMCE scripts may not get enqueued as scripts when some plugins use wp_editor()
     // or wp_enqueue_editor(). Instead, they are printed inside the footer script print actions.
     // To unload TinyMCE we need to remove those actions.

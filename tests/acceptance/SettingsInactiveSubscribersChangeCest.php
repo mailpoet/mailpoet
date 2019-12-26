@@ -31,7 +31,7 @@ class SettingsInactiveSubscribersChangeCest {
       ->withCronTriggerMethod('WordPress');
   }
 
-  function inactiveSubscribersSettingsChange(\AcceptanceTester $I) {
+  public function inactiveSubscribersSettingsChange(\AcceptanceTester $I) {
     $I->wantTo('Change inactive users settings and reactivate all subscribers');
     $I->login();
     $I->amOnMailPoetPage('Settings');

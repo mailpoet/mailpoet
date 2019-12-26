@@ -11,17 +11,17 @@ class PremiumKeyCheck extends KeyCheckWorker {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(SettingsController $settings) {
+  public function __construct(SettingsController $settings) {
     $this->settings = $settings;
     parent::__construct();
   }
 
 
-  function checkProcessingRequirements() {
+  public function checkProcessingRequirements() {
     return Bridge::isPremiumKeySpecified();
   }
 
-  function checkKey() {
+  public function checkKey() {
     $premium_key = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
     $result = $this->bridge->checkPremiumKey($premium_key);
     $this->bridge->storePremiumKeyAndState($premium_key, $result);

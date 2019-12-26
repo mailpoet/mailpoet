@@ -14,7 +14,7 @@ class Capabilities {
   /** @var AccessControl */
   private $access_control;
 
-  function __construct($renderer = null, WPFunctions $wp = null) {
+  public function __construct($renderer = null, WPFunctions $wp = null) {
     if ($renderer !== null) {
       $this->renderer = $renderer;
     }
@@ -25,11 +25,11 @@ class Capabilities {
     $this->access_control = new AccessControl;
   }
 
-  function init() {
+  public function init() {
     $this->setupMembersCapabilities();
   }
 
-  function setupWPCapabilities() {
+  public function setupWPCapabilities() {
     $permissions = $this->access_control->getDefaultPermissions();
     $role_objects = [];
     foreach ($permissions as $name => $roles) {
@@ -43,7 +43,7 @@ class Capabilities {
     }
   }
 
-  function removeWPCapabilities() {
+  public function removeWPCapabilities() {
     $permissions = $this->access_control->getDefaultPermissions();
     $role_objects = [];
     foreach ($permissions as $name => $roles) {
@@ -57,20 +57,20 @@ class Capabilities {
     }
   }
 
-  function setupMembersCapabilities() {
+  public function setupMembersCapabilities() {
     $this->wp->addAction('admin_enqueue_scripts', [$this, 'enqueueMembersStyles']);
     $this->wp->addAction('members_register_cap_groups', [$this, 'registerMembersCapGroup']);
     $this->wp->addAction('members_register_caps', [$this, 'registerMembersCapabilities']);
   }
 
-  function enqueueMembersStyles() {
+  public function enqueueMembersStyles() {
     WPFunctions::get()->wpEnqueueStyle(
       'mailpoet-admin-global',
       Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('adminGlobal.css')
     );
   }
 
-  function registerMembersCapGroup() {
+  public function registerMembersCapGroup() {
     members_register_cap_group(
       self::MEMBERS_CAP_GROUP_NAME,
       [
@@ -82,14 +82,14 @@ class Capabilities {
     );
   }
 
-  function registerMembersCapabilities() {
+  public function registerMembersCapabilities() {
     $permissions = $this->access_control->getPermissionLabels();
     foreach ($permissions as $name => $label) {
       $this->registerMembersCapability($name, $label);
     }
   }
 
-  function registerMembersCapability($name, $label) {
+  public function registerMembersCapability($name, $label) {
     members_register_cap(
       $name,
       [

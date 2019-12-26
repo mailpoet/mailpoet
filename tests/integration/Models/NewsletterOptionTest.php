@@ -8,7 +8,7 @@ use MailPoetVendor\Idiorm\ORM;
 class NewsletterOptionTest extends \MailPoetTest {
   public $data;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
     $this->data = [
       'newsletter_id' => 1,
@@ -17,7 +17,7 @@ class NewsletterOptionTest extends \MailPoetTest {
     ];
   }
 
-  function testItCanCreateOrUpdateNewsletterOptionFieldRelation() {
+  public function testItCanCreateOrUpdateNewsletterOptionFieldRelation() {
     // it can create
     $data = $this->data;
     NewsletterOption::createOrUpdate($data);
@@ -36,7 +36,7 @@ class NewsletterOptionTest extends \MailPoetTest {
   }
 
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
   }
 }

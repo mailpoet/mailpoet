@@ -12,7 +12,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
   /** @var SubscriberPersonalDataEraser */
   private $eraser;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->eraser = new SubscriberPersonalDataEraser();
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
@@ -20,7 +20,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
   }
 
-  function testExportWorksWhenSubscriberNotFound() {
+  public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->eraser->erase('email.that@doesnt.exists');
     expect($result)->internalType('array');
     expect($result)->hasKey('items_removed');
@@ -29,7 +29,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     expect($result['done'])->equals(true);
   }
 
-  function testItDeletesCustomFields() {
+  public function testItDeletesCustomFields() {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'eraser.test.email.that@has.custom.fields',
     ]);
@@ -53,7 +53,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
 
   }
 
-  function testItDeletesSubscriberData() {
+  public function testItDeletesSubscriberData() {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'subscriber@for.anon.test',
       'first_name' => 'John',
@@ -74,7 +74,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     expect($subscriber_after->unconfirmed_data)->equals('');
   }
 
-  function testItDeletesSubscriberEmailAddress() {
+  public function testItDeletesSubscriberEmailAddress() {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'subscriber@for.anon.test',
     ]);

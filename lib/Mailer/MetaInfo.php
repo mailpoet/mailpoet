@@ -7,19 +7,19 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 
 class MetaInfo {
-  function getSendingTestMetaInfo() {
+  public function getSendingTestMetaInfo() {
     return $this->makeMetaInfo('sending_test', 'unknown', 'administrator');
   }
 
-  function getPreviewMetaInfo() {
+  public function getPreviewMetaInfo() {
     return $this->makeMetaInfo('preview', 'unknown', 'administrator');
   }
 
-  function getStatsNotificationMetaInfo() {
+  public function getStatsNotificationMetaInfo() {
     return $this->makeMetaInfo('email_stats_notification', 'unknown', 'administrator');
   }
 
-  function getWordPressTransactionalMetaInfo(SubscriberEntity $subscriber = null) {
+  public function getWordPressTransactionalMetaInfo(SubscriberEntity $subscriber = null) {
     return $this->makeMetaInfo(
       'transactional',
       $subscriber ? $subscriber->getStatus() : 'unknown',
@@ -27,15 +27,15 @@ class MetaInfo {
     );
   }
 
-  function getConfirmationMetaInfo(Subscriber $subscriber) {
+  public function getConfirmationMetaInfo(Subscriber $subscriber) {
     return $this->makeMetaInfo('confirmation', $subscriber->status, $subscriber->source);
   }
 
-  function getNewSubscriberNotificationMetaInfo() {
+  public function getNewSubscriberNotificationMetaInfo() {
     return $this->makeMetaInfo('new_subscriber_notification', 'unknown', 'administrator');
   }
 
-  function getNewsletterMetaInfo($newsletter, Subscriber $subscriber) {
+  public function getNewsletterMetaInfo($newsletter, Subscriber $subscriber) {
     $type = 'unknown';
     switch ($newsletter->type) {
       case Newsletter::TYPE_AUTOMATIC:

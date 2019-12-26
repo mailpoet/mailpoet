@@ -4,7 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 class ListsListingCest {
 
-  function listsListing(\AcceptanceTester $I) {
+  public function listsListing(\AcceptanceTester $I) {
     $I->wantTo('Open lists listings page');
 
     $I->login();

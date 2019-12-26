@@ -59,7 +59,7 @@ class CustomFieldsTest extends \MailPoetTest {
     ],
   ];
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->repository = ContainerWrapper::getInstance(WP_DEBUG)->get(CustomFieldsRepository::class);
     $this->repository->truncate();
@@ -68,7 +68,7 @@ class CustomFieldsTest extends \MailPoetTest {
     }
   }
 
-  function testItCanGetAllCustomFields() {
+  public function testItCanGetAllCustomFields() {
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
     $response = $router->getAll();
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -81,7 +81,7 @@ class CustomFieldsTest extends \MailPoetTest {
     }
   }
 
-  function testItCanDeleteACustomField() {
+  public function testItCanDeleteACustomField() {
     $custom_field = CustomField::where('type', 'date')->findOne();
     $custom_field_id = $custom_field->id();
 
@@ -96,7 +96,7 @@ class CustomFieldsTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
-  function testItCanSaveACustomField() {
+  public function testItCanSaveACustomField() {
     $new_custom_field = [
       'name' => 'New custom field',
       'type' => 'text',
@@ -120,7 +120,7 @@ class CustomFieldsTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
-  function testItCanGetACustomField() {
+  public function testItCanGetACustomField() {
     $custom_field = $this->repository->findOneBy(['name' => 'CF: text']);
 
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());

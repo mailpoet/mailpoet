@@ -7,7 +7,7 @@ use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoetVendor\Idiorm\ORM;
 
 class BatchIteratorTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->task_id = 123; // random ID
     $this->batch_size = 2;
@@ -21,7 +21,7 @@ class BatchIteratorTest extends \MailPoetTest {
     $this->iterator = new BatchIterator($this->task_id, $this->batch_size);
   }
 
-  function testItFailsToConstructWithWrongArguments() {
+  public function testItFailsToConstructWithWrongArguments() {
     try {
       $iterator = new BatchIterator(0, 0);
       $this->fail('Exception was not thrown');
@@ -30,12 +30,12 @@ class BatchIteratorTest extends \MailPoetTest {
     }
   }
 
-  function testItConstructs() {
+  public function testItConstructs() {
     $iterator = new BatchIterator(123, 456); // random IDs
     expect_that($iterator instanceof BatchIterator);
   }
 
-  function testItIterates() {
+  public function testItIterates() {
     $iterations = ceil($this->subscriber_count / $this->batch_size);
     $i = 0;
     foreach ($this->iterator as $batch) {
@@ -57,11 +57,11 @@ class BatchIteratorTest extends \MailPoetTest {
     expect($i)->equals($iterations);
   }
 
-  function testItCanBeCounted() {
+  public function testItCanBeCounted() {
     expect(count($this->iterator))->equals($this->subscriber_count);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
   }
 }

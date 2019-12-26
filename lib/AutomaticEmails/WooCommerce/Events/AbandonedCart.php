@@ -29,7 +29,7 @@ class AbandonedCart {
   /** @var AutomaticEmailScheduler */
   private $scheduler;
 
-  function __construct() {
+  public function __construct() {
     $this->wp = WPFunctions::get();
     $this->woo_commerce_helper = new WooCommerceHelper();
     $this->cookies = new Cookies();
@@ -37,7 +37,7 @@ class AbandonedCart {
     $this->scheduler = new AutomaticEmailScheduler();
   }
 
-  function getEventDetails() {
+  public function getEventDetails() {
     return [
       'slug' => self::SLUG,
       'title' => WPFunctions::get()->_x('Abandoned Shopping Cart', 'This is the name of a type of automatic email for ecommerce. Those emails are sent automatically when a customer adds product to his shopping cart but never complete the checkout process.', 'mailpoet'),
@@ -73,7 +73,7 @@ class AbandonedCart {
     ];
   }
 
-  function init() {
+  public function init() {
     if (!$this->woo_commerce_helper->isWooCommerceActive()) {
       return;
     }
@@ -127,7 +127,7 @@ class AbandonedCart {
     );
   }
 
-  function handleCartChange() {
+  public function handleCartChange() {
     $cart = $this->woo_commerce_helper->WC()->cart;
     if ($cart && !$cart->is_empty()) {
       $this->scheduleAbandonedCartEmail();
@@ -137,7 +137,7 @@ class AbandonedCart {
     }
   }
 
-  function trackPageVisit() {
+  public function trackPageVisit() {
     // on page visit reschedule all currently scheduled (not yet sent) emails for given subscriber
     // (it tracks at most once per minute to avoid processing many calls at the same time, i.e. AJAX)
     $this->page_visit_tracker->trackVisit(function () {

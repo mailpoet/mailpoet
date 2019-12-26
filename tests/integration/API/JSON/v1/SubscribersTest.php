@@ -46,7 +46,7 @@ class SubscribersTest extends \MailPoetTest {
   /** @var CaptchaSession */
   private $captcha_session;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->cleanup();
     $container = ContainerWrapper::getInstance();
@@ -111,7 +111,7 @@ class SubscribersTest extends \MailPoetTest {
     ]);
   }
 
-  function testItCanGetASubscriber() {
+  public function testItCanGetASubscriber() {
     $response = $this->endpoint->get(['id' => 'not_an_id']);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals(
@@ -134,7 +134,7 @@ class SubscribersTest extends \MailPoetTest {
     );
   }
 
-  function testItCanSaveANewSubscriber() {
+  public function testItCanSaveANewSubscriber() {
     $valid_data = [
       'email' => 'raul.doe@mailpoet.com',
       'first_name' => 'Raul',
@@ -175,7 +175,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($subscriber->source)->equals('administrator');
   }
 
-  function testItCanSaveAnExistingSubscriber() {
+  public function testItCanSaveAnExistingSubscriber() {
     $subscriber_data = $this->subscriber_2->asArray();
     unset($subscriber_data['created_at']);
     $subscriber_data['segments'] = [$this->segment_1->id];
@@ -190,7 +190,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data['source'])->equals('api');
   }
 
-  function testItCanRemoveListsFromAnExistingSubscriber() {
+  public function testItCanRemoveListsFromAnExistingSubscriber() {
     $subscriber_data = $this->subscriber_2->asArray();
     unset($subscriber_data['created_at']);
     unset($subscriber_data['segments']);
@@ -203,7 +203,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($this->subscriber_2->segments()->findArray())->count(0);
   }
 
-  function testItCanRestoreASubscriber() {
+  public function testItCanRestoreASubscriber() {
     $this->subscriber_1->trash();
 
     $trashed_subscriber = Subscriber::findOne($this->subscriber_1->id);
@@ -218,7 +218,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanTrashASubscriber() {
+  public function testItCanTrashASubscriber() {
     $response = $this->endpoint->trash(['id' => $this->subscriber_2->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -228,14 +228,14 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanDeleteASubscriber() {
+  public function testItCanDeleteASubscriber() {
     $response = $this->endpoint->delete(['id' => $this->subscriber_1->id]);
     expect($response->data)->isEmpty();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanFilterListing() {
+  public function testItCanFilterListing() {
     // filter by non existing segment
     $response = $this->endpoint->listing([
       'filter' => [
@@ -267,7 +267,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data[0]['email'])->equals($this->subscriber_2->email);
   }
 
-  function testItCanAddSegmentsUsingHooks() {
+  public function testItCanAddSegmentsUsingHooks() {
     $add_segment = function() {
       return 'segment';
     };
@@ -280,7 +280,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->meta['filters']['segment'])->equals('segment');
   }
 
-  function testItCanSearchListing() {
+  public function testItCanSearchListing() {
     $new_subscriber = Subscriber::createOrUpdate([
       'email' => 'search.me@find.me',
       'first_name' => 'Billy Bob',
@@ -316,7 +316,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data[0]['email'])->equals($new_subscriber->email);
   }
 
-  function testItCanGroupListing() {
+  public function testItCanGroupListing() {
     $subscribed_group = $this->endpoint->listing([
       'group' => Subscriber::STATUS_SUBSCRIBED,
     ]);
@@ -355,7 +355,7 @@ class SubscribersTest extends \MailPoetTest {
     );
   }
 
-  function testItCorrectSubscriptionStatus() {
+  public function testItCorrectSubscriptionStatus() {
     $segment = Segment::createOrUpdate(['name' => 'Segment185245']);
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'third@example.com',
@@ -379,7 +379,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data[0]['status'])->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
-  function testItCanSortAndLimitListing() {
+  public function testItCanSortAndLimitListing() {
     // get 1st page (limit items per page to 1)
     $response = $this->endpoint->listing([
       'limit' => 1,
@@ -408,7 +408,7 @@ class SubscribersTest extends \MailPoetTest {
     );
   }
 
-  function testItCanBulkDeleteSelectionOfSubscribers() {
+  public function testItCanBulkDeleteSelectionOfSubscribers() {
     $deletable_subscriber = Subscriber::createOrUpdate([
       'email' => 'to.be.removed@mailpoet.com',
     ]);
@@ -439,7 +439,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($is_deletable_subscriber_deleted)->true();
   }
 
-  function testItCanBulkDeleteSubscribers() {
+  public function testItCanBulkDeleteSubscribers() {
     $response = $this->endpoint->bulkAction([
       'action' => 'trash',
       'listing' => ['group' => 'all'],
@@ -462,7 +462,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(0);
   }
 
-  function testItCannotRunAnInvalidBulkAction() {
+  public function testItCannotRunAnInvalidBulkAction() {
     $response = $this->endpoint->bulkAction([
       'action' => 'invalidAction',
       'listing' => [],
@@ -471,7 +471,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->contains('has no method');
   }
 
-  function testItFailsWithEmailFilled() {
+  public function testItFailsWithEmailFilled() {
     $response = $this->endpoint->subscribe([
       'form_id' => $this->form->id,
       'email' => 'toto@mailpoet.com',
@@ -482,7 +482,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Please leave the first field empty.');
   }
 
-  function testItCannotSubscribeWithoutFormID() {
+  public function testItCannotSubscribeWithoutFormID() {
     $response = $this->endpoint->subscribe([
       'form_field_ZW1haWw' => 'toto@mailpoet.com',
       // no form ID specified
@@ -492,7 +492,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Please specify a valid form ID.');
   }
 
-  function testItCannotSubscribeWithoutSegmentsIfTheyAreSelectedByUser() {
+  public function testItCannotSubscribeWithoutSegmentsIfTheyAreSelectedByUser() {
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
@@ -503,7 +503,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Please select a list.');
   }
 
-  function testItCanSubscribe() {
+  public function testItCanSubscribe() {
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
@@ -512,7 +512,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
-  function testItCannotSubscribeWithoutReCaptchaWhenEnabled() {
+  public function testItCannotSubscribeWithoutReCaptchaWhenEnabled() {
     $this->settings->set('captcha', ['type' => Captcha::TYPE_RECAPTCHA]);
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => 'toto@mailpoet.com',
@@ -524,7 +524,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->settings->set('captcha', []);
   }
 
-  function testItCannotSubscribeWithoutBuiltInCaptchaWhenEnabled() {
+  public function testItCannotSubscribeWithoutBuiltInCaptchaWhenEnabled() {
     $this->settings->set('captcha', ['type' => Captcha::TYPE_BUILTIN]);
     $email = 'toto@mailpoet.com';
     $subscriber = Subscriber::create();
@@ -541,7 +541,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->settings->set('captcha', []);
   }
 
-  function testItCanSubscribeWithBuiltInCaptchaWhenEnabled() {
+  public function testItCanSubscribeWithBuiltInCaptchaWhenEnabled() {
     $this->settings->set('captcha', ['type' => Captcha::TYPE_BUILTIN]);
     $email = 'toto@mailpoet.com';
     $subscriber = Subscriber::create();
@@ -563,7 +563,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->settings->set('captcha', []);
   }
 
-  function testItCannotSubscribeWithoutMandatoryCustomField() {
+  public function testItCannotSubscribeWithoutMandatoryCustomField() {
     $custom_field = CustomField::createOrUpdate([
       'name' => 'custom field',
       'type' => 'text',
@@ -589,7 +589,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
-  function testItCanSubscribeWithoutSegmentsIfTheyAreSelectedByAdmin() {
+  public function testItCanSubscribeWithoutSegmentsIfTheyAreSelectedByAdmin() {
     $form = $this->form->asArray();
     $form['settings']['segments_selected_by'] = 'admin';
     $this->form->settings = $form['settings'];
@@ -609,7 +609,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($subscriber_segments[1]['id'])->equals($form['settings']['segments'][1]);
   }
 
-  function testItCannotSubscribeIfFormHasNoSegmentsDefined() {
+  public function testItCannotSubscribeIfFormHasNoSegmentsDefined() {
     $form = $this->form->asArray();
     $form['settings']['segments_selected_by'] = 'admin';
     unset($form['settings']['segments']);
@@ -626,7 +626,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Please select a list.');
   }
 
-  function testItCannotMassSubscribe() {
+  public function testItCannotMassSubscribe() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
     $this->endpoint->subscribe([
@@ -645,7 +645,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
   }
 
-  function testItCannotMassResubscribe() {
+  public function testItCannotMassResubscribe() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
     $this->endpoint->subscribe([
@@ -670,7 +670,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
   }
 
-  function testItSchedulesWelcomeEmailNotificationWhenSubscriberIsAdded() {
+  public function testItSchedulesWelcomeEmailNotificationWhenSubscriberIsAdded() {
     $this->_createWelcomeNewsletter();
     $subscriber_data = [
       'email' => 'raul.doe@mailpoet.com',
@@ -685,7 +685,7 @@ class SubscribersTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(1);
   }
 
-  function testItSchedulesWelcomeEmailNotificationWhenExistedSubscriberIsUpdated() {
+  public function testItSchedulesWelcomeEmailNotificationWhenExistedSubscriberIsUpdated() {
     $this->_createWelcomeNewsletter();
     $subscriber_data = [
       'email' => 'raul.doe@mailpoet.com',
@@ -705,7 +705,7 @@ class SubscribersTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(1);
   }
 
-  function testItDoesNotSchedulesWelcomeEmailNotificationWhenNoNewSegmentIsAdded() {
+  public function testItDoesNotSchedulesWelcomeEmailNotificationWhenNoNewSegmentIsAdded() {
     $this->_createWelcomeNewsletter();
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'raul.doe@mailpoet.com',
@@ -731,7 +731,7 @@ class SubscribersTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(0);
   }
 
-  function testItSendsConfirmationEmail() {
+  public function testItSendsConfirmationEmail() {
     $response = $this->endpoint->sendConfirmationEmail(['id' => 'non_existent']);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
 
@@ -745,7 +745,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
-  function testItKeepsSpecialSegmentsUnchangedAfterSaving() {
+  public function testItKeepsSpecialSegmentsUnchangedAfterSaving() {
     $wc_segment = Segment::createOrUpdate([
       'name' => 'WooCommerce Users',
       'type' => Segment::TYPE_WC_USERS,
@@ -806,7 +806,7 @@ class SubscribersTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanup();
   }
 

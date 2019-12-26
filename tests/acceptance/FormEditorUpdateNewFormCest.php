@@ -7,7 +7,7 @@ use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Segment;
 
 class FormEditorUpdateNewFormCest {
-  function updateNewForm(\AcceptanceTester $I) {
+  public function updateNewForm(\AcceptanceTester $I) {
     $segment_factory = new Segment();
     $segment_name = 'Fancy List';
     $segment_factory->withName($segment_name)->create();

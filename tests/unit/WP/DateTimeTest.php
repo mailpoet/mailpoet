@@ -8,7 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class DateTimeTest extends \MailPoetUnitTest {
 
-  function testGetTimeFormat() {
+  public function testGetTimeFormat() {
     $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
       'getOption' => function($key) {
         return 'H:i';
@@ -24,7 +24,7 @@ class DateTimeTest extends \MailPoetUnitTest {
     expect($date_time->getTimeFormat())->equals('H:i:s');
   }
 
-  function testGetDateFormat() {
+  public function testGetDateFormat() {
     $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
       'getOption' => function($key) {
         return 'm-d';
@@ -40,7 +40,7 @@ class DateTimeTest extends \MailPoetUnitTest {
     expect($date_time->getDateFormat())->equals('Y-m-d');
   }
 
-  function testGetCurrentDate() {
+  public function testGetCurrentDate() {
     $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
       'currentTime' => function($format) {
         return date($format);
@@ -49,7 +49,7 @@ class DateTimeTest extends \MailPoetUnitTest {
     expect($date_time->getCurrentDate("Y-m"))->equals(date("Y-m"));
   }
 
-  function testGetCurrentTime() {
+  public function testGetCurrentTime() {
     $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
       'currentTime' => function($format) {
         return date($format);
@@ -58,7 +58,7 @@ class DateTimeTest extends \MailPoetUnitTest {
     expect($date_time->getCurrentTime("i:s"))->regExp('/\d\d:\d\d/');
   }
 
-  function testFormatTime() {
+  public function testFormatTime() {
     $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
       'getOption' => function($key) {
         return 'H:i';
@@ -70,7 +70,7 @@ class DateTimeTest extends \MailPoetUnitTest {
     expect($date_time->formatTime($timestamp, $format))->equals(date($format, $timestamp));
   }
 
-  function testFormatDate() {
+  public function testFormatDate() {
     $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
       'getOption' => function($key) {
         return 'm-d';
@@ -82,7 +82,7 @@ class DateTimeTest extends \MailPoetUnitTest {
     expect($date_time->formatDate($timestamp, $format))->equals(date($format, $timestamp));
   }
 
-  function testTimeInterval() {
+  public function testTimeInterval() {
     $date_time = new WPDateTime(Stub::make(new WPFunctions(), [
       'getOption' => function($key) {
         return 'H:i';

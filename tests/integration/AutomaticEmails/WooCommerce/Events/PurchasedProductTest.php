@@ -26,18 +26,18 @@ require_once __DIR__ . '/../WooCommerceStubs/ItemDetails.php';
 require_once __DIR__ . '/../WooCommerceStubs/OrderDetails.php';
 
 class PurchasedProductTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     WPFunctions::get()->removeAllFilters('woocommerce_payment_complete');
   }
 
-  function testItGetsEventDetails() {
+  public function testItGetsEventDetails() {
     $event = new PurchasedProduct();
     $result = $event->getEventDetails();
     expect($result)->notEmpty();
     expect($result['slug'])->equals(PurchasedProduct::SLUG);
   }
 
-  function testItDoesNotScheduleEmailWhenOrderDetailsAreNotAvailable() {
+  public function testItDoesNotScheduleEmailWhenOrderDetailsAreNotAvailable() {
     $helper = Stub::make(WCHelper::class, [
       'wcGetOrder' => false,
     ]);
@@ -46,7 +46,7 @@ class PurchasedProductTest extends \MailPoetTest {
     expect($result)->isEmpty();
   }
 
-  function testItDoesNotScheduleEmailWhenCustomerEmailIsEmpty() {
+  public function testItDoesNotScheduleEmailWhenCustomerEmailIsEmpty() {
     $order_details = Stub::make(
       new OrderDetails(),
       [
@@ -63,7 +63,7 @@ class PurchasedProductTest extends \MailPoetTest {
     expect($result)->isEmpty();
   }
 
-  function testItDoesNotScheduleEmailWhenCustomerIsNotAWCSegmentSubscriber() {
+  public function testItDoesNotScheduleEmailWhenCustomerIsNotAWCSegmentSubscriber() {
     $order_details = Stub::make(
       new OrderDetails(),
       [
@@ -91,7 +91,7 @@ class PurchasedProductTest extends \MailPoetTest {
   }
 
 
-  function testItDoesNotScheduleEmailWhenPurchasedProductDoesNotMatchConfiguredProductIds() {
+  public function testItDoesNotScheduleEmailWhenPurchasedProductDoesNotMatchConfiguredProductIds() {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
     $newsletter = Newsletter::createOrUpdate(
       [
@@ -162,18 +162,18 @@ class PurchasedProductTest extends \MailPoetTest {
     expect($scheduled_task)->isEmpty();
   }
 
-  function testItSchedulesEmailForProcessingOrder() {
+  public function testItSchedulesEmailForProcessingOrder() {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_processing');
     $this->_runTestItSchedulesEmailForState('processing');
   }
 
-  function testItSchedulesEmailForCompletedOrder() {
+  public function testItSchedulesEmailForCompletedOrder() {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
     $this->_runTestItSchedulesEmailForState('completed');
   }
 
 
-  function _runTestItSchedulesEmailForState($state) {
+  public function _runTestItSchedulesEmailForState($state) {
     $newsletter = Newsletter::createOrUpdate(
       [
         'subject' => 'WooCommerce',
@@ -256,7 +256,7 @@ class PurchasedProductTest extends \MailPoetTest {
     return $order_id;
   }
 
-  function _createNewsletterOption(array $options, $newsletter_id) {
+  public function _createNewsletterOption(array $options, $newsletter_id) {
     foreach ($options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::where('name', $option)
         ->where('newsletter_type', Newsletter::TYPE_AUTOMATIC)
@@ -289,7 +289,7 @@ class PurchasedProductTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);

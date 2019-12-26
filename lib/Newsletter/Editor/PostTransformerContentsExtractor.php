@@ -16,13 +16,13 @@ class PostTransformerContentsExtractor {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
-  function __construct($args) {
+  public function __construct($args) {
     $this->args = $args;
     $this->wp = new WPFunctions();
     $this->woocommerce_helper = new WooCommerceHelper();
   }
 
-  function getContent($post, $with_post_class, $display_type) {
+  public function getContent($post, $with_post_class, $display_type) {
     $content_manager = new PostContentManager();
     $meta_manager = new MetaInformationManager();
 
@@ -66,7 +66,7 @@ class PostTransformerContentsExtractor {
     return $image_info;
   }
 
-  function getFeaturedImage($post) {
+  public function getFeaturedImage($post) {
     $post_id = $post->ID;
     $post_title = $this->sanitizeTitle($post->post_title);
     $image_full_width = (bool)filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN);
@@ -124,7 +124,7 @@ class PostTransformerContentsExtractor {
     ];
   }
 
-  function getTitle($post) {
+  public function getTitle($post) {
     $title = $this->sanitizeTitle($post->post_title);
 
     if (filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
@@ -181,7 +181,7 @@ class PostTransformerContentsExtractor {
     return $content;
   }
 
-  function isProduct($post) {
+  public function isProduct($post) {
     return $post->post_type === 'product';
   }
 

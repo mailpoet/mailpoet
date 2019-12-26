@@ -9,11 +9,11 @@ class SubscribersExport {
   /** @var PageRenderer */
   private $page_renderer;
 
-  function __construct(PageRenderer $page_renderer) {
+  public function __construct(PageRenderer $page_renderer) {
     $this->page_renderer = $page_renderer;
   }
 
-  function render() {
+  public function render() {
     $export = new ImportExportFactory(ImportExportFactory::EXPORT_ACTION);
     $data = $export->bootstrap();
     $data['sub_menu'] = 'mailpoet-subscribers';

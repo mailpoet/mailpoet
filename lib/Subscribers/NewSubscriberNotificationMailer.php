@@ -26,7 +26,7 @@ class NewSubscriberNotificationMailer {
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
-  function __construct(Mailer $mailer, Renderer $renderer, SettingsController $settings) {
+  public function __construct(Mailer $mailer, Renderer $renderer, SettingsController $settings) {
     $this->mailer = $mailer;
     $this->renderer = $renderer;
     $this->settings = $settings;
@@ -39,7 +39,7 @@ class NewSubscriberNotificationMailer {
    *
    * @throws \Exception
    */
-  function send(Subscriber $subscriber, array $segments) {
+  public function send(Subscriber $subscriber, array $segments) {
     $settings = $this->settings->get(NewSubscriberNotificationMailer::SETTINGS_KEY);
     if ($this->isDisabled($settings)) {
       return;

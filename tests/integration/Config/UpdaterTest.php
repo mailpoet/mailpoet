@@ -7,7 +7,7 @@ use Codeception\Stub\Expected;
 use MailPoet\Config\Updater;
 
 class UpdaterTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->plugin_name = 'some-plugin/some-plugin.php';
     $this->slug = 'some-plugin';
@@ -20,7 +20,7 @@ class UpdaterTest extends \MailPoetTest {
     );
   }
 
-  function testItInitializes() {
+  public function testItInitializes() {
     $updater = Stub::make(
       $this->updater,
       [
@@ -32,7 +32,7 @@ class UpdaterTest extends \MailPoetTest {
     apply_filters('pre_set_site_transient_update_plugins', null);
   }
 
-  function testItChecksForUpdates() {
+  public function testItChecksForUpdates() {
     $update_transient = new \StdClass;
     $update_transient->last_checked = time();
     $updater = Stub::construct(
@@ -69,7 +69,7 @@ class UpdaterTest extends \MailPoetTest {
     expect($result->response[$this->plugin_name]->package)->notEmpty();
   }
 
-  function testItReturnsObjectIfPassedNonObjectWhenCheckingForUpdates() {
+  public function testItReturnsObjectIfPassedNonObjectWhenCheckingForUpdates() {
     $result = $this->updater->checkForUpdate(null);
     expect($result instanceof \StdClass)->true();
   }

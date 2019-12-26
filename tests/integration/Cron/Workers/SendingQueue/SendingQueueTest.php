@@ -54,7 +54,7 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var LoggerFactory */
   private $logger_factory;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
@@ -131,13 +131,13 @@ class SendingQueueTest extends \MailPoetTest {
     );
   }
 
-  function testItConstructs() {
+  public function testItConstructs() {
     expect($this->sending_queue_worker->batch_size)->equals(SendingQueueWorker::BATCH_SIZE);
     expect($this->sending_queue_worker->mailer_task instanceof MailerTask);
     expect($this->sending_queue_worker->newsletter_task instanceof NewsletterTask);
   }
 
-  function testItEnforcesExecutionLimitsBeforeQueueProcessing() {
+  public function testItEnforcesExecutionLimitsBeforeQueueProcessing() {
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker(
         $this->sending_error_handler,
@@ -161,7 +161,7 @@ class SendingQueueTest extends \MailPoetTest {
     }
   }
 
-  function testItEnforcesExecutionLimitsAfterSendingWhenQueueStatusIsNotSetToComplete() {
+  public function testItEnforcesExecutionLimitsAfterSendingWhenQueueStatusIsNotSetToComplete() {
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker, $this->logger_factory, Stub::makeEmpty(NewslettersRepository::class), $this->cron_helper),
       [
@@ -194,7 +194,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
   }
 
-  function testItDoesNotEnforceExecutionLimitsAfterSendingWhenQueueStatusIsSetToComplete() {
+  public function testItDoesNotEnforceExecutionLimitsAfterSendingWhenQueueStatusIsSetToComplete() {
     // when sending is done and there are no more subscribers to process, continue
     // without enforcing execution limits. this allows the newsletter to be marked as sent
     // in the process() method and after that execution limits will be enforced
@@ -232,7 +232,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
   }
 
-  function testItEnforcesExecutionLimitsAfterQueueProcessing() {
+  public function testItEnforcesExecutionLimitsAfterQueueProcessing() {
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker($this->sending_error_handler, $this->stats_notifications_worker, $this->logger_factory, Stub::makeEmpty(NewslettersRepository::class), $this->cron_helper),
       [
@@ -246,7 +246,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker->process();
   }
 
-  function testItDeletesQueueWhenNewsletterIsNotFound() {
+  public function testItDeletesQueueWhenNewsletterIsNotFound() {
     // queue exists
     $queue = SendingQueue::findOne($this->queue->id);
     expect($queue)->notEquals(false);
@@ -261,7 +261,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($queue)->false(false);
   }
 
-  function testItPassesExtraParametersToMailerWhenTrackingIsDisabled() {
+  public function testItPassesExtraParametersToMailerWhenTrackingIsDisabled() {
     $this->settings->set('tracking.enabled', false);
     $directUnsubscribeURL = $this->getDirectUnsubscribeURL();
     $sending_queue_worker = new SendingQueueWorker(
@@ -291,7 +291,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker->process();
   }
 
-  function testItPassesExtraParametersToMailerWhenTrackingIsEnabled() {
+  public function testItPassesExtraParametersToMailerWhenTrackingIsEnabled() {
     $this->settings->set('tracking.enabled', true);
     $trackedUnsubscribeURL = $this->getTrackedUnsubscribeURL();
     $sending_queue_worker = new SendingQueueWorker(
@@ -321,7 +321,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sending_queue_worker->process();
   }
 
-  function testItCanProcessSubscribersOneByOne() {
+  public function testItCanProcessSubscribersOneByOne() {
     $sending_queue_worker = new SendingQueueWorker(
       $this->sending_error_handler,
       $this->stats_notifications_worker,
@@ -368,7 +368,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($statistics)->notEquals(false);
   }
 
-  function testItCanProcessSubscribersInBulk() {
+  public function testItCanProcessSubscribersInBulk() {
     $sending_queue_worker = new SendingQueueWorker(
       $this->sending_error_handler,
       $this->stats_notifications_worker,
@@ -418,7 +418,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($statistics)->notEquals(false);
   }
 
-  function testItProcessesStandardNewsletters() {
+  public function testItProcessesStandardNewsletters() {
     $sending_queue_worker = new SendingQueueWorker(
       $this->sending_error_handler,
       $this->stats_notifications_worker,
@@ -466,7 +466,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($statistics)->notEquals(false);
   }
 
-  function testItUpdatesUpdateTime() {
+  public function testItUpdatesUpdateTime() {
     $originalUpdated = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(5)->toDateTimeString();
 
     $this->queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
@@ -490,7 +490,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($newQueue->updated_at)->notEquals($originalUpdated);
   }
 
-  function testItCanProcessWelcomeNewsletters() {
+  public function testItCanProcessWelcomeNewsletters() {
     $this->newsletter->type = Newsletter::TYPE_WELCOME;
     $this->newsletter_segment->delete();
 
@@ -540,7 +540,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($statistics)->notEquals(false);
   }
 
-  function testItPreventsSendingWelcomeEmailWhenSubscriberIsUnsubscribed() {
+  public function testItPreventsSendingWelcomeEmailWhenSubscriberIsUnsubscribed() {
     $this->newsletter->type = Newsletter::TYPE_WELCOME;
     $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
     $this->subscriber->save();
@@ -572,7 +572,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updated_queue->count_to_process)->equals(0);
   }
 
-  function testItRemovesNonexistentSubscribersFromProcessingList() {
+  public function testItRemovesNonexistentSubscribersFromProcessingList() {
     $queue = $this->queue;
     $queue->setSubscribers([
       $this->subscriber->id(),
@@ -607,7 +607,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect(count($statistics))->equals(1);
   }
 
-  function testItUpdatesQueueSubscriberCountWhenNoneOfSubscribersExist() {
+  public function testItUpdatesQueueSubscriberCountWhenNoneOfSubscribersExist() {
     $queue = $this->queue;
     $queue->setSubscribers([
       123,
@@ -633,7 +633,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updated_queue->count_to_process)->equals(0);
   }
 
-  function testItDoesNotSendToTrashedSubscribers() {
+  public function testItDoesNotSendToTrashedSubscribers() {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
@@ -656,7 +656,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect((int)$updated_queue->count_total)->equals(0);
   }
 
-  function testItDoesNotSendToGloballyUnsubscribedSubscribers() {
+  public function testItDoesNotSendToGloballyUnsubscribedSubscribers() {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
@@ -672,7 +672,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect((int)$updated_queue->count_total)->equals(0);
   }
 
-  function testItDoesNotSendToSubscribersUnsubscribedFromSegments() {
+  public function testItDoesNotSendToSubscribersUnsubscribedFromSegments() {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
@@ -688,7 +688,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect((int)$updated_queue->count_total)->equals(0);
   }
 
-  function testItDoesNotSendToInactiveSubscribers() {
+  public function testItDoesNotSendToInactiveSubscribers() {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
@@ -704,7 +704,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect((int)$updated_queue->count_total)->equals(0);
   }
 
-  function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
+  public function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
     $sending_task = $this->createMock(SendingTask::class);
     $sending_task
       ->method('updateProcessedSubscribers')
@@ -756,7 +756,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
   }
 
-  function testItDoesNotUpdateNewsletterHashDuringSending() {
+  public function testItDoesNotUpdateNewsletterHashDuringSending() {
     $sending_queue_worker = new SendingQueueWorker(
       $this->sending_error_handler,
       $this->stats_notifications_worker,
@@ -779,7 +779,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updated_newsletter->hash)->equals($this->newsletter->hash);
   }
 
-  function testItAllowsSettingCustomBatchSize() {
+  public function testItAllowsSettingCustomBatchSize() {
     $custom_batch_size_value = 10;
     $filter = function() use ($custom_batch_size_value) {
       return $custom_batch_size_value;
@@ -797,7 +797,7 @@ class SendingQueueTest extends \MailPoetTest {
     $wp->removeFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);

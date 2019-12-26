@@ -12,11 +12,11 @@ class DataGenerator {
   /** @var Output */
   private $console;
 
-  function __construct(Output $console) {
+  public function __construct(Output $console) {
     $this->console = $console;
   }
 
-  function run($generator_name) {
+  public function run($generator_name) {
     ini_set('memory_limit', '1024M');
     $timer = time();
     try {

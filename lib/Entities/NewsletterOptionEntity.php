@@ -37,42 +37,42 @@ class NewsletterOptionEntity {
   /**
    * @return string|null
    */
-  function getValue() {
+  public function getValue() {
     return $this->value;
   }
 
   /**
    * @param string|null $value
    */
-  function setValue($value) {
+  public function setValue($value) {
     $this->value = $value;
   }
 
   /**
    * @return NewsletterEntity
    */
-  function getNewsletter() {
+  public function getNewsletter() {
     return $this->newsletter;
   }
 
   /**
    * @param NewsletterEntity $newsletter
    */
-  function setNewsletter($newsletter) {
+  public function setNewsletter($newsletter) {
     $this->newsletter = $newsletter;
   }
 
   /**
    * @return NewsletterOptionFieldEntity
    */
-  function getOptionField() {
+  public function getOptionField() {
     return $this->option_field;
   }
 
   /**
    * @param NewsletterOptionFieldEntity $option_field
    */
-  function setOptionField($option_field) {
+  public function setOptionField($option_field) {
     $this->option_field = $option_field;
   }
 }

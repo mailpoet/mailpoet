@@ -17,7 +17,7 @@ class Widget extends \WP_Widget {
   /** @var AssetsController */
   private $assets_controller;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct(
       'mailpoet_form',
       WPFunctions::get()->__('MailPoet 3 Form', 'mailpoet'),
@@ -36,7 +36,7 @@ class Widget extends \WP_Widget {
     }
   }
 
-  function setupIframe() {
+  public function setupIframe() {
     $form_id = (isset($_GET['mailpoet_form_iframe']) ? (int)$_GET['mailpoet_form_iframe'] : 0);
     if (!$form_id || !Form::findOne($form_id)) return;
 
@@ -140,7 +140,7 @@ class Widget extends \WP_Widget {
       <a href="javascript:;" onClick="createSubscriptionForm()" class="mailpoet_form_new"><?php WPFunctions::get()->_e('Create a new form', 'mailpoet'); ?></a>
     </p>
     <script type="text/javascript">
-    function createSubscriptionForm() {
+    public function createSubscriptionForm() {
         MailPoet.Ajax.post({
           endpoint: 'forms',
           action: 'create',
@@ -167,7 +167,7 @@ class Widget extends \WP_Widget {
   /**
    * Output the widget itself.
    */
-  function widget($args, $instance = null) {
+  public function widget($args, $instance = null) {
     $this->assets_controller->setupFrontEndDependencies();
 
     // turn $args into variables

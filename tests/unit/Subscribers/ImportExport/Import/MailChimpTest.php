@@ -16,14 +16,14 @@ class MailChimpTest extends \MailPoetUnitTest {
   /** @var array */
   private $lists;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
     $this->api_key = getenv('WP_TEST_IMPORT_MAILCHIMP_API');
     $this->mailchimp = new MailChimp($this->api_key);
     $this->lists = explode(",", getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS'));
   }
 
-  function _before() {
+  public function _before() {
     WPFunctions::set(Stub::make(new WPFunctions, [
       '__' => function ($value) {
         return $value;
@@ -31,7 +31,7 @@ class MailChimpTest extends \MailPoetUnitTest {
     ]));
   }
 
-  function testItCanGetAPIKey() {
+  public function testItCanGetAPIKey() {
     $valid_api_key_format = '12345678901234567890123456789012-ab1';
     // key must consist of two parts separated by hyphen
     expect($this->mailchimp->getAPIKey('invalid_api_key_format'))->false();
@@ -49,14 +49,14 @@ class MailChimpTest extends \MailPoetUnitTest {
       ->equals($valid_api_key_format);
   }
 
-  function testItCanGetDatacenter() {
+  public function testItCanGetDatacenter() {
     $valid_api_key_format = '12345678901234567890123456789012-ab1';
     $data_center = 'ab1';
     expect($this->mailchimp->getDataCenter($valid_api_key_format))
       ->equals($data_center);
   }
 
-  function testItFailsWithIncorrectAPIKey() {
+  public function testItFailsWithIncorrectAPIKey() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     try {
@@ -69,7 +69,7 @@ class MailChimpTest extends \MailPoetUnitTest {
     }
   }
 
-  function testItCanGetLists() {
+  public function testItCanGetLists() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     try {
       $lists = $this->mailchimp->getLists();
@@ -81,7 +81,7 @@ class MailChimpTest extends \MailPoetUnitTest {
     expect($lists[0]['name'])->notEmpty();
   }
 
-  function testItFailsWithIncorrectLists() {
+  public function testItFailsWithIncorrectLists() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     try {
@@ -99,7 +99,7 @@ class MailChimpTest extends \MailPoetUnitTest {
     }
   }
 
-  function testItCanGetSubscribers() {
+  public function testItCanGetSubscribers() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     try {
@@ -115,7 +115,7 @@ class MailChimpTest extends \MailPoetUnitTest {
     expect($subscribers['subscribersCount'])->equals(1);
   }
 
-  function testItFailsWhenSubscribersDataTooLarge() {
+  public function testItFailsWhenSubscribersDataTooLarge() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $mailchimp = clone($this->mailchimp);
     $mailchimp->max_post_size = 10;
@@ -129,7 +129,7 @@ class MailChimpTest extends \MailPoetUnitTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     WPFunctions::set(new WPFunctions);
   }
 }

@@ -13,7 +13,7 @@ class DynamicSegmentFilter extends Model {
 
   public static $_table = MP_DYNAMIC_SEGMENTS_FILTERS_TABLE;
 
-  function save() {
+  public function save() {
     if (is_null($this->filter_data)) {
       $this->filter_data = [];
     }
@@ -25,7 +25,7 @@ class DynamicSegmentFilter extends Model {
     return parent::save();
   }
 
-  static function getAllBySegmentIds($segmentIds) {
+  public static function getAllBySegmentIds($segmentIds) {
     if (empty($segmentIds)) return [];
     $query = self::tableAlias('filters')
       ->whereIn('filters.segment_id', $segmentIds);
@@ -42,7 +42,7 @@ class DynamicSegmentFilter extends Model {
     return $value;
   }
 
-  static function deleteAllBySegmentIds($segmentIds) {
+  public static function deleteAllBySegmentIds($segmentIds) {
     if (empty($segmentIds)) return;
 
     $query = self::tableAlias('filters')

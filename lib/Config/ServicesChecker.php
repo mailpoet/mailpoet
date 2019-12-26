@@ -20,7 +20,7 @@ class ServicesChecker {
     $this->settings = SettingsController::getInstance();
   }
 
-  function isMailPoetAPIKeyValid($display_error_notice = true, $force_check = false) {
+  public function isMailPoetAPIKeyValid($display_error_notice = true, $force_check = false) {
     if (!$force_check && !Bridge::isMPSendingServiceEnabled()) {
       return null;
     }
@@ -63,7 +63,7 @@ class ServicesChecker {
     return false;
   }
 
-  function isPremiumKeyValid($display_error_notice = true) {
+  public function isPremiumKeyValid($display_error_notice = true) {
     $premium_key_specified = Bridge::isPremiumKeySpecified();
     $premium_plugin_active = License::getLicense();
     $premium_key = $this->settings->get(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);

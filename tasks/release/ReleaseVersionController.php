@@ -10,12 +10,12 @@ class ReleaseVersionController {
   /** @var string */
   private $project;
 
-  function __construct(JiraController $jira, $project) {
+  public function __construct(JiraController $jira, $project) {
     $this->jira = $jira;
     $this->project = $project;
   }
 
-  function assignVersionToCompletedTickets($version = null) {
+  public function assignVersionToCompletedTickets($version = null) {
     $version = $this->ensureCorrectVersion($version);
     if (!$version) {
       throw new \Exception('The version is invalid or already released');
@@ -32,7 +32,7 @@ class ReleaseVersionController {
     return [$version, join("\n", $output)];
   }
 
-  function determineNextVersion() {
+  public function determineNextVersion() {
     $last_version = $this->jira->getLastReleasedVersion();
 
     $part_to_increment = VersionHelper::PATCH;

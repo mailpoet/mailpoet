@@ -7,7 +7,7 @@ use MailPoet\Test\DataFactories\Settings;
 
 class EnableAndDisableSignupConfirmationCest {
 
-  function disableSignupConfirmation(AcceptanceTester $I) {
+  public function disableSignupConfirmation(AcceptanceTester $I) {
     $settings = new Settings();
     $settings
       ->withConfirmationEmailEnabled()
@@ -20,7 +20,7 @@ class EnableAndDisableSignupConfirmationCest {
     $I->dontSee('Disable signup confirmation subject');
   }
 
-  function enableSignupConfirmation(AcceptanceTester $I) {
+  public function enableSignupConfirmation(AcceptanceTester $I) {
     $settings = new Settings();
     $settings
       ->withConfirmationEmailDisabled()

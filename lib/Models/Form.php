@@ -14,15 +14,15 @@ use MailPoet\WP\Functions as WPFunctions;
 class Form extends Model {
   public static $_table = MP_FORMS_TABLE;
 
-  function getSettings() {
+  public function getSettings() {
     return WPFunctions::get()->isSerialized($this->settings) ? unserialize($this->settings) : $this->settings;
   }
 
-  function getBody() {
+  public function getBody() {
     return WPFunctions::get()->isSerialized($this->body) ? unserialize($this->body) : $this->body;
   }
 
-  function asArray() {
+  public function asArray() {
     $model = parent::asArray();
 
     $model['body'] = $this->getBody();
@@ -31,7 +31,7 @@ class Form extends Model {
     return $model;
   }
 
-  function save() {
+  public function save() {
     $this->set('body', (is_serialized($this->body))
       ? $this->body
       : serialize($this->body)
@@ -43,7 +43,7 @@ class Form extends Model {
     return parent::save();
   }
 
-  function getFieldList() {
+  public function getFieldList() {
     $body = $this->getBody();
     if (empty($body)) {
       return false;
@@ -69,7 +69,7 @@ class Form extends Model {
     return $fields ?: false;
   }
 
-  function filterSegments(array $segment_ids = []) {
+  public function filterSegments(array $segment_ids = []) {
     $settings = $this->getSettings();
     if (empty($settings['segments'])) {
       return [];
@@ -86,11 +86,11 @@ class Form extends Model {
     return $segment_ids;
   }
 
-  static function search($orm, $search = '') {
+  public static function search($orm, $search = '') {
     return $orm->whereLike('name', '%' . $search . '%');
   }
 
-  static function groups() {
+  public static function groups() {
     return [
       [
         'name' => 'all',
@@ -105,14 +105,14 @@ class Form extends Model {
     ];
   }
 
-  static function groupBy($orm, $group = null) {
+  public static function groupBy($orm, $group = null) {
     if ($group === 'trash') {
       return $orm->whereNotNull('deleted_at');
     }
     return $orm->whereNull('deleted_at');
   }
 
-  static function getDefaultSuccessMessage() {
+  public static function getDefaultSuccessMessage() {
     $settings = SettingsController::getInstance();
     if ($settings->get('signup_confirmation.enabled')) {
       return __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet');
@@ -120,7 +120,7 @@ class Form extends Model {
     return __('You’ve been successfully subscribed to our newsletter!', 'mailpoet');
   }
 
-  static function updateSuccessMessages() {
+  public static function updateSuccessMessages() {
     $right_message = self::getDefaultSuccessMessage();
     $wrong_message = (
       $right_message === __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet')

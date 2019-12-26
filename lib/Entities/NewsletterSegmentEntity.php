@@ -31,22 +31,22 @@ class NewsletterSegmentEntity {
   /**
    * @return NewsletterEntity
    */
-  function getNewsletter() {
+  public function getNewsletter() {
     return $this->newsletter;
   }
 
-  function setNewsletter(NewsletterEntity $newsletter) {
+  public function setNewsletter(NewsletterEntity $newsletter) {
     $this->newsletter = $newsletter;
   }
 
   /**
    * @return SegmentEntity
    */
-  function getSegment() {
+  public function getSegment() {
     return $this->segment;
   }
 
-  function setSegment(SegmentEntity $segment) {
+  public function setSegment(SegmentEntity $segment) {
     $this->segment = $segment;
   }
 }

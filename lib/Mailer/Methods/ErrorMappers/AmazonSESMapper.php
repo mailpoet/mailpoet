@@ -14,7 +14,7 @@ class AmazonSESMapper {
 
   const METHOD = Mailer::METHOD_AMAZONSES;
 
-  function getErrorFromException(\Exception $e, $subscriber) {
+  public function getErrorFromException(\Exception $e, $subscriber) {
     $level = MailerError::LEVEL_HARD;
     if ($e instanceof Swift_RfcComplianceException) {
       $level = MailerError::LEVEL_SOFT;
@@ -27,7 +27,7 @@ class AmazonSESMapper {
    * @see https://docs.aws.amazon.com/ses/latest/DeveloperGuide/api-error-codes.html
    * @return MailerError
    */
-  function getErrorFromResponse($response, $subscriber) {
+  public function getErrorFromResponse($response, $subscriber) {
     $message = ($response) ?
       $response->Error->Message->__toString() :
       sprintf(WPFunctions::get()->__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);

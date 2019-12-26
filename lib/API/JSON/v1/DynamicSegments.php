@@ -51,7 +51,7 @@ class DynamicSegments extends APIEndpoint {
     $this->subscribers_counts_loader = $subscribers_counts_loader ?: new SubscribersCount();
   }
 
-  function get($data = []) {
+  public function get($data = []) {
     if (isset($data['id'])) {
       $id = (int)$data['id'];
     } else {
@@ -77,7 +77,7 @@ class DynamicSegments extends APIEndpoint {
     }
   }
 
-  function save($data) {
+  public function save($data) {
     try {
       $dynamic_segment = $this->mapper->mapDataToDB($data);
       $this->saver->save($dynamic_segment);
@@ -117,7 +117,7 @@ class DynamicSegments extends APIEndpoint {
     }
   }
 
-  function trash($data = []) {
+  public function trash($data = []) {
     if (isset($data['id'])) {
       $id = (int)$data['id'];
     } else {
@@ -140,7 +140,7 @@ class DynamicSegments extends APIEndpoint {
     }
   }
 
-  function restore($data = []) {
+  public function restore($data = []) {
     if (isset($data['id'])) {
       $id = (int)$data['id'];
     } else {
@@ -163,7 +163,7 @@ class DynamicSegments extends APIEndpoint {
     }
   }
 
-  function delete($data = []) {
+  public function delete($data = []) {
     if (isset($data['id'])) {
       $id = (int)$data['id'];
     } else {
@@ -183,7 +183,7 @@ class DynamicSegments extends APIEndpoint {
     }
   }
 
-  function listing($data = []) {
+  public function listing($data = []) {
     $listing_data = $this->listing_handler->get('\MailPoet\Models\DynamicSegment', $data);
 
     $data = [];
@@ -206,7 +206,7 @@ class DynamicSegments extends APIEndpoint {
 
   }
 
-  function bulkAction($data = []) {
+  public function bulkAction($data = []) {
     try {
       $meta = $this->bulk_action->apply('\MailPoet\Models\DynamicSegment', $data);
       return $this->successResponse(null, $meta);

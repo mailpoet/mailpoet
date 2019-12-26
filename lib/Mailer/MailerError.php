@@ -36,7 +36,7 @@ class MailerError {
    * @param int|null $retry_interval
    * @param array $subscribers_errors
    */
-  function __construct($operation, $level, $message = null, $retry_interval = null, array $subscribers_errors = []) {
+  public function __construct($operation, $level, $message = null, $retry_interval = null, array $subscribers_errors = []) {
     $this->operation = $operation;
     $this->level = $level;
     $this->message = $message;
@@ -47,39 +47,39 @@ class MailerError {
   /**
    * @return string
    */
-  function getOperation() {
+  public function getOperation() {
     return $this->operation;
   }
 
   /**
    * @return string
    */
-  function getLevel() {
+  public function getLevel() {
     return $this->level;
   }
 
   /**
    * @return null|string
    */
-  function getMessage() {
+  public function getMessage() {
     return $this->message;
   }
 
   /**
    * @return int|null
    */
-  function getRetryInterval() {
+  public function getRetryInterval() {
     return $this->retry_interval;
   }
 
   /**
    * @return SubscriberError[]
    */
-  function getSubscriberErrors() {
+  public function getSubscriberErrors() {
     return $this->subscribers_errors;
   }
 
-  function getMessageWithFailedSubscribers() {
+  public function getMessageWithFailedSubscribers() {
     $message = $this->message ?: '';
     if (!$this->subscribers_errors) {
       return $message;

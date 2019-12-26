@@ -11,7 +11,7 @@ class WooCommerceCustomerListCest {
   /** @var WooCommerceProduct */
   private $product_factory;
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->product_factory = new WooCommerceProduct($I);
     $settings_factory = new Settings();
@@ -20,7 +20,7 @@ class WooCommerceCustomerListCest {
     $settings_factory->withCookieRevenueTrackingDisabled();
   }
 
-  function newCustomerIsAddedToListTest(\AcceptanceTester $I) {
+  public function newCustomerIsAddedToListTest(\AcceptanceTester $I) {
     $customer_email = 'wc_customer@example.com';
     $product = $this->product_factory->create();
     $I->orderProduct($product, $customer_email);

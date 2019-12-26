@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 
 class ExportSubscribersCest {
-  function exportSubscribers(\AcceptanceTester $I) {
+  public function exportSubscribers(\AcceptanceTester $I) {
     $segment_factory = new Segment();
     $segment_name = 'Hobbyists';
     $segment = $segment_factory->withName($segment_name)->create();

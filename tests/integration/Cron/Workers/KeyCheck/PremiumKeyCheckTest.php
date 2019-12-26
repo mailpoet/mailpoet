@@ -13,20 +13,20 @@ class PremiumKeyCheckTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->premium_key = '123457890abcdef';
     $this->worker = new PremiumKeyCheck($this->settings, microtime(true));
   }
 
-  function testItRequiresPremiumKeyToBeSpecified() {
+  public function testItRequiresPremiumKeyToBeSpecified() {
     expect($this->worker->checkProcessingRequirements())->false();
     $this->fillPremiumKey();
     expect($this->worker->checkProcessingRequirements())->true();
   }
 
-  function testItChecksPremiumKey() {
+  public function testItChecksPremiumKey() {
     $response = ['code' => Bridge::KEY_VALID];
     $this->worker->bridge = Stub::make(
       new Bridge,
@@ -56,7 +56,7 @@ class PremiumKeyCheckTest extends \MailPoetTest {
     );
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

@@ -16,12 +16,12 @@ abstract class Response {
   public $status;
   public $meta;
 
-  function __construct($status, $meta = []) {
+  public function __construct($status, $meta = []) {
     $this->status = $status;
     $this->meta = $meta;
   }
 
-  function send() {
+  public function send() {
     WPFunctions::get()->statusHeader($this->status);
 
     $data = $this->getData();
@@ -41,5 +41,5 @@ abstract class Response {
     die();
   }
 
-  abstract function getData();
+  public abstract function getData();
 }

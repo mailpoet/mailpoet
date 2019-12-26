@@ -11,7 +11,7 @@ class SendProductPurchaseEmailCest {
   /** @var Settings */
   private $settings_factory;
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->settings_factory = new Settings();
     $this->settings_factory->withWooCommerceListImportPageDisplayed(true);
@@ -19,7 +19,7 @@ class SendProductPurchaseEmailCest {
     $this->settings_factory->withCronTriggerMethod('WordPress');
   }
 
-  function sendProductPurchaseEmail(\AcceptanceTester $I) {
+  public function sendProductPurchaseEmail(\AcceptanceTester $I) {
     $I->wantTo('Buy a product and receive a "Product Purchase" email');
 
     $product_name = 'Product Purchase Test Product';
@@ -43,7 +43,7 @@ class SendProductPurchaseEmailCest {
     $I->waitForText($user_email, 20);
   }
 
-  function doNotSendProductPurchaseEmailIfUserHasNotOptedIn(\AcceptanceTester $I) {
+  public function doNotSendProductPurchaseEmailIfUserHasNotOptedIn(\AcceptanceTester $I) {
     $I->wantTo('Buy a product, do not opt-in and don\'t receive a "Product Purchase" email');
 
     $product_name = 'Product Purchase Test Product';

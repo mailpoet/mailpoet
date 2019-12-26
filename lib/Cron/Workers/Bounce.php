@@ -29,22 +29,22 @@ class Bounce extends SimpleWorker {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(SettingsController $settings) {
+  public function __construct(SettingsController $settings) {
     $this->settings = $settings;
     parent::__construct();
   }
 
-  function init() {
+  public function init() {
     if (!$this->api) {
       $this->api = new API($this->settings->get(Mailer::MAILER_CONFIG_SETTING_NAME)['mailpoet_api_key']);
     }
   }
 
-  function checkProcessingRequirements() {
+  public function checkProcessingRequirements() {
     return Bridge::isMPSendingServiceEnabled();
   }
 
-  function prepareTaskStrategy(ScheduledTask $task, $timer) {
+  public function prepareTaskStrategy(ScheduledTask $task, $timer) {
     BounceTask::prepareSubscribers($task);
 
     if (!ScheduledTaskSubscriber::getUnprocessedCount($task->id)) {
@@ -54,7 +54,7 @@ class Bounce extends SimpleWorker {
     return true;
   }
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     $subscriber_batches = new BatchIterator($task->id, self::BATCH_SIZE);
 
     if (count($subscriber_batches) === 0) {
@@ -82,12 +82,12 @@ class Bounce extends SimpleWorker {
     return true;
   }
 
-  function processEmails(array $subscriber_emails) {
+  public function processEmails(array $subscriber_emails) {
     $checked_emails = $this->api->checkBounces($subscriber_emails);
     $this->processApiResponse((array)$checked_emails);
   }
 
-  function processApiResponse(array $checked_emails) {
+  public function processApiResponse(array $checked_emails) {
     foreach ($checked_emails as $email) {
       if (!isset($email['address'], $email['bounce'])) {
         continue;

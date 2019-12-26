@@ -13,11 +13,11 @@ class TimestampListener {
   /** @var Carbon */
   private $now;
 
-  function __construct(WPFunctions $wp) {
+  public function __construct(WPFunctions $wp) {
     $this->now = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
   }
 
-  function prePersist(LifecycleEventArgs $event_args) {
+  public function prePersist(LifecycleEventArgs $event_args) {
     $entity = $event_args->getEntity();
     $entity_traits = $this->getEntityTraits($entity);
 
@@ -30,7 +30,7 @@ class TimestampListener {
     }
   }
 
-  function preUpdate(LifecycleEventArgs $event_args) {
+  public function preUpdate(LifecycleEventArgs $event_args) {
     $entity = $event_args->getEntity();
     $entity_traits = $this->getEntityTraits($entity);
 

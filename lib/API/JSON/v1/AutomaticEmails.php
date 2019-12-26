@@ -14,11 +14,11 @@ class AutomaticEmails extends APIEndpoint {
 
   private $wp;
 
-  function __construct() {
+  public function __construct() {
     $this->wp = new WPFunctions;
   }
 
-  function getEventOptions($data) {
+  public function getEventOptions($data) {
     $query = (!empty($data['query'])) ? $data['query'] : null;
     $filter = (!empty($data['filter'])) ? $data['filter'] : null;
     $email_slug = (!empty($data['email_slug'])) ? $data['email_slug'] : null;
@@ -45,7 +45,7 @@ class AutomaticEmails extends APIEndpoint {
       );
   }
 
-  function getEventShortcodes($data) {
+  public function getEventShortcodes($data) {
     $email_slug = (!empty($data['email_slug'])) ? $data['email_slug'] : null;
     $event_slug = (!empty($data['event_slug'])) ? $data['event_slug'] : null;
 

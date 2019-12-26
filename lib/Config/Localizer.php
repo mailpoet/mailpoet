@@ -5,12 +5,12 @@ namespace MailPoet\Config;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Localizer {
-  function init() {
+  public function init() {
     $this->loadGlobalText();
     $this->loadPluginText();
   }
 
-  function loadGlobalText() {
+  public function loadGlobalText() {
     $language_path = sprintf(
       '%s/%s-%s.mo',
       Env::$languages_path,
@@ -20,7 +20,7 @@ class Localizer {
     WPFunctions::get()->loadTextdomain(Env::$plugin_name, $language_path);
   }
 
-  function loadPluginText() {
+  public function loadPluginText() {
     WPFunctions::get()->loadPluginTextdomain(
       Env::$plugin_name,
       false,
@@ -28,7 +28,7 @@ class Localizer {
     );
   }
 
-  function locale() {
+  public function locale() {
     $locale = WPFunctions::get()->applyFilters(
       'plugin_locale',
       WPFunctions::get()->getUserLocale(),
@@ -37,7 +37,7 @@ class Localizer {
     return $locale;
   }
 
-  function forceLoadWebsiteLocaleText() {
+  public function forceLoadWebsiteLocaleText() {
     $language_path = sprintf(
       '%s/%s-%s.mo',
       Env::$languages_path,

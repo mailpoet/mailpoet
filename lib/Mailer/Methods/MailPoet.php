@@ -26,7 +26,7 @@ class MailPoet {
   /** @var BlacklistCheck */
   private $blacklist;
 
-  function __construct($api_key, $sender, $reply_to, MailPoetMapper $error_mapper, AuthorizedEmailsController $authorized_emails_controller) {
+  public function __construct($api_key, $sender, $reply_to, MailPoetMapper $error_mapper, AuthorizedEmailsController $authorized_emails_controller) {
     $this->api = new API($api_key);
     $this->sender = $sender;
     $this->reply_to = $reply_to;
@@ -36,7 +36,7 @@ class MailPoet {
     $this->blacklist = new BlacklistCheck();
   }
 
-  function send($newsletter, $subscriber, $extra_params = []) {
+  public function send($newsletter, $subscriber, $extra_params = []) {
     if ($this->services_checker->isMailPoetAPIKeyValid() === false) {
       return Mailer::formatMailerErrorResult($this->error_mapper->getInvalidApiKeyError());
     }
@@ -65,7 +65,7 @@ class MailPoet {
     }
   }
 
-  function processSendError($result, $subscriber, $newsletter) {
+  public function processSendError($result, $subscriber, $newsletter) {
     if (!empty($result['code']) && $result['code'] === API::RESPONSE_CODE_KEY_INVALID) {
       Bridge::invalidateKey();
     } elseif (!empty($result['code'])
@@ -77,7 +77,7 @@ class MailPoet {
     return $this->error_mapper->getErrorForResult($result, $subscriber, $this->sender, $newsletter);
   }
 
-  function processSubscriber($subscriber) {
+  public function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
     if (!isset($subscriber_data['email'])) {
       $subscriber_data = [
@@ -90,7 +90,7 @@ class MailPoet {
     ];
   }
 
-  function getBody($newsletter, $subscriber, $extra_params = []) {
+  public function getBody($newsletter, $subscriber, $extra_params = []) {
     if (is_array($newsletter) && is_array($subscriber)) {
       $body = [];
       for ($record = 0; $record < count($newsletter); $record++) {

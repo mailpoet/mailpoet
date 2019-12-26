@@ -14,11 +14,11 @@ class APITestNamespacedEndpointStubV1 extends APIEndpoint {
     ],
   ];
 
-  function test($data) {
+  public function test($data) {
     return $this->successResponse($data);
   }
 
-  function restricted($data) {
+  public function restricted($data) {
     return $this->successResponse($data);
   }
 }

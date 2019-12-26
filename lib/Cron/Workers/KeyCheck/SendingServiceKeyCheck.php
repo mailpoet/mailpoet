@@ -12,16 +12,16 @@ class SendingServiceKeyCheck extends KeyCheckWorker {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(SettingsController $settings) {
+  public function __construct(SettingsController $settings) {
     $this->settings = $settings;
     parent::__construct();
   }
 
-  function checkProcessingRequirements() {
+  public function checkProcessingRequirements() {
     return Bridge::isMPSendingServiceEnabled();
   }
 
-  function checkKey() {
+  public function checkKey() {
     $mss_key = $this->settings->get(Mailer::MAILER_CONFIG_SETTING_NAME)['mailpoet_api_key'];
     $result = $this->bridge->checkMSSKey($mss_key);
     $this->bridge->storeMSSKeyAndState($mss_key, $result);

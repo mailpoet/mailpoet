@@ -9,7 +9,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberExporter {
 
-  function export($email) {
+  public function export($email) {
     return [
       'data' => $this->exportSubscriber(Subscriber::findOne(trim($email))),
       'done' => true,

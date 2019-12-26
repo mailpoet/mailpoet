@@ -11,7 +11,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoetVendor\Idiorm\ORM;
 
 class UnsubscribesTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     // create newsletter
     $newsletter = Newsletter::create();
@@ -33,7 +33,7 @@ class UnsubscribesTest extends \MailPoetTest {
     $this->unsubscribes = new Unsubscribes();
   }
 
-  function testItTracksUnsubscribeEvent() {
+  public function testItTracksUnsubscribeEvent() {
     $this->unsubscribes->track(
       $this->newsletter->id,
       $this->subscriber->id,
@@ -42,7 +42,7 @@ class UnsubscribesTest extends \MailPoetTest {
     expect(count(StatisticsUnsubscribes::findMany()))->equals(1);
   }
 
-  function testItDoesNotTrackRepeatedUnsubscribeEvents() {
+  public function testItDoesNotTrackRepeatedUnsubscribeEvents() {
     for ($count = 0; $count <= 2; $count++) {
       $this->unsubscribes->track(
         $this->newsletter->id,
@@ -53,7 +53,7 @@ class UnsubscribesTest extends \MailPoetTest {
     expect(count(StatisticsUnsubscribes::findMany()))->equals(1);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);

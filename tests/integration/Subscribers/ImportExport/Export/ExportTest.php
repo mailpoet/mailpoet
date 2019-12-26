@@ -13,7 +13,7 @@ use MailPoet\Subscribers\ImportExport\Export\Export;
 use MailPoetVendor\Idiorm\ORM;
 
 class ExportTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->JSON_data = json_decode(file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
     $this->subscriber_fields = [
@@ -103,7 +103,7 @@ class ExportTest extends \MailPoetTest {
     $this->export = new Export($this->JSON_data);
   }
 
-  function testItCanConstruct() {
+  public function testItCanConstruct() {
     expect($this->export->export_format_option)
       ->equals('csv');
     expect($this->export->subscriber_fields)
@@ -139,14 +139,14 @@ class ExportTest extends \MailPoetTest {
     )->equals(1);
   }
 
-  function testItCanGetSubscriberCustomFields() {
+  public function testItCanGetSubscriberCustomFields() {
     $source = CustomField::where('name', $this->custom_fields_data[0]['name'])
       ->findOne();
     $target = $this->export->getSubscriberCustomFields();
     expect($target)->equals([$source->id => $source->name]);
   }
 
-  function testItCanFormatSubscriberFields() {
+  public function testItCanFormatSubscriberFields() {
     $formatted_subscriber_fields = $this->export->formatSubscriberFields(
       array_keys($this->subscriber_fields),
       $this->export->getSubscriberCustomFields()
@@ -155,7 +155,7 @@ class ExportTest extends \MailPoetTest {
       ->equals(array_values($this->subscriber_fields));
   }
 
-  function testItProperlyReturnsSubscriberCustomFields() {
+  public function testItProperlyReturnsSubscriberCustomFields() {
     $subscribers = $this->export->getSubscribers(0, 10);
     foreach ($subscribers as $subscriber) {
       if ($subscriber['email'] === $this->subscribers_data[1]) {
@@ -165,7 +165,7 @@ class ExportTest extends \MailPoetTest {
     }
   }
 
-  function testItCanGetSubscribers() {
+  public function testItCanGetSubscribers() {
     $this->export->default_subscribers_getter = new DefaultSubscribersGetter([1], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(2);
@@ -180,20 +180,20 @@ class ExportTest extends \MailPoetTest {
 
   }
 
-  function testItAlwaysGroupsSubscribersBySegments() {
+  public function testItAlwaysGroupsSubscribersBySegments() {
     $this->export->default_subscribers_getter = new DefaultSubscribersGetter([0, 1, 2], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(5);
   }
 
-  function testItCanGetSubscribersOnlyWithoutSegments() {
+  public function testItCanGetSubscribersOnlyWithoutSegments() {
     $this->export->default_subscribers_getter = new DefaultSubscribersGetter([0], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(1);
     expect($subscribers[0]['segment_name'])->equals('Not In Segment');
   }
 
-  function testItRequiresWritableExportFile() {
+  public function testItRequiresWritableExportFile() {
     try {
       $this->export->export_path = '/fake_folder';
       $this->export->process();
@@ -204,7 +204,7 @@ class ExportTest extends \MailPoetTest {
     }
   }
 
-  function testItCanProcess() {
+  public function testItCanProcess() {
     try {
       $this->export->export_file = $this->export->getExportFile('csv');
       $this->export->export_format_option = 'csv';
@@ -226,7 +226,7 @@ class ExportTest extends \MailPoetTest {
     expect($result['exportFileURL'])->notEmpty();
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);

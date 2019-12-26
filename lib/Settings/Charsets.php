@@ -3,7 +3,7 @@
 namespace MailPoet\Settings;
 
 class Charsets {
-  static function getAll() {
+  public static function getAll() {
     return [
       'UTF-8', 'UTF-7', 'BIG5', 'ISO-2022-JP',
       'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3',

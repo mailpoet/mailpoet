@@ -18,7 +18,7 @@ class FormDataMapper {
    * @return DynamicSegment
    * @throws InvalidSegmentTypeException
    */
-  function mapDataToDB(array $data) {
+  public function mapDataToDB(array $data) {
     $filters = $this->getFilters($data);
     $dynamic_segment = $this->createDynamicSegment($data);
 

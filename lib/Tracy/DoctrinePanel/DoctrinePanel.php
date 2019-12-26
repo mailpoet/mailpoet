@@ -16,12 +16,12 @@ class DoctrinePanel implements IBarPanel {
   /** @var DebugStack */
   private $sql_logger;
 
-  function __construct(Configuration $doctrine_configuration) {
+  public function __construct(Configuration $doctrine_configuration) {
     $this->sql_logger = new DebugStack();
     $doctrine_configuration->setSQLLogger($this->sql_logger);
   }
 
-  function getTab() {
+  public function getTab() {
     $queries = $this->sql_logger->queries;
     $count = count($queries);
     $count_suffix = $count === 1 ? 'query' : 'queries';
@@ -34,13 +34,13 @@ class DoctrinePanel implements IBarPanel {
     return $img . '<span class="tracy-label" >' . "$count $count_suffix / $time ms" . '</span>';
   }
 
-  function getPanel() {
+  public function getPanel() {
     ob_start();
     require __DIR__ . '/doctrine-panel.phtml';
     return ob_get_clean();
   }
 
-  static function init(EntityManagerInterface $entity_manager) {
+  public static function init(EntityManagerInterface $entity_manager) {
     Debugger::getBar()->addPanel(new DoctrinePanel($entity_manager->getConnection()->getConfiguration()));
   }
 

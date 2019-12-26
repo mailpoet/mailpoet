@@ -22,7 +22,7 @@ class SchedulerTest extends \MailPoetUnitTest {
   /** @var StatsNotificationsRepository|\PHPUnit_Framework_MockObject_MockObject */
   private $repository;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = $this->createMock(SettingsController::class);
     $this->entityManager = $this->createMock(EntityManager::class);
@@ -35,7 +35,7 @@ class SchedulerTest extends \MailPoetUnitTest {
     );
   }
 
-  function testShouldSchedule() {
+  public function testShouldSchedule() {
     $this->settings
       ->method('get')
       ->will($this->returnValueMap([
@@ -75,7 +75,7 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->stats_notifications->schedule($newsletter);
   }
 
-  function testShouldScheduleForNotificationHistory() {
+  public function testShouldScheduleForNotificationHistory() {
     $this->settings
       ->method('get')
       ->will($this->returnValueMap([
@@ -115,7 +115,7 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->stats_notifications->schedule($newsletter);
   }
 
-  function testShouldNotScheduleIfTrackingIsDisabled() {
+  public function testShouldNotScheduleIfTrackingIsDisabled() {
     $this->settings
       ->method('get')
       ->will($this->returnValueMap([
@@ -135,7 +135,7 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->stats_notifications->schedule($newsletter);
   }
 
-  function testShouldNotScheduleIfDisabled() {
+  public function testShouldNotScheduleIfDisabled() {
     $this->settings
       ->method('get')
       ->will($this->returnValueMap([
@@ -155,7 +155,7 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->stats_notifications->schedule($newsletter);
   }
 
-  function testShouldNotScheduleIfSettingsMissing() {
+  public function testShouldNotScheduleIfSettingsMissing() {
     $this->settings
       ->method('get')
       ->will($this->returnValueMap([
@@ -176,7 +176,7 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->stats_notifications->schedule($newsletter);
   }
 
-  function testShouldNotScheduleIfEmailIsMissing() {
+  public function testShouldNotScheduleIfEmailIsMissing() {
     $this->settings
       ->method('get')
       ->will($this->returnValueMap([
@@ -196,7 +196,7 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->stats_notifications->schedule($newsletter);
   }
 
-  function testShouldNotScheduleIfEmailIsEmpty() {
+  public function testShouldNotScheduleIfEmailIsEmpty() {
     $this->settings
       ->method('get')
       ->will($this->returnValueMap([
@@ -215,7 +215,7 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->stats_notifications->schedule($newsletter);
   }
 
-  function testShouldNotScheduleIfAlreadyScheduled() {
+  public function testShouldNotScheduleIfAlreadyScheduled() {
     $this->settings
       ->method('get')
       ->will($this->returnValueMap([
@@ -240,7 +240,7 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->stats_notifications->schedule($newsletter);
   }
 
-  function testShouldNotScheduleIfInvalidType() {
+  public function testShouldNotScheduleIfInvalidType() {
     $this->settings
       ->method('get')
       ->will($this->returnValueMap([

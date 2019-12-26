@@ -14,7 +14,7 @@ use DateTimeInterface;
 class StatisticsClicks extends Model {
   public static $_table = MP_STATISTICS_CLICKS_TABLE;
 
-  static function createOrUpdateClickCount($link_id, $subscriber_id, $newsletter_id, $queue_id) {
+  public static function createOrUpdateClickCount($link_id, $subscriber_id, $newsletter_id, $queue_id) {
     $statistics = self::where('link_id', $link_id)
       ->where('subscriber_id', $subscriber_id)
       ->where('newsletter_id', $newsletter_id)
@@ -33,7 +33,7 @@ class StatisticsClicks extends Model {
     return $statistics->save();
   }
 
-  static function getAllForSubscriber(Subscriber $subscriber) {
+  public static function getAllForSubscriber(Subscriber $subscriber) {
     return static::tableAlias('clicks')
       ->select('clicks.id', 'id')
       ->select('newsletter_rendered_subject')
@@ -53,7 +53,7 @@ class StatisticsClicks extends Model {
       ->orderByAsc('url');
   }
 
-  static function findLatestPerNewsletterBySubscriber(Subscriber $subscriber, DateTimeInterface $from, DateTimeInterface $to) {
+  public static function findLatestPerNewsletterBySubscriber(Subscriber $subscriber, DateTimeInterface $from, DateTimeInterface $to) {
     // subquery to find latest click IDs for each newsletter
     $table = self::$_table;
     $latest_click_ids_per_newsletter_query = "

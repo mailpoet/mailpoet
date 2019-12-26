@@ -7,7 +7,7 @@ use MailPoet\Models\Model as MPModel;
 use MailPoetVendor\Idiorm\ORM;
 
 class ModelTest extends \MailPoetTest {
-  function testItRethrowsPDOExceptions() {
+  public function testItRethrowsPDOExceptions() {
     $message = 'Error message';
     $model = Stub::make('MailPoet\Models\Model');
     $pdo = Stub::make(
@@ -28,7 +28,7 @@ class ModelTest extends \MailPoetTest {
     }
   }
 
-  function testItConvertsModelObjectToArray() {
+  public function testItConvertsModelObjectToArray() {
     $model = MPModel::create();
     $model->first = 'first';
     $model->last = 'last';
@@ -45,28 +45,28 @@ class ModelTest extends \MailPoetTest {
     );
   }
 
-  function testSetErrorsWithoutCode() {
+  public function testSetErrorsWithoutCode() {
     $model = MPModel::create();
     $model->setError('error1');
     $model->setError('error2');
     expect($model->getErrors())->equals(['error1', 'error2']);
   }
 
-  function testSetErrorsAsArray() {
+  public function testSetErrorsAsArray() {
     $model = MPModel::create();
     $model->setError(['error1']);
     $model->setError(['error2', 'error1']);
     expect($model->getErrors())->equals(['error1', 'error2']);
   }
 
-  function testSetErrorsWithCode() {
+  public function testSetErrorsWithCode() {
     $model = MPModel::create();
     $model->setError('error1');
     $model->setError('error2', 5);
     expect($model->getErrors())->equals(['error1', 5 => 'error2']);
   }
 
-  function testSetErrorCodeForDuplicateRecords() {
+  public function testSetErrorCodeForDuplicateRecords() {
     $orm = Stub::makeEmpty(
       ORM::class,
       [
@@ -85,7 +85,7 @@ class ModelTest extends \MailPoetTest {
     expect($errors[MPModel::DUPLICATE_RECORD])->contains('Please specify a different "name".');
   }
 
-  function _after() {
+  public function _after() {
     ORM::setDb($this->connection->getWrappedConnection());
   }
 }

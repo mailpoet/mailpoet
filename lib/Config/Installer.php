@@ -16,16 +16,16 @@ class Installer {
   /** @var SettingsController */
   private $settings;
 
-  function __construct($slug) {
+  public function __construct($slug) {
     $this->slug = $slug;
     $this->settings = SettingsController::getInstance();
   }
 
-  function init() {
+  public function init() {
     WPFunctions::get()->addFilter('plugins_api', [$this, 'getPluginInformation'], 10, 3);
   }
 
-  function getPluginInformation($data, $action = '', $args = null) {
+  public function getPluginInformation($data, $action = '', $args = null) {
     if ($action === 'plugin_information'
       && isset($args->slug)
       && $args->slug === $this->slug
@@ -36,7 +36,7 @@ class Installer {
     return $data;
   }
 
-  static function getPremiumStatus() {
+  public static function getPremiumStatus() {
     $slug = self::PREMIUM_PLUGIN_SLUG;
 
     $premium_plugin_active = License::getLicense();
@@ -54,12 +54,12 @@ class Installer {
     );
   }
 
-  static function isPluginInstalled($slug) {
+  public static function isPluginInstalled($slug) {
     $installed_plugin = self::getInstalledPlugin($slug);
     return !empty($installed_plugin);
   }
 
-  static function getPluginInstallationUrl($slug) {
+  public static function getPluginInstallationUrl($slug) {
     $install_url = WPFunctions::get()->addQueryArg(
       [
         'action'   => 'install-plugin',
@@ -71,7 +71,7 @@ class Installer {
     return $install_url;
   }
 
-  static function getPluginActivationUrl($slug) {
+  public static function getPluginActivationUrl($slug) {
     $plugin_file = self::getPluginFile($slug);
     if (empty($plugin_file)) {
       return false;
@@ -95,7 +95,7 @@ class Installer {
     return $installed_plugin;
   }
 
-  static function getPluginFile($slug) {
+  public static function getPluginFile($slug) {
     $plugin_file = false;
     $installed_plugin = self::getInstalledPlugin($slug);
     if (!empty($installed_plugin)) {
@@ -104,7 +104,7 @@ class Installer {
     return $plugin_file;
   }
 
-  function retrievePluginInformation() {
+  public function retrievePluginInformation() {
     $key = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
     $api = new API($key);
     $info = $api->getPluginInformation($this->slug);

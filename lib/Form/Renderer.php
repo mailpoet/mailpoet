@@ -8,13 +8,13 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
   // public: rendering method
-  static function render($form = []) {
+  public static function render($form = []) {
     $html = static::renderStyles($form);
     $html .= static::renderHTML($form);
     return $html;
   }
 
-  static function renderStyles($form = [], $prefix = null) {
+  public static function renderStyles($form = [], $prefix = null) {
     $styles = new Util\Styles();
 
     $html = '<style type="text/css">';
@@ -25,14 +25,14 @@ class Renderer {
     return $html;
   }
 
-  static function renderHTML($form = []) {
+  public static function renderHTML($form = []) {
     if (isset($form['body']) && !empty($form['body'])) {
       return static::renderBlocks($form['body']);
     }
     return '';
   }
 
-  static function getStyles($form = []) {
+  public static function getStyles($form = []) {
     if (isset($form['styles'])
     && strlen(trim($form['styles'])) > 0) {
       return strip_tags($form['styles']);
@@ -42,7 +42,7 @@ class Renderer {
     }
   }
 
-  static function renderBlocks($blocks = [], $honeypot_enabled = true) {
+  public static function renderBlocks($blocks = [], $honeypot_enabled = true) {
     $settings = SettingsController::getInstance();
     // add honeypot for spambots
     $html = ($honeypot_enabled) ?
@@ -76,7 +76,7 @@ class Renderer {
     return $html;
   }
 
-  static function renderBlock($block = []) {
+  public static function renderBlock($block = []) {
     $html = '';
     switch ($block['type']) {
       case 'html':

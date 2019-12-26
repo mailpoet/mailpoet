@@ -23,13 +23,13 @@ class WooCommerce {
   private $_woocommerce_enabled;
   private $wp;
 
-  function __construct() {
+  public function __construct() {
     $this->wp = new WPFunctions;
     $this->woocommerce_helper = new WooCommerceHelper();
     $this->_woocommerce_enabled = $this->isWoocommerceEnabled();
   }
 
-  function init() {
+  public function init() {
     $this->wp->addFilter(
       AutomaticEmails::FILTER_PREFIX . self::SLUG,
       [
@@ -46,7 +46,7 @@ class WooCommerce {
     );
   }
 
-  function setupGroup() {
+  public function setupGroup() {
     return [
       'slug' => self::SLUG,
       'title' => WPFunctions::get()->__('WooCommerce', 'mailpoet'),
@@ -55,7 +55,7 @@ class WooCommerce {
     ];
   }
 
-  function setupEvents($events) {
+  public function setupEvents($events) {
     $custom_event_details = (!$this->_woocommerce_enabled) ? [
       'actionButtonTitle' => WPFunctions::get()->__('WooCommerce is required', 'mailpoet'),
       'actionButtonLink' => 'https://wordpress.org/plugins/woocommerce/',
@@ -94,7 +94,7 @@ class WooCommerce {
     return $events;
   }
 
-  function isWoocommerceEnabled() {
+  public function isWoocommerceEnabled() {
     return $this->woocommerce_helper->isWooCommerceActive();
   }
 

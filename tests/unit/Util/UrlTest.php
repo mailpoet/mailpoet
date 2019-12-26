@@ -7,7 +7,7 @@ use MailPoet\Util\Url;
 use MailPoet\WP\Functions as WPFunctions;
 
 class UrlTest extends \MailPoetUnitTest {
-  function testCurrentUrlReturnsHomeUrlOnHome() {
+  public function testCurrentUrlReturnsHomeUrlOnHome() {
     $home_url = 'http://example.com';
     $url_helper = new Url(Stub::make(new WPFunctions(), [
       'homeUrl' => $home_url,

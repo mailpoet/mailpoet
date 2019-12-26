@@ -20,17 +20,17 @@ class FeatureFlags extends APIEndpoint {
   /** @var FeatureFlagsController */
   private $feature_flags_controller;
 
-  function __construct(FeaturesController $features_controller, FeatureFlagsController $feature_flags) {
+  public function __construct(FeaturesController $features_controller, FeatureFlagsController $feature_flags) {
     $this->features_controller = $features_controller;
     $this->feature_flags_controller = $feature_flags;
   }
 
-  function getAll() {
+  public function getAll() {
     $feature_flags = $this->feature_flags_controller->getAll();
     return $this->successResponse($feature_flags);
   }
 
-  function set(array $flags) {
+  public function set(array $flags) {
     foreach ($flags as $name => $value) {
       if (!$this->features_controller->exists($name)) {
         return $this->badRequest([

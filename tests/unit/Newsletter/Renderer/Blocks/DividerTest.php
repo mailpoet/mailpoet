@@ -17,7 +17,7 @@ class DividerTest extends \MailPoetUnitTest {
     ],
   ];
 
-  function testItRendersCorrectly() {
+  public function testItRendersCorrectly() {
     $output = Divider::render($this->block);
     $expected_result = '
       <tr>

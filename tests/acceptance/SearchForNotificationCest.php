@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class SearchForNotificationCest {
 
-  function searchForStandardNotification(\AcceptanceTester $I) {
+  public function searchForStandardNotification(\AcceptanceTester $I) {
     $I->wantTo('Successfully search for an existing notification');
     $newsletter_title = 'Search Test Notification';
     $failure_condition_newsletter = 'Not Actually Real';

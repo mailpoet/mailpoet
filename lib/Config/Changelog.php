@@ -23,7 +23,7 @@ class Changelog {
   /** @var MP2Migrator */
   private $mp2_migrator;
 
-  function __construct(
+  public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     Helper $wooCommerceHelper,
@@ -37,7 +37,7 @@ class Changelog {
     $this->mp2_migrator = $mp2_migrator;
   }
 
-  function init() {
+  public function init() {
     $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
 
     // don't run any check when it's an ajax request
@@ -60,7 +60,7 @@ class Changelog {
     );
   }
 
-  function check() {
+  public function check() {
     $version = $this->settings->get('version');
     $this->checkMp2Migration($version);
     if ($version === null) {

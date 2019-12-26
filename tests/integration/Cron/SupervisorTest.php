@@ -12,7 +12,7 @@ class SupervisorTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     // cron trigger is by default set to 'WordPress'; when it runs and does not
     // detect any queues to process, it deletes the daemon setting, so Supervisor and
@@ -26,34 +26,34 @@ class SupervisorTest extends \MailPoetTest {
     $this->supervisor = ContainerWrapper::getInstance()->get(Supervisor::class);
   }
 
-  function testItCanBeInitialized() {
+  public function testItCanBeInitialized() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $this->supervisor->init();
     expect($this->supervisor->token)->notEmpty();
     expect($this->supervisor->daemon)->notEmpty();
   }
 
-  function testItCreatesDaemonWhenOneDoesNotExist() {
+  public function testItCreatesDaemonWhenOneDoesNotExist() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $this->supervisor->init();
     expect($this->supervisor->getDaemon())->notEmpty();
   }
 
-  function testItReturnsDaemonWhenOneExists() {
+  public function testItReturnsDaemonWhenOneExists() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $this->supervisor->init();
     expect($this->supervisor->getDaemon())->equals($this->supervisor->daemon);
   }
 
-  function testItDoesNothingWhenDaemonExecutionDurationIsBelowLimit() {
+  public function testItDoesNothingWhenDaemonExecutionDurationIsBelowLimit() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $this->supervisor->init();
     expect($this->supervisor->checkDaemon())
       ->equals($this->supervisor->daemon);
   }
 
-  function testRestartsDaemonWhenExecutionDurationIsAboveLimit() {
+  public function testRestartsDaemonWhenExecutionDurationIsAboveLimit() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $this->supervisor->init();
     $this->supervisor->daemon['updated_at'] = time() - $this->cron_helper->getDaemonExecutionTimeout();
@@ -63,7 +63,7 @@ class SupervisorTest extends \MailPoetTest {
     expect($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
   }
 
-  function testRestartsDaemonWhenItIsInactive() {
+  public function testRestartsDaemonWhenItIsInactive() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $this->supervisor->init();
     $this->supervisor->daemon['updated_at'] = time();
@@ -72,7 +72,7 @@ class SupervisorTest extends \MailPoetTest {
     expect($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

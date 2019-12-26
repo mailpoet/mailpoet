@@ -26,15 +26,15 @@ class Subscription {
   /** @var UserSubscription\Pages */
   private $subscription_pages;
 
-  function __construct(UserSubscription\Pages $subscription_pages) {
+  public function __construct(UserSubscription\Pages $subscription_pages) {
     $this->subscription_pages = $subscription_pages;
   }
 
-  function captcha($data) {
+  public function captcha($data) {
     $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CAPTCHA, $data);
   }
 
-  function captchaImage($data) {
+  public function captchaImage($data) {
     $captcha = new UserSubscription\Captcha;
     $width = !empty($data['width']) ? (int)$data['width'] : null;
     $height = !empty($data['height']) ? (int)$data['height'] : null;
@@ -42,16 +42,16 @@ class Subscription {
     return $captcha->renderImage($width, $height, $session_id);
   }
 
-  function confirm($data) {
+  public function confirm($data) {
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM, $data);
     $subscription->confirm();
   }
 
-  function manage($data) {
+  public function manage($data) {
     $this->initSubscriptionPage(UserSubscription\Pages::ACTION_MANAGE, $data);
   }
 
-  function unsubscribe($data) {
+  public function unsubscribe($data) {
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_UNSUBSCRIBE, $data);
     $subscription->unsubscribe();
   }

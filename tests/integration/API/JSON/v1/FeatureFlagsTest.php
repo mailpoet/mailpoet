@@ -17,14 +17,14 @@ class FeatureFlagsTest extends \MailPoetTest {
   /** @var FeatureFlagsRepository */
   private $repository;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->repository = $this->di_container->get(FeatureFlagsRepository::class);
     $table_name = $this->entity_manager->getClassMetadata(FeatureFlagEntity::class)->getTableName();
     $this->entity_manager->getConnection()->executeUpdate("TRUNCATE $table_name");
   }
 
-  function testItReturnsDefaults() {
+  public function testItReturnsDefaults() {
     $endpoint = $this->createEndpointWithFeatureDefaults([
       'feature-a' => true,
       'feature-b' => false,
@@ -44,7 +44,7 @@ class FeatureFlagsTest extends \MailPoetTest {
     ]);
   }
 
-  function testItReturnsDatabaseValue() {
+  public function testItReturnsDatabaseValue() {
     $this->repository->createOrUpdate([
       'name' => 'feature-a',
       'value' => false,
@@ -63,7 +63,7 @@ class FeatureFlagsTest extends \MailPoetTest {
     ]);
   }
 
-  function testItSetsDatabaseValue() {
+  public function testItSetsDatabaseValue() {
     $endpoint = $this->createEndpointWithFeatureDefaults([
       'feature-a' => true,
     ]);
@@ -80,7 +80,7 @@ class FeatureFlagsTest extends \MailPoetTest {
   }
 
 
-  function testItUpdatesDatabaseValue() {
+  public function testItUpdatesDatabaseValue() {
     $this->repository->createOrUpdate([
       'name' => 'feature-a',
       'value' => false,
@@ -101,7 +101,7 @@ class FeatureFlagsTest extends \MailPoetTest {
     expect($features[0]->getValue())->equals(true);
   }
 
-  function testItDoesNotReturnUnknownFlag() {
+  public function testItDoesNotReturnUnknownFlag() {
     $this->repository->createOrUpdate([
       'name' => 'feature-unknown',
       'value' => true,
@@ -111,7 +111,7 @@ class FeatureFlagsTest extends \MailPoetTest {
     expect($endpoint->getAll()->data)->isEmpty();
   }
 
-  function testItDoesNotSaveUnknownFlag() {
+  public function testItDoesNotSaveUnknownFlag() {
     $endpoint = $this->createEndpointWithFeatureDefaults([]);
     $response = $endpoint->set([
       'feature-unknown' => false,

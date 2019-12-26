@@ -22,13 +22,13 @@ class Subscribers {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(PageRenderer $page_renderer, PageLimit $listing_page_limit, WPFunctions $wp) {
+  public function __construct(PageRenderer $page_renderer, PageLimit $listing_page_limit, WPFunctions $wp) {
     $this->page_renderer = $page_renderer;
     $this->listing_page_limit = $listing_page_limit;
     $this->wp = $wp;
   }
 
-  function render() {
+  public function render() {
     $data = [];
 
     $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('subscribers');

@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditorDividerBlockCest {
-  function addDivider(\AcceptanceTester $I) {
+  public function addDivider(\AcceptanceTester $I) {
     $I->wantTo('add divider block to newsletter');
     $dividerSettings = ('[data-automation-id="settings_tool"]');
     $dividerResizeHandle = ('[data-automation-id="divider_resize_handle"]');

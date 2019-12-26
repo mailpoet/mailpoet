@@ -13,7 +13,7 @@ class SendGridMapperTest extends \MailPoetUnitTest {
   /** @var array */
   private $response = [];
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->mapper = new SendGridMapper();
     $this->response = [
@@ -23,14 +23,14 @@ class SendGridMapperTest extends \MailPoetUnitTest {
     ];
   }
 
-  function testGetProperError() {
+  public function testGetProperError() {
     $error = $this->mapper->getErrorFromResponse($this->response, 'john@rambo.com');
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
     expect($error->getMessage())->equals('Some message');
     expect($error->getSubscriberErrors()[0]->getEmail())->equals('john@rambo.com');
   }
 
-  function testGetSoftErrorForInvalidEmail() {
+  public function testGetSoftErrorForInvalidEmail() {
     $this->response['errors'][0] = 'Invalid email address ,,@';
     $error = $this->mapper->getErrorFromResponse($this->response, ',,@');
     expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);

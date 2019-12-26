@@ -10,7 +10,7 @@ use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SMTPTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = [
       'method' => 'SMTP',
@@ -63,7 +63,7 @@ class SMTPTest extends \MailPoetTest {
     ];
   }
 
-  function testItCanBuildMailer() {
+  public function testItCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
     expect($mailer->getTransport()->getHost())
       ->equals($this->settings['host']);
@@ -77,7 +77,7 @@ class SMTPTest extends \MailPoetTest {
       ->equals($this->settings['encryption']);
   }
 
-  function testWhenReturnPathIsNullItIsSetToSenderEmail() {
+  public function testWhenReturnPathIsNullItIsSetToSenderEmail() {
     $mailer = new SMTP(
       $this->settings['host'],
       $this->settings['port'],
@@ -93,7 +93,7 @@ class SMTPTest extends \MailPoetTest {
     expect($mailer->return_path)->equals($this->sender['from_email']);
   }
 
-  function testItCanCreateMessage() {
+  public function testItCanCreateMessage() {
     $message = $this->mailer
       ->createMessage($this->newsletter, $this->subscriber, $this->extra_params);
     expect($message->getTo())
@@ -114,7 +114,7 @@ class SMTPTest extends \MailPoetTest {
       ->equals('<' . $this->extra_params['unsubscribe_url'] . '>');
   }
 
-  function testItCanProcessSubscriber() {
+  public function testItCanProcessSubscriber() {
     expect($this->mailer->processSubscriber('test@test.com'))
       ->equals(['test@test.com' => '']);
     expect($this->mailer->processSubscriber('First <test@test.com>'))
@@ -123,7 +123,7 @@ class SMTPTest extends \MailPoetTest {
       ->equals(['test@test.com' => 'First Last']);
   }
 
-  function testItCantSendWithoutProperAuthentication() {
+  public function testItCantSendWithoutProperAuthentication() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->mailer->login = 'someone';
     $this->mailer->mailer = $this->mailer->buildMailer();
@@ -134,7 +134,7 @@ class SMTPTest extends \MailPoetTest {
     expect($result['response'])->false();
   }
 
-  function testItAppliesTransportFilter() {
+  public function testItAppliesTransportFilter() {
     $mailer = $this->mailer->buildMailer();
     expect($mailer->getTransport()->getStreamOptions())->isEmpty();
     (new WPFunctions)->addFilter(
@@ -162,7 +162,7 @@ class SMTPTest extends \MailPoetTest {
     );
   }
 
-  function testItAppliesTimeoutFilter() {
+  public function testItAppliesTimeoutFilter() {
     $mailer = $this->mailer->buildMailer();
     expect($mailer->getTransport()->getTimeout())->equals(\MailPoet\Mailer\Methods\SMTP::SMTP_CONNECTION_TIMEOUT);
     (new WPFunctions)->addFilter(
@@ -175,7 +175,7 @@ class SMTPTest extends \MailPoetTest {
     expect($mailer->getTransport()->getTimeout())->equals(20);
   }
 
-  function testItChecksBlacklistBeforeSending() {
+  public function testItChecksBlacklistBeforeSending() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
@@ -192,7 +192,7 @@ class SMTPTest extends \MailPoetTest {
     expect($result['error']->getMessage())->contains('SMTP has returned an unknown error.');
   }
 
-  function testItCanSend() {
+  public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $result = $this->mailer->send(
       $this->newsletter,
@@ -201,6 +201,6 @@ class SMTPTest extends \MailPoetTest {
     expect($result['response'])->true();
   }
 
-  function _after() {
+  public function _after() {
   }
 }

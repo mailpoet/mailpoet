@@ -58,7 +58,7 @@ class Hooks {
   /** @var DynamicSegmentHooks */
   private $dynamic_segment_hooks;
 
-  function __construct(
+  public function __construct(
     Form $subscription_form,
     Comment $subscription_comment,
     Manage $subscription_manage,
@@ -88,7 +88,7 @@ class Hooks {
     $this->dynamic_segment_hooks = $dynamic_segment_hooks;
   }
 
-  function init() {
+  public function init() {
     $this->setupWPUsers();
     $this->setupWooCommerceUsers();
     $this->setupWooCommercePurchases();
@@ -101,11 +101,11 @@ class Hooks {
     $this->dynamic_segment_hooks->init();
   }
 
-  function initEarlyHooks() {
+  public function initEarlyHooks() {
     $this->setupMailer();
   }
 
-  function setupSubscriptionEvents() {
+  public function setupSubscriptionEvents() {
 
     $subscribe = $this->settings->get('subscribe', []);
     // Subscribe in comments
@@ -197,7 +197,7 @@ class Hooks {
     );
   }
 
-  function setupMailer() {
+  public function setupMailer() {
     $this->wp->addAction('plugins_loaded', [
       $this->wordpress_mailer_replacer,
       'replaceWordPressMailer',
@@ -212,7 +212,7 @@ class Hooks {
     ]);
   }
 
-  function setupWooCommerceSubscriptionEvents() {
+  public function setupWooCommerceSubscriptionEvents() {
     $woocommerce = $this->settings->get('woocommerce', []);
     // WooCommerce: subscribe on checkout
     if (!empty($woocommerce['optin_on_checkout']['enabled'])) {
@@ -230,7 +230,7 @@ class Hooks {
     );
   }
 
-  function setupWPUsers() {
+  public function setupWPUsers() {
     // WP Users synchronization
     $this->wp->addAction(
       'user_register',
@@ -265,14 +265,14 @@ class Hooks {
     );
   }
 
-  function setupWooCommerceSettings() {
+  public function setupWooCommerceSettings() {
     $this->wp->addAction('woocommerce_settings_start', [
       $this->woocommerce_settings,
       'disableWooCommerceSettings',
     ]);
   }
 
-  function setupWooCommerceUsers() {
+  public function setupWooCommerceUsers() {
     // WooCommerce Customers synchronization
     $this->wp->addAction(
       'woocommerce_new_customer',
@@ -301,7 +301,7 @@ class Hooks {
     );
   }
 
-  function setupWooCommercePurchases() {
+  public function setupWooCommercePurchases() {
     // use both 'processing' and 'completed' states since payment hook and 'processing' status
     // may be skipped with some payment methods (cheque) or when state transitioned manually
     $accepted_order_states = WPFunctions::get()->applyFilters(
@@ -319,7 +319,7 @@ class Hooks {
     }
   }
 
-  function setupImageSize() {
+  public function setupImageSize() {
     $this->wp->addFilter(
       'image_size_names_choose',
       [$this, 'appendImageSize'],
@@ -327,13 +327,13 @@ class Hooks {
     );
   }
 
-  function appendImageSize($sizes) {
+  public function appendImageSize($sizes) {
     return array_merge($sizes, [
       'mailpoet_newsletter_max' => WPFunctions::get()->__('MailPoet Newsletter', 'mailpoet'),
     ]);
   }
 
-  function setupListing() {
+  public function setupListing() {
     $this->wp->addFilter(
       'set-screen-option',
       [$this, 'setScreenOption'],
@@ -341,7 +341,7 @@ class Hooks {
     );
   }
 
-  function setScreenOption($status, $option, $value) {
+  public function setScreenOption($status, $option, $value) {
     if (preg_match('/^mailpoet_(.*)_per_page$/', $option)) {
       return $value;
     } else {
@@ -349,7 +349,7 @@ class Hooks {
     }
   }
 
-  function setupPostNotifications() {
+  public function setupPostNotifications() {
     $this->wp->addAction(
       'transition_post_status',
       [$this->post_notification_scheduler, 'transitionHook'],

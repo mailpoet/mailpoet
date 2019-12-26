@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\DynamicSegment;
 
 class EditExistingSegmentCest {
-  function editUserRoleSegment(\AcceptanceTester $I) {
+  public function editUserRoleSegment(\AcceptanceTester $I) {
     $I->wantTo('Edit an existing WP user role segment');
 
     $segment_title = 'Edit User Role Segment Test';

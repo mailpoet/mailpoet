@@ -30,7 +30,7 @@ class PostNotificationScheduler {
     $this->logger_factory = LoggerFactory::getInstance();
   }
 
-  function transitionHook($new_status, $old_status, $post) {
+  public function transitionHook($new_status, $old_status, $post) {
     $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'transition post notification hook initiated',
       [
@@ -46,7 +46,7 @@ class PostNotificationScheduler {
     $this->schedulePostNotification($post->ID);
   }
 
-  function schedulePostNotification($post_id) {
+  public function schedulePostNotification($post_id) {
     $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'schedule post notification hook',
       ['post_id' => $post_id]
@@ -63,7 +63,7 @@ class PostNotificationScheduler {
     }
   }
 
-  function createPostNotificationSendingTask($newsletter) {
+  public function createPostNotificationSendingTask($newsletter) {
     $existing_notification_history = Newsletter::tableAlias('newsletters')
       ->where('newsletters.parent_id', $newsletter->id)
       ->where('newsletters.type', Newsletter::TYPE_NOTIFICATION_HISTORY)
@@ -102,7 +102,7 @@ class PostNotificationScheduler {
     return $sending_task;
   }
 
-  function processPostNotificationSchedule($newsletter) {
+  public function processPostNotificationSchedule($newsletter) {
     $interval_type = $newsletter->intervalType;
     $hour = (int)$newsletter->timeOfDay / self::SECONDS_IN_HOUR;
     $week_day = $newsletter->weekDay;

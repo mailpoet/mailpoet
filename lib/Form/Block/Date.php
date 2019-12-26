@@ -7,7 +7,7 @@ use MailPoetVendor\Carbon\Carbon;
 
 class Date extends Base {
 
-  static function render($block) {
+  public static function render($block) {
     $html = '';
     $html .= '<p class="mailpoet_paragraph">';
     $html .= static::renderLabel($block);
@@ -103,7 +103,7 @@ class Date extends Base {
     return $html;
   }
 
-  static function getDateTypes() {
+  public static function getDateTypes() {
     return [
       'year_month_day' => WPFunctions::get()->__('Year, month, day', 'mailpoet'),
       'year_month' => WPFunctions::get()->__('Year, month', 'mailpoet'),
@@ -112,7 +112,7 @@ class Date extends Base {
     ];
   }
 
-  static function getDateFormats() {
+  public static function getDateFormats() {
     return [
       'year_month_day' => ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'],
       'year_month' => ['MM/YYYY', 'YYYY/MM'],
@@ -120,14 +120,14 @@ class Date extends Base {
       'month' => ['MM'],
     ];
   }
-  static function getMonthNames() {
+  public static function getMonthNames() {
     return [__('January', 'mailpoet'), WPFunctions::get()->__('February', 'mailpoet'), WPFunctions::get()->__('March', 'mailpoet'), WPFunctions::get()->__('April', 'mailpoet'),
       WPFunctions::get()->__('May', 'mailpoet'), WPFunctions::get()->__('June', 'mailpoet'), WPFunctions::get()->__('July', 'mailpoet'), WPFunctions::get()->__('August', 'mailpoet'), WPFunctions::get()->__('September', 'mailpoet'),
       WPFunctions::get()->__('October', 'mailpoet'), WPFunctions::get()->__('November', 'mailpoet'), WPFunctions::get()->__('December', 'mailpoet'),
     ];
   }
 
-  static function getMonths($block = []) {
+  public static function getMonths($block = []) {
     $defaults = [
       'selected' => null,
     ];
@@ -152,7 +152,7 @@ class Date extends Base {
     return $html;
   }
 
-  static function getYears($block = []) {
+  public static function getYears($block = []) {
     $defaults = [
       'selected' => null,
       'from' => (int)strftime('%Y') - 100,
@@ -181,7 +181,7 @@ class Date extends Base {
     return $html;
   }
 
-  static function getDays($block = []) {
+  public static function getDays($block = []) {
     $defaults = [
       'selected' => null,
     ];
@@ -207,7 +207,7 @@ class Date extends Base {
     return $html;
   }
 
-  static function convertDateToDatetime($date, $date_format) {
+  public static function convertDateToDatetime($date, $date_format) {
     $datetime = false;
     if ($date_format === 'datetime') {
       $datetime = $date;

@@ -8,7 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class ShortcodesHelper {
 
-  static function getShortcodes() {
+  public static function getShortcodes() {
     $shortcodes = [
       WPFunctions::get()->__('Subscriber', 'mailpoet') => [
         [
@@ -115,7 +115,7 @@ class ShortcodesHelper {
     return $shortcodes;
   }
 
-  static function getCustomFields() {
+  public static function getCustomFields() {
     $custom_fields = CustomField::findMany();
     if (!$custom_fields) return false;
     return array_map(function($custom_field) {

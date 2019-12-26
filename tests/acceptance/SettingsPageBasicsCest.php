@@ -7,7 +7,7 @@ use MailPoet\Test\DataFactories\Settings;
 
 class SettingsPageBasicsCest {
 
-  function checkSettingsPagesLoad(\AcceptanceTester $I) {
+  public function checkSettingsPagesLoad(\AcceptanceTester $I) {
     $I->wantTo('Confirm all settings pages load correctly');
     $I->login();
     $I->amOnMailPoetPage('Settings');
@@ -32,7 +32,7 @@ class SettingsPageBasicsCest {
     $I->seeNoJSErrors();
   }
 
-  function editDefaultSenderInformation(\AcceptanceTester $I) {
+  public function editDefaultSenderInformation(\AcceptanceTester $I) {
     $I->wantTo('Confirm default sender information can be edited');
     $I->login();
     $I->amOnMailPoetPage('Settings');
@@ -45,7 +45,7 @@ class SettingsPageBasicsCest {
     $I->waitForText('Settings saved');
   }
 
-  function allowSubscribeInComments(\AcceptanceTester $I) {
+  public function allowSubscribeInComments(\AcceptanceTester $I) {
     $I->wantTo('Allow users to subscribe to lists in site comments');
     $post_title = 'Hello world!';
     $I->login();
@@ -71,7 +71,7 @@ class SettingsPageBasicsCest {
     $I->dontSee("Yes, add me to your mailing list");
   }
 
-  function checkSenderFreemailWarning(\AcceptanceTester $I) {
+  public function checkSenderFreemailWarning(\AcceptanceTester $I) {
     $settings = new Settings();
     $settings->withSendingMethod(Mailer::METHOD_SMTP);
     $settings->withTodayInstallationDate();

@@ -3,7 +3,7 @@
 namespace MailPoet\Newsletter\Editor;
 
 class LayoutHelper {
-  static function row($blocks, $styles = []) {
+  public static function row($blocks, $styles = []) {
     if (empty($styles['backgroundColor'])) {
       $styles['backgroundColor'] = 'transparent';
     }
@@ -15,7 +15,7 @@ class LayoutHelper {
     ];
   }
 
-  static function col($blocks, $styles = []) {
+  public static function col($blocks, $styles = []) {
     if (empty($styles['backgroundColor'])) {
       $styles['backgroundColor'] = 'transparent';
     }

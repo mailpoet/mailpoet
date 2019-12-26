@@ -13,12 +13,12 @@ class NewslettersExporterTest extends \MailPoetTest {
   /** @var NewslettersExporter */
   private $exporter;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->exporter = new NewslettersExporter();
   }
 
-  function testExportWorksWhenSubscriberNotFound() {
+  public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->exporter->export('email.that@doesnt.exists');
     expect($result)->internalType('array');
     expect($result)->hasKey('data');
@@ -27,7 +27,7 @@ class NewslettersExporterTest extends \MailPoetTest {
     expect($result['done'])->equals(true);
   }
 
-  function testExportWorksForSubscriberWithNoNewsletters() {
+  public function testExportWorksForSubscriberWithNoNewsletters() {
     Subscriber::createOrUpdate([
       'email' => 'email.that@has.no.newsletters',
     ]);
@@ -39,7 +39,7 @@ class NewslettersExporterTest extends \MailPoetTest {
     expect($result['done'])->equals(true);
   }
 
-  function testExportReturnsRenderedSubjects() {
+  public function testExportReturnsRenderedSubjects() {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'user@with.newsletters',
     ]);
@@ -64,7 +64,7 @@ class NewslettersExporterTest extends \MailPoetTest {
     expect($result['data'][0]['data'])->contains(['name' => 'Email subject', 'value' => 'Email Subject']);
   }
 
-  function testExportReturnsUrl() {
+  public function testExportReturnsUrl() {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'user1@with.newsletters',
     ]);
@@ -87,7 +87,7 @@ class NewslettersExporterTest extends \MailPoetTest {
     expect($result['data'][0]['data'][3]['value'])->contains('mailpoet_router&endpoint=view_in_browser&action=view&data=');
   }
 
-  function testExportOpens() {
+  public function testExportOpens() {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'user21@with.newsletters',
     ]);

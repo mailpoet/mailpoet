@@ -13,7 +13,7 @@ class ManageSubscriptionLinkCest {
   /** @var string */
   private $newsletter_title;
 
-  function __construct() {
+  public function __construct() {
     $this->newsletter_title = 'Subscription links Email ' . \MailPoet\Util\Security::generateRandomString();
   }
 
@@ -21,13 +21,13 @@ class ManageSubscriptionLinkCest {
     $this->settings = $settings;
   }
 
-  function _before() {
+  public function _before() {
     $this->settings
       ->withConfirmationEmailEnabled()
       ->withCronTriggerMethod('WordPress');
   }
 
-  function manageSubscriptionLink(\AcceptanceTester $I) {
+  public function manageSubscriptionLink(\AcceptanceTester $I) {
     $I->wantTo('Verify that "manage subscription" link works and subscriber status can be updated');
     $this->sendEmail($I);
     $I->amOnMailboxAppPage();
@@ -61,7 +61,7 @@ class ManageSubscriptionLinkCest {
     $I->seeNoJSErrors();
   }
 
-  function unsubscribeLink(\AcceptanceTester $I) {
+  public function unsubscribeLink(\AcceptanceTester $I) {
     $I->wantTo('Verify that "unsubscribe" link works and subscriber status is set to unsubscribed');
     $this->sendEmail($I);
 

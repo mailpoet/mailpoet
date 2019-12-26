@@ -10,25 +10,25 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerceSyncTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     $this->woocommerce_segment = $this->createMock(WooCommerceSegment::class);
     $this->woocommerce_helper = $this->createMock(WooCommerceHelper::class);
     $this->worker = new WooCommerceSync($this->woocommerce_segment, $this->woocommerce_helper, microtime(true));
   }
 
-  function testItWillNotRunIfWooCommerceIsDisabled() {
+  public function testItWillNotRunIfWooCommerceIsDisabled() {
     $this->woocommerce_helper->method('isWooCommerceActive')
       ->willReturn(false);
     expect($this->worker->checkProcessingRequirements())->false();
   }
 
-  function testItWillRunIfWooCommerceIsEnabled() {
+  public function testItWillRunIfWooCommerceIsEnabled() {
     $this->woocommerce_helper->method('isWooCommerceActive')
       ->willReturn(true);
     expect($this->worker->checkProcessingRequirements())->true();
   }
 
-  function testItCallsWooCommerceSync() {
+  public function testItCallsWooCommerceSync() {
     $this->woocommerce_segment->expects($this->once())
       ->method('synchronizeCustomers');
     $task = $this->createScheduledTask();
@@ -44,7 +44,7 @@ class WooCommerceSyncTest extends \MailPoetTest {
     return $task;
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

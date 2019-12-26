@@ -27,7 +27,7 @@ class WooCommerceCategory implements Filter {
     $this->connect = $connect;
   }
 
-  function toSql(ORM $orm) {
+  public function toSql(ORM $orm) {
     global $wpdb;
     $orm->distinct();
     $orm->rawJoin(
@@ -45,8 +45,8 @@ class WooCommerceCategory implements Filter {
     $orm->rawJoin(
       'INNER JOIN ' . $wpdb->term_taxonomy,
       '
-         term_taxonomy.term_taxonomy_id=term_relationships.term_taxonomy_id 
-         AND 
+         term_taxonomy.term_taxonomy_id=term_relationships.term_taxonomy_id
+         AND
          term_taxonomy.term_id IN (' . join(',', $this->getAllCategoryIds()) . ')',
       'term_taxonomy'
     );
@@ -64,7 +64,7 @@ class WooCommerceCategory implements Filter {
     return $ids;
   }
 
-  function toArray() {
+  public function toArray() {
     return [
       'action' => WooCommerceCategory::ACTION_CATEGORY,
       'category_id' => $this->category_id,

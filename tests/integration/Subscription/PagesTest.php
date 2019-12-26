@@ -25,7 +25,7 @@ class PagesTest extends \MailPoetTest {
   /** @var Subscriber */
   private $subscriber;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->subscriber = Subscriber::create();
     $this->subscriber->hydrate(Fixtures::get('subscriber_template'));
@@ -38,7 +38,7 @@ class PagesTest extends \MailPoetTest {
     $this->pages = ContainerWrapper::getInstance()->get(Pages::class);
   }
 
-  function testItConfirmsSubscription() {
+  public function testItConfirmsSubscription() {
     $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $subscription = $this->pages->init($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
     $subscription->confirm();
@@ -46,7 +46,7 @@ class PagesTest extends \MailPoetTest {
     expect($confirmed_subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItDoesNotConfirmSubscriptionOnDuplicateAttempt() {
+  public function testItDoesNotConfirmSubscriptionOnDuplicateAttempt() {
     $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $subscriber = $this->subscriber;
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
@@ -55,7 +55,7 @@ class PagesTest extends \MailPoetTest {
     expect($subscription->confirm())->false();
   }
 
-  function testItSendsWelcomeNotificationUponConfirmingSubscription() {
+  public function testItSendsWelcomeNotificationUponConfirmingSubscription() {
     $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $subscription = $this->pages->init($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
     // create segment
@@ -109,14 +109,14 @@ class PagesTest extends \MailPoetTest {
     expect($scheduled_notification)->notEmpty();
   }
 
-  function testItUnsubscribes() {
+  public function testItUnsubscribes() {
     $pages = $this->pages->init($action = 'unsubscribe', $this->test_data);
     $pages->unsubscribe();
     $updated_subscriber = Subscriber::findOne($this->subscriber->id);
     expect($updated_subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
-  function testItDoesntUnsubscribeWhenPreviewing() {
+  public function testItDoesntUnsubscribeWhenPreviewing() {
     $this->test_data['preview'] = 1;
     $pages = $this->pages->init($action = 'unsubscribe', $this->test_data);
     $pages->unsubscribe();
@@ -124,7 +124,7 @@ class PagesTest extends \MailPoetTest {
     expect($updated_subscriber->status)->notEquals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);

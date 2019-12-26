@@ -23,7 +23,7 @@ class PurchasedInCategory {
   /** @var LoggerFactory */
   private $logger_factory;
 
-  function __construct(WCHelper $woocommerce_helper = null) {
+  public function __construct(WCHelper $woocommerce_helper = null) {
     if ($woocommerce_helper === null) {
       $woocommerce_helper = new WCHelper();
     }
@@ -32,7 +32,7 @@ class PurchasedInCategory {
     $this->logger_factory = LoggerFactory::getInstance();
   }
 
-  function getEventDetails() {
+  public function getEventDetails() {
     return [
       'slug' => self::SLUG,
       'title' => _x('Purchased In This Category', 'This is the name of a type for automatic email for ecommerce. Those emails are sent automatically every time a customer buys for the first time a product in a given category', 'mailpoet'),
@@ -49,7 +49,7 @@ class PurchasedInCategory {
     ];
   }
 
-  function init() {
+  public function init() {
     WPFunctions::get()->removeAllFilters('woocommerce_product_purchased_get_categories');
     WPFunctions::get()->addFilter(
       'woocommerce_product_purchased_get_categories',
@@ -67,7 +67,7 @@ class PurchasedInCategory {
     }
   }
 
-  function getCategories($search_query) {
+  public function getCategories($search_query) {
     $args = [
       'taxonomy' => 'product_cat',
       'search' => $search_query,
@@ -86,7 +86,7 @@ class PurchasedInCategory {
     }, $all_categories);
   }
 
-  function scheduleEmail($order_id) {
+  public function scheduleEmail($order_id) {
     $order_details = $this->woocommerce_helper->wcGetOrder($order_id);
     if (!$order_details || !$order_details->get_billing_email()) {
       $this->logger_factory->getLogger(self::SLUG)->addInfo(

@@ -43,7 +43,7 @@ class NewsletterTest extends \MailPoetTest {
   /** @var LoggerFactory */
   private $logger_factory;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->newsletter_task = new NewsletterTask();
     $this->subscriber = Subscriber::create();
@@ -71,11 +71,11 @@ class NewsletterTest extends \MailPoetTest {
     $this->logger_factory = LoggerFactory::getInstance();
   }
 
-  function testItConstructs() {
+  public function testItConstructs() {
     expect($this->newsletter_task->tracking_enabled)->true();
   }
 
-  function testItDoesNotGetNewsletterWhenStatusIsNotActiveOrSending() {
+  public function testItDoesNotGetNewsletterWhenStatusIsNotActiveOrSending() {
     // draft or any other status return false
     $newsletter = $this->newsletter;
     $newsletter->status = Newsletter::STATUS_DRAFT;
@@ -94,14 +94,14 @@ class NewsletterTest extends \MailPoetTest {
     expect($this->newsletter_task->getNewsletterFromQueue($this->queue))->isInstanceOf('Mailpoet\Models\Newsletter');
   }
 
-  function testItDoesNotGetDeletedNewsletter() {
+  public function testItDoesNotGetDeletedNewsletter() {
     $newsletter = $this->newsletter;
     $newsletter->set_expr('deleted_at', 'NOW()');
     $newsletter->save();
     expect($this->newsletter_task->getNewsletterFromQueue($this->queue))->false();
   }
 
-  function testItDoesNotGetNewsletterWhenParentNewsletterStatusIsNotActiveOrSending() {
+  public function testItDoesNotGetNewsletterWhenParentNewsletterStatusIsNotActiveOrSending() {
     // draft or any other status return false
     $parent_newsletter = $this->parent_newsletter;
     $parent_newsletter->status = Newsletter::STATUS_DRAFT;
@@ -132,7 +132,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($this->newsletter_task->getNewsletterFromQueue($this->queue))->isInstanceOf('Mailpoet\Models\Newsletter');
   }
 
-  function testItDoesNotGetDeletedNewsletterWhenParentNewsletterIsDeleted() {
+  public function testItDoesNotGetDeletedNewsletterWhenParentNewsletterIsDeleted() {
     $parent_newsletter = $this->parent_newsletter;
     $parent_newsletter->set_expr('deleted_at', 'NOW()');
     $parent_newsletter->save();
@@ -143,14 +143,14 @@ class NewsletterTest extends \MailPoetTest {
     expect($this->newsletter_task->getNewsletterFromQueue($this->queue))->false();
   }
 
-  function testItReturnsNewsletterObjectWhenRenderedNewsletterBodyExistsInTheQueue() {
+  public function testItReturnsNewsletterObjectWhenRenderedNewsletterBodyExistsInTheQueue() {
     $queue = $this->queue;
     $queue->newsletter_rendered_body = ['html' => 'test', 'text' => 'test'];
     $result = $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue);
     expect($result instanceof \MailPoet\Models\Newsletter)->true();
   }
 
-  function testItHashesLinksAndInsertsTrackingImageWhenTrackingIsEnabled() {
+  public function testItHashesLinksAndInsertsTrackingImageWhenTrackingIsEnabled() {
     $wp = Stub::make(new WPFunctions, [
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
     ]);
@@ -172,7 +172,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(WPHooksHelper::getFilterApplied($hook_name)[1] instanceof Newsletter)->true();
   }
 
-  function testItDoesNotHashLinksAndInsertTrackingCodeWhenTrackingIsDisabled() {
+  public function testItDoesNotHashLinksAndInsertTrackingCodeWhenTrackingIsDisabled() {
     $wp = Stub::make(new WPFunctions, [
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
     ]);
@@ -195,7 +195,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(WPHooksHelper::getFilterApplied($hook_name)[1] instanceof Newsletter)->true();
   }
 
-  function testItReturnsFalseAndDeletesNewsletterWhenPostNotificationContainsNoPosts() {
+  public function testItReturnsFalseAndDeletesNewsletterWhenPostNotificationContainsNoPosts() {
     $newsletter = $this->newsletter;
 
     $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
@@ -211,7 +211,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter)->false();
   }
 
-  function testItSavesNewsletterPosts() {
+  public function testItSavesNewsletterPosts() {
     $this->newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     $this->newsletter->parent_id = $this->newsletter->id;
     $posts_task = $this->make(PostsTask::class, [
@@ -226,7 +226,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter_post->post_id)->equals('10');
   }
 
-  function testItUpdatesStatusAndSetsSentAtDateOnlyForStandardAndPostNotificationNewsletters() {
+  public function testItUpdatesStatusAndSetsSentAtDateOnlyForStandardAndPostNotificationNewsletters() {
     $newsletter = $this->newsletter;
     $queue = new \stdClass();
     $queue->processed_at = date('Y-m-d H:i:s');
@@ -258,7 +258,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($updated_newsletter->status)->notEquals(Newsletter::STATUS_SENT);
   }
 
-  function testItDoesNotRenderSubscriberShortcodeInSubjectWhenPreprocessingNewsletter() {
+  public function testItDoesNotRenderSubscriberShortcodeInSubjectWhenPreprocessingNewsletter() {
     $newsletter = $this->newsletter;
     $newsletter->subject = 'Newsletter for [subscriber:firstname] [date:dordinal]';
     $queue = $this->queue;
@@ -269,7 +269,7 @@ class NewsletterTest extends \MailPoetTest {
       ->contains(date_i18n('jS', $wp->currentTime('timestamp')));
   }
 
-  function testItUsesADefaultSubjectIfRenderedSubjectIsEmptyWhenPreprocessingNewsletter() {
+  public function testItUsesADefaultSubjectIfRenderedSubjectIsEmptyWhenPreprocessingNewsletter() {
     $newsletter = $this->newsletter;
     $newsletter->subject = '  [custom_shortcode:should_render_empty]  ';
     $queue = $this->queue;
@@ -279,7 +279,7 @@ class NewsletterTest extends \MailPoetTest {
       ->equals('No subject');
   }
 
-  function testItUsesRenderedNewsletterBodyAndSubjectFromQueueObjectWhenPreparingNewsletterForSending() {
+  public function testItUsesRenderedNewsletterBodyAndSubjectFromQueueObjectWhenPreparingNewsletterForSending() {
     $queue = $this->queue;
     $queue->newsletter_rendered_body = [
       'html' => 'queue HTML body',
@@ -304,7 +304,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($result['body']['text'])->equals('queue TEXT body');
   }
 
-  function testItRendersShortcodesAndReplacesSubscriberDataInLinks() {
+  public function testItRendersShortcodesAndReplacesSubscriberDataInLinks() {
     $newsletter = $this->newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);
     $result = $this->newsletter_task->prepareNewsletterForSending(
       $newsletter,
@@ -318,7 +318,7 @@ class NewsletterTest extends \MailPoetTest {
       ->contains(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
-  function testItDoesNotReplaceSubscriberDataInLinksWhenTrackingIsNotEnabled() {
+  public function testItDoesNotReplaceSubscriberDataInLinksWhenTrackingIsNotEnabled() {
     $newsletter_task = $this->newsletter_task;
     $newsletter_task->tracking_enabled = false;
     $newsletter = $newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);
@@ -333,7 +333,7 @@ class NewsletterTest extends \MailPoetTest {
       ->notContains(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
-  function testItGetsSegments() {
+  public function testItGetsSegments() {
     for ($i = 1; $i <= 3; $i++) {
       $newsletter_segment = NewsletterSegment::create();
       $newsletter_segment->newsletter_id = $this->newsletter->id;
@@ -345,7 +345,7 @@ class NewsletterTest extends \MailPoetTest {
     );
   }
 
-  function testItLogsErrorWhenQueueWithCannotBeSaved() {
+  public function testItLogsErrorWhenQueueWithCannotBeSaved() {
     $queue = $this->queue;
     $queue->non_existent_column = true; // this will trigger save error
     try {
@@ -358,7 +358,7 @@ class NewsletterTest extends \MailPoetTest {
     }
   }
 
-  function testItLogsErrorWhenExistingRenderedNewsletterBodyIsInvalid() {
+  public function testItLogsErrorWhenExistingRenderedNewsletterBodyIsInvalid() {
     $queue_mock = $this->createMock(SendingTask::class);
     $queue_mock
       ->expects($this->any())
@@ -379,7 +379,7 @@ class NewsletterTest extends \MailPoetTest {
     }
   }
 
-  function testItLogsErrorWhenNewlyRenderedNewsletterBodyIsInvalid() {
+  public function testItLogsErrorWhenNewlyRenderedNewsletterBodyIsInvalid() {
     $queue = $this->queue;
     $queue_mock = $this->createMock(SendingTask::class);
     $queue_mock
@@ -410,7 +410,7 @@ class NewsletterTest extends \MailPoetTest {
     }
   }
 
-  function testItPreProcessesNewsletterWhenNewlyRenderedNewsletterBodyIsValid() {
+  public function testItPreProcessesNewsletterWhenNewlyRenderedNewsletterBodyIsValid() {
     $queue = $this->queue;
     $queue_mock = $this->createMock(SendingTask::class);
     $queue_mock
@@ -444,7 +444,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock))->equals($this->newsletter);
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);

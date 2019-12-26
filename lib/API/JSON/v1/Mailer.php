@@ -30,14 +30,14 @@ class Mailer extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
-  function __construct(AuthorizedEmailsController $authorized_emails_controller, SettingsController $settings, Bridge $bridge, MetaInfo $mailerMetaInfo) {
+  public function __construct(AuthorizedEmailsController $authorized_emails_controller, SettingsController $settings, Bridge $bridge, MetaInfo $mailerMetaInfo) {
     $this->authorized_emails_controller = $authorized_emails_controller;
     $this->settings = $settings;
     $this->bridge = $bridge;
     $this->mailerMetaInfo = $mailerMetaInfo;
   }
 
-  function send($data = []) {
+  public function send($data = []) {
     try {
       $mailer = new \MailPoet\Mailer\Mailer();
       $mailer->init(
@@ -67,7 +67,7 @@ class Mailer extends APIEndpoint {
     }
   }
 
-  function resumeSending() {
+  public function resumeSending() {
     if ($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING)) {
       $this->authorized_emails_controller->checkAuthorizedEmailAddresses();
     }
@@ -75,7 +75,7 @@ class Mailer extends APIEndpoint {
     return $this->successResponse(null);
   }
 
-  function getAuthorizedEmailAddresses() {
+  public function getAuthorizedEmailAddresses() {
     $authorized_emails = $this->bridge->getAuthorizedEmailAddresses();
     return $this->successResponse($authorized_emails);
   }

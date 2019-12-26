@@ -6,7 +6,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Test\DataFactories\Settings;
 
 class SettingsFreeEmailAsFromAddressTriggersAlertCest {
-  function addFreeEmailAsFromAddressWithMSS(\AcceptanceTester $I) {
+  public function addFreeEmailAsFromAddressWithMSS(\AcceptanceTester $I) {
     $I->wantTo('Confirm free emails as FROM address does not trigger alert message when sending with MSS');
     $settings = new Settings();
     $settings->withSendingMethodMailPoet();
@@ -23,7 +23,7 @@ class SettingsFreeEmailAsFromAddressTriggersAlertCest {
     $I->dontSeeElement('.sender_email_address_warning');
   }
 
-  function addFreeEmailAsFromAddressWithoutMSS(\AcceptanceTester $I) {
+  public function addFreeEmailAsFromAddressWithoutMSS(\AcceptanceTester $I) {
     $I->wantTo('Confirm free emails as FROM address trigger alert message when sending without MSS');
     $settings = new Settings();
     $settings->withSendingMethod(Mailer::METHOD_PHPMAIL);

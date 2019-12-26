@@ -45,42 +45,42 @@ class SegmentEntity {
   /**
    * @return string
    */
-  function getName() {
+  public function getName() {
     return $this->name;
   }
 
   /**
    * @param string $name
    */
-  function setName($name) {
+  public function setName($name) {
     $this->name = $name;
   }
 
   /**
    * @return string
    */
-  function getType() {
+  public function getType() {
     return $this->type;
   }
 
   /**
    * @param string $type
    */
-  function setType($type) {
+  public function setType($type) {
     $this->type = $type;
   }
 
   /**
    * @return string
    */
-  function getDescription() {
+  public function getDescription() {
     return $this->description;
   }
 
   /**
    * @param string $description
    */
-  function setDescription($description) {
+  public function setDescription($description) {
     $this->description = $description;
   }
 }

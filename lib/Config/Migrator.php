@@ -17,7 +17,7 @@ class Migrator {
   private $charset_collate;
   private $models;
 
-  function __construct() {
+  public function __construct() {
     $this->prefix = Env::$db_prefix;
     $this->charset_collate = Env::$db_charset_collate;
     $this->models = [
@@ -54,7 +54,7 @@ class Migrator {
     ];
   }
 
-  function up() {
+  public function up() {
     global $wpdb;
 
     $output = [];
@@ -65,7 +65,7 @@ class Migrator {
     return $output;
   }
 
-  function down() {
+  public function down() {
     global $wpdb;
 
     $_this = $this;
@@ -77,7 +77,7 @@ class Migrator {
     array_map($drop_table, $this->models);
   }
 
-  function segments() {
+  public function segments() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
@@ -92,7 +92,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function settings() {
+  public function settings() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(50) NOT NULL,',
@@ -105,7 +105,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function customFields() {
+  public function customFields() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
@@ -119,7 +119,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function scheduledTasks() {
+  public function scheduledTasks() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'type varchar(90) NULL DEFAULT NULL,',
@@ -140,7 +140,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statsNotifications() {
+  public function statsNotifications() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -154,7 +154,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function scheduledTaskSubscribers() {
+  public function scheduledTaskSubscribers() {
     $attributes = [
       'task_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
@@ -169,7 +169,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function sendingQueues() {
+  public function sendingQueues() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'task_id int(11) unsigned NOT NULL,',
@@ -191,7 +191,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function subscribers() {
+  public function subscribers() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'wp_user_id bigint(20) NULL,',
@@ -224,7 +224,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function subscriberSegment() {
+  public function subscriberSegment() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'subscriber_id int(11) unsigned NOT NULL,',
@@ -239,7 +239,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function subscriberCustomField() {
+  public function subscriberCustomField() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'subscriber_id int(11) unsigned NOT NULL,',
@@ -253,7 +253,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function subscriberIps() {
+  public function subscriberIps() {
     $attributes = [
       'ip varchar(45) NOT NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
@@ -263,7 +263,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletters() {
+  public function newsletters() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'hash varchar(150) NULL DEFAULT NULL,',
@@ -290,7 +290,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletterTemplates() {
+  public function newsletterTemplates() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) NULL DEFAULT 0,',
@@ -307,7 +307,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletterOptionFields() {
+  public function newsletterOptionFields() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
@@ -320,7 +320,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletterOption() {
+  public function newsletterOption() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -334,7 +334,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletterSegment() {
+  public function newsletterSegment() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -347,7 +347,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletterLinks() {
+  public function newsletterLinks() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -364,7 +364,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletterPosts() {
+  public function newsletterPosts() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -377,7 +377,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function forms() {
+  public function forms() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,', // should be null but db_delta can't handle this change
@@ -392,7 +392,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statisticsNewsletters() {
+  public function statisticsNewsletters() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -406,7 +406,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statisticsClicks() {
+  public function statisticsClicks() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -424,7 +424,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statisticsOpens() {
+  public function statisticsOpens() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -441,7 +441,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statisticsUnsubscribes() {
+  public function statisticsUnsubscribes() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -456,7 +456,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statisticsForms() {
+  public function statisticsForms() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'form_id int(11) unsigned NOT NULL,',
@@ -468,7 +468,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statisticsWoocommercePurchases() {
+  public function statisticsWoocommercePurchases() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'newsletter_id int(11) unsigned NOT NULL,',
@@ -489,7 +489,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function mappingToExternalEntities() {
+  public function mappingToExternalEntities() {
     $attributes = [
       'old_id int(11) unsigned NOT NULL,',
       'type varchar(50) NOT NULL,',
@@ -501,7 +501,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function log() {
+  public function log() {
     $attributes = [
       'id bigint(20) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(255),',
@@ -513,7 +513,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function userFlags() {
+  public function userFlags() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'user_id bigint(20) NOT NULL,',
@@ -527,7 +527,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function featureFlags() {
+  public function featureFlags() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(100) NOT NULL,',
@@ -540,7 +540,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function dynamicSegmentFilters() {
+  public function dynamicSegmentFilters() {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'segment_id int(11) unsigned NOT NULL,',

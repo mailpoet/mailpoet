@@ -3,7 +3,7 @@
 namespace MailPoet\Services;
 
 class SPFCheckTest extends \MailPoetUnitTest {
-  function testItChecksSPFRecord() {
+  public function testItChecksSPFRecord() {
     $domain = 'example.com';
     // Failed to get DNS records
     $response = false;

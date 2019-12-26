@@ -32,14 +32,14 @@ class Mailer {
   const METHOD_PHPMAIL = 'PHPMail';
   const METHOD_SMTP = 'SMTP';
 
-  function __construct(SettingsController $settings = null) {
+  public function __construct(SettingsController $settings = null) {
     if (!$settings) {
       $settings = SettingsController::getInstance();
     }
     $this->settings = $settings;
   }
 
-  function init($mailer = false, $sender = false, $reply_to = false, $return_path = false) {
+  public function init($mailer = false, $sender = false, $reply_to = false, $return_path = false) {
     $this->mailer_config = $this->getMailerConfig($mailer);
     $this->sender = $this->getSenderNameAndAddress($sender);
     $this->reply_to = $this->getReplyToNameAndAddress($reply_to);
@@ -47,7 +47,7 @@ class Mailer {
     $this->mailer_instance = $this->buildMailer();
   }
 
-  function send($newsletter, $subscriber, $extra_params = []) {
+  public function send($newsletter, $subscriber, $extra_params = []) {
     if (!$this->mailer_instance) {
       $this->init();
     }
@@ -134,7 +134,7 @@ class Mailer {
     ];
   }
 
-  function getReplyToNameAndAddress($reply_to = []) {
+  public function getReplyToNameAndAddress($reply_to = []) {
     if (!$reply_to) {
       $reply_to = $this->settings->get('reply_to');
       $reply_to['name'] = (!empty($reply_to['name'])) ?
@@ -155,7 +155,7 @@ class Mailer {
     ];
   }
 
-  function getReturnPathAddress($return_path) {
+  public function getReturnPathAddress($return_path) {
     return ($return_path) ?
       $return_path :
       $this->settings->get('bounce.address');
@@ -164,7 +164,7 @@ class Mailer {
   /**
    * @param  \MailPoet\Models\Subscriber|array $subscriber
    */
-  function formatSubscriberNameAndEmailAddress($subscriber) {
+  public function formatSubscriberNameAndEmailAddress($subscriber) {
     $subscriber = (is_object($subscriber)) ? $subscriber->asArray() : $subscriber;
     if (!is_array($subscriber)) return $subscriber;
     if (isset($subscriber['address'])) $subscriber['email'] = $subscriber['address'];
@@ -183,20 +183,20 @@ class Mailer {
     return $subscriber;
   }
 
-  function encodeAddressNamePart($name) {
+  public function encodeAddressNamePart($name) {
     if (mb_detect_encoding($name) === 'ASCII') return $name;
     // encode non-ASCII string as per RFC 2047 (https://www.ietf.org/rfc/rfc2047.txt)
     return sprintf('=?utf-8?B?%s?=', base64_encode($name));
   }
 
-  static function formatMailerErrorResult(MailerError $error) {
+  public static function formatMailerErrorResult(MailerError $error) {
     return [
       'response' => false,
       'error' => $error,
     ];
   }
 
-  static function formatMailerSendSuccessResult() {
+  public static function formatMailerSendSuccessResult() {
     return [
       'response' => true,
     ];

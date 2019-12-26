@@ -19,13 +19,13 @@ class NewsletterStatisticsCest {
     $this->settings = $settings;
   }
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->settings->withWooCommerceListImportPageDisplayed(true);
     $this->settings->withCookieRevenueTrackingDisabled();
   }
 
-  function showWooCommercePurchaseStatistics(\AcceptanceTester $I) {
+  public function showWooCommercePurchaseStatistics(\AcceptanceTester $I) {
     $title = 'Newsletter Title';
     $currency = 'EUR';
     $I->cli(['option', 'set', 'woocommerce_currency', $currency]);
@@ -53,7 +53,7 @@ class NewsletterStatisticsCest {
     $I->see('5,00€', '.mailpoet_stats_text a');
   }
 
-  function dontShowWooCommercePurchaseStatisticsWithZeroValue(\AcceptanceTester $I) {
+  public function dontShowWooCommercePurchaseStatisticsWithZeroValue(\AcceptanceTester $I) {
     $title = 'Newsletter Title';
     $currency = 'EUR';
     $I->cli(['option', 'set', 'woocommerce_currency', $currency]);

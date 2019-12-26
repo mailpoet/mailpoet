@@ -21,7 +21,7 @@ class Subscription {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(
+  public function __construct(
     SettingsController $settings,
     WPFunctions $wp
   ) {
@@ -29,7 +29,7 @@ class Subscription {
     $this->wp = $wp;
   }
 
-  function extendWooCommerceCheckoutForm() {
+  public function extendWooCommerceCheckoutForm() {
     $input_name = self::CHECKOUT_OPTIN_INPUT_NAME;
     $checked = $this->isCurrentUserSubscribed();
     if (!empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
@@ -67,7 +67,7 @@ class Subscription {
       && $subscriber_segment->status === Subscriber::STATUS_SUBSCRIBED;
   }
 
-  function subscribeOnCheckout($order_id, $data) {
+  public function subscribeOnCheckout($order_id, $data) {
     if (empty($data['billing_email'])) {
       // no email in posted order data
       return null;

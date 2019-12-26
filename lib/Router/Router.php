@@ -20,7 +20,7 @@ class Router {
   const RESPONSE_ERROR = 404;
   const RESPONE_FORBIDDEN = 403;
 
-  function __construct(AccessControl $access_control, ContainerInterface $container, $api_data = false) {
+  public function __construct(AccessControl $access_control, ContainerInterface $container, $api_data = false) {
     $api_data = ($api_data) ? $api_data : $_GET;
     $this->api_request = is_array($api_data) && array_key_exists(self::NAME, $api_data);
     $this->endpoint = isset($api_data['endpoint']) ?
@@ -36,7 +36,7 @@ class Router {
     $this->container = $container;
   }
 
-  function init() {
+  public function init() {
     if (!$this->api_request) return;
     $endpoint_class = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
 
@@ -62,7 +62,7 @@ class Router {
     }
   }
 
-  static function decodeRequestData($data) {
+  public static function decodeRequestData($data) {
     $data = json_decode(base64_decode($data), true);
     if (!is_array($data)) {
       $data = [];
@@ -70,11 +70,11 @@ class Router {
     return $data;
   }
 
-  static function encodeRequestData($data) {
+  public static function encodeRequestData($data) {
     return rtrim(base64_encode(json_encode($data)), '=');
   }
 
-  static function buildRequest($endpoint, $action, $data = false) {
+  public static function buildRequest($endpoint, $action, $data = false) {
     $params = [
       self::NAME => '',
       'endpoint' => $endpoint,
@@ -86,12 +86,12 @@ class Router {
     return WPFunctions::get()->addQueryArg($params, WPFunctions::get()->homeUrl());
   }
 
-  function terminateRequest($code, $message) {
+  public function terminateRequest($code, $message) {
     WPFunctions::get()->statusHeader($code, $message);
     exit;
   }
 
-  function validatePermissions($endpoint_action, $permissions) {
+  public function validatePermissions($endpoint_action, $permissions) {
     // validate action permission if defined, otherwise validate global permission
     return(!empty($permissions['actions'][$endpoint_action])) ?
       $this->access_control->validatePermission($permissions['actions'][$endpoint_action]) :

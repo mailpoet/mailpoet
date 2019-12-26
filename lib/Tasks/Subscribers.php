@@ -12,15 +12,15 @@ class Subscribers {
     $this->task = $task;
   }
 
-  function setSubscribers(array $subscriber_ids) {
+  public function setSubscribers(array $subscriber_ids) {
     ScheduledTaskSubscriber::setSubscribers($this->task->id, $subscriber_ids);
   }
 
-  function getSubscribers() {
+  public function getSubscribers() {
     return ScheduledTaskSubscriber::where('task_id', $this->task->id);
   }
 
-  function isSubscriberProcessed($subscriber_id) {
+  public function isSubscriberProcessed($subscriber_id) {
     $subscriber = $this->getSubscribers()
       ->where('subscriber_id', $subscriber_id)
       ->where('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
@@ -28,20 +28,20 @@ class Subscribers {
     return !empty($subscriber);
   }
 
-  function removeSubscribers(array $subscribers_to_remove) {
+  public function removeSubscribers(array $subscribers_to_remove) {
     $this->getSubscribers()
       ->whereIn('subscriber_id', $subscribers_to_remove)
       ->deleteMany();
     $this->checkCompleted();
   }
 
-  function removeAllSubscribers() {
+  public function removeAllSubscribers() {
     $this->getSubscribers()
       ->deleteMany();
     $this->checkCompleted();
   }
 
-  function updateProcessedSubscribers(array $processed_subscribers) {
+  public function updateProcessedSubscribers(array $processed_subscribers) {
     if (!empty($processed_subscribers)) {
       $this->getSubscribers()
         ->whereIn('subscriber_id', $processed_subscribers)
@@ -52,7 +52,7 @@ class Subscribers {
     $this->checkCompleted();
   }
 
-  function saveSubscriberError($subcriber_id, $error_message) {
+  public function saveSubscriberError($subcriber_id, $error_message) {
     $this->getSubscribers()
       ->where('subscriber_id', $subcriber_id)
       ->findResultSet()

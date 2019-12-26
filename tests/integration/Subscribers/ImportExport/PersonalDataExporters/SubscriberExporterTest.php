@@ -10,12 +10,12 @@ class SubscriberExporterTest extends \MailPoetTest {
   /** @var SubscriberExporter */
   private $exporter;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->exporter = new SubscriberExporter();
   }
 
-  function testExportWorksWhenSubscriberNotFound() {
+  public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->exporter->export('email.that@doesnt.exists');
     expect($result)->internalType('array');
     expect($result)->hasKey('data');
@@ -24,7 +24,7 @@ class SubscriberExporterTest extends \MailPoetTest {
     expect($result['done'])->equals(true);
   }
 
-  function testExportSubscriberWithoutCustomFields() {
+  public function testExportSubscriberWithoutCustomFields() {
     Subscriber::createOrUpdate([
       'email' => 'email.that@has.no.custom.fields',
       'first_name' => 'John',
@@ -54,7 +54,7 @@ class SubscriberExporterTest extends \MailPoetTest {
     expect($result['data'][0]['data'])->equals($expected);
   }
 
-  function testExportSubscriberWithSource() {
+  public function testExportSubscriberWithSource() {
     Subscriber::createOrUpdate([
       'email' => 'email.with@source.com',
       'first_name' => 'John',
@@ -70,7 +70,7 @@ class SubscriberExporterTest extends \MailPoetTest {
     ]);
   }
 
-  function testExportSubscriberWithIPs() {
+  public function testExportSubscriberWithIPs() {
     Subscriber::createOrUpdate([
       'email' => 'email.that@has.ip.addresses',
       'first_name' => 'John',
@@ -86,7 +86,7 @@ class SubscriberExporterTest extends \MailPoetTest {
   }
 
 
-  function testExportSubscriberWithCustomField() {
+  public function testExportSubscriberWithCustomField() {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'email.that@has.custom.fields',
     ]);

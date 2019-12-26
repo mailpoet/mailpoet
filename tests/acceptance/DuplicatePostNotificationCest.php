@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class DuplicatePostNotificationCest {
 
-  function duplicatePostNotification(\AcceptanceTester $I) {
+  public function duplicatePostNotification(\AcceptanceTester $I) {
     $I->wantTo('Duplicate post notification email');
 
     // step 1 - Prepare post notification email

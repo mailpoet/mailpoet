@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class AdvancedSettingsCest {
-  function toggleAnonymousDataSetting(\AcceptanceTester $I) {
+  public function toggleAnonymousDataSetting(\AcceptanceTester $I) {
     $I->wantTo('Confirm anonymous data settings can be toggled on Advanced Settings Page');
     $noAnonymousData = '[data-automation-id="analytics-no"]';
     $yesAnonymousData = '[data-automation-id="analytics-yes"]';
@@ -25,7 +25,7 @@ class AdvancedSettingsCest {
     $I->seeOptionIsSelected($yesAnonymousData, 'Yes');
   }
 
-  function addBounceEmailAddress(\AcceptanceTester $I) {
+  public function addBounceEmailAddress(\AcceptanceTester $I) {
     $I->wantTo('Add a bounce email address on Advanced Settings page');
     $bounceAddressField = '[data-automation-id="bounce-address-field"]';
     $bounceAddressText = 'bounce@bounce.bounce';
@@ -47,7 +47,7 @@ class AdvancedSettingsCest {
     $I->waitForText($bounceAddressText);
   }
 
-  function toggleTaskScheduler(\AcceptanceTester $I) {
+  public function toggleTaskScheduler(\AcceptanceTester $I) {
     $I->wantTo('Toggle the newsletter task schedule between cron options');
     $chooseWordPressCron = '[data-automation-id="wordress_cron_radio"]';
     $chooseMailPoetCron = '[data-automation-id="mailpoet_cron_radio"]';
@@ -103,7 +103,7 @@ class AdvancedSettingsCest {
     $I->waitForText($systemInfoWordPressCron);
   }
 
-  function toggleLogging(\AcceptanceTester $I) {
+  public function toggleLogging(\AcceptanceTester $I) {
     $I->wantTo('Toggle logging options and confirm output');
     $loggingSelectBox = '[data-automation-id="logging-select-box"]';
     $chooseLogEverything = '[data-automation-id="log-everything"]';
@@ -140,7 +140,7 @@ class AdvancedSettingsCest {
     $I->waitForElement($chooseLogErrors);
   }
 
-  function checkInactiveSubscribers(\AcceptanceTester $I) {
+  public function checkInactiveSubscribers(\AcceptanceTester $I) {
     $I->wantTo('Check that inactive subsribers has default value');
     $inactiveSubscribersDefault = '[data-automation-id="inactive-subscribers-default"]';
     $I->login();

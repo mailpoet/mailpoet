@@ -20,7 +20,7 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->newsletter = Newsletter::createOrUpdate([
       'subject' => 'My Standard Newsletter',
@@ -49,43 +49,43 @@ class NewsletterTest extends \MailPoetTest {
     $this->sending_queue->save();
   }
 
-  function testItCanBeCreated() {
+  public function testItCanBeCreated() {
     expect($this->newsletter->id() > 0)->true();
     expect($this->newsletter->getErrors())->false();
   }
 
-  function testItHasASubject() {
+  public function testItHasASubject() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     expect($newsletter->subject)->equals($this->newsletter->subject);
   }
 
-  function testItHasAType() {
+  public function testItHasAType() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     expect($newsletter->type)->equals($this->newsletter->type);
   }
 
-  function testItHasABody() {
+  public function testItHasABody() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     expect($newsletter->body)->equals($this->newsletter->body);
   }
 
-  function testItHasPreheader() {
+  public function testItHasPreheader() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     expect($newsletter->preheader)->equals($this->newsletter->preheader);
   }
 
-  function testItHasACreatedAtOnCreation() {
+  public function testItHasACreatedAtOnCreation() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     expect($newsletter->created_at)->notNull();
   }
 
-  function testItHasAnUpdatedAtOnCreation() {
+  public function testItHasAnUpdatedAtOnCreation() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     expect($newsletter->updated_at)
       ->equals($newsletter->created_at);
   }
 
-  function testItUpdatesTheUpdatedAtOnUpdate() {
+  public function testItUpdatesTheUpdatedAtOnUpdate() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     $created_at = $newsletter->created_at;
 
@@ -102,13 +102,13 @@ class NewsletterTest extends \MailPoetTest {
     expect($is_time_updated)->true();
   }
 
-  function testItCanBeQueued() {
+  public function testItCanBeQueued() {
     $queue = $this->newsletter->getQueue();
     expect($queue->id > 0)->true();
     expect($queue->newsletter_id)->equals($this->newsletter->id);
   }
 
-  function testItCanHaveSegments() {
+  public function testItCanHaveSegments() {
     $newsletter_segments = $this->newsletter->segments()->findArray();
     expect($newsletter_segments)->count(2);
     expect($newsletter_segments[0]['id'])->equals($this->segment_1->id);
@@ -117,7 +117,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter_segments[1]['name'])->equals('Segment 2');
   }
 
-  function testItCanHaveParentNewsletter() {
+  public function testItCanHaveParentNewsletter() {
     $parent_newsletter = Newsletter::create();
     $parent_newsletter->type = Newsletter::TYPE_NOTIFICATION;
     $parent_newsletter->save();
@@ -130,7 +130,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($parent->id)->equals($parent_newsletter->id);
   }
 
-  function testItCanHaveDeletedSegments() {
+  public function testItCanHaveDeletedSegments() {
     $this->segment_2->delete();
     $this->newsletter->withSegments(true);
     $newsletter_segments = $this->newsletter->segments;
@@ -141,7 +141,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter_segments[1]['name'])->contains('Deleted');
   }
 
-  function testItCanHaveStatistics() {
+  public function testItCanHaveStatistics() {
     $newsletter = $this->newsletter;
     $sending_queue = $this->sending_queue;
 
@@ -178,7 +178,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($statistics['unsubscribed'])->equals(1);
   }
 
-  function testItCanCreateOrUpdate() {
+  public function testItCanCreateOrUpdate() {
     $is_created = Newsletter::createOrUpdate(
       [
         'subject' => 'new newsletter',
@@ -201,13 +201,13 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter->subject)->equals('updated newsletter');
   }
 
-  function testItCannotSetAnEmptyDeletedAt() {
+  public function testItCannotSetAnEmptyDeletedAt() {
     $this->newsletter->deleted_at = '';
     $newsletter = $this->newsletter->save();
     expect($newsletter->deleted_at)->equals('NULL');
   }
 
-  function testItCanBeFilteredBySegment() {
+  public function testItCanBeFilteredBySegment() {
     // no filter
     $newsletters = Newsletter::filter('filterBy')->findArray();
     expect($newsletters)->count(1);
@@ -233,7 +233,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletters)->isEmpty();
   }
 
-  function testItCanBeGrouped() {
+  public function testItCanBeGrouped() {
     $newsletters = Newsletter::filter('groupBy', [
       'group' => 'all',
     ])->findArray();
@@ -262,7 +262,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletters)->count(1);
   }
 
-  function testItHasSearchFilter() {
+  public function testItHasSearchFilter() {
     Newsletter::createOrUpdate(
       [
         'subject' => 'search for "pineapple"',
@@ -274,7 +274,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter->subject)->contains('pineapple');
   }
 
-  function testItCanHaveOptions() {
+  public function testItCanHaveOptions() {
     $newsletter_options = [
       'name' => 'Event',
       'newsletter_type' => Newsletter::TYPE_WELCOME,
@@ -292,7 +292,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter->Event)->equals($association->value);
   }
 
-  function testItGetsArchiveNewslettersForSegments() {
+  public function testItGetsArchiveNewslettersForSegments() {
     // clear the DB
     $this->_after();
 
@@ -330,7 +330,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($results[0]->type)->equals(Newsletter::TYPE_NOTIFICATION_HISTORY);
   }
 
-  function testItGetsAllArchiveNewsletters() {
+  public function testItGetsAllArchiveNewsletters() {
     // clear the DB
     $this->_after();
 
@@ -379,23 +379,23 @@ class NewsletterTest extends \MailPoetTest {
     expect($results[1]->type)->equals(Newsletter::TYPE_NOTIFICATION_HISTORY);
   }
 
-  function testItGeneratesHashOnNewsletterSave() {
+  public function testItGeneratesHashOnNewsletterSave() {
     expect(strlen($this->newsletter->hash))
       ->equals(Security::HASH_LENGTH);
   }
 
-  function testItRegeneratesHashOnNotificationHistoryCreation() {
+  public function testItRegeneratesHashOnNotificationHistoryCreation() {
     $notification_history = $this->newsletter->createNotificationHistory();
     expect($notification_history->hash)->notEquals($this->newsletter->hash);
     expect(strlen($notification_history->hash))
       ->equals(Security::HASH_LENGTH);
   }
 
-  function testItGetsQueueFromNewsletter() {
+  public function testItGetsQueueFromNewsletter() {
     expect($this->newsletter->queue()->findOne()->id)->equals($this->sending_queue->id);
   }
 
-  function testItCanBeRestored() {
+  public function testItCanBeRestored() {
     $this->newsletter->status = Newsletter::STATUS_SENT;
     $this->newsletter->trash();
     expect($this->newsletter->deleted_at)->notNull();
@@ -411,7 +411,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($this->newsletter->status)->equals(Newsletter::STATUS_DRAFT);
   }
 
-  function testItCanBulkRestoreNewsletters() {
+  public function testItCanBulkRestoreNewsletters() {
     $statuses = [
       Newsletter::STATUS_DRAFT,
       Newsletter::STATUS_SENT,
@@ -439,7 +439,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(Newsletter::where('status', Newsletter::STATUS_SENDING)->findArray())->count(0);
   }
 
-  function testItDeletesSegmentAndQueueAssociationsWhenNewsletterIsDeleted() {
+  public function testItDeletesSegmentAndQueueAssociationsWhenNewsletterIsDeleted() {
     $newsletter = $this->newsletter;
 
     // create multiple sending queues
@@ -461,7 +461,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter_segments)->isEmpty();
   }
 
-  function testItDeletesChildrenSegmentAndQueueAssociationsWhenParentNewsletterIsDeleted() {
+  public function testItDeletesChildrenSegmentAndQueueAssociationsWhenParentNewsletterIsDeleted() {
     $parent_newsletter = $this->newsletter;
     // create multiple children (post notification history) newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
@@ -494,7 +494,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(NewsletterSegment::findArray())->count(0);
   }
 
-  function testItTrashesQueueAssociationsWhenNewsletterIsTrashed() {
+  public function testItTrashesQueueAssociationsWhenNewsletterIsTrashed() {
     // create multiple sending queues
     $newsletter = $this->newsletter;
     for ($i = 1; $i <= 5; $i++) {
@@ -510,7 +510,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
   }
 
-  function testItTrashesChildrenQueueAssociationsWhenParentNewsletterIsTrashed() {
+  public function testItTrashesChildrenQueueAssociationsWhenParentNewsletterIsTrashed() {
     $parent_newsletter = $this->newsletter;
     // create multiple children (post notification history) newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
@@ -536,7 +536,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
   }
 
-  function testItRestoresTrashedQueueAssociationsWhenNewsletterIsRestored() {
+  public function testItRestoresTrashedQueueAssociationsWhenNewsletterIsRestored() {
     // create multiple sending queues
     $newsletter = $this->newsletter;
     for ($i = 1; $i <= 5; $i++) {
@@ -553,7 +553,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
   }
 
-  function testItRestoresTrashedChildrenQueueAssociationsWhenParentNewsletterIsRestored() {
+  public function testItRestoresTrashedChildrenQueueAssociationsWhenParentNewsletterIsRestored() {
     // delete parent newsletter and sending queue
     $parent_newsletter = $this->newsletter;
     $parent_newsletter->deleted_at = date('Y-m-d H:i:s');
@@ -588,7 +588,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
   }
 
-  function testItTrashesAllQueueAssociationsWhenNewslettersAreBulkTrashed() {
+  public function testItTrashesAllQueueAssociationsWhenNewslettersAreBulkTrashed() {
     // create multiple newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
@@ -611,7 +611,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
   }
 
-  function testItTrashesAllChildrenQueueAssociationsWhenParentNewslettersAreBulkTrashed() {
+  public function testItTrashesAllChildrenQueueAssociationsWhenParentNewslettersAreBulkTrashed() {
     // create multiple children (post notification history) newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
@@ -635,7 +635,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
   }
 
-  function testItBulkRestoresTrashedQueueAssociationsWhenNewslettersAreBulkRestored() {
+  public function testItBulkRestoresTrashedQueueAssociationsWhenNewslettersAreBulkRestored() {
     // create multiple newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
@@ -660,7 +660,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
   }
 
-  function testItBulkRestoresTrashedChildrenQueueAssociationsWhenParentNewslettersAreBulkRestored() {
+  public function testItBulkRestoresTrashedChildrenQueueAssociationsWhenParentNewslettersAreBulkRestored() {
     // create multiple children (post notification history) newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
@@ -686,7 +686,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
   }
 
-  function testItBulkDeletesSegmentAndQueueAssociationsWhenNewslettersAreBulkDeleted() {
+  public function testItBulkDeletesSegmentAndQueueAssociationsWhenNewslettersAreBulkDeleted() {
     // create multiple newsletters, sending queues and newsletter segments
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
@@ -716,7 +716,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(NewsletterSegment::findArray())->count(0);
   }
 
-  function testItBulkDeletesChildrenSegmentAndQueueAssociationsWhenParentNewslettersAreBulkDeleted() {
+  public function testItBulkDeletesChildrenSegmentAndQueueAssociationsWhenParentNewslettersAreBulkDeleted() {
     $this->_after();
     // create multiple children (post notification history) newsletters, sending queues and newsletter segments
     for ($i = 1; $i <= 5; $i++) {
@@ -747,7 +747,7 @@ class NewsletterTest extends \MailPoetTest {
     expect(NewsletterSegment::findArray())->count(0);
   }
 
-  function testItDuplicatesNewsletter() {
+  public function testItDuplicatesNewsletter() {
     $original_newsletter = $this->newsletter;
     $original_newsletter->status = Newsletter::STATUS_SENT;
     $original_newsletter->sent_at = $original_newsletter->deleted_at = $original_newsletter->created_at = $original_newsletter->updated_at = date( '2000-m-d H:i:s');
@@ -771,7 +771,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($duplicate_newsletter->subject)->equals($data['subject']);
   }
 
-  function testItCanQueryAutomaticEmailsByGroup() {
+  public function testItCanQueryAutomaticEmailsByGroup() {
     $newsletter_1 = Newsletter::createOrUpdate(
       [
         'subject' => 'WooCommerce',
@@ -844,7 +844,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($result[1]->id)->equals($newsletter_2->id);
   }
 
-  function testItGetsAndDecodesNewsletterOptionMetaField() {
+  public function testItGetsAndDecodesNewsletterOptionMetaField() {
     $newsletter = Newsletter::createOrUpdate(
       [
         'subject' => 'Test Option Meta Field',
@@ -879,7 +879,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter->getMeta())->equals($meta);
   }
 
-  function testPausesTaskWhenNewsletterWithActivationIsDisabled() {
+  public function testPausesTaskWhenNewsletterWithActivationIsDisabled() {
     $newsletters_with_activation = [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_WELCOME, Newsletter::TYPE_AUTOMATIC];
     foreach ($newsletters_with_activation as $type) {
       $newsletter = Newsletter::createOrUpdate([
@@ -896,7 +896,7 @@ class NewsletterTest extends \MailPoetTest {
     }
   }
 
-  function testUnpausesTaskWhenNewsletterWithActivationIsEnabled() {
+  public function testUnpausesTaskWhenNewsletterWithActivationIsEnabled() {
     $newsletters_with_activation = [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_WELCOME, Newsletter::TYPE_AUTOMATIC];
     foreach ($newsletters_with_activation as $type) {
       $newsletter = Newsletter::createOrUpdate([
@@ -917,7 +917,7 @@ class NewsletterTest extends \MailPoetTest {
     }
   }
 
-  function testBlocksActivationOfEmptyNewsletter() {
+  public function testBlocksActivationOfEmptyNewsletter() {
     $newsletter = Newsletter::createOrUpdate([
       'type' => Newsletter::TYPE_NOTIFICATION,
       'body' => '[]',
@@ -928,7 +928,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletter->getErrors())->notEmpty();
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);

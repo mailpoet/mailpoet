@@ -14,7 +14,7 @@ class ReceiveStandardEmailCest {
     $this->settings = $settings;
   }
 
-  function receiveStandardEmail(\AcceptanceTester $I) {
+  public function receiveStandardEmail(\AcceptanceTester $I) {
     $this->settings->withCronTriggerMethod('WordPress');
 
     // try some special characters in the subject to ensure they are received correctly

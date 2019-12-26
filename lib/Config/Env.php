@@ -36,7 +36,7 @@ class Env {
   static $db_charset_collate;
   static $db_timezone_offset;
 
-  static function init($file, $version, $db_host, $db_user, $db_password, $db_name) {
+  public static function init($file, $version, $db_host, $db_user, $db_password, $db_name) {
     self::$version = $version;
     self::$file = $file;
     self::$path = dirname(self::$file);
@@ -82,7 +82,7 @@ class Env {
     self::$db_timezone_offset = self::getDbTimezoneOffset();
   }
 
-  static function getDbTimezoneOffset($offset = false) {
+  public static function getDbTimezoneOffset($offset = false) {
     $offset = ($offset) ? $offset : WPFunctions::get()->getOption('gmt_offset');
     $mins = $offset * 60;
     $sgn = ($mins < 0 ? -1 : 1);

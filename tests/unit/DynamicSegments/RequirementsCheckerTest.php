@@ -15,7 +15,7 @@ class RequirementsCheckerTest extends \MailPoetUnitTest {
   /** @var RequirementsChecker */
   private $requirements_checker;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     if (!defined('MP_SEGMENTS_TABLE')) define('MP_SEGMENTS_TABLE', '');
     $this->woocommerce_helper = $this
@@ -25,21 +25,21 @@ class RequirementsCheckerTest extends \MailPoetUnitTest {
     $this->requirements_checker = new RequirementsChecker($this->woocommerce_helper);
   }
 
-  function testShouldntBlockSegmentIfWooCommerceIsActive() {
+  public function testShouldntBlockSegmentIfWooCommerceIsActive() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(true);
     $segment = DynamicSegment::create();
     $segment->setFilters([new WooCommerceCategory(1)]);
     expect($this->requirements_checker->shouldSkipSegment($segment))->false();
   }
 
-  function testShouldBlockWooCommerceSegmentIfWooCommerceIsInactive() {
+  public function testShouldBlockWooCommerceSegmentIfWooCommerceIsInactive() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(false);
     $segment = DynamicSegment::create();
     $segment->setFilters([new WooCommerceCategory(1)]);
     expect($this->requirements_checker->shouldSkipSegment($segment))->true();
   }
 
-  function testShouldntBlockNonWooCommerceSegmentIfWooCommerceIsInactive() {
+  public function testShouldntBlockNonWooCommerceSegmentIfWooCommerceIsInactive() {
     $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(false);
     $segment = DynamicSegment::create();
     $segment->setFilters([new EmailAction(EmailAction::ACTION_OPENED, 2)]);

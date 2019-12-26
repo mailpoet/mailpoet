@@ -131,7 +131,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
   protected $_errors;
   protected $_new_record;
 
-  function __construct() {
+  public function __construct() {
     $this->_errors = [];
     $validator = new ModelValidator();
     parent::__construct($validator);
@@ -140,7 +140,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
   /**
    * @return static
    */
-  static function create() {
+  public static function create() {
     $created = parent::create();
     if (is_bool($created)) {
       throw new \Exception('ORM is not initialised');
@@ -194,7 +194,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return self::_createOrUpdate($data);
   }
 
-  function getErrors() {
+  public function getErrors() {
     if (empty($this->_errors)) {
       return false;
     } else {
@@ -202,7 +202,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     }
   }
 
-  function setError($error = '', $error_code = null) {
+  public function setError($error = '', $error_code = null) {
     if (!$error_code) {
       $error_code = count($this->_errors);
     }
@@ -216,7 +216,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     }
   }
 
-  function save() {
+  public function save() {
     $this->setTimestamp();
     $this->_new_record = $this->isNew();
     try {
@@ -247,17 +247,17 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return $this;
   }
 
-  function isNew() {
+  public function isNew() {
     return (isset($this->_new_record)) ?
       $this->_new_record :
       parent::isNew();
   }
 
-  function trash() {
+  public function trash() {
     return $this->set_expr('deleted_at', 'NOW()')->save();
   }
 
-  static function bulkTrash($orm) {
+  public static function bulkTrash($orm) {
     $model = get_called_class();
     $count = self::bulkAction($orm, function($ids) use ($model) {
       $model::rawExecute(join(' ', [
@@ -270,7 +270,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return ['count' => $count];
   }
 
-  static function bulkDelete($orm) {
+  public static function bulkDelete($orm) {
     $model = get_called_class();
     $count = self::bulkAction($orm, function($ids) use ($model) {
       $model::whereIn('id', $ids)->deleteMany();
@@ -279,11 +279,11 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return ['count' => $count];
   }
 
-  function restore() {
+  public function restore() {
     return $this->set_expr('deleted_at', 'NULL')->save();
   }
 
-  static function bulkRestore($orm) {
+  public static function bulkRestore($orm) {
     $model = get_called_class();
     $count = self::bulkAction($orm, function($ids) use ($model) {
       $model::rawExecute(join(' ', [
@@ -296,7 +296,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return ['count' => $count];
   }
 
-  static function bulkAction($orm, $callback = false) {
+  public static function bulkAction($orm, $callback = false) {
     $total = $orm->count();
 
     if ($total === 0) return false;
@@ -319,7 +319,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
       ->rowCount();
   }
 
-  function duplicate($data = []) {
+  public function duplicate($data = []) {
     $model = get_called_class();
     $model_data = array_merge($this->asArray(), $data);
     unset($model_data['id']);
@@ -336,17 +336,17 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return $duplicate;
   }
 
-  function setTimestamp() {
+  public function setTimestamp() {
     if ($this->created_at === null) {
       $this->set_expr('created_at', 'NOW()');
     }
   }
 
-  static function getPublished() {
+  public static function getPublished() {
     return static::whereNull('deleted_at');
   }
 
-  static function getTrashed() {
+  public static function getTrashed() {
     return static::whereNotNull('deleted_at');
   }
 

@@ -15,7 +15,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class ConfirmationEmailMailerTest extends \MailPoetTest {
 
-  function testItSendsConfirmationEmail() {
+  public function testItSendsConfirmationEmail() {
     $subcription_url_facrory_mock = $this->createMock(SubscriptionUrlFactory::class);
     $subcription_url_facrory_mock->method('getConfirmationUrl')->willReturn('http://example.com');
 
@@ -62,7 +62,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $sender->sendConfirmationEmail($subscriber);
   }
 
-  function testItSetsErrorsWhenConfirmationEmailCannotBeSent() {
+  public function testItSetsErrorsWhenConfirmationEmailCannotBeSent() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'first_name' => 'John',
@@ -89,7 +89,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     expect($subscriber->getErrors()[0])->equals('Something went wrong with your subscription. Please contact the website owner.');
   }
 
-  function testItDoesntSendWhenMSSIsActiveAndConfirmationEmailIsNotAuthorized() {
+  public function testItDoesntSendWhenMSSIsActiveAndConfirmationEmailIsNotAuthorized() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'first_name' => 'John',
@@ -116,7 +116,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
   }
 
-  function testItLimitsNumberOfConfirmationEmailsForNotLoggedInUser() {
+  public function testItLimitsNumberOfConfirmationEmailsForNotLoggedInUser() {
     wp_set_current_user(0);
     expect((new WPFunctions)->isUserLoggedIn())->false();
     $subscriber = Subscriber::create();
@@ -144,7 +144,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     expect($sender->sendConfirmationEmail($subscriber))->equals(false);
   }
 
-  function testItDoesNotLimitNumberOfConfirmationEmailsForLoggedInUser() {
+  public function testItDoesNotLimitNumberOfConfirmationEmailsForLoggedInUser() {
     wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
@@ -172,7 +172,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     expect($sender->sendConfirmationEmail($subscriber))->equals(true);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);

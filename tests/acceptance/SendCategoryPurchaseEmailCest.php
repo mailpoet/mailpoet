@@ -10,7 +10,7 @@ use MailPoet\Util\Security;
 
 class SendCategoryPurchaseEmailCest {
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $settings_factory = new Settings();
     $settings_factory->withWooCommerceListImportPageDisplayed(true);
@@ -18,7 +18,7 @@ class SendCategoryPurchaseEmailCest {
     $settings_factory->withCronTriggerMethod('WordPress');
   }
 
-  function sendCategoryPurchaseEmail(\AcceptanceTester $I) {
+  public function sendCategoryPurchaseEmail(\AcceptanceTester $I) {
     $I->wantTo('Buy a product in category and receive a "Purchased In This Category" email');
 
     $product_name = 'Category Purchase Test Product';

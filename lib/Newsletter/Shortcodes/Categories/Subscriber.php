@@ -10,7 +10,7 @@ class Subscriber {
   /**
    * @param \MailPoet\Models\Subscriber|false|mixed $subscriber
    */
-  static function process(
+  public static function process(
     $shortcode_details,
     $newsletter,
     $subscriber

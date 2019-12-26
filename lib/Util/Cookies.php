@@ -13,7 +13,7 @@ class Cookies {
     'httponly' => false,
   ];
 
-  function set($name, $value, array $options = []) {
+  public function set($name, $value, array $options = []) {
     $options = $options + self::DEFAULT_OPTIONS;
     $value = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     $error = json_last_error();
@@ -33,7 +33,7 @@ class Cookies {
     );
   }
 
-  function get($name) {
+  public function get($name) {
     if (!array_key_exists($name, $_COOKIE)) {
       return null;
     }
@@ -45,7 +45,7 @@ class Cookies {
     return $value;
   }
 
-  function delete($name) {
+  public function delete($name) {
     unset($_COOKIE[$name]);
   }
 }

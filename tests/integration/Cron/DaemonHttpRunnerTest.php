@@ -23,13 +23,13 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
   }
 
-  function testItConstructs() {
+  public function testItConstructs() {
     $this->settings->set(
       CronHelper::DAEMON_SETTING,
       []
@@ -39,7 +39,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     expect(strlen($daemon->token))->greaterOrEquals(5);
   }
 
-  function testItDoesNotRunWithoutRequestData() {
+  public function testItDoesNotRunWithoutRequestData() {
     $daemon = $this->make(
       DaemonHttpRunner::class,
       [
@@ -51,7 +51,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     expect($daemon->run(false))->equals('Invalid or missing request data.');
   }
 
-  function testItDoesNotRunWhenThereIsInvalidOrMissingToken() {
+  public function testItDoesNotRunWhenThereIsInvalidOrMissingToken() {
     $daemon = $this->make(
       DaemonHttpRunner::class,
       [
@@ -66,7 +66,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     expect($daemon->run(['token' => 456]))->equals('Invalid or missing token.');
   }
 
-  function testItStoresErrorMessageAndContinuesExecutionWhenWorkersThrowException() {
+  public function testItStoresErrorMessageAndContinuesExecutionWhenWorkersThrowException() {
     $data = [
       'token' => 123,
     ];
@@ -94,7 +94,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     expect($updated_daemon['last_error'][1]['message'])->equals('');
   }
 
-  function testItCanPauseExecution() {
+  public function testItCanPauseExecution() {
     $daemon = $this->makeEmpty(Daemon::class);
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => Expected::exactly(1, function($pause_delay) {
@@ -113,7 +113,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
   }
 
 
-  function testItTerminatesExecutionWhenDaemonIsDeleted() {
+  public function testItTerminatesExecutionWhenDaemonIsDeleted() {
     $daemon = $this->make(Daemon::class, [
       'run' => function () {
         $this->settings->delete(CronHelper::DAEMON_SETTING);
@@ -134,7 +134,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon_http_runner->run($data);
   }
 
-  function testItTerminatesExecutionWhenDaemonTokenChangesAndKeepsChangedToken() {
+  public function testItTerminatesExecutionWhenDaemonTokenChangesAndKeepsChangedToken() {
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,
       'terminateRequest' => Expected::exactly(1),
@@ -159,7 +159,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     expect($data_after_run['token'])->equals(567);
   }
 
-  function testItTerminatesExecutionWhenDaemonIsDeactivated() {
+  public function testItTerminatesExecutionWhenDaemonIsDeactivated() {
     $daemon = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,
       'terminateRequest' => Expected::exactly(1),
@@ -174,7 +174,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon->run($data);
   }
 
-  function testItTerminatesExecutionWhenWPTriggerStopsCron() {
+  public function testItTerminatesExecutionWhenWPTriggerStopsCron() {
     $daemon = $this->make(Daemon::class, [
       'run' => null,
     ]);
@@ -195,7 +195,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     WPFunctions::get()->removeAllFilters('mailpoet_cron_enable_self_deactivation');
   }
 
-  function testItUpdatesDaemonTokenDuringExecution() {
+  public function testItUpdatesDaemonTokenDuringExecution() {
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,
       'callSelf' => null,
@@ -215,7 +215,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     expect($updated_daemon['token'])->equals($daemon_http_runner->token);
   }
 
-  function testItUpdatesTimestampsDuringExecution() {
+  public function testItUpdatesTimestampsDuringExecution() {
     $cron_worker_runner_mock = $this->createMock(CronWorkerRunner::class);
     $cron_worker_runner_mock
       ->expects($this->at(0))
@@ -247,7 +247,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     expect($updated_daemon['run_completed_at'])->lessThan($now + 4);
   }
 
-  function testItCanRun() {
+  public function testItCanRun() {
     ignore_user_abort(0);
     expect(ignore_user_abort())->equals(0);
     $daemon_http_runner = $this->make(DaemonHttpRunner::class, [
@@ -270,7 +270,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     expect(ignore_user_abort())->equals(1);
   }
 
-  function testItRespondsToPingRequest() {
+  public function testItRespondsToPingRequest() {
     $daemon = $this->make(DaemonHttpRunner::class, [
       'terminateRequest' => Expected::exactly(1, function($message) {
         expect($message)->equals('pong');
@@ -279,7 +279,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon->ping();
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 

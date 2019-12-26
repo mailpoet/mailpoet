@@ -29,7 +29,7 @@ class FeaturesController {
   }
 
   /** @return bool */
-  function isSupported($feature) {
+  public function isSupported($feature) {
     if (!$this->exists($feature)) {
       throw new \RuntimeException("Unknown feature '$feature'");
     }
@@ -43,17 +43,17 @@ class FeaturesController {
   }
 
   /** @return bool */
-  function exists($feature) {
+  public function exists($feature) {
     return array_key_exists($feature, $this->defaults);
   }
 
   /** @return array */
-  function getDefaults() {
+  public function getDefaults() {
     return $this->defaults;
   }
 
   /** @return array */
-  function getAllFlags() {
+  public function getAllFlags() {
     $this->ensureFlagsLoaded();
     return $this->flags;
   }

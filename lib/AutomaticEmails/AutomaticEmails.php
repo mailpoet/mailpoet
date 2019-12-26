@@ -16,11 +16,11 @@ class AutomaticEmails {
     'WooCommerce',
   ];
 
-  function __construct() {
+  public function __construct() {
     $this->wp = new WPFunctions;
   }
 
-  function init() {
+  public function init() {
     foreach ($this->available_groups as $group) {
       $group_class = sprintf(
         '%1$s\%2$s\%2$s',
@@ -44,7 +44,7 @@ class AutomaticEmails {
     }
   }
 
-  function getAutomaticEmails() {
+  public function getAutomaticEmails() {
     global $wp_filter;
 
     $registered_groups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wp_filter));
@@ -70,7 +70,7 @@ class AutomaticEmails {
     return $automatic_emails;
   }
 
-  function getAutomaticEmailBySlug($email_slug) {
+  public function getAutomaticEmailBySlug($email_slug) {
     $automatic_emails = $this->getAutomaticEmails();
 
     if (empty($automatic_emails)) return null;
@@ -82,7 +82,7 @@ class AutomaticEmails {
     return null;
   }
 
-  function getAutomaticEmailEventBySlug($email_slug, $event_slug) {
+  public function getAutomaticEmailEventBySlug($email_slug, $event_slug) {
     $automatic_email = $this->getAutomaticEmailBySlug($email_slug);
 
     if (empty($automatic_email)) return null;
@@ -94,7 +94,7 @@ class AutomaticEmails {
     return null;
   }
 
-  function validateAutomaticEmailDataFields(array $automatic_email) {
+  public function validateAutomaticEmailDataFields(array $automatic_email) {
     $required_fields = [
       'slug',
       'title',
@@ -109,7 +109,7 @@ class AutomaticEmails {
     return true;
   }
 
-  function validateAutomaticEmailEventsDataFields(array $automatic_email_events) {
+  public function validateAutomaticEmailEventsDataFields(array $automatic_email_events) {
     $required_fields = [
       'slug',
       'title',
@@ -125,7 +125,7 @@ class AutomaticEmails {
     return true;
   }
 
-  function unregisterAutomaticEmails() {
+  public function unregisterAutomaticEmails() {
     global $wp_filter;
 
     $registered_groups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wp_filter));

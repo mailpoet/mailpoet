@@ -9,7 +9,7 @@ use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 
 class AmazonSESTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = [
       'method' => 'AmazonSES',
@@ -56,7 +56,7 @@ class AmazonSESTest extends \MailPoetTest {
     ];
   }
 
-  function testItsConstructorWorks() {
+  public function testItsConstructorWorks() {
     expect($this->mailer->aws_endpoint)
       ->equals(
         sprintf('email.%s.amazonaws.com', $this->settings['region'])
@@ -69,7 +69,7 @@ class AmazonSESTest extends \MailPoetTest {
     expect(preg_match('!^\d{8}$!', $this->mailer->date_without_time))->equals(1);
   }
 
-  function testWhenReturnPathIsNullItIsSetToSenderEmail() {
+  public function testWhenReturnPathIsNullItIsSetToSenderEmail() {
     $mailer = new AmazonSES(
       $this->settings['region'],
       $this->settings['access_key'],
@@ -82,7 +82,7 @@ class AmazonSESTest extends \MailPoetTest {
     expect($mailer->return_path)->equals($this->sender['from_email']);
   }
 
-  function testItChecksForValidRegion() {
+  public function testItChecksForValidRegion() {
     try {
       $mailer = new AmazonSES(
         'random_region',
@@ -99,7 +99,7 @@ class AmazonSESTest extends \MailPoetTest {
     }
   }
 
-  function testItCanGenerateBody() {
+  public function testItCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     expect($body['Action'])->equals('SendRawEmail');
     expect($body['Version'])->equals('2010-12-01');
@@ -108,7 +108,7 @@ class AmazonSESTest extends \MailPoetTest {
       ->equals($this->mailer->encodeMessage($this->mailer->message));
   }
 
-  function testItCanCreateMessage() {
+  public function testItCanCreateMessage() {
     $message = $this->mailer
       ->createMessage($this->newsletter, $this->subscriber, $this->extra_params);
     expect($message->getTo())
@@ -129,7 +129,7 @@ class AmazonSESTest extends \MailPoetTest {
       ->equals('<' . $this->extra_params['unsubscribe_url'] . '>');
   }
 
-  function testItCanCreateRequest() {
+  public function testItCanCreateRequest() {
     $request = $this->mailer->request($this->newsletter, $this->subscriber);
     // preserve the original message
     $raw_message = $this->mailer->encodeMessage($this->mailer->message);
@@ -147,7 +147,7 @@ class AmazonSESTest extends \MailPoetTest {
     expect($request['body'])->equals(urldecode(http_build_query($body)));
   }
 
-  function testItCanCreateCanonicalRequest() {
+  public function testItCanCreateCanonicalRequest() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $canonicalRequest = explode(
       "\n",
@@ -170,7 +170,7 @@ class AmazonSESTest extends \MailPoetTest {
       );
   }
 
-  function testItCanCreateCredentialScope() {
+  public function testItCanCreateCredentialScope() {
     $credentialScope = $this->mailer->getCredentialScope();
     expect($credentialScope)
       ->equals(
@@ -181,7 +181,7 @@ class AmazonSESTest extends \MailPoetTest {
       );
   }
 
-  function testItCanCreateStringToSign() {
+  public function testItCanCreateStringToSign() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $credentialScope = $this->mailer->getCredentialScope();
     $canonicalRequest = $this->mailer->getCanonicalRequest($body);
@@ -201,7 +201,7 @@ class AmazonSESTest extends \MailPoetTest {
       );
   }
 
-  function testItCanSignRequest() {
+  public function testItCanSignRequest() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $signedRequest = $this->mailer->signRequest($body);
     expect($signedRequest)
@@ -215,7 +215,7 @@ class AmazonSESTest extends \MailPoetTest {
       ->equals(1);
   }
 
-  function testItCannotSendWithoutProperAccessKey() {
+  public function testItCannotSendWithoutProperAccessKey() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->mailer->aws_access_key = 'somekey';
     $result = $this->mailer->send(
@@ -225,7 +225,7 @@ class AmazonSESTest extends \MailPoetTest {
     expect($result['response'])->false();
   }
 
-  function testItCatchesSendingErrors() {
+  public function testItCatchesSendingErrors() {
     $invalid_subscriber = 'john.@doe.com';
     $result = $this->mailer->send(
       $this->newsletter,
@@ -236,7 +236,7 @@ class AmazonSESTest extends \MailPoetTest {
     expect($result['error']->getMessage())->contains('does not comply with RFC 2822');
   }
 
-  function testItChecksBlacklistBeforeSending() {
+  public function testItChecksBlacklistBeforeSending() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
@@ -253,7 +253,7 @@ class AmazonSESTest extends \MailPoetTest {
     expect($result['error']->getMessage())->contains('AmazonSES has returned an unknown error.');
   }
 
-  function testItCanSend() {
+  public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $result = $this->mailer->send(
       $this->newsletter,

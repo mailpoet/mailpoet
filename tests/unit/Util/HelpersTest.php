@@ -5,14 +5,14 @@ namespace MailPoet\Test\Util;
 use MailPoet\Util\Helpers;
 
 class HelpersTest extends \MailPoetUnitTest {
-  function testItReplacesLinkTags() {
+  public function testItReplacesLinkTags() {
     $source = '[link]example link[/link]';
     $link = 'http://example.com';
     expect(Helpers::replaceLinkTags($source, $link))
       ->equals('<a href="' . $link . '">example link</a>');
   }
 
-  function testItReplacesLinkTagsAndAddsAttributes() {
+  public function testItReplacesLinkTagsAndAddsAttributes() {
     $source = '[link]example link[/link]';
     $link = 'http://example.com';
     $attributes = [
@@ -23,20 +23,20 @@ class HelpersTest extends \MailPoetUnitTest {
       ->equals('<a class="test class" target="_blank" href="' . $link . '">example link</a>');
   }
 
-  function testItAcceptsCustomLinkTag() {
+  public function testItAcceptsCustomLinkTag() {
     $source = '[custom_link_tag]example link[/custom_link_tag]';
     $link = 'http://example.com';
     expect(Helpers::replaceLinkTags($source, $link, [], 'custom_link_tag'))
       ->equals('<a href="' . $link . '">example link</a>');
   }
 
-  function testItChecksForValidJsonString() {
+  public function testItChecksForValidJsonString() {
     expect(Helpers::isJson(123))->false();
     $json = json_encode(['one' => 1, 'two' => 2]);
     expect(Helpers::isJson($json))->true();
   }
 
-  function testItTrimStringsRecursively() {
+  public function testItTrimStringsRecursively() {
     expect(Helpers::recursiveTrim('  foo'))->equals('foo');
     expect(Helpers::recursiveTrim('foo  '))->equals('foo');
     expect(Helpers::recursiveTrim(123))->equals(123);

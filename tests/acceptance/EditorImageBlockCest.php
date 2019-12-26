@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditorImageBlockCest {
-  function addImage(\AcceptanceTester $I) {
+  public function addImage(\AcceptanceTester $I) {
     $I->wantTo('add image block to newsletter');
     $I->cli(['media', 'import', '/wp-core/wp-content/plugins/mailpoet/tests/_data/unicornsplaceholder.png']);
     $newsletter = (new Newsletter())

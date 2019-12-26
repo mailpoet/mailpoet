@@ -29,18 +29,18 @@ class CronHelper {
     $this->wp = $wp;
   }
 
-  function getDaemonExecutionLimit() {
+  public function getDaemonExecutionLimit() {
     $limit = $this->wp->applyFilters('mailpoet_cron_get_execution_limit', self::DAEMON_EXECUTION_LIMIT);
     return $limit;
   }
 
-  function getDaemonExecutionTimeout() {
+  public function getDaemonExecutionTimeout() {
     $limit = $this->getDaemonExecutionLimit();
     $timeout = $limit * 1.75;
     return $this->wp->applyFilters('mailpoet_cron_get_execution_timeout', $timeout);
   }
 
-  function createDaemon($token) {
+  public function createDaemon($token) {
     $daemon = [
       'token' => $token,
       'status' => self::DAEMON_STATUS_ACTIVE,
@@ -54,15 +54,15 @@ class CronHelper {
     return $daemon;
   }
 
-  function restartDaemon($token) {
+  public function restartDaemon($token) {
     return $this->createDaemon($token);
   }
 
-  function getDaemon() {
+  public function getDaemon() {
     return $this->settings->fetch(self::DAEMON_SETTING);
   }
 
-  function saveDaemonLastError($error) {
+  public function saveDaemonLastError($error) {
     $daemon = $this->getDaemon();
     if ($daemon) {
       $daemon['last_error'] = $error;
@@ -71,7 +71,7 @@ class CronHelper {
     }
   }
 
-  function saveDaemonRunCompleted($run_completed_at) {
+  public function saveDaemonRunCompleted($run_completed_at) {
     $daemon = $this->getDaemon();
     if ($daemon) {
       $daemon['run_completed_at'] = $run_completed_at;
@@ -79,7 +79,7 @@ class CronHelper {
     }
   }
 
-  function saveDaemon($daemon) {
+  public function saveDaemon($daemon) {
     $daemon['updated_at'] = time();
     $this->settings->set(
       self::DAEMON_SETTING,
@@ -87,7 +87,7 @@ class CronHelper {
     );
   }
 
-  function deactivateDaemon($daemon) {
+  public function deactivateDaemon($daemon) {
     $daemon['status'] = self::DAEMON_STATUS_INACTIVE;
     $this->settings->set(
       self::DAEMON_SETTING,
@@ -95,11 +95,11 @@ class CronHelper {
     );
   }
 
-  function createToken() {
+  public function createToken() {
     return Security::generateRandomString();
   }
 
-  function pingDaemon() {
+  public function pingDaemon() {
     $url = $this->getCronUrl(
       CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
@@ -112,11 +112,11 @@ class CronHelper {
     return $response;
   }
 
-  function validatePingResponse($response) {
+  public function validatePingResponse($response) {
     return $response === DaemonHttpRunner::PING_SUCCESS_RESPONSE;
   }
 
-  function accessDaemon($token) {
+  public function accessDaemon($token) {
     $data = ['token' => $token];
     $url = $this->getCronUrl(
       CronDaemonEndpoint::ACTION_RUN,
@@ -135,7 +135,7 @@ class CronHelper {
   /**
    * @return boolean|null
    */
-  function isDaemonAccessible() {
+  public function isDaemonAccessible() {
     $daemon = $this->getDaemon();
     if (!$daemon || !isset($daemon['run_accessed_at']) || $daemon['run_accessed_at'] === null) {
       return null;
@@ -152,7 +152,7 @@ class CronHelper {
     return null;
   }
 
-  function queryCronUrl($url) {
+  public function queryCronUrl($url) {
     $args = $this->wp->applyFilters(
       'mailpoet_cron_request_args',
       [
@@ -165,7 +165,7 @@ class CronHelper {
     return $this->wp->wpRemotePost($url, $args);
   }
 
-  function getCronUrl($action, $data = false) {
+  public function getCronUrl($action, $data = false) {
     $url = Router::buildRequest(
       CronDaemonEndpoint::ENDPOINT,
       $action,
@@ -177,7 +177,7 @@ class CronHelper {
       $custom_cron_url;
   }
 
-  function getSiteUrl($site_url = false) {
+  public function getSiteUrl($site_url = false) {
     // additional check for some sites running inside a virtual machine or behind
     // proxy where there could be different ports (e.g., host:8080 => guest:80)
     $site_url = ($site_url) ? $site_url : WPFunctions::get()->homeUrl();
@@ -200,7 +200,7 @@ class CronHelper {
     throw new \Exception(__('Site URL is unreachable.', 'mailpoet'));
   }
 
-  function enforceExecutionLimit($timer) {
+  public function enforceExecutionLimit($timer) {
     $elapsed_time = microtime(true) - $timer;
     if ($elapsed_time >= $this->getDaemonExecutionLimit()) {
       throw new \Exception(__('Maximum execution time has been reached.', 'mailpoet'), self::DAEMON_EXECUTION_LIMIT_REACHED);

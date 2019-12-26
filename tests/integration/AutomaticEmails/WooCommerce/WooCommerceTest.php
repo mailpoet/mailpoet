@@ -11,7 +11,7 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WooCommerceTest extends \MailPoetTest {
-  function testItRegistersAbandonedCartEvent() {
+  public function testItRegistersAbandonedCartEvent() {
     $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
     $WC->__construct();
     $WC->init();
@@ -22,7 +22,7 @@ class WooCommerceTest extends \MailPoetTest {
     expect($result)->notEmpty();
   }
 
-  function testItRegistersFirstPuchaseEvent() {
+  public function testItRegistersFirstPuchaseEvent() {
     $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
     $WC->__construct();
     $WC->init();
@@ -38,7 +38,7 @@ class WooCommerceTest extends \MailPoetTest {
     expect(has_filter('woocommerce_order_status_processing'))->true();
   }
 
-  function testItRegistersPurchasedInCategoryEvent() {
+  public function testItRegistersPurchasedInCategoryEvent() {
     $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
     $WC->__construct();
     $WC->init();
@@ -49,7 +49,7 @@ class WooCommerceTest extends \MailPoetTest {
     expect($result)->notEmpty();
   }
 
-  function testItRegistersPurchasedProductEvent() {
+  public function testItRegistersPurchasedProductEvent() {
     $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
     $WC->__construct();
     $WC->init();
@@ -65,7 +65,7 @@ class WooCommerceTest extends \MailPoetTest {
     expect(has_filter('woocommerce_product_purchased_get_products'))->true();
   }
 
-  function testItReplacesEventActionButtonWithLinkToWCPluginRepoWhenWCIsDisabled() {
+  public function testItReplacesEventActionButtonWithLinkToWCPluginRepoWhenWCIsDisabled() {
     $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => false]);
     $WC->__construct();
     $WC->init();
@@ -87,7 +87,7 @@ class WooCommerceTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     $wp = new WPFunctions;
     $wp->removeAllFilters('mailpoet_newsletter_shortcode');
     $wp->removeAllFilters('woocommerce_payment_complete');

@@ -13,19 +13,19 @@ class AfterMigrationNotice {
   /** @var SettingsController */
   private $settings;
 
-  function __construct() {
+  public function __construct() {
     $this->settings = SettingsController::getInstance();
   }
 
-  function enable() {
+  public function enable() {
     $this->settings->set(self::OPTION_NAME, true);
   }
 
-  function disable() {
+  public function disable() {
     $this->settings->set(self::OPTION_NAME, false);
   }
 
-  function init($should_display) {
+  public function init($should_display) {
     if ($should_display && $this->settings->get(self::OPTION_NAME, false)) {
       return $this->display();
     }

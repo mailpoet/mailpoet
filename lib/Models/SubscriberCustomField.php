@@ -14,7 +14,7 @@ use function MailPoetVendor\array_column;
 class SubscriberCustomField extends Model {
   public static $_table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE;
 
-  static function createOrUpdate($data = []) {
+  public static function createOrUpdate($data = []) {
     $custom_field = CustomField::findOne($data['custom_field_id']);
     if ($custom_field instanceof CustomField) {
       $custom_field = $custom_field->asArray();
@@ -49,7 +49,7 @@ class SubscriberCustomField extends Model {
     ]);
   }
 
-  static function createMultiple($values) {
+  public static function createMultiple($values) {
     return self::rawExecute(
       'INSERT IGNORE INTO `' . self::$_table . '` ' .
       '(custom_field_id, subscriber_id, value) ' .
@@ -63,7 +63,7 @@ class SubscriberCustomField extends Model {
     );
   }
 
-  static function updateMultiple($values) {
+  public static function updateMultiple($values) {
     $subscriber_ids = array_unique(array_column($values, 1));
     $query = sprintf(
       "UPDATE `%s` SET value = (CASE %s ELSE value END) WHERE subscriber_id IN (%s)",
@@ -77,13 +77,13 @@ class SubscriberCustomField extends Model {
     );
   }
 
-  static function deleteSubscriberRelations($subscriber) {
+  public static function deleteSubscriberRelations($subscriber) {
     if ($subscriber === false) return false;
     $relations = self::where('subscriber_id', $subscriber->id);
     return $relations->deleteMany();
   }
 
-  static function deleteManySubscriberRelations(array $subscriber_ids) {
+  public static function deleteManySubscriberRelations(array $subscriber_ids) {
     if (empty($subscriber_ids)) return false;
     $relations = self::whereIn('subscriber_id', $subscriber_ids);
     return $relations->deleteMany();

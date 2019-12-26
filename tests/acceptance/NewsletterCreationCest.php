@@ -4,7 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 class NewsletterCreationCest {
 
-  function createPostNotification(\AcceptanceTester $I) {
+  public function createPostNotification(\AcceptanceTester $I) {
     $I->wantTo('Create and configure post notification email');
 
     $newsletter_title = 'Post Notification ' . \MailPoet\Util\Security::generateRandomString();
@@ -45,7 +45,7 @@ class NewsletterCreationCest {
     $I->see("Send immediately if there's new content to " . $segment_name . ".", $newsletter_listing_element);
   }
 
-  function createStandardNewsletter(\AcceptanceTester $I) {
+  public function createStandardNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Create and configure standard newsletter');
 
     $newsletter_title = 'Testing Newsletter ' . \MailPoet\Util\Security::generateRandomString();

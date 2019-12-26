@@ -239,7 +239,7 @@ class EditorProductsCest {
     $I->waitForElementNotVisible('.velocity-animating');
   }
 
-  function testProductsWidget(\AcceptanceTester $I) {
+  public function testProductsWidget(\AcceptanceTester $I) {
     $this->initializeNewsletter($I);
     $this->productsWidgetNotVisible($I);
     $this->initializeWooCommerce($I);

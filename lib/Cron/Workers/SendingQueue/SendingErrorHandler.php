@@ -7,7 +7,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class SendingErrorHandler {
-  function processError(
+  public function processError(
     MailerError $error,
     SendingTask $sending_task,
     array $prepared_subscribers_ids,

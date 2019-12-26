@@ -43,7 +43,7 @@ class AbandonedCartTest extends \MailPoetTest {
   /** @var AbandonedCartPageVisitTracker|MockObject */
   private $page_visit_tracker_mock;
 
-  function _before() {
+  public function _before() {
     $this->cleanup();
 
     $this->current_time = Carbon::createFromTimestamp((new WPFunctions())->currentTime('timestamp'));
@@ -65,14 +65,14 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->page_visit_tracker_mock = $this->makeEmpty(AbandonedCartPageVisitTracker::class);
   }
 
-  function testItGetsEventDetails() {
+  public function testItGetsEventDetails() {
     $event = new AbandonedCart();
     $result = $event->getEventDetails();
     expect($result)->notEmpty();
     expect($result['slug'])->equals(AbandonedCart::SLUG);
   }
 
-  function testItRegistersWooCommerceCartEvents() {
+  public function testItRegistersWooCommerceCartEvents() {
     $abandoned_cart_email = $this->createAbandonedCartEmail();
 
     $registered_actions = [];
@@ -89,7 +89,7 @@ class AbandonedCartTest extends \MailPoetTest {
     expect($registered_actions)->contains('woocommerce_cart_item_restored');
   }
 
-  function testItRegistersPageVisitEvent() {
+  public function testItRegistersPageVisitEvent() {
     $abandoned_cart_email = $this->createAbandonedCartEmail();
 
     $registered_actions = [];
@@ -101,7 +101,7 @@ class AbandonedCartTest extends \MailPoetTest {
     expect($registered_actions)->contains('wp');
   }
 
-  function testItFindsUserByWordPressSession() {
+  public function testItFindsUserByWordPressSession() {
     $this->createNewsletter();
     $this->createSubscriberAsCurrentUser();
     $this->woo_commerce_cart_mock->method('is_empty')->willReturn(false);
@@ -113,7 +113,7 @@ class AbandonedCartTest extends \MailPoetTest {
   }
 
 
-  function testItFindsUserByCookie() {
+  public function testItFindsUserByCookie() {
     $this->createNewsletter();
     $subscriber = $this->createSubscriber();
 
@@ -134,7 +134,7 @@ class AbandonedCartTest extends \MailPoetTest {
     expect(ScheduledTask::findMany())->count(1);
   }
 
-  function testItSchedulesEmailWhenItemAddedToCart() {
+  public function testItSchedulesEmailWhenItemAddedToCart() {
     $this->createNewsletter();
     $this->createSubscriberAsCurrentUser();
 
@@ -153,7 +153,7 @@ class AbandonedCartTest extends \MailPoetTest {
     expect($scheduled_tasks[0]->scheduled_at)->same($expected_time->format('Y-m-d H:i:s'));
   }
 
-  function testItPostponesEmailWhenCartEdited() {
+  public function testItPostponesEmailWhenCartEdited() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
 
@@ -173,7 +173,7 @@ class AbandonedCartTest extends \MailPoetTest {
     expect($scheduled_tasks[0]->scheduled_at)->same($expected_time->format('Y-m-d H:i:s'));
   }
 
-  function testItCancelsEmailWhenCartEmpty() {
+  public function testItCancelsEmailWhenCartEmpty() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
 
@@ -194,7 +194,7 @@ class AbandonedCartTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(0);
   }
 
-  function testItSchedulesNewEmailWhenEmailAlreadySent() {
+  public function testItSchedulesNewEmailWhenEmailAlreadySent() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
 
@@ -217,7 +217,7 @@ class AbandonedCartTest extends \MailPoetTest {
     expect($scheduled->scheduled_at)->same($expected_time->format('Y-m-d H:i:s'));
   }
 
-  function testItPostponesEmailWhenPageVisited() {
+  public function testItPostponesEmailWhenPageVisited() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
 
@@ -367,7 +367,7 @@ class AbandonedCartTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
   }
 
-  function _after() {
+  public function _after() {
     WPFunctions::set(new WPFunctions());
     Carbon::setTestNow();
     $this->cleanup();

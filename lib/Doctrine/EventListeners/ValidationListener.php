@@ -10,11 +10,11 @@ class ValidationListener {
   /** @var ValidatorInterface */
   private $validator;
 
-  function __construct(ValidatorInterface $validator) {
+  public function __construct(ValidatorInterface $validator) {
     $this->validator = $validator;
   }
 
-  function onFlush(OnFlushEventArgs $event_args) {
+  public function onFlush(OnFlushEventArgs $event_args) {
     $unit_of_work = $event_args->getEntityManager()->getUnitOfWork();
 
     foreach ($unit_of_work->getScheduledEntityInsertions() as $entity) {

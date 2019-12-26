@@ -16,7 +16,7 @@ class WooCommerceProduct {
   const TYPE_EXTERNAL = 'external';
   const TYPE_VARIABLE = 'variable';
 
-  function __construct(\AcceptanceTester $tester) {
+  public function __construct(\AcceptanceTester $tester) {
     $this->tester = $tester;
     $this->data = [
       'name' => 'Product',
@@ -35,7 +35,7 @@ class WooCommerceProduct {
    * @param string $name
    * @return $this
    */
-  function withName($name) {
+  public function withName($name) {
     return $this->update('name', $name);
   }
 
@@ -43,7 +43,7 @@ class WooCommerceProduct {
    * @param string $description
    * @return $this
    */
-  function withDescription($description) {
+  public function withDescription($description) {
     return $this->update('description', $description);
   }
 
@@ -51,7 +51,7 @@ class WooCommerceProduct {
    * @param string $shortDescription
    * @return $this
    */
-  function withShortDescription($shortDescription) {
+  public function withShortDescription($shortDescription) {
     return $this->update('shortDescription', $shortDescription);
   }
 
@@ -59,7 +59,7 @@ class WooCommerceProduct {
    * @param string $type
    * @return $this
    */
-  function withType($type) {
+  public function withType($type) {
     return $this->update('type', $type);
   }
 
@@ -67,7 +67,7 @@ class WooCommerceProduct {
    * @param string $sku
    * @return $this
    */
-  function withSku($sku) {
+  public function withSku($sku) {
     return $this->update('sku', $sku);
   }
 
@@ -75,7 +75,7 @@ class WooCommerceProduct {
    * @param int $price
    * @return $this
    */
-  function withPrice($price) {
+  public function withPrice($price) {
     return $this->update('price', $price);
   }
 
@@ -83,7 +83,7 @@ class WooCommerceProduct {
    * @param array $ids
    * @return $this
    */
-  function withCategoryIds($ids) {
+  public function withCategoryIds($ids) {
     $ids = array_map(function($id){
       return ['id' => $id];
     }, $ids);
@@ -94,7 +94,7 @@ class WooCommerceProduct {
    * @param array $ids
    * @return $this
    */
-  function withTagIds($ids) {
+  public function withTagIds($ids) {
     $ids = array_map(function($id){
       return ['id' => $id];
     }, $ids);
@@ -105,14 +105,14 @@ class WooCommerceProduct {
    * @param array $images
    * @return $this
    */
-  function withImages($images) {
+  public function withImages($images) {
     $images = array_map(function($src){
       return ['src' => $src];
     }, $images);
     return $this->update('images', $images);
   }
 
-  function create() {
+  public function create() {
     $create_command = ['wc', 'product', 'create', '--porcelain', '--user=admin'];
     $create_command[] = "--name={$this->data['name']}";
     $create_command[] = "--type={$this->data['type']}";
@@ -142,12 +142,12 @@ class WooCommerceProduct {
     return json_decode($product_out[0], true);
   }
 
-  function createCategory($name) {
+  public function createCategory($name) {
     $create_output = $this->tester->cliToArray(['wc', 'product_cat', 'create', '--porcelain', '--user=admin', "--name=$name"]);
     return $create_output[0];
   }
 
-  function createTag($name) {
+  public function createTag($name) {
     $create_output = $this->tester->cliToArray(['wc', 'product_tag', 'create', '--porcelain', '--user=admin', "--name=$name"]);
     return $create_output[0];
   }
@@ -155,11 +155,11 @@ class WooCommerceProduct {
   /**
    * @param int $id
    */
-  function delete($id) {
+  public function delete($id) {
     $this->tester->cliToArray(['wc', 'product', 'delete', $id, '--force=1', '--user=admin']);
   }
 
-  function deleteAll() {
+  public function deleteAll() {
     $list = $this->tester->cliToArray(['wc', 'product', 'list', '--format=json', '--user=admin', '--fields=id']);
     foreach (json_decode($list[0], true) as $item) {
       $this->delete($item['id']);

@@ -36,7 +36,7 @@ class LoggerFactory {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(SettingsController $settings) {
+  public function __construct(SettingsController $settings) {
     $this->settings = $settings;
   }
 
@@ -46,7 +46,7 @@ class LoggerFactory {
    *
    * @return \MailPoetVendor\Monolog\Logger
    */
-  function getLogger($name = 'MailPoet', $attach_processors = WP_DEBUG) {
+  public function getLogger($name = 'MailPoet', $attach_processors = WP_DEBUG) {
     if (!isset($this->logger_instances[$name])) {
       $this->logger_instances[$name] = new \MailPoetVendor\Monolog\Logger($name);
 
@@ -64,7 +64,7 @@ class LoggerFactory {
     return $this->logger_instances[$name];
   }
 
-  static function getInstance() {
+  public static function getInstance() {
     if (!self::$instance instanceof LoggerFactory) {
       self::$instance = new LoggerFactory(SettingsController::getInstance());
     }

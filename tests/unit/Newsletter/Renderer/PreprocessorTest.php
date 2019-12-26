@@ -9,7 +9,7 @@ use MailPoet\WooCommerce\TransactionalEmails;
 
 class PreprocessorTest extends \MailPoetUnitTest {
 
-  function testProcessWooCommerceHeadingBlock() {
+  public function testProcessWooCommerceHeadingBlock() {
     $renderer = Stub::make(Renderer::class);
     $transactional_emails = Stub::make(TransactionalEmails::class, [
       'getWCEmailSettings' => [
@@ -40,7 +40,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
     ]]);
   }
 
-  function testProcessWooCommerceContentBlock() {
+  public function testProcessWooCommerceContentBlock() {
     $renderer = Stub::make(Renderer::class);
     $preprocessor = new Preprocessor($renderer, Stub::make(TransactionalEmails::class));
     expect($preprocessor->processBlock(['type' => 'woocommerceContent']))->equals([[

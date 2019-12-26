@@ -13,12 +13,12 @@ class Premium {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(PageRenderer $page_renderer, WPFunctions $wp) {
+  public function __construct(PageRenderer $page_renderer, WPFunctions $wp) {
     $this->page_renderer = $page_renderer;
     $this->wp = $wp;
   }
 
-  function render() {
+  public function render() {
     $data = [
       'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
       'subscriber_count' => Subscriber::getTotalSubscribers(),

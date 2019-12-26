@@ -6,7 +6,7 @@ use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Divider {
-  static function render($element) {
+  public static function render($element) {
     $background_color = $element['styles']['block']['backgroundColor'];
     $divider_cell_style = "border-top-width: {$element['styles']['block']['borderWidth']};";
     $divider_cell_style .= "border-top-style: {$element['styles']['block']['borderStyle']};";

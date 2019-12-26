@@ -30,7 +30,7 @@ class APITest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     // create WP user
     $this->wp_user_id = null;
@@ -55,7 +55,7 @@ class APITest extends \MailPoetTest {
     );
   }
 
-  function testItCallsAPISetupAction() {
+  public function testItCallsAPISetupAction() {
     $called = false;
     (new WPFunctions)->addAction(
       'mailpoet_api_setup',
@@ -77,7 +77,7 @@ class APITest extends \MailPoetTest {
     expect($called)->true();
   }
 
-  function testItCanAddEndpointNamespaces() {
+  public function testItCanAddEndpointNamespaces() {
     expect($this->api->getEndpointNamespaces())->count(1);
 
     $namespace = [
@@ -91,7 +91,7 @@ class APITest extends \MailPoetTest {
     expect($namespaces[$namespace['version']][0])->equals($namespace['name']);
   }
 
-  function testItReturns400ErrorWhenAPIVersionIsNotSpecified() {
+  public function testItReturns400ErrorWhenAPIVersionIsNotSpecified() {
     $data = [
       'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
       'method' => 'test',
@@ -101,7 +101,7 @@ class APITest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
-  function testItAcceptsAndProcessesAPIVersion() {
+  public function testItAcceptsAndProcessesAPIVersion() {
     $namespace = [
       'name' => 'MailPoet\API\JSON\v2',
       'version' => 'v2',
@@ -121,7 +121,7 @@ class APITest extends \MailPoetTest {
     );
   }
 
-  function testItCallsAddedEndpoints() {
+  public function testItCallsAddedEndpoints() {
     $namespace = [
       'name' => 'MailPoet\API\JSON\v1',
       'version' => 'v1',
@@ -140,7 +140,7 @@ class APITest extends \MailPoetTest {
     expect($response->getData()['data'])->equals($data['data']);
   }
 
-  function testItCallsAddedEndpointsForSpecificAPIVersion() {
+  public function testItCallsAddedEndpointsForSpecificAPIVersion() {
     $namespace = [
       'name' => 'MailPoet\API\JSON\v2',
       'version' => 'v2',
@@ -157,7 +157,7 @@ class APITest extends \MailPoetTest {
     expect($response->getData()['data'])->equals($data['api_version']);
   }
 
-  function testItValidatesPermissionBeforeProcessingEndpointMethod() {
+  public function testItValidatesPermissionBeforeProcessingEndpointMethod() {
     $namespace = [
       'name' => 'MailPoet\API\JSON\v1',
       'version' => 'v1',
@@ -193,7 +193,7 @@ class APITest extends \MailPoetTest {
     expect($response->getData()['data'])->equals($data['data']);
   }
 
-  function testItReturnsForbiddenResponseWhenPermissionFailsValidation() {
+  public function testItReturnsForbiddenResponseWhenPermissionFailsValidation() {
     $namespace = [
       'name' => 'MailPoet\API\JSON\v1',
       'version' => 'v1',
@@ -216,7 +216,7 @@ class APITest extends \MailPoetTest {
     expect($response->status)->equals(Response::STATUS_FORBIDDEN);
   }
 
-  function testItValidatesGlobalPermission() {
+  public function testItValidatesGlobalPermission() {
     $permissions = [
       'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
     ];
@@ -247,7 +247,7 @@ class APITest extends \MailPoetTest {
     expect($api->validatePermissions(null, $permissions))->true();
   }
 
-  function testItValidatesEndpointMethodPermission() {
+  public function testItValidatesEndpointMethodPermission() {
     $permissions = [
       'global' => null,
       'methods' => [
@@ -282,7 +282,7 @@ class APITest extends \MailPoetTest {
     expect($api->validatePermissions('test', $permissions))->true();
   }
 
-  function testItThrowsExceptionWhenInvalidEndpointMethodIsCalled() {
+  public function testItThrowsExceptionWhenInvalidEndpointMethodIsCalled() {
     $namespace = [
       'name' => 'MailPoet\API\JSON\v2',
       'version' => 'v2',
@@ -301,7 +301,7 @@ class APITest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Invalid API endpoint method.');
   }
 
-  function _after() {
+  public function _after() {
     wp_delete_user($this->wp_user_id);
   }
 }

@@ -32,7 +32,7 @@ class JsonEntity {
   /**
    * @return int|null
    */
-  function getId() {
+  public function getId() {
     return $this->id;
   }
 

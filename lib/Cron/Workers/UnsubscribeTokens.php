@@ -15,7 +15,7 @@ class UnsubscribeTokens extends SimpleWorker {
   const BATCH_SIZE = 1000;
   const AUTOMATIC_SCHEDULING = false;
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     $meta = $task->getMeta();
     do {
       $this->cron_helper->enforceExecutionLimit($timer);
@@ -49,7 +49,7 @@ class UnsubscribeTokens extends SimpleWorker {
     return count($instances);
   }
 
-  function getNextRunDate() {
+  public function getNextRunDate() {
     $wp = new WPFunctions;
     return Carbon::createFromTimestamp($wp->currentTime('timestamp'));
   }

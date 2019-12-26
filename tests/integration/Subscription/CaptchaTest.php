@@ -21,7 +21,7 @@ class CaptchaTest extends \MailPoetTest {
   /** @var CaptchaSession */
   private $captcha_session;
 
-  function _before() {
+  public function _before() {
     $cookies_mock = $this->createMock(Cookies::class);
     $cookies_mock->method('get')->willReturn('abcd');
     $this->captcha_session = new CaptchaSession(new Functions());
@@ -31,13 +31,13 @@ class CaptchaTest extends \MailPoetTest {
     $this->captcha_session->reset();
   }
 
-  function testItDoesNotRequireCaptchaForTheFirstSubscription() {
+  public function testItDoesNotRequireCaptchaForTheFirstSubscription() {
     $email = 'non-existent-subscriber@example.com';
     $result = $this->captcha->isRequired($email);
     expect($result)->equals(false);
   }
 
-  function testItRequiresCaptchaForRepeatedRecipient() {
+  public function testItRequiresCaptchaForRepeatedRecipient() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->count_confirmations = 1;
@@ -46,7 +46,7 @@ class CaptchaTest extends \MailPoetTest {
     expect($result)->equals(true);
   }
 
-  function testItRequiresCaptchaForRepeatedIPAddress() {
+  public function testItRequiresCaptchaForRepeatedIPAddress() {
     $ip = SubscriberIP::create();
     $ip->ip = '127.0.0.1';
     $ip->created_at = Carbon::now()->subMinutes(1);
@@ -56,14 +56,14 @@ class CaptchaTest extends \MailPoetTest {
     expect($result)->equals(true);
   }
 
-  function testItRendersImageAndStoresHashToSession() {
+  public function testItRendersImageAndStoresHashToSession() {
     expect($this->captcha_session->getCaptchaHash())->false();
     $image = $this->captcha->renderImage(null, null, self::CAPTCHA_SESSION_ID, true);
     expect($image)->notEmpty();
     expect($this->captcha_session->getCaptchaHash())->notEmpty();
   }
 
-  function _after() {
+  public function _after() {
     SubscriberIP::deleteMany();
   }
 }

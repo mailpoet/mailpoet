@@ -4,7 +4,7 @@ namespace MailPoet\Form\Block;
 
 class Divider {
 
-  static function render() {
+  public static function render() {
     return '<hr class="mailpoet_divider" />';
   }
 }

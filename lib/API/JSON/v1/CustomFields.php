@@ -31,12 +31,12 @@ class CustomFields extends APIEndpoint {
     $this->custom_fields_response_builder = $custom_fields_response_builder;
   }
 
-  function getAll() {
+  public function getAll() {
     $collection = $this->custom_fields_repository->findBy([], ['created_at' => 'asc']);
     return $this->successResponse($this->custom_fields_response_builder->buildBatch($collection));
   }
 
-  function delete($data = []) {
+  public function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : null);
     $custom_field = $this->custom_fields_repository->findOneById($id);
     if ($custom_field instanceof CustomFieldEntity) {
@@ -51,7 +51,7 @@ class CustomFields extends APIEndpoint {
     }
   }
 
-  function save($data = []) {
+  public function save($data = []) {
     try {
       $custom_field = $this->custom_fields_repository->createOrUpdate($data);
       $custom_field = $this->custom_fields_repository->findOneById($custom_field->getId());
@@ -62,7 +62,7 @@ class CustomFields extends APIEndpoint {
     }
   }
 
-  function get($data = []) {
+  public function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : null);
     $custom_field = $this->custom_fields_repository->findOneById($id);
     if ($custom_field instanceof CustomFieldEntity) {

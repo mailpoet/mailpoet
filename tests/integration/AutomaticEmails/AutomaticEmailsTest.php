@@ -5,11 +5,11 @@ namespace MailPoet\AutomaticEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomaticEmailsTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     $this->AM = new AutomaticEmails();
     $this->wp = new WPFunctions();
   }
-  function testItCanUnregisterAutomaticEmails() {
+  public function testItCanUnregisterAutomaticEmails() {
     $this->wp->addFilter('mailpoet_automatic_email_test1', function() {
       return [
         'slug' => 'email1',
@@ -33,7 +33,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     expect($result)->null();
   }
 
-  function testItReturnsNullWhenThereAreNoRegisteredAutomaticEmails() {
+  public function testItReturnsNullWhenThereAreNoRegisteredAutomaticEmails() {
     $AM = $this->AM;
     $AM->unregisterAutomaticEmails();
     $AM->available_groups = [];
@@ -41,7 +41,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     expect($AM->getAutomaticEmails())->null();
   }
 
-  function testItGetsAutomaticEmails() {
+  public function testItGetsAutomaticEmails() {
     $this->wp->addFilter('mailpoet_automatic_email_test1', function() {
       return [
         'slug' => 'email1',
@@ -83,12 +83,12 @@ class AutomaticEmailsTest extends \MailPoetTest {
     $this->wp->removeAllFilters('mailpoet_automatic_email_test2');
   }
 
-  function testItReturnsNullWhenGettingEmailBySlugAndThereAreNoRegisteredEmails() {
+  public function testItReturnsNullWhenGettingEmailBySlugAndThereAreNoRegisteredEmails() {
     expect($this->AM->getAutomaticEmailBySlug('some_slug'))->null();
 
   }
 
-  function testItReturnsNullWhenItCannotGetEmailBySlug() {
+  public function testItReturnsNullWhenItCannotGetEmailBySlug() {
     $this->wp->addFilter('mailpoet_automatic_email_test', function() {
       return [
         'slug' => 'email',
@@ -110,7 +110,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
   }
 
-  function testItGetsEmailBySlug() {
+  public function testItGetsEmailBySlug() {
     $this->wp->addFilter('mailpoet_automatic_email_test1', function() {
       return [
         'slug' => 'email1',
@@ -150,11 +150,11 @@ class AutomaticEmailsTest extends \MailPoetTest {
   }
 
 
-  function testItReturnsNullWhenGettingEmailEventBySlugAndThereAreNoRegisteredEmails() {
+  public function testItReturnsNullWhenGettingEmailEventBySlugAndThereAreNoRegisteredEmails() {
     expect($this->AM->getAutomaticEmailEventBySlug('some_email', 'some_slug'))->null();
   }
 
-  function testItReturnsNullWhenItCannotGetEmailEventBySlug() {
+  public function testItReturnsNullWhenItCannotGetEmailEventBySlug() {
     $this->wp->addFilter('mailpoet_automatic_email_test', function() {
       return [
         'slug' => 'email',
@@ -176,7 +176,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
   }
 
-  function testItGetsEmailEventBySlug() {
+  public function testItGetsEmailEventBySlug() {
     $this->wp->addFilter('mailpoet_automatic_email_test', function() {
       return [
         'slug' => 'email',
@@ -205,7 +205,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
   }
 
-  function testItValidatesEmailDataFields() {
+  public function testItValidatesEmailDataFields() {
     // slug is missing
     $data = [
       'title' => true,
@@ -248,7 +248,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     expect($this->AM->validateAutomaticEmailDataFields($data))->true();
   }
 
-  function testItValidatesEmailEventsDataFields() {
+  public function testItValidatesEmailEventsDataFields() {
     // slug is missing
     $data = [
       [

@@ -10,7 +10,7 @@ use MailPoet\Models\Subscriber;
 
 class EmailActionTest extends \MailPoetTest {
 
-  function _before() {
+  public function _before() {
     $this->newsletter = Newsletter::createOrUpdate([
       'subject' => 'newsletter 1',
       'status' => 'sent',
@@ -38,55 +38,55 @@ class EmailActionTest extends \MailPoetTest {
     StatisticsClicks::createOrUpdateClickCount(1, $this->subscriber_opened_clicked->id, $this->newsletter->id, 1);
   }
 
-  function testGetOpened() {
+  public function testGetOpened() {
     $emailAction = new EmailAction(EmailAction::ACTION_OPENED, $this->newsletter->id);
     $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
     expect($sql->count())->equals(2);
   }
 
-  function testNotOpened() {
+  public function testNotOpened() {
     $emailAction = new EmailAction(EmailAction::ACTION_NOT_OPENED, $this->newsletter->id);
     $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
     expect($sql->count())->equals(1);
   }
 
-  function testGetClickedWithoutLink() {
+  public function testGetClickedWithoutLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_CLICKED, $this->newsletter->id);
     $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
     expect($sql->count())->equals(1);
   }
 
-  function testGetClickedWithLink() {
+  public function testGetClickedWithLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_CLICKED, $this->newsletter->id, 1);
     $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
     expect($sql->count())->equals(1);
   }
 
-  function testGetClickedWithWrongLink() {
+  public function testGetClickedWithWrongLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_CLICKED, $this->newsletter->id, 2);
     $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
     expect($sql->count())->equals(0);
   }
 
-  function testGetNotClickedWithLink() {
+  public function testGetNotClickedWithLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_NOT_CLICKED, $this->newsletter->id, 1);
     $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
     expect($sql->count())->equals(2);
   }
 
-  function testGetNotClickedWithWrongLink() {
+  public function testGetNotClickedWithWrongLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_NOT_CLICKED, $this->newsletter->id, 2);
     $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
     expect($sql->count())->equals(3);
   }
 
-  function testGetNotClickedWithoutLink() {
+  public function testGetNotClickedWithoutLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_NOT_CLICKED, $this->newsletter->id);
     $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
     expect($sql->count())->equals(2);
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanData();
   }
 

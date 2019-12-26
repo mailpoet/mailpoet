@@ -3,7 +3,7 @@
 namespace MailPoet\Form\Block;
 
 class Textarea extends Base {
-  static function render($block) {
+  public static function render($block) {
     $html = '';
 
     $html .= '<p class="mailpoet_paragraph">';

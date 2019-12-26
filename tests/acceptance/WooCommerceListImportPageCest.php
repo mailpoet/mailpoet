@@ -22,13 +22,13 @@ class WooCommerceListImportPageCest {
     $this->settings = $settings;
   }
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->customer_factory = new WooCommerceCustomer($I);
     $this->order_factory = new WooCommerceOrder($I);
   }
 
-  function importListPageImportTest(\AcceptanceTester $I) {
+  public function importListPageImportTest(\AcceptanceTester $I) {
     $this->settings
       ->withWooCommerceListImportPageDisplayed(false)
       ->withCronTriggerMethod('WordPress');
@@ -65,7 +65,7 @@ class WooCommerceListImportPageCest {
     $I->see($guest_user_data['email']);
   }
 
-  function importPageFormBehaviourTest(\AcceptanceTester $I) {
+  public function importPageFormBehaviourTest(\AcceptanceTester $I) {
     $I->login();
     $I->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
     $I->see('WooCommerce customers now have their own list');
@@ -89,7 +89,7 @@ class WooCommerceListImportPageCest {
    * can't go to another page unless he submits the form
    * @param \AcceptanceTester $I
    */
-  function importListPageRedirectionTest(\AcceptanceTester $I) {
+  public function importListPageRedirectionTest(\AcceptanceTester $I) {
     $this->settings->withWooCommerceListImportPageDisplayed(false);
     $order = $this->order_factory
       ->withDateCreated('2001-08-22T11:11:56') // any time in the past. Must be before the plugin activation
