@@ -77,7 +77,6 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::forTable(SubscriberCustomField::$_table)
-      ->deleteMany();
+    SubscriberCustomField::deleteMany();
   }
 }

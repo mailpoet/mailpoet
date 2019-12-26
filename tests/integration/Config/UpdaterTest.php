@@ -37,7 +37,7 @@ class UpdaterTest extends \MailPoetTest {
   }
 
   public function testItChecksForUpdates() {
-    $update_transient = new \StdClass;
+    $update_transient = new \stdClass;
     $update_transient->last_checked = time();
     $updater = Stub::construct(
       $this->updater,
@@ -75,6 +75,6 @@ class UpdaterTest extends \MailPoetTest {
 
   public function testItReturnsObjectIfPassedNonObjectWhenCheckingForUpdates() {
     $result = $this->updater->checkForUpdate(null);
-    expect($result instanceof \StdClass)->true();
+    expect($result instanceof \stdClass)->true();
   }
 }

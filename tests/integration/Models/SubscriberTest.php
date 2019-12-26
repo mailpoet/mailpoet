@@ -423,7 +423,7 @@ class SubscriberTest extends \MailPoetTest {
   }
 
   public function testItCanCreateOrUpdateMultipleRecords() {
-    ORM::forTable(Subscriber::$_table)->deleteMany();
+    Subscriber::deleteMany();
     $columns = [
       'first_name',
       'last_name',

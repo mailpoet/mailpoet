@@ -4,6 +4,7 @@ define('ABSPATH', getenv('WP_ROOT') . '/');
 
 require_once ABSPATH . 'wp-load.php';
 require_once ABSPATH . 'wp-admin/includes/admin.php';
+require_once(ABSPATH . 'wp-admin/includes/ms.php');
 require_once ABSPATH . 'wp-includes/class-phpmailer.php';
 
 if (!class_exists('\MailPoet\Premium\DI\ContainerConfigurator')) {
@@ -13,3 +14,5 @@ if (!class_exists('\MailPoet\Premium\DI\ContainerConfigurator')) {
 if (!class_exists(WooCommerce::class)) {
   require_once __DIR__ . '/woocommerce.php';
 }
+
+require_once __DIR__ . '/function-stubs.php';

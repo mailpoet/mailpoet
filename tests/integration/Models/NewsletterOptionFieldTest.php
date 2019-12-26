@@ -121,11 +121,8 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::forTable(NewsletterOption::$_table)
-      ->deleteMany();
-    ORM::forTable(NewsletterOptionField::$_table)
-      ->deleteMany();
-    ORM::forTable(Newsletter::$_table)
-      ->deleteMany();
+    NewsletterOption::deleteMany();
+    NewsletterOptionField::deleteMany();
+    Newsletter::deleteMany();
   }
 }

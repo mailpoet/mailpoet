@@ -73,10 +73,22 @@ class WC_Order { // phpcs:ignore
  * @method int get_product_id(string $context = 'view')
  */
 class WC_Order_Item_Product { // phpcs:ignore
+  function get_product_id() { // phpcs:ignore
+  }
 }
 
 /**
  * @method int[] get_category_ids(string $context = 'view')
  */
 class WC_Product { // phpcs:ignore
+}
+
+class WC_Cart { // phpcs:ignore
+}
+
+class WC_Mailer { // phpcs:ignore
+  function email_header() { // phpcs:ignore
+  }
+  function email_footer() { // phpcs:ignore
+  }
 }
