@@ -84,7 +84,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->segment->save();
     $this->subscriber_segment = SubscriberSegment::create();
     $this->subscriber_segment->subscriber_id = $this->subscriber->id;
-    $this->subscriber_segment->segment_id = $this->segment->id;
+    $this->subscriber_segment->segment_id = (int)$this->segment->id;
     $this->subscriber_segment->save();
     $this->newsletter = Newsletter::create();
     $this->newsletter->type = Newsletter::TYPE_STANDARD;
@@ -94,7 +94,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter->save();
     $this->newsletter_segment = NewsletterSegment::create();
     $this->newsletter_segment->newsletter_id = $this->newsletter->id;
-    $this->newsletter_segment->segment_id = $this->segment->id;
+    $this->newsletter_segment->segment_id = (int)$this->segment->id;
     $this->newsletter_segment->save();
     $this->queue = SendingTask::create();
     $this->queue->newsletter_id = $this->newsletter->id;

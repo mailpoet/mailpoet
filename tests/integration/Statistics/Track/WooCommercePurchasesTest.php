@@ -312,7 +312,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $click->newsletter_id = $link->newsletter_id;
     $click->subscriber_id = $subscriber->id;
     $click->queue_id = $link->queue_id;
-    $click->link_id = $link->id;
+    $click->link_id = (int)$link->id;
     $click->count = 1;
 
     $timestamp = new DateTime("-$created_days_ago days");

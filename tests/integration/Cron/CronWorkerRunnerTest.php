@@ -110,7 +110,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect($result)->true();
 
     $scheduled_at = $task->scheduled_at;
-    $task->updated_at = Carbon::createFromTimestamp((int)strtotime($task->updated_at))
+    $task->updated_at = Carbon::createFromTimestamp((int)strtotime((string)$task->updated_at))
       ->subMinutes(CronWorkerRunner::TASK_RUN_TIMEOUT + 1);
     $task->save();
 

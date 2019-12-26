@@ -70,7 +70,7 @@ $settings = SettingsController::getInstance();
 $settings->set('db_version', \MailPoet\Config\Env::$version);
 
 $cacheDir = '/tmp';
-if (is_dir(getenv('WP_TEST_CACHE_PATH'))) {
+if (is_dir((string)getenv('WP_TEST_CACHE_PATH'))) {
   $cacheDir = getenv('WP_TEST_CACHE_PATH');
 }
 

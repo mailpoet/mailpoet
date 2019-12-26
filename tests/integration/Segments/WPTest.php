@@ -136,7 +136,7 @@ class WPTest extends \MailPoetTest  {
   public function testItSynchronizeFirstNames() {
     $id = $this->insertUser();
     WP::synchronizeUsers();
-    update_user_meta($id, 'first_name', 'First name');
+    update_user_meta((int)$id, 'first_name', 'First name');
     WP::synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
     expect($subscriber->first_name)->equals('First name');
@@ -145,7 +145,7 @@ class WPTest extends \MailPoetTest  {
   public function testItSynchronizeLastNames() {
     $id = $this->insertUser();
     WP::synchronizeUsers();
-    update_user_meta($id, 'last_name', 'Last name');
+    update_user_meta((int)$id, 'last_name', 'Last name');
     WP::synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
     expect($subscriber->last_name)->equals('Last name');
@@ -162,7 +162,7 @@ class WPTest extends \MailPoetTest  {
 
   public function testItSynchronizeFirstNamesFromMetaNotDisplayName() {
     $id = $this->insertUser();
-    update_user_meta($id, 'first_name', 'First name');
+    update_user_meta((int)$id, 'first_name', 'First name');
     $this->updateWPUserDisplayName($id, 'display_name');
     WP::synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
@@ -195,7 +195,7 @@ class WPTest extends \MailPoetTest  {
     WP::synchronizeUsers();
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(2);
-    wp_delete_user($id);
+    wp_delete_user((int)$id);
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(1);
   }
@@ -304,7 +304,7 @@ class WPTest extends \MailPoetTest  {
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'wp_user_id' => $id,
     ]);
-    update_user_meta($id, 'default_password_nag', '1');
+    update_user_meta((int)$id, 'default_password_nag', '1');
     WP::synchronizeUsers();
     $db_subscriber = Subscriber::findOne($subscriber->id);
     expect($db_subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);

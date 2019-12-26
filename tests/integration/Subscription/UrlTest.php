@@ -117,8 +117,8 @@ class UrlTest extends \MailPoetTest {
 
   private function checkData($url) {
     // extract & decode data from url
-    $url_params = parse_url($url);
-    parse_str($url_params['query'], $params);
+    $url_params_query = parse_url($url, PHP_URL_QUERY);
+    parse_str((string)$url_params_query, $params);
     $data = Router::decodeRequestData($params['data']);
 
     expect($data['email'])->contains('john@mailpoet.com');

@@ -95,9 +95,9 @@ class PagesTest extends \MailPoetTest {
       expect($newsletter_option_field->getErrors())->false();
 
       $newsletter_option = NewsletterOption::create();
-      $newsletter_option->option_field_id = $newsletter_option_field->id;
+      $newsletter_option->option_field_id = (int)$newsletter_option_field->id;
       $newsletter_option->newsletter_id = $newsletter->id;
-      $newsletter_option->value = $value;
+      $newsletter_option->value = (string)$value;
       $newsletter_option->save();
       expect($newsletter_option->getErrors())->false();
     }

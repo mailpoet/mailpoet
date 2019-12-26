@@ -299,7 +299,7 @@ class WelcomeTest extends \MailPoetTest {
       }
 
       $newsletter_option = NewsletterOption::create();
-      $newsletter_option->option_field_id = $newsletter_option_field->id;
+      $newsletter_option->option_field_id = (int)$newsletter_option_field->id;
       $newsletter_option->newsletter_id = $newsletter_id;
       $newsletter_option->value = $value;
       $newsletter_option->save();

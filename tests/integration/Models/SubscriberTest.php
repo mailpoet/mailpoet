@@ -764,7 +764,7 @@ class SubscriberTest extends \MailPoetTest {
         $segment[$i]->save();
         $subscriber_segment[$i] = SubscriberSegment::create();
         $subscriber_segment[$i]->subscriber_id = $subscriber[$i]->id;
-        $subscriber_segment[$i]->segment_id = $segment[$i]->id;
+        $subscriber_segment[$i]->segment_id = (int)$segment[$i]->id;
         $subscriber_segment[$i]->save();
       }
       return [

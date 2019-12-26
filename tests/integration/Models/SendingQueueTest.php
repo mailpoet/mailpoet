@@ -92,7 +92,7 @@ class SendingQueueTest extends \MailPoetTest {
     $queue = SendingQueue::findOne($queue->id);
 
     expect(Helpers::isJson($queue->meta))->true();
-    expect(json_decode($queue->meta, true))->equals($meta);
+    expect(json_decode((string)$queue->meta, true))->equals($meta);
   }
 
   public function testItDoesNotJsonEncodesMetaEqualToNull() {

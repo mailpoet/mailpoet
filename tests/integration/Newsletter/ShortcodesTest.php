@@ -244,7 +244,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->false();
     $subscriber_custom_field = SubscriberCustomField::create();
     $subscriber_custom_field->subscriber_id = $subscriber->id;
-    $subscriber_custom_field->custom_field_id = $custom_field->id;
+    $subscriber_custom_field->custom_field_id = (int)$custom_field->id;
     $subscriber_custom_field->value = 'custom_field_value';
     $subscriber_custom_field->save();
     $result = $shortcodes_object->process(

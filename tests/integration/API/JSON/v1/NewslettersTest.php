@@ -974,7 +974,7 @@ class NewslettersTest extends \MailPoetTest {
   public function testItGeneratesPreviewLinksWithNewsletterHashAndNoSubscriberData() {
     $response = $this->endpoint->listing();
     $preview_link = $response->data[0]['preview_url'];
-    parse_str(parse_url($preview_link, PHP_URL_QUERY), $preview_link_data);
+    parse_str((string)parse_url($preview_link, PHP_URL_QUERY), $preview_link_data);
     $preview_link_data = Url::transformUrlDataObject(Router::decodeRequestData($preview_link_data['data']));
     expect($preview_link_data['newsletter_hash'])->notEmpty();
     expect($preview_link_data['subscriber_id'])->false();
