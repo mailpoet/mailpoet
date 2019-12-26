@@ -24,7 +24,7 @@ class PurchasedProduct {
   /** @var LoggerFactory */
   private $logger_factory;
 
-  function __construct(WCHelper $helper = null) {
+  public function __construct(WCHelper $helper = null) {
     if ($helper === null) {
       $helper = new WCHelper();
     }
@@ -33,7 +33,7 @@ class PurchasedProduct {
     $this->logger_factory = LoggerFactory::getInstance();
   }
 
-  function init() {
+  public function init() {
     WPFunctions::get()->removeAllFilters('woocommerce_product_purchased_get_products');
     WPFunctions::get()->addFilter(
       'woocommerce_product_purchased_get_products',
@@ -53,7 +53,7 @@ class PurchasedProduct {
     }
   }
 
-  function getEventDetails() {
+  public function getEventDetails() {
     return [
       'slug' => self::SLUG,
       'title' => WPFunctions::get()->__('Purchased This Product', 'mailpoet'),
@@ -70,7 +70,7 @@ class PurchasedProduct {
     ];
   }
 
-  function getProducts($product_search_query) {
+  public function getProducts($product_search_query) {
     $args = [
       'post_type' => 'product',
       'post_status' => 'publish',
@@ -96,7 +96,7 @@ class PurchasedProduct {
     return $woocommerce_products;
   }
 
-  function scheduleEmailWhenProductIsPurchased($order_id) {
+  public function scheduleEmailWhenProductIsPurchased($order_id) {
     $order_details = $this->helper->wcGetOrder($order_id);
     if (!$order_details || !$order_details->get_billing_email()) {
       $this->logger_factory->getLogger(self::SLUG)->addInfo(

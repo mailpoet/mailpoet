@@ -27,20 +27,20 @@ class CronDaemon {
   /** @var CronHelper */
   private $cron_helper;
 
-  function __construct(DaemonHttpRunner $daemon_runner, CronHelper $cron_helper) {
+  public function __construct(DaemonHttpRunner $daemon_runner, CronHelper $cron_helper) {
     $this->daemon_runner = $daemon_runner;
     $this->cron_helper = $cron_helper;
   }
 
-  function run($data) {
+  public function run($data) {
     $this->daemon_runner->run($data);
   }
 
-  function ping() {
+  public function ping() {
      die($this->cron_helper->pingDaemon());
   }
 
-  function pingResponse() {
+  public function pingResponse() {
     $this->daemon_runner->ping();
   }
 }

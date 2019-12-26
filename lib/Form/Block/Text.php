@@ -4,7 +4,7 @@ namespace MailPoet\Form\Block;
 
 class Text extends Base {
 
-  static function render($block) {
+  public static function render($block) {
     $type = 'text';
     $automation_id = ' ';
     if ($block['id'] === 'email') {

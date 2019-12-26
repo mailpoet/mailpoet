@@ -12,7 +12,7 @@ class SubscribersCount {
   /** @var RequirementsChecker */
   private $requirements_checker;
 
-  function __construct(RequirementsChecker $requirements_checker = null) {
+  public function __construct(RequirementsChecker $requirements_checker = null) {
     if (!$requirements_checker) {
       $requirements_checker = new RequirementsChecker(new WooCommerceHelper());
     }
@@ -24,7 +24,7 @@ class SubscribersCount {
    *
    * @return int
    */
-  function getSubscribersCount(DynamicSegment $dynamic_segment) {
+  public function getSubscribersCount(DynamicSegment $dynamic_segment) {
     $orm = Subscriber::selectExpr('count(distinct ' . Subscriber::$_table . '.id) as cnt');
     if ($this->requirements_checker->shouldSkipSegment($dynamic_segment)) {
       return 0;

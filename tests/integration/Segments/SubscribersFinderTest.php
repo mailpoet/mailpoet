@@ -16,7 +16,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersFinderTest extends \MailPoetTest {
 
-  function _before() {
+  public function _before() {
     parent::_before();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
@@ -55,7 +55,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     $this->sending = SendingTask::create();
   }
 
-  function testFindSubscribersInSegmentInSegmentDefaultSegment() {
+  public function testFindSubscribersInSegmentInSegmentDefaultSegment() {
     $finder = new SubscribersFinder();
     $deleted_segment_id = 1000; // non-existent segment
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber_2->id], [$this->segment_1->id, $deleted_segment_id]);
@@ -63,7 +63,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     expect($subscribers[$this->subscriber_2->id])->equals($this->subscriber_2->id);
   }
 
-  function testFindSubscribersInSegmentUsingFinder() {
+  public function testFindSubscribersInSegmentUsingFinder() {
     $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['findSubscribersInSegment']);
     $mock
       ->expects($this->once())
@@ -81,7 +81,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     expect($subscribers)->contains($this->subscriber_3->id);
   }
 
-  function testFindSubscribersInSegmentUsingFinderMakesResultUnique() {
+  public function testFindSubscribersInSegmentUsingFinderMakesResultUnique() {
     $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['findSubscribersInSegment']);
     $mock
       ->expects($this->exactly(2))
@@ -98,7 +98,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     expect($subscribers)->count(1);
   }
 
-  function testItAddsSubscribersToTaskFromStaticSegments() {
+  public function testItAddsSubscribersToTaskFromStaticSegments() {
     $finder = new SubscribersFinder();
     $subscribers_count = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
@@ -111,7 +111,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     expect($this->sending->getSubscribers())->equals([$this->subscriber_2->id]);
   }
 
-  function testItDoesNotAddSubscribersToTaskFromNoSegment() {
+  public function testItDoesNotAddSubscribersToTaskFromNoSegment() {
     $finder = new SubscribersFinder();
     $subscribers_count = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
@@ -122,7 +122,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     expect($subscribers_count)->equals(0);
   }
 
-  function testItAddsSubscribersToTaskFromDynamicSegments() {
+  public function testItAddsSubscribersToTaskFromDynamicSegments() {
     $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['getSubscriberIdsInSegment']);
     $mock
       ->expects($this->once())
@@ -145,7 +145,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     expect($this->sending->getSubscribers())->equals([$this->subscriber_1->id]);
   }
 
-  function testItAddsSubscribersToTaskFromStaticAndDynamicSegments() {
+  public function testItAddsSubscribersToTaskFromStaticAndDynamicSegments() {
     $finder = new SubscribersFinder();
 
     $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['getSubscriberIdsInSegment']);

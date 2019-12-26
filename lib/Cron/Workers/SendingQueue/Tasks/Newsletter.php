@@ -37,7 +37,7 @@ class Newsletter {
   /** @var Emoji */
   private $emoji;
 
-  function __construct(WPFunctions $wp = null, PostsTask $posts_task = null, GATracking $ga_tracking = null, Emoji $emoji = null) {
+  public function __construct(WPFunctions $wp = null, PostsTask $posts_task = null, GATracking $ga_tracking = null, Emoji $emoji = null) {
     $settings = SettingsController::getInstance();
     $this->tracking_enabled = (boolean)$settings->get('tracking.enabled');
     if ($wp === null) {
@@ -59,7 +59,7 @@ class Newsletter {
     $this->emoji = $emoji;
   }
 
-  function getNewsletterFromQueue($queue) {
+  public function getNewsletterFromQueue($queue) {
     // get existing active or sending newsletter
     $newsletter = $queue->newsletter()
       ->whereNull('deleted_at')
@@ -87,7 +87,7 @@ class Newsletter {
     return $newsletter;
   }
 
-  function preProcessNewsletter(\MailPoet\Models\Newsletter $newsletter, $sending_task) {
+  public function preProcessNewsletter(\MailPoet\Models\Newsletter $newsletter, $sending_task) {
     // return the newsletter if it was previously rendered
     if (!is_null($sending_task->getNewsletterRenderedBody())) {
       return (!$sending_task->validate()) ?
@@ -167,7 +167,7 @@ class Newsletter {
     return $newsletter;
   }
 
-  function prepareNewsletterForSending($newsletter, $subscriber, $queue) {
+  public function prepareNewsletterForSending($newsletter, $subscriber, $queue) {
     // shortcodes and links will be replaced in the subject, html and text body
     // to speed the processing, join content into a continuous string
     $rendered_newsletter = $queue->getNewsletterRenderedBody();
@@ -204,7 +204,7 @@ class Newsletter {
     ];
   }
 
-  function markNewsletterAsSent($newsletter, $queue) {
+  public function markNewsletterAsSent($newsletter, $queue) {
     // if it's a standard or notification history newsletter, update its status
     if ($newsletter->type === NewsletterModel::TYPE_STANDARD ||
        $newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY
@@ -215,14 +215,14 @@ class Newsletter {
     }
   }
 
-  function getNewsletterSegments($newsletter) {
+  public function getNewsletterSegments($newsletter) {
     $segments = NewsletterSegmentModel::where('newsletter_id', $newsletter->id)
       ->select('segment_id')
       ->findArray();
     return Helpers::flattenArray($segments);
   }
 
-  function stopNewsletterPreProcessing($error_code = null) {
+  public function stopNewsletterPreProcessing($error_code = null) {
     MailerLog::processError(
       'queue_save',
       WPFunctions::get()->__('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.', 'mailpoet'),

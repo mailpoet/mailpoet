@@ -24,7 +24,7 @@ class SettingsTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->settings = SettingsController::getInstance();
@@ -37,7 +37,7 @@ class SettingsTest extends \MailPoetTest {
     );
   }
 
-  function testItCanGetSettings() {
+  public function testItCanGetSettings() {
     $response = $this->endpoint->get();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
@@ -51,7 +51,7 @@ class SettingsTest extends \MailPoetTest {
     expect($response->data)->equals($this->settings->getAllDefaults());
   }
 
-  function testItCanSetSettings() {
+  public function testItCanSetSettings() {
     $new_settings = [
       'some' => [
         'setting' => [
@@ -82,7 +82,7 @@ class SettingsTest extends \MailPoetTest {
     expect($response->data['some']['new_setting'])->true();
   }
 
-  function testItSchedulesInactiveSubscribersCheckIfIntervalSettingChanges() {
+  public function testItSchedulesInactiveSubscribersCheckIfIntervalSettingChanges() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 30);
     $settings = ['deactivate_subscriber_after_inactive_days' => 30];
     $this->endpoint->set($settings);
@@ -99,7 +99,7 @@ class SettingsTest extends \MailPoetTest {
     expect($task->scheduled_at)->lessThan(Carbon::now());
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

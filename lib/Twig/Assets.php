@@ -10,11 +10,11 @@ class Assets extends AbstractExtension {
   const CDN_URL = 'https://ps.w.org/mailpoet/';
   private $_globals;
 
-  function __construct($globals) {
+  public function __construct($globals) {
     $this->_globals = $globals;
   }
 
-  function getFunctions() {
+  public function getFunctions() {
     return [
       new TwigFunction(
         'stylesheet',
@@ -44,7 +44,7 @@ class Assets extends AbstractExtension {
     ];
   }
 
-  function generateStylesheet() {
+  public function generateStylesheet() {
     $stylesheets = func_get_args();
     $output = [];
 
@@ -59,7 +59,7 @@ class Assets extends AbstractExtension {
     return join("\n", $output);
   }
 
-  function generateJavascript() {
+  public function generateJavascript() {
     $scripts = func_get_args();
     $output = [];
 
@@ -73,7 +73,7 @@ class Assets extends AbstractExtension {
     return join("\n", $output);
   }
 
-  function getJavascriptScriptUrl($script) {
+  public function getJavascriptScriptUrl($script) {
     return sprintf(
       '%s/%s/%s',
       $this->_globals['assets_url'],
@@ -82,21 +82,21 @@ class Assets extends AbstractExtension {
     );
   }
 
-  function generateImageUrl($path) {
+  public function generateImageUrl($path) {
     return $this->appendVersionToUrl(
       $this->_globals['assets_url'] . '/img/' . $path
     );
   }
 
-  function appendVersionToUrl($url) {
+  public function appendVersionToUrl($url) {
     return WPFunctions::get()->addQueryArg('mailpoet_version', $this->_globals['version'], $url);
   }
 
-  function getAssetFileName($manifest, $asset) {
+  public function getAssetFileName($manifest, $asset) {
     return (!empty($manifest[$asset])) ? $manifest[$asset] : $asset;
   }
 
-  function generateCdnUrl($path) {
+  public function generateCdnUrl($path) {
     $useCdn = defined('MAILPOET_USE_CDN') ? MAILPOET_USE_CDN : true;
     return ($useCdn ? self::CDN_URL : $this->_globals['base_url'] . '/plugin_repository/') . "assets/$path";
   }

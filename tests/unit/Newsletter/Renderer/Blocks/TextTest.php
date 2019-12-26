@@ -14,12 +14,12 @@ class TextTest extends \MailPoetUnitTest {
   /** @var pQuery */
   private $parser;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->parser = new pQuery;
   }
 
-  function testItRendersPlainText() {
+  public function testItRendersPlainText() {
     $output = Text::render($this->block);
     $expected_result = '
       <tr>
@@ -30,7 +30,7 @@ class TextTest extends \MailPoetUnitTest {
     expect($output)->equals($expected_result);
   }
 
-  function testItRendersParagraph() {
+  public function testItRendersParagraph() {
     $this->block['text'] = '<p>Text</p>';
     $output = Text::render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
@@ -45,7 +45,7 @@ class TextTest extends \MailPoetUnitTest {
     expect($paragraph_table)->equals($expected_result);
   }
 
-  function testItRendersList() {
+  public function testItRendersList() {
     $this->block['text'] = '<ul><li>Item 1</li><li>Item 2</li></ul>';
     $output = Text::render($this->block);
     $ul = $this->parser->parseStr($output)->query('ul');
@@ -55,7 +55,7 @@ class TextTest extends \MailPoetUnitTest {
     expect($list)->equals($expected_result);
   }
 
-  function testItRendersBlockquotes() {
+  public function testItRendersBlockquotes() {
     $this->block['text'] = '<blockquote><p>Quote</p></blockquote>';
     $output = Text::render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
@@ -80,14 +80,14 @@ class TextTest extends \MailPoetUnitTest {
     expect($blockquote_table)->equals($expected_result);
   }
 
-  function testItStylesHeadings() {
+  public function testItStylesHeadings() {
     $this->block['text'] = '<h1>Heading</h1><h2>Heading 2</h2>';
     $output = Text::render($this->block);
     expect($output)->contains('<h1 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading</h1>');
     expect($output)->contains('<h2 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading 2</h2>');
   }
 
-  function testItRemovesLastLineBreak() {
+  public function testItRemovesLastLineBreak() {
     $this->block['text'] = 'hello<br />';
     $output = Text::render($this->block);
     expect($output)->notContains('<br />');

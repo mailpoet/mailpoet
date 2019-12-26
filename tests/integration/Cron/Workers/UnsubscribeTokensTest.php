@@ -17,7 +17,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
   private $subscriber_without_token;
   private $newsletter_without_token;
 
-  function _before() {
+  public function _before() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
@@ -47,7 +47,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
     $this->newsletter_without_token->save();
   }
 
-  function testItAddsTokensToSubscribers() {
+  public function testItAddsTokensToSubscribers() {
     $worker = new UnsubscribeTokens();
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate(), microtime(true));
     $this->subscriber_with_token = Subscriber::findOne($this->subscriber_with_token->id);
@@ -56,7 +56,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
     expect(strlen($this->subscriber_without_token->unsubscribe_token))->equals(15);
   }
 
-  function testItAddsTokensToNewsletters() {
+  public function testItAddsTokensToNewsletters() {
     $worker = new UnsubscribeTokens();
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate(), microtime(true));
     $this->newsletter_with_token = Newsletter::findOne($this->newsletter_with_token->id);
@@ -65,7 +65,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
     expect(strlen($this->newsletter_without_token->unsubscribe_token))->equals(15);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);

@@ -11,7 +11,7 @@ class MailerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->available_mailer_methods = [
       [
@@ -67,7 +67,7 @@ class MailerTest extends \MailPoetTest {
     $this->settings = SettingsController::getInstance();
   }
 
-  function testItRequiresMailerMethod() {
+  public function testItRequiresMailerMethod() {
     // reset mta settings so that we have no default mailer
     $this->settings->set('mta', null);
     try {
@@ -79,7 +79,7 @@ class MailerTest extends \MailPoetTest {
     }
   }
 
-  function testItRequiresSender() {
+  public function testItRequiresSender() {
     try {
       $mailer = new Mailer();
       $mailer->init($mailer = $this->mailer);
@@ -89,7 +89,7 @@ class MailerTest extends \MailPoetTest {
     }
   }
 
-  function testItCanConstruct() {
+  public function testItCanConstruct() {
     $mailer = new Mailer();
     $mailer->init($this->mailer, $this->sender, $this->reply_to, $this->return_path);
     expect($mailer->sender['from_name'])->equals($this->sender['name']);
@@ -99,7 +99,7 @@ class MailerTest extends \MailPoetTest {
     expect($mailer->return_path)->equals($this->return_path);
   }
 
-  function testItThrowsUnknownMailerException() {
+  public function testItThrowsUnknownMailerException() {
     try {
       $mailer = new Mailer();
       $mailer->init(['method' => 'Unknown'], $this->sender);
@@ -109,7 +109,7 @@ class MailerTest extends \MailPoetTest {
     }
   }
 
-  function testItSetsReplyToAddressWhenOnlyNameIsAvailable() {
+  public function testItSetsReplyToAddressWhenOnlyNameIsAvailable() {
     $reply_to = ['name' => 'test'];
     $mailer = new Mailer();
     $mailer->init($this->mailer, $this->sender, $reply_to);
@@ -117,7 +117,7 @@ class MailerTest extends \MailPoetTest {
     expect($reply_to['reply_to_email'])->equals($this->sender['address']);
   }
 
-  function testItGetsReturnPathAddress() {
+  public function testItGetsReturnPathAddress() {
     $mailer = new Mailer();
     $mailer->init($this->mailer, $this->sender, $this->reply_to);
     $return_path = $mailer->getReturnPathAddress('bounce@test.com');
@@ -127,7 +127,7 @@ class MailerTest extends \MailPoetTest {
     expect($return_path)->equals('settngs_bounce@test.com');
   }
 
-  function testItCanTransformSubscriber() {
+  public function testItCanTransformSubscriber() {
     $mailer = new Mailer();
     $mailer->init($this->mailer, $this->sender, $this->reply_to);
     expect($mailer->formatSubscriberNameAndEmailAddress('test@email.com'))
@@ -164,7 +164,7 @@ class MailerTest extends \MailPoetTest {
     )->equals('First Last <test@email.com>');
   }
 
-  function testItCanConvertNonASCIIEmailAddressString() {
+  public function testItCanConvertNonASCIIEmailAddressString() {
     $mailer = new Mailer();
     $mailer->init($this->mailer, $this->sender, $this->reply_to);
     expect($mailer->sender['from_name'])->equals($this->sender['name']);
@@ -185,7 +185,7 @@ class MailerTest extends \MailPoetTest {
       ->equals(sprintf('=?utf-8?B?%s?=', base64_encode($reply_to['name'])));
   }
 
-  function testItCanSend() {
+  public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->sender['address'] = 'staff@mailpoet.com';
     $mailer = new Mailer();
@@ -194,7 +194,7 @@ class MailerTest extends \MailPoetTest {
     expect($result['response'])->true();
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

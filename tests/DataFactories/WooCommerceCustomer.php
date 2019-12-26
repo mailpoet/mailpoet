@@ -10,7 +10,7 @@ class WooCommerceCustomer {
   /** @var array */
   private $data;
 
-  function __construct(\AcceptanceTester $tester) {
+  public function __construct(\AcceptanceTester $tester) {
     $unique_id = bin2hex(random_bytes(7)); // phpcs:ignore
     $this->tester = $tester;
     $this->data = [
@@ -25,7 +25,7 @@ class WooCommerceCustomer {
  * @param string $name
  * @return $this
  */
-  function withFirstName($name) {
+  public function withFirstName($name) {
     return $this->update('first_name', $name);
   }
 
@@ -33,7 +33,7 @@ class WooCommerceCustomer {
    * @param string $name
    * @return $this
    */
-  function withLastName($name) {
+  public function withLastName($name) {
     return $this->update('last_name', $name);
   }
 
@@ -41,7 +41,7 @@ class WooCommerceCustomer {
    * @param string $password
    * @return $this
    */
-  function withPassword($password) {
+  public function withPassword($password) {
     return $this->update('password', $password);
   }
 
@@ -49,12 +49,12 @@ class WooCommerceCustomer {
    * @param string $email
    * @return $this
    */
-  function withEmail($email) {
+  public function withEmail($email) {
     return $this->update('email', $email);
   }
 
 
-  function create() {
+  public function create() {
     $create_output = $this->tester->cliToArray(['wc', 'customer', 'create', '--porcelain', '--user=admin', "--first_name={$this->data['first_name']}", "--last_name={$this->data['last_name']}", "--email={$this->data['email']}", "--password={$this->data['password']}"]);
     $customer_out = $this->tester->cliToArray(['wc', 'customer', 'get', $create_output[0], '--format=json', '--user=admin']);
     return json_decode($customer_out[0], true);
@@ -63,11 +63,11 @@ class WooCommerceCustomer {
   /**
    * @param int $id
    */
-  function delete($id) {
+  public function delete($id) {
     $this->tester->cliToArray(['wc', 'customer', 'delete', $id, '--force=1', '--user=admin']);
   }
 
-  function deleteAll() {
+  public function deleteAll() {
     $list = $this->tester->cliToArray(['wc', 'customer', 'list', '--format=json', '--user=admin', '--fields=id']);
     foreach (json_decode($list[0], true) as $item) {
       $this->delete($item['id']);

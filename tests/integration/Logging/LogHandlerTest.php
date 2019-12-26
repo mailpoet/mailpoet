@@ -76,7 +76,7 @@ class LogHandlerTest extends \MailPoetTest {
     expect($log)->notEmpty();
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Log::$_table);
   }
 

@@ -6,7 +6,7 @@ use MailPoet\Models\Subscriber;
 
 class UserRoleTest extends \MailPoetTest {
 
-  function _before() {
+  public function _before() {
     $this->cleanData();
     wp_insert_user([
       'user_login' => 'user-role-test1',
@@ -28,19 +28,19 @@ class UserRoleTest extends \MailPoetTest {
     ]);
   }
 
-  function testItConstructsQuery() {
+  public function testItConstructsQuery() {
     $userRole = new UserRole('editor', 'and');
     $sql = $userRole->toSql(Subscriber::selectExpr('*'));
     expect($sql->count())->equals(2);
   }
 
-  function testItDoesntGetSubString() {
+  public function testItDoesntGetSubString() {
     $userRole = new UserRole('edit', 'and');
     $sql = $userRole->toSql(Subscriber::selectExpr('*'));
     expect($sql->count())->equals(0);
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanData();
   }
 

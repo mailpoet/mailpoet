@@ -18,7 +18,7 @@ class ApiDataSanitizer {
   const ERROR_NO_VALUES = 1009;
   const ERROR_NO_VALUE = 1010;
 
-  function sanitize(array $data = []) {
+  public function sanitize(array $data = []) {
     $this->checkMandatoryStringParameter($data, 'name');
     $this->checkMandatoryStringParameter($data, 'type');
     $this->checkParamsType($data);

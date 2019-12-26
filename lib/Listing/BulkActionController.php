@@ -9,12 +9,12 @@ class BulkActionController {
   /** @var Handler */
   private $handler;
 
-  function __construct(BulkActionFactory $factory, Handler $handler) {
+  public function __construct(BulkActionFactory $factory, Handler $handler) {
     $this->factory = $factory;
     $this->handler = $handler;
   }
 
-  function apply($model_class, array $data) {
+  public function apply($model_class, array $data) {
     $bulk_action_method = 'bulk' . ucfirst($data['action']);
     unset($data['action']);
 

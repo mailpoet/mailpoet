@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 
 class SettingsArchivePageCest {
-  function createArchivePageNoSentNewsletters(\AcceptanceTester $I) {
+  public function createArchivePageNoSentNewsletters(\AcceptanceTester $I) {
     $I->wantTo('Create page with MP archive shortcode, showing no sent newsletters');
     $segment_factory = new Segment();
     $segment = $segment_factory->withName('Empty Send')->create();
@@ -22,7 +22,7 @@ class SettingsArchivePageCest {
     $I->waitForText($pageTitle);
     $I->waitForText('Oops! There are no newsletters to display.');
   }
-  function createArchivePageWithSentNewsletters(\AcceptanceTester $I) {
+  public function createArchivePageWithSentNewsletters(\AcceptanceTester $I) {
     $I->wantTo('Create page with MP archive shortcode, showing sent newsletters');
     $segment_factory = new Segment();
     $segment2 = $segment_factory->withName('SentNewsletters')->create();

@@ -33,7 +33,7 @@ class JsonTypesTest extends \MailPoetTest {
     ],
   ];
 
-  function _before() {
+  public function _before() {
     $this->wp = new WPFunctions();
     $this->entity_manager = $this->createEntityManager();
     $this->table_name = $this->entity_manager->getClassMetadata(JsonEntity::class)->getTableName();
@@ -47,7 +47,7 @@ class JsonTypesTest extends \MailPoetTest {
     ");
   }
 
-  function testItSavesJsonData() {
+  public function testItSavesJsonData() {
     $entity = new JsonEntity();
     $entity->setJsonData($this->test_data);
     $entity->setJsonOrSerializedData($this->test_data);
@@ -59,7 +59,7 @@ class JsonTypesTest extends \MailPoetTest {
     expect($saved_data['json_or_serialized_data'])->same(json_encode($this->test_data));
   }
 
-  function testItLoadsJsonData() {
+  public function testItLoadsJsonData() {
     $this->connection->executeUpdate(
       "INSERT INTO $this->table_name (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
       [
@@ -74,7 +74,7 @@ class JsonTypesTest extends \MailPoetTest {
     expect($entity->getJsonOrSerializedData())->same($this->test_data);
   }
 
-  function testItLoadsSerializedData() {
+  public function testItLoadsSerializedData() {
     $this->connection->executeUpdate(
       "INSERT INTO $this->table_name (id, json_or_serialized_data) VALUES (?, ?)",
       [
@@ -88,7 +88,7 @@ class JsonTypesTest extends \MailPoetTest {
     expect($entity->getJsonOrSerializedData())->same($this->test_data);
   }
 
-  function testItSavesNullData() {
+  public function testItSavesNullData() {
     $entity = new JsonEntity();
     $entity->setJsonData(null);
     $entity->setJsonOrSerializedData(null);
@@ -100,7 +100,7 @@ class JsonTypesTest extends \MailPoetTest {
     expect($saved_data['json_or_serialized_data'])->null();
   }
 
-  function testItLoadsNullData() {
+  public function testItLoadsNullData() {
     $this->connection->executeUpdate(
       "INSERT INTO $this->table_name (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
       [
@@ -115,7 +115,7 @@ class JsonTypesTest extends \MailPoetTest {
     expect($entity->getJsonOrSerializedData())->null();
   }
 
-  function testItLoadsEmptyStringAsNull() {
+  public function testItLoadsEmptyStringAsNull() {
     $this->connection->executeUpdate(
       "INSERT INTO $this->table_name (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
       [
@@ -130,7 +130,7 @@ class JsonTypesTest extends \MailPoetTest {
     expect($entity->getJsonOrSerializedData())->null();
   }
 
-  function testItDoesNotSaveInvalidData() {
+  public function testItDoesNotSaveInvalidData() {
     $entity = new JsonEntity();
     $entity->setJsonData("\xB1\x31"); // invalid unicode sequence
     $this->entity_manager->persist($entity);
@@ -144,7 +144,7 @@ class JsonTypesTest extends \MailPoetTest {
     expect($exception)->isInstanceOf(RuntimeException::class);
   }
 
-  function testItDoesNotLoadInvalidData() {
+  public function testItDoesNotLoadInvalidData() {
     $this->connection->executeUpdate(
       "INSERT INTO $this->table_name (id, json_data) VALUES (?, ?)",
       [
@@ -162,7 +162,7 @@ class JsonTypesTest extends \MailPoetTest {
     expect($exception)->isInstanceOf(RuntimeException::class);
   }
 
-  function _after() {
+  public function _after() {
     parent::_after();
     $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
   }

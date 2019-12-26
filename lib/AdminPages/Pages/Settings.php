@@ -41,7 +41,7 @@ class Settings {
   /** @var Installation */
   private $installation;
 
-  function __construct(
+  public function __construct(
     PageRenderer $page_renderer,
     SettingsController $settings,
     WooCommerceHelper $woocommerce_helper,
@@ -59,7 +59,7 @@ class Settings {
     $this->captcha = $captcha;
   }
 
-  function render() {
+  public function render() {
     $settings = $this->settings->getAll();
     $flags = $this->getFlags();
 

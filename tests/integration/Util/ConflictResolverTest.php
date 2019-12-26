@@ -9,7 +9,7 @@ class ConflictResolverTest extends \MailPoetTest {
   public $conflict_resolver;
   public $wp_filter;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
     $this->conflict_resolver = new ConflictResolver();
     $this->conflict_resolver->init();
@@ -17,7 +17,7 @@ class ConflictResolverTest extends \MailPoetTest {
     $this->wp_filter = $wp_filter;
   }
 
-  function testItResolvesRouterUrlQueryParametersConflict() {
+  public function testItResolvesRouterUrlQueryParametersConflict() {
     expect(!empty($this->wp_filter['mailpoet_conflict_resolver_router_url_query_parameters']))->true();
     // it should unset action & endpoint GET variables
     $_GET['endpoint'] = $_GET['action'] = $_GET['test'] = 'test';
@@ -27,7 +27,7 @@ class ConflictResolverTest extends \MailPoetTest {
     expect(empty($_GET['test']))->false();
   }
 
-  function testItUnloadsAllStylesFromLocationsNotOnPermittedList() {
+  public function testItUnloadsAllStylesFromLocationsNotOnPermittedList() {
     expect(!empty($this->wp_filter['mailpoet_conflict_resolver_styles']))->true();
     // grab a random permitted style location
     $permitted_asset_location = $this->conflict_resolver->permitted_assets_locations['styles'][array_rand($this->conflict_resolver->permitted_assets_locations['styles'], 1)];
@@ -45,7 +45,7 @@ class ConflictResolverTest extends \MailPoetTest {
     expect(in_array('permitted_style', $wp_styles->queue))->true();
   }
 
-  function testItWhitelistsStyles() {
+  public function testItWhitelistsStyles() {
     wp_enqueue_style('select2', '/wp-content/some/offending/plugin/select2.css');
     $wp = new WPFunctions;
     $wp->addFilter(
@@ -65,7 +65,7 @@ class ConflictResolverTest extends \MailPoetTest {
     expect(in_array('select2', $wp_styles->queue))->true();
   }
 
-  function testItUnloadsAllScriptsFromLocationsNotOnPermittedList() {
+  public function testItUnloadsAllScriptsFromLocationsNotOnPermittedList() {
     expect(!empty($this->wp_filter['mailpoet_conflict_resolver_scripts']))->true();
     // grab a random permitted script location
     $permitted_asset_location = $this->conflict_resolver->permitted_assets_locations['scripts'][array_rand($this->conflict_resolver->permitted_assets_locations['scripts'], 1)];
@@ -83,7 +83,7 @@ class ConflictResolverTest extends \MailPoetTest {
     expect(in_array('permitted_script', $wp_scripts->queue))->true();
   }
 
-  function testItWhitelistsScripts() {
+  public function testItWhitelistsScripts() {
     wp_enqueue_script('select2', '/wp-content/some/offending/plugin/select2.js');
     $wp = new WPFunctions;
     $wp->addFilter(
@@ -101,6 +101,6 @@ class ConflictResolverTest extends \MailPoetTest {
     expect(in_array('select2', $wp_scripts->queue))->true();
   }
 
-  function _after() {
+  public function _after() {
   }
 }

@@ -25,11 +25,11 @@ class ScheduledTaskSubscriber extends Model {
   public static $_table = MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE;
   public static $_id_column = ['task_id', 'subscriber_id'];
 
-  function task() {
+  public function task() {
     return $this->hasOne(__NAMESPACE__ . '\ScheduledTask', 'id', 'task_id');
   }
 
-  static function createOrUpdate($data = []) {
+  public static function createOrUpdate($data = []) {
     if (!is_array($data) || empty($data['task_id']) || empty($data['subscriber_id'])) {
       return;
     }
@@ -41,7 +41,7 @@ class ScheduledTaskSubscriber extends Model {
     ]);
   }
 
-  static function setSubscribers($task_id, array $subscriber_ids) {
+  public static function setSubscribers($task_id, array $subscriber_ids) {
     static::clearSubscribers($task_id);
     return static::addSubscribers($task_id, $subscriber_ids);
   }
@@ -49,7 +49,7 @@ class ScheduledTaskSubscriber extends Model {
   /**
    * For large batches use MailPoet\Segments\SubscribersFinder::addSubscribersToTaskFromSegments()
    */
-  static function addSubscribers($task_id, array $subscriber_ids) {
+  public static function addSubscribers($task_id, array $subscriber_ids) {
     foreach ($subscriber_ids as $subscriber_id) {
       self::createOrUpdate([
         'task_id' => $task_id,
@@ -58,23 +58,23 @@ class ScheduledTaskSubscriber extends Model {
     }
   }
 
-  static function clearSubscribers($task_id) {
+  public static function clearSubscribers($task_id) {
     return self::where('task_id', $task_id)->deleteMany();
   }
 
-  static function getUnprocessedCount($task_id) {
+  public static function getUnprocessedCount($task_id) {
     return self::getCount($task_id, self::STATUS_UNPROCESSED);
   }
 
-  static function getProcessedCount($task_id) {
+  public static function getProcessedCount($task_id) {
     return self::getCount($task_id, self::STATUS_PROCESSED);
   }
 
-  static function getTotalCount($task_id) {
+  public static function getTotalCount($task_id) {
     return self::getCount($task_id);
   }
 
-  static function listingQuery($data) {
+  public static function listingQuery($data) {
     $group = isset($data['group']) ? $data['group'] : 'all';
     return self::join(Subscriber::$_table, ["subscriber_id", "=", "subscribers.id"], "subscribers")
       ->filter($group, $data['params'])
@@ -88,7 +88,7 @@ class ScheduledTaskSubscriber extends Model {
       ->select('subscribers.first_name', 'firstName');
   }
 
-  static function groups($data) {
+  public static function groups($data) {
     $params = $data['params'];
     return [
       [
@@ -114,23 +114,23 @@ class ScheduledTaskSubscriber extends Model {
     ];
   }
 
-  static function all($orm, $params) {
+  public static function all($orm, $params) {
     return $orm->whereIn('task_id', $params['task_ids']);
   }
 
-  static function sent($orm, $params) {
+  public static function sent($orm, $params) {
     return $orm->filter('all', $params)
       ->where('processed', self::STATUS_PROCESSED)
       ->where('failed', self::FAIL_STATUS_OK);
   }
 
-  static function failed($orm, $params) {
+  public static function failed($orm, $params) {
     return $orm->filter('all', $params)
       ->where('processed', self::STATUS_PROCESSED)
       ->where('failed', self::FAIL_STATUS_FAILED);
   }
 
-  static function unprocessed($orm, $params) {
+  public static function unprocessed($orm, $params) {
     return $orm->filter('all', $params)
       ->where('processed', self::STATUS_UNPROCESSED);
   }

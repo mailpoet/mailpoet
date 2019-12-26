@@ -13,7 +13,7 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge\API;
 
 class MailPoetAPITest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = [
       'method' => 'MailPoet',
@@ -53,7 +53,7 @@ class MailPoetAPITest extends \MailPoetTest {
     ];
   }
 
-  function testItCanGenerateBodyForSingleMessage() {
+  public function testItCanGenerateBodyForSingleMessage() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $subscriber = $this->mailer->processSubscriber($this->subscriber);
     expect($body[0]['to']['address'])->equals($subscriber['email']);
@@ -67,7 +67,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($body[0]['text'])->equals($this->newsletter['body']['text']);
   }
 
-  function testItCanGenerateBodyForMultipleMessages() {
+  public function testItCanGenerateBodyForMultipleMessages() {
     $newsletters = array_fill(0, 10, $this->newsletter);
     $subscribers = array_fill(0, 10, $this->subscriber);
     $body = $this->mailer->getBody($newsletters, $subscribers);
@@ -84,7 +84,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($body[0]['text'])->equals($this->newsletter['body']['text']);
   }
 
-  function testItCanAddExtraParametersToSingleMessage() {
+  public function testItCanAddExtraParametersToSingleMessage() {
     $extra_params = [
       'unsubscribe_url' => 'http://example.com',
       'meta' => $this->metaInfo,
@@ -94,7 +94,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($body[0]['meta'])->equals($extra_params['meta']);
   }
 
-  function testItCanAddExtraParametersToMultipleMessages() {
+  public function testItCanAddExtraParametersToMultipleMessages() {
     $newsletters = array_fill(0, 10, $this->newsletter);
     $subscribers = array_fill(0, 10, $this->subscriber);
     $extra_params = [
@@ -110,7 +110,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($body[9]['meta'])->equals($extra_params['meta'][9]);
   }
 
-  function testItCanProcessSubscriber() {
+  public function testItCanProcessSubscriber() {
     expect($this->mailer->processSubscriber('test@test.com'))
       ->equals(
         [
@@ -131,7 +131,7 @@ class MailPoetAPITest extends \MailPoetTest {
         ]);
   }
 
-  function testItWillNotSendIfApiKeyIsMarkedInvalid() {
+  public function testItWillNotSendIfApiKeyIsMarkedInvalid() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->mailer->api_key = 'someapi';
     $this->mailer->services_checker = Stub::make(
@@ -146,7 +146,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($result['response'])->false();
   }
 
-  function testItCannotSendWithoutProperApiKey() {
+  public function testItCannotSendWithoutProperApiKey() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->mailer->api->setKey('someapi');
     $result = $this->mailer->send(
@@ -156,7 +156,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($result['response'])->false();
   }
 
-  function testItCanSend() {
+  public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $result = $this->mailer->send(
       $this->newsletter,
@@ -165,7 +165,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($result['response'])->true();
   }
 
-  function testFormatConnectionError() {
+  public function testFormatConnectionError() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
       ['sendMessages' => [
@@ -180,7 +180,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($result['error']->getOperation())->equals(MailerError::OPERATION_CONNECT);
   }
 
-  function testFormatErrorNotArray() {
+  public function testFormatErrorNotArray() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
       ['sendMessages' => [
@@ -196,7 +196,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
   }
 
-  function testFormatErrorTooBig() {
+  public function testFormatErrorTooBig() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
       ['sendMessages' => [
@@ -211,7 +211,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($result['error'])->isInstanceOf(MailerError::class);
   }
 
-  function testFormatPayloadError() {
+  public function testFormatPayloadError() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
       ['sendMessages' => [
@@ -227,7 +227,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
   }
 
-  function testFormatPayloadErrorWithErrorMessage() {
+  public function testFormatPayloadErrorWithErrorMessage() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
       ['sendMessages' => [
@@ -243,7 +243,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
   }
 
-  function testItCallsAuthorizedEmailsValidationOnRelatedError() {
+  public function testItCallsAuthorizedEmailsValidationOnRelatedError() {
     $mailer = new MailPoet(
       $this->settings['api_key'],
       $this->sender,
@@ -263,7 +263,7 @@ class MailPoetAPITest extends \MailPoetTest {
     $mailer->send([$this->newsletter], [$this->subscriber]);
   }
 
-  function testItChecksBlacklistBeforeSendingToASingleSubscriber() {
+  public function testItChecksBlacklistBeforeSendingToASingleSubscriber() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
@@ -289,7 +289,7 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($result['error']->getMessage())->contains('MailPoet has returned an unknown error.');
   }
 
-  function testItChecksBlacklistBeforeSendingToMultipleSubscribers() {
+  public function testItChecksBlacklistBeforeSendingToMultipleSubscribers() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(

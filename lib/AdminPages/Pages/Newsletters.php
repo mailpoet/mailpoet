@@ -50,7 +50,7 @@ class Newsletters {
   /** @var SubscribersFeature */
   private $subscribers_feature;
 
-  function __construct(
+  public function __construct(
     PageRenderer $page_renderer,
     PageLimit $listing_page_limit,
     WPFunctions $wp,
@@ -72,7 +72,7 @@ class Newsletters {
     $this->subscribers_feature = $subscribers_feature;
   }
 
-  function render() {
+  public function render() {
     global $wp_roles;
 
     $data = [];

@@ -50,7 +50,7 @@ class Populator {
   /** @var FeaturesController */
   private $flags_controller;
 
-  function __construct(
+  public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     Captcha $captcha,
@@ -145,7 +145,7 @@ class Populator {
     $this->flags_controller = $flags_controller;
   }
 
-  function up() {
+  public function up() {
     $localizer = new Localizer();
     $localizer->forceLoadWebsiteLocaleText();
 

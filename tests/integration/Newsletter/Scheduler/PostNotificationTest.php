@@ -22,12 +22,12 @@ class PostNotificationTest extends \MailPoetTest {
   /** @var PostNotificationScheduler */
   private $post_notification_scheduler;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->post_notification_scheduler = new PostNotificationScheduler;
   }
 
-  function testItCreatesPostNotificationSendingTask() {
+  public function testItCreatesPostNotificationSendingTask() {
     $newsletter = $this->_createNewsletter();
     $newsletter->schedule = '* 5 * * *';
 
@@ -44,7 +44,7 @@ class PostNotificationTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(1);
   }
 
-  function testItCreatesPostNotificationSendingTaskIfAPausedNotificationExists() {
+  public function testItCreatesPostNotificationSendingTaskIfAPausedNotificationExists() {
     $newsletter = $this->_createNewsletter();
     $newsletter->schedule = '* 5 * * *';
 
@@ -66,7 +66,7 @@ class PostNotificationTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(2);
   }
 
-  function tesIttDoesNotSchedulePostNotificationWhenNotificationWasAlreadySentForPost() {
+  public function tesIttDoesNotSchedulePostNotificationWhenNotificationWasAlreadySentForPost() {
     $newsletter = $this->_createNewsletter();
     $newsletter_post = NewsletterPost::create();
     $newsletter_post->newsletter_id = $newsletter->id;
@@ -80,7 +80,7 @@ class PostNotificationTest extends \MailPoetTest {
     expect($queue)->false();
   }
 
-  function testItSchedulesPostNotification() {
+  public function testItSchedulesPostNotification() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -101,7 +101,7 @@ class PostNotificationTest extends \MailPoetTest {
     expect($queue->scheduled_at)->startsWith($next_run_date->format('Y-m-d 05:00'));
   }
 
-  function testItProcessesPostNotificationScheduledForDailyDelivery() {
+  public function testItProcessesPostNotificationScheduledForDailyDelivery() {
     $newsletter_option_field = NewsletterOptionField::create();
     $newsletter_option_field->name = 'schedule';
     $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
@@ -125,7 +125,7 @@ class PostNotificationTest extends \MailPoetTest {
       ->equals('2017-01-01 14:00:00');
   }
 
-  function testItProcessesPostNotificationScheduledForWeeklyDelivery() {
+  public function testItProcessesPostNotificationScheduledForWeeklyDelivery() {
     $newsletter_option_field = NewsletterOptionField::create();
     $newsletter_option_field->name = 'schedule';
     $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
@@ -149,7 +149,7 @@ class PostNotificationTest extends \MailPoetTest {
       ->equals('2017-01-03 14:00:00');
   }
 
-  function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnSpecificDay() {
+  public function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnSpecificDay() {
     $newsletter_option_field = NewsletterOptionField::create();
     $newsletter_option_field->name = 'schedule';
     $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
@@ -173,7 +173,7 @@ class PostNotificationTest extends \MailPoetTest {
       ->equals('2017-01-19 14:00:00');
   }
 
-  function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnLastWeekDay() {
+  public function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnLastWeekDay() {
     $newsletter_option_field = NewsletterOptionField::create();
     $newsletter_option_field->name = 'schedule';
     $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
@@ -197,7 +197,7 @@ class PostNotificationTest extends \MailPoetTest {
       ->equals('2017-02-25 14:00:00');
   }
 
-  function testItProcessesPostNotificationScheduledForImmediateDelivery() {
+  public function testItProcessesPostNotificationScheduledForImmediateDelivery() {
     $newsletter_option_field = NewsletterOptionField::create();
     $newsletter_option_field->name = 'schedule';
     $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
@@ -222,7 +222,7 @@ class PostNotificationTest extends \MailPoetTest {
   }
 
 
-  function testUnsearchablePostTypeDoesNotSchedulePostNotification() {
+  public function testUnsearchablePostTypeDoesNotSchedulePostNotification() {
     $hook = ContainerWrapper::getInstance()->get(Hooks::class);
 
     $newsletter = $this->_createNewsletter();
@@ -258,7 +258,7 @@ class PostNotificationTest extends \MailPoetTest {
     expect($queue)->notequals(false);
   }
 
-  function testSchedulerWontRunIfUnsentNotificationHistoryExists() {
+  public function testSchedulerWontRunIfUnsentNotificationHistoryExists() {
     $newsletter = $this->_createNewsletter();
 
     $this->_createNewsletterOptions(
@@ -290,7 +290,7 @@ class PostNotificationTest extends \MailPoetTest {
     expect($queue)->equals(false);
   }
 
-  function _removePostNotificationHooks() {
+  public function _removePostNotificationHooks() {
     foreach (WPPosts::getTypes() as $post_type) {
       remove_filter(
         'publish_' . $post_type,
@@ -300,7 +300,7 @@ class PostNotificationTest extends \MailPoetTest {
     }
   }
 
-  function _createNewsletter() {
+  public function _createNewsletter() {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_NOTIFICATION;
     $newsletter->status = Newsletter::STATUS_ACTIVE;
@@ -309,7 +309,7 @@ class PostNotificationTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  function _createNewsletterOptions($newsletter_id, $options) {
+  public function _createNewsletterOptions($newsletter_id, $options) {
     foreach ($options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::where('name', $option)->findOne();
       if (!$newsletter_option_field) {
@@ -329,7 +329,7 @@ class PostNotificationTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     Carbon::setTestNow();
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);

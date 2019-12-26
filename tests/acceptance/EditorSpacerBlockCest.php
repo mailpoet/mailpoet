@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditorSpacerBlockCest {
-  function addSpacer(\AcceptanceTester $I) {
+  public function addSpacer(\AcceptanceTester $I) {
     $I->wantTo('add spacer block to newsletter');
     $spacerResizeHandle = '[data-automation-id="spacer_resize_handle"]';
     $spacerInEditor = '[data-automation-id="spacer"]';

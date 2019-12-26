@@ -9,12 +9,12 @@ use MailPoet\Config\Renderer;
 use MailPoetVendor\Twig_Environment;
 
 class RendererTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->renderer = new Renderer($caching = false, $debugging = false);
   }
 
-  function testItUsesCorrectAssetsManifestFilenames() {
+  public function testItUsesCorrectAssetsManifestFilenames() {
     $renderer = Stub::make(new Renderer(),
       ['getAssetManifest' => function($manifest) {
         return $manifest;
@@ -25,7 +25,7 @@ class RendererTest extends \MailPoetTest {
     expect($renderer->assets_manifest_css)->equals(Env::$assets_path . '/dist/css/manifest.json');
   }
 
-  function testItGetsAssetManifest() {
+  public function testItGetsAssetManifest() {
     $assets_manifest_js = [
       'script1.js' => 'script1.hash.js',
       'script2.js' => 'script2.hash.js',
@@ -41,11 +41,11 @@ class RendererTest extends \MailPoetTest {
     expect($this->renderer->getAssetManifest(Env::$temp_path . '/css.json'))->equals($assets_manifest_css);
   }
 
-  function testItReturnsFalseAssetManifestDoesNotExist() {
+  public function testItReturnsFalseAssetManifestDoesNotExist() {
     expect($this->renderer->getAssetManifest(Env::$temp_path . '/js.json'))->false();
   }
 
-  function testItCanGetCssAsset() {
+  public function testItCanGetCssAsset() {
     $assets_manifest_css = [
       'style1.css' => 'style1.hash.css',
       'style2.css' => 'style2.hash.css',
@@ -56,7 +56,7 @@ class RendererTest extends \MailPoetTest {
     expect($renderer->getCssAsset('style2.css'))->equals('style2.hash.css');
   }
 
-  function testItCanGetJsAsset() {
+  public function testItCanGetJsAsset() {
     $assets_manifest_js = [
       'script1.js' => 'script1.hash.js',
       'script2.js' => 'script2.hash.js',
@@ -67,12 +67,12 @@ class RendererTest extends \MailPoetTest {
     expect($renderer->getJsAsset('script2.js'))->equals('script2.hash.js');
   }
 
-  function testItWillNotEnableCacheWhenWpDebugIsOn() {
+  public function testItWillNotEnableCacheWhenWpDebugIsOn() {
     $result = $this->renderer->detectCache();
     expect($result)->equals(false);
   }
 
-  function testItDelegatesRenderingToTwig() {
+  public function testItDelegatesRenderingToTwig() {
     $renderer = Stub::construct(
       $this->renderer,
       [],
@@ -91,7 +91,7 @@ class RendererTest extends \MailPoetTest {
     expect($renderer->render('non-existing-template.html', ['somekey' => 'someval']))->equals('test render');
   }
 
-  function testItRethrowsTwigCacheExceptions() {
+  public function testItRethrowsTwigCacheExceptions() {
     $exception_message = 'this is a test error';
     $renderer = Stub::construct(
       $this->renderer,
@@ -117,11 +117,11 @@ class RendererTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     $this->_removeAssetsManifests();
   }
 
-  function _removeAssetsManifests() {
+  public function _removeAssetsManifests() {
     if (is_readable(Env::$temp_path . '/js.json')) unlink(Env::$temp_path . '/js.json');
     if (is_readable(Env::$temp_path . '/css.json')) unlink(Env::$temp_path . '/css.json');
   }

@@ -6,7 +6,7 @@ use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Segment;
 
 class SubscribeOnRegistrationPageCest {
-  function allowSubscribeOnRegistrationPage(\AcceptanceTester $I) {
+  public function allowSubscribeOnRegistrationPage(\AcceptanceTester $I) {
     $I->wantTo('Allow users to subscribe to lists on site registration page');
     //create a list for this test
     $segment_factory = new Segment();
@@ -44,7 +44,7 @@ class SubscribeOnRegistrationPageCest {
     $I->waitForText($regseg);
   }
 
-  function sendConfirmationEmailOnRegistration(\AcceptanceTester $I) {
+  public function sendConfirmationEmailOnRegistration(\AcceptanceTester $I) {
     $I->wantTo('send confirmation email on user registration when no additional lists');
     $user_email = 'registerpagesignupconfirmation@fake.fake';
     $I->login();

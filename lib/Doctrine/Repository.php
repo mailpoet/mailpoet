@@ -17,7 +17,7 @@ abstract class Repository {
   /** @var DoctrineEntityRepository */
   protected $doctrine_repository;
 
-  function __construct(EntityManager $entity_manager) {
+  public function __construct(EntityManager $entity_manager) {
     $this->entity_manager = $entity_manager;
     $this->class_metadata = $entity_manager->getClassMetadata($this->getEntityClassName());
     $this->doctrine_repository = new DoctrineEntityRepository($this->entity_manager, $this->class_metadata);
@@ -30,7 +30,7 @@ abstract class Repository {
    * @param int|null $offset
    * @return array
    */
-  function findBy(array $criteria, array $order_by = null, $limit = null, $offset = null) {
+  public function findBy(array $criteria, array $order_by = null, $limit = null, $offset = null) {
     return $this->doctrine_repository->findBy($criteria, $order_by, $limit, $offset);
   }
 
@@ -39,7 +39,7 @@ abstract class Repository {
    * @param array|null $order_by
    * @return object|null
    */
-  function findOneBy(array $criteria, array $order_by = null) {
+  public function findOneBy(array $criteria, array $order_by = null) {
     return $this->doctrine_repository->findOneBy($criteria, $order_by);
   }
 
@@ -47,25 +47,25 @@ abstract class Repository {
    * @param mixed $id
    * @return object|null
    */
-  function findOneById($id) {
+  public function findOneById($id) {
     return $this->doctrine_repository->find($id);
   }
 
   /**
    * @return array
    */
-  function findAll() {
+  public function findAll() {
     return $this->doctrine_repository->findAll();
   }
 
   /**
    * @param object $entity
    */
-  function persist($entity) {
+  public function persist($entity) {
     $this->entity_manager->persist($entity);
   }
 
-  function truncate() {
+  public function truncate() {
     $cmd = $this->entity_manager->getClassMetadata($this->getEntityClassName());
     $table_name = $cmd->getTableName();
     $connection = $this->entity_manager->getConnection();
@@ -80,11 +80,11 @@ abstract class Repository {
   /**
    * @param object $entity
    */
-  function remove($entity) {
+  public function remove($entity) {
     $this->entity_manager->remove($entity);
   }
 
-  function flush() {
+  public function flush() {
     $this->entity_manager->flush();
   }
 

@@ -20,7 +20,7 @@ class WooCommercePastOrders extends SimpleWorker {
   /** @var WooCommercePurchases */
   private $woocommerce_purchases;
 
-  function __construct(
+  public function __construct(
     WCHelper $woocommerce_helper,
     WooCommercePurchases $woocommerce_purchases
   ) {
@@ -29,11 +29,11 @@ class WooCommercePastOrders extends SimpleWorker {
     parent::__construct();
   }
 
-  function checkProcessingRequirements() {
+  public function checkProcessingRequirements() {
     return $this->woocommerce_helper->isWooCommerceActive() && empty($this->getCompletedTasks()); // run only once
   }
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     $oldest_click = StatisticsClicks::orderByAsc('created_at')->limit(1)->findOne();
     if (!$oldest_click instanceof StatisticsClicks) {
       return true;
@@ -70,7 +70,7 @@ class WooCommercePastOrders extends SimpleWorker {
     return false;
   }
 
-  function getNextRunDate() {
+  public function getNextRunDate() {
     return Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')); // schedule immediately
   }
 }

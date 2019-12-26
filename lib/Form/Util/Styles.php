@@ -87,7 +87,7 @@ EOL;
   /**
    * @param FeaturesController $features_controller
    */
-  function __construct(
+  public function __construct(
     FeaturesController $features_controller = null
   ) {
     if ($features_controller === null) {
@@ -96,7 +96,7 @@ EOL;
     $this->features_controller = $features_controller;
   }
 
-  function getDefaultStyles() {
+  public function getDefaultStyles() {
     if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
       $text_input_width = 'width: 100%;';
     } else {
@@ -105,7 +105,7 @@ EOL;
     return str_replace('[TEXT_INPUTS_WIDTH_RULE]', $text_input_width, $this->default_styles);
   }
 
-  function render($stylesheet, $prefix = '') {
+  public function render($stylesheet, $prefix = '') {
     if (!$stylesheet) return;
     $styles = new CSSParser($stylesheet);
     $styles = $styles->parse();

@@ -17,7 +17,7 @@ use MailPoet\Newsletter\Renderer\Renderer;
 class RendererTest extends \MailPoetTest {
   const COLUMN_BASE_WIDTH = 660;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
     $this->newsletter = [
       'body' => json_decode(
@@ -34,7 +34,7 @@ class RendererTest extends \MailPoetTest {
     $this->DOM_parser = new \pQuery();
   }
 
-  function testItRendersCompleteNewsletter() {
+  public function testItRendersCompleteNewsletter() {
     $this->renderer->preview = true; // do not render logo
     $template = $this->renderer->render();
     expect(isset($template['html']))->true();
@@ -53,7 +53,7 @@ class RendererTest extends \MailPoetTest {
     expect(count($DOM('.nested-vertical-container')))->equals(1);
   }
 
-  function testItRendersOneColumn() {
+  public function testItRendersOneColumn() {
     $column_content = [
       'one',
     ];
@@ -78,7 +78,7 @@ class RendererTest extends \MailPoetTest {
     expect((string)$DOM)->contains(' bgcolor="#999999"');
   }
 
-  function testItRendersTwoColumns() {
+  public function testItRendersTwoColumns() {
     $column_content = [
       'one',
       'two',
@@ -104,7 +104,7 @@ class RendererTest extends \MailPoetTest {
     expect((string)$DOM)->contains(' bgcolor="#999999"');
   }
 
-  function testItRendersThreeColumns() {
+  public function testItRendersThreeColumns() {
     $column_content = [
       'one',
       'two',
@@ -131,7 +131,7 @@ class RendererTest extends \MailPoetTest {
     expect((string)$DOM)->contains(' bgcolor="#999999"');
   }
 
-  function testItRendersScaledColumnBackgroundImage() {
+  public function testItRendersScaledColumnBackgroundImage() {
     $column_content = ['one'];
     $column_styles = ['block' => ['backgroundColor' => "#999999"]];
     $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'scale', 'width' => '1000px', 'height' => '500px'];
@@ -154,7 +154,7 @@ class RendererTest extends \MailPoetTest {
     expect($column_css)->contains('background-size: cover;');
   }
 
-  function testItRendersFitColumnBackgroundImage() {
+  public function testItRendersFitColumnBackgroundImage() {
     $column_content = ['one'];
     $column_styles = ['block' => ['backgroundColor' => "#999999"]];
     $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'fit', 'width' => '1000px', 'height' => '500px'];
@@ -177,7 +177,7 @@ class RendererTest extends \MailPoetTest {
     expect($column_css)->contains('background-size: contain;');
   }
 
-  function testItRendersTiledColumnBackgroundImage() {
+  public function testItRendersTiledColumnBackgroundImage() {
     $column_content = ['one'];
     $column_styles = ['block' => ['backgroundColor' => "#999999"]];
     $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'tile', 'width' => '1000px', 'height' => '500px'];
@@ -200,7 +200,7 @@ class RendererTest extends \MailPoetTest {
     expect($column_css)->contains('background-size: contain;');
   }
 
-  function testItRendersFallbackColumnBackgroundColorForBackgroundImage() {
+  public function testItRendersFallbackColumnBackgroundColorForBackgroundImage() {
     $column_content = ['one'];
     $column_styles = ['block' => ['backgroundColor' => 'transparent']];
     $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'tile', 'width' => '1000px', 'height' => '500px'];
@@ -219,7 +219,7 @@ class RendererTest extends \MailPoetTest {
     expect($column_css)->contains('background-color: #ffffff;');
   }
 
-  function testItRendersHeader() {
+  public function testItRendersHeader() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][0];
     $DOM = $this->DOM_parser->parseStr(Header::render($template));
@@ -230,7 +230,7 @@ class RendererTest extends \MailPoetTest {
     expect($DOM('td', 0)->attr('style'))->notEmpty();
   }
 
-  function testItRendersImage() {
+  public function testItRendersImage() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
     $DOM = $this->DOM_parser->parseStr(Image::render($template, self::COLUMN_BASE_WIDTH));
@@ -238,7 +238,7 @@ class RendererTest extends \MailPoetTest {
     expect($DOM('tr > td > img', 0)->attr('width'))->equals(620);
   }
 
-  function testItRendersAlignedImage() {
+  public function testItRendersAlignedImage() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
     // default alignment (center)
@@ -261,7 +261,7 @@ class RendererTest extends \MailPoetTest {
     expect($DOM('tr > td', 0)->attr('align'))->equals('right');
   }
 
-  function testItDoesNotRenderImageWithoutSrc() {
+  public function testItDoesNotRenderImageWithoutSrc() {
     $image = [
       'src' => '',
       'width' => '100',
@@ -273,7 +273,7 @@ class RendererTest extends \MailPoetTest {
     expect($rendered_image)->equals('');
   }
 
-  function testItForcesAbsoluteSrcForImages() {
+  public function testItForcesAbsoluteSrcForImages() {
     $image = [
       'src' => '/relative-path',
       'width' => '100',
@@ -298,7 +298,7 @@ class RendererTest extends \MailPoetTest {
     expect($rendered_image)->contains('src="//path-without-protocol"');
   }
 
-  function testItRendersImageWithLink() {
+  public function testItRendersImageWithLink() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
     $template['link'] = 'http://example.com';
@@ -308,7 +308,7 @@ class RendererTest extends \MailPoetTest {
     expect($DOM('tr > td > a', 0)->attr('href'))->equals($template['link']);
   }
 
-  function testItAdjustsImageDimensions() {
+  public function testItAdjustsImageDimensions() {
     // image gets scaled down when image width > column width
     $image = [
       'width' => 800,
@@ -337,7 +337,7 @@ class RendererTest extends \MailPoetTest {
     expect($new_image_dimensions['width'])->equals(619);
   }
 
-  function testItRendersImageWithAutoDimensions() {
+  public function testItRendersImageWithAutoDimensions() {
     $image = [
       'width' => 'auto',
       'height' => 'auto',
@@ -350,7 +350,7 @@ class RendererTest extends \MailPoetTest {
     expect($rendered_image)->contains('width="auto"');
   }
 
-  function testItAdjustImageDimensionsWithPx() {
+  public function testItAdjustImageDimensionsWithPx() {
     $image = [
       'width' => '1000px',
       'height' => '1000px',
@@ -363,7 +363,7 @@ class RendererTest extends \MailPoetTest {
     expect($rendered_image)->contains('width="620"');
   }
 
-  function testItAdjustImageDimensionsWithoutPx() {
+  public function testItAdjustImageDimensionsWithoutPx() {
     $image = [
       'width' => '1000',
       'height' => '1000',
@@ -376,7 +376,7 @@ class RendererTest extends \MailPoetTest {
     expect($rendered_image)->contains('width="620"');
   }
 
-  function testItRendersText() {
+  public function testItRendersText() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][2];
     $DOM = $this->DOM_parser->parseStr(Text::render($template));
@@ -416,7 +416,7 @@ class RendererTest extends \MailPoetTest {
       ->contains('<a');
   }
 
-  function testItRendersDivider() {
+  public function testItRendersDivider() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][3];
     $DOM = $this->DOM_parser->parseStr(Divider::render($template));
@@ -428,7 +428,7 @@ class RendererTest extends \MailPoetTest {
       ))->equals(1);
   }
 
-  function testItRendersSpacer() {
+  public function testItRendersSpacer() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][4];
     $DOM = $this->DOM_parser->parseStr(Spacer::render($template));
@@ -436,7 +436,7 @@ class RendererTest extends \MailPoetTest {
     expect($DOM('tr > td.mailpoet_spacer', 0)->attr('height'))->equals(50);
   }
 
-  function testItSetsSpacerBackground() {
+  public function testItSetsSpacerBackground() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][4];
     $DOM = $this->DOM_parser->parseStr(Spacer::render($template));
@@ -447,7 +447,7 @@ class RendererTest extends \MailPoetTest {
       ->equals('#ffff');
   }
 
-  function testItCalculatesButtonWidth() {
+  public function testItCalculatesButtonWidth() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $template['styles']['block']['width'] = '700px';
@@ -455,7 +455,7 @@ class RendererTest extends \MailPoetTest {
     expect($button_width)->equals('618px'); //(width - (2 * border width)
   }
 
-  function testItRendersButton() {
+  public function testItRendersButton() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $DOM = $this->DOM_parser->parseStr(Button::render($template, self::COLUMN_BASE_WIDTH));
@@ -490,7 +490,7 @@ class RendererTest extends \MailPoetTest {
     )->equals(1);
   }
 
-  function testItUsesFullFontFamilyNameInElementStyles() {
+  public function testItUsesFullFontFamilyNameInElementStyles() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $template['styles']['block']['fontFamily'] = 'Lucida';
@@ -502,7 +502,7 @@ class RendererTest extends \MailPoetTest {
     )->equals(1);
   }
 
-  function testItRendersSocialIcons() {
+  public function testItRendersSocialIcons() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][6];
     $DOM = $this->DOM_parser->parseStr(Social::render($template));
@@ -516,7 +516,7 @@ class RendererTest extends \MailPoetTest {
     expect(count($DOM('a > img')))->equals(10);
   }
 
-  function testItDoesNotRenderSocialIconsWithoutImageSrc() {
+  public function testItDoesNotRenderSocialIconsWithoutImageSrc() {
     $block = [
       'icons' => [
         'image' => '',
@@ -530,7 +530,7 @@ class RendererTest extends \MailPoetTest {
     expect($rendered_block)->equals('');
   }
 
-  function testItRendersFooter() {
+  public function testItRendersFooter() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][3]['blocks'][0]['blocks'][0];
     $DOM = $this->DOM_parser->parseStr(Footer::render($template));
@@ -541,7 +541,7 @@ class RendererTest extends \MailPoetTest {
     expect($DOM('td', 0)->attr('style'))->notEmpty();
   }
 
-  function testItSetsSubject() {
+  public function testItSetsSubject() {
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render();
     $DOM = $this->DOM_parser->parseStr($template['html']);
@@ -549,7 +549,7 @@ class RendererTest extends \MailPoetTest {
     expect($subject)->equals($this->newsletter['subject']);
   }
 
-  function testItSetsPreheader() {
+  public function testItSetsPreheader() {
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render();
     $DOM = $this->DOM_parser->parseStr($template['html']);
@@ -557,7 +557,7 @@ class RendererTest extends \MailPoetTest {
     expect($preheader)->equals($this->newsletter['preheader']);
   }
 
-  function testItDoesNotAddMailpoetLogoWhenPremiumIsActive() {
+  public function testItDoesNotAddMailpoetLogoWhenPremiumIsActive() {
     $this->renderer->preview = false;
     $this->renderer->mss_activated = false;
     $this->renderer->premium_activated = true;
@@ -567,7 +567,7 @@ class RendererTest extends \MailPoetTest {
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
 
-  function testItDoesNotAddMailpoetLogoWhenMSSIsActive() {
+  public function testItDoesNotAddMailpoetLogoWhenMSSIsActive() {
     $this->renderer->preview = false;
     $this->renderer->premium_activated = false;
     $this->renderer->mss_activated = true;
@@ -577,7 +577,7 @@ class RendererTest extends \MailPoetTest {
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
 
-  function testItDoesNotAddMailpoetLogoWhenPreviewIsEnabled() {
+  public function testItDoesNotAddMailpoetLogoWhenPreviewIsEnabled() {
     $this->renderer->mss_activated = false;
     $this->renderer->premium_activated = false;
     $this->renderer->preview = true;
@@ -587,7 +587,7 @@ class RendererTest extends \MailPoetTest {
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
 
-  function testItAddsMailpoetLogo() {
+  public function testItAddsMailpoetLogo() {
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $this->renderer->mss_activated = false;
     $this->renderer->premium_activated = false;
@@ -597,7 +597,7 @@ class RendererTest extends \MailPoetTest {
     expect($template['html'])->contains('mailpoet_logo_newsletter.png');
   }
 
-  function testItPostProcessesTemplate() {
+  public function testItPostProcessesTemplate() {
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render();
     // !important should be stripped from everywhere except from with the <style> tag

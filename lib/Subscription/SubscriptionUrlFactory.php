@@ -30,12 +30,12 @@ class SubscriptionUrlFactory {
     $this->link_tokens = $link_tokens;
   }
 
-  function getCaptchaUrl($session_id) {
+  public function getCaptchaUrl($session_id) {
     $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
     return $this->getSubscriptionUrl($post, 'captcha', null, ['captcha_session_id' => $session_id]);
   }
 
-  function getCaptchaImageUrl($width, $height, $session_id) {
+  public function getCaptchaImageUrl($width, $height, $session_id) {
     $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
     return $this->getSubscriptionUrl(
       $post,
@@ -45,22 +45,22 @@ class SubscriptionUrlFactory {
     );
   }
 
-  function getConfirmationUrl(Subscriber $subscriber = null) {
+  public function getConfirmationUrl(Subscriber $subscriber = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.confirmation'));
     return $this->getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
-  function getManageUrl(Subscriber $subscriber = null) {
+  public function getManageUrl(Subscriber $subscriber = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.manage'));
     return $this->getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
-  function getUnsubscribeUrl(Subscriber $subscriber = null) {
+  public function getUnsubscribeUrl(Subscriber $subscriber = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.unsubscribe'));
     return $this->getSubscriptionUrl($post, 'unsubscribe', $subscriber);
   }
 
-  function getSubscriptionUrl(
+  public function getSubscriptionUrl(
     $post = null,
     $action = null,
     Subscriber $subscriber = null,
@@ -101,7 +101,7 @@ class SubscriptionUrlFactory {
   /**
    * @return SubscriptionUrlFactory
    */
-  static function getInstance() {
+  public static function getInstance() {
     if (!self::$instance instanceof SubscriptionUrlFactory) {
       self::$instance = new SubscriptionUrlFactory(new WPFunctions, SettingsController::getInstance(), new LinkTokens);
     }

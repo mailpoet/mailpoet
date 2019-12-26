@@ -15,7 +15,7 @@ class ImportExport extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
   ];
 
-  function getMailChimpLists($data) {
+  public function getMailChimpLists($data) {
     try {
       $mailChimp = new MailChimp($data['api_key']);
       $lists = $mailChimp->getLists();
@@ -27,7 +27,7 @@ class ImportExport extends APIEndpoint {
     }
   }
 
-  function getMailChimpSubscribers($data) {
+  public function getMailChimpSubscribers($data) {
     try {
       $mailChimp = new MailChimp($data['api_key']);
       $subscribers = $mailChimp->getSubscribers($data['lists']);
@@ -39,7 +39,7 @@ class ImportExport extends APIEndpoint {
     }
   }
 
-  function addSegment($data) {
+  public function addSegment($data) {
     $segment = Segment::createOrUpdate($data);
     $errors = $segment->getErrors();
 
@@ -52,7 +52,7 @@ class ImportExport extends APIEndpoint {
     }
   }
 
-  function processImport($data) {
+  public function processImport($data) {
     try {
       $import = new \MailPoet\Subscribers\ImportExport\Import\Import(
         json_decode($data, true)
@@ -66,7 +66,7 @@ class ImportExport extends APIEndpoint {
     }
   }
 
-  function processExport($data) {
+  public function processExport($data) {
     try {
       $export = new \MailPoet\Subscribers\ImportExport\Export\Export(
         json_decode($data, true)
@@ -80,7 +80,7 @@ class ImportExport extends APIEndpoint {
     }
   }
 
-  function setupWooCommerceInitialImport() {
+  public function setupWooCommerceInitialImport() {
     try {
       $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)
         ->whereRaw('status = ? OR status IS NULL', [ScheduledTask::STATUS_SCHEDULED])

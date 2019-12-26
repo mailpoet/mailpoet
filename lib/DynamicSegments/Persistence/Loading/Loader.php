@@ -18,7 +18,7 @@ class Loader {
   /**
    * @return DynamicSegment[]
    */
-  function load() {
+  public function load() {
     $segments = DynamicSegment::findAll();
     return $this->loadFilters($segments);
   }

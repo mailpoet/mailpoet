@@ -18,11 +18,11 @@ class DynamicSegmentHooks {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp) {
+  public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
   }
 
-  function init() {
+  public function init() {
     $this->wp->addAction(
       'mailpoet_segments_with_subscriber_count',
       [$this, 'addSegmentsWithSubscribersCount']
@@ -54,32 +54,32 @@ class DynamicSegmentHooks {
     );
   }
 
-  function addSegmentsWithSubscribersCount($initial_segments) {
+  public function addSegmentsWithSubscribersCount($initial_segments) {
     $newsletters_add_segments = new AddToNewslettersSegments(new Loader(new DBMapper()), new SubscribersCount());
     return $newsletters_add_segments->add($initial_segments);
   }
 
-  function getSubscribersInSegmentsFinders(array $finders) {
+  public function getSubscribersInSegmentsFinders(array $finders) {
     $finders[] = new SendingNewslettersSubscribersFinder(new SingleSegmentLoader(new DBMapper()), new SubscribersIds());
     return $finders;
   }
 
-  function getSubscribersListingsInSegmentsHandlers(array $handlers) {
+  public function getSubscribersListingsInSegmentsHandlers(array $handlers) {
     $handlers[] = new SubscribersListingsHandlerFactory();
     return $handlers;
   }
 
-  function addDynamicFiltersToSubscribersListingsFilters($segment_filters) {
+  public function addDynamicFiltersToSubscribersListingsFilters($segment_filters) {
     $newsletters_add_segments = new AddToSubscribersFilters(new Loader(new DBMapper()), new SubscribersCount());
     return $newsletters_add_segments->add($segment_filters);
   }
 
-  function applySubscriberBulkAction(array $handlers) {
+  public function applySubscriberBulkAction(array $handlers) {
     $handlers[] = new SubscribersBulkActionHandler();
     return $handlers;
   }
 
-  function getSegmentFilters($segment_id) {
+  public function getSegmentFilters($segment_id) {
     $single_segment_loader = new SingleSegmentLoader(new DBMapper());
     return $single_segment_loader->load($segment_id)->getFilters();
   }

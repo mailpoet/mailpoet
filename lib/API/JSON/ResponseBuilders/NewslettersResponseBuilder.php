@@ -9,7 +9,7 @@ use MailPoet\Entities\SendingQueueEntity;
 class NewslettersResponseBuilder {
   const DATE_FORMAT = 'Y-m-d H:i:s';
 
-  function build(NewsletterEntity $newsletter) {
+  public function build(NewsletterEntity $newsletter) {
     return [
       'id' => (string)$newsletter->getId(), // (string) for BC
       'hash' => $newsletter->getHash(),

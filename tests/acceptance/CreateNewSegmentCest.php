@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class CreateNewSegmentCest {
-  function createUserRoleSegment(\AcceptanceTester $I) {
+  public function createUserRoleSegment(\AcceptanceTester $I) {
     $I->wantTo('Create a new WP user role segment');
     $segment_title = 'Create User Role Segment Test';
     $I->login();
@@ -21,7 +21,7 @@ class CreateNewSegmentCest {
     $I->waitForText($segment_title, 20);
   }
 
-  function createEmailSegment(\AcceptanceTester $I) {
+  public function createEmailSegment(\AcceptanceTester $I) {
     $I->wantTo('Create a new email segment');
     $email_subject = 'Segment Email Test';
     $newsletter_factory = new Newsletter();

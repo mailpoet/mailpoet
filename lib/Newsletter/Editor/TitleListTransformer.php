@@ -8,11 +8,11 @@ class TitleListTransformer {
 
   private $args;
 
-  function __construct($args) {
+  public function __construct($args) {
     $this->args = $args;
   }
 
-  function transform($posts) {
+  public function transform($posts) {
     $results = array_map(function($post) {
       return $this->getPostTitle($post);
     }, $posts);

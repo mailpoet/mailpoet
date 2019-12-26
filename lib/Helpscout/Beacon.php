@@ -17,12 +17,12 @@ class Beacon {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(SettingsController $settings, WPFunctions $wp) {
+  public function __construct(SettingsController $settings, WPFunctions $wp) {
     $this->settings = $settings;
     $this->wp = $wp;
   }
 
-  function getData() {
+  public function getData() {
     global $wpdb;
     $db_version = $wpdb->get_var('SELECT @@VERSION');
     $mta = $this->settings->get('mta');

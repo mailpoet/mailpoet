@@ -7,7 +7,7 @@ use Facebook\WebDriver\WebDriverBy;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditorLineHeightCest {
-  function changeLineHeight(\AcceptanceTester $I) {
+  public function changeLineHeight(\AcceptanceTester $I) {
     $textSize = '10';
     $h1Size = '40';
     $h2Size = '30';

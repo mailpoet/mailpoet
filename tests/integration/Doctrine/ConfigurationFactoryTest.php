@@ -13,7 +13,7 @@ use MailPoetVendor\Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
 class ConfigurationFactoryTest extends \MailPoetTest {
-  function testItSetsUpBasicOptions() {
+  public function testItSetsUpBasicOptions() {
     $configuration_factory = new ConfigurationFactory(false, new AnnotationReaderProvider());
     $configuration = $configuration_factory->createConfiguration();
 
@@ -34,7 +34,7 @@ class ConfigurationFactoryTest extends \MailPoetTest {
     expect($configuration->getProxyNamespace())->equals('MailPoetDoctrineProxies');
   }
 
-  function testItSetsUpEnvironmentSpecificOptions() {
+  public function testItSetsUpEnvironmentSpecificOptions() {
     // dev mode
     $configuration_factory = new ConfigurationFactory(true, new AnnotationReaderProvider());
     $configuration = $configuration_factory->createConfiguration();

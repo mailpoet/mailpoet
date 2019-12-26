@@ -10,11 +10,11 @@ class PageLimit {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp) {
+  public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
   }
 
-  function getLimitPerPage($model = null) {
+  public function getLimitPerPage($model = null) {
     if ($model === null) {
       return self::DEFAULT_LIMIT_PER_PAGE;
     }

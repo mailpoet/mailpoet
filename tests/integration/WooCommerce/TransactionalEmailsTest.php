@@ -31,7 +31,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
   /** @var NewslettersRepository */
   private $newsletters_repository;
 
-  function _before() {
+  public function _before() {
     $this->wp = new WPFunctions();
     $this->settings = SettingsController::getInstance();
     $this->original_wc_settings = $this->settings->get('woocommerce');
@@ -46,7 +46,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     );
   }
 
-  function testInitCreatesTransactionalEmailAndSavesItsId() {
+  public function testInitCreatesTransactionalEmailAndSavesItsId() {
     $this->transactional_emails->init();
     $email = $this->newsletters_repository->findOneBy(['type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL]);
     $id = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
@@ -55,14 +55,14 @@ class TransactionalEmailsTest extends \MailPoetTest {
     expect($email->getId())->equals($id);
   }
 
-  function testInitDoesntCreateTransactionalEmailIfSettingAlreadySet() {
+  public function testInitDoesntCreateTransactionalEmailIfSettingAlreadySet() {
     $this->settings->set(TransactionalEmails::SETTING_EMAIL_ID, 1);
     $this->transactional_emails->init();
     $email = $this->newsletters_repository->findOneBy(['type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL]);
     expect($email)->equals(null);
   }
 
-  function testInitUsesImageFromWCSettings() {
+  public function testInitUsesImageFromWCSettings() {
     $wp = Stub::make(new WPFunctions, ['getOption' => function($name) {
       if ($name == 'woocommerce_email_header_image') {
         return 'my-awesome-image-url';
@@ -84,7 +84,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     expect(json_encode($email->getBody()))->contains('my-awesome-image-url');
   }
 
-  function testItSynchronizesEmailSettingsToWooCommerce() {
+  public function testItSynchronizesEmailSettingsToWooCommerce() {
     $newsletter = new NewsletterEntity;
     $newsletter->setType(Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL);
     $newsletter->setSubject('WooCommerce Transactional Email');
@@ -170,7 +170,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     expect($wp->getOption('woocommerce_email_text_color'))->equals('#111111');
   }
 
-  function testUseTemplateForWCEmails() {
+  public function testUseTemplateForWCEmails() {
     $added_actions = [];
     $removed_actions = [];
     $newsletter = new NewsletterEntity;
@@ -240,7 +240,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     expect($added_actions['woocommerce_email_styles']('some css'))->equals('prefixed some css');
   }
 
-  function _after() {
+  public function _after() {
     $this->entity_manager
       ->createQueryBuilder()
       ->delete()

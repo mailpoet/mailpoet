@@ -16,7 +16,7 @@ class PostContentTransformerTest extends \MailPoetTest {
   /** @var array */
   private $image_mock;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->content_mock = [
       [
@@ -32,7 +32,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     ];
   }
 
-  function testShouldAddImageAboveTitleForExcerptWithoutLayout() {
+  public function testShouldAddImageAboveTitleForExcerptWithoutLayout() {
     $args = [
       'withLayout' => false,
       'displayType' => 'excerpt',
@@ -44,7 +44,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result)->equals([$this->image_mock, $this->title_mock, $this->content_mock[0]]);
   }
 
-  function testShouldAddImageBelowTitleForExcerptWithoutLayout() {
+  public function testShouldAddImageBelowTitleForExcerptWithoutLayout() {
     $args = [
       'withLayout' => false,
       'displayType' => 'excerpt',
@@ -56,7 +56,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result)->equals([$this->title_mock, $this->image_mock, $this->content_mock[0]]);
   }
 
-  function testShouldTransformContentWithoutLayoutWhenImageIsMissing() {
+  public function testShouldTransformContentWithoutLayoutWhenImageIsMissing() {
     $args = [
       'withLayout' => false,
       'displayType' => 'excerpt',
@@ -68,7 +68,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result)->equals([$this->title_mock, $this->content_mock[0]]);
   }
 
-  function testShouldNotAddImageForTitleOnlyWhenImageIsPresentWithoutLayout() {
+  public function testShouldNotAddImageForTitleOnlyWhenImageIsPresentWithoutLayout() {
     $args = [
       'withLayout' => false,
       'displayType' => 'titleOnly',
@@ -80,7 +80,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result)->equals([$this->title_mock, $this->content_mock[0]]);
   }
 
-  function testShouldPrependTitleTextToContentTextIfFirstContentBlockIsTextual() {
+  public function testShouldPrependTitleTextToContentTextIfFirstContentBlockIsTextual() {
     $args = [
       'withLayout' => false,
       'displayType' => 'titleOnly',
@@ -96,7 +96,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result)->equals([$expected]);
   }
 
-  function testShouldCreateLayoutStructureForCenteredImageWithLayout() {
+  public function testShouldCreateLayoutStructureForCenteredImageWithLayout() {
     $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
@@ -117,7 +117,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result_blocks[1]['type'])->equals('image');
   }
 
-  function testShouldCreateLayoutStructureForCenteredImageWithLayoutWithTitleAboveExcerpt() {
+  public function testShouldCreateLayoutStructureForCenteredImageWithLayoutWithTitleAboveExcerpt() {
     $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
@@ -134,7 +134,7 @@ class PostContentTransformerTest extends \MailPoetTest {
 
   }
 
-  function testShouldCreateLayoutStructureForOtherThanCenteredPositionedImageWithLayout() {
+  public function testShouldCreateLayoutStructureForOtherThanCenteredPositionedImageWithLayout() {
     $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
@@ -153,7 +153,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect(count($result[1]['blocks']))->equals(2);
   }
 
-  function testShouldAddCenteredImageForExcerptWithLayout() {
+  public function testShouldAddCenteredImageForExcerptWithLayout() {
     $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
@@ -165,7 +165,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[0]['blocks'][0]['blocks'])->equals([$this->title_mock, $this->image_mock, $this->content_mock[0]]);
   }
 
-  function testShouldHandleOldStructureImagePositionValueAndAddImageForExcerptWithLayout() {
+  public function testShouldHandleOldStructureImagePositionValueAndAddImageForExcerptWithLayout() {
     $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
@@ -177,7 +177,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[0]['blocks'][0]['blocks'])->equals([$this->title_mock, $this->image_mock, $this->content_mock[0]]);
   }
 
-  function testShouldAddLeftPositionedImageForExcerptWithLayout() {
+  public function testShouldAddLeftPositionedImageForExcerptWithLayout() {
     $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
@@ -191,7 +191,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[1]['blocks'][1]['blocks'])->equals([$this->content_mock[0]]);
   }
 
-  function testShouldAddLeftPositionedImageForExcerptWithTitleAboveExcerpt() {
+  public function testShouldAddLeftPositionedImageForExcerptWithTitleAboveExcerpt() {
     $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
@@ -206,7 +206,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[0]['blocks'][1]['blocks'][1])->equals($this->content_mock[0]);
   }
 
-  function testShouldAddRightPositionedImageForExcerptWithLayout() {
+  public function testShouldAddRightPositionedImageForExcerptWithLayout() {
     $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',
@@ -220,7 +220,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[1]['blocks'][1]['blocks'])->equals([$this->image_mock]);
   }
 
-  function testShouldNotAddImageForTitleOnlyWithLayout() {
+  public function testShouldNotAddImageForTitleOnlyWithLayout() {
     $args = [
       'withLayout' => true,
       'displayType' => 'titleOnly',
@@ -232,7 +232,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[0]['blocks'][0]['blocks'])->equals([$this->title_mock, $this->content_mock[0]]);
   }
 
-  function testShouldAddClassToParagraphsInFullPostsWithLayout() {
+  public function testShouldAddClassToParagraphsInFullPostsWithLayout() {
     $args = [
       'withLayout' => true,
       'displayType' => 'full',
@@ -263,7 +263,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     $transformer->transform($post);
   }
 
-  function testShouldNotAddClassToParagraphsInExcerptWithLayout() {
+  public function testShouldNotAddClassToParagraphsInExcerptWithLayout() {
     $args = [
       'withLayout' => true,
       'displayType' => 'excerpt',

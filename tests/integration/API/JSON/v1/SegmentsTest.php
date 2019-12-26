@@ -14,7 +14,7 @@ class SegmentsTest extends \MailPoetTest {
   /** @var Segments */
   private $endpoint;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Segments::class);
     $this->segment_1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
@@ -22,7 +22,7 @@ class SegmentsTest extends \MailPoetTest {
     $this->segment_3 = Segment::createOrUpdate(['name' => 'Segment 3', 'type' => 'default']);
   }
 
-  function testItCanGetASegment() {
+  public function testItCanGetASegment() {
     $response = $this->endpoint->get(/* missing id */);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('This list does not exist.');
@@ -38,7 +38,7 @@ class SegmentsTest extends \MailPoetTest {
     );
   }
 
-  function testItCanGetListingData() {
+  public function testItCanGetListingData() {
     $response = $this->endpoint->listing();
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -53,7 +53,7 @@ class SegmentsTest extends \MailPoetTest {
     expect($response->data[2]['name'])->equals($this->segment_3->name);
   }
 
-  function testItCanSaveASegment() {
+  public function testItCanSaveASegment() {
     $segment_data = [
       'name' => 'New Segment',
     ];
@@ -69,7 +69,7 @@ class SegmentsTest extends \MailPoetTest {
     );
   }
 
-  function testItCannotSaveDuplicate() {
+  public function testItCannotSaveDuplicate() {
     $duplicate_entry = [
       'name' => 'Segment 1',
     ];
@@ -81,7 +81,7 @@ class SegmentsTest extends \MailPoetTest {
     );
   }
 
-  function testItCanRestoreASegment() {
+  public function testItCanRestoreASegment() {
     $this->segment_1->trash();
 
     $trashed_segment = Segment::findOne($this->segment_1->id);
@@ -96,7 +96,7 @@ class SegmentsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanTrashASegment() {
+  public function testItCanTrashASegment() {
     $response = $this->endpoint->trash(['id' => $this->segment_2->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -106,14 +106,14 @@ class SegmentsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanDeleteASegment() {
+  public function testItCanDeleteASegment() {
     $response = $this->endpoint->delete(['id' => $this->segment_3->id]);
     expect($response->data)->isEmpty();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanDuplicateASegment() {
+  public function testItCanDuplicateASegment() {
     $response = $this->endpoint->duplicate(['id' => $this->segment_1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -122,7 +122,7 @@ class SegmentsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
   }
 
-  function testItCanBulkDeleteSegments() {
+  public function testItCanBulkDeleteSegments() {
     $subscriber_segment = SubscriberSegment::createOrUpdate([
       'subscriber_id' => 1,
       'segment_id' => $this->segment_1->id,
@@ -154,7 +154,7 @@ class SegmentsTest extends \MailPoetTest {
     expect(SubscriberSegment::findOne($subscriber_segment->id))->equals(false);
   }
 
-  function _after() {
+  public function _after() {
     Segment::deleteMany();
   }
 }

@@ -18,12 +18,12 @@ class WooCommercePurchases {
   /** @var Cookies */
   private $cookies;
 
-  function __construct(Helper $woocommerce_helper, Cookies $cookies) {
+  public function __construct(Helper $woocommerce_helper, Cookies $cookies) {
     $this->woocommerce_helper = $woocommerce_helper;
     $this->cookies = $cookies;
   }
 
-  function trackPurchase($id, $use_cookies = true) {
+  public function trackPurchase($id, $use_cookies = true) {
     $order = $this->woocommerce_helper->wcGetOrder($id);
     if (!$order instanceof WC_Order) {
       return;

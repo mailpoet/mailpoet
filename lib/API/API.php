@@ -12,7 +12,7 @@ class API {
    * @return \MailPoet\API\MP\v1\API
    * @throws \Exception
    */
-  static function MP($version) {
+  public static function MP($version) {
     $api_class = sprintf('%s\MP\%s\API', __NAMESPACE__, $version);
     try {
       return ContainerWrapper::getInstance()->get($api_class);

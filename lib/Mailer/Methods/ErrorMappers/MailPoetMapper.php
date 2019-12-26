@@ -18,7 +18,7 @@ class MailPoetMapper {
 
   const TEMPORARY_UNAVAILABLE_RETRY_INTERVAL = 300; // seconds
 
-  function getInvalidApiKeyError() {
+  public function getInvalidApiKeyError() {
     return new MailerError(
       MailerError::OPERATION_SEND,
       MailerError::LEVEL_HARD,
@@ -26,7 +26,7 @@ class MailPoetMapper {
     );
   }
 
-  function getErrorForResult(array $result, $subscribers, $sender = null, $newsletter = null) {
+  public function getErrorForResult(array $result, $subscribers, $sender = null, $newsletter = null) {
     $level = MailerError::LEVEL_HARD;
     $operation = MailerError::OPERATION_SEND;
     $retry_interval = null;

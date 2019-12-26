@@ -35,7 +35,7 @@ class TransactionalEmails {
   /** @var NewslettersRepository */
   private $newsletters_repository;
 
-  function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer, Helper $woocommerce_helper, NewslettersRepository $newsletters_repository) {
+  public function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer, Helper $woocommerce_helper, NewslettersRepository $newsletters_repository) {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->template = $template;

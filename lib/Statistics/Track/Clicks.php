@@ -31,7 +31,7 @@ class Clicks {
   /**
    * @param \stdClass|null $data
    */
-  function track($data) {
+  public function track($data) {
     if (!$data || empty($data->link)) {
       return $this->abort();
     }
@@ -90,7 +90,7 @@ class Clicks {
     }
   }
 
-  function processUrl($url, $newsletter, $subscriber, $queue, $wp_user_preview) {
+  public function processUrl($url, $newsletter, $subscriber, $queue, $wp_user_preview) {
     if (preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
       if (!$shortcode['action']) $this->abort();
       $url = Link::processShortcodeAction(
@@ -107,13 +107,13 @@ class Clicks {
     return $url;
   }
 
-  function abort() {
+  public function abort() {
     WPFunctions::get()->statusHeader(404);
     WPFunctions::get()->getTemplatePart((string)404);
     exit;
   }
 
-  function redirectToUrl($url) {
+  public function redirectToUrl($url) {
     header('Location: ' . $url, true, 302);
     exit;
   }

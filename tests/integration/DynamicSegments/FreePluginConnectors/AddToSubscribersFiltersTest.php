@@ -8,7 +8,7 @@ use MailPoet\Models\DynamicSegment;
 
 class AddToSubscribersFiltersTest extends \MailPoetTest {
 
-  function testItReturnsOriginalArray() {
+  public function testItReturnsOriginalArray() {
     $original_segment = [
       'label' => 'segment1',
       'value' => '',
@@ -25,7 +25,7 @@ class AddToSubscribersFiltersTest extends \MailPoetTest {
     expect($result)->equals([$original_segment]);
   }
 
-  function testItAddsDynamicSegments() {
+  public function testItAddsDynamicSegments() {
     $dynamic_segment = DynamicSegment::create();
     $dynamic_segment->hydrate([
       'name' => 'segment2',
@@ -54,7 +54,7 @@ class AddToSubscribersFiltersTest extends \MailPoetTest {
     ]);
   }
 
-  function testItSortsTheResult() {
+  public function testItSortsTheResult() {
     $dynamic_segment1 = DynamicSegment::create();
     $dynamic_segment1->hydrate([
       'name' => 'segment b',

@@ -9,12 +9,12 @@ class API {
   private $wp;
   public $url_products = 'https://release.mailpoet.com/products/';
 
-  function __construct($api_key) {
+  public function __construct($api_key) {
     $this->setKey($api_key);
     $this->wp = new WPFunctions();
   }
 
-  function getPluginInformation($plugin_name) {
+  public function getPluginInformation($plugin_name) {
     $result = $this->request(
       $this->url_products . $plugin_name
     );
@@ -35,11 +35,11 @@ class API {
     return $body;
   }
 
-  function setKey($api_key) {
+  public function setKey($api_key) {
     $this->api_key = $api_key;
   }
 
-  function getKey() {
+  public function getKey() {
     return $this->api_key;
   }
 

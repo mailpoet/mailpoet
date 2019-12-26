@@ -18,7 +18,7 @@ class SingleSegmentLoader {
    * @param string|int $segment_id
    * @return DynamicSegment
    */
-  function load($segment_id) {
+  public function load($segment_id) {
 
     $segment = DynamicSegment::findOne($segment_id);
     if (!$segment instanceof DynamicSegment) {

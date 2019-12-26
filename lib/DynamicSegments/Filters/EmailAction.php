@@ -58,7 +58,7 @@ class EmailAction implements Filter {
     $this->action = $action;
   }
 
-  function toSql(ORM $orm) {
+  public function toSql(ORM $orm) {
     if (($this->action === EmailAction::ACTION_CLICKED) || ($this->action === EmailAction::ACTION_NOT_CLICKED)) {
       $table = StatisticsClicks::$_table;
     } else {
@@ -98,7 +98,7 @@ class EmailAction implements Filter {
     return $clause;
   }
 
-  function toArray() {
+  public function toArray() {
     return [
       'action' => $this->action,
       'newsletter_id' => $this->newsletter_id,

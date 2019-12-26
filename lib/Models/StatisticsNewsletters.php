@@ -8,7 +8,7 @@ namespace MailPoet\Models;
 class StatisticsNewsletters extends Model {
   public static $_table = MP_STATISTICS_NEWSLETTERS_TABLE;
 
-  static function createMultiple(array $data) {
+  public static function createMultiple(array $data) {
     $values = [];
     foreach ($data as $value) {
       if (!empty($value['newsletter_id']) &&
@@ -32,7 +32,7 @@ class StatisticsNewsletters extends Model {
     );
   }
 
-  static function getAllForSubscriber(Subscriber $subscriber) {
+  public static function getAllForSubscriber(Subscriber $subscriber) {
     return static::tableAlias('statistics')
       ->select('statistics.newsletter_id', 'newsletter_id')
       ->select('newsletter_rendered_subject')

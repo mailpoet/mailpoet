@@ -7,7 +7,7 @@ use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoetVendor\Idiorm\ORM;
 
 class ShortcodesHelperTest extends \MailPoetTest {
-  function testGetsShortcodes() {
+  public function testGetsShortcodes() {
     $shortcodes = ShortcodesHelper::getShortcodes();
     expect(array_keys($shortcodes))->equals(
       [
@@ -20,7 +20,7 @@ class ShortcodesHelperTest extends \MailPoetTest {
     );
   }
 
-  function testItGetsCustomShortShortcodes() {
+  public function testItGetsCustomShortShortcodes() {
     $shortcodes = ShortcodesHelper::getShortcodes();
     expect(count($shortcodes['Subscriber']))->equals(5);
     $custom_field = CustomField::create();
@@ -35,7 +35,7 @@ class ShortcodesHelperTest extends \MailPoetTest {
       ->equals('[subscriber:cf_' . $custom_field->id . ']');
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
   }
 }

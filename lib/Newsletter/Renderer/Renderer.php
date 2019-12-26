@@ -28,7 +28,7 @@ class Renderer {
   /**
    * @param \MailPoet\Models\Newsletter|array $newsletter
    */
-  function __construct($newsletter, $preview = false) {
+  public function __construct($newsletter, $preview = false) {
     $this->newsletter = ($newsletter instanceof Newsletter) ? $newsletter->asArray() : $newsletter;
     $this->preview = $preview;
     $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
@@ -44,7 +44,7 @@ class Renderer {
     $this->mss_activated = $bridge->isMPSendingServiceEnabled();
   }
 
-  function render($type = false) {
+  public function render($type = false) {
     $newsletter = $this->newsletter;
     $body = (is_array($newsletter['body']))
       ? $newsletter['body']

@@ -7,11 +7,11 @@ use MailPoetVendor\Twig\TwigFilter;
 
 class Filters extends AbstractExtension {
 
-  function getName() {
+  public function getName() {
     return 'filters';
   }
 
-  function getFilters() {
+  public function getFilters() {
     return [
       new TwigFilter(
         'intval',

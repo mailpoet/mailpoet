@@ -13,14 +13,14 @@ use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 
 class Links {
-  static function process($rendered_newsletter, $newsletter, $queue) {
+  public static function process($rendered_newsletter, $newsletter, $queue) {
     list($rendered_newsletter, $links) =
       self::hashAndReplaceLinks($rendered_newsletter, $newsletter->id, $queue->id);
     self::saveLinks($links, $newsletter, $queue);
     return $rendered_newsletter;
   }
 
-  static function hashAndReplaceLinks($rendered_newsletter, $newsletter_id, $queue_id) {
+  public static function hashAndReplaceLinks($rendered_newsletter, $newsletter_id, $queue_id) {
     // join HTML and TEXT rendered body into a text string
     $content = Helpers::joinObject($rendered_newsletter);
     list($content, $links) = NewsletterLinks::process($content, $newsletter_id, $queue_id);
@@ -34,11 +34,11 @@ class Links {
     ];
   }
 
-  static function saveLinks($links, $newsletter, $queue) {
+  public static function saveLinks($links, $newsletter, $queue) {
     return NewsletterLinks::save($links, $newsletter->id, $queue->id);
   }
 
-  static function getUnsubscribeUrl($queue, $subscriber_id) {
+  public static function getUnsubscribeUrl($queue, $subscriber_id) {
     $subscriber = Subscriber::where('id', $subscriber_id)->findOne();
     $settings = SettingsController::getInstance();
     if ((boolean)$settings->get('tracking.enabled')) {

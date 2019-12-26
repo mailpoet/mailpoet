@@ -11,14 +11,14 @@ class Functions {
   /**
    * @return Functions
    */
-  static function get() {
+  public static function get() {
     if (self::$instance === null) {
       self::$instance = new Functions;
     }
     return self::$instance;
   }
 
-  static function set(Functions $instance) {
+  public static function set(Functions $instance) {
     self::$instance = $instance;
   }
 
@@ -27,7 +27,7 @@ class Functions {
    * @param mixed ...$args
    * @return mixed
    */
-  function doAction($tag, ...$args) {
+  public function doAction($tag, ...$args) {
     return call_user_func_array('do_action', func_get_args());
   }
 
@@ -36,7 +36,7 @@ class Functions {
    * @param mixed ...$args
    * @return mixed
    */
-  function applyFilters($tag, ...$args) {
+  public function applyFilters($tag, ...$args) {
     return call_user_func_array('apply_filters', func_get_args());
   }
 
@@ -47,42 +47,42 @@ class Functions {
    * @param int $accepted_args
    * @return boolean
    */
-  function addAction($tag, $function_to_add, $priority = 10, $accepted_args = 1) {
+  public function addAction($tag, $function_to_add, $priority = 10, $accepted_args = 1) {
     return call_user_func_array('add_action', func_get_args());
   }
 
-  function __($text, $domain = 'default') {
+  public function __($text, $domain = 'default') {
     return __($text, $domain);
   }
 
-  function _e($text, $domain = 'default') {
+  public function _e($text, $domain = 'default') {
     return _e($text, $domain);
   }
 
-  function _n($single, $plural, $number, $domain = 'default') {
+  public function _n($single, $plural, $number, $domain = 'default') {
     return _n($single, $plural, $number, $domain);
   }
 
-  function _x($text, $context, $domain = 'default') {
+  public function _x($text, $context, $domain = 'default') {
     return _x($text, $context, $domain);
   }
 
-  function addCommentMeta($comment_id, $meta_key, $meta_value, $unique = false) {
+  public function addCommentMeta($comment_id, $meta_key, $meta_value, $unique = false) {
     return add_comment_meta($comment_id, $meta_key, $meta_value, $unique);
   }
 
-  function addFilter($tag, callable $function_to_add, $priority = 10, $accepted_args = 1) {
+  public function addFilter($tag, callable $function_to_add, $priority = 10, $accepted_args = 1) {
     return add_filter($tag, $function_to_add, $priority, $accepted_args);
   }
 
   /**
    * @param bool|array $crop
    */
-  function addImageSize($name, $width = 0, $height = 0, $crop = false) {
+  public function addImageSize($name, $width = 0, $height = 0, $crop = false) {
     return add_image_size($name, $width, $height, $crop);
   }
 
-  function addMenuPage($page_title, $menu_title, $capability, $menu_slug, callable $function = null, $icon_url = '', $position = null) {
+  public function addMenuPage($page_title, $menu_title, $capability, $menu_slug, callable $function = null, $icon_url = '', $position = null) {
     if (is_null($function)) {
       $function = function () {
       };
@@ -90,163 +90,163 @@ class Functions {
     return add_menu_page($page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position);
   }
 
-  function addQueryArg($key, $value = false, $url = false) {
+  public function addQueryArg($key, $value = false, $url = false) {
     return add_query_arg($key, $value, $url);
   }
 
-  function addScreenOption($option, $args = []) {
+  public function addScreenOption($option, $args = []) {
     return add_screen_option($option, $args);
   }
 
-  function addShortcode($tag, callable $callback) {
+  public function addShortcode($tag, callable $callback) {
     return add_shortcode($tag, $callback);
   }
 
-  function addSubmenuPage($parent_slug, $page_title, $menu_title, $capability, $menu_slug, callable $function) {
+  public function addSubmenuPage($parent_slug, $page_title, $menu_title, $capability, $menu_slug, callable $function) {
     return add_submenu_page($parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function);
   }
 
-  function adminUrl($path = '', $scheme = 'admin') {
+  public function adminUrl($path = '', $scheme = 'admin') {
     return admin_url($path, $scheme);
   }
 
-  function currentFilter() {
+  public function currentFilter() {
     return current_filter();
   }
 
-  function currentTime($type, $gmt = false) {
+  public function currentTime($type, $gmt = false) {
     return current_time($type, $gmt);
   }
 
-  function currentUserCan($capability) {
+  public function currentUserCan($capability) {
     return current_user_can($capability);
   }
 
-  function dateI18n($dateformatstring, $timestamp_with_offset = false, $gmt = false) {
+  public function dateI18n($dateformatstring, $timestamp_with_offset = false, $gmt = false) {
     return date_i18n($dateformatstring, $timestamp_with_offset, $gmt);
   }
 
-  function deleteCommentMeta($comment_id, $meta_key, $meta_value = '') {
+  public function deleteCommentMeta($comment_id, $meta_key, $meta_value = '') {
     return delete_comment_meta($comment_id, $meta_key, $meta_value);
   }
 
-  function deleteOption($option) {
+  public function deleteOption($option) {
     return delete_option($option);
   }
 
-  function doShortcode($content, $ignore_html = false) {
+  public function doShortcode($content, $ignore_html = false) {
     return do_shortcode($content, $ignore_html);
   }
 
-  function escAttr($text) {
+  public function escAttr($text) {
     return esc_attr($text);
   }
 
-  function escHtml($text) {
+  public function escHtml($text) {
     return esc_html($text);
   }
 
-  function escSql($sql) {
+  public function escSql($sql) {
     return esc_sql($sql);
   }
 
-  function getBloginfo($show = '', $filter = 'raw') {
+  public function getBloginfo($show = '', $filter = 'raw') {
     return get_bloginfo($show, $filter);
   }
 
-  function getCategories($args = '') {
+  public function getCategories($args = '') {
     return get_categories($args);
   }
 
-  function getComment($comment = null, $output = OBJECT) {
+  public function getComment($comment = null, $output = OBJECT) {
     return get_comment($comment, $output);
   }
 
-  function getCommentMeta($comment_id, $key = '', $single = false) {
+  public function getCommentMeta($comment_id, $key = '', $single = false) {
     return get_comment_meta($comment_id, $key, $single);
   }
 
-  function getCurrentScreen() {
+  public function getCurrentScreen() {
     return get_current_screen();
   }
 
-  function getCurrentUserId() {
+  public function getCurrentUserId() {
     return get_current_user_id();
   }
 
-  function getDateFromGmt($string, $format = 'Y-m-d H:i:s') {
+  public function getDateFromGmt($string, $format = 'Y-m-d H:i:s') {
     return get_date_from_gmt($string, $format);
   }
 
-  function getEditProfileUrl($user_id = 0, $scheme = 'admin') {
+  public function getEditProfileUrl($user_id = 0, $scheme = 'admin') {
     return get_edit_profile_url($user_id, $scheme);
   }
 
-  function getEditableRoles() {
+  public function getEditableRoles() {
     return get_editable_roles();
   }
 
-  function getLocale() {
+  public function getLocale() {
     return get_locale();
   }
 
-  function getObjectTaxonomies($object, $output = 'names') {
+  public function getObjectTaxonomies($object, $output = 'names') {
     return get_object_taxonomies($object, $output);
   }
 
-  function getOption($option, $default = false) {
+  public function getOption($option, $default = false) {
     return get_option($option, $default);
   }
 
-  function getPages($args = []) {
+  public function getPages($args = []) {
     return get_pages($args);
   }
 
-  function getPermalink($post, $leavename = false) {
+  public function getPermalink($post, $leavename = false) {
     return get_permalink($post, $leavename);
   }
 
-  function getPluginPageHook($plugin_page, $parent_page) {
+  public function getPluginPageHook($plugin_page, $parent_page) {
     return get_plugin_page_hook($plugin_page, $parent_page);
   }
 
-  function getPluginUpdates() {
+  public function getPluginUpdates() {
     return get_plugin_updates();
   }
 
-  function getPlugins($plugin_folder = '') {
+  public function getPlugins($plugin_folder = '') {
     return get_plugins($plugin_folder);
   }
 
-  function getPost($post = null, $output = OBJECT, $filter = 'raw') {
+  public function getPost($post = null, $output = OBJECT, $filter = 'raw') {
     return get_post($post, $output, $filter);
   }
 
-  function getPostThumbnailId($post = null) {
+  public function getPostThumbnailId($post = null) {
     return get_post_thumbnail_id($post);
   }
 
-  function getPostTypes($args = [], $output = 'names', $operator = 'and') {
+  public function getPostTypes($args = [], $output = 'names', $operator = 'and') {
     return get_post_types($args, $output, $operator);
   }
 
-  function getPosts(array $args = null) {
+  public function getPosts(array $args = null) {
     return get_posts($args);
   }
 
-  function getRole($role) {
+  public function getRole($role) {
     return get_role($role);
   }
 
-  function getSiteOption($option, $default = false, $deprecated = true) {
+  public function getSiteOption($option, $default = false, $deprecated = true) {
     return get_site_option($option, $default, $deprecated);
   }
 
-  function getSiteUrl($blog_id = null, $path = '', $scheme = null) {
+  public function getSiteUrl($blog_id = null, $path = '', $scheme = null) {
     return get_site_url($blog_id, $path, $scheme);
   }
 
-  function getTemplatePart($slug, $name = null) {
+  public function getTemplatePart($slug, $name = null) {
     return get_template_part($slug, $name);
   }
 
@@ -255,73 +255,73 @@ class Functions {
    * @param string|array $deprecated
    * @return array|int|WP_Error
    */
-  function getTerms($args = [], $deprecated = '') {
+  public function getTerms($args = [], $deprecated = '') {
     return get_terms($args, $deprecated);
   }
 
   /**
    * @param int|false $user_id
    */
-  function getTheAuthorMeta($field = '', $user_id = false) {
+  public function getTheAuthorMeta($field = '', $user_id = false) {
     return get_the_author_meta($field, $user_id);
   }
 
   /**
    * @param  int|\WP_User $user_id
    */
-  function getUserLocale($user_id = 0) {
+  public function getUserLocale($user_id = 0) {
     return get_user_locale($user_id);
   }
 
-  function getUserMeta($user_id, $key = '', $single = false) {
+  public function getUserMeta($user_id, $key = '', $single = false) {
     return get_user_meta($user_id, $key, $single);
   }
 
-  function getUserdata($user_id) {
+  public function getUserdata($user_id) {
     return get_userdata($user_id);
   }
 
-  function getUserBy($field, $value) {
+  public function getUserBy($field, $value) {
     return get_user_by($field, $value);
   }
 
-  function hasFilter($tag, $function_to_check = false) {
+  public function hasFilter($tag, $function_to_check = false) {
     return has_filter($tag, $function_to_check);
   }
 
-  function homeUrl($path = '', $scheme = null) {
+  public function homeUrl($path = '', $scheme = null) {
     return home_url($path, $scheme);
   }
 
-  function includesUrl($path = '', $scheme = null) {
+  public function includesUrl($path = '', $scheme = null) {
     return includes_url($path, $scheme);
   }
 
-  function isAdmin() {
+  public function isAdmin() {
     return is_admin();
   }
 
-  function isEmail($email, $deprecated = false) {
+  public function isEmail($email, $deprecated = false) {
     return is_email($email, $deprecated);
   }
 
-  function isMultisite() {
+  public function isMultisite() {
     return is_multisite();
   }
 
-  function isPluginActive($plugin) {
+  public function isPluginActive($plugin) {
     return is_plugin_active($plugin);
   }
 
-  function isRtl() {
+  public function isRtl() {
     return is_rtl();
   }
 
-  function isSerialized($data, $strict = true) {
+  public function isSerialized($data, $strict = true) {
     return is_serialized($data, $strict);
   }
 
-  function isUserLoggedIn() {
+  public function isUserLoggedIn() {
     return is_user_logged_in();
   }
 
@@ -329,35 +329,35 @@ class Functions {
    * @param  string|false $deprecated
    * @param  string|false $plugin_rel_path
    */
-  function loadPluginTextdomain($domain, $deprecated = false, $plugin_rel_path = false) {
+  public function loadPluginTextdomain($domain, $deprecated = false, $plugin_rel_path = false) {
     return load_plugin_textdomain($domain, $deprecated, $plugin_rel_path);
   }
 
-  function loadTextdomain($domain, $mofile) {
+  public function loadTextdomain($domain, $mofile) {
     return load_textdomain($domain, $mofile);
   }
 
-  function numberFormatI18n($number, $decimals = 0) {
+  public function numberFormatI18n($number, $decimals = 0) {
     return number_format_i18n($number, $decimals);
   }
 
-  function pluginBasename($file) {
+  public function pluginBasename($file) {
     return plugin_basename($file);
   }
 
-  function pluginsUrl($path = '', $plugin = '') {
+  public function pluginsUrl($path = '', $plugin = '') {
     return plugins_url($path, $plugin);
   }
 
-  function registerActivationHook($file, $function) {
+  public function registerActivationHook($file, $function) {
     return register_activation_hook($file, $function);
   }
 
-  function registerPostType($post_type, $args = []) {
+  public function registerPostType($post_type, $args = []) {
     return register_post_type($post_type, $args);
   }
 
-  function registerWidget($widget) {
+  public function registerWidget($widget) {
     return register_widget($widget);
   }
 
@@ -366,199 +366,199 @@ class Functions {
    * @param callable $function_to_remove
    * @param int $priority
    */
-  function removeAction($tag, $function_to_remove, $priority = 10) {
+  public function removeAction($tag, $function_to_remove, $priority = 10) {
     return remove_action($tag, $function_to_remove, $priority);
   }
 
-  function removeAllActions($tag, $priority = false) {
+  public function removeAllActions($tag, $priority = false) {
     return remove_all_actions($tag, $priority);
   }
 
-  function removeAllFilters($tag, $priority = false) {
+  public function removeAllFilters($tag, $priority = false) {
     return remove_all_filters($tag, $priority);
   }
 
-  function removeFilter($tag, callable $function_to_remove, $priority = 10) {
+  public function removeFilter($tag, callable $function_to_remove, $priority = 10) {
     return remove_filter($tag, $function_to_remove, $priority);
   }
 
-  function removeShortcode($tag) {
+  public function removeShortcode($tag) {
     return remove_shortcode($tag);
   }
 
-  function selfAdminUrl($path = '', $scheme = 'admin') {
+  public function selfAdminUrl($path = '', $scheme = 'admin') {
     return self_admin_url($path, $scheme);
   }
 
-  function setTransient($transient, $value, $expiration) {
+  public function setTransient($transient, $value, $expiration) {
     return set_transient($transient, $value, $expiration);
   }
 
-  function getTransient($transient) {
+  public function getTransient($transient) {
     return get_transient($transient);
   }
 
-  function deleteTransient($transient) {
+  public function deleteTransient($transient) {
     return delete_transient($transient);
   }
 
-  function singlePostTitle($prefix = '', $display = true) {
+  public function singlePostTitle($prefix = '', $display = true) {
     return single_post_title($prefix, $display);
   }
 
-  function siteUrl($path = '', $scheme = null) {
+  public function siteUrl($path = '', $scheme = null) {
     return site_url($path, $scheme);
   }
 
-  function statusHeader($code, $description = '') {
+  public function statusHeader($code, $description = '') {
     return status_header($code, $description);
   }
 
-  function stripslashesDeep($value) {
+  public function stripslashesDeep($value) {
     return stripslashes_deep($value);
   }
 
-  function translate($text, $domain = 'default') {
+  public function translate($text, $domain = 'default') {
     return translate($text, $domain);
   }
 
-  function unloadTextdomain($domain) {
+  public function unloadTextdomain($domain) {
     return unload_textdomain($domain);
   }
 
-  function updateOption($option, $value, $autoload = null) {
+  public function updateOption($option, $value, $autoload = null) {
     return update_option($option, $value, $autoload);
   }
 
-  function wpAddInlineScript($handle, $data, $position = 'after') {
+  public function wpAddInlineScript($handle, $data, $position = 'after') {
     return wp_add_inline_script($handle, $data, $position);
   }
 
-  function wpCreateNonce($action = -1) {
+  public function wpCreateNonce($action = -1) {
     return wp_create_nonce($action);
   }
 
-  function wpDequeueScript($handle) {
+  public function wpDequeueScript($handle) {
     return wp_dequeue_script($handle);
   }
 
-  function wpDequeueStyle($handle) {
+  public function wpDequeueStyle($handle) {
     return wp_dequeue_style($handle);
   }
 
-  function wpEncodeEmoji($content) {
+  public function wpEncodeEmoji($content) {
     return wp_encode_emoji($content);
   }
 
-  function wpEnqueueMedia(array $args = []) {
+  public function wpEnqueueMedia(array $args = []) {
     return wp_enqueue_media($args);
   }
 
-  function wpEnqueueScript($handle, $src = '', array $deps = [], $ver = false, $in_footer = false) {
+  public function wpEnqueueScript($handle, $src = '', array $deps = [], $ver = false, $in_footer = false) {
     return wp_enqueue_script($handle, $src, $deps, $ver, $in_footer);
   }
 
-  function wpEnqueueStyle($handle, $src = '', array $deps = [], $ver = false, $media = 'all') {
+  public function wpEnqueueStyle($handle, $src = '', array $deps = [], $ver = false, $media = 'all') {
     return wp_enqueue_style($handle, $src, $deps, $ver, $media);
   }
 
-  function wpGetAttachmentImageSrc($attachment_id, $size = 'thumbnail', $icon = false) {
+  public function wpGetAttachmentImageSrc($attachment_id, $size = 'thumbnail', $icon = false) {
     return wp_get_attachment_image_src($attachment_id, $size, $icon);
   }
 
-  function wpGetCurrentUser() {
+  public function wpGetCurrentUser() {
     return wp_get_current_user();
   }
 
-  function wpGetPostTerms($post_id, $taxonomy = 'post_tag', array $args = []) {
+  public function wpGetPostTerms($post_id, $taxonomy = 'post_tag', array $args = []) {
     return wp_get_post_terms($post_id, $taxonomy, $args);
   }
 
-  function wpGetReferer() {
+  public function wpGetReferer() {
     return wp_get_referer();
   }
 
-  function wpGetTheme($stylesheet = null, $theme_root = null) {
+  public function wpGetTheme($stylesheet = null, $theme_root = null) {
     return wp_get_theme($stylesheet, $theme_root);
   }
 
-  function wpInsertPost(array $postarr, $wp_error = false) {
+  public function wpInsertPost(array $postarr, $wp_error = false) {
     return wp_insert_post($postarr, $wp_error);
   }
 
-  function wpJsonEncode($data, $options = 0, $depth = 512) {
+  public function wpJsonEncode($data, $options = 0, $depth = 512) {
     return wp_json_encode($data, $options, $depth);
   }
 
-  function wpLocalizeScript($handle, $object_name, array $l10n) {
+  public function wpLocalizeScript($handle, $object_name, array $l10n) {
     return wp_localize_script($handle, $object_name, $l10n);
   }
 
-  function wpLoginUrl($redirect = '', $force_reauth = false) {
+  public function wpLoginUrl($redirect = '', $force_reauth = false) {
     return wp_login_url($redirect, $force_reauth);
   }
 
-  function wpParseArgs($args, $defaults = '') {
+  public function wpParseArgs($args, $defaults = '') {
     return wp_parse_args($args, $defaults);
   }
 
-  function wpParseUrl($url, $component = -1) {
+  public function wpParseUrl($url, $component = -1) {
     return wp_parse_url($url, $component);
   }
 
-  function wpSpecialcharsDecode($string, $quote_style = ENT_NOQUOTES ) {
+  public function wpSpecialcharsDecode($string, $quote_style = ENT_NOQUOTES ) {
     return wp_specialchars_decode($string, $quote_style);
   }
 
-  function wpPrintScripts($handles = false) {
+  public function wpPrintScripts($handles = false) {
     return wp_print_scripts($handles);
   }
 
-  function wpRemoteGet($url, array $args = []) {
+  public function wpRemoteGet($url, array $args = []) {
     return wp_remote_get($url, $args);
   }
 
-  function wpRemotePost($url, array $args = []) {
+  public function wpRemotePost($url, array $args = []) {
     return wp_remote_post($url, $args);
   }
 
-  function wpRemoteRetrieveBody($response) {
+  public function wpRemoteRetrieveBody($response) {
     return wp_remote_retrieve_body($response);
   }
 
-  function wpRemoteRetrieveResponseCode($response) {
+  public function wpRemoteRetrieveResponseCode($response) {
     return wp_remote_retrieve_response_code($response);
   }
 
-  function wpRemoteRetrieveResponseMessage($response) {
+  public function wpRemoteRetrieveResponseMessage($response) {
     return wp_remote_retrieve_response_message($response);
   }
 
-  function wpSafeRedirect($location, $status = 302) {
+  public function wpSafeRedirect($location, $status = 302) {
     return wp_safe_redirect($location, $status);
   }
 
-  function wpSetCurrentUser($id, $name = '') {
+  public function wpSetCurrentUser($id, $name = '') {
     return wp_set_current_user($id, $name);
   }
 
-  function wpStaticizeEmoji($text) {
+  public function wpStaticizeEmoji($text) {
     return wp_staticize_emoji($text);
   }
 
-  function wpTrimWords($text, $num_words = 55, $more = null) {
+  public function wpTrimWords($text, $num_words = 55, $more = null) {
     return wp_trim_words($text, $num_words, $more);
   }
 
-  function wpUploadDir($time = null, $create_dir = true, $refresh_cache = false) {
+  public function wpUploadDir($time = null, $create_dir = true, $refresh_cache = false) {
     return wp_upload_dir($time, $create_dir, $refresh_cache);
   }
 
-  function wpVerifyNonce($nonce, $action = -1) {
+  public function wpVerifyNonce($nonce, $action = -1) {
     return wp_verify_nonce($nonce, $action);
   }
 
-  function wpautop($pee, $br = true) {
+  public function wpautop($pee, $br = true) {
     return wpautop($pee, $br);
   }
 
@@ -566,7 +566,7 @@ class Functions {
    * @param string $host
    * @return array|bool
    */
-  function parseDbHost($host) {
+  public function parseDbHost($host) {
     global $wpdb;
     if (method_exists($wpdb, 'parse_db_host')) {
       return $wpdb->parse_db_host($host);

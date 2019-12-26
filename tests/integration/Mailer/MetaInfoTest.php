@@ -12,12 +12,12 @@ class MetaInfoTest extends \MailPoetTest {
   /** @var MetaInfo */
   private $meta;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->meta = new MetaInfo;
   }
 
-  function testItGetsMetaInfoForSendingTest() {
+  public function testItGetsMetaInfoForSendingTest() {
     expect($this->meta->getSendingTestMetaInfo())->equals([
       'email_type' => 'sending_test',
       'subscriber_status' => 'unknown',
@@ -25,7 +25,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function testItGetsMetaInfoForPreview() {
+  public function testItGetsMetaInfoForPreview() {
     expect($this->meta->getPreviewMetaInfo())->equals([
       'email_type' => 'preview',
       'subscriber_status' => 'unknown',
@@ -33,7 +33,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function testItGetsMetaInfoForStatsNotifications() {
+  public function testItGetsMetaInfoForStatsNotifications() {
     expect($this->meta->getStatsNotificationMetaInfo())->equals([
       'email_type' => 'email_stats_notification',
       'subscriber_status' => 'unknown',
@@ -41,7 +41,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function testItGetsMetaInfoForWordPressTransactionalEmails() {
+  public function testItGetsMetaInfoForWordPressTransactionalEmails() {
     expect($this->meta->getWordPressTransactionalMetaInfo())->equals([
       'email_type' => 'transactional',
       'subscriber_status' => 'unknown',
@@ -59,7 +59,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function testItGetsMetaInfoForConfirmationEmails() {
+  public function testItGetsMetaInfoForConfirmationEmails() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'status' => 'unconfirmed',
@@ -72,7 +72,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function testItGetsMetaInfoForNewSubscriberNotifications() {
+  public function testItGetsMetaInfoForNewSubscriberNotifications() {
     expect($this->meta->getNewSubscriberNotificationMetaInfo())->equals([
       'email_type' => 'new_subscriber_notification',
       'subscriber_status' => 'unknown',
@@ -80,7 +80,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function testItGetsMetaInfoForStandardNewsletter() {
+  public function testItGetsMetaInfoForStandardNewsletter() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'status' => 'subscribed',
@@ -96,7 +96,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function testItGetsMetaInfoForWelcomeEmail() {
+  public function testItGetsMetaInfoForWelcomeEmail() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'status' => 'subscribed',
@@ -112,7 +112,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function testItGetsMetaInfoForPostNotification() {
+  public function testItGetsMetaInfoForPostNotification() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'status' => 'subscribed',
@@ -136,7 +136,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function testItGetsMetaInfoForAutomaticEmails() {
+  public function testItGetsMetaInfoForAutomaticEmails() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'status' => 'subscribed',
@@ -168,7 +168,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function testItSetsUnknownSubscriberSourceWhenNull() {
+  public function testItSetsUnknownSubscriberSourceWhenNull() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'status' => 'subscribed',
@@ -184,7 +184,7 @@ class MetaInfoTest extends \MailPoetTest {
     ]);
   }
 
-  function _after() {
+  public function _after() {
     Subscriber::deleteMany();
   }
 }

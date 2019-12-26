@@ -33,7 +33,7 @@ class Functions extends AbstractExtension {
     $this->referral_url_decorator = new UrlDecorator($this->wp, $this->settings);
   }
 
-  function getFunctions() {
+  public function getFunctions() {
     return [
       new TwigFunction(
         'json_encode',
@@ -158,7 +158,7 @@ class Functions extends AbstractExtension {
     ];
   }
 
-  function getSendingFrequency() {
+  public function getSendingFrequency() {
     $args = func_get_args();
     $value = (int)array_shift($args);
 
@@ -194,31 +194,31 @@ class Functions extends AbstractExtension {
     }
   }
 
-  function getWPDateFormat() {
+  public function getWPDateFormat() {
     return $this->wp->getOption('date_format') ?: 'F j, Y';
   }
 
-  function getWPStartOfWeek() {
+  public function getWPStartOfWeek() {
     return $this->wp->getOption('start_of_week') ?: 0;
   }
 
-  function getMailPoetVersion() {
+  public function getMailPoetVersion() {
     return MAILPOET_VERSION;
   }
 
-  function getMailPoetPremiumVersion() {
+  public function getMailPoetPremiumVersion() {
     return (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : false;
   }
 
-  function getWPTimeFormat() {
+  public function getWPTimeFormat() {
     return $this->wp->getOption('time_format') ?: 'g:i a';
   }
 
-  function getWPDateTimeFormat() {
+  public function getWPDateTimeFormat() {
     return sprintf('%s %s', $this->getWPDateFormat(), $this->getWPTimeFormat());
   }
 
-  function params($key = null) {
+  public function params($key = null) {
     $args = $this->wp->stripslashesDeep($_GET);
     if (array_key_exists($key, $args)) {
       return $args[$key];
@@ -226,29 +226,29 @@ class Functions extends AbstractExtension {
     return null;
   }
 
-  function installedInLastTwoWeeks() {
+  public function installedInLastTwoWeeks() {
     $max_number_of_weeks = 2;
     $installed_at = Carbon::createFromFormat('Y-m-d H:i:s', $this->settings->get('installed_at'));
     return $installed_at->diffInWeeks(Carbon::now()) < $max_number_of_weeks;
   }
 
-  function isRtl() {
+  public function isRtl() {
     return $this->wp->isRtl();
   }
 
-  function getTwoLettersLocale() {
+  public function getTwoLettersLocale() {
     return explode('_', $this->wp->getLocale())[0];
   }
 
-  function getFreeDomains() {
+  public function getFreeDomains() {
     return FreeDomains::FREE_DOMAINS;
   }
 
-  function isWoocommerceActive() {
+  public function isWoocommerceActive() {
     return $this->woocommerce_helper->isWooCommerceActive();
   }
 
-  function openedStatsColor($opened) {
+  public function openedStatsColor($opened) {
     if ($opened > 30) {
       return '#2993ab';
     } elseif ($opened > 10) {
@@ -258,7 +258,7 @@ class Functions extends AbstractExtension {
     }
   }
 
-  function clickedStatsColor($clicked) {
+  public function clickedStatsColor($clicked) {
     if ($clicked > 3) {
       return '#2993ab';
     } elseif ($clicked > 1) {
@@ -268,7 +268,7 @@ class Functions extends AbstractExtension {
     }
   }
 
-  function openedStatsText($opened) {
+  public function openedStatsText($opened) {
     if ($opened > 30) {
       return __('EXCELLENT', 'mailpoet');
     } elseif ($opened > 10) {
@@ -278,7 +278,7 @@ class Functions extends AbstractExtension {
     }
   }
 
-  function clickedStatsText($clicked) {
+  public function clickedStatsText($clicked) {
     if ($clicked > 3) {
       return __('EXCELLENT', 'mailpoet');
     } elseif ($clicked > 1) {
@@ -288,7 +288,7 @@ class Functions extends AbstractExtension {
     }
   }
 
-  function addReferralId($url) {
+  public function addReferralId($url) {
     return $this->referral_url_decorator->decorate($url);
   }
 }

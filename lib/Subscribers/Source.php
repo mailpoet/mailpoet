@@ -26,7 +26,7 @@ class Source {
     Source::UNKNOWN,
   ];
 
-  static function setSource(Subscriber $subscriber, $source) {
+  public static function setSource(Subscriber $subscriber, $source) {
     if ((isset($subscriber->source)) && ($subscriber->source !== Source::UNKNOWN)) {
       // we don't want to override source
       return $subscriber;

@@ -24,11 +24,11 @@ use MailPoetVendor\Idiorm\ORM;
 require_once __DIR__ . '/../WooCommerceStubs/OrderDetails.php';
 
 class FirstPurchaseTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     WPFunctions::get()->removeAllFilters('mailpoet_newsletter_shortcode');
   }
 
-  function testItGetsEventDetails() {
+  public function testItGetsEventDetails() {
     $event = new FirstPurchase();
 
     $result = $event->getEventDetails();
@@ -36,7 +36,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result['slug'])->equals(FirstPurchase::SLUG);
   }
 
-  function testDateShortcodeHandlerReturnsShortcodeWhenItCannotDetectProperShortcode() {
+  public function testDateShortcodeHandlerReturnsShortcodeWhenItCannotDetectProperShortcode() {
     $event = new FirstPurchase();
     $shortcode = 'wrong shortcode';
 
@@ -44,7 +44,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->equals($shortcode);
   }
 
-  function testDateShortcodeHandlerReturnsShortcodeWhenQueueIsMissing() {
+  public function testDateShortcodeHandlerReturnsShortcodeWhenQueueIsMissing() {
     $event = new FirstPurchase();
     $shortcode = $event::ORDER_DATE_SHORTCODE;
     WPFunctions::set(Stub::make(new WPFunctions, [
@@ -54,7 +54,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->equals('success');
   }
 
-  function testDateShortcodeHandlerReturnsCurrentDateWhenDateIsMissingInQueueMeta() {
+  public function testDateShortcodeHandlerReturnsCurrentDateWhenDateIsMissingInQueueMeta() {
     $event = new FirstPurchase();
     $shortcode = $event::ORDER_DATE_SHORTCODE;
     $queue = SendingQueue::create(['task_id' => 1]);
@@ -66,7 +66,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->equals('success');
   }
 
-  function testDateShortcodeHandlerReturnsSystemFormattedDate() {
+  public function testDateShortcodeHandlerReturnsSystemFormattedDate() {
     $event = new FirstPurchase();
     $shortcode = $event::ORDER_DATE_SHORTCODE;
     $queue = SendingQueue::create(['task_id' => 1]);
@@ -77,7 +77,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->equals('success');
   }
 
-  function testOrderAmountShortcodeHandlerReturnsShortcodeWhenItCannotDetectProperShortcode() {
+  public function testOrderAmountShortcodeHandlerReturnsShortcodeWhenItCannotDetectProperShortcode() {
     $event = new FirstPurchase();
     $shortcode = 'wrong shortcode';
 
@@ -85,7 +85,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->equals($shortcode);
   }
 
-  function testOrderAmountShortcodeHandlerReturnsFormattedZeroValueWhenQueueIsMissing() {
+  public function testOrderAmountShortcodeHandlerReturnsFormattedZeroValueWhenQueueIsMissing() {
     $helper = Stub::make(WCHelper::class, [
       'wcPrice' => function($price) {
         return $price;
@@ -97,7 +97,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->equals(0);
   }
 
-  function testOrderAmountShortcodeHandlerReturnsFormattedZeroValueWhenOrderAmountIsMissingInQueueMeta() {
+  public function testOrderAmountShortcodeHandlerReturnsFormattedZeroValueWhenOrderAmountIsMissingInQueueMeta() {
     $helper = Stub::make(WCHelper::class, [
       'wcPrice' => function($price) {
         return $price;
@@ -110,7 +110,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->equals(0);
   }
 
-  function testOrderAmountShortcodeHandlerReturnsFormattedPrice() {
+  public function testOrderAmountShortcodeHandlerReturnsFormattedPrice() {
     $helper = Stub::make(WCHelper::class, [
       'wcPrice' => function($price) {
         return $price;
@@ -124,7 +124,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->equals(15);
   }
 
-  function testItDoesNotScheduleEmailWhenOrderDetailsAreNotAvailable() {
+  public function testItDoesNotScheduleEmailWhenOrderDetailsAreNotAvailable() {
     $helper = Stub::make(WCHelper::class, [
       'wcGetOrder' => false,
     ]);
@@ -133,7 +133,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->isEmpty();
   }
 
-  function testItDoesNotScheduleEmailWhenCustomerEmailIsEmpty() {
+  public function testItDoesNotScheduleEmailWhenCustomerEmailIsEmpty() {
     $order_details = Stub::make(
       new OrderDetails(),
       [
@@ -149,7 +149,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->isEmpty();
   }
 
-  function testItDoesNotScheduleEmailWhenItIsNotCustomersFirstPurchase() {
+  public function testItDoesNotScheduleEmailWhenItIsNotCustomersFirstPurchase() {
     $order_details = Stub::make(new OrderDetails(), ['get_billing_email' => 'test@example.com']);
     $helper = Stub::make(WCHelper::class, [
       'wcGetOrder' => $order_details,
@@ -161,7 +161,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->isEmpty();
   }
 
-  function testItDoesNotScheduleEmailWhenCustomerIsNotAWCSegmentSubscriber() {
+  public function testItDoesNotScheduleEmailWhenCustomerIsNotAWCSegmentSubscriber() {
     $date_created = new \DateTime('2018-12-12');
     $order_details = Stub::make(
       new OrderDetails(),
@@ -192,17 +192,17 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($result)->isEmpty();
   }
 
-  function testItSchedulesEmailForProcessingOrder() {
+  public function testItSchedulesEmailForProcessingOrder() {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_processing');
     $this->_runTestItSchedulesEmailForState('processing');
   }
 
-  function testItSchedulesEmailForCompletedOrder() {
+  public function testItSchedulesEmailForCompletedOrder() {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
     $this->_runTestItSchedulesEmailForState('completed');
   }
 
-  function testItSchedulesEmailOnlyOnce() {
+  public function testItSchedulesEmailOnlyOnce() {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_processing');
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
     $order_id = $this->_runTestItSchedulesEmailForState('processing');
@@ -212,7 +212,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     expect($tasks_count_after_status_change)->equals($tasks_count_before_status_change);
   }
 
-  function _runTestItSchedulesEmailForState($order_state) {
+  public function _runTestItSchedulesEmailForState($order_state) {
     $newsletter = Newsletter::createOrUpdate(
       [
         'subject' => 'WooCommerce',
@@ -287,7 +287,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     return $order_id;
   }
 
-  function _createNewsletterOption(array $options, $newsletter_id) {
+  public function _createNewsletterOption(array $options, $newsletter_id) {
     foreach ($options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::where('name', $option)
         ->where('newsletter_type', Newsletter::TYPE_AUTOMATIC)
@@ -320,7 +320,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);

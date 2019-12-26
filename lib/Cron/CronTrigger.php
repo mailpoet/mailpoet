@@ -30,7 +30,7 @@ class CronTrigger {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(
+  public function __construct(
     MailPoet $mailpoet_trigger,
     WordPress $wordpress_trigger,
     SettingsController $settings
@@ -40,7 +40,7 @@ class CronTrigger {
     $this->settings = $settings;
   }
 
-  function init() {
+  public function init() {
     $current_method = $this->settings->get(self::SETTING_NAME . '.method');
     try {
       if ($current_method === self::METHOD_MAILPOET) {

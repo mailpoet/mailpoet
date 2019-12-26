@@ -20,7 +20,7 @@ class PageRenderer {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(
+  public function __construct(
     Renderer $renderer,
     FeaturesController $features_controller,
     SettingsController $settings
@@ -35,7 +35,7 @@ class PageRenderer {
    * @param string $template
    * @param array $data
    */
-  function displayPage($template, array $data = []) {
+  public function displayPage($template, array $data = []) {
     $defaults = [
       'feature_flags' => $this->features_controller->getAllFlags(),
       'referral_id' => $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME),

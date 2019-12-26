@@ -13,13 +13,13 @@ class ImportExportTest extends \MailPoetTest {
   /** @var ImportExport */
   private $endpoint;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(ImportExport::class);
     ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->deleteMany();
   }
 
-  function testItSchedulesTaskWhenNoneExistss() {
+  public function testItSchedulesTaskWhenNoneExistss() {
     $response = $this->endpoint->setupWooCommerceInitialImport();
     expect($response->status)->equals(200);
     $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->findOne();
@@ -30,7 +30,7 @@ class ImportExportTest extends \MailPoetTest {
     expect($scheduled_at->timestamp)->lessOrEquals($now + 1);
   }
 
-  function testItReschedulesScheduledTaskToNow() {
+  public function testItReschedulesScheduledTaskToNow() {
     $original_schedule = Carbon::createFromTimestamp(time() + 3000);
     $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, $original_schedule);
     $this->endpoint->setupWooCommerceInitialImport();
@@ -44,7 +44,7 @@ class ImportExportTest extends \MailPoetTest {
     expect($task_count)->equals(1);
   }
 
-  function testItDoesNothingForRunningTask() {
+  public function testItDoesNothingForRunningTask() {
     $this->createTask(WooCommerceSync::TASK_TYPE, null);
     $this->endpoint->setupWooCommerceInitialImport();
     $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->findOne();
@@ -53,7 +53,7 @@ class ImportExportTest extends \MailPoetTest {
     expect($task_count)->equals(1);
   }
 
-  function testItIgnoresCompletedAndPausedTasks() {
+  public function testItIgnoresCompletedAndPausedTasks() {
     $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTask::STATUS_PAUSED);
     $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTask::STATUS_COMPLETED);
     $this->endpoint->setupWooCommerceInitialImport();

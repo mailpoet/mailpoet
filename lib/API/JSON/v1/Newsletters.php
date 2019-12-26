@@ -80,7 +80,7 @@ class Newsletters extends APIEndpoint {
   /** @var SubscribersFeature */
   private $subscribers_feature;
 
-  function __construct(
+  public function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
     WPFunctions $wp,
@@ -112,7 +112,7 @@ class Newsletters extends APIEndpoint {
     $this->subscribers_feature = $subscribers_feature;
   }
 
-  function get($data = []) {
+  public function get($data = []) {
     $newsletter = isset($data['id'])
       ? $this->newsletters_repository->findOneById((int)$data['id'])
       : null;
@@ -137,7 +137,7 @@ class Newsletters extends APIEndpoint {
     }
   }
 
-  function getWithStats($data = []) {
+  public function getWithStats($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $newsletter = Newsletter::findOne($id);
     if ($newsletter instanceof Newsletter) {
@@ -164,7 +164,7 @@ class Newsletters extends APIEndpoint {
     }
   }
 
-  function save($data = []) {
+  public function save($data = []) {
     $data = $this->wp->applyFilters('mailpoet_api_newsletters_save_before', $data);
 
     $segments = [];
@@ -286,7 +286,7 @@ class Newsletters extends APIEndpoint {
     return $this->successResponse($newsletter->asArray(), ['preview_url' => $preview_url]);
   }
 
-  function setStatus($data = []) {
+  public function setStatus($data = []) {
     $status = (isset($data['status']) ? $data['status'] : null);
 
     if (!$status) {
@@ -339,7 +339,7 @@ class Newsletters extends APIEndpoint {
     );
   }
 
-  function restore($data = []) {
+  public function restore($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $newsletter = Newsletter::findOne($id);
     if ($newsletter instanceof Newsletter) {
@@ -359,7 +359,7 @@ class Newsletters extends APIEndpoint {
     }
   }
 
-  function trash($data = []) {
+  public function trash($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $newsletter = Newsletter::findOne($id);
     if ($newsletter instanceof Newsletter) {
@@ -378,7 +378,7 @@ class Newsletters extends APIEndpoint {
     }
   }
 
-  function delete($data = []) {
+  public function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $newsletter = Newsletter::findOne($id);
     if ($newsletter instanceof Newsletter) {
@@ -391,7 +391,7 @@ class Newsletters extends APIEndpoint {
     }
   }
 
-  function duplicate($data = []) {
+  public function duplicate($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $newsletter = Newsletter::findOne($id);
 
@@ -420,7 +420,7 @@ class Newsletters extends APIEndpoint {
     }
   }
 
-  function showPreview($data = []) {
+  public function showPreview($data = []) {
     if (empty($data['body'])) {
       return $this->badRequest([
         APIError::BAD_REQUEST => __('Newsletter data is missing.', 'mailpoet'),
@@ -456,7 +456,7 @@ class Newsletters extends APIEndpoint {
     }
   }
 
-  function sendPreview($data = []) {
+  public function sendPreview($data = []) {
     if (empty($data['subscriber'])) {
       return $this->badRequest([
         APIError::BAD_REQUEST => __('Please specify receiver information.', 'mailpoet'),
@@ -527,7 +527,7 @@ class Newsletters extends APIEndpoint {
     }
   }
 
-  function listing($data = []) {
+  public function listing($data = []) {
     $listing_data = $this->listing_handler->get('\MailPoet\Models\Newsletter', $data);
 
     $data = [];
@@ -585,7 +585,7 @@ class Newsletters extends APIEndpoint {
     ]);
   }
 
-  function bulkAction($data = []) {
+  public function bulkAction($data = []) {
     try {
       $meta = $this->bulk_action->apply('\MailPoet\Models\Newsletter', $data);
       return $this->successResponse(null, $meta);
@@ -596,7 +596,7 @@ class Newsletters extends APIEndpoint {
     }
   }
 
-  function create($data = []) {
+  public function create($data = []) {
     $options = [];
     if (isset($data['options'])) {
       $options = $data['options'];

@@ -19,7 +19,7 @@ class ImageTest extends \MailPoetUnitTest {
     ],
   ];
 
-  function testItRendersCorrectly() {
+  public function testItRendersCorrectly() {
     $output = Image::render($this->block, 200);
     $expected_result = '
       <tr>
@@ -30,7 +30,7 @@ class ImageTest extends \MailPoetUnitTest {
     expect($output)->equals($expected_result);
   }
 
-  function testItRendersWithoutLink() {
+  public function testItRendersWithoutLink() {
     $this->block['link'] = null;
     $output = Image::render($this->block, 200);
     $expected_result = '

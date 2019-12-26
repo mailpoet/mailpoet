@@ -21,7 +21,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class SchedulerTest extends \MailPoetTest {
 
-  function testItGetsActiveNewslettersFilteredByTypeAndGroup() {
+  public function testItGetsActiveNewslettersFilteredByTypeAndGroup() {
     $this->_createNewsletter($type = Newsletter::TYPE_WELCOME);
 
     // no newsletters with type "notification" should be found
@@ -44,7 +44,7 @@ class SchedulerTest extends \MailPoetTest {
     expect(Scheduler::getNewsletters(Newsletter::TYPE_WELCOME, 'test'))->count(1);
   }
 
-  function testItCanGetNextRunDate() {
+  public function testItCanGetNextRunDate() {
     // it accepts cron syntax and returns next run date
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
@@ -54,7 +54,7 @@ class SchedulerTest extends \MailPoetTest {
     expect(Scheduler::getNextRunDate('invalid CRON expression'))->false();
   }
 
-  function testItCanGetPreviousRunDate() {
+  public function testItCanGetPreviousRunDate() {
     // it accepts cron syntax and returns previous run date
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     Carbon::setTestNow($current_time); // mock carbon to return current time
@@ -64,7 +64,7 @@ class SchedulerTest extends \MailPoetTest {
     expect(Scheduler::getPreviousRunDate('invalid CRON expression'))->false();
   }
 
-  function testItFormatsDatetimeString() {
+  public function testItFormatsDatetimeString() {
     expect(Scheduler::formatDatetimeString('April 20, 2016 4pm'))
       ->equals('2016-04-20 16:00:00');
   }
@@ -101,7 +101,7 @@ class SchedulerTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     Carbon::setTestNow();
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);

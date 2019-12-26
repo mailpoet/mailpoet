@@ -47,7 +47,7 @@ class JiraController {
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-project-projectIdOrKey-versions-get
    */
-  function getVersion($version_name = null) {
+  public function getVersion($version_name = null) {
     $response = $this->http_client->get("project/$this->project/versions");
     $versions = json_decode($response->getBody()->getContents(), true);
     if ($version_name === null) {
@@ -61,7 +61,7 @@ class JiraController {
     throw new \Exception('Unknown project version');
   }
 
-  function getLastVersion() {
+  public function getLastVersion() {
     $response = $this->http_client->get("project/$this->project/version", [
       'query' => [
         'maxResults' => 1,
@@ -75,7 +75,7 @@ class JiraController {
     return reset($version['values']);
   }
 
-  function getLastReleasedVersion() {
+  public function getLastReleasedVersion() {
     $response = $this->http_client->get("project/$this->project/version", [
       'query' => [
         'maxResults' => 1,
@@ -93,7 +93,7 @@ class JiraController {
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-version-post
    */
-  function createVersion($version_name) {
+  public function createVersion($version_name) {
     $data = [
       'name' => $version_name,
       'archived' => false,
@@ -105,7 +105,7 @@ class JiraController {
     return json_decode($response->getBody()->getContents(), true);
   }
 
-  function releaseVersion($version_name) {
+  public function releaseVersion($version_name) {
     $version = $this->getVersion($version_name);
     $response = $this->http_client->put("version/$version[id]", [
       'json' => [
@@ -116,7 +116,7 @@ class JiraController {
     return json_decode($response->getBody()->getContents(), true);
   }
 
-  function getIssuesDataForVersion($version) {
+  public function getIssuesDataForVersion($version) {
     $changelog_id = self::CHANGELOG_FIELD_ID;
     $release_note_id = self::RELEASENOTE_FIELD_ID;
     $pull_requests_id = self::PULL_REQUESTS_ID;
@@ -136,7 +136,7 @@ class JiraController {
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-search-get
    */
-  function search($jql, array $fields = null) {
+  public function search($jql, array $fields = null) {
     $params = ['jql' => $jql];
     if ($fields) {
       $params['fields'] = join(',', $fields);
@@ -148,7 +148,7 @@ class JiraController {
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-issue-issueIdOrKey-put
    */
-  function updateIssue($key, $data) {
+  public function updateIssue($key, $data) {
     $this->http_client->put("issue/$key", ['json' => $data]);
   }
 }

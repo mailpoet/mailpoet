@@ -42,7 +42,7 @@ class API {
   const CURRENT_VERSION = 'v1';
 
 
-  function __construct(
+  public function __construct(
     ContainerInterface $container,
     AccessControl $access_control,
     SettingsController $settings,
@@ -60,7 +60,7 @@ class API {
     }
   }
 
-  function init() {
+  public function init() {
      // admin security token and API version
     WPFunctions::get()->addAction(
       'admin_head',
@@ -80,7 +80,7 @@ class API {
     );
   }
 
-  function setupAjax() {
+  public function setupAjax() {
     $this->wp->doAction('mailpoet_api_setup', [$this]);
 
     if (isset($_POST['api_version'])) {
@@ -105,7 +105,7 @@ class API {
     $response->send();
   }
 
-  function setRequestData($data, $request_type) {
+  public function setRequestData($data, $request_type) {
     $this->_request_api_version = !empty($data['api_version']) ? $data['api_version'] : false;
 
     $this->_request_endpoint = isset($data['endpoint'])
@@ -162,7 +162,7 @@ class API {
     }
   }
 
-  function processRoute() {
+  public function processRoute() {
     try {
       if (empty($this->_request_endpoint_class) ||
         !$this->container->has($this->_request_endpoint_class)
@@ -203,18 +203,18 @@ class API {
     }
   }
 
-  function validatePermissions($request_method, $permissions) {
+  public function validatePermissions($request_method, $permissions) {
     // validate method permission if defined, otherwise validate global permission
     return(!empty($permissions['methods'][$request_method])) ?
       $this->access_control->validatePermission($permissions['methods'][$request_method]) :
       $this->access_control->validatePermission($permissions['global']);
   }
 
-  function checkToken() {
+  public function checkToken() {
     return WPFunctions::get()->wpVerifyNonce($this->_request_token, 'mailpoet_token');
   }
 
-  function setTokenAndAPIVersion() {
+  public function setTokenAndAPIVersion() {
     $global = '<script type="text/javascript">';
     $global .= 'var mailpoet_token = "%s";';
     $global .= 'var mailpoet_api_version = "%s";';
@@ -226,24 +226,24 @@ class API {
     );
   }
 
-  function addEndpointNamespace($namespace, $version) {
+  public function addEndpointNamespace($namespace, $version) {
     if (!empty($this->_endpoint_namespaces[$version][$namespace])) return;
     $this->_endpoint_namespaces[$version][] = $namespace;
   }
 
-  function getEndpointNamespaces() {
+  public function getEndpointNamespaces() {
     return $this->_endpoint_namespaces;
   }
 
-  function getRequestedEndpointClass() {
+  public function getRequestedEndpointClass() {
     return $this->_request_endpoint_class;
   }
 
-  function getRequestedAPIVersion() {
+  public function getRequestedAPIVersion() {
     return $this->_request_api_version;
   }
 
-  function createErrorResponse($error_type, $error_message, $response_status) {
+  public function createErrorResponse($error_type, $error_message, $response_status) {
     $error_response = new ErrorResponse(
       [
         $error_type => $error_message,

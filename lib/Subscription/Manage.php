@@ -19,13 +19,13 @@ class Manage {
   /** @var LinkTokens */
   private $link_tokens;
 
-  function __construct(UrlHelper $url_helper, FieldNameObfuscator $field_name_obfuscator, LinkTokens $link_tokens) {
+  public function __construct(UrlHelper $url_helper, FieldNameObfuscator $field_name_obfuscator, LinkTokens $link_tokens) {
     $this->url_helper = $url_helper;
     $this->field_name_obfuscator = $field_name_obfuscator;
     $this->link_tokens = $link_tokens;
   }
 
-  function onSave() {
+  public function onSave() {
     $action = (isset($_POST['action']) ? $_POST['action'] : null);
     $token = (isset($_POST['token']) ? $_POST['token'] : null);
 

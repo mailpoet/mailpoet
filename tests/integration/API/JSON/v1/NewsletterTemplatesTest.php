@@ -7,7 +7,7 @@ use MailPoet\API\JSON\v1\NewsletterTemplates;
 use MailPoet\Models\NewsletterTemplate;
 
 class NewsletterTemplatesTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     NewsletterTemplate::deleteMany();
     NewsletterTemplate::createOrUpdate([
@@ -22,7 +22,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     ]);
   }
 
-  function testItCanGetANewsletterTemplate() {
+  public function testItCanGetANewsletterTemplate() {
     $template = NewsletterTemplate::where('name', 'Template #1')->findOne();
 
     $router = new NewsletterTemplates();
@@ -43,7 +43,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     );
   }
 
-  function testItCanGetAllNewsletterTemplates() {
+  public function testItCanGetAllNewsletterTemplates() {
     $templates = NewsletterTemplate::count();
 
     $router = new NewsletterTemplates();
@@ -52,7 +52,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     expect($response->data)->count($templates);
   }
 
-  function testItCanSaveANewTemplate() {
+  public function testItCanSaveANewTemplate() {
     $template_data = [
       'name' => 'Template #3',
       'body' => '{"key3": "value3"}',
@@ -66,7 +66,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     );
   }
 
-  function testItCanSaveANewTemplateAssociatedWithANewsletter() {
+  public function testItCanSaveANewTemplateAssociatedWithANewsletter() {
     $template_data = [
       'newsletter_id' => 2,
       'name' => 'Template #3',
@@ -81,7 +81,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     );
   }
 
-  function testItCanUpdateTemplateAssociatedWithANewsletter() {
+  public function testItCanUpdateTemplateAssociatedWithANewsletter() {
     $template_data = [
       'newsletter_id' => '1',
       'name' => 'Template #2',
@@ -111,7 +111,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     expect($normalize($template))->equals($template_data);
   }
 
-  function testItCanDeleteANewsletterTemplate() {
+  public function testItCanDeleteANewsletterTemplate() {
     $template = NewsletterTemplate::where('name', 'Template #2')->findOne();
     expect($template->deleted_at)->null();
 
@@ -128,7 +128,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     expect($deleted_template)->false();
   }
 
-  function _after() {
+  public function _after() {
     NewsletterTemplate::deleteMany();
   }
 }

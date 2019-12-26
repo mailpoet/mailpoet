@@ -15,7 +15,7 @@ use PDO;
 class ConnectionFactoryTest extends \MailPoetTest {
   private $env_backup = [];
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->env_backup['db_host'] = Env::$db_host;
     $this->env_backup['db_is_ipv6'] = Env::$db_is_ipv6;
@@ -24,7 +24,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     $this->env_backup['db_charset'] = Env::$db_charset;
   }
 
-  function testItSetsUpConnection() {
+  public function testItSetsUpConnection() {
     $connection_factory = new ConnectionFactory();
     $connection = $connection_factory->createConnection();
 
@@ -44,14 +44,14 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect(Type::getType(JsonOrSerializedType::NAME))->isInstanceOf(JsonOrSerializedType::class);
   }
 
-  function testItIgnoresEmptyCharset() {
+  public function testItIgnoresEmptyCharset() {
     Env::$db_charset = '';
     $connection_factory = new ConnectionFactory();
     $connection = $connection_factory->createConnection();
     expect($connection->getParams())->hasntKey('charset');
   }
 
-  function testItSetsUpSocket() {
+  public function testItSetsUpSocket() {
     Env::$db_host = null;
     Env::$db_port = null;
     Env::$db_socket = 'socket';
@@ -63,7 +63,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect($connection->getParams()['unix_socket'])->equals('socket');
   }
 
-  function testItSetsUpIpV6() {
+  public function testItSetsUpIpV6() {
     Env::$db_is_ipv6 = true;
 
     Env::$db_host = '::1';
@@ -84,7 +84,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect($connection->executeQuery('SELECT 1')->fetchColumn())->same('1');
   }
 
-  function testItSetsDriverOptions() {
+  public function testItSetsDriverOptions() {
     $connection_factory = new ConnectionFactory();
     $connection = $connection_factory->createConnection();
 
@@ -111,7 +111,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect($result['@@session.collation_connection'])->equals(Env::$db_collation);
   }
 
-  function testItSelectivelyUpdatesWaitTimeoutOption() {
+  public function testItSelectivelyUpdatesWaitTimeoutOption() {
     // timeout will be kept from DB defaults
     $connection_factory = $this->make(ConnectionFactory::class, [
       'min_wait_timeout' => 1,
@@ -129,7 +129,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect($current)->equals(999999);
   }
 
-  function _after() {
+  public function _after() {
     parent::_after();
     Env::$db_host = $this->env_backup['db_host'];
     Env::$db_port = $this->env_backup['db_port'];

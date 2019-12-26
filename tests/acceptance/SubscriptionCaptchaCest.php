@@ -15,7 +15,7 @@ class SubscriptionCaptchaCest {
   /** @var string */
   private $subscriber_email;
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $this->subscriber_email = 'test-form@example.com';
     $this->settings_factory = new Settings();
     $this->settings_factory->withCaptchaType(Captcha::TYPE_BUILTIN);
@@ -34,7 +34,7 @@ class SubscriptionCaptchaCest {
     $I->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter']);
   }
 
-  function checkCaptchaPageExistsAfterSubscription(\AcceptanceTester $I) {
+  public function checkCaptchaPageExistsAfterSubscription(\AcceptanceTester $I) {
     $I->wantTo('See the built-in captcha after subscribing using form widget');
     $I->amOnPage('/');
     $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
@@ -43,7 +43,7 @@ class SubscriptionCaptchaCest {
     $I->seeNoJSErrors();
   }
 
-  function checkCaptchaPageIsNotShownToLoggedInUsers(\AcceptanceTester $I) {
+  public function checkCaptchaPageIsNotShownToLoggedInUsers(\AcceptanceTester $I) {
     $I->wantTo('check that captcha page is not shown to logged in users');
     $I->login();
     $I->amOnPage('/');

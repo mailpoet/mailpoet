@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\DynamicSegment;
 
 class RestoreTrashedSegmentCest {
-  function restoreSegmentFromTrash(\AcceptanceTester $I) {
+  public function restoreSegmentFromTrash(\AcceptanceTester $I) {
     $I->wantTo('Restore a segment from trash');
 
     $segment_title = 'Restore Segment From Trash Test';

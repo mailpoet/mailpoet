@@ -21,7 +21,7 @@ class SendGrid {
 
   private $wp;
 
-  function __construct($api_key, $sender, $reply_to, SendGridMapper $error_mapper) {
+  public function __construct($api_key, $sender, $reply_to, SendGridMapper $error_mapper) {
     $this->api_key = $api_key;
     $this->sender = $sender;
     $this->reply_to = $reply_to;
@@ -30,7 +30,7 @@ class SendGrid {
     $this->blacklist = new BlacklistCheck();
   }
 
-  function send($newsletter, $subscriber, $extra_params = []) {
+  public function send($newsletter, $subscriber, $extra_params = []) {
     if ($this->blacklist->isBlacklisted($subscriber)) {
       $error = $this->error_mapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
@@ -51,7 +51,7 @@ class SendGrid {
     return Mailer::formatMailerSendSuccessResult();
   }
 
-  function getBody($newsletter, $subscriber, $extra_params = []) {
+  public function getBody($newsletter, $subscriber, $extra_params = []) {
     $body = [
       'to' => $subscriber,
       'from' => $this->sender['from_email'],
@@ -75,11 +75,11 @@ class SendGrid {
     return $body;
   }
 
-  function auth() {
+  public function auth() {
     return 'Bearer ' . $this->api_key;
   }
 
-  function request($newsletter, $subscriber, $extra_params = []) {
+  public function request($newsletter, $subscriber, $extra_params = []) {
     $body = $this->getBody($newsletter, $subscriber, $extra_params);
     return [
       'timeout' => 10,

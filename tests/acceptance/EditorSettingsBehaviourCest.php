@@ -15,7 +15,7 @@ class EditorSettingsBehaviourCest {
   const HIGHLIGHTED_ALC_SELECTOR = '.mailpoet_highlight .mailpoet_automated_latest_content_block_posts';
   const SETTINGS_PANEL_SELECTOR = '#mailpoet_panel';
 
-  function testSettingsBehaviour(\AcceptanceTester $I) {
+  public function testSettingsBehaviour(\AcceptanceTester $I) {
     $I->wantTo('Test settings behaviour');
     $newsletterTitle = 'Settings Newsletter';
     $newsletter = (new Newsletter())

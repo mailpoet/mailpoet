@@ -20,17 +20,17 @@ class AbandonedCartPageVisitTracker {
   /** @var Cookies */
   private $cookies;
 
-  function __construct(WPFunctions $wp, WooCommerceHelper $woo_commerce_helper, Cookies $cookies) {
+  public function __construct(WPFunctions $wp, WooCommerceHelper $woo_commerce_helper, Cookies $cookies) {
     $this->wp = $wp;
     $this->woo_commerce_helper = $woo_commerce_helper;
     $this->cookies = $cookies;
   }
 
-  function startTracking() {
+  public function startTracking() {
     $this->saveLastVisitTimestamp();
   }
 
-  function trackVisit(callable $onTrackCallback = null) {
+  public function trackVisit(callable $onTrackCallback = null) {
     // track at most once per minute to avoid processing many calls at the same time, i.e. AJAX
     $last_visit_timestamp = $this->loadLastVisitTimestamp();
     $minute_ago_timestamp = Carbon::now()->getTimestamp() - 60;
@@ -42,7 +42,7 @@ class AbandonedCartPageVisitTracker {
     }
   }
 
-  function stopTracking() {
+  public function stopTracking() {
     $this->removeLastVisitTimestamp();
   }
 

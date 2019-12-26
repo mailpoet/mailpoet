@@ -7,7 +7,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
 
 class NewsletterSendingErrorCest {
-  function generalErrorNotice(\AcceptanceTester $I) {
+  public function generalErrorNotice(\AcceptanceTester $I) {
     (new Newsletter())->create();
 
     $I->wantTo('See proper sending error when sending failed');
@@ -31,7 +31,7 @@ class NewsletterSendingErrorCest {
     $I->waitForText('Sending has been resumed.');
   }
 
-  function phpMailErrorNotice(\AcceptanceTester $I) {
+  public function phpMailErrorNotice(\AcceptanceTester $I) {
     (new Newsletter())->create();
 
     $I->wantTo('See proper sending error when sending failed with PHPMail');

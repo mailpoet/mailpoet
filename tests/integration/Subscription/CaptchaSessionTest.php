@@ -11,24 +11,24 @@ class CaptchaSessionTest extends \MailPoetTest {
   /** @var CaptchaSession */
   private $captcha_session;
 
-  function _before() {
+  public function _before() {
     $this->captcha_session = new CaptchaSession(new WPFunctions);
     $this->captcha_session->init(self::SESSION_ID);
   }
 
-  function testItCanStoreAndRetrieveFormData() {
+  public function testItCanStoreAndRetrieveFormData() {
     $form_data = ['email' => 'email@example.com'];
     $this->captcha_session->setFormData($form_data);
     expect($this->captcha_session->getFormData())->equals($form_data);
   }
 
-  function testItCanStoreAndRetrieveCaptchaHash() {
+  public function testItCanStoreAndRetrieveCaptchaHash() {
     $hash = '1234';
     $this->captcha_session->setCaptchaHash($hash);
     expect($this->captcha_session->getCaptchaHash())->equals($hash);
   }
 
-  function testItCanResetSessionData() {
+  public function testItCanResetSessionData() {
     $this->captcha_session->setFormData(['email' => 'email@example.com']);
     $this->captcha_session->setCaptchaHash('hash123');
     $this->captcha_session->reset();
@@ -36,7 +36,7 @@ class CaptchaSessionTest extends \MailPoetTest {
     expect($this->captcha_session->getCaptchaHash())->false();
   }
 
-  function testItAssociatesDataWithSession() {
+  public function testItAssociatesDataWithSession() {
     $hash = '1234';
     $this->captcha_session->setCaptchaHash($hash);
     expect($this->captcha_session->getCaptchaHash())->equals($hash);

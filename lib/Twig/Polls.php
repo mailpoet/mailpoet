@@ -30,13 +30,13 @@ class Polls extends AbstractExtension {
     ];
   }
 
-  function getPollsData() {
+  public function getPollsData() {
     return [
       'mta_method' => $this->settings->get('mta.method'),
     ];
   }
 
-  function getPollsVisibility() {
+  public function getPollsVisibility() {
     return [
       'show_poll_success_delivery_preview' => $this->settings->get('show_poll_success_delivery_preview'),
     ];

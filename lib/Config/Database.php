@@ -6,17 +6,17 @@ use MailPoetVendor\Idiorm\ORM;
 use PDO;
 
 class Database {
-  function init(PDO $pdo) {
+  public function init(PDO $pdo) {
     ORM::setDb($pdo);
     $this->setupLogging();
     $this->defineTables();
   }
 
-  function setupLogging() {
+  public function setupLogging() {
     ORM::configure('logging', WP_DEBUG);
   }
 
-  function defineTables() {
+  public function defineTables() {
     if (!defined('MP_SETTINGS_TABLE')) {
       define('MP_SETTINGS_TABLE', Env::$db_prefix . 'settings');
       define('MP_SEGMENTS_TABLE', Env::$db_prefix . 'segments');

@@ -11,12 +11,12 @@ class SegmentsExporterTest extends \MailPoetTest {
   /** @var SegmentsExporter */
   private $exporter;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->exporter = new SegmentsExporter();
   }
 
-  function testExportWorksWhenSubscriberNotFound() {
+  public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->exporter->export('email.that@doesnt.exists');
     expect($result)->internalType('array');
     expect($result)->hasKey('data');
@@ -25,7 +25,7 @@ class SegmentsExporterTest extends \MailPoetTest {
     expect($result['done'])->equals(true);
   }
 
-  function testExportWorksForSubscriberWithNoSegments() {
+  public function testExportWorksForSubscriberWithNoSegments() {
     Subscriber::createOrUpdate([
       'email' => 'email.that@has.no.segments',
     ]);
@@ -37,7 +37,7 @@ class SegmentsExporterTest extends \MailPoetTest {
     expect($result['done'])->equals(true);
   }
 
-  function testExportWorksForSubscriberWithSegments() {
+  public function testExportWorksForSubscriberWithSegments() {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'email.that@has.some.segments',
     ]);

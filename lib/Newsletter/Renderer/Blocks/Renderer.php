@@ -12,7 +12,7 @@ class Renderer {
   public $posts;
   public $ALC;
 
-  function __construct(array $newsletter) {
+  public function __construct(array $newsletter) {
     $this->newsletter = $newsletter;
     $this->posts = [];
     $newer_than_timestamp = false;
@@ -31,7 +31,7 @@ class Renderer {
     );
   }
 
-  function render($data) {
+  public function render($data) {
     $column_count = count($data['blocks']);
     $columns_layout = isset($data['columnLayout']) ? $data['columnLayout'] : null;
     $column_widths = ColumnsHelper::columnWidth($column_count, $columns_layout);
@@ -63,7 +63,7 @@ class Renderer {
     return $block_content;
   }
 
-  function createElementFromBlockType($block, $column_base_width) {
+  public function createElementFromBlockType($block, $column_base_width) {
     if ($block['type'] === 'automatedLatestContent') {
       $content = $this->processAutomatedLatestContent($block, $column_base_width);
       return $content;
@@ -76,7 +76,7 @@ class Renderer {
     return $block_class::render($block, $column_base_width);
   }
 
-  function automatedLatestContentTransformedPosts($args) {
+  public function automatedLatestContentTransformedPosts($args) {
     $posts_to_exclude = $this->getPosts();
     $ALC_posts = $this->ALC->getPosts($args, $posts_to_exclude);
     foreach ($ALC_posts as $post) {
@@ -86,7 +86,7 @@ class Renderer {
     return $this->ALC->transformPosts($args, $ALC_posts);
   }
 
-  function processAutomatedLatestContent($args, $column_base_width) {
+  public function processAutomatedLatestContent($args, $column_base_width) {
     $transformed_posts = [
       'blocks' => $this->automatedLatestContentTransformedPosts($args),
     ];
@@ -95,11 +95,11 @@ class Renderer {
     return $rendered_posts;
   }
 
-  function getPosts() {
+  public function getPosts() {
     return $this->posts;
   }
 
-  function setPosts($posts) {
+  public function setPosts($posts) {
     return $this->posts = $posts;
   }
 }

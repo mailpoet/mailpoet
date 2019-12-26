@@ -13,12 +13,12 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
   /** @var CronWorkerScheduler */
   private $cron_worker_scheduler;
 
-  function _before() {
+  public function _before() {
     $this->cron_worker_scheduler = $this->di_container->get(CronWorkerScheduler::class);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 
-  function testItSchedulesTask() {
+  public function testItSchedulesTask() {
     $next_run_date = Carbon::now()->addWeek();
     $this->cron_worker_scheduler->schedule('test', $next_run_date);
 
@@ -29,7 +29,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     expect($tasks[0]->scheduled_at)->same($next_run_date->format('Y-m-d H:i:s'));
   }
 
-  function testItDoesNotScheduleTaskTwice() {
+  public function testItDoesNotScheduleTaskTwice() {
     $next_run_date = Carbon::now()->addWeek();
     $this->cron_worker_scheduler->schedule('test', $next_run_date);
     expect(ScheduledTask::findMany())->count(1);
@@ -39,7 +39,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     expect(ScheduledTask::findMany())->count(1);
   }
 
-  function testItReschedulesTask() {
+  public function testItReschedulesTask() {
     $next_run_date = Carbon::now()->subDay();
     $task = $this->cron_worker_scheduler->schedule('test', $next_run_date);
     $this->cron_worker_scheduler->reschedule($task, 10);
@@ -52,7 +52,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     expect($tasks[0]->scheduled_at)->greaterThan(Carbon::now());
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

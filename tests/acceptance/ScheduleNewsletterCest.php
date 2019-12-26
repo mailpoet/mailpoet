@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class ScheduleNewsletterCest {
 
-  function scheduleStandardNewsletter(\AcceptanceTester $I) {
+  public function scheduleStandardNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Schedule a newsletter');
     $newsletter_title = 'Schedule Test Newsletter';
 

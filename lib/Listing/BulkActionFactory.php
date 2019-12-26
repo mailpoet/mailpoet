@@ -6,12 +6,12 @@ class BulkActionFactory {
   /** @var array */
   private $actions = [];
 
-  function registerAction($model_class, $bulk_action_method, $action_class) {
+  public function registerAction($model_class, $bulk_action_method, $action_class) {
     $this->ensureMethodExists($action_class, $bulk_action_method);
     $this->actions[$model_class][$bulk_action_method] = $action_class;
   }
 
-  function getActionClass($model_class, $bulk_action_method) {
+  public function getActionClass($model_class, $bulk_action_method) {
     $resulting_class = $model_class;
     if (!empty($this->actions[$model_class][$bulk_action_method])) {
       $resulting_class = $this->actions[$model_class][$bulk_action_method];

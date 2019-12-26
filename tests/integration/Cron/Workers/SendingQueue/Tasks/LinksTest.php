@@ -8,7 +8,7 @@ use MailPoet\Models\NewsletterLink;
 use MailPoetVendor\Idiorm\ORM;
 
 class LinksTest extends \MailPoetTest {
-  function testItCanSaveLinks() {
+  public function testItCanSaveLinks() {
     $links = [
       [
         'link' => 'http://example.com',
@@ -25,7 +25,7 @@ class LinksTest extends \MailPoetTest {
     expect($newsletter_link->url)->equals($links[0]['link']);
   }
 
-  function testItCanHashAndReplaceLinks() {
+  public function testItCanHashAndReplaceLinks() {
     $rendered_newsletter = [
       'html' => '<a href="http://example.com">Example Link</a>',
       'text' => '<a href="http://example.com">Example Link</a>',
@@ -40,7 +40,7 @@ class LinksTest extends \MailPoetTest {
     expect($processed_and_hashed_links[0]['link'])->equals('http://example.com');
   }
 
-  function testItCanProcessRenderedBody() {
+  public function testItCanProcessRenderedBody() {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->save();
@@ -55,7 +55,7 @@ class LinksTest extends \MailPoetTest {
     expect($result['html'])->contains($newsletter_link->hash);
   }
 
-  function testItCanEnsureThatUnsubscribeLinkIsAlwaysPresent() {
+  public function testItCanEnsureThatUnsubscribeLinkIsAlwaysPresent() {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->save();
@@ -70,7 +70,7 @@ class LinksTest extends \MailPoetTest {
     expect($unsubscribe_count)->equals(1);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
   }

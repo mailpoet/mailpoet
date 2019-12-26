@@ -13,12 +13,12 @@ class SubscribersListings {
 
   private $wp;
 
-  function __construct(Handler $handler, WPFunctions $wp) {
+  public function __construct(Handler $handler, WPFunctions $wp) {
     $this->handler = $handler;
     $this->wp = $wp;
   }
 
-  function getListingsInSegment($data) {
+  public function getListingsInSegment($data) {
     if (!isset($data['filter']['segment'])) {
       throw new \InvalidArgumentException('Missing segment id');
     }

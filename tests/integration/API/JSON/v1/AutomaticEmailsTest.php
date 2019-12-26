@@ -5,10 +5,10 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomaticEmailsTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     $this->wp = new WPFunctions;
   }
-  function testItRequiresProperlyFormattedRequestWhenGettingEventOptions() {
+  public function testItRequiresProperlyFormattedRequestWhenGettingEventOptions() {
     $API = new AutomaticEmails();
     $expected_error_message = 'Improperly formatted request.';
 
@@ -53,7 +53,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     expect($result->errors[0]['message'])->equals($expected_error_message);
   }
 
-  function testItRequiresValidEventFilterWhenGettingEventOptions() {
+  public function testItRequiresValidEventFilterWhenGettingEventOptions() {
     $API = new AutomaticEmails();
     $expected_error_message = 'Automatic email event filter does not exist.';
 
@@ -94,7 +94,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     $this->wp->removeAllFilters('test_filter');
   }
 
-  function testItGetsEventOptions() {
+  public function testItGetsEventOptions() {
     $API = new AutomaticEmails();
 
     $this->wp->addFilter('mailpoet_automatic_email_test', function() {
@@ -133,7 +133,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     $this->wp->removeAllFilters('test_filter');
   }
 
-  function testItRequiresProperlyFormattedRequestWhenGettingEventShortcodes() {
+  public function testItRequiresProperlyFormattedRequestWhenGettingEventShortcodes() {
     $API = new AutomaticEmails();
     $expected_error_message = 'Improperly formatted request.';
 
@@ -154,7 +154,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     expect($result->errors[0]['message'])->equals($expected_error_message);
   }
 
-  function testItRequiresValidEventWhenGettingEventShortcodes() {
+  public function testItRequiresValidEventWhenGettingEventShortcodes() {
     $API = new AutomaticEmails();
     $expected_error_message = 'Automatic email event does not exist.';
 
@@ -185,7 +185,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
   }
 
-  function testItGetsEventShortcodes() {
+  public function testItGetsEventShortcodes() {
     $API = new AutomaticEmails();
     $shortcodes = [
       [

@@ -17,7 +17,7 @@ class Notice {
   private $data_notice_name;
   private $render_in_paragraph;
 
-  function __construct($type, $message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
+  public function __construct($type, $message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
     $this->type = $type;
     $this->message = $message;
     $this->classes = $classes;
@@ -25,11 +25,11 @@ class Notice {
     $this->render_in_paragraph = $render_in_paragraph;
   }
 
-  function getMessage() {
+  public function getMessage() {
     return $this->message;
   }
 
-  static function displayError($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true, $show_error_title = true) {
+  public static function displayError($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true, $show_error_title = true) {
     if ($show_error_title) {
       $message = sprintf(
         "<b>%s </b> %s",
@@ -40,15 +40,15 @@ class Notice {
     self::createNotice(self::TYPE_ERROR, $message, $classes, $data_notice_name, $render_in_paragraph);
   }
 
-  static function displayWarning($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
+  public static function displayWarning($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
     return self::createNotice(self::TYPE_WARNING, $message, $classes, $data_notice_name, $render_in_paragraph);
   }
 
-  static function displaySuccess($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
+  public static function displaySuccess($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
     self::createNotice(self::TYPE_SUCCESS, $message, $classes, $data_notice_name, $render_in_paragraph);
   }
 
-  static function displayInfo($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
+  public static function displayInfo($message, $classes = '', $data_notice_name = '', $render_in_paragraph = true) {
     self::createNotice(self::TYPE_INFO, $message, $classes, $data_notice_name, $render_in_paragraph);
   }
 
@@ -58,7 +58,7 @@ class Notice {
     return $notice;
   }
 
-  function displayWPNotice() {
+  public function displayWPNotice() {
     $class = sprintf('notice notice-%s mailpoet_notice_server %s', $this->type, $this->classes);
     $message = nl2br($this->message);
     $data_notice_name = !empty($this->data_notice_name) ? sprintf('data-notice="%s"', $this->data_notice_name) : '';

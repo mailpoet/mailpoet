@@ -10,7 +10,7 @@ use MailPoet\Util\Helpers;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->queue = SendingQueue::create();
     $this->queue->task_id = 0;
@@ -23,14 +23,14 @@ class SendingQueueTest extends \MailPoetTest {
     ];
   }
 
-  function testItChecksProcessedSubscribersForOldQueues() {
+  public function testItChecksProcessedSubscribersForOldQueues() {
     $subscriber_id = 123;
     expect($this->queue->isSubscriberProcessed($subscriber_id))->false();
     $this->queue->subscribers = ['processed' => [$subscriber_id]];
     expect($this->queue->isSubscriberProcessed($subscriber_id))->true();
   }
 
-  function testItChecksProcessedSubscribersForNewQueues() {
+  public function testItChecksProcessedSubscribersForNewQueues() {
     $subscriber_id = 123;
     $queue = SendingTask::create();
     $queue->setSubscribers([$subscriber_id]);
@@ -40,7 +40,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($queue->isSubscriberProcessed($subscriber_id))->true();
   }
 
-  function testItReadsSerializedRenderedNewsletterBody() {
+  public function testItReadsSerializedRenderedNewsletterBody() {
     $queue = $this->queue;
     $data = [
       'html' => 'html',
@@ -50,7 +50,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($queue->getNewsletterRenderedBody())->equals($data);
   }
 
-  function testItReadsJsonEncodedRenderedNewsletterBody() {
+  public function testItReadsJsonEncodedRenderedNewsletterBody() {
     $queue = $this->queue;
     $data = [
       'html' => 'html',
@@ -60,7 +60,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($queue->getNewsletterRenderedBody())->equals($data);
   }
 
-  function testItJsonEncodesRenderedNewsletterBodyWhenSaving() {
+  public function testItJsonEncodesRenderedNewsletterBodyWhenSaving() {
     $queue = SendingQueue::create();
     $data = [
       'html' => 'html',
@@ -77,7 +77,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect(json_decode($queue->newsletter_rendered_body, true))->equals($data);
   }
 
-  function testItJsonEncodesMetaWhenSaving() {
+  public function testItJsonEncodesMetaWhenSaving() {
     $queue = SendingQueue::create();
     $meta = [
       'some' => 'value',
@@ -93,7 +93,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect(json_decode($queue->meta, true))->equals($meta);
   }
 
-  function testItDoesNotJsonEncodesMetaEqualToNull() {
+  public function testItDoesNotJsonEncodesMetaEqualToNull() {
     $queue = SendingQueue::create();
     $meta = null;
     $queue->task_id = 0;
@@ -107,7 +107,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($queue->meta)->equals($meta);
   }
 
-  function testItReencodesSerializedObjectToJsonEncoded() {
+  public function testItReencodesSerializedObjectToJsonEncoded() {
     $queue = $this->queue;
     $newsletter_rendered_body = $this->rendered_body;
 
@@ -128,7 +128,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($sending_queue->newsletter_rendered_body)->equals(json_encode($newsletter_rendered_body));
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);

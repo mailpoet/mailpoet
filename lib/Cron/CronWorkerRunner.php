@@ -23,14 +23,14 @@ class CronWorkerRunner {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(CronHelper $cron_helper, CronWorkerScheduler $cron_worker_scheduler, WPFunctions $wp) {
+  public function __construct(CronHelper $cron_helper, CronWorkerScheduler $cron_worker_scheduler, WPFunctions $wp) {
     $this->timer = microtime(true);
     $this->cron_helper = $cron_helper;
     $this->cron_worker_scheduler = $cron_worker_scheduler;
     $this->wp = $wp;
   }
 
-  function run(CronWorkerInterface $worker) {
+  public function run(CronWorkerInterface $worker) {
     // abort if execution limit is reached
     $this->cron_helper->enforceExecutionLimit($this->timer);
     $due_tasks = $this->getDueTasks($worker);

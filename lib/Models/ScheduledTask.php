@@ -34,12 +34,12 @@ class ScheduledTask extends Model {
 
   private $wp;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
     $this->wp = new WPFunctions();
   }
 
-  function subscribers() {
+  public function subscribers() {
     return $this->hasManyThrough(
       __NAMESPACE__ . '\Subscriber',
       __NAMESPACE__ . '\ScheduledTaskSubscriber',
@@ -48,13 +48,13 @@ class ScheduledTask extends Model {
     );
   }
 
-  function pause() {
+  public function pause() {
     $this->set('status', self::STATUS_PAUSED);
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);
   }
 
-  static function pauseAllByNewsletter(Newsletter $newsletter) {
+  public static function pauseAllByNewsletter(Newsletter $newsletter) {
     ScheduledTask::rawExecute(
       'UPDATE `' . ScheduledTask::$_table . '` t ' .
       'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
@@ -65,13 +65,13 @@ class ScheduledTask extends Model {
     );
   }
 
-  function resume() {
+  public function resume() {
     $this->setExpr('status', 'NULL');
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);
   }
 
-  static function setScheduledAllByNewsletter(Newsletter $newsletter) {
+  public static function setScheduledAllByNewsletter(Newsletter $newsletter) {
     ScheduledTask::rawExecute(
       'UPDATE `' . ScheduledTask::$_table . '` t ' .
       'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
@@ -83,14 +83,14 @@ class ScheduledTask extends Model {
     );
   }
 
-  function complete() {
+  public function complete() {
     $this->processed_at = $this->wp->currentTime('mysql');
     $this->set('status', self::STATUS_COMPLETED);
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);
   }
 
-  function save() {
+  public function save() {
     // set the default priority to medium
     if (!$this->priority) {
       $this->priority = self::PRIORITY_MEDIUM;
@@ -105,18 +105,18 @@ class ScheduledTask extends Model {
     return $this;
   }
 
-  function asArray() {
+  public function asArray() {
     $model = parent::asArray();
     $model['meta'] = $this->getMeta();
     return $model;
   }
 
-  function getMeta() {
+  public function getMeta() {
     $meta = (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
     return !empty($meta) ? (array)$meta : [];
   }
 
-  function delete() {
+  public function delete() {
     try {
       ORM::get_db()->beginTransaction();
       ScheduledTaskSubscriber::where('task_id', $this->id)->deleteMany();
@@ -129,7 +129,7 @@ class ScheduledTask extends Model {
     return null;
   }
 
-  function rescheduleProgressively() {
+  public function rescheduleProgressively() {
     $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     $timeout = (int)min(self::BASIC_RESCHEDULE_TIMEOUT * pow(2, $this->reschedule_count), self::MAX_RESCHEDULE_TIMEOUT);
     $this->scheduled_at = $scheduled_at->addMinutes($timeout);
@@ -139,7 +139,7 @@ class ScheduledTask extends Model {
     return $timeout;
   }
 
-  static function touchAllByIds(array $ids) {
+  public static function touchAllByIds(array $ids) {
     ScheduledTask::rawExecute(
       'UPDATE `' . ScheduledTask::$_table . '`' .
       'SET `updated_at` = NOW() ' .
@@ -150,7 +150,7 @@ class ScheduledTask extends Model {
   /**
    * @return ScheduledTask|null
    */
-  static function findOneScheduledByNewsletterIdAndSubscriberId($newsletter_id, $subscriber_id) {
+  public static function findOneScheduledByNewsletterIdAndSubscriberId($newsletter_id, $subscriber_id) {
     return ScheduledTask::tableAlias('tasks')
       ->select('tasks.*')
       ->innerJoin(SendingQueue::$_table, 'queues.task_id = tasks.id', 'queues')
@@ -163,19 +163,19 @@ class ScheduledTask extends Model {
       ->findOne() ?: null;
   }
 
-  static function findDueByType($type, $limit = null) {
+  public static function findDueByType($type, $limit = null) {
     return self::findByTypeAndStatus($type, ScheduledTask::STATUS_SCHEDULED, $limit);
   }
 
-  static function findRunningByType($type, $limit = null) {
+  public static function findRunningByType($type, $limit = null) {
     return self::findByTypeAndStatus($type, null, $limit);
   }
 
-  static function findFutureScheduledByType($type, $limit = null) {
+  public static function findFutureScheduledByType($type, $limit = null) {
     return self::findByTypeAndStatus($type, ScheduledTask::STATUS_SCHEDULED, $limit, true);
   }
 
-  static function findCompletedByType($type, $limit = null) {
+  public static function findCompletedByType($type, $limit = null) {
     return self::findByTypeAndStatus($type, ScheduledTask::STATUS_COMPLETED, $limit);
   }
 

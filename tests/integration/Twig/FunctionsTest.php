@@ -7,7 +7,7 @@ use MailPoet\Twig\Functions;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FunctionsTest extends \MailPoetTest {
-  function testItExecutesIsRtlFunction() {
+  public function testItExecutesIsRtlFunction() {
     $template = ['template' => '{% if is_rtl() %}rtl{% endif %}'];
     $twig = new \MailPoetVendor\Twig_Environment(new \MailPoetVendor\Twig_Loader_Array($template));
     WPFunctions::set(Stub::make(new WPFunctions, [
@@ -21,7 +21,7 @@ class FunctionsTest extends \MailPoetTest {
     expect($result_no_rtl)->isEmpty();
   }
 
-  function _after() {
+  public function _after() {
     WPFunctions::set(new WPFunctions);
   }
 }

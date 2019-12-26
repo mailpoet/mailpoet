@@ -26,7 +26,7 @@ class ButtonTest extends \MailPoetUnitTest {
     ],
   ];
 
-  function testItRendersCorrectly() {
+  public function testItRendersCorrectly() {
     $output = Button::render($this->block, 200);
     $expected_result = '
       <tr>

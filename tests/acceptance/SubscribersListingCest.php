@@ -7,7 +7,7 @@ use MailPoet\Test\DataFactories\Subscriber;
 
 class SubscribersListingCest {
 
-  function subscribersListing(\AcceptanceTester $I) {
+  public function subscribersListing(\AcceptanceTester $I) {
     $I->wantTo('Open subscribers listings page');
 
     (new Subscriber())
@@ -20,7 +20,7 @@ class SubscribersListingCest {
     $I->waitForText('wp@example.com');
   }
 
-  function sendConfirmationEmail(\AcceptanceTester $I) {
+  public function sendConfirmationEmail(\AcceptanceTester $I) {
     $I->wantTo('Send confirmation email');
 
     $disallowed_email = 'disallowed@example.com';

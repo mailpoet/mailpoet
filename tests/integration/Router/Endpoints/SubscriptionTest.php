@@ -10,13 +10,13 @@ use MailPoet\Subscription\Pages;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriptionTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     $this->data = [];
     // instantiate class
     $this->subscription = ContainerWrapper::getInstance()->get(Subscription::class);
   }
 
-  function testItDisplaysConfirmPage() {
+  public function testItDisplaysConfirmPage() {
     $pages = Stub::make(Pages::class, [
       'wp' => new WPFunctions,
       'confirm' => Expected::exactly(1),
@@ -25,7 +25,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscription->confirm($this->data);
   }
 
-  function testItDisplaysManagePage() {
+  public function testItDisplaysManagePage() {
     $pages = Stub::make(Pages::class, [
       'wp' => new WPFunctions,
       'getManageLink' => Expected::exactly(1),
@@ -37,7 +37,7 @@ class SubscriptionTest extends \MailPoetTest {
     do_shortcode('[mailpoet_manage_subscription]');
   }
 
-  function testItDisplaysUnsubscribePage() {
+  public function testItDisplaysUnsubscribePage() {
     $pages = Stub::make(Pages::class, [
       'wp' => new WPFunctions,
       'unsubscribe' => Expected::exactly(1),

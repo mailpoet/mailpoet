@@ -4,7 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 class SubscriberManageImportExportCest {
 
-  function importBigUsersListCSV(\AcceptanceTester $I) {
+  public function importBigUsersListCSV(\AcceptanceTester $I) {
     $I->wantTo('Import a big list');
     $I->login();
     $I->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
@@ -39,7 +39,7 @@ class SubscriberManageImportExportCest {
     $I->waitForElement('[data-automation-id="import_data_manipulation_step"]');
   }
 
-  function importUsersToSubscribersViaCSV(\AcceptanceTester $I) {
+  public function importUsersToSubscribersViaCSV(\AcceptanceTester $I) {
     $I->wantTo('Import a subscriber list from CSV');
     $I->login();
     $I->amOnMailPoetPage ('Subscribers');

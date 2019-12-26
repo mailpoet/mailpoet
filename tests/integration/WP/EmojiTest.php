@@ -8,7 +8,7 @@ use MailPoet\WP\Emoji;
 use MailPoetVendor\Idiorm\ORM;
 
 class EmojiTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->data_encoded = "Emojis: &#x1f603;&#x1f635;&#x1f4aa;, not emojis: &#046;&#0142;";
     $this->data_decoded = "Emojis: 😃😵💪, not emojis: &#046;&#0142;";
@@ -17,7 +17,7 @@ class EmojiTest extends \MailPoetTest {
     $this->emoji = new Emoji();
   }
 
-  function testItCanEncodeNewsletterRenderedBody() {
+  public function testItCanEncodeNewsletterRenderedBody() {
     $emoji = $this->make(
       Emoji::class,
       ['encodeForUTF8Column' => Expected::exactly(3, function ($params) {
@@ -29,7 +29,7 @@ class EmojiTest extends \MailPoetTest {
     $emoji->encodeEmojisInBody('string, call 3');
   }
 
-  function testItCanDecodeNewsletterBody() {
+  public function testItCanDecodeNewsletterBody() {
     $emoji = $this->make(
       Emoji::class,
       ['decodeEntities' => Expected::exactly(3, function ($params) {
@@ -41,7 +41,7 @@ class EmojiTest extends \MailPoetTest {
     $emoji->decodeEmojisInBody('string, call 3');
   }
 
-  function testItCanEncodeForUTF8Column() {
+  public function testItCanEncodeForUTF8Column() {
     $table = Env::$db_prefix . 'dummytable_utf8';
     $this->createTable($table, 'utf8');
 
@@ -51,7 +51,7 @@ class EmojiTest extends \MailPoetTest {
     $this->dropTable($table);
   }
 
-  function testItDoesNotEncodeForUTF8MB4Column() {
+  public function testItDoesNotEncodeForUTF8MB4Column() {
     $table = Env::$db_prefix . 'dummytable_utf8mb4';
     $this->createTable($table, 'utf8mb4');
 
@@ -61,7 +61,7 @@ class EmojiTest extends \MailPoetTest {
     $this->dropTable($table);
   }
 
-  function testItCanDecodeEntities() {
+  public function testItCanDecodeEntities() {
     $result = $this->emoji->decodeEntities($this->data_encoded);
     expect($result)->equals($this->data_decoded);
   }

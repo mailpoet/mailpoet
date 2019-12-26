@@ -17,7 +17,7 @@ use MailPoetVendor\Idiorm\ORM;
 require_once('BounceTestMockAPI.php');
 
 class BounceTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->emails = [
       'soft_bounce@example.com',
@@ -37,24 +37,24 @@ class BounceTest extends \MailPoetTest {
     $this->worker->api = new MockAPI('key');
   }
 
-  function testItDefinesConstants() {
+  public function testItDefinesConstants() {
     expect(Bounce::BATCH_SIZE)->equals(100);
   }
 
-  function testItCanInitializeBridgeAPI() {
+  public function testItCanInitializeBridgeAPI() {
     $this->setMailPoetSendingMethod();
     $worker = new Bounce($this->di_container->get(SettingsController::class), microtime(true));
     $worker->init();
     expect($worker->api instanceof API)->true();
   }
 
-  function testItRequiresMailPoetMethodToBeSetUp() {
+  public function testItRequiresMailPoetMethodToBeSetUp() {
     expect($this->worker->checkProcessingRequirements())->false();
     $this->setMailPoetSendingMethod();
     expect($this->worker->checkProcessingRequirements())->true();
   }
 
-  function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenPreparingTask() {
+  public function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenPreparingTask() {
     // 1st run - subscribers will be processed
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
@@ -67,7 +67,7 @@ class BounceTest extends \MailPoetTest {
     expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty();
   }
 
-  function testItPreparesTask() {
+  public function testItPreparesTask() {
     $task = $this->createScheduledTask();
     expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->isEmpty();
     $result = $this->worker->prepareTaskStrategy($task, microtime(true));
@@ -75,7 +75,7 @@ class BounceTest extends \MailPoetTest {
     expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->notEmpty();
   }
 
-  function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenProcessingTask() {
+  public function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenProcessingTask() {
     // prepare subscribers
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
@@ -88,7 +88,7 @@ class BounceTest extends \MailPoetTest {
     expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty();
   }
 
-  function testItProcessesTask() {
+  public function testItProcessesTask() {
     $task = $this->createRunningTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->notEmpty();
@@ -96,7 +96,7 @@ class BounceTest extends \MailPoetTest {
     expect(ScheduledTaskSubscriber::getProcessedCount($task->id))->notEmpty();
   }
 
-  function testItSetsSubscriberStatusAsBounced() {
+  public function testItSetsSubscriberStatusAsBounced() {
     $emails = Subscriber::select('email')->findArray();
     $emails = array_column($emails, 'email');
 
@@ -138,7 +138,7 @@ class BounceTest extends \MailPoetTest {
     return $task;
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);

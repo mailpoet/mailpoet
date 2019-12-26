@@ -15,13 +15,13 @@ class AutomatedLatestContent {
   /** @var LoggerFactory */
   private $logger_factory;
 
-  function __construct($newsletter_id = false, $newer_than_timestamp = false) {
+  public function __construct($newsletter_id = false, $newer_than_timestamp = false) {
     $this->newsletter_id = $newsletter_id;
     $this->newer_than_timestamp = $newer_than_timestamp;
     $this->logger_factory = LoggerFactory::getInstance();
   }
 
-  function filterOutSentPosts($where) {
+  public function filterOutSentPosts($where) {
     $sentPostsQuery = 'SELECT ' . MP_NEWSLETTER_POSTS_TABLE . '.post_id FROM '
       . MP_NEWSLETTER_POSTS_TABLE . ' WHERE '
       . MP_NEWSLETTER_POSTS_TABLE . ".newsletter_id='" . $this->newsletter_id . "'";
@@ -41,7 +41,7 @@ class AutomatedLatestContent {
     $query->is_home = false;
   }
 
-  function getPosts($args, $posts_to_exclude = []) {
+  public function getPosts($args, $posts_to_exclude = []) {
     // Get posts as logged out user, so private posts hidden by other plugins (e.g. UAM) are also excluded
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     WPFunctions::get()->wpSetCurrentUser(0);
@@ -108,12 +108,12 @@ class AutomatedLatestContent {
     return $posts;
   }
 
-  function transformPosts($args, $posts) {
+  public function transformPosts($args, $posts) {
     $transformer = new Transformer($args);
     return $transformer->transform($posts);
   }
 
-  function constructTaxonomiesQuery($args) {
+  public function constructTaxonomiesQuery($args) {
     $taxonomies_query = [];
     if (isset($args['terms']) && is_array($args['terms'])) {
       $taxonomies = [];

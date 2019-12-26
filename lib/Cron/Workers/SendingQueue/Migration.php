@@ -15,13 +15,13 @@ class Migration extends SimpleWorker {
   const TASK_TYPE = 'migration';
   const BATCH_SIZE = 20;
 
-  function checkProcessingRequirements() {
+  public function checkProcessingRequirements() {
     // if migration was completed, don't run it again
     $completed_tasks = $this->getCompletedTasks();
     return empty($completed_tasks);
   }
 
-  function prepareTaskStrategy(ScheduledTask $task, $timer) {
+  public function prepareTaskStrategy(ScheduledTask $task, $timer) {
     $unmigrated_columns = $this->checkUnmigratedColumnsExist();
     $unmigrated_queues_count = 0;
     $unmigrated_queue_subscribers = [];
@@ -48,7 +48,7 @@ class Migration extends SimpleWorker {
     return true;
   }
 
-  function pauseSending() {
+  public function pauseSending() {
     $mailer_log = MailerLog::getMailerLog();
     if (MailerLog::isSendingPaused($mailer_log)) {
       // sending is already paused
@@ -62,7 +62,7 @@ class Migration extends SimpleWorker {
     return MailerLog::pauseSending($mailer_log);
   }
 
-  function resumeSending() {
+  public function resumeSending() {
     $mailer_log = MailerLog::getMailerLog();
     if (!MailerLog::isSendingPaused($mailer_log)) {
       // sending is not paused
@@ -75,7 +75,7 @@ class Migration extends SimpleWorker {
     }
   }
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     $this->migrateSendingQueues($timer);
     $this->migrateSubscribers($timer);
     $this->resumeSending();
@@ -88,12 +88,12 @@ class Migration extends SimpleWorker {
     return in_array('type', $existing_columns);
   }
 
-  function getUnmigratedQueues() {
+  public function getUnmigratedQueues() {
     return SendingQueueModel::where('task_id', 0)
       ->whereNull('type');
   }
 
-  function getTaskIdsForUnmigratedSubscribers() {
+  public function getTaskIdsForUnmigratedSubscribers() {
     global $wpdb;
     $query = sprintf(
       'SELECT queues.`task_id` FROM %1$s queues INNER JOIN %2$s tasks ON queues.`task_id` = tasks.`id` ' .
@@ -110,7 +110,7 @@ class Migration extends SimpleWorker {
   /*
    * Migrate all sending queues without converting subscriber data
    */
-  function migrateSendingQueues($timer) {
+  public function migrateSendingQueues($timer) {
     global $wpdb;
 
     $queues = $this->getUnmigratedQueues()
@@ -160,7 +160,7 @@ class Migration extends SimpleWorker {
   /*
    * Migrate subscribers for in-progress sending tasks from the `subscribers` field to a separate table
    */
-  function migrateSubscribers($timer) {
+  public function migrateSubscribers($timer) {
     global $wpdb;
 
     // find in-progress queues that have serialized subscribers
@@ -188,7 +188,7 @@ class Migration extends SimpleWorker {
     return true;
   }
 
-  function migrateTaskSubscribers($task_id, $timer) {
+  public function migrateTaskSubscribers($task_id, $timer) {
     global $wpdb;
 
     $migrated_unprocessed_count = ScheduledTaskSubscriber::getUnprocessedCount($task_id);
@@ -241,7 +241,7 @@ class Migration extends SimpleWorker {
     return true;
   }
 
-  function getNextRunDate($wp = null) {
+  public function getNextRunDate($wp = null) {
     if (is_null($wp)) {
       $wp = new WPFunctions();
     }

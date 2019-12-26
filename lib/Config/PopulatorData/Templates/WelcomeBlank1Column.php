@@ -11,14 +11,14 @@ class WelcomeBlank1Column {
   private $template_image_url;
   private $social_icon_url;
 
-  function __construct($assets_url) {
+  public function __construct($assets_url) {
     $this->assets_url = $assets_url;
     $this->external_template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/welcome-email-blank-1-column';
     $this->template_image_url = $this->assets_url . '/img/blank_templates';
     $this->social_icon_url = $this->assets_url . '/img/newsletter_editor/social-icons';
   }
 
-  function get() {
+  public function get() {
     return [
       'name' => WPFunctions::get()->__("Welcome Email: Blank 1 Column", 'mailpoet'),
       'categories' => json_encode(['welcome', 'blank']),

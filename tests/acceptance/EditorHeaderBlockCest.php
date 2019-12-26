@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditorHeaderBlockCest {
-  function addHeader(\AcceptanceTester $I) {
+  public function addHeader(\AcceptanceTester $I) {
     $I->wantTo('add header block to newsletter');
     $headerInEditor = ('[data-automation-id="header"]');
     $headerSettingsIcon = ('[data-automation-id="settings_tool"]');

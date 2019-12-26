@@ -13,7 +13,7 @@ class RendererTest extends \MailPoetTest {
   /** @var Newsletter */
   private $newsletter;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->newsletter = Stub::make(Newsletter::class, [
       'asArray' => function() {
@@ -35,7 +35,7 @@ class RendererTest extends \MailPoetTest {
     ]);
   }
 
-  function testGetHTMLBeforeContent() {
+  public function testGetHTMLBeforeContent() {
     $renderer = new Renderer(new csstidy);
     $newsletter_renderer = new NewsletterRenderer($this->newsletter, true);
     $newsletter_renderer->preprocessor = new Preprocessor(
@@ -58,7 +58,7 @@ class RendererTest extends \MailPoetTest {
     expect($html)->notContains('Some text after content');
   }
 
-  function testGetHTMLAfterContent() {
+  public function testGetHTMLAfterContent() {
     $renderer = new Renderer(new csstidy);
     $newsletter_renderer = new NewsletterRenderer($this->newsletter, true);
     $newsletter_renderer->preprocessor = new Preprocessor(
@@ -81,7 +81,7 @@ class RendererTest extends \MailPoetTest {
     expect($html)->contains('Some text after content');
   }
 
-  function testPrefixCss() {
+  public function testPrefixCss() {
     $renderer = new Renderer(new csstidy);
     $css = $renderer->prefixCss('
       #some_id {color: black}

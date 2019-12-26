@@ -84,120 +84,120 @@ class SendingQueueEntity {
   /**
    * @return array|null
    */
-  function getNewsletterRenderedBody() {
+  public function getNewsletterRenderedBody() {
     return $this->newsletter_rendered_body;
   }
 
   /**
    * @param array|null $newsletter_rendered_body
    */
-  function setNewsletterRenderedBody($newsletter_rendered_body) {
+  public function setNewsletterRenderedBody($newsletter_rendered_body) {
     $this->newsletter_rendered_body = $newsletter_rendered_body;
   }
 
   /**
    * @return string|null
    */
-  function getNewsletterRenderedSubject() {
+  public function getNewsletterRenderedSubject() {
     return $this->newsletter_rendered_subject;
   }
 
   /**
    * @param string|null $newsletter_rendered_subject
    */
-  function setNewsletterRenderedSubject($newsletter_rendered_subject) {
+  public function setNewsletterRenderedSubject($newsletter_rendered_subject) {
     $this->newsletter_rendered_subject = $newsletter_rendered_subject;
   }
 
   /**
    * @return string|null
    */
-  function getSubscribers() {
+  public function getSubscribers() {
     return $this->subscribers;
   }
 
   /**
    * @param string|null $subscribers
    */
-  function setSubscribers($subscribers) {
+  public function setSubscribers($subscribers) {
     $this->subscribers = $subscribers;
   }
 
   /**
    * @return int
    */
-  function getCountTotal() {
+  public function getCountTotal() {
     return $this->count_total;
   }
 
   /**
    * @param int $count_total
    */
-  function setCountTotal($count_total) {
+  public function setCountTotal($count_total) {
     $this->count_total = $count_total;
   }
 
   /**
    * @return int
    */
-  function getCountProcessed() {
+  public function getCountProcessed() {
     return $this->count_processed;
   }
 
   /**
    * @param int $count_processed
    */
-  function setCountProcessed($count_processed) {
+  public function setCountProcessed($count_processed) {
     $this->count_processed = $count_processed;
   }
 
   /**
    * @return int
    */
-  function getCountToProcess() {
+  public function getCountToProcess() {
     return $this->count_to_process;
   }
 
   /**
    * @param int $count_to_process
    */
-  function setCountToProcess($count_to_process) {
+  public function setCountToProcess($count_to_process) {
     $this->count_to_process = $count_to_process;
   }
 
   /**
    * @return array|null
    */
-  function getMeta() {
+  public function getMeta() {
     return $this->meta;
   }
 
   /**
    * @param array|null $meta
    */
-  function setMeta($meta) {
+  public function setMeta($meta) {
     $this->meta = $meta;
   }
 
   /**
    * @return ScheduledTaskEntity
    */
-  function getTask() {
+  public function getTask() {
     return $this->task;
   }
 
-  function setTask(ScheduledTaskEntity $task) {
+  public function setTask(ScheduledTaskEntity $task) {
     $this->task = $task;
   }
 
   /**
    * @return NewsletterEntity
    */
-  function getNewsletter() {
+  public function getNewsletter() {
     return $this->newsletter;
   }
 
-  function setNewsletter(NewsletterEntity $newsletter) {
+  public function setNewsletter(NewsletterEntity $newsletter) {
     $this->newsletter = $newsletter;
   }
 }

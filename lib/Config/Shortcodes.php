@@ -17,12 +17,12 @@ class Shortcodes {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(Pages $subscription_pages, WPFunctions $wp) {
+  public function __construct(Pages $subscription_pages, WPFunctions $wp) {
     $this->subscription_pages = $subscription_pages;
     $this->wp = $wp;
   }
 
-  function init() {
+  public function init() {
     // form widget shortcode
     $this->wp->addShortcode('mailpoet_form', [$this, 'formWidget']);
 
@@ -51,7 +51,7 @@ class Shortcodes {
     $this->subscription_pages->initShortcodes();
   }
 
-  function formWidget($params = []) {
+  public function formWidget($params = []) {
     // IMPORTANT: fixes conflict with MagicMember
     $this->wp->removeShortcode('user_list');
 
@@ -64,7 +64,7 @@ class Shortcodes {
     }
   }
 
-  function getSubscribersCount($params) {
+  public function getSubscribersCount($params) {
     if (!empty($params['segments'])) {
       $segment_ids = array_map(function($segment_id) {
         return (int)trim($segment_id);
@@ -83,7 +83,7 @@ class Shortcodes {
     }
   }
 
-  function getArchive($params) {
+  public function getArchive($params) {
     $segment_ids = [];
     if (!empty($params['segments'])) {
       $segment_ids = array_map(function($segment_id) {
@@ -124,14 +124,14 @@ class Shortcodes {
     return $html;
   }
 
-  function renderArchiveDate($newsletter) {
+  public function renderArchiveDate($newsletter) {
     return $this->wp->dateI18n(
       $this->wp->getOption('date_format'),
       strtotime($newsletter->processed_at)
     );
   }
 
-  function renderArchiveSubject($newsletter, $subscriber, $queue) {
+  public function renderArchiveSubject($newsletter, $subscriber, $queue) {
     $preview_url = NewsletterUrl::getViewInBrowserUrl(
       NewsletterUrl::TYPE_ARCHIVE,
       $newsletter,

@@ -15,7 +15,7 @@ class SubscriberLinkTokens extends SimpleWorker {
   const BATCH_SIZE = 10000;
   const AUTOMATIC_SCHEDULING = false;
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     $count = Subscriber::whereNull('link_token')->count();
     if ($count) {
       $auth_key = defined('AUTH_KEY') ? AUTH_KEY : '';
@@ -28,7 +28,7 @@ class SubscriberLinkTokens extends SimpleWorker {
     return true;
   }
 
-  function getNextRunDate() {
+  public function getNextRunDate() {
     $wp = new WPFunctions();
     return Carbon::createFromTimestamp($wp->currentTime('timestamp'));
   }

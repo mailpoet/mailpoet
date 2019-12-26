@@ -6,7 +6,7 @@ use MailPoet\Form\Block\Select;
 use MailPoet\Models\Subscriber;
 
 class SelectTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->block = [
       'id' => 'status',
@@ -40,26 +40,26 @@ class SelectTest extends \MailPoetTest {
     ];
   }
 
-  function testItRendersSelectBlock() {
+  public function testItRendersSelectBlock() {
     $rendered = Select::render($this->block);
     expect($rendered)->contains(Subscriber::STATUS_SUBSCRIBED);
     expect($rendered)->contains(Subscriber::STATUS_UNSUBSCRIBED);
     expect($rendered)->contains(Subscriber::STATUS_BOUNCED);
   }
 
-  function testItRendersSelectedOption() {
+  public function testItRendersSelectedOption() {
     $this->block['params']['values'][0]['is_checked'] = true;
     $rendered = Select::render($this->block);
     expect($rendered)->contains('selected="selected"');
   }
 
-  function testItRendersDisabledOptions() {
+  public function testItRendersDisabledOptions() {
     $this->block['params']['values'][2]['is_disabled'] = true;
     $rendered = Select::render($this->block);
     expect($rendered)->contains('disabled="disabled"');
   }
 
-  function testItDoesNotRenderHiddenOptions() {
+  public function testItDoesNotRenderHiddenOptions() {
     $this->block['params']['values'][2]['is_hidden'] = true;
     $rendered = Select::render($this->block);
     expect($rendered)->notContains(Subscriber::STATUS_BOUNCED);

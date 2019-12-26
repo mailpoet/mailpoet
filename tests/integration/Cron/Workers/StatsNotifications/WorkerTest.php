@@ -51,7 +51,7 @@ class WorkerTest extends \MailPoetTest {
   /** @var NewsletterLinkRepository */
   private $newsletter_link_repository;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
@@ -164,7 +164,7 @@ class WorkerTest extends \MailPoetTest {
     ]);
   }
 
-  function testRendersTemplate() {
+  public function testRendersTemplate() {
     $this->renderer->expects($this->exactly(2))
        ->method('render');
     $this->renderer->expects($this->at(0))
@@ -178,7 +178,7 @@ class WorkerTest extends \MailPoetTest {
     $this->stats_notifications->process();
   }
 
-  function testAddsSubjectToContext() {
+  public function testAddsSubjectToContext() {
     $this->renderer->expects($this->exactly(2)) // html + text template
      ->method('render')
      ->with(
@@ -190,7 +190,7 @@ class WorkerTest extends \MailPoetTest {
     $this->stats_notifications->process();
   }
 
-  function testAddsPreHeaderToContext() {
+  public function testAddsPreHeaderToContext() {
     $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
       ->with(
@@ -202,7 +202,7 @@ class WorkerTest extends \MailPoetTest {
     $this->stats_notifications->process();
   }
 
-  function testAddsWPUrlsToContext() {
+  public function testAddsWPUrlsToContext() {
     $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
       ->with(
@@ -215,7 +215,7 @@ class WorkerTest extends \MailPoetTest {
     $this->stats_notifications->process();
   }
 
-  function testAddsLinksToContext() {
+  public function testAddsLinksToContext() {
     $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
       ->with(
@@ -228,7 +228,7 @@ class WorkerTest extends \MailPoetTest {
     $this->stats_notifications->process();
   }
 
-  function testReplacesShortcodeLinks() {
+  public function testReplacesShortcodeLinks() {
     $link = NewsletterLink::createOrUpdate([
       'url' => '[link:subscription_manage_url]',
       'newsletter_id' => $this->newsletter->id(),
@@ -270,14 +270,14 @@ class WorkerTest extends \MailPoetTest {
     $this->stats_notifications->process();
   }
 
-  function testSends() {
+  public function testSends() {
     $this->mailer->expects($this->once())
       ->method('send');
 
     $this->stats_notifications->process();
   }
 
-  function testItWorksForNewsletterWithNoStats() {
+  public function testItWorksForNewsletterWithNoStats() {
     $newsletter = Newsletter::createOrUpdate([
       'subject' => 'Email Subject2',
       'type' => Newsletter::TYPE_STANDARD,

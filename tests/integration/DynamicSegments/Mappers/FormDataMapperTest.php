@@ -9,7 +9,7 @@ class FormDataMapperTest extends \MailPoetTest {
   /** @var FormDataMapper */
   private $mapper;
 
-  function _before() {
+  public function _before() {
     $this->mapper = new FormDataMapper();
   }
 

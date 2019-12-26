@@ -8,13 +8,13 @@ use MailPoet\Test\DataFactories\Settings;
 use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedEmailAddressesValidationCest {
-  function _before(\AcceptanceTester $I, Scenario $scenario) {
+  public function _before(\AcceptanceTester $I, Scenario $scenario) {
     if (!getenv('WP_TEST_MAILER_MAILPOET_API')) {
       $scenario->skip("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
     }
   }
 
-  function authorizedEmailsValidation(\AcceptanceTester $I) {
+  public function authorizedEmailsValidation(\AcceptanceTester $I) {
     $unauthorized_sending_email = 'unauthorized1@email.com';
     $error_message_prefix = 'Sending all of your emails has been paused because your email address ';
     $error_notice_element = '[data-notice="unauthorized-email-addresses-notice"]';
@@ -42,7 +42,7 @@ class AuthorizedEmailAddressesValidationCest {
     $I->cantSee($error_message_prefix);
   }
 
-  function authorizedEmailsInNewslettersValidation(\AcceptanceTester $I) {
+  public function authorizedEmailsInNewslettersValidation(\AcceptanceTester $I) {
     $subject = 'Subject Unauthorized Welcome Email';
     (new Newsletter())->withSubject($subject)
       ->withActiveStatus()
@@ -77,7 +77,7 @@ class AuthorizedEmailAddressesValidationCest {
     $I->cantSee('Update the from address of Subject 1');
   }
 
-  function validationBeforeSendingNewsletter(\AcceptanceTester $I) {
+  public function validationBeforeSendingNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Validate from address before sending newsletter');
 
     $settings = new Settings();

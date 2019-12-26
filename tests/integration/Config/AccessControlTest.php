@@ -11,12 +11,12 @@ class AccessControlTest extends \MailPoetTest {
   /** @var AccessControl */
   private $access_control;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->access_control = new AccessControl;
   }
 
-  function testItAllowsSettingCustomPermissions() {
+  public function testItAllowsSettingCustomPermissions() {
     $wp = new WPFunctions;
     $wp->addFilter(
       'mailpoet_permission_access_plugin_admin',
@@ -88,13 +88,13 @@ class AccessControlTest extends \MailPoetTest {
     );
   }
 
-  function testItGetsPermissionLabels() {
+  public function testItGetsPermissionLabels() {
     $permissions = $this->access_control->getDefaultPermissions();
     $labels = $this->access_control->getPermissionLabels();
     expect(count($permissions))->equals(count($labels));
   }
 
-  function testItValidatesIfUserHasCapability() {
+  public function testItValidatesIfUserHasCapability() {
     $capability = 'some_capability';
     $access_control = new AccessControl();
     WPFunctions::set(Stub::make(new WPFunctions, [
@@ -104,7 +104,7 @@ class AccessControlTest extends \MailPoetTest {
     expect($access_control->validatePermission($capability))->true();
   }
 
-  function _after() {
+  public function _after() {
     WPFunctions::set(new WPFunctions);
   }
 }

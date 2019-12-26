@@ -15,12 +15,12 @@ class ReferralDetector {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(WPFunctions $wp, SettingsController $settings) {
+  public function __construct(WPFunctions $wp, SettingsController $settings) {
     $this->wp = $wp;
     $this->settings = $settings;
   }
 
-  function detect() {
+  public function detect() {
     $referral_id = $this->settings->get(self::REFERRAL_SETTING_NAME, null);
     if ($referral_id) {
       return $referral_id;

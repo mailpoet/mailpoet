@@ -5,18 +5,18 @@ namespace MailPoet\Test\Config;
 use MailPoet\Config\Migrator;
 
 class MigratorTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->migrator = new Migrator();
   }
 
-  function testItCanGenerateTheSubscribersSql() {
+  public function testItCanGenerateTheSubscribersSql() {
     $subscriber_sql = $this->migrator->subscribers();
     $expected_table = $this->migrator->prefix . 'subscribers';
     expect($subscriber_sql)->contains($expected_table);
   }
 
-  function testItDoesNotMigrateWhenDatabaseIsUpToDate() {
+  public function testItDoesNotMigrateWhenDatabaseIsUpToDate() {
     $changes = $this->migrator->up();
     $this->assertEmpty(
       $changes,
@@ -24,6 +24,6 @@ class MigratorTest extends \MailPoetTest {
     );
   }
 
-  function _after() {
+  public function _after() {
   }
 }

@@ -22,7 +22,7 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'subscriber@example.com';
     $this->segments = [Segment::create(), Segment::create()];
@@ -31,14 +31,14 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
     $this->settings = SettingsController::getInstance();
   }
 
-  function testItDoesNotSendIfNoSettings() {
+  public function testItDoesNotSendIfNoSettings() {
     $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, null);
     $mailer = Stub::makeEmpty(Mailer::class, ['send' => Expected::never()], $this);
     $service = new NewSubscriberNotificationMailer($mailer, $this->di_container->get(Renderer::class), $this->di_container->get(SettingsController::class));
     $service->send($this->subscriber, $this->segments);
   }
 
-  function testItDoesNotSendIfSettingsDoesNotHaveEnabled() {
+  public function testItDoesNotSendIfSettingsDoesNotHaveEnabled() {
     $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, []);
     $mailer = Stub::makeEmpty(Mailer::class, ['send' => Expected::never()], $this);
     $service = new NewSubscriberNotificationMailer($mailer, $this->di_container->get(Renderer::class), $this->di_container->get(SettingsController::class));
@@ -46,21 +46,21 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
   }
 
 
-  function testItDoesNotSendIfSettingsDoesNotHaveAddress() {
+  public function testItDoesNotSendIfSettingsDoesNotHaveAddress() {
     $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false]);
     $mailer = Stub::makeEmpty(Mailer::class, ['send' => Expected::never()], $this);
     $service = new NewSubscriberNotificationMailer($mailer, $this->di_container->get(Renderer::class), $this->di_container->get(SettingsController::class));
     $service->send($this->subscriber, $this->segments);
   }
 
-  function testItDoesNotSendIfDisabled() {
+  public function testItDoesNotSendIfDisabled() {
     $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false, 'address' => 'a@b.c']);
     $mailer = Stub::makeEmpty(Mailer::class, ['send' => Expected::never()], $this);
     $service = new NewSubscriberNotificationMailer($mailer, $this->di_container->get(Renderer::class), $this->di_container->get(SettingsController::class));
     $service->send($this->subscriber, $this->segments);
   }
 
-  function testItSends() {
+  public function testItSends() {
     $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => true, 'address' => 'a@b.c']);
 
     $mailer = Stub::makeEmpty(Mailer::class, [
@@ -88,7 +88,7 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
     $service->send($this->subscriber, $this->segments);
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

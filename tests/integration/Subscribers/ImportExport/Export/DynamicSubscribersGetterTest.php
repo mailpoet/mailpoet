@@ -11,7 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 class DynamicSubscribersGetterTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->subscriber_fields = [
       'first_name' => 'First name',
@@ -116,7 +116,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
     }, $subscribers);
   }
 
-  function testItGetsSubscribersInOneSegment() {
+  public function testItGetsSubscribersInOneSegment() {
     $getter = new DynamicSubscribersGetter([1], 10);
     $subscribers = $getter->get();
     expect($this->filterSubscribersData($subscribers))->equals([
@@ -145,7 +145,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
     expect($getter->get())->equals(false);
   }
 
-  function testItGetsSubscribersInMultipleSegments() {
+  public function testItGetsSubscribersInMultipleSegments() {
     $getter = new DynamicSubscribersGetter([1, 2], 10);
     expect($this->filterSubscribersData($getter->get()))->equals([
       [
@@ -206,7 +206,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
     expect($getter->get())->equals(false);
   }
 
-  function testItGetsSubscribersInBatches() {
+  public function testItGetsSubscribersInBatches() {
     $getter = new DynamicSubscribersGetter([1, 2], 2);
     expect($this->filterSubscribersData($getter->get()))->equals([
       [
@@ -272,7 +272,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
     expect($getter->get())->equals(false);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . CustomField::$_table);

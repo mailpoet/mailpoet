@@ -36,7 +36,7 @@ class SubscriberActions {
     $this->welcome_scheduler = $welcome_scheduler;
   }
 
-  function subscribe($subscriber_data = [], $segment_ids = []) {
+  public function subscribe($subscriber_data = [], $segment_ids = []) {
     // filter out keys from the subscriber_data array
     // that should not be editable when subscribing
     $subscriber_data = Subscriber::filterOutReservedColumns($subscriber_data);

@@ -27,7 +27,7 @@ abstract class SimpleWorker implements CronWorkerInterface {
   /** @var CronWorkerScheduler */
   protected $cron_worker_scheduler;
 
-  function __construct() {
+  public function __construct() {
     if (static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
     }
@@ -37,34 +37,34 @@ abstract class SimpleWorker implements CronWorkerInterface {
     $this->cron_worker_scheduler = ContainerWrapper::getInstance()->get(CronWorkerScheduler::class);
   }
 
-  function getTaskType() {
+  public function getTaskType() {
     return static::TASK_TYPE;
   }
 
-  function supportsMultipleInstances() {
+  public function supportsMultipleInstances() {
     return static::SUPPORT_MULTIPLE_INSTANCES;
   }
 
-  function schedule() {
+  public function schedule() {
     $this->cron_worker_scheduler->schedule(static::TASK_TYPE, $this->getNextRunDate());
   }
 
-  function checkProcessingRequirements() {
+  public function checkProcessingRequirements() {
     return true;
   }
 
-  function init() {
+  public function init() {
   }
 
-  function prepareTaskStrategy(ScheduledTask $task, $timer) {
+  public function prepareTaskStrategy(ScheduledTask $task, $timer) {
     return true;
   }
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     return true;
   }
 
-  function getNextRunDate() {
+  public function getNextRunDate() {
     // random day of the next week
     $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     $date->setISODate((int)$date->format('o'), ((int)$date->format('W')) + 1, mt_rand(1, 7));
@@ -72,7 +72,7 @@ abstract class SimpleWorker implements CronWorkerInterface {
     return $date;
   }
 
-  function scheduleAutomatically() {
+  public function scheduleAutomatically() {
     return static::AUTOMATIC_SCHEDULING;
   }
 

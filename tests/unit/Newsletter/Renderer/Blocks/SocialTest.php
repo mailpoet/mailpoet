@@ -34,23 +34,23 @@ class SocialTest extends \MailPoetUnitTest {
     ],
   ];
 
-  function testItRendersCorrectly() {
+  public function testItRendersCorrectly() {
     $output = Social::render($this->block);
     $expected_result = '
       <tr>
         <td class="mailpoet_padded_side mailpoet_padded_vertical" valign="top" align="center">
           <a href="http://www.facebook.com" style="text-decoration:none!important;"
-        ><img 
+        ><img
           src="http://mailpoet.localhost/Facebook.png"
-          width="32" 
-          height="32" 
+          width="32"
+          height="32"
           style="width:32px;height:32px;-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;"
           alt="facebook"
         ></a>&nbsp;<a href="" style="text-decoration:none!important;"
-        ><img 
+        ><img
           src="http://mailpoet.localhost/Twitter.png"
-          width="36" 
-          height="36" 
+          width="36"
+          height="36"
           style="width:36px;height:36px;-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;"
           alt="twitter"
         ></a>&nbsp;

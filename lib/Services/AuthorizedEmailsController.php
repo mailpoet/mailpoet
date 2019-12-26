@@ -23,12 +23,12 @@ class AuthorizedEmailsController {
     Newsletter::TYPE_AUTOMATIC,
   ];
 
-  function __construct(SettingsController $settingsController, Bridge $bridge) {
+  public function __construct(SettingsController $settingsController, Bridge $bridge) {
     $this->settings = $settingsController;
     $this->bridge = $bridge;
   }
 
-  function checkAuthorizedEmailAddresses() {
+  public function checkAuthorizedEmailAddresses() {
     if (!Bridge::isMPSendingServiceEnabled()) {
       $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
       $this->updateMailerLog();
@@ -49,14 +49,14 @@ class AuthorizedEmailsController {
     $this->updateMailerLog($result);
   }
 
-  function onSettingsSave($settings) {
+  public function onSettingsSave($settings) {
     $sender_address_set = !empty($settings['sender']['address']);
     if ($sender_address_set) {
       $this->checkAuthorizedEmailAddresses();
     }
   }
 
-  function onNewsletterUpdate(Newsletter $newsletter, Newsletter $old_newsletter = null) {
+  public function onNewsletterUpdate(Newsletter $newsletter, Newsletter $old_newsletter = null) {
     if ($old_newsletter === null || $newsletter->sender_address === $old_newsletter->sender_address) {
       return;
     }

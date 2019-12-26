@@ -13,14 +13,14 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class MenuTest extends \MailPoetTest {
-  function testItReturnsTrueIfCurrentPageBelongsToMailpoet() {
+  public function testItReturnsTrueIfCurrentPageBelongsToMailpoet() {
     $result = Menu::isOnMailPoetAdminPage(null, 'somepage');
     expect($result)->false();
     $result = Menu::isOnMailPoetAdminPage(null, 'mailpoet-newsletters');
     expect($result)->true();
   }
 
-  function testItRespectsExclusionsWhenCheckingMPPages() {
+  public function testItRespectsExclusionsWhenCheckingMPPages() {
     $exclude = ['mailpoet-welcome'];
     $result = Menu::isOnMailPoetAdminPage($exclude, 'mailpoet-welcome');
     expect($result)->false();
@@ -28,7 +28,7 @@ class MenuTest extends \MailPoetTest {
     expect($result)->true();
   }
 
-  function testItWorksWithRequestDataWhenCheckingMPPages() {
+  public function testItWorksWithRequestDataWhenCheckingMPPages() {
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $result = Menu::isOnMailPoetAdminPage();
     expect($result)->true();
@@ -42,7 +42,7 @@ class MenuTest extends \MailPoetTest {
     expect($result)->false();
   }
 
-  function testItChecksMailpoetAPIKey() {
+  public function testItChecksMailpoetAPIKey() {
     $menu = $this->getMenu();
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
@@ -63,7 +63,7 @@ class MenuTest extends \MailPoetTest {
     expect($menu->mp_api_key_valid)->false();
   }
 
-  function testItChecksPremiumKey() {
+  public function testItChecksPremiumKey() {
     $menu = $this->getMenu();
 
     $_REQUEST['page'] = 'mailpoet-newsletters';

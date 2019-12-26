@@ -6,7 +6,7 @@ use MailPoet\Util\Security;
 
 class SecurityTest extends \MailPoetUnitTest {
 
-  function testItCanGenerateARandomString() {
+  public function testItCanGenerateARandomString() {
     // it has a default length of 5
     $hash = Security::generateRandomString();
     expect(strlen($hash))->equals(5);
@@ -24,14 +24,14 @@ class SecurityTest extends \MailPoetUnitTest {
     expect(ctype_alnum($long_hash))->true();
   }
 
-  function testItGeneratesRandomHash() {
+  public function testItGeneratesRandomHash() {
     $hash_1 = Security::generateHash();
     $hash_2 = Security::generateHash();
     expect($hash_1)->notEquals($hash_2);
     expect(strlen($hash_1))->equals(Security::HASH_LENGTH);
   }
 
-  function testItGeneratesRandomHashWithCustomLength() {
+  public function testItGeneratesRandomHashWithCustomLength() {
     expect(strlen(Security::generateHash(10)))->equals(10);
   }
 }

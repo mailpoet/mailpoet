@@ -6,11 +6,11 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class DeleteAutomaticWooCommerceEmailCest {
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
   }
 
-  function trashAutomaticWooCommerceEmail(\AcceptanceTester $I) {
+  public function trashAutomaticWooCommerceEmail(\AcceptanceTester $I) {
     $newsletter_name = 'Trash Automatic WooCommerce Email Test';
 
     $newsletter_factory = new Newsletter();
@@ -30,7 +30,7 @@ class DeleteAutomaticWooCommerceEmailCest {
     $I->waitForText($newsletter_name);
   }
 
-  function restoreTrashedAutomaticWooCommerceEmail(\AcceptanceTester $I) {
+  public function restoreTrashedAutomaticWooCommerceEmail(\AcceptanceTester $I) {
     $newsletter_name = 'Restore Trashed Automatic WooCommerce Email Test';
 
     $newsletter_factory = new Newsletter();
@@ -53,7 +53,7 @@ class DeleteAutomaticWooCommerceEmailCest {
     $I->waitForText($newsletter_name);
   }
 
-  function deleteTrashedAutomaticWooCommerceEmail(\AcceptanceTester $I) {
+  public function deleteTrashedAutomaticWooCommerceEmail(\AcceptanceTester $I) {
     $newsletter_name = 'Delete Trashed Automatic WooCommerce Email Test';
 
     $newsletter_factory = new Newsletter();

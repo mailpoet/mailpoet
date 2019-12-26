@@ -8,7 +8,7 @@ use MailPoetVendor\Carbon\Carbon;
 
 class Scheduler {
 
-  static function getNextRunDate($schedule, $from_timestamp = false) {
+  public static function getNextRunDate($schedule, $from_timestamp = false) {
     $wp = new WPFunctions();
     $from_timestamp = ($from_timestamp) ? $from_timestamp : $wp->currentTime('timestamp');
     try {
@@ -21,7 +21,7 @@ class Scheduler {
     return $next_run_date;
   }
 
-  static function getPreviousRunDate($schedule, $from_timestamp = false) {
+  public static function getPreviousRunDate($schedule, $from_timestamp = false) {
     $wp = WPFunctions::get();
     $from_timestamp = ($from_timestamp) ? $from_timestamp : $wp->currentTime('timestamp');
     try {
@@ -34,7 +34,7 @@ class Scheduler {
     return $previous_run_date;
   }
 
-  static function getScheduledTimeWithDelay($after_time_type, $after_time_number) {
+  public static function getScheduledTimeWithDelay($after_time_type, $after_time_number) {
     $wp = WPFunctions::get();
     $current_time = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     switch ($after_time_type) {
@@ -51,7 +51,7 @@ class Scheduler {
     }
   }
 
-  static function getNewsletters($type, $group = false) {
+  public static function getNewsletters($type, $group = false) {
     return Newsletter::getPublished()
       ->filter('filterType', $type, $group)
       ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
@@ -59,7 +59,7 @@ class Scheduler {
       ->findMany();
   }
 
-  static function formatDatetimeString($datetime_string) {
+  public static function formatDatetimeString($datetime_string) {
     return Carbon::parse($datetime_string)->format('Y-m-d H:i:s');
   }
 }

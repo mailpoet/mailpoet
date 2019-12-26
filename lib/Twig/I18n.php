@@ -11,12 +11,12 @@ class I18n extends AbstractExtension {
 
   private $_text_domains;
 
-  function __construct($text_domain) {
+  public function __construct($text_domain) {
     // set text domain
     $this->_text_domains = [$text_domain, 'woocommerce'];
   }
 
-  function getFunctions() {
+  public function getFunctions() {
     // twig custom functions
     $twig_functions = [];
     // list of WP functions to map
@@ -39,7 +39,7 @@ class I18n extends AbstractExtension {
     return $twig_functions;
   }
 
-  function localize() {
+  public function localize() {
     $args = func_get_args();
     $translations = array_shift($args);
     $output = [];
@@ -53,30 +53,30 @@ class I18n extends AbstractExtension {
     return join("\n", $output);
   }
 
-  function translate() {
+  public function translate() {
     $args = func_get_args();
 
     return call_user_func_array('__', $this->setTextDomain($args));
   }
 
-  function pluralize() {
+  public function pluralize() {
     $args = func_get_args();
 
     return call_user_func_array('_n', $this->setTextDomain($args));
   }
 
-  function translateWithContext() {
+  public function translateWithContext() {
     $args = func_get_args();
 
     return call_user_func_array('_x', $this->setTextDomain($args));
   }
 
-  function getLocale() {
+  public function getLocale() {
     $localizer = new Localizer;
     return $localizer->locale();
   }
 
-  function date() {
+  public function date() {
     $args = func_get_args();
     $date = (isset($args[0])) ? $args[0] : null;
     $date_format = (isset($args[1])) ? $args[1] : WPFunctions::get()->getOption('date_format');

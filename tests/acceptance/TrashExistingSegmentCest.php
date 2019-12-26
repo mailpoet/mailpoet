@@ -7,12 +7,12 @@ use MailPoet\Test\DataFactories\Settings;
 
 class TrashExistingSegmentCest {
 
-  function _before() {
+  public function _before() {
     (new Settings())->withWooCommerceListImportPageDisplayed(true);
     (new Settings())->withCookieRevenueTrackingDisabled();
   }
 
-  function moveSegmentToTrash(\AcceptanceTester $I) {
+  public function moveSegmentToTrash(\AcceptanceTester $I) {
     $I->wantTo('Move an existing segment to trash');
 
     $segment_title = 'Move Segment To Trash Test';

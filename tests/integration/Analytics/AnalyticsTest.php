@@ -19,7 +19,7 @@ class AnalyticsTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->analytics = new Analytics(
@@ -30,22 +30,22 @@ class AnalyticsTest extends \MailPoetTest {
     remove_all_filters(Analytics::ANALYTICS_FILTER);
   }
 
-  function testIsEnabledReturnsTrueIfSettingEnabled() {
+  public function testIsEnabledReturnsTrueIfSettingEnabled() {
     $this->settings->set('analytics', ['enabled' => '1']);
     expect($this->analytics->isEnabled())->true();
   }
 
-  function testIsEnabledReturnsFalseIfEmptySettings() {
+  public function testIsEnabledReturnsFalseIfEmptySettings() {
     $this->settings->set('analytics', []);
     expect($this->analytics->isEnabled())->false();
   }
 
-  function testIsEnabledReturnsFalseIfNotEnabled() {
+  public function testIsEnabledReturnsFalseIfNotEnabled() {
     $this->settings->set('analytics', ['enabled' => '']);
     expect($this->analytics->isEnabled())->false();
   }
 
-  function testGetDataIfSettingsIsDisabled() {
+  public function testGetDataIfSettingsIsDisabled() {
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
       [
@@ -59,7 +59,7 @@ class AnalyticsTest extends \MailPoetTest {
     expect($analytics->generateAnalytics())->null();
   }
 
-  function testGetDataIfSentRecently() {
+  public function testGetDataIfSentRecently() {
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
       [
@@ -74,7 +74,7 @@ class AnalyticsTest extends \MailPoetTest {
     expect($analytics->generateAnalytics())->null();
   }
 
-  function testGetDataIfEnabledButNeverSent() {
+  public function testGetDataIfEnabledButNeverSent() {
     $data = [];
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
@@ -92,7 +92,7 @@ class AnalyticsTest extends \MailPoetTest {
     expect($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
   }
 
-  function testGetDataIfEnabledAndSentLongTimeAgo() {
+  public function testGetDataIfEnabledAndSentLongTimeAgo() {
     $data = [];
     $reporter = Stub::makeEmpty(
       'MailPoet\Analytics\Reporter',
@@ -111,7 +111,7 @@ class AnalyticsTest extends \MailPoetTest {
     expect($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
   }
 
-  function testSetPublicId() {
+  public function testSetPublicId() {
     $fakePublicId = 'alk-ded-egrg-zaz-fvf-rtr-zdef';
 
     $this->settings->set('public_id', 'old-fake-public-id');
@@ -124,7 +124,7 @@ class AnalyticsTest extends \MailPoetTest {
     expect($this->settings->get(Analytics::SETTINGS_LAST_SENT_KEY, null))->null();
   }
 
-  function testIsPublicIdNew() {
+  public function testIsPublicIdNew() {
     $fakePublicId = 'alk-ded-egrg-zaz-fvf-rtr-zdef';
 
     $this->settings->set('public_id', 'old-fake-public-id');

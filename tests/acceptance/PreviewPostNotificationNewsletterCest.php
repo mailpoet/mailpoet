@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class PreviewPostNotificationNewsletterCest {
-  function previewStandardNewsletter(\AcceptanceTester $I) {
+  public function previewStandardNewsletter(\AcceptanceTester $I) {
     $newsletterName = 'Preview in Browser Post Notification';
     $newsletter = new Newsletter();
     $newsletter->withSubject($newsletterName)->withPostNotificationsType()->create();

@@ -8,11 +8,11 @@ use MailPoetVendor\Doctrine\DBAL\Types\Type;
 class JsonType extends Type {
   const NAME = 'json';
 
-  function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) {
+  public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) {
     return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
   }
 
-  function convertToDatabaseValue($value, AbstractPlatform $platform) {
+  public function convertToDatabaseValue($value, AbstractPlatform $platform) {
     if ($value === null) {
       return null;
     }
@@ -27,7 +27,7 @@ class JsonType extends Type {
     return $encoded;
   }
 
-  function convertToPHPValue($value, AbstractPlatform $platform) {
+  public function convertToPHPValue($value, AbstractPlatform $platform) {
     if ($value === null || $value === '') {
       return null;
     }
@@ -41,11 +41,11 @@ class JsonType extends Type {
     return $decoded;
   }
 
-  function getName() {
+  public function getName() {
     return self::NAME;
   }
 
-  function requiresSQLCommentHint(AbstractPlatform $platform) {
+  public function requiresSQLCommentHint(AbstractPlatform $platform) {
     return !$platform->hasNativeJsonType();
   }
 

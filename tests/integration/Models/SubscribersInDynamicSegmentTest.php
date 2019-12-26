@@ -9,7 +9,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersInDynamicSegmentTest extends \MailPoetTest {
 
-  function _before() {
+  public function _before() {
     $this->cleanData();
     $this->dynamic_segment = DynamicSegment::createOrUpdate([
       'name' => 'name',
@@ -40,7 +40,7 @@ class SubscribersInDynamicSegmentTest extends \MailPoetTest {
     ]);
   }
 
-  function testListingQuery() {
+  public function testListingQuery() {
     $listing_data = [
       'filter' => ['segment' => $this->dynamic_segment->id],
       'group' => 'all',
@@ -53,7 +53,7 @@ class SubscribersInDynamicSegmentTest extends \MailPoetTest {
     expect($data[1]->email)->equals('user-role-test3@example.com');
   }
 
-  function testListingQueryWithSearch() {
+  public function testListingQueryWithSearch() {
     $listing_data = [
       'filter' => ['segment' => $this->dynamic_segment->id],
       'group' => 'all',
@@ -65,7 +65,7 @@ class SubscribersInDynamicSegmentTest extends \MailPoetTest {
     expect($data[0]->email)->equals('user-role-test1@example.com');
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanData();
   }
 

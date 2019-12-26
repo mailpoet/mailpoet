@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class EditExistingPostNotificationEmailCest {
 
-  function editSubjectAndSchedule(\AcceptanceTester $I) {
+  public function editSubjectAndSchedule(\AcceptanceTester $I) {
     $I->wantTo('Edit existing post notification email');
 
     $newsletter_title = 'Edit Test Post Notification';

@@ -5,12 +5,12 @@ namespace MailPoet\Test\Newsletter;
 use MailPoet\Newsletter\AutomatedLatestContent;
 
 class AutomatedLatestContentTest extends \MailPoetTest {
-  function __construct() {
+  public function __construct() {
     parent::__construct();
     $this->alc = new AutomatedLatestContent();
   }
 
-  function testItCategorizesTermsToTaxonomies() {
+  public function testItCategorizesTermsToTaxonomies() {
     $args = [
       'terms' => [
         [
@@ -46,7 +46,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     ]);
   }
 
-  function testItCanExcludeTaxonomies() {
+  public function testItCanExcludeTaxonomies() {
     $args = [
       'terms' => [
         [

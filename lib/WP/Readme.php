@@ -3,7 +3,7 @@
 namespace MailPoet\WP;
 
 class Readme {
-  static function parseChangelog($readme_txt, $limit = null) {
+  public static function parseChangelog($readme_txt, $limit = null) {
     // Extract changelog section of the readme.txt
     preg_match('/== Changelog ==(.*?)(\n==|$)/is', $readme_txt, $changelog);
 

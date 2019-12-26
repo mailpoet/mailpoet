@@ -11,7 +11,7 @@ class BlackFridayNotice {
   const OPTION_NAME = 'dismissed-black-friday-notice';
   const DISMISS_NOTICE_TIMEOUT_SECONDS = 2592000; // 30 days
 
-  function init($should_display) {
+  public function init($should_display) {
     $should_display = $should_display
       && (time() <= strtotime('2019-11-30 23:59:59'))
       && (time() >= strtotime('2019-11-08 00:00:00'))
@@ -36,7 +36,7 @@ class BlackFridayNotice {
     WPNotice::displaySuccess($header . $body . $link, $extra_classes, self::OPTION_NAME);
   }
 
-  function disable() {
+  public function disable() {
     WPFunctions::get()->setTransient(self::OPTION_NAME, true, self::DISMISS_NOTICE_TIMEOUT_SECONDS);
   }
 

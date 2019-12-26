@@ -24,7 +24,7 @@ class FooterTest extends \MailPoetUnitTest {
     ],
   ];
 
-  function testItRendersCorrectly() {
+  public function testItRendersCorrectly() {
     $output = Footer::render($this->block);
     $expected_result = '
       <tr>
@@ -35,7 +35,7 @@ class FooterTest extends \MailPoetUnitTest {
     expect($output)->equals($expected_result);
   }
 
-  function testItRendersWithBackgroundColor() {
+  public function testItRendersWithBackgroundColor() {
     $this->block['styles']['block']['backgroundColor'] = '#f0f0f0';
     $output = Footer::render($this->block);
     $expected_result = '
@@ -47,7 +47,7 @@ class FooterTest extends \MailPoetUnitTest {
     expect($output)->equals($expected_result);
   }
 
-  function testItPrefersInlinedCssForLinks() {
+  public function testItPrefersInlinedCssForLinks() {
     $this->block['text'] = '<p>Footer text. <a href="http://example.com" style="color:#aaaaaa;">link</a></p>';
     $output = Footer::render($this->block);
     expect($output)->contains('<a href="http://example.com" style="color:#aaaaaa;text-decoration:none">link</a>');

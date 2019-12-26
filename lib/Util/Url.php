@@ -8,11 +8,11 @@ class Url {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp) {
+  public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
   }
 
-  function getCurrentUrl() {
+  public function getCurrentUrl() {
     $home_url = parse_url($this->wp->homeUrl());
     $query_args = $this->wp->addQueryArg(null, null);
 
@@ -24,12 +24,12 @@ class Url {
     return $this->wp->homeUrl($query_args);
   }
 
-  function redirectTo($url = null) {
+  public function redirectTo($url = null) {
     $this->wp->wpSafeRedirect($url);
     exit();
   }
 
-  function redirectBack($params = []) {
+  public function redirectBack($params = []) {
     // check mailpoet_redirect parameter
     $referer = (isset($_POST['mailpoet_redirect'])
       ? $_POST['mailpoet_redirect']
@@ -50,7 +50,7 @@ class Url {
     exit();
   }
 
-  function redirectWithReferer($url = null) {
+  public function redirectWithReferer($url = null) {
     $current_url = $this->getCurrentUrl();
     $url = $this->wp->addQueryArg(
       [

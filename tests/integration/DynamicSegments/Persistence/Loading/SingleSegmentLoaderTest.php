@@ -15,7 +15,7 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
   /** @var SingleSegmentLoader */
   private $loader;
 
-  function _before() {
+  public function _before() {
     $this->loader = new SingleSegmentLoader(new DBMapper());
     ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
@@ -32,23 +32,23 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
     $filter_data->save();
   }
 
-  function testItLoadsSegments() {
+  public function testItLoadsSegments() {
     $data = $this->loader->load($this->segment->id);
     expect($data)->isInstanceOf('\MailPoet\Models\DynamicSegment');
   }
 
-  function testItThrowsForUnknownSegment() {
+  public function testItThrowsForUnknownSegment() {
     $this->setExpectedException('InvalidArgumentException');
     $this->loader->load($this->segment->id + 11564564);
   }
 
-  function testItPopulatesCommonData() {
+  public function testItPopulatesCommonData() {
     $data = $this->loader->load($this->segment->id);
     expect($data->name)->equals('segment 1');
     expect($data->description)->equals('description');
   }
 
-  function testItPopulatesFilters() {
+  public function testItPopulatesFilters() {
     $data = $this->loader->load($this->segment->id);
     $filters0 = $data->getFilters();
     expect($filters0)->count(1);
@@ -56,7 +56,7 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
     expect($filters0[0]->getRole())->equals('Administrator');
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
   }

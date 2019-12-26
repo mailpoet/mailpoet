@@ -10,28 +10,28 @@ class OrderDetails
   public $total;
   public $order_id;
 
-  function __construct($order_id = null) {
+  public function __construct($order_id = null) {
     $this->order_id = $order_id;
   }
 
-  function get_customer_id() {
+  public function get_customer_id() {
   }
 
-  function get_billing_email() {
+  public function get_billing_email() {
   }
 
-  function get_date_created() {
+  public function get_date_created() {
   }
 
-  function get_id() {
+  public function get_id() {
     return $this->order_id;
   }
 
-  function get_total() {
+  public function get_total() {
     return $this->total;
   }
 
-  function get_items() {
+  public function get_items() {
     return new ItemDetails();
   }
 }

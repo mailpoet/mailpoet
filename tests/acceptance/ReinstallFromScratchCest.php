@@ -11,7 +11,7 @@ use PHPUnit_Framework_Assert as Asserts;
 
 class ReinstallFromScratchCest {
 
-  function reinstallFromScratch(\AcceptanceTester $I) {
+  public function reinstallFromScratch(\AcceptanceTester $I) {
     $I->wantTo('Reinstall from scratch');
     $I->login();
 

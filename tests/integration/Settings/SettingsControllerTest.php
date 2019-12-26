@@ -12,37 +12,37 @@ class SettingsControllerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $controller;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->controller = $this->di_container->get(SettingsController::class);
   }
 
-  function testItReturnsStoredValue() {
+  public function testItReturnsStoredValue() {
     $this->createOrUpdateSetting('test_key', 1);
     $this->controller->resetCache();
     $this->assertEquals(1, $this->controller->get('test_key'));
   }
 
-  function testItReturnsStoredNestedValue() {
+  public function testItReturnsStoredNestedValue() {
     $this->createOrUpdateSetting('test_key', serialize(['sub_key' => 'value']));
     $this->assertEquals('value', $this->controller->get('test_key.sub_key'));
   }
 
-  function testItReturnsNullForUnknownSetting() {
+  public function testItReturnsNullForUnknownSetting() {
     $this->assertEquals(null, $this->controller->get('test_key'));
     $this->assertEquals(null, $this->controller->get('test_key.sub_key'));
     $this->createOrUpdateSetting('test_key', serialize(['sub_key' => 'value']));
     $this->assertEquals(null, $this->controller->get('test_key.wrong_subkey'));
   }
 
-  function testItReturnsDefaultValueForUnknownSetting() {
+  public function testItReturnsDefaultValueForUnknownSetting() {
     $this->assertEquals('default', $this->controller->get('test_key', 'default'));
     $this->assertEquals('default', $this->controller->get('test_key.sub_key', 'default'));
     $this->createOrUpdateSetting('test_key', serialize(['sub_key' => 'value']));
     $this->assertEquals('default', $this->controller->get('test_key.wrong_subkey', 'default'));
   }
 
-  function testItCanFetchValuesFromDB() {
+  public function testItCanFetchValuesFromDB() {
     $this->assertEquals(null, $this->controller->fetch('test_key'));
     $this->assertEquals(null, $this->controller->fetch('test_key.sub_key'));
     $this->assertEquals('default', $this->controller->fetch('test_key.wrong_subkey', 'default'));
@@ -51,7 +51,7 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals('value', $this->controller->fetch('test_key.sub_key', 'default'));
   }
 
-  function testItReturnsDefaultValueAsFallback() {
+  public function testItReturnsDefaultValueAsFallback() {
     $settings = Stub::make($this->controller, [
       'settings_repository' => $this->make(SettingsRepository::class, [
          'findOneByName' => null,
@@ -67,7 +67,7 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals(1, $settings->get('default1.default2'));
   }
 
-  function testItCanReturnAllSettings() {
+  public function testItCanReturnAllSettings() {
     $this->createOrUpdateSetting('test_key1', 1);
     $this->createOrUpdateSetting('test_key2', 2);
     $all = $this->controller->getAll();
@@ -75,21 +75,21 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals(2, $all['test_key2']);
   }
 
-  function testItCanSetAtTopLevel() {
+  public function testItCanSetAtTopLevel() {
     $this->controller->set('test_key', 1);
     $this->assertEquals(1, $this->controller->get('test_key'));
     $db_value = $this->getSettingValue('test_key');
     $this->assertEquals(1, $db_value);
   }
 
-  function testItCanSetAtNestedLevel() {
+  public function testItCanSetAtNestedLevel() {
     $this->controller->set('test_key.key1.key2', 1);
     $this->assertEquals(1, $this->controller->get('test_key.key1.key2'));
     $db_value = unserialize($this->getSettingValue('test_key'));
     $this->assertEquals(1, $db_value['key1']['key2']);
   }
 
-  function testItCanSetNUll() {
+  public function testItCanSetNUll() {
     $this->controller->set('test_key.key1.key2', 1);
     $this->assertEquals(1, $this->controller->get('test_key.key1.key2'));
     $this->controller->set('test_key.key1.key2', null);
@@ -98,7 +98,7 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertNull($db_value['key1']['key2']);
   }
 
-  function testItCanOverrideValueAndSetAtNestedLevel() {
+  public function testItCanOverrideValueAndSetAtNestedLevel() {
     $this->controller->set('test_key.key1', 1);
     $this->controller->set('test_key.key1.key2', 1);
     $this->assertEquals(1, $this->controller->get('test_key.key1.key2'));
@@ -106,7 +106,7 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals(1, $db_value['key1']['key2']);
   }
 
-  function testItLoadsFromDbOnlyOnce() {
+  public function testItLoadsFromDbOnlyOnce() {
     $this->createOrUpdateSetting('test_key', 1);
     $this->assertEquals(1, $this->controller->get('test_key'));
     $this->createOrUpdateSetting('test_key', 2);
@@ -114,7 +114,7 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals(true, true);
   }
 
-  function _after() {
+  public function _after() {
     $table_name = $this->entity_manager->getClassMetadata(SettingEntity::class)->getTableName();
     $this->connection->executeUpdate('TRUNCATE ' . $table_name);
   }

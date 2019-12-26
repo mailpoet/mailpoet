@@ -17,7 +17,7 @@ class Saver {
    * @return integer
    * @throws ErrorSavingException
    */
-  function save(DynamicSegment $segment) {
+  public function save(DynamicSegment $segment) {
     $db = ORM::get_db();
     $db->beginTransaction();
 

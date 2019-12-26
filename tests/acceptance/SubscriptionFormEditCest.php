@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Form;
 
 class SubscriptionFormEditCest {
 
-  function editForm(\AcceptanceTester $I) {
+  public function editForm(\AcceptanceTester $I) {
 
     //Step one - create form from factory
     $form_name = 'Testing Form Edit';

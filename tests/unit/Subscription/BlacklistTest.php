@@ -3,7 +3,7 @@
 namespace MailPoet\Subscription;
 
 class BlacklistTest extends \MailPoetUnitTest {
-  function testItChecksBlacklistedEmails() {
+  public function testItChecksBlacklistedEmails() {
     $email = 'test@example.com';
     $domain = 'example.com';
     $blacklist = new Blacklist();

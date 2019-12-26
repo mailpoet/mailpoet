@@ -10,7 +10,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 
 class AutomaticEmailScheduler {
 
-  function scheduleAutomaticEmail($group, $event, $scheduling_condition = false, $subscriber_id = false, $meta = false) {
+  public function scheduleAutomaticEmail($group, $event, $scheduling_condition = false, $subscriber_id = false, $meta = false) {
     $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) return false;
     foreach ($newsletters as $newsletter) {
@@ -20,7 +20,7 @@ class AutomaticEmailScheduler {
     }
   }
 
-  function scheduleOrRescheduleAutomaticEmail($group, $event, $subscriber_id, $meta = false) {
+  public function scheduleOrRescheduleAutomaticEmail($group, $event, $subscriber_id, $meta = false) {
     $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) {
       return false;
@@ -41,7 +41,7 @@ class AutomaticEmailScheduler {
     }
   }
 
-  function rescheduleAutomaticEmail($group, $event, $subscriber_id) {
+  public function rescheduleAutomaticEmail($group, $event, $subscriber_id) {
     $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) {
       return false;
@@ -60,7 +60,7 @@ class AutomaticEmailScheduler {
     }
   }
 
-  function cancelAutomaticEmail($group, $event, $subscriber_id) {
+  public function cancelAutomaticEmail($group, $event, $subscriber_id) {
     $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) {
       return false;
@@ -81,7 +81,7 @@ class AutomaticEmailScheduler {
     }
   }
 
-  function createAutomaticEmailSendingTask($newsletter, $subscriber_id, $meta) {
+  public function createAutomaticEmailSendingTask($newsletter, $subscriber_id, $meta) {
     $sending_task = SendingTask::create();
     $sending_task->newsletter_id = $newsletter->id;
     if ($newsletter->sendTo === 'user' && $subscriber_id) {

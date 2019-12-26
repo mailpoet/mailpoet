@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 
 class SubscriberCountShortcodeCest {
-  function createSubscriberCountPageWithShortcode(\AcceptanceTester $I) {
+  public function createSubscriberCountPageWithShortcode(\AcceptanceTester $I) {
     $I->wantTo('Create page with MP subscriber shortcode');
     $segment_factory = new Segment();
     $segment = $segment_factory->withName('SubscriberCount')->create();

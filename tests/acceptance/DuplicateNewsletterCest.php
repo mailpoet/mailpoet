@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class DuplicateNewsletterCest {
 
-  function duplicateNewsletter(\AcceptanceTester $I) {
+  public function duplicateNewsletter(\AcceptanceTester $I) {
     $newsletter_name = 'Duplicate Newsletter';
     $newsletter = new Newsletter();
     $newsletter->withSubject($newsletter_name)->create();

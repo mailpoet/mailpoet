@@ -212,11 +212,11 @@ class Hosts {
     ],
   ];
 
-  static function getWebHosts() {
+  public static function getWebHosts() {
     return static::$_web;
   }
 
-  static function getSMTPHosts() {
+  public static function getSMTPHosts() {
     return static::$_smtp;
   }
 }

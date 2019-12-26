@@ -24,14 +24,14 @@ class Help {
   /** @var Beacon */
   private $helpscout_beacon;
 
-  function __construct(PageRenderer $page_renderer, State $tasks_state, CronHelper $cron_helper, Beacon $helpscout_beacon) {
+  public function __construct(PageRenderer $page_renderer, State $tasks_state, CronHelper $cron_helper, Beacon $helpscout_beacon) {
     $this->page_renderer = $page_renderer;
     $this->tasks_state = $tasks_state;
     $this->cron_helper = $cron_helper;
     $this->helpscout_beacon = $helpscout_beacon;
   }
 
-  function render() {
+  public function render() {
     $system_info_data = $this->helpscout_beacon->getData();
     $cron_ping_response = $this->cron_helper->pingDaemon();
     $system_status_data = [

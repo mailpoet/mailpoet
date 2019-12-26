@@ -15,12 +15,12 @@ class SubscribersImport {
   /** @var Installation */
   private $installation;
 
-  function __construct(PageRenderer $page_renderer, Installation $installation) {
+  public function __construct(PageRenderer $page_renderer, Installation $installation) {
     $this->page_renderer = $page_renderer;
     $this->installation = $installation;
   }
 
-  function render() {
+  public function render() {
     $import = new ImportExportFactory(ImportExportFactory::IMPORT_ACTION);
     $data = $import->bootstrap();
     $data = array_merge($data, [

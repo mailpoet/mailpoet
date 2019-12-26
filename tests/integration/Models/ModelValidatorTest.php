@@ -7,19 +7,19 @@ use MailPoet\Models\ModelValidator;
 class ModelValidatorTest extends \MailPoetTest {
   public $validator;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
     $this->validator = new ModelValidator();
   }
 
-  function testItConfiguresValidators() {
+  public function testItConfiguresValidators() {
     $configured_validators = $this->validator->getValidators();
     foreach (array_keys($this->validator->validators) as $validator) {
       expect($configured_validators)->contains($validator);
     }
   }
 
-  function testItValidatesEmail() {
+  public function testItValidatesEmail() {
     expect($this->validator->validateEmail('test'))->false();
     expect($this->validator->validateEmail('tést@éxample.com'))->false();
     expect($this->validator->validateEmail('test@example.com'))->true();
@@ -27,13 +27,13 @@ class ModelValidatorTest extends \MailPoetTest {
     expect($this->validator->validateEmail('a@b.c'))->false();
   }
 
-  function testItValidatesNonRoleEmail() {
+  public function testItValidatesNonRoleEmail() {
     expect($this->validator->validateNonRoleEmail('test'))->false();
     expect($this->validator->validateNonRoleEmail('webmaster@example.com'))->false();
     expect($this->validator->validateNonRoleEmail('test@example.com'))->true();
   }
 
-  function testItValidatesRenderedNewsletterBody() {
+  public function testItValidatesRenderedNewsletterBody() {
     expect($this->validator->validateRenderedNewsletterBody('test'))->false();
     expect($this->validator->validateRenderedNewsletterBody(serialize('test')))->false();
     expect($this->validator->validateRenderedNewsletterBody(['html' => 'test', 'text' => null]))->false();

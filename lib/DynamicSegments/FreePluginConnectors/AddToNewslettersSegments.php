@@ -23,7 +23,7 @@ class AddToNewslettersSegments {
    *
    * @return array
    */
-  function add(array $initial_segments) {
+  public function add(array $initial_segments) {
     $dynamic_segments = $this->getListings();
     return array_merge($initial_segments, $dynamic_segments);
   }

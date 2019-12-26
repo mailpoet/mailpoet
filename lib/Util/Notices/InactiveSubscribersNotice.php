@@ -18,12 +18,12 @@ class InactiveSubscribersNotice {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(SettingsController $settings, WPFunctions $wp) {
+  public function __construct(SettingsController $settings, WPFunctions $wp) {
     $this->settings = $settings;
     $this->wp = $wp;
   }
 
-  function init($should_display) {
+  public function init($should_display) {
     if (!$should_display || !$this->settings->get(self::OPTION_NAME, true)) {
       return;
     }
@@ -41,7 +41,7 @@ class InactiveSubscribersNotice {
     return $this->display($inactive_subscribers_count);
   }
 
-  function disable() {
+  public function disable() {
     $this->settings->set(self::OPTION_NAME, false);
   }
 

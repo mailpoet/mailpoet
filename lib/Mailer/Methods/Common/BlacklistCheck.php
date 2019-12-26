@@ -15,7 +15,7 @@ class BlacklistCheck {
     $this->blacklist = $blacklist;
   }
 
-  function isBlacklisted($subscriber) {
+  public function isBlacklisted($subscriber) {
     $email = $this->getSubscriberEmailForBlacklistCheck($subscriber);
     return $this->blacklist->isBlacklisted($email);
   }

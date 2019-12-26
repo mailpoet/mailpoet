@@ -12,12 +12,12 @@ class FeatureFlagsController {
   /** @var FeatureFlagsRepository */
   private $feature_flags_repository;
 
-  function __construct(FeaturesController $features_controller, FeatureFlagsRepository $feature_flags_repository) {
+  public function __construct(FeaturesController $features_controller, FeatureFlagsRepository $feature_flags_repository) {
     $this->features_controller = $features_controller;
     $this->feature_flags_repository = $feature_flags_repository;
   }
 
-  function set($name, $value) {
+  public function set($name, $value) {
     if (!$this->features_controller->exists($name)) {
       throw new \RuntimeException("Feature '$name' does not exist'");
     }
@@ -25,7 +25,7 @@ class FeatureFlagsController {
     $this->feature_flags_repository->createOrUpdate(['name' => $name, 'value' => $value]);
   }
 
-  function getAll() {
+  public function getAll() {
     $flags = $this->feature_flags_repository->findAll();
     $flagsMap = array_combine(
       array_map(

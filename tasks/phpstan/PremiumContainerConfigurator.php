@@ -7,12 +7,12 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder;
 
 // phpcs:ignore Squiz.Classes.ClassFileName
 class ContainerConfigurator implements IContainerConfigurator {
-  function configure(ContainerBuilder $container) {
+  public function configure(ContainerBuilder $container) {
   }
 
-  function getDumpNamespace() {
+  public function getDumpNamespace() {
   }
 
-  function getDumpClassname() {
+  public function getDumpClassname() {
   }
 }

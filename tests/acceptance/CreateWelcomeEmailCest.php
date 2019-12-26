@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class CreateWelcomeEmailCest {
-  function createWelcomeNewsletter(\AcceptanceTester $I) {
+  public function createWelcomeNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Create and configure welcome newsletter');
     $newsletter_title = 'Create Welcome Email';
     $I->login();

@@ -25,14 +25,14 @@ class WooCommerceTest extends \MailPoetTest  {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     $this->woocommerce_segment = ContainerWrapper::getInstance()->get(WooCommerceSegment::class);
     $this->settings = ContainerWrapper::getInstance()->get(SettingsController::class);
     $this->cleanData();
     $this->addCustomerRole();
   }
 
-  function testItSynchronizesNewRegisteredCustomer() {
+  public function testItSynchronizesNewRegisteredCustomer() {
     $user = $this->insertRegisteredCustomer();
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
@@ -57,7 +57,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->deleted_at)->equals(null);
   }
 
-  function testItSynchronizesUpdatedRegisteredCustomer() {
+  public function testItSynchronizesUpdatedRegisteredCustomer() {
     $user = $this->insertRegisteredCustomer();
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
@@ -81,7 +81,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED); // no overriding
   }
 
-  function testItSynchronizesDeletedRegisteredCustomer() {
+  public function testItSynchronizesDeletedRegisteredCustomer() {
     $wc_segment = Segment::getWooCommerceSegment();
     $user = $this->insertRegisteredCustomer();
     $subscriber = Subscriber::create();
@@ -104,7 +104,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect(SubscriberSegment::findOne($association->id))->isEmpty();
   }
 
-  function testItSynchronizesNewGuestCustomer() {
+  public function testItSynchronizesNewGuestCustomer() {
     $guest = $this->insertGuestCustomer();
     $hook = 'woocommerce_checkout_update_order_meta';
     $this->woocommerce_segment->synchronizeGuestCustomer($guest['order_id'], $hook);
@@ -116,7 +116,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
   }
 
-  function testItSynchronizesCustomers() {
+  public function testItSynchronizesCustomers() {
     $this->settings->set('mailpoet_subscribe_old_woocommerce_customers', ['dummy' => '1', 'enabled' => '1']);
     $user = $this->insertRegisteredCustomer();
     $guest = $this->insertGuestCustomer();
@@ -131,7 +131,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
   }
 
-  function testItSynchronizesNewCustomers() {
+  public function testItSynchronizesNewCustomers() {
     $this->insertRegisteredCustomer();
     $this->insertGuestCustomer();
     $this->woocommerce_segment->synchronizeCustomers();
@@ -142,7 +142,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscribersCount)->equals(4);
   }
 
-  function testItSynchronizesPresubscribedRegisteredCustomers() {
+  public function testItSynchronizesPresubscribedRegisteredCustomers() {
     $random_number = 12345;
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'user-sync-test' . $random_number . '@example.com',
@@ -159,7 +159,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($wp_subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
-  function testItSynchronizesPresubscribedGuestCustomers() {
+  public function testItSynchronizesPresubscribedGuestCustomers() {
     $random_number = 12345;
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'user-sync-test' . $random_number . '@example.com',
@@ -176,7 +176,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($wp_subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
-  function testItDoesNotSynchronizeEmptyEmailsForNewUsers() {
+  public function testItDoesNotSynchronizeEmptyEmailsForNewUsers() {
     $guest = $this->insertGuestCustomer();
     update_post_meta($guest['order_id'], '_billing_email', '');
     $this->woocommerce_segment->synchronizeCustomers();
@@ -185,7 +185,7 @@ class WooCommerceTest extends \MailPoetTest  {
     $this->deleteOrder($guest['order_id']);
   }
 
-  function testItDoesNotSynchronizeInvalidEmailsForNewUsers() {
+  public function testItDoesNotSynchronizeInvalidEmailsForNewUsers() {
     $guest = $this->insertGuestCustomer();
     $invalid_email = 'ivalid.@email.com';
     update_post_meta($guest['order_id'], '_billing_email', $invalid_email);
@@ -195,7 +195,7 @@ class WooCommerceTest extends \MailPoetTest  {
     $this->deleteOrder($guest['order_id']);
   }
 
-  function testItSynchronizesFirstNamesForRegisteredCustomers() {
+  public function testItSynchronizesFirstNamesForRegisteredCustomers() {
     $user = $this->insertRegisteredCustomerWithOrder(null, ['first_name' => '']);
     $this->woocommerce_segment->synchronizeCustomers();
     update_post_meta($user->order_id, '_billing_first_name', 'First name');
@@ -205,7 +205,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->first_name)->equals('First name (newer)');
   }
 
-  function testItSynchronizesLastNamesForRegisteredCustomers() {
+  public function testItSynchronizesLastNamesForRegisteredCustomers() {
     $user = $this->insertRegisteredCustomerWithOrder(null, ['last_name' => '']);
     $this->woocommerce_segment->synchronizeCustomers();
     update_post_meta($user->order_id, '_billing_last_name', 'Last name');
@@ -215,7 +215,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->last_name)->equals('Last name (newer)');
   }
 
-  function testItSynchronizesFirstNamesForGuestCustomers() {
+  public function testItSynchronizesFirstNamesForGuestCustomers() {
     $guest = $this->insertGuestCustomer(null, ['first_name' => '']);
     $this->woocommerce_segment->synchronizeCustomers();
     update_post_meta($guest['order_id'], '_billing_first_name', 'First name');
@@ -225,7 +225,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->first_name)->equals('First name (newer)');
   }
 
-  function testItSynchronizesLastNamesForGuestCustomers() {
+  public function testItSynchronizesLastNamesForGuestCustomers() {
     $guest = $this->insertGuestCustomer(null, ['last_name' => '']);
     $this->woocommerce_segment->synchronizeCustomers();
     update_post_meta($guest['order_id'], '_billing_last_name', 'Last name');
@@ -235,7 +235,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->last_name)->equals('Last name (newer)');
   }
 
-  function testItSynchronizesSegment() {
+  public function testItSynchronizesSegment() {
     $this->insertRegisteredCustomer();
     $this->insertRegisteredCustomer();
     $this->insertGuestCustomer();
@@ -247,7 +247,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscribers->count())->equals(4);
   }
 
-  function testItRemovesRegisteredCustomersFromTrash() {
+  public function testItRemovesRegisteredCustomersFromTrash() {
     $user = $this->insertRegisteredCustomer();
     $this->woocommerce_segment->synchronizeCustomers();
     $subscriber = Subscriber::where("email", $user->user_email)
@@ -262,7 +262,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->deleted_at)->null();
   }
 
-  function testItRemovesGuestCustomersFromTrash() {
+  public function testItRemovesGuestCustomersFromTrash() {
     $guest = $this->insertGuestCustomer();
     $this->woocommerce_segment->synchronizeCustomers();
     $subscriber = Subscriber::where("email", $guest['email'])
@@ -277,7 +277,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber->deleted_at)->null();
   }
 
-  function testItRemovesOrphanedSubscribers() {
+  public function testItRemovesOrphanedSubscribers() {
     $this->insertRegisteredCustomer();
     $this->insertGuestCustomer();
     $user = $this->insertRegisteredCustomerWithOrder();
@@ -293,7 +293,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscribers->count())->equals(2);
   }
 
-  function testItDoesntDeleteNonWCData() {
+  public function testItDoesntDeleteNonWCData() {
     $this->insertRegisteredCustomer();
     $this->insertGuestCustomer();
     // WP user
@@ -335,7 +335,7 @@ class WooCommerceTest extends \MailPoetTest  {
     $subscriber3->delete();
   }
 
-  function testItUnsubscribesSubscribersWithoutWCFlagFromWCSegment() {
+  public function testItUnsubscribesSubscribersWithoutWCFlagFromWCSegment() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'first_name' => 'Mike',
@@ -355,7 +355,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect(SubscriberSegment::findOne($association->id))->isEmpty();
   }
 
-  function testItUnsubscribesSubscribersWithoutEmailFromWCSegment() {
+  public function testItUnsubscribesSubscribersWithoutEmailFromWCSegment() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'first_name' => 'Mike',
@@ -376,7 +376,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect(SubscriberSegment::findOne($association->id))->isEmpty();
   }
 
-  function testItSetGlobalStatusUnsubscribedForUsersUnsyncedFromWooCommerceSegment() {
+  public function testItSetGlobalStatusUnsubscribedForUsersUnsyncedFromWooCommerceSegment() {
     $guest = $this->insertGuestCustomer();
     $subscriber = Subscriber::createOrUpdate([
       'first_name' => 'Mike',
@@ -397,7 +397,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
-  function testItDoesntSetGlobalStatusUnsubscribedIfUserHasMoreLists() {
+  public function testItDoesntSetGlobalStatusUnsubscribedIfUserHasMoreLists() {
     $guest = $this->insertGuestCustomer();
     $subscriber = Subscriber::createOrUpdate([
       'first_name' => 'Mike',
@@ -423,7 +423,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($subscriber_after_update->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItSubscribesSubscribersToWCListWhenSettingIsEnabled() {
+  public function testItSubscribesSubscribersToWCListWhenSettingIsEnabled() {
     $wc_segment = Segment::getWooCommerceSegment();
     $user1 = $this->insertRegisteredCustomer();
     $user2 = $this->insertRegisteredCustomer();
@@ -465,7 +465,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($association2_after_update->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
-  function testItUnsubscribesSubscribersFromWCListWhenSettingIsDisabled() {
+  public function testItUnsubscribesSubscribersFromWCListWhenSettingIsDisabled() {
     $wc_segment = Segment::getWooCommerceSegment();
     $user1 = $this->insertRegisteredCustomer();
     $user2 = $this->insertRegisteredCustomer();
@@ -507,7 +507,7 @@ class WooCommerceTest extends \MailPoetTest  {
     expect($association2_after_update->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanData();
     $this->removeCustomerRole();
   }

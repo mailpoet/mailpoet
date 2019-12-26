@@ -9,7 +9,7 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
 class SubscribersInDynamicSegment extends Subscriber {
 
-  static function listingQuery(array $data = []) {
+  public static function listingQuery(array $data = []) {
     $query = self::select(self::$_table . '.*');
     $single_segment_loader = new SingleSegmentLoader(new DBMapper());
     $dynamic_segment = $single_segment_loader->load($data['filter']['segment']);

@@ -9,19 +9,19 @@ class WordPress extends \Codeception\Module
 {
   private static $functions_to_intercept = [];
 
-  static function interceptFunction($function_name, $callback) {
+  public static function interceptFunction($function_name, $callback) {
     self::$functions_to_intercept[$function_name] = $callback;
   }
 
-  static function releaseFunction($function_name) {
+  public static function releaseFunction($function_name) {
     unset(self::$functions_to_intercept[$function_name]);
   }
 
-  static function releaseAllFunctions() {
+  public static function releaseAllFunctions() {
     self::$functions_to_intercept = [];
   }
 
-  static function getInterceptor($function_name) {
+  public static function getInterceptor($function_name) {
     if (isset(self::$functions_to_intercept[$function_name]))
       return self::$functions_to_intercept[$function_name];
   }

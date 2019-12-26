@@ -21,13 +21,13 @@ class ErrorsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDecl
     Events::SUITE_AFTER => 'processErrorsAfterSuite',
   ];
 
-  function loadErrorCountsBeforeSuite() {
+  public function loadErrorCountsBeforeSuite() {
     foreach (self::ERROR_LOG_PATHS as $path) {
       $this->known_error_counts[$path] = count($this->readFileToArray($path));
     }
   }
 
-  function checkErrorsAfterTest(TestEvent $e) {
+  public function checkErrorsAfterTest(TestEvent $e) {
     foreach (self::ERROR_LOG_PATHS as $path) {
       $errors = $this->readFileToArray($path);
       foreach (array_slice($errors, $this->known_error_counts[$path]) as $error) {
@@ -38,7 +38,7 @@ class ErrorsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDecl
     }
   }
 
-  function processErrorsAfterSuite(SuiteEvent $event) {
+  public function processErrorsAfterSuite(SuiteEvent $event) {
     foreach ($this->errors as $error) {
       list($test, $exception) = $error;
       $event->getResult()->addFailure($test, $exception, microtime(true));

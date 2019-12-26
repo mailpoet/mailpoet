@@ -12,7 +12,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class TransactionalEmailsTest extends \MailPoetUnitTest {
 
-  function testGetEmailHeadings() {
+  public function testGetEmailHeadings() {
     $wp = Stub::make(new WPFunctions, [
       'getOption' => function($name) {
         if ($name === 'woocommerce_new_order_settings')

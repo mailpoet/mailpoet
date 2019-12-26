@@ -22,12 +22,12 @@ class ConfigurationFactory {
   /** @var AnnotationReaderProvider */
   private $annotation_reader_provider;
 
-  function __construct($is_dev_mode = null, AnnotationReaderProvider $annotation_reader_provider) {
+  public function __construct($is_dev_mode = null, AnnotationReaderProvider $annotation_reader_provider) {
     $this->is_dev_mode = $is_dev_mode === null ? WP_DEBUG : $is_dev_mode;
     $this->annotation_reader_provider = $annotation_reader_provider;
   }
 
-  function createConfiguration() {
+  public function createConfiguration() {
     $configuration = new Configuration();
     $configuration->setNamingStrategy(new UnderscoreNamingStrategy());
 

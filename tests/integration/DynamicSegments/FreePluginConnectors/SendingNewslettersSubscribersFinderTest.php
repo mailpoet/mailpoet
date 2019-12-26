@@ -20,13 +20,13 @@ class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
   /** @var SendingNewslettersSubscribersFinder */
   private $subscribers_in_segments_finder;
 
-  function _before() {
+  public function _before() {
     $this->single_segment_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader');
     $this->subscribers_ids_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersIds');
     $this->subscribers_in_segments_finder = new SendingNewslettersSubscribersFinder($this->single_segment_loader, $this->subscribers_ids_loader);
   }
 
-  function testFindSubscribersInSegmentReturnsEmptyIfNotDynamic() {
+  public function testFindSubscribersInSegmentReturnsEmptyIfNotDynamic() {
     $this->single_segment_loader
       ->expects($this->never())
       ->method('load');
@@ -40,7 +40,7 @@ class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
     expect($result)->count(0);
   }
 
-  function testFindSubscribersInSegmentReturnsSubscribers() {
+  public function testFindSubscribersInSegmentReturnsSubscribers() {
     $dynamic_segment = DynamicSegment::create();
     $dynamic_segment->hydrate([
       'name' => 'segment 1',
@@ -65,7 +65,7 @@ class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
   }
 
 
-  function testGetSubscriberIdsInSegmentReturnsEmptyIfNotDynamic() {
+  public function testGetSubscriberIdsInSegmentReturnsEmptyIfNotDynamic() {
     $this->single_segment_loader
       ->expects($this->never())
       ->method('load');
@@ -78,7 +78,7 @@ class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
     expect($result)->count(0);
   }
 
-  function testGetSubscriberIdsInSegmentReturnsSubscribers() {
+  public function testGetSubscriberIdsInSegmentReturnsSubscribers() {
     $dynamic_segment = DynamicSegment::create();
     $dynamic_segment->hydrate([
       'name' => 'segment 2',

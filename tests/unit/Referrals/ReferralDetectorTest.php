@@ -14,7 +14,7 @@ class ReferralDetectorTest extends \MailPoetUnitTest {
   /** @var WPFunctions&MockObject */
   private $wp_mock;
 
-  function _before() {
+  public function _before() {
     $this->settings_mock = $this->createMock(SettingsController::class);
     $this->wp_mock = $this->createMock(WPFunctions::class);
     if (!defined(ReferralDetector::REFERRAL_CONSTANT_NAME)) {
@@ -22,7 +22,7 @@ class ReferralDetectorTest extends \MailPoetUnitTest {
     }
   }
 
-  function testItPrefersSettingsValue() {
+  public function testItPrefersSettingsValue() {
     $this->settings_mock
       ->expects($this->once())
       ->method('get')
@@ -34,7 +34,7 @@ class ReferralDetectorTest extends \MailPoetUnitTest {
     expect($referral_detector->detect())->equals('settings_referral_id');
   }
 
-  function testItPrefersOptionValueToConstantAndStoresValueToSettings() {
+  public function testItPrefersOptionValueToConstantAndStoresValueToSettings() {
     $this->settings_mock
       ->expects($this->once())
       ->method('get')
@@ -51,7 +51,7 @@ class ReferralDetectorTest extends \MailPoetUnitTest {
     expect($referral_detector->detect())->equals('option_referral_id');
   }
 
-  function testItCanReadConstantAndStoreValueToSettings() {
+  public function testItCanReadConstantAndStoreValueToSettings() {
     $this->settings_mock
       ->expects($this->once())
       ->method('get')

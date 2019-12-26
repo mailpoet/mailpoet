@@ -10,7 +10,7 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
 
   private $custom_field;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
     $this->custom_field = CustomField::createOrUpdate([
@@ -20,35 +20,35 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
     ]);
   }
 
-  function testItValidatesDataWithoutCustomField() {
+  public function testItValidatesDataWithoutCustomField() {
     $validator = new RequiredCustomFieldValidator();
     $this->setExpectedException('Exception');
     $validator->validate([]);
   }
 
-  function testItValidatesDataWithCustomFieldPassedAsId() {
+  public function testItValidatesDataWithCustomFieldPassedAsId() {
     $validator = new RequiredCustomFieldValidator();
     $validator->validate([$this->custom_field->id() => 'value']);
   }
 
-  function testItValidatesDataWithCustomFieldPassedAsCFId() {
+  public function testItValidatesDataWithCustomFieldPassedAsCFId() {
     $validator = new RequiredCustomFieldValidator();
     $validator->validate(['cf_' . $this->custom_field->id() => 'custom field']);
   }
 
-  function testItValidatesDataWithEmptyCustomField() {
+  public function testItValidatesDataWithEmptyCustomField() {
     $validator = new RequiredCustomFieldValidator();
     $this->setExpectedException('Exception');
     $validator->validate([$this->custom_field->id() => '']);
   }
 
-  function testItValidatesDataWithEmptyCustomFieldAsCFId() {
+  public function testItValidatesDataWithEmptyCustomFieldAsCFId() {
     $validator = new RequiredCustomFieldValidator();
     $this->setExpectedException('Exception');
     $validator->validate(['cf_' . $this->custom_field->id() => '']);
   }
 
-  function testItValidatesOnlyFieldPresentInForm() {
+  public function testItValidatesOnlyFieldPresentInForm() {
     CustomField::createOrUpdate([
       'name' => 'custom field 2',
       'type' => 'text',

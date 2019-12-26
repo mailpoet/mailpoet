@@ -5,7 +5,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Spacer {
-  static function render($element) {
+  public static function render($element) {
     $height = (int)$element['styles']['block']['height'];
     $background_color = EHelper::escapeHtmlAttr($element['styles']['block']['backgroundColor']);
     $template = '

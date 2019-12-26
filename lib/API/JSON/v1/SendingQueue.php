@@ -23,11 +23,11 @@ class SendingQueue extends APIEndpoint {
   /** @var SubscribersFeature */
   private $subscribers_feature;
 
-  function __construct(SubscribersFeature $subscribers_feature) {
+  public function __construct(SubscribersFeature $subscribers_feature) {
     $this->subscribers_feature = $subscribers_feature;
   }
 
-  function add($data = []) {
+  public function add($data = []) {
     if ($this->subscribers_feature->check()) {
       return $this->errorResponse([
         APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
@@ -117,7 +117,7 @@ class SendingQueue extends APIEndpoint {
     }
   }
 
-  function pause($data = []) {
+  public function pause($data = []) {
     $newsletter_id = (isset($data['newsletter_id'])
       ? (int)$data['newsletter_id']
       : false
@@ -144,7 +144,7 @@ class SendingQueue extends APIEndpoint {
     }
   }
 
-  function resume($data = []) {
+  public function resume($data = []) {
     if ($this->subscribers_feature->check()) {
       return $this->errorResponse([
         APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),

@@ -4,7 +4,7 @@ namespace MailPoet\Test\Segments;
 
 class DynamicListingsHandlerMock {
 
-  function get() {
+  public function get() {
 
   }
 

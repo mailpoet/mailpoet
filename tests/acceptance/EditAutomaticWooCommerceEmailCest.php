@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditAutomaticWooCommerceEmailCest {
-  function dontSeeWooCommerceTabWhenWooCommerceIsNotActive(\AcceptanceTester $I) {
+  public function dontSeeWooCommerceTabWhenWooCommerceIsNotActive(\AcceptanceTester $I) {
     $I->wantTo('Not see WooCommerce tab');
     $I->deactivateWooCommerce();
     $I->login();
@@ -13,7 +13,7 @@ class EditAutomaticWooCommerceEmailCest {
     $I->dontSee('[data-automation-id="tab-WooCommerce"]');
   }
 
-  function editAutomaticWooCommerceEmail(\AcceptanceTester $I) {
+  public function editAutomaticWooCommerceEmail(\AcceptanceTester $I) {
     $newsletter_name = 'Edit Automatic WooCommerce Email Test';
     $newsletter_edited_name = 'Edit Automatic WooCommerce Email Test Edited';
 

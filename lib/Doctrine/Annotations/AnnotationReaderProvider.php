@@ -11,7 +11,7 @@ class AnnotationReaderProvider {
   /** @var CachedReader */
   private $annotation_reader;
 
-  function __construct() {
+  public function __construct() {
     // register annotation reader if doctrine/annotations package is installed
     // (i.e. in dev environment, on production metadata is dumped in the build)
     $read_annotations = class_exists(CachedReader::class) && class_exists(AnnotationReader::class);
@@ -24,7 +24,7 @@ class AnnotationReaderProvider {
   }
 
   /** @return CachedReader|null */
-  function getAnnotationReader() {
+  public function getAnnotationReader() {
     return $this->annotation_reader;
   }
 }

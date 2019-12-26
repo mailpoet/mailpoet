@@ -23,7 +23,7 @@ class FormTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->settings->set('sender', [
@@ -73,7 +73,7 @@ class FormTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation.enabled', false);
   }
 
-  function testItSubscribesAndRedirectsBackWithSuccessResponse() {
+  public function testItSubscribesAndRedirectsBackWithSuccessResponse() {
     $url_helper = Stub::make(UrlHelper::class, [
       'redirectBack' => function($params) {
         return $params;
@@ -86,7 +86,7 @@ class FormTest extends \MailPoetTest {
     expect($result['mailpoet_error'])->null();
   }
 
-  function testItSubscribesAndRedirectsToCustomUrlWithSuccessResponse() {
+  public function testItSubscribesAndRedirectsToCustomUrlWithSuccessResponse() {
     // update form with a redirect setting
     $form = $this->form;
     $form_settings = unserialize($form->settings);
@@ -108,7 +108,7 @@ class FormTest extends \MailPoetTest {
     expect($result)->regExp('/http.*?sample-post/i');
   }
 
-  function testItDoesNotSubscribeAndRedirectsBackWithErrorResponse() {
+  public function testItDoesNotSubscribeAndRedirectsBackWithErrorResponse() {
     // clear subscriber email so that subscription fails
     $request_data = $this->request_data;
     $request_data['data']['email'] = false;
@@ -124,7 +124,7 @@ class FormTest extends \MailPoetTest {
     expect($result['mailpoet_success'])->null();
   }
 
-  function testItDoesNotSubscribeAndRedirectsToRedirectUrlIfPresent() {
+  public function testItDoesNotSubscribeAndRedirectsToRedirectUrlIfPresent() {
     $redirect_url = 'http://test/';
     $url_helper = Stub::make(UrlHelper::class, [
       'redirectTo' => function($params) {
@@ -141,7 +141,7 @@ class FormTest extends \MailPoetTest {
     expect($result)->equals($redirect_url);
   }
 
-  function _after() {
+  public function _after() {
     wp_delete_post($this->post);
     ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
     ORM::raw_execute('TRUNCATE ' . FormModel::$_table);

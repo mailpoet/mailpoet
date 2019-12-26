@@ -19,12 +19,12 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
   }
 
-  function testItResetsAuthorisedEmailsErrorIfMssIsNotActive() {
+  public function testItResetsAuthorisedEmailsErrorIfMssIsNotActive() {
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, 'Error');
     $controller = $this->getController($authorized_emails_from_api = null);
@@ -32,7 +32,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
   }
 
-  function testItSetsProperErrorForOldUsers() {
+  public function testItSetsProperErrorForOldUsers() {
     $this->settings->set('installed_at', '2018-03-04');
     $this->settings->set('sender.address', 'invalid@email.com');
     $this->setMailPoetSendingMethod();
@@ -41,7 +41,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals(['invalid_sender_address' => 'invalid@email.com']);
   }
 
-  function testItSetsProperErrorForInvalidDefaultSender() {
+  public function testItSetsProperErrorForInvalidDefaultSender() {
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'invalid@email.com');
     $this->setMailPoetSendingMethod();
@@ -50,7 +50,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals(['invalid_sender_address' => 'invalid@email.com']);
   }
 
-  function testItSetEmptyErrorWhenDefaultSenderAddressIsCorrect() {
+  public function testItSetEmptyErrorWhenDefaultSenderAddressIsCorrect() {
     $this->settings->set('installed_at', new Carbon());
     $this->settings->set('sender.address', 'auth@email.com');
     $this->setMailPoetSendingMethod();
@@ -59,23 +59,23 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
   }
 
-  function testItSetErrorForScheduledNewsletterWithUnauthorizedSender() {
+  public function testItSetErrorForScheduledNewsletterWithUnauthorizedSender() {
     $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_SCHEDULED);
   }
 
-  function testItSetErrorForActiveWelcomeEmailUnauthorizedSender() {
+  public function testItSetErrorForActiveWelcomeEmailUnauthorizedSender() {
     $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_WELCOME, Newsletter::STATUS_ACTIVE);
   }
 
-  function testItSetErrorForPostNotificationUnauthorizedSender() {
+  public function testItSetErrorForPostNotificationUnauthorizedSender() {
     $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_NOTIFICATION, Newsletter::STATUS_ACTIVE);
   }
 
-  function testItSetErrorForAutomaticEmailUnauthorizedSender() {
+  public function testItSetErrorForAutomaticEmailUnauthorizedSender() {
     $this->checkUnauthorizedInNewsletter(Newsletter::TYPE_AUTOMATIC, Newsletter::STATUS_ACTIVE);
   }
 
-  function testItResetErrorWhenAllSendersAreCorrect() {
+  public function testItResetErrorWhenAllSendersAreCorrect() {
     $newsletter = Newsletter::createOrUpdate([
       'subject' => 'Subject',
       'status' => Newsletter::STATUS_ACTIVE,
@@ -99,7 +99,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($error)->null();
   }
 
-  function testItResetsUnauthorizedErrorInMailerLog() {
+  public function testItResetsUnauthorizedErrorInMailerLog() {
     $log = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_AUTHORIZATION, 'message');
     MailerLog::updateMailerLog($log);
     $this->settings->set('installed_at', new Carbon());
@@ -111,7 +111,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($error)->null();
   }
 
-  function testItDoesNotResetOtherErrorInMailerLog() {
+  public function testItDoesNotResetOtherErrorInMailerLog() {
     $log = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_SEND, 'message');
     MailerLog::updateMailerLog($log);
     $this->settings->set('installed_at', new Carbon());
@@ -123,7 +123,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($error['operation'])->equals(MailerError::OPERATION_SEND);
   }
 
-  function testItDoesNotResetMailerLogItErrorPersists() {
+  public function testItDoesNotResetMailerLogItErrorPersists() {
     $log = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_AUTHORIZATION, 'message');
     MailerLog::updateMailerLog($log);
     $this->settings->set('installed_at', new Carbon());
@@ -175,7 +175,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     return new AuthorizedEmailsController($this->settings, $bridge_mock);
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
   }

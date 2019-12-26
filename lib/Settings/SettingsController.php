@@ -24,11 +24,11 @@ class SettingsController {
   /** @var SettingsRepository */
   private $settings_repository;
 
-  function __construct(SettingsRepository $settings_repository) {
+  public function __construct(SettingsRepository $settings_repository) {
     $this->settings_repository = $settings_repository;
   }
 
-  function get($key, $default = null) {
+  public function get($key, $default = null) {
     $this->ensureLoaded();
     $key_parts = explode('.', $key);
     $setting = $this->settings;
@@ -48,7 +48,7 @@ class SettingsController {
     return $setting;
   }
 
-  function getAllDefaults() {
+  public function getAllDefaults() {
     if ($this->defaults === null) {
       $this->defaults = [
         'mta_group' => self::DEFAULT_SENDING_METHOD_GROUP,
@@ -84,19 +84,19 @@ class SettingsController {
    * Fetches the value from DB and update in cache
    * This is required for sync settings between parallel processes e.g. cron
    */
-  function fetch($key, $default = null) {
+  public function fetch($key, $default = null) {
     $keys = explode('.', $key);
     $main_key = $keys[0];
     $this->settings[$main_key] = $this->fetchValue($main_key);
     return $this->get($key, $default);
   }
 
-  function getAll() {
+  public function getAll() {
     $this->ensureLoaded();
     return array_replace_recursive($this->getAllDefaults(), $this->settings);
   }
 
-  function set($key, $value) {
+  public function set($key, $value) {
     $this->ensureLoaded();
     $key_parts = explode('.', $key);
     $main_key = $key_parts[0];
@@ -112,7 +112,7 @@ class SettingsController {
     $this->settings_repository->createOrUpdateByName($main_key, $this->settings[$main_key]);
   }
 
-  function delete($key) {
+  public function delete($key) {
     $setting = $this->settings_repository->findOneByName($key);
     if ($setting) {
       $this->settings_repository->remove($setting);
@@ -150,13 +150,13 @@ class SettingsController {
     return $setting ? $setting->getValue() : null;
   }
 
-  function resetCache() {
+  public function resetCache() {
     $this->settings = [];
     $this->loaded = false;
   }
 
   /** @return SettingsController */
-  static function getInstance() {
+  public static function getInstance() {
     return ContainerWrapper::getInstance()->get(SettingsController::class);
   }
 }

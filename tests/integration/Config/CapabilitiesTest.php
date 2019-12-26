@@ -18,14 +18,14 @@ class CapabilitiesTest extends \MailPoetTest {
   /** @var Capabilities */
   private $caps;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $renderer = new Renderer();
     $this->caps = new Capabilities($renderer);
     $this->access_control = new AccessControl();
   }
 
-  function testItInitializes() {
+  public function testItInitializes() {
     $caps = Stub::makeEmptyExcept(
       $this->caps,
       'init',
@@ -35,7 +35,7 @@ class CapabilitiesTest extends \MailPoetTest {
     $caps->init();
   }
 
-  function testItSetsUpWPCapabilities() {
+  public function testItSetsUpWPCapabilities() {
     $permissions = $this->access_control->getDefaultPermissions();
     $this->caps->setupWPCapabilities();
     $checked = false;
@@ -48,7 +48,7 @@ class CapabilitiesTest extends \MailPoetTest {
     expect($checked)->true();
   }
 
-  function testItRemovesWPCapabilities() {
+  public function testItRemovesWPCapabilities() {
     $permissions = $this->access_control->getDefaultPermissions();
     $this->caps->removeWPCapabilities();
     $checked = false;
@@ -63,7 +63,7 @@ class CapabilitiesTest extends \MailPoetTest {
     $this->caps->setupWPCapabilities();
   }
 
-  function testItDoesNotSetupCapabilitiesForNonexistentRoles() {
+  public function testItDoesNotSetupCapabilitiesForNonexistentRoles() {
     $this->caps->removeWPCapabilities();
 
     $filter = function() {
@@ -90,7 +90,7 @@ class CapabilitiesTest extends \MailPoetTest {
     expect($editor_role->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
   }
 
-  function testItSetsUpMembersCapabilities() {
+  public function testItSetsUpMembersCapabilities() {
     $wp = Stub::make(new WPFunctions, [
       'addAction' => asCallable([WPHooksHelper::class, 'addAction']),
     ]);
@@ -107,7 +107,7 @@ class CapabilitiesTest extends \MailPoetTest {
     expect(is_callable(WPHooksHelper::getActionAdded($hook_name)[0]))->true();
   }
 
-  function testItRegistersMembersCapabilities() {
+  public function testItRegistersMembersCapabilities() {
     $permissions = $this->access_control->getPermissionLabels();
     $permission_count = count($permissions);
     if (function_exists('members_register_cap')) { // Members plugin active

@@ -47,7 +47,7 @@ class API {
     $this->welcome_scheduler = $welcome_scheduler;
   }
 
-  function getSubscriberFields() {
+  public function getSubscriberFields() {
     $data = [
       [
         'id' => 'email',
@@ -93,7 +93,7 @@ class API {
     return $data;
   }
 
-  function addSubscriberField(array $data = []) {
+  public function addSubscriberField(array $data = []) {
     try {
       $custom_field = CustomField::createOrUpdate($this->custom_fields_data_sanitizer->sanitize($data));
       $errors = $custom_field->getErrors();
@@ -110,11 +110,11 @@ class API {
     }
   }
 
-  function subscribeToList($subscriber_id, $list_id, $options = []) {
+  public function subscribeToList($subscriber_id, $list_id, $options = []) {
     return $this->subscribeToLists($subscriber_id, [$list_id], $options);
   }
 
-  function subscribeToLists($subscriber_id, array $list_ids, $options = []) {
+  public function subscribeToLists($subscriber_id, array $list_ids, $options = []) {
     $schedule_welcome_email = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
     $send_confirmation_email = (isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false) ? false : true;
     $skip_subscriber_notification = (isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true) ? true : false;
@@ -189,11 +189,11 @@ class API {
     return $subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
 
-  function unsubscribeFromList($subscriber_id, $list_id) {
+  public function unsubscribeFromList($subscriber_id, $list_id) {
     return $this->unsubscribeFromLists($subscriber_id, [$list_id]);
   }
 
-  function unsubscribeFromLists($subscriber_id, array $list_ids) {
+  public function unsubscribeFromLists($subscriber_id, array $list_ids) {
     if (empty($list_ids)) {
       throw new APIException(__('At least one segment ID is required.', 'mailpoet'), APIException::SEGMENT_REQUIRED);
     }
@@ -237,12 +237,12 @@ class API {
     return $subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
 
-  function getLists() {
+  public function getLists() {
     return Segment::where('type', Segment::TYPE_DEFAULT)
       ->findArray();
   }
 
-  function addSubscriber(array $subscriber, $list_ids = [], $options = []) {
+  public function addSubscriber(array $subscriber, $list_ids = [], $options = []) {
     $send_confirmation_email = (isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false) ? false : true;
     $schedule_welcome_email = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
     $skip_subscriber_notification = (isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true) ? true : false;
@@ -316,7 +316,7 @@ class API {
     return $new_subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
 
-  function addList(array $list) {
+  public function addList(array $list) {
     // throw exception when list name is missing
     if (empty($list['name'])) {
       throw new APIException(
@@ -356,7 +356,7 @@ class API {
     return $new_list->asArray();
   }
 
-  function getSubscriber($subscriber_email) {
+  public function getSubscriber($subscriber_email) {
     $subscriber = Subscriber::findOne($subscriber_email);
     // throw exception when subscriber does not exist
     if (!$subscriber) {

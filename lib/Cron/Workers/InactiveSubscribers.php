@@ -19,7 +19,7 @@ class InactiveSubscribers extends SimpleWorker {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(
+  public function __construct(
     InactiveSubscribersController $inactive_subscribers_controller,
     SettingsController $settings
   ) {
@@ -29,7 +29,7 @@ class InactiveSubscribers extends SimpleWorker {
   }
 
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     $tracking_enabled = (bool)$this->settings->get('tracking.enabled');
     if (!$tracking_enabled) {
       $this->schedule();

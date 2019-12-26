@@ -25,7 +25,7 @@ class Segments extends APIEndpoint {
   /** @var WooCommerce */
   private $woo_commerce_sync;
 
-  function __construct(
+  public function __construct(
     Listing\BulkActionController $bulk_action,
     Listing\Handler $listing_handler,
     WooCommerce $woo_commerce
@@ -35,7 +35,7 @@ class Segments extends APIEndpoint {
     $this->woo_commerce_sync = $woo_commerce;
   }
 
-  function get($data = []) {
+  public function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if ($segment instanceof Segment) {
@@ -47,7 +47,7 @@ class Segments extends APIEndpoint {
     }
   }
 
-  function listing($data = []) {
+  public function listing($data = []) {
     $listing_data = $this->listing_handler->get('\MailPoet\Models\Segment', $data);
 
     $data = [];
@@ -69,7 +69,7 @@ class Segments extends APIEndpoint {
     ]);
   }
 
-  function save($data = []) {
+  public function save($data = []) {
     $segment = Segment::createOrUpdate($data);
     $errors = $segment->getErrors();
 
@@ -84,7 +84,7 @@ class Segments extends APIEndpoint {
     }
   }
 
-  function restore($data = []) {
+  public function restore($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if ($segment instanceof Segment) {
@@ -102,7 +102,7 @@ class Segments extends APIEndpoint {
     }
   }
 
-  function trash($data = []) {
+  public function trash($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if ($segment instanceof Segment) {
@@ -120,7 +120,7 @@ class Segments extends APIEndpoint {
     }
   }
 
-  function delete($data = []) {
+  public function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if ($segment instanceof Segment) {
@@ -133,7 +133,7 @@ class Segments extends APIEndpoint {
     }
   }
 
-  function duplicate($data = []) {
+  public function duplicate($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
 
@@ -161,7 +161,7 @@ class Segments extends APIEndpoint {
     }
   }
 
-  function synchronize($data) {
+  public function synchronize($data) {
     try {
       if ($data['type'] === Segment::TYPE_WC_USERS) {
         $this->woo_commerce_sync->synchronizeCustomers();
@@ -177,7 +177,7 @@ class Segments extends APIEndpoint {
     return $this->successResponse(null);
   }
 
-  function bulkAction($data = []) {
+  public function bulkAction($data = []) {
     try {
       $meta = $this->bulk_action->apply('\MailPoet\Models\Segment', $data);
       return $this->successResponse(null, $meta);

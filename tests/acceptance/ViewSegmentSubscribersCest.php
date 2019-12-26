@@ -7,12 +7,12 @@ use MailPoet\Test\DataFactories\Settings;
 
 class ViewSegmentSubscribersCest {
 
-  function _before() {
+  public function _before() {
     (new Settings())->withWooCommerceListImportPageDisplayed(true);
     (new Settings())->withCookieRevenueTrackingDisabled();
   }
 
-  function viewUserRoleSegmentSubscribers(\AcceptanceTester $I) {
+  public function viewUserRoleSegmentSubscribers(\AcceptanceTester $I) {
     $I->wantTo('View WP user role segment subscribers');
 
     $wp_admin_email = 'test-admin@example.com';

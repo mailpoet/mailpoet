@@ -7,7 +7,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 
 class Newsletter {
-  static function process(
+  public static function process(
     $shortcode_details,
     $newsletter,
     $subscriber,

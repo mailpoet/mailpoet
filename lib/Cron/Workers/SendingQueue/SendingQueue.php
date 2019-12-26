@@ -47,7 +47,7 @@ class SendingQueue {
   /** @var CronHelper */
   private $cron_helper;
 
-  function __construct(
+  public function __construct(
     SendingErrorHandler $error_handler,
     StatsNotificationsScheduler $stats_notifications_scheduler,
     LoggerFactory $logger_factory,
@@ -68,7 +68,7 @@ class SendingQueue {
     $this->cron_helper = $cron_helper;
   }
 
-  function process($timer = false) {
+  public function process($timer = false) {
     $timer = $timer ?: microtime(true);
     $this->enforceSendingAndExecutionLimits($timer);
     foreach (self::getRunningQueues() as $queue) {
@@ -165,7 +165,7 @@ class SendingQueue {
     }
   }
 
-  function processQueue($queue, $newsletter, $subscribers, $timer) {
+  public function processQueue($queue, $newsletter, $subscribers, $timer) {
     // determine if processing is done in bulk or individually
     $processing_method = $this->mailer_task->getProcessingMethod();
     $prepared_newsletters = [];
@@ -227,7 +227,7 @@ class SendingQueue {
     return $queue;
   }
 
-  function sendNewsletter(
+  public function sendNewsletter(
     SendingTask $sending_task, $prepared_subscriber_id, $prepared_newsletter,
     $prepared_subscriber, $statistics, $timer, $extra_params = []
   ) {
@@ -247,7 +247,7 @@ class SendingQueue {
     );
   }
 
-  function sendNewsletters(
+  public function sendNewsletters(
     SendingTask $sending_task, $prepared_subscribers_ids, $prepared_newsletters,
     $prepared_subscribers, $statistics, $timer, $extra_params = []
   ) {
@@ -301,14 +301,14 @@ class SendingQueue {
     return $sending_task;
   }
 
-  function enforceSendingAndExecutionLimits($timer) {
+  public function enforceSendingAndExecutionLimits($timer) {
     // abort if execution limit is reached
     $this->cron_helper->enforceExecutionLimit($timer);
     // abort if sending limit has been reached
     MailerLog::enforceExecutionRequirements();
   }
 
-  static function getRunningQueues() {
+  public static function getRunningQueues() {
     return SendingTask::getRunningQueues(self::TASK_BATCH_SIZE);
   }
 }

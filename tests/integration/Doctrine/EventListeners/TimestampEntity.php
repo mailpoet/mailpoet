@@ -29,17 +29,17 @@ class TimestampEntity {
   private $name;
 
   /** @return int|null */
-  function getId() {
+  public function getId() {
     return $this->id;
   }
 
   /** @return string */
-  function getName() {
+  public function getName() {
     return $this->name;
   }
 
   /** @param string $name */
-  function setName($name) {
+  public function setName($name) {
     $this->name = $name;
   }
 }

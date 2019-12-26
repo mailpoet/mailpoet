@@ -8,7 +8,7 @@ use MailPoet\Models\SubscriberSegment;
 
 class SubscriberSegmentTest extends \MailPoetTest {
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->subscriber = Subscriber::createOrUpdate([
       'email' => 'john.doe@mailpoet.com',
@@ -23,7 +23,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     $this->wc_segment = Segment::getWooCommerceSegment();
   }
 
-  function testItCanSubscribeToSegments() {
+  public function testItCanSubscribeToSegments() {
     $result = SubscriberSegment::subscribeToSegments($this->subscriber, [
         $this->segment_1->id,
         $this->segment_2->id,
@@ -34,7 +34,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscribed_segments)->count(2);
   }
 
-  function testItCanResetSubscriptions() {
+  public function testItCanResetSubscriptions() {
     // subscribe to the first segment
     $result = SubscriberSegment::subscribeToSegments($this->subscriber, [
         $this->segment_1->id,
@@ -55,7 +55,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscribed_segments[0]['name'])->equals($this->segment_2->name);
   }
 
-  function testItCanUnsubscribeFromSegments() {
+  public function testItCanUnsubscribeFromSegments() {
     SubscriberSegment::createOrUpdate([
       'subscriber_id' => $this->subscriber->id,
       'segment_id' => $this->segment_1->id,
@@ -80,7 +80,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscribed_segments[0]['name'])->equals($this->segment_2->name);
   }
 
-  function testItDoesNotUnsubscribeFromWPSegment() {
+  public function testItDoesNotUnsubscribeFromWPSegment() {
     $subscriber = $this->subscriber;
     $segment_1 = $this->segment_1;
     $segment_1->type = Segment::TYPE_WP_USERS;
@@ -131,7 +131,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscriber->subscriptions[2]['segment_id'])->equals($segment_3->id);
   }
 
-  function testItCanUnsubscribeFromAllSegments() {
+  public function testItCanUnsubscribeFromAllSegments() {
     SubscriberSegment::createOrUpdate([
       'subscriber_id' => $this->subscriber->id,
       'segment_id' => $this->segment_1->id,
@@ -159,7 +159,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscriptions_count)->equals(2);
   }
 
-  function testItCanResubscribeToAllSegments() {
+  public function testItCanResubscribeToAllSegments() {
     $result = SubscriberSegment::subscribeToSegments($this->subscriber, [
         $this->segment_1->id,
         $this->segment_2->id,
@@ -181,7 +181,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscribed_segments)->count(2);
   }
 
-  function testItCanDeleteSubscriptions() {
+  public function testItCanDeleteSubscriptions() {
     SubscriberSegment::createOrUpdate([
       'subscriber_id' => $this->subscriber->id,
       'segment_id' => $this->segment_1->id,
@@ -205,7 +205,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscriptions_count)->equals(0);
   }
 
-  function testItCanDeleteManySubscriptions() {
+  public function testItCanDeleteManySubscriptions() {
     // subscribe first subscriber to segments
     SubscriberSegment::subscribeToSegments($this->subscriber, [
       $this->segment_1->id, $this->segment_2->id,
@@ -232,7 +232,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect(SubscriberSegment::count())->equals(0);
   }
 
-  function testItCanCreateOrUpdate() {
+  public function testItCanCreateOrUpdate() {
     // create relationship between subscriber and a segment
     $result = SubscriberSegment::createOrUpdate([
       'subscriber_id' => $this->subscriber->id,
@@ -268,7 +268,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscriptions_count)->equals(1);
   }
 
-  function testItCanFilterBySubscribedStatus() {
+  public function testItCanFilterBySubscribedStatus() {
     SubscriberSegment::createOrUpdate([
       'subscriber_id' => $this->subscriber->id,
       'segment_id' => $this->segment_1->id,
@@ -287,7 +287,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscriptions_count)->equals(1);
   }
 
-  function testItCannotUnsubscribeFromWPAndWooCommerceSegments() {
+  public function testItCannotUnsubscribeFromWPAndWooCommerceSegments() {
     // subscribe to a segment, the WP segment, the WooCommerce segment
     $result = SubscriberSegment::subscribeToSegments($this->subscriber, [
         $this->segment_1->id,
@@ -306,7 +306,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscribed_segments[0]['name'])->equals($this->wp_segment->name);
   }
 
-  function testItCannotDeleteSubscriptionToWPAndWooCommerceSegments() {
+  public function testItCannotDeleteSubscriptionToWPAndWooCommerceSegments() {
     // subscribe to a segment, the WP segment, the WooCommerce segment
     $result = SubscriberSegment::subscribeToSegments($this->subscriber, [
         $this->segment_1->id,
@@ -326,7 +326,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscribed_segments[1]['name'])->equals($this->wc_segment->name);
   }
 
-  function _after() {
+  public function _after() {
     Segment::deleteMany();
     Subscriber::deleteMany();
     SubscriberSegment::deleteMany();

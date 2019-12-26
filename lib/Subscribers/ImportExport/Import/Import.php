@@ -53,7 +53,7 @@ class Import {
     ];
   }
 
-  function validateImportData($data) {
+  public function validateImportData($data) {
     $required_data_fields = [
       'subscribers',
       'columns',
@@ -70,7 +70,7 @@ class Import {
     }
   }
 
-  function process() {
+  public function process() {
     // validate data based on field validation rules
     $subscribers_data = $this->validateSubscribersData($this->subscribers_data);
     if (!$subscribers_data) {
@@ -136,7 +136,7 @@ class Import {
     ];
   }
 
-  function validateSubscribersData($subscribers_data) {
+  public function validateSubscribersData($subscribers_data) {
     $invalid_records = [];
     $validator = new ModelValidator();
     foreach ($subscribers_data as $column => &$data) {
@@ -182,7 +182,7 @@ class Import {
     return $subscribers_data;
   }
 
-  function transformSubscribersData($subscribers, $columns) {
+  public function transformSubscribersData($subscribers, $columns) {
     $transformed_subscribers = [];
     foreach ($columns as $column => $data) {
       $transformed_subscribers[$column] = array_column($subscribers, $data['index']);
@@ -190,7 +190,7 @@ class Import {
     return $transformed_subscribers;
   }
 
-  function splitSubscribersData($subscribers_data) {
+  public function splitSubscribersData($subscribers_data) {
     // $subscribers_data is an two-dimensional associative array
     // of all subscribers being imported: [field => [value1, value2], field => [value1, value2], ...]
     $temp_existing_subscribers = [];
@@ -238,7 +238,7 @@ class Import {
     ];
   }
 
-  function deleteExistingTrashedSubscribers($subscribers_data) {
+  public function deleteExistingTrashedSubscribers($subscribers_data) {
     $existing_trashed_records = array_filter(
       array_map(function($subscriber_emails) {
         return Subscriber::selectMany(['id'])
@@ -257,7 +257,7 @@ class Import {
     }
   }
 
-  function addMissingRequiredFields($subscribers) {
+  public function addMissingRequiredFields($subscribers) {
     $subscribers_count = count($subscribers['data'][key($subscribers['data'])]);
     foreach (array_keys($this->required_subscribers_fields) as $required_field) {
       if (in_array($required_field, $subscribers['fields'])) continue;
@@ -308,7 +308,7 @@ class Import {
     return $subscribers_data;
   }
 
-  function getSubscribersFields($subscribers_fields) {
+  public function getSubscribersFields($subscribers_fields) {
     return array_values(
       array_filter(
         array_map(function($field) {
@@ -318,7 +318,7 @@ class Import {
     );
   }
 
-  function getCustomSubscribersFields($subscribers_fields) {
+  public function getCustomSubscribersFields($subscribers_fields) {
     return array_values(
       array_filter(
         array_map(function($field) {
@@ -328,7 +328,7 @@ class Import {
     );
   }
 
-  function createOrUpdateSubscribers(
+  public function createOrUpdateSubscribers(
     $action,
     $subscribers_data,
     $subscribers_custom_fields = false
@@ -378,7 +378,7 @@ class Import {
     return $created_or_updated_subscribers;
   }
 
-  function createOrUpdateCustomFields(
+  public function createOrUpdateCustomFields(
     $action,
     $created_or_updated_subscribers,
     $subscribers_data,
@@ -418,11 +418,11 @@ class Import {
     }
   }
 
-  function synchronizeWPUsers($wp_users) {
+  public function synchronizeWPUsers($wp_users) {
     return array_walk($wp_users, '\MailPoet\Segments\WP::synchronizeUser');
   }
 
-  function addSubscribersToSegments($subscribers_ids, $segments_ids) {
+  public function addSubscribersToSegments($subscribers_ids, $segments_ids) {
     foreach (array_chunk($subscribers_ids, self::DB_QUERY_CHUNK_SIZE) as $subscriber_ids_chunk) {
       SubscriberSegment::subscribeManyToSegments(
         $subscriber_ids_chunk, $segments_ids

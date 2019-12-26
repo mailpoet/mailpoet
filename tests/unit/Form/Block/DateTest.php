@@ -5,7 +5,7 @@ namespace MailPoet\Test\Form\Block;
 use MailPoet\Form\Block\Date;
 
 class DateTest extends \MailPoetUnitTest {
-  function testItCanConvertDateMonthYearFormatToDatetime() {
+  public function testItCanConvertDateMonthYearFormatToDatetime() {
     $date = [
       'MM/DD/YYYY' => '05/10/2016',
       'DD/MM/YYYY' => '10/05/2016',
@@ -18,7 +18,7 @@ class DateTest extends \MailPoetUnitTest {
     }
   }
 
-  function testItCanConvertMonthYearFormatToDatetime() {
+  public function testItCanConvertMonthYearFormatToDatetime() {
     $date = [
       'MM/YYYY' => '05/2016',
       'YYYY/MM' => '2016/05',
@@ -29,23 +29,23 @@ class DateTest extends \MailPoetUnitTest {
     }
   }
 
-  function testItCanConvertMonthToDatetime() {
+  public function testItCanConvertMonthToDatetime() {
     $current_year = date('Y');
     expect(Date::convertDateToDatetime('05', 'MM'))
       ->equals(sprintf('%s-05-01 00:00:00', $current_year));
   }
 
-  function testItCanConvertYearToDatetime() {
+  public function testItCanConvertYearToDatetime() {
     expect(Date::convertDateToDatetime('2016', 'YYYY'))
       ->equals('2016-01-01 00:00:00');
   }
 
-  function testItCanConvertDatetimeToDatetime() {
+  public function testItCanConvertDatetimeToDatetime() {
     expect(Date::convertDateToDatetime('2016-05-10 00:00:00', 'datetime'))
       ->equals('2016-05-10 00:00:00');
   }
 
-  function testItCanClearDate() {
+  public function testItCanClearDate() {
     expect(Date::convertDateToDatetime('0/10/5', 'YYYY/MM/DD'))
       ->equals(date('Y') . '-10-05 00:00:00');
     expect(Date::convertDateToDatetime('0/0/5', 'YYYY/MM/DD'))

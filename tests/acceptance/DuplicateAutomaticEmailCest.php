@@ -5,7 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class DuplicateAutomaticEmailCest {
-  function duplicateAutomaticEmail(\AcceptanceTester $I) {
+  public function duplicateAutomaticEmail(\AcceptanceTester $I) {
     $I->wantTo('Duplicate an automatic email');
     $I->activateWooCommerce();
     $email_subject = 'Duplicate Automatic Email Test';

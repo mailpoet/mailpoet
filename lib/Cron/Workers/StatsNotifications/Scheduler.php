@@ -31,7 +31,7 @@ class Scheduler {
   /** @var StatsNotificationsRepository */
   private $repository;
 
-  function __construct(
+  public function __construct(
     SettingsController $settings,
     EntityManager $entity_manager,
     StatsNotificationsRepository $repository
@@ -41,7 +41,7 @@ class Scheduler {
     $this->repository = $repository;
   }
 
-  function schedule(NewsletterEntity $newsletter) {
+  public function schedule(NewsletterEntity $newsletter) {
     if (!$this->shouldSchedule($newsletter)) {
       return false;
     }

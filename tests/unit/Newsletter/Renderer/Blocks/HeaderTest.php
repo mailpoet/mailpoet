@@ -24,7 +24,7 @@ class HeaderTest extends \MailPoetUnitTest {
     ],
   ];
 
-  function testItRendersCorrectly() {
+  public function testItRendersCorrectly() {
     $output = Header::render($this->block);
     $expected_result = '
       <tr>
@@ -35,7 +35,7 @@ class HeaderTest extends \MailPoetUnitTest {
     expect($output)->equals($expected_result);
   }
 
-  function testItRendersBackgroundColorCorrectly() {
+  public function testItRendersBackgroundColorCorrectly() {
     $this->block['styles']['block']['backgroundColor'] = '#f0f0f0';
     $output = Header::render($this->block);
     $expected_result = '
@@ -47,7 +47,7 @@ class HeaderTest extends \MailPoetUnitTest {
     expect($output)->equals($expected_result);
   }
 
-  function testItPrefersInlinedCssForLinks() {
+  public function testItPrefersInlinedCssForLinks() {
     $this->block['text'] = '<p>Header text. <a href="http://example.com" style="color:#aaaaaa;">link</a></p>';
     $output = Footer::render($this->block);
     expect($output)->contains('<a href="http://example.com" style="color:#aaaaaa;text-decoration:underline">link</a>');

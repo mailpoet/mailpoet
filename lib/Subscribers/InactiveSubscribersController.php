@@ -19,7 +19,7 @@ class InactiveSubscribersController {
   /** @var SettingsRepository */
   private $settings_repository;
 
-  function __construct(SettingsRepository $settings_repository) {
+  public function __construct(SettingsRepository $settings_repository) {
     $this->settings_repository = $settings_repository;
   }
 
@@ -28,7 +28,7 @@ class InactiveSubscribersController {
    * @param int $batch_size
    * @return int|boolean
    */
-  function markInactiveSubscribers($days_to_inactive, $batch_size, $start_id = null) {
+  public function markInactiveSubscribers($days_to_inactive, $batch_size, $start_id = null) {
     $threshold_date = $this->getThresholdDate($days_to_inactive);
     return $this->deactivateSubscribers($threshold_date, $batch_size, $start_id);
   }
@@ -38,7 +38,7 @@ class InactiveSubscribersController {
    * @param int $batch_size
    * @return int
    */
-  function markActiveSubscribers($days_to_inactive, $batch_size) {
+  public function markActiveSubscribers($days_to_inactive, $batch_size) {
     $threshold_date = $this->getThresholdDate($days_to_inactive);
     return $this->activateSubscribers($threshold_date, $batch_size);
   }
@@ -46,7 +46,7 @@ class InactiveSubscribersController {
   /**
    * @return void
    */
-  function reactivateInactiveSubscribers() {
+  public function reactivateInactiveSubscribers() {
     $reactivate_all_inactive_query = sprintf(
       "UPDATE %s SET status = '%s' WHERE status = '%s';",
       Subscriber::$_table, Subscriber::STATUS_SUBSCRIBED, Subscriber::STATUS_INACTIVE

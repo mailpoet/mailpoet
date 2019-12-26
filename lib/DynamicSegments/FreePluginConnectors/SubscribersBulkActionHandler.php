@@ -16,7 +16,7 @@ class SubscribersBulkActionHandler {
    * @return array
    * @throws \Exception
    */
-  function apply(array $segment, array $data) {
+  public function apply(array $segment, array $data) {
     if ($segment['type'] === DynamicSegment::TYPE_DYNAMIC) {
       $bulkAction = new BulkActionController(new BulkActionFactory(), new Handler());
       return $bulkAction->apply('\MailPoet\Models\SubscribersInDynamicSegment', $data);

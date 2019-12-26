@@ -8,7 +8,7 @@ use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WidgetTest extends \MailPoetTest {
-  function testItAllowsModifyingRenderedFormWidgetViaHook() {
+  public function testItAllowsModifyingRenderedFormWidgetViaHook() {
     $form = Form::createOrUpdate(
       [
         'name' => 'Test Form',

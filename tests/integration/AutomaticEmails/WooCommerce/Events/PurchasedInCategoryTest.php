@@ -26,7 +26,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
   /** @var PurchasedInCategory */
   private $event;
 
-  function _before() {
+  public function _before() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
@@ -40,13 +40,13 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $this->event = new PurchasedInCategory($this->woocommerce_helper);
   }
 
-  function testItGetsEventDetails() {
+  public function testItGetsEventDetails() {
     $result = $this->event->getEventDetails();
     expect($result)->notEmpty();
     expect($result['slug'])->equals(PurchasedInCategory::SLUG);
   }
 
-  function testItDoesNotScheduleEmailWhenOrderDetailsAreNotAvailable() {
+  public function testItDoesNotScheduleEmailWhenOrderDetailsAreNotAvailable() {
     $this->woocommerce_helper
       ->expects($this->once())
       ->method('wcGetOrder')
@@ -54,7 +54,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $this->event->scheduleEmail(1);
   }
 
-  function testItDoesNotScheduleEmailWhenNoSubscriber() {
+  public function testItDoesNotScheduleEmailWhenNoSubscriber() {
     $order = $this->getOrderMock();
     $this->woocommerce_helper
       ->expects($this->once())
@@ -67,7 +67,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $this->event->scheduleEmail(2);
   }
 
-  function testItSchedules() {
+  public function testItSchedules() {
     $newsletter = Newsletter::createOrUpdate(
       [
         'subject' => 'WooCommerce',
@@ -153,7 +153,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     return $order_mock;
   }
 
-  function _createNewsletterOption(array $options, $newsletter_id) {
+  public function _createNewsletterOption(array $options, $newsletter_id) {
     foreach ($options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::where('name', $option)
         ->where('newsletter_type', Newsletter::TYPE_AUTOMATIC)

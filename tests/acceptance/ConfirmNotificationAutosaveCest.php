@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class ConfirmNotificationAutosaveCest {
 
-  function confirmNotificationAutosave(\AcceptanceTester $I) {
+  public function confirmNotificationAutosave(\AcceptanceTester $I) {
     $I->wantTo('Confirm Post Notification Autosave');
     $newsletter_title = 'Notification Autosave Test';
     // step 1 - Prepare post notification data

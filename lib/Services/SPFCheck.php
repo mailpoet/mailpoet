@@ -3,7 +3,7 @@
 namespace MailPoet\Services;
 
 class SPFCheck {
-  function checkSPFRecord($domain) {
+  public function checkSPFRecord($domain) {
     $record = $this->getSPFRecord($domain);
     if (empty($record)) {
       return true;

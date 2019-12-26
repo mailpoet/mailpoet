@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Config;
 
 class InitializerTest extends \MailPoetTest {
-  function testItConfiguresHooks() {
+  public function testItConfiguresHooks() {
     global $wp_filter;
     $is_hooked = false;
     // mailpoet should hook to 'wp_loaded' with priority of 10

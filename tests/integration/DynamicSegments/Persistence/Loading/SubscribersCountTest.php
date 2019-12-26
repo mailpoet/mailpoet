@@ -13,7 +13,7 @@ class SubscribersCountTest extends \MailPoetTest {
   /** @var RequirementsChecker|\PHPUnit_Framework_MockObject_MockObject */
   private $requirement_checker;
 
-  function _before() {
+  public function _before() {
     $this->cleanData();
     wp_insert_user([
       'user_login' => 'user-role-test1',
@@ -39,7 +39,7 @@ class SubscribersCountTest extends \MailPoetTest {
       ->getMock();
   }
 
-  function testItConstructsQuery() {
+  public function testItConstructsQuery() {
     $this->requirement_checker->method('shouldSkipSegment')->willReturn(false);
     $userRole = DynamicSegment::create();
     $userRole->hydrate([
@@ -53,7 +53,7 @@ class SubscribersCountTest extends \MailPoetTest {
     expect($count)->equals(2);
   }
 
-  function testItSkipsIfRequirementNotMet() {
+  public function testItSkipsIfRequirementNotMet() {
     $this->requirement_checker->method('shouldSkipSegment')->willReturn(true);
     $userRole = DynamicSegment::create();
     $userRole->hydrate([
@@ -67,7 +67,7 @@ class SubscribersCountTest extends \MailPoetTest {
     expect($count)->equals(0);
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanData();
   }
 

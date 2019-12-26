@@ -18,17 +18,17 @@ class Beamer extends SimpleWorker {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(SettingsController $settings, WPFunctions $wp) {
+  public function __construct(SettingsController $settings, WPFunctions $wp) {
     parent::__construct();
     $this->settings = $settings;
     $this->wp = $wp;
   }
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     return $this->setLastAnnouncementDate();
   }
 
-  function setLastAnnouncementDate() {
+  public function setLastAnnouncementDate() {
     $response = $this->wp->wpRemoteGet(self::API_URL . '/posts?published=true&maxResults=1', [
       'headers' => [
         'Beamer-Api-Key' => self::API_KEY,
@@ -42,7 +42,7 @@ class Beamer extends SimpleWorker {
     return true;
   }
 
-  function getNextRunDate() {
+  public function getNextRunDate() {
     $wp = new WPFunctions;
     $date = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     return $date->hour(11)->minute(00)->second(00)->addDay();

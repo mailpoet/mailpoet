@@ -21,7 +21,7 @@ class ValidationTest extends \MailPoetTest {
   /** @var string */
   private $table_name;
 
-  function _before() {
+  public function _before() {
     $this->wp = new WPFunctions();
     $this->entity_manager = $this->createEntityManager();
     $this->table_name = $this->entity_manager->getClassMetadata(ValidatedEntity::class)->getTableName();
@@ -34,7 +34,7 @@ class ValidationTest extends \MailPoetTest {
     ");
   }
 
-  function testItValidatesNewEntity() {
+  public function testItValidatesNewEntity() {
     $entity = new ValidatedEntity();
     $this->entity_manager->persist($entity);
     try {
@@ -46,7 +46,7 @@ class ValidationTest extends \MailPoetTest {
     }
   }
 
-  function testItValidatesUpdatedEntity() {
+  public function testItValidatesUpdatedEntity() {
     $id = 1;
     $name = 'Test name';
     $this->connection->executeUpdate("INSERT INTO $this->table_name (id, name) VALUES (?, ?)", [$id, $name]);

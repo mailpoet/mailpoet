@@ -5,7 +5,7 @@ namespace MailPoet\Test\Twig;
 use MailPoet\Twig\Assets;
 
 class AssetsTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->assets_url = 'https://www.testing.com/wp-content/plugins/mailpoet/assets';
     $this->version = '1.2.3';
@@ -19,7 +19,7 @@ class AssetsTest extends \MailPoetTest {
     );
   }
 
-  function testItGeneratesJavascriptTagsForAssetsUsinManifestFile() {
+  public function testItGeneratesJavascriptTagsForAssetsUsinManifestFile() {
     $manifest = [
       'script1.js' => 'script1.hash.js',
       'script2.js' => 'script2.hash.js',
@@ -40,7 +40,7 @@ class AssetsTest extends \MailPoetTest {
     );
   }
 
-  function testItGeneratesJavascriptTagsForAssetsWhenManifestFileDoesNotExist() {
+  public function testItGeneratesJavascriptTagsForAssetsWhenManifestFileDoesNotExist() {
     expect($this->assets_extension->generateJavascript('lib/script1.js', 'script2.js'))->equals(
       '<script type="text/javascript" src="' . $this->assets_url . '/js/lib/script1.js"></script>'
       . "\n"
@@ -48,7 +48,7 @@ class AssetsTest extends \MailPoetTest {
     );
   }
 
-  function testItGeneratesStylesheetTagsForAssetsUsingManifestFile() {
+  public function testItGeneratesStylesheetTagsForAssetsUsingManifestFile() {
     $manifest = [
       'style1.css' => 'style1.hash.css',
       'style2.css' => 'style2.hash.css',
@@ -69,7 +69,7 @@ class AssetsTest extends \MailPoetTest {
     );
   }
 
-  function testItGeneratesStylesheetTagsWhenManifestFileDoesNotExist() {
+  public function testItGeneratesStylesheetTagsWhenManifestFileDoesNotExist() {
     expect($this->assets_extension->generateStylesheet('style1.css', 'style2.css'))->equals(
       '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/dist/css/style1.css" />'
       . "\n"
@@ -77,13 +77,13 @@ class AssetsTest extends \MailPoetTest {
     );
   }
 
-  function testItGeneratesImageUrls() {
+  public function testItGeneratesImageUrls() {
     expect($this->assets_extension->generateImageUrl('image1.png'))->equals(
       $this->assets_url . '/img/image1.png?mailpoet_version=' . $this->version
     );
   }
 
-  function testItAppendsVersionToUrl() {
+  public function testItAppendsVersionToUrl() {
     $without_file = 'http://url.com/';
     expect($this->assets_extension->appendVersionToUrl($without_file))->equals(
       $without_file . '?mailpoet_version=' . $this->version

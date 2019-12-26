@@ -8,7 +8,7 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterOptionFieldTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->data = [
       'name' => 'event',
@@ -36,21 +36,21 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
     ];
   }
 
-  function testItCanBeCreated() {
+  public function testItCanBeCreated() {
     expect($this->option_field->id() > 0)->equals(true);
     expect($this->option_field->getErrors())->false();
   }
 
-  function testItHasName() {
+  public function testItHasName() {
     expect($this->option_field->name)->equals($this->data['name']);
   }
 
-  function testItHasNewsletterType() {
+  public function testItHasNewsletterType() {
     expect($this->option_field->newsletter_type)
       ->equals($this->data['newsletter_type']);
   }
 
-  function testItHasToBeValid() {
+  public function testItHasToBeValid() {
     $invalid_newsletter_option = NewsletterOptionField::create();
     $result = $invalid_newsletter_option->save();
     $errors = $result->getErrors();
@@ -60,17 +60,17 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
     expect($errors[1])->equals('Please specify a newsletter type.');
   }
 
-  function testItHasACreatedAtOnCreation() {
+  public function testItHasACreatedAtOnCreation() {
     expect($this->option_field->created_at)->notNull();
   }
 
-  function testItHasAnUpdatedAtOnCreation() {
+  public function testItHasAnUpdatedAtOnCreation() {
     $option_field = NewsletterOptionField::findOne($this->option_field->id);
     expect($option_field->updated_at)
       ->equals($option_field->created_at);
   }
 
-  function testItUpdatesTheUpdatedAtOnUpdate() {
+  public function testItUpdatesTheUpdatedAtOnUpdate() {
     $option_field = NewsletterOptionField::findOne($this->option_field->id);
     $created_at = $option_field->created_at;
 
@@ -86,7 +86,7 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
     expect($is_time_updated)->true();
   }
 
-  function testItCanHaveManyNewsletters() {
+  public function testItCanHaveManyNewsletters() {
     foreach ($this->newsletter_data as $data) {
       $newsletter = Newsletter::create();
       $newsletter->hydrate($data);
@@ -102,7 +102,7 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
     expect(count($newsletters))->equals(2);
   }
 
-  function testItCanStoreOptionValue() {
+  public function testItCanStoreOptionValue() {
     $newsletter = Newsletter::create();
     $newsletter->hydrate($this->newsletter_data[0]);
     $newsletter->save();
@@ -117,7 +117,7 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
     expect($newsletter->value)->equals($association->value);
   }
 
-  function _after() {
+  public function _after() {
     ORM::forTable(NewsletterOption::$_table)
       ->deleteMany();
     ORM::forTable(NewsletterOptionField::$_table)

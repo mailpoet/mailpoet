@@ -14,11 +14,11 @@ class WoocommerceSettingsTest extends \MailPoetTest {
   /** @var WPFunctions */
   private $wp;
 
-  function _before() {
+  public function _before() {
     $this->wp = new WPFunctions();
     $this->endpoint = new WoocommerceSettings($this->wp);
   }
-  function testItCanSetSettings() {
+  public function testItCanSetSettings() {
     $this->wp->updateOption('woocommerce_email_base_color', '#ffffff');
     $response = $this->endpoint->set([
       'woocommerce_email_base_color' => '#aaaaaa',
@@ -27,7 +27,7 @@ class WoocommerceSettingsTest extends \MailPoetTest {
     expect($this->wp->getOption('woocommerce_email_base_color'))->equals('#aaaaaa');
   }
 
-  function testItDoesNotSetUnallowedSettings() {
+  public function testItDoesNotSetUnallowedSettings() {
     $response = $this->endpoint->set([
       'mailpoet_some_none_exting_option' => 'some value',
     ]);

@@ -9,7 +9,7 @@ class CheckSkippedTestsExtension extends Extension { // phpcs:ignore PSR1.Classe
     Events::SUITE_AFTER => 'checkErrorsAfterTests',
   ];
 
-  function checkErrorsAfterTests(SuiteEvent $e) {
+  public function checkErrorsAfterTests(SuiteEvent $e) {
     $branch = getenv('CIRCLE_BRANCH');
     $skipped = $e->getResult()->skipped();
     if (in_array($branch, ['master', 'release']) && (count($skipped) !== 0)) {

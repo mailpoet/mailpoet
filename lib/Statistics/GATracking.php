@@ -13,11 +13,11 @@ class GATracking {
   /** @var SecondLevelDomainNames */
   private $secondLevelDomainNames;
 
-  function __construct() {
+  public function __construct() {
     $this->secondLevelDomainNames = new SecondLevelDomainNames();
   }
 
-  function applyGATracking($rendered_newsletter, $newsletter, $internal_host = null) {
+  public function applyGATracking($rendered_newsletter, $newsletter, $internal_host = null) {
     if ($newsletter instanceof Newsletter && $newsletter->type == Newsletter::TYPE_NOTIFICATION_HISTORY) {
       $parent_newsletter = $newsletter->parent()->findOne();
       $field = $parent_newsletter->ga_campaign;

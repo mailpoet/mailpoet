@@ -6,7 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Posts {
 
-  static function getTerms($args) {
+  public static function getTerms($args) {
     // Since WordPress 4.5.0 signature of get_terms changed to require
     // one argument array, where taxonomy is key of that array
     if (version_compare(WPFunctions::get()->getBloginfo('version'), '4.5.0', '>=')) {
@@ -18,7 +18,7 @@ class Posts {
     }
   }
 
-  static function getTypes($args = [], $output = 'names', $operator = 'and') {
+  public static function getTypes($args = [], $output = 'names', $operator = 'and') {
     $defaults = [
       'exclude_from_search' => false,
     ];

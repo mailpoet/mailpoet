@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class MailpoetMenuCest {
-  function sendEmail(\AcceptanceTester $I) {
+  public function sendEmail(\AcceptanceTester $I) {
     $I->wantTo('Use MailPoet menu in WordPress admin');
 
     $I->login();

@@ -9,7 +9,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\PHPMail;
 
 class PHPMailTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->sender = [
       'from_name' => 'Sender',
@@ -41,13 +41,13 @@ class PHPMailTest extends \MailPoetTest {
     ];
   }
 
-  function testItCanBuildMailer() {
+  public function testItCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
     expect($mailer)->isInstanceOf('PHPMailer');
     expect($mailer->Mailer)->equals('mail'); // uses PHP's mail() function
   }
 
-  function testWhenReturnPathIsNullItIsSetToSenderEmail() {
+  public function testWhenReturnPathIsNullItIsSetToSenderEmail() {
     $mailer = new PHPMail(
       $this->sender,
       $this->reply_to,
@@ -57,7 +57,7 @@ class PHPMailTest extends \MailPoetTest {
     expect($mailer->return_path)->equals($this->sender['from_email']);
   }
 
-  function testItCanConfigureMailerWithMessage() {
+  public function testItCanConfigureMailerWithMessage() {
     $mailer = $this->mailer
       ->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extra_params);
     expect($mailer->CharSet)->equals('UTF-8');
@@ -98,7 +98,7 @@ class PHPMailTest extends \MailPoetTest {
     );
   }
 
-  function testItCanConfigureMailerWithTextEmail() {
+  public function testItCanConfigureMailerWithTextEmail() {
     $mailer = $this->mailer
       ->configureMailerWithMessage([
         'subject' => 'testing local method (PHP mail)',
@@ -110,7 +110,7 @@ class PHPMailTest extends \MailPoetTest {
     expect($mailer->Body)->equals('TEXT body');
   }
 
-  function testItCanProcessSubscriber() {
+  public function testItCanProcessSubscriber() {
     expect($this->mailer->processSubscriber('test@test.com'))->equals(
       [
         'email' => 'test@test.com',
@@ -128,7 +128,7 @@ class PHPMailTest extends \MailPoetTest {
       ]);
   }
 
-  function testItChecksBlacklistBeforeSending() {
+  public function testItChecksBlacklistBeforeSending() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
@@ -145,7 +145,7 @@ class PHPMailTest extends \MailPoetTest {
     expect($result['error']->getMessage())->contains('PHPMail has returned an unknown error.');
   }
 
-  function testItCanSend() {
+  public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $result = $this->mailer->send(
       $this->newsletter,

@@ -13,42 +13,42 @@ class DateTime {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp = null) {
+  public function __construct(WPFunctions $wp = null) {
     if ($wp === null) {
       $wp = new WPFunctions();
     }
     $this->wp = $wp;
   }
 
-  function getTimeFormat() {
+  public function getTimeFormat() {
     $time_format = $this->wp->getOption('time_format');
     if (empty($time_format)) $time_format = self::DEFAULT_TIME_FORMAT;
     return $time_format;
   }
 
-  function getDateFormat() {
+  public function getDateFormat() {
     $date_format = $this->wp->getOption('date_format');
     if (empty($date_format)) $date_format = self::DEFAULT_DATE_FORMAT;
     return $date_format;
   }
 
-  function getCurrentTime($format=false) {
+  public function getCurrentTime($format=false) {
     if (empty($format)) $format = $this->getTimeFormat();
     return $this->wp->currentTime($format);
   }
 
-  function getCurrentDate($format=false) {
+  public function getCurrentDate($format=false) {
     if (empty($format)) $format = $this->getDateFormat();
     return $this->getCurrentTime($format);
   }
 
-  function formatTime($timestamp, $format=false) {
+  public function formatTime($timestamp, $format=false) {
     if (empty($format)) $format = $this->getTimeFormat();
 
     return date($format, $timestamp);
   }
 
-  function formatDate($timestamp, $format=false) {
+  public function formatDate($timestamp, $format=false) {
     if (empty($format)) $format = $this->getDateFormat();
 
     return date($format, $timestamp);
@@ -58,7 +58,7 @@ class DateTime {
    * Generates a list of time strings within an interval,
    * formatted and mapped from DEFAULT_TIME_FORMAT to WordPress time strings.
    */
-  function getTimeInterval(
+  public function getTimeInterval(
     $start_time='00:00:00',
     $time_step='+1 hour',
     $total_steps=24

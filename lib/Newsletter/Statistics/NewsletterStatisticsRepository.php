@@ -19,7 +19,7 @@ class NewsletterStatisticsRepository extends Repository {
    * @param NewsletterEntity $newsletter
    * @return int
    */
-  function getTotalSentCount(NewsletterEntity $newsletter) {
+  public function getTotalSentCount(NewsletterEntity $newsletter) {
     try {
       return (int)$this->doctrine_repository
         ->createQueryBuilder('n')
@@ -41,7 +41,7 @@ class NewsletterStatisticsRepository extends Repository {
    * @param NewsletterEntity $newsletter
    * @return NewsletterStatistics
    */
-  function getStatistics(NewsletterEntity $newsletter) {
+  public function getStatistics(NewsletterEntity $newsletter) {
     return new NewsletterStatistics(
       $this->getStatisticsClickCount($newsletter),
       $this->getStatisticsOpenCount($newsletter),
@@ -54,7 +54,7 @@ class NewsletterStatisticsRepository extends Repository {
    * @param NewsletterEntity $newsletter
    * @return int
    */
-  function getStatisticsClickCount(NewsletterEntity $newsletter) {
+  public function getStatisticsClickCount(NewsletterEntity $newsletter) {
     return $this->getStatisticsCount($newsletter, StatisticsClickEntity::class);
   }
 
@@ -62,7 +62,7 @@ class NewsletterStatisticsRepository extends Repository {
    * @param NewsletterEntity $newsletter
    * @return int
    */
-  function getStatisticsOpenCount(NewsletterEntity $newsletter) {
+  public function getStatisticsOpenCount(NewsletterEntity $newsletter) {
     return $this->getStatisticsCount($newsletter, StatisticsOpenEntity::class);
   }
 
@@ -70,7 +70,7 @@ class NewsletterStatisticsRepository extends Repository {
    * @param NewsletterEntity $newsletter
    * @return int
    */
-  function getStatisticsUnsubscribeCount(NewsletterEntity $newsletter) {
+  public function getStatisticsUnsubscribeCount(NewsletterEntity $newsletter) {
     return $this->getStatisticsCount($newsletter, StatisticsUnsubscribeEntity::class);
   }
 

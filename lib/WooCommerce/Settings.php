@@ -14,7 +14,7 @@ class Settings {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(
+  public function __construct(
     Renderer $renderer,
     SettingsController $settings
   ) {
@@ -22,7 +22,7 @@ class Settings {
     $this->settings = $settings;
   }
 
-  function disableWooCommerceSettings() {
+  public function disableWooCommerceSettings() {
     if (
       !isset($_GET['tab'])
       || $_GET['tab'] !== 'email'

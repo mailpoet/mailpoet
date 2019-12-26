@@ -28,7 +28,7 @@ class WelcomeWizard {
   /** @var FeaturesController */
   private $features_controller;
 
-  function __construct(
+  public function __construct(
     PageRenderer $page_renderer,
     SettingsController $settings,
     WooCommerceHelper $woocommerce_helper,
@@ -42,7 +42,7 @@ class WelcomeWizard {
     $this->features_controller = $features_controller;
   }
 
-  function render() {
+  public function render() {
     if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
     $data = [
       'is_mp2_migration_complete' => (bool)$this->settings->get(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY),

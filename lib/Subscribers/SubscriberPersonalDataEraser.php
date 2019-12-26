@@ -7,7 +7,7 @@ use MailPoet\Models\SubscriberCustomField;
 
 class SubscriberPersonalDataEraser {
 
-  function erase($email) {
+  public function erase($email) {
     if (empty($email)) {
       return [
         'items_removed' => false,

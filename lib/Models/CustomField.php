@@ -19,7 +19,7 @@ class CustomField extends Model {
   const TYPE_CHECKBOX = 'checkbox';
   const TYPE_SELECT = 'select';
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
     $this->addValidations('name', [
       'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
@@ -29,7 +29,7 @@ class CustomField extends Model {
     ]);
   }
 
-  function asArray() {
+  public function asArray() {
     $model = parent::asArray();
 
     if (isset($model['params'])) {
@@ -40,7 +40,7 @@ class CustomField extends Model {
     return $model;
   }
 
-  function save() {
+  public function save() {
     if (is_null($this->params)) {
       $this->params = [];
     }
@@ -52,7 +52,7 @@ class CustomField extends Model {
     return parent::save();
   }
 
-  function formatValue($value = null) {
+  public function formatValue($value = null) {
     // format custom field data depending on type
     if (is_array($value) && $this->type === self::TYPE_DATE) {
       $custom_field_data = $this->asArray();
@@ -122,7 +122,7 @@ class CustomField extends Model {
     return $value;
   }
 
-  function subscribers() {
+  public function subscribers() {
     return $this->hasManyThrough(
       __NAMESPACE__ . '\Subscriber',
       __NAMESPACE__ . '\SubscriberCustomField',
@@ -131,7 +131,7 @@ class CustomField extends Model {
     )->selectExpr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value');
   }
 
-  static function createOrUpdate($data = []) {
+  public static function createOrUpdate($data = []) {
     // set name as label by default
     if (empty($data['params']['label']) && isset($data['name'])) {
       $data['params']['label'] = $data['name'];

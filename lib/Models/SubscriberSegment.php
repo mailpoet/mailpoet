@@ -12,11 +12,11 @@ namespace MailPoet\Models;
 class SubscriberSegment extends Model {
   public static $_table = MP_SUBSCRIBER_SEGMENT_TABLE;
 
-  function subscriber() {
+  public function subscriber() {
     return $this->has_one(__NAMESPACE__ . '\Subscriber', 'id', 'subscriber_id');
   }
 
-  static function unsubscribeFromSegments($subscriber, $segment_ids = []) {
+  public static function unsubscribeFromSegments($subscriber, $segment_ids = []) {
     if ($subscriber === false) return false;
 
     // Reset confirmation emails count, so user can resubscribe
@@ -59,7 +59,7 @@ class SubscriberSegment extends Model {
     return true;
   }
 
-  static function resubscribeToAllSegments($subscriber) {
+  public static function resubscribeToAllSegments($subscriber) {
     if ($subscriber === false) return false;
     // (re)subscribe to all segments linked to the subscriber
     return self::where('subscriber_id', $subscriber->id)
@@ -68,7 +68,7 @@ class SubscriberSegment extends Model {
       ->save();
   }
 
-  static function subscribeToSegments($subscriber, $segment_ids = []) {
+  public static function subscribeToSegments($subscriber, $segment_ids = []) {
     if ($subscriber === false) return false;
     if (!empty($segment_ids)) {
       // subscribe to specified segments
@@ -85,12 +85,12 @@ class SubscriberSegment extends Model {
     }
   }
 
-  static function resetSubscriptions($subscriber, $segment_ids = []) {
+  public static function resetSubscriptions($subscriber, $segment_ids = []) {
     self::unsubscribeFromSegments($subscriber);
     return self::subscribeToSegments($subscriber, $segment_ids);
   }
 
-  static function subscribeManyToSegments(
+  public static function subscribeManyToSegments(
     $subscriber_ids = [],
     $segment_ids = []
   ) {
@@ -119,7 +119,7 @@ class SubscriberSegment extends Model {
     return true;
   }
 
-  static function deleteManySubscriptions($subscriber_ids = [], $segment_ids = []) {
+  public static function deleteManySubscriptions($subscriber_ids = [], $segment_ids = []) {
     if (empty($subscriber_ids)) return false;
 
     // delete subscribers' relations to segments (except WP and WooCommerce segments)
@@ -147,7 +147,7 @@ class SubscriberSegment extends Model {
     return $subscriptions->deleteMany();
   }
 
-  static function deleteSubscriptions($subscriber, $segment_ids = []) {
+  public static function deleteSubscriptions($subscriber, $segment_ids = []) {
     if ($subscriber === false) return false;
 
     $wp_segment = Segment::getWPSegment();
@@ -162,11 +162,11 @@ class SubscriberSegment extends Model {
     return $subscriptions->deleteMany();
   }
 
-  static function subscribed($orm) {
+  public static function subscribed($orm) {
     return $orm->where('status', Subscriber::STATUS_SUBSCRIBED);
   }
 
-  static function createOrUpdate($data = []) {
+  public static function createOrUpdate($data = []) {
     $keys = false;
     if (isset($data['subscriber_id']) && isset($data['segment_id'])) {
       $keys = [

@@ -26,7 +26,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   const INACTIVITY_DAYS_THRESHOLD = 5;
   const PROCESS_BATCH_SIZE = 100;
 
-  function _before() {
+  public function _before() {
     $this->controller = new InactiveSubscribersController($this->di_container->get(SettingsRepository::class));
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
@@ -44,7 +44,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     parent::_before();
   }
 
-  function testItDeactivatesOldSubscribersWithUnopenedEmail() {
+  public function testItDeactivatesOldSubscribersWithUnopenedEmail() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
 
     $subscriber1 = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
@@ -60,7 +60,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber2->status)->equals(Subscriber::STATUS_INACTIVE);
   }
 
-  function testItDeactivatesLimitedAmountOfSubscribers() {
+  public function testItDeactivatesLimitedAmountOfSubscribers() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
 
     $subscriber1 = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
@@ -84,7 +84,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber2->status)->equals(Subscriber::STATUS_INACTIVE);
   }
 
-  function testItDoesNotDeactivateNewSubscriberWithUnopenedEmail() {
+  public function testItDoesNotDeactivateNewSubscriberWithUnopenedEmail() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
 
     $subscriber = $this->createSubscriber('s1@email.com', $completed_days_ago = 3);
@@ -96,7 +96,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItDoesNotDeactivateNewlyResubscribedSubscriberWithUnopenedEmail() {
+  public function testItDoesNotDeactivateNewlyResubscribedSubscriberWithUnopenedEmail() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
 
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
@@ -110,7 +110,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItDoesNotDeactivateSubscriberWithoutSentEmail() {
+  public function testItDoesNotDeactivateSubscriberWithoutSentEmail() {
     $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
@@ -119,7 +119,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItDoesNotDeactivateSubscriberWhoRecentlyOpenedEmail() {
+  public function testItDoesNotDeactivateSubscriberWhoRecentlyOpenedEmail() {
     list($task, $queue) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 2);
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
     $this->addSubcriberToTask($subscriber, $task);
@@ -132,7 +132,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItDoesNotDeactivateSubscriberWhoReceivedEmailRecently() {
+  public function testItDoesNotDeactivateSubscriberWhoReceivedEmailRecently() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 0);
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
     $this->addSubcriberToTask($subscriber, $task);
@@ -142,7 +142,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItDoesNotDeactivateSubscriberWhoReceivedEmailWhichWasNeverOpened() {
+  public function testItDoesNotDeactivateSubscriberWhoReceivedEmailWhichWasNeverOpened() {
     list($task) = $this->createCompletedSendingTask($completed_days_ago = 2);
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
     $this->addSubcriberToTask($subscriber, $task);
@@ -152,7 +152,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItDoesNotDeactivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
+  public function testItDoesNotDeactivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
 
     $this->createSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY, true, (new Carbon())->subDays(3));
@@ -167,7 +167,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->removeSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY);
   }
 
-  function testItActivatesSubscriberWhoRecentlyOpenedEmail() {
+  public function testItActivatesSubscriberWhoRecentlyOpenedEmail() {
     list($task, $queue) = $this->createCompletedSendingTask($completed_days_ago = 2);
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
     $this->addSubcriberToTask($subscriber, $task);
@@ -178,7 +178,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItActivatesLimitedNumberOfSubscribers() {
+  public function testItActivatesLimitedNumberOfSubscribers() {
     list($task, $queue) = $this->createCompletedSendingTask($completed_days_ago = 3);
     $subscriber1 = $this->createSubscriber('s1@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
     $subscriber2 = $this->createSubscriber('s2@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
@@ -203,7 +203,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber2->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  function testItDoesNotActivateOldSubscribersWithUnopenedEmail() {
+  public function testItDoesNotActivateOldSubscribersWithUnopenedEmail() {
     list($task) = $this->createCompletedSendingTask($completed_days_ago = 2);
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
     $this->addSubcriberToTask($subscriber, $task);
@@ -213,7 +213,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_INACTIVE);
   }
 
-  function testItActivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
+  public function testItActivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
 
     $this->createSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY, true, (new Carbon())->subDays(3));
@@ -228,7 +228,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->removeSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY);
   }
 
-  function testItDoesReactivateInactiveSubscribers() {
+  public function testItDoesReactivateInactiveSubscribers() {
     list($task) = $this->createCompletedSendingTask($completed_days_ago = 2);
     $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
     $this->addSubcriberToTask($subscriber, $task);

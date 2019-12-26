@@ -12,12 +12,12 @@ class PostsTest extends \MailPoetTest {
   /** @var PostsTask */
   private $posts_task;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->posts_task = new PostsTask;
   }
 
-  function testItFailsWhenNoPostsArePresent() {
+  public function testItFailsWhenNoPostsArePresent() {
     $newsletter = (object)[
       'id' => 1,
       'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
@@ -28,7 +28,7 @@ class PostsTest extends \MailPoetTest {
     expect($this->posts_task->extractAndSave($rendered_newsletter, $newsletter))->equals(false);
   }
 
-  function testItCanExtractAndSavePosts() {
+  public function testItCanExtractAndSavePosts() {
     $post_id = 10;
     $newsletter = (object)[
       'id' => 2,
@@ -44,7 +44,7 @@ class PostsTest extends \MailPoetTest {
     expect($newsletter_post->post_id)->equals($post_id);
   }
 
-  function testItDoesNotSavePostsWhenNewsletterIsNotANotificationHistory() {
+  public function testItDoesNotSavePostsWhenNewsletterIsNotANotificationHistory() {
     $post_id = 10;
     $newsletter = (object)[
       'id' => 2,
@@ -59,7 +59,7 @@ class PostsTest extends \MailPoetTest {
     expect($this->posts_task->extractAndSave($rendered_newsletter, $newsletter))->equals(false);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
   }
 }

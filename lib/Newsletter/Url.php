@@ -11,7 +11,7 @@ class Url {
   const TYPE_ARCHIVE = 'display_archive';
   const TYPE_LISTING_EDITOR = 'display_listing_editor';
 
-  static function getViewInBrowserUrl(
+  public static function getViewInBrowserUrl(
     $type,
     $newsletter,
     $subscriber = false,
@@ -45,7 +45,7 @@ class Url {
     );
   }
 
-  static function createUrlDataObject($newsletter, $subscriber, $queue, $preview) {
+  public static function createUrlDataObject($newsletter, $subscriber, $queue, $preview) {
     return [
       (!empty($newsletter->id)) ?
         (int)$newsletter->id :
@@ -66,7 +66,7 @@ class Url {
     ];
   }
 
-  static function transformUrlDataObject($data) {
+  public static function transformUrlDataObject($data) {
     reset($data);
     if (!is_int(key($data))) return $data;
     $transformed_data = [];

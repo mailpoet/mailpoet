@@ -14,12 +14,12 @@ class ViewInBrowser {
   /** @var bool */
   private $is_tracking_enabled;
 
-  function __construct(Emoji $emoji, $is_tracking_enabled) {
+  public function __construct(Emoji $emoji, $is_tracking_enabled) {
     $this->is_tracking_enabled = $is_tracking_enabled;
     $this->emoji = $emoji;
   }
 
-  function view($data) {
+  public function view($data) {
     $wp_user_preview = (
       ($data->subscriber && $data->subscriber->isWPUser() && $data->preview) ||
       ($data->preview && $data->newsletter_hash)
@@ -32,7 +32,7 @@ class ViewInBrowser {
     );
   }
 
-  function renderNewsletter($newsletter, $subscriber, $queue, $wp_user_preview) {
+  public function renderNewsletter($newsletter, $subscriber, $queue, $wp_user_preview) {
     if ($queue && $queue->getNewsletterRenderedBody()) {
       $newsletter_body = $queue->getNewsletterRenderedBody('html');
       $newsletter_body = $this->emoji->decodeEmojisInBody($newsletter_body);

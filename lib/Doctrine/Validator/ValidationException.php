@@ -12,7 +12,7 @@ class ValidationException extends \RuntimeException {
   /** @var ConstraintViolationListInterface|ConstraintViolationInterface[] */
   private $violations;
 
-  function __construct($resource_name, ConstraintViolationListInterface $violations) {
+  public function __construct($resource_name, ConstraintViolationListInterface $violations) {
     $this->resource_name = $resource_name;
     $this->violations = $violations;
 
@@ -23,17 +23,17 @@ class ValidationException extends \RuntimeException {
   }
 
   /** @return string */
-  function getResourceName() {
+  public function getResourceName() {
     return $this->resource_name;
   }
 
   /** @return ConstraintViolationListInterface|ConstraintViolationInterface[] */
-  function getViolations() {
+  public function getViolations() {
     return $this->violations;
   }
 
   /** @return string[] */
-  function getErrors() {
+  public function getErrors() {
     $messages = [];
     foreach ($this->violations as $violation) {
       $messages[] = $this->formatError($violation);

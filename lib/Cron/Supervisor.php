@@ -9,16 +9,16 @@ class Supervisor {
   /** @var CronHelper */
   private $cron_helper;
 
-  function __construct(CronHelper $cron_helper) {
+  public function __construct(CronHelper $cron_helper) {
     $this->cron_helper = $cron_helper;
   }
 
-  function init() {
+  public function init() {
     $this->token = $this->cron_helper->createToken();
     $this->daemon = $this->getDaemon();
   }
 
-  function checkDaemon() {
+  public function checkDaemon() {
     $daemon = $this->daemon;
     $execution_timeout_exceeded =
       (time() - (int)$daemon['updated_at']) >= $this->cron_helper->getDaemonExecutionTimeout();
@@ -31,13 +31,13 @@ class Supervisor {
     return $daemon;
   }
 
-  function runDaemon() {
+  public function runDaemon() {
     $this->cron_helper->accessDaemon($this->token);
     $daemon = $this->cron_helper->getDaemon();
     return $daemon;
   }
 
-  function getDaemon() {
+  public function getDaemon() {
     $daemon = $this->cron_helper->getDaemon();
     if (!$daemon) {
       $this->cron_helper->createDaemon($this->token);

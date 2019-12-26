@@ -23,7 +23,7 @@ class DaemonTest extends \MailPoetTest {
     $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
   }
 
-  function testItCanRun() {
+  public function testItCanRun() {
     $cron_worker_runner = $this->make(CronWorkerRunner::class, [
       'run' => null,
     ]);
@@ -35,7 +35,7 @@ class DaemonTest extends \MailPoetTest {
     $daemon->run($data);
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 

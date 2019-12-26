@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class StatsPageCest {
 
-  function statsPage(\AcceptanceTester $I) {
+  public function statsPage(\AcceptanceTester $I) {
     $I->wantTo('Open stats page of a sent newsletter');
 
     $newsletter_title = 'Stats Page Test';

@@ -13,18 +13,18 @@ class ChangelogController {
   /** @var JiraController */
   private $jira;
 
-  function __construct(JiraController $jira, $readme_file) {
+  public function __construct(JiraController $jira, $readme_file) {
     $this->jira = $jira;
     $this->readme_file = $readme_file;
   }
 
-  function update($version_name = null) {
+  public function update($version_name = null) {
     $changelog_data = $this->get($version_name);
     $this->updateReadme($changelog_data[0], $changelog_data[1]);
     return $changelog_data;
   }
 
-  function get($version_name = null) {
+  public function get($version_name = null) {
     $version = $this->jira->getVersion($version_name);
     $issues = $this->jira->getIssuesDataForVersion($version);
     $heading = $this->renderHeading($version);

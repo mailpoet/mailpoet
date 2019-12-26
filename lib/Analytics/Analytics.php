@@ -28,7 +28,7 @@ class Analytics {
   }
 
   /** @return array|null */
-  function generateAnalytics() {
+  public function generateAnalytics() {
     if ($this->shouldSend()) {
       $data = $this->wp->applyFilters(self::ANALYTICS_FILTER, $this->reporter->getData());
       $this->recordDataSent();
@@ -38,12 +38,12 @@ class Analytics {
   }
 
   /** @return boolean */
-  function isEnabled() {
+  public function isEnabled() {
     $analytics_settings = $this->settings->get('analytics', []);
     return !empty($analytics_settings['enabled']) === true;
   }
 
-  function setPublicId($new_public_id) {
+  public function setPublicId($new_public_id) {
     $current_public_id = $this->settings->get('public_id');
     if ($current_public_id !== $new_public_id) {
       $this->settings->set('public_id', $new_public_id);
@@ -54,7 +54,7 @@ class Analytics {
   }
 
   /** @return string */
-  function getPublicId() {
+  public function getPublicId() {
     $public_id = $this->settings->get('public_id', '');
     // if we didn't get the user public_id from the shop yet : we create one based on mixpanel distinct_id
     if (empty($public_id) && !empty($_COOKIE['mixpanel_distinct_id'])) {
@@ -71,7 +71,7 @@ class Analytics {
    * Returns true if a the public_id was added and update new_public_id to false
    * @return boolean
    */
-  function isPublicIdNew() {
+  public function isPublicIdNew() {
     $new_public_id = $this->settings->get('new_public_id');
     if ($new_public_id === 'true') {
       $this->settings->set('new_public_id', 'false');

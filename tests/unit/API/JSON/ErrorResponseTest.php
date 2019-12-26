@@ -7,7 +7,7 @@ use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ErrorResponseTest extends \MailPoetUnitTest {
-  function testItSanitizesSqlErrorsWhenReturningResponse() {
+  public function testItSanitizesSqlErrorsWhenReturningResponse() {
     WPFunctions::set(Stub::make(new WPFunctions, [
       '__' => function ($value) {
         return $value;
@@ -39,7 +39,7 @@ class ErrorResponseTest extends \MailPoetUnitTest {
     );
   }
 
-  function _after() {
+  public function _after() {
     WPFunctions::set(new WPFunctions);
   }
 }

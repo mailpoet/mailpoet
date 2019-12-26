@@ -6,33 +6,33 @@ use MailPoet\Models\ScheduledTask;
 
 interface CronWorkerInterface {
   /** @return string */
-  function getTaskType();
+  public function getTaskType();
 
   /** @return bool */
-  function scheduleAutomatically();
+  public function scheduleAutomatically();
 
   /** @return bool */
-  function supportsMultipleInstances();
+  public function supportsMultipleInstances();
 
   /** @return bool */
-  function checkProcessingRequirements();
+  public function checkProcessingRequirements();
 
-  function init();
+  public function init();
 
   /**
    * @param ScheduledTask $task
    * @param float $timer
    * @return bool
    */
-  function prepareTaskStrategy(ScheduledTask $task, $timer);
+  public function prepareTaskStrategy(ScheduledTask $task, $timer);
 
   /**
    * @param ScheduledTask $task
    * @param float $timer
    * @return bool
    */
-  function processTaskStrategy(ScheduledTask $task, $timer);
+  public function processTaskStrategy(ScheduledTask $task, $timer);
 
   /** @return \DateTimeInterface */
-  function getNextRunDate();
+  public function getNextRunDate();
 }

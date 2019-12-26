@@ -13,12 +13,12 @@ class UrlDecorator {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(WPFunctions $wp, SettingsController $settings) {
+  public function __construct(WPFunctions $wp, SettingsController $settings) {
     $this->wp = $wp;
     $this->settings = $settings;
   }
 
-  function decorate($url) {
+  public function decorate($url) {
     $referral_id = $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME, null);
     if ($referral_id === null) {
       return $url;

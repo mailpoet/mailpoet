@@ -10,7 +10,7 @@ class StylesTest extends \MailPoetUnitTest {
   /** @var FeaturesController&\PHPUnit_Framework_MockObject_MockObject */
   private $features_controller;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->features_controller = $this->createMock(FeaturesController::class);
     $this->features_controller
@@ -19,12 +19,12 @@ class StylesTest extends \MailPoetUnitTest {
       ->willReturn(false);
   }
 
-  function testItSetsDefaultCSSStyles() {
+  public function testItSetsDefaultCSSStyles() {
     $styles = new Styles($this->features_controller);
     expect($styles->getDefaultStyles())->notEmpty();
   }
 
-  function testItProcessesAndRendersStyles() {
+  public function testItProcessesAndRendersStyles() {
     $stylesheet = '
     /* some comment */
     input[name=first_name]    , input.some_class,     .some_class { color: red  ; background: blue; } .another_style { fonT-siZe: 20px                            }

@@ -13,7 +13,7 @@ class APITestNamespacedEndpointStubV2 extends APIEndpoint {
     ],
   ];
 
-  function testVersion() {
+  public function testVersion() {
     return $this->successResponse('v2');
   }
 }

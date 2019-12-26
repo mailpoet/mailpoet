@@ -13,7 +13,7 @@ class PostTransformer {
   /** @var string */
   private $image_position;
 
-  function __construct($args, PostTransformerContentsExtractor $extractor = null) {
+  public function __construct($args, PostTransformerContentsExtractor $extractor = null) {
     $this->args = $args;
     $this->with_layout = isset($args['withLayout']) ? (bool)filter_var($args['withLayout'], FILTER_VALIDATE_BOOLEAN) : false;
     $this->image_position = 'left';
@@ -23,7 +23,7 @@ class PostTransformer {
     $this->extractor = $extractor;
   }
 
-  function getDivider() {
+  public function getDivider() {
     if (empty($this->with_layout)) {
       return $this->args['divider'];
     }
@@ -32,7 +32,7 @@ class PostTransformer {
     ]);
   }
 
-  function transform($post) {
+  public function transform($post) {
     if (empty($this->with_layout)) {
       return $this->getStructure($post);
     }

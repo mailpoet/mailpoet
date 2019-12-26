@@ -10,7 +10,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoetVendor\Idiorm\ORM;
 
 class SegmentTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->segment_data = [
       'name' => 'some name',
@@ -56,16 +56,16 @@ class SegmentTest extends \MailPoetTest {
     ];
   }
 
-  function testItCanBeCreated() {
+  public function testItCanBeCreated() {
     expect($this->segment->id() > 0)->true();
     expect($this->segment->getErrors())->false();
   }
 
-  function testItCanHaveName() {
+  public function testItCanHaveName() {
     expect($this->segment->name)->equals($this->segment_data['name']);
   }
 
-  function nameMustBeUnique() {
+  public function nameMustBeUnique() {
     $segment = Segment::create();
     $segment->hydrate($this->segment_data);
     $result = $segment->save();
@@ -77,11 +77,11 @@ class SegmentTest extends \MailPoetTest {
     );
   }
 
-  function testItCanHaveDescription() {
+  public function testItCanHaveDescription() {
     expect($this->segment->description)->equals($this->segment_data['description']);
   }
 
-  function testItHasToBeValid() {
+  public function testItHasToBeValid() {
     $invalid_segment = Segment::create();
 
     $result = $invalid_segment->save();
@@ -91,18 +91,18 @@ class SegmentTest extends \MailPoetTest {
     expect($errors[0])->equals('Please specify a name.');
   }
 
-  function testItHasACreatedAtOnCreation() {
+  public function testItHasACreatedAtOnCreation() {
     $segment = Segment::findOne($this->segment->id);
     expect($segment->created_at)->notNull();
   }
 
-  function testItHasAnUpdatedAtOnCreation() {
+  public function testItHasAnUpdatedAtOnCreation() {
     $segment = Segment::findOne($this->segment->id);
     expect($segment->updated_at)
       ->equals($segment->created_at);
   }
 
-  function testItUpdatesTheUpdatedAtOnUpdate() {
+  public function testItUpdatesTheUpdatedAtOnUpdate() {
     $segment = Segment::findOne($this->segment->id);
     $created_at = $segment->created_at;
 
@@ -119,7 +119,7 @@ class SegmentTest extends \MailPoetTest {
     expect($is_time_updated)->true();
   }
 
-  function testItCanCreateOrUpdate() {
+  public function testItCanCreateOrUpdate() {
     $is_created = Segment::createOrUpdate([
       'name' => 'new list',
     ]);
@@ -140,7 +140,7 @@ class SegmentTest extends \MailPoetTest {
     expect($segment->name)->equals('updated list');
   }
 
-  function testItCanHaveManySubscribers() {
+  public function testItCanHaveManySubscribers() {
     foreach ($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriber_data);
@@ -157,7 +157,7 @@ class SegmentTest extends \MailPoetTest {
     expect(count($subscribers))->equals(4);
   }
 
-  function testItCanHaveManyNewsletters() {
+  public function testItCanHaveManyNewsletters() {
     foreach ($this->newsletters_data as $newsletter_data) {
       $newsletter = Newsletter::create();
       $newsletter->hydrate($newsletter_data);
@@ -174,7 +174,7 @@ class SegmentTest extends \MailPoetTest {
     expect(count($newsletters))->equals(2);
   }
 
-  function testItCanHaveSubscriberCount() {
+  public function testItCanHaveSubscriberCount() {
     // normal subscribers
     foreach ($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::create();
@@ -222,7 +222,7 @@ class SegmentTest extends \MailPoetTest {
     expect($subscribers_count[Subscriber::STATUS_BOUNCED])->equals(0);
   }
 
-  function testItCanGetSegmentsWithSubscriberCount() {
+  public function testItCanGetSegmentsWithSubscriberCount() {
     foreach ($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriber_data);
@@ -236,7 +236,7 @@ class SegmentTest extends \MailPoetTest {
     expect($segments[0]['subscribers'])->equals(1);
   }
 
-  function testItCanGetSegmentsForExport() {
+  public function testItCanGetSegmentsForExport() {
     foreach ($this->subscribers_data as $index => $subscriber_data) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriber_data);
@@ -256,7 +256,7 @@ class SegmentTest extends \MailPoetTest {
     expect($segments[1]['subscribers'])->equals(1);
   }
 
-  function testListingQuery() {
+  public function testListingQuery() {
     Segment::createOrUpdate([
       'name' => 'name 2',
       'description' => 'description 2',
@@ -268,13 +268,13 @@ class SegmentTest extends \MailPoetTest {
     expect($data[0]->name)->equals('some name');
   }
 
-  function testListingQueryWithGroup() {
+  public function testListingQueryWithGroup() {
     $query = Segment::listingQuery(['group' => 'trash']);
     $data = $query->findMany();
     expect($data)->count(0);
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);

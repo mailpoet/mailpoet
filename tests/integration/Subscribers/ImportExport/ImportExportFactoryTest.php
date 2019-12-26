@@ -9,7 +9,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 
 class ImportExportFactoryTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $segment_1 = Segment::createOrUpdate(['name' => 'Unconfirmed Segment']);
     $segment_2 = Segment::createOrUpdate(['name' => 'Confirmed Segment']);
@@ -47,7 +47,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $this->exportFactory = new ImportExportFactory('export');
   }
 
-  function testItCanGetSegmentsWithSubscriberCount() {
+  public function testItCanGetSegmentsWithSubscriberCount() {
     $segments = $this->importFactory->getSegments();
     expect(count($segments))->equals(2);
     expect($segments[0]['name'])->equals('Confirmed Segment');
@@ -56,7 +56,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($segments[1]['subscriberCount'])->equals(0);
   }
 
-  function testItCanGetPublicSegmentsForImport() {
+  public function testItCanGetPublicSegmentsForImport() {
     $segments = $this->importFactory->getSegments();
     expect($segments[0]['subscriberCount'])->equals(1);
     expect($segments[1]['subscriberCount'])->equals(0);
@@ -77,7 +77,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($segments[1]['subscriberCount'])->equals(0);
   }
 
-  function testItCanGetPublicSegmentsForExport() {
+  public function testItCanGetPublicSegmentsForExport() {
     $segments = $this->exportFactory->getSegments();
     expect(count($segments))->equals(2);
     $subscriber = Subscriber::where('email', 'john@mailpoet.com')
@@ -88,7 +88,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect(count($segments))->equals(1);
   }
 
-  function testItCanGetSegmentsForExport() {
+  public function testItCanGetSegmentsForExport() {
     $segments = $this->exportFactory->getSegments();
     expect(count($segments))->equals(2);
 
@@ -98,7 +98,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($segments[1]['subscriberCount'])->equals(1);
   }
 
-  function testItCanGetSubscriberFields() {
+  public function testItCanGetSubscriberFields() {
     $subsriberFields = $this->importFactory->getSubscriberFields();
     $fields = [
       'email',
@@ -124,7 +124,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     }
   }
 
-  function testItCanFormatSubscriberFields() {
+  public function testItCanFormatSubscriberFields() {
     $formattedSubscriberFields =
       $this->importFactory->formatSubscriberFields(
         $this->importFactory->getSubscriberFields()
@@ -142,7 +142,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($formattedSubscriberFields[0]['custom'])->false();
   }
 
-  function testItCanGetSubscriberCustomFields() {
+  public function testItCanGetSubscriberCustomFields() {
     $subscriberCustomFields =
       $this->importFactory
         ->getSubscriberCustomFields();
@@ -150,7 +150,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       ->equals('date');
   }
 
-  function testItCanFormatSubscriberCustomFields() {
+  public function testItCanFormatSubscriberCustomFields() {
     $formattedSubscriberCustomFields =
       $this->importFactory->formatSubscriberCustomFields(
         $this->importFactory->getSubscriberCustomFields()
@@ -168,7 +168,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($formattedSubscriberCustomFields[0]['custom'])->true();
   }
 
-  function testItCanFormatFieldsForSelect2Import() {
+  public function testItCanFormatFieldsForSelect2Import() {
     $ImportExportFactory = clone($this->importFactory);
     $select2FieldsWithoutCustomFields = [
       [
@@ -213,7 +213,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
 
-  function testItCanFormatFieldsForSelect2Export() {
+  public function testItCanFormatFieldsForSelect2Export() {
     $ImportExportFactory = clone($this->exportFactory);
     $select2FieldsWithoutCustomFields = [
       [
@@ -258,7 +258,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
 
-  function testItCanBootStrapImport() {
+  public function testItCanBootStrapImport() {
     $import = clone($this->importFactory);
     $importMenu = $import->bootstrap();
     expect(count(json_decode($importMenu['segments'], true)))
@@ -275,7 +275,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     );
   }
 
-  function testItCanBootStrapExport() {
+  public function testItCanBootStrapExport() {
     $export = clone($this->importFactory);
     $exportMenu = $export->bootstrap();
     expect(count(json_decode($exportMenu['segments'], true)))
@@ -285,7 +285,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       ->equals(3);
   }
 
-  function _after() {
+  public function _after() {
     Subscriber::deleteMany();
     Segment::deleteMany();
     SubscriberSegment::deleteMany();

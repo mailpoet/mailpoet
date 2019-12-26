@@ -16,7 +16,7 @@ class UserFlagsController {
   /** @var UserFlagsRepository */
   private $user_flags_repository;
 
-  function __construct(UserFlagsRepository $user_flags_repository) {
+  public function __construct(UserFlagsRepository $user_flags_repository) {
     $this->defaults = [
       'last_announcement_seen' => false,
       'editor_tutorial_seen' => false,
@@ -24,7 +24,7 @@ class UserFlagsController {
     $this->user_flags_repository = $user_flags_repository;
   }
 
-  function get($name) {
+  public function get($name) {
     $this->ensureLoaded();
     if (!isset($this->data[$name])) {
       return $this->defaults[$name];
@@ -32,7 +32,7 @@ class UserFlagsController {
     return $this->data[$name];
   }
 
-  function getAll() {
+  public function getAll() {
     $this->ensureLoaded();
     $data = $this->data;
     if (!is_array($data)) {
@@ -41,7 +41,7 @@ class UserFlagsController {
     return array_merge($this->defaults, $data);
   }
 
-  function set($name, $value) {
+  public function set($name, $value) {
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     $flag = $this->user_flags_repository->findOneBy([
       'user_id' => $current_user_id,
@@ -62,7 +62,7 @@ class UserFlagsController {
     }
   }
 
-  function delete($name) {
+  public function delete($name) {
     $current_user_id = WPFunctions::get()->getCurrentUserId();
     $flag = $this->user_flags_repository->findOneBy([
       'user_id' => $current_user_id,

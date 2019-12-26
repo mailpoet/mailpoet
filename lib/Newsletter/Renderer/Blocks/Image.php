@@ -7,7 +7,7 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Image {
-  static function render($element, $column_base_width) {
+  public static function render($element, $column_base_width) {
     if (empty($element['src'])) {
       return '';
     }
@@ -51,7 +51,7 @@ class Image {
     return $template;
   }
 
-  static function adjustImageDimensions($element, $column_base_width) {
+  public static function adjustImageDimensions($element, $column_base_width) {
     $padded_width = StylesHelper::$padding_width * 2;
     // scale image to fit column width
     if ($element['width'] > $column_base_width) {

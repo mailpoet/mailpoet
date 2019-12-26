@@ -23,7 +23,7 @@ class UrlTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
@@ -33,7 +33,7 @@ class UrlTest extends \MailPoetTest {
     $this->url = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, new LinkTokens);
   }
 
-  function testItReturnsTheDefaultPageUrlIfNoPageIsSetInSettings() {
+  public function testItReturnsTheDefaultPageUrlIfNoPageIsSetInSettings() {
     $this->settings->delete('subscription');
 
     $url = $this->url->getCaptchaUrl('abc');
@@ -47,21 +47,21 @@ class UrlTest extends \MailPoetTest {
     expect($url)->contains('endpoint=subscription');
   }
 
-  function testItReturnsTheCaptchaUrl() {
+  public function testItReturnsTheCaptchaUrl() {
     $url = $this->url->getCaptchaUrl('abc');
     expect($url)->notNull();
     expect($url)->contains('action=captcha');
     expect($url)->contains('endpoint=subscription');
   }
 
-  function testItReturnsTheCaptchaImageUrl() {
+  public function testItReturnsTheCaptchaImageUrl() {
     $url = $this->url->getCaptchaImageUrl(250, 100, 'abc');
     expect($url)->notNull();
     expect($url)->contains('action=captchaImage');
     expect($url)->contains('endpoint=subscription');
   }
 
-  function testItReturnsTheConfirmationUrl() {
+  public function testItReturnsTheConfirmationUrl() {
     // preview
     $url = $this->url->getConfirmationUrl(null);
     expect($url)->notNull();
@@ -79,7 +79,7 @@ class UrlTest extends \MailPoetTest {
     $this->checkData($url);
   }
 
-  function testItReturnsTheManageSubscriptionUrl() {
+  public function testItReturnsTheManageSubscriptionUrl() {
     // preview
     $url = $this->url->getManageUrl(null);
     expect($url)->notNull();
@@ -97,7 +97,7 @@ class UrlTest extends \MailPoetTest {
     $this->checkData($url);
   }
 
-  function testItReturnsTheUnsubscribeUrl() {
+  public function testItReturnsTheUnsubscribeUrl() {
     // preview
     $url = $this->url->getUnsubscribeUrl(null);
     expect($url)->notNull();
@@ -125,7 +125,7 @@ class UrlTest extends \MailPoetTest {
     expect($data['token'])->notEmpty();
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
     Subscriber::deleteMany();
   }

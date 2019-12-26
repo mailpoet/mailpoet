@@ -7,33 +7,33 @@ use MailPoetVendor\Carbon\Carbon;
 class BridgeTestMockAPI extends API {
   public $api_key;
 
-  function __construct($api_key) {
+  public function __construct($api_key) {
     $this->setKey($api_key);
   }
 
-  function checkMSSKey() {
+  public function checkMSSKey() {
     // if a key begins with these codes, return them
     $regex = '/^(expiring|401|402|403|503)/';
     $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;
     return $this->processAPICheckResponse($code);
   }
 
-  function checkPremiumKey() {
+  public function checkPremiumKey() {
     // if a key begins with these codes, return them
     $regex = '/^(expiring|401|402|403|503)/';
     $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;
     return $this->processPremiumResponse($code);
   }
 
-  function updateSubscriberCount($count) {
+  public function updateSubscriberCount($count) {
     return true;
   }
 
-  function setKey($api_key) {
+  public function setKey($api_key) {
     $this->api_key = $api_key;
   }
 
-  function getKey() {
+  public function getKey() {
     return $this->api_key;
   }
 

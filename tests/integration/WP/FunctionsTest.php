@@ -5,7 +5,7 @@ namespace MailPoet\Test\WP;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FunctionsTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     global $content_width;
     $this->_content_width = $content_width;
@@ -15,7 +15,7 @@ class FunctionsTest extends \MailPoetTest {
     $this->wp = new WPFunctions;
   }
 
-  function makeAttachment($upload, $parent_post_id = 0) {
+  public function makeAttachment($upload, $parent_post_id = 0) {
     $type = '';
     if (!empty($upload['type'])) {
         $type = $upload['type'];
@@ -42,7 +42,7 @@ class FunctionsTest extends \MailPoetTest {
     return $this->ids[] = $id;
   }
 
-  function testItCanProcessActions() {
+  public function testItCanProcessActions() {
     $test_value = ['abc', 'def'];
     $test_value2 = new \stdClass;
     $called = false;
@@ -64,7 +64,7 @@ class FunctionsTest extends \MailPoetTest {
     expect($called)->false();
   }
 
-  function testItCanProcessFilters() {
+  public function testItCanProcessFilters() {
     $test_value = ['abc', 'def'];
 
     $called = false;
@@ -86,7 +86,7 @@ class FunctionsTest extends \MailPoetTest {
     expect($called)->false();
   }
 
-  function _after() {
+  public function _after() {
     global $content_width;
     $content_width = $this->_content_width;
   }

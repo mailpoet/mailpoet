@@ -26,7 +26,7 @@ class WooCommerceProduct implements Filter {
     $this->connect = $connect;
   }
 
-  function toSql(ORM $orm) {
+  public function toSql(ORM $orm) {
     global $wpdb;
     $orm->distinct();
     $orm->rawJoin(
@@ -37,8 +37,8 @@ class WooCommerceProduct implements Filter {
     $orm->join($wpdb->prefix . 'woocommerce_order_items', ['postmeta.post_id', '=', 'items.order_id'], 'items');
     $orm->rawJoin(
       'INNER JOIN ' . $wpdb->prefix . 'woocommerce_order_itemmeta',
-      "itemmeta.order_item_id=items.order_item_id 
-       AND itemmeta.meta_key='_product_id' 
+      "itemmeta.order_item_id=items.order_item_id
+       AND itemmeta.meta_key='_product_id'
        AND itemmeta.meta_value=" . $this->product_id,
       'itemmeta'
     );
@@ -46,7 +46,7 @@ class WooCommerceProduct implements Filter {
     return $orm;
   }
 
-  function toArray() {
+  public function toArray() {
     return [
       'action' => WooCommerceProduct::ACTION_PRODUCT,
       'product_id' => $this->product_id,

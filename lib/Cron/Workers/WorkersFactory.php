@@ -22,82 +22,82 @@ class WorkersFactory {
   }
 
   /** @return SchedulerWorker */
-  function createScheduleWorker() {
+  public function createScheduleWorker() {
     return $this->container->get(SchedulerWorker::class);
   }
 
   /** @return SendingQueueWorker */
-  function createQueueWorker() {
+  public function createQueueWorker() {
     return $this->container->get(SendingQueueWorker::class);
   }
 
   /** @return StatsNotificationsWorker */
-  function createStatsNotificationsWorker() {
+  public function createStatsNotificationsWorker() {
     return $this->container->get(StatsNotificationsWorker::class);
   }
 
   /** @return StatsNotificationsWorkerForAutomatedEmails */
-  function createStatsNotificationsWorkerForAutomatedEmails() {
+  public function createStatsNotificationsWorkerForAutomatedEmails() {
     return $this->container->get(StatsNotificationsWorkerForAutomatedEmails::class);
   }
 
   /** @return SendingServiceKeyCheckWorker */
-  function createSendingServiceKeyCheckWorker() {
+  public function createSendingServiceKeyCheckWorker() {
     return $this->container->get(SendingServiceKeyCheckWorker::class);
   }
 
   /** @return PremiumKeyCheckWorker */
-  function createPremiumKeyCheckWorker() {
+  public function createPremiumKeyCheckWorker() {
     return $this->container->get(PremiumKeyCheckWorker::class);
   }
 
   /** @return BounceWorker */
-  function createBounceWorker() {
+  public function createBounceWorker() {
     return $this->container->get(BounceWorker::class);
   }
 
   /** @return MigrationWorker */
-  function createMigrationWorker() {
+  public function createMigrationWorker() {
     return $this->container->get(MigrationWorker::class);
   }
 
   /** @return WooCommerceSyncWorker */
-  function createWooCommerceSyncWorker() {
+  public function createWooCommerceSyncWorker() {
     return $this->container->get(WooCommerceSyncWorker::class);
   }
 
   /** @return ExportFilesCleanup */
-  function createExportFilesCleanupWorker() {
+  public function createExportFilesCleanupWorker() {
     return $this->container->get(ExportFilesCleanup::class);
   }
 
   /** @return Beamer */
-  function createBeamerkWorker() {
+  public function createBeamerkWorker() {
     return $this->container->get(Beamer::class);
   }
 
   /** @return InactiveSubscribers */
-  function createInactiveSubscribersWorker() {
+  public function createInactiveSubscribersWorker() {
     return $this->container->get(InactiveSubscribers::class);
   }
 
   /** @return UnsubscribeTokens */
-  function createUnsubscribeTokensWorker() {
+  public function createUnsubscribeTokensWorker() {
     return $this->container->get(UnsubscribeTokens::class);
   }
 
   /** @return SubscriberLinkTokens */
-  function createSubscriberLinkTokensWorker() {
+  public function createSubscriberLinkTokensWorker() {
     return $this->container->get(SubscriberLinkTokens::class);
   }
 
   /** @return AuthorizedSendingEmailsCheck */
-  function createAuthorizedSendingEmailsCheckWorker() {
+  public function createAuthorizedSendingEmailsCheckWorker() {
     return $this->container->get(AuthorizedSendingEmailsCheck::class);
   }
 
   /** @return WooCommercePastOrders */
-  function createWooCommercePastOrdersWorker() {
+  public function createWooCommercePastOrdersWorker() {
     return $this->container->get(WooCommercePastOrders::class);
   }
 }

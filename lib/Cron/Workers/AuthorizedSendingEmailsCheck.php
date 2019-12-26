@@ -13,16 +13,16 @@ class AuthorizedSendingEmailsCheck extends SimpleWorker {
   /** @var AuthorizedEmailsController */
   private $authorized_emails_controller;
 
-  function __construct(AuthorizedEmailsController $authorized_emails_controller) {
+  public function __construct(AuthorizedEmailsController $authorized_emails_controller) {
     $this->authorized_emails_controller = $authorized_emails_controller;
     parent::__construct();
   }
 
-  function checkProcessingRequirements() {
+  public function checkProcessingRequirements() {
     return Bridge::isMPSendingServiceEnabled();
   }
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     $this->authorized_emails_controller->checkAuthorizedEmailAddresses();
     return true;
   }

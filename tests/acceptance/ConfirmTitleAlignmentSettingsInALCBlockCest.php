@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class ConfirmTitleAlignmentSettingsInALCBlockCest {
 
-  function createWelcomeNewsletter(\AcceptanceTester $I) {
+  public function createWelcomeNewsletter(\AcceptanceTester $I) {
     $I->wantTo('Confirm title alignment settings in ALC block');
 
     // create a post and a newsletter with ALC block

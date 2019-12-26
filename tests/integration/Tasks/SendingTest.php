@@ -12,7 +12,7 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->newsletter = $this->createNewNewsletter();
     $this->task = $this->createNewScheduledTask();
@@ -27,7 +27,7 @@ class SendingTest extends \MailPoetTest {
     ]);
   }
 
-  function testItCanBeConstructed() {
+  public function testItCanBeConstructed() {
     $sending = SendingTask::create();
     expect_that($sending instanceof SendingTask);
     expect_that($sending->queue() instanceof SendingQueue);
@@ -35,7 +35,7 @@ class SendingTest extends \MailPoetTest {
     expect_that($sending->taskSubscribers() instanceof Subscribers);
   }
 
-  function testItCanBeConstructedOnlyWithAProperTaskType() {
+  public function testItCanBeConstructedOnlyWithAProperTaskType() {
     $this->task->type = 'wrong_type';
     try {
       $sending = SendingTask::create($this->task, $this->queue);
@@ -45,20 +45,20 @@ class SendingTest extends \MailPoetTest {
     }
   }
 
-  function testItCanCreateManyFromTasks() {
+  public function testItCanCreateManyFromTasks() {
     $sendings = SendingTask::createManyFromTasks([$this->task]);
     expect($sendings)->notEmpty();
     $queue = $sendings[0]->queue();
     expect($queue->task_id)->equals($this->task->id);
   }
 
-  function testItCanBeCreatedFromQueue() {
+  public function testItCanBeCreatedFromQueue() {
     $sending = SendingTask::createFromQueue($this->queue);
     $task = $sending->task();
     expect($task->id)->equals($this->queue->task_id);
   }
 
-  function testItCanBeInitializedByNewsletterId() {
+  public function testItCanBeInitializedByNewsletterId() {
     $sending = SendingTask::getByNewsletterId($this->newsletter->id);
     $queue = $sending->queue();
     $task = $sending->task();
@@ -66,13 +66,13 @@ class SendingTest extends \MailPoetTest {
     expect($task->id)->equals($queue->task_id);
   }
 
-  function testItCanBeConvertedToArray() {
+  public function testItCanBeConvertedToArray() {
     $sending = $this->sending->asArray();
     expect($sending['id'])->equals($this->queue->id);
     expect($sending['task_id'])->equals($this->task->id);
   }
 
-  function testItSavesDataForUnderlyingModels() {
+  public function testItSavesDataForUnderlyingModels() {
     $newsletter_rendered_subject = 'Abc';
     $status = ScheduledTask::STATUS_PAUSED;
     $this->sending->status = $status;
@@ -84,38 +84,38 @@ class SendingTest extends \MailPoetTest {
     expect($queue->newsletter_rendered_subject)->equals($newsletter_rendered_subject);
   }
 
-  function testItDeletesUnderlyingModels() {
+  public function testItDeletesUnderlyingModels() {
     $this->sending->delete();
     expect(ScheduledTask::findOne($this->task->id))->equals(false);
     expect(SendingQueue::findOne($this->queue->id))->equals(false);
     expect(ScheduledTaskSubscriber::where('task_id', $this->task->id)->findMany())->isEmpty();
   }
 
-  function testItGetsSubscribers() {
+  public function testItGetsSubscribers() {
     expect($this->sending->getSubscribers())->equals([123, 456]);
   }
 
-  function testItSetsSubscribers() {
+  public function testItSetsSubscribers() {
     $subscriber_ids = [1, 2, 3];
     $this->sending->setSubscribers($subscriber_ids);
     expect($this->sending->getSubscribers())->equals($subscriber_ids);
     expect($this->sending->count_total)->equals(count($subscriber_ids));
   }
 
-  function testItRemovesSubscribers() {
+  public function testItRemovesSubscribers() {
     $subscriber_ids = [456];
     $this->sending->removeSubscribers($subscriber_ids);
     expect($this->sending->getSubscribers())->equals([123]);
     expect($this->sending->count_total)->equals(1);
   }
 
-  function testItRemovesAllSubscribers() {
+  public function testItRemovesAllSubscribers() {
     $this->sending->removeAllSubscribers();
     expect($this->sending->getSubscribers())->equals([]);
     expect($this->sending->count_total)->equals(0);
   }
 
-  function testItUpdatesProcessedSubscribers() {
+  public function testItUpdatesProcessedSubscribers() {
     expect($this->sending->count_to_process)->equals(2);
     expect($this->sending->count_processed)->equals(0);
     $subscriber_ids = [456];
@@ -124,7 +124,7 @@ class SendingTest extends \MailPoetTest {
     expect($this->sending->count_processed)->equals(1);
   }
 
-  function testItGetsScheduledQueues() {
+  public function testItGetsScheduledQueues() {
     $this->sending->status = ScheduledTask::STATUS_SCHEDULED;
     $this->sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
     $this->sending->save();
@@ -140,7 +140,7 @@ class SendingTest extends \MailPoetTest {
     expect($tasks)->isEmpty();
   }
 
-  function testItGetsBatchOfScheduledQueues() {
+  public function testItGetsBatchOfScheduledQueues() {
     $this->_after();
     $amount = 5;
     for ($i = 0; $i < $amount + 3; $i += 1) {
@@ -149,13 +149,13 @@ class SendingTest extends \MailPoetTest {
     expect(SendingTask::getScheduledQueues($amount))->count($amount);
   }
 
-  function testItDoesNotGetPaused() {
+  public function testItDoesNotGetPaused() {
     $this->_after();
     $this->createNewSendingTask(['status' => ScheduledTask::STATUS_PAUSED]);
     expect(SendingTask::getScheduledQueues())->count(0);
   }
 
-  function testItGetsRunningQueues() {
+  public function testItGetsRunningQueues() {
     $this->sending->status = null;
     $this->sending->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->subHours(1);
     $this->sending->save();
@@ -171,7 +171,7 @@ class SendingTest extends \MailPoetTest {
     expect($tasks)->isEmpty();
   }
 
-  function testItGetsBatchOfRunningQueues() {
+  public function testItGetsBatchOfRunningQueues() {
     $this->_after();
     $amount = 5;
     for ($i = 0; $i < $amount + 3; $i += 1) {
@@ -180,7 +180,7 @@ class SendingTest extends \MailPoetTest {
     expect(SendingTask::getRunningQueues($amount))->count($amount);
   }
 
-  function testItGetsBatchOfRunningQueuesSortedByUpdatedTime() {
+  public function testItGetsBatchOfRunningQueuesSortedByUpdatedTime() {
     $this->_after();
 
     $sending1 = $this->createNewSendingTask(['status' => ScheduledTask::STATUS_SCHEDULED]);
@@ -199,7 +199,7 @@ class SendingTest extends \MailPoetTest {
     expect($queues[2]->task_id)->equals($sending2->id());
   }
 
-  function testItGetsBatchOfScheduledQueuesSortedByUpdatedTime() {
+  public function testItGetsBatchOfScheduledQueuesSortedByUpdatedTime() {
     $this->_after();
 
     $sending1 = $this->createNewSendingTask(['status' => null]);
@@ -218,19 +218,19 @@ class SendingTest extends \MailPoetTest {
     expect($queues[2]->task_id)->equals($sending2->id());
   }
 
-  function createNewNewsletter() {
+  public function createNewNewsletter() {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
     return $newsletter->save();
   }
 
-  function createNewScheduledTask() {
+  public function createNewScheduledTask() {
     $task = ScheduledTask::create();
     $task->type = SendingTask::TASK_TYPE;
     return $task->save();
   }
 
-  function createNewSendingQueue($args = []) {
+  public function createNewSendingQueue($args = []) {
     $newsletter = isset($args['newsletter']) ? $args['newsletter'] : $this->createNewNewsletter();
     $task = isset($args['task']) ? $args['task'] : $this->createNewScheduledTask();
 
@@ -240,7 +240,7 @@ class SendingTest extends \MailPoetTest {
     return $queue->save();
   }
 
-  function createNewSendingTask($args = []) {
+  public function createNewSendingTask($args = []) {
     $task = isset($args['task']) ? $args['task'] : $this->createNewScheduledTask();
     $queue = isset($args['queue']) ? $args['queue'] : $this->createNewSendingQueue(['task' => $task]);
     $status = isset($args['status']) ? $args['status'] : null;
@@ -252,7 +252,7 @@ class SendingTest extends \MailPoetTest {
     return $sending->save();
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);

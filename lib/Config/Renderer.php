@@ -17,7 +17,7 @@ class Renderer {
   public $assets_manifest_js;
   public $assets_manifest_css;
 
-  function __construct($caching_enabled = false, $debugging_enabled = false) {
+  public function __construct($caching_enabled = false, $debugging_enabled = false) {
     $this->caching_enabled = $caching_enabled;
     $this->debugging_enabled = $debugging_enabled;
     $this->cache_path = Env::$cache_path;
@@ -46,35 +46,35 @@ class Renderer {
     $this->setupSyntax();
   }
 
-  function setupTranslations() {
+  public function setupTranslations() {
     $this->renderer->addExtension(new Twig\I18n(Env::$plugin_name));
   }
 
-  function setupFunctions() {
+  public function setupFunctions() {
     $this->renderer->addExtension(new Twig\Functions());
   }
 
-  function setupFilters() {
+  public function setupFilters() {
     $this->renderer->addExtension(new Twig\Filters());
   }
 
-  function setupHandlebars() {
+  public function setupHandlebars() {
     $this->renderer->addExtension(new Twig\Handlebars());
   }
 
-  function setupHelpscout() {
+  public function setupHelpscout() {
     $this->renderer->addExtension(new Twig\Helpscout());
   }
 
-  function setupAnalytics() {
+  public function setupAnalytics() {
     $this->renderer->addExtension(new Twig\Analytics());
   }
 
-  function setupPolls() {
+  public function setupPolls() {
     $this->renderer->addExtension(new Twig\Polls());
   }
 
-  function setupGlobalVariables() {
+  public function setupGlobalVariables() {
     $this->renderer->addExtension(new Twig\Assets([
       'version' => Env::$version,
       'base_url' => Env::$base_url,
@@ -84,7 +84,7 @@ class Renderer {
     ]));
   }
 
-  function setupSyntax() {
+  public function setupSyntax() {
     $lexer = new TwigLexer($this->renderer, [
       'tag_comment' => ['<#', '#>'],
       'tag_block' => ['<%', '%>'],
@@ -94,17 +94,17 @@ class Renderer {
     $this->renderer->setLexer($lexer);
   }
 
-  function detectCache() {
+  public function detectCache() {
     return $this->caching_enabled ? $this->cache_path : false;
   }
 
-  function setupDebug() {
+  public function setupDebug() {
     if ($this->debugging_enabled) {
       $this->renderer->addExtension(new DebugExtension());
     }
   }
 
-  function render($template, $context = []) {
+  public function render($template, $context = []) {
     try {
       return $this->renderer->render($template, $context);
     } catch (\RuntimeException $e) {
@@ -117,7 +117,7 @@ class Renderer {
     }
   }
 
-  function getAssetManifest($manifest_file) {
+  public function getAssetManifest($manifest_file) {
     if (is_readable($manifest_file)) {
       $contents = file_get_contents($manifest_file);
       if (is_string($contents)) {
@@ -127,13 +127,13 @@ class Renderer {
     return false;
   }
 
-  function getJsAsset($asset) {
+  public function getJsAsset($asset) {
     return (!empty($this->assets_manifest_js[$asset])) ?
       $this->assets_manifest_js[$asset] :
       $asset;
   }
 
-  function getCssAsset($asset) {
+  public function getCssAsset($asset) {
     return (!empty($this->assets_manifest_css[$asset])) ?
       $this->assets_manifest_css[$asset] :
       $asset;

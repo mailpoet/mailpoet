@@ -22,12 +22,12 @@ class WooCommerce {
   private $mailpoet_email_collation;
   private $wp_postmeta_value_collation;
 
-  function __construct(SettingsController $settings, WPFunctions $wp) {
+  public function __construct(SettingsController $settings, WPFunctions $wp) {
     $this->settings = $settings;
     $this->wp = $wp;
   }
 
-  function synchronizeRegisteredCustomer($wp_user_id, $current_filter = null) {
+  public function synchronizeRegisteredCustomer($wp_user_id, $current_filter = null) {
     $wc_segment = Segment::getWooCommerceSegment();
 
     if ($wc_segment === false) return;
@@ -75,7 +75,7 @@ class WooCommerce {
     return true;
   }
 
-  function synchronizeGuestCustomer($order_id, $current_filter = null) {
+  public function synchronizeGuestCustomer($order_id, $current_filter = null) {
     $wc_order = $this->wp->getPost($order_id);
     $wc_segment = Segment::getWooCommerceSegment();
 
@@ -97,7 +97,7 @@ class WooCommerce {
     }
   }
 
-  function synchronizeCustomers() {
+  public function synchronizeCustomers() {
     $this->getColumnCollation();
 
     WP::synchronizeUsers(); // synchronize registered users

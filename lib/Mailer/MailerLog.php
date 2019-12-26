@@ -10,7 +10,7 @@ class MailerLog {
   const RETRY_ATTEMPTS_LIMIT = 3;
   const RETRY_INTERVAL = 120; // seconds
 
-  static function getMailerLog($mailer_log = false) {
+  public static function getMailerLog($mailer_log = false) {
     if ($mailer_log) return $mailer_log;
     $settings = SettingsController::getInstance();
     $mailer_log = $settings->get(self::SETTING_NAME);
@@ -20,7 +20,7 @@ class MailerLog {
     return $mailer_log;
   }
 
-  static function createMailerLog() {
+  public static function createMailerLog() {
     $mailer_log = [
       'sent' => null,
       'started' => time(),
@@ -34,17 +34,17 @@ class MailerLog {
     return $mailer_log;
   }
 
-  static function resetMailerLog() {
+  public static function resetMailerLog() {
     return self::createMailerLog();
   }
 
-  static function updateMailerLog($mailer_log) {
+  public static function updateMailerLog($mailer_log) {
     $settings = SettingsController::getInstance();
     $settings->set(self::SETTING_NAME, $mailer_log);
     return $mailer_log;
   }
 
-  static function enforceExecutionRequirements($mailer_log = false) {
+  public static function enforceExecutionRequirements($mailer_log = false) {
     $mailer_log = self::getMailerLog($mailer_log);
     if ($mailer_log['retry_attempt'] === self::RETRY_ATTEMPTS_LIMIT) {
       $mailer_log = self::pauseSending($mailer_log);
@@ -66,14 +66,14 @@ class MailerLog {
     }
   }
 
-  static function pauseSending($mailer_log) {
+  public static function pauseSending($mailer_log) {
     $mailer_log['status'] = self::STATUS_PAUSED;
     $mailer_log['retry_attempt'] = null;
     $mailer_log['retry_at'] = null;
     return self::updateMailerLog($mailer_log);
   }
 
-  static function resumeSending() {
+  public static function resumeSending() {
     return self::resetMailerLog();
   }
 
@@ -86,7 +86,7 @@ class MailerLog {
    *
    * @throws \Exception
    */
-  static function processNonBlockingError($operation, $error_message, $retry_interval = self::RETRY_INTERVAL) {
+  public static function processNonBlockingError($operation, $error_message, $retry_interval = self::RETRY_INTERVAL) {
     $mailer_log = self::getMailerLog();
     $mailer_log['retry_at'] = time() + $retry_interval;
     $mailer_log = self::setError($mailer_log, $operation, $error_message);
@@ -104,7 +104,7 @@ class MailerLog {
    *
    * @throws \Exception
    */
-  static function processError($operation, $error_message, $error_code = null, $pause_sending = false) {
+  public static function processError($operation, $error_message, $error_code = null, $pause_sending = false) {
     $mailer_log = self::getMailerLog();
     $mailer_log['retry_attempt']++;
     $mailer_log['retry_at'] = time() + self::RETRY_INTERVAL;
@@ -116,7 +116,7 @@ class MailerLog {
     self::enforceExecutionRequirements();
   }
 
-  static function setError($mailer_log, $operation, $error_message, $error_code = null) {
+  public static function setError($mailer_log, $operation, $error_message, $error_code = null) {
     $mailer_log['error'] = [
       'operation' => $operation,
       'error_message' => $error_message,
@@ -127,12 +127,12 @@ class MailerLog {
     return $mailer_log;
   }
 
-  static function getError($mailer_log = false) {
+  public static function getError($mailer_log = false) {
     $mailer_log = self::getMailerLog($mailer_log);
     return isset($mailer_log['error']) ? $mailer_log['error'] : null;
   }
 
-  static function incrementSentCount() {
+  public static function incrementSentCount() {
     $mailer_log = self::getMailerLog();
     // do not increment count if sending limit is reached
     if (self::isSendingLimitReached($mailer_log)) return;
@@ -144,14 +144,14 @@ class MailerLog {
     return self::updateMailerLog($mailer_log);
   }
 
-  static function clearSendingErrorLog($mailer_log) {
+  public static function clearSendingErrorLog($mailer_log) {
     $mailer_log['retry_attempt'] = null;
     $mailer_log['retry_at'] = null;
     $mailer_log['error'] = null;
     return self::updateMailerLog($mailer_log);
   }
 
-  static function isSendingLimitReached($mailer_log = false) {
+  public static function isSendingLimitReached($mailer_log = false) {
     $settings = SettingsController::getInstance();
     $mailer_config = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
     // do not enforce sending limit for MailPoet's sending method
@@ -174,7 +174,7 @@ class MailerLog {
     return false;
   }
 
-  static function isSendingPaused($mailer_log = false) {
+  public static function isSendingPaused($mailer_log = false) {
     $mailer_log = self::getMailerLog($mailer_log);
     return $mailer_log['status'] === self::STATUS_PAUSED;
   }

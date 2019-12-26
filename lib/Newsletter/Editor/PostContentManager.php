@@ -13,13 +13,13 @@ class PostContentManager {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
-  function __construct(WooCommerceHelper $woocommerce_helper = null) {
+  public function __construct(WooCommerceHelper $woocommerce_helper = null) {
     $wp = new WPFunctions;
     $this->max_excerpt_length = $wp->applyFilters('mailpoet_newsletter_post_excerpt_length', $this->max_excerpt_length);
     $this->woocommerce_helper = $woocommerce_helper ?: new WooCommerceHelper();
   }
 
-  function getContent($post, $displayType) {
+  public function getContent($post, $displayType) {
     if ($displayType === 'titleOnly') {
       return '';
     }
@@ -38,7 +38,7 @@ class PostContentManager {
     return self::stripShortCodes($post->post_content);
   }
 
-  function filterContent($content, $display_type, $with_post_class = true) {
+  public function filterContent($content, $display_type, $with_post_class = true) {
     $content = self::convertEmbeddedContent($content);
 
     // convert h4 h5 h6 to h3

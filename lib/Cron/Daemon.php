@@ -16,7 +16,7 @@ class Daemon {
   /** @var WorkersFactory */
   private $workers_factory;
 
-  function __construct(
+  public function __construct(
     CronHelper $cron_helper,
     CronWorkerRunner $cron_worker_runner,
     WorkersFactory $workers_factory
@@ -27,7 +27,7 @@ class Daemon {
     $this->cron_helper = $cron_helper;
   }
 
-  function run($settings_daemon_data) {
+  public function run($settings_daemon_data) {
     $settings_daemon_data['run_started_at'] = time();
     $this->cron_helper->saveDaemon($settings_daemon_data);
 

@@ -20,7 +20,7 @@ class PHPMail {
   /** @var BlacklistCheck */
   private $blacklist;
 
-  function __construct($sender, $reply_to, $return_path, PHPMailMapper $error_mapper) {
+  public function __construct($sender, $reply_to, $return_path, PHPMailMapper $error_mapper) {
     $this->sender = $sender;
     $this->reply_to = $reply_to;
     $this->return_path = ($return_path) ?
@@ -31,7 +31,7 @@ class PHPMail {
     $this->blacklist = new BlacklistCheck();
   }
 
-  function send($newsletter, $subscriber, $extra_params = []) {
+  public function send($newsletter, $subscriber, $extra_params = []) {
     if ($this->blacklist->isBlacklisted($subscriber)) {
       $error = $this->error_mapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
@@ -50,14 +50,14 @@ class PHPMail {
     }
   }
 
-  function buildMailer() {
+  public function buildMailer() {
     $mailer = new \PHPMailer(true);
     // send using PHP's mail() function
     $mailer->isMail();
     return $mailer;
   }
 
-  function configureMailerWithMessage($newsletter, $subscriber, $extra_params = []) {
+  public function configureMailerWithMessage($newsletter, $subscriber, $extra_params = []) {
     $mailer = $this->mailer;
     $mailer->clearAddresses();
     $mailer->clearCustomHeaders();
@@ -91,7 +91,7 @@ class PHPMail {
     return $mailer;
   }
 
-  function processSubscriber($subscriber) {
+  public function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
     if (!isset($subscriber_data['email'])) {
       $subscriber_data = [

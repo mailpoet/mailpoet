@@ -27,12 +27,12 @@ class DynamicSegmentsTest extends \MailPoetTest {
   /** @var Handler */
   private $listing_handler;
 
-  function _before() {
+  public function _before() {
     $this->bulk_action = ContainerWrapper::getInstance()->get(BulkActionController::class);
     $this->listing_handler = ContainerWrapper::getInstance()->get(Handler::class);
   }
 
-  function testGetReturnsResponse() {
+  public function testGetReturnsResponse() {
     $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
       'load' => function () {
         $dynamic_segment = DynamicSegment::create();
@@ -58,7 +58,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     ]);
   }
 
-  function testGetReturnsError() {
+  public function testGetReturnsError() {
     $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
       'load' => function () {
         throw new \InvalidArgumentException('segment not found');
@@ -70,7 +70,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect($response->status)->equals(self::SEGMENT_NOT_FOUND_RESPONSE_CODE);
   }
 
-  function testSaverSavesData() {
+  public function testSaverSavesData() {
     $mapper = Stub::makeEmpty('\MailPoet\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
       $dynamic_segment = DynamicSegment::create();
       $dynamic_segment->hydrate([
@@ -87,7 +87,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
   }
 
-  function testSaverReturnsErrorOnInvalidData() {
+  public function testSaverReturnsErrorOnInvalidData() {
     $mapper = Stub::makeEmpty('\MailPoet\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
       throw new InvalidSegmentTypeException();
     })]);
@@ -99,7 +99,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
   }
 
-  function testSaverReturnsErrorOnSave() {
+  public function testSaverReturnsErrorOnSave() {
     $mapper = Stub::makeEmpty('\MailPoet\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
       $dynamic_segment = DynamicSegment::create();
       $dynamic_segment->hydrate([
@@ -119,7 +119,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Error saving data');
   }
 
-  function testItCanTrashASegment() {
+  public function testItCanTrashASegment() {
     DynamicSegment::deleteMany();
     $dynamic_segment = DynamicSegment::createOrUpdate([
       'name' => 'Trash test',
@@ -144,7 +144,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $dynamic_segment->delete();
   }
 
-  function testItCanRestoreASegment() {
+  public function testItCanRestoreASegment() {
     DynamicSegment::deleteMany();
     $dynamic_segment = DynamicSegment::createOrUpdate([
       'name' => 'Restore test',
@@ -169,7 +169,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $dynamic_segment->delete();
   }
 
-  function testItCanDeleteASegment() {
+  public function testItCanDeleteASegment() {
     DynamicSegment::deleteMany();
     $dynamic_segment = DynamicSegment::createOrUpdate([
       'name' => 'Delete test',
@@ -195,7 +195,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect(DynamicSegmentFilter::findOne($filter->id))->equals(false);
   }
 
-  function testItCanBulkDeleteSegments() {
+  public function testItCanBulkDeleteSegments() {
     DynamicSegment::deleteMany();
     $dynamic_segment_1 = DynamicSegment::createOrUpdate([
       'name' => 'Test 1',

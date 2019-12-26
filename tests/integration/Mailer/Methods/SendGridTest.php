@@ -9,7 +9,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\SendGrid;
 
 class SendGridTest extends \MailPoetTest {
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = [
       'method' => 'SendGrid',
@@ -46,7 +46,7 @@ class SendGridTest extends \MailPoetTest {
     ];
   }
 
-  function testItCanGenerateBody() {
+  public function testItCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->extra_params);
     expect($body['to'])->contains($this->subscriber);
     expect($body['from'])->equals($this->sender['from_email']);
@@ -60,7 +60,7 @@ class SendGridTest extends \MailPoetTest {
     expect($body['text'])->equals($this->newsletter['body']['text']);
   }
 
-  function testItCanCreateRequest() {
+  public function testItCanCreateRequest() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $request = $this->mailer->request($this->newsletter, $this->subscriber);
     expect($request['timeout'])->equals(10);
@@ -71,12 +71,12 @@ class SendGridTest extends \MailPoetTest {
     expect($request['body'])->equals(http_build_query($body));
   }
 
-  function testItCanDoBasicAuth() {
+  public function testItCanDoBasicAuth() {
     expect($this->mailer->auth())
       ->equals('Bearer ' . $this->settings['api_key']);
   }
 
-  function testItCannotSendWithoutProperApiKey() {
+  public function testItCannotSendWithoutProperApiKey() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
@@ -86,7 +86,7 @@ class SendGridTest extends \MailPoetTest {
     expect($result['response'])->false();
   }
 
-  function testItChecksBlacklistBeforeSending() {
+  public function testItChecksBlacklistBeforeSending() {
     $blacklisted_subscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
@@ -103,7 +103,7 @@ class SendGridTest extends \MailPoetTest {
     expect($result['error']->getMessage())->contains('SendGrid has returned an unknown error.');
   }
 
-  function testItCanSend() {
+  public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $result = $this->mailer->send(
       $this->newsletter,

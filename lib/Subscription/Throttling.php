@@ -7,7 +7,7 @@ use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Throttling {
-  static function throttle() {
+  public static function throttle() {
     $wp = new WPFunctions;
     $subscription_limit_enabled = $wp->applyFilters('mailpoet_subscription_limit_enabled', true);
 
@@ -48,7 +48,7 @@ class Throttling {
     return false;
   }
 
-  static function purge() {
+  public static function purge() {
     $wp = new WPFunctions;
     $interval = $wp->applyFilters('mailpoet_subscription_purge_window', MONTH_IN_SECONDS);
     return SubscriberIP::whereRaw(
@@ -57,7 +57,7 @@ class Throttling {
     )->deleteMany();
   }
 
-  static function secondsToTimeString($seconds) {
+  public static function secondsToTimeString($seconds) {
     $wp = new WPFunctions;
     $hrs = floor($seconds / 3600);
     $min = floor($seconds % 3600 / 60);

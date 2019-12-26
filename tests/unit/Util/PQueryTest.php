@@ -5,14 +5,14 @@ namespace MailPoet\Test\Util;
 use MailPoet\Util\pQuery\pQuery;
 
 class PQueryTest extends \MailPoetUnitTest {
-  function testBreakingQuoteAreNotRendered() {
+  public function testBreakingQuoteAreNotRendered() {
     $html = '<a href="#" title="Escape " this"></a>';
     $domnode = pQuery::parseStr($html);
     $inner_text = $domnode->getInnerText();
     expect($inner_text)->equals("");
   }
 
-  function testQuotesAreCorrectlyEscaped() {
+  public function testQuotesAreCorrectlyEscaped() {
     $html_characters = ['&quot;', '&#34;', '&#39;'];
 
     foreach ($html_characters as $char) {
@@ -20,7 +20,7 @@ class PQueryTest extends \MailPoetUnitTest {
     }
   }
 
-  function testEncodedHtmlNamesAreDecoded() {
+  public function testEncodedHtmlNamesAreDecoded() {
     $html_names = ['&amp;', '&lt;', '&gt;', '&nbsp;', '&iexcl;', '&cent;', '&pound;', '&curren;', '&yen;', '&brvbar;', '&sect;', '&uml;', '&copy;', '&ordf;', '&laquo;', '&not;', '&shy;', '&reg;', '&macr;', '&deg;', '&plusmn;', '&sup2;', '&sup3;', '&acute;', '&micro;', '&para;', '&middot;', '&cedil;', '&sup1;', '&ordm;', '&raquo;', '&frac14;', '&frac12;', '&frac34;', '&iquest;', '&Agrave;', '&Aacute;', '&Acirc;', '&Atilde;', '&Auml;', '&Aring;', '&AElig;', '&Ccedil;', '&Egrave;', '&Eacute;', '&Ecirc;', '&Euml;', '&Igrave;', '&Iacute;', '&Icirc;', '&Iuml;', '&ETH;', '&Ntilde;', '&Ograve;', '&Oacute;', '&Ocirc;', '&Otilde;', '&Ouml;', '&times;', '&Oslash;', '&Ugrave;', '&Uacute;', '&Ucirc;', '&Uuml;', '&Yacute;', '&THORN;', '&szlig;', '&agrave;', '&aacute;', '&acirc;', '&atilde;', '&auml;', '&aring;', '&aelig;', '&ccedil;', '&egrave;', '&eacute;', '&ecirc;', '&euml;', '&igrave;', '&iacute;', '&icirc;', '&iuml;', '&eth;', '&ntilde;', '&ograve;', '&oacute;', '&ocirc;', '&otilde;', '&ouml;', '&divide;', '&oslash;', '&ugrave;', '&uacute;', '&ucirc;', '&uuml;', '&yacute;', '&thorn;', '&yuml;'];
 
     foreach ($html_names as $char) {
@@ -28,7 +28,7 @@ class PQueryTest extends \MailPoetUnitTest {
     }
   }
 
-  function testEncodedHtmlNumbersAreDecoded() {
+  public function testEncodedHtmlNumbersAreDecoded() {
     // Tested numbers are from https://www.ascii.cl/htmlcodes.htm
     $html_numbers = array_merge(range(40, 126), range(160, 255), [32, 33, 35, 36, 37, 38, 338, 339, 352, 353, 376, 402, 8211, 8212, 8216, 8217, 8218, 8220, 8221, 8222, 8224, 8225, 8226, 8230, 8240, 8364, 8482]);
 
@@ -37,7 +37,7 @@ class PQueryTest extends \MailPoetUnitTest {
     }
   }
 
-  function testItCanParseRealHtmlSnippets() {
+  public function testItCanParseRealHtmlSnippets() {
     $snippets = [
       '<table width="100%" border="0" cellpadding="0" cellspacing="0" class="mailpoet_cols-one" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0;background-color:#ffffff;border-collapse:collapse" bgcolor="#ffffff"><tbody><tr><td class="mailpoet_header_footer_padded mailpoet_header" style="line-height:19.2px;text-align:center ;color:#222222 ;font-family:Arial ;font-size:12px ;border-collapse:collapse;padding:10px 20px"> <a href="http://littlespree.com?mailpoet_router&endpoint=track&action=click&data=WyIyMjIwIiwiZDE0Zjc3IiwiMTA4IiwiMTBiYjc1ZDhiZjgxIixmYWxzZV0" style="color:#6cb7d4 ;text-decoration:underline ">View this newsletter in your browser.</a></td></tr></tbody></table>',
       '<td class="mailpoet_spacer" height="30" valign="top" style="border-collapse:collapse"></td>',
@@ -55,7 +55,7 @@ class PQueryTest extends \MailPoetUnitTest {
     }
   }
 
-  function parseTest($html, $equals = true) {
+  public function parseTest($html, $equals = true) {
     $parsed_html = pQuery::parseStr($html)->getInnerText();
     if ($equals) {
       expect($parsed_html)->equals($html);

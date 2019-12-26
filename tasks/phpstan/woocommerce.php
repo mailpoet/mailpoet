@@ -2,7 +2,7 @@
 
 // phpcs:ignore
 class WooCommerce {
-  function mailer() {
+  public function mailer() {
   }
 }
 

@@ -13,7 +13,7 @@ class RevenueTrackingPermission {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(
+  public function __construct(
     PageRenderer $page_renderer,
     WPFunctions $wp
   ) {
@@ -21,7 +21,7 @@ class RevenueTrackingPermission {
     $this->wp = $wp;
   }
 
-  function render() {
+  public function render() {
     if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
     $data = [
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG),

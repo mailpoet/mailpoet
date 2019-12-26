@@ -19,7 +19,7 @@ class NewsletterTemplate extends Model {
   const RECENTLY_SENT_CATEGORIES = '["recent"]';
   const RECENTLY_SENT_COUNT = 12;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
 
     $this->addValidations('name', [
@@ -30,7 +30,7 @@ class NewsletterTemplate extends Model {
     ]);
   }
 
-  static function cleanRecentlySent($data) {
+  public static function cleanRecentlySent($data) {
     if (!empty($data['categories']) && $data['categories'] === self::RECENTLY_SENT_CATEGORIES) {
       $ids = parent::where('categories', self::RECENTLY_SENT_CATEGORIES)
         ->select('id')
@@ -46,7 +46,7 @@ class NewsletterTemplate extends Model {
     }
   }
 
-  function asArray() {
+  public function asArray() {
     $template = parent::asArray();
     if (isset($template['body'])) {
       $template['body'] = json_decode($template['body'], true);

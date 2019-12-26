@@ -8,13 +8,13 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class PrivacyPolicy {
 
-  function init() {
+  public function init() {
     if (function_exists('wp_add_privacy_policy_content')) {
       wp_add_privacy_policy_content(__('MailPoet', 'mailpoet'), $this->getPrivacyPolicyContent());
     }
   }
 
-  function getPrivacyPolicyContent() {
+  public function getPrivacyPolicyContent() {
     $content = (
       '<h2>' .
         WPFunctions::get()->__('MailPoet newsletter & emails', 'mailpoet') .

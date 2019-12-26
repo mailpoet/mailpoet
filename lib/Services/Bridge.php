@@ -36,14 +36,14 @@ class Bridge {
   /** @var SettingsController */
   private $settings;
 
-  function __construct(SettingsController $settingsController = null) {
+  public function __construct(SettingsController $settingsController = null) {
     if ($settingsController === null) {
       $settingsController = SettingsController::getInstance();
     }
     $this->settings = $settingsController;
   }
 
-  static function isMPSendingServiceEnabled() {
+  public static function isMPSendingServiceEnabled() {
     try {
       $mailer_config = SettingsController::getInstance()->get(Mailer::MAILER_CONFIG_SETTING_NAME);
       return !empty($mailer_config['method'])
@@ -53,19 +53,19 @@ class Bridge {
     }
   }
 
-  static function isMSSKeySpecified() {
+  public static function isMSSKeySpecified() {
     $settings = SettingsController::getInstance();
     $key = $settings->get(self::API_KEY_SETTING_NAME);
     return !empty($key);
   }
 
-  static function isPremiumKeySpecified() {
+  public static function isPremiumKeySpecified() {
     $settings = SettingsController::getInstance();
     $key = $settings->get(self::PREMIUM_KEY_SETTING_NAME);
     return !empty($key);
   }
 
-  static function pingBridge() {
+  public static function pingBridge() {
     $params = [
       'blocking' => true,
       'timeout' => 10,
@@ -75,7 +75,7 @@ class Bridge {
     return $wp->wpRemoteRetrieveResponseCode($result) === 200;
   }
 
-  function initApi($api_key) {
+  public function initApi($api_key) {
     if ($this->api) {
       $this->api->setKey($api_key);
     } else {
@@ -93,20 +93,20 @@ class Bridge {
     return $this->api;
   }
 
-  function getAuthorizedEmailAddresses() {
+  public function getAuthorizedEmailAddresses() {
     return $this
       ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
       ->getAuthorizedEmailAddresses();
   }
 
-  function checkMSSKey($api_key) {
+  public function checkMSSKey($api_key) {
     $result = $this
       ->getApi($api_key)
       ->checkMSSKey();
     return $this->processKeyCheckResult($result);
   }
 
-  function storeMSSKeyAndState($key, $state) {
+  public function storeMSSKeyAndState($key, $state) {
     if (empty($state['state'])
       || $state['state'] === self::KEY_CHECK_ERROR
     ) {
@@ -126,7 +126,7 @@ class Bridge {
     );
   }
 
-  function checkPremiumKey($key) {
+  public function checkPremiumKey($key) {
     $result = $this
       ->getApi($key)
       ->checkPremiumKey();
@@ -159,7 +159,7 @@ class Bridge {
     );
   }
 
-  function storePremiumKeyAndState($key, $state) {
+  public function storePremiumKeyAndState($key, $state) {
     if (empty($state['state'])
       || $state['state'] === self::KEY_CHECK_ERROR
     ) {
@@ -189,7 +189,7 @@ class Bridge {
     return $state;
   }
 
-  function updateSubscriberCount($result) {
+  public function updateSubscriberCount($result) {
     if (
       (
         !empty($result['state'])
@@ -205,7 +205,7 @@ class Bridge {
     return null;
   }
 
-  static function invalidateKey() {
+  public static function invalidateKey() {
     $settings = SettingsController::getInstance();
     $settings->set(
       self::API_KEY_STATE_SETTING_NAME,
@@ -213,7 +213,7 @@ class Bridge {
     );
   }
 
-  function onSettingsSave($settings) {
+  public function onSettingsSave($settings) {
     $api_key_set = !empty($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
     $premium_key_set = !empty($settings['premium']['premium_key']);
     if ($api_key_set) {

@@ -6,7 +6,7 @@ use MailPoet\API\JSON\v1\AutomatedLatestContent;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomatedLatestContentTest extends \MailPoetTest {
-  function testItGetsPostTypes() {
+  public function testItGetsPostTypes() {
     $endpoint = new AutomatedLatestContent(new \MailPoet\Newsletter\AutomatedLatestContent(), new WPFunctions);
     $response = $endpoint->getPostTypes();
     expect($response->data)->notEmpty();
@@ -17,7 +17,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     }
   }
 
-  function testItDoesNotGetPostTypesExludedFromSearch() {
+  public function testItDoesNotGetPostTypesExludedFromSearch() {
     $endpoint = new AutomatedLatestContent(new \MailPoet\Newsletter\AutomatedLatestContent(), new WPFunctions);
     $response = $endpoint ->getPostTypes();
     // WP's default post type 'revision' is excluded from search

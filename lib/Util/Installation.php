@@ -15,12 +15,12 @@ class Installation {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(SettingsController $settings, WPFunctions $wp) {
+  public function __construct(SettingsController $settings, WPFunctions $wp) {
     $this->settings = $settings;
     $this->wp = $wp;
   }
 
-  function isNewInstallation() {
+  public function isNewInstallation() {
     $installed_at = $this->settings->get('installed_at');
     if (is_null($installed_at)) {
       return true;

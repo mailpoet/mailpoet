@@ -12,7 +12,7 @@ class BatchIterator implements \Iterator, \Countable {
   private $last_processed_id = 0;
   private $batch_last_id;
 
-  function __construct($task_id, $batch_size) {
+  public function __construct($task_id, $batch_size) {
     if ($task_id <= 0) {
       throw new \Exception('Task ID must be greater than zero');
     } elseif ($batch_size <= 0) {
@@ -22,11 +22,11 @@ class BatchIterator implements \Iterator, \Countable {
     $this->batch_size = (int)$batch_size;
   }
 
-  function rewind() {
+  public function rewind() {
     $this->last_processed_id = 0;
   }
 
-  function current() {
+  public function current() {
     $subscribers = $this->getSubscribers()
       ->orderByAsc('subscriber_id')
       ->limit($this->batch_size)
@@ -36,19 +36,19 @@ class BatchIterator implements \Iterator, \Countable {
     return $subscribers;
   }
 
-  function key() {
+  public function key() {
     return null;
   }
 
-  function next() {
+  public function next() {
     $this->last_processed_id = $this->batch_last_id;
   }
 
-  function valid() {
+  public function valid() {
     return $this->count() > 0;
   }
 
-  function count() {
+  public function count() {
     return $this->getSubscribers()->count();
   }
 

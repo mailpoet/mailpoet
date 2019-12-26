@@ -66,84 +66,84 @@ class ScheduledTaskEntity {
   /**
    * @return string|null
    */
-  function getType() {
+  public function getType() {
     return $this->type;
   }
 
   /**
    * @param string|null $type
    */
-  function setType($type) {
+  public function setType($type) {
     $this->type = $type;
   }
 
   /**
    * @return string|null
    */
-  function getStatus() {
+  public function getStatus() {
     return $this->status;
   }
 
   /**
    * @param string|null $status
    */
-  function setStatus($status) {
+  public function setStatus($status) {
     $this->status = $status;
   }
 
   /**
    * @return int
    */
-  function getPriority() {
+  public function getPriority() {
     return $this->priority;
   }
 
   /**
    * @param int $priority
    */
-  function setPriority($priority) {
+  public function setPriority($priority) {
     $this->priority = $priority;
   }
 
   /**
    * @return DateTimeInterface|null
    */
-  function getScheduledAt() {
+  public function getScheduledAt() {
     return $this->scheduled_at;
   }
 
   /**
    * @param DateTimeInterface|null $scheduled_at
    */
-  function setScheduledAt($scheduled_at) {
+  public function setScheduledAt($scheduled_at) {
     $this->scheduled_at = $scheduled_at;
   }
 
   /**
    * @return DateTimeInterface|null
    */
-  function getProcessedAt() {
+  public function getProcessedAt() {
     return $this->processed_at;
   }
 
   /**
    * @param DateTimeInterface|null $processed_at
    */
-  function setProcessedAt($processed_at) {
+  public function setProcessedAt($processed_at) {
     $this->processed_at = $processed_at;
   }
 
   /**
    * @return array|null
    */
-  function getMeta() {
+  public function getMeta() {
     return $this->meta;
   }
 
   /**
    * @param array|null $meta
    */
-  function setMeta($meta) {
+  public function setMeta($meta) {
     $this->meta = $meta;
   }
 }

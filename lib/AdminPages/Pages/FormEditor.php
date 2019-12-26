@@ -27,7 +27,7 @@ class FormEditor {
   /** @var CustomFieldsResponseBuilder */
   private $custom_fields_response_builder;
 
-  function __construct(
+  public function __construct(
     PageRenderer $page_renderer,
     FeaturesController $features_controller,
     CustomFieldsRepository $custom_fields_repository,
@@ -39,7 +39,7 @@ class FormEditor {
     $this->custom_fields_response_builder = $custom_fields_response_builder;
   }
 
-  function render() {
+  public function render() {
     $id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     $form = Form::findOne($id);
     if ($form instanceof Form) {

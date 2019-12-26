@@ -22,7 +22,7 @@ class ContainerWrapper implements ContainerInterface {
     $this->premium_container = $premium_container;
   }
 
-  function get($id) {
+  public function get($id) {
     try {
       return $this->free_container->get($id);
     } catch (NotFoundExceptionInterface $e) {
@@ -33,21 +33,21 @@ class ContainerWrapper implements ContainerInterface {
     }
   }
 
-  function has($id) {
+  public function has($id) {
     return $this->free_container->has($id) || ($this->premium_container && $this->premium_container->has($id));
   }
 
   /**
    * @return ContainerInterface|null
    */
-  function getPremiumContainer() {
+  public function getPremiumContainer() {
     if (!$this->premium_container && class_exists(\MailPoet\Premium\DI\ContainerConfigurator::class)) {
       $this->premium_container = self::createPremiumContainer($this->free_container);
     }
     return $this->premium_container;
   }
 
-  static function getInstance($debug = false) {
+  public static function getInstance($debug = false) {
     if (self::$instance) {
       return self::$instance;
     }

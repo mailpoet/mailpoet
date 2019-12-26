@@ -6,7 +6,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class NewslettersListingCest {
 
-  function newslettersListing(\AcceptanceTester $I) {
+  public function newslettersListing(\AcceptanceTester $I) {
     $standard_newsletter_subject = 'Standard newsletter';
     $welcome_email_subject = 'Welcome email';
     $post_notification_email_subject = 'Post notification';
@@ -41,7 +41,7 @@ class NewslettersListingCest {
     $I->seeNoJSErrors();
   }
 
-  function statisticsColumn(\AcceptanceTester $I) {
+  public function statisticsColumn(\AcceptanceTester $I) {
     (new Newsletter())->create();
 
     $I->wantTo('Check if statistics column is visible depending on tracking option');

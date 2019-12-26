@@ -6,7 +6,7 @@ use MailPoet\Models\Subscriber;
 
 class SourceTest extends \MailPoetTest {
 
-  function testItDoesntOverrideSource() {
+  public function testItDoesntOverrideSource() {
     $subscriber = Subscriber::createOrUpdate([
       'source' => Source::FORM,
     ]);
@@ -14,7 +14,7 @@ class SourceTest extends \MailPoetTest {
     expect($updated_subscriber->source)->equals(Source::FORM);
   }
 
-  function testItDoesntAllowInvalidSource() {
+  public function testItDoesntAllowInvalidSource() {
     $subscriber = Subscriber::createOrUpdate([
       'source' => Source::UNKNOWN,
     ]);
@@ -22,13 +22,13 @@ class SourceTest extends \MailPoetTest {
     Source::setSource($subscriber, 'invalid source');
   }
 
-  function testItWorksWhenNoSourceIsSet() {
+  public function testItWorksWhenNoSourceIsSet() {
     $subscriber = Subscriber::createOrUpdate([]);
     $updated_subscriber = Source::setSource($subscriber, Source::FORM);
     expect($updated_subscriber->source)->equals(Source::FORM);
   }
 
-  function testItWorks() {
+  public function testItWorks() {
     $subscriber = Subscriber::createOrUpdate([
       'source' => Source::UNKNOWN,
     ]);

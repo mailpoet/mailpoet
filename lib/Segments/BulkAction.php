@@ -12,7 +12,7 @@ class BulkAction {
   private $data = null;
   private $wp;
 
-  function __construct($data) {
+  public function __construct($data) {
     $this->data = $data;
     $this->wp = new WPFunctions;
   }
@@ -21,7 +21,7 @@ class BulkAction {
    * @return array
    * @throws \Exception
    */
-  function apply() {
+  public function apply() {
     if (!isset($this->data['listing']['filter']['segment'])) {
       throw new \InvalidArgumentException('Missing segment id');
     }

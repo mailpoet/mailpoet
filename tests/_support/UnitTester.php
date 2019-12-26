@@ -20,13 +20,13 @@ class UnitTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes.Class
   use _generated\UnitTesterActions;
 
   // generate random users
-  function generateSubscribers($count, $data = []) {
+  public function generateSubscribers($count, $data = []) {
     for ($i = 0; $i < $count; $i++) {
       $this->generateSubscriber($data);
     }
   }
 
-  function generateSubscriber($data = []) {
+  public function generateSubscriber($data = []) {
     $subscriber_data = [
       'email' => sprintf('user%s@mailpoet.com', bin2hex(random_bytes(7))), // phpcs:ignore PHPCompatibility
       'first_name' => $this->generateName(),

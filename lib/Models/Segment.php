@@ -21,7 +21,7 @@ class Segment extends Model {
   const TYPE_WC_USERS = SegmentEntity::TYPE_WC_USERS;
   const TYPE_DEFAULT = SegmentEntity::TYPE_DEFAULT;
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
 
     $this->addValidations('name', [
@@ -29,13 +29,13 @@ class Segment extends Model {
     ]);
   }
 
-  function delete() {
+  public function delete() {
     // delete all relations to subscribers
     SubscriberSegment::where('segment_id', $this->id)->deleteMany();
     return parent::delete();
   }
 
-  function newsletters() {
+  public function newsletters() {
     return $this->has_many_through(
       __NAMESPACE__ . '\Newsletter',
       __NAMESPACE__ . '\NewsletterSegment',
@@ -44,7 +44,7 @@ class Segment extends Model {
     );
   }
 
-  function subscribers() {
+  public function subscribers() {
     return $this->has_many_through(
       __NAMESPACE__ . '\Subscriber',
       __NAMESPACE__ . '\SubscriberSegment',
@@ -53,7 +53,7 @@ class Segment extends Model {
     );
   }
 
-  function duplicate($data = []) {
+  public function duplicate($data = []) {
     $duplicate = parent::duplicate($data);
 
     if ($duplicate !== false) {
@@ -69,20 +69,20 @@ class Segment extends Model {
     return false;
   }
 
-  function addSubscriber($subscriber_id) {
+  public function addSubscriber($subscriber_id) {
     $relation = SubscriberSegment::create();
     $relation->set('subscriber_id', $subscriber_id);
     $relation->set('segment_id', $this->id);
     return $relation->save();
   }
 
-  function removeSubscriber($subscriber_id) {
+  public function removeSubscriber($subscriber_id) {
     return SubscriberSegment::where('subscriber_id', $subscriber_id)
       ->where('segment_id', $this->id)
       ->delete();
   }
 
-  function withSubscribersCount() {
+  public function withSubscribersCount() {
     $this->subscribers_count = SubscriberSegment::tableAlias('relation')
       ->where('relation.segment_id', $this->id)
       ->join(
@@ -122,7 +122,7 @@ class Segment extends Model {
     return $this;
   }
 
-  function withAutomatedEmailsSubjects() {
+  public function withAutomatedEmailsSubjects() {
     $automated_emails = NewsletterSegment::tableAlias('relation')
       ->where('relation.segment_id', $this->id)
       ->join(
@@ -145,7 +145,7 @@ class Segment extends Model {
     return $this;
   }
 
-  static function getWPSegment() {
+  public static function getWPSegment() {
     $wp_segment = self::where('type', self::TYPE_WP_USERS)->findOne();
 
     if ($wp_segment === false) {
@@ -163,7 +163,7 @@ class Segment extends Model {
     return $wp_segment;
   }
 
-  static function getWooCommerceSegment() {
+  public static function getWooCommerceSegment() {
     $wc_segment = self::where('type', self::TYPE_WC_USERS)->findOne();
 
     if ($wc_segment === false) {
@@ -181,7 +181,7 @@ class Segment extends Model {
     return $wc_segment;
   }
 
-  static function shouldShowWooCommerceSegment() {
+  public static function shouldShowWooCommerceSegment() {
     $woocommerce_helper = new WCHelper();
     $is_woocommerce_active = $woocommerce_helper->isWooCommerceActive();
     $woocommerce_user_exists = Segment::tableAlias('segment')
@@ -200,7 +200,7 @@ class Segment extends Model {
     return true;
   }
 
-  static function getSegmentTypes() {
+  public static function getSegmentTypes() {
     $types = [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS];
     if (Segment::shouldShowWooCommerceSegment()) {
       $types[] = Segment::TYPE_WC_USERS;
@@ -208,11 +208,11 @@ class Segment extends Model {
     return $types;
   }
 
-  static function search($orm, $search = '') {
+  public static function search($orm, $search = '') {
     return $orm->whereLike('name', '%' . $search . '%');
   }
 
-  static function groups() {
+  public static function groups() {
     $all_query = Segment::getPublished();
     if (!Segment::shouldShowWooCommerceSegment()) {
       $all_query->whereNotEqual('type', self::TYPE_WC_USERS);
@@ -231,7 +231,7 @@ class Segment extends Model {
     ];
   }
 
-  static function groupBy($orm, $group = null) {
+  public static function groupBy($orm, $group = null) {
     if ($group === 'trash') {
       $orm->whereNotNull('deleted_at');
     } else {
@@ -240,7 +240,7 @@ class Segment extends Model {
     return $orm;
   }
 
-  static function getSegmentsWithSubscriberCount($type = self::TYPE_DEFAULT) {
+  public static function getSegmentsWithSubscriberCount($type = self::TYPE_DEFAULT) {
     $query = self::selectMany([self::$_table . '.id', self::$_table . '.name'])
       ->whereIn('type', Segment::getSegmentTypes())
       ->selectExpr(
@@ -271,14 +271,14 @@ class Segment extends Model {
     return $query->findArray();
   }
 
-  static function getSegmentsForImport() {
+  public static function getSegmentsForImport() {
     $segments = self::getSegmentsWithSubscriberCount($type = false);
     return array_values(array_filter($segments, function($segment) {
       return $segment['type'] !== Segment::TYPE_WC_USERS;
     }));
   }
 
-  static function getSegmentsForExport() {
+  public static function getSegmentsForExport() {
     return self::rawQuery(
       '(SELECT segments.id, segments.name, COUNT(relation.subscriber_id) as subscribers ' .
       'FROM ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation ' .
@@ -298,7 +298,7 @@ class Segment extends Model {
     )->findArray();
   }
 
-  static function listingQuery(array $data = []) {
+  public static function listingQuery(array $data = []) {
     $query = self::select('*');
     $query->whereIn('type', Segment::getSegmentTypes());
     if (isset($data['group'])) {
@@ -307,11 +307,11 @@ class Segment extends Model {
     return $query;
   }
 
-  static function getPublic() {
+  public static function getPublic() {
     return self::getPublished()->where('type', self::TYPE_DEFAULT)->orderByAsc('name');
   }
 
-  static function bulkTrash($orm) {
+  public static function bulkTrash($orm) {
     $count = parent::bulkAction($orm, function($ids) {
       Segment::rawExecute(join(' ', [
         'UPDATE `' . Segment::$_table . '`',
@@ -324,7 +324,7 @@ class Segment extends Model {
     return ['count' => $count];
   }
 
-  static function bulkDelete($orm) {
+  public static function bulkDelete($orm) {
     $count = parent::bulkAction($orm, function($ids) {
       // delete segments (only default)
       $segments = Segment::whereIn('id', $ids)
@@ -341,7 +341,7 @@ class Segment extends Model {
     return ['count' => $count];
   }
 
-  static function getAnalytics() {
+  public static function getAnalytics() {
     $analytics = Segment::selectExpr('type, count(*) as count')
                         ->whereNull('deleted_at')
                         ->groupBy('type')

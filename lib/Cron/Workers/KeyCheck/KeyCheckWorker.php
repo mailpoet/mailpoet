@@ -9,13 +9,13 @@ use MailPoet\Services\Bridge;
 abstract class KeyCheckWorker extends SimpleWorker {
   public $bridge;
 
-  function init() {
+  public function init() {
     if (!$this->bridge) {
       $this->bridge = new Bridge();
     }
   }
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     try {
       $result = $this->checkKey();
     } catch (\Exception $e) {
@@ -30,5 +30,5 @@ abstract class KeyCheckWorker extends SimpleWorker {
     return true;
   }
 
-  abstract function checkKey();
+  public abstract function checkKey();
 }

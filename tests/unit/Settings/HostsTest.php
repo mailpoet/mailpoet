@@ -5,7 +5,7 @@ namespace MailPoet\Test\Settings;
 use MailPoet\Settings\Hosts;
 
 class HostsTest extends \MailPoetUnitTest {
-  function testItReturnsAListOfWebHosts() {
+  public function testItReturnsAListOfWebHosts() {
     $web_hosts = Hosts::getWebHosts();
     expect($web_hosts)->notEmpty();
 
@@ -15,7 +15,7 @@ class HostsTest extends \MailPoetUnitTest {
     }
   }
 
-  function testItReturnsAListOfSMTPHosts() {
+  public function testItReturnsAListOfSMTPHosts() {
     $smtp_hosts = Hosts::getSMTPHosts();
     expect($smtp_hosts)->notEmpty();
 

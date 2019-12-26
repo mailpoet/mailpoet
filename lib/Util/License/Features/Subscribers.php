@@ -17,12 +17,12 @@ class Subscribers {
   /** @var SubscribersRepository */
   private $subscribers_repository;
 
-  function __construct(SettingsController $settings, SubscribersRepository $subscribers_repository) {
+  public function __construct(SettingsController $settings, SubscribersRepository $subscribers_repository) {
     $this->settings = $settings;
     $this->subscribers_repository = $subscribers_repository;
   }
 
-  function check() {
+  public function check() {
     $subscribers_count = $this->subscribers_repository->getTotalSubscribers();
     $has_mss_key = !empty($this->settings->get(Bridge::API_KEY_SETTING_NAME));
     $has_premium_key = !empty($this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME));
@@ -30,7 +30,7 @@ class Subscribers {
     return $subscribers_count > $this->getSubscribersLimit();
   }
 
-  function getSubscribersLimit() {
+  public function getSubscribersLimit() {
     $installation_time = strtotime($this->settings->get('installed_at'));
     $old_user = $installation_time < strtotime(self::NEW_LIMIT_DATE);
     return $old_user ? self::SUBSCRIBERS_OLD_LIMIT : self::SUBSCRIBERS_NEW_LIMIT;

@@ -94,7 +94,7 @@ class Subscribers extends APIEndpoint {
     $this->subscription_url_factory = $subscription_url_factory;
   }
 
-  function get($data = []) {
+  public function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
     if ($subscriber === false) {
@@ -111,7 +111,7 @@ class Subscribers extends APIEndpoint {
     }
   }
 
-  function listing($data = []) {
+  public function listing($data = []) {
 
     if (!isset($data['filter']['segment'])) {
       $listing_data = $this->listing_handler->get('\MailPoet\Models\Subscriber', $data);
@@ -159,7 +159,7 @@ class Subscribers extends APIEndpoint {
     }
   }
 
-  function subscribe($data = []) {
+  public function subscribe($data = []) {
     $form_id = (isset($data['form_id']) ? (int)$data['form_id'] : false);
     $form = Form::findOne($form_id);
     unset($data['form_id']);
@@ -336,7 +336,7 @@ class Subscribers extends APIEndpoint {
     return true;
   }
 
-  function save($data = []) {
+  public function save($data = []) {
     if (empty($data['segments'])) {
       $data['segments'] = [];
     }
@@ -400,7 +400,7 @@ class Subscribers extends APIEndpoint {
     return array_diff($data['segments'], $old_segment_ids);
   }
 
-  function restore($data = []) {
+  public function restore($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
     if ($subscriber instanceof Subscriber) {
@@ -418,7 +418,7 @@ class Subscribers extends APIEndpoint {
     }
   }
 
-  function trash($data = []) {
+  public function trash($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
     if ($subscriber instanceof Subscriber) {
@@ -436,7 +436,7 @@ class Subscribers extends APIEndpoint {
     }
   }
 
-  function delete($data = []) {
+  public function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
     if ($subscriber instanceof Subscriber) {
@@ -449,7 +449,7 @@ class Subscribers extends APIEndpoint {
     }
   }
 
-  function sendConfirmationEmail($data = []) {
+  public function sendConfirmationEmail($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
     if ($subscriber instanceof Subscriber) {
@@ -464,7 +464,7 @@ class Subscribers extends APIEndpoint {
     }
   }
 
-  function bulkAction($data = []) {
+  public function bulkAction($data = []) {
     try {
       if (!isset($data['listing']['filter']['segment'])) {
         return $this->successResponse(

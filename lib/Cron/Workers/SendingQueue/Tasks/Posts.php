@@ -14,7 +14,7 @@ class Posts {
     $this->logger_factory = LoggerFactory::getInstance();
   }
 
-  function extractAndSave($rendered_newsletter, $newsletter) {
+  public function extractAndSave($rendered_newsletter, $newsletter) {
     if ($newsletter->type !== NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
       return false;
     }
@@ -44,7 +44,7 @@ class Posts {
     return true;
   }
 
-  function getAlcPostsCount($rendered_newsletter, \MailPoet\Models\Newsletter $newsletter) {
+  public function getAlcPostsCount($rendered_newsletter, \MailPoet\Models\Newsletter $newsletter) {
     $template_posts_count = substr_count($newsletter->body, 'data-post-id');
     $newsletter_posts_count = substr_count($rendered_newsletter['html'], 'data-post-id');
     return $newsletter_posts_count - $template_posts_count;

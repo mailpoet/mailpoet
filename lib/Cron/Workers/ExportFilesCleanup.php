@@ -10,7 +10,7 @@ class ExportFilesCleanup extends SimpleWorker {
   const TASK_TYPE = 'export_files_cleanup';
   const DELETE_FILES_AFTER_X_DAYS = 1;
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     $iterator = new \GlobIterator(Export::getExportPath() . '/' . Export::getFilePrefix() . '*.*');
     foreach ($iterator as $file) {
       if (is_string($file)) {

@@ -14,7 +14,7 @@ class Registration {
   /** @var SubscriberActions */
   private $subscriber_actions;
 
-  function __construct(
+  public function __construct(
     SettingsController $settings,
     SubscriberActions $subscriber_actions
   ) {
@@ -22,7 +22,7 @@ class Registration {
     $this->subscriber_actions = $subscriber_actions;
   }
 
-  function extendForm() {
+  public function extendForm() {
     $label = $this->settings->get(
       'subscribe.on_register.label',
       WPFunctions::get()->__('Yes, please add me to your mailing list.', 'mailpoet')
@@ -40,7 +40,7 @@ class Registration {
     </p>';
   }
 
-  function onMultiSiteRegister($result) {
+  public function onMultiSiteRegister($result) {
     if (empty($result['errors']->errors)) {
       if (
         isset($_POST['mailpoet']['subscribe_on_register'])
@@ -55,7 +55,7 @@ class Registration {
     return $result;
   }
 
-  function onRegister(
+  public function onRegister(
     $errors,
     $user_login,
     $user_email = null

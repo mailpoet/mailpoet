@@ -14,7 +14,7 @@ class State
   /**
    * @return array
    */
-  function getCountsPerStatus() {
+  public function getCountsPerStatus() {
     $stats = [
       ScheduledTask::STATUS_COMPLETED => 0,
       ScheduledTask::STATUS_PAUSED => 0,
@@ -40,7 +40,7 @@ class State
   /**
    * @return array
    */
-  function getLatestTasks(
+  public function getLatestTasks(
     $type = null,
     $statuses = [
       ScheduledTask::STATUS_COMPLETED,

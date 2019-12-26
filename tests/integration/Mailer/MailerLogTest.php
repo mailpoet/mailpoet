@@ -12,12 +12,12 @@ class MailerLogTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
   }
 
-  function testItGetsMailerLogWhenOneExists() {
+  public function testItGetsMailerLogWhenOneExists() {
     $mailer_log = [
       'sent' => 0,
       'started' => time(),
@@ -26,19 +26,19 @@ class MailerLogTest extends \MailPoetTest {
     expect(MailerLog::getMailerLog())->equals($mailer_log);
   }
 
-  function testItGetsMailerLogWhenOneDoesNotExist() {
+  public function testItGetsMailerLogWhenOneDoesNotExist() {
     $mailer_log = MailerLog::getMailerLog();
     expect($mailer_log['sent'])->equals(0);
     expect(strlen($mailer_log['started']))->greaterThan(5);
   }
 
-  function testItCreatesMailer() {
+  public function testItCreatesMailer() {
     $mailer_log = MailerLog::createMailerLog();
     expect($mailer_log['sent'])->equals(0);
     expect(strlen($mailer_log['started']))->greaterThan(5);
   }
 
-  function testItResetsMailerLog() {
+  public function testItResetsMailerLog() {
     $mailer_log = [
       'sent' => 1,
       'started' => time() - 10,
@@ -50,7 +50,7 @@ class MailerLogTest extends \MailPoetTest {
     expect($updated_mailer_log['started'])->greaterThan($mailer_log['started']);
   }
 
-  function testItUpdatesMailerLog() {
+  public function testItUpdatesMailerLog() {
     $mailer_log = [
       'sent' => 1,
       'started' => time() - 10,
@@ -60,7 +60,7 @@ class MailerLogTest extends \MailPoetTest {
     expect($updated_mailer_log)->equals($mailer_log);
   }
 
-  function testItIncrementsSentCount() {
+  public function testItIncrementsSentCount() {
     $mailer_log = [
       'sent' => 1,
       'started' => time(),
@@ -72,7 +72,7 @@ class MailerLogTest extends \MailPoetTest {
     expect($updated_mailer_log['sent'])->equals(2);
   }
 
-  function testItChecksWhenSendingLimitIsReached() {
+  public function testItChecksWhenSendingLimitIsReached() {
     $mailer_config = [
       'frequency' => [
         'emails' => 2,
@@ -98,14 +98,14 @@ class MailerLogTest extends \MailPoetTest {
     expect(MailerLog::isSendingLimitReached())->true();
   }
 
-  function testItChecksWhenSendingIsPaused() {
+  public function testItChecksWhenSendingIsPaused() {
     $mailer_log = ['status' => MailerLog::STATUS_PAUSED];
     expect(MailerLog::isSendingPaused($mailer_log))->true();
     $mailer_log = ['status' => false];
     expect(MailerLog::isSendingPaused($mailer_log))->false();
   }
 
-  function testItResetsMailerAfterSendingLimitWaitPeriodIsOver() {
+  public function testItResetsMailerAfterSendingLimitWaitPeriodIsOver() {
     $mailer_config = [
       'frequency' => [
         'emails' => 2,
@@ -127,7 +127,7 @@ class MailerLogTest extends \MailPoetTest {
     expect($updated_mailer_log['sent'])->equals(0);
   }
 
-  function testItResumesSending() {
+  public function testItResumesSending() {
     // set status to "paused"
     $mailer_log = ['status' => MailerLog::STATUS_PAUSED];
     MailerLog::updateMailerLog($mailer_log);
@@ -139,7 +139,7 @@ class MailerLogTest extends \MailPoetTest {
     expect($mailer_log['status'])->null();
   }
 
-  function testItPausesSending() {
+  public function testItPausesSending() {
     $mailer_log = [
       'status' => null,
       'retry_attempt' => MailerLog::RETRY_ATTEMPTS_LIMIT,
@@ -153,7 +153,7 @@ class MailerLogTest extends \MailPoetTest {
     expect($mailer_log['retry_at'])->null();
   }
 
-  function testItProcessesSendingError() {
+  public function testItProcessesSendingError() {
     // retry-related mailer values should be null
     $mailer_log = MailerLog::getMailerLog();
     expect($mailer_log['retry_attempt'])->null();
@@ -173,7 +173,7 @@ class MailerLogTest extends \MailPoetTest {
     );
   }
 
-  function testItProcessesNonBlockingSendingError() {
+  public function testItProcessesNonBlockingSendingError() {
     $mailer_log = MailerLog::getMailerLog();
     expect($mailer_log['retry_attempt'])->null();
     expect($mailer_log['retry_at'])->null();
@@ -191,7 +191,7 @@ class MailerLogTest extends \MailPoetTest {
     );
   }
 
-  function testItPausesSendingAfterProcessingSendingError() {
+  public function testItPausesSendingAfterProcessingSendingError() {
     $mailer_log = MailerLog::getMailerLog();
     expect($mailer_log['error'])->null();
     try {
@@ -212,7 +212,7 @@ class MailerLogTest extends \MailPoetTest {
     );
   }
 
-  function testItEnforcesSendingLimit() {
+  public function testItEnforcesSendingLimit() {
     $mailer_config = [
       'frequency' => [
         'emails' => 2,
@@ -234,7 +234,7 @@ class MailerLogTest extends \MailPoetTest {
     }
   }
 
-  function testItEnsuresSendingLimitIsEnforcedAfterFrequencyIsLowered() {
+  public function testItEnsuresSendingLimitIsEnforcedAfterFrequencyIsLowered() {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['sent'] = 10;
     $mailer_log['started'] = time();
@@ -256,7 +256,7 @@ class MailerLogTest extends \MailPoetTest {
     }
   }
 
-  function testItEnsuresSendingLimitIsNotEnforcedAfterFrequencyIsIncreased() {
+  public function testItEnsuresSendingLimitIsNotEnforcedAfterFrequencyIsIncreased() {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['sent'] = 10;
     $mailer_log['started'] = time();
@@ -277,7 +277,7 @@ class MailerLogTest extends \MailPoetTest {
     }
   }
 
-  function testItEnforcesRetryAtTime() {
+  public function testItEnforcesRetryAtTime() {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['retry_at'] = time() + 10;
     // exception is thrown when current time is sooner than 120 seconds
@@ -289,7 +289,7 @@ class MailerLogTest extends \MailPoetTest {
     }
   }
 
-  function testItEnforcesRetryAttempts() {
+  public function testItEnforcesRetryAttempts() {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['retry_attempt'] = 2;
     // allow less than 3 attempts
@@ -306,7 +306,7 @@ class MailerLogTest extends \MailPoetTest {
     expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);
   }
 
-  function testItClearsSendingErrorLog() {
+  public function testItClearsSendingErrorLog() {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['retry_attempt'] = 1;
     $mailer_log['retry_at'] = 1;
@@ -319,7 +319,7 @@ class MailerLogTest extends \MailPoetTest {
     expect($mailer_log['status'])->equals('status');
   }
 
-  function testItEnforcesPausedStatus() {
+  public function testItEnforcesPausedStatus() {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['status'] = MailerLog::STATUS_PAUSED;
     try {
@@ -330,7 +330,7 @@ class MailerLogTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
   }
 }

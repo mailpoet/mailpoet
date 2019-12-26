@@ -9,7 +9,7 @@ use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Settings\SettingsController;
 
 class CronTriggerTest extends \MailPoetUnitTest {
-  function testItDefinesConstants() {
+  public function testItDefinesConstants() {
     expect(CronTrigger::METHOD_LINUX_CRON)->same('Linux Cron');
     expect(CronTrigger::METHOD_MAILPOET)->same('MailPoet');
     expect(CronTrigger::METHOD_WORDPRESS)->same('WordPress');
@@ -23,7 +23,7 @@ class CronTriggerTest extends \MailPoetUnitTest {
     expect(CronTrigger::SETTING_NAME)->equals('cron_trigger');
   }
 
-  function testItCanInitializeCronTriggerMethod() {
+  public function testItCanInitializeCronTriggerMethod() {
     $settings_mock = Stub::makeEmpty(SettingsController::class, [
       'get' => CronTrigger::METHOD_WORDPRESS,
     ]);
@@ -31,7 +31,7 @@ class CronTriggerTest extends \MailPoetUnitTest {
     expect($cron_trigger->init())->true();
   }
 
-  function testItReturnsFalseWhenItCantInitializeCronTriggerMethod() {
+  public function testItReturnsFalseWhenItCantInitializeCronTriggerMethod() {
     $settings_mock = Stub::makeEmpty(SettingsController::class, [
       'get' => 'unknown-method',
     ]);
@@ -39,7 +39,7 @@ class CronTriggerTest extends \MailPoetUnitTest {
     expect($cron_trigger->init())->false();
   }
 
-  function testItIgnoresExceptionsThrownFromCronTriggerMethods() {
+  public function testItIgnoresExceptionsThrownFromCronTriggerMethods() {
     $settings_mock = Stub::makeEmpty(SettingsController::class, [
       'get' => CronTrigger::METHOD_MAILPOET,
     ]);

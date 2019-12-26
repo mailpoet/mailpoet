@@ -8,7 +8,7 @@ use MailPoetVendor\Paris\ORMWrapper;
 class Handler {
   const DEFAULT_LIMIT_PER_PAGE = 20;
 
-  function getSelection($model_class, array $data) {
+  public function getSelection($model_class, array $data) {
     $data = $this->processData($data);
     $table_name = $model_class::$_table;
     $model = Model::factory($model_class);
@@ -34,7 +34,7 @@ class Handler {
     }
   }
 
-  function get($model_class, array $data) {
+  public function get($model_class, array $data) {
     $data = $this->processData($data);
     $table_name = $model_class::$_table;
     $model = Model::factory($model_class);

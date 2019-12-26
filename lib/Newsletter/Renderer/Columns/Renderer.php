@@ -6,7 +6,7 @@ use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Renderer {
 
-  function render($content_block, $columns_data) {
+  public function render($content_block, $columns_data) {
 
     $columns_count = count($content_block['blocks']);
 
@@ -24,7 +24,7 @@ class Renderer {
     return $template['content_start'] . $content . $template['content_end'];
   }
 
-  function getOneColumnTemplate($styles, $image) {
+  public function getOneColumnTemplate($styles, $image) {
     $background_css = $this->getBackgroundCss($styles, $image);
     $template['content_start'] = '
       <tr>
@@ -99,7 +99,7 @@ class Renderer {
       </td>';
   }
 
-  function getMultipleColumnsContentStart($width, $alignment, $class) {
+  public function getMultipleColumnsContentStart($width, $alignment, $class) {
     return '
       <td width="' . $width . '" valign="top">
         <![endif]--><div style="display:inline-block; max-width:' . $width . 'px; vertical-align:top; width:100%;">

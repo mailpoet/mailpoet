@@ -19,7 +19,7 @@ class DBMapper {
  *
  * @return DynamicSegment
  */
-  function mapSegment(DynamicSegment $segment_data, array $filters_data) {
+  public function mapSegment(DynamicSegment $segment_data, array $filters_data) {
     $filters = $this->getFilters($segment_data->id, $filters_data);
     $segment_data->setFilters($filters);
     return $segment_data;
@@ -31,7 +31,7 @@ class DBMapper {
    *
    * @return DynamicSegment[]
    */
-  function mapSegments(array $segments_data, array $filters_data) {
+  public function mapSegments(array $segments_data, array $filters_data) {
     $result = [];
     foreach ($segments_data as $segment_data) {
       $result[] = $this->mapSegment($segment_data, $filters_data);

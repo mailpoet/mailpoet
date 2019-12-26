@@ -13,7 +13,7 @@ class MailChimp {
   private $lists_url;
   const API_KEY_REGEX = '/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,4}$/';
 
-  function __construct($api_key) {
+  public function __construct($api_key) {
     $this->api_key = $this->getAPIKey($api_key);
     $this->max_post_size = Helpers::getMaxPostSize('bytes');
     $this->data_center = $this->getDataCenter($this->api_key);
@@ -21,7 +21,7 @@ class MailChimp {
     $this->export_url = 'https://%s.api.mailchimp.com/export/1.0/list/?apikey=%s&id=%s';
   }
 
-  function getLists() {
+  public function getLists() {
     if (!$this->api_key || !$this->data_center) {
       return $this->throwException('API');
     }
@@ -59,7 +59,7 @@ class MailChimp {
     return $lists;
   }
 
-  function getSubscribers($lists = []) {
+  public function getSubscribers($lists = []) {
     if (!$this->api_key || !$this->data_center) {
       return $this->throwException('API');
     }
@@ -122,17 +122,17 @@ class MailChimp {
     ];
   }
 
-  function getDataCenter($api_key) {
+  public function getDataCenter($api_key) {
     if (!$api_key) return false;
     $api_key_parts = explode('-', $api_key);
     return end($api_key_parts);
   }
 
-  function getAPIKey($api_key) {
+  public function getAPIKey($api_key) {
     return (preg_match(self::API_KEY_REGEX, $api_key)) ? $api_key : false;
   }
 
-  function throwException($error) {
+  public function throwException($error) {
     $errorMessage = WPFunctions::get()->__('Unknown MailChimp error.', 'mailpoet');
     switch ($error) {
       case 'API':

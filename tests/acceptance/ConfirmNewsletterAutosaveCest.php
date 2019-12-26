@@ -4,7 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 class ConfirmNewsletterAutosaveCest {
 
-  function confirmNewsletterAutoSave(\AcceptanceTester $I) {
+  public function confirmNewsletterAutoSave(\AcceptanceTester $I) {
     $I->wantTo('Confirm autosave works as advertised');
 
     $newsletter_title = 'Autosave Test ' . \MailPoet\Util\Security::generateRandomString();

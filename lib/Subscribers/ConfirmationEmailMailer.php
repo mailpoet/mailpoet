@@ -32,7 +32,7 @@ class ConfirmationEmailMailer {
   /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
-  function __construct(Mailer $mailer, WPFunctions $wp, SettingsController $settings, SubscriptionUrlFactory $subscription_url_factory) {
+  public function __construct(Mailer $mailer, WPFunctions $wp, SettingsController $settings, SubscriptionUrlFactory $subscription_url_factory) {
     $this->mailer = $mailer;
     $this->wp = $wp;
     $this->settings = $settings;
@@ -40,7 +40,7 @@ class ConfirmationEmailMailer {
     $this->subscription_url_factory = $subscription_url_factory;
   }
 
-  function sendConfirmationEmail(Subscriber $subscriber) {
+  public function sendConfirmationEmail(Subscriber $subscriber) {
     $signup_confirmation = $this->settings->get('signup_confirmation');
     if ((bool)$signup_confirmation['enabled'] === false) {
       return false;

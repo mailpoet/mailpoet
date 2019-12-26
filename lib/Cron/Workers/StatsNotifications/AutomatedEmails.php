@@ -37,7 +37,7 @@ class AutomatedEmails extends SimpleWorker {
   /** @var NewsletterStatisticsRepository */
   private $newsletter_statistics_repository;
 
-  function __construct(
+  public function __construct(
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
@@ -54,7 +54,7 @@ class AutomatedEmails extends SimpleWorker {
     $this->newsletter_statistics_repository = $newsletter_statistics_repository;
   }
 
-  function checkProcessingRequirements() {
+  public function checkProcessingRequirements() {
     $settings = $this->settings->get(Worker::SETTINGS_KEY);
     if (!is_array($settings)) {
       return false;
@@ -74,7 +74,7 @@ class AutomatedEmails extends SimpleWorker {
     return (bool)$settings['automated'];
   }
 
-  function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer) {
     try {
       $settings = $this->settings->get(Worker::SETTINGS_KEY);
       $newsletters = $this->getNewsletters();
@@ -147,7 +147,7 @@ class AutomatedEmails extends SimpleWorker {
     return $context;
   }
 
-  function getNextRunDate() {
+  public function getNextRunDate() {
     $wp = new WPFunctions;
     $date = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     return $date->endOfMonth()->next(Carbon::MONDAY)->midDay();

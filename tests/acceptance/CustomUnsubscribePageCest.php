@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 class CustomUnsubscribePageCest {
-  function createCustomUnsubscribePage(\AcceptanceTester $I) {
+  public function createCustomUnsubscribePage(\AcceptanceTester $I) {
     $I->wantTo('Create page with MP subscriber shortcode');
     $pageTitle = 'SorryToSeeYouGo';
     $pageText = 'Manage your subscription';

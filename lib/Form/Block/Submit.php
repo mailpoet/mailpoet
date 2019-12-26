@@ -4,7 +4,7 @@ namespace MailPoet\Form\Block;
 
 class Submit extends Base {
 
-  static function render($block) {
+  public static function render($block) {
     $html = '';
 
     $html .= '<p class="mailpoet_paragraph"><input type="submit" class="mailpoet_submit" ';

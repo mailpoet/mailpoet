@@ -28,7 +28,7 @@ class SubscriptionTest extends \MailPoetTest {
   /** @var Subscriber */
   private $subscriber;
 
-  function _before() {
+  public function _before() {
     $this->order_id = 123; // dummy
     $this->subscription = ContainerWrapper::getInstance()->get(Subscription::class);
     $this->settings = SettingsController::getInstance();
@@ -44,7 +44,7 @@ class SubscriptionTest extends \MailPoetTest {
     $this->original_settings = $this->settings->get('woocommerce');
   }
 
-  function testItDisplaysACheckedCheckboxIfCurrentUserIsSubscribed() {
+  public function testItDisplaysACheckedCheckboxIfCurrentUserIsSubscribed() {
     WP::synchronizeUsers();
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
@@ -56,7 +56,7 @@ class SubscriptionTest extends \MailPoetTest {
     expect($this->getRenderedOptinField())->contains('checked');
   }
 
-  function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotSubscribed() {
+  public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotSubscribed() {
     WP::synchronizeUsers();
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
@@ -68,18 +68,18 @@ class SubscriptionTest extends \MailPoetTest {
     expect($this->getRenderedOptinField())->notContains('checked');
   }
 
-  function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotLoggedIn() {
+  public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotLoggedIn() {
     wp_set_current_user(0);
     expect($this->getRenderedOptinField())->notContains('checked');
   }
 
-  function testItDisplaysCheckboxOptinMessageFromSettings() {
+  public function testItDisplaysCheckboxOptinMessageFromSettings() {
     $new_message = 'This is a test message.';
     $this->settings->set(Subscription::OPTIN_MESSAGE_SETTING_NAME, $new_message);
     expect($this->getRenderedOptinField())->contains($new_message);
   }
 
-  function testItsTemplateCanBeOverriddenByAHook() {
+  public function testItsTemplateCanBeOverriddenByAHook() {
     $new_template = 'This is a new template';
     add_filter(
       'mailpoet_woocommerce_checkout_optin_template',
@@ -94,13 +94,13 @@ class SubscriptionTest extends \MailPoetTest {
     expect($result)->contains(Subscription::CHECKOUT_OPTIN_INPUT_NAME);
   }
 
-  function testItDoesNotTryToSubscribeIfThereIsNoEmailInOrderData() {
+  public function testItDoesNotTryToSubscribeIfThereIsNoEmailInOrderData() {
     $data = [];
     $subscribed = $this->subscription->subscribeOnCheckout($this->order_id, $data);
     expect($subscribed)->equals(null);
   }
 
-  function testItDoesNotTryToSubscribeIfSubscriberWithTheEmailWasNotSynced() {
+  public function testItDoesNotTryToSubscribeIfSubscriberWithTheEmailWasNotSynced() {
     // non-existent
     $data['billing_email'] = 'non-existent-subscriber@example.com';
     $subscribed = $this->subscription->subscribeOnCheckout($this->order_id, $data);
@@ -113,7 +113,7 @@ class SubscriptionTest extends \MailPoetTest {
     expect($subscribed)->equals(null);
   }
 
-  function testItUnsubscribesIfCheckoutOptinIsDisabled() {
+  public function testItUnsubscribesIfCheckoutOptinIsDisabled() {
     SubscriberSegment::subscribeToSegments(
       $this->subscriber,
       [$this->wc_segment->id]
@@ -130,7 +130,7 @@ class SubscriptionTest extends \MailPoetTest {
     expect($subscribed_segments)->count(0);
   }
 
-  function testItUnsubscribesIfCheckboxIsNotChecked() {
+  public function testItUnsubscribesIfCheckboxIsNotChecked() {
     SubscriberSegment::subscribeToSegments(
       $this->subscriber,
       [$this->wc_segment->id]
@@ -150,7 +150,7 @@ class SubscriptionTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
-  function testItSubscribesIfCheckboxIsChecked() {
+  public function testItSubscribesIfCheckboxIsChecked() {
     $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
     $this->subscriber->save();
 
@@ -182,7 +182,7 @@ class SubscriptionTest extends \MailPoetTest {
     return $result;
   }
 
-  function _after() {
+  public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     // restore settings

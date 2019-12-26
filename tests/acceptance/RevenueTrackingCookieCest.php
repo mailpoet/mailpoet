@@ -15,12 +15,12 @@ class RevenueTrackingCookieCest {
     $this->settings = $settings;
   }
 
-  function _before(\AcceptanceTester $I) {
+  public function _before(\AcceptanceTester $I) {
     $I->activateWooCommerce();
     $this->settings->withCronTriggerMethod('WordPress');
   }
 
-  function cookieIsStoredOnClick(\AcceptanceTester $I) {
+  public function cookieIsStoredOnClick(\AcceptanceTester $I) {
     $I->wantTo('Test Revenue cookie is saved');
     $newsletter_subject = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
     $newsletter = (new Newsletter())->withSubject($newsletter_subject)->create();
@@ -59,7 +59,7 @@ class RevenueTrackingCookieCest {
     $I->canSeeCookie('mailpoet_revenue_tracking');
   }
 
-  function cookieIsNotStoredWhenSettingsDisabled(\AcceptanceTester $I) {
+  public function cookieIsNotStoredWhenSettingsDisabled(\AcceptanceTester $I) {
     $I->wantTo('Test Revenue cookie is not saved');
     $newsletter_subject = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
     $newsletter = (new Newsletter())->withSubject($newsletter_subject)->create();

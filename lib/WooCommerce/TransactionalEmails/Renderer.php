@@ -20,7 +20,7 @@ class Renderer {
   /** @var string */
   private $html_after_content;
 
-  function __construct(csstidy $css_parser) {
+  public function __construct(csstidy $css_parser) {
     $this->css_parser = $css_parser;
     $this->html_before_content = '';
     $this->html_after_content = '';

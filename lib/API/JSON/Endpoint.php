@@ -16,13 +16,13 @@ abstract class Endpoint {
 
   protected static $get_methods = [];
 
-  function successResponse(
+  public function successResponse(
     $data = [], $meta = [], $status = Response::STATUS_OK
   ) {
     return new SuccessResponse($data, $meta, $status);
   }
 
-  function errorResponse(
+  public function errorResponse(
     $errors = [], $meta = [], $status = Response::STATUS_NOT_FOUND
   ) {
     if (empty($errors)) {
@@ -33,7 +33,7 @@ abstract class Endpoint {
     return new ErrorResponse($errors, $meta, $status);
   }
 
-  function badRequest($errors = [], $meta = []) {
+  public function badRequest($errors = [], $meta = []) {
     if (empty($errors)) {
       $errors = [
         Error::BAD_REQUEST => WPFunctions::get()->__('Invalid request parameters', 'mailpoet'),

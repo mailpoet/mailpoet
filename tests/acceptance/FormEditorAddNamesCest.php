@@ -9,7 +9,7 @@ use MailPoet\Test\DataFactories\Segment;
 
 class FormEditorAddNamesCest {
 
-  function addNamesToAForm(\AcceptanceTester $I) {
+  public function addNamesToAForm(\AcceptanceTester $I) {
     $segment_factory = new Segment();
     $segment_name = 'Fancy List';
     $segment = $segment_factory->withName($segment_name)->create();

@@ -16,7 +16,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct($segments_ids, $batch_size, WPFunctions $wp = null) {
+  public function __construct($segments_ids, $batch_size, WPFunctions $wp = null) {
     parent::__construct($segments_ids, $batch_size);
     if ($wp == null) {
       $wp = new WPFunctions;

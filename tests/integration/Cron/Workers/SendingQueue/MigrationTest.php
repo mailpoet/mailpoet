@@ -19,7 +19,7 @@ class MigrationTest extends \MailPoetTest {
   /** @var Migration */
   private $worker;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     // Alter table to test migration
     $this->downgradeTable();
@@ -44,17 +44,17 @@ class MigrationTest extends \MailPoetTest {
     $this->worker = new Migration(microtime(true));
   }
 
-  function testItDefinesConstants() {
+  public function testItDefinesConstants() {
     expect(Migration::BATCH_SIZE)->equals(20);
   }
 
-  function testItChecksForACompletedMigrationBeforeRunning() {
+  public function testItChecksForACompletedMigrationBeforeRunning() {
     expect($this->worker->checkProcessingRequirements())->true();
     $this->createCompletedTask();
     expect($this->worker->checkProcessingRequirements())->false();
   }
 
-  function testItPausesSendingWhenPreparingATask() {
+  public function testItPausesSendingWhenPreparingATask() {
     $task = $this->createScheduledTask();
     expect(MailerLog::isSendingPaused())->false();
     $result = $this->worker->prepareTaskStrategy($task, microtime(true));
@@ -62,7 +62,7 @@ class MigrationTest extends \MailPoetTest {
     expect(MailerLog::isSendingPaused())->true();
   }
 
-  function testItResumesSendingIfThereIsNothingToMigrate() {
+  public function testItResumesSendingIfThereIsNothingToMigrate() {
     SendingQueue::deleteMany();
     $this->worker->pauseSending();
     expect(MailerLog::isSendingPaused())->true();
@@ -71,14 +71,14 @@ class MigrationTest extends \MailPoetTest {
     expect(MailerLog::isSendingPaused())->false();
   }
 
-  function testItCompletesTaskIfThereIsNothingToMigrate() {
+  public function testItCompletesTaskIfThereIsNothingToMigrate() {
     SendingQueue::deleteMany();
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
     expect(ScheduledTask::findOne($task->id)->status)->equals(ScheduledTask::STATUS_COMPLETED);
   }
 
-  function testItMigratesSendingQueuesAndSubscribers() {
+  public function testItMigratesSendingQueuesAndSubscribers() {
     expect($this->worker->getUnmigratedQueues()->count())->equals(4);
     expect(ScheduledTask::where('type', SendingTask::TASK_TYPE)->findMany())->count(0);
     expect(ScheduledTaskSubscriber::whereGt('task_id', 0)->count())->equals(0);
@@ -102,7 +102,7 @@ class MigrationTest extends \MailPoetTest {
     expect($migrated_subscribers[1]->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
   }
 
-  function testItResumesSendingAfterMigratingSendingQueuesAndSubscribers() {
+  public function testItResumesSendingAfterMigratingSendingQueuesAndSubscribers() {
     $this->worker->pauseSending();
     expect(MailerLog::isSendingPaused())->true();
     $task = $this->createRunningTask();
@@ -110,7 +110,7 @@ class MigrationTest extends \MailPoetTest {
     expect(MailerLog::isSendingPaused())->false();
   }
 
-  function testItUsesWPTimeToReturnNextRunDate() {
+  public function testItUsesWPTimeToReturnNextRunDate() {
     $timestamp = 1514801410;
 
     $wp = Stub::make(new WPFunctions, [
@@ -191,7 +191,7 @@ class MigrationTest extends \MailPoetTest {
     );
   }
 
-  function _after() {
+  public function _after() {
     $this->di_container->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);

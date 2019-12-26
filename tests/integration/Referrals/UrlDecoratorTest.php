@@ -14,19 +14,19 @@ class UrlDecoratorTest extends \MailPoetTest {
   /** @var UrlDecorator */
   private $url_decorator;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->url_decorator = new UrlDecorator(WPFunctions::get(), $this->settings);
   }
 
-  function testItDoesntDoAnythingWhenNoReferralId() {
+  public function testItDoesntDoAnythingWhenNoReferralId() {
     $this->settings->set(ReferralDetector::REFERRAL_SETTING_NAME, null);
     $url = 'http://example.com';
     expect($this->url_decorator->decorate($url))->equals($url);
   }
 
-  function testItCorrectlyAddsReferralId() {
+  public function testItCorrectlyAddsReferralId() {
     $this->settings->set(ReferralDetector::REFERRAL_SETTING_NAME, 'abcdefgh');
     expect($this->url_decorator->decorate('http://example.com/'))
       ->equals('http://example.com/?ref=abcdefgh');

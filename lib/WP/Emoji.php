@@ -8,21 +8,21 @@ class Emoji {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp = null) {
+  public function __construct(WPFunctions $wp = null) {
     if ($wp === null) {
       $wp = new WPFunctions();
     }
     $this->wp = $wp;
   }
 
-  function encodeEmojisInBody($newsletter_rendered_body) {
+  public function encodeEmojisInBody($newsletter_rendered_body) {
     if (is_array($newsletter_rendered_body)) {
       return array_map([$this, 'encodeRenderedBodyForUTF8Column'], $newsletter_rendered_body);
     }
     return $this->encodeRenderedBodyForUTF8Column($newsletter_rendered_body);
   }
 
-  function decodeEmojisInBody($newsletter_rendered_body) {
+  public function decodeEmojisInBody($newsletter_rendered_body) {
     if (is_array($newsletter_rendered_body)) {
       return array_map([$this, 'decodeEntities'], $newsletter_rendered_body);
     }
@@ -37,7 +37,7 @@ class Emoji {
     );
   }
 
-  function encodeForUTF8Column($table, $field, $value) {
+  public function encodeForUTF8Column($table, $field, $value) {
     global $wpdb;
     $charset = $wpdb->get_col_charset($table, $field);
     if ($charset === 'utf8') {
@@ -46,7 +46,7 @@ class Emoji {
     return $value;
   }
 
-  function decodeEntities($content) {
+  public function decodeEntities($content) {
     // Based on WPFunctions::get()->wpStaticizeEmoji()
 
     // Loosely match the Emoji Unicode range.

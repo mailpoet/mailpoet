@@ -6,17 +6,17 @@ use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class EscapeHelperTest extends \MailPoetUnitTest {
 
-  function testItEscapesHtmlText() {
+  public function testItEscapesHtmlText() {
     expect(EHelper::escapeHtmlText('Text<tag>\'"Hello</tag>'))
       ->equals("Text&lt;tag&gt;'\"Hello&lt;/tag&gt;");
   }
 
-  function testItEscapesHtmlAttr() {
+  public function testItEscapesHtmlAttr() {
     expect(EHelper::escapeHtmlAttr('Text<tag>\'"Hello</tag>'))
       ->equals("Text&lt;tag&gt;&#039;&quot;Hello&lt;/tag&gt;");
   }
 
-  function testItEscapesLinkAttr() {
+  public function testItEscapesLinkAttr() {
     expect(EHelper::escapeHtmlLinkAttr('Text<tag>\'"Hello</tag>'))
       ->equals("Text&lt;tag&gt;&#039;&quot;Hello&lt;/tag&gt;");
     expect(EHelper::escapeHtmlLinkAttr('javaScRipt:Text<tag>\'"Hello</tag>'))

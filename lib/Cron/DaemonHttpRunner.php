@@ -26,7 +26,7 @@ class DaemonHttpRunner {
   /** @var WordPress */
   private $wordpress_trigger;
 
-  function __construct(Daemon $daemon = null, CronHelper $cron_helper, SettingsController $settings, WordPress $wordpress_trigger) {
+  public function __construct(Daemon $daemon = null, CronHelper $cron_helper, SettingsController $settings, WordPress $wordpress_trigger) {
     $this->cron_helper = $cron_helper;
     $this->settings_daemon_data = $this->cron_helper->getDaemon();
     $this->token = $this->cron_helper->createToken();
@@ -36,7 +36,7 @@ class DaemonHttpRunner {
     $this->wordpress_trigger = $wordpress_trigger;
   }
 
-  function ping() {
+  public function ping() {
     // if Tracy enabled & called by 'MailPoet Cron' user agent, disable Tracy Bar
     // (happens in CronHelperTest because it's not a real integration test - calls other WP instance)
     $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
@@ -47,7 +47,7 @@ class DaemonHttpRunner {
     $this->terminateRequest(self::PING_SUCCESS_RESPONSE);
   }
 
-  function run($request_data) {
+  public function run($request_data) {
     ignore_user_abort(true);
     if (strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
@@ -94,33 +94,33 @@ class DaemonHttpRunner {
     return $this->callSelf();
   }
 
-  function pauseExecution($pause_time) {
+  public function pauseExecution($pause_time) {
     return sleep($pause_time);
   }
 
-  function callSelf() {
+  public function callSelf() {
     $this->cron_helper->accessDaemon($this->token);
     $this->terminateRequest();
   }
 
-  function abortWithError($message) {
+  public function abortWithError($message) {
     WPFunctions::get()->statusHeader(404, $message);
     exit;
   }
 
-  function terminateRequest($message = false) {
+  public function terminateRequest($message = false) {
     die($message);
   }
 
-  function isCronTriggerMethodWordPress() {
+  public function isCronTriggerMethodWordPress() {
     return $this->settings->get(CronTrigger::SETTING_NAME . '.method') === CronTrigger::METHOD_WORDPRESS;
   }
 
-  function checkWPTriggerExecutionRequirements() {
+  public function checkWPTriggerExecutionRequirements() {
     return $this->wordpress_trigger->checkExecutionRequirements();
   }
 
-  function stopCron() {
+  public function stopCron() {
     return $this->wordpress_trigger->stop();
   }
 

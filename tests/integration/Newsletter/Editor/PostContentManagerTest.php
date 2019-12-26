@@ -8,14 +8,14 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class PostContentManagerTest extends \MailPoetTest {
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->post_content = new PostContentManager(
       $this->make(WooCommerceHelper::class, ['isWooCommerceActive' => false])
     );
   }
 
-  function testFilterContentRetainsStructuralTags() {
+  public function testFilterContentRetainsStructuralTags() {
     $html = '<p>some paragraph text</p>';
     expect($this->post_content->filterContent($html, 'full'))->equals(
       '<p class="' . PostContentManager::WP_POST_CLASS . '">some paragraph text</p>'
@@ -42,7 +42,7 @@ class PostContentManagerTest extends \MailPoetTest {
     );
   }
 
-  function testFilterContentRetainsHeadings() {
+  public function testFilterContentRetainsHeadings() {
     $html = '<h1>heading 1</h1>';
     expect($this->post_content->filterContent($html, 'full'))->equals($html);
 
@@ -65,7 +65,7 @@ class PostContentManagerTest extends \MailPoetTest {
       ->equals('<p class="' . PostContentManager::WP_POST_CLASS . '">heading 3</p>');
   }
 
-  function testFilterContentRetainsTextStyling() {
+  public function testFilterContentRetainsTextStyling() {
     $text_tags = [
       '<em>emphasized></em>',
       '<b>bold</b>',
@@ -80,7 +80,7 @@ class PostContentManagerTest extends \MailPoetTest {
     }
   }
 
-  function testFilterContentRetainsImagesAndLinks() {
+  public function testFilterContentRetainsImagesAndLinks() {
     $html = '<img src="#" alt="some alt" />';
     expect($this->post_content->filterContent($html, 'full'))->equals(
       '<p class="' . PostContentManager::WP_POST_CLASS . '"><img src="#" alt="some alt" /></p>'
@@ -92,7 +92,7 @@ class PostContentManagerTest extends \MailPoetTest {
     );
   }
 
-  function testFilterContentStripsUndesirableTags() {
+  public function testFilterContentStripsUndesirableTags() {
     $undesirable_tags = [
       '<embed src="#" />',
       '<iframe src="#" />',
@@ -111,7 +111,7 @@ class PostContentManagerTest extends \MailPoetTest {
     }
   }
 
-  function testFilterContentStripsUndesirableTagsForExcerpts() {
+  public function testFilterContentStripsUndesirableTagsForExcerpts() {
     $undesirable_tags = [
       '<embed src="#" />',
       '<iframe src="#" />',
@@ -135,7 +135,7 @@ class PostContentManagerTest extends \MailPoetTest {
   }
 
 
-  function testItAppliesCustomMaxExcerptLenghViaHook() {
+  public function testItAppliesCustomMaxExcerptLenghViaHook() {
     $post_content_manager = new PostContentManager(
       $this->make(WooCommerceHelper::class, ['isWooCommerceActive' => false])
     );
@@ -157,7 +157,7 @@ class PostContentManagerTest extends \MailPoetTest {
     expect($excerpt)->equals('one two &hellip;');
   }
 
-  function testItStripsShortcodesWhenGettingPostContent() {
+  public function testItStripsShortcodesWhenGettingPostContent() {
     // shortcodes are stripped in excerpt
     $post = (object)[
       'post_excerpt' => '[shortcode]some text in excerpt[/shortcode]',
@@ -177,14 +177,14 @@ class PostContentManagerTest extends \MailPoetTest {
     expect($this->post_content->getContent($post, ''))->equals('some text in content');
   }
 
-  function testItRemovesImageCaptionsFromClassicEditorPosts() {
+  public function testItRemovesImageCaptionsFromClassicEditorPosts() {
     $post = (object)[
       'post_content' => 'Text [caption id="attachment_23" align="alignnone" width="300"]<img class="size-medium wp-image-23" src="i.png" alt="Alt" width="300" height="300" />Caption[/caption] Text [caption id="attachment_23" align="alignnone" width="300"]<img class="size-medium wp-image-23" src="i.png" alt="Alt" width="300" height="300" />Caption[/caption] Text',
     ];
     expect($this->post_content->getContent($post, 'excerpt'))->equals('Text Text Text');
   }
 
-  function testItRemovesImageCaptionsFromGutenbergPosts() {
+  public function testItRemovesImageCaptionsFromGutenbergPosts() {
     $content = <<<EOT
       <!-- wp:paragraph -->
       <p>Text</p>

@@ -24,7 +24,7 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
   /** @var AbandonedCartPageVisitTracker */
   private $page_visit_tracker;
 
-  function _before() {
+  public function _before() {
     $this->current_time = Carbon::now();
     Carbon::setTestNow($this->current_time);
 
@@ -43,17 +43,17 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     $this->page_visit_tracker = new AbandonedCartPageVisitTracker($this->wp, $woo_commerce_helper_mock, new Cookies());
   }
 
-  function testItSetsTimestampWhenTrackingStarted() {
+  public function testItSetsTimestampWhenTrackingStarted() {
     $this->page_visit_tracker->startTracking();
     expect($this->session_store['mailpoet_last_visit_timestamp'])->same($this->current_time->getTimestamp());
   }
 
-  function testItDeletesTimestampWhenTrackingStopped() {
+  public function testItDeletesTimestampWhenTrackingStopped() {
     $this->page_visit_tracker->stopTracking();
     expect($this->session_store)->isEmpty();
   }
 
-  function testItTracks() {
+  public function testItTracks() {
     $this->wp->method('isAdmin')->willReturn(false);
     $this->wp->method('wpGetCurrentUser')->willReturn(
       $this->makeEmpty(WP_User::class, ['exists' => true])
@@ -70,7 +70,7 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     expect($tracking_callback_executed)->true();
   }
 
-  function testItTracksByCookie() {
+  public function testItTracksByCookie() {
     $this->wp->method('isAdmin')->willReturn(false);
     $this->wp->method('wpGetCurrentUser')->willReturn(
       $this->makeEmpty(WP_User::class, ['exists' => false])
@@ -83,7 +83,7 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     expect($this->session_store['mailpoet_last_visit_timestamp'])->same($this->current_time->getTimestamp());
   }
 
-  function testItDoesNotTrackWhenUserNotFound() {
+  public function testItDoesNotTrackWhenUserNotFound() {
     $this->wp->method('isAdmin')->willReturn(false);
     $this->wp->method('wpGetCurrentUser')->willReturn(
       $this->makeEmpty(WP_User::class, ['exists' => false])
@@ -95,7 +95,7 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     expect($this->session_store['mailpoet_last_visit_timestamp'])->same($hour_ago_timestamp);
   }
 
-  function testItDoesNotTrackAdminPage() {
+  public function testItDoesNotTrackAdminPage() {
     $this->wp->method('isAdmin')->willReturn(true);
     $this->wp->method('wpGetCurrentUser')->willReturn(
       $this->makeEmpty(WP_User::class, ['exists' => true])
@@ -107,7 +107,7 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     expect($this->session_store['mailpoet_last_visit_timestamp'])->same($hour_ago_timestamp);
   }
 
-  function testItDoesNotTrackMultipleTimesPerMinute() {
+  public function testItDoesNotTrackMultipleTimesPerMinute() {
     $ten_seconds_ago_timestamp = $this->current_time->getTimestamp() - 10;
     $this->session_store['mailpoet_last_visit_timestamp'] = $ten_seconds_ago_timestamp;
     $this->page_visit_tracker->trackVisit();
@@ -140,7 +140,7 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
       ->getMock();
   }
 
-  function _after() {
+  public function _after() {
     Carbon::setTestNow();
   }
 }

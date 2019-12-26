@@ -19,7 +19,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
   /** @var int */
   private $current_user_id;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->cleanup();
 
@@ -46,7 +46,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
     $this->createUserFlag($other_user_id, 'flag_2', 'other_value_2');
   }
 
-  function testItGetsFlagsOfCurrentUser() {
+  public function testItGetsFlagsOfCurrentUser() {
     expect($this->user_flags->get('flag_1'))->equals('value_1');
     expect($this->user_flags->get('flag_2'))->equals('default_value_2');
     expect($this->user_flags->getAll())->equals([
@@ -56,14 +56,14 @@ class UserFlagsControllerTest extends \MailPoetTest {
     ]);
   }
 
-  function testItLoadsDataOnlyOnceWhenNeeded() {
+  public function testItLoadsDataOnlyOnceWhenNeeded() {
     $this->updateUserFlag($this->current_user_id, 'flag_1', 'new_value_1');
     expect($this->user_flags->get('flag_1'))->equals('new_value_1');
     $this->updateUserFlag($this->current_user_id, 'flag_1', 'newer_value_1');
     expect($this->user_flags->get('flag_1'))->equals('new_value_1');
   }
 
-  function testItSetsNewFlagValue() {
+  public function testItSetsNewFlagValue() {
     expect($this->user_flags->get('flag_1'))->equals('value_1');
     $this->user_flags->set('flag_1', 'updated_value');
     expect($this->user_flags->get('flag_1'))->equals('updated_value');
@@ -74,7 +74,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
     expect($flag->getValue())->equals('updated_value');
   }
 
-  function testItDeletesAFlag() {
+  public function testItDeletesAFlag() {
     expect($this->user_flags->get('flag_1'))->equals('value_1');
     $this->user_flags->delete('flag_1');
     expect($this->user_flags->get('flag_1'))->equals('default_value_1');
@@ -85,7 +85,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
     expect($flag)->null();
   }
 
-  function _after() {
+  public function _after() {
     $this->cleanup();
     WPFunctions::set(new WPFunctions);
   }

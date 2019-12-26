@@ -24,13 +24,13 @@ class CleanupExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDec
   /** @var PDO */
   private $root_connection;
 
-  function __construct($config, $options) {
+  public function __construct($config, $options) {
     parent::__construct($config, $options);
     $this->root_connection = new PDO($this->createDsnConnectionString(), self::DB_USERNAME, self::DB_PASSWORD);
     $this->root_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   }
 
-  function backupDatabase(SuiteEvent $event) {
+  public function backupDatabase(SuiteEvent $event) {
     exec($this->createMysqlDumpCommand());
     $sql = file_get_contents(self::DB_BACKUP_PATH);
 
@@ -65,7 +65,7 @@ class CleanupExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDec
     file_put_contents(self::DB_BACKUP_PATH, $sql);
   }
 
-  function cleanupEnvironment(TestEvent $event) {
+  public function cleanupEnvironment(TestEvent $event) {
     $this->root_connection->exec(file_get_contents(self::DB_BACKUP_PATH));
     exec('rm -rf ' . self::MAILHOG_DATA_PATH . '/*', $output);
 

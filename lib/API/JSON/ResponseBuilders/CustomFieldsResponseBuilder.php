@@ -10,7 +10,7 @@ class CustomFieldsResponseBuilder {
    * @param CustomFieldEntity[] $custom_fields
    * @return array
    */
-  function buildBatch(array $custom_fields) {
+  public function buildBatch(array $custom_fields) {
     return array_map([$this, 'build'], $custom_fields);
   }
 
@@ -18,7 +18,7 @@ class CustomFieldsResponseBuilder {
    * @param CustomFieldEntity $custom_field
    * @return array
    */
-  function build(CustomFieldEntity $custom_field) {
+  public function build(CustomFieldEntity $custom_field) {
     return [
       'id' => $custom_field->getId(),
       'name' => $custom_field->getName(),

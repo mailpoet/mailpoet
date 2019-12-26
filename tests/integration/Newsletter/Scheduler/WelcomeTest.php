@@ -19,12 +19,12 @@ class WelcomeTest extends \MailPoetTest {
   /** @var WelcomeScheduler */
   private $welcome_scheduler;
 
-  function _before() {
+  public function _before() {
     parent::_before();
     $this->welcome_scheduler = new WelcomeScheduler;
   }
 
-  function testItDoesNotCreateDuplicateWelcomeNotificationSendingTasks() {
+  public function testItDoesNotCreateDuplicateWelcomeNotificationSendingTasks() {
     $newsletter = (object)[
       'id' => 1,
       'afterTimeNumber' => 2,
@@ -45,7 +45,7 @@ class WelcomeTest extends \MailPoetTest {
     expect(SendingQueue::findMany())->count(2);
   }
 
-  function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInHours() {
+  public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInHours() {
     $newsletter = (object)[
       'id' => 1,
       'afterTimeNumber' => 2,
@@ -64,7 +64,7 @@ class WelcomeTest extends \MailPoetTest {
       ->equals($current_time->addHours(2)->format('Y-m-d H:i'));
   }
 
-  function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInDays() {
+  public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInDays() {
     $newsletter = (object)[
       'id' => 1,
       'afterTimeNumber' => 2,
@@ -83,7 +83,7 @@ class WelcomeTest extends \MailPoetTest {
       ->equals($current_time->addDays(2)->format('Y-m-d H:i'));
   }
 
-  function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInWeeks() {
+  public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInWeeks() {
     $newsletter = (object)[
       'id' => 1,
       'afterTimeNumber' => 2,
@@ -102,7 +102,7 @@ class WelcomeTest extends \MailPoetTest {
       ->equals($current_time->addWeeks(2)->format('Y-m-d H:i'));
   }
 
-  function testItCreatesWelcomeNotificationSendingTaskScheduledToSendImmediately() {
+  public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendImmediately() {
     $newsletter = (object)[
       'id' => 1,
       'afterTimeNumber' => 2,
@@ -120,7 +120,7 @@ class WelcomeTest extends \MailPoetTest {
       ->equals($current_time->format('Y-m-d H:i'));
   }
 
-  function testItDoesNotSchedulesSubscriberWelcomeNotificationWhenSubscriberIsNotInSegment() {
+  public function testItDoesNotSchedulesSubscriberWelcomeNotificationWhenSubscriberIsNotInSegment() {
     // do not schedule when subscriber is not in segment
     $newsletter = $this->_createNewsletter();
     $this->welcome_scheduler->scheduleSubscriberWelcomeNotification(
@@ -134,7 +134,7 @@ class WelcomeTest extends \MailPoetTest {
     expect($queue)->false();
   }
 
-  function testItSchedulesSubscriberWelcomeNotification() {
+  public function testItSchedulesSubscriberWelcomeNotification() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -165,7 +165,7 @@ class WelcomeTest extends \MailPoetTest {
   }
 
 
-  function itDoesNotScheduleAnythingWhenNewsletterDoesNotExist() {
+  public function itDoesNotScheduleAnythingWhenNewsletterDoesNotExist() {
 
     // subscriber welcome notification is not scheduled
     $result = $this->welcome_scheduler->scheduleSubscriberWelcomeNotification(
@@ -182,7 +182,7 @@ class WelcomeTest extends \MailPoetTest {
     expect($result)->false();
   }
 
-  function testItDoesNotScheduleWPUserWelcomeNotificationWhenRoleHasNotChanged() {
+  public function testItDoesNotScheduleWPUserWelcomeNotificationWhenRoleHasNotChanged() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -205,7 +205,7 @@ class WelcomeTest extends \MailPoetTest {
     expect($queue)->false();
   }
 
-  function testItDoesNotScheduleWPUserWelcomeNotificationWhenUserRoleDoesNotMatch() {
+  public function testItDoesNotScheduleWPUserWelcomeNotificationWhenUserRoleDoesNotMatch() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -227,7 +227,7 @@ class WelcomeTest extends \MailPoetTest {
     expect($queue)->false();
   }
 
-  function testItSchedulesWPUserWelcomeNotificationWhenUserRolesMatches() {
+  public function testItSchedulesWPUserWelcomeNotificationWhenUserRolesMatches() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -251,7 +251,7 @@ class WelcomeTest extends \MailPoetTest {
       ->equals($current_time->addDay()->format('Y-m-d H:i'));
   }
 
-  function testItSchedulesWPUserWelcomeNotificationWhenUserHasAnyRole() {
+  public function testItSchedulesWPUserWelcomeNotificationWhenUserHasAnyRole() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter->id,
@@ -275,7 +275,7 @@ class WelcomeTest extends \MailPoetTest {
       ->equals($current_time->addDay()->format('Y-m-d H:i'));
   }
 
-  function _createNewsletter(
+  public function _createNewsletter(
     $status = Newsletter::STATUS_ACTIVE
   ) {
     $newsletter = Newsletter::create();
@@ -286,7 +286,7 @@ class WelcomeTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  function _createNewsletterOptions($newsletter_id, $options) {
+  public function _createNewsletterOptions($newsletter_id, $options) {
     foreach ($options as $option => $value) {
       $newsletter_option_field = NewsletterOptionField::where('name', $option)->findOne();
       if (!$newsletter_option_field) {
@@ -306,7 +306,7 @@ class WelcomeTest extends \MailPoetTest {
     }
   }
 
-  function _after() {
+  public function _after() {
     Carbon::setTestNow();
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);

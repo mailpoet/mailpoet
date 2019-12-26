@@ -20,7 +20,7 @@ class AssetsController {
 
   const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit';
 
-  function __construct(WPFunctions $wp, BasicRenderer $renderer, SettingsController $settings) {
+  public function __construct(WPFunctions $wp, BasicRenderer $renderer, SettingsController $settings) {
     $this->wp = $wp;
     $this->renderer = $renderer;
     $this->settings = $settings;
@@ -30,7 +30,7 @@ class AssetsController {
    * Returns assets scripts tags as string
    * @return string
    */
-  function printScripts() {
+  public function printScripts() {
     ob_start();
     $this->wp->wpPrintScripts('jquery');
     $this->wp->wpPrintScripts('mailpoet_vendor');
@@ -41,7 +41,7 @@ class AssetsController {
     return $scripts;
   }
 
-  function setupFrontEndDependencies() {
+  public function setupFrontEndDependencies() {
     $this->wp->wpEnqueueStyle(
       'mailpoet_public',
       Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('public.css')
@@ -96,7 +96,7 @@ EOL;
     );
   }
 
-  function setupAdminWidgetPageDependencies() {
+  public function setupAdminWidgetPageDependencies() {
     $this->wp->wpEnqueueScript(
       'mailpoet_vendor',
       Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),

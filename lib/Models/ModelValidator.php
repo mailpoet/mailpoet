@@ -46,7 +46,7 @@ class ModelValidator extends \MailPoetVendor\Sudzy\Engine {
     'www',
   ];
 
-  function __construct() {
+  public function __construct() {
     parent::__construct();
     $this->validators = [
       'validEmail' => 'validateEmail',
@@ -67,19 +67,19 @@ class ModelValidator extends \MailPoetVendor\Sudzy\Engine {
     }
   }
 
-  function validateEmail($email) {
+  public function validateEmail($email) {
     $permitted_length = (strlen($email) >= self::EMAIL_MIN_LENGTH && strlen($email) <= self::EMAIL_MAX_LENGTH);
     $valid_email = WPFunctions::get()->isEmail($email) !== false && parent::_isEmail($email, null);
     return ($permitted_length && $valid_email);
   }
 
-  function validateNonRoleEmail($email) {
+  public function validateNonRoleEmail($email) {
     if (!$this->validateEmail($email)) return false;
     $first_part = strtolower(substr($email, 0, strpos($email, '@')));
     return array_search($first_part, self::ROLE_EMAILS) === false;
   }
 
-  function validateRenderedNewsletterBody($newsletter_body) {
+  public function validateRenderedNewsletterBody($newsletter_body) {
     if (is_serialized($newsletter_body)) {
       $newsletter_body = unserialize($newsletter_body);
     } else if (Helpers::isJson($newsletter_body)) {
