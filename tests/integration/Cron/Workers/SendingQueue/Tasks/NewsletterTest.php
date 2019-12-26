@@ -159,7 +159,9 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
       ->findOne();
-    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
+    /** @var SendingQueue $updated_queue */
+    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue($updated_queue);
     $rendered_newsletter = $updated_queue->getNewsletterRenderedBody();
     expect($rendered_newsletter['html'])
       ->contains('[mailpoet_click_data]-' . $link->hash);
@@ -182,7 +184,9 @@ class NewsletterTest extends \MailPoetTest {
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
       ->findOne();
     expect($link)->false();
-    $updated_queue = SendingTask::createFromQueue(SendingQueue::findOne($this->queue->id));
+    /** @var SendingQueue $updated_queue */
+    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $updated_queue = SendingTask::createFromQueue($updated_queue);
     $rendered_newsletter = $updated_queue->getNewsletterRenderedBody();
     expect($rendered_newsletter['html'])
       ->notContains('[mailpoet_click_data]');

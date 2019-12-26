@@ -391,8 +391,12 @@ class NewslettersTest extends \MailPoetTest {
       ],
     ];
     $newsletter = $this->endpoint->save($newsletter_data);
-    $sending_queue_1 = SendingTask::createFromQueue(SendingQueue::findOne($sending_queue_1->id));
-    $sending_queue_2 = SendingTask::createFromQueue(SendingQueue::findOne($sending_queue_2->id));
+    /** @var SendingQueue $sending_queue_1 */
+    $sending_queue_1 = SendingQueue::findOne($sending_queue_1->id);
+    $sending_queue_1 = SendingTask::createFromQueue($sending_queue_1);
+    /** @var SendingQueue $sending_queue_2 */
+    $sending_queue_2 = SendingQueue::findOne($sending_queue_2->id);
+    $sending_queue_2 = SendingTask::createFromQueue($sending_queue_2);
     expect($sending_queue_1->scheduled_at)->notEquals($current_time);
     expect($sending_queue_1->scheduled_at)->equals(
       Scheduler::getNextRunDate($newsletter->data['schedule'])
