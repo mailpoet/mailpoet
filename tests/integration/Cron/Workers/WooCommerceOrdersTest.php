@@ -184,7 +184,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $statistics->newsletter_id = $click->newsletter_id;
     $statistics->subscriber_id = $click->subscriber_id;
     $statistics->queue_id = $click->queue_id;
-    $statistics->click_id = $click->id;
+    $statistics->click_id = (int)$click->id;
     $statistics->order_id = $id;
     $statistics->order_currency = 'EUR';
     $statistics->order_price_total = 123.0;

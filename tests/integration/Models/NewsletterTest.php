@@ -289,7 +289,7 @@ class NewsletterTest extends \MailPoetTest {
     $option_field->save();
     $association = NewsletterOption::create();
     $association->newsletter_id = $this->newsletter->id;
-    $association->option_field_id = $option_field->id;
+    $association->option_field_id = (int)$option_field->id;
     $association->value = 'list';
     $association->save();
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)

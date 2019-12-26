@@ -52,8 +52,8 @@ class ShortcodesTest extends \MailPoetTest {
     $link = $link->attr('href');
     expect($link)->contains('endpoint=view_in_browser');
     // request data object contains newsletter hash but not newsletter id
-    $parsed_link = parse_url($link);
-    parse_str(html_entity_decode($parsed_link['query']), $data);
+    $parsed_link = parse_url($link, PHP_URL_QUERY);
+    parse_str(html_entity_decode((string)$parsed_link), $data);
     $request_data = Url::transformUrlDataObject(
       Router::decodeRequestData($data['data'])
     );

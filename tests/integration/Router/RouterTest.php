@@ -27,7 +27,7 @@ class RouterTest extends \MailPoetTest {
       Router::NAME => '',
       'endpoint' => 'router_test_mock_endpoint',
       'action' => 'test',
-      'data' => base64_encode(json_encode(['data' => 'dummy data'])),
+      'data' => base64_encode((string)json_encode(['data' => 'dummy data'])),
     ];
     $this->access_control = new AccessControl();
     $container_factory = new ContainerFactory(new ContainerConfigurator());
@@ -40,8 +40,8 @@ class RouterTest extends \MailPoetTest {
   public function testItCanGetAPIDataFromGetRequest() {
     $data = ['data' => 'dummy data'];
     $url = 'http://example.com/?' . Router::NAME . '&endpoint=view_in_browser&action=view&data='
-      . base64_encode(json_encode($data));
-    parse_str(parse_url($url, PHP_URL_QUERY), $_GET);
+      . base64_encode((string)json_encode($data));
+    parse_str((string)parse_url($url, PHP_URL_QUERY), $_GET);
     $router = new Router($this->access_control, $this->container);
     expect($router->api_request)->equals(true);
     expect($router->endpoint)->equals('viewInBrowser');
@@ -234,7 +234,7 @@ class RouterTest extends \MailPoetTest {
     $data = ['data' => 'dummy data'];
     $result = Router::encodeRequestData($data);
     expect($result)->equals(
-      rtrim(base64_encode(json_encode($data)), '=')
+      rtrim(base64_encode((string)json_encode($data)), '=')
     );
   }
 
@@ -246,7 +246,7 @@ class RouterTest extends \MailPoetTest {
 
   public function testItCanDecodeRequestData() {
     $data = ['data' => 'dummy data'];
-    $encoded_data = rtrim(base64_encode(json_encode($data)), '=');
+    $encoded_data = rtrim(base64_encode((string)json_encode($data)), '=');
     $result = Router::decodeRequestData($encoded_data);
     expect($result)->equals($data);
   }
@@ -258,7 +258,7 @@ class RouterTest extends \MailPoetTest {
 
   public function testItCanBuildRequest() {
     $data = ['data' => 'dummy data'];
-    $encoded_data = rtrim(base64_encode(json_encode($data)), '=');
+    $encoded_data = rtrim(base64_encode((string)json_encode($data)), '=');
     $result = Router::buildRequest(
       'router_test_mock_endpoint',
       'test',

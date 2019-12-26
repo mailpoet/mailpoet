@@ -25,7 +25,7 @@ class RendererTest extends \MailPoetTest {
     parent::__construct();
     $this->newsletter = [
       'body' => json_decode(
-        file_get_contents(dirname(__FILE__) . '/RendererTestData.json'), true
+        (string)file_get_contents(dirname(__FILE__) . '/RendererTestData.json'), true
       ),
       'id' => 1,
       'subject' => 'Some subject',
