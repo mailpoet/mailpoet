@@ -1,0 +1,898 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot access property \\$exclude_from_search on WP_Post_Type\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/AutomatedLatestContentTest.php
+
+		-
+			message: "#^Cannot call method id\\(\\) on bool\\|MailPoet\\\\Models\\\\CustomField\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/CustomFieldsTest.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on MailPoet\\\\Entities\\\\CustomFieldEntity\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/CustomFieldsTest.php
+
+		-
+			message: "#^Cannot access property \\$deleted_at on bool\\|MailPoet\\\\Models\\\\DynamicSegment\\.$#"
+			count: 2
+			path: ../../tests/integration/API/JSON/v1/DynamicSegmentsTest.php
+
+		-
+			message: "#^Cannot call method delete\\(\\) on bool\\|MailPoet\\\\Models\\\\DynamicSegment\\.$#"
+			count: 2
+			path: ../../tests/integration/API/JSON/v1/DynamicSegmentsTest.php
+
+		-
+			message: "#^Cannot call method asArray\\(\\) on bool\\|MailPoet\\\\Models\\\\Form\\.$#"
+			count: 8
+			path: ../../tests/integration/API/JSON/v1/FormsTest.php
+
+		-
+			message: "#^Cannot access property \\$deleted_at on bool\\|MailPoet\\\\Models\\\\Form\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/FormsTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 3
+			path: ../../tests/integration/API/JSON/v1/ImportExportTest.php
+
+		-
+			message: "#^Cannot access property \\$scheduled_at on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 2
+			path: ../../tests/integration/API/JSON/v1/ImportExportTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\NewsletterTemplate\\.$#"
+			count: 4
+			path: ../../tests/integration/API/JSON/v1/NewsletterTemplatesTest.php
+
+		-
+			message: "#^Cannot call method asArray\\(\\) on bool\\|MailPoet\\\\Models\\\\NewsletterTemplate\\.$#"
+			count: 4
+			path: ../../tests/integration/API/JSON/v1/NewsletterTemplatesTest.php
+
+		-
+			message: "#^Cannot access property \\$deleted_at on bool\\|MailPoet\\\\Models\\\\NewsletterTemplate\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/NewsletterTemplatesTest.php
+
+		-
+			message: "#^Cannot call method withSegments\\(\\) on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 2
+			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
+
+		-
+			message: "#^Cannot call method asArray\\(\\) on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 8
+			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
+
+		-
+			message: "#^Cannot access property \\$some_option on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
+
+		-
+			message: "#^Cannot access property \\$unsubscribe_token on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
+
+		-
+			message: "#^Cannot access property \\$subject on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
+
+		-
+			message: "#^Cannot call method asArray\\(\\) on bool\\|MailPoet\\\\Models\\\\SendingQueue\\.$#"
+			count: 2
+			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
+
+		-
+			message: "#^Cannot access property \\$schedule on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
+
+		-
+			message: "#^Cannot access property \\$deleted_at on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
+
+		-
+			message: "#^Cannot call method asArray\\(\\) on bool\\|MailPoet\\\\Models\\\\Segment\\.$#"
+			count: 5
+			path: ../../tests/integration/API/JSON/v1/SegmentsTest.php
+
+		-
+			message: "#^Cannot access property \\$deleted_at on bool\\|MailPoet\\\\Models\\\\Segment\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SegmentsTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$scheduled_at on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 3
+			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$type on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 2
+			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterOptionField\\|true\\.$#"
+			count: 2
+			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$value on MailPoet\\\\Models\\\\NewsletterOption\\|true\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
+
+		-
+			message: "#^Cannot call method save\\(\\) on MailPoet\\\\Models\\\\NewsletterOption\\|true\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
+
+		-
+			message: "#^Cannot call method getErrors\\(\\) on MailPoet\\\\Models\\\\NewsletterOption\\|true\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$error on bool\\|MailPoet\\\\Models\\\\ScheduledTaskSubscriber\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingTaskSubscribersTest.php
+
+		-
+			message: "#^Cannot access property \\$failed on bool\\|MailPoet\\\\Models\\\\ScheduledTaskSubscriber\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingTaskSubscribersTest.php
+
+		-
+			message: "#^Cannot access property \\$processed on bool\\|MailPoet\\\\Models\\\\ScheduledTaskSubscriber\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingTaskSubscribersTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingTaskSubscribersTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingTaskSubscribersTest.php
+
+		-
+			message: "#^Cannot access property \\$scheduled_at on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SettingsTest.php
+
+		-
+			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartPageVisitTrackerTest\\:\\:\\$wp \\(MailPoet\\\\WP\\\\Functions&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\WP\\\\Functions\\.$#"
+			count: 1
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartPageVisitTrackerTest.php
+
+		-
+			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartTest\\:\\:\\$wp \\(MailPoet\\\\WP\\\\Functions&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\WP\\\\Functions\\.$#"
+			count: 1
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartTest.php
+
+		-
+			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartTest\\:\\:\\$woo_commerce_helper_mock \\(MailPoet\\\\WooCommerce\\\\Helper&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\WooCommerce\\\\Helper\\.$#"
+			count: 1
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartTest.php
+
+		-
+			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartTest\\:\\:\\$page_visit_tracker_mock \\(MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartPageVisitTracker&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartPageVisitTracker\\.$#"
+			count: 1
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartTest.php
+
+		-
+			message: "#^Cannot access property \\$scheduled_at on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 2
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartTest.php
+
+		-
+			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterOptionField\\|true\\.$#"
+			count: 2
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartTest.php
+
+		-
+			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterOptionField\\|true\\.$#"
+			count: 2
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/FirstPurchaseTest.php
+
+		-
+			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\PurchasedInCategoryTest\\:\\:\\$woocommerce_helper \\(PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\WooCommerce\\\\Helper\\.$#"
+			count: 1
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/PurchasedInCategoryTest.php
+
+		-
+			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterOptionField\\|true\\.$#"
+			count: 2
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/PurchasedInCategoryTest.php
+
+		-
+			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterOptionField\\|true\\.$#"
+			count: 2
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/PurchasedProductTest.php
+
+		-
+			message: "#^Cannot call method has_cap\\(\\) on WP_Role\\|null\\.$#"
+			count: 6
+			path: ../../tests/integration/Config/CapabilitiesTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$db of static method MailPoetVendor\\\\Idiorm\\\\ORM\\:\\:set_db\\(\\) expects PDO, null given\\.$#"
+			count: 1
+			path: ../../tests/integration/Config/DatabaseTest.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$user_email\\.$#"
+			count: 4
+			path: ../../tests/integration/Config/ShortcodesTest.php
+
+		-
+			message: "#^Offset 'run_access' does not exist on array\\('run_access' \\=\\> int\\|null, 'run_start' \\=\\> int\\|null\\)\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/CronHelperTest.php
+
+		-
+			message: "#^Offset 'run_start' does not exist on array\\('run_access' \\=\\> int\\|null, 'run_start' \\=\\> int\\|null\\)\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/CronHelperTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 5
+			path: ../../tests/integration/Cron/CronWorkerRunnerTest.php
+
+		-
+			message: "#^Cannot access property \\$scheduled_at on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 5
+			path: ../../tests/integration/Cron/CronWorkerRunnerTest.php
+
+		-
+			message: "#^Cannot access property \\$updated_at on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/CronWorkerRunnerTest.php
+
+		-
+			message: "#^Cannot call method save\\(\\) on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/CronWorkerRunnerTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/CronWorkerRunnerTest.php
+
+		-
+			message: "#^Cannot access property \\$in_progress on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/CronWorkerRunnerTest.php
+
+		-
+			message: "#^Cannot access property \\$reschedule_count on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/CronWorkerRunnerTest.php
+
+		-
+			message: "#^Cannot access property \\$scheduled_at on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/Workers/InactiveSubscribersTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 17
+			path: ../../tests/integration/Cron/Workers/SchedulerTest.php
+
+		-
+			message: "#^Cannot access property \\$schedule on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SchedulerTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/Workers/SchedulerTest.php
+
+		-
+			message: "#^Cannot access property \\$scheduled_at on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/Workers/SchedulerTest.php
+
+		-
+			message: "#^Cannot access property \\$updated_at on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SchedulerTest.php
+
+		-
+			message: "#^Cannot access property \\$ID on WP_User\\|false\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/Workers/SchedulerTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/MigrationTest.php
+
+		-
+			message: "#^Cannot access property \\$task_id on bool\\|MailPoet\\\\Models\\\\SendingQueue\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/Workers/SendingQueue/MigrationTest.php
+
+		-
+			message: "#^Cannot access property \\$type on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/MigrationTest.php
+
+		-
+			message: "#^Cannot call method delete\\(\\) on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 5
+			path: ../../tests/integration/Cron/Workers/SendingQueue/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$sent_at on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$updated_at on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$hash on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$newsletter_id on bool\\|MailPoet\\\\Models\\\\NewsletterLink\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/LinksTest.php
+
+		-
+			message: "#^Cannot access property \\$queue_id on bool\\|MailPoet\\\\Models\\\\NewsletterLink\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/LinksTest.php
+
+		-
+			message: "#^Cannot access property \\$url on bool\\|MailPoet\\\\Models\\\\NewsletterLink\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/LinksTest.php
+
+		-
+			message: "#^Cannot access property \\$hash on bool\\|MailPoet\\\\Models\\\\NewsletterLink\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/LinksTest.php
+
+		-
+			message: "#^Cannot access property \\$hash on bool\\|MailPoet\\\\Models\\\\NewsletterLink\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$post_id on bool\\|MailPoet\\\\Models\\\\NewsletterPost\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 3
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$sent_at on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/NewsletterTest.php
+
+		-
+			message: "#^Cannot call method set\\(\\) on bool\\|MailPoetVendor\\\\Idiorm\\\\ORM\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/NewsletterTest.php
+
+		-
+			message: "#^Cannot call method save\\(\\) on bool\\|MailPoetVendor\\\\Idiorm\\\\ORM\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$post_id on bool\\|MailPoet\\\\Models\\\\NewsletterPost\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/PostsTest.php
+
+		-
+			message: "#^Cannot access property \\$post_title on array\\|WP_Post\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/ShortcodesTest.php
+
+		-
+			message: "#^Cannot access property \\$unsubscribe_token on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/Workers/UnsubscribeTokensTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 4
+			path: ../../tests/integration/Cron/Workers/WooCommerceOrdersTest.php
+
+		-
+			message: "#^Cannot call method getMeta\\(\\) on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 2
+			path: ../../tests/integration/Cron/Workers/WooCommerceOrdersTest.php
+
+		-
+			message: "#^Cannot call method setName\\(\\) on object\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/Doctrine/EventListeners/TimestampListenerTest.php
+
+		-
+			message: "#^Cannot call method getCreatedAt\\(\\) on object\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/Doctrine/EventListeners/TimestampListenerTest.php
+
+		-
+			message: "#^Cannot call method getUpdatedAt\\(\\) on object\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/Doctrine/EventListeners/TimestampListenerTest.php
+
+		-
+			message: "#^Cannot call method getJsonData\\(\\) on object\\|null\\.$#"
+			count: 4
+			path: ../../tests/integration/Doctrine/Types/JsonTypesTest.php
+
+		-
+			message: "#^Cannot call method getJsonOrSerializedData\\(\\) on object\\|null\\.$#"
+			count: 4
+			path: ../../tests/integration/Doctrine/Types/JsonTypesTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$orm of method MailPoet\\\\DynamicSegments\\\\Filters\\\\EmailAction\\:\\:toSql\\(\\) expects MailPoetVendor\\\\Idiorm\\\\ORM, MailPoet\\\\Models\\\\Subscriber given\\.$#"
+			count: 8
+			path: ../../tests/integration/DynamicSegments/Filters/EmailActionTest.php
+
+		-
+			message: "#^Call to an undefined method MailPoetVendor\\\\Idiorm\\\\IdiormResultSet\\:\\:delete\\(\\)\\.$#"
+			count: 3
+			path: ../../tests/integration/DynamicSegments/Filters/EmailActionTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$orm of method MailPoet\\\\DynamicSegments\\\\Filters\\\\UserRole\\:\\:toSql\\(\\) expects MailPoetVendor\\\\Idiorm\\\\ORM, MailPoet\\\\Models\\\\Subscriber given\\.$#"
+			count: 2
+			path: ../../tests/integration/DynamicSegments/Filters/UserRoleTest.php
+
+		-
+			message: "#^Property MailPoet\\\\DynamicSegments\\\\FreePluginConnectors\\\\SendingNewslettersSubscribersFinderTest\\:\\:\\$single_segment_loader \\(MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SingleSegmentLoader&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SingleSegmentLoader\\.$#"
+			count: 1
+			path: ../../tests/integration/DynamicSegments/FreePluginConnectors/SendingNewslettersSubscribersFinderTest.php
+
+		-
+			message: "#^Property MailPoet\\\\DynamicSegments\\\\FreePluginConnectors\\\\SendingNewslettersSubscribersFinderTest\\:\\:\\$subscribers_ids_loader \\(MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SubscribersIds&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SubscribersIds\\.$#"
+			count: 1
+			path: ../../tests/integration/DynamicSegments/FreePluginConnectors/SendingNewslettersSubscribersFinderTest.php
+
+		-
+			message: "#^Cannot access property \\$name on bool\\|MailPoet\\\\Models\\\\DynamicSegment\\.$#"
+			count: 1
+			path: ../../tests/integration/DynamicSegments/Persistence/SaverTest.php
+
+		-
+			message: "#^Cannot access property \\$description on bool\\|MailPoet\\\\Models\\\\DynamicSegment\\.$#"
+			count: 1
+			path: ../../tests/integration/DynamicSegments/Persistence/SaverTest.php
+
+		-
+			message: "#^Cannot access property \\$created_at on bool\\|MailPoet\\\\Models\\\\Log\\.$#"
+			count: 1
+			path: ../../tests/integration/Logging/LogHandlerTest.php
+
+		-
+			message: "#^Cannot access property \\$created_at on bool\\|MailPoet\\\\Models\\\\CustomField\\.$#"
+			count: 5
+			path: ../../tests/integration/Models/CustomFieldTest.php
+
+		-
+			message: "#^Cannot access property \\$updated_at on bool\\|MailPoet\\\\Models\\\\CustomField\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/CustomFieldTest.php
+
+		-
+			message: "#^Cannot access property \\$name on bool\\|MailPoet\\\\Models\\\\CustomField\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/CustomFieldTest.php
+
+		-
+			message: "#^Cannot call method save\\(\\) on bool\\|MailPoet\\\\Models\\\\CustomField\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/CustomFieldTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\CustomField\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/CustomFieldTest.php
+
+		-
+			message: "#^Cannot call method subscribers\\(\\) on bool\\|MailPoet\\\\Models\\\\CustomField\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/CustomFieldTest.php
+
+		-
+			message: "#^Cannot access property \\$name on bool\\|MailPoet\\\\Models\\\\Form\\.$#"
+			count: 4
+			path: ../../tests/integration/Models/FormTest.php
+
+		-
+			message: "#^Cannot access property \\$created_at on bool\\|MailPoet\\\\Models\\\\Form\\.$#"
+			count: 5
+			path: ../../tests/integration/Models/FormTest.php
+
+		-
+			message: "#^Cannot access property \\$updated_at on bool\\|MailPoet\\\\Models\\\\Form\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/FormTest.php
+
+		-
+			message: "#^Cannot call method save\\(\\) on bool\\|MailPoet\\\\Models\\\\Form\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/FormTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\Form\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/FormTest.php
+
+		-
+			message: "#^Cannot call method asArray\\(\\) on bool\\|MailPoet\\\\Models\\\\Form\\.$#"
+			count: 4
+			path: ../../tests/integration/Models/FormTest.php
+
+		-
+			message: "#^Cannot access property \\$updated_at on bool\\|MailPoet\\\\Models\\\\NewsletterOptionField\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/NewsletterOptionFieldTest.php
+
+		-
+			message: "#^Cannot access property \\$created_at on bool\\|MailPoet\\\\Models\\\\NewsletterOptionField\\.$#"
+			count: 3
+			path: ../../tests/integration/Models/NewsletterOptionFieldTest.php
+
+		-
+			message: "#^Cannot access property \\$name on bool\\|MailPoet\\\\Models\\\\NewsletterOptionField\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterOptionFieldTest.php
+
+		-
+			message: "#^Cannot call method save\\(\\) on bool\\|MailPoet\\\\Models\\\\NewsletterOptionField\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterOptionFieldTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\NewsletterOptionField\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterOptionFieldTest.php
+
+		-
+			message: "#^Cannot call method newsletters\\(\\) on bool\\|MailPoet\\\\Models\\\\NewsletterOptionField\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/NewsletterOptionFieldTest.php
+
+		-
+			message: "#^Cannot access property \\$value on bool\\|MailPoet\\\\Models\\\\NewsletterOption\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/NewsletterOptionTest.php
+
+		-
+			message: "#^Cannot access property \\$name on bool\\|MailPoet\\\\Models\\\\NewsletterTemplate\\.$#"
+			count: 4
+			path: ../../tests/integration/Models/NewsletterTemplateTest.php
+
+		-
+			message: "#^Cannot access property \\$body on bool\\|MailPoet\\\\Models\\\\NewsletterTemplate\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterTemplateTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\NewsletterTemplate\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/NewsletterTemplateTest.php
+
+		-
+			message: "#^Cannot access property \\$subject on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 6
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$type on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$body on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$preheader on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$created_at on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 6
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$updated_at on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 3
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot call method save\\(\\) on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 3
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$Event on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$hash on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$sent_at on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$deleted_at on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot call method getMeta\\(\\) on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/NewsletterTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 5
+			path: ../../tests/integration/Models/ScheduledTaskTest.php
+
+		-
+			message: "#^Cannot access property \\$meta on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 3
+			path: ../../tests/integration/Models/ScheduledTaskTest.php
+
+		-
+			message: "#^Cannot access property \\$created_at on bool\\|MailPoet\\\\Models\\\\Segment\\.$#"
+			count: 5
+			path: ../../tests/integration/Models/SegmentTest.php
+
+		-
+			message: "#^Cannot access property \\$updated_at on bool\\|MailPoet\\\\Models\\\\Segment\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/SegmentTest.php
+
+		-
+			message: "#^Cannot access property \\$name on bool\\|MailPoet\\\\Models\\\\Segment\\.$#"
+			count: 3
+			path: ../../tests/integration/Models/SegmentTest.php
+
+		-
+			message: "#^Cannot call method save\\(\\) on bool\\|MailPoet\\\\Models\\\\Segment\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/SegmentTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\Segment\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/SegmentTest.php
+
+		-
+			message: "#^Cannot call method subscribers\\(\\) on bool\\|MailPoet\\\\Models\\\\Segment\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/SegmentTest.php
+
+		-
+			message: "#^Cannot call method newsletters\\(\\) on bool\\|MailPoet\\\\Models\\\\Segment\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/SegmentTest.php
+
+		-
+			message: "#^Cannot access property \\$newsletter_rendered_body on bool\\|MailPoet\\\\Models\\\\SendingQueue\\.$#"
+			count: 3
+			path: ../../tests/integration/Models/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$meta on bool\\|MailPoet\\\\Models\\\\SendingQueue\\.$#"
+			count: 4
+			path: ../../tests/integration/Models/SendingQueueTest.php
+
+		-
+			message: "#^Property MailPoet\\\\Models\\\\SendingQueue\\:\\:\\$meta \\(object\\|string\\|null\\) does not accept array\\<string, int\\>\\.$#"
+			count: 1
+			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/FirstPurchaseTest.php
+
+		-
+			message: "#^Property MailPoet\\\\Models\\\\SendingQueue\\:\\:\\$meta \\(object\\|string\\|null\\) does not accept array\\<string, string\\>\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/SendingQueueTest.php
+
+		-
+			message: "#^Cannot call method save\\(\\) on bool\\|MailPoet\\\\Models\\\\SendingQueue\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/SendingQueueTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\SubscriberSegment\\.$#"
+			count: 2
+			path: ../../tests/integration/Models/SubscriberSegmentTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\SubscriberSegment\\.$#"
+			count: 1
+			path: ../../tests/integration/Models/SubscriberSegmentTest.php
+
+		-
+			message: "#^Cannot access property \\$hash on bool\\|MailPoet\\\\Models\\\\NewsletterLink\\.$#"
+			count: 1
+			path: ../../tests/integration/Newsletter/Links/LinksTest.php
+
+		-
+			message: "#^Cannot access property \\$url on bool\\|MailPoet\\\\Models\\\\NewsletterLink\\.$#"
+			count: 1
+			path: ../../tests/integration/Newsletter/Links/LinksTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
+			count: 3
+			path: ../../tests/integration/Newsletter/Scheduler/AutomaticEmailTest.php
+
+		-
+			message: "#^Cannot call method getMeta\\(\\) on bool\\|MailPoet\\\\Models\\\\SendingQueue\\.$#"
+			count: 1
+			path: ../../tests/integration/Newsletter/Scheduler/AutomaticEmailTest.php
+
+		-
+			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterOptionField\\|true\\.$#"
+			count: 1
+			path: ../../tests/integration/Newsletter/Scheduler/AutomaticEmailTest.php
+
+		-
+			message: "#^Cannot access property \\$value on bool\\|MailPoet\\\\Models\\\\NewsletterOption\\.$#"
+			count: 5
+			path: ../../tests/integration/Newsletter/Scheduler/PostNotificationTest.php
+
+		-
+			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterOptionField\\|true\\.$#"
+			count: 1
+			path: ../../tests/integration/Newsletter/Scheduler/PostNotificationTest.php
+
+		-
+			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterOptionField\\|true\\.$#"
+			count: 1
+			path: ../../tests/integration/Newsletter/Scheduler/SchedulerTest.php
+
+		-
+			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterOptionField\\|true\\.$#"
+			count: 1
+			path: ../../tests/integration/Newsletter/Scheduler/WelcomeTest.php
+
+		-
+			message: "#^Cannot access property \\$post_title on array\\|WP_Post\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/Newsletter/ShortcodesTest.php
+
+		-
+			message: "#^Cannot access property \\$subscriber on bool\\|stdClass\\.$#"
+			count: 1
+			path: ../../tests/integration/Router/Endpoints/ViewInBrowserTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\SubscriberSegment\\.$#"
+			count: 4
+			path: ../../tests/integration/Segments/WooCommerceTest.php
+
+		-
+			message: "#^Cannot call method getValue\\(\\) on MailPoet\\\\Entities\\\\UserFlagEntity\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/Settings/UserFlagsControllerTest.php
+
+		-
+			message: "#^Cannot access property \\$click_id on bool\\|MailPoet\\\\Models\\\\StatisticsWooCommercePurchases\\.$#"
+			count: 2
+			path: ../../tests/integration/Statistics/Track/WooCommercePurchasesTest.php
+
+		-
+			message: "#^Cannot access property \\$subscriber_id on bool\\|MailPoet\\\\Models\\\\StatisticsWooCommercePurchases\\.$#"
+			count: 2
+			path: ../../tests/integration/Statistics/Track/WooCommercePurchasesTest.php
+
+		-
+			message: "#^Cannot access property \\$queue_id on bool\\|MailPoet\\\\Models\\\\StatisticsWooCommercePurchases\\.$#"
+			count: 2
+			path: ../../tests/integration/Statistics/Track/WooCommercePurchasesTest.php
+
+		-
+			message: "#^Cannot access property \\$id on bool\\|MailPoet\\\\Models\\\\CustomField\\.$#"
+			count: 1
+			path: ../../tests/integration/Subscribers/ImportExport/Export/ExportTest.php
+
+		-
+			message: "#^Cannot access property \\$name on bool\\|MailPoet\\\\Models\\\\CustomField\\.$#"
+			count: 1
+			path: ../../tests/integration/Subscribers/ImportExport/Export/ExportTest.php
+
+		-
+			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
+			count: 1
+			path: ../../tests/integration/Tasks/SendingTest.php
+
+		-
+			message: "#^Cannot access property \\$newsletter_rendered_subject on bool\\|MailPoet\\\\Models\\\\SendingQueue\\.$#"
+			count: 1
+			path: ../../tests/integration/Tasks/SendingTest.php
+
+		-
+			message: "#^Call to an undefined method MailPoetVendor\\\\Idiorm\\\\IdiormResultSet\\:\\:set\\(\\)\\.$#"
+			count: 1
+			path: ../../tests/integration/Tasks/Subscribers/BatchIteratorTest.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on MailPoet\\\\Entities\\\\NewsletterEntity\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/WooCommerce/TransactionalEmailsTest.php
+
+		-
+			message: "#^Cannot call method getBody\\(\\) on MailPoet\\\\Entities\\\\NewsletterEntity\\|null\\.$#"
+			count: 1
+			path: ../../tests/integration/WooCommerce/TransactionalEmailsTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$argument of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
+			count: 1
+			path: ../../tests/integration/_bootstrap.php
+
+
