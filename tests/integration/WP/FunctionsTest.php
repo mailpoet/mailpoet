@@ -40,6 +40,7 @@ class FunctionsTest extends \MailPoetTest {
     ];
 
     // Save the data
+    /** @var int $id */
     $id = wp_insert_attachment($attachment, $upload['file'], $parent_post_id);
     $metadata = wp_generate_attachment_metadata($id, $upload['file']);
     wp_update_attachment_metadata($id, $metadata);

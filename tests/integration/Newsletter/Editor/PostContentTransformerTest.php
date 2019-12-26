@@ -243,7 +243,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     $post = [];
     $expected_with_post_class = true;
 
-    /** @var MockObject $extractor */
+    /** @var PostTransformerContentsExtractor&MockObject $extractor */
     $extractor = $this->make(
       PostTransformerContentsExtractor::class,
       [
@@ -274,7 +274,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     $post = [];
     $expected_with_post_class = false;
 
-    /** @var MockObject $extractor */
+    /** @var PostTransformerContentsExtractor&MockObject $extractor */
     $extractor = $this->make(
       PostTransformerContentsExtractor::class,
       [

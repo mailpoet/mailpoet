@@ -125,8 +125,10 @@ class ScheduledTaskTest extends \MailPoetTest {
 
     $task = ScheduledTask::findOne($task->id);
 
-    expect(Helpers::isJson($task->meta))->true();
-    expect(json_decode($task->meta, true))->equals($meta);
+    /** @var string $task_meta */
+    $task_meta = $task->meta;
+    expect(Helpers::isJson($task_meta))->true();
+    expect(json_decode($task_meta, true))->equals($meta);
   }
 
   public function testItDoesNotJsonEncodesMetaEqualToNull() {

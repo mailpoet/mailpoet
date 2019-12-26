@@ -51,6 +51,7 @@ class ValidationTest extends \MailPoetTest {
     $name = 'Test name';
     $this->connection->executeUpdate("INSERT INTO $this->table_name (id, name) VALUES (?, ?)", [$id, $name]);
 
+    /** @var ValidatedEntity $entity */
     $entity = $this->entity_manager->find(ValidatedEntity::class, $id);
     $entity->setName('x');
     try {

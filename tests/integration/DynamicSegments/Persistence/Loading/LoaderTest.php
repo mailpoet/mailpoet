@@ -72,10 +72,14 @@ class LoaderTest extends \MailPoetTest {
     $filters1 = $data[1]->getFilters();
     expect($filters0)->count(1);
     expect($filters1)->count(1);
-    expect($filters0[0])->isInstanceOf('\MailPoet\DynamicSegments\Filters\UserRole');
-    expect($filters1[0])->isInstanceOf('\MailPoet\DynamicSegments\Filters\UserRole');
-    expect($filters0[0]->getRole())->equals('Editor');
-    expect($filters1[0]->getRole())->equals('Administrator');
+    /** @var UserRole $filter0 */
+    $filter0 = $filters0[0];
+    /** @var UserRole $filter1 */
+    $filter1 = $filters1[0];
+    expect($filter0)->isInstanceOf('\MailPoet\DynamicSegments\Filters\UserRole');
+    expect($filter1)->isInstanceOf('\MailPoet\DynamicSegments\Filters\UserRole');
+    expect($filter0->getRole())->equals('Editor');
+    expect($filter1->getRole())->equals('Administrator');
   }
 
   public function _after() {

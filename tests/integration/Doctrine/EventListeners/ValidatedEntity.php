@@ -26,7 +26,7 @@ class ValidatedEntity {
    */
   private $name;
 
-  /** @return int */
+  /** @return int|null */
   public function getId() {
     return $this->id;
   }

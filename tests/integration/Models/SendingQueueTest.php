@@ -75,8 +75,10 @@ class SendingQueueTest extends \MailPoetTest {
 
     $queue = SendingQueue::findOne($queue->id);
 
-    expect(Helpers::isJson($queue->newsletter_rendered_body))->true();
-    expect(json_decode($queue->newsletter_rendered_body, true))->equals($data);
+    /** @var string queue_newsletter_rendered_body */
+    $queue_newsletter_rendered_body = $queue->newsletter_rendered_body;
+    expect(Helpers::isJson($queue_newsletter_rendered_body))->true();
+    expect(json_decode($queue_newsletter_rendered_body, true))->equals($data);
   }
 
   public function testItJsonEncodesMetaWhenSaving() {

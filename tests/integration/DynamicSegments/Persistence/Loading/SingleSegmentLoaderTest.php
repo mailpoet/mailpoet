@@ -52,8 +52,10 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
     $data = $this->loader->load($this->segment->id);
     $filters0 = $data->getFilters();
     expect($filters0)->count(1);
-    expect($filters0[0])->isInstanceOf('\MailPoet\DynamicSegments\Filters\UserRole');
-    expect($filters0[0]->getRole())->equals('Administrator');
+    /** @var UserRole $filter0 */
+    $filter0 = $filters0[0];
+    expect($filter0)->isInstanceOf('\MailPoet\DynamicSegments\Filters\UserRole');
+    expect($filter0->getRole())->equals('Administrator');
   }
 
   public function _after() {

@@ -238,7 +238,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   /**
-   * @param $email
+   * @param string $email
    * @param int $created_days_ago
    * @param string $status
    * @return Subscriber

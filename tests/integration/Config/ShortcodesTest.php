@@ -49,6 +49,7 @@ class ShortcodesTest extends \MailPoetTest {
     WordPress::releaseFunction('apply_filters');
     $dom = \pQuery::parseStr($result);
     $link = $dom->query('a');
+    /** @var string $link */
     $link = $link->attr('href');
     expect($link)->contains('endpoint=view_in_browser');
     // request data object contains newsletter hash but not newsletter id

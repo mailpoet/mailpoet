@@ -17,7 +17,7 @@ use function MailPoetVendor\array_column;
  * @property int $id
  * @property int $newsletter_id
  * @property string $newsletter_rendered_subject
- * @property string $newsletter_rendered_body
+ * @property string|array $newsletter_rendered_body
  * @property bool $non_existent_column
  */
 class Sending {

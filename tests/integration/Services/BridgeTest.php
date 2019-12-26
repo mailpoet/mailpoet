@@ -228,7 +228,7 @@ class BridgeTest extends \MailPoetTest {
 
   public function testItChecksAndStoresKeysOnSettingsSave() {
     $response = ['abc' => 'def'];
-    /** @var MockObject $bridge */
+    /** @var Bridge&MockObject $bridge */
     $bridge = Stub::makeEmptyExcept(
       $this->bridge,
       'onSettingsSave',
