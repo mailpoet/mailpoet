@@ -32,7 +32,7 @@ class InstallerTest extends \MailPoetTest {
   }
 
   public function testItGetsPluginInformation() {
-    $args = new \StdClass;
+    $args = new \stdClass;
     $args->slug = $this->slug;
     $installer = Stub::construct(
       $this->installer,
@@ -69,11 +69,11 @@ class InstallerTest extends \MailPoetTest {
   }
 
   public function testItIgnoresNonMatchingRequestsWhenGettingPluginInformation() {
-    $data = new \StdClass;
+    $data = new \stdClass;
     $data->some_property = '123';
     $result = $this->installer->getPluginInformation($data, 'some_action', null);
     expect($result)->equals($data);
-    $args = new \StdClass;
+    $args = new \stdClass;
     $args->slug = 'different-slug';
     $result = $this->installer->getPluginInformation($data, 'plugin_information', $args);
     expect($result)->equals($data);

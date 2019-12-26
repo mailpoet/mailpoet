@@ -22,7 +22,6 @@ class NewsletterPostTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::for_table(NewsletterPost::$_table)
-      ->deleteMany();
+    NewsletterPost::deleteMany();
   }
 }

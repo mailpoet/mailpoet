@@ -104,7 +104,6 @@ class NewsletterTemplateTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::for_table(NewsletterTemplate::$_table)
-      ->deleteMany();
+    NewsletterTemplate::deleteMany();
   }
 }

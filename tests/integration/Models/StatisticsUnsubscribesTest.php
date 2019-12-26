@@ -27,7 +27,6 @@ class StatisticsUnsubscribesTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::for_table(StatisticsUnsubscribes::$_table)
-      ->deleteMany();
+    StatisticsUnsubscribes::deleteMany();
   }
 }
