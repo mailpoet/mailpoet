@@ -87,7 +87,7 @@ class WooCommerceListImportPageCest {
   /**
    * Test that admin is always redirected to WooCommerce list import page and
    * can't go to another page unless he submits the form
-   * @param \AcceptanceTester $I
+   * @param \AcceptanceTester $i
    */
   public function importListPageRedirectionTest(\AcceptanceTester $i) {
     $this->settings->withWooCommerceListImportPageDisplayed(false);

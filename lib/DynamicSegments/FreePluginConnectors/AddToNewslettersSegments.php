@@ -19,7 +19,7 @@ class AddToNewslettersSegments {
   }
 
   /**
-   * @param array $initial_segments
+   * @param array $initialSegments
    *
    * @return array
    */

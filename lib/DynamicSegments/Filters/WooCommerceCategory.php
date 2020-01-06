@@ -19,7 +19,7 @@ class WooCommerceCategory implements Filter {
   private $connect;
 
   /**
-   * @param int $category_id
+   * @param int $categoryId
    * @param string $connect
    */
   public function __construct($categoryId, $connect = null) {

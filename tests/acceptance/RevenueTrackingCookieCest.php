@@ -100,7 +100,7 @@ class RevenueTrackingCookieCest {
    * Checks that email was received by looking for a subject in inbox.
    * In case it was not found reloads the inbox and check once more.
    * Emails are sent via cron and might not be sent immediately.
-   * @param \AcceptanceTester $I
+   * @param \AcceptanceTester $i
    * @param string $subject
    * @throws \Exception
    */

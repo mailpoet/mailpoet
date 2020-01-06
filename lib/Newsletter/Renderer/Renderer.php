@@ -162,7 +162,7 @@ class Renderer {
   }
 
   /**
-   * @param DomNode $template_dom
+   * @param DomNode $templateDom
    * @return string
    */
   private function postProcessTemplate(DomNode $templateDom) {

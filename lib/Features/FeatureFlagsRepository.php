@@ -7,7 +7,7 @@ use MailPoet\Entities\FeatureFlagEntity;
 
 /**
  * @method FeatureFlagEntity[] findAll()
- * @method FeatureFlagEntity|null findOneBy(array $criteria, array $order_by = null)
+ * @method FeatureFlagEntity|null findOneBy(array $criteria, array $orderBy = null)
  * @method void persist(FeatureFlagEntity $entity)
  * @method void remove(FeatureFlagEntity $entity)
  */

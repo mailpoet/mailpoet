@@ -24,8 +24,8 @@ class InactiveSubscribersController {
   }
 
   /**
-   * @param int $days_to_inactive
-   * @param int $batch_size
+   * @param int $daysToInactive
+   * @param int $batchSize
    * @return int|boolean
    */
   public function markInactiveSubscribers($daysToInactive, $batchSize, $startId = null) {
@@ -34,8 +34,8 @@ class InactiveSubscribersController {
   }
 
   /**
-   * @param int $days_to_inactive
-   * @param int $batch_size
+   * @param int $daysToInactive
+   * @param int $batchSize
    * @return int
    */
   public function markActiveSubscribers($daysToInactive, $batchSize) {
@@ -55,7 +55,7 @@ class InactiveSubscribersController {
   }
 
   /**
-   * @param int $days_to_inactive
+   * @param int $daysToInactive
    * @return Carbon
    */
   private function getThresholdDate($daysToInactive) {
@@ -64,8 +64,8 @@ class InactiveSubscribersController {
   }
 
   /**
-   * @param Carbon $threshold_date
-   * @param int $batch_size
+   * @param Carbon $thresholdDate
+   * @param int $batchSize
    * @return int|boolean
    */
   private function deactivateSubscribers(Carbon $thresholdDate, $batchSize, $startId = null) {
@@ -149,8 +149,8 @@ class InactiveSubscribersController {
   }
 
   /**
-   * @param Carbon $threshold_date
-   * @param int $batch_size
+   * @param Carbon $thresholdDate
+   * @param int $batchSize
    * @return int
    */
   private function activateSubscribers(Carbon $thresholdDate, $batchSize) {

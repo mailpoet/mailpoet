@@ -124,7 +124,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param int|null $wp_user_id
+   * @param int|null $wpUserId
    */
   public function setWpUserId($wpUserId) {
     $this->wpUserId = $wpUserId;
@@ -138,7 +138,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param bool $is_woocommerce_user
+   * @param bool $isWoocommerceUser
    */
   public function setIsWoocommerceUser($isWoocommerceUser) {
     $this->isWoocommerceUser = $isWoocommerceUser;
@@ -152,7 +152,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param string $first_name
+   * @param string $firstName
    */
   public function setFirstName($firstName) {
     $this->firstName = $firstName;
@@ -166,7 +166,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param string $last_name
+   * @param string $lastName
    */
   public function setLastName($lastName) {
     $this->lastName = $lastName;
@@ -217,7 +217,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param string $subscribed_ip
+   * @param string $subscribedIp
    */
   public function setSubscribedIp($subscribedIp) {
     $this->subscribedIp = $subscribedIp;
@@ -231,7 +231,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param string|null $confirmed_ip
+   * @param string|null $confirmedIp
    */
   public function setConfirmedIp($confirmedIp) {
     $this->confirmedIp = $confirmedIp;
@@ -245,7 +245,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param DateTimeInterface|null $confirmed_at
+   * @param DateTimeInterface|null $confirmedAt
    */
   public function setConfirmedAt($confirmedAt) {
     $this->confirmedAt = $confirmedAt;
@@ -259,7 +259,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param DateTimeInterface|null $last_subscribed_at
+   * @param DateTimeInterface|null $lastSubscribedAt
    */
   public function setLastSubscribedAt($lastSubscribedAt) {
     $this->lastSubscribedAt = $lastSubscribedAt;
@@ -273,7 +273,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param string|null $unconfirmed_data
+   * @param string|null $unconfirmedData
    */
   public function setUnconfirmedData($unconfirmedData) {
     $this->unconfirmedData = $unconfirmedData;
@@ -313,7 +313,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param int $count_confirmations
+   * @param int $countConfirmations
    */
   public function setConfirmationsCount($countConfirmations) {
     $this->countConfirmations = $countConfirmations;
@@ -327,7 +327,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param string|null $unsubscribe_token
+   * @param string|null $unsubscribeToken
    */
   public function setUnsubscribeToken($unsubscribeToken) {
     $this->unsubscribeToken = $unsubscribeToken;
@@ -341,7 +341,7 @@ class SubscriberEntity {
   }
 
   /**
-   * @param string|null $link_token
+   * @param string|null $linkToken
    */
   public function setLinkToken($linkToken) {
     $this->linkToken = $linkToken;

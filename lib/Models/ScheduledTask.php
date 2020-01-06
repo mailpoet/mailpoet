@@ -10,13 +10,13 @@ use MailPoetVendor\Idiorm\ORM;
 
 /**
  * @property int $id
- * @property string $processed_at
+ * @property string $processedAt
  * @property string|null $status
  * @property string|null $type
  * @property int $priority
- * @property string|null $scheduled_at
- * @property boolean|null $in_progress
- * @property int $reschedule_count
+ * @property string|null $scheduledAt
+ * @property boolean|null $inProgress
+ * @property int $rescheduleCount
  * @property string|array|null $meta
  */
 class ScheduledTask extends Model {

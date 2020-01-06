@@ -42,9 +42,9 @@ class Functions {
 
   /**
    * @param string $tag
-   * @param callable $function_to_add
+   * @param callable $functionToAdd
    * @param int $priority
-   * @param int $accepted_args
+   * @param int $acceptedArgs
    * @return boolean
    */
   public function addAction($tag, $functionToAdd, $priority = 10, $acceptedArgs = 1) {
@@ -260,14 +260,14 @@ class Functions {
   }
 
   /**
-   * @param int|false $user_id
+   * @param int|false $userId
    */
   public function getTheAuthorMeta($field = '', $userId = false) {
     return get_the_author_meta($field, $userId);
   }
 
   /**
-   * @param  int|\WP_User $user_id
+   * @param  int|\WP_User $userId
    */
   public function getUserLocale($userId = 0) {
     return get_user_locale($userId);
@@ -327,7 +327,7 @@ class Functions {
 
   /**
    * @param  string|false $deprecated
-   * @param  string|false $plugin_rel_path
+   * @param  string|false $pluginRelPath
    */
   public function loadPluginTextdomain($domain, $deprecated = false, $pluginRelPath = false) {
     return load_plugin_textdomain($domain, $deprecated, $pluginRelPath);
@@ -363,7 +363,7 @@ class Functions {
 
     /**
    * @param string $tag
-   * @param callable $function_to_remove
+   * @param callable $functionToRemove
    * @param int $priority
    */
   public function removeAction($tag, $functionToRemove, $priority = 10) {

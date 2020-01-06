@@ -159,7 +159,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
       ->findOne();
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();
@@ -184,7 +184,7 @@ class NewsletterTest extends \MailPoetTest {
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
       ->findOne();
     expect($link)->false();
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();

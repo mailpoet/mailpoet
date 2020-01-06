@@ -55,7 +55,7 @@ class SimpleWorkerTest extends \MailPoetTest {
 
   public function testItCalculatesNextRunDateWithinNextWeekBoundaries() {
     $currentDate = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    /** @var Carbon $next_run_date */
+    /** @var Carbon $nextRunDate */
     $nextRunDate = (new MockSimpleWorker())->getNextRunDate();
     $difference = $nextRunDate->diffInDays($currentDate);
     // Subtract days left in the current week

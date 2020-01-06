@@ -18,7 +18,7 @@ class WooCommerceProduct implements Filter {
   private $connect;
 
   /**
-   * @param int $product_id
+   * @param int $productId
    * @param string $connect
    */
   public function __construct($productId, $connect = null) {

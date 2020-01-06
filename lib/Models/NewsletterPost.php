@@ -3,9 +3,9 @@
 namespace MailPoet\Models;
 
 /**
- * @property int $newsletter_id
- * @property int $post_id
- * @property string $updated_at
+ * @property int $newsletterId
+ * @property int $postId
+ * @property string $updatedAt
  */
 class NewsletterPost extends Model {
   public static $_table = MP_NEWSLETTER_POSTS_TABLE;

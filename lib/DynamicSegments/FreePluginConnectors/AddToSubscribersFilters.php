@@ -19,7 +19,7 @@ class AddToSubscribersFilters {
   }
 
   /**
-   * @param array $segment_filters
+   * @param array $segmentFilters
    *
    * @return array
    */

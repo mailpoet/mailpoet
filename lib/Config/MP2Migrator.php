@@ -379,7 +379,7 @@ class MP2Migrator {
   /**
    * Import a segment
    *
-   * @param array $list_data List data
+   * @param array $listData List data
    * @return Segment
    */
   private function importSegment($listData) {
@@ -453,7 +453,7 @@ class MP2Migrator {
   /**
    * Import a custom field
    *
-   * @param array $custom_field MP2 custom field
+   * @param array $customField MP2 custom field
    * @return CustomField
    */
   private function importCustomField($customField) {
@@ -471,7 +471,7 @@ class MP2Migrator {
   /**
    * Map the MailPoet 2 custom field type with the MailPoet custom field type
    *
-   * @param string $mp2_type MP2 custom field type
+   * @param string $mp2Type MP2 custom field type
    * @return string MP3 custom field type
    */
   private function mapCustomFieldType($mp2Type) {
@@ -536,7 +536,7 @@ class MP2Migrator {
   /**
    * Map the validate value
    *
-   * @param string $mp2_value MP2 value
+   * @param string $mp2Value MP2 value
    * @return string MP3 value
    */
   private function mapCustomFieldValidateValue($mp2Value) {
@@ -616,7 +616,7 @@ class MP2Migrator {
   /**
    * Import a subscriber
    *
-   * @param array $user_data User data
+   * @param array $userData User data
    * @return Subscriber
    */
   private function importSubscriber($userData) {
@@ -649,7 +649,7 @@ class MP2Migrator {
   /**
    * Map the MailPoet 2 user status with MailPoet 3
    *
-   * @param int $mp2_user_status MP2 user status
+   * @param int $mp2UserStatus MP2 user status
    * @return string MP3 user status
    */
   private function mapUserStatus($mp2UserStatus) {
@@ -678,7 +678,7 @@ class MP2Migrator {
    * Import the segments for a subscriber
    *
    * @param Subscriber $subscriber MP3 subscriber
-   * @param int $user_id MP2 user ID
+   * @param int $userId MP2 user ID
    */
   private function importSubscriberSegments($subscriber, $userId) {
     $userLists = $this->getUserLists($userId);
@@ -691,7 +691,7 @@ class MP2Migrator {
    * Get the lists for a user
    *
    * @global object $wpdb
-   * @param int $user_id User ID
+   * @param int $userId User ID
    * @return array Users Lists
    */
   private function getUserLists($userId) {
@@ -711,8 +711,8 @@ class MP2Migrator {
   /**
    * Import a subscriber segment
    *
-   * @param int $subscriber_id
-   * @param array $user_list
+   * @param int $subscriberId
+   * @param array $userList
    * @return SubscriberSegment|null
    */
   private function importSubscriberSegment($subscriberId, $userList) {
@@ -769,9 +769,9 @@ class MP2Migrator {
   /**
    * Import a subscriber custom field
    *
-   * @param int $subscriber_id Subscriber ID
-   * @param array $custom_field Custom field
-   * @param string $custom_field_value Custom field value
+   * @param int $subscriberId Subscriber ID
+   * @param array $customField Custom field
+   * @param string $customFieldValue Custom field value
    * @return SubscriberCustomField
    */
   private function importSubscriberCustomField($subscriberId, $customField, $customFieldValue) {
@@ -864,7 +864,7 @@ class MP2Migrator {
   /**
    * Import a form
    *
-   * @param array $form_data Form data
+   * @param array $formData Form data
    * @return Form
    */
   private function importForm($formData) {
@@ -928,7 +928,7 @@ class MP2Migrator {
   /**
    * Get the MP3 segments IDs of the MP2 lists IDs
    *
-   * @param array $mp2_list_ids
+   * @param array $mp2ListIds
    */
   private function getMappedSegmentIds($mp2ListIds) {
     $mp3SegmentIds = [];
@@ -1105,7 +1105,7 @@ class MP2Migrator {
    * Get an email
    *
    * @global object $wpdb
-   * @param int $email_id
+   * @param int $emailId
    * @return array Email
    */
   private function getEmail($emailId) {
@@ -1126,7 +1126,7 @@ class MP2Migrator {
   /**
    * Map the Email frequency interval
    *
-   * @param string $interval_str Interval
+   * @param string $intervalStr Interval
    * @return string Interval
    */
   private function mapFrequencyInterval($intervalStr) {
@@ -1156,8 +1156,8 @@ class MP2Migrator {
   /**
    * Map the Email frequency number
    *
-   * @param int $emails_number Emails number
-   * @param string $interval_str Interval
+   * @param int $emailsNumber Emails number
+   * @param string $intervalStr Interval
    * @return int Emails number
    */
   private function mapFrequencyEmails($emailsNumber, $intervalStr) {

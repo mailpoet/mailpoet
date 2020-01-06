@@ -22,8 +22,8 @@ class SubscribersIds {
   /**
    * Finds subscribers in a dynamic segment and returns their ids.
    *
-   * @param DynamicSegment $dynamic_segment
-   * @param array $limit_to_subscribers_ids If passed the result will be limited only to ids within this array
+   * @param DynamicSegment $dynamicSegment
+   * @param array $limitToSubscribersIds If passed the result will be limited only to ids within this array
    *
    * @return Subscriber[]
    */

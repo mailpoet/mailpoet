@@ -73,7 +73,7 @@ class Newsletter {
   }
 
   /**
-   * @param string $created_at in format Y-m-d H:i:s
+   * @param string $createdAt in format Y-m-d H:i:s
    * @return Newsletter
    */
   public function withCreatedAt($createdAt) {

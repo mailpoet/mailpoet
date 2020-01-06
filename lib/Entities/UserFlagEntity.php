@@ -39,7 +39,7 @@ class UserFlagEntity {
     return $this->userId;
   }
 
-  /** @param int $user_id */
+  /** @param int $userId */
   public function setUserId($userId) {
     $this->userId = $userId;
   }

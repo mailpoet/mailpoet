@@ -13,22 +13,22 @@ use function MailPoetVendor\array_column;
 /**
  * @property int $id
  * @property string $email
- * @property string $first_name
- * @property string $last_name
+ * @property string $firstName
+ * @property string $lastName
  * @property string $status
- * @property string|null $subscribed_ip
- * @property string|null $confirmed_ip
- * @property string|null $confirmed_at
- * @property string|null $last_subscribed_at
- * @property string|null $deleted_at
+ * @property string|null $subscribedIp
+ * @property string|null $confirmedIp
+ * @property string|null $confirmedAt
+ * @property string|null $lastSubscribedAt
+ * @property string|null $deletedAt
  * @property string|null $source
- * @property string|null $link_token
- * @property int $count_confirmations
- * @property int $wp_user_id
+ * @property string|null $linkToken
+ * @property int $countConfirmations
+ * @property int $wpUserId
  * @property array $segments
  * @property array $subscriptions
- * @property string $unconfirmed_data
- * @property int $is_woocommerce_user
+ * @property string $unconfirmedData
+ * @property int $isWoocommerceUser
  */
 
 class Subscriber extends Model {
@@ -346,7 +346,7 @@ class Subscriber extends Model {
   }
 
   /**
-   * @param string $customer_email
+   * @param string $customerEmail
    * @return bool|Subscriber
    */
   public static function getWooCommerceSegmentSubscriber($customerEmail) {

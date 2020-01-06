@@ -199,7 +199,7 @@ class NewsletterEntity {
   }
 
   /**
-   * @param string $sender_address
+   * @param string $senderAddress
    */
   public function setSenderAddress($senderAddress) {
     $this->senderAddress = $senderAddress;
@@ -213,7 +213,7 @@ class NewsletterEntity {
   }
 
   /**
-   * @param string $sender_name
+   * @param string $senderName
    */
   public function setSenderName($senderName) {
     $this->senderName = $senderName;
@@ -241,7 +241,7 @@ class NewsletterEntity {
   }
 
   /**
-   * @param string $reply_to_address
+   * @param string $replyToAddress
    */
   public function setReplyToAddress($replyToAddress) {
     $this->replyToAddress = $replyToAddress;
@@ -255,7 +255,7 @@ class NewsletterEntity {
   }
 
   /**
-   * @param string $reply_to_name
+   * @param string $replyToName
    */
   public function setReplyToName($replyToName) {
     $this->replyToName = $replyToName;
@@ -297,7 +297,7 @@ class NewsletterEntity {
   }
 
   /**
-   * @param DateTimeInterface|null $sent_at
+   * @param DateTimeInterface|null $sentAt
    */
   public function setSentAt($sentAt) {
     $this->sentAt = $sentAt;
@@ -318,7 +318,7 @@ class NewsletterEntity {
   }
 
   /**
-   * @param string $ga_campaign
+   * @param string $gaCampaign
    */
   public function setGaCampaign($gaCampaign) {
     $this->gaCampaign = $gaCampaign;
@@ -326,7 +326,7 @@ class NewsletterEntity {
 
 
   /**
-   * @param string|null $unsubscribe_token
+   * @param string|null $unsubscribeToken
    */
   public function setUnsubscribeToken($unsubscribeToken) {
     $this->unsubscribeToken = $unsubscribeToken;

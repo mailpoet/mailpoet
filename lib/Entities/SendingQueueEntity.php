@@ -89,7 +89,7 @@ class SendingQueueEntity {
   }
 
   /**
-   * @param array|null $newsletter_rendered_body
+   * @param array|null $newsletterRenderedBody
    */
   public function setNewsletterRenderedBody($newsletterRenderedBody) {
     $this->newsletterRenderedBody = $newsletterRenderedBody;
@@ -103,7 +103,7 @@ class SendingQueueEntity {
   }
 
   /**
-   * @param string|null $newsletter_rendered_subject
+   * @param string|null $newsletterRenderedSubject
    */
   public function setNewsletterRenderedSubject($newsletterRenderedSubject) {
     $this->newsletterRenderedSubject = $newsletterRenderedSubject;
@@ -131,7 +131,7 @@ class SendingQueueEntity {
   }
 
   /**
-   * @param int $count_total
+   * @param int $countTotal
    */
   public function setCountTotal($countTotal) {
     $this->countTotal = $countTotal;
@@ -145,7 +145,7 @@ class SendingQueueEntity {
   }
 
   /**
-   * @param int $count_processed
+   * @param int $countProcessed
    */
   public function setCountProcessed($countProcessed) {
     $this->countProcessed = $countProcessed;
@@ -159,7 +159,7 @@ class SendingQueueEntity {
   }
 
   /**
-   * @param int $count_to_process
+   * @param int $countToProcess
    */
   public function setCountToProcess($countToProcess) {
     $this->countToProcess = $countToProcess;

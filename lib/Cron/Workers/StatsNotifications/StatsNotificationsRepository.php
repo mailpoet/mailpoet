@@ -14,7 +14,7 @@ class StatsNotificationsRepository extends Repository {
   }
 
   /**
-   * @param int $newsletter_id
+   * @param int $newsletterId
    * @return StatsNotificationEntity|null
    */
   public function findOneByNewsletterId($newsletterId) {

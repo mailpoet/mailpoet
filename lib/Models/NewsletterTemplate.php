@@ -6,7 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * @property string $name
- * @property int|null $newsletter_id
+ * @property int|null $newsletterId
  * @property string $categories
  * @property string $description
  * @property string|null $body
