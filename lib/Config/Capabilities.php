@@ -66,7 +66,7 @@ class Capabilities {
   public function enqueueMembersStyles() {
     WPFunctions::get()->wpEnqueueStyle(
       'mailpoet-admin-global',
-      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('adminGlobal.css')
+      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-admin.css')
     );
   }
 
