@@ -110,7 +110,7 @@ class ManageSubscriptionLinkCest {
     $i->click('Send');
 
     // Reloading page is faster than waiting for regular AJAX request to refresh it
-    for ($i = 0; $i < 15; $i++) {
+    for ($index = 0; $index < 15; $index++) {
       try {
         $i->wait(2);
         $i->reloadPage();

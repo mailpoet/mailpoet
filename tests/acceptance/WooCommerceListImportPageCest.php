@@ -52,7 +52,7 @@ class WooCommerceListImportPageCest {
     $i->reloadPage();
     // It takes more time to sync guest user
     // So we reload page several times and check for guest customer email
-    for ($i = 0; $i < 15; $i++) {
+    for ($index = 0; $index < 15; $index++) {
       try {
         $i->wait(2);
         $i->reloadPage();

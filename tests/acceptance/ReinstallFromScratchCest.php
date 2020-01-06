@@ -25,8 +25,8 @@ class ReinstallFromScratchCest {
     $subscriber = new Subscriber();
     $subscriber->create();
     // Create few WP users, which should be imported after reinstall
-    for ($i = 0; $i <= 5; $i++) {
-      wp_create_user('test' . $i, 'password', 'imported' . $i . '@from.wordpress');
+    for ($index = 0; $index <= 5; $index++) {
+      wp_create_user('test' . $index, 'password', 'imported' . $index . '@from.wordpress');
     }
 
     // Step 2 - reinstall from scratch
