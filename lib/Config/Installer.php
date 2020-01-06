@@ -45,13 +45,13 @@ class Installer {
     $premiumInstallUrl = $premiumPluginInstalled ? '' : self::getPluginInstallationUrl($slug);
     $premiumActivateUrl = $premiumPluginActive ? '' : self::getPluginActivationUrl($slug);
 
-    return compact(
-      'premium_plugin_active',
-      'premium_plugin_installed',
-      'premium_plugin_initialized',
-      'premium_install_url',
-      'premium_activate_url'
-    );
+    return [
+      'premium_plugin_active' => $premiumPluginActive,
+      'premium_plugin_installed' => $premiumPluginInstalled,
+      'premium_plugin_initialized' => $premiumPluginInitialized,
+      'premium_install_url' => $premiumInstallUrl,
+      'premium_activate_url' => $premiumActivateUrl,
+    ];
   }
 
   public static function isPluginInstalled($slug) {
