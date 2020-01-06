@@ -73,7 +73,7 @@ class Newsletters {
   }
 
   public function render() {
-    global $wpRoles;
+    global $wp_roles; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
     $data = [];
 
@@ -90,7 +90,7 @@ class Newsletters {
     $data['current_wp_user'] = $this->wp->wpGetCurrentUser()->to_array();
     $data['current_wp_user_firstname'] = $this->wp->wpGetCurrentUser()->user_firstname;
     $data['site_url'] = $this->wp->siteUrl();
-    $data['roles'] = $wpRoles->get_names();
+    $data['roles'] = $wp_roles->get_names(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $data['roles']['mailpoet_all'] = $this->wp->__('In any WordPress role', 'mailpoet');
 
     $installedAtDateTime = new \DateTime($data['settings']['installed_at']);

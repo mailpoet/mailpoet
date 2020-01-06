@@ -45,9 +45,10 @@ class AutomaticEmails {
   }
 
   public function getAutomaticEmails() {
-    global $wpFilter;
+    global $wp_filter; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
-    $registeredGroups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wpFilter));
+    // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $registeredGroups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wp_filter));
 
     if (empty($registeredGroups)) return null;
 
@@ -126,9 +127,10 @@ class AutomaticEmails {
   }
 
   public function unregisterAutomaticEmails() {
-    global $wpFilter;
+    global $wp_filter; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
-    $registeredGroups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wpFilter));
+    // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $registeredGroups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wp_filter));
 
     if (empty($registeredGroups)) return null;
 

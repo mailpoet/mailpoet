@@ -56,12 +56,12 @@ class PostTransformerContentsExtractor {
      *
      * https://mailpoet.atlassian.net/browse/MAILPOET-1365
      */
-    global $contentWidth; // default is NULL
+    global $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps, default is NULL
 
-    $contentWidthCopy = $contentWidth;
-    $contentWidth = Env::NEWSLETTER_CONTENT_WIDTH;
+    $contentWidthCopy = $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $content_width = Env::NEWSLETTER_CONTENT_WIDTH; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $imageInfo = $this->wp->wpGetAttachmentImageSrc($id, 'mailpoet_newsletter_max');
-    $contentWidth = $contentWidthCopy;
+    $content_width = $contentWidthCopy; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
     return $imageInfo;
   }

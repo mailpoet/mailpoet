@@ -28,7 +28,7 @@ class Update {
 
   public function render() {
     global $wp;
-    $currentUrl = $this->wp->homeUrl(add_query_arg($wp->queryString, $wp->request));
+    $currentUrl = $this->wp->homeUrl(add_query_arg($wp->query_string, $wp->request)); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $redirectUrl =
       (!empty($_GET['mailpoet_redirect']))
         ? urldecode($_GET['mailpoet_redirect'])

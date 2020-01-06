@@ -12,9 +12,9 @@ class FunctionsTest extends \MailPoetTest {
   public $contentWidth;
   public function _before() {
     parent::_before();
-    global $contentWidth;
-    $this->contentWidth = $contentWidth;
-    $contentWidth = 150;
+    global $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $this->contentWidth = $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $content_width = 150; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $this->action = 'mailpoet_test_action';
     $this->filter = 'mailpoet_test_filter';
     $this->wp = new WPFunctions;
@@ -93,7 +93,7 @@ class FunctionsTest extends \MailPoetTest {
   }
 
   public function _after() {
-    global $contentWidth;
-    $contentWidth = $this->contentWidth;
+    global $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $content_width = $this->contentWidth; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 }

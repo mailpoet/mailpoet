@@ -83,7 +83,7 @@ class Pages {
     $subscriptionUrlFactory = Subscription\SubscriptionUrlFactory::getInstance();
     return [
       'id' => $page->ID,
-      'title' => $page->postTitle,
+      'title' => $page->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       'url' => [
         'unsubscribe' => $subscriptionUrlFactory->getSubscriptionUrl($page, 'unsubscribe'),
         'manage' => $subscriptionUrlFactory->getSubscriptionUrl($page, 'manage'),
