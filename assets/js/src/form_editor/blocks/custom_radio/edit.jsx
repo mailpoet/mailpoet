@@ -11,6 +11,7 @@ import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import CustomFieldSettings from './custom_field_settings.jsx';
+import formatLabel from '../label_formatter.jsx';
 
 const CustomRadioEdit = ({ attributes, setAttributes }) => {
   const isSaving = useSelect(
@@ -63,10 +64,7 @@ const CustomRadioEdit = ({ attributes, setAttributes }) => {
 
   const getLabel = () => {
     if (attributes.hideLabel) return null;
-    if (attributes.mandatory) {
-      return `${attributes.label} *`;
-    }
-    return attributes.label;
+    return formatLabel(attributes);
   };
 
   return (

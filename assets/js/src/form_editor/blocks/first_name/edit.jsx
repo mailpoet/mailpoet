@@ -9,6 +9,8 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
+import formatLabel from '../label_formatter.jsx';
+
 const FirstNameEdit = ({ attributes, setAttributes }) => {
   const inspectorControls = (
     <InspectorControls>
@@ -48,20 +50,13 @@ const FirstNameEdit = ({ attributes, setAttributes }) => {
     />
   );
 
-  const getLabel = () => {
-    if (attributes.mandatory) {
-      return `${attributes.label} *`;
-    }
-    return attributes.label;
-  };
-
   return (
     <>
       {inspectorControls}
-      {attributes.labelWithinInput ? (getTextInput(getLabel())
+      {attributes.labelWithinInput ? (getTextInput(formatLabel(attributes))
       ) : (
         <label className="mailpoet_text_label" data-automation-id="editor_first_name_label" htmlFor="first_name">
-          {getLabel()}
+          {formatLabel(attributes)}
           <br />
           {getTextInput('')}
         </label>

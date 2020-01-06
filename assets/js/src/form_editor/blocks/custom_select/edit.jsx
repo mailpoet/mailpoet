@@ -10,6 +10,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
+import formatLabel from '../label_formatter.jsx';
 
 import CustomFieldSettings from '../custom_radio/custom_field_settings.jsx';
 
@@ -65,16 +66,9 @@ const CustomSelectEdit = ({ attributes, setAttributes }) => {
     </InspectorControls>
   );
 
-  const getLabel = () => {
-    if (attributes.mandatory) {
-      return `${attributes.label} *`;
-    }
-    return attributes.label;
-  };
-
   const getInput = () => {
     const options = [{
-      label: attributes.labelWithinInput ? getLabel() : '-',
+      label: attributes.labelWithinInput ? formatLabel(attributes) : '-',
       value: null,
     }];
     if (Array.isArray(attributes.values) || !attributes.values.length) {
@@ -83,7 +77,7 @@ const CustomSelectEdit = ({ attributes, setAttributes }) => {
     return (
       <div className="mailpoet_custom_select">
         <SelectControl
-          label={!attributes.labelWithinInput ? getLabel() : undefined}
+          label={!attributes.labelWithinInput ? formatLabel(attributes) : undefined}
           options={options}
           onChange={() => {}}
         />
