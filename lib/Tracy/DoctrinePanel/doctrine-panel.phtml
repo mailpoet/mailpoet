@@ -17,7 +17,7 @@ namespace MailPoet\Tracy\DoctrinePanel;
       <th>Types</th>
       <th>Time&nbsp;(ms)</th>
     </tr>
-    <?php foreach ($this->sql_logger->queries as $item): ?>
+    <?php foreach ($this->sqlLogger->queries as $item): ?>
     <tr>
       <td><?php echo $this->formatSql($item['sql']) ?></td>
       <td><pre><?php echo $this->formatArrayData($item['params']) ?></pre></td>

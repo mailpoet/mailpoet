@@ -42,13 +42,13 @@ class DIPanel implements IBarPanel {
   }
 
   private function loadServices() {
-    list($services, $definitions) = $this->getServicesFromContainer('free_container');
+    list($services, $definitions) = $this->getServicesFromContainer('freeContainer');
     $this->freeServices = array_keys($services);
     sort($this->freeServices);
     $this->definitions = $definitions;
     $this->argumentsFlattened = $this->flattenArguments($this->freeServices);
     if (array_key_exists('premium_container', $services)) {
-      list($services, $definitions) = $this->getServicesFromContainer('premium_container');
+      list($services, $definitions) = $this->getServicesFromContainer('premiumContainer');
       $this->premiumServices = array_keys($services);
       sort($this->premiumServices);
       $this->definitions = array_merge($this->definitions, $definitions);
