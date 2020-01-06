@@ -42,7 +42,7 @@ class SettingsInactiveSubscribersChangeCest {
     $i->waitForText('Settings saved');
     $i->amOnMailPoetPage('Subscribers');
     // Subscribers are activated in background so we do a couple of reloads
-    for ($i = 0; $i < 15; $i++) {
+    for ($index = 0; $index < 15; $index++) {
       try {
         $i->wait(2);
         $i->reloadPage();

@@ -58,7 +58,7 @@ class EditorProductsCest {
     $categoryMultipleResultsId = $this->productFactory->createCategory(self::CATEGORY_MULTIPLE_RESULTS);
 
     // Create products for multiple results
-    for ($i = 0; $i < self::PRODUCTS_COUNT; $i++) {
+    for ($index = 0; $index < self::PRODUCTS_COUNT; $index++) {
       $this->productFactory
         ->withName(self::KEYWORD_MULTIPLE_RESULTS . ' ' . Security::generateRandomString())
         ->create();
