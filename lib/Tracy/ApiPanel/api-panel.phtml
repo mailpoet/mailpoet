@@ -12,15 +12,15 @@ use Tracy\Dumper;
 <table>
   <tr>
     <th>Endpoint</th>
-    <td><pre><?php echo $this->endpoint_reflection->getName() ?></pre></td>
+    <td><pre><?php echo $this->endpointReflection->getName() ?></pre></td>
   </tr>
   <tr>
     <th>Method</th>
-    <td><pre><?php echo $this->request_method . '()' ?></pre></td>
+    <td><pre><?php echo $this->requestMethod . '()' ?></pre></td>
   </tr>
 </table>
 
-<?php if(!empty($this->request_data)): ?>
+<?php if(!empty($this->requestData)): ?>
 <br/>
 <h2 style="font-size: 140%; color: #575753;">Data</h2>
 <div class="tracy-inner tracy-mailpoet-api">
@@ -29,7 +29,7 @@ use Tracy\Dumper;
       <th>Name</th>
       <th>Value</th>
     </tr>
-    <?php foreach ($this->request_data as $name => $value): ?>
+    <?php foreach ($this->requestData as $name => $value): ?>
     <tr>
       <td><?php echo $name ?></td>
       <td><?php echo Dumper::toHtml($value) ?></td>
