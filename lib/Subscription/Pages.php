@@ -178,7 +178,7 @@ class Pages {
     }
 
     if (
-      ($post->postTitle !== $this->wp->__('MailPoet Page', 'mailpoet'))
+      ($post->post_title !== $this->wp->__('MailPoet Page', 'mailpoet')) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       ||
       ($pageTitle !== $this->wp->singlePostTitle('', false))
     ) {

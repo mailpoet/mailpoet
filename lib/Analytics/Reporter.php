@@ -27,7 +27,7 @@ class Reporter {
   }
 
   public function getData() {
-    global $wpdb, $wpVersion, $woocommerce;
+    global $wpdb, $wp_version, $woocommerce;  // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $mta = $this->settings->get('mta', []);
     $newsletters = Newsletter::getAnalytics();
     $isCronTriggerMethodWP = $this->settings->get('cron_trigger.method') === CronTrigger::METHOD_WORDPRESS;
@@ -41,7 +41,7 @@ class Reporter {
     $result = [
       'PHP version' => PHP_VERSION,
       'MySQL version' => $wpdb->db_version(),
-      'WordPress version' => $wpVersion,
+      'WordPress version' => $wp_version, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       'Multisite environment' => WPFunctions::get()->isMultisite() ? 'yes' : 'no',
       'RTL' => WPFunctions::get()->isRtl() ? 'yes' : 'no',
       'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,

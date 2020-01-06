@@ -41,9 +41,9 @@ class WooCommerceCategory implements Filter {
       "itemmeta.order_item_id = items.order_item_id AND itemmeta.meta_key = '_product_id'",
       'itemmeta'
     );
-    $orm->join($wpdb->termRelationships, ['itemmeta.meta_value', '=', 'term_relationships.object_id'], 'term_relationships');
+    $orm->join($wpdb->term_relationships, ['itemmeta.meta_value', '=', 'term_relationships.object_id'], 'term_relationships'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $orm->rawJoin(
-      'INNER JOIN ' . $wpdb->termTaxonomy,
+      'INNER JOIN ' . $wpdb->term_taxonomy, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       '
          term_taxonomy.term_taxonomy_id=term_relationships.term_taxonomy_id
          AND

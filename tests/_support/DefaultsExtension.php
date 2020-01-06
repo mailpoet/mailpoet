@@ -41,9 +41,9 @@ class DefaultsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDe
 
     // get rid of 'blog/' prefix that is added automatically to rewrite rules on multisite by default
     // (init() loads 'permalink_structure' option from DB, flush_rules() regenerates 'rewrite_rules')
-    global $wpRewrite;
-    $wpRewrite->init();
-    $wpRewrite->flush_rules();
+    global $wp_rewrite; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wp_rewrite->init(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wp_rewrite->flush_rules(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
   private function setupWooCommerce() {
