@@ -44,7 +44,7 @@ class AssetsController {
   public function setupFrontEndDependencies() {
     $this->wp->wpEnqueueStyle(
       'mailpoet_public',
-      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('public.css')
+      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-public.css')
     );
 
     $this->wp->wpEnqueueScript(

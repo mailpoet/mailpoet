@@ -64,7 +64,7 @@ class Export {
 
         // CSS
         $output[] = '<link rel="stylesheet" type="text/css" href="' .
-          Env::$assets_url . '/dist/css/public.css?mp_ver=' . MAILPOET_VERSION .
+          Env::$assets_url . '/dist/css/mailpoet-public.css?mp_ver=' . MAILPOET_VERSION .
         '" />';
 
         // jQuery
