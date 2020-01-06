@@ -99,7 +99,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes }) => {
   );
 
   const getLabel = () => {
-    if (attributes.hideLabel) return null;
+    if (attributes.hideLabel || !attributes.label) return null;
     return attributes.label;
   };
 

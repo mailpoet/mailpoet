@@ -11,6 +11,7 @@ import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import CustomFieldSettings from './custom_field_settings.jsx';
+import formatLabel from '../label_formatter.jsx';
 
 const CustomTextEdit = ({ attributes, setAttributes }) => {
   const isSaving = useSelect(
@@ -77,20 +78,13 @@ const CustomTextEdit = ({ attributes, setAttributes }) => {
     />
   );
 
-  const getLabel = () => {
-    if (attributes.mandatory) {
-      return `${attributes.label} *`;
-    }
-    return attributes.label;
-  };
-
   return (
     <>
       {inspectorControls}
-      {attributes.labelWithinInput ? (getTextInput(getLabel())
+      {attributes.labelWithinInput ? (getTextInput(formatLabel(attributes))
       ) : (
         <label className="mailpoet_text_label" data-automation-id="editor_custom_text_label" htmlFor="custom_text">
-          {getLabel()}
+          {formatLabel(attributes)}
           <br />
           {getTextInput('')}
         </label>

@@ -12,6 +12,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import CustomFieldSettings from './custom_field_settings.jsx';
 import FormFieldDate from '../../../form/fields/date.jsx';
+import formatLabel from '../label_formatter.jsx';
 
 const CustomDateEdit = ({ attributes, setAttributes }) => {
   const isSaving = useSelect(
@@ -68,18 +69,11 @@ const CustomDateEdit = ({ attributes, setAttributes }) => {
     </InspectorControls>
   );
 
-  const getLabel = () => {
-    if (attributes.mandatory) {
-      return `${attributes.label} *`;
-    }
-    return attributes.label;
-  };
-
   return (
     <>
       {inspectorControls}
       <label className="mailpoet_text_label mailpoet_custom_date" data-automation-id="editor_custom_date_label" htmlFor="custom_text">
-        {getLabel()}
+        {formatLabel(attributes)}
         <br />
         <FormFieldDate
           field={{
