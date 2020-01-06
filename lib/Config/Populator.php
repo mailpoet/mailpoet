@@ -623,8 +623,8 @@ class Populator {
 
   private function updateLastSubscribedAt() {
     global $wpdb;
-    // perform once for versions below or equal to 3.41.2
-    if (version_compare($this->settings->get('db_version', '3.41.3'), '3.41.2', '>')) {
+    // perform once for versions below or equal to 3.42.0
+    if (version_compare($this->settings->get('db_version', '3.42.1'), '3.42.0', '>')) {
       return false;
     }
     $query = "UPDATE `%s` SET last_subscribed_at = GREATEST(COALESCE(confirmed_at, 0), COALESCE(created_at, 0)) WHERE status != '%s' AND last_subscribed_at IS NULL;";
