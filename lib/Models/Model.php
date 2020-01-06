@@ -122,8 +122,8 @@ use MailPoet\WP\Functions as WPFunctions;
  * @method static static distinct()
  * @method $this set(string|array $key, string|null $value = null)
  *
- * @property string|null $created_at
- * @property string|null $updated_at
+ * @property string|null $createdAt
+ * @property string|null $updatedAt
  * @property string|null $id
  * @property string|null $first
  * @property string|null $last

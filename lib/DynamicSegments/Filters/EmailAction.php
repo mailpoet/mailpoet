@@ -37,8 +37,8 @@ class EmailAction implements Filter {
   private $connect;
 
   /**
-   * @param int $newsletter_id
-   * @param int $link_id
+   * @param int $newsletterId
+   * @param int $linkId
    * @param string $action
    * @param string $connect
    */

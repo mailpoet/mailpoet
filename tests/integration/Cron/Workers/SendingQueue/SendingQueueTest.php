@@ -357,7 +357,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect($updatedQueue->status)->equals(SendingQueue::STATUS_COMPLETED);
@@ -409,7 +409,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect($updatedQueue->status)->equals(SendingQueue::STATUS_COMPLETED);
@@ -454,7 +454,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     // queue status is set to completed
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect($updatedQueue->status)->equals(SendingQueue::STATUS_COMPLETED);
@@ -535,7 +535,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect($updatedQueue->status)->equals(SendingQueue::STATUS_COMPLETED);
@@ -580,7 +580,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     // queue status is set to completed
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
 
@@ -611,7 +611,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->process();
 
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     // queue subscriber processed/to process count is updated
@@ -643,7 +643,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->process();
 
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     // queue subscriber processed/to process count is updated
@@ -665,7 +665,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter is sent to existing subscriber
     $sendingQueueWorker->process();
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect((int)$updatedQueue->countTotal)->equals(1);
@@ -677,7 +677,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber->deletedAt = Carbon::now();
     $subscriber->save();
     $sendingQueueWorker->process();
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect((int)$updatedQueue->countTotal)->equals(0);
@@ -695,7 +695,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriber->save();
     $sendingQueueWorker->process();
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect((int)$updatedQueue->countTotal)->equals(0);
@@ -713,7 +713,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriberSegment->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriberSegment->save();
     $sendingQueueWorker->process();
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect((int)$updatedQueue->countTotal)->equals(0);
@@ -731,7 +731,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber->status = Subscriber::STATUS_INACTIVE;
     $subscriber->save();
     $sendingQueueWorker->process();
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect((int)$updatedQueue->countTotal)->equals(0);

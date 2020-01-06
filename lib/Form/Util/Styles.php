@@ -85,7 +85,7 @@ EOL;
   private $featuresController;
 
   /**
-   * @param FeaturesController $features_controller
+   * @param FeaturesController $featuresController
    */
   public function __construct(
     FeaturesController $featuresController = null

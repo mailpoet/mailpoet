@@ -5,8 +5,8 @@ namespace MailPoet\Models;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
- * @property int $task_id
- * @property int $subscriber_id
+ * @property int $taskId
+ * @property int $subscriberId
  * @property int $processed
  * @property int $failed
  * @property string $error

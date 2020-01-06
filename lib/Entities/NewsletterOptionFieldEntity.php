@@ -53,7 +53,7 @@ class NewsletterOptionFieldEntity {
   }
 
   /**
-   * @param string $newsletter_type
+   * @param string $newsletterType
    */
   public function setNewsletterType($newsletterType) {
     $this->newsletterType = $newsletterType;

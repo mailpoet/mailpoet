@@ -8,8 +8,8 @@ use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
- * @property array $subscribers_count
- * @property array $automated_emails_subjects
+ * @property array $subscribersCount
+ * @property array $automatedEmailsSubjects
  * @property string $name
  * @property string $type
  * @property string $description

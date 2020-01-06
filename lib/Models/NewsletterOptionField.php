@@ -6,7 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * @property string $name
- * @property string $newsletter_type
+ * @property string $newsletterType
  */
 
 class NewsletterOptionField extends Model {

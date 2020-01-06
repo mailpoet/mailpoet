@@ -125,7 +125,7 @@ class DaemonHttpRunner {
   }
 
   /**
-   * @param array|null $settings_daemon_data
+   * @param array|null $settingsDaemonData
    *
    * @return boolean
    */

@@ -20,7 +20,7 @@ class SubscribersCount {
   }
 
   /**
-   * @param DynamicSegment $dynamic_segment
+   * @param DynamicSegment $dynamicSegment
    *
    * @return int
    */

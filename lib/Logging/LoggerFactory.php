@@ -42,7 +42,7 @@ class LoggerFactory {
 
   /**
    * @param string $name
-   * @param bool $attach_processors
+   * @param bool $attachProcessors
    *
    * @return \MailPoetVendor\Monolog\Logger
    */

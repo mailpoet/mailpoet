@@ -39,7 +39,7 @@ class AddToNewslettersSegmentsTest extends \MailPoetTest {
       return [$dynamicSegment];
     })]);
 
-    /** @var \MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount|MockObject $subscribers_count_loader */
+    /** @var \MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount|MockObject $subscribersCountLoader */
     $subscribersCountLoader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount']);
     $subscribersCountLoader
       ->expects($this->once())

@@ -3,7 +3,7 @@
 namespace MailPoet\Models;
 
 /**
- * @property string|null $sent_at
+ * @property string|null $sentAt
  */
 class StatisticsNewsletters extends Model {
   public static $_table = MP_STATISTICS_NEWSLETTERS_TABLE;

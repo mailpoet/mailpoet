@@ -81,8 +81,8 @@ class MailerLog {
    * Process error, doesn't increase retry_attempt so it will not block sending
    *
    * @param string $operation
-   * @param string $error_message
-   * @param int $retry_interval
+   * @param string $errorMessage
+   * @param int $retryInterval
    *
    * @throws \Exception
    */
@@ -98,9 +98,9 @@ class MailerLog {
    * Process error, increase retry_attempt and block sending if it goes above RETRY_INTERVAL
    *
    * @param string $operation
-   * @param string $error_message
-   * @param string $error_code
-   * @param bool $pause_sending
+   * @param string $errorMessage
+   * @param string $errorCode
+   * @param bool $pauseSending
    *
    * @throws \Exception
    */

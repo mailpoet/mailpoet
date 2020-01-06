@@ -47,7 +47,7 @@ class WooCommerceOrder {
   }
 
   /**
-   * @param array $customer_data Customer created via WooCommerceCustomer factory
+   * @param array $customerData Customer created via WooCommerceCustomer factory
    * @return $this
    */
   public function withCustomer($customerData) {

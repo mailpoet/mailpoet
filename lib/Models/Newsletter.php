@@ -20,20 +20,20 @@ use function MailPoetVendor\array_column;
 
 /**
  * @property int $id
- * @property int $parent_id
+ * @property int $parentId
  * @property string $type
  * @property object|array|boolean $queue
  * @property string $hash
- * @property string $sender_address
+ * @property string $senderAddress
  * @property string $status
  * @property string|object $meta
  * @property array $options
- * @property int $children_count
+ * @property int $childrenCount
  * @property bool|array $statistics
- * @property string $sent_at
- * @property string $deleted_at
- * @property int $total_sent
- * @property int $total_scheduled
+ * @property string $sentAt
+ * @property string $deletedAt
+ * @property int $totalSent
+ * @property int $totalScheduled
  * @property array $segments
  * @property string $subject
  * @property string $preheader
@@ -41,7 +41,7 @@ use function MailPoetVendor\array_column;
  * @property string|null $schedule
  * @property boolean|null $isScheduled
  * @property string|null $scheduledAt
- * @property string $ga_campaign
+ * @property string $gaCampaign
  */
 
 class Newsletter extends Model {

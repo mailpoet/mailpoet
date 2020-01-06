@@ -3,9 +3,9 @@
 namespace MailPoet\Models;
 
 /**
- * @property int $newsletter_id
- * @property int $subscriber_id
- * @property int $queue_id
+ * @property int $newsletterId
+ * @property int $subscriberId
+ * @property int $queueId
  */
 class StatisticsOpens extends Model {
   public static $_table = MP_STATISTICS_OPENS_TABLE;

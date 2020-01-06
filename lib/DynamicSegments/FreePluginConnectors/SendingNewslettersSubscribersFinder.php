@@ -23,7 +23,7 @@ class SendingNewslettersSubscribersFinder {
 
   /**
    * @param Segment $segment
-   * @param int[] $subscribers_to_process_ids
+   * @param int[] $subscribersToProcessIds
    *
    * @return Subscriber[]
    */

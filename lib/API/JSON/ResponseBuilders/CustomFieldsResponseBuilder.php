@@ -7,7 +7,7 @@ use MailPoet\Entities\CustomFieldEntity;
 class CustomFieldsResponseBuilder {
 
   /**
-   * @param CustomFieldEntity[] $custom_fields
+   * @param CustomFieldEntity[] $customFields
    * @return array
    */
   public function buildBatch(array $customFields) {
@@ -15,7 +15,7 @@ class CustomFieldsResponseBuilder {
   }
 
   /**
-   * @param CustomFieldEntity $custom_field
+   * @param CustomFieldEntity $customField
    * @return array
    */
   public function build(CustomFieldEntity $customField) {

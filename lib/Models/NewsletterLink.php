@@ -3,8 +3,8 @@
 namespace MailPoet\Models;
 
 /**
- * @property int $newsletter_id
- * @property int $queue_id
+ * @property int $newsletterId
+ * @property int $queueId
  * @property string $url
  * @property string $hash
  * @property int|null $clicksCount

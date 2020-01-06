@@ -11,7 +11,7 @@ class NewsletterLinkRepository extends Repository {
   }
 
   /**
-   * @param int $newsletter_id
+   * @param int $newsletterId
    * @return NewsletterLinkEntity|null
    */
   public function findTopLinkForNewsletter($newsletterId) {

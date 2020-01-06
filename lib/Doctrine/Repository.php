@@ -25,7 +25,7 @@ abstract class Repository {
 
   /**
    * @param array $criteria
-   * @param array|null $order_by
+   * @param array|null $orderBy
    * @param int|null $limit
    * @param int|null $offset
    * @return array
@@ -36,7 +36,7 @@ abstract class Repository {
 
   /**
    * @param array $criteria
-   * @param array|null $order_by
+   * @param array|null $orderBy
    * @return object|null
    */
   public function findOneBy(array $criteria, array $orderBy = null) {

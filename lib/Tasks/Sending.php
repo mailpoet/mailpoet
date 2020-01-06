@@ -13,12 +13,12 @@ use function MailPoetVendor\array_column;
 /**
  * A facade class containing all necessary models to work with a sending queue
  * @property string|null $status
- * @property int $task_id
+ * @property int $taskId
  * @property int $id
- * @property int $newsletter_id
- * @property string $newsletter_rendered_subject
- * @property string|array $newsletter_rendered_body
- * @property bool $non_existent_column
+ * @property int $newsletterId
+ * @property string $newsletterRenderedSubject
+ * @property string|array $newsletterRenderedBody
+ * @property bool $nonExistentColumn
  */
 class Sending {
   const TASK_TYPE = 'sending';

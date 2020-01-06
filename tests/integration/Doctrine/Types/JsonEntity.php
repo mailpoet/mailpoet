@@ -44,7 +44,7 @@ class JsonEntity {
   }
 
   /**
-   * @param array|null $json_data
+   * @param array|null $jsonData
    */
   public function setJsonData($jsonData) {
     $this->jsonData = $jsonData;
@@ -58,7 +58,7 @@ class JsonEntity {
   }
 
   /**
-   * @param array|null $json_or_serialized_data
+   * @param array|null $jsonOrSerializedData
    */
   public function setJsonOrSerializedData($jsonOrSerializedData) {
     $this->jsonOrSerializedData = $jsonOrSerializedData;

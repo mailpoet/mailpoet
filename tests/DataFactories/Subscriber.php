@@ -21,7 +21,7 @@ class Subscriber {
   }
 
   /**
-   * @param string $first_name
+   * @param string $firstName
    * @return $this
    */
   public function withFirstName($firstName) {
@@ -30,7 +30,7 @@ class Subscriber {
   }
 
   /**
-   * @param string $last_name
+   * @param string $lastName
    * @return $this
    */
   public function withLastName($lastName) {

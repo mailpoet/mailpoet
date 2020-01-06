@@ -3,10 +3,10 @@
 namespace MailPoet\Models;
 
 /**
- * @property int $newsletter_id
- * @property int $option_field_id
+ * @property int $newsletterId
+ * @property int $optionFieldId
  * @property string $value
- * @property string $updated_at
+ * @property string $updatedAt
  */
 class NewsletterOption extends Model {
   public static $_table = MP_NEWSLETTER_OPTION_TABLE;

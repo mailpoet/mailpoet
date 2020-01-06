@@ -10,8 +10,8 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property int $id
  * @property string $name
  * @property string $description
- * @property string $created_at
- * @property string $updated_at
+ * @property string $createdAt
+ * @property string $updatedAt
  */
 class DynamicSegment extends MailPoetSegment {
 

@@ -6,8 +6,8 @@ use MailPoet\Models\Model;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
- * @property array|string|null $filter_data
- * @property string $segment_id
+ * @property array|string|null $filterData
+ * @property string $segmentId
  */
 class DynamicSegmentFilter extends Model {
 

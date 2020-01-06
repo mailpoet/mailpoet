@@ -261,7 +261,7 @@ class SchedulerTest extends \MailPoetTest {
     ], $this);
     expect($queue->status)->notNull();
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect($updatedQueue->status)->null();
@@ -280,7 +280,7 @@ class SchedulerTest extends \MailPoetTest {
     expect($queue->status)->notNull();
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
     // update queue's status to null
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect($updatedQueue->status)->null();
@@ -338,7 +338,7 @@ class SchedulerTest extends \MailPoetTest {
     $result = $scheduler->verifyMailpoetSubscriber($subscriber->id, $newsletter, $queue);
     expect($result)->false();
     // update the time queue is scheduled to run at
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     expect(Carbon::parse($updatedQueue->scheduledAt))->equals(
@@ -413,7 +413,7 @@ class SchedulerTest extends \MailPoetTest {
     // return true
     expect($scheduler->processScheduledStandardNewsletter($newsletter, $queue))->true();
     // update queue's list of subscribers to process
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     $updatedQueueSubscribers = $updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
@@ -480,7 +480,7 @@ class SchedulerTest extends \MailPoetTest {
     expect($notificationHistory)->notEmpty();
     // update queue with a list of subscribers to process and change newsletter id
     // to that of the notification history
-    /** @var SendingQueue $updated_queue */
+    /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     $updatedQueueSubscribers = $updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED);

@@ -5,13 +5,13 @@ namespace MailPoet\Models;
 use WC_Order;
 
 /**
- * @property int $newsletter_id
- * @property int $subscriber_id
- * @property int $queue_id
- * @property int $click_id
- * @property int $order_id
- * @property string $order_currency
- * @property float $order_price_total
+ * @property int $newsletterId
+ * @property int $subscriberId
+ * @property int $queueId
+ * @property int $clickId
+ * @property int $orderId
+ * @property string $orderCurrency
+ * @property float $orderPriceTotal
  */
 class StatisticsWooCommercePurchases extends Model {
   public static $_table = MP_STATISTICS_WOOCOMMERCE_PURCHASES_TABLE;

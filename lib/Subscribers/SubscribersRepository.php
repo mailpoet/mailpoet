@@ -6,8 +6,8 @@ use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SubscriberEntity;
 
 /**
- * @method SubscriberEntity[] findBy(array $criteria, array $order_by = null, int $limit = null, int $offset = null)
- * @method SubscriberEntity|null findOneBy(array $criteria, array $order_by = null)
+ * @method SubscriberEntity[] findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null)
+ * @method SubscriberEntity|null findOneBy(array $criteria, array $orderBy = null)
  * @method SubscriberEntity|null findOneById(mixed $id)
  * @method void persist(SubscriberEntity $entity)
  * @method void remove(SubscriberEntity $entity)

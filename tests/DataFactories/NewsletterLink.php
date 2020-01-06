@@ -28,7 +28,7 @@ class NewsletterLink {
   }
 
   /**
-   * @param string $created_at in format Y-m-d H:i:s
+   * @param string $createdAt in format Y-m-d H:i:s
    * @return NewsletterLink
    */
   public function withCreatedAt($createdAt) {

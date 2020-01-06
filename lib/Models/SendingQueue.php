@@ -8,17 +8,17 @@ use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
- * @property int $count_processed
- * @property int $count_to_process
- * @property int $count_total
- * @property string|array $newsletter_rendered_body
- * @property string $newsletter_rendered_subject
- * @property int $task_id
- * @property int $newsletter_id
+ * @property int $countProcessed
+ * @property int $countToProcess
+ * @property int $countTotal
+ * @property string|array $newsletterRenderedBody
+ * @property string $newsletterRenderedSubject
+ * @property int $taskId
+ * @property int $newsletterId
  * @property string|object|null $meta
  * @property string|array $subscribers
- * @property string|null $deleted_at
- * @property string $scheduled_at
+ * @property string|null $deletedAt
+ * @property string $scheduledAt
  * @property string $status
  */
 

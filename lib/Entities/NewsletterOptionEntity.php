@@ -70,7 +70,7 @@ class NewsletterOptionEntity {
   }
 
   /**
-   * @param NewsletterOptionFieldEntity $option_field
+   * @param NewsletterOptionFieldEntity $optionField
    */
   public function setOptionField($optionField) {
     $this->optionField = $optionField;

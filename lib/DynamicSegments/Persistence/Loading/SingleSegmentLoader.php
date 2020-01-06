@@ -15,7 +15,7 @@ class SingleSegmentLoader {
   }
 
   /**
-   * @param string|int $segment_id
+   * @param string|int $segmentId
    * @return DynamicSegment
    */
   public function load($segmentId) {

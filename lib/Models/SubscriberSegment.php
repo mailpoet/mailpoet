@@ -4,8 +4,8 @@ namespace MailPoet\Models;
 
 /**
  * @property int $id
- * @property int $subscriber_id
- * @property int $segment_id
+ * @property int $subscriberId
+ * @property int $segmentId
  * @property string $status
  */
 

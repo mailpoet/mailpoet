@@ -7,8 +7,8 @@ use MailPoet\Util\Helpers;
 use function MailPoetVendor\array_column;
 
 /**
- * @property int $subscriber_id
- * @property int $custom_field_id
+ * @property int $subscriberId
+ * @property int $customFieldId
  * @property string $value
  */
 class SubscriberCustomField extends Model {

@@ -239,7 +239,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
 
   /**
    * @param string $email
-   * @param int $created_days_ago
+   * @param int $createdDaysAgo
    * @param string $status
    * @return Subscriber
    */
@@ -253,7 +253,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   /**
-   * @param int $processed_days_ago
+   * @param int $processedDaysAgo
    * @return array
    */
   private function createCompletedSendingTask($processedDaysAgo = 0) {
@@ -268,7 +268,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   /**
-   * @param int $processed_days_ago
+   * @param int $processedDaysAgo
    * @return array
    */
   private function createCompletedSendingTaskWithOneOpen($processedDaysAgo = 0) {
@@ -282,7 +282,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   /**
    * @param Subscriber $subscriber
    * @param ScheduledTask $task
-   * @param int $days_ago
+   * @param int $daysAgo
    */
   private function addSubcriberToTask(Subscriber $subscriber, ScheduledTask $task, $daysAgo = 0) {
     $createdAt = (new Carbon())->subDays($daysAgo)->toDateTimeString();
