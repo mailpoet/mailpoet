@@ -5,6 +5,7 @@ namespace MailPoet\Tasks;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -216,6 +217,7 @@ class Sending {
   }
 
   public function __isset($prop) {
+    $prop = Helpers::camelCaseToUnderscore($prop);
     if ($this->isQueueProperty($prop)) {
       return isset($this->queue->$prop);
     } else {
@@ -224,6 +226,7 @@ class Sending {
   }
 
   public function __get($prop) {
+    $prop = Helpers::camelCaseToUnderscore($prop);
     if ($this->isQueueProperty($prop)) {
       return $this->queue->$prop;
     } else {
@@ -232,6 +235,7 @@ class Sending {
   }
 
   public function __set($prop, $value) {
+    $prop = Helpers::camelCaseToUnderscore($prop);
     if ($this->isCommonProperty($prop)) {
       $this->queue->$prop = $value;
       $this->task->$prop = $value;

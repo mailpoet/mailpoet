@@ -3,6 +3,7 @@
 namespace MailPoet\Models;
 
 use MailPoet\Models\Model;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
@@ -35,6 +36,7 @@ class DynamicSegmentFilter extends Model {
   }
 
   public function __get($name) {
+    $name = Helpers::camelCaseToUnderscore($name);
     $value = parent::__get($name);
     if ($name === 'filter_data' && WPFunctions::get()->isSerialized($value)) {
       return unserialize($value);

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Models;
 
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
@@ -373,5 +374,24 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     }
     $this->setError($this->getValidationErrors());
     return $success;
+  }
+
+  public function __get($name) {
+    $value = parent::__get($name);
+    if ($value !== null) {
+      return $value;
+    }
+    $name = Helpers::camelCaseToUnderscore($name);
+    return parent::__get($name);
+  }
+
+  public function __set($name, $value) {
+    $name = Helpers::camelCaseToUnderscore($name);
+    return parent::__set($name, $value);
+  }
+
+  public function __isset($name) {
+    $name = Helpers::camelCaseToUnderscore($name);
+    return parent::__isset($name);
   }
 }
