@@ -47,15 +47,18 @@ export default {
       endpoint: 'customFields',
       action: 'save',
       data: requestData,
-    }).done((response) => {
-      dispatch('mailpoet-form-editor').saveCustomFieldDone(customField.id, response.data);
-      if (typeof actionData.onFinish === 'function') actionData.onFinish();
-    }).fail((response) => {
-      let errorMessage = null;
-      if (response.errors.length > 0) {
-        errorMessage = response.errors.map((error) => (error.message));
-      }
-      dispatch('mailpoet-form-editor').saveCustomFieldFailed(errorMessage);
-    });
+    })
+      .then((response) => {
+        dispatch('mailpoet-form-editor').saveCustomFieldDone(customField.id, response.data);
+        if (typeof actionData.onFinish === 'function') actionData.onFinish();
+      })
+      .then(dispatch('mailpoet-form-editor').saveForm)
+      .fail((response) => {
+        let errorMessage = null;
+        if (response.errors.length > 0) {
+          errorMessage = response.errors.map((error) => (error.message));
+        }
+        dispatch('mailpoet-form-editor').saveCustomFieldFailed(errorMessage);
+      });
   },
 };
