@@ -19,7 +19,6 @@ export default (state, action) => {
   return {
     ...state,
     isCustomFieldSaving: false,
-    isFormSaving: false,
     notices,
     customFields,
   };

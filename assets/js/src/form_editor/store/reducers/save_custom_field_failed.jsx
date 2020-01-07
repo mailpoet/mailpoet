@@ -8,7 +8,6 @@ export default (state, action) => {
   });
   return {
     ...state,
-    isFormSaving: false,
     isCustomFieldSaving: false,
     notices,
   };
