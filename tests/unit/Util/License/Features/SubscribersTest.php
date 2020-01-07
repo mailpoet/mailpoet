@@ -106,6 +106,30 @@ class SubscribersTest extends \MailPoetUnitTest {
     expect($subscribers_feature->check())->true();
   }
 
+  public function testCheckReturnsFalseIfPremiumKeyExistsButLimitMissing() {
+    $subscribers_feature = $this->constructWith([
+      'has_mss_key' => false,
+      'has_premium_key' => true,
+      'installed_at' => '2019-11-11',
+      'subscribers_count' => 3000,
+      'premium_subscribers_limit' => false,
+      'mss_subscribers_limit' => false,
+    ]);
+    expect($subscribers_feature->check())->false();
+  }
+
+  public function testCheckReturnsFalseIfMSSKeyExistsButLimitMissing() {
+    $subscribers_feature = $this->constructWith([
+      'has_mss_key' => true,
+      'has_premium_key' => false,
+      'installed_at' => '2019-11-11',
+      'subscribers_count' => 3000,
+      'premium_subscribers_limit' => false,
+      'mss_subscribers_limit' => false,
+    ]);
+    expect($subscribers_feature->check())->false();
+  }
+
   private function constructWith($specs) {
     $settings = Stub::make(SettingsController::class, [
       'get' => function($name) use($specs) {
