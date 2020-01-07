@@ -219,6 +219,14 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.labelWithinInput).to.be.equal(true);
   });
 
+  it('Should add a label if label is missing in data', () => {
+    const input = { ...emailInput, position: '1' };
+    delete input.params.label;
+    const [block] = formBodyToBlocks([{ ...emailInput, position: '1' }]);
+    checkBlockBasics(block);
+    expect(block.attributes.label).to.be.equal(null);
+  });
+
   it('Should map first name input to block', () => {
     const [block] = formBodyToBlocks([{ ...firstNameInput, position: '1' }]);
     checkBlockBasics(block);

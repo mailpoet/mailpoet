@@ -78,8 +78,8 @@ export default (data, customFields = []) => {
     if (item.params && has(item.params, 'label_within')) {
       mapped.attributes.labelWithinInput = !!item.params.label_within;
     }
-    if (item.params && has(item.params, 'label')) {
-      mapped.attributes.label = item.params.label;
+    if (item.params) {
+      mapped.attributes.label = item.params.label ? item.params.label : null;
     }
     switch (item.id) {
       case 'email':
@@ -121,11 +121,13 @@ export default (data, customFields = []) => {
           name: 'mailpoet-form/submit-button',
         };
       case 'divider':
+        delete mapped.attributes.label;
         return {
           ...mapped,
           name: 'mailpoet-form/divider',
         };
       case 'html':
+        delete mapped.attributes.label;
         return {
           ...mapped,
           name: 'mailpoet-form/html',
