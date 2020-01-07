@@ -66,16 +66,24 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
   );
 
   const getInput = () => {
+    let defaultValue = attributes.labelWithinInput ? formatLabel(attributes) : '-';
     const options = [{
-      label: attributes.labelWithinInput ? formatLabel(attributes) : '-',
+      label: defaultValue,
     }];
+
     if (Array.isArray(attributes.values) || !attributes.values.length) {
-      attributes.values.forEach((value) => options.push({
-        label: value.name,
-      }));
+      attributes.values.forEach((value) => {
+        options.push({
+          label: value.name,
+        });
+        if (!attributes.labelWithinInput && value.isChecked) {
+          defaultValue = value.name;
+        }
+      });
     }
+
     return (
-      <select className="mailpoet_select" id={clientId}>
+      <select className="mailpoet_select" id={clientId} value={defaultValue}>
         {
           options.map((option) => (
             <option key={option.label} value={option.label}>
