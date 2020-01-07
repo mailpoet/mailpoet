@@ -29,11 +29,11 @@ class AmazonSESMapper {
    */
   public function getErrorFromResponse($response, $subscriber) {
     $message = ($response) ?
-      $response->error->Message->__toString() :
+      $response->Error->Message->__toString() : // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       sprintf(WPFunctions::get()->__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
 
     $level = MailerError::LEVEL_HARD;
-    if ($response && $response->error->Code->__toString() === 'MessageRejected') {
+    if ($response && $response->Error->Code->__toString() === 'MessageRejected') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $level = MailerError::LEVEL_SOFT;
     }
     $subscriberErrors = [new SubscriberError($subscriber, null)];

@@ -106,7 +106,7 @@ class ViewInBrowserTest extends \MailPoetTest {
 
   public function testItFailsValidationWhenNewsletterIdIsProvidedButSubscriberDoesNotExist() {
     $data = (object)$this->browserPreviewData;
-    $data->subscriberId = false;
+    $data->subscriber_id = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     expect($this->viewInBrowser->_validateBrowserPreviewData($data))->false();
   }
 
@@ -116,10 +116,10 @@ class ViewInBrowserTest extends \MailPoetTest {
     $newsletter2->type = 'type';
     $newsletter2 = $newsletter2->save();
     $data = (object)$this->browserPreviewData;
-    $data->newsletterHash = $newsletter2->hash;
+    $data->newsletter_hash = $newsletter2->hash; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
     expect($result->newsletter->id)->equals($newsletter2->id);
-    $data->newsletterHash = false;
+    $data->newsletter_hash = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
     expect($result->newsletter->id)->equals($newsletter1->id);
   }

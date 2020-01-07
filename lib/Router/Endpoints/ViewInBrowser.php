@@ -58,19 +58,19 @@ class ViewInBrowser {
    */
   public function _validateBrowserPreviewData($data) {
     // either newsletter ID or hash must be defined, and newsletter must exist
-    if (empty($data->newsletterId) && empty($data->newsletterHash)) return false;
-    $data->newsletter = (!empty($data->newsletterHash)) ?
-      Newsletter::getByHash($data->newsletterHash) :
-      Newsletter::findOne($data->newsletterId);
+    if (empty($data->newsletter_id) && empty($data->newsletter_hash)) return false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $data->newsletter = (!empty($data->newsletter_hash)) ? // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      Newsletter::getByHash($data->newsletter_hash) : // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      Newsletter::findOne($data->newsletter_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     if (!$data->newsletter) return false;
 
     // subscriber is optional; if exists, token must validate
-    $data->subscriber = (!empty($data->subscriberId)) ?
-      Subscriber::findOne($data->subscriberId) :
+    $data->subscriber = (!empty($data->subscriber_id)) ? // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      Subscriber::findOne($data->subscriber_id) : // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       false;
     if ($data->subscriber) {
-      if (empty($data->subscriberToken) ||
-         !$this->linkTokens->verifyToken($data->subscriber, $data->subscriberToken)
+      if (empty($data->subscriber_token) || // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+         !$this->linkTokens->verifyToken($data->subscriber, $data->subscriber_token) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       ) return false;
     } else if (!$data->subscriber && !empty($data->preview)) {
       // if this is a preview and subscriber does not exist,
@@ -79,12 +79,12 @@ class ViewInBrowser {
     }
 
     // if newsletter hash is not provided but newsletter ID is defined then subscriber must exist
-    if (empty($data->newsletterHash) && $data->newsletterId && !$data->subscriber) return false;
+    if (empty($data->newsletter_hash) && $data->newsletter_id && !$data->subscriber) return false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
     // queue is optional; try to find it if it's not defined and this is not a welcome email
     if ($data->newsletter->type !== Newsletter::TYPE_WELCOME) {
-      $data->queue = (!empty($data->queueId)) ?
-        SendingQueue::findOne($data->queueId) :
+      $data->queue = (!empty($data->queue_id)) ? // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        SendingQueue::findOne($data->queue_id) : // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         SendingQueue::where('newsletter_id', $data->newsletter->id)
           ->findOne();
     } else {
@@ -101,7 +101,7 @@ class ViewInBrowser {
     ) return $data;
 
     // allow others to preview newsletters only when newsletter hash is defined
-    if (!empty($data->preview) && empty($data->newsletterHash)
+    if (!empty($data->preview) && empty($data->newsletter_hash) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     ) return false;
 
     // if queue and subscriber exist, subscriber must have received the newsletter
