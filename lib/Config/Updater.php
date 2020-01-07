@@ -33,8 +33,8 @@ class Updater {
 
     $latestVersion = $this->getLatestVersion();
 
-    if (isset($latestVersion->newVersion)) {
-      if (version_compare($this->version, $latestVersion->newVersion, '<')) {
+    if (isset($latestVersion->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      if (version_compare($this->version, $latestVersion->new_version, '<')) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         $updateTransient->response[$this->plugin] = $latestVersion;
       }
       $updateTransient->lastChecked = time();
