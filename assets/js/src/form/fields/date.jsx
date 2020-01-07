@@ -239,7 +239,11 @@ class FormFieldDate extends React.Component {
     const monthNames = window.mailpoet_month_names || [];
     const dateFormats = window.mailpoet_date_formats || {};
     const dateType = this.props.field.params.date_type;
-    const dateSelects = dateFormats[dateType][0].split('/');
+    let dateFormat = dateFormats[dateType][0];
+    if (this.props.field.params.date_format) {
+      dateFormat = this.props.field.params.date_format;
+    }
+    const dateSelects = dateFormat.split('/');
 
     const fields = dateSelects.map((type) => {
       switch (type) {
