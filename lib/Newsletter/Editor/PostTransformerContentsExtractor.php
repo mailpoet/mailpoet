@@ -68,7 +68,7 @@ class PostTransformerContentsExtractor {
 
   public function getFeaturedImage($post) {
     $postId = $post->ID;
-    $postTitle = $this->sanitizeTitle($post->postTitle);
+    $postTitle = $this->sanitizeTitle($post->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $imageFullWidth = (bool)filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN);
 
     if (!has_post_thumbnail($postId)) {
@@ -125,7 +125,7 @@ class PostTransformerContentsExtractor {
   }
 
   public function getTitle($post) {
-    $title = $this->sanitizeTitle($post->postTitle);
+    $title = $this->sanitizeTitle($post->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
     if (filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
       $title = '<a href="' . $this->wp->getPermalink($post->ID) . '">' . $title . '</a>';
@@ -182,7 +182,7 @@ class PostTransformerContentsExtractor {
   }
 
   public function isProduct($post) {
-    return $post->postType === 'product';
+    return $post->post_type === 'product'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
   /**

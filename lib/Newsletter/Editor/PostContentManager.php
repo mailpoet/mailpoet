@@ -23,19 +23,19 @@ class PostContentManager {
     if ($displayType === 'titleOnly') {
       return '';
     }
-    if ($this->woocommerceHelper->isWooCommerceActive() && $post->postType === 'product') {
+    if ($this->woocommerceHelper->isWooCommerceActive() && $post->post_type === 'product') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $product = $this->woocommerceHelper->wcGetProduct($post->ID);
       if ($product) {
         return $this->getContentForProduct($product, $displayType);
       }
     }
     if ($displayType === 'excerpt') {
-      if (!empty($post->postExcerpt)) {
-        return self::stripShortCodes($post->postExcerpt);
+      if (!empty($post->post_excerpt)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        return self::stripShortCodes($post->post_excerpt); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       }
-      return $this->generateExcerpt($post->postContent);
+      return $this->generateExcerpt($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     }
-    return self::stripShortCodes($post->postContent);
+    return self::stripShortCodes($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
   public function filterContent($content, $displayType, $withPostClass = true) {

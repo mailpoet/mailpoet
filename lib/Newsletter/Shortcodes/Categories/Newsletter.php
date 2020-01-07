@@ -44,8 +44,8 @@ class Newsletter {
     // Queries with taxonomies are autodetected as 'is_archive=true' and 'is_home=false'
     // while queries without them end up being 'is_archive=false' and 'is_home=true'.
     // This is to fix that by always enforcing constistent behavior.
-    $query->isArchive = true;
-    $query->isHome = false;
+    $query->is_archive = true; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $query->is_home = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
   private static function getLatestWPPost($postIds) {

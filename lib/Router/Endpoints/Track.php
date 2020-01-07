@@ -51,23 +51,23 @@ class Track {
 
   public function _processTrackData($data) {
     $data = (object)Links::transformUrlDataObject($data);
-    if (empty($data->queueId) ||
-      empty($data->subscriberId) ||
-      empty($data->subscriberToken)
+    if (empty($data->queue_id) || // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      empty($data->subscriber_id) || // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      empty($data->subscriber_token) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     ) {
       return false;
     }
-    $data->queue = SendingQueue::findOne($data->queueId);
+    $data->queue = SendingQueue::findOne($data->queue_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     if ($data->queue instanceof SendingQueue) {
       $data->queue = SendingTask::createFromQueue($data->queue);
     }
-    $data->subscriber = Subscriber::findOne($data->subscriberId) ?: null;
-    $data->newsletter = (!empty($data->queue->newsletterId)) ?
-      Newsletter::findOne($data->queue->newsletterId) :
+    $data->subscriber = Subscriber::findOne($data->subscriber_id) ?: null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $data->newsletter = (!empty($data->queue->newsletter_id)) ? // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      Newsletter::findOne($data->queue->newsletter_id) : // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       false;
-    if (!empty($data->linkHash)) {
-      $data->link = NewsletterLink::where('hash', $data->linkHash)
-        ->where('queue_id', $data->queueId)
+    if (!empty($data->link_hash)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $data->link = NewsletterLink::where('hash', $data->link_hash) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        ->where('queue_id', $data->queue_id) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         ->findOne();
     }
     return $this->_validateTrackData($data);
@@ -75,7 +75,7 @@ class Track {
 
   public function _validateTrackData($data) {
     if (!$data->subscriber || !$data->queue || !$data->newsletter) return false;
-    $subscriberTokenMatch = $this->linkTokens->verifyToken($data->subscriber, $data->subscriberToken);
+    $subscriberTokenMatch = $this->linkTokens->verifyToken($data->subscriber, $data->subscriber_token); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     if (!$subscriberTokenMatch) {
       $this->terminate(403);
     }

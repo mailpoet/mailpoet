@@ -46,7 +46,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect(trim(Shortcodes::process($content)))->equals('Subject line with one shortcode:');
 
     // when tag is found, the shortcode will be processed and replaced
-    expect(Shortcodes::process($content, $contentSource))->equals('Subject line with one shortcode: ' . $wpPost->postTitle);
+    expect(Shortcodes::process($content, $contentSource))->equals('Subject line with one shortcode: ' . $wpPost->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
   public function _after() {

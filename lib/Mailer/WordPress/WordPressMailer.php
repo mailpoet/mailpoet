@@ -40,7 +40,7 @@ class WordPressMailer extends \PHPMailer {
 
   public function send() {
     // We need this so that the \PHPMailer class will correctly prepare all the headers.
-    $this->mailer = 'mail';
+    $this->Mailer = 'mail'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
     // Prepare everything (including the message) for sending.
     $this->preSend();
@@ -74,16 +74,16 @@ class WordPressMailer extends \PHPMailer {
 
   private function getEmail() {
     $email = [
-      'subject' => $this->subject,
+      'subject' => $this->Subject, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       'body' => [],
     ];
 
-    if ($this->contentType === 'text/plain') {
-      $email['body']['text'] = $this->body;
-    } elseif ($this->contentType === 'text/html') {
-      $text = @Html2Text::convert(strtolower($this->charSet) === 'utf-8' ? $this->body : utf8_encode($this->body));
+    if ($this->ContentType === 'text/plain') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $email['body']['text'] = $this->Body; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    } elseif ($this->ContentType === 'text/html') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $text = @Html2Text::convert(strtolower($this->CharSet) === 'utf-8' ? $this->Body : utf8_encode($this->Body)); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $email['body']['text'] = $text;
-      $email['body']['html'] = $this->body;
+      $email['body']['html'] = $this->Body; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     } else {
       throw new \phpmailerException('Unsupported email content type has been used. Please use only text or HTML emails.');
     }

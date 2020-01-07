@@ -122,11 +122,11 @@ class WooCommerce {
     $mailpoetEmailColumn = $wpdb->get_row(
       'SHOW FULL COLUMNS FROM ' . MP_SUBSCRIBERS_TABLE . ' WHERE Field = "email"'
     );
-    $this->mailpoetEmailCollation = $mailpoetEmailColumn->collation;
+    $this->mailpoetEmailCollation = $mailpoetEmailColumn->Collation; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $wpPostmetaValueColumn = $wpdb->get_row(
       'SHOW FULL COLUMNS FROM ' . $wpdb->postmeta . ' WHERE Field = "meta_value"'
     );
-    $this->wpPostmetaValueCollation = $wpPostmetaValueColumn->collation;
+    $this->wpPostmetaValueCollation = $wpPostmetaValueColumn->Collation; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
   private function needsCollationChange($collation1, $collation2) {

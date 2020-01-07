@@ -90,7 +90,7 @@ class PurchasedProduct {
     $woocommerceProducts = array_map(function($product) {
       return [
         'id' => $product->ID,
-        'name' => $product->postTitle,
+        'name' => $product->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       ];
     }, $woocommerceProducts);
     return $woocommerceProducts;

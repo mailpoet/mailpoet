@@ -51,7 +51,9 @@ class PHPMailTest extends \MailPoetTest {
   public function testItCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
     expect($mailer)->isInstanceOf('PHPMailer');
-    expect($mailer->mailer)->equals('mail'); // uses PHP's mail() function
+
+    // uses PHP's mail() function
+    expect($mailer->Mailer)->equals('mail'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
   public function testWhenReturnPathIsNullItIsSetToSenderEmail() {
@@ -67,7 +69,7 @@ class PHPMailTest extends \MailPoetTest {
   public function testItCanConfigureMailerWithMessage() {
     $mailer = $this->mailer
       ->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extraParams);
-    expect($mailer->charSet)->equals('UTF-8');
+    expect($mailer->CharSet)->equals('UTF-8'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     expect($mailer->getToAddresses())->equals(
       [
         [
@@ -78,8 +80,8 @@ class PHPMailTest extends \MailPoetTest {
     );
     expect($mailer->getAllRecipientAddresses())
       ->equals(['mailpoet-phoenix-test@mailinator.com' => true]);
-    expect($mailer->from)->equals($this->sender['from_email']);
-    expect($mailer->fromName)->equals($this->sender['from_name']);
+    expect($mailer->From)->equals($this->sender['from_email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($mailer->FromName)->equals($this->sender['from_name']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     expect($mailer->getReplyToAddresses())->equals(
       [
         'reply-to@mailpoet.com' => [
@@ -88,12 +90,12 @@ class PHPMailTest extends \MailPoetTest {
         ],
       ]
     );
-    expect($mailer->sender)->equals($this->returnPath);
-    expect($mailer->contentType)->equals('text/html');
-    expect($mailer->subject)->equals($this->newsletter['subject']);
-    expect($mailer->body)
+    expect($mailer->Sender)->equals($this->returnPath); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($mailer->ContentType)->equals('text/html'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($mailer->Subject)->equals($this->newsletter['subject']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($mailer->Body) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       ->equals($this->newsletter['body']['html']);
-    expect($mailer->altBody)
+    expect($mailer->AltBody) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       ->equals($this->newsletter['body']['text']);
     expect($mailer->getCustomHeaders())->equals(
       [
@@ -113,8 +115,8 @@ class PHPMailTest extends \MailPoetTest {
           'text' => 'TEXT body',
         ],
       ], $this->subscriber);
-    expect($mailer->contentType)->equals('text/plain');
-    expect($mailer->body)->equals('TEXT body');
+    expect($mailer->ContentType)->equals('text/plain'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($mailer->Body)->equals('TEXT body'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
   public function testItCanProcessSubscriber() {

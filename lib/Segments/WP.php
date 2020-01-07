@@ -40,16 +40,16 @@ class WP {
       case 'added_existing_user':
       default:
         // get first name & last name
-        $firstName = $wpUser->firstName;
-        $lastName = $wpUser->lastName;
-        if (empty($wpUser->firstName) && empty($wpUser->lastName)) {
-          $firstName = $wpUser->displayName;
+        $firstName = $wpUser->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        $lastName = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        if (empty($wpUser->first_name) && empty($wpUser->last_name)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          $firstName = $wpUser->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         }
         $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
         // subscriber data
         $data = [
           'wp_user_id' => $wpUser->ID,
-          'email' => $wpUser->userEmail,
+          'email' => $wpUser->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
           'first_name' => $firstName,
           'last_name' => $lastName,
           'status' => $signupConfirmationEnabled ? Subscriber::STATUS_UNCONFIRMED : Subscriber::STATUS_SUBSCRIBED,
