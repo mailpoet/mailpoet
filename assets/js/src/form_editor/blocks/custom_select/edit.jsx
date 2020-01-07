@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Panel,
   PanelBody,
-  SelectControl,
   TextControl,
   ToggleControl,
 } from '@wordpress/components';
@@ -75,20 +74,29 @@ const CustomSelectEdit = ({ attributes, setAttributes }) => {
       attributes.values.forEach((value) => options.push({ label: value.name }));
     }
     return (
-      <div className="mailpoet_custom_select">
-        <SelectControl
-          label={!attributes.labelWithinInput ? formatLabel(attributes) : undefined}
-          options={options}
-          onChange={() => {}}
-        />
-      </div>
+      <select className="mailpoet_select">
+        {
+          options.map((option) => (
+            <option key={option.label} value={option.label}>{option.label}</option>
+          ))
+        }
+      </select>
     );
   };
 
   return (
     <>
       {inspectorControls}
-      {getInput()}
+      <div className="mailpoet_custom_select">
+        {attributes.labelWithinInput ? (getInput()
+        ) : (
+          <label className="mailpoet_select_label" htmlFor="mailpoet_custom_select">
+            {formatLabel(attributes)}
+            <br />
+            {getInput()}
+          </label>
+        )}
+      </div>
     </>
   );
 };

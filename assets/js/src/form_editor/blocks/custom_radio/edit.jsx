@@ -70,7 +70,7 @@ const CustomRadioEdit = ({ attributes, setAttributes }) => {
   return (
     <>
       {inspectorControls}
-      {getLabel()}
+      <span className="mailpoet_radio_label">{getLabel()}</span>
       {Array.isArray(attributes.values) && attributes.values.map((value) => (
         <div key={value.id}>
           <label>

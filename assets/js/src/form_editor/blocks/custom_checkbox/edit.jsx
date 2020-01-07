@@ -102,7 +102,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes }) => {
   return (
     <>
       {inspectorControls}
-      <p>{getLabel()}</p>
+      <span className="mailpoet_checkbox_label">{getLabel()}</span>
       <div>
         <label>
           <input

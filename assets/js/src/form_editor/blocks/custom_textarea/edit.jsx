@@ -107,7 +107,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes }) => {
       {inspectorControls}
       {attributes.labelWithinInput ? (getTextArea(formatLabel(attributes))
       ) : (
-        <label className="mailpoet_text_label" data-automation-id="editor_custom_text_label" htmlFor="custom_text">
+        <label className="mailpoet_textarea_label" data-automation-id="editor_custom_text_label" htmlFor="custom_text">
           {formatLabel(attributes)}
           <br />
           {getTextArea('')}

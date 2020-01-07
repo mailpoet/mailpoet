@@ -38,6 +38,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
       />
       <BaseControl
         label={attributes.label}
+        className="mailpoet_segments_label"
       />
       {renderValues()}
     </>
