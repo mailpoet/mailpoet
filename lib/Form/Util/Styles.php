@@ -28,7 +28,7 @@ class Styles {
 .mailpoet_list_label,
 .mailpoet_date_label {
   display:block;
-  font-weight:bold;
+  [LABELS_FONT_WEIGHT_RULE]
 }
 
 /* inputs */
@@ -99,10 +99,14 @@ EOL;
   public function getDefaultStyles() {
     if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
       $text_input_width = 'width: 100%;';
+      $label_font_weight = 'font-weight: regular;';
     } else {
       $text_input_width = 'width: 200px;';
+      $label_font_weight = 'font-weight: bold;';
     }
-    return str_replace('[TEXT_INPUTS_WIDTH_RULE]', $text_input_width, $this->default_styles);
+    $styles = str_replace('[TEXT_INPUTS_WIDTH_RULE]', $text_input_width, $this->default_styles);
+    $styles = str_replace('[LABELS_FONT_WEIGHT_RULE]', $label_font_weight, $styles);
+    return $styles;
   }
 
   public function render($stylesheet, $prefix = '') {
