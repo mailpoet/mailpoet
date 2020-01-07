@@ -26,7 +26,7 @@ const CustomFieldSettings = ({
           validate: localValidate,
         })}
         isBusy={isSaving}
-        disabled={isSaving}
+        disabled={isSaving || (localMandatory === mandatory && localValidate === validate)}
         className="button-on-top"
       >
         {MailPoet.I18n.t('customFieldSaveCTA')}

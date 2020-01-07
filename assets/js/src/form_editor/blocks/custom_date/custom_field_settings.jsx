@@ -51,7 +51,15 @@ const CustomFieldSettings = ({
           defaultToday: localDefaultToday,
         })}
         isBusy={isSaving}
-        disabled={isSaving}
+        disabled={
+          isSaving
+          || (
+            localMandatory === mandatory
+            && localDefaultToday === defaultToday
+            && localDateType === dateType
+            && localDateFormat === dateFormat
+          )
+        }
         className="button-on-top"
       >
         {MailPoet.I18n.t('customFieldSaveCTA')}

@@ -81,7 +81,7 @@ const PreviewItem = ({
     >
       <input
         type="radio"
-        onChange={(event) => onCheck(value.id, event.target.value)}
+        onChange={(event) => onCheck(value.id, event.target.checked)}
         key={`check-${value.id}`}
       />
       <input

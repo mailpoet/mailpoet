@@ -5,6 +5,7 @@ import {
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+import { isEmpty, isEqual, xorWith } from 'lodash';
 
 import SettingsPreview from './settings_preview.jsx';
 
@@ -15,7 +16,7 @@ const CustomFieldSettings = ({
   onSave,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
-  const [localValues, setLocalValues] = useState(values);
+  const [localValues, setLocalValues] = useState(JSON.parse(JSON.stringify(values)));
 
   const update = (value) => {
     setLocalValues(localValues.map((valueInSelection) => {
@@ -42,7 +43,13 @@ const CustomFieldSettings = ({
           values: localValues,
         })}
         isBusy={isSaving}
-        disabled={isSaving}
+        disabled={
+          isSaving
+          || (
+            localMandatory === mandatory
+            && isEmpty(xorWith(values, localValues, isEqual))
+          )
+        }
         className="button-on-top"
       >
         {MailPoet.I18n.t('customFieldSaveCTA')}
