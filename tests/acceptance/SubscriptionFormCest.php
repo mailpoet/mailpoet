@@ -71,8 +71,10 @@ class SubscriptionFormCest {
     $I->wantTo('Subscribe using iframe form');
 
     $I->amOnPage('/form-test');
+    $I->executeJS('window.scrollTo(0, document.body.scrollHeight);');
     $I->switchToIframe('mailpoet_form_iframe');
     $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
+    $I->scrollTo('.mailpoet_submit');
     $I->click('.mailpoet_submit');
     $I->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $I->seeNoJSErrors();
