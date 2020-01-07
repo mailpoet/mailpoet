@@ -80,7 +80,8 @@ const PreviewItem = ({
       style={{ opacity }}
     >
       <input
-        type="radio"
+        type="checkbox"
+        checked={value.isChecked || false}
         onChange={(event) => onCheck(value.id, event.target.checked)}
         key={`check-${value.id}`}
       />
@@ -103,6 +104,7 @@ PreviewItem.propTypes = {
   value: PropTypes.shape({
     name: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
+    isChecked: PropTypes.bool,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
   onCheck: PropTypes.func.isRequired,

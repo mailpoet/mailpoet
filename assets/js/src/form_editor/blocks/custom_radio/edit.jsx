@@ -77,6 +77,7 @@ const CustomRadioEdit = ({ attributes, setAttributes }) => {
             <input
               type="radio"
               disabled
+              checked={value.isChecked || false}
             />
             {value.name}
           </label>
@@ -92,6 +93,7 @@ CustomRadioEdit.propTypes = {
     values: PropTypes.arrayOf(PropTypes.shape({
       name: PropTypes.string.isRequired,
       id: PropTypes.string.isRequired,
+      isChecked: PropTypes.bool,
     })),
     mandatory: PropTypes.bool.isRequired,
     hideLabel: PropTypes.bool,
