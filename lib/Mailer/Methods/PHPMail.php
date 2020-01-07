@@ -62,17 +62,17 @@ class PHPMail {
     $mailer->clearAddresses();
     $mailer->clearCustomHeaders();
     $mailer->isHTML(!empty($newsletter['body']['html']));
-    $mailer->charSet = 'UTF-8';
+    $mailer->CharSet = 'UTF-8'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $mailer->setFrom($this->sender['from_email'], $this->sender['from_name'], false);
     $mailer->addReplyTo($this->replyTo['reply_to_email'], $this->replyTo['reply_to_name']);
     $subscriber = $this->processSubscriber($subscriber);
     $mailer->addAddress($subscriber['email'], $subscriber['name']);
-    $mailer->subject = (!empty($newsletter['subject'])) ? $newsletter['subject'] : '';
-    $mailer->body = (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text'];
-    if ($mailer->contentType !== 'text/plain') {
-      $mailer->altBody = (!empty($newsletter['body']['text'])) ? $newsletter['body']['text'] : '';
+    $mailer->Subject = (!empty($newsletter['subject'])) ? $newsletter['subject'] : ''; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $mailer->Body = (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    if ($mailer->ContentType !== 'text/plain') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $mailer->AltBody = (!empty($newsletter['body']['text'])) ? $newsletter['body']['text'] : ''; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     }
-    $mailer->sender = $this->returnPath;
+    $mailer->Sender = $this->returnPath; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     if (!empty($extraParams['unsubscribe_url'])) {
       $this->mailer->addCustomHeader('List-Unsubscribe', $extraParams['unsubscribe_url']);
     }
@@ -84,8 +84,8 @@ class PHPMail {
     //   sendmail command which expects only NL as line endings (POSIX). Since quoted-printable
     //   requires CRLF some of those commands convert LF to CRLF which can break the email body
     //   because it already (correctly) uses CRLF. Such CRLF then (wrongly) becomes CRCRLF.
-    if (\PHPMailer::hasLineLongerThanMax($mailer->body)) {
-      $mailer->encoding = 'base64';
+    if (\PHPMailer::hasLineLongerThanMax($mailer->Body)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $mailer->Encoding = 'base64'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     }
 
     return $mailer;

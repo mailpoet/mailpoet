@@ -182,7 +182,7 @@ class Populator {
     $page = null;
     if (!empty($pages)) {
       $page = array_shift($pages);
-      if (strpos($page->postContent, '[mailpoet_page]') === false) {
+      if (strpos($page->post_content, '[mailpoet_page]') === false) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         $page = null;
       }
     }
@@ -220,8 +220,8 @@ class Populator {
 
     // set default sender info based on current user
     $sender = [
-      'name' => $currentUser->displayName,
-      'address' => $currentUser->userEmail,
+      'name' => $currentUser->display_name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'address' => $currentUser->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     ];
 
     // set default from name & address

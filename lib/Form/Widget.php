@@ -181,7 +181,7 @@ class Widget extends \WP_Widget {
       'widget_title',
       !empty($instance['title']) ? $instance['title'] : '',
       $instance,
-      $this->idBase
+      $this->id_base // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     );
 
     // get form
@@ -206,7 +206,7 @@ class Widget extends \WP_Widget {
     $output = '';
 
     if (!empty($body)) {
-      $formId = $this->idBase . '_' . $form['id'];
+      $formId = $this->id_base . '_' . $form['id']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $data = [
         'form_id' => $formId,
         'form_type' => $formType,

@@ -67,7 +67,7 @@ class DynamicSegments {
     $products = $this->wp->getPosts($args);
     return array_map(function ($product) {
       return [
-        'title' => $product->postTitle,
+        'title' => $product->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         'ID' => $product->ID,
       ];
     }, $products);

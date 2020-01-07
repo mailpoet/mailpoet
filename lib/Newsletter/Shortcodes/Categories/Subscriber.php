@@ -31,7 +31,7 @@ class Subscriber {
       case 'displayname':
         if ($subscriber && $subscriber->wpUserId) {
           $wpUser = WPFunctions::get()->getUserdata($subscriber->wpUserId);
-          return $wpUser->userLogin;
+          return $wpUser->user_login; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         }
         return $defaultValue;
       case 'count':

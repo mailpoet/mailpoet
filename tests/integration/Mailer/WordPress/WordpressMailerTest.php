@@ -45,8 +45,8 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->subject = 'Subject';
-    $wpMailer->body = 'Email Text Body';
+    $wpMailer->Subject = 'Subject'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Body = 'Email Text Body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $wpMailer->isHTML(false);
     $wpMailer->send();
   }
@@ -66,8 +66,8 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
-    $wpMailer->subject = 'Subject';
-    $wpMailer->body = 'Body';
+    $wpMailer->Subject = 'Subject'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Body = 'Body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $wpMailer->isHTML(false);
     $wpMailer->send();
   }
@@ -90,8 +90,8 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->subject = 'Subject';
-    $wpMailer->body = 'Email Html Body';
+    $wpMailer->Subject = 'Subject'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Body = 'Email Html Body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $wpMailer->isHTML(true);
     $wpMailer->send();
   }
@@ -107,7 +107,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->body = 'body';
+    $wpMailer->Body = 'body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     expect($wpMailer->send())->true();
   }
 
@@ -126,7 +126,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->body = 'body';
+    $wpMailer->Body = 'body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     expect($wpMailer->send())->true();
   }
 
@@ -144,7 +144,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->body = 'body';
+    $wpMailer->Body = 'body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
     $errorMessage = null;
     try {
@@ -167,8 +167,8 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->body = 'body';
-    $wpMailer->contentType = 'application/json';
+    $wpMailer->Body = 'body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->ContentType = 'application/json'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
   }
@@ -187,7 +187,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->body = 'body';
+    $wpMailer->Body = 'body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
     $errorMessage = null;
     try {
@@ -225,8 +225,8 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
-    $wpMailer->subject = 'Subject';
-    $wpMailer->body = 'Body';
+    $wpMailer->Subject = 'Subject'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Body = 'Body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $wpMailer->send();
   }
 

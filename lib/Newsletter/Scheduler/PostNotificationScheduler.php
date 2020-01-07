@@ -40,7 +40,7 @@ class PostNotificationScheduler {
       ]
     );
     $types = Posts::getTypes();
-    if (($newStatus !== 'publish') || !isset($types[$post->postType])) {
+    if (($newStatus !== 'publish') || !isset($types[$post->post_type])) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       return;
     }
     $this->schedulePostNotification($post->ID);

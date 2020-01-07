@@ -134,7 +134,7 @@ class ShortcodesTest extends \MailPoetTest {
     $result =
       $shortcodesObject->process(['[newsletter:post_title]'], $content);
     $wpPost = get_post($this->wPPost);
-    expect($result['0'])->equals($wpPost->postTitle);
+    expect($result['0'])->equals($wpPost->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
   public function itCanProcessPostNotificationNewsletterNumberShortcode() {
