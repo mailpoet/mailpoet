@@ -72,7 +72,7 @@ const CustomDateEdit = ({ attributes, setAttributes }) => {
   return (
     <>
       {inspectorControls}
-      <label className="mailpoet_text_label mailpoet_custom_date" data-automation-id="editor_custom_date_label" htmlFor="custom_text">
+      <label className="mailpoet_date_label mailpoet_custom_date" data-automation-id="editor_custom_date_label" htmlFor="custom_text">
         {formatLabel(attributes)}
         <br />
         <FormFieldDate
