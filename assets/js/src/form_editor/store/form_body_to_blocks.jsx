@@ -25,6 +25,9 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
     if (has(item.params, 'hide_label')) {
       mapped.attributes.hideLabel = !!item.params.hide_label;
     }
+    if (has(item.params, 'lines')) {
+      mapped.attributes.lines = item.params.lines;
+    }
     if (has(item.params, 'date_type')) {
       mapped.attributes.dateType = item.params.date_type;
     }

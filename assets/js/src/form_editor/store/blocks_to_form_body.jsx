@@ -38,6 +38,9 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
   if (has(block.attributes, 'dateType')) {
     mapped.params.date_type = block.attributes.dateType;
   }
+  if (has(block.attributes, 'lines')) {
+    mapped.params.lines = block.attributes.lines;
+  }
   if (has(block.attributes, 'dateFormat')) {
     mapped.params.date_format = block.attributes.dateFormat;
   }
