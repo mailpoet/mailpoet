@@ -1,177 +1,183 @@
-/* Fix select2 z-index to work with MailPoet.Modal */
-.select2-dropdown {
-  z-index: 101000 !important;
-}
+.admin_page_mailpoet-newsletter-editor {
+  /* Allow horizontal scrolling on smaller (tablet/phone) sized screens */
+  overflow-x: auto;
 
-/* Remove input field styles from select2 type input */
-.select2-container {
-  border: none;
-  padding: 0;
-}
-
-/* Fix select2 input glow and margins that wordpress may insert */
-.select2 input,
-.select2 input:focus {
-  border-color: none;
-  box-shadow: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* Fix width overrides for select2 */
-.mailpoet_editor_settings .select2-container {
-  width: 100% !important;
-}
-
-.tox {
-  /* Small style changes to better fit TinyMCE to our editor */
-  &.tox-tinymce-inline {
-    border: 1px solid $content-border-color;
-    border-radius: 3px;
-    box-shadow: 0 0 3px 1px rgba(0, 0, 0, .05);
-
-    /* Fix for fixed TinyMCE toolbar to be above WP menu */
-    z-index: 50001;
+  /* Fix select2 z-index to work with MailPoet.Modal */
+  .select2-dropdown {
+    z-index: 101000 !important;
   }
 
-  /* Fix for TinyMCE modals are above WP menu */
-  &.tox-tinymce-aux {
-    z-index: 99999;
+  /* Remove input field styles from select2 type input */
+  .select2-container {
+    border: none;
+    padding: 0;
   }
 
-  .tox-toolbar {
-    background-color: $primary-background-color;
+  /* Fix select2 input glow and margins that wordpress may insert */
+  .select2 input,
+  .select2 input:focus {
+    border-color: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+  }
 
-    /* Fix double border on top of TineMCE popup */
-    &:first-child {
-      border-top: 0;
+  /* Fix width overrides for select2 */
+  .mailpoet_editor_settings .select2-container {
+    width: 100% !important;
+  }
+
+  .tox {
+    /* Small style changes to better fit TinyMCE to our editor */
+    &.tox-tinymce-inline {
+      border: 1px solid $content-border-color;
+      border-radius: 3px;
+      box-shadow: 0 0 3px 1px rgba(0, 0, 0, .05);
+
+      /* Fix for fixed TinyMCE toolbar to be above WP menu */
+      z-index: 50001;
+    }
+
+    /* Fix for TinyMCE modals are above WP menu */
+    &.tox-tinymce-aux {
+      z-index: 99999;
+    }
+
+    .tox-toolbar {
+      background-color: $primary-background-color;
+
+      /* Fix double border on top of TineMCE popup */
+      &:first-child {
+        border-top: 0;
+      }
+    }
+
+    /* Slightly smaller TinyMCE button */
+    .tox-tbtn:not(.tox-tbtn--select) {
+      height: 28px;
+      width: 30px;
+    }
+
+    /* Fix for text type select */
+    .tox-collection__item-label {
+      line-height: normal;
     }
   }
 
-  /* Slightly smaller TinyMCE button */
-  .tox-tbtn:not(.tox-tbtn--select) {
-    height: 28px;
-    width: 30px;
+  /* TinyMCE remove active border from the editor */
+  .mce-edit-focus {
+    outline: none;
   }
 
-  /* Fix for text type select */
-  .tox-collection__item-label {
-    line-height: normal;
+  #wpbody-content > * {
+    margin-left: 20px;
   }
-}
 
-/* TinyMCE remove active border from the editor */
-.mce-edit-focus {
-  outline: none;
-}
+  #wpbody-content > .wrap {
+    margin-left: 0;
+  }
 
-#wpbody-content > * {
-  margin-left: 20px;
-}
+  #wpcontent {
+    margin-left: 160px;
+    padding-left: 0;
+  }
 
-#wpbody-content > .wrap {
-  margin-left: 0;
-}
-
-#wpcontent {
-  margin-left: 160px;
-  padding-left: 0;
-
-  .folded & {
+  &.folded #wpcontent {
     margin-left: 36px;
   }
-}
 
-.wrap {
-  margin-left: 0;
-  margin-right: 0;
-}
+  &.auto-fold #wpcontent {
+    @media only screen and (max-width: 960px) { margin-left: 36px; }
 
-/* Reduce WP admin bar z-index in order for TinyMCE toolbar to be visible */
-#wpadminbar {
-  z-index: 50000;
-}
+    @media only screen and (max-width: 782px) { margin-left: 0; }
+  }
 
-/* Allow horizontal scrolling on smaller (tablet/phone) sized screens */
-body {
-  overflow-x: auto;
-}
-
-/* Hide the "Details" section of WordPress Media manager */
-.media-sidebar {
-  display: none;
-}
-
-#mailpoet-media-manager {
-  .attachments-browser .attachments,
-  .attachments-browser .uploader-inline {
+  .wrap {
+    margin-left: 0;
     margin-right: 0;
   }
 
-  .attachments-browser .attachments,
-  .attachments-browser .media-toolbar,
-  .attachments-browser .uploader-inline {
-    right: 0;
-  }
-}
-
-/* Remove max width from date selector in WordPress Media Manager */
-#media-attachment-date-filters {
-  max-width: calc(100% - 12px);
-}
-
-/* Alter Spectrum color picker to leave only the color preview, without arrows */
-.sp-replacer {
-  border: 0;
-  border-radius: 3px;
-  box-shadow: 1px 2px darken($primary-background-color, 13%);
-  padding: 0;
-}
-
-.sp-preview {
-  border-width: 0;
-  height: 25px;
-  margin-right: 0;
-  width: 25px;
-}
-
-.sp-dd {
-  display: none;
-}
-
-/* Sidepanel overrides */
-.mailpoet_panel_body {
-  margin: 19px;
-  padding: 0;
-
-  .mailpoet_editor_settings h3 {
-    margin-top: 0;
-  }
-}
-
-.mailpoet_panel_wrapper {
-  background-color: $primary-background-color;
-  border: 1px solid $content-border-color;
-}
-
-.wrap > .mailpoet_notice,
-.notice,
-.update-nag {
-  margin-left: 2px + 15px !important;
-  margin-right: 20px !important;
-}
-
-/* Make a button group */
-.mailpoet_button_group {
-  .button:first-child {
-    border-bottom-right-radius: 0;
-    border-right: 0;
-    border-top-right-radius: 0;
+  /* Reduce WP admin bar z-index in order for TinyMCE toolbar to be visible */
+  #wpadminbar {
+    z-index: 50000;
   }
 
-  .button:last-child {
-    border-bottom-left-radius: 0;
-    border-left: 0;
-    border-top-left-radius: 0;
+  /* Hide the "Details" section of WordPress Media manager */
+  .media-sidebar {
+    display: none;
+  }
+
+  #mailpoet-media-manager {
+    .attachments-browser .attachments,
+    .attachments-browser .uploader-inline {
+      margin-right: 0;
+    }
+
+    .attachments-browser .attachments,
+    .attachments-browser .media-toolbar,
+    .attachments-browser .uploader-inline {
+      right: 0;
+    }
+  }
+
+  /* Remove max width from date selector in WordPress Media Manager */
+  #media-attachment-date-filters {
+    max-width: calc(100% - 12px);
+  }
+
+  /* Alter Spectrum color picker to leave only the color preview, without arrows */
+  .sp-replacer {
+    border: 0;
+    border-radius: 3px;
+    box-shadow: 1px 2px darken($primary-background-color, 13%);
+    padding: 0;
+  }
+
+  .sp-preview {
+    border-width: 0;
+    height: 25px;
+    margin-right: 0;
+    width: 25px;
+  }
+
+  .sp-dd {
+    display: none;
+  }
+
+  /* Sidepanel overrides */
+  .mailpoet_panel_body {
+    margin: 19px;
+    padding: 0;
+
+    .mailpoet_editor_settings h3 {
+      margin-top: 0;
+    }
+  }
+
+  .mailpoet_panel_wrapper {
+    background-color: $primary-background-color;
+    border: 1px solid $content-border-color;
+  }
+
+  .wrap > .mailpoet_notice,
+  .notice,
+  .update-nag {
+    margin-left: 2px + 15px !important;
+    margin-right: 20px !important;
+  }
+
+  /* Make a button group */
+  .mailpoet_button_group {
+    .button:first-child {
+      border-bottom-right-radius: 0;
+      border-right: 0;
+      border-top-right-radius: 0;
+    }
+
+    .button:last-child {
+      border-bottom-left-radius: 0;
+      border-left: 0;
+      border-top-left-radius: 0;
+    }
   }
 }
