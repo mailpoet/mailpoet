@@ -25,8 +25,10 @@ class Subscribers {
   }
 
   public function check() {
+    $limit = $this->getSubscribersLimit();
+    if ($limit === false) return false;
     $subscribers_count = $this->subscribers_repository->getTotalSubscribers();
-    return $subscribers_count > $this->getSubscribersLimit();
+    return $subscribers_count > $limit;
   }
 
   public function hasAPIKey() {
@@ -43,6 +45,8 @@ class Subscribers {
     $has_premium_key = !empty($this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME));
     $premium_subscribers_limit = $this->settings->get(self::PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY);
     if ($has_premium_key && !empty($premium_subscribers_limit)) return (int)$premium_subscribers_limit;
+
+    if ($has_mss_key || $has_premium_key) return false;
 
     $installation_time = strtotime($this->settings->get('installed_at'));
     $old_user = $installation_time < strtotime(self::NEW_LIMIT_DATE);
