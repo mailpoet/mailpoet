@@ -82,7 +82,7 @@ export default (data, customFields = []) => {
       mapped.attributes.labelWithinInput = !!item.params.label_within;
     }
     if (item.params) {
-      mapped.attributes.label = item.params.label ? item.params.label : null;
+      mapped.attributes.label = item.params.label ? item.params.label : '';
     }
     switch (item.id) {
       case 'email':

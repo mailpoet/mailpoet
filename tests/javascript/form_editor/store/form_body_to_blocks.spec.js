@@ -224,7 +224,7 @@ describe('Form Body To Blocks', () => {
     delete input.params.label;
     const [block] = formBodyToBlocks([{ ...emailInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.attributes.label).to.be.equal(null);
+    expect(block.attributes.label).to.be.equal('');
   });
 
   it('Should map first name input to block', () => {
