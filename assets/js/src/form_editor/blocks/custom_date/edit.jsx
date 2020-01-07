@@ -14,7 +14,7 @@ import CustomFieldSettings from './custom_field_settings.jsx';
 import FormFieldDate from '../../../form/fields/date.jsx';
 import formatLabel from '../label_formatter.jsx';
 
-const CustomDateEdit = ({ attributes, setAttributes }) => {
+const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
@@ -70,29 +70,28 @@ const CustomDateEdit = ({ attributes, setAttributes }) => {
   );
 
   return (
-    <>
+    <div className="mailpoet_custom_date">
       {inspectorControls}
-      <label className="mailpoet_date_label mailpoet_custom_date" data-automation-id="editor_custom_date_label" htmlFor="custom_text">
+      <label className="mailpoet_date_label" data-automation-id="editor_custom_date_label" htmlFor={clientId}>
         {formatLabel(attributes)}
-        <br />
-        <FormFieldDate
-          field={{
-            name: 'field',
-            day_placeholder: MailPoet.I18n.t('customFieldDay'),
-            month_placeholder: MailPoet.I18n.t('customFieldMonth'),
-            year_placeholder: MailPoet.I18n.t('customFieldYear'),
-            params: {
-              date_type: attributes.dateType,
-              date_format: attributes.dateFormat,
-            },
-          }}
-          item={{
-            field: attributes.defaultToday ? moment().format('YYYY-MM-DD') : '',
-          }}
-          onValueChange={() => {}}
-        />
       </label>
-    </>
+      <FormFieldDate
+        field={{
+          name: clientId,
+          day_placeholder: MailPoet.I18n.t('customFieldDay'),
+          month_placeholder: MailPoet.I18n.t('customFieldMonth'),
+          year_placeholder: MailPoet.I18n.t('customFieldYear'),
+          params: {
+            date_type: attributes.dateType,
+            date_format: attributes.dateFormat,
+          },
+        }}
+        item={{
+          field: attributes.defaultToday ? moment().format('YYYY-MM-DD') : '',
+        }}
+        onValueChange={() => {}}
+      />
+    </div>
   );
 };
 
@@ -104,6 +103,7 @@ CustomDateEdit.propTypes = {
     defaultToday: PropTypes.bool,
     mandatory: PropTypes.bool.isRequired,
   }).isRequired,
+  clientId: PropTypes.string.isRequired,
   setAttributes: PropTypes.func.isRequired,
 };
 

@@ -13,7 +13,7 @@ import formatLabel from '../label_formatter.jsx';
 
 import CustomFieldSettings from '../custom_radio/custom_field_settings.jsx';
 
-const CustomSelectEdit = ({ attributes, setAttributes }) => {
+const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
@@ -68,16 +68,19 @@ const CustomSelectEdit = ({ attributes, setAttributes }) => {
   const getInput = () => {
     const options = [{
       label: attributes.labelWithinInput ? formatLabel(attributes) : '-',
-      value: null,
     }];
     if (Array.isArray(attributes.values) || !attributes.values.length) {
-      attributes.values.forEach((value) => options.push({ label: value.name }));
+      attributes.values.forEach((value) => options.push({
+        label: value.name,
+      }));
     }
     return (
-      <select className="mailpoet_select">
+      <select className="mailpoet_select" id={clientId}>
         {
           options.map((option) => (
-            <option key={option.label} value={option.label}>{option.label}</option>
+            <option key={option.label} value={option.label}>
+              {option.label}
+            </option>
           ))
         }
       </select>
@@ -88,14 +91,12 @@ const CustomSelectEdit = ({ attributes, setAttributes }) => {
     <>
       {inspectorControls}
       <div className="mailpoet_custom_select">
-        {attributes.labelWithinInput ? (getInput()
-        ) : (
-          <label className="mailpoet_select_label" htmlFor="mailpoet_custom_select">
+        {!attributes.labelWithinInput ? (
+          <label className="mailpoet_select_label" htmlFor={clientId}>
             {formatLabel(attributes)}
-            <br />
-            {getInput()}
           </label>
-        )}
+        ) : null}
+        {getInput()}
       </div>
     </>
   );
@@ -112,6 +113,7 @@ CustomSelectEdit.propTypes = {
     mandatory: PropTypes.bool.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
+  clientId: PropTypes.string.isRequired,
 };
 
 export default CustomSelectEdit;
