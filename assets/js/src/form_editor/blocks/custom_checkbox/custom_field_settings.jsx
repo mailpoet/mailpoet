@@ -28,7 +28,14 @@ const CustomFieldSettings = ({
           checkboxLabel: localCheckboxLabel,
         })}
         isBusy={isSaving}
-        disabled={isSaving}
+        disabled={
+          isSaving
+          || (
+            localMandatory === mandatory
+            && localIsChecked === isChecked
+            && localCheckboxLabel === checkboxLabel
+          )
+        }
         className="button-on-top"
       >
         {MailPoet.I18n.t('customFieldSaveCTA')}
