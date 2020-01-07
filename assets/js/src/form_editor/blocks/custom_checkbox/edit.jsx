@@ -47,15 +47,25 @@ const CustomCheckboxEdit = ({ attributes, setAttributes }) => {
           <CustomFieldSettings
             mandatory={attributes.mandatory}
             isSaving={isSaving}
+            isChecked={isChecked()}
+            checkboxLabel={getCheckboxLabel()}
             onSave={(params) => saveCustomField({
               customFieldId: attributes.customFieldId,
               data: {
                 params: {
                   required: params.mandatory ? '1' : undefined,
+                  values: [{
+                    is_checked: params.isChecked ? '1' : undefined,
+                    value: params.checkboxLabel,
+                  }],
                 },
               },
               onFinish: () => setAttributes({
                 mandatory: params.mandatory,
+                values: [{
+                  isChecked: params.isChecked,
+                  name: params.checkboxLabel,
+                }],
               }),
             })}
           />
@@ -73,25 +83,6 @@ const CustomCheckboxEdit = ({ attributes, setAttributes }) => {
             label={MailPoet.I18n.t('displayLabel')}
             checked={!attributes.hideLabel}
             onChange={(hideLabel) => (setAttributes({ hideLabel: !hideLabel }))}
-          />
-          <input
-            type="checkbox"
-            checked={isChecked()}
-            onChange={(event) => setAttributes({
-              values: [{
-                name: getCheckboxLabel(),
-                checked: !!event.target.checked,
-              }],
-            })}
-          />
-          <input
-            value={getCheckboxLabel()}
-            onChange={(event) => setAttributes({
-              values: [{
-                name: event.target.value,
-                checked: isChecked(),
-              }],
-            })}
           />
         </PanelBody>
       </Panel>

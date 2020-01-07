@@ -10,8 +10,12 @@ const CustomFieldSettings = ({
   mandatory,
   isSaving,
   onSave,
+  isChecked,
+  checkboxLabel,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
+  const [localIsChecked, setLocalIsChecked] = useState(isChecked);
+  const [localCheckboxLabel, setLocalCheckboxLabel] = useState(checkboxLabel);
 
   return (
     <div className="custom-field-settings">
@@ -20,6 +24,8 @@ const CustomFieldSettings = ({
         isDefault
         onClick={() => onSave({
           mandatory: localMandatory,
+          isChecked: localIsChecked,
+          checkboxLabel: localCheckboxLabel,
         })}
         isBusy={isSaving}
         disabled={isSaving}
@@ -32,6 +38,17 @@ const CustomFieldSettings = ({
         checked={localMandatory}
         onChange={setLocalMandatory}
       />
+      <div>
+        <input
+          type="checkbox"
+          checked={localIsChecked}
+          onChange={(event) => setLocalIsChecked(!!event.target.checked)}
+        />
+        <input
+          value={localCheckboxLabel}
+          onChange={(event) => setLocalCheckboxLabel(event.target.value)}
+        />
+      </div>
     </div>
   );
 };
@@ -40,11 +57,15 @@ CustomFieldSettings.propTypes = {
   mandatory: PropTypes.bool,
   onSave: PropTypes.func.isRequired,
   isSaving: PropTypes.bool,
+  isChecked: PropTypes.bool,
+  checkboxLabel: PropTypes.string,
 };
 
 CustomFieldSettings.defaultProps = {
   mandatory: false,
   isSaving: false,
+  isChecked: false,
+  checkboxLabel: '',
 };
 
 export default CustomFieldSettings;
