@@ -13,7 +13,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import CustomFieldSettings from './custom_field_settings.jsx';
 import formatLabel from '../label_formatter.jsx';
 
-const CustomTextEdit = ({ attributes, setAttributes }) => {
+const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
@@ -68,7 +68,7 @@ const CustomTextEdit = ({ attributes, setAttributes }) => {
 
   const getTextInput = (placeholder) => (
     <input
-      id="custom_text"
+      id={clientId}
       className="mailpoet_text"
       type="text"
       name="custom_text"
@@ -81,14 +81,12 @@ const CustomTextEdit = ({ attributes, setAttributes }) => {
   return (
     <>
       {inspectorControls}
-      {attributes.labelWithinInput ? (getTextInput(formatLabel(attributes))
-      ) : (
-        <label className="mailpoet_text_label" data-automation-id="editor_custom_text_label" htmlFor="custom_text">
+      {!attributes.labelWithinInput ? (
+        <label className="mailpoet_text_label" data-automation-id="editor_custom_text_label" htmlFor={clientId}>
           {formatLabel(attributes)}
-          <br />
-          {getTextInput('')}
         </label>
-      )}
+      ) : null}
+      {getTextInput(attributes.labelWithinInput ? formatLabel(attributes) : '')}
     </>
   );
 };
@@ -101,6 +99,7 @@ CustomTextEdit.propTypes = {
     customFieldId: PropTypes.number.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
+  clientId: PropTypes.string.isRequired,
 };
 
 export default CustomTextEdit;

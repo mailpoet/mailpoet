@@ -46,14 +46,12 @@ const EmailEdit = ({ attributes, setAttributes }) => {
   return (
     <>
       {inspectorControls}
-      {attributes.labelWithinInput ? (getTextInput(`${attributes.label} *`)
-      ) : (
+      {!attributes.labelWithinInput ? (
         <label className="mailpoet_text_label" data-automation-id="editor_email_label" htmlFor="email">
           {`${attributes.label} *`}
-          <br />
-          {getTextInput('')}
         </label>
-      )}
+      ) : null}
+      {getTextInput(attributes.labelWithinInput ? `${attributes.label} *` : '')}
     </>
   );
 };

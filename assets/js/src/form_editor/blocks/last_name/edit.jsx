@@ -53,14 +53,12 @@ const LastNameEdit = ({ attributes, setAttributes }) => {
   return (
     <>
       {inspectorControls}
-      {attributes.labelWithinInput ? (getTextInput(formatLabel(attributes))
-      ) : (
+      {!attributes.labelWithinInput ? (
         <label className="mailpoet_text_label" data-automation-id="editor_last_name_label" htmlFor="last_name">
           {formatLabel(attributes)}
-          <br />
-          {getTextInput('')}
         </label>
-      )}
+      ) : null}
+      {getTextInput(attributes.labelWithinInput ? formatLabel(attributes) : '')}
     </>
   );
 };
