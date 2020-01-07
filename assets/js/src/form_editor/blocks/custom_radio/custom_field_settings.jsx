@@ -47,6 +47,11 @@ const CustomFieldSettings = ({
       >
         {MailPoet.I18n.t('customFieldSaveCTA')}
       </Button>
+      <ToggleControl
+        label={MailPoet.I18n.t('blockMandatory')}
+        checked={localMandatory}
+        onChange={setLocalMandatory}
+      />
       <SettingsPreview
         remove={remove}
         update={update}
@@ -66,11 +71,6 @@ const CustomFieldSettings = ({
       >
         {MailPoet.I18n.t('customFieldAddItem')}
       </Button>
-      <ToggleControl
-        label={MailPoet.I18n.t('blockMandatory')}
-        checked={localMandatory}
-        onChange={setLocalMandatory}
-      />
     </div>
   );
 };
