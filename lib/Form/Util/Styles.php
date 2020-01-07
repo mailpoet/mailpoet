@@ -99,7 +99,7 @@ EOL;
   public function getDefaultStyles() {
     if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
       $text_input_width = 'width: 100%;';
-      $label_font_weight = 'font-weight: regular;';
+      $label_font_weight = 'font-weight: normal;';
     } else {
       $text_input_width = 'width: 200px;';
       $label_font_weight = 'font-weight: bold;';
