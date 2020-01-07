@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Panel,
-  PanelBody,
+  PanelBody, SelectControl,
   TextControl,
   ToggleControl,
 } from '@wordpress/components';
@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import CustomFieldSettings from './custom_field_settings.jsx';
+import CustomFieldSettings from '../custom_text/custom_field_settings.jsx';
 import formatLabel from '../label_formatter.jsx';
 
 const CustomTextAreaEdit = ({ attributes, setAttributes }) => {
@@ -57,6 +57,33 @@ const CustomTextAreaEdit = ({ attributes, setAttributes }) => {
             label={MailPoet.I18n.t('displayLabelWithinInput')}
             checked={attributes.labelWithinInput}
             onChange={(labelWithinInput) => (setAttributes({ labelWithinInput }))}
+          />
+          <SelectControl
+            label={`${MailPoet.I18n.t('customFieldNumberOfLines')}:`}
+            value={attributes.lines}
+            options={[
+              {
+                label: MailPoet.I18n.t('customField1Line'),
+                value: '1',
+              },
+              {
+                label: MailPoet.I18n.t('customField2Lines'),
+                value: '2',
+              },
+              {
+                label: MailPoet.I18n.t('customField3Lines'),
+                value: '3',
+              },
+              {
+                label: MailPoet.I18n.t('customField4Lines'),
+                value: '4',
+              },
+              {
+                label: MailPoet.I18n.t('customField5Lines'),
+                value: '5',
+              },
+            ]}
+            onChange={(lines) => (setAttributes({ lines }))}
           />
         </PanelBody>
       </Panel>
