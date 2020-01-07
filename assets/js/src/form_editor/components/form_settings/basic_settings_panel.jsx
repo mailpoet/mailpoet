@@ -97,7 +97,7 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
           className="mailpoet-form-success-types__control"
           onChange={onSuccessTypeChange}
           selected={settings.on_success || 'message'}
-          label={`${MailPoet.I18n.t('settingsAfterSubmit')}…`}
+          label={MailPoet.I18n.t('settingsAfterSubmit')}
           options={[
             {
               label: MailPoet.I18n.t('settingsShowMessage'),
