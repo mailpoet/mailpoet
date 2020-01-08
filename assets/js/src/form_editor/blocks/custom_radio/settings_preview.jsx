@@ -7,8 +7,8 @@ import React, {
 import PropTypes from 'prop-types';
 import { Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import Backend from 'react-dnd-html5-backend';
+import { useDrag, useDrop } from 'react-dnd';
+import DndProvider from '../dnd_provider.jsx';
 
 const PreviewItem = ({
   value,
@@ -153,7 +153,7 @@ const Preview = ({
   };
 
   return (
-    <DndProvider backend={Backend}>
+    <DndProvider>
       {valuesWhileMoved.map((value, index) => (
         <PreviewItem
           key={value.id}
