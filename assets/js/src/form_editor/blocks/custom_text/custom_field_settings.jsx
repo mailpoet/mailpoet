@@ -16,6 +16,7 @@ const CustomFieldSettings = ({
   onSave,
   displayCustomFieldDeleteConfirm,
   onCustomFieldDeleteClick,
+  onCustomFieldDeleteCancel,
   onCustomFieldDeleteConfirm,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
@@ -41,6 +42,7 @@ const CustomFieldSettings = ({
         displayConfirm={displayCustomFieldDeleteConfirm}
         onDeleteClick={onCustomFieldDeleteClick}
         onDeleteConfirm={onCustomFieldDeleteConfirm}
+        onDeleteCancel={onCustomFieldDeleteCancel}
       />
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
@@ -82,6 +84,7 @@ CustomFieldSettings.propTypes = {
   displayCustomFieldDeleteConfirm: PropTypes.bool,
   onCustomFieldDeleteClick: PropTypes.func,
   onCustomFieldDeleteConfirm: PropTypes.func,
+  onCustomFieldDeleteCancel: PropTypes.func,
 };
 
 CustomFieldSettings.defaultProps = {
@@ -91,6 +94,7 @@ CustomFieldSettings.defaultProps = {
   displayCustomFieldDeleteConfirm: false,
   onCustomFieldDeleteClick: () => {},
   onCustomFieldDeleteConfirm: () => {},
+  onCustomFieldDeleteCancel: () => {},
 };
 
 export default CustomFieldSettings;

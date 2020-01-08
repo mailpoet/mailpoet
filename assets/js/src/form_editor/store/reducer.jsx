@@ -13,7 +13,7 @@ import changeFormBlocks from './reducers/change_form_blocks.jsx';
 import saveCustomFieldDone from './reducers/save_custom_field_done.jsx';
 import saveCustomFieldFailed from './reducers/save_custom_field_failed.jsx';
 import saveCustomFieldStarted from './reducers/save_custom_field_started.jsx';
-import customFieldDeleteClick from './reducers/custom_field_delete_click.jsx';
+import { customFieldDeleteClick, customFieldDeleteCancel } from './reducers/custom_field_delete.jsx';
 
 const saveFormStarted = saveFormStartedFactory(MailPoet);
 
@@ -34,6 +34,7 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'TOGGLE_SIDEBAR': return toggleSidebar(state, action);
     case 'TOGGLE_SIDEBAR_PANEL': return toggleSidebarPanel(state, action);
     case 'CUSTOM_FIELD_DELETE_CLICK': return customFieldDeleteClick(state, action);
+    case 'CUSTOM_FIELD_DELETE_CANCEL': return customFieldDeleteCancel(state, action);
     default:
       return state;
   }

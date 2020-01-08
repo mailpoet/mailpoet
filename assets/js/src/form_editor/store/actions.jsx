@@ -26,6 +26,12 @@ export function onCustomFieldDeleteClick() {
   };
 }
 
+export function onCustomFieldDeleteCancel() {
+  return {
+    type: 'CUSTOM_FIELD_DELETE_CANCEL',
+  };
+}
+
 export function changeFormStyles(styles) {
   return {
     type: 'CHANGE_FORM_STYLES',

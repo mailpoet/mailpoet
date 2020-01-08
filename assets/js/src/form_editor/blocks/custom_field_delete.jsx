@@ -8,6 +8,7 @@ import MailPoet from 'mailpoet';
 const CustomFieldDelete = ({
   isBusy,
   displayConfirm,
+  onDeleteCancel,
   onDeleteClick,
   onDeleteConfirm,
 }) => {
@@ -16,6 +17,8 @@ const CustomFieldDelete = ({
       const result = window.confirm(MailPoet.I18n.t('customFieldDeleteConfirm'));// eslint-disable-line no-alert
       if (result) {
         onDeleteConfirm();
+      } else {
+        onDeleteCancel();
       }
     }
   });
@@ -37,12 +40,14 @@ CustomFieldDelete.propTypes = {
   isBusy: PropTypes.bool,
   displayConfirm: PropTypes.bool,
   onDeleteClick: PropTypes.func,
+  onDeleteCancel: PropTypes.func,
   onDeleteConfirm: PropTypes.func,
 };
 
 CustomFieldDelete.defaultProps = {
   isBusy: false,
   displayConfirm: false,
+  onDeleteCancel: () => {},
   onDeleteClick: () => {},
   onDeleteConfirm: () => {},
 };
