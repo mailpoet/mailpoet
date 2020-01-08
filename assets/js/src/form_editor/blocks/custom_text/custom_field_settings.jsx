@@ -7,11 +7,16 @@ import {
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
+import CustomFieldDelete from '../custom_field_delete.jsx';
+
 const CustomFieldSettings = ({
   mandatory,
   validate,
   isSaving,
   onSave,
+  displayCustomFieldDeleteConfirm,
+  onCustomFieldDeleteClick,
+  onCustomFieldDeleteConfirm,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValidate, setLocalValidate] = useState(validate);
@@ -31,6 +36,12 @@ const CustomFieldSettings = ({
       >
         {MailPoet.I18n.t('customFieldSaveCTA')}
       </Button>
+      <CustomFieldDelete
+        isBusy={isSaving}
+        displayConfirm={displayCustomFieldDeleteConfirm}
+        onDeleteClick={onCustomFieldDeleteClick}
+        onDeleteConfirm={onCustomFieldDeleteConfirm}
+      />
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -68,12 +79,18 @@ CustomFieldSettings.propTypes = {
   validate: PropTypes.string,
   onSave: PropTypes.func.isRequired,
   isSaving: PropTypes.bool,
+  displayCustomFieldDeleteConfirm: PropTypes.bool,
+  onCustomFieldDeleteClick: PropTypes.func,
+  onCustomFieldDeleteConfirm: PropTypes.func,
 };
 
 CustomFieldSettings.defaultProps = {
   mandatory: false,
   isSaving: false,
   validate: '',
+  displayCustomFieldDeleteConfirm: false,
+  onCustomFieldDeleteClick: () => {},
+  onCustomFieldDeleteConfirm: () => {},
 };
 
 export default CustomFieldSettings;
