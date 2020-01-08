@@ -355,6 +355,7 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('Custom Select');
     expect(input.type).to.be.equal('select');
     expect(input.position).to.be.equal('1');
+    expect(input.unique).to.be.equal('1');
     expect(input.params.label).to.be.equal('Select');
     expect(input.params.values).to.be.an('Array').that.has.length(2);
     expect(input.params.values[0]).to.have.property('value', 'option 1');
@@ -382,6 +383,7 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('Custom Field name');
     expect(input.type).to.be.equal('radio');
     expect(input.position).to.be.equal('1');
+    expect(input.unique).to.be.equal('1');
     expect(input.params.label).to.be.equal('Options');
     expect(input.params.required).to.be.eq('1');
     expect(input.params.hide_label).to.eq('1');
@@ -411,6 +413,7 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('Custom Checkbox');
     expect(input.type).to.be.equal('checkbox');
     expect(input.position).to.be.equal('1');
+    expect(input.unique).to.be.equal('1');
     expect(input.params.label).to.be.equal('Checkbox');
     expect(input.params.required).to.be.be.undefined;
     expect(input.params.hide_label).to.be.undefined;
@@ -439,6 +442,7 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('Custom Date');
     expect(input.type).to.be.equal('date');
     expect(input.position).to.be.equal('1');
+    expect(input.unique).to.be.equal('1');
     expect(input.params.label).to.be.equal('Date');
     expect(input.params.required).to.be.undefined;
     expect(input.params.date_type).to.be.equal('month_year');
