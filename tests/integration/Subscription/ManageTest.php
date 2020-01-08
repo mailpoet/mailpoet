@@ -6,10 +6,12 @@ use Codeception\Stub;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\Manage;
 use MailPoet\Util\Url as UrlHelper;
+use MailPoetVendor\Idiorm\ORM;
 
 class ManageTest extends \MailPoetTest {
 
@@ -21,6 +23,7 @@ class ManageTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->_after();
     $di = $this->di_container;
     $this->settings = $di->get(SettingsController::class);
     $this->segment_a = Segment::createOrUpdate(['name' => 'List A']);
@@ -71,12 +74,20 @@ class ManageTest extends \MailPoetTest {
     $subscriptions = array_map(function($s) {
       return ['status' => $s['status'], 'segment_id' => $s['segment_id']];
     }, $subscriber->subscriptions);
+    usort($subscriptions, function($a, $b) {
+      return $a['segment_id'] - $b['segment_id'];
+    });
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
     expect($subscriptions)->equals([
       ['segment_id' => $this->segment_a->id, 'status' => Subscriber::STATUS_UNSUBSCRIBED],
-      ['segment_id' => $this->hidden_segment->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
       ['segment_id' => $this->segment_b->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hidden_segment->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
     ]);
   }
 
+  public function _after() {
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+  }
 }
