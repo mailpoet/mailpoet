@@ -20,6 +20,12 @@ export function changeFormName(name) {
   };
 }
 
+export function onCustomFieldDeleteClick() {
+  return {
+    type: 'CUSTOM_FIELD_DELETE_CLICK',
+  };
+}
+
 export function changeFormStyles(styles) {
   return {
     type: 'CHANGE_FORM_STYLES',
