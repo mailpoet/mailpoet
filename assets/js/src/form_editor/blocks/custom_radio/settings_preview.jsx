@@ -120,20 +120,20 @@ const Preview = ({
   remove,
   onReorder,
 }) => {
-  const [valuesWhileMoved, setSegments] = useState(values);
+  const [valuesWhileMoved, setValues] = useState(values);
   const moveItem = useCallback(
     (dragIndex, hoverIndex) => {
       const result = Array.from(valuesWhileMoved);
       const [removed] = result.splice(dragIndex, 1);
       result.splice(hoverIndex, 0, removed);
 
-      setSegments(result);
+      setValues(result);
     },
-    [valuesWhileMoved, setSegments],
+    [valuesWhileMoved, setValues],
   );
 
   useEffect(() => {
-    setSegments(values);
+    setValues(values);
   }, [values]);
 
   if (valuesWhileMoved.length === 0) {
@@ -147,6 +147,13 @@ const Preview = ({
   };
 
   const onCheck = (valueId, checked) => {
+    if (checked) {
+      const checkedValue = valuesWhileMoved.find((v) => v.isChecked);
+      if (checkedValue) {
+        checkedValue.isChecked = false;
+        update(checkedValue);
+      }
+    }
     const value = valuesWhileMoved.find((v) => v.id === valueId);
     value.isChecked = checked;
     update(value);
