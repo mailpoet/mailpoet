@@ -5,6 +5,7 @@ namespace MailPoet\Subscription;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Util\Url as UrlHelper;
@@ -44,7 +45,10 @@ class Manage {
       $subscriber = Subscriber::where('email', $subscriberData['email'])->findOne();
       if ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) {
         if ($subscriberData['email'] !== Pages::DEMO_EMAIL) {
-          $subscriberData = $this->addHiddenSegments($subscriber, $subscriberData);
+          if (!empty($subscriberData['segments'])) {
+            $this->updateSubscriptions($subscriber, $subscriberData['segments']);
+            unset($subscriberData['segments']);
+          }
           $subscriber = Subscriber::createOrUpdate($this->filterOutEmptyMandatoryFields($subscriberData));
           $subscriber->getErrors();
         }
@@ -54,19 +58,35 @@ class Manage {
     $this->urlHelper->redirectBack();
   }
 
-  private function addHiddenSegments(Subscriber $subscriber, array $data) {
-    $shownSegments = $this->settings->get('subscription.segments');
-    if (empty($shownSegments)) {
-      return $data;
-    }
-    if (empty($data['segments'])) $data['segments'] = [];
+  private function updateSubscriptions(Subscriber $subscriber, array $segmentsIds) {
     $subscriber->withSubscriptions();
+    $allowedSegments = $this->settings->get('subscription.segments', false);
+    $subscriptionsSegmentsIds = [];
+    // Unsubscribe from missing segments
     foreach ($subscriber->subscriptions as $subscription) {
-      if ($subscription['status'] === Subscriber::STATUS_SUBSCRIBED && !in_array($subscription['segment_id'], $shownSegments)) {
-        $data['segments'][] = $subscription['segment_id'];
+      $segmentId = $subscription['segment_id'];
+      $subscriptionsSegmentsIds[] = $segmentId;
+      if ($allowedSegments && !in_array($segmentId, $allowedSegments)) {
+        continue;
+      }
+      if (!in_array($segmentId, $segmentsIds)) {
+        SubscriberSegment::createOrUpdate([
+          'subscriber_id' => $subscriber->id,
+          'segment_id' => $segmentId,
+          'status' => Subscriber::STATUS_UNSUBSCRIBED,
+        ]);
       }
     }
-    return $data;
+    // subscribe to new segments
+    foreach ($segmentsIds as $segmentId) {
+      if (!in_array($segmentId, $subscriptionsSegmentsIds)) {
+        SubscriberSegment::createOrUpdate([
+          'subscriber_id' => $subscriber->id,
+          'segment_id' => $segmentId,
+          'status' => Subscriber::STATUS_SUBSCRIBED,
+        ]);
+      }
+    }
   }
 
   private function filterOutEmptyMandatoryFields(array $subscriberData) {
