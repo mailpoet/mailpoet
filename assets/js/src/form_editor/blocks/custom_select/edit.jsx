@@ -83,7 +83,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
     }
 
     return (
-      <select className="mailpoet_select" id={clientId} value={defaultValue}>
+      <select className="mailpoet_select" id={clientId} value={defaultValue} readOnly>
         {
           options.map((option) => (
             <option key={option.label} value={option.label}>
