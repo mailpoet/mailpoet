@@ -5,7 +5,7 @@ import {
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
-import { isEmpty, isEqual, xorWith } from 'lodash';
+import { isEqualWith } from 'lodash';
 
 import SettingsPreview from './settings_preview.jsx';
 
@@ -47,7 +47,7 @@ const CustomFieldSettings = ({
           isSaving
           || (
             localMandatory === mandatory
-            && isEmpty(xorWith(values, localValues, isEqual))
+            && isEqualWith(values, localValues)
           )
         }
         className="button-on-top"
