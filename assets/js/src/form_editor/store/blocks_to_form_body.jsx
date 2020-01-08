@@ -7,6 +7,7 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
     ...mappedCommonProperties,
     id: block.attributes.customFieldId.toString(),
     name: customField.name,
+    unique: '1',
   };
   if (block.name.startsWith('mailpoet-form/custom-date')) {
     mapped.type = 'date';
