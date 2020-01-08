@@ -22,6 +22,11 @@ const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
     (sel) => sel('mailpoet-form-editor').getDisplayCustomFieldDeleteConfirm(),
     []
   );
+  const isDeleting = useSelect(
+    (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
+    []
+  );
+
   const {
     saveCustomField,
     onCustomFieldDeleteClick,
@@ -56,8 +61,12 @@ const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
             }}
             displayCustomFieldDeleteConfirm={displayCustomFieldDeleteConfirm}
             onCustomFieldDeleteClick={onCustomFieldDeleteClick}
-            onCustomFieldDeleteConfirm={onCustomFieldDeleteConfirm}
+            onCustomFieldDeleteConfirm={() => onCustomFieldDeleteConfirm(
+              attributes.customFieldId,
+              clientId
+            )}
             onCustomFieldDeleteCancel={onCustomFieldDeleteCancel}
+            isDeleting={isDeleting}
           />
         </PanelBody>
       </Panel>

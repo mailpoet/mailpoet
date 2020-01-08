@@ -61,4 +61,25 @@ export default {
         dispatch('mailpoet-form-editor').saveCustomFieldFailed(errorMessage);
       });
   },
+
+  DELETE_CUSTOM_FIELD(actionData) {
+    dispatch('mailpoet-form-editor').deleteCustomFieldStarted();
+    // MailPoet.Ajax.post({
+    //   api_version: window.mailpoet_api_version,
+    //   endpoint: 'customFields',
+    //   action: 'delete',
+    //   data: {
+    //     id: actionData.customFieldId
+    //   }
+    // })
+    setTimeout(() => {
+      console.log('xxx', actionData);
+      console.log('before', select('core/block-editor').getBlocks());
+      dispatch('mailpoet-form-editor').deleteCustomFieldDone(actionData.customFieldId, actionData.clientId);
+      dispatch('core/block-editor').removeBlock(actionData.clientId);
+    }, 1000);
+    setTimeout(() => {
+      console.log('after', select('core/block-editor').getBlocks());
+    }, 2000);
+  },
 };

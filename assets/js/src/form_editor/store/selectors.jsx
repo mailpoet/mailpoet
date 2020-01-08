@@ -35,6 +35,9 @@ export default {
   getDisplayCustomFieldDeleteConfirm(state) {
     return state.displayCustomFieldDeleteConfirm;
   },
+  getIsCustomFieldDeleting(state) {
+    return state.isCustomFieldDeleting;
+  },
   getDismissibleNotices(state) {
     return state.notices.filter((notice) => notice.isDismissible === true);
   },

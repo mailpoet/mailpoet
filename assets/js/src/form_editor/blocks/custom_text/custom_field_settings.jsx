@@ -13,6 +13,7 @@ const CustomFieldSettings = ({
   mandatory,
   validate,
   isSaving,
+  isDeleting,
   onSave,
   displayCustomFieldDeleteConfirm,
   onCustomFieldDeleteClick,
@@ -32,13 +33,20 @@ const CustomFieldSettings = ({
           validate: localValidate,
         })}
         isBusy={isSaving}
-        disabled={isSaving || (localMandatory === mandatory && localValidate === validate)}
+        disabled={
+          isSaving
+          || isDeleting
+          || (
+            localMandatory === mandatory
+            && localValidate === validate
+          )
+        }
         className="button-on-top"
       >
         {MailPoet.I18n.t('customFieldSaveCTA')}
       </Button>
       <CustomFieldDelete
-        isBusy={isSaving}
+        isBusy={isSaving || isDeleting}
         displayConfirm={displayCustomFieldDeleteConfirm}
         onDeleteClick={onCustomFieldDeleteClick}
         onDeleteConfirm={onCustomFieldDeleteConfirm}
@@ -81,6 +89,7 @@ CustomFieldSettings.propTypes = {
   validate: PropTypes.string,
   onSave: PropTypes.func.isRequired,
   isSaving: PropTypes.bool,
+  isDeleting: PropTypes.bool,
   displayCustomFieldDeleteConfirm: PropTypes.bool,
   onCustomFieldDeleteClick: PropTypes.func,
   onCustomFieldDeleteConfirm: PropTypes.func,
@@ -90,6 +99,7 @@ CustomFieldSettings.propTypes = {
 CustomFieldSettings.defaultProps = {
   mandatory: false,
   isSaving: false,
+  isDeleting: false,
   validate: '',
   displayCustomFieldDeleteConfirm: false,
   onCustomFieldDeleteClick: () => {},
