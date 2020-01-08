@@ -24,7 +24,10 @@ span {
 
   &.select2-search {
     &.select2-search--dropdown {
-      display: none !important;
+      .admin_page_mailpoet-import &,
+      .admin_page_mailpoet-export & {
+        display: none !important;
+      }
     }
   }
 }
