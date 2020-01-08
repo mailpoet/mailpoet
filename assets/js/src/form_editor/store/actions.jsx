@@ -32,6 +32,20 @@ export function onCustomFieldDeleteCancel() {
   };
 }
 
+export function deleteCustomFieldStarted() {
+  return {
+    type: 'DELETE_CUSTOM_FIELD_STARTED',
+  };
+}
+
+export function deleteCustomFieldDone(customFieldId, clientId) {
+  return {
+    type: 'DELETE_CUSTOM_FIELD_DONE',
+    customFieldId,
+    clientId,
+  };
+}
+
 export function changeFormStyles(styles) {
   return {
     type: 'CHANGE_FORM_STYLES',
@@ -125,5 +139,13 @@ export function* saveCustomField(data) {
   yield {
     type: 'SAVE_CUSTOM_FIELD',
     ...data,
+  };
+}
+
+export function* onCustomFieldDeleteConfirm(customFieldId, clientId) {
+  yield {
+    type: 'DELETE_CUSTOM_FIELD',
+    customFieldId,
+    clientId,
   };
 }
