@@ -20,7 +20,7 @@ class WooCommerceOrder {
   const STATUS_REFUNDED = 'refunded';
 
   public function __construct(\AcceptanceTester $tester) {
-    $unique_id = bin2hex(random_bytes(7)); // phpcs:ignore
+    $uniqueId = bin2hex(random_bytes(7)); // phpcs:ignore
     $this->tester = $tester;
     $this->data = [
       'customer_id' => self::GUEST_CUSTOMER_ID,
