@@ -54,7 +54,7 @@ class ConnectionFactory {
       '@@session.sql_mode = REPLACE(@@sql_mode, "ONLY_FULL_GROUP_BY", "")',
       // We need to use CONVERT for MySQL 8, Maria DB bug which triggers #1232 - Incorrect argument type to variable 'wait_timeout`
       // https://stackoverflow.com/questions/35187378/mariadb-type-error-when-setting-session-variable
-      "@@session.wait_timeout = GREATEST(CONVERT(COALESCE(@@wait_timeout, 0), SIGNED), $this->min_wait_timeout)",
+      "@@session.wait_timeout = GREATEST(CONVERT(COALESCE(@@wait_timeout, 0), SIGNED), $this->minWaitTimeout)",
     ];
 
     if (!empty(Env::$dbCharset)) {
