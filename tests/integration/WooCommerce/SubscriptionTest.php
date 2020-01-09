@@ -107,7 +107,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
     expect($subscribed)->equals(null);
     // not a WooCommerce user
-    $this->subscriber->is_woocommerce_user = 0;
+    $this->subscriber->isWoocommerceUser = 0;
     $this->subscriber->save();
     $data['billing_email'] = $this->subscriber->email;
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);

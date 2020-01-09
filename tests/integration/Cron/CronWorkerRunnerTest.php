@@ -94,7 +94,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
 
     $result = $this->cronWorkerRunner->run($worker);
     expect($result)->false();
-    expect(ScheduledTask::findOne()->scheduled_at)->same($inOneWeek->format('Y-m-d H:i:s'));
+    expect(ScheduledTask::findOne()->scheduledAt)->same($inOneWeek->format('Y-m-d H:i:s'));
   }
 
   public function testItWillRescheduleTaskIfItIsRunningForTooLong() {

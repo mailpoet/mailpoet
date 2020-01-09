@@ -15,8 +15,8 @@ class SendingQueueTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->queue = SendingQueue::create();
-    $this->queue->task_id = 0;
-    $this->queue->newsletter_id = 1;
+    $this->queue->taskId = 0;
+    $this->queue->newsletterId = 1;
     $this->queue->save();
 
     $this->renderedBody = [

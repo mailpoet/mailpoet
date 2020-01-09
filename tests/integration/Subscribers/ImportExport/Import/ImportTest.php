@@ -66,13 +66,13 @@ class ImportTest extends \MailPoetTest {
   }
 
   public function testItConstructs() {
-    expect(is_array($this->import->subscribers_data))->true();
-    expect($this->import->segments_ids)->equals($this->testData['segments']);
-    expect(is_array($this->import->subscribers_fields))->true();
-    expect(is_array($this->import->subscribers_custom_fields))->true();
-    expect($this->import->subscribers_count)->equals(2);
-    expect($this->import->created_at)->notEmpty();
-    expect($this->import->updated_at)->notEmpty();
+    expect(is_array($this->import->subscribersData))->true();
+    expect($this->import->segmentsIds)->equals($this->testData['segments']);
+    expect(is_array($this->import->subscribersFields))->true();
+    expect(is_array($this->import->subscribersCustomFields))->true();
+    expect($this->import->subscribersCount)->equals(2);
+    expect($this->import->createdAt)->notEmpty();
+    expect($this->import->updatedAt)->notEmpty();
   }
 
   public function testItChecksForRequiredDataFields() {
@@ -151,13 +151,13 @@ class ImportTest extends \MailPoetTest {
 
   public function testItTransformsSubscribers() {
     $customField = $this->subscribersCustomFields[0];
-    expect($this->import->subscribers_data['first_name'][0])
+    expect($this->import->subscribersData['first_name'][0])
       ->equals($this->testData['subscribers'][0][0]);
-    expect($this->import->subscribers_data['last_name'][0])
+    expect($this->import->subscribersData['last_name'][0])
       ->equals($this->testData['subscribers'][0][1]);
-    expect($this->import->subscribers_data['email'][0])
+    expect($this->import->subscribersData['email'][0])
       ->equals($this->testData['subscribers'][0][2]);
-    expect($this->import->subscribers_data[$customField][0])
+    expect($this->import->subscribersData[$customField][0])
       ->equals($this->testData['subscribers'][0][3]);
   }
 
@@ -405,7 +405,7 @@ class ImportTest extends \MailPoetTest {
     expect($result['updated'])->equals(0);
     $result = $this->import->process();
     expect($result['updated'])->equals(2);
-    $this->import->update_subscribers = false;
+    $this->import->updateSubscribers = false;
     $result = $this->import->process();
     expect($result['updated'])->equals(0);
   }
@@ -496,8 +496,8 @@ class ImportTest extends \MailPoetTest {
       ->findOne()
       ->delete();
     $timestamp = time() + 1;
-    $this->import->created_at = $this->import->required_subscribers_fields['created_at'] = date('Y-m-d H:i:s', $timestamp);
-    $this->import->updated_at = date('Y-m-d H:i:s', $timestamp + 1);
+    $this->import->createdAt = $this->import->requiredSubscribersFields['created_at'] = date('Y-m-d H:i:s', $timestamp);
+    $this->import->updatedAt = date('Y-m-d H:i:s', $timestamp + 1);
     $result = $this->import->process();
     expect($result['created'])->equals(1);
     $dbSubscribers = array_column(

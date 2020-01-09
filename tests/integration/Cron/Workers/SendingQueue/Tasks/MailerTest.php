@@ -133,7 +133,7 @@ class MailerTest extends \MailPoetTest {
       ]
     );
     // mailer instance should be properly configured
-    expect($mailerTask->mailer->mailer_instance instanceof $phpMailClass)
+    expect($mailerTask->mailer->mailerInstance instanceof $phpMailClass)
       ->true();
     // send method should return true
     expect($mailerTask->send('Newsletter', 'Subscriber'))->true();

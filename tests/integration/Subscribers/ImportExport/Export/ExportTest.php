@@ -110,9 +110,9 @@ class ExportTest extends \MailPoetTest {
   }
 
   public function testItCanConstruct() {
-    expect($this->export->export_format_option)
+    expect($this->export->exportFormatOption)
       ->equals('csv');
-    expect($this->export->subscriber_fields)
+    expect($this->export->subscriberFields)
       ->equals(
         [
           'email',
@@ -120,28 +120,28 @@ class ExportTest extends \MailPoetTest {
           '1',
         ]
       );
-    expect($this->export->subscriber_custom_fields)
+    expect($this->export->subscriberCustomFields)
       ->equals($this->export->getSubscriberCustomFields());
-    expect($this->export->formatted_subscriber_fields)
+    expect($this->export->formattedSubscriberFields)
       ->equals(
         $this->export->formatSubscriberFields(
-          $this->export->subscriber_fields,
-          $this->export->subscriber_custom_fields
+          $this->export->subscriberFields,
+          $this->export->subscriberCustomFields
         )
       );
     expect(
       preg_match(
         '|' .
         preg_quote(Env::$tempPath, '|') . '/MailPoet_export_[a-z0-9]{15}.' .
-        $this->export->export_format_option .
-        '|', $this->export->export_file)
+        $this->export->exportFormatOption .
+        '|', $this->export->exportFile)
     )->equals(1);
     expect(
       preg_match(
         '|' .
         preg_quote(Env::$tempUrl, '|') . '/' .
-        basename($this->export->export_file) .
-        '|', $this->export->export_file_URL)
+        basename($this->export->exportFile) .
+        '|', $this->export->exportFileURL)
     )->equals(1);
   }
 
@@ -172,28 +172,28 @@ class ExportTest extends \MailPoetTest {
   }
 
   public function testItCanGetSubscribers() {
-    $this->export->default_subscribers_getter = new DefaultSubscribersGetter([1], 100);
+    $this->export->defaultSubscribersGetter = new DefaultSubscribersGetter([1], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(2);
 
-    $this->export->default_subscribers_getter = new DefaultSubscribersGetter([2], 100);
+    $this->export->defaultSubscribersGetter = new DefaultSubscribersGetter([2], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(2);
 
-    $this->export->default_subscribers_getter = new DefaultSubscribersGetter([1, 2], 100);
+    $this->export->defaultSubscribersGetter = new DefaultSubscribersGetter([1, 2], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(4);
 
   }
 
   public function testItAlwaysGroupsSubscribersBySegments() {
-    $this->export->default_subscribers_getter = new DefaultSubscribersGetter([0, 1, 2], 100);
+    $this->export->defaultSubscribersGetter = new DefaultSubscribersGetter([0, 1, 2], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(5);
   }
 
   public function testItCanGetSubscribersOnlyWithoutSegments() {
-    $this->export->default_subscribers_getter = new DefaultSubscribersGetter([0], 100);
+    $this->export->defaultSubscribersGetter = new DefaultSubscribersGetter([0], 100);
     $subscribers = $this->export->getSubscribers();
     expect($subscribers)->count(1);
     expect($subscribers[0]['segment_name'])->equals('Not In Segment');
@@ -201,7 +201,7 @@ class ExportTest extends \MailPoetTest {
 
   public function testItRequiresWritableExportFile() {
     try {
-      $this->export->export_path = '/fake_folder';
+      $this->export->exportPath = '/fake_folder';
       $this->export->process();
       $this->fail('Export did not throw an exception');
     } catch (\Exception $e) {
@@ -212,8 +212,8 @@ class ExportTest extends \MailPoetTest {
 
   public function testItCanProcess() {
     try {
-      $this->export->export_file = $this->export->getExportFile('csv');
-      $this->export->export_format_option = 'csv';
+      $this->export->exportFile = $this->export->getExportFile('csv');
+      $this->export->exportFormatOption = 'csv';
       $result = $this->export->process();
     } catch (\Exception $e) {
       $this->fail('Export to .csv process threw an exception');
@@ -222,8 +222,8 @@ class ExportTest extends \MailPoetTest {
     expect($result['exportFileURL'])->notEmpty();
 
     try {
-      $this->export->export_file = $this->export->getExportFile('xlsx');
-      $this->export->export_format_option = 'xlsx';
+      $this->export->exportFile = $this->export->getExportFile('xlsx');
+      $this->export->exportFormatOption = 'xlsx';
       $result = $this->export->process();
     } catch (\Exception $e) {
       $this->fail('Export to .xlsx process threw an exception');
