@@ -64,22 +64,24 @@ export default {
 
   DELETE_CUSTOM_FIELD(actionData) {
     dispatch('mailpoet-form-editor').deleteCustomFieldStarted();
-    // MailPoet.Ajax.post({
-    //   api_version: window.mailpoet_api_version,
-    //   endpoint: 'customFields',
-    //   action: 'delete',
-    //   data: {
-    //     id: actionData.customFieldId
-    //   }
-    // })
-    setTimeout(() => {
-      console.log('xxx', actionData);
-      console.log('before', select('core/block-editor').getBlocks());
-      dispatch('mailpoet-form-editor').deleteCustomFieldDone(actionData.customFieldId, actionData.clientId);
-      dispatch('core/block-editor').removeBlock(actionData.clientId);
-    }, 1000);
-    setTimeout(() => {
-      console.log('after', select('core/block-editor').getBlocks());
-    }, 2000);
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'customFields',
+      action: 'delete',
+      data: {
+        id: actionData.customFieldId,
+      },
+    })
+      .then(() => {
+        dispatch('mailpoet-form-editor').deleteCustomFieldDone(actionData.customFieldId, actionData.clientId);
+        dispatch('core/block-editor').removeBlock(actionData.clientId);
+      })
+      .fail((response) => {
+        let errorMessage = null;
+        if (response.errors.length > 0) {
+          errorMessage = response.errors.map((error) => (error.message));
+        }
+        dispatch('mailpoet-form-editor').deleteCustomFieldFailed(errorMessage);
+      });
   },
 };

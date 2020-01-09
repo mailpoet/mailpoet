@@ -18,6 +18,7 @@ import {
   customFieldDeleteCancel,
   customFieldDeleteStart,
   customFieldDeleteDone,
+  customFieldDeleteFailed,
 } from './reducers/custom_field_delete.jsx';
 
 const saveFormStarted = saveFormStartedFactory(MailPoet);
@@ -42,6 +43,7 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'CUSTOM_FIELD_DELETE_CANCEL': return customFieldDeleteCancel(state, action);
     case 'DELETE_CUSTOM_FIELD_STARTED': return customFieldDeleteStart(state, action);
     case 'DELETE_CUSTOM_FIELD_DONE': return customFieldDeleteDone(state, action);
+    case 'DELETE_CUSTOM_FIELD_FAILED': return customFieldDeleteFailed(state, action);
     default:
       return state;
   }
