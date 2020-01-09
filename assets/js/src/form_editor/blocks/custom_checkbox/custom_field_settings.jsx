@@ -60,6 +60,7 @@ const CustomFieldSettings = ({
         />
         <input
           value={localCheckboxLabel}
+          type="text"
           onChange={(event) => setLocalCheckboxLabel(event.target.value)}
         />
       </div>
