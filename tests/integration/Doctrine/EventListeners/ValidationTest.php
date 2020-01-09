@@ -25,9 +25,9 @@ class ValidationTest extends \MailPoetTest {
     $this->wp = new WPFunctions();
     $this->entityManager = $this->createEntityManager();
     $this->tableName = $this->entityManager->getClassMetadata(ValidatedEntity::class)->getTableName();
-    $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
+    $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->tableName");
     $this->connection->executeUpdate("
-      CREATE TABLE $this->table_name (
+      CREATE TABLE $this->tableName (
         id int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
         name varchar(255) NOT NULL
       )
@@ -49,7 +49,7 @@ class ValidationTest extends \MailPoetTest {
   public function testItValidatesUpdatedEntity() {
     $id = 1;
     $name = 'Test name';
-    $this->connection->executeUpdate("INSERT INTO $this->table_name (id, name) VALUES (?, ?)", [$id, $name]);
+    $this->connection->executeUpdate("INSERT INTO $this->tableName (id, name) VALUES (?, ?)", [$id, $name]);
 
     /** @var ValidatedEntity $entity */
     $entity = $this->entityManager->find(ValidatedEntity::class, $id);

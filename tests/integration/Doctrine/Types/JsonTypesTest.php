@@ -37,9 +37,9 @@ class JsonTypesTest extends \MailPoetTest {
     $this->wp = new WPFunctions();
     $this->entityManager = $this->createEntityManager();
     $this->tableName = $this->entityManager->getClassMetadata(JsonEntity::class)->getTableName();
-    $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
+    $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->tableName");
     $this->connection->executeUpdate("
-      CREATE TABLE $this->table_name (
+      CREATE TABLE $this->tableName (
         id int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
         json_data longtext NULL,
         json_or_serialized_data longtext NULL
@@ -54,14 +54,14 @@ class JsonTypesTest extends \MailPoetTest {
     $this->entityManager->persist($entity);
     $this->entityManager->flush();
 
-    $savedData = $this->connection->executeQuery("SELECT * FROM $this->table_name")->fetch();
+    $savedData = $this->connection->executeQuery("SELECT * FROM $this->tableName")->fetch();
     expect($savedData['json_data'])->same(json_encode($this->testData));
     expect($savedData['json_or_serialized_data'])->same(json_encode($this->testData));
   }
 
   public function testItLoadsJsonData() {
     $this->connection->executeUpdate(
-      "INSERT INTO $this->table_name (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
+      "INSERT INTO $this->tableName (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
       [
         1,
         json_encode($this->testData),
@@ -76,7 +76,7 @@ class JsonTypesTest extends \MailPoetTest {
 
   public function testItLoadsSerializedData() {
     $this->connection->executeUpdate(
-      "INSERT INTO $this->table_name (id, json_or_serialized_data) VALUES (?, ?)",
+      "INSERT INTO $this->tableName (id, json_or_serialized_data) VALUES (?, ?)",
       [
         1,
         serialize($this->testData),
@@ -95,14 +95,14 @@ class JsonTypesTest extends \MailPoetTest {
     $this->entityManager->persist($entity);
     $this->entityManager->flush();
 
-    $savedData = $this->connection->executeQuery("SELECT * FROM $this->table_name")->fetch();
+    $savedData = $this->connection->executeQuery("SELECT * FROM $this->tableName")->fetch();
     expect($savedData['json_data'])->null();
     expect($savedData['json_or_serialized_data'])->null();
   }
 
   public function testItLoadsNullData() {
     $this->connection->executeUpdate(
-      "INSERT INTO $this->table_name (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
+      "INSERT INTO $this->tableName (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
       [
         1,
         null,
@@ -117,7 +117,7 @@ class JsonTypesTest extends \MailPoetTest {
 
   public function testItLoadsEmptyStringAsNull() {
     $this->connection->executeUpdate(
-      "INSERT INTO $this->table_name (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
+      "INSERT INTO $this->tableName (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
       [
         1,
         '',
@@ -146,7 +146,7 @@ class JsonTypesTest extends \MailPoetTest {
 
   public function testItDoesNotLoadInvalidData() {
     $this->connection->executeUpdate(
-      "INSERT INTO $this->table_name (id, json_data) VALUES (?, ?)",
+      "INSERT INTO $this->tableName (id, json_data) VALUES (?, ?)",
       [
         1,
         '{', // invalid JSON
@@ -164,7 +164,7 @@ class JsonTypesTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
+    $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->tableName");
   }
 
   private function createEntityManager() {
