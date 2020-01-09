@@ -60,11 +60,11 @@ const CustomFieldSettings = ({
           },
           {
             label: MailPoet.I18n.t('customFieldValidateNumbersOnly'),
-            value: 'alphanum',
+            value: 'number',
           },
           {
             label: MailPoet.I18n.t('customFieldValidateAlphanumerical'),
-            value: 'number',
+            value: 'alphanum',
           },
           {
             label: MailPoet.I18n.t('customFieldValidatePhoneNumber'),
