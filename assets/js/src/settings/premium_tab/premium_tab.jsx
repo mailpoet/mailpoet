@@ -120,12 +120,12 @@ const PremiumTab = (props) => {
   async function verifyMailPoetSendingServiceKey(activateMssIfKeyValid) {
     try {
       const response = await requestServicesApi(key, 'checkMSSKey');
-      setMssStatus(MssStatus.KEY_VALID_MSS_NOT_ACTIVE);
       setMssKeyMessage(response.data.message || null);
-
       if (activateMssIfKeyValid) {
         await activateMss(key);
         setMssStatus(MssStatus.KEY_VALID_MSS_ACTIVE);
+      } else {
+        setMssStatus(MssStatus.KEY_VALID_MSS_NOT_ACTIVE);
       }
     } catch (error) {
       setMssStatus(MssStatus.KEY_INVALID);
