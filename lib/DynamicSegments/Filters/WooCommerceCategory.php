@@ -22,8 +22,8 @@ class WooCommerceCategory implements Filter {
    * @param int $category_id
    * @param string $connect
    */
-  public function __construct($category_id, $connect = null) {
-    $this->category_id = (int)$category_id;
+  public function __construct($categoryId, $connect = null) {
+    $this->categoryId = (int)$categoryId;
     $this->connect = $connect;
   }
 
@@ -41,9 +41,9 @@ class WooCommerceCategory implements Filter {
       "itemmeta.order_item_id = items.order_item_id AND itemmeta.meta_key = '_product_id'",
       'itemmeta'
     );
-    $orm->join($wpdb->term_relationships, ['itemmeta.meta_value', '=', 'term_relationships.object_id'], 'term_relationships');
+    $orm->join($wpdb->termRelationships, ['itemmeta.meta_value', '=', 'term_relationships.object_id'], 'term_relationships');
     $orm->rawJoin(
-      'INNER JOIN ' . $wpdb->term_taxonomy,
+      'INNER JOIN ' . $wpdb->termTaxonomy,
       '
          term_taxonomy.term_taxonomy_id=term_relationships.term_taxonomy_id
          AND
@@ -55,19 +55,19 @@ class WooCommerceCategory implements Filter {
   }
 
   private function getAllCategoryIds() {
-    $subcategories = WPFunctions::get()->getTerms('product_cat', ['child_of' => $this->category_id]);
+    $subcategories = WPFunctions::get()->getTerms('product_cat', ['child_of' => $this->categoryId]);
     if (!is_array($subcategories)) return [];
     $ids = array_map(function($category) {
-      return $category->term_id;
+      return $category->termId;
     }, $subcategories);
-    $ids[] = $this->category_id;
+    $ids[] = $this->categoryId;
     return $ids;
   }
 
   public function toArray() {
     return [
       'action' => WooCommerceCategory::ACTION_CATEGORY,
-      'category_id' => $this->category_id,
+      'category_id' => $this->categoryId,
       'connect' => $this->connect,
       'segmentType' => WooCommerceCategory::SEGMENT_TYPE,
     ];

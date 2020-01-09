@@ -53,13 +53,13 @@ class NewsletterTemplatesTest extends \MailPoetTest {
   }
 
   public function testItCanSaveANewTemplate() {
-    $template_data = [
+    $templateData = [
       'name' => 'Template #3',
       'body' => '{"key3": "value3"}',
     ];
 
     $router = new NewsletterTemplates();
-    $response = $router->save($template_data);
+    $response = $router->save($templateData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       NewsletterTemplate::findOne($response->data['id'])->asArray()
@@ -67,14 +67,14 @@ class NewsletterTemplatesTest extends \MailPoetTest {
   }
 
   public function testItCanSaveANewTemplateAssociatedWithANewsletter() {
-    $template_data = [
+    $templateData = [
       'newsletter_id' => 2,
       'name' => 'Template #3',
       'body' => '{"key3": "value3"}',
     ];
 
     $router = new NewsletterTemplates();
-    $response = $router->save($template_data);
+    $response = $router->save($templateData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       NewsletterTemplate::findOne($response->data['id'])->asArray()
@@ -82,19 +82,19 @@ class NewsletterTemplatesTest extends \MailPoetTest {
   }
 
   public function testItCanUpdateTemplateAssociatedWithANewsletter() {
-    $template_data = [
+    $templateData = [
       'newsletter_id' => '1',
       'name' => 'Template #2',
       'body' => '{"key3": "value3"}',
     ];
 
-    $template_id = NewsletterTemplate::whereEqual('newsletter_id', 1)->findOne()->id;
+    $templateId = NewsletterTemplate::whereEqual('newsletter_id', 1)->findOne()->id;
 
     $router = new NewsletterTemplates();
-    $response = $router->save($template_data);
+    $response = $router->save($templateData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $template_data['body'] = json_decode($template_data['body'], true);
+    $templateData['body'] = json_decode($templateData['body'], true);
 
     $normalize = function($array) {
       $result = [];
@@ -106,14 +106,14 @@ class NewsletterTemplatesTest extends \MailPoetTest {
       return $result;
     };
 
-    expect($normalize($response->data))->equals($template_data);
-    $template = NewsletterTemplate::findOne($template_id)->asArray();
-    expect($normalize($template))->equals($template_data);
+    expect($normalize($response->data))->equals($templateData);
+    $template = NewsletterTemplate::findOne($templateId)->asArray();
+    expect($normalize($template))->equals($templateData);
   }
 
   public function testItCanDeleteANewsletterTemplate() {
     $template = NewsletterTemplate::where('name', 'Template #2')->findOne();
-    expect($template->deleted_at)->null();
+    expect($template->deletedAt)->null();
 
     $router = new NewsletterTemplates();
     $response = $router->delete(/* missing id */);
@@ -124,8 +124,8 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $response = $router->delete(['id' => $template->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $deleted_template = NewsletterTemplate::findOne($template->id);
-    expect($deleted_template)->false();
+    $deletedTemplate = NewsletterTemplate::findOne($template->id);
+    expect($deletedTemplate)->false();
   }
 
   public function _after() {

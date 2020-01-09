@@ -19,8 +19,8 @@ class DefaultsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDe
     $settings = new Settings();
     $settings->withDefaultSettings();
 
-    $user_flags = new UserFlags(1);
-    $user_flags->withDefaultFlags();
+    $userFlags = new UserFlags(1);
+    $userFlags->withDefaultFlags();
   }
 
   private function setupWordPress() {
@@ -41,9 +41,9 @@ class DefaultsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDe
 
     // get rid of 'blog/' prefix that is added automatically to rewrite rules on multisite by default
     // (init() loads 'permalink_structure' option from DB, flush_rules() regenerates 'rewrite_rules')
-    global $wp_rewrite;
-    $wp_rewrite->init();
-    $wp_rewrite->flush_rules();
+    global $wpRewrite;
+    $wpRewrite->init();
+    $wpRewrite->flush_rules();
   }
 
   private function setupWooCommerce() {
@@ -61,15 +61,15 @@ class DefaultsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDe
     update_option('woocommerce_price_decimal_sep', ',', 'yes');
 
     // pages
-    $shop_page_id = $this->createPage('shop', 'Shop', '');
-    $cart_page_id = $this->createPage('cart', 'Cart', '[woocommerce_cart]');
-    $checkout_page_id = $this->createPage('checkout', 'Checkout', '[woocommerce_checkout]');
-    $my_account_page_id = $this->createPage('my-account', 'My account', '[woocommerce_my_account]');
+    $shopPageId = $this->createPage('shop', 'Shop', '');
+    $cartPageId = $this->createPage('cart', 'Cart', '[woocommerce_cart]');
+    $checkoutPageId = $this->createPage('checkout', 'Checkout', '[woocommerce_checkout]');
+    $myAccountPageId = $this->createPage('my-account', 'My account', '[woocommerce_my_account]');
 
-    update_option('woocommerce_shop_page_id', $shop_page_id, 'yes');
-    update_option('woocommerce_cart_page_id', $cart_page_id, 'yes');
-    update_option('woocommerce_checkout_page_id', $checkout_page_id, 'yes');
-    update_option('woocommerce_myaccount_page_id', $my_account_page_id, 'yes');
+    update_option('woocommerce_shop_page_id', $shopPageId, 'yes');
+    update_option('woocommerce_cart_page_id', $cartPageId, 'yes');
+    update_option('woocommerce_checkout_page_id', $checkoutPageId, 'yes');
+    update_option('woocommerce_myaccount_page_id', $myAccountPageId, 'yes');
 
     // other
     update_option('woocommerce_bacs_settings', ['enabled' => 'yes'], 'yes');

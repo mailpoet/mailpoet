@@ -30,12 +30,12 @@ class CustomFieldsRepository extends Repository {
     }
     if (!isset($field)) {
       $field = new CustomFieldEntity();
-      $this->entity_manager->persist($field);
+      $this->entityManager->persist($field);
     }
     if (isset($data['name'])) $field->setName($data['name']);
     if (isset($data['type'])) $field->setType($data['type']);
     if (isset($data['params'])) $field->setParams($data['params']);
-    $this->entity_manager->flush();
+    $this->entityManager->flush();
     return $field;
   }
 }

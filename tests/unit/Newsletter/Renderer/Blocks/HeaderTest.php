@@ -26,25 +26,25 @@ class HeaderTest extends \MailPoetUnitTest {
 
   public function testItRendersCorrectly() {
     $output = Header::render($this->block);
-    $expected_result = '
+    $expectedResult = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_header"  style="line-height: 19.2px;color: #222222;font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;font-size: 12px;text-align: left;">
           <a href="[link:newsletter_view_in_browser_url]" style="color:#6cb7d4;text-decoration:underline">View this in your browser.</a>
         </td>
       </tr>';
-    expect($output)->equals($expected_result);
+    expect($output)->equals($expectedResult);
   }
 
   public function testItRendersBackgroundColorCorrectly() {
     $this->block['styles']['block']['backgroundColor'] = '#f0f0f0';
     $output = Header::render($this->block);
-    $expected_result = '
+    $expectedResult = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_header" bgcolor="#f0f0f0" style="line-height: 19.2px;background-color: #f0f0f0;color: #222222;font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;font-size: 12px;text-align: left;">
           <a href="[link:newsletter_view_in_browser_url]" style="color:#6cb7d4;text-decoration:underline">View this in your browser.</a>
         </td>
       </tr>';
-    expect($output)->equals($expected_result);
+    expect($output)->equals($expectedResult);
   }
 
   public function testItPrefersInlinedCssForLinks() {

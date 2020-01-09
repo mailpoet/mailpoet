@@ -23,8 +23,8 @@ class Clicks {
   /** @var Cookies */
   private $cookies;
 
-  public function __construct(SettingsController $settings_controller, Cookies $cookies) {
-    $this->settings_controller = $settings_controller;
+  public function __construct(SettingsController $settingsController, Cookies $cookies) {
+    $this->settingsController = $settingsController;
     $this->cookies = $cookies;
   }
 
@@ -39,28 +39,28 @@ class Clicks {
     $queue = $data->queue;
     $newsletter = $data->newsletter;
     $link = $data->link;
-    $wp_user_preview = ($data->preview && $subscriber->isWPUser());
+    $wpUserPreview = ($data->preview && $subscriber->isWPUser());
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
-    if (!$wp_user_preview) {
-      $statistics_clicks = StatisticsClicks::createOrUpdateClickCount(
+    if (!$wpUserPreview) {
+      $statisticsClicks = StatisticsClicks::createOrUpdateClickCount(
         $link->id,
         $subscriber->id,
         $newsletter->id,
         $queue->id
       );
-      $this->sendRevenueCookie($statistics_clicks);
+      $this->sendRevenueCookie($statisticsClicks);
       $this->sendAbandonedCartCookie($subscriber);
       // track open event
-      $open_event = new Opens();
-      $open_event->track($data, $display_image = false);
+      $openEvent = new Opens();
+      $openEvent->track($data, $displayImage = false);
     }
-    $url = $this->processUrl($link->url, $newsletter, $subscriber, $queue, $wp_user_preview);
+    $url = $this->processUrl($link->url, $newsletter, $subscriber, $queue, $wpUserPreview);
     $this->redirectToUrl($url);
   }
 
   private function sendRevenueCookie(StatisticsClicks $clicks) {
-    if ($this->settings_controller->get('woocommerce.accept_cookie_revenue_tracking.enabled')) {
+    if ($this->settingsController->get('woocommerce.accept_cookie_revenue_tracking.enabled')) {
       $this->cookies->set(
         self::REVENUE_TRACKING_COOKIE_NAME,
         [
@@ -76,7 +76,7 @@ class Clicks {
   }
 
   private function sendAbandonedCartCookie($subscriber) {
-    if ($this->settings_controller->get('woocommerce.accept_cookie_revenue_tracking.enabled')) {
+    if ($this->settingsController->get('woocommerce.accept_cookie_revenue_tracking.enabled')) {
       $this->cookies->set(
         self::ABANDONED_CART_COOKIE_NAME,
         [
@@ -90,7 +90,7 @@ class Clicks {
     }
   }
 
-  public function processUrl($url, $newsletter, $subscriber, $queue, $wp_user_preview) {
+  public function processUrl($url, $newsletter, $subscriber, $queue, $wpUserPreview) {
     if (preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
       if (!$shortcode['action']) $this->abort();
       $url = Link::processShortcodeAction(
@@ -98,10 +98,10 @@ class Clicks {
         $newsletter,
         $subscriber,
         $queue,
-        $wp_user_preview
+        $wpUserPreview
       );
     } else {
-      $shortcodes = new Shortcodes($newsletter, $subscriber, $queue, $wp_user_preview);
+      $shortcodes = new Shortcodes($newsletter, $subscriber, $queue, $wpUserPreview);
       $url = $shortcodes->replace($url);
     }
     return $url;

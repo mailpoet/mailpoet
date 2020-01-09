@@ -19,30 +19,30 @@ class PostTransformerContentsExtractor {
   public function __construct($args) {
     $this->args = $args;
     $this->wp = new WPFunctions();
-    $this->woocommerce_helper = new WooCommerceHelper();
+    $this->woocommerceHelper = new WooCommerceHelper();
   }
 
-  public function getContent($post, $with_post_class, $display_type) {
-    $content_manager = new PostContentManager();
-    $meta_manager = new MetaInformationManager();
+  public function getContent($post, $withPostClass, $displayType) {
+    $contentManager = new PostContentManager();
+    $metaManager = new MetaInformationManager();
 
-    $content = $content_manager->getContent($post, $this->args['displayType']);
-    $content = $meta_manager->appendMetaInformation($content, $post, $this->args);
-    $content = $content_manager->filterContent($content, $display_type, $with_post_class);
+    $content = $contentManager->getContent($post, $this->args['displayType']);
+    $content = $metaManager->appendMetaInformation($content, $post, $this->args);
+    $content = $contentManager->filterContent($content, $displayType, $withPostClass);
 
-    $structure_transformer = new StructureTransformer();
-    $content = $structure_transformer->transform($content, $this->args['imageFullWidth'] === true);
+    $structureTransformer = new StructureTransformer();
+    $content = $structureTransformer->transform($content, $this->args['imageFullWidth'] === true);
 
     if ($this->isProduct($post)) {
       $content = $this->addProductDataToContent($content, $post);
     }
 
-    $read_more_btn = $this->getReadMoreButton($post);
-    $blocks_count = count($content);
-    if ($read_more_btn['type'] === 'text' && $blocks_count > 0 && $content[$blocks_count - 1]['type'] === 'text') {
-      $content[$blocks_count - 1]['text'] .= $read_more_btn['text'];
+    $readMoreBtn = $this->getReadMoreButton($post);
+    $blocksCount = count($content);
+    if ($readMoreBtn['type'] === 'text' && $blocksCount > 0 && $content[$blocksCount - 1]['type'] === 'text') {
+      $content[$blocksCount - 1]['text'] .= $readMoreBtn['text'];
     } else {
-      $content[] = $read_more_btn;
+      $content[] = $readMoreBtn;
     }
     return $content;
   }
@@ -56,47 +56,47 @@ class PostTransformerContentsExtractor {
      *
      * https://mailpoet.atlassian.net/browse/MAILPOET-1365
      */
-    global $content_width; // default is NULL
+    global $contentWidth; // default is NULL
 
-    $content_width_copy = $content_width;
-    $content_width = Env::NEWSLETTER_CONTENT_WIDTH;
-    $image_info = $this->wp->wpGetAttachmentImageSrc($id, 'mailpoet_newsletter_max');
-    $content_width = $content_width_copy;
+    $contentWidthCopy = $contentWidth;
+    $contentWidth = Env::NEWSLETTER_CONTENT_WIDTH;
+    $imageInfo = $this->wp->wpGetAttachmentImageSrc($id, 'mailpoet_newsletter_max');
+    $contentWidth = $contentWidthCopy;
 
-    return $image_info;
+    return $imageInfo;
   }
 
   public function getFeaturedImage($post) {
-    $post_id = $post->ID;
-    $post_title = $this->sanitizeTitle($post->post_title);
-    $image_full_width = (bool)filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN);
+    $postId = $post->ID;
+    $postTitle = $this->sanitizeTitle($post->postTitle);
+    $imageFullWidth = (bool)filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN);
 
-    if (!has_post_thumbnail($post_id)) {
+    if (!has_post_thumbnail($postId)) {
       return false;
     }
 
-    $thumbnail_id = $this->wp->getPostThumbnailId($post_id);
-    $image_info = $this->getImageInfo($thumbnail_id);
+    $thumbnailId = $this->wp->getPostThumbnailId($postId);
+    $imageInfo = $this->getImageInfo($thumbnailId);
 
     // get alt text
-    $alt_text = trim(strip_tags(get_post_meta(
-      $thumbnail_id,
+    $altText = trim(strip_tags(get_post_meta(
+      $thumbnailId,
       '_wp_attachment_image_alt',
       true
     )));
-    if (strlen($alt_text) === 0) {
+    if (strlen($altText) === 0) {
       // if the alt text is empty then use the post title
-      $alt_text = trim(strip_tags($post_title));
+      $altText = trim(strip_tags($postTitle));
     }
 
     return [
       'type' => 'image',
-      'link' => $this->wp->getPermalink($post_id),
-      'src' => $image_info[0],
-      'alt' => $alt_text,
-      'fullWidth' => $image_full_width,
-      'width' => $image_info[1],
-      'height' => $image_info[2],
+      'link' => $this->wp->getPermalink($postId),
+      'src' => $imageInfo[0],
+      'alt' => $altText,
+      'fullWidth' => $imageFullWidth,
+      'width' => $imageInfo[1],
+      'height' => $imageInfo[2],
       'styles' => [
         'block' => [
           'textAlign' => 'center',
@@ -112,7 +112,7 @@ class PostTransformerContentsExtractor {
       return $button;
     }
 
-    $read_more_text = sprintf(
+    $readMoreText = sprintf(
       '<p><a href="%s">%s</a></p>',
       $this->wp->getPermalink($post->ID),
       $this->args['readMoreText']
@@ -120,12 +120,12 @@ class PostTransformerContentsExtractor {
 
     return [
       'type' => 'text',
-      'text' => $read_more_text,
+      'text' => $readMoreText,
     ];
   }
 
   public function getTitle($post) {
-    $title = $this->sanitizeTitle($post->post_title);
+    $title = $this->sanitizeTitle($post->postTitle);
 
     if (filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
       $title = '<a href="' . $this->wp->getPermalink($post->ID) . '">' . $title . '</a>';
@@ -151,8 +151,8 @@ class PostTransformerContentsExtractor {
   private function getPrice($post) {
     $price = null;
     $product = null;
-    if ($this->woocommerce_helper->isWooCommerceActive()) {
-      $product = $this->woocommerce_helper->wcGetProduct($post->ID);
+    if ($this->woocommerceHelper->isWooCommerceActive()) {
+      $product = $this->woocommerceHelper->wcGetProduct($post->ID);
     }
     if ($product) {
       $price = '<h2>' . strip_tags($product->get_price_html(), '<span><del>') . '</h2>';
@@ -165,12 +165,12 @@ class PostTransformerContentsExtractor {
       return $content;
     }
     $price = $this->getPrice($post);
-    $blocks_count = count($content);
-    if ($blocks_count > 0 && $content[$blocks_count - 1]['type'] === 'text') {
+    $blocksCount = count($content);
+    if ($blocksCount > 0 && $content[$blocksCount - 1]['type'] === 'text') {
       if ($this->args['pricePosition'] === 'below') {
-        $content[$blocks_count - 1]['text'] = $content[$blocks_count - 1]['text'] . $price;
+        $content[$blocksCount - 1]['text'] = $content[$blocksCount - 1]['text'] . $price;
       } else {
-        $content[$blocks_count - 1]['text'] = $price . $content[$blocks_count - 1]['text'];
+        $content[$blocksCount - 1]['text'] = $price . $content[$blocksCount - 1]['text'];
       }
     } else {
       $content[] = [
@@ -182,7 +182,7 @@ class PostTransformerContentsExtractor {
   }
 
   public function isProduct($post) {
-    return $post->post_type === 'product';
+    return $post->postType === 'product';
   }
 
   /**

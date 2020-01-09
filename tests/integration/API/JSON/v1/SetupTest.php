@@ -27,34 +27,34 @@ class SetupTest extends \MailPoetTest {
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
 
-    $features_controller = Stub::makeEmpty(FeaturesController::class);
+    $featuresController = Stub::makeEmpty(FeaturesController::class);
 
     $settings = SettingsController::getInstance();
-    $referral_detector = new ReferralDetector($wp, $settings);
-    $populator = new Populator($settings, $wp, new Captcha(), $referral_detector, $features_controller);
+    $referralDetector = new ReferralDetector($wp, $settings);
+    $populator = new Populator($settings, $wp, new Captcha(), $referralDetector, $featuresController);
     $router = new Setup($wp, new Activator($settings, $populator));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     $settings = SettingsController::getInstance();
-    $signup_confirmation = $settings->fetch('signup_confirmation.enabled');
-    expect($signup_confirmation)->true();
+    $signupConfirmation = $settings->fetch('signup_confirmation.enabled');
+    expect($signupConfirmation)->true();
 
     $captcha = $settings->fetch('captcha');
-    $subscription_captcha = new Captcha;
-    $captcha_type = $subscription_captcha->isSupported() ? Captcha::TYPE_BUILTIN : Captcha::TYPE_DISABLED;
-    expect($captcha['type'])->equals($captcha_type);
+    $subscriptionCaptcha = new Captcha;
+    $captchaType = $subscriptionCaptcha->isSupported() ? Captcha::TYPE_BUILTIN : Captcha::TYPE_DISABLED;
+    expect($captcha['type'])->equals($captchaType);
     expect($captcha['recaptcha_site_token'])->equals('');
     expect($captcha['recaptcha_secret_token'])->equals('');
 
-    $woocommerce_optin_on_checkout = $settings->fetch('woocommerce.optin_on_checkout');
-    expect($woocommerce_optin_on_checkout['enabled'])->true();
+    $woocommerceOptinOnCheckout = $settings->fetch('woocommerce.optin_on_checkout');
+    expect($woocommerceOptinOnCheckout['enabled'])->true();
 
-    $hook_name = 'mailpoet_setup_reset';
-    expect(WPHooksHelper::isActionDone($hook_name))->true();
+    $hookName = 'mailpoet_setup_reset';
+    expect(WPHooksHelper::isActionDone($hookName))->true();
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

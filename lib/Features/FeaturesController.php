@@ -24,8 +24,8 @@ class FeaturesController {
   /** @var FeatureFlagsRepository */
   private $feature_flags_repository;
 
-  public function __construct(FeatureFlagsRepository $feature_flags_repository) {
-    $this->feature_flags_repository = $feature_flags_repository;
+  public function __construct(FeatureFlagsRepository $featureFlagsRepository) {
+    $this->featureFlagsRepository = $featureFlagsRepository;
   }
 
   /** @return bool */
@@ -71,7 +71,7 @@ class FeaturesController {
   }
 
   private function getValueMap() {
-    $features = $this->feature_flags_repository->findAll();
+    $features = $this->featureFlagsRepository->findAll();
     $featuresMap = [];
     foreach ($features as $feature) {
       $featuresMap[$feature->getName()] = (bool)$feature->getValue();

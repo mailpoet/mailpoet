@@ -13,9 +13,9 @@ class API {
    * @throws \Exception
    */
   public static function MP($version) {
-    $api_class = sprintf('%s\MP\%s\API', __NAMESPACE__, $version);
+    $apiClass = sprintf('%s\MP\%s\API', __NAMESPACE__, $version);
     try {
-      return ContainerWrapper::getInstance()->get($api_class);
+      return ContainerWrapper::getInstance()->get($apiClass);
     } catch (ServiceNotFoundException $e) {
       throw new \Exception(__('Invalid API version.', 'mailpoet'));
     }

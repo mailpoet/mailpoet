@@ -21,18 +21,18 @@ class NewsletterOptionTest extends \MailPoetTest {
     // it can create
     $data = $this->data;
     NewsletterOption::createOrUpdate($data);
-    $newsletter_option = NewsletterOption::where('newsletter_id', $data['newsletter_id'])
+    $newsletterOption = NewsletterOption::where('newsletter_id', $data['newsletter_id'])
       ->where('option_field_id', $data['option_field_id'])
       ->findOne();
-    expect($newsletter_option->value)->equals($data['value']);
+    expect($newsletterOption->value)->equals($data['value']);
 
     // it can update
     $data['value'] = 'updated test';
     NewsletterOption::createOrUpdate($data);
-    $newsletter_option = NewsletterOption::where('newsletter_id', $data['newsletter_id'])
+    $newsletterOption = NewsletterOption::where('newsletter_id', $data['newsletter_id'])
       ->where('option_field_id', $data['option_field_id'])
       ->findOne();
-    expect($newsletter_option->value)->equals($data['value']);
+    expect($newsletterOption->value)->equals($data['value']);
   }
 
 

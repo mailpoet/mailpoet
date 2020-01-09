@@ -20,19 +20,19 @@ class FeatureFlags extends APIEndpoint {
   /** @var FeatureFlagsController */
   private $feature_flags_controller;
 
-  public function __construct(FeaturesController $features_controller, FeatureFlagsController $feature_flags) {
-    $this->features_controller = $features_controller;
-    $this->feature_flags_controller = $feature_flags;
+  public function __construct(FeaturesController $featuresController, FeatureFlagsController $featureFlags) {
+    $this->featuresController = $featuresController;
+    $this->featureFlagsController = $featureFlags;
   }
 
   public function getAll() {
-    $feature_flags = $this->feature_flags_controller->getAll();
-    return $this->successResponse($feature_flags);
+    $featureFlags = $this->featureFlagsController->getAll();
+    return $this->successResponse($featureFlags);
   }
 
   public function set(array $flags) {
     foreach ($flags as $name => $value) {
-      if (!$this->features_controller->exists($name)) {
+      if (!$this->featuresController->exists($name)) {
         return $this->badRequest([
           APIError::BAD_REQUEST => "Feature '$name' does not exist'",
         ]);
@@ -40,7 +40,7 @@ class FeatureFlags extends APIEndpoint {
     }
 
     foreach ($flags as $name => $value) {
-      $this->feature_flags_controller->set($name, (bool)$value);
+      $this->featureFlagsController->set($name, (bool)$value);
     }
     return $this->successResponse([]);
   }

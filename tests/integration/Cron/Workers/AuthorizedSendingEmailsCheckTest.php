@@ -15,8 +15,8 @@ class AuthorizedSendingEmailsCheckTest extends \MailPoetTest {
   }
 
   public function testItRunsCheckOnBridge() {
-    $bridge_mock = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Stub\Expected::once()]);
-    $worker = new AuthorizedSendingEmailsCheck($bridge_mock);
+    $bridgeMock = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Stub\Expected::once()]);
+    $worker = new AuthorizedSendingEmailsCheck($bridgeMock);
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
   }
 }

@@ -24,7 +24,7 @@ class WoocommerceSettings extends APIEndpoint {
 
   public function set($data = []) {
     foreach ($data as $option => $value) {
-      if (in_array($option, $this->allowed_settings)) {
+      if (in_array($option, $this->allowedSettings)) {
         $this->wp->updateOption($option, $value);
       }
     }

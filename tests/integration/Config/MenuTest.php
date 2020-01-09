@@ -52,7 +52,7 @@ class MenuTest extends \MailPoetTest {
       $this
     );
     $menu->checkMailPoetAPIKey($checker);
-    expect($menu->mp_api_key_valid)->true();
+    expect($menu->mpApiKeyValid)->true();
 
     $checker = Stub::make(
       new ServicesChecker(),
@@ -60,7 +60,7 @@ class MenuTest extends \MailPoetTest {
       $this
     );
     $menu->checkMailPoetAPIKey($checker);
-    expect($menu->mp_api_key_valid)->false();
+    expect($menu->mpApiKeyValid)->false();
   }
 
   public function testItChecksPremiumKey() {
@@ -73,7 +73,7 @@ class MenuTest extends \MailPoetTest {
       $this
     );
     $menu->checkPremiumKey($checker);
-    expect($menu->premium_key_valid)->true();
+    expect($menu->premiumKeyValid)->true();
 
     $checker = Stub::make(
       new ServicesChecker(),
@@ -81,7 +81,7 @@ class MenuTest extends \MailPoetTest {
       $this
     );
     $menu->checkPremiumKey($checker);
-    expect($menu->premium_key_valid)->false();
+    expect($menu->premiumKeyValid)->false();
   }
 
   private function getMenu() {

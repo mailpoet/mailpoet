@@ -93,7 +93,7 @@ class ImportExport extends APIEndpoint {
         $task->type = WooCommerceSync::TASK_TYPE;
         $task->status = ScheduledTask::STATUS_SCHEDULED;
       }
-      $task->scheduled_at = Carbon::createFromTimestamp((int)current_time('timestamp'));
+      $task->scheduledAt = Carbon::createFromTimestamp((int)current_time('timestamp'));
       $task->save();
       return $this->successResponse();
     } catch (\Exception $e) {

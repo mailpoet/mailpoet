@@ -24,12 +24,12 @@ class UnsubscribesTest extends \MailPoetTest {
     // create subscriber
     $subscriber = Subscriber::create();
     $subscriber->email = 'test@example.com';
-    $subscriber->first_name = 'First';
-    $subscriber->last_name = 'Last';
+    $subscriber->firstName = 'First';
+    $subscriber->lastName = 'Last';
     $this->subscriber = $subscriber->save();
     // create queue
     $queue = SendingTask::create();
-    $queue->newsletter_id = $newsletter->id;
+    $queue->newsletterId = $newsletter->id;
     $queue->setSubscribers([$subscriber->id]);
     $queue->updateProcessedSubscribers([$subscriber->id]);
     $this->queue = $queue->save();

@@ -12,43 +12,43 @@ class ViewSegmentSubscribersCest {
     (new Settings())->withCookieRevenueTrackingDisabled();
   }
 
-  public function viewUserRoleSegmentSubscribers(\AcceptanceTester $I) {
-    $I->wantTo('View WP user role segment subscribers');
+  public function viewUserRoleSegmentSubscribers(\AcceptanceTester $i) {
+    $i->wantTo('View WP user role segment subscribers');
 
-    $wp_admin_email = 'test-admin@example.com';
-    $wp_editor_email = 'test-editor@example.com';
-    $wp_author_email = 'test-author@example.com';
-    $segment_title = 'User Role Segment Test';
+    $wpAdminEmail = 'test-admin@example.com';
+    $wpEditorEmail = 'test-editor@example.com';
+    $wpAuthorEmail = 'test-author@example.com';
+    $segmentTitle = 'User Role Segment Test';
 
-    $this->createUser('Test Admin', 'admin', $wp_admin_email);
-    $this->createUser('Test Editor', 'editor', $wp_editor_email);
-    $this->createUser('Test Author', 'author', $wp_author_email);
+    $this->createUser('Test Admin', 'admin', $wpAdminEmail);
+    $this->createUser('Test Editor', 'editor', $wpEditorEmail);
+    $this->createUser('Test Author', 'author', $wpAuthorEmail);
 
-    $segment_factory = new DynamicSegment();
-    $segment = $segment_factory
-      ->withName($segment_title)
+    $segmentFactory = new DynamicSegment();
+    $segment = $segmentFactory
+      ->withName($segmentTitle)
       ->withUserRoleFilter('Editor')
       ->create();
 
-    $I->login();
-    $I->amOnMailpoetPage('Segments');
-    $listing_automation_selector = '[data-automation-id="listing_item_' . $segment->id . '"]';
-    $I->waitForText($segment_title, 10, $listing_automation_selector);
-    $I->clickItemRowActionByItemName($segment_title, 'View Subscribers');
-    $I->seeInCurrentUrl('mailpoet-subscribers#');
-    $I->seeInCurrentUrl('segment=' . $segment->id);
-    $I->waitForText($wp_editor_email, 20);
-    $I->see($segment_title, ['css' => 'select[name=segment]']);
-    $I->dontSee($wp_admin_email);
-    $I->dontSee($wp_author_email);
-    $I->seeNoJSErrors();
+    $i->login();
+    $i->amOnMailpoetPage('Segments');
+    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->id . '"]';
+    $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
+    $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
+    $i->seeInCurrentUrl('mailpoet-subscribers#');
+    $i->seeInCurrentUrl('segment=' . $segment->id);
+    $i->waitForText($wpEditorEmail, 20);
+    $i->see($segmentTitle, ['css' => 'select[name=segment]']);
+    $i->dontSee($wpAdminEmail);
+    $i->dontSee($wpAuthorEmail);
+    $i->seeNoJSErrors();
   }
 
   private function createUser($name, $role, $email) {
-    $user_id = wp_create_user($name, "$name-password", $email);
-    $user = get_user_by('ID', $user_id);
-    foreach ($user->roles as $default_role) {
-      $user->remove_role($default_role);
+    $userId = wp_create_user($name, "$name-password", $email);
+    $user = get_user_by('ID', $userId);
+    foreach ($user->roles as $defaultRole) {
+      $user->remove_role($defaultRole);
     }
     $user->add_role($role);
     return $user;

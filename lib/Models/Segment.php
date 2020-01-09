@@ -58,10 +58,10 @@ class Segment extends Model {
 
     if ($duplicate !== false) {
       foreach ($this->subscribers()->findResultSet() as $relation) {
-        $new_relation = SubscriberSegment::create();
-        $new_relation->set('subscriber_id', $relation->id);
-        $new_relation->set('segment_id', $duplicate->id);
-        $new_relation->save();
+        $newRelation = SubscriberSegment::create();
+        $newRelation->set('subscriber_id', $relation->id);
+        $newRelation->set('segment_id', $duplicate->id);
+        $newRelation->save();
       }
 
       return $duplicate;
@@ -69,21 +69,21 @@ class Segment extends Model {
     return false;
   }
 
-  public function addSubscriber($subscriber_id) {
+  public function addSubscriber($subscriberId) {
     $relation = SubscriberSegment::create();
-    $relation->set('subscriber_id', $subscriber_id);
+    $relation->set('subscriber_id', $subscriberId);
     $relation->set('segment_id', $this->id);
     return $relation->save();
   }
 
-  public function removeSubscriber($subscriber_id) {
-    return SubscriberSegment::where('subscriber_id', $subscriber_id)
+  public function removeSubscriber($subscriberId) {
+    return SubscriberSegment::where('subscriber_id', $subscriberId)
       ->where('segment_id', $this->id)
       ->delete();
   }
 
   public function withSubscribersCount() {
-    $this->subscribers_count = SubscriberSegment::tableAlias('relation')
+    $this->subscribersCount = SubscriberSegment::tableAlias('relation')
       ->where('relation.segment_id', $this->id)
       ->join(
         MP_SUBSCRIBERS_TABLE,
@@ -123,7 +123,7 @@ class Segment extends Model {
   }
 
   public function withAutomatedEmailsSubjects() {
-    $automated_emails = NewsletterSegment::tableAlias('relation')
+    $automatedEmails = NewsletterSegment::tableAlias('relation')
       ->where('relation.segment_id', $this->id)
       ->join(
         MP_NEWSLETTERS_TABLE,
@@ -138,53 +138,53 @@ class Segment extends Model {
       ->select('newsletters.subject')
       ->findMany();
 
-    $this->automated_emails_subjects = array_map(function($email) {
+    $this->automatedEmailsSubjects = array_map(function($email) {
       return $email->subject;
-    }, $automated_emails);
+    }, $automatedEmails);
 
     return $this;
   }
 
   public static function getWPSegment() {
-    $wp_segment = self::where('type', self::TYPE_WP_USERS)->findOne();
+    $wpSegment = self::where('type', self::TYPE_WP_USERS)->findOne();
 
-    if ($wp_segment === false) {
+    if ($wpSegment === false) {
       // create the wp users segment
-      $wp_segment = Segment::create();
-      $wp_segment->hydrate([
+      $wpSegment = Segment::create();
+      $wpSegment->hydrate([
         'name' => WPFunctions::get()->__('WordPress Users', 'mailpoet'),
         'description' =>
           WPFunctions::get()->__('This list contains all of your WordPress users.', 'mailpoet'),
         'type' => self::TYPE_WP_USERS,
       ]);
-      $wp_segment->save();
+      $wpSegment->save();
     }
 
-    return $wp_segment;
+    return $wpSegment;
   }
 
   public static function getWooCommerceSegment() {
-    $wc_segment = self::where('type', self::TYPE_WC_USERS)->findOne();
+    $wcSegment = self::where('type', self::TYPE_WC_USERS)->findOne();
 
-    if ($wc_segment === false) {
+    if ($wcSegment === false) {
       // create the WooCommerce customers segment
-      $wc_segment = Segment::create();
-      $wc_segment->hydrate([
+      $wcSegment = Segment::create();
+      $wcSegment->hydrate([
         'name' => WPFunctions::get()->__('WooCommerce Customers', 'mailpoet'),
         'description' =>
           WPFunctions::get()->__('This list contains all of your WooCommerce customers.', 'mailpoet'),
         'type' => self::TYPE_WC_USERS,
       ]);
-      $wc_segment->save();
+      $wcSegment->save();
     }
 
-    return $wc_segment;
+    return $wcSegment;
   }
 
   public static function shouldShowWooCommerceSegment() {
-    $woocommerce_helper = new WCHelper();
-    $is_woocommerce_active = $woocommerce_helper->isWooCommerceActive();
-    $woocommerce_user_exists = Segment::tableAlias('segment')
+    $woocommerceHelper = new WCHelper();
+    $isWoocommerceActive = $woocommerceHelper->isWooCommerceActive();
+    $woocommerceUserExists = Segment::tableAlias('segment')
       ->where('segment.type', Segment::TYPE_WC_USERS)
       ->join(
         MP_SUBSCRIBER_SEGMENT_TABLE,
@@ -194,7 +194,7 @@ class Segment extends Model {
       ->limit(1)
       ->findOne();
 
-    if (!$is_woocommerce_active && !$woocommerce_user_exists) {
+    if (!$isWoocommerceActive && !$woocommerceUserExists) {
       return false;
     }
     return true;
@@ -213,15 +213,15 @@ class Segment extends Model {
   }
 
   public static function groups() {
-    $all_query = Segment::getPublished();
+    $allQuery = Segment::getPublished();
     if (!Segment::shouldShowWooCommerceSegment()) {
-      $all_query->whereNotEqual('type', self::TYPE_WC_USERS);
+      $allQuery->whereNotEqual('type', self::TYPE_WC_USERS);
     }
     return [
       [
         'name' => 'all',
         'label' => WPFunctions::get()->__('All', 'mailpoet'),
-        'count' => $all_query->count(),
+        'count' => $allQuery->count(),
       ],
       [
         'name' => 'trash',

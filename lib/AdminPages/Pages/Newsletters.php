@@ -51,33 +51,33 @@ class Newsletters {
   private $subscribers_feature;
 
   public function __construct(
-    PageRenderer $page_renderer,
-    PageLimit $listing_page_limit,
+    PageRenderer $pageRenderer,
+    PageLimit $listingPageLimit,
     WPFunctions $wp,
     SettingsController $settings,
-    UserFlagsController $user_flags,
-    WooCommerceHelper $woocommerce_helper,
+    UserFlagsController $userFlags,
+    WooCommerceHelper $woocommerceHelper,
     Installation $installation,
-    FeaturesController $features_controller,
-    SubscribersFeature $subscribers_feature
+    FeaturesController $featuresController,
+    SubscribersFeature $subscribersFeature
   ) {
-    $this->page_renderer = $page_renderer;
-    $this->listing_page_limit = $listing_page_limit;
+    $this->pageRenderer = $pageRenderer;
+    $this->listingPageLimit = $listingPageLimit;
     $this->wp = $wp;
     $this->settings = $settings;
-    $this->user_flags = $user_flags;
-    $this->woocommerce_helper = $woocommerce_helper;
+    $this->userFlags = $userFlags;
+    $this->woocommerceHelper = $woocommerceHelper;
     $this->installation = $installation;
-    $this->features_controller = $features_controller;
-    $this->subscribers_feature = $subscribers_feature;
+    $this->featuresController = $featuresController;
+    $this->subscribersFeature = $subscribersFeature;
   }
 
   public function render() {
-    global $wp_roles;
+    global $wpRoles;
 
     $data = [];
 
-    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('newsletters');
+    $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('newsletters');
     $segments = Segment::getSegmentsWithSubscriberCount($type = false);
     $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
     usort($segments, function ($a, $b) {
@@ -90,19 +90,19 @@ class Newsletters {
     $data['current_wp_user'] = $this->wp->wpGetCurrentUser()->to_array();
     $data['current_wp_user_firstname'] = $this->wp->wpGetCurrentUser()->user_firstname;
     $data['site_url'] = $this->wp->siteUrl();
-    $data['roles'] = $wp_roles->get_names();
+    $data['roles'] = $wpRoles->get_names();
     $data['roles']['mailpoet_all'] = $this->wp->__('In any WordPress role', 'mailpoet');
 
     $installedAtDateTime = new \DateTime($data['settings']['installed_at']);
     $data['installed_days_ago'] = (int)$installedAtDateTime->diff(new \DateTime())->format('%a');
-    $data['subscribers_limit'] = $this->subscribers_feature->getSubscribersLimit();
-    $data['subscribers_limit_reached'] = $this->subscribers_feature->check();
-    $data['has_valid_api_key'] = $this->subscribers_feature->hasValidApiKey();
+    $data['subscribers_limit'] = $this->subscribersFeature->getSubscribersLimit();
+    $data['subscribers_limit_reached'] = $this->subscribersFeature->check();
+    $data['has_valid_api_key'] = $this->subscribersFeature->hasValidApiKey();
 
-    $date_time = new DateTime();
-    $data['current_date'] = $date_time->getCurrentDate(DateTime::DEFAULT_DATE_FORMAT);
-    $data['current_time'] = $date_time->getCurrentTime();
-    $data['schedule_time_of_day'] = $date_time->getTimeInterval(
+    $dateTime = new DateTime();
+    $data['current_date'] = $dateTime->getCurrentDate(DateTime::DEFAULT_DATE_FORMAT);
+    $data['current_time'] = $dateTime->getCurrentTime();
+    $data['schedule_time_of_day'] = $dateTime->getTimeInterval(
       '00:00:00',
       '+1 hour',
       24
@@ -112,23 +112,23 @@ class Newsletters {
 
     $data['tracking_enabled'] = $this->settings->get('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
-    $data['is_woocommerce_active'] = $this->woocommerce_helper->isWooCommerceActive();
-    $data['is_mailpoet_update_available'] = array_key_exists(Env::$plugin_path, $this->wp->getPluginUpdates());
+    $data['is_woocommerce_active'] = $this->woocommerceHelper->isWooCommerceActive();
+    $data['is_mailpoet_update_available'] = array_key_exists(Env::$pluginPath, $this->wp->getPluginUpdates());
     $data['subscriber_count'] = Subscriber::getTotalSubscribers();
     $data['newsletters_count'] = Newsletter::count();
-    $data['mailpoet_feature_flags'] = $this->features_controller->getAllFlags();
+    $data['mailpoet_feature_flags'] = $this->featuresController->getAllFlags();
 
     if (!$data['premium_plugin_active']) {
       $data['free_premium_subscribers_limit'] = License::FREE_PREMIUM_SUBSCRIBERS_LIMIT;
     }
 
-    $last_announcement_date = $this->settings->get('last_announcement_date');
-    $last_announcement_seen = $this->user_flags->get('last_announcement_seen');
+    $lastAnnouncementDate = $this->settings->get('last_announcement_date');
+    $lastAnnouncementSeen = $this->userFlags->get('last_announcement_seen');
     $data['feature_announcement_has_news'] = (
-      empty($last_announcement_seen) ||
-      $last_announcement_seen < $last_announcement_date
+      empty($lastAnnouncementSeen) ||
+      $lastAnnouncementSeen < $lastAnnouncementDate
     );
-    $data['last_announcement_seen'] = $last_announcement_seen;
+    $data['last_announcement_seen'] = $lastAnnouncementSeen;
 
     $data['automatic_emails'] = [
       [
@@ -178,6 +178,6 @@ class Newsletters {
     $this->wp->wpEnqueueScript('jquery-ui');
     $this->wp->wpEnqueueScript('jquery-ui-datepicker');
 
-    $this->page_renderer->displayPage('newsletters.html', $data);
+    $this->pageRenderer->displayPage('newsletters.html', $data);
   }
 }

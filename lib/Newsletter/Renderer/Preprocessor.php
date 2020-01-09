@@ -25,9 +25,9 @@ class Preprocessor {
   /** @var TransactionalEmails */
   private $transactional_emails;
 
-  public function __construct(BlocksRenderer $blocks_renderer, TransactionalEmails $transactional_emails) {
-    $this->blocks_renderer = $blocks_renderer;
-    $this->transactional_emails = $transactional_emails;
+  public function __construct(BlocksRenderer $blocksRenderer, TransactionalEmails $transactionalEmails) {
+    $this->blocksRenderer = $blocksRenderer;
+    $this->transactionalEmails = $transactionalEmails;
   }
 
   /**
@@ -53,11 +53,11 @@ class Preprocessor {
   public function processBlock($block) {
     switch ($block['type']) {
       case 'automatedLatestContentLayout':
-        return $this->blocks_renderer->automatedLatestContentTransformedPosts($block);
+        return $this->blocksRenderer->automatedLatestContentTransformedPosts($block);
       case 'woocommerceHeading':
-        $wc_email_settings = $this->transactional_emails->getWCEmailSettings();
-        $content = self::WC_HEADING_BEFORE . '<h1 style="color:' . $wc_email_settings['base_text_color'] . ';">' . self::WC_HEADING_PLACEHOLDER . '</h1>' . self::WC_HEADING_AFTER;
-        return $this->placeholder($content, ['backgroundColor' => $wc_email_settings['base_color']]);
+        $wcEmailSettings = $this->transactionalEmails->getWCEmailSettings();
+        $content = self::WC_HEADING_BEFORE . '<h1 style="color:' . $wcEmailSettings['base_text_color'] . ';">' . self::WC_HEADING_PLACEHOLDER . '</h1>' . self::WC_HEADING_AFTER;
+        return $this->placeholder($content, ['backgroundColor' => $wcEmailSettings['base_color']]);
       case 'woocommerceContent':
         return $this->placeholder(self::WC_CONTENT_PLACEHOLDER);
     }

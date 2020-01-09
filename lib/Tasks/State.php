@@ -82,13 +82,13 @@ class State
       'id' => (int)$task->id,
       'type' => $task->type,
       'priority' => (int)$task->priority,
-      'updated_at' => Carbon::createFromTimeString((string)$task->updated_at)->timestamp,
-      'scheduled_at' => $task->scheduled_at ? Carbon::createFromTimeString($task->scheduled_at)->timestamp : null,
+      'updated_at' => Carbon::createFromTimeString((string)$task->updatedAt)->timestamp,
+      'scheduled_at' => $task->scheduledAt ? Carbon::createFromTimeString($task->scheduledAt)->timestamp : null,
       'status' => $task->status,
       'newsletter' => (($queue instanceof SendingQueue) && ($newsletter instanceof Newsletter)) ? [
-        'newsletter_id' => (int)$queue->newsletter_id,
+        'newsletter_id' => (int)$queue->newsletterId,
         'queue_id' => (int)$queue->id,
-        'subject' => $queue->newsletter_rendered_subject ?: $newsletter->subject,
+        'subject' => $queue->newsletterRenderedSubject ?: $newsletter->subject,
         'preview_url' => NewsletterUrl::getViewInBrowserUrl(
           NewsletterUrl::TYPE_LISTING_EDITOR,
           $newsletter,

@@ -35,7 +35,7 @@ class BounceTest extends \MailPoetTest {
         ]);
     }
 
-    $this->worker = new Bounce($this->di_container->get(SettingsController::class));
+    $this->worker = new Bounce($this->diContainer->get(SettingsController::class));
 
     $this->worker->api = new MockAPI();
   }
@@ -46,7 +46,7 @@ class BounceTest extends \MailPoetTest {
 
   public function testItCanInitializeBridgeAPI() {
     $this->setMailPoetSendingMethod();
-    $worker = new Bounce($this->di_container->get(SettingsController::class));
+    $worker = new Bounce($this->diContainer->get(SettingsController::class));
     $worker->init();
     expect($worker->api instanceof API)->true();
   }
@@ -127,7 +127,7 @@ class BounceTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = 'bounce';
     $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
@@ -136,13 +136,13 @@ class BounceTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = 'bounce';
     $task->status = null;
-    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);

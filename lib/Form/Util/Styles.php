@@ -88,24 +88,24 @@ EOL;
    * @param FeaturesController $features_controller
    */
   public function __construct(
-    FeaturesController $features_controller = null
+    FeaturesController $featuresController = null
   ) {
-    if ($features_controller === null) {
-      $features_controller = ContainerWrapper::getInstance()->get(FeaturesController::class);
+    if ($featuresController === null) {
+      $featuresController = ContainerWrapper::getInstance()->get(FeaturesController::class);
     }
-    $this->features_controller = $features_controller;
+    $this->featuresController = $featuresController;
   }
 
   public function getDefaultStyles() {
-    if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
-      $text_input_width = 'width: 100%;';
-      $label_font_weight = 'font-weight: normal;';
+    if ($this->featuresController->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
+      $textInputWidth = 'width: 100%;';
+      $labelFontWeight = 'font-weight: normal;';
     } else {
-      $text_input_width = 'width: 200px;';
-      $label_font_weight = 'font-weight: bold;';
+      $textInputWidth = 'width: 200px;';
+      $labelFontWeight = 'font-weight: bold;';
     }
-    $styles = str_replace('[TEXT_INPUTS_WIDTH_RULE]', $text_input_width, $this->default_styles);
-    $styles = str_replace('[LABELS_FONT_WEIGHT_RULE]', $label_font_weight, $styles);
+    $styles = str_replace('[TEXT_INPUTS_WIDTH_RULE]', $textInputWidth, $this->defaultStyles);
+    $styles = str_replace('[LABELS_FONT_WEIGHT_RULE]', $labelFontWeight, $styles);
     return $styles;
   }
 
@@ -113,18 +113,18 @@ EOL;
     if (!$stylesheet) return;
     $styles = new CSSParser($stylesheet);
     $styles = $styles->parse();
-    $formatted_styles = [];
-    foreach ($styles->getAllDeclarationBlocks() as $style_declaration) {
+    $formattedStyles = [];
+    foreach ($styles->getAllDeclarationBlocks() as $styleDeclaration) {
       $selectors = array_map(function($selector) use ($prefix) {
         return sprintf('%s %s', $prefix, $selector->__toString());
-      }, $style_declaration->getSelectors());
+      }, $styleDeclaration->getSelectors());
       $selectors = implode(', ', $selectors);
       $rules = array_map(function($rule) {
         return $rule->__toString();
-      }, $style_declaration->getRules());
+      }, $styleDeclaration->getRules());
       $rules = sprintf('{ %s }', implode(' ', $rules));
-      $formatted_styles[] = sprintf('%s %s', $selectors, $rules);
+      $formattedStyles[] = sprintf('%s %s', $selectors, $rules);
     }
-    return implode(PHP_EOL, $formatted_styles);
+    return implode(PHP_EOL, $formattedStyles);
   }
 }

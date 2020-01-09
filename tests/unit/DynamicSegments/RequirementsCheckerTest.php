@@ -18,32 +18,32 @@ class RequirementsCheckerTest extends \MailPoetUnitTest {
   public function _before() {
     parent::_before();
     if (!defined('MP_SEGMENTS_TABLE')) define('MP_SEGMENTS_TABLE', '');
-    $this->woocommerce_helper = $this
+    $this->woocommerceHelper = $this
       ->getMockBuilder(Helper::class)
       ->setMethods(['isWooCommerceActive'])
       ->getMock();
-    $this->requirements_checker = new RequirementsChecker($this->woocommerce_helper);
+    $this->requirementsChecker = new RequirementsChecker($this->woocommerceHelper);
   }
 
   public function testShouldntBlockSegmentIfWooCommerceIsActive() {
-    $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(true);
+    $this->woocommerceHelper->method('isWooCommerceActive')->willReturn(true);
     $segment = DynamicSegment::create();
     $segment->setFilters([new WooCommerceCategory(1)]);
-    expect($this->requirements_checker->shouldSkipSegment($segment))->false();
+    expect($this->requirementsChecker->shouldSkipSegment($segment))->false();
   }
 
   public function testShouldBlockWooCommerceSegmentIfWooCommerceIsInactive() {
-    $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(false);
+    $this->woocommerceHelper->method('isWooCommerceActive')->willReturn(false);
     $segment = DynamicSegment::create();
     $segment->setFilters([new WooCommerceCategory(1)]);
-    expect($this->requirements_checker->shouldSkipSegment($segment))->true();
+    expect($this->requirementsChecker->shouldSkipSegment($segment))->true();
   }
 
   public function testShouldntBlockNonWooCommerceSegmentIfWooCommerceIsInactive() {
-    $this->woocommerce_helper->method('isWooCommerceActive')->willReturn(false);
+    $this->woocommerceHelper->method('isWooCommerceActive')->willReturn(false);
     $segment = DynamicSegment::create();
     $segment->setFilters([new EmailAction(EmailAction::ACTION_OPENED, 2)]);
-    expect($this->requirements_checker->shouldSkipSegment($segment))->false();
+    expect($this->requirementsChecker->shouldSkipSegment($segment))->false();
   }
 
 }

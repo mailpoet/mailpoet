@@ -14,11 +14,11 @@ trait DeletedAtTrait {
 
   /** @return DateTimeInterface|null */
   public function getDeletedAt() {
-    return $this->deleted_at;
+    return $this->deletedAt;
   }
 
   /** @param DateTimeInterface|null $deleted_at */
-  public function setDeletedAt($deleted_at) {
-    $this->deleted_at = $deleted_at;
+  public function setDeletedAt($deletedAt) {
+    $this->deletedAt = $deletedAt;
   }
 }

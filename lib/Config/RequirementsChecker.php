@@ -20,12 +20,12 @@ class RequirementsChecker {
     '\Html2Text\Html2Text',
   ];
 
-  public function __construct($display_error_notice = true) {
-    $this->display_error_notice = $display_error_notice;
+  public function __construct($displayErrorNotice = true) {
+    $this->displayErrorNotice = $displayErrorNotice;
   }
 
   public function checkAllRequirements() {
-    $available_tests = [
+    $availableTests = [
       self::TEST_PDO_EXTENSION,
       self::TEST_FOLDER_PERMISSIONS,
       self::TEST_MBSTRING_EXTENSION,
@@ -33,7 +33,7 @@ class RequirementsChecker {
       self::TEST_VENDOR_SOURCE,
     ];
     $results = [];
-    foreach ($available_tests as $test) {
+    foreach ($availableTests as $test) {
       $callback = [$this, 'check' . $test];
       if (is_callable($callback)) {
         $results[$test] = call_user_func($callback);
@@ -44,8 +44,8 @@ class RequirementsChecker {
 
   public function checkTempAndCacheFolderCreation() {
     $paths = [
-      'temp_path' => Env::$temp_path,
-      'cache_path' => Env::$cache_path,
+      'temp_path' => Env::$tempPath,
+      'cache_path' => Env::$cachePath,
     ];
     if (!is_dir($paths['cache_path']) && !wp_mkdir_p($paths['cache_path'])) {
       $error = Helpers::replaceLinkTags(
@@ -56,8 +56,8 @@ class RequirementsChecker {
       return $this->processError($error);
     }
     foreach ($paths as $path) {
-      $index_file = $path . '/index.php';
-      if (!file_exists($index_file)) {
+      $indexFile = $path . '/index.php';
+      if (!file_exists($indexFile)) {
         file_put_contents(
           $path . '/index.php',
           str_replace('\n', PHP_EOL, '<?php\n\n// Silence is golden')
@@ -79,7 +79,7 @@ class RequirementsChecker {
 
   public function checkMbstringExtension() {
     if (!extension_loaded('mbstring')) {
-      require_once Env::$util_path . '/Polyfills.php';
+      require_once Env::$utilPath . '/Polyfills.php';
     }
     return true;
   }
@@ -95,9 +95,9 @@ class RequirementsChecker {
   }
 
   public function checkVendorSource() {
-    foreach ($this->vendor_classes as $dependency) {
-      $dependency_path = $this->getDependencyPath($dependency);
-      if (!$dependency_path) {
+    foreach ($this->vendorClasses as $dependency) {
+      $dependencyPath = $this->getDependencyPath($dependency);
+      if (!$dependencyPath) {
         $error = sprintf(
           WPFunctions::get()->__('A MailPoet dependency (%s) does not appear to be loaded correctly, thus MailPoet will not work correctly. Please reinstall the plugin.', 'mailpoet'),
           $dependency
@@ -107,12 +107,12 @@ class RequirementsChecker {
       }
 
       $pattern = '#' . preg_quote(Env::$path) . '[\\\/]#';
-      $is_loaded_by_plugin = preg_match($pattern, $dependency_path);
-      if (!$is_loaded_by_plugin) {
+      $isLoadedByPlugin = preg_match($pattern, $dependencyPath);
+      if (!$isLoadedByPlugin) {
         $error = sprintf(
           WPFunctions::get()->__('MailPoet has detected a dependency conflict (%s) with another plugin (%s), which may cause unexpected behavior. Please disable the offending plugin to fix this issue.', 'mailpoet'),
           $dependency,
-          $dependency_path
+          $dependencyPath
         );
 
         return $this->processError($error);
@@ -122,9 +122,9 @@ class RequirementsChecker {
     return true;
   }
 
-  private function getDependencyPath($namespaced_class) {
+  private function getDependencyPath($namespacedClass) {
     try {
-      $reflector = new \ReflectionClass($namespaced_class);
+      $reflector = new \ReflectionClass($namespacedClass);
       return $reflector->getFileName();
     } catch (\ReflectionException $ex) {
       return false;
@@ -132,7 +132,7 @@ class RequirementsChecker {
   }
 
   public function processError($error) {
-    if ($this->display_error_notice) {
+    if ($this->displayErrorNotice) {
       WPNotice::displayError($error);
     }
     return false;

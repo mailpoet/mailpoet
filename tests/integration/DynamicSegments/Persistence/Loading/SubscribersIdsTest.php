@@ -18,7 +18,7 @@ class SubscribersIdsTest extends \MailPoetTest {
 
   public function _before() {
     $this->cleanData();
-    $this->editors_wp_ids[] = wp_insert_user([
+    $this->editorsWpIds[] = wp_insert_user([
       'user_login' => 'user-role-test1',
       'user_email' => 'user-role-test1@example.com',
       'role' => 'editor',
@@ -30,44 +30,44 @@ class SubscribersIdsTest extends \MailPoetTest {
       'role' => 'administrator',
       'user_pass' => '12123154',
     ]);
-    $this->editors_wp_ids[] = wp_insert_user([
+    $this->editorsWpIds[] = wp_insert_user([
       'user_login' => 'user-role-test3',
       'user_email' => 'user-role-test3@example.com',
       'role' => 'editor',
       'user_pass' => '12123154',
     ]);
-    $this->requirement_checker = $this
+    $this->requirementChecker = $this
       ->getMockBuilder(RequirementsChecker::class)
       ->setMethods(['shouldSkipSegment'])
       ->getMock();
   }
 
   public function testItConstructsSubscribersIdQueryForAnyDynamicSegment() {
-    $this->requirement_checker->method('shouldSkipSegment')->willReturn(false);
+    $this->requirementChecker->method('shouldSkipSegment')->willReturn(false);
     $userRole = DynamicSegment::create();
     $userRole->hydrate([
       'name' => 'segment',
       'description' => 'description',
     ]);
     $userRole->setFilters([new UserRole('editor', 'and')]);
-    $loader = new SubscribersIds($this->requirement_checker);
+    $loader = new SubscribersIds($this->requirementChecker);
     $result = $loader->load($userRole);
-    $wp_ids = [
+    $wpIds = [
       Subscriber::findOne($result[0]->id)->wp_user_id,
       Subscriber::findOne($result[1]->id)->wp_user_id,
     ];
-    $this->assertEquals($wp_ids, $this->editors_wp_ids, $message = '', $delta = 0.0, $maxDepth = 10, $canonicalize = true);
+    $this->assertEquals($wpIds, $this->editorsWpIds, $message = '', $delta = 0.0, $maxDepth = 10, $canonicalize = true);
   }
 
   public function testItSkipsConstructingSubscribersIdQueryForAnyDynamicSegmentIfRequirementsNotMet() {
-    $this->requirement_checker->method('shouldSkipSegment')->willReturn(true);
+    $this->requirementChecker->method('shouldSkipSegment')->willReturn(true);
     $userRole = DynamicSegment::create();
     $userRole->hydrate([
       'name' => 'segment',
       'description' => 'description',
     ]);
     $userRole->setFilters([new UserRole('editor', 'and')]);
-    $loader = new SubscribersIds($this->requirement_checker);
+    $loader = new SubscribersIds($this->requirementChecker);
     $result = $loader->load($userRole);
     expect($result)->isEmpty();
   }

@@ -13,13 +13,13 @@ class SubscribersAPIKeyInvalid {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(PageRenderer $page_renderer, WPFunctions $wp) {
-    $this->page_renderer = $page_renderer;
+  public function __construct(PageRenderer $pageRenderer, WPFunctions $wp) {
+    $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
   }
 
   public function render() {
-    $this->page_renderer->displayPage('invalidkey.html', [
+    $this->pageRenderer->displayPage('invalidkey.html', [
       'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
       'subscriber_count' => Subscriber::getTotalSubscribers(),
     ]);

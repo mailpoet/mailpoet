@@ -8,75 +8,75 @@ use MailPoetVendor\Paris\ORMWrapper;
 class Handler {
   const DEFAULT_LIMIT_PER_PAGE = 20;
 
-  public function getSelection($model_class, array $data) {
+  public function getSelection($modelClass, array $data) {
     $data = $this->processData($data);
-    $table_name = $model_class::$_table;
-    $model = Model::factory($model_class);
+    $tableName = $modelClass::$_table;
+    $model = Model::factory($modelClass);
 
-    if (method_exists($model_class, 'listingQuery')) {
-      $custom_query = call_user_func_array(
-        [$model_class, 'listingQuery'],
+    if (method_exists($modelClass, 'listingQuery')) {
+      $customQuery = call_user_func_array(
+        [$modelClass, 'listingQuery'],
         [$data]
       );
       if (!empty($data['selection'])) {
-        $custom_query->whereIn($table_name . '.id', $data['selection']);
+        $customQuery->whereIn($tableName . '.id', $data['selection']);
       }
-      return $custom_query;
+      return $customQuery;
     } else {
       $model = $this->setFilter($model, $data);
       $this->setGroup($model, $data);
       $this->setSearch($model, $data);
 
       if (!empty($data['selection'])) {
-        $model->whereIn($table_name . '.id', $data['selection']);
+        $model->whereIn($tableName . '.id', $data['selection']);
       }
       return $model;
     }
   }
 
-  public function get($model_class, array $data) {
+  public function get($modelClass, array $data) {
     $data = $this->processData($data);
-    $table_name = $model_class::$_table;
-    $model = Model::factory($model_class);
+    $tableName = $modelClass::$_table;
+    $model = Model::factory($modelClass);
     // get groups
     $groups = [];
-    if (method_exists($model_class, 'groups')) {
+    if (method_exists($modelClass, 'groups')) {
       $groups = call_user_func_array(
-        [$model_class, 'groups'],
+        [$modelClass, 'groups'],
         [$data]
       );
     }
 
     // get filters
     $filters = [];
-    if (method_exists($model_class, 'filters')) {
+    if (method_exists($modelClass, 'filters')) {
       $filters = call_user_func_array(
-        [$model_class, 'filters'],
+        [$modelClass, 'filters'],
         [$data]
       );
     }
 
     // get items and total count
-    if (method_exists($model_class, 'listingQuery')) {
-      $custom_query = call_user_func_array(
-        [$model_class, 'listingQuery'],
+    if (method_exists($modelClass, 'listingQuery')) {
+      $customQuery = call_user_func_array(
+        [$modelClass, 'listingQuery'],
         [$data]
       );
 
-      $count = $custom_query->count();
+      $count = $customQuery->count();
 
-      $items = $custom_query
+      $items = $customQuery
         ->offset($data['offset'])
         ->limit($data['limit'])
         ->{'order_by_' . $data['sort_order']}(
-          $table_name . '.' . $data['sort_by']
+          $tableName . '.' . $data['sort_by']
         )
         ->findMany();
     } else {
       $model = $this->setFilter($model, $data);
       $this->setGroup($model, $data);
       $this->setSearch($model, $data);
-      $this->setOrder($model, $data, $table_name);
+      $this->setOrder($model, $data, $tableName);
 
       $count = $model->count();
 
@@ -101,10 +101,10 @@ class Handler {
     return $model->filter('search', $data['search']);
   }
 
-  private function setOrder(ORMWrapper $model, array $data, $table_name) {
+  private function setOrder(ORMWrapper $model, array $data, $tableName) {
     return $model
       ->{'order_by_' . $data['sort_order']}(
-        $table_name . '.' . $data['sort_by']);
+        $tableName . '.' . $data['sort_by']);
   }
 
   private function setGroup(ORMWrapper $model, array $data) {
@@ -123,17 +123,17 @@ class Handler {
 
   private function processData(array $data) {
     // check if sort order was specified or default to "asc"
-    $sort_order = (!empty($data['sort_order'])) ? $data['sort_order'] : 'asc';
+    $sortOrder = (!empty($data['sort_order'])) ? $data['sort_order'] : 'asc';
     // constrain sort order value to either be "asc" or "desc"
-    $sort_order = ($sort_order === 'asc') ? 'asc' : 'desc';
+    $sortOrder = ($sortOrder === 'asc') ? 'asc' : 'desc';
 
     // sanitize sort by
-    $sort_by = (!empty($data['sort_by']))
+    $sortBy = (!empty($data['sort_by']))
       ? filter_var($data['sort_by'], FILTER_SANITIZE_STRING)
       : '';
 
-    if (empty($sort_by)) {
-      $sort_by = 'id';
+    if (empty($sortBy)) {
+      $sortBy = 'id';
     }
 
     $data = [
@@ -148,8 +148,8 @@ class Handler {
       // searching
       'search' => (isset($data['search']) ? $data['search'] : null),
       // sorting
-      'sort_by' => $sort_by,
-      'sort_order' => $sort_order,
+      'sort_by' => $sortBy,
+      'sort_order' => $sortOrder,
       // grouping
       'group' => (isset($data['group']) ? $data['group'] : null),
       // filters

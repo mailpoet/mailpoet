@@ -28,23 +28,23 @@ class DynamicSegmentsTest extends \MailPoetTest {
   private $listing_handler;
 
   public function _before() {
-    $this->bulk_action = ContainerWrapper::getInstance()->get(BulkActionController::class);
-    $this->listing_handler = ContainerWrapper::getInstance()->get(Handler::class);
+    $this->bulkAction = ContainerWrapper::getInstance()->get(BulkActionController::class);
+    $this->listingHandler = ContainerWrapper::getInstance()->get(Handler::class);
   }
 
   public function testGetReturnsResponse() {
     $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
       'load' => function () {
-        $dynamic_segment = DynamicSegment::create();
-        $dynamic_segment->hydrate([
+        $dynamicSegment = DynamicSegment::create();
+        $dynamicSegment->hydrate([
           'name' => 's1',
           'description' => '',
         ]);
-        $dynamic_segment->setFilters([new UserRole('Editor', 'or')]);
-        return $dynamic_segment;
+        $dynamicSegment->setFilters([new UserRole('Editor', 'or')]);
+        return $dynamicSegment;
       },
     ]);
-    $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, null, null, $loader);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, null, null, $loader);
     $response = $endpoint->get(['id' => 5]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\SuccessResponse');
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
@@ -64,7 +64,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
         throw new \InvalidArgumentException('segment not found');
       },
     ]);
-    $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, null, null, $loader);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, null, null, $loader);
     $response = $endpoint->get(['id' => 5]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
     expect($response->status)->equals(self::SEGMENT_NOT_FOUND_RESPONSE_CODE);
@@ -72,16 +72,16 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
   public function testSaverSavesData() {
     $mapper = Stub::makeEmpty('\MailPoet\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
-      $dynamic_segment = DynamicSegment::create();
-      $dynamic_segment->hydrate([
+      $dynamicSegment = DynamicSegment::create();
+      $dynamicSegment->hydrate([
         'name' => 'name',
         'description' => 'description',
       ]);
-      return $dynamic_segment;
+      return $dynamicSegment;
     })]);
     $saver = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Saver', ['save' => Expected::once()]);
 
-    $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, $mapper, $saver);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $mapper, $saver);
     $response = $endpoint->save([]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\SuccessResponse');
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
@@ -93,7 +93,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     })]);
     $saver = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Saver', ['save' => Expected::never()]);
 
-    $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, $mapper, $saver);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $mapper, $saver);
     $response = $endpoint->save([]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
     expect($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
@@ -101,18 +101,18 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
   public function testSaverReturnsErrorOnSave() {
     $mapper = Stub::makeEmpty('\MailPoet\DynamicSegments\Mappers\FormDataMapper', ['mapDataToDB' => Expected::once(function () {
-      $dynamic_segment = DynamicSegment::create();
-      $dynamic_segment->hydrate([
+      $dynamicSegment = DynamicSegment::create();
+      $dynamicSegment->hydrate([
         'name' => 'name',
         'description' => 'description',
       ]);
-      return $dynamic_segment;
+      return $dynamicSegment;
     })]);
     $saver = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Saver', ['save' => Expected::once(function () {
       throw new ErrorSavingException('Error saving data', Model::DUPLICATE_RECORD);
     })]);
 
-    $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, $mapper, $saver);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $mapper, $saver);
     $response = $endpoint->save([]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
     expect($response->status)->equals(self::SERVER_ERROR_RESPONSE_CODE);
@@ -121,95 +121,95 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
   public function testItCanTrashASegment() {
     DynamicSegment::deleteMany();
-    $dynamic_segment = DynamicSegment::createOrUpdate([
+    $dynamicSegment = DynamicSegment::createOrUpdate([
       'name' => 'Trash test',
       'description' => 'description',
     ]);
     $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
-      'load' => function () use($dynamic_segment) {
-        return $dynamic_segment;
+      'load' => function () use($dynamicSegment) {
+        return $dynamicSegment;
       },
     ]);
 
-    $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, null, null, $loader);
-    $response = $endpoint->trash(['id' => $dynamic_segment->id]);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, null, null, $loader);
+    $response = $endpoint->trash(['id' => $dynamicSegment->id]);
 
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->data)->equals($dynamic_segment->asArray());
+    expect($response->data)->equals($dynamicSegment->asArray());
     expect($response->meta['count'])->equals(1);
 
-    $dynamic_segment = DynamicSegment::findOne($dynamic_segment->id);
-    expect($dynamic_segment->deleted_at)->notNull();
+    $dynamicSegment = DynamicSegment::findOne($dynamicSegment->id);
+    expect($dynamicSegment->deletedAt)->notNull();
 
-    $dynamic_segment->delete();
+    $dynamicSegment->delete();
   }
 
   public function testItCanRestoreASegment() {
     DynamicSegment::deleteMany();
-    $dynamic_segment = DynamicSegment::createOrUpdate([
+    $dynamicSegment = DynamicSegment::createOrUpdate([
       'name' => 'Restore test',
       'description' => 'description',
     ]);
     $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
-      'load' => function () use($dynamic_segment) {
-        return $dynamic_segment;
+      'load' => function () use($dynamicSegment) {
+        return $dynamicSegment;
       },
     ]);
 
-    $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, null, null, $loader);
-    $response = $endpoint->restore(['id' => $dynamic_segment->id]);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, null, null, $loader);
+    $response = $endpoint->restore(['id' => $dynamicSegment->id]);
 
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->data)->equals($dynamic_segment->asArray());
+    expect($response->data)->equals($dynamicSegment->asArray());
     expect($response->meta['count'])->equals(1);
 
-    $dynamic_segment = DynamicSegment::findOne($dynamic_segment->id);
-    expect($dynamic_segment->deleted_at)->equals(null);
+    $dynamicSegment = DynamicSegment::findOne($dynamicSegment->id);
+    expect($dynamicSegment->deletedAt)->equals(null);
 
-    $dynamic_segment->delete();
+    $dynamicSegment->delete();
   }
 
   public function testItCanDeleteASegment() {
     DynamicSegment::deleteMany();
-    $dynamic_segment = DynamicSegment::createOrUpdate([
+    $dynamicSegment = DynamicSegment::createOrUpdate([
       'name' => 'Delete test',
       'description' => 'description',
     ]);
     $filter = DynamicSegmentFilter::createOrUpdate([
-      'segment_id' => $dynamic_segment->id,
+      'segment_id' => $dynamicSegment->id,
     ]);
     $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
-      'load' => function () use($dynamic_segment) {
-        return $dynamic_segment;
+      'load' => function () use($dynamicSegment) {
+        return $dynamicSegment;
       },
     ]);
 
-    $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, null, null, $loader);
-    $response = $endpoint->delete(['id' => $dynamic_segment->id]);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, null, null, $loader);
+    $response = $endpoint->delete(['id' => $dynamicSegment->id]);
 
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     expect($response->data)->equals(null);
     expect($response->meta['count'])->equals(1);
 
-    expect(DynamicSegment::findOne($dynamic_segment->id))->equals(false);
+    expect(DynamicSegment::findOne($dynamicSegment->id))->equals(false);
     expect(DynamicSegmentFilter::findOne($filter->id))->equals(false);
   }
 
   public function testItCanBulkDeleteSegments() {
     DynamicSegment::deleteMany();
-    $dynamic_segment_1 = DynamicSegment::createOrUpdate([
+    $dynamicSegment1 = DynamicSegment::createOrUpdate([
       'name' => 'Test 1',
       'description' => 'description',
     ]);
-    $dynamic_segment_2 = DynamicSegment::createOrUpdate([
+    $dynamicSegment2 = DynamicSegment::createOrUpdate([
       'name' => 'Test 2',
       'description' => 'description',
     ]);
     $filter = DynamicSegmentFilter::createOrUpdate([
-      'segment_id' => $dynamic_segment_1->id,
+      'segment_id' => $dynamicSegment1->id,
     ]);
 
-    $endpoint = new DynamicSegments($this->bulk_action, $this->listing_handler, null, null, null);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, null, null, null);
     $response = $endpoint->bulkAction([
       'action' => 'trash',
       'listing' => ['group' => 'all'],

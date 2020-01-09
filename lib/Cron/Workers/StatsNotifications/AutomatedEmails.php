@@ -42,7 +42,7 @@ class AutomatedEmails extends SimpleWorker {
     Renderer $renderer,
     SettingsController $settings,
     NewslettersRepository $repository,
-    NewsletterStatisticsRepository $newsletter_statistics_repository,
+    NewsletterStatisticsRepository $newsletterStatisticsRepository,
     MetaInfo $mailerMetaInfo
   ) {
     parent::__construct();
@@ -51,7 +51,7 @@ class AutomatedEmails extends SimpleWorker {
     $this->renderer = $renderer;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->repository = $repository;
-    $this->newsletter_statistics_repository = $newsletter_statistics_repository;
+    $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
   }
 
   public function checkProcessingRequirements() {
@@ -79,10 +79,10 @@ class AutomatedEmails extends SimpleWorker {
       $settings = $this->settings->get(Worker::SETTINGS_KEY);
       $newsletters = $this->getNewsletters();
       if ($newsletters) {
-        $extra_params = [
+        $extraParams = [
           'meta' => $this->mailerMetaInfo->getStatsNotificationMetaInfo(),
         ];
-        $this->mailer->send($this->constructNewsletter($newsletters), $settings['address'], $extra_params);
+        $this->mailer->send($this->constructNewsletter($newsletters), $settings['address'], $extraParams);
       }
     } catch (\Exception $e) {
       if (WP_DEBUG) {
@@ -114,7 +114,7 @@ class AutomatedEmails extends SimpleWorker {
       [NewsletterEntity::TYPE_AUTOMATIC, NewsletterEntity::TYPE_WELCOME]
     );
     foreach ($newsletters as $newsletter) {
-      $statistics = $this->newsletter_statistics_repository->getStatistics($newsletter);
+      $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
       if ($statistics->getTotalSentCount()) {
         $result[] = [
           'statistics' => $statistics,

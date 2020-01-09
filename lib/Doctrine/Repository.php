@@ -17,10 +17,10 @@ abstract class Repository {
   /** @var DoctrineEntityRepository */
   protected $doctrine_repository;
 
-  public function __construct(EntityManager $entity_manager) {
-    $this->entity_manager = $entity_manager;
-    $this->class_metadata = $entity_manager->getClassMetadata($this->getEntityClassName());
-    $this->doctrine_repository = new DoctrineEntityRepository($this->entity_manager, $this->class_metadata);
+  public function __construct(EntityManager $entityManager) {
+    $this->entityManager = $entityManager;
+    $this->classMetadata = $entityManager->getClassMetadata($this->getEntityClassName());
+    $this->doctrineRepository = new DoctrineEntityRepository($this->entityManager, $this->classMetadata);
   }
 
   /**
@@ -30,8 +30,8 @@ abstract class Repository {
    * @param int|null $offset
    * @return array
    */
-  public function findBy(array $criteria, array $order_by = null, $limit = null, $offset = null) {
-    return $this->doctrine_repository->findBy($criteria, $order_by, $limit, $offset);
+  public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) {
+    return $this->doctrineRepository->findBy($criteria, $orderBy, $limit, $offset);
   }
 
   /**
@@ -39,8 +39,8 @@ abstract class Repository {
    * @param array|null $order_by
    * @return object|null
    */
-  public function findOneBy(array $criteria, array $order_by = null) {
-    return $this->doctrine_repository->findOneBy($criteria, $order_by);
+  public function findOneBy(array $criteria, array $orderBy = null) {
+    return $this->doctrineRepository->findOneBy($criteria, $orderBy);
   }
 
   /**
@@ -48,28 +48,28 @@ abstract class Repository {
    * @return object|null
    */
   public function findOneById($id) {
-    return $this->doctrine_repository->find($id);
+    return $this->doctrineRepository->find($id);
   }
 
   /**
    * @return array
    */
   public function findAll() {
-    return $this->doctrine_repository->findAll();
+    return $this->doctrineRepository->findAll();
   }
 
   /**
    * @param object $entity
    */
   public function persist($entity) {
-    $this->entity_manager->persist($entity);
+    $this->entityManager->persist($entity);
   }
 
   public function truncate() {
-    $cmd = $this->entity_manager->getClassMetadata($this->getEntityClassName());
-    $table_name = $cmd->getTableName();
-    $connection = $this->entity_manager->getConnection();
-    $connection->transactional(function(Connection $connection) use ($table_name) {
+    $cmd = $this->entityManager->getClassMetadata($this->getEntityClassName());
+    $tableName = $cmd->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->transactional(function(Connection $connection) use ($tableName) {
       $connection->query('SET FOREIGN_KEY_CHECKS=0');
       $q = "TRUNCATE $table_name";
       $connection->executeUpdate($q);
@@ -81,11 +81,11 @@ abstract class Repository {
    * @param object $entity
    */
   public function remove($entity) {
-    $this->entity_manager->remove($entity);
+    $this->entityManager->remove($entity);
   }
 
   public function flush() {
-    $this->entity_manager->flush();
+    $this->entityManager->flush();
   }
 
   /**

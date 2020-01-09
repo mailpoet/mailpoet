@@ -15,14 +15,14 @@ class SubscriberCustomField extends Model {
   public static $_table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE;
 
   public static function createOrUpdate($data = []) {
-    $custom_field = CustomField::findOne($data['custom_field_id']);
-    if ($custom_field instanceof CustomField) {
-      $custom_field = $custom_field->asArray();
+    $customField = CustomField::findOne($data['custom_field_id']);
+    if ($customField instanceof CustomField) {
+      $customField = $customField->asArray();
     } else {
       return false;
     }
 
-    if ($custom_field['type'] === 'date') {
+    if ($customField['type'] === 'date') {
       if (is_array($data['value'])) {
         $day = (
           isset($data['value']['day'])
@@ -64,12 +64,12 @@ class SubscriberCustomField extends Model {
   }
 
   public static function updateMultiple($values) {
-    $subscriber_ids = array_unique(array_column($values, 1));
+    $subscriberIds = array_unique(array_column($values, 1));
     $query = sprintf(
       "UPDATE `%s` SET value = (CASE %s ELSE value END) WHERE subscriber_id IN (%s)",
       self::$_table,
       str_repeat('WHEN custom_field_id = ? AND subscriber_id = ? THEN ? ', count($values)),
-      implode(',', $subscriber_ids)
+      implode(',', $subscriberIds)
     );
     self::rawExecute(
       $query,
@@ -83,9 +83,9 @@ class SubscriberCustomField extends Model {
     return $relations->deleteMany();
   }
 
-  public static function deleteManySubscriberRelations(array $subscriber_ids) {
-    if (empty($subscriber_ids)) return false;
-    $relations = self::whereIn('subscriber_id', $subscriber_ids);
+  public static function deleteManySubscriberRelations(array $subscriberIds) {
+    if (empty($subscriberIds)) return false;
+    $relations = self::whereIn('subscriber_id', $subscriberIds);
     return $relations->deleteMany();
   }
 }

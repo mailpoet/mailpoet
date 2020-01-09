@@ -17,23 +17,23 @@ class Renderer {
   public $assets_manifest_js;
   public $assets_manifest_css;
 
-  public function __construct($caching_enabled = false, $debugging_enabled = false) {
-    $this->caching_enabled = $caching_enabled;
-    $this->debugging_enabled = $debugging_enabled;
-    $this->cache_path = Env::$cache_path;
+  public function __construct($cachingEnabled = false, $debuggingEnabled = false) {
+    $this->cachingEnabled = $cachingEnabled;
+    $this->debuggingEnabled = $debuggingEnabled;
+    $this->cachePath = Env::$cachePath;
 
-    $file_system = new TwigFileSystem(Env::$views_path);
+    $fileSystem = new TwigFileSystem(Env::$viewsPath);
     $this->renderer = new TwigEnv(
-      $file_system,
+      $fileSystem,
       [
         'cache' => $this->detectCache(),
-        'debug' => $this->debugging_enabled,
+        'debug' => $this->debuggingEnabled,
         'auto_reload' => true,
       ]
     );
 
-    $this->assets_manifest_js = $this->getAssetManifest(Env::$assets_path . '/dist/js/manifest.json');
-    $this->assets_manifest_css = $this->getAssetManifest(Env::$assets_path . '/dist/css/manifest.json');
+    $this->assetsManifestJs = $this->getAssetManifest(Env::$assetsPath . '/dist/js/manifest.json');
+    $this->assetsManifestCss = $this->getAssetManifest(Env::$assetsPath . '/dist/css/manifest.json');
     $this->setupDebug();
     $this->setupTranslations();
     $this->setupFunctions();
@@ -47,7 +47,7 @@ class Renderer {
   }
 
   public function setupTranslations() {
-    $this->renderer->addExtension(new Twig\I18n(Env::$plugin_name));
+    $this->renderer->addExtension(new Twig\I18n(Env::$pluginName));
   }
 
   public function setupFunctions() {
@@ -77,10 +77,10 @@ class Renderer {
   public function setupGlobalVariables() {
     $this->renderer->addExtension(new Twig\Assets([
       'version' => Env::$version,
-      'base_url' => Env::$base_url,
-      'assets_url' => Env::$assets_url,
-      'assets_manifest_js' => $this->assets_manifest_js,
-      'assets_manifest_css' => $this->assets_manifest_css,
+      'base_url' => Env::$baseUrl,
+      'assets_url' => Env::$assetsUrl,
+      'assets_manifest_js' => $this->assetsManifestJs,
+      'assets_manifest_css' => $this->assetsManifestCss,
     ]));
   }
 
@@ -95,11 +95,11 @@ class Renderer {
   }
 
   public function detectCache() {
-    return $this->caching_enabled ? $this->cache_path : false;
+    return $this->cachingEnabled ? $this->cachePath : false;
   }
 
   public function setupDebug() {
-    if ($this->debugging_enabled) {
+    if ($this->debuggingEnabled) {
       $this->renderer->addExtension(new DebugExtension());
     }
   }
@@ -111,15 +111,15 @@ class Renderer {
       throw new \Exception(sprintf(
         WPFunctions::get()->__('Failed to render template "%s". Please ensure the template cache folder "%s" exists and has write permissions. Terminated with error: "%s"'),
         $template,
-        $this->cache_path,
+        $this->cachePath,
         $e->getMessage()
       ));
     }
   }
 
-  public function getAssetManifest($manifest_file) {
-    if (is_readable($manifest_file)) {
-      $contents = file_get_contents($manifest_file);
+  public function getAssetManifest($manifestFile) {
+    if (is_readable($manifestFile)) {
+      $contents = file_get_contents($manifestFile);
       if (is_string($contents)) {
         return json_decode($contents, true);
       }
@@ -128,14 +128,14 @@ class Renderer {
   }
 
   public function getJsAsset($asset) {
-    return (!empty($this->assets_manifest_js[$asset])) ?
-      $this->assets_manifest_js[$asset] :
+    return (!empty($this->assetsManifestJs[$asset])) ?
+      $this->assetsManifestJs[$asset] :
       $asset;
   }
 
   public function getCssAsset($asset) {
-    return (!empty($this->assets_manifest_css[$asset])) ?
-      $this->assets_manifest_css[$asset] :
+    return (!empty($this->assetsManifestCss[$asset])) ?
+      $this->assetsManifestCss[$asset] :
       $asset;
   }
 }

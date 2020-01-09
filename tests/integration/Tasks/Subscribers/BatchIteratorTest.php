@@ -13,16 +13,16 @@ class BatchIteratorTest extends \MailPoetTest {
   public $task_id;
   public function _before() {
     parent::_before();
-    $this->task_id = 123; // random ID
-    $this->batch_size = 2;
-    $this->subscriber_count = 10;
-    for ($i = 0; $i < $this->subscriber_count; $i++) {
+    $this->taskId = 123; // random ID
+    $this->batchSize = 2;
+    $this->subscriberCount = 10;
+    for ($i = 0; $i < $this->subscriberCount; $i++) {
       ScheduledTaskSubscriber::createOrUpdate([
-        'task_id' => $this->task_id,
+        'task_id' => $this->taskId,
         'subscriber_id' => $i + 1,
       ]);
     }
-    $this->iterator = new BatchIterator($this->task_id, $this->batch_size);
+    $this->iterator = new BatchIterator($this->taskId, $this->batchSize);
   }
 
   public function testItFailsToConstructWithWrongArguments() {
@@ -40,29 +40,29 @@ class BatchIteratorTest extends \MailPoetTest {
   }
 
   public function testItIterates() {
-    $iterations = ceil($this->subscriber_count / $this->batch_size);
+    $iterations = ceil($this->subscriberCount / $this->batchSize);
     $i = 0;
     foreach ($this->iterator as $batch) {
       $i++;
 
       // process subscribers
-      ScheduledTaskSubscriber::where('task_id', $this->task_id)
+      ScheduledTaskSubscriber::where('task_id', $this->taskId)
         ->whereIn('subscriber_id', $batch)
         ->findResultSet()
         ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
         ->save();
 
       if ($i < $iterations) {
-        expect(count($batch))->equals($this->batch_size);
+        expect(count($batch))->equals($this->batchSize);
       } else {
-        expect(count($batch))->lessOrEquals($this->batch_size);
+        expect(count($batch))->lessOrEquals($this->batchSize);
       }
     }
     expect($i)->equals($iterations);
   }
 
   public function testItCanBeCounted() {
-    expect(count($this->iterator))->equals($this->subscriber_count);
+    expect(count($this->iterator))->equals($this->subscriberCount);
   }
 
   public function _after() {

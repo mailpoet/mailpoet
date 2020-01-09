@@ -72,13 +72,13 @@ class KeyCheckWorkerTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = MockKeyCheckWorker::TASK_TYPE;
     $task->status = null;
-    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

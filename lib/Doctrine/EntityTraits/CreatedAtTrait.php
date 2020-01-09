@@ -14,10 +14,10 @@ trait CreatedAtTrait {
 
   /** @return DateTimeInterface */
   public function getCreatedAt() {
-    return $this->created_at;
+    return $this->createdAt;
   }
 
-  public function setCreatedAt(DateTimeInterface $created_at) {
-    $this->created_at = $created_at;
+  public function setCreatedAt(DateTimeInterface $createdAt) {
+    $this->createdAt = $createdAt;
   }
 }

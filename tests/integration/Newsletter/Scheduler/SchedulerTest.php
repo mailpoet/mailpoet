@@ -47,20 +47,20 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItCanGetNextRunDate() {
     // it accepts cron syntax and returns next run date
-    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($current_time); // mock carbon to return current time
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    Carbon::setTestNow($currentTime); // mock carbon to return current time
     expect(Scheduler::getNextRunDate('* * * * *'))
-      ->equals($current_time->addMinute()->format('Y-m-d H:i:00'));
+      ->equals($currentTime->addMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
     expect(Scheduler::getNextRunDate('invalid CRON expression'))->false();
   }
 
   public function testItCanGetPreviousRunDate() {
     // it accepts cron syntax and returns previous run date
-    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($current_time); // mock carbon to return current time
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    Carbon::setTestNow($currentTime); // mock carbon to return current time
     expect(Scheduler::getPreviousRunDate('* * * * *'))
-      ->equals($current_time->subMinute()->format('Y-m-d H:i:00'));
+      ->equals($currentTime->subMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
     expect(Scheduler::getPreviousRunDate('invalid CRON expression'))->false();
   }
@@ -82,23 +82,23 @@ class SchedulerTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  private function _createNewsletterOptions($newsletter_id, $newsletter_type, $options) {
+  private function _createNewsletterOptions($newsletterId, $newsletterType, $options) {
     foreach ($options as $option => $value) {
-      $newsletter_option_field = NewsletterOptionField::where('name', $option)->findOne();
-      if (!$newsletter_option_field) {
-        $newsletter_option_field = NewsletterOptionField::create();
-        $newsletter_option_field->name = $option;
-        $newsletter_option_field->newsletter_type = $newsletter_type;
-        $newsletter_option_field->save();
-        expect($newsletter_option_field->getErrors())->false();
+      $newsletterOptionField = NewsletterOptionField::where('name', $option)->findOne();
+      if (!$newsletterOptionField) {
+        $newsletterOptionField = NewsletterOptionField::create();
+        $newsletterOptionField->name = $option;
+        $newsletterOptionField->newsletterType = $newsletterType;
+        $newsletterOptionField->save();
+        expect($newsletterOptionField->getErrors())->false();
       }
 
-      $newsletter_option = NewsletterOption::create();
-      $newsletter_option->option_field_id = (int)$newsletter_option_field->id;
-      $newsletter_option->newsletter_id = $newsletter_id;
-      $newsletter_option->value = $value;
-      $newsletter_option->save();
-      expect($newsletter_option->getErrors())->false();
+      $newsletterOption = NewsletterOption::create();
+      $newsletterOption->optionFieldId = (int)$newsletterOptionField->id;
+      $newsletterOption->newsletterId = $newsletterId;
+      $newsletterOption->value = $value;
+      $newsletterOption->save();
+      expect($newsletterOption->getErrors())->false();
     }
   }
 

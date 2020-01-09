@@ -25,53 +25,53 @@ class Widget extends \WP_Widget {
     );
     $this->wp = new WPFunctions;
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
-    $this->assets_controller = new AssetsController($this->wp, $this->renderer, SettingsController::getInstance());
+    $this->assetsController = new AssetsController($this->wp, $this->renderer, SettingsController::getInstance());
     if (!is_admin()) {
       $this->setupIframe();
     } else {
       WPFunctions::get()->addAction('widgets_admin_page', [
-        $this->assets_controller,
+        $this->assetsController,
         'setupAdminWidgetPageDependencies',
       ]);
     }
   }
 
   public function setupIframe() {
-    $form_id = (isset($_GET['mailpoet_form_iframe']) ? (int)$_GET['mailpoet_form_iframe'] : 0);
-    if (!$form_id || !Form::findOne($form_id)) return;
+    $formId = (isset($_GET['mailpoet_form_iframe']) ? (int)$_GET['mailpoet_form_iframe'] : 0);
+    if (!$formId || !Form::findOne($formId)) return;
 
-    $form_html = $this->widget(
+    $formHtml = $this->widget(
       [
-        'form' => $form_id,
+        'form' => $formId,
         'form_type' => 'iframe',
       ]
     );
 
-    $scripts = $this->assets_controller->printScripts();
+    $scripts = $this->assetsController->printScripts();
 
     // language attributes
-    $language_attributes = [];
-    $is_rtl = (bool)(function_exists('is_rtl') && WPFunctions::get()->isRtl());
+    $languageAttributes = [];
+    $isRtl = (bool)(function_exists('is_rtl') && WPFunctions::get()->isRtl());
 
-    if ($is_rtl) {
-      $language_attributes[] = 'dir="rtl"';
+    if ($isRtl) {
+      $languageAttributes[] = 'dir="rtl"';
     }
 
     if (get_option('html_type') === 'text/html') {
-      $language_attributes[] = sprintf('lang="%s"', WPFunctions::get()->getBloginfo('language'));
+      $languageAttributes[] = sprintf('lang="%s"', WPFunctions::get()->getBloginfo('language'));
     }
 
-    $language_attributes = WPFunctions::get()->applyFilters(
-      'language_attributes', implode(' ', $language_attributes)
+    $languageAttributes = WPFunctions::get()->applyFilters(
+      'language_attributes', implode(' ', $languageAttributes)
     );
 
     $data = [
-      'language_attributes' => $language_attributes,
+      'language_attributes' => $languageAttributes,
       'scripts' => $scripts,
-      'form' => $form_html,
+      'form' => $formHtml,
       'mailpoet_form' => [
         'ajax_url' => WPFunctions::get()->adminUrl('admin-ajax.php', 'absolute'),
-        'is_rtl' => $is_rtl,
+        'is_rtl' => $isRtl,
       ],
     ];
 
@@ -87,10 +87,10 @@ class Widget extends \WP_Widget {
   /**
    * Save the new widget's title.
    */
-  public function update($new_instance, $old_instance) {
-    $instance = $old_instance;
-    $instance['title'] = strip_tags($new_instance['title']);
-    $instance['form'] = (int)$new_instance['form'];
+  public function update($newInstance, $oldInstance) {
+    $instance = $oldInstance;
+    $instance['title'] = strip_tags($newInstance['title']);
+    $instance['form'] = (int)$newInstance['form'];
     return $instance;
   }
 
@@ -105,13 +105,13 @@ class Widget extends \WP_Widget {
       ]
     );
 
-    $form_edit_url = WPFunctions::get()->adminUrl('admin.php?page=mailpoet-form-editor&id=');
+    $formEditUrl = WPFunctions::get()->adminUrl('admin.php?page=mailpoet-form-editor&id=');
 
     // set title
     $title = isset($instance['title']) ? strip_tags($instance['title']) : '';
 
     // set form
-    $selected_form = isset($instance['form']) ? (int)($instance['form']) : 0;
+    $selectedForm = isset($instance['form']) ? (int)($instance['form']) : 0;
 
     // get forms list
     $forms = Form::getPublished()->orderByAsc('name')->findArray();
@@ -129,10 +129,10 @@ class Widget extends \WP_Widget {
       <select class="widefat" id="<?php echo $this->get_field_id('form') ?>" name="<?php echo $this->get_field_name('form'); ?>">
         <?php
         foreach ($forms as $form) {
-          $is_selected = ($selected_form === (int)$form['id']) ? 'selected="selected"' : '';
-          $form_name = $form['name'] ? $this->wp->escHtml($form['name']) : "({$this->wp->_x('no name', 'fallback for forms without a name in a form list')})"
+          $isSelected = ($selectedForm === (int)$form['id']) ? 'selected="selected"' : '';
+          $formName = $form['name'] ? $this->wp->escHtml($form['name']) : "({$this->wp->_x('no name', 'fallback for forms without a name in a form list')})"
           ?>
-        <option value="<?php echo (int)$form['id']; ?>" <?php echo $is_selected; ?>><?php echo $form_name; ?></option>
+        <option value="<?php echo (int)$form['id']; ?>" <?php echo $isSelected; ?>><?php echo $formName; ?></option>
         <?php }  ?>
       </select>
     </p>
@@ -148,7 +148,7 @@ class Widget extends \WP_Widget {
         }).done(function(response) {
           if (response.data && response.data.id) {
             window.location =
-              "<?php echo $form_edit_url; ?>" + response.data.id;
+              "<?php echo $formEditUrl; ?>" + response.data.id;
           }
         }).fail((response) => {
           if (response.errors.length > 0) {
@@ -168,7 +168,7 @@ class Widget extends \WP_Widget {
    * Output the widget itself.
    */
   public function widget($args, $instance = null) {
-    $this->assets_controller->setupFrontEndDependencies();
+    $this->assetsController->setupFrontEndDependencies();
 
     // turn $args into variables
     extract($args);
@@ -181,7 +181,7 @@ class Widget extends \WP_Widget {
       'widget_title',
       !empty($instance['title']) ? $instance['title'] : '',
       $instance,
-      $this->id_base
+      $this->idBase
     );
 
     // get form
@@ -189,7 +189,7 @@ class Widget extends \WP_Widget {
     if (!$form) return '';
 
     $form = $form->asArray();
-    $form_type = 'widget';
+    $formType = 'widget';
     if (isset($instance['form_type']) && in_array(
         $instance['form_type'],
         [
@@ -199,25 +199,25 @@ class Widget extends \WP_Widget {
           'shortcode',
         ]
       )) {
-      $form_type = $instance['form_type'];
+      $formType = $instance['form_type'];
     }
 
     $body = (isset($form['body']) ? $form['body'] : []);
     $output = '';
 
     if (!empty($body)) {
-      $form_id = $this->id_base . '_' . $form['id'];
+      $formId = $this->idBase . '_' . $form['id'];
       $data = [
-        'form_id' => $form_id,
-        'form_type' => $form_type,
+        'form_id' => $formId,
+        'form_type' => $formType,
         'form' => $form,
         'title' => $title,
-        'styles' => FormRenderer::renderStyles($form, '#' . $form_id),
+        'styles' => FormRenderer::renderStyles($form, '#' . $formId),
         'html' => FormRenderer::renderHTML($form),
-        'before_widget' => (!empty($before_widget) ? $before_widget : ''),
-        'after_widget' => (!empty($after_widget) ? $after_widget : ''),
-        'before_title' => (!empty($before_title) ? $before_title : ''),
-        'after_title' => (!empty($after_title) ? $after_title : ''),
+        'before_widget' => (!empty($beforeWidget) ? $beforeWidget : ''),
+        'after_widget' => (!empty($afterWidget) ? $afterWidget : ''),
+        'before_title' => (!empty($beforeTitle) ? $beforeTitle : ''),
+        'after_title' => (!empty($afterTitle) ? $afterTitle : ''),
       ];
 
       // (POST) non ajax success/error variables
@@ -249,7 +249,7 @@ class Widget extends \WP_Widget {
       }
     }
 
-    if ($form_type === 'widget') {
+    if ($formType === 'widget') {
       echo $output;
     } else {
       return $output;

@@ -16,12 +16,12 @@ class UserFlagsController {
   /** @var UserFlagsRepository */
   private $user_flags_repository;
 
-  public function __construct(UserFlagsRepository $user_flags_repository) {
+  public function __construct(UserFlagsRepository $userFlagsRepository) {
     $this->defaults = [
       'last_announcement_seen' => false,
       'editor_tutorial_seen' => false,
     ];
-    $this->user_flags_repository = $user_flags_repository;
+    $this->userFlagsRepository = $userFlagsRepository;
   }
 
   public function get($name) {
@@ -42,20 +42,20 @@ class UserFlagsController {
   }
 
   public function set($name, $value) {
-    $current_user_id = WPFunctions::get()->getCurrentUserId();
-    $flag = $this->user_flags_repository->findOneBy([
-      'user_id' => $current_user_id,
+    $currentUserId = WPFunctions::get()->getCurrentUserId();
+    $flag = $this->userFlagsRepository->findOneBy([
+      'user_id' => $currentUserId,
       'name' => $name,
     ]);
 
     if (!$flag) {
       $flag = new UserFlagEntity();
-      $flag->setUserId($current_user_id);
+      $flag->setUserId($currentUserId);
       $flag->setName($name);
-      $this->user_flags_repository->persist($flag);
+      $this->userFlagsRepository->persist($flag);
     }
     $flag->setValue($value);
-    $this->user_flags_repository->flush();
+    $this->userFlagsRepository->flush();
 
     if ($this->isLoaded()) {
       $this->data[$name] = $value;
@@ -63,9 +63,9 @@ class UserFlagsController {
   }
 
   public function delete($name) {
-    $current_user_id = WPFunctions::get()->getCurrentUserId();
-    $flag = $this->user_flags_repository->findOneBy([
-      'user_id' => $current_user_id,
+    $currentUserId = WPFunctions::get()->getCurrentUserId();
+    $flag = $this->userFlagsRepository->findOneBy([
+      'user_id' => $currentUserId,
       'name' => $name,
     ]);
 
@@ -73,8 +73,8 @@ class UserFlagsController {
       return;
     }
 
-    $this->user_flags_repository->remove($flag);
-    $this->user_flags_repository->flush();
+    $this->userFlagsRepository->remove($flag);
+    $this->userFlagsRepository->flush();
 
     if ($this->isLoaded()) {
       unset($this->data[$name]);
@@ -82,8 +82,8 @@ class UserFlagsController {
   }
 
   private function load() {
-    $current_user_id = WPFunctions::get()->getCurrentUserId();
-    $flags = $this->user_flags_repository->findBy(['user_id' => $current_user_id]);
+    $currentUserId = WPFunctions::get()->getCurrentUserId();
+    $flags = $this->userFlagsRepository->findBy(['user_id' => $currentUserId]);
     $this->data = [];
     foreach ($flags as $flag) {
       $this->data[$flag->getName()] = $flag->getValue();

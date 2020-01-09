@@ -31,17 +31,17 @@ class Renderer {
   public function __construct($newsletter, $preview = false) {
     $this->newsletter = ($newsletter instanceof Newsletter) ? $newsletter->asArray() : $newsletter;
     $this->preview = $preview;
-    $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
-    $this->columns_renderer = new Columns\Renderer();
+    $this->blocksRenderer = new Blocks\Renderer($this->newsletter);
+    $this->columnsRenderer = new Columns\Renderer();
     $this->preprocessor = new Preprocessor(
-      $this->blocks_renderer,
+      $this->blocksRenderer,
       ContainerWrapper::getInstance()->get(TransactionalEmails::class)
     );
-    $this->CSS_inliner = new \MailPoetVendor\CSS();
+    $this->cSSInliner = new \MailPoetVendor\CSS();
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
-    $this->premium_activated = License::getLicense();
+    $this->premiumActivated = License::getLicense();
     $bridge = new Bridge();
-    $this->mss_activated = $bridge->isMPSendingServiceEnabled();
+    $this->mssActivated = $bridge->isMPSendingServiceEnabled();
   }
 
   public function render($type = false) {
@@ -56,33 +56,33 @@ class Renderer {
       ? $body['globalStyles']
       : [];
 
-    if (!$this->premium_activated && !$this->mss_activated && !$this->preview) {
+    if (!$this->premiumActivated && !$this->mssActivated && !$this->preview) {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
 
     $content = $this->preprocessor->process($content);
-    $rendered_body = $this->renderBody($content);
-    $rendered_styles = $this->renderStyles($styles);
-    $custom_fonts_links = StylesHelper::getCustomFontsLinks($styles);
+    $renderedBody = $this->renderBody($content);
+    $renderedStyles = $this->renderStyles($styles);
+    $customFontsLinks = StylesHelper::getCustomFontsLinks($styles);
 
     $template = $this->injectContentIntoTemplate($this->template, [
       htmlspecialchars($newsletter['subject']),
-      $rendered_styles,
-      $custom_fonts_links,
+      $renderedStyles,
+      $customFontsLinks,
       EHelper::escapeHtmlText($newsletter['preheader']),
-      $rendered_body,
+      $renderedBody,
     ]);
-    $template_dom = $this->inlineCSSStyles($template);
-    $template = $this->postProcessTemplate($template_dom);
+    $templateDom = $this->inlineCSSStyles($template);
+    $template = $this->postProcessTemplate($templateDom);
 
-    $rendered_newsletter = [
+    $renderedNewsletter = [
       'html' => $template,
       'text' => $this->renderTextVersion($template),
     ];
 
-    return ($type && !empty($rendered_newsletter[$type])) ?
-      $rendered_newsletter[$type] :
-      $rendered_newsletter;
+    return ($type && !empty($renderedNewsletter[$type])) ?
+      $renderedNewsletter[$type] :
+      $renderedNewsletter;
   }
 
   /**
@@ -95,16 +95,16 @@ class Renderer {
       : [];
 
     $_this = $this;
-    $rendered_content = array_map(function($content_block) use($_this) {
+    $renderedContent = array_map(function($contentBlock) use($_this) {
 
-      $columns_data = $_this->blocks_renderer->render($content_block);
+      $columnsData = $_this->blocksRenderer->render($contentBlock);
 
-      return $_this->columns_renderer->render(
-        $content_block,
-        $columns_data
+      return $_this->columnsRenderer->render(
+        $contentBlock,
+        $columnsData
       );
     }, $blocks);
-    return implode('', $rendered_content);
+    return implode('', $renderedContent);
   }
 
   /**
@@ -149,7 +149,7 @@ class Renderer {
    * @return DomNode
    */
   private function inlineCSSStyles($template) {
-    return $this->CSS_inliner->inlineCSS($template);
+    return $this->cSSInliner->inlineCSS($template);
   }
 
   /**
@@ -165,14 +165,14 @@ class Renderer {
    * @param DomNode $template_dom
    * @return string
    */
-  private function postProcessTemplate(DomNode $template_dom) {
+  private function postProcessTemplate(DomNode $templateDom) {
     // replace spaces in image tag URLs
-    foreach ($template_dom->query('img') as $image) {
+    foreach ($templateDom->query('img') as $image) {
       $image->src = str_replace(' ', '%20', $image->src);
     }
     $template = WPFunctions::get()->applyFilters(
       self::FILTER_POST_PROCESS,
-      $template_dom->__toString()
+      $templateDom->__toString()
     );
     return $template;
   }
@@ -204,7 +204,7 @@ class Renderer {
             [
               'type' => 'image',
               'link' => 'http://www.mailpoet.com',
-              'src' => Env::$assets_url . '/img/mailpoet_logo_newsletter.png',
+              'src' => Env::$assetsUrl . '/img/mailpoet_logo_newsletter.png',
               'fullWidth' => false,
               'alt' => 'MailPoet',
               'width' => '108px',

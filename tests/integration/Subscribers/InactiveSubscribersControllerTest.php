@@ -27,7 +27,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   const PROCESS_BATCH_SIZE = 100;
 
   public function _before() {
-    $this->controller = new InactiveSubscribersController($this->di_container->get(SettingsRepository::class));
+    $this->controller = new InactiveSubscribersController($this->diContainer->get(SettingsRepository::class));
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
@@ -45,11 +45,11 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDeactivatesOldSubscribersWithUnopenedEmail() {
-    list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
+    list($task) = $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 3);
 
-    $subscriber1 = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
+    $subscriber1 = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10);
     $this->addSubcriberToTask($subscriber1, $task);
-    $subscriber2 = $this->createSubscriber('s2@email.com', $created_days_ago = 10);
+    $subscriber2 = $this->createSubscriber('s2@email.com', $createdDaysAgo = 10);
     $this->addSubcriberToTask($subscriber2, $task);
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
@@ -61,22 +61,22 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDeactivatesLimitedAmountOfSubscribers() {
-    list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
+    list($task) = $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 3);
 
-    $subscriber1 = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
+    $subscriber1 = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10);
     $this->addSubcriberToTask($subscriber1, $task);
-    $subscriber2 = $this->createSubscriber('s2@email.com', $created_days_ago = 10);
+    $subscriber2 = $this->createSubscriber('s2@email.com', $createdDaysAgo = 10);
     $this->addSubcriberToTask($subscriber2, $task);
-    $batch_size = 1;
+    $batchSize = 1;
 
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batch_size, $subscriber1->id);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize, $subscriber1->id);
     expect($result)->equals(1);
     $subscriber1 = Subscriber::findOne($subscriber1->id);
     $subscriber2 = Subscriber::findOne($subscriber2->id);
     expect($subscriber1->status === Subscriber::STATUS_INACTIVE || $subscriber2->status === Subscriber::STATUS_INACTIVE)->true();
     expect($subscriber1->status === Subscriber::STATUS_SUBSCRIBED || $subscriber2->status === Subscriber::STATUS_SUBSCRIBED)->true();
 
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batch_size, $subscriber2->id);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize, $subscriber2->id);
     expect($result)->equals(1);
     $subscriber1 = Subscriber::findOne($subscriber1->id);
     $subscriber2 = Subscriber::findOne($subscriber2->id);
@@ -85,9 +85,9 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivateNewSubscriberWithUnopenedEmail() {
-    list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
+    list($task) = $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 3);
 
-    $subscriber = $this->createSubscriber('s1@email.com', $completed_days_ago = 3);
+    $subscriber = $this->createSubscriber('s1@email.com', $completedDaysAgo = 3);
     $this->addSubcriberToTask($subscriber, $task);
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
@@ -97,10 +97,10 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivateNewlyResubscribedSubscriberWithUnopenedEmail() {
-    list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
+    list($task) = $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 3);
 
-    $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
-    $subscriber->last_subscribed_at = (new Carbon())->subDays(2)->toDateTimeString();
+    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10);
+    $subscriber->lastSubscribedAt = (new Carbon())->subDays(2)->toDateTimeString();
     $subscriber->save();
     $this->addSubcriberToTask($subscriber, $task);
 
@@ -111,8 +111,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivateSubscriberWithoutSentEmail() {
-    $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
-    $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
+    $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 3);
+    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10);
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = Subscriber::findOne($subscriber->id);
@@ -120,11 +120,11 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivateSubscriberWhoRecentlyOpenedEmail() {
-    list($task, $queue) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 2);
-    $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
+    list($task, $queue) = $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 2);
+    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10);
     $this->addSubcriberToTask($subscriber, $task);
-    $this->addEmailOpenedRecord($subscriber, $queue, $opened_days_ago = 2);
-    list($task2) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 2);
+    $this->addEmailOpenedRecord($subscriber, $queue, $openedDaysAgo = 2);
+    list($task2) = $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 2);
     $this->addSubcriberToTask($subscriber, $task2);
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
@@ -133,8 +133,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivateSubscriberWhoReceivedEmailRecently() {
-    list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 0);
-    $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
+    list($task) = $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 0);
+    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10);
     $this->addSubcriberToTask($subscriber, $task);
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
@@ -143,8 +143,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivateSubscriberWhoReceivedEmailWhichWasNeverOpened() {
-    list($task) = $this->createCompletedSendingTask($completed_days_ago = 2);
-    $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
+    list($task) = $this->createCompletedSendingTask($completedDaysAgo = 2);
+    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10);
     $this->addSubcriberToTask($subscriber, $task);
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
@@ -153,11 +153,11 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
-    list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
+    list($task) = $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 3);
 
     $this->createSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY, true, (new Carbon())->subDays(3));
 
-    $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10);
+    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10);
     $this->addSubcriberToTask($subscriber, $task);
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
@@ -168,10 +168,10 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItActivatesSubscriberWhoRecentlyOpenedEmail() {
-    list($task, $queue) = $this->createCompletedSendingTask($completed_days_ago = 2);
-    $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
+    list($task, $queue) = $this->createCompletedSendingTask($completedDaysAgo = 2);
+    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10, Subscriber::STATUS_INACTIVE);
     $this->addSubcriberToTask($subscriber, $task);
-    $this->addEmailOpenedRecord($subscriber, $queue, $opened_days_ago = 2);
+    $this->addEmailOpenedRecord($subscriber, $queue, $openedDaysAgo = 2);
     $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(1);
     $subscriber = Subscriber::findOne($subscriber->id);
@@ -179,23 +179,23 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItActivatesLimitedNumberOfSubscribers() {
-    list($task, $queue) = $this->createCompletedSendingTask($completed_days_ago = 3);
-    $subscriber1 = $this->createSubscriber('s1@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
-    $subscriber2 = $this->createSubscriber('s2@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
+    list($task, $queue) = $this->createCompletedSendingTask($completedDaysAgo = 3);
+    $subscriber1 = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10, Subscriber::STATUS_INACTIVE);
+    $subscriber2 = $this->createSubscriber('s2@email.com', $createdDaysAgo = 10, Subscriber::STATUS_INACTIVE);
     $this->addSubcriberToTask($subscriber1, $task);
     $this->addSubcriberToTask($subscriber2, $task);
-    $this->addEmailOpenedRecord($subscriber1, $queue, $opened_days_ago = 2);
-    $this->addEmailOpenedRecord($subscriber2, $queue, $opened_days_ago = 2);
-    $batch_size = 1;
+    $this->addEmailOpenedRecord($subscriber1, $queue, $openedDaysAgo = 2);
+    $this->addEmailOpenedRecord($subscriber2, $queue, $openedDaysAgo = 2);
+    $batchSize = 1;
 
-    $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batch_size);
+    $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize);
     expect($result)->equals(1);
     $subscriber1 = Subscriber::findOne($subscriber1->id);
     $subscriber2 = Subscriber::findOne($subscriber2->id);
     expect($subscriber1->status === Subscriber::STATUS_INACTIVE || $subscriber2->status === Subscriber::STATUS_INACTIVE)->true();
     expect($subscriber1->status === Subscriber::STATUS_SUBSCRIBED || $subscriber2->status === Subscriber::STATUS_SUBSCRIBED)->true();
 
-    $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batch_size);
+    $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize);
     expect($result)->equals(1);
     $subscriber1 = Subscriber::findOne($subscriber1->id);
     $subscriber2 = Subscriber::findOne($subscriber2->id);
@@ -204,8 +204,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotActivateOldSubscribersWithUnopenedEmail() {
-    list($task) = $this->createCompletedSendingTask($completed_days_ago = 2);
-    $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
+    list($task) = $this->createCompletedSendingTask($completedDaysAgo = 2);
+    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10, Subscriber::STATUS_INACTIVE);
     $this->addSubcriberToTask($subscriber, $task);
     $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
@@ -214,11 +214,11 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItActivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
-    list($task) = $this->createCompletedSendingTaskWithOneOpen($completed_days_ago = 3);
+    list($task) = $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 3);
 
     $this->createSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY, true, (new Carbon())->subDays(3));
 
-    $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
+    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10, Subscriber::STATUS_INACTIVE);
     $this->addSubcriberToTask($subscriber, $task);
 
     $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
@@ -229,8 +229,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesReactivateInactiveSubscribers() {
-    list($task) = $this->createCompletedSendingTask($completed_days_ago = 2);
-    $subscriber = $this->createSubscriber('s1@email.com', $created_days_ago = 10, Subscriber::STATUS_INACTIVE);
+    list($task) = $this->createCompletedSendingTask($completedDaysAgo = 2);
+    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10, Subscriber::STATUS_INACTIVE);
     $this->addSubcriberToTask($subscriber, $task);
     $this->controller->reactivateInactiveSubscribers();
     $subscriber = Subscriber::findOne($subscriber->id);
@@ -243,11 +243,11 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
    * @param string $status
    * @return Subscriber
    */
-  private function createSubscriber($email, $created_days_ago = 0, $status = Subscriber::STATUS_SUBSCRIBED) {
-    $created_at = (new Carbon())->subDays($created_days_ago)->toDateTimeString();
+  private function createSubscriber($email, $createdDaysAgo = 0, $status = Subscriber::STATUS_SUBSCRIBED) {
+    $createdAt = (new Carbon())->subDays($createdDaysAgo)->toDateTimeString();
     $subscriber = Subscriber::createOrUpdate(['email' => $email, 'status' => $status]);
-    $subscriber->created_at = $created_at;
-    $subscriber->last_subscribed_at = $created_at;
+    $subscriber->createdAt = $createdAt;
+    $subscriber->lastSubscribedAt = $createdAt;
     $subscriber->save();
     return $subscriber;
   }
@@ -256,11 +256,11 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
    * @param int $processed_days_ago
    * @return array
    */
-  private function createCompletedSendingTask($processed_days_ago = 0) {
-    $processed_at = (new Carbon())->subDays($processed_days_ago)->toDateTimeString();
+  private function createCompletedSendingTask($processedDaysAgo = 0) {
+    $processedAt = (new Carbon())->subDays($processedDaysAgo)->toDateTimeString();
     $task = ScheduledTask::createOrUpdate(['type' => Sending::TASK_TYPE, 'status' => ScheduledTask::STATUS_COMPLETED]);
-    $task->created_at = $processed_at;
-    $task->processed_at = $processed_at;
+    $task->createdAt = $processedAt;
+    $task->processedAt = $processedAt;
     $task->save();
     $queue = SendingQueue::createOrUpdate(['task_id' => $task->id, 'newsletter_id' => $this->newsletter->id]);
     $queue->save();
@@ -271,9 +271,9 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
    * @param int $processed_days_ago
    * @return array
    */
-  private function createCompletedSendingTaskWithOneOpen($processed_days_ago = 0) {
-    list($task, $queue) = $this->createCompletedSendingTask($processed_days_ago);
-    $subscriber0 = $this->createSubscriber('s0@email.com', $created_days_ago = 10);
+  private function createCompletedSendingTaskWithOneOpen($processedDaysAgo = 0) {
+    list($task, $queue) = $this->createCompletedSendingTask($processedDaysAgo);
+    $subscriber0 = $this->createSubscriber('s0@email.com', $createdDaysAgo = 10);
     $this->addSubcriberToTask($subscriber0, $task);
     $this->addEmailOpenedRecord($subscriber0, $queue);
     return [$task, $queue];
@@ -284,29 +284,29 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
    * @param ScheduledTask $task
    * @param int $days_ago
    */
-  private function addSubcriberToTask(Subscriber $subscriber, ScheduledTask $task, $days_ago = 0) {
-    $created_at = (new Carbon())->subDays($days_ago)->toDateTimeString();
-    $task_subscriber = ScheduledTaskSubscriber::createOrUpdate(['task_id' => $task->id, 'subscriber_id' => $subscriber->id]);
-    $task_subscriber->created_at = $created_at;
-    $task_subscriber->save();
+  private function addSubcriberToTask(Subscriber $subscriber, ScheduledTask $task, $daysAgo = 0) {
+    $createdAt = (new Carbon())->subDays($daysAgo)->toDateTimeString();
+    $taskSubscriber = ScheduledTaskSubscriber::createOrUpdate(['task_id' => $task->id, 'subscriber_id' => $subscriber->id]);
+    $taskSubscriber->createdAt = $createdAt;
+    $taskSubscriber->save();
   }
 
-  private function addEmailOpenedRecord(Subscriber $subscriber, SendingQueue $queue, $days_ago = 0) {
-    $opened = StatisticsOpens::createOrUpdate(['subscriber_id' => $subscriber->id, 'newsletter_id' => $queue->newsletter_id, 'queue_id' => $queue->id]);
-    $opened->created_at = (new Carbon())->subDays($days_ago)->toDateTimeString();
+  private function addEmailOpenedRecord(Subscriber $subscriber, SendingQueue $queue, $daysAgo = 0) {
+    $opened = StatisticsOpens::createOrUpdate(['subscriber_id' => $subscriber->id, 'newsletter_id' => $queue->newsletterId, 'queue_id' => $queue->id]);
+    $opened->createdAt = (new Carbon())->subDays($daysAgo)->toDateTimeString();
     $opened->save();
   }
 
-  private function createSetting($name, $value, $created_at) {
-    $table_name = $this->entity_manager->getClassMetadata(SettingEntity::class)->getTableName();
+  private function createSetting($name, $value, $createdAt) {
+    $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
     $this->connection->executeUpdate(
       "INSERT INTO $table_name (name, value, created_at) VALUES (?, ?, ?)",
-      [$name, $value, $created_at]
+      [$name, $value, $createdAt]
     );
   }
 
   private function removeSetting($name) {
-    $table_name = $this->entity_manager->getClassMetadata(SettingEntity::class)->getTableName();
+    $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
     $this->connection->executeUpdate("DELETE FROM $table_name WHERE name = ?", [$name]);
   }
 }

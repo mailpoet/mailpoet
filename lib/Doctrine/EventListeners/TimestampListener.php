@@ -17,30 +17,30 @@ class TimestampListener {
     $this->now = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
   }
 
-  public function prePersist(LifecycleEventArgs $event_args) {
-    $entity = $event_args->getEntity();
-    $entity_traits = $this->getEntityTraits($entity);
+  public function prePersist(LifecycleEventArgs $eventArgs) {
+    $entity = $eventArgs->getEntity();
+    $entityTraits = $this->getEntityTraits($entity);
 
-    if (in_array(CreatedAtTrait::class, $entity_traits, true) && method_exists($entity, 'setCreatedAt')) {
+    if (in_array(CreatedAtTrait::class, $entityTraits, true) && method_exists($entity, 'setCreatedAt')) {
       $entity->setCreatedAt($this->now);
     }
 
-    if (in_array(UpdatedAtTrait::class, $entity_traits, true) && method_exists($entity, 'setUpdatedAt')) {
+    if (in_array(UpdatedAtTrait::class, $entityTraits, true) && method_exists($entity, 'setUpdatedAt')) {
       $entity->setUpdatedAt($this->now);
     }
   }
 
-  public function preUpdate(LifecycleEventArgs $event_args) {
-    $entity = $event_args->getEntity();
-    $entity_traits = $this->getEntityTraits($entity);
+  public function preUpdate(LifecycleEventArgs $eventArgs) {
+    $entity = $eventArgs->getEntity();
+    $entityTraits = $this->getEntityTraits($entity);
 
-    if (in_array(UpdatedAtTrait::class, $entity_traits, true) && method_exists($entity, 'setUpdatedAt')) {
+    if (in_array(UpdatedAtTrait::class, $entityTraits, true) && method_exists($entity, 'setUpdatedAt')) {
       $entity->setUpdatedAt($this->now);
     }
   }
 
   private function getEntityTraits($entity) {
-    $entity_reflection = new ReflectionObject($entity);
-    return $entity_reflection->getTraitNames();
+    $entityReflection = new ReflectionObject($entity);
+    return $entityReflection->getTraitNames();
   }
 }

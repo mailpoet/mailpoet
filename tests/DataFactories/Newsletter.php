@@ -36,8 +36,8 @@ class Newsletter {
       ];
     $this->options = [];
     $this->segments = [];
-    $this->queue_options = [];
-    $this->task_subscribers = [];
+    $this->queueOptions = [];
+    $this->taskSubscribers = [];
     $this->loadBodyFrom('newsletterWithALC.json');
   }
 
@@ -76,13 +76,13 @@ class Newsletter {
    * @param string $created_at in format Y-m-d H:i:s
    * @return Newsletter
    */
-  public function withCreatedAt($created_at) {
-    $this->data['created_at'] = $created_at;
+  public function withCreatedAt($createdAt) {
+    $this->data['created_at'] = $createdAt;
     return $this;
   }
 
-  public function withParentId($parent_id) {
-    $this->data['parent_id'] = $parent_id;
+  public function withParentId($parentId) {
+    $this->data['parent_id'] = $parentId;
     return $this;
   }
 
@@ -126,11 +126,11 @@ class Newsletter {
   /**
    * @return Newsletter
    */
-  public function withWelcomeTypeForSegment($segment_id = 2) {
+  public function withWelcomeTypeForSegment($segmentId = 2) {
     $this->data['type'] = 'welcome';
     $this->withOptions([
       3 => 'segment', // event
-      4 => $segment_id, // segment
+      4 => $segmentId, // segment
       5 => 'subscriber', // role
       6 => '1', // afterTimeNumber
       7 => 'immediate', // afterTimeType
@@ -166,7 +166,7 @@ class Newsletter {
   public function withAutomaticTypeWooCommerceProductPurchased(array $products = []) {
     $this->data['type'] = 'automatic';
 
-    $products_option = array_map(function ($product) {
+    $productsOption = array_map(function ($product) {
       return ['id' => $product['id'], 'name' => $product['name']];
     }, $products);
 
@@ -175,7 +175,7 @@ class Newsletter {
       15 => 'woocommerce_product_purchased',
       16 => 'user', // sendTo
       19 => 'immediate', // afterTimeType
-      20 => json_encode(['option' => $products_option]),
+      20 => json_encode(['option' => $productsOption]),
     ]);
     return $this;
   }
@@ -241,17 +241,17 @@ class Newsletter {
   }
 
   public function withSendingQueue(array $options = []) {
-    $this->queue_options = [
+    $this->queueOptions = [
       'status' => ScheduledTask::STATUS_COMPLETED,
       'count_processed' => 1,
       'count_total' => 1,
     ];
-    $this->queue_options = array_merge($this->queue_options, $options);
+    $this->queueOptions = array_merge($this->queueOptions, $options);
     return $this;
   }
 
   public function withSubscriber($subscriber, array $data = []) {
-    $this->task_subscribers[] = array_merge([
+    $this->taskSubscribers[] = array_merge([
       'subscriber_id' => $subscriber->id,
       'processed' => 1,
       'failed' => 0,
@@ -265,37 +265,37 @@ class Newsletter {
    */
   public function create() {
     $newsletter = \MailPoet\Models\Newsletter::createOrUpdate($this->data);
-    foreach ($this->options as $option_id => $option_value) {
+    foreach ($this->options as $optionId => $optionValue) {
       \MailPoet\Models\NewsletterOption::createOrUpdate(
         [
           'newsletter_id' => $newsletter->id,
-          'option_field_id' => $option_id,
-          'value' => $option_value,
+          'option_field_id' => $optionId,
+          'value' => $optionValue,
         ]
       );
     }
     if ($this->data['sender_address']) {
-      $newsletter->sender_address = $this->data['sender_address'];
+      $newsletter->senderAddress = $this->data['sender_address'];
       $newsletter->save();
     }
-    foreach ($this->segments as $segment_id) {
+    foreach ($this->segments as $segmentId) {
       NewsletterSegment::createOrUpdate([
         'newsletter_id' => $newsletter->id,
-        'segment_id' => $segment_id,
+        'segment_id' => $segmentId,
       ]);
     }
-    if ($this->queue_options) {
-      $sending_task = SendingTask::create();
-      $sending_task->newsletter_id = $newsletter->id;
-      $sending_task->status = $this->queue_options['status'];
-      $sending_task->count_processed = $this->queue_options['count_processed'];
-      $sending_task->count_total = $this->queue_options['count_total'];
-      $sending_task->save();
+    if ($this->queueOptions) {
+      $sendingTask = SendingTask::create();
+      $sendingTask->newsletterId = $newsletter->id;
+      $sendingTask->status = $this->queueOptions['status'];
+      $sendingTask->countProcessed = $this->queueOptions['count_processed'];
+      $sendingTask->countTotal = $this->queueOptions['count_total'];
+      $sendingTask->save();
 
-      foreach ($this->task_subscribers as $data) {
-        $task_subscriber = ScheduledTaskSubscriber::createOrUpdate([
+      foreach ($this->taskSubscribers as $data) {
+        $taskSubscriber = ScheduledTaskSubscriber::createOrUpdate([
           'subscriber_id' => $data['subscriber_id'],
-          'task_id' => $sending_task->task_id,
+          'task_id' => $sendingTask->taskId,
           'error' => $data['error'],
           'failed' => $data['failed'],
           'processed' => $data['processed'],

@@ -14,41 +14,41 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
   private $cron_worker_scheduler;
 
   public function _before() {
-    $this->cron_worker_scheduler = $this->di_container->get(CronWorkerScheduler::class);
+    $this->cronWorkerScheduler = $this->diContainer->get(CronWorkerScheduler::class);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 
   public function testItSchedulesTask() {
-    $next_run_date = Carbon::now()->addWeek();
-    $this->cron_worker_scheduler->schedule('test', $next_run_date);
+    $nextRunDate = Carbon::now()->addWeek();
+    $this->cronWorkerScheduler->schedule('test', $nextRunDate);
 
     $tasks = ScheduledTask::findMany();
     expect($tasks)->count(1);
     expect($tasks[0]->type)->same('test');
     expect($tasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
-    expect($tasks[0]->scheduled_at)->same($next_run_date->format('Y-m-d H:i:s'));
+    expect($tasks[0]->scheduled_at)->same($nextRunDate->format('Y-m-d H:i:s'));
   }
 
   public function testItDoesNotScheduleTaskTwice() {
-    $next_run_date = Carbon::now()->addWeek();
-    $this->cron_worker_scheduler->schedule('test', $next_run_date);
+    $nextRunDate = Carbon::now()->addWeek();
+    $this->cronWorkerScheduler->schedule('test', $nextRunDate);
     expect(ScheduledTask::findMany())->count(1);
 
-    $result = $this->cron_worker_scheduler->schedule('test', $next_run_date);
+    $result = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
     expect($result)->false();
     expect(ScheduledTask::findMany())->count(1);
   }
 
   public function testItReschedulesTask() {
-    $next_run_date = Carbon::now()->subDay();
-    $task = $this->cron_worker_scheduler->schedule('test', $next_run_date);
-    $this->cron_worker_scheduler->reschedule($task, 10);
+    $nextRunDate = Carbon::now()->subDay();
+    $task = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
+    $this->cronWorkerScheduler->reschedule($task, 10);
 
     $tasks = ScheduledTask::findMany();
     expect($tasks)->count(1);
     expect($tasks[0]->type)->same('test');
     expect($tasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
-    expect($tasks[0]->scheduled_at)->greaterThan($next_run_date);
+    expect($tasks[0]->scheduled_at)->greaterThan($nextRunDate);
     expect($tasks[0]->scheduled_at)->greaterThan(Carbon::now());
   }
 

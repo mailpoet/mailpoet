@@ -15,7 +15,7 @@ class ThrottlingTest extends \MailPoetTest {
     for ($i = 1; $i <= 10; $i++) {
       $ip = SubscriberIP::create();
       $ip->ip = '127.0.0.1';
-      $ip->created_at = Carbon::now()->subMinutes($i);
+      $ip->createdAt = Carbon::now()->subMinutes($i);
       $ip->save();
     }
     expect(Throttling::throttle())->equals(MINUTE_IN_SECONDS * pow(2, 10));
@@ -33,8 +33,8 @@ class ThrottlingTest extends \MailPoetTest {
 
   public function testItDoesNotThrottleForLoggedInUsers() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-    $wp_users = get_users();
-    wp_set_current_user($wp_users[0]->ID);
+    $wpUsers = get_users();
+    wp_set_current_user($wpUsers[0]->ID);
     expect(Throttling::throttle())->equals(false);
     expect(Throttling::throttle())->equals(false);
     wp_set_current_user(0);
@@ -48,7 +48,7 @@ class ThrottlingTest extends \MailPoetTest {
 
     $ip2 = SubscriberIP::create();
     $ip2->ip = '127.0.0.1';
-    $ip2->created_at = Carbon::now()->subMonths(1)->subSeconds(1);
+    $ip2->createdAt = Carbon::now()->subMonths(1)->subSeconds(1);
     $ip2->save();
 
     expect(SubscriberIP::count())->equals(2);

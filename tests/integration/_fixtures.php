@@ -3,7 +3,7 @@
 use Codeception\Util\Fixtures;
 use MailPoet\Models\Subscriber;
 
-$newsletter_body_text =
+$newsletterBodyText =
 
 Fixtures::add(
   'newsletter_body_template',

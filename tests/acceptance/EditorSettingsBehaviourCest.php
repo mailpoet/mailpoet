@@ -15,51 +15,51 @@ class EditorSettingsBehaviourCest {
   const HIGHLIGHTED_ALC_SELECTOR = '.mailpoet_highlight .mailpoet_automated_latest_content_block_posts';
   const SETTINGS_PANEL_SELECTOR = '#mailpoet_panel';
 
-  public function testSettingsBehaviour(\AcceptanceTester $I) {
-    $I->wantTo('Test settings behaviour');
+  public function testSettingsBehaviour(\AcceptanceTester $i) {
+    $i->wantTo('Test settings behaviour');
     $newsletterTitle = 'Settings Newsletter';
     $newsletter = (new Newsletter())
         ->withSubject($newsletterTitle)
         ->loadBodyFrom('newsletterWithALCAndButton.json')
         ->withSubject($newsletterTitle)
         ->create();
-    $I->login();
-    $I->amEditingNewsletter($newsletter->id);
+    $i->login();
+    $i->amEditingNewsletter($newsletter->id);
 
     // Check settings are not visible at the beginning
-    $I->dontSee(self::SETTINGS_PANEL_SELECTOR);
+    $i->dontSee(self::SETTINGS_PANEL_SELECTOR);
 
     // Check settings are opened and keeps opened when clicking on the same block
-    $I->click(self::ALC_OVERLAY_SELECTOR);
-    $I->waitForElementVisible(self::SETTINGS_PANEL_SELECTOR);
-    $I->wait(0.35); // CSS animation
-    $I->click(self::ALC_OVERLAY_SELECTOR);
-    $I->seeElement(self::SETTINGS_PANEL_SELECTOR);
+    $i->click(self::ALC_OVERLAY_SELECTOR);
+    $i->waitForElementVisible(self::SETTINGS_PANEL_SELECTOR);
+    $i->wait(0.35); // CSS animation
+    $i->click(self::ALC_OVERLAY_SELECTOR);
+    $i->seeElement(self::SETTINGS_PANEL_SELECTOR);
 
     // Check settings are closed when block is duplicated
-    $I->click(self::DUPLICATE_BUTTON_SELECTOR);
-    $I->waitForElementNotVisible(self::SETTINGS_PANEL_SELECTOR);
-    $I->wait(1); // Wait for ALC blocks to reorder themselves
+    $i->click(self::DUPLICATE_BUTTON_SELECTOR);
+    $i->waitForElementNotVisible(self::SETTINGS_PANEL_SELECTOR);
+    $i->wait(1); // Wait for ALC blocks to reorder themselves
 
     // Check settings are closed when clicked on another block
-    $I->click(self::ALC_OVERLAY_SELECTOR);
-    $I->waitForElementVisible(self::SETTINGS_PANEL_SELECTOR);
-    $I->wait(0.35); // CSS animation
-    $I->click(self::BUTTON_1_SELECTOR);
-    $I->waitForElementNotVisible(self::SETTINGS_PANEL_SELECTOR);
+    $i->click(self::ALC_OVERLAY_SELECTOR);
+    $i->waitForElementVisible(self::SETTINGS_PANEL_SELECTOR);
+    $i->wait(0.35); // CSS animation
+    $i->click(self::BUTTON_1_SELECTOR);
+    $i->waitForElementNotVisible(self::SETTINGS_PANEL_SELECTOR);
 
     // Check other blocks are not highlightable when settings are showed
-    $I->seeNumberOfElements(self::HIGHLIGHTED_BLOCK_SELECTOR, 0); // Nothing is highlighted
-    $I->moveMouseOver(['xpath' => '//*[text()="' . self::BUTTON_2_SELECTOR . '"]']);
-    $I->wait(0.35); // CSS animation
-    $I->seeNumberOfElements(self::HIGHLIGHTED_BUTTON_SELECTOR, 1); // Button is highlighted
-    $I->click(self::ALC_OVERLAY_SELECTOR);
-    $I->wait(0.35); // CSS animation
-    $I->seeNumberOfElements(self::HIGHLIGHTED_ALC_SELECTOR, 1); // ALC is highlighted
-    $I->moveMouseOver(['xpath' => '//*[text()="' . self::BUTTON_1_SELECTOR . '"]']);
-    $I->wait(0.35); // CSS animation
-    $I->seeNumberOfElements(self::HIGHLIGHTED_ALC_SELECTOR, 1); // ALC is highlighted
-    $I->seeNumberOfElements(self::HIGHLIGHTED_BUTTON_SELECTOR, 0); // Button is not highlighted
+    $i->seeNumberOfElements(self::HIGHLIGHTED_BLOCK_SELECTOR, 0); // Nothing is highlighted
+    $i->moveMouseOver(['xpath' => '//*[text()="' . self::BUTTON_2_SELECTOR . '"]']);
+    $i->wait(0.35); // CSS animation
+    $i->seeNumberOfElements(self::HIGHLIGHTED_BUTTON_SELECTOR, 1); // Button is highlighted
+    $i->click(self::ALC_OVERLAY_SELECTOR);
+    $i->wait(0.35); // CSS animation
+    $i->seeNumberOfElements(self::HIGHLIGHTED_ALC_SELECTOR, 1); // ALC is highlighted
+    $i->moveMouseOver(['xpath' => '//*[text()="' . self::BUTTON_1_SELECTOR . '"]']);
+    $i->wait(0.35); // CSS animation
+    $i->seeNumberOfElements(self::HIGHLIGHTED_ALC_SELECTOR, 1); // ALC is highlighted
+    $i->seeNumberOfElements(self::HIGHLIGHTED_BUTTON_SELECTOR, 0); // Button is not highlighted
   }
 
 }

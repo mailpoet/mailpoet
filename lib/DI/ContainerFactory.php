@@ -26,9 +26,9 @@ class ContainerFactory {
    * @return Container
    */
   public function getContainer() {
-    $dump_class = '\\' . $this->configurator->getDumpNamespace() . '\\' . $this->configurator->getDumpClassname();
-    if (!$this->debug && class_exists($dump_class)) {
-      $container = new $dump_class();
+    $dumpClass = '\\' . $this->configurator->getDumpNamespace() . '\\' . $this->configurator->getDumpClassname();
+    if (!$this->debug && class_exists($dumpClass)) {
+      $container = new $dumpClass();
     } else {
       $container = $this->getConfiguredContainer();
       $container->compile();

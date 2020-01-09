@@ -18,9 +18,9 @@ class DefaultSubscribersGetter extends SubscribersGetter {
    */
   protected $get_subscribers_without_segment;
 
-  public function __construct($segments_ids, $batch_size) {
-    parent::__construct($segments_ids, $batch_size);
-    $this->get_subscribers_without_segment = (array_search(0, $segments_ids) !== false);
+  public function __construct($segmentsIds, $batchSize) {
+    parent::__construct($segmentsIds, $batchSize);
+    $this->getSubscribersWithoutSegment = (array_search(0, $segmentsIds) !== false);
   }
 
   protected function filter($subscribers) {
@@ -48,7 +48,7 @@ class DefaultSubscribersGetter extends SubscribersGetter {
       )
       ->groupBy(Segment::$_table . '.id');
 
-    if ($this->get_subscribers_without_segment !== false) {
+    if ($this->getSubscribersWithoutSegment !== false) {
       // if there are subscribers who do not belong to any segment, use
       // a CASE function to group them under "Not In Segment"
       $subscribers = $subscribers
@@ -59,20 +59,20 @@ class DefaultSubscribersGetter extends SubscribersGetter {
         )
         ->whereRaw(
           SubscriberSegment::$_table . '.segment_id IN (' .
-          rtrim(str_repeat('?,', count($this->segments_ids)), ',') . ') ' .
+          rtrim(str_repeat('?,', count($this->segmentsIds)), ',') . ') ' .
           'OR ' . SubscriberSegment::$_table . '.segment_id IS NULL ',
-          $this->segments_ids
+          $this->segmentsIds
         );
     } else {
       // if all subscribers belong to at least one segment, select the segment name
       $subscribers = $subscribers
         ->selectExpr('MAX(' . Segment::$_table . '.name) as segment_name')
-        ->whereIn(SubscriberSegment::$_table . '.segment_id', $this->segments_ids);
+        ->whereIn(SubscriberSegment::$_table . '.segment_id', $this->segmentsIds);
     }
 
     $subscribers = $subscribers
       ->offset($this->offset)
-      ->limit($this->batch_size)
+      ->limit($this->batchSize)
       ->findArray();
 
     return $subscribers;

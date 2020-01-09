@@ -19,7 +19,7 @@ class DividerTest extends \MailPoetUnitTest {
 
   public function testItRendersCorrectly() {
     $output = Divider::render($this->block);
-    $expected_result = '
+    $expectedResult = '
       <tr>
         <td class="mailpoet_divider" valign="top" style="padding: 13px 20px 13px 20px;">
           <table width="100%" border="0" cellpadding="0" cellspacing="0"
@@ -31,6 +31,6 @@ class DividerTest extends \MailPoetUnitTest {
           </table>
         </td>
       </tr>';
-    expect($output)->equals($expected_result);
+    expect($output)->equals($expectedResult);
   }
 }

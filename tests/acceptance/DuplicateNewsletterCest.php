@@ -6,16 +6,16 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class DuplicateNewsletterCest {
 
-  public function duplicateNewsletter(\AcceptanceTester $I) {
-    $newsletter_name = 'Duplicate Newsletter';
+  public function duplicateNewsletter(\AcceptanceTester $i) {
+    $newsletterName = 'Duplicate Newsletter';
     $newsletter = new Newsletter();
-    $newsletter->withSubject($newsletter_name)->create();
-    $I->wantTo('Duplicate a newsletter');
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($newsletter_name);
-    $I->clickItemRowActionByItemName($newsletter_name, 'Duplicate');
-    $I->waitForText('Copy of ' . $newsletter_name);
+    $newsletter->withSubject($newsletterName)->create();
+    $i->wantTo('Duplicate a newsletter');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Duplicate');
+    $i->waitForText('Copy of ' . $newsletterName);
   }
 
 }

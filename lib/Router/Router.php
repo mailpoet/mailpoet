@@ -20,42 +20,42 @@ class Router {
   const RESPONSE_ERROR = 404;
   const RESPONE_FORBIDDEN = 403;
 
-  public function __construct(AccessControl $access_control, ContainerInterface $container, $api_data = false) {
-    $api_data = ($api_data) ? $api_data : $_GET;
-    $this->api_request = is_array($api_data) && array_key_exists(self::NAME, $api_data);
-    $this->endpoint = isset($api_data['endpoint']) ?
-      Helpers::underscoreToCamelCase($api_data['endpoint']) :
+  public function __construct(AccessControl $accessControl, ContainerInterface $container, $apiData = false) {
+    $apiData = ($apiData) ? $apiData : $_GET;
+    $this->apiRequest = is_array($apiData) && array_key_exists(self::NAME, $apiData);
+    $this->endpoint = isset($apiData['endpoint']) ?
+      Helpers::underscoreToCamelCase($apiData['endpoint']) :
       false;
-    $this->endpoint_action = isset($api_data['action']) ?
-      Helpers::underscoreToCamelCase($api_data['action']) :
+    $this->endpointAction = isset($apiData['action']) ?
+      Helpers::underscoreToCamelCase($apiData['action']) :
       false;
-    $this->data = isset($api_data['data']) ?
-      self::decodeRequestData($api_data['data']) :
+    $this->data = isset($apiData['data']) ?
+      self::decodeRequestData($apiData['data']) :
       [];
-    $this->access_control = $access_control;
+    $this->accessControl = $accessControl;
     $this->container = $container;
   }
 
   public function init() {
-    if (!$this->api_request) return;
-    $endpoint_class = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
+    if (!$this->apiRequest) return;
+    $endpointClass = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
 
-    if (!$this->endpoint || !class_exists($endpoint_class)) {
+    if (!$this->endpoint || !class_exists($endpointClass)) {
       return $this->terminateRequest(self::RESPONSE_ERROR, WPFunctions::get()->__('Invalid router endpoint', 'mailpoet'));
     }
 
-    $endpoint = $this->container->get($endpoint_class);
+    $endpoint = $this->container->get($endpointClass);
 
-    if (!method_exists($endpoint, $this->endpoint_action) || !in_array($this->endpoint_action, $endpoint->allowed_actions)) {
+    if (!method_exists($endpoint, $this->endpointAction) || !in_array($this->endpointAction, $endpoint->allowedActions)) {
       return $this->terminateRequest(self::RESPONSE_ERROR, WPFunctions::get()->__('Invalid router endpoint action', 'mailpoet'));
     }
-    if (!$this->validatePermissions($this->endpoint_action, $endpoint->permissions)) {
+    if (!$this->validatePermissions($this->endpointAction, $endpoint->permissions)) {
       return $this->terminateRequest(self::RESPONE_FORBIDDEN, WPFunctions::get()->__('You do not have the required permissions.', 'mailpoet'));
     }
     WPFunctions::get()->doAction('mailpoet_conflict_resolver_router_url_query_parameters');
     $callback = [
       $endpoint,
-      $this->endpoint_action,
+      $this->endpointAction,
     ];
     if (is_callable($callback)) {
       return call_user_func($callback, $this->data);
@@ -91,10 +91,10 @@ class Router {
     exit;
   }
 
-  public function validatePermissions($endpoint_action, $permissions) {
+  public function validatePermissions($endpointAction, $permissions) {
     // validate action permission if defined, otherwise validate global permission
-    return(!empty($permissions['actions'][$endpoint_action])) ?
-      $this->access_control->validatePermission($permissions['actions'][$endpoint_action]) :
-      $this->access_control->validatePermission($permissions['global']);
+    return(!empty($permissions['actions'][$endpointAction])) ?
+      $this->accessControl->validatePermission($permissions['actions'][$endpointAction]) :
+      $this->accessControl->validatePermission($permissions['global']);
   }
 }

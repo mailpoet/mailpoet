@@ -22,9 +22,9 @@ class PremiumKeyCheck extends KeyCheckWorker {
   }
 
   public function checkKey() {
-    $premium_key = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
-    $result = $this->bridge->checkPremiumKey($premium_key);
-    $this->bridge->storePremiumKeyAndState($premium_key, $result);
+    $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
+    $result = $this->bridge->checkPremiumKey($premiumKey);
+    $this->bridge->storePremiumKeyAndState($premiumKey, $result);
     return $result;
   }
 }

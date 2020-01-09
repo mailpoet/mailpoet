@@ -36,104 +36,104 @@ class WooCommercePastRevenues {
     remove_all_actions('woocommerce_order_status_completed');
     remove_all_actions('woocommerce_order_status_processing');
 
-    $minimal_created_at_date = (new Carbon())->subDays(self::MAX_DAYS_AGO)->toDateTimeString();
+    $minimalCreatedAtDate = (new Carbon())->subDays(self::MAX_DAYS_AGO)->toDateTimeString();
 
     // Create list
-    $segment_factory = new Segment();
-    $subscribers_list = $segment_factory->withName('WC revenues load test')->create();
+    $segmentFactory = new Segment();
+    $subscribersList = $segmentFactory->withName('WC revenues load test')->create();
 
     // Create subscribers
-    $subscribers_ids = [];
-    $subscriber_emails = [];
+    $subscribersIds = [];
+    $subscriberEmails = [];
     for ($i = 1; $i <= self::SUBSCRIBERS_COUNT; $i++) {
       $email = "address$i@email.com";
-      $subscriber = $this->createSubscriber("address$i@email.com", "last_name_$i", $minimal_created_at_date, $subscribers_list);
-      $subscribers_ids[] = $subscriber->id;
-      $subscriber_emails[$subscriber->id] = $email;
-      $batch_log = $this->getBatchLog('Subscribers', count($subscribers_ids));
-      if ($batch_log) {
-        yield $batch_log;
+      $subscriber = $this->createSubscriber("address$i@email.com", "last_name_$i", $minimalCreatedAtDate, $subscribersList);
+      $subscribersIds[] = $subscriber->id;
+      $subscriberEmails[$subscriber->id] = $email;
+      $batchLog = $this->getBatchLog('Subscribers', count($subscribersIds));
+      if ($batchLog) {
+        yield $batchLog;
       }
     }
     yield "Subscribers done";
 
     // Products
-    $product_category = $this->createProductCategory('WC Revenues Test Category', 'revenues-test-cat');
+    $productCategory = $this->createProductCategory('WC Revenues Test Category', 'revenues-test-cat');
     $products = [];
     for ($i = 1; $i <= self::PRODUCTS_COUNT; $i++) {
-      $products[] = $this->createProduct("Product $i", 100, [$product_category->term_id]);
+      $products[] = $this->createProduct("Product $i", 100, [$productCategory->termId]);
     }
     yield "Products done";
 
     // Newsletters
-    $email_factory = new Newsletter();
+    $emailFactory = new Newsletter();
     // Create sent standard newsletters
-    $sent_standard_newsletters = [];
+    $sentStandardNewsletters = [];
     for ($i = 1; $i <= self::STANDARD_NEWSLETTER; $i++) {
-      $sent_at = $this->getRandomDateInPast();
-      $newsletter = $email_factory
+      $sentAt = $this->getRandomDateInPast();
+      $newsletter = $emailFactory
         ->withSubject("Standard $i")
-        ->withSegments([$subscribers_list])
-        ->withCreatedAt($sent_at)
+        ->withSegments([$subscribersList])
+        ->withCreatedAt($sentAt)
         ->create();
-      $sent_standard_newsletters[] = $this->createSentEmailData($newsletter, $sent_at, $subscribers_ids, $subscribers_list->id);
+      $sentStandardNewsletters[] = $this->createSentEmailData($newsletter, $sentAt, $subscribersIds, $subscribersList->id);
     }
     yield "Standard newsletters done";
 
     // Crate sent post notifications
-    $email_factory = new Newsletter();
-    $post_notification = $email_factory
+    $emailFactory = new Newsletter();
+    $postNotification = $emailFactory
       ->withSubject("Post Notification Parent")
       ->withPostNotificationsType()
       ->withActiveStatus()
-      ->withSegments([$subscribers_list])
-      ->withCreatedAt($minimal_created_at_date)
+      ->withSegments([$subscribersList])
+      ->withCreatedAt($minimalCreatedAtDate)
       ->create();
-    $sent_post_notifications = [];
+    $sentPostNotifications = [];
     for ($i = 1; $i <= self::POST_NOTIFICATIONS_HISTORY; $i++) {
-      $sent_at = $this->getRandomDateInPast();
-      $newsletter = $email_factory
+      $sentAt = $this->getRandomDateInPast();
+      $newsletter = $emailFactory
         ->withSubject("Post notification history $i")
         ->withPostNotificationHistoryType()
-        ->withSegments([$subscribers_list])
-        ->withCreatedAt($sent_at)
-        ->withParentId($post_notification->id)
+        ->withSegments([$subscribersList])
+        ->withCreatedAt($sentAt)
+        ->withParentId($postNotification->id)
         ->create();
-      $sent_post_notifications[] = $this->createSentEmailData($newsletter, $sent_at, $subscribers_ids, $subscribers_list->id);
+      $sentPostNotifications[] = $this->createSentEmailData($newsletter, $sentAt, $subscribersIds, $subscribersList->id);
     }
 
     yield "Post notifications done";
 
     // Welcome emails
-    $email_factory = new Newsletter();
-    $welcome_email = $email_factory
+    $emailFactory = new Newsletter();
+    $welcomeEmail = $emailFactory
       ->withSubject("Welcome email")
       ->withActiveStatus()
-      ->withWelcomeTypeForSegment($subscribers_list->id())
-      ->withSegments([$subscribers_list])
-      ->withCreatedAt($minimal_created_at_date)
+      ->withWelcomeTypeForSegment($subscribersList->id())
+      ->withSegments([$subscribersList])
+      ->withCreatedAt($minimalCreatedAtDate)
       ->create();
-    $sent_welcome_emails = [];
-    foreach ($subscribers_ids as $subscriber_id) {
-      $sent_welcome_emails[$subscriber_id] = $this->createSentEmailData($welcome_email, $minimal_created_at_date, [$subscriber_id], $subscribers_list->id);
-      $batch_log = $this->getBatchLog('Welcome emails sent', count($sent_welcome_emails));
-      if ($batch_log) {
-        yield $batch_log;
+    $sentWelcomeEmails = [];
+    foreach ($subscribersIds as $subscriberId) {
+      $sentWelcomeEmails[$subscriberId] = $this->createSentEmailData($welcomeEmail, $minimalCreatedAtDate, [$subscriberId], $subscribersList->id);
+      $batchLog = $this->getBatchLog('Welcome emails sent', count($sentWelcomeEmails));
+      if ($batchLog) {
+        yield $batchLog;
       }
     }
 
     yield "Welcome emails done";
 
     // Automatic emails
-    $automatic_emails = [];
-    $email_factory = new Newsletter();
+    $automaticEmails = [];
+    $emailFactory = new Newsletter();
     // First purchase
-    $automatic_emails[] = $email_factory
+    $automaticEmails[] = $emailFactory
       ->withSubject("First Purchase")
       ->withActiveStatus()
       ->withAutomaticTypeWooCommerceFirstPurchase()
       ->withSegments([])
-      ->withCreatedAt($minimal_created_at_date)
+      ->withCreatedAt($minimalCreatedAtDate)
       ->create();
     // Purchased product
     for ($i = 1; $i <= 2; $i++) {
@@ -141,12 +141,12 @@ class WooCommercePastRevenues {
         'id' => $products[$i]->get_name(),
         'name' => $products[$i]->get_id(),
       ];
-      $automatic_emails[] = $email_factory
+      $automaticEmails[] = $emailFactory
         ->withSubject("Purchased Product $i")
         ->withActiveStatus()
         ->withAutomaticTypeWooCommerceProductPurchased([$product])
         ->withSegments([])
-        ->withCreatedAt($minimal_created_at_date)
+        ->withCreatedAt($minimalCreatedAtDate)
         ->create();
     }
     // Purchase in category emails
@@ -156,78 +156,78 @@ class WooCommercePastRevenues {
         'name' => $products[$i]->get_id(),
         'categories' => $products[$i]->get_category_ids(),
       ];
-      $automatic_emails[] = $email_factory
+      $automaticEmails[] = $emailFactory
         ->withSubject("Purchased Product in Category $i")
         ->withActiveStatus()
         ->withAutomaticTypeWooCommerceProductInCategoryPurchased([$product])
         ->withSegments([])
-        ->withCreatedAt($minimal_created_at_date)
+        ->withCreatedAt($minimalCreatedAtDate)
         ->create();
     }
 
     // Send automatic emails
-    $sent_automatic_emails = [];
-    foreach ($subscribers_ids as $subscriber_id) {
-      $sent_automatic_emails[$subscriber_id] = [];
+    $sentAutomaticEmails = [];
+    foreach ($subscribersIds as $subscriberId) {
+      $sentAutomaticEmails[$subscriberId] = [];
       // Pick random three automatic emails for each subscriber
-      $emails_to_send = array_intersect_key(
-        $automatic_emails,
-        array_flip(array_rand($automatic_emails, 3))
+      $emailsToSend = array_intersect_key(
+        $automaticEmails,
+        array_flip(array_rand($automaticEmails, 3))
       );
-      foreach ($emails_to_send as $email) {
-        $sent_automatic_emails[$subscriber_id][] = $this->createSentEmailData($email, $this->getRandomDateInPast(), [$subscriber_id], $subscribers_list->id);
+      foreach ($emailsToSend as $email) {
+        $sentAutomaticEmails[$subscriberId][] = $this->createSentEmailData($email, $this->getRandomDateInPast(), [$subscriberId], $subscribersList->id);
       }
-      $batch_log = $this->getBatchLog('Automatic emails sent', count($sent_automatic_emails));
-      if ($batch_log) {
-        yield $batch_log;
+      $batchLog = $this->getBatchLog('Automatic emails sent', count($sentAutomaticEmails));
+      if ($batchLog) {
+        yield $batchLog;
       }
     }
     yield "Automatic emails done";
 
     // Clicks and orders
     // Pick random subscribers which will have an order
-    $subscribers_with_orders = array_flip(array_intersect_key(
-      $subscribers_ids,
-      array_flip(array_rand($subscribers_ids, self::SUBSCRIBERS_WITH_ORDERS_COUNT))
+    $subscribersWithOrders = array_flip(array_intersect_key(
+      $subscribersIds,
+      array_flip(array_rand($subscribersIds, self::SUBSCRIBERS_WITH_ORDERS_COUNT))
     ));
     $i = 0;
-    foreach ($subscribers_ids as $subscriber_id) {
+    foreach ($subscribersIds as $subscriberId) {
       $i++;
-      $subscriber_click_times = [];
-      $subscriber_received_emails = array_merge(
-        $sent_automatic_emails[$subscriber_id],
-        [$sent_welcome_emails[$subscriber_id]],
-        $sent_post_notifications,
-        $sent_standard_newsletters
+      $subscriberClickTimes = [];
+      $subscriberReceivedEmails = array_merge(
+        $sentAutomaticEmails[$subscriberId],
+        [$sentWelcomeEmails[$subscriberId]],
+        $sentPostNotifications,
+        $sentStandardNewsletters
       );
       // Pick amount of received emails and generate opens and clicks
-      $opened_count = floor(count($subscriber_received_emails) / rand(2, 5));
-      $emails_to_click = array_intersect_key(
-        $subscriber_received_emails,
-        array_flip(array_rand($subscriber_received_emails, $opened_count))
+      $openedCount = floor(count($subscriberReceivedEmails) / rand(2, 5));
+      $emailsToClick = array_intersect_key(
+        $subscriberReceivedEmails,
+        array_flip(array_rand($subscriberReceivedEmails, $openedCount))
       );
       // Click and open selected emails
-      foreach ($emails_to_click as $email) {
-        $click_created_at = (new Carbon())->setTimestamp($email['sent_at'])->addHours(1)->toDateTimeString();
-        $this->openSentNewsletter($email, $subscriber_id, $click_created_at);
-        $this->clickSentNewsletter($email, $subscriber_id, $click_created_at);
-        $subscriber_click_times[] = $click_created_at;
+      foreach ($emailsToClick as $email) {
+        $clickCreatedAt = (new Carbon())->setTimestamp($email['sent_at'])->addHours(1)->toDateTimeString();
+        $this->openSentNewsletter($email, $subscriberId, $clickCreatedAt);
+        $this->clickSentNewsletter($email, $subscriberId, $clickCreatedAt);
+        $subscriberClickTimes[] = $clickCreatedAt;
       }
       // Create order
-      if (isset($subscribers_with_orders[$subscriber_id])) {
+      if (isset($subscribersWithOrders[$subscriberId])) {
         // Pick a random logged click time and generate an order day after the click
-        $click_time = $subscriber_click_times[array_rand($subscriber_click_times)];
-        $order_completed_at = (new Carbon($click_time))->addDay();
+        $clickTime = $subscriberClickTimes[array_rand($subscriberClickTimes)];
+        $orderCompletedAt = (new Carbon($clickTime))->addDay();
         $this->createCompletedWooCommerceOrder(
-          $subscriber_id,
-          $subscriber_emails[$subscriber_id],
+          $subscriberId,
+          $subscriberEmails[$subscriberId],
           [$products[array_rand($products)]],
-          $order_completed_at
+          $orderCompletedAt
         );
       }
-      $batch_log = $this->getBatchLog('Subscriber clicks and orders', $i);
-      if ($batch_log) {
-        yield $batch_log;
+      $batchLog = $this->getBatchLog('Subscriber clicks and orders', $i);
+      if ($batchLog) {
+        yield $batchLog;
       }
     }
     yield "Clicks and Orders done";
@@ -235,12 +235,12 @@ class WooCommercePastRevenues {
   }
 
   private function getRandomDateInPast() {
-    $days_ago = mt_rand(self::MIN_DAYS_AGO, self::MAX_DAYS_AGO);
-    return (new Carbon())->subDays($days_ago)->toDateTimeString();
+    $daysAgo = mt_rand(self::MIN_DAYS_AGO, self::MAX_DAYS_AGO);
+    return (new Carbon())->subDays($daysAgo)->toDateTimeString();
   }
 
-  private function getBatchLog($data_type, $generated_count) {
-    if ($generated_count % self::LOG_BATCH_SIZE !== 0) {
+  private function getBatchLog($dataType, $generatedCount) {
+    if ($generatedCount % self::LOG_BATCH_SIZE !== 0) {
       return;
     }
     return "$data_type: $generated_count";
@@ -291,12 +291,12 @@ class WooCommercePastRevenues {
     ORM::rawExecute("SET UNIQUE_CHECKS = 1;");
   }
 
-  private function createSubscriber($email, $last_name, $created_at_date, \MailPoet\Models\Segment $segment, $status = Subscriber::STATUS_SUBSCRIBED) {
+  private function createSubscriber($email, $lastName, $createdAtDate, \MailPoet\Models\Segment $segment, $status = Subscriber::STATUS_SUBSCRIBED) {
     $subscriber = Subscriber::createOrUpdate([
       'email' => $email,
       'status' => $status,
-      'last_name' => $last_name,
-      'created_at' => $created_at_date,
+      'last_name' => $lastName,
+      'created_at' => $createdAtDate,
     ]);
     $subscriber->save();
     $segment->addSubscriber($subscriber->id);
@@ -306,14 +306,14 @@ class WooCommercePastRevenues {
   /**
    * @return \WC_Product
    */
-  private function createProduct($name, $price, $category_ids = [], $discount = 0) {
+  private function createProduct($name, $price, $categoryIds = [], $discount = 0) {
     $product = new \WC_Product();
     $product->set_name($name);
     $product->set_price($price - $discount);
     $product->set_status('publish');
     $product->set_regular_price($price);
-    if ($category_ids) {
-      $product->set_category_ids($category_ids);
+    if ($categoryIds) {
+      $product->set_category_ids($categoryIds);
     }
     $product->save();
     return $product;
@@ -322,30 +322,30 @@ class WooCommercePastRevenues {
   /**
    * @return array
    */
-  private function createSentEmailData(\MailPoet\Models\Newsletter $newsletter, $sent_at, $subscribers_ids, $segment_id) {
+  private function createSentEmailData(\MailPoet\Models\Newsletter $newsletter, $sentAt, $subscribersIds, $segmentId) {
     // Sending task
     $task = ScheduledTask::createOrUpdate([
       'type' => Sending::TASK_TYPE,
       'status' => ScheduledTask::STATUS_COMPLETED,
-      'created_at' => $sent_at,
-      'processed_at' => $sent_at,
+      'created_at' => $sentAt,
+      'processed_at' => $sentAt,
     ]);
     $task->save();
 
     // Add subscribers to task
-    $batch_data = [];
-    foreach ($subscribers_ids as $subscriber_id) {
-      $batch_data[] = "({$task->id}, $subscriber_id, 1, '$sent_at')";
-      if (count($batch_data) % 1000 === 0) {
+    $batchData = [];
+    foreach ($subscribersIds as $subscriberId) {
+      $batchData[] = "({$task->id}, $subscriber_id, 1, '$sent_at')";
+      if (count($batchData) % 1000 === 0) {
         ORM::rawExecute(
-          "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batch_data)
+          "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
         );
-        $batch_data = [];
+        $batchData = [];
       }
     }
-    if ($batch_data) {
+    if ($batchData) {
       ORM::rawExecute(
-        "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batch_data)
+        "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
       );
     }
 
@@ -353,23 +353,23 @@ class WooCommercePastRevenues {
     $queue = SendingQueue::createOrUpdate([
       'task_id' => $task->id,
       'newsletter_id' => $newsletter->id,
-      'count_total' => count($subscribers_ids),
-      'count_processed' => count($subscribers_ids),
+      'count_total' => count($subscribersIds),
+      'count_processed' => count($subscribersIds),
     ]);
     $queue->save();
 
     // Link
     $link = (new \MailPoet\Test\DataFactories\NewsletterLink($newsletter))
-      ->withCreatedAt($sent_at)
+      ->withCreatedAt($sentAt)
       ->create()
       ->save();
 
     // Newsletter segment
-    NewsletterSegment::createOrUpdate(['newsletter_id' => $newsletter->id, 'segment_id' => $segment_id])->save();
+    NewsletterSegment::createOrUpdate(['newsletter_id' => $newsletter->id, 'segment_id' => $segmentId])->save();
 
     if ($newsletter->status === \MailPoet\Models\Newsletter::STATUS_DRAFT) {
       $newsletter->status = \MailPoet\Models\Newsletter::STATUS_SENT;
-      $newsletter->sent_at = $sent_at;
+      $newsletter->sentAt = $sentAt;
       $newsletter->save();
     }
 
@@ -377,7 +377,7 @@ class WooCommercePastRevenues {
       'newsletter_id' => $newsletter->id,
       'task_id' => $task->id,
       'queue_id' => $queue->id,
-      'sent_at' => strtotime($sent_at),
+      'sent_at' => strtotime($sentAt),
       'link_id' => $link->id,
     ];
   }
@@ -385,27 +385,27 @@ class WooCommercePastRevenues {
   /**
    * @return StatisticsOpens
    */
-  private function openSentNewsletter(array $sent_newsletter_data, $subscriber_id, $created_at) {
+  private function openSentNewsletter(array $sentNewsletterData, $subscriberId, $createdAt) {
     StatisticsOpens::createOrUpdate([
-      'subscriber_id' => $subscriber_id,
-      'newsletter_id' => $sent_newsletter_data['newsletter_id'],
-      'queue_id' => $sent_newsletter_data['queue_id'],
-      'created_at' => $created_at,
+      'subscriber_id' => $subscriberId,
+      'newsletter_id' => $sentNewsletterData['newsletter_id'],
+      'queue_id' => $sentNewsletterData['queue_id'],
+      'created_at' => $createdAt,
     ])->save();
   }
 
   /**
    * @return array
    */
-  private function clickSentNewsletter(array $sent_newsletter_data, $subscriber_id, $created_at) {
+  private function clickSentNewsletter(array $sentNewsletterData, $subscriberId, $createdAt) {
     StatisticsClicks::createOrUpdate([
-      'subscriber_id' => $subscriber_id,
-      'newsletter_id' => $sent_newsletter_data['newsletter_id'],
-      'queue_id' => $sent_newsletter_data['queue_id'],
-      'link_id' => $sent_newsletter_data['link_id'],
+      'subscriber_id' => $subscriberId,
+      'newsletter_id' => $sentNewsletterData['newsletter_id'],
+      'queue_id' => $sentNewsletterData['queue_id'],
+      'link_id' => $sentNewsletterData['link_id'],
       'count' => 1,
-      'created_at' => $created_at,
-      'updated_at' => $created_at,
+      'created_at' => $createdAt,
+      'updated_at' => $createdAt,
     ])->save();
   }
 
@@ -424,7 +424,7 @@ class WooCommercePastRevenues {
   /**
    * @return \WC_Order|\WP_Error
    */
-  private function createCompletedWooCommerceOrder($subscriber_id, $email, $products = [], Carbon $completed_at = null) {
+  private function createCompletedWooCommerceOrder($subscriberId, $email, $products = [], Carbon $completedAt = null) {
     $address = [
       'first_name' => "name_$subscriber_id",
       'last_name' => "lastname_$subscriber_id",
@@ -445,15 +445,15 @@ class WooCommercePastRevenues {
     $order->calculate_totals();
     $order->update_status('completed', '', false);
 
-    if ($completed_at) {
-      $order->set_date_completed($completed_at->toDateTimeString());
-      $order->set_date_paid($completed_at->toDateTimeString());
+    if ($completedAt) {
+      $order->set_date_completed($completedAt->toDateTimeString());
+      $order->set_date_paid($completedAt->toDateTimeString());
       $order->save();
-      $order_created_time = $completed_at->subMinute()->toDateTimeString();
+      $orderCreatedTime = $completedAt->subMinute()->toDateTimeString();
       wp_update_post([
         'ID' => $order->get_id(),
-        'post_date' => $order_created_time,
-        'post_date_gmt' => get_gmt_from_date( $order_created_time ),
+        'post_date' => $orderCreatedTime,
+        'post_date_gmt' => get_gmt_from_date( $orderCreatedTime ),
       ]);
     }
     return $order;

@@ -22,7 +22,7 @@ class ServicesTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->services_endpoint = $this->di_container->get(Services::class);
+    $this->servicesEndpoint = $this->diContainer->get(Services::class);
     $this->data = ['key' => '1234567890abcdef'];
     $this->settings = SettingsController::getInstance();
   }
@@ -31,30 +31,30 @@ class ServicesTest extends \MailPoetTest {
     $email = 'spf_test@example.com';
     $this->settings->set('sender.address', $email);
 
-    $spf_check = $this->make(
+    $spfCheck = $this->make(
       SPFCheck::class,
       ['checkSPFRecord' => false]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedSPFCheck($spf_check);
-    $response = $services_endpoint->checkSPFRecord([]);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedSPFCheck($spfCheck);
+    $response = $servicesEndpoint->checkSPFRecord([]);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->meta['sender_address'])->equals($email);
   }
 
   public function testItRespondsWithSuccessIfSPFCheckPasses() {
-    $spf_check = $this->make(
+    $spfCheck = $this->make(
       SPFCheck::class,
       ['checkSPFRecord' => true]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedSPFCheck($spf_check);
-    $response = $services_endpoint->checkSPFRecord([]);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedSPFCheck($spfCheck);
+    $response = $servicesEndpoint->checkSPFRecord([]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
   public function testItRespondsWithErrorIfNoMSSKeyIsGiven() {
-    $response = $this->di_container->get(Services::class)->checkMSSKey(['key' => '']);
+    $response = $this->diContainer->get(Services::class)->checkMSSKey(['key' => '']);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])->equals('Please specify a key.');
   }
@@ -68,8 +68,8 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkMSSKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
@@ -81,8 +81,8 @@ class ServicesTest extends \MailPoetTest {
         'storeMSSKeyAndState' => Expected::once(),
       ]
     );
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkMSSKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
@@ -99,11 +99,11 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkMSSKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])
-      ->contains($date->format($services_endpoint->date_time->getDateFormat()));
+      ->contains($date->format($servicesEndpoint->dateTime->getDateFormat()));
   }
 
   public function testItRespondsWithErrorIfServiceIsUnavailableDuringMSSCheck() {
@@ -115,12 +115,12 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkMSSKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains(
       $this->invokeMethod(
-        $services_endpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
+        $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
       )
     );
   }
@@ -134,12 +134,12 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkMSSKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains(
       $this->invokeMethod(
-        $services_endpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
+        $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
       )
     );
   }
@@ -153,8 +153,8 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkMSSKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains('404');
   }
@@ -170,14 +170,14 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkMSSKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('test');
   }
 
   public function testItRespondsWithErrorIfNoPremiumKeyIsGiven() {
-    $response = $response = $this->di_container->get(Services::class)->checkPremiumKey(['key' => '']);
+    $response = $response = $this->diContainer->get(Services::class)->checkPremiumKey(['key' => '']);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])->equals('Please specify a key.');
   }
@@ -191,8 +191,8 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkPremiumKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     foreach (array_keys(Installer::getPremiumStatus()) as $key) {
       expect(isset($response->meta[$key]))->true();
@@ -208,8 +208,8 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkPremiumKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
@@ -222,8 +222,8 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkPremiumKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
@@ -240,11 +240,11 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkPremiumKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])
-      ->contains($date->format($services_endpoint->date_time->getDateFormat()));
+      ->contains($date->format($servicesEndpoint->dateTime->getDateFormat()));
   }
 
   public function testItRespondsWithErrorIfServiceIsUnavailableDuringPremiumCheck() {
@@ -256,12 +256,12 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkPremiumKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains(
       $this->invokeMethod(
-        $services_endpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
+        $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
       )
     );
   }
@@ -275,12 +275,12 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkPremiumKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains(
       $this->invokeMethod(
-        $services_endpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
+        $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
       )
     );
   }
@@ -294,8 +294,8 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkPremiumKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains('404');
   }
@@ -311,14 +311,14 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkPremiumKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('test');
   }
 
   public function testItRespondsWithPublicIdForMSS() {
-    $fake_public_id = 'a-fake-public_id';
+    $fakePublicId = 'a-fake-public_id';
     $this->settings->delete('public_id');
     $this->settings->delete('new_public_id');
 
@@ -327,16 +327,16 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkMSSKey' => [
           'state' => Bridge::KEY_VALID,
-          'data' => [ 'public_id' => $fake_public_id ],
+          'data' => [ 'public_id' => $fakePublicId ],
         ],
         'storeMSSKeyAndState' => Expected::once(),
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $services_endpoint->checkMSSKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint->checkMSSKey($this->data);
 
-    expect($this->settings->get('public_id'))->equals($fake_public_id);
+    expect($this->settings->get('public_id'))->equals($fakePublicId);
     expect($this->settings->get('new_public_id'))->equals('true');
   }
 
@@ -352,15 +352,15 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkMSSKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
 
     expect($this->settings->get('public_id', null))->null();
     expect($this->settings->get('new_public_id', null))->null();
   }
 
   public function testItRespondsWithPublicIdForPremium() {
-    $fake_public_id = 'another-fake-public_id';
+    $fakePublicId = 'another-fake-public_id';
     $this->settings->delete('public_id');
     $this->settings->delete('new_public_id');
 
@@ -369,16 +369,16 @@ class ServicesTest extends \MailPoetTest {
       [
         'checkPremiumKey' => [
           'state' => Bridge::KEY_VALID,
-          'data' => [ 'public_id' => $fake_public_id ],
+          'data' => [ 'public_id' => $fakePublicId ],
         ],
         'storePremiumKeyAndState' => Expected::once(),
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkPremiumKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkPremiumKey($this->data);
 
-    expect($this->settings->get('public_id'))->equals($fake_public_id);
+    expect($this->settings->get('public_id'))->equals($fakePublicId);
     expect($this->settings->get('new_public_id'))->equals('true');
   }
 
@@ -394,32 +394,32 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $services_endpoint = $this->createServicesEndpointWithMockedBridge($bridge);
-    $response = $services_endpoint->checkPremiumKey($this->data);
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkPremiumKey($this->data);
 
     expect($this->settings->get('public_id', null))->null();
     expect($this->settings->get('new_public_id', null))->null();
   }
 
-  private function createServicesEndpointWithMockedSPFCheck($spf_check) {
+  private function createServicesEndpointWithMockedSPFCheck($spfCheck) {
     return new Services(
-      $this->di_container->get(Bridge::class),
-      $this->di_container->get(SettingsController::class),
-      $this->di_container->get(Analytics::class),
-      $spf_check,
-      $this->di_container->get(SendingServiceKeyCheck::class),
-      $this->di_container->get(PremiumKeyCheck::class)
+      $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(Analytics::class),
+      $spfCheck,
+      $this->diContainer->get(SendingServiceKeyCheck::class),
+      $this->diContainer->get(PremiumKeyCheck::class)
     );
   }
 
   private function createServicesEndpointWithMockedBridge($bridge) {
     return new Services(
       $bridge,
-      $this->di_container->get(SettingsController::class),
-      $this->di_container->get(Analytics::class),
-      $this->di_container->get(SPFCheck::class),
-      $this->di_container->get(SendingServiceKeyCheck::class),
-      $this->di_container->get(PremiumKeyCheck::class)
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(Analytics::class),
+      $this->diContainer->get(SPFCheck::class),
+      $this->diContainer->get(SendingServiceKeyCheck::class),
+      $this->diContainer->get(PremiumKeyCheck::class)
     );
   }
 }

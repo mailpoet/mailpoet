@@ -13,17 +13,17 @@ class WordpressMailerTest extends \MailPoetTest {
   private $subscribers_repository;
 
   public function _before() {
-    $this->subscribers_repository = $this->di_container->get(SubscribersRepository::class);
-    $this->subscribers_repository->truncate();
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->subscribersRepository->truncate();
   }
 
   public function testItdoesNotSendWhenPreSendCheckFails() {
     $mailer = $this->createMock(Mailer::class);
     $mailer->expects($this->never())->method('send');
-    $fallback_mailer = $this->createMock(FallbackMailer::class);
-    $fallback_mailer->expects($this->never())->method('send');
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer->expects($this->never())->method('send');
 
-    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
   }
@@ -40,13 +40,13 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $fallback_mailer = $this->createMock(FallbackMailer::class);
-    $fallback_mailer->expects($this->never())->method('send');
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer->expects($this->never())->method('send');
 
-    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Subject = 'Subject';
-    $wpMailer->Body = 'Email Text Body';
+    $wpMailer->subject = 'Subject';
+    $wpMailer->body = 'Email Text Body';
     $wpMailer->isHTML(false);
     $wpMailer->send();
   }
@@ -61,13 +61,13 @@ class WordpressMailerTest extends \MailPoetTest {
         'address' => 'email@example.com',
       ])
       ->willReturn(['response' => true]);
-    $fallback_mailer = $this->createMock(FallbackMailer::class);
-    $fallback_mailer->expects($this->never())->method('send');
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer->expects($this->never())->method('send');
 
-    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
-    $wpMailer->Subject = 'Subject';
-    $wpMailer->Body = 'Body';
+    $wpMailer->subject = 'Subject';
+    $wpMailer->body = 'Body';
     $wpMailer->isHTML(false);
     $wpMailer->send();
   }
@@ -85,13 +85,13 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $fallback_mailer = $this->createMock(FallbackMailer::class);
-    $fallback_mailer->expects($this->never())->method('send');
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer->expects($this->never())->method('send');
 
-    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Subject = 'Subject';
-    $wpMailer->Body = 'Email Html Body';
+    $wpMailer->subject = 'Subject';
+    $wpMailer->body = 'Email Html Body';
     $wpMailer->isHTML(true);
     $wpMailer->send();
   }
@@ -102,12 +102,12 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => true]);
-    $fallback_mailer = $this->createMock(FallbackMailer::class);
-    $fallback_mailer->expects($this->never())->method('send');
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer->expects($this->never())->method('send');
 
-    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body';
+    $wpMailer->body = 'body';
     expect($wpMailer->send())->true();
   }
 
@@ -118,15 +118,15 @@ class WordpressMailerTest extends \MailPoetTest {
       ->method('send')
       ->willThrowException(new \Exception());
 
-    $fallback_mailer = $this->createMock(FallbackMailer::class);
-    $fallback_mailer
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => true]);
 
-    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body';
+    $wpMailer->body = 'body';
     expect($wpMailer->send())->true();
   }
 
@@ -136,25 +136,25 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => false, 'error' => new MailerError('send', MailerError::LEVEL_HARD, 'Error from primary mailer')]);
-    $fallback_mailer = $this->createMock(FallbackMailer::class);
-    $fallback_mailer
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => false, 'error' => new MailerError('send', MailerError::LEVEL_HARD, 'Error from fallback mailer')]);
 
-    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body';
+    $wpMailer->body = 'body';
 
-    $error_message = null;
+    $errorMessage = null;
     try {
       $wpMailer->send();
     } catch (\phpmailerException $e) {
-      $error_message = $e->getMessage();
+      $errorMessage = $e->getMessage();
     }
 
     // ensure error from primary mailer is thrown
-    expect($error_message)->same('Error from primary mailer');
+    expect($errorMessage)->same('Error from primary mailer');
   }
 
   public function testItThrowsOnUnknownContentType() {
@@ -162,13 +162,13 @@ class WordpressMailerTest extends \MailPoetTest {
     $mailer
       ->expects($this->never())
       ->method('send');
-    $fallback_mailer = $this->createMock(FallbackMailer::class);
-    $fallback_mailer->expects($this->never())->method('send');
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer->expects($this->never())->method('send');
 
-    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body';
-    $wpMailer->ContentType = 'application/json';
+    $wpMailer->body = 'body';
+    $wpMailer->contentType = 'application/json';
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
   }
@@ -179,25 +179,25 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willThrowException(new \Exception('Exception from primary mailer'));
-    $fallback_mailer = $this->createMock(FallbackMailer::class);
-    $fallback_mailer
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer
       ->expects($this->once())
       ->method('send')
       ->willThrowException(new \Exception('Exception from fallback mailer'));
 
-    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body';
+    $wpMailer->body = 'body';
 
-    $error_message = null;
+    $errorMessage = null;
     try {
       $wpMailer->send();
     } catch (\phpmailerException $e) {
-      $error_message = $e->getMessage();
+      $errorMessage = $e->getMessage();
     }
 
     // ensure exception from primary mailer is thrown
-    expect($error_message)->same('Exception from primary mailer');
+    expect($errorMessage)->same('Exception from primary mailer');
   }
 
   public function testItAddSubscriberMetaInfo() {
@@ -213,24 +213,24 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ])
       ->willReturn(['response' => true]);
-    $fallback_mailer = $this->createMock(FallbackMailer::class);
-    $fallback_mailer->expects($this->never())->method('send');
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer->expects($this->never())->method('send');
 
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail('email@example.com');
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber->setSource('form');
-    $this->subscribers_repository->persist($subscriber);
-    $this->subscribers_repository->flush();
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
 
-    $wpMailer = new WordPressMailer($mailer, $fallback_mailer, new MetaInfo, $this->subscribers_repository);
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
-    $wpMailer->Subject = 'Subject';
-    $wpMailer->Body = 'Body';
+    $wpMailer->subject = 'Subject';
+    $wpMailer->body = 'Body';
     $wpMailer->send();
   }
 
   public function _after() {
-    $this->subscribers_repository->truncate();
+    $this->subscribersRepository->truncate();
   }
 }

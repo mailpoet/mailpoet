@@ -29,7 +29,7 @@ class CronHelperTest extends \MailPoetTest {
       'name' => 'John Doe',
       'address' => 'john.doe@example.com',
     ]);
-    $this->cron_helper = new CronHelper($this->settings, new WPFunctions);
+    $this->cronHelper = new CronHelper($this->settings, new WPFunctions);
   }
 
   public function testItDefinesConstants() {
@@ -41,7 +41,7 @@ class CronHelperTest extends \MailPoetTest {
   public function testItCreatesDaemon() {
     $token = 'create_token';
     $time = time();
-    $this->cron_helper->createDaemon($token);
+    $this->cronHelper->createDaemon($token);
     $daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($daemon)->equals(
       [
@@ -60,7 +60,7 @@ class CronHelperTest extends \MailPoetTest {
   public function testItRestartsDaemon() {
     $token = 'restart_token';
     $time = time();
-    $this->cron_helper->restartDaemon($token);
+    $this->cronHelper->restartDaemon($token);
     $daemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     expect($daemon)->equals(
       [
@@ -82,7 +82,7 @@ class CronHelperTest extends \MailPoetTest {
       CronHelper::DAEMON_SETTING,
       $daemon
     );
-    expect($this->cron_helper->getDaemon())->equals($daemon);
+    expect($this->cronHelper->getDaemon())->equals($daemon);
   }
 
   public function testItSavesDaemon() {
@@ -93,9 +93,9 @@ class CronHelperTest extends \MailPoetTest {
       $daemon
     );
     $time = time();
-    $this->cron_helper->saveDaemon($daemon);
+    $this->cronHelper->saveDaemon($daemon);
     $daemon['updated_at'] = $time;
-    expect($this->cron_helper->getDaemon())->equals($daemon);
+    expect($this->cronHelper->getDaemon())->equals($daemon);
   }
 
   public function testItUpdatesDaemonAccessedAt() {
@@ -108,16 +108,16 @@ class CronHelperTest extends \MailPoetTest {
     $wp = Stub::make(new WPFunctions, [
       'wpRemotePost' => [],
     ]);
-    $cron_helper = new CronHelper($this->settings, $wp);
-    $cron_helper->accessDaemon('some_token');
-    $updated_daemon = $cron_helper->getDaemon();
-    expect($updated_daemon['run_accessed_at'])->greaterOrEquals($time);
-    expect($updated_daemon['run_accessed_at'])->lessThan($time + 2);
+    $cronHelper = new CronHelper($this->settings, $wp);
+    $cronHelper->accessDaemon('some_token');
+    $updatedDaemon = $cronHelper->getDaemon();
+    expect($updatedDaemon['run_accessed_at'])->greaterOrEquals($time);
+    expect($updatedDaemon['run_accessed_at'])->lessThan($time + 2);
   }
 
   public function testItThrowsAnExceptionIfAccessingNonExistingDaemon() {
     try {
-      $this->cron_helper->accessDaemon('some_token');
+      $this->cronHelper->accessDaemon('some_token');
       $this->fail('An exception should have been thrown.');
     } catch (\LogicException $e) {
       expect($e->getMessage())->equals('Daemon does not exist.');
@@ -126,16 +126,16 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItDetectsNotAccessibleDaemon() {
     $time = time();
-    $run_start_values = [null, $time - 20];
-    foreach ($run_start_values as $run_start) {
+    $runStartValues = [null, $time - 20];
+    foreach ($runStartValues as $runStart) {
       $daemon = $this->getDeamonTestData();
       $daemon['run_accessed_at'] = $time - 10;
-      $daemon['run_started_at'] = $run_start;
+      $daemon['run_started_at'] = $runStart;
       $this->settings->set(
         CronHelper::DAEMON_SETTING,
         $daemon
       );
-      expect($this->cron_helper->isDaemonAccessible())->false();
+      expect($this->cronHelper->isDaemonAccessible())->false();
     }
   }
 
@@ -148,12 +148,12 @@ class CronHelperTest extends \MailPoetTest {
       CronHelper::DAEMON_SETTING,
       $daemon
     );
-    expect($this->cron_helper->isDaemonAccessible())->true();
+    expect($this->cronHelper->isDaemonAccessible())->true();
   }
 
   public function testItDetectsUnknownStateOfTheDaemon() {
     $time = time();
-    $test_inputs = [
+    $testInputs = [
       [
         'run_access' => null,
         'run_start' => null,
@@ -168,15 +168,15 @@ class CronHelperTest extends \MailPoetTest {
       ],
       null,
     ];
-    foreach ($test_inputs as $test_input) {
+    foreach ($testInputs as $testInput) {
       $daemon = $this->getDeamonTestData();
-      $daemon['run_accessed_at'] = $test_input['run_access'];
-      $daemon['run_started_at'] = $test_input['run_start'];
+      $daemon['run_accessed_at'] = $testInput['run_access'];
+      $daemon['run_started_at'] = $testInput['run_start'];
       $this->settings->set(
         CronHelper::DAEMON_SETTING,
         $daemon
       );
-      expect($this->cron_helper->isDaemonAccessible())->null();
+      expect($this->cronHelper->isDaemonAccessible())->null();
     }
   }
 
@@ -187,8 +187,8 @@ class CronHelperTest extends \MailPoetTest {
       $daemon
     );
 
-    $this->cron_helper->deactivateDaemon($daemon);
-    $daemon = $this->cron_helper->getDaemon();
+    $this->cronHelper->deactivateDaemon($daemon);
+    $daemon = $this->cronHelper->getDaemon();
     expect($daemon['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
   }
 
@@ -200,8 +200,8 @@ class CronHelperTest extends \MailPoetTest {
     );
 
     $time = time();
-    $this->cron_helper->saveDaemonLastError('error');
-    $daemon = $this->cron_helper->getDaemon();
+    $this->cronHelper->saveDaemonLastError('error');
+    $daemon = $this->cronHelper->getDaemon();
     expect($daemon['last_error'])->equals('error');
     expect($daemon['last_error_date'])->greaterOrEquals($time);
   }
@@ -214,15 +214,15 @@ class CronHelperTest extends \MailPoetTest {
       $daemon
     );
 
-    $this->cron_helper->saveDaemonRunCompleted(123);
-    $daemon = $this->cron_helper->getDaemon();
+    $this->cronHelper->saveDaemonRunCompleted(123);
+    $daemon = $this->cronHelper->getDaemon();
     expect($daemon['run_completed_at'])->equals(123);
   }
 
   public function testItCreatesRandomToken() {
     // random token is a string of 5 characters
-    $token1 = $this->cron_helper->createToken();
-    $token2 = $this->cron_helper->createToken();
+    $token1 = $this->cronHelper->createToken();
+    $token2 = $this->cronHelper->createToken();
     expect($token1)->notEquals($token2);
     expect(is_string($token1))->true();
     expect(strlen($token1))->equals(5);
@@ -230,24 +230,24 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItGetsSiteUrl() {
     // 1. do nothing when the url does not contain port
-    $site_url = 'http://example.com';
-    expect($this->cron_helper->getSiteUrl($site_url))->equals($site_url);
+    $siteUrl = 'http://example.com';
+    expect($this->cronHelper->getSiteUrl($siteUrl))->equals($siteUrl);
 
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     // 2. when url contains valid port, try connecting to it
-    $site_url = 'http://example.com:80';
-    expect($this->cron_helper->getSiteUrl($site_url))->equals($site_url);
+    $siteUrl = 'http://example.com:80';
+    expect($this->cronHelper->getSiteUrl($siteUrl))->equals($siteUrl);
 
     // 3. when url contains invalid port, try connecting to it. when connection fails,
     // another attempt will be made to connect to the standard port derived from URL schema
-    $site_url = 'http://example.com:8080';
-    expect($this->cron_helper->getSiteUrl($site_url))->equals('http://example.com');
+    $siteUrl = 'http://example.com:8080';
+    expect($this->cronHelper->getSiteUrl($siteUrl))->equals('http://example.com');
 
     // 4. when connection can't be established, exception should be thrown
-    $site_url = 'https://invalid:80';
+    $siteUrl = 'https://invalid:80';
     try {
-      $this->cron_helper->getSiteUrl($site_url);
+      $this->cronHelper->getSiteUrl($siteUrl);
       self::fail('Site URL is unreachable exception not thrown.');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('Site URL is unreachable.');
@@ -256,15 +256,15 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItGetsSubsiteUrlOnMultisiteEnvironment() {
     if ((boolean)getenv('MULTISITE') === true) {
-      expect($this->cron_helper->getSiteUrl())->contains(getenv('WP_TEST_MULTISITE_SLUG'));
+      expect($this->cronHelper->getSiteUrl())->contains(getenv('WP_TEST_MULTISITE_SLUG'));
     }
   }
 
   public function testItEnforcesExecutionLimit() {
     $time = microtime(true);
-    expect($this->cron_helper->enforceExecutionLimit($time))->null();
+    expect($this->cronHelper->enforceExecutionLimit($time))->null();
     try {
-      $this->cron_helper->enforceExecutionLimit($time - $this->cron_helper->getDaemonExecutionLimit());
+      $this->cronHelper->enforceExecutionLimit($time - $this->cronHelper->getDaemonExecutionLimit());
       self::fail('Execution limit exception not thrown.');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
@@ -277,31 +277,31 @@ class CronHelperTest extends \MailPoetTest {
       return 'http://custom_cron_url';
     };
     add_filter('mailpoet_cron_request_url', $filter);
-    expect($this->cron_helper->getCronUrl('sample_action'))->equals('http://custom_cron_url');
+    expect($this->cronHelper->getCronUrl('sample_action'))->equals('http://custom_cron_url');
     remove_filter('mailpoet_cron_request_url', $filter);
   }
 
   public function testItAllowsSettingCustomCronRequestArguments() {
-    $request_args = [
+    $requestArgs = [
       'blocking' => 'custom_blocking',
       'sslverify' => 'custom_ssl_verify',
       'timeout' => 'custom_timeout',
       'user-agent' => 'custom_user_agent',
     ];
-    $filter = function($args) use ($request_args) {
+    $filter = function($args) use ($requestArgs) {
       expect($args)->notEmpty();
-      return $request_args;
+      return $requestArgs;
     };
-    $wp_remote_get_args = [];
+    $wpRemoteGetArgs = [];
     $wp = Stub::make(new WPFunctions, [
-      'wpRemotePost' => function() use (&$wp_remote_get_args) {
-        return $wp_remote_get_args = func_get_args();
+      'wpRemotePost' => function() use (&$wpRemoteGetArgs) {
+        return $wpRemoteGetArgs = func_get_args();
       },
     ]);
     $wp->addFilter('mailpoet_cron_request_args', $filter);
-    $cron_helper = new CronHelper($this->settings, $wp);
-    $cron_helper->queryCronUrl('test');
-    expect($wp_remote_get_args[1])->equals($request_args);
+    $cronHelper = new CronHelper($this->settings, $wp);
+    $cronHelper->queryCronUrl('test');
+    expect($wpRemoteGetArgs[1])->equals($requestArgs);
 
     $wp->removeFilter('mailpoet_cron_request_args', $filter);
   }
@@ -310,23 +310,23 @@ class CronHelperTest extends \MailPoetTest {
     $wp = Stub::make(new WPFunctions, [
       'applyFilters' => [],
     ]);
-    $cron_helper = new CronHelper($this->settings, $wp);
-    expect($cron_helper->pingDaemon())->equals('A valid URL was not provided.');
+    $cronHelper = new CronHelper($this->settings, $wp);
+    expect($cronHelper->pingDaemon())->equals('A valid URL was not provided.');
   }
 
   public function testItPingsDaemon() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     // raw response is returned
-    expect($this->cron_helper->pingDaemon())->equals(DaemonHttpRunner::PING_SUCCESS_RESPONSE);
+    expect($this->cronHelper->pingDaemon())->equals(DaemonHttpRunner::PING_SUCCESS_RESPONSE);
   }
 
   public function testItValidatesPingResponse() {
-    expect($this->cron_helper->validatePingResponse('pong'))->true();
-    expect($this->cron_helper->validatePingResponse('something else'))->false();
+    expect($this->cronHelper->validatePingResponse('pong'))->true();
+    expect($this->cronHelper->validatePingResponse('something else'))->false();
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 
   private function getDeamonTestData() {

@@ -18,8 +18,8 @@ class MailChimpTest extends \MailPoetUnitTest {
 
   public function __construct() {
     parent::__construct();
-    $this->api_key = getenv('WP_TEST_IMPORT_MAILCHIMP_API');
-    $this->mailchimp = new MailChimp($this->api_key);
+    $this->apiKey = getenv('WP_TEST_IMPORT_MAILCHIMP_API');
+    $this->mailchimp = new MailChimp($this->apiKey);
     $this->lists = explode(",", getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS'));
   }
 
@@ -32,7 +32,7 @@ class MailChimpTest extends \MailPoetUnitTest {
   }
 
   public function testItCanGetAPIKey() {
-    $valid_api_key_format = '12345678901234567890123456789012-ab1';
+    $validApiKeyFormat = '12345678901234567890123456789012-ab1';
     // key must consist of two parts separated by hyphen
     expect($this->mailchimp->getAPIKey('invalid_api_key_format'))->false();
     // key must only contain numerals and letters
@@ -45,15 +45,15 @@ class MailChimpTest extends \MailPoetUnitTest {
       ->false();
     expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-1'))
       ->false();
-    expect($this->mailchimp->getAPIKey($valid_api_key_format))
-      ->equals($valid_api_key_format);
+    expect($this->mailchimp->getAPIKey($validApiKeyFormat))
+      ->equals($validApiKeyFormat);
   }
 
   public function testItCanGetDatacenter() {
-    $valid_api_key_format = '12345678901234567890123456789012-ab1';
-    $data_center = 'ab1';
-    expect($this->mailchimp->getDataCenter($valid_api_key_format))
-      ->equals($data_center);
+    $validApiKeyFormat = '12345678901234567890123456789012-ab1';
+    $dataCenter = 'ab1';
+    expect($this->mailchimp->getDataCenter($validApiKeyFormat))
+      ->equals($dataCenter);
   }
 
   public function testItFailsWithIncorrectAPIKey() {
@@ -61,7 +61,7 @@ class MailChimpTest extends \MailPoetUnitTest {
 
     try {
       $mailchimp = clone($this->mailchimp);
-      $mailchimp->api_key = false;
+      $mailchimp->apiKey = false;
       $lists = $mailchimp->getLists();
       $this->fail('MailChimp getLists() did not throw an exception');
     } catch (\Exception $e) {
@@ -118,7 +118,7 @@ class MailChimpTest extends \MailPoetUnitTest {
   public function testItFailsWhenSubscribersDataTooLarge() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $mailchimp = clone($this->mailchimp);
-    $mailchimp->max_post_size = 10;
+    $mailchimp->maxPostSize = 10;
 
     try {
       $subscribers = $mailchimp->getSubscribers($this->lists);

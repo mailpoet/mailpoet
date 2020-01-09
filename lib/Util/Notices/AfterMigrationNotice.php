@@ -25,8 +25,8 @@ class AfterMigrationNotice {
     $this->settings->set(self::OPTION_NAME, false);
   }
 
-  public function init($should_display) {
-    if ($should_display && $this->settings->get(self::OPTION_NAME, false)) {
+  public function init($shouldDisplay) {
+    if ($shouldDisplay && $this->settings->get(self::OPTION_NAME, false)) {
       return $this->display();
     }
   }
@@ -41,10 +41,10 @@ class AfterMigrationNotice {
       ]
     );
 
-    $extra_classes = 'mailpoet-dismissible-notice is-dismissible';
-    $data_notice_name = self::OPTION_NAME;
+    $extraClasses = 'mailpoet-dismissible-notice is-dismissible';
+    $dataNoticeName = self::OPTION_NAME;
 
-    \MailPoet\WP\Notice::displaySuccess($message, $extra_classes, $data_notice_name);
+    \MailPoet\WP\Notice::displaySuccess($message, $extraClasses, $dataNoticeName);
     return $message;
   }
 

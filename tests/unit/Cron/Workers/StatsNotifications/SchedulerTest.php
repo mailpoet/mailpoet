@@ -28,7 +28,7 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->entityManager = $this->createMock(EntityManager::class);
     $this->entityManager->method('flush');
     $this->repository = $this->createMock(StatsNotificationsRepository::class);
-    $this->stats_notifications = new Scheduler(
+    $this->statsNotifications = new Scheduler(
       $this->settings,
       $this->entityManager,
       $this->repository
@@ -43,9 +43,9 @@ class SchedulerTest extends \MailPoetUnitTest {
         ['tracking.enabled', null, true],
       ]));
 
-    $newsletter_id = 5;
+    $newsletterId = 5;
     $newsletter = new NewsletterEntity();
-    $newsletter->setId($newsletter_id);
+    $newsletter->setId($newsletterId);
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
 
     $this->entityManager
@@ -69,10 +69,10 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->repository
       ->expects($this->once())
       ->method('findOneByNewsletterId')
-      ->with($newsletter_id)
+      ->with($newsletterId)
       ->willReturn([]);
 
-    $this->stats_notifications->schedule($newsletter);
+    $this->statsNotifications->schedule($newsletter);
   }
 
   public function testShouldScheduleForNotificationHistory() {
@@ -83,9 +83,9 @@ class SchedulerTest extends \MailPoetUnitTest {
         ['tracking.enabled', null, true],
       ]));
 
-    $newsletter_id = 4;
+    $newsletterId = 4;
     $newsletter = new NewsletterEntity();
-    $newsletter->setId($newsletter_id);
+    $newsletter->setId($newsletterId);
     $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
 
     $this->entityManager
@@ -109,10 +109,10 @@ class SchedulerTest extends \MailPoetUnitTest {
     $this->repository
       ->expects($this->once())
       ->method('findOneByNewsletterId')
-      ->with($newsletter_id)
+      ->with($newsletterId)
       ->willReturn([]);
 
-    $this->stats_notifications->schedule($newsletter);
+    $this->statsNotifications->schedule($newsletter);
   }
 
   public function testShouldNotScheduleIfTrackingIsDisabled() {
@@ -127,12 +127,12 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->expects($this->never())
       ->method('persist');
 
-    $newsletter_id = 13;
+    $newsletterId = 13;
     $newsletter = new NewsletterEntity();
-    $newsletter->setId($newsletter_id);
+    $newsletter->setId($newsletterId);
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
 
-    $this->stats_notifications->schedule($newsletter);
+    $this->statsNotifications->schedule($newsletter);
   }
 
   public function testShouldNotScheduleIfDisabled() {
@@ -147,12 +147,12 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->expects($this->never())
       ->method('persist');
 
-    $newsletter_id = 6;
+    $newsletterId = 6;
     $newsletter = new NewsletterEntity();
-    $newsletter->setId($newsletter_id);
+    $newsletter->setId($newsletterId);
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
 
-    $this->stats_notifications->schedule($newsletter);
+    $this->statsNotifications->schedule($newsletter);
   }
 
   public function testShouldNotScheduleIfSettingsMissing() {
@@ -167,13 +167,13 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->expects($this->never())
       ->method('persist');
 
-    $newsletter_id = 7;
+    $newsletterId = 7;
 
     $newsletter = new NewsletterEntity();
-    $newsletter->setId($newsletter_id);
+    $newsletter->setId($newsletterId);
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
 
-    $this->stats_notifications->schedule($newsletter);
+    $this->statsNotifications->schedule($newsletter);
   }
 
   public function testShouldNotScheduleIfEmailIsMissing() {
@@ -188,12 +188,12 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->expects($this->never())
       ->method('persist');
 
-    $newsletter_id = 8;
+    $newsletterId = 8;
     $newsletter = new NewsletterEntity();
-    $newsletter->setId($newsletter_id);
+    $newsletter->setId($newsletterId);
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
 
-    $this->stats_notifications->schedule($newsletter);
+    $this->statsNotifications->schedule($newsletter);
   }
 
   public function testShouldNotScheduleIfEmailIsEmpty() {
@@ -208,11 +208,11 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->expects($this->never())
       ->method('persist');
 
-    $newsletter_id = 9;
+    $newsletterId = 9;
     $newsletter = new NewsletterEntity();
-    $newsletter->setId($newsletter_id);
+    $newsletter->setId($newsletterId);
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
-    $this->stats_notifications->schedule($newsletter);
+    $this->statsNotifications->schedule($newsletter);
   }
 
   public function testShouldNotScheduleIfAlreadyScheduled() {
@@ -223,21 +223,21 @@ class SchedulerTest extends \MailPoetUnitTest {
         ['tracking.enabled', null, true],
       ]));
 
-    $newsletter_id = 10;
+    $newsletterId = 10;
     $newsletter = new NewsletterEntity();
-    $newsletter->setId($newsletter_id);
+    $newsletter->setId($newsletterId);
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
 
     $this->repository
       ->expects($this->once())
       ->method('findOneByNewsletterId')
-      ->with($newsletter_id)
+      ->with($newsletterId)
       ->willReturn(new StatsNotificationEntity(new NewsletterEntity(), new ScheduledTaskEntity()));
     $this->entityManager
       ->expects($this->never())
       ->method('persist');
 
-    $this->stats_notifications->schedule($newsletter);
+    $this->statsNotifications->schedule($newsletter);
   }
 
   public function testShouldNotScheduleIfInvalidType() {
@@ -251,11 +251,11 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->expects($this->never())
       ->method('persist');
 
-    $newsletter_id = 11;
+    $newsletterId = 11;
     $newsletter = new NewsletterEntity();
-    $newsletter->setId($newsletter_id);
+    $newsletter->setId($newsletterId);
     $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
-    $this->stats_notifications->schedule($newsletter);
+    $this->statsNotifications->schedule($newsletter);
   }
 
 }

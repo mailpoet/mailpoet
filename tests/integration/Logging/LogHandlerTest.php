@@ -9,9 +9,9 @@ use MailPoetVendor\Idiorm\ORM;
 class LogHandlerTest extends \MailPoetTest {
 
   public function testItCreatesLog() {
-    $log_handler = new LogHandler();
+    $logHandler = new LogHandler();
     $time = new \DateTime();
-    $log_handler->handle([
+    $logHandler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],
       'context' => [],
@@ -20,7 +20,7 @@ class LogHandlerTest extends \MailPoetTest {
     ]);
 
     $log = Log::where('name', 'name')->orderByDesc('id')->findOne();
-    expect($log->created_at)->equals($time->format('Y-m-d H:i:s'));
+    expect($log->createdAt)->equals($time->format('Y-m-d H:i:s'));
 
   }
 
@@ -37,8 +37,8 @@ class LogHandlerTest extends \MailPoetTest {
       return 0;
     };
 
-    $log_handler = new LogHandler(\MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
-    $log_handler->handle([
+    $logHandler = new LogHandler(\MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
+    $logHandler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],
       'context' => [],
@@ -63,8 +63,8 @@ class LogHandlerTest extends \MailPoetTest {
       return 100;
     };
 
-    $log_handler = new LogHandler(\MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
-    $log_handler->handle([
+    $logHandler = new LogHandler(\MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
+    $logHandler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],
       'context' => [],

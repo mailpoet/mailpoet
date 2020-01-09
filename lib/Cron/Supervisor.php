@@ -9,38 +9,38 @@ class Supervisor {
   /** @var CronHelper */
   private $cron_helper;
 
-  public function __construct(CronHelper $cron_helper) {
-    $this->cron_helper = $cron_helper;
+  public function __construct(CronHelper $cronHelper) {
+    $this->cronHelper = $cronHelper;
   }
 
   public function init() {
-    $this->token = $this->cron_helper->createToken();
+    $this->token = $this->cronHelper->createToken();
     $this->daemon = $this->getDaemon();
   }
 
   public function checkDaemon() {
     $daemon = $this->daemon;
-    $execution_timeout_exceeded =
-      (time() - (int)$daemon['updated_at']) >= $this->cron_helper->getDaemonExecutionTimeout();
-    $daemon_is_inactive =
+    $executionTimeoutExceeded =
+      (time() - (int)$daemon['updated_at']) >= $this->cronHelper->getDaemonExecutionTimeout();
+    $daemonIsInactive =
       isset($daemon['status']) && $daemon['status'] === CronHelper::DAEMON_STATUS_INACTIVE;
-    if ($execution_timeout_exceeded || $daemon_is_inactive) {
-      $this->cron_helper->restartDaemon($this->token);
+    if ($executionTimeoutExceeded || $daemonIsInactive) {
+      $this->cronHelper->restartDaemon($this->token);
       return $this->runDaemon();
     }
     return $daemon;
   }
 
   public function runDaemon() {
-    $this->cron_helper->accessDaemon($this->token);
-    $daemon = $this->cron_helper->getDaemon();
+    $this->cronHelper->accessDaemon($this->token);
+    $daemon = $this->cronHelper->getDaemon();
     return $daemon;
   }
 
   public function getDaemon() {
-    $daemon = $this->cron_helper->getDaemon();
+    $daemon = $this->cronHelper->getDaemon();
     if (!$daemon) {
-      $this->cron_helper->createDaemon($this->token);
+      $this->cronHelper->createDaemon($this->token);
       return $this->runDaemon();
     }
     return $daemon;

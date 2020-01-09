@@ -7,92 +7,92 @@ use MailPoet\Test\DataFactories\Settings;
 
 class SettingsPageBasicsCest {
 
-  public function checkSettingsPagesLoad(\AcceptanceTester $I) {
-    $I->wantTo('Confirm all settings pages load correctly');
-    $I->login();
-    $I->amOnMailPoetPage('Settings');
+  public function checkSettingsPagesLoad(\AcceptanceTester $i) {
+    $i->wantTo('Confirm all settings pages load correctly');
+    $i->login();
+    $i->amOnMailPoetPage('Settings');
     //Basics Tab
-    $I->waitForText('Basics');
-    $I->seeNoJSErrors();
+    $i->waitForText('Basics');
+    $i->seeNoJSErrors();
     //Sign-up Confirmation Tab
-    $I->click('[data-automation-id="signup_settings_tab"]');
-    $I->waitForText('Enable sign-up confirmation');
-    $I->seeNoJSErrors();
+    $i->click('[data-automation-id="signup_settings_tab"]');
+    $i->waitForText('Enable sign-up confirmation');
+    $i->seeNoJSErrors();
     //Send With Tab
-    $I->click('[data-automation-id="send_with_settings_tab"]');
-    $I->waitForText('MailPoet Sending Service');
-    $I->seeNoJSErrors();
+    $i->click('[data-automation-id="send_with_settings_tab"]');
+    $i->waitForText('MailPoet Sending Service');
+    $i->seeNoJSErrors();
     //Advanced Tab
-    $I->click('[data-automation-id="settings-advanced-tab"]');
-    $I->waitForText('Bounce email address');
-    $I->seeNoJSErrors();
+    $i->click('[data-automation-id="settings-advanced-tab"]');
+    $i->waitForText('Bounce email address');
+    $i->seeNoJSErrors();
     //Activation Key Tab
-    $I->click('[data-automation-id="activation_settings_tab"]');
-    $I->waitForText('Activation Key');
-    $I->seeNoJSErrors();
+    $i->click('[data-automation-id="activation_settings_tab"]');
+    $i->waitForText('Activation Key');
+    $i->seeNoJSErrors();
   }
 
-  public function editDefaultSenderInformation(\AcceptanceTester $I) {
-    $I->wantTo('Confirm default sender information can be edited');
-    $I->login();
-    $I->amOnMailPoetPage('Settings');
-    $I->fillField(['name' => 'sender[name]'], 'Sender');
-    $I->fillField(['name' => 'sender[address]'], 'sender@fake.fake');
-    $I->fillField(['name' => 'reply_to[name]'], 'Reply Name');
-    $I->fillField(['name' => 'reply_to[address]'], 'reply@fake.fake');
+  public function editDefaultSenderInformation(\AcceptanceTester $i) {
+    $i->wantTo('Confirm default sender information can be edited');
+    $i->login();
+    $i->amOnMailPoetPage('Settings');
+    $i->fillField(['name' => 'sender[name]'], 'Sender');
+    $i->fillField(['name' => 'sender[address]'], 'sender@fake.fake');
+    $i->fillField(['name' => 'reply_to[name]'], 'Reply Name');
+    $i->fillField(['name' => 'reply_to[address]'], 'reply@fake.fake');
     //save settings
-    $I->click('[data-automation-id="settings-submit-button"]');
-    $I->waitForText('Settings saved');
+    $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
   }
 
-  public function allowSubscribeInComments(\AcceptanceTester $I) {
-    $I->wantTo('Allow users to subscribe to lists in site comments');
-    $post_title = 'Hello world!';
-    $I->login();
-    $I->amOnMailPoetPage('Settings');
-    $I->checkOption('#settings[subscribe_on_comment]');
-    $I->selectOptionInSelect2('My First List');
+  public function allowSubscribeInComments(\AcceptanceTester $i) {
+    $i->wantTo('Allow users to subscribe to lists in site comments');
+    $postTitle = 'Hello world!';
+    $i->login();
+    $i->amOnMailPoetPage('Settings');
+    $i->checkOption('#settings[subscribe_on_comment]');
+    $i->selectOptionInSelect2('My First List');
     //save settings
-    $I->click('[data-automation-id="settings-submit-button"]');
-    $I->amOnPage('/');
-    $I->waitForText($post_title);
-    $I->click($post_title);
-    $I->scrollTo('.comment-form-mailpoet');
-    $I->waitForElement(['css' => '.comment-form-mailpoet']);
+    $i->click('[data-automation-id="settings-submit-button"]');
+    $i->amOnPage('/');
+    $i->waitForText($postTitle);
+    $i->click($postTitle);
+    $i->scrollTo('.comment-form-mailpoet');
+    $i->waitForElement(['css' => '.comment-form-mailpoet']);
     //clear checkbox to hide Select2 from next test
-    $I->amOnMailPoetPage('Settings');
-    $I->uncheckOption('#settings[subscribe_on_comment]');
+    $i->amOnMailPoetPage('Settings');
+    $i->uncheckOption('#settings[subscribe_on_comment]');
     //save settings
-    $I->click('[data-automation-id="settings-submit-button"]');
+    $i->click('[data-automation-id="settings-submit-button"]');
     //check to make sure comment subscription form is gone
-    $I->amOnPage('/');
-    $I->waitForText($post_title);
-    $I->click($post_title);
-    $I->dontSee("Yes, add me to your mailing list");
+    $i->amOnPage('/');
+    $i->waitForText($postTitle);
+    $i->click($postTitle);
+    $i->dontSee("Yes, add me to your mailing list");
   }
 
-  public function checkSenderFreemailWarning(\AcceptanceTester $I) {
+  public function checkSenderFreemailWarning(\AcceptanceTester $i) {
     $settings = new Settings();
     $settings->withSendingMethod(Mailer::METHOD_SMTP);
     $settings->withTodayInstallationDate();
 
-    $I->wantTo('Confirm default sender information can be edited');
-    $I->login();
-    $I->amOnMailPoetPage('Settings');
-    $I->fillField(['name' => 'sender[name]'], 'Sender');
-    $I->fillField(['name' => 'sender[address]'], 'sender@email.com');
-    $I->seeElement('[data-acceptance-id="freemail-sender-warning-old-installation"]');
-    $I->see('contact@' . \AcceptanceTester::WP_DOMAIN);
-    $I->fillField(['name' => 'sender[address]'], 'sender@fake.fake');
-    $I->dontseeElement('[data-acceptance-id="freemail-sender-warning-old-installation"]');
+    $i->wantTo('Confirm default sender information can be edited');
+    $i->login();
+    $i->amOnMailPoetPage('Settings');
+    $i->fillField(['name' => 'sender[name]'], 'Sender');
+    $i->fillField(['name' => 'sender[address]'], 'sender@email.com');
+    $i->seeElement('[data-acceptance-id="freemail-sender-warning-old-installation"]');
+    $i->see('contact@' . \AcceptanceTester::WP_DOMAIN);
+    $i->fillField(['name' => 'sender[address]'], 'sender@fake.fake');
+    $i->dontseeElement('[data-acceptance-id="freemail-sender-warning-old-installation"]');
 
     $settings = new Settings();
     $settings->withSendingMethodMailPoet();
-    $I->reloadPage();
+    $i->reloadPage();
 
-    $I->fillField(['name' => 'sender[address]'], 'sender2@email.com');
-    $I->dontSeeElement('[data-acceptance-id="freemail-sender-warning-new-installation"]');
-    $I->fillField(['name' => 'sender[address]'], 'sender@fake.fake');
-    $I->dontSeeElement('[data-acceptance-id="freemail-sender-warning-new-installation"]');
+    $i->fillField(['name' => 'sender[address]'], 'sender2@email.com');
+    $i->dontSeeElement('[data-acceptance-id="freemail-sender-warning-new-installation"]');
+    $i->fillField(['name' => 'sender[address]'], 'sender@fake.fake');
+    $i->dontSeeElement('[data-acceptance-id="freemail-sender-warning-new-installation"]');
   }
 }

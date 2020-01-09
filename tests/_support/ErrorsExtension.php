@@ -23,17 +23,17 @@ class ErrorsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDecl
 
   public function loadErrorCountsBeforeSuite() {
     foreach (self::ERROR_LOG_PATHS as $path) {
-      $this->known_error_counts[$path] = count($this->readFileToArray($path));
+      $this->knownErrorCounts[$path] = count($this->readFileToArray($path));
     }
   }
 
   public function checkErrorsAfterTest(TestEvent $e) {
     foreach (self::ERROR_LOG_PATHS as $path) {
       $errors = $this->readFileToArray($path);
-      foreach (array_slice($errors, $this->known_error_counts[$path]) as $error) {
+      foreach (array_slice($errors, $this->knownErrorCounts[$path]) as $error) {
         $this->output->writeln("<error>$error</error>");
         $this->errors[] = [$e->getTest(), new AssertionFailedError($error)];
-        $this->known_error_counts[$path]++;
+        $this->knownErrorCounts[$path]++;
       }
     }
   }

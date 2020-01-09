@@ -8,11 +8,11 @@ use pQuery\DomNode;
 
 class StructureTransformer {
 
-  public function transform($content, $image_full_width) {
+  public function transform($content, $imageFullWidth) {
     $root = pQuery::parseStr($content);
 
     $this->hoistImagesToRoot($root);
-    $structure = $this->transformTagsToBlocks($root, $image_full_width);
+    $structure = $this->transformTagsToBlocks($root, $imageFullWidth);
     $structure = $this->mergeNeighboringBlocks($structure);
     return $structure;
   }
@@ -23,8 +23,8 @@ class StructureTransformer {
    */
   protected function hoistImagesToRoot(DomNode $root) {
     foreach ($root->query('img') as $item) {
-      $top_ancestor = DOMUtil::findTopAncestor($item);
-      $offset = $top_ancestor->index();
+      $topAncestor = DOMUtil::findTopAncestor($item);
+      $offset = $topAncestor->index();
 
       if ($item->hasParent('a') || $item->hasParent('figure')) {
         $item = $item->parent;
@@ -38,9 +38,9 @@ class StructureTransformer {
    * Transforms HTML tags into their respective JSON objects,
    * turns other root children into text blocks
    */
-  private function transformTagsToBlocks(DomNode $root, $image_full_width) {
+  private function transformTagsToBlocks(DomNode $root, $imageFullWidth) {
     $children = $this->filterOutFiguresWithoutImages($root->children);
-    return array_map(function($item) use ($image_full_width) {
+    return array_map(function($item) use ($imageFullWidth) {
       if ($this->isImageElement($item)) {
         $image = $item->tag === 'img' ? $item : $item->query('img')[0];
         $width = $image->getAttribute('width');
@@ -50,7 +50,7 @@ class StructureTransformer {
           'link' => $item->getAttribute('href') ?: '',
           'src' => $image->getAttribute('src'),
           'alt' => $image->getAttribute('alt'),
-          'fullWidth' => $image_full_width,
+          'fullWidth' => $imageFullWidth,
           'width' => $width === null ? 'auto' : $width,
           'height' => $height === null ? 'auto' : $height,
           'styles' => [
@@ -102,32 +102,32 @@ class StructureTransformer {
    * E.g. 2 adjacent text blocks may be combined into one.
    */
   private function mergeNeighboringBlocks(array $structure) {
-    $updated_structure = [];
-    $text_accumulator = '';
+    $updatedStructure = [];
+    $textAccumulator = '';
     foreach ($structure as $item) {
       if ($item['type'] === 'text') {
-        $text_accumulator .= $item['text'];
+        $textAccumulator .= $item['text'];
       }
       if ($item['type'] !== 'text') {
-        if (!empty($text_accumulator)) {
-          $updated_structure[] = [
+        if (!empty($textAccumulator)) {
+          $updatedStructure[] = [
             'type' => 'text',
-            'text' => trim($text_accumulator),
+            'text' => trim($textAccumulator),
           ];
-          $text_accumulator = '';
+          $textAccumulator = '';
         }
-        $updated_structure[] = $item;
+        $updatedStructure[] = $item;
       }
     }
 
-    if (!empty($text_accumulator)) {
-      $updated_structure[] = [
+    if (!empty($textAccumulator)) {
+      $updatedStructure[] = [
         'type' => 'text',
-        'text' => trim($text_accumulator),
+        'text' => trim($textAccumulator),
       ];
     }
 
-    return $updated_structure;
+    return $updatedStructure;
   }
 
 }

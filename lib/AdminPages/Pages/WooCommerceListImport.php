@@ -13,8 +13,8 @@ class WooCommerceListImport {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(PageRenderer $page_renderer, WPFunctions $wp) {
-    $this->page_renderer = $page_renderer;
+  public function __construct(PageRenderer $pageRenderer, WPFunctions $wp) {
+    $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
   }
 
@@ -23,6 +23,6 @@ class WooCommerceListImport {
     $data = [
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG),
     ];
-    $this->page_renderer->displayPage('woocommerce_list_import.html', $data);
+    $this->pageRenderer->displayPage('woocommerce_list_import.html', $data);
   }
 }

@@ -22,7 +22,7 @@ class SendGridMapper {
     if (strpos($response, 'Invalid email address') === 0) {
       $level = MailerError::LEVEL_SOFT;
     }
-    $subscriber_errors = [new SubscriberError($subscriber, null)];
-    return new MailerError(MailerError::OPERATION_SEND, $level, $response, null, $subscriber_errors);
+    $subscriberErrors = [new SubscriberError($subscriber, null)];
+    return new MailerError(MailerError::OPERATION_SEND, $level, $response, null, $subscriberErrors);
   }
 }

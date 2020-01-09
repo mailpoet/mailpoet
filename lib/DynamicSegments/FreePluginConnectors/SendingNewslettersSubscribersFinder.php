@@ -16,9 +16,9 @@ class SendingNewslettersSubscribersFinder {
   /** @var SubscribersIds */
   private $subscribers_ids_loader;
 
-  public function __construct(SingleSegmentLoader $single_segment_loader, SubscribersIds $subscribers_ids_loader) {
-    $this->single_segment_loader = $single_segment_loader;
-    $this->subscribers_ids_loader = $subscribers_ids_loader;
+  public function __construct(SingleSegmentLoader $singleSegmentLoader, SubscribersIds $subscribersIdsLoader) {
+    $this->singleSegmentLoader = $singleSegmentLoader;
+    $this->subscribersIdsLoader = $subscribersIdsLoader;
   }
 
   /**
@@ -27,10 +27,10 @@ class SendingNewslettersSubscribersFinder {
    *
    * @return Subscriber[]
    */
-  public function findSubscribersInSegment(Segment $segment, array $subscribers_to_process_ids) {
+  public function findSubscribersInSegment(Segment $segment, array $subscribersToProcessIds) {
     if ($segment->type !== DynamicSegment::TYPE_DYNAMIC) return [];
-    $dynamic_segment = $this->single_segment_loader->load($segment->id);
-    return $this->subscribers_ids_loader->load($dynamic_segment, $subscribers_to_process_ids);
+    $dynamicSegment = $this->singleSegmentLoader->load($segment->id);
+    return $this->subscribersIdsLoader->load($dynamicSegment, $subscribersToProcessIds);
   }
 
   /**
@@ -40,8 +40,8 @@ class SendingNewslettersSubscribersFinder {
    */
   public function getSubscriberIdsInSegment(Segment $segment) {
     if ($segment->type !== DynamicSegment::TYPE_DYNAMIC) return [];
-    $dynamic_segment = $this->single_segment_loader->load($segment->id);
-    $result = $this->subscribers_ids_loader->load($dynamic_segment);
+    $dynamicSegment = $this->singleSegmentLoader->load($segment->id);
+    $result = $this->subscribersIdsLoader->load($dynamicSegment);
     return $this->createResultArray($result);
   }
 

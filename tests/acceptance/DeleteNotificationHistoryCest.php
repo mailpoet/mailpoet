@@ -6,43 +6,43 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class DeleteNotificationHistoryCest {
 
-  public function delete(\AcceptanceTester $I) {
+  public function delete(\AcceptanceTester $i) {
     // step 1 - Prepare data
-    $I->wantTo('delete a notification history');
-    $newsletter_name = 'Post notification history';
-    $post_notification = (new Newsletter())
+    $i->wantTo('delete a notification history');
+    $newsletterName = 'Post notification history';
+    $postNotification = (new Newsletter())
       ->withSubject('Deletion Test Post Notification History')
       ->withPostNotificationsType()
       ->create();
-    $post_notification_history = (new Newsletter())
-      ->withSubject($newsletter_name)
+    $postNotificationHistory = (new Newsletter())
+      ->withSubject($newsletterName)
       ->withPostNotificationHistoryType()
-      ->withParentId($post_notification->id)
+      ->withParentId($postNotification->id)
       ->create();
     // step 2 - Open list
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForElement('[data-automation-id="history-' . $post_notification->id . '"]');
-    $I->click('[data-automation-id="history-' . $post_notification->id . '"]');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
+    $i->waitForElement('[data-automation-id="history-' . $postNotification->id . '"]');
+    $i->click('[data-automation-id="history-' . $postNotification->id . '"]');
     //step 3 - Delete Notification
-    $I->waitForElement('[data-automation-id="listing_item_' . $post_notification_history->id . '"]');
-    $I->clickItemRowActionByItemName($newsletter_name, 'Move to trash');
-    $I->waitForElement('[data-automation-id="filters_trash"]');
-    $I->click('[data-automation-id="filters_trash"]');
-    $I->waitForText($newsletter_name);
+    $i->waitForElement('[data-automation-id="listing_item_' . $postNotificationHistory->id . '"]');
+    $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newsletterName);
     //step 4 - Restore Notification
-    $I->clickItemRowActionByItemName($newsletter_name, 'Restore');
-    $I->waitForElementNotVisible('[data-automation-id="filters_trash"]');
-    $I->waitForText($newsletter_name);
+    $i->clickItemRowActionByItemName($newsletterName, 'Restore');
+    $i->waitForElementNotVisible('[data-automation-id="filters_trash"]');
+    $i->waitForText($newsletterName);
     //step 4 - Delete permanently Notification
-    $I->clickItemRowActionByItemName($newsletter_name, 'Move to trash');
-    $I->waitForElement('[data-automation-id="filters_trash"]');
-    $I->click('[data-automation-id="filters_trash"]');
-    $I->waitForText($newsletter_name);
-    $I->clickItemRowActionByItemName($newsletter_name, 'Delete Permanently');
-    $I->waitForText('permanently deleted.');
-    $I->waitForElementNotVisible($newsletter_name);
+    $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
+    $i->waitForText('permanently deleted.');
+    $i->waitForElementNotVisible($newsletterName);
   }
 
 }

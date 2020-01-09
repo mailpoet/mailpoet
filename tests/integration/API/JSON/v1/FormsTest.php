@@ -19,9 +19,9 @@ class FormsTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Forms::class);
-    $this->form_1 = Form::createOrUpdate(['name' => 'Form 1']);
-    $this->form_2 = Form::createOrUpdate(['name' => 'Form 2']);
-    $this->form_3 = Form::createOrUpdate(['name' => 'Form 3']);
+    $this->form1 = Form::createOrUpdate(['name' => 'Form 1']);
+    $this->form2 = Form::createOrUpdate(['name' => 'Form 2']);
+    $this->form3 = Form::createOrUpdate(['name' => 'Form 3']);
     Segment::createOrUpdate(['name' => 'Segment 1']);
     Segment::createOrUpdate(['name' => 'Segment 2']);
   }
@@ -35,10 +35,10 @@ class FormsTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('This form does not exist.');
 
-    $response = $this->endpoint->get(['id' => $this->form_1->id]);
+    $response = $this->endpoint->get(['id' => $this->form1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::findOne($this->form_1->id)->asArray()
+      Form::findOne($this->form1->id)->asArray()
     );
   }
 
@@ -67,11 +67,11 @@ class FormsTest extends \MailPoetTest {
   }
 
   public function testItCanSaveAForm() {
-    $form_data = [
+    $formData = [
       'name' => 'My First Form',
     ];
 
-    $response = $this->endpoint->save($form_data);
+    $response = $this->endpoint->save($formData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Form::where('name', 'My First Form')->findOne()->asArray()
@@ -116,39 +116,39 @@ class FormsTest extends \MailPoetTest {
   }
 
   public function testItCanRestoreAForm() {
-    $this->form_1->trash();
+    $this->form1->trash();
 
-    $trashed_form = Form::findOne($this->form_1->id);
-    expect($trashed_form->deleted_at)->notNull();
+    $trashedForm = Form::findOne($this->form1->id);
+    expect($trashedForm->deletedAt)->notNull();
 
-    $response = $this->endpoint->restore(['id' => $this->form_1->id]);
+    $response = $this->endpoint->restore(['id' => $this->form1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::findOne($this->form_1->id)->asArray()
+      Form::findOne($this->form1->id)->asArray()
     );
     expect($response->data['deleted_at'])->null();
     expect($response->meta['count'])->equals(1);
   }
 
   public function testItCanTrashAForm() {
-    $response = $this->endpoint->trash(['id' => $this->form_2->id]);
+    $response = $this->endpoint->trash(['id' => $this->form2->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::findOne($this->form_2->id)->asArray()
+      Form::findOne($this->form2->id)->asArray()
     );
     expect($response->data['deleted_at'])->notNull();
     expect($response->meta['count'])->equals(1);
   }
 
   public function testItCanDeleteAForm() {
-    $response = $this->endpoint->delete(['id' => $this->form_3->id]);
+    $response = $this->endpoint->delete(['id' => $this->form3->id]);
     expect($response->data)->isEmpty();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(1);
   }
 
   public function testItCanDuplicateAForm() {
-    $response = $this->endpoint->duplicate(['id' => $this->form_1->id]);
+    $response = $this->endpoint->duplicate(['id' => $this->form1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       Form::where('name', 'Copy of Form 1')->findOne()->asArray()

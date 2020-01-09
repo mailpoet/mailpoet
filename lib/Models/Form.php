@@ -49,13 +49,13 @@ class Form extends Model {
       return false;
     }
 
-    $skipped_types = ['html', 'divider', 'submit'];
+    $skippedTypes = ['html', 'divider', 'submit'];
     $fields = [];
 
     foreach ((array)$body as $field) {
       if (empty($field['id'])
         || empty($field['type'])
-        || in_array($field['type'], $skipped_types)
+        || in_array($field['type'], $skippedTypes)
       ) {
         continue;
       }
@@ -69,7 +69,7 @@ class Form extends Model {
     return $fields ?: false;
   }
 
-  public function filterSegments(array $segment_ids = []) {
+  public function filterSegments(array $segmentIds = []) {
     $settings = $this->getSettings();
     if (empty($settings['segments'])) {
       return [];
@@ -78,12 +78,12 @@ class Form extends Model {
     if (!empty($settings['segments_selected_by'])
       && $settings['segments_selected_by'] == 'user'
     ) {
-      $segment_ids = array_intersect($segment_ids, $settings['segments']);
+      $segmentIds = array_intersect($segmentIds, $settings['segments']);
     } else {
-      $segment_ids = $settings['segments'];
+      $segmentIds = $settings['segments'];
     }
 
-    return $segment_ids;
+    return $segmentIds;
   }
 
   public static function search($orm, $search = '') {
@@ -121,17 +121,17 @@ class Form extends Model {
   }
 
   public static function updateSuccessMessages() {
-    $right_message = self::getDefaultSuccessMessage();
-    $wrong_message = (
-      $right_message === __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet')
+    $rightMessage = self::getDefaultSuccessMessage();
+    $wrongMessage = (
+      $rightMessage === __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet')
       ? __('You’ve been successfully subscribed to our newsletter!', 'mailpoet')
       : __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet')
     );
     $forms = self::findMany();
     foreach ($forms as $form) {
       $settings = $form->getSettings();
-      if (isset($settings['success_message']) && $settings['success_message'] === $wrong_message) {
-        $settings['success_message'] = $right_message;
+      if (isset($settings['success_message']) && $settings['success_message'] === $wrongMessage) {
+        $settings['success_message'] = $rightMessage;
         $form->set('settings', serialize($settings));
         $form->save();
       }

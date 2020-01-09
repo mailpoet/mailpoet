@@ -14,59 +14,59 @@ class ViewInBrowser {
   /** @var bool */
   private $is_tracking_enabled;
 
-  public function __construct(Emoji $emoji, $is_tracking_enabled) {
-    $this->is_tracking_enabled = $is_tracking_enabled;
+  public function __construct(Emoji $emoji, $isTrackingEnabled) {
+    $this->isTrackingEnabled = $isTrackingEnabled;
     $this->emoji = $emoji;
   }
 
   public function view($data) {
-    $wp_user_preview = (
+    $wpUserPreview = (
       ($data->subscriber && $data->subscriber->isWPUser() && $data->preview) ||
-      ($data->preview && $data->newsletter_hash)
+      ($data->preview && $data->newsletterHash)
     );
     return $this->renderNewsletter(
       $data->newsletter,
       $data->subscriber,
       $data->queue,
-      $wp_user_preview
+      $wpUserPreview
     );
   }
 
-  public function renderNewsletter($newsletter, $subscriber, $queue, $wp_user_preview) {
+  public function renderNewsletter($newsletter, $subscriber, $queue, $wpUserPreview) {
     if ($queue && $queue->getNewsletterRenderedBody()) {
-      $newsletter_body = $queue->getNewsletterRenderedBody('html');
-      $newsletter_body = $this->emoji->decodeEmojisInBody($newsletter_body);
+      $newsletterBody = $queue->getNewsletterRenderedBody('html');
+      $newsletterBody = $this->emoji->decodeEmojisInBody($newsletterBody);
       // rendered newsletter body has shortcodes converted to links; we need to
       // isolate "view in browser", "unsubscribe" and "manage subscription" links
       // and convert them to shortcodes, which later will be replaced with "#" when
       // newsletter is previewed
-      if ($wp_user_preview && preg_match(Links::getLinkRegex(), $newsletter_body)) {
-        $newsletter_body = Links::convertHashedLinksToShortcodesAndUrls(
-          $newsletter_body,
-          $queue_id = $queue->id,
-          $convert_all = true
+      if ($wpUserPreview && preg_match(Links::getLinkRegex(), $newsletterBody)) {
+        $newsletterBody = Links::convertHashedLinksToShortcodesAndUrls(
+          $newsletterBody,
+          $queueId = $queue->id,
+          $convertAll = true
         );
         // remove open tracking link
-        $newsletter_body = str_replace(Links::DATA_TAG_OPEN, '', $newsletter_body);
+        $newsletterBody = str_replace(Links::DATA_TAG_OPEN, '', $newsletterBody);
       }
     } else {
-      $renderer = new Renderer($newsletter, $wp_user_preview);
-      $newsletter_body = $renderer->render('html');
+      $renderer = new Renderer($newsletter, $wpUserPreview);
+      $newsletterBody = $renderer->render('html');
     }
     $shortcodes = new Shortcodes(
       $newsletter,
       $subscriber,
       $queue,
-      $wp_user_preview
+      $wpUserPreview
     );
-    $rendered_newsletter = $shortcodes->replace($newsletter_body);
-    if (!$wp_user_preview && $queue && $subscriber && $this->is_tracking_enabled) {
-      $rendered_newsletter = Links::replaceSubscriberData(
+    $renderedNewsletter = $shortcodes->replace($newsletterBody);
+    if (!$wpUserPreview && $queue && $subscriber && $this->isTrackingEnabled) {
+      $renderedNewsletter = Links::replaceSubscriberData(
         $subscriber->id,
         $queue->id,
-        $rendered_newsletter
+        $renderedNewsletter
       );
     }
-    return $rendered_newsletter;
+    return $renderedNewsletter;
   }
 }

@@ -12,14 +12,14 @@ class LinkTokensTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->link_tokens = new LinkTokens;
+    $this->linkTokens = new LinkTokens;
   }
 
   public function testItGeneratesSubscriberToken() {
     $subscriber1 = $this->makeSubscriber(['email' => 'demo1@fake.loc']);
     $subscriber2 = $this->makeSubscriber(['email' => 'demo2@fake.loc']);
-    $token1 = $this->link_tokens->getToken($subscriber1);
-    $token2 = $this->link_tokens->getToken($subscriber2);
+    $token1 = $this->linkTokens->getToken($subscriber1);
+    $token2 = $this->linkTokens->getToken($subscriber2);
     expect(strlen($token1))->equals(6);
     expect(strlen($token2))->equals(6);
     expect($token1 != $token2)->equals(true);
@@ -28,17 +28,17 @@ class LinkTokensTest extends \MailPoetTest {
   public function testItGetsSubscriberToken() {
     $subscriber1 = $this->makeSubscriber(['email' => 'demo1@fake.loc', 'link_token' => 'already-existing-token']);
     $subscriber2 = $this->makeSubscriber(['email' => 'demo2@fake.loc']);
-    expect($this->link_tokens->getToken($subscriber1))->equals('already-existing-token');
-    expect(strlen($this->link_tokens->getToken($subscriber2)))->equals(6);
+    expect($this->linkTokens->getToken($subscriber1))->equals('already-existing-token');
+    expect(strlen($this->linkTokens->getToken($subscriber2)))->equals(6);
   }
 
   public function testItVerifiesSubscriberToken() {
     $subscriber = $this->makeSubscriber([
       'email' => 'demo@fake.loc',
     ]);
-    $token = $this->link_tokens->getToken($subscriber);
-    expect($this->link_tokens->verifyToken($subscriber, $token))->true();
-    expect($this->link_tokens->verifyToken($subscriber, 'faketoken'))->false();
+    $token = $this->linkTokens->getToken($subscriber);
+    expect($this->linkTokens->verifyToken($subscriber, $token))->true();
+    expect($this->linkTokens->verifyToken($subscriber, 'faketoken'))->false();
   }
 
   public function _after() {

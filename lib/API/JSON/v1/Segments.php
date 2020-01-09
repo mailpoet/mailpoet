@@ -26,13 +26,13 @@ class Segments extends APIEndpoint {
   private $woo_commerce_sync;
 
   public function __construct(
-    Listing\BulkActionController $bulk_action,
-    Listing\Handler $listing_handler,
-    WooCommerce $woo_commerce
+    Listing\BulkActionController $bulkAction,
+    Listing\Handler $listingHandler,
+    WooCommerce $wooCommerce
   ) {
-    $this->bulk_action = $bulk_action;
-    $this->listing_handler = $listing_handler;
-    $this->woo_commerce_sync = $woo_commerce;
+    $this->bulkAction = $bulkAction;
+    $this->listingHandler = $listingHandler;
+    $this->wooCommerceSync = $wooCommerce;
   }
 
   public function get($data = []) {
@@ -48,11 +48,11 @@ class Segments extends APIEndpoint {
   }
 
   public function listing($data = []) {
-    $listing_data = $this->listing_handler->get('\MailPoet\Models\Segment', $data);
+    $listingData = $this->listingHandler->get('\MailPoet\Models\Segment', $data);
 
     $data = [];
-    foreach ($listing_data['items'] as $segment) {
-      $segment->subscribers_url = WPFunctions::get()->adminUrl(
+    foreach ($listingData['items'] as $segment) {
+      $segment->subscribersUrl = WPFunctions::get()->adminUrl(
         'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->id . ']'
       );
 
@@ -63,9 +63,9 @@ class Segments extends APIEndpoint {
     }
 
     return $this->successResponse($data, [
-      'count' => $listing_data['count'],
-      'filters' => $listing_data['filters'],
-      'groups' => $listing_data['groups'],
+      'count' => $listingData['count'],
+      'filters' => $listingData['filters'],
+      'groups' => $listingData['groups'],
     ]);
   }
 
@@ -164,7 +164,7 @@ class Segments extends APIEndpoint {
   public function synchronize($data) {
     try {
       if ($data['type'] === Segment::TYPE_WC_USERS) {
-        $this->woo_commerce_sync->synchronizeCustomers();
+        $this->wooCommerceSync->synchronizeCustomers();
       } else {
         WP::synchronizeUsers();
       }
@@ -179,7 +179,7 @@ class Segments extends APIEndpoint {
 
   public function bulkAction($data = []) {
     try {
-      $meta = $this->bulk_action->apply('\MailPoet\Models\Segment', $data);
+      $meta = $this->bulkAction->apply('\MailPoet\Models\Segment', $data);
       return $this->successResponse(null, $meta);
     } catch (\Exception $e) {
       return $this->errorResponse([

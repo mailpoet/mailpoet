@@ -14,7 +14,7 @@ class SettingsControllerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->controller = $this->di_container->get(SettingsController::class);
+    $this->controller = $this->diContainer->get(SettingsController::class);
   }
 
   public function testItReturnsStoredValue() {
@@ -78,15 +78,15 @@ class SettingsControllerTest extends \MailPoetTest {
   public function testItCanSetAtTopLevel() {
     $this->controller->set('test_key', 1);
     $this->assertEquals(1, $this->controller->get('test_key'));
-    $db_value = $this->getSettingValue('test_key');
-    $this->assertEquals(1, $db_value);
+    $dbValue = $this->getSettingValue('test_key');
+    $this->assertEquals(1, $dbValue);
   }
 
   public function testItCanSetAtNestedLevel() {
     $this->controller->set('test_key.key1.key2', 1);
     $this->assertEquals(1, $this->controller->get('test_key.key1.key2'));
-    $db_value = unserialize($this->getSettingValue('test_key'));
-    $this->assertEquals(1, $db_value['key1']['key2']);
+    $dbValue = unserialize($this->getSettingValue('test_key'));
+    $this->assertEquals(1, $dbValue['key1']['key2']);
   }
 
   public function testItCanSetNUll() {
@@ -94,16 +94,16 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals(1, $this->controller->get('test_key.key1.key2'));
     $this->controller->set('test_key.key1.key2', null);
     $this->assertNull(null, $this->controller->get('test_key.key1.key2'));
-    $db_value = unserialize($this->getSettingValue('test_key'));
-    $this->assertNull($db_value['key1']['key2']);
+    $dbValue = unserialize($this->getSettingValue('test_key'));
+    $this->assertNull($dbValue['key1']['key2']);
   }
 
   public function testItCanOverrideValueAndSetAtNestedLevel() {
     $this->controller->set('test_key.key1', 1);
     $this->controller->set('test_key.key1.key2', 1);
     $this->assertEquals(1, $this->controller->get('test_key.key1.key2'));
-    $db_value = unserialize($this->getSettingValue('test_key'));
-    $this->assertEquals(1, $db_value['key1']['key2']);
+    $dbValue = unserialize($this->getSettingValue('test_key'));
+    $this->assertEquals(1, $dbValue['key1']['key2']);
   }
 
   public function testItLoadsFromDbOnlyOnce() {
@@ -115,12 +115,12 @@ class SettingsControllerTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $table_name = $this->entity_manager->getClassMetadata(SettingEntity::class)->getTableName();
-    $this->connection->executeUpdate('TRUNCATE ' . $table_name);
+    $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
+    $this->connection->executeUpdate('TRUNCATE ' . $tableName);
   }
 
   private function createOrUpdateSetting($name, $value) {
-    $table_name = $this->entity_manager->getClassMetadata(SettingEntity::class)->getTableName();
+    $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
     $this->connection->executeUpdate("
       INSERT INTO $table_name (name, value) VALUES (?, ?)
       ON DUPLICATE KEY UPDATE value = ?
@@ -128,7 +128,7 @@ class SettingsControllerTest extends \MailPoetTest {
   }
 
   private function getSettingValue($name) {
-    $table_name = $this->entity_manager->getClassMetadata(SettingEntity::class)->getTableName();
+    $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
     return $this->connection->executeQuery("SELECT value FROM $table_name WHERE name = ?", [$name])->fetchColumn();
   }
 }

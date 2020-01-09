@@ -11,14 +11,14 @@ class ConflictResolverTest extends \MailPoetTest {
 
   public function __construct() {
     parent::__construct();
-    $this->conflict_resolver = new ConflictResolver();
-    $this->conflict_resolver->init();
-    global $wp_filter;
-    $this->wp_filter = $wp_filter;
+    $this->conflictResolver = new ConflictResolver();
+    $this->conflictResolver->init();
+    global $wpFilter;
+    $this->wpFilter = $wpFilter;
   }
 
   public function testItResolvesRouterUrlQueryParametersConflict() {
-    expect(!empty($this->wp_filter['mailpoet_conflict_resolver_router_url_query_parameters']))->true();
+    expect(!empty($this->wpFilter['mailpoet_conflict_resolver_router_url_query_parameters']))->true();
     // it should unset action & endpoint GET variables
     $_GET['endpoint'] = $_GET['action'] = $_GET['test'] = 'test';
     do_action('mailpoet_conflict_resolver_router_url_query_parameters');
@@ -28,21 +28,21 @@ class ConflictResolverTest extends \MailPoetTest {
   }
 
   public function testItUnloadsAllStylesFromLocationsNotOnPermittedList() {
-    expect(!empty($this->wp_filter['mailpoet_conflict_resolver_styles']))->true();
+    expect(!empty($this->wpFilter['mailpoet_conflict_resolver_styles']))->true();
     // grab a random permitted style location
-    $permitted_asset_location = $this->conflict_resolver->permitted_assets_locations['styles'][array_rand($this->conflict_resolver->permitted_assets_locations['styles'], 1)];
+    $permittedAssetLocation = $this->conflictResolver->permitted_assets_locations['styles'][array_rand($this->conflictResolver->permitted_assets_locations['styles'], 1)];
     // enqueue styles
     wp_enqueue_style('select2', '/wp-content/some/offending/plugin/select2.css');
-    wp_enqueue_style('permitted_style', trim($permitted_asset_location, '^'));
-    $this->conflict_resolver->resolveStylesConflict();
+    wp_enqueue_style('permitted_style', trim($permittedAssetLocation, '^'));
+    $this->conflictResolver->resolveStylesConflict();
     do_action('wp_print_styles');
     do_action('admin_print_styles');
     do_action('admin_print_footer_scripts');
     do_action('admin_footer');
-    global $wp_styles;
+    global $wpStyles;
     // it should dequeue all styles except those found on the list of permitted locations
-    expect(in_array('select2', $wp_styles->queue))->false();
-    expect(in_array('permitted_style', $wp_styles->queue))->true();
+    expect(in_array('select2', $wpStyles->queue))->false();
+    expect(in_array('permitted_style', $wpStyles->queue))->true();
   }
 
   public function testItWhitelistsStyles() {
@@ -50,37 +50,37 @@ class ConflictResolverTest extends \MailPoetTest {
     $wp = new WPFunctions;
     $wp->addFilter(
       'mailpoet_conflict_resolver_whitelist_style',
-      function($whitelisted_styles) {
-        $whitelisted_styles[] = '^/wp-content/some/offending/plugin';
-        return $whitelisted_styles;
+      function($whitelistedStyles) {
+        $whitelistedStyles[] = '^/wp-content/some/offending/plugin';
+        return $whitelistedStyles;
       }
     );
-    $this->conflict_resolver->resolveStylesConflict();
+    $this->conflictResolver->resolveStylesConflict();
     do_action('wp_print_styles');
     do_action('admin_print_styles');
     do_action('admin_print_footer_scripts');
     do_action('admin_footer');
-    global $wp_styles;
+    global $wpStyles;
     // it should not dequeue select2 style
-    expect(in_array('select2', $wp_styles->queue))->true();
+    expect(in_array('select2', $wpStyles->queue))->true();
   }
 
   public function testItUnloadsAllScriptsFromLocationsNotOnPermittedList() {
-    expect(!empty($this->wp_filter['mailpoet_conflict_resolver_scripts']))->true();
+    expect(!empty($this->wpFilter['mailpoet_conflict_resolver_scripts']))->true();
     // grab a random permitted script location
-    $permitted_asset_location = $this->conflict_resolver->permitted_assets_locations['scripts'][array_rand($this->conflict_resolver->permitted_assets_locations['scripts'], 1)];
+    $permittedAssetLocation = $this->conflictResolver->permitted_assets_locations['scripts'][array_rand($this->conflictResolver->permitted_assets_locations['scripts'], 1)];
     // enqueue scripts
     wp_enqueue_script('select2', '/wp-content/some/offending/plugin/select2.js');
-    wp_enqueue_script('some_random_script', 'http://example.com/some_script.js', [], null, $in_footer = true); // test inside footer
-    wp_enqueue_script('permitted_script', trim($permitted_asset_location, '^'));
-    $this->conflict_resolver->resolveScriptsConflict();
+    wp_enqueue_script('some_random_script', 'http://example.com/some_script.js', [], null, $inFooter = true); // test inside footer
+    wp_enqueue_script('permitted_script', trim($permittedAssetLocation, '^'));
+    $this->conflictResolver->resolveScriptsConflict();
     do_action('wp_print_scripts');
     do_action('admin_print_footer_scripts');
-    global $wp_scripts;
+    global $wpScripts;
     // it should dequeue all scripts except those found on the list of permitted locations
-    expect(in_array('select2', $wp_scripts->queue))->false();
-    expect(in_array('some_random_script', $wp_scripts->queue))->false();
-    expect(in_array('permitted_script', $wp_scripts->queue))->true();
+    expect(in_array('select2', $wpScripts->queue))->false();
+    expect(in_array('some_random_script', $wpScripts->queue))->false();
+    expect(in_array('permitted_script', $wpScripts->queue))->true();
   }
 
   public function testItWhitelistsScripts() {
@@ -88,17 +88,17 @@ class ConflictResolverTest extends \MailPoetTest {
     $wp = new WPFunctions;
     $wp->addFilter(
       'mailpoet_conflict_resolver_whitelist_script',
-      function($whitelisted_scripts) {
-        $whitelisted_scripts[] = '^/wp-content/some/offending/plugin';
-        return $whitelisted_scripts;
+      function($whitelistedScripts) {
+        $whitelistedScripts[] = '^/wp-content/some/offending/plugin';
+        return $whitelistedScripts;
       }
     );
-    $this->conflict_resolver->resolveStylesConflict();
+    $this->conflictResolver->resolveStylesConflict();
     do_action('wp_print_scripts');
     do_action('admin_print_footer_scripts');
-    global $wp_scripts;
+    global $wpScripts;
     // it should not dequeue select2 script
-    expect(in_array('select2', $wp_scripts->queue))->true();
+    expect(in_array('select2', $wpScripts->queue))->true();
   }
 
   public function _after() {

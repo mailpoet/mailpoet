@@ -36,12 +36,12 @@ class MailerError {
    * @param int|null $retry_interval
    * @param array $subscribers_errors
    */
-  public function __construct($operation, $level, $message = null, $retry_interval = null, array $subscribers_errors = []) {
+  public function __construct($operation, $level, $message = null, $retryInterval = null, array $subscribersErrors = []) {
     $this->operation = $operation;
     $this->level = $level;
     $this->message = $message;
-    $this->retry_interval = $retry_interval;
-    $this->subscribers_errors = $subscribers_errors;
+    $this->retryInterval = $retryInterval;
+    $this->subscribersErrors = $subscribersErrors;
   }
 
   /**
@@ -69,25 +69,25 @@ class MailerError {
    * @return int|null
    */
   public function getRetryInterval() {
-    return $this->retry_interval;
+    return $this->retryInterval;
   }
 
   /**
    * @return SubscriberError[]
    */
   public function getSubscriberErrors() {
-    return $this->subscribers_errors;
+    return $this->subscribersErrors;
   }
 
   public function getMessageWithFailedSubscribers() {
     $message = $this->message ?: '';
-    if (!$this->subscribers_errors) {
+    if (!$this->subscribersErrors) {
       return $message;
     }
 
     $message .= $this->message ? ' ' : '';
 
-    if (count($this->subscribers_errors) === 1) {
+    if (count($this->subscribersErrors) === 1) {
       $message .= WPFunctions::get()->__('Unprocessed subscriber:', 'mailpoet') . ' ';
     } else {
       $message .= WPFunctions::get()->__('Unprocessed subscribers:', 'mailpoet') . ' ';
@@ -95,9 +95,9 @@ class MailerError {
 
     $message .= implode(
       ', ',
-      array_map(function (SubscriberError $subscriber_error) {
+      array_map(function (SubscriberError $subscriberError) {
         return "($subscriber_error)";
-      }, $this->subscribers_errors)
+      }, $this->subscribersErrors)
     );
     return $message;
   }

@@ -5,16 +5,16 @@ namespace MailPoet\Statistics\Track;
 use MailPoet\Models\StatisticsUnsubscribes;
 
 class Unsubscribes {
-  public function track($newsletter_id, $subscriber_id, $queue_id) {
-    $statistics = StatisticsUnsubscribes::where('subscriber_id', $subscriber_id)
-      ->where('newsletter_id', $newsletter_id)
-      ->where('queue_id', $queue_id)
+  public function track($newsletterId, $subscriberId, $queueId) {
+    $statistics = StatisticsUnsubscribes::where('subscriber_id', $subscriberId)
+      ->where('newsletter_id', $newsletterId)
+      ->where('queue_id', $queueId)
       ->findOne();
     if (!$statistics) {
       $statistics = StatisticsUnsubscribes::create();
-      $statistics->newsletter_id = $newsletter_id;
-      $statistics->subscriber_id = $subscriber_id;
-      $statistics->queue_id = $queue_id;
+      $statistics->newsletterId = $newsletterId;
+      $statistics->subscriberId = $subscriberId;
+      $statistics->queueId = $queueId;
       $statistics->save();
     }
   }

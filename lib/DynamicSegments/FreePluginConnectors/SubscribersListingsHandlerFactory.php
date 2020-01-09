@@ -11,7 +11,7 @@ class SubscribersListingsHandlerFactory {
   public function get(Segment $segment, $data) {
     if ($segment->type === DynamicSegment::TYPE_DYNAMIC) {
       $listing = new Handler();
-      return $listing_data = $listing->get('\MailPoet\Models\SubscribersInDynamicSegment', $data);
+      return $listingData = $listing->get('\MailPoet\Models\SubscribersInDynamicSegment', $data);
     }
   }
 }

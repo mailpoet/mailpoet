@@ -62,19 +62,19 @@ class APITest extends \MailPoetTest {
   }
 
   public function testItReturnsCustomFields() {
-    $custom_field1 = CustomField::createOrUpdate([
+    $customField1 = CustomField::createOrUpdate([
       'name' => 'text custom field',
       'type' => CustomField::TYPE_TEXT,
       'params' => ['required' => '1', 'date_type' => 'year_month_day'],
     ]);
-    $custom_field2 = CustomField::createOrUpdate([
+    $customField2 = CustomField::createOrUpdate([
       'name' => 'checkbox custom field',
       'type' => CustomField::TYPE_CHECKBOX,
       'params' => ['required' => ''],
     ]);
     $response = $this->getApi()->getSubscriberFields();
     expect($response)->contains([
-      'id' => 'cf_' . $custom_field1->id,
+      'id' => 'cf_' . $customField1->id,
       'name' => 'text custom field',
       'type' => 'text',
       'params' => [
@@ -84,7 +84,7 @@ class APITest extends \MailPoetTest {
       ],
     ]);
     expect($response)->contains([
-      'id' => 'cf_' . $custom_field2->id,
+      'id' => 'cf_' . $customField2->id,
       'name' => 'checkbox custom field',
       'type' => 'checkbox',
       'params' => [
@@ -258,7 +258,7 @@ class APITest extends \MailPoetTest {
 
     // should not send
     $sent = false;
-    $subscriber->count_confirmations = 1;
+    $subscriber->countConfirmations = 1;
     $subscriber->save();
     $API->subscribeToLists($subscriber->email, $segments, ['skip_subscriber_notification' => true]);
     expect($sent)->equals(false);
@@ -389,19 +389,19 @@ class APITest extends \MailPoetTest {
   }
 
   public function testItExcludesWPUsersAndWooCommerceCustomersSegmentsWhenGettingSegments() {
-    $default_segment = Segment::createOrUpdate(
+    $defaultSegment = Segment::createOrUpdate(
       [
         'name' => 'Default',
         'type' => Segment::TYPE_DEFAULT,
       ]
     );
-    $wp_segment = Segment::createOrUpdate(
+    $wpSegment = Segment::createOrUpdate(
       [
         'name' => 'Default',
         'type' => Segment::TYPE_WP_USERS,
       ]
     );
-    $wc_segment = Segment::createOrUpdate(
+    $wcSegment = Segment::createOrUpdate(
       [
         'name' => 'Default',
         'type' => Segment::TYPE_WC_USERS,
@@ -409,7 +409,7 @@ class APITest extends \MailPoetTest {
     );
     $result = $this->getApi()->getLists();
     expect($result)->count(1);
-    expect($result[0]['id'])->equals($default_segment->id);
+    expect($result[0]['id'])->equals($defaultSegment->id);
   }
 
   public function testItRequiresEmailAddressToAddSubscriber() {
@@ -461,21 +461,21 @@ class APITest extends \MailPoetTest {
   }
 
   public function testItAddsSubscriber() {
-    $custom_field = CustomField::create();
-    $custom_field->name = 'test custom field';
-    $custom_field->type = CustomField::TYPE_TEXT;
-    $custom_field->save();
+    $customField = CustomField::create();
+    $customField->name = 'test custom field';
+    $customField->type = CustomField::TYPE_TEXT;
+    $customField->save();
 
     $subscriber = [
     'email' => 'test@example.com',
-    'cf_' . $custom_field->id => 'test',
+    'cf_' . $customField->id => 'test',
     ];
 
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $result = $this->getApi()->addSubscriber($subscriber);
     expect($result['id'])->greaterThan(0);
     expect($result['email'])->equals($subscriber['email']);
-    expect($result['cf_' . $custom_field->id])->equals('test');
+    expect($result['cf_' . $customField->id])->equals('test');
     expect($result['source'])->equals('api');
     expect($result['subscribed_ip'])->equals($_SERVER['REMOTE_ADDR']);
     expect(strlen($result['unsubscribe_token']))->equals(15);
@@ -548,7 +548,7 @@ class APITest extends \MailPoetTest {
     $task->type = 'sending';
     $task->setError("Big Error");
     $sendingStub = Sending::create($task, SendingQueue::create());
-    $welcome_scheduler = $this->make('MailPoet\Newsletter\Scheduler\WelcomeScheduler', [
+    $welcomeScheduler = $this->make('MailPoet\Newsletter\Scheduler\WelcomeScheduler', [
       'scheduleSubscriberWelcomeNotification' => [$sendingStub],
     ]);
     $segment = Segment::createOrUpdate(
@@ -562,7 +562,7 @@ class APITest extends \MailPoetTest {
       Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
       Stub::makeEmptyExcept(RequiredCustomFieldValidator::class, 'validate'),
       Stub::makeEmpty(ApiDataSanitizer::class),
-      $welcome_scheduler
+      $welcomeScheduler
     );
     $subscriber = [
       'email' => 'test@example.com',
@@ -613,7 +613,7 @@ class APITest extends \MailPoetTest {
       \MailPoet\API\MP\v1\API::class,
       'addSubscriber',
       [
-        'subscribeToLists' => Expected::once(function ($subscriber_id, $segments_ids, $options) {
+        'subscribeToLists' => Expected::once(function ($subscriberId, $segmentsIds, $options) {
           expect($options)->contains('send_confirmation_email');
           expect($options['send_confirmation_email'])->equals(true);
         }),
@@ -629,8 +629,8 @@ class APITest extends \MailPoetTest {
   }
 
   public function testItThrowsWhenConfirmationEmailFailsToSend() {
-    $confirmation_mailer = $this->createMock(ConfirmationEmailMailer::class);
-    $confirmation_mailer->expects($this->once())
+    $confirmationMailer = $this->createMock(ConfirmationEmailMailer::class);
+    $confirmationMailer->expects($this->once())
       ->method('sendConfirmationEmail')
       ->willReturnCallback(function (Subscriber $subscriber) {
         $subscriber->setError('Big Error');
@@ -638,7 +638,7 @@ class APITest extends \MailPoetTest {
       });
 
     $API = Stub::copy($this->getApi(), [
-      'confirmation_email_mailer' => $confirmation_mailer,
+      'confirmation_email_mailer' => $confirmationMailer,
     ]);
     $segment = Segment::createOrUpdate(
       [

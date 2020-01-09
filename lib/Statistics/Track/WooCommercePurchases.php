@@ -18,42 +18,42 @@ class WooCommercePurchases {
   /** @var Cookies */
   private $cookies;
 
-  public function __construct(Helper $woocommerce_helper, Cookies $cookies) {
-    $this->woocommerce_helper = $woocommerce_helper;
+  public function __construct(Helper $woocommerceHelper, Cookies $cookies) {
+    $this->woocommerceHelper = $woocommerceHelper;
     $this->cookies = $cookies;
   }
 
-  public function trackPurchase($id, $use_cookies = true) {
-    $order = $this->woocommerce_helper->wcGetOrder($id);
+  public function trackPurchase($id, $useCookies = true) {
+    $order = $this->woocommerceHelper->wcGetOrder($id);
     if (!$order instanceof WC_Order) {
       return;
     }
 
     // limit clicks to 'USE_CLICKS_SINCE_DAYS_AGO' range before order has been created
-    $from_date = $order->get_date_created();
-    if (is_null($from_date)) {
+    $fromDate = $order->get_date_created();
+    if (is_null($fromDate)) {
       return;
     }
-    $from = clone $from_date;
+    $from = clone $fromDate;
     $from->modify(-self::USE_CLICKS_SINCE_DAYS_AGO . ' days');
     $to = $order->get_date_created();
 
     // track purchases from all clicks matched by order email
-    $processed_newsletter_ids_map = [];
-    $order_email_clicks = $this->getClicks($order->get_billing_email(), $from, $to);
-    foreach ($order_email_clicks as $click) {
+    $processedNewsletterIdsMap = [];
+    $orderEmailClicks = $this->getClicks($order->get_billing_email(), $from, $to);
+    foreach ($orderEmailClicks as $click) {
       StatisticsWooCommercePurchases::createOrUpdateByClickDataAndOrder($click, $order);
-      $processed_newsletter_ids_map[$click->newsletter_id] = true;
+      $processedNewsletterIdsMap[$click->newsletterId] = true;
     }
 
-    if (!$use_cookies) {
+    if (!$useCookies) {
       return;
     }
 
     // track purchases from clicks matched by cookie email (only for newsletters not tracked by order)
-    $cookie_email_clicks = $this->getClicks($this->getSubscriberEmailFromCookie(), $from, $to);
-    foreach ($cookie_email_clicks as $click) {
-      if (isset($processed_newsletter_ids_map[$click->newsletter_id])) {
+    $cookieEmailClicks = $this->getClicks($this->getSubscriberEmailFromCookie(), $from, $to);
+    foreach ($cookieEmailClicks as $click) {
+      if (isset($processedNewsletterIdsMap[$click->newsletterId])) {
         continue; // do not track click for newsletters that were already tracked by order email
       }
       StatisticsWooCommercePurchases::createOrUpdateByClickDataAndOrder($click, $order);
@@ -69,17 +69,17 @@ class WooCommercePurchases {
   }
 
   private function getSubscriberEmailFromCookie() {
-    $cookie_data = $this->cookies->get(Clicks::REVENUE_TRACKING_COOKIE_NAME);
-    if (!$cookie_data) {
+    $cookieData = $this->cookies->get(Clicks::REVENUE_TRACKING_COOKIE_NAME);
+    if (!$cookieData) {
       return null;
     }
 
-    $click = StatisticsClicks::findOne($cookie_data['statistics_clicks']);
+    $click = StatisticsClicks::findOne($cookieData['statistics_clicks']);
     if (!$click instanceof StatisticsClicks) {
       return null;
     }
 
-    $subscriber = Subscriber::findOne($click->subscriber_id);
+    $subscriber = Subscriber::findOne($click->subscriberId);
     if ($subscriber) {
       return $subscriber->email;
     }

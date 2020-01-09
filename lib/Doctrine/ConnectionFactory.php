@@ -22,34 +22,34 @@ class ConnectionFactory {
   ];
 
   public function createConnection() {
-    $platform_class = self::PLATFORM_CLASS;
-    $connection_params = [
+    $platformClass = self::PLATFORM_CLASS;
+    $connectionParams = [
       'wrapperClass' => SerializableConnection::class,
       'driver' => self::DRIVER,
-      'platform' => new $platform_class,
-      'user' => Env::$db_username,
-      'password' => Env::$db_password,
-      'dbname' => Env::$db_name,
-      'driverOptions' => $this->getDriverOptions(Env::$db_timezone_offset, Env::$db_charset, Env::$db_collation),
+      'platform' => new $platformClass,
+      'user' => Env::$dbUsername,
+      'password' => Env::$dbPassword,
+      'dbname' => Env::$dbName,
+      'driverOptions' => $this->getDriverOptions(Env::$dbTimezoneOffset, Env::$dbCharset, Env::$dbCollation),
     ];
 
-    if (!empty(Env::$db_charset)) {
-      $connection_params['charset'] = Env::$db_charset;
+    if (!empty(Env::$dbCharset)) {
+      $connectionParams['charset'] = Env::$dbCharset;
     }
 
-    if (!empty(Env::$db_socket)) {
-      $connection_params['unix_socket'] = Env::$db_socket;
+    if (!empty(Env::$dbSocket)) {
+      $connectionParams['unix_socket'] = Env::$dbSocket;
     } else {
-      $connection_params['host'] = Env::$db_is_ipv6 ? ('[' . Env::$db_host . ']') : Env::$db_host;
-      $connection_params['port'] = Env::$db_port;
+      $connectionParams['host'] = Env::$dbIsIpv6 ? ('[' . Env::$dbHost . ']') : Env::$dbHost;
+      $connectionParams['port'] = Env::$dbPort;
     }
 
     $this->setupTypes();
-    return DriverManager::getConnection($connection_params);
+    return DriverManager::getConnection($connectionParams);
   }
 
-  private function getDriverOptions($timezone_offset, $charset, $collation) {
-    $driver_options = [
+  private function getDriverOptions($timezoneOffset, $charset, $collation) {
+    $driverOptions = [
       "@@session.time_zone = '$timezone_offset'",
       '@@session.sql_mode = REPLACE(@@sql_mode, "ONLY_FULL_GROUP_BY", "")',
       // We need to use CONVERT for MySQL 8, Maria DB bug which triggers #1232 - Incorrect argument type to variable 'wait_timeout`
@@ -57,12 +57,12 @@ class ConnectionFactory {
       "@@session.wait_timeout = GREATEST(CONVERT(COALESCE(@@wait_timeout, 0), SIGNED), $this->min_wait_timeout)",
     ];
 
-    if (!empty(Env::$db_charset)) {
-      $driver_options[] = "NAMES $charset" . (empty($collation) ? '' : " COLLATE $collation");
+    if (!empty(Env::$dbCharset)) {
+      $driverOptions[] = "NAMES $charset" . (empty($collation) ? '' : " COLLATE $collation");
     }
 
     return [
-      PDO::MYSQL_ATTR_INIT_COMMAND => 'SET ' . implode(', ', $driver_options),
+      PDO::MYSQL_ATTR_INIT_COMMAND => 'SET ' . implode(', ', $driverOptions),
     ];
   }
 

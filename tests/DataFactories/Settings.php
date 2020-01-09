@@ -86,9 +86,9 @@ class Settings {
     return $this;
   }
 
-  public function withSendingMethod($sending_method) {
-    $this->settings->set('mta.method', $sending_method);
-    $this->settings->set('mta_group', $sending_method === Mailer::METHOD_SMTP ? 'smtp' : 'website');
+  public function withSendingMethod($sendingMethod) {
+    $this->settings->set('mta.method', $sendingMethod);
+    $this->settings->set('mta_group', $sendingMethod === Mailer::METHOD_SMTP ? 'smtp' : 'website');
     return $this;
   }
 
@@ -116,10 +116,10 @@ class Settings {
     $this->settings->set('smtp_provider', 'manual');
   }
 
-  public function withSendingError($error_message, $operation = 'send') {
+  public function withSendingError($errorMessage, $operation = 'send') {
     $this->settings->set('mta_log.status', 'paused');
     $this->settings->set('mta_log.error.operation', $operation);
-    $this->settings->set('mta_log.error.error_message', $error_message);
+    $this->settings->set('mta_log.error.error_message', $errorMessage);
     return $this;
   }
 
@@ -135,8 +135,8 @@ class Settings {
     return $this;
   }
 
-  public function withWooCommerceListImportPageDisplayed($was_shown) {
-    $this->settings->set('woocommerce_import_screen_displayed', $was_shown ? 1 : 0);
+  public function withWooCommerceListImportPageDisplayed($wasShown) {
+    $this->settings->set('woocommerce_import_screen_displayed', $wasShown ? 1 : 0);
     return $this;
   }
 

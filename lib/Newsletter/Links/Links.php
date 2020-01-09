@@ -21,15 +21,15 @@ class Links {
   const LINK_TYPE_SHORTCODE = 'shortcode';
   const LINK_TYPE_URL = 'link';
 
-  public static function process($content, $newsletter_id, $queue_id) {
-    $extracted_links = self::extract($content);
-    $saved_links = self::load($newsletter_id, $queue_id);
-    $processed_links = self::hash($extracted_links, $saved_links);
-    return self::replace($content, $processed_links);
+  public static function process($content, $newsletterId, $queueId) {
+    $extractedLinks = self::extract($content);
+    $savedLinks = self::load($newsletterId, $queueId);
+    $processedLinks = self::hash($extractedLinks, $savedLinks);
+    return self::replace($content, $processedLinks);
   }
 
   public static function extract($content) {
-    $extracted_links = [];
+    $extractedLinks = [];
     // extract link shortcodes
     $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract(
@@ -37,7 +37,7 @@ class Links {
       $categories = [Link::CATEGORY_NAME]
     );
     if ($shortcodes) {
-      $extracted_links = array_map(function($shortcode) {
+      $extractedLinks = array_map(function($shortcode) {
         return [
           'type' => Links::LINK_TYPE_SHORTCODE,
           'link' => $shortcode,
@@ -48,73 +48,73 @@ class Links {
     $DOM = DomParser::parseStr($content);
     foreach ($DOM->query('a') as $link) {
       if (!$link->href) continue;
-      $extracted_links[] = [
+      $extractedLinks[] = [
         'type' => self::LINK_TYPE_URL,
         'link' => $link->href,
       ];
     }
-    return array_unique($extracted_links, SORT_REGULAR);
+    return array_unique($extractedLinks, SORT_REGULAR);
   }
 
-  public static function replace($content, $processed_links) {
+  public static function replace($content, $processedLinks) {
     // replace HTML anchor tags
     $DOM = DomParser::parseStr($content);
     foreach ($DOM->query('a') as $link) {
-      $link_to_replace = $link->href;
-      $replacement_link = (!empty($processed_links[$link_to_replace]['processed_link'])) ?
-        $processed_links[$link_to_replace]['processed_link'] :
+      $linkToReplace = $link->href;
+      $replacementLink = (!empty($processedLinks[$linkToReplace]['processed_link'])) ?
+        $processedLinks[$linkToReplace]['processed_link'] :
         null;
-      if (!$replacement_link) continue;
-      $link->setAttribute('href', $replacement_link);
+      if (!$replacementLink) continue;
+      $link->setAttribute('href', $replacementLink);
     }
     $content = $DOM->__toString();
     // replace link shortcodes and markdown links
-    foreach ($processed_links as $processed_link) {
-      $link_to_replace = $processed_link['link'];
-      $replacement_link = $processed_link['processed_link'];
-      if ($processed_link['type'] == self::LINK_TYPE_SHORTCODE) {
-        $content = str_replace($link_to_replace, $replacement_link, $content);
+    foreach ($processedLinks as $processedLink) {
+      $linkToReplace = $processedLink['link'];
+      $replacementLink = $processedLink['processed_link'];
+      if ($processedLink['type'] == self::LINK_TYPE_SHORTCODE) {
+        $content = str_replace($linkToReplace, $replacementLink, $content);
       }
       $content = preg_replace(
-        '/\[(.*?)\](\(' . preg_quote($link_to_replace, '/') . '\))/',
-        '[$1](' . $replacement_link . ')',
+        '/\[(.*?)\](\(' . preg_quote($linkToReplace, '/') . '\))/',
+        '[$1](' . $replacementLink . ')',
         $content
       );
     }
     return [
       $content,
-      array_values($processed_links),
+      array_values($processedLinks),
     ];
   }
 
   public static function replaceSubscriberData(
-    $subscriber_id,
-    $queue_id,
+    $subscriberId,
+    $queueId,
     $content,
     $preview = false
   ) {
     // match data tags
-    $subscriber = Subscriber::findOne($subscriber_id);
+    $subscriber = Subscriber::findOne($subscriberId);
     preg_match_all(self::getLinkRegex(), $content, $matches);
     foreach ($matches[1] as $index => $match) {
       $hash = null;
       if (preg_match('/-/', $match)) {
         list(, $hash) = explode('-', $match);
       }
-      $link_tokens = new LinkTokens;
+      $linkTokens = new LinkTokens;
       $data = self::createUrlDataObject(
         $subscriber->id,
-        $link_tokens->getToken($subscriber),
-        $queue_id,
+        $linkTokens->getToken($subscriber),
+        $queueId,
         $hash,
         $preview
       );
-      $router_action = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
+      $routerAction = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
         TrackEndpoint::ACTION_CLICK :
         TrackEndpoint::ACTION_OPEN;
       $link = Router::buildRequest(
         TrackEndpoint::ENDPOINT,
-        $router_action,
+        $routerAction,
         $data
       );
       $content = str_replace($match, $link, $content);
@@ -122,49 +122,49 @@ class Links {
     return $content;
   }
 
-  public static function save(array $links, $newsletter_id, $queue_id) {
+  public static function save(array $links, $newsletterId, $queueId) {
     foreach ($links as $link) {
       if (isset($link['id']))
         continue;
       if (empty($link['hash']) || empty($link['link'])) continue;
-      $newsletter_link = NewsletterLink::create();
-      $newsletter_link->newsletter_id = $newsletter_id;
-      $newsletter_link->queue_id = $queue_id;
-      $newsletter_link->hash = $link['hash'];
-      $newsletter_link->url = $link['link'];
-      $newsletter_link->save();
+      $newsletterLink = NewsletterLink::create();
+      $newsletterLink->newsletterId = $newsletterId;
+      $newsletterLink->queueId = $queueId;
+      $newsletterLink->hash = $link['hash'];
+      $newsletterLink->url = $link['link'];
+      $newsletterLink->save();
     }
   }
 
-  public static function ensureUnsubscribeLink(array $processed_links) {
+  public static function ensureUnsubscribeLink(array $processedLinks) {
     if (in_array(
       NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
-      array_column($processed_links, 'link'))
+      array_column($processedLinks, 'link'))
     ) {
-      return $processed_links;
+      return $processedLinks;
     }
-    $processed_links[] = self::hashLink(
+    $processedLinks[] = self::hashLink(
       NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
       Links::LINK_TYPE_SHORTCODE
     );
-    return $processed_links;
+    return $processedLinks;
   }
 
-  public static function convertHashedLinksToShortcodesAndUrls($content, $queue_id, $convert_all = false) {
+  public static function convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = false) {
     preg_match_all(self::getLinkRegex(), $content, $links);
     $links = array_unique(Helpers::flattenArray($links));
     foreach ($links as $link) {
-      $link_hash = explode('-', $link);
-      if (!isset($link_hash[1])) continue;
-      $newsletter_link = NewsletterLink::where('hash', $link_hash[1])
-        ->where('queue_id', $queue_id)
+      $linkHash = explode('-', $link);
+      if (!isset($linkHash[1])) continue;
+      $newsletterLink = NewsletterLink::where('hash', $linkHash[1])
+        ->where('queue_id', $queueId)
         ->findOne();
       // convert either only link shortcodes or all hashes links if "convert all"
       // option is specified
-      if (($newsletter_link instanceof NewsletterLink) &&
-        (preg_match('/\[link:/', $newsletter_link->url) || $convert_all)
+      if (($newsletterLink instanceof NewsletterLink) &&
+        (preg_match('/\[link:/', $newsletterLink->url) || $convertAll)
       ) {
-        $content = str_replace($link, $newsletter_link->url, $content);
+        $content = str_replace($link, $newsletterLink->url, $content);
       }
     }
     return $content;
@@ -179,13 +179,13 @@ class Links {
   }
 
   public static function createUrlDataObject(
-    $subscriber_id, $subscriber_link_token, $queue_id, $link_hash, $preview
+    $subscriberId, $subscriberLinkToken, $queueId, $linkHash, $preview
   ) {
     return [
-      $subscriber_id,
-      $subscriber_link_token,
-      $queue_id,
-      $link_hash,
+      $subscriberId,
+      $subscriberLinkToken,
+      $queueId,
+      $linkHash,
       $preview,
     ];
   }
@@ -193,13 +193,13 @@ class Links {
   public static function transformUrlDataObject($data) {
     reset($data);
     if (!is_int(key($data))) return $data;
-    $transformed_data = [];
-    $transformed_data['subscriber_id'] = (!empty($data[0])) ? $data[0] : false;
-    $transformed_data['subscriber_token'] = (!empty($data[1])) ? $data[1] : false;
-    $transformed_data['queue_id'] = (!empty($data[2])) ? $data[2] : false;
-    $transformed_data['link_hash'] = (!empty($data[3])) ? $data[3] : false;
-    $transformed_data['preview'] = (!empty($data[4])) ? $data[4] : false;
-    return $transformed_data;
+    $transformedData = [];
+    $transformedData['subscriber_id'] = (!empty($data[0])) ? $data[0] : false;
+    $transformedData['subscriber_token'] = (!empty($data[1])) ? $data[1] : false;
+    $transformedData['queue_id'] = (!empty($data[2])) ? $data[2] : false;
+    $transformedData['link_hash'] = (!empty($data[3])) ? $data[3] : false;
+    $transformedData['preview'] = (!empty($data[4])) ? $data[4] : false;
+    return $transformedData;
   }
 
   private static function hashLink($link, $type) {
@@ -214,32 +214,32 @@ class Links {
     ];
   }
 
-  private static function hash($extracted_links, $saved_links) {
-    $processed_links = array_map(function(&$link) {
+  private static function hash($extractedLinks, $savedLinks) {
+    $processedLinks = array_map(function(&$link) {
       $link['type'] = Links::LINK_TYPE_URL;
       $link['link'] = $link['url'];
       $link['processed_link'] = self::DATA_TAG_CLICK . '-' . $link['hash'];
       return $link;
-    }, $saved_links);
-    foreach ($extracted_links as $extracted_link) {
-      $link = $extracted_link['link'];
-      if (array_key_exists($link, $processed_links))
+    }, $savedLinks);
+    foreach ($extractedLinks as $extractedLink) {
+      $link = $extractedLink['link'];
+      if (array_key_exists($link, $processedLinks))
         continue;
       // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
-      $processed_links[$link] = self::hashLink($link, $extracted_link['type']);
+      $processedLinks[$link] = self::hashLink($link, $extractedLink['type']);
     }
-    return $processed_links;
+    return $processedLinks;
   }
 
-  private static function load($newsletter_id, $queue_id) {
-    $links = NewsletterLink::whereEqual('newsletter_id', $newsletter_id)
-      ->whereEqual('queue_id', $queue_id)
+  private static function load($newsletterId, $queueId) {
+    $links = NewsletterLink::whereEqual('newsletter_id', $newsletterId)
+      ->whereEqual('queue_id', $queueId)
       ->findMany();
-    $saved_links = [];
+    $savedLinks = [];
     foreach ($links as $link) {
-      $saved_links[$link->url] = $link->asArray();
+      $savedLinks[$link->url] = $link->asArray();
     }
-    return $saved_links;
+    return $savedLinks;
   }
 }

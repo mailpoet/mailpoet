@@ -7,8 +7,8 @@ class Checkbox extends Base {
   public static function render($block) {
     $html = '';
 
-    $field_name = 'data[' . static::getFieldName($block) . ']';
-    $field_validation = static::getInputValidation($block);
+    $fieldName = 'data[' . static::getFieldName($block) . ']';
+    $fieldValidation = static::getInputValidation($block);
 
     $html .= '<p class="mailpoet_paragraph">';
 
@@ -19,25 +19,25 @@ class Checkbox extends Base {
       : []
     );
 
-    $selected_value = self::getFieldValue($block);
+    $selectedValue = self::getFieldValue($block);
 
     foreach ($options as $option) {
       $html .= '<label class="mailpoet_checkbox_label">';
       $html .= '<input type="checkbox" class="mailpoet_checkbox" ';
 
-      $html .= 'name="' . $field_name . '" ';
+      $html .= 'name="' . $fieldName . '" ';
 
       $html .= 'value="1" ';
 
       $html .= (
         (
-          $selected_value === ''
+          $selectedValue === ''
           && isset($option['is_checked'])
           && $option['is_checked']
-        ) || ($selected_value)
+        ) || ($selectedValue)
       ) ? 'checked="checked"' : '';
 
-      $html .= $field_validation;
+      $html .= $fieldValidation;
 
       $html .= ' /> ' . esc_attr($option['value']);
 

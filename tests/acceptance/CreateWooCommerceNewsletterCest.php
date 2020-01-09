@@ -7,71 +7,71 @@ use MailPoet\Test\DataFactories\Features;
 
 class CreateWooCommerceNewsletterCest {
 
-  public function createFirstPurchaseEmail(\AcceptanceTester $I) {
-    $I->wantTo('Create and configure a first purchase automatic email');
+  public function createFirstPurchaseEmail(\AcceptanceTester $i) {
+    $i->wantTo('Create and configure a first purchase automatic email');
 
-    $newsletter_title = 'First Purchase Email Creation';
-    $I->activateWooCommerce();
+    $newsletterTitle = 'First Purchase Email Creation';
+    $i->activateWooCommerce();
 
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="create_woocommerce"]');
-    $I->click('[data-automation-id="create_woocommerce_first_purchase"]');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('[data-automation-id="create_woocommerce"]');
+    $i->click('[data-automation-id="create_woocommerce_first_purchase"]');
 
-    $I->waitForText('Select WooCommerce events conditions');
-    $I->click('Next');
+    $i->waitForText('Select WooCommerce events conditions');
+    $i->click('Next');
 
     $template = '[data-automation-id="select_template_0"]';
-    $I->waitForElement($template);
-    $I->click($template);
+    $i->waitForElement($template);
+    $i->click($template);
 
-    $title_element = '[data-automation-id="newsletter_title"]';
-    $I->waitForElement($title_element);
-    $I->fillField($title_element, $newsletter_title);
-    $I->click('Next');
+    $titleElement = '[data-automation-id="newsletter_title"]';
+    $i->waitForElement($titleElement);
+    $i->fillField($titleElement, $newsletterTitle);
+    $i->click('Next');
 
-    $I->waitForElement('[data-automation-id="newsletter_send_form"]');
-    $newsletter_listing_element = '[data-automation-id="listing_item_' . basename($I->getCurrentUrl()) . '"]';
-    $I->waitForElementClickable('[value="Activate"]');
-    $I->click('Activate');
+    $i->waitForElement('[data-automation-id="newsletter_send_form"]');
+    $newsletterListingElement = '[data-automation-id="listing_item_' . basename($i->getCurrentUrl()) . '"]';
+    $i->waitForElementClickable('[value="Activate"]');
+    $i->click('Activate');
 
-    $I->waitForElement($newsletter_listing_element);
-    $I->see($newsletter_title, $newsletter_listing_element);
-    $I->see('Email sent when a customer makes their first purchase.', $newsletter_listing_element);
+    $i->waitForElement($newsletterListingElement);
+    $i->see($newsletterTitle, $newsletterListingElement);
+    $i->see('Email sent when a customer makes their first purchase.', $newsletterListingElement);
   }
 
-  public function createAbandonedCartEmail(\AcceptanceTester $I) {
-    $I->wantTo('Create and configure an abandoned cart automatic email');
+  public function createAbandonedCartEmail(\AcceptanceTester $i) {
+    $i->wantTo('Create and configure an abandoned cart automatic email');
 
-    $newsletter_title = 'Abandoned Cart Email Creation';
-    $I->activateWooCommerce();
+    $newsletterTitle = 'Abandoned Cart Email Creation';
+    $i->activateWooCommerce();
 
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="create_woocommerce"]');
-    $I->scrollToTop();
-    $I->click('[data-automation-id="create_woocommerce_abandoned_shopping_cart"]');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('[data-automation-id="create_woocommerce"]');
+    $i->scrollToTop();
+    $i->click('[data-automation-id="create_woocommerce_abandoned_shopping_cart"]');
 
-    $I->waitForText('Abandoned Shopping Cart');
-    $I->click('Next');
+    $i->waitForText('Abandoned Shopping Cart');
+    $i->click('Next');
 
     $template = '[data-automation-id="select_template_0"]';
-    $I->waitForElement($template);
-    $I->click($template);
+    $i->waitForElement($template);
+    $i->click($template);
 
-    $title_element = '[data-automation-id="newsletter_title"]';
-    $I->waitForElement($title_element);
-    $I->fillField($title_element, $newsletter_title);
-    $I->click('Next');
+    $titleElement = '[data-automation-id="newsletter_title"]';
+    $i->waitForElement($titleElement);
+    $i->fillField($titleElement, $newsletterTitle);
+    $i->click('Next');
 
-    $I->waitForElement('[data-automation-id="newsletter_send_form"]');
-    $newsletter_listing_element = '[data-automation-id="listing_item_' . basename($I->getCurrentUrl()) . '"]';
-    $I->waitForElementClickable('[value="Activate"]');
-    $I->click('Activate');
+    $i->waitForElement('[data-automation-id="newsletter_send_form"]');
+    $newsletterListingElement = '[data-automation-id="listing_item_' . basename($i->getCurrentUrl()) . '"]';
+    $i->waitForElementClickable('[value="Activate"]');
+    $i->click('Activate');
 
-    $I->waitForElement($newsletter_listing_element);
-    $I->see($newsletter_title, $newsletter_listing_element);
-    $I->see('Email sent when a customer abandons his cart', $newsletter_listing_element);
+    $i->waitForElement($newsletterListingElement);
+    $i->see($newsletterTitle, $newsletterListingElement);
+    $i->see('Email sent when a customer abandons his cart', $newsletterListingElement);
   }
 
 }

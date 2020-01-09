@@ -19,10 +19,10 @@ class Manage {
   /** @var LinkTokens */
   private $link_tokens;
 
-  public function __construct(UrlHelper $url_helper, FieldNameObfuscator $field_name_obfuscator, LinkTokens $link_tokens) {
-    $this->url_helper = $url_helper;
-    $this->field_name_obfuscator = $field_name_obfuscator;
-    $this->link_tokens = $link_tokens;
+  public function __construct(UrlHelper $urlHelper, FieldNameObfuscator $fieldNameObfuscator, LinkTokens $linkTokens) {
+    $this->urlHelper = $urlHelper;
+    $this->fieldNameObfuscator = $fieldNameObfuscator;
+    $this->linkTokens = $linkTokens;
   }
 
   public function onSave() {
@@ -30,49 +30,49 @@ class Manage {
     $token = (isset($_POST['token']) ? $_POST['token'] : null);
 
     if ($action !== 'mailpoet_subscription_update' || empty($_POST['data'])) {
-      $this->url_helper->redirectBack();
+      $this->urlHelper->redirectBack();
     }
-    $subscriber_data = $_POST['data'];
-    $subscriber_data = $this->field_name_obfuscator->deobfuscateFormPayload($subscriber_data);
+    $subscriberData = $_POST['data'];
+    $subscriberData = $this->fieldNameObfuscator->deobfuscateFormPayload($subscriberData);
 
-    if (!empty($subscriber_data['email'])) {
-      $subscriber = Subscriber::where('email', $subscriber_data['email'])->findOne();
-      if ($subscriber && $this->link_tokens->verifyToken($subscriber, $token)) {
-        if ($subscriber_data['email'] !== Pages::DEMO_EMAIL) {
-          $subscriber = Subscriber::createOrUpdate($this->filterOutEmptyMandatoryFields($subscriber_data));
+    if (!empty($subscriberData['email'])) {
+      $subscriber = Subscriber::where('email', $subscriberData['email'])->findOne();
+      if ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) {
+        if ($subscriberData['email'] !== Pages::DEMO_EMAIL) {
+          $subscriber = Subscriber::createOrUpdate($this->filterOutEmptyMandatoryFields($subscriberData));
           $subscriber->getErrors();
         }
       }
     }
 
-    $this->url_helper->redirectBack();
+    $this->urlHelper->redirectBack();
   }
 
-  private function filterOutEmptyMandatoryFields(array $subscriber_data) {
+  private function filterOutEmptyMandatoryFields(array $subscriberData) {
     $mandatory = $this->getMandatory();
     foreach ($mandatory as $name) {
-      if (strlen(trim($subscriber_data[$name])) === 0) {
-        unset($subscriber_data[$name]);
+      if (strlen(trim($subscriberData[$name])) === 0) {
+        unset($subscriberData[$name]);
       }
     }
-    return $subscriber_data;
+    return $subscriberData;
   }
 
   private function getMandatory() {
     $mandatory = [];
-    $required_custom_fields = CustomField::findMany();
-    foreach ($required_custom_fields as $custom_field) {
-      if (is_serialized($custom_field->params)) {
-        $params = unserialize($custom_field->params);
+    $requiredCustomFields = CustomField::findMany();
+    foreach ($requiredCustomFields as $customField) {
+      if (is_serialized($customField->params)) {
+        $params = unserialize($customField->params);
       } else {
-        $params = $custom_field->params;
+        $params = $customField->params;
       }
       if (
         is_array($params)
         && isset($params['required'])
         && $params['required']
       ) {
-        $mandatory[] = 'cf_' . $custom_field->id;
+        $mandatory[] = 'cf_' . $customField->id;
       }
     }
     return $mandatory;

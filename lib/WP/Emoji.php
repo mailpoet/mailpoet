@@ -15,18 +15,18 @@ class Emoji {
     $this->wp = $wp;
   }
 
-  public function encodeEmojisInBody($newsletter_rendered_body) {
-    if (is_array($newsletter_rendered_body)) {
-      return array_map([$this, 'encodeRenderedBodyForUTF8Column'], $newsletter_rendered_body);
+  public function encodeEmojisInBody($newsletterRenderedBody) {
+    if (is_array($newsletterRenderedBody)) {
+      return array_map([$this, 'encodeRenderedBodyForUTF8Column'], $newsletterRenderedBody);
     }
-    return $this->encodeRenderedBodyForUTF8Column($newsletter_rendered_body);
+    return $this->encodeRenderedBodyForUTF8Column($newsletterRenderedBody);
   }
 
-  public function decodeEmojisInBody($newsletter_rendered_body) {
-    if (is_array($newsletter_rendered_body)) {
-      return array_map([$this, 'decodeEntities'], $newsletter_rendered_body);
+  public function decodeEmojisInBody($newsletterRenderedBody) {
+    if (is_array($newsletterRenderedBody)) {
+      return array_map([$this, 'decodeEntities'], $newsletterRenderedBody);
     }
-    return $this->decodeEntities($newsletter_rendered_body);
+    return $this->decodeEntities($newsletterRenderedBody);
   }
 
   private function encodeRenderedBodyForUTF8Column($value) {

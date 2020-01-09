@@ -6,20 +6,20 @@ use MailPoet\Settings\Hosts;
 
 class HostsTest extends \MailPoetUnitTest {
   public function testItReturnsAListOfWebHosts() {
-    $web_hosts = Hosts::getWebHosts();
-    expect($web_hosts)->notEmpty();
+    $webHosts = Hosts::getWebHosts();
+    expect($webHosts)->notEmpty();
 
-    foreach ($web_hosts as $host) {
+    foreach ($webHosts as $host) {
       expect($host['interval'])->greaterThan(0);
       expect($host['emails'])->greaterThan(0);
     }
   }
 
   public function testItReturnsAListOfSMTPHosts() {
-    $smtp_hosts = Hosts::getSMTPHosts();
-    expect($smtp_hosts)->notEmpty();
+    $smtpHosts = Hosts::getSMTPHosts();
+    expect($smtpHosts)->notEmpty();
 
-    foreach ($smtp_hosts as $host) {
+    foreach ($smtpHosts as $host) {
       expect($host['interval'])->greaterThan(0);
       expect($host['emails'])->greaterThan(0);
     }

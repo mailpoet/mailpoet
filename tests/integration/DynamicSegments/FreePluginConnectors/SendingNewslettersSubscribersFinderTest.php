@@ -22,66 +22,66 @@ class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
   private $subscribers_in_segments_finder;
 
   public function _before() {
-    $this->single_segment_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader');
-    $this->subscribers_ids_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersIds');
-    $this->subscribers_in_segments_finder = new SendingNewslettersSubscribersFinder($this->single_segment_loader, $this->subscribers_ids_loader);
+    $this->singleSegmentLoader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader');
+    $this->subscribersIdsLoader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersIds');
+    $this->subscribersInSegmentsFinder = new SendingNewslettersSubscribersFinder($this->singleSegmentLoader, $this->subscribersIdsLoader);
   }
 
   public function testFindSubscribersInSegmentReturnsEmptyIfNotDynamic() {
-    $this->single_segment_loader
+    $this->singleSegmentLoader
       ->expects($this->never())
       ->method('load');
-    $this->subscribers_ids_loader
+    $this->subscribersIdsLoader
       ->expects($this->never())
       ->method('load');
     $segment = Segment::create();
     $segment->type = Segment::TYPE_DEFAULT;
     $segment->id = '3';
-    $result = $this->subscribers_in_segments_finder->findSubscribersInSegment($segment, []);
+    $result = $this->subscribersInSegmentsFinder->findSubscribersInSegment($segment, []);
     expect($result)->count(0);
   }
 
   public function testFindSubscribersInSegmentReturnsSubscribers() {
-    $dynamic_segment = DynamicSegment::create();
-    $dynamic_segment->hydrate([
+    $dynamicSegment = DynamicSegment::create();
+    $dynamicSegment->hydrate([
       'name' => 'segment 1',
       'description' => '',
     ]);
     $ids = [1, 2, 3];
-    $this->single_segment_loader
+    $this->singleSegmentLoader
       ->expects($this->once())
       ->method('load')
       ->with($this->equalTo(3))
-      ->will($this->returnValue($dynamic_segment));
-    $this->subscribers_ids_loader
+      ->will($this->returnValue($dynamicSegment));
+    $this->subscribersIdsLoader
       ->expects($this->once())
       ->method('load')
-      ->with($this->equalTo($dynamic_segment), $ids)
+      ->with($this->equalTo($dynamicSegment), $ids)
       ->will($this->returnValue([new Subscriber()]));
     $segment = DynamicSegment::create();
     $segment->type = DynamicSegment::TYPE_DYNAMIC;
     $segment->id = 3;
-    $result = $this->subscribers_in_segments_finder->findSubscribersInSegment($segment, $ids);
+    $result = $this->subscribersInSegmentsFinder->findSubscribersInSegment($segment, $ids);
     expect($result)->count(1);
   }
 
 
   public function testGetSubscriberIdsInSegmentReturnsEmptyIfNotDynamic() {
-    $this->single_segment_loader
+    $this->singleSegmentLoader
       ->expects($this->never())
       ->method('load');
-    $this->subscribers_ids_loader
+    $this->subscribersIdsLoader
       ->expects($this->never())
       ->method('load');
     $segment = DynamicSegment::create();
     $segment->type = DynamicSegment::TYPE_DEFAULT;
-    $result = $this->subscribers_in_segments_finder->getSubscriberIdsInSegment($segment);
+    $result = $this->subscribersInSegmentsFinder->getSubscriberIdsInSegment($segment);
     expect($result)->count(0);
   }
 
   public function testGetSubscriberIdsInSegmentReturnsSubscribers() {
-    $dynamic_segment = DynamicSegment::create();
-    $dynamic_segment->hydrate([
+    $dynamicSegment = DynamicSegment::create();
+    $dynamicSegment->hydrate([
       'name' => 'segment 2',
       'description' => '',
     ]);
@@ -89,20 +89,20 @@ class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
     $subscriber1->hydrate(['id' => 1]);
     $subscriber2 = Subscriber::create();
     $subscriber2->hydrate(['id' => 2]);
-    $this->single_segment_loader
+    $this->singleSegmentLoader
       ->expects($this->once())
       ->method('load')
       ->with($this->equalTo(3))
-      ->will($this->returnValue($dynamic_segment));
-    $this->subscribers_ids_loader
+      ->will($this->returnValue($dynamicSegment));
+    $this->subscribersIdsLoader
       ->expects($this->once())
       ->method('load')
-      ->with($this->equalTo($dynamic_segment))
+      ->with($this->equalTo($dynamicSegment))
       ->will($this->returnValue([$subscriber1, $subscriber2]));
     $segment = DynamicSegment::create();
     $segment->type = DynamicSegment::TYPE_DYNAMIC;
     $segment->id = 3;
-    $result = $this->subscribers_in_segments_finder->getSubscriberIdsInSegment($segment);
+    $result = $this->subscribersInSegmentsFinder->getSubscriberIdsInSegment($segment);
     expect($result)->count(2);
     expect($result[0]['id'])->equals(1);
     expect($result[1]['id'])->equals(2);

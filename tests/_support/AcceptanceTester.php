@@ -47,36 +47,36 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
    * Define custom actions here
    */
   public function login() {
-    $I = $this;
-    $I->amOnPage('/wp-login.php');
-    if ($I->loadSessionSnapshot('login')) {
+    $i = $this;
+    $i->amOnPage('/wp-login.php');
+    if ($i->loadSessionSnapshot('login')) {
       return;
     }
 
     // remove any other WP auth & login cookies to avoid login/logout errors
-    $auth_cookies = $I->grabCookiesWithPattern('/^wordpress_[a-z0-9]{32}$/') ?: [];
-    $login_cookies = $I->grabCookiesWithPattern('/^wordpress_logged_in_[a-z0-9]{32}$/') ?: [];
-    foreach (array_merge($auth_cookies, $login_cookies) as $cookie) {
-      $I->resetCookie($cookie->getName());
+    $authCookies = $i->grabCookiesWithPattern('/^wordpress_[a-z0-9]{32}$/') ?: [];
+    $loginCookies = $i->grabCookiesWithPattern('/^wordpress_logged_in_[a-z0-9]{32}$/') ?: [];
+    foreach (array_merge($authCookies, $loginCookies) as $cookie) {
+      $i->resetCookie($cookie->getName());
     }
 
-    $I->wait(1);// this needs to be here, Username is not filled properly without this line
-    $I->fillField('Username', 'admin');
-    $I->fillField('Password', 'password');
-    $I->click('Log In');
-    $I->waitForText('MailPoet', 10);
-    $I->saveSessionSnapshot('login');
+    $i->wait(1);// this needs to be here, Username is not filled properly without this line
+    $i->fillField('Username', 'admin');
+    $i->fillField('Password', 'password');
+    $i->click('Log In');
+    $i->waitForText('MailPoet', 10);
+    $i->saveSessionSnapshot('login');
   }
 
   /**
    * Define custom actions here
    */
   public function logOut() {
-    $I = $this;
-    $I->amOnPage('/wp-login.php?action=logout');
-    $I->click('log out');
-    $I->waitForText('You are now logged out.');
-    $I->deleteSessionSnapshot('login');
+    $i = $this;
+    $i->amOnPage('/wp-login.php?action=logout');
+    $i->click('log out');
+    $i->waitForText('You are now logged out.');
+    $i->deleteSessionSnapshot('login');
   }
 
   /**
@@ -85,7 +85,7 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
    * @param string $page The page to visit e.g. Inbox or Status
    */
   public function amOnMailpoetPage($page) {
-    $I = $this;
+    $i = $this;
     if ($page === 'Emails') {
       $path = 'newsletters';
     } elseif ($page === 'Lists') {
@@ -95,23 +95,23 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
     } else {
       $path = strtolower($page);
     }
-    $I->amOnPage("/wp-admin/admin.php?page=mailpoet-$path");
+    $i->amOnPage("/wp-admin/admin.php?page=mailpoet-$path");
   }
 
   /**
    * Navigate to Mailhog page and wait for angular to load
    */
   public function amOnMailboxAppPage() {
-    $I = $this;
-    $I->amOnUrl(self::MAIL_URL);
+    $i = $this;
+    $i->amOnUrl(self::MAIL_URL);
     // ensure that angular is loaded by checking angular specific class
-    $I->waitForElement('.messages.ng-scope');
+    $i->waitForElement('.messages.ng-scope');
   }
 
-  public function clickItemRowActionByItemName($item_name, $link) {
-    $I = $this;
-    $I->moveMouseOver(['xpath' => '//*[text()="' . $item_name . '"]//ancestor::tr']);
-    $I->click($link, ['xpath' => '//*[text()="' . $item_name . '"]//ancestor::tr']);
+  public function clickItemRowActionByItemName($itemName, $link) {
+    $i = $this;
+    $i->moveMouseOver(['xpath' => '//*[text()="' . $itemName . '"]//ancestor::tr']);
+    $i->click($link, ['xpath' => '//*[text()="' . $itemName . '"]//ancestor::tr']);
   }
 
   /**
@@ -121,10 +121,10 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
    * @param string $element
    */
   public function selectOptionInSelect2($value, $element = 'input.select2-search__field') {
-    $I = $this;
-    $I->waitForElement($element);
-    $I->fillField($element, $value);
-    $I->pressKey($element, \WebDriverKeys::ENTER);
+    $i = $this;
+    $i->waitForElement($element);
+    $i->fillField($element, $value);
+    $i->pressKey($element, \WebDriverKeys::ENTER);
   }
 
   /**
@@ -134,9 +134,9 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
    * @param string $element
    */
   public function seeSelectedInSelect2($value, $element = '.select2-container') {
-    $I = $this;
-    $I->waitForElement($element);
-    $I->see($value, $element);
+    $i = $this;
+    $i->waitForElement($element);
+    $i->see($value, $element);
   }
 
   /**
@@ -145,71 +145,71 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
    * @param int $id
    */
   public function amEditingNewsletter($id) {
-    $I = $this;
-    $I->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletter-editor&id=' . $id);
-    $I->waitForElement('[data-automation-id="newsletter_title"]');
-    $I->waitForElementNotVisible('.velocity-animating');
+    $i = $this;
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletter-editor&id=' . $id);
+    $i->waitForElement('[data-automation-id="newsletter_title"]');
+    $i->waitForElementNotVisible('.velocity-animating');
   }
 
   public function createFormAndSubscribe($form = null) {
-    $I = $this;
+    $i = $this;
     // create form widget
     if (!$form) {
-      $form_factory = new Form();
-      $form = $form_factory->withName('Confirmation Form')->create();
+      $formFactory = new Form();
+      $form = $formFactory->withName('Confirmation Form')->create();
     }
-    $I->cli(['widget', 'reset', 'sidebar-1']);
-    $I->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter']);
+    $i->cli(['widget', 'reset', 'sidebar-1']);
+    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter']);
 
     // subscribe
-    $I->amOnUrl(self::WP_URL);
-    $I->fillField('[data-automation-id="form_email"]', 'subscriber@example.com');
-    $I->click('[data-automation-id="subscribe-submit-button"]');
-    $I->waitForText(FormModel::getDefaultSuccessMessage(), 30, '.mailpoet_validate_success');
-    $I->seeNoJSErrors();
+    $i->amOnUrl(self::WP_URL);
+    $i->fillField('[data-automation-id="form_email"]', 'subscriber@example.com');
+    $i->click('[data-automation-id="subscribe-submit-button"]');
+    $i->waitForText(FormModel::getDefaultSuccessMessage(), 30, '.mailpoet_validate_success');
+    $i->seeNoJSErrors();
   }
 
   public function waitForListingItemsToLoad() {
-    $I = $this;
-    $I->waitForElementNotVisible('.mailpoet_listing_loading');
+    $i = $this;
+    $i->waitForElementNotVisible('.mailpoet_listing_loading');
   }
 
   public function clickLabelWithInput($inputName, $inputValue) {
-    $I = $this;
-    $I->click("//*[name()='label'][.//*[name()='input'][@name='{$inputName}'][@value='{$inputValue}']]");
+    $i = $this;
+    $i->click("//*[name()='label'][.//*[name()='input'][@name='{$inputName}'][@value='{$inputValue}']]");
   }
 
   public function assertAttributeContains($selector, $attribute, $contains) {
-    $I = $this;
-    $attributeValue = $I->grabAttributeFrom($selector, $attribute);
+    $i = $this;
+    $attributeValue = $i->grabAttributeFrom($selector, $attribute);
     expect($attributeValue)->contains($contains);
   }
 
   public function assertAttributeNotContains($selector, $attribute, $notContains) {
-    $I = $this;
-    $attributeValue = $I->grabAttributeFrom($selector, $attribute);
+    $i = $this;
+    $attributeValue = $i->grabAttributeFrom($selector, $attribute);
     expect($attributeValue)->notContains($notContains);
   }
 
   public function searchFor($query, $element = '#search_input', $button = 'Search') {
-    $I = $this;
-    $I->waitForElement($element);
-    $I->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
-    $I->fillField($element, $query);
-    $I->click($button);
-    $I->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
+    $i = $this;
+    $i->waitForElement($element);
+    $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
+    $i->fillField($element, $query);
+    $i->click($button);
+    $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
   }
 
   public function createListWithSubscriber() {
-    $segment_factory = new Segment();
-    $segment_name = 'List ' . \MailPoet\Util\Security::generateRandomString();
-    $segment = $segment_factory->withName($segment_name)->create();
+    $segmentFactory = new Segment();
+    $segmentName = 'List ' . \MailPoet\Util\Security::generateRandomString();
+    $segment = $segmentFactory->withName($segmentName)->create();
 
-    $subscriber_factory = new Subscriber();
-    $subscriber_email = \MailPoet\Util\Security::generateRandomString() . '@domain.com';
-    $subscriber_factory->withSegments([$segment])->withEmail($subscriber_email)->create();
+    $subscriberFactory = new Subscriber();
+    $subscriberEmail = \MailPoet\Util\Security::generateRandomString() . '@domain.com';
+    $subscriberFactory->withSegments([$segment])->withEmail($subscriberEmail)->create();
 
-    return $segment_name;
+    return $segmentName;
   }
 
   public function switchToNextTab($offset = 1) {
@@ -276,34 +276,34 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
   }
 
   public function activateWooCommerce() {
-    $I = $this;
-    $I->cli(['plugin', 'activate', 'woocommerce']);
+    $i = $this;
+    $i->cli(['plugin', 'activate', 'woocommerce']);
   }
   public function deactivateWooCommerce() {
-    $I = $this;
-    $I->cli(['plugin', 'deactivate', 'woocommerce']);
+    $i = $this;
+    $i->cli(['plugin', 'deactivate', 'woocommerce']);
   }
 
   /**
    * Order a product and create an account within the order process
    */
-  public function orderProduct(array $product, $user_email, $do_register = true, $do_subscribe = true) {
-    $I = $this;
-    $I->addProductToCart($product);
-    $I->goToCheckout();
-    $I->fillCustomerInfo($user_email);
-    if ($do_register) {
-      $I->optInForRegistration();
+  public function orderProduct(array $product, $userEmail, $doRegister = true, $doSubscribe = true) {
+    $i = $this;
+    $i->addProductToCart($product);
+    $i->goToCheckout();
+    $i->fillCustomerInfo($userEmail);
+    if ($doRegister) {
+      $i->optInForRegistration();
     }
-    $I->selectPaymentMethod();
-    if ($do_subscribe) {
-      $I->optInForSubscription();
+    $i->selectPaymentMethod();
+    if ($doSubscribe) {
+      $i->optInForSubscription();
     } else {
-      $I->optOutOfSubscription();
+      $i->optOutOfSubscription();
     }
-    $I->placeOrder();
-    if ($do_register) {
-      $I->logOut();
+    $i->placeOrder();
+    if ($doRegister) {
+      $i->logOut();
     }
   }
 
@@ -315,80 +315,80 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
    * Add a product to cart
    */
   public function addProductToCart(array $product) {
-    $I = $this;
-    $I->amOnPage('product/' . $product['slug']);
-    $I->click('Add to cart');
-    $I->waitForText("“{$product['name']}” has been added to your cart.");
+    $i = $this;
+    $i->amOnPage('product/' . $product['slug']);
+    $i->click('Add to cart');
+    $i->waitForText("“{$product['name']}” has been added to your cart.");
   }
 
   /**
    * Go to the checkout page
    */
   public function goToCheckout() {
-    $I = $this;
-    $I->amOnPage('checkout');
+    $i = $this;
+    $i->amOnPage('checkout');
   }
 
   /**
    * Fill the customer info
    */
-  public function fillCustomerInfo($user_email) {
-    $I = $this;
-    $I->fillField('billing_first_name', 'John');
-    $I->fillField('billing_last_name', 'Doe');
-    $I->fillField('billing_address_1', 'Address 1');
-    $I->fillField('billing_city', 'Paris');
-    $I->fillField('billing_email', $user_email);
-    $I->fillField('billing_postcode', '75000');
-    $I->fillField('billing_phone', '123456');
+  public function fillCustomerInfo($userEmail) {
+    $i = $this;
+    $i->fillField('billing_first_name', 'John');
+    $i->fillField('billing_last_name', 'Doe');
+    $i->fillField('billing_address_1', 'Address 1');
+    $i->fillField('billing_city', 'Paris');
+    $i->fillField('billing_email', $userEmail);
+    $i->fillField('billing_postcode', '75000');
+    $i->fillField('billing_phone', '123456');
   }
 
   /**
    * Check the option for creating an account
    */
   public function optInForRegistration() {
-    $I = $this;
-    $I->scrollTo(['css' => '#createaccount'], 0, -40);
-    $I->click('#createaccount');
+    $i = $this;
+    $i->scrollTo(['css' => '#createaccount'], 0, -40);
+    $i->click('#createaccount');
   }
 
   /**
    * Check the option for subscribing to the WC list
    */
   public function optInForSubscription() {
-    $I = $this;
-    $I->waitForElementClickable('#mailpoet_woocommerce_checkout_optin');
-    $I->checkOption('#mailpoet_woocommerce_checkout_optin');
+    $i = $this;
+    $i->waitForElementClickable('#mailpoet_woocommerce_checkout_optin');
+    $i->checkOption('#mailpoet_woocommerce_checkout_optin');
   }
 
   /**
    * Uncheck the option for subscribing to the WC list
    */
   public function optOutOfSubscription() {
-    $I = $this;
-    $I->waitForElementClickable('#mailpoet_woocommerce_checkout_optin');
-    $I->uncheckOption('#mailpoet_woocommerce_checkout_optin');
+    $i = $this;
+    $i->waitForElementClickable('#mailpoet_woocommerce_checkout_optin');
+    $i->uncheckOption('#mailpoet_woocommerce_checkout_optin');
   }
 
   /**
    * Select a payment method (cheque, cod, ppec_paypal)
    */
   public function selectPaymentMethod($method = 'cod') {
-    $I = $this;
+    $i = $this;
     // We need to scroll with some negative offset so that the input is not hidden above the top page fold
-    $approximate_payment_method_input_height = 40;
-    $I->scrollTo('#payment_method_' . $method, 0, -$approximate_payment_method_input_height);
-    $I->waitForElementNotVisible('.blockOverlay', 30); // wait for payment method loading overlay to disappear
-    $I->click('#payment_method_' . $method);
+    $approximatePaymentMethodInputHeight = 40;
+    $i->scrollTo('#payment_method_' . $method, 0, -$approximatePaymentMethodInputHeight);
+    $i->waitForElementNotVisible('.blockOverlay', 30); // wait for payment method loading overlay to disappear
+    $i->click('#payment_method_' . $method);
   }
 
   /**
    * Place the order
    */
   public function placeOrder() {
-    $I = $this;
-    $I->click('Place order');
-    $I->waitForText('Your order has been received');
+    $i = $this;
+    $i->click('Place order');
+    $i->waitForText('Your order has been received');
   }
 
   // Enforce WP-CLI to be called with array because:

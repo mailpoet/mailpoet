@@ -24,26 +24,26 @@ class CustomFields extends APIEndpoint {
   private $custom_fields_response_builder;
 
   public function __construct(
-    CustomFieldsRepository $custom_fields_repository,
-    CustomFieldsResponseBuilder $custom_fields_response_builder
+    CustomFieldsRepository $customFieldsRepository,
+    CustomFieldsResponseBuilder $customFieldsResponseBuilder
   ) {
-    $this->custom_fields_repository = $custom_fields_repository;
-    $this->custom_fields_response_builder = $custom_fields_response_builder;
+    $this->customFieldsRepository = $customFieldsRepository;
+    $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
   }
 
   public function getAll() {
-    $collection = $this->custom_fields_repository->findBy([], ['created_at' => 'asc']);
-    return $this->successResponse($this->custom_fields_response_builder->buildBatch($collection));
+    $collection = $this->customFieldsRepository->findBy([], ['created_at' => 'asc']);
+    return $this->successResponse($this->customFieldsResponseBuilder->buildBatch($collection));
   }
 
   public function delete($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : null);
-    $custom_field = $this->custom_fields_repository->findOneById($id);
-    if ($custom_field instanceof CustomFieldEntity) {
-      $this->custom_fields_repository->remove($custom_field);
-      $this->custom_fields_repository->flush();
+    $customField = $this->customFieldsRepository->findOneById($id);
+    if ($customField instanceof CustomFieldEntity) {
+      $this->customFieldsRepository->remove($customField);
+      $this->customFieldsRepository->flush();
 
-      return $this->successResponse($this->custom_fields_response_builder->build($custom_field));
+      return $this->successResponse($this->customFieldsResponseBuilder->build($customField));
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet'),
@@ -53,10 +53,10 @@ class CustomFields extends APIEndpoint {
 
   public function save($data = []) {
     try {
-      $custom_field = $this->custom_fields_repository->createOrUpdate($data);
-      $custom_field = $this->custom_fields_repository->findOneById($custom_field->getId());
-      if(!$custom_field instanceof CustomFieldEntity) return $this->errorResponse();
-      return $this->successResponse($this->custom_fields_response_builder->build($custom_field));
+      $customField = $this->customFieldsRepository->createOrUpdate($data);
+      $customField = $this->customFieldsRepository->findOneById($customField->getId());
+      if(!$customField instanceof CustomFieldEntity) return $this->errorResponse();
+      return $this->successResponse($this->customFieldsResponseBuilder->build($customField));
     } catch (\Exception $e) {
       return $this->errorResponse($errors = [], $meta = [], $status = Response::STATUS_BAD_REQUEST);
     }
@@ -64,9 +64,9 @@ class CustomFields extends APIEndpoint {
 
   public function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : null);
-    $custom_field = $this->custom_fields_repository->findOneById($id);
-    if ($custom_field instanceof CustomFieldEntity) {
-      return $this->successResponse($this->custom_fields_response_builder->build($custom_field));
+    $customField = $this->customFieldsRepository->findOneById($id);
+    if ($customField instanceof CustomFieldEntity) {
+      return $this->successResponse($this->customFieldsResponseBuilder->build($customField));
     }
     return $this->errorResponse([
       APIError::NOT_FOUND => WPFunctions::get()->__('This custom field does not exist.', 'mailpoet'),

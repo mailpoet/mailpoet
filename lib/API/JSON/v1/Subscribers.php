@@ -69,29 +69,29 @@ class Subscribers extends APIEndpoint {
   private $subscription_url_factory;
 
   public function __construct(
-    Listing\BulkActionController $bulk_action_controller,
-    SubscribersListings $subscribers_listings,
-    SubscriberActions $subscriber_actions,
-    RequiredCustomFieldValidator $required_custom_field_validator,
-    Listing\Handler $listing_handler,
-    Captcha $subscription_captcha,
+    Listing\BulkActionController $bulkActionController,
+    SubscribersListings $subscribersListings,
+    SubscriberActions $subscriberActions,
+    RequiredCustomFieldValidator $requiredCustomFieldValidator,
+    Listing\Handler $listingHandler,
+    Captcha $subscriptionCaptcha,
     WPFunctions $wp,
     SettingsController $settings,
-    CaptchaSession $captcha_session,
-    ConfirmationEmailMailer $confirmation_email_mailer,
-    SubscriptionUrlFactory $subscription_url_factory
+    CaptchaSession $captchaSession,
+    ConfirmationEmailMailer $confirmationEmailMailer,
+    SubscriptionUrlFactory $subscriptionUrlFactory
   ) {
-    $this->bulk_action_controller = $bulk_action_controller;
-    $this->subscribers_listings = $subscribers_listings;
-    $this->subscriber_actions = $subscriber_actions;
-    $this->required_custom_field_validator = $required_custom_field_validator;
-    $this->listing_handler = $listing_handler;
-    $this->subscription_captcha = $subscription_captcha;
+    $this->bulkActionController = $bulkActionController;
+    $this->subscribersListings = $subscribersListings;
+    $this->subscriberActions = $subscriberActions;
+    $this->requiredCustomFieldValidator = $requiredCustomFieldValidator;
+    $this->listingHandler = $listingHandler;
+    $this->subscriptionCaptcha = $subscriptionCaptcha;
     $this->wp = $wp;
     $this->settings = $settings;
-    $this->captcha_session = $captcha_session;
-    $this->confirmation_email_mailer = $confirmation_email_mailer;
-    $this->subscription_url_factory = $subscription_url_factory;
+    $this->captchaSession = $captchaSession;
+    $this->confirmationEmailMailer = $confirmationEmailMailer;
+    $this->subscriptionUrlFactory = $subscriptionUrlFactory;
   }
 
   public function get($data = []) {
@@ -114,54 +114,54 @@ class Subscribers extends APIEndpoint {
   public function listing($data = []) {
 
     if (!isset($data['filter']['segment'])) {
-      $listing_data = $this->listing_handler->get('\MailPoet\Models\Subscriber', $data);
+      $listingData = $this->listingHandler->get('\MailPoet\Models\Subscriber', $data);
     } else {
-      $listing_data = $this->subscribers_listings->getListingsInSegment($data);
+      $listingData = $this->subscribersListings->getListingsInSegment($data);
     }
 
     $result = [];
-    foreach ($listing_data['items'] as $subscriber) {
-      $subscriber_result = $subscriber
+    foreach ($listingData['items'] as $subscriber) {
+      $subscriberResult = $subscriber
         ->withSubscriptions()
         ->asArray();
       if (isset($data['filter']['segment'])) {
-        $subscriber_result = $this->preferUnsubscribedStatusFromSegment($subscriber_result, $data['filter']['segment']);
+        $subscriberResult = $this->preferUnsubscribedStatusFromSegment($subscriberResult, $data['filter']['segment']);
       }
-      $result[] = $subscriber_result;
+      $result[] = $subscriberResult;
     }
 
-    $listing_data['filters']['segment'] = $this->wp->applyFilters(
+    $listingData['filters']['segment'] = $this->wp->applyFilters(
       'mailpoet_subscribers_listings_filters_segments',
-      $listing_data['filters']['segment']
+      $listingData['filters']['segment']
     );
 
     return $this->successResponse($result, [
-      'count' => $listing_data['count'],
-      'filters' => $listing_data['filters'],
-      'groups' => $listing_data['groups'],
+      'count' => $listingData['count'],
+      'filters' => $listingData['filters'],
+      'groups' => $listingData['groups'],
     ]);
   }
 
-  private function preferUnsubscribedStatusFromSegment(array $subscriber, $segment_id) {
-    $segment_status = $this->findSegmentStatus($subscriber, $segment_id);
+  private function preferUnsubscribedStatusFromSegment(array $subscriber, $segmentId) {
+    $segmentStatus = $this->findSegmentStatus($subscriber, $segmentId);
 
-    if ($segment_status === Subscriber::STATUS_UNSUBSCRIBED) {
-      $subscriber['status'] = $segment_status;
+    if ($segmentStatus === Subscriber::STATUS_UNSUBSCRIBED) {
+      $subscriber['status'] = $segmentStatus;
     }
     return $subscriber;
   }
 
-  private function findSegmentStatus(array $subscriber, $segment_id) {
+  private function findSegmentStatus(array $subscriber, $segmentId) {
     foreach ($subscriber['subscriptions'] as $segment) {
-      if ($segment['segment_id'] === $segment_id) {
+      if ($segment['segment_id'] === $segmentId) {
         return $segment['status'];
       }
     }
   }
 
   public function subscribe($data = []) {
-    $form_id = (isset($data['form_id']) ? (int)$data['form_id'] : false);
-    $form = Form::findOne($form_id);
+    $formId = (isset($data['form_id']) ? (int)$data['form_id'] : false);
+    $form = Form::findOne($formId);
     unset($data['form_id']);
 
     if (!$form instanceof Form) {
@@ -175,19 +175,19 @@ class Subscribers extends APIEndpoint {
       ]);
     }
 
-    $captcha_settings = $this->settings->get('captcha');
+    $captchaSettings = $this->settings->get('captcha');
 
-    if (!empty($captcha_settings['type'])
-      && $captcha_settings['type'] === Captcha::TYPE_BUILTIN
+    if (!empty($captchaSettings['type'])
+      && $captchaSettings['type'] === Captcha::TYPE_BUILTIN
     ) {
-      $captcha_session_id = isset($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
-      $this->captcha_session->init($captcha_session_id);
+      $captchaSessionId = isset($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
+      $this->captchaSession->init($captchaSessionId);
       if (!isset($data['captcha'])) {
         // Save form data to session
-        $this->captcha_session->setFormData(array_merge($data, ['form_id' => $form_id]));
-      } elseif ($this->captcha_session->getFormData()) {
+        $this->captchaSession->setFormData(array_merge($data, ['form_id' => $formId]));
+      } elseif ($this->captchaSession->getFormData()) {
         // Restore form data from session
-        $data = array_merge($this->captcha_session->getFormData(), ['captcha' => $data['captcha']]);
+        $data = array_merge($this->captchaSession->getFormData(), ['captcha' => $data['captcha']]);
       }
       // Otherwise use the post data
     }
@@ -195,54 +195,54 @@ class Subscribers extends APIEndpoint {
     $data = $this->deobfuscateFormPayload($data);
 
     try {
-      $this->required_custom_field_validator->validate($data, $form);
+      $this->requiredCustomFieldValidator->validate($data, $form);
     } catch (\Exception $e) {
       return $this->badRequest([APIError::BAD_REQUEST => $e->getMessage()]);
     }
 
-    $segment_ids = (!empty($data['segments'])
+    $segmentIds = (!empty($data['segments'])
       ? (array)$data['segments']
       : []
     );
-    $segment_ids = $form->filterSegments($segment_ids);
+    $segmentIds = $form->filterSegments($segmentIds);
     unset($data['segments']);
 
-    if (empty($segment_ids)) {
+    if (empty($segmentIds)) {
       return $this->badRequest([
         APIError::BAD_REQUEST => WPFunctions::get()->__('Please select a list.', 'mailpoet'),
       ]);
     }
 
-    $captcha_validation_result = $this->validateCaptcha($captcha_settings, $data);
-    if ($captcha_validation_result instanceof APIResponse) {
-      return $captcha_validation_result;
+    $captchaValidationResult = $this->validateCaptcha($captchaSettings, $data);
+    if ($captchaValidationResult instanceof APIResponse) {
+      return $captchaValidationResult;
     }
 
     // only accept fields defined in the form
-    $form_fields = $form->getFieldList();
-    $data = array_intersect_key($data, array_flip($form_fields));
+    $formFields = $form->getFieldList();
+    $data = array_intersect_key($data, array_flip($formFields));
 
     // make sure we don't allow too many subscriptions with the same ip address
     $timeout = SubscriptionThrottling::throttle();
 
     if ($timeout > 0) {
-      $time_to_wait = SubscriptionThrottling::secondsToTimeString($timeout);
+      $timeToWait = SubscriptionThrottling::secondsToTimeString($timeout);
       $meta = [];
       $meta['refresh_captcha'] = true;
       return $this->badRequest([
-        APIError::BAD_REQUEST => sprintf(WPFunctions::get()->__('You need to wait %s before subscribing again.', 'mailpoet'), $time_to_wait),
+        APIError::BAD_REQUEST => sprintf(WPFunctions::get()->__('You need to wait %s before subscribing again.', 'mailpoet'), $timeToWait),
       ], $meta);
     }
 
-    $subscriber = $this->subscriber_actions->subscribe($data, $segment_ids);
+    $subscriber = $this->subscriberActions->subscribe($data, $segmentIds);
     $errors = $subscriber->getErrors();
 
     if ($errors !== false) {
       return $this->badRequest($errors);
     } else {
-      if (!empty($captcha_settings['type']) && $captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
+      if (!empty($captchaSettings['type']) && $captchaSettings['type'] === Captcha::TYPE_BUILTIN) {
         // Captcha has been verified, invalidate the session vars
-        $this->captcha_session->reset();
+        $this->captchaSession->reset();
       }
 
       $meta = [];
@@ -275,34 +275,34 @@ class Subscribers extends APIEndpoint {
     return $obfuscator->deobfuscateFormPayload($data);
   }
 
-  private function validateCaptcha($captcha_settings, $data) {
-    if (empty($captcha_settings['type'])) {
+  private function validateCaptcha($captchaSettings, $data) {
+    if (empty($captchaSettings['type'])) {
       return true;
     }
 
-    $is_builtin_captcha_required = false;
-    if ($captcha_settings['type'] === Captcha::TYPE_BUILTIN) {
-      $is_builtin_captcha_required = $this->subscription_captcha->isRequired(isset($data['email']) ? $data['email'] : '');
-      if ($is_builtin_captcha_required && empty($data['captcha'])) {
+    $isBuiltinCaptchaRequired = false;
+    if ($captchaSettings['type'] === Captcha::TYPE_BUILTIN) {
+      $isBuiltinCaptchaRequired = $this->subscriptionCaptcha->isRequired(isset($data['email']) ? $data['email'] : '');
+      if ($isBuiltinCaptchaRequired && empty($data['captcha'])) {
         $meta = [];
-        $meta['redirect_url'] = $this->subscription_url_factory->getCaptchaUrl($this->captcha_session->getId());
+        $meta['redirect_url'] = $this->subscriptionUrlFactory->getCaptchaUrl($this->captchaSession->getId());
         return $this->badRequest([
           APIError::BAD_REQUEST => WPFunctions::get()->__('Please fill in the CAPTCHA.', 'mailpoet'),
         ], $meta);
       }
     }
 
-    if ($captcha_settings['type'] === Captcha::TYPE_RECAPTCHA && empty($data['recaptcha'])) {
+    if ($captchaSettings['type'] === Captcha::TYPE_RECAPTCHA && empty($data['recaptcha'])) {
       return $this->badRequest([
         APIError::BAD_REQUEST => WPFunctions::get()->__('Please check the CAPTCHA.', 'mailpoet'),
       ]);
     }
 
-    if ($captcha_settings['type'] === Captcha::TYPE_RECAPTCHA) {
+    if ($captchaSettings['type'] === Captcha::TYPE_RECAPTCHA) {
       $res = empty($data['recaptcha']) ? $data['recaptcha-no-js'] : $data['recaptcha'];
       $res = WPFunctions::get()->wpRemotePost('https://www.google.com/recaptcha/api/siteverify', [
         'body' => [
-          'secret' => $captcha_settings['recaptcha_secret_token'],
+          'secret' => $captchaSettings['recaptcha_secret_token'],
           'response' => $res,
         ],
       ]);
@@ -317,14 +317,14 @@ class Subscribers extends APIEndpoint {
           APIError::BAD_REQUEST => WPFunctions::get()->__('Error while validating the CAPTCHA.', 'mailpoet'),
         ]);
       }
-    } elseif ($captcha_settings['type'] === Captcha::TYPE_BUILTIN && $is_builtin_captcha_required) {
-      $captcha_hash = $this->captcha_session->getCaptchaHash();
-      if (empty($captcha_hash)) {
+    } elseif ($captchaSettings['type'] === Captcha::TYPE_BUILTIN && $isBuiltinCaptchaRequired) {
+      $captchaHash = $this->captchaSession->getCaptchaHash();
+      if (empty($captchaHash)) {
         return $this->badRequest([
           APIError::BAD_REQUEST => WPFunctions::get()->__('Please regenerate the CAPTCHA.', 'mailpoet'),
         ]);
-      } elseif (!hash_equals(strtolower($data['captcha']), $captcha_hash)) {
-        $this->captcha_session->setCaptchaHash(null);
+      } elseif (!hash_equals(strtolower($data['captcha']), $captchaHash)) {
+        $this->captchaSession->setCaptchaHash(null);
         $meta = [];
         $meta['refresh_captcha'] = true;
         return $this->badRequest([
@@ -341,7 +341,7 @@ class Subscribers extends APIEndpoint {
       $data['segments'] = [];
     }
     $data['segments'] = array_merge($data['segments'], $this->getNonDefaultSubscribedSegments($data));
-    $new_segments = $this->findNewSegments($data);
+    $newSegments = $this->findNewSegments($data);
     $subscriber = Subscriber::createOrUpdate($data);
     $errors = $subscriber->getErrors();
 
@@ -354,9 +354,9 @@ class Subscribers extends APIEndpoint {
       $subscriber->save();
     }
 
-    if (!empty($new_segments)) {
+    if (!empty($newSegments)) {
       $scheduler = new WelcomeScheduler();
-      $scheduler->scheduleSubscriberWelcomeNotification($subscriber->id, $new_segments);
+      $scheduler->scheduleSubscriberWelcomeNotification($subscriber->id, $newSegments);
     }
 
     return $this->successResponse(
@@ -369,35 +369,35 @@ class Subscribers extends APIEndpoint {
       return [];
     }
 
-    $subscribed_segment_ids = [];
-    $non_default_segment = Segment::select('id')
+    $subscribedSegmentIds = [];
+    $nonDefaultSegment = Segment::select('id')
       ->whereNotEqual('type', Segment::TYPE_DEFAULT)
       ->findArray();
-    $non_default_segment_ids = array_map(function($segment) {
+    $nonDefaultSegmentIds = array_map(function($segment) {
       return $segment['id'];
-    }, $non_default_segment);
+    }, $nonDefaultSegment);
 
-    $subscribed_segments = SubscriberSegment::select('segment_id')
+    $subscribedSegments = SubscriberSegment::select('segment_id')
       ->where('subscriber_id', $data['id'])
       ->where('status', Subscriber::STATUS_SUBSCRIBED)
-      ->whereIn('segment_id', $non_default_segment_ids)
+      ->whereIn('segment_id', $nonDefaultSegmentIds)
       ->findArray();
-    $subscribed_segment_ids = array_map(function($segment) {
+    $subscribedSegmentIds = array_map(function($segment) {
       return $segment['segment_id'];
-    }, $subscribed_segments);
+    }, $subscribedSegments);
 
-    return $subscribed_segment_ids;
+    return $subscribedSegmentIds;
   }
 
   private function findNewSegments(array $data) {
-    $old_segment_ids = [];
+    $oldSegmentIds = [];
     if (isset($data['id']) && (int)$data['id'] > 0) {
-      $old_segments = SubscriberSegment::where('subscriber_id', $data['id'])->findMany();
-      foreach ($old_segments as $old_segment) {
-        $old_segment_ids[] = $old_segment->segment_id;
+      $oldSegments = SubscriberSegment::where('subscriber_id', $data['id'])->findMany();
+      foreach ($oldSegments as $oldSegment) {
+        $oldSegmentIds[] = $oldSegment->segmentId;
       }
     }
-    return array_diff($data['segments'], $old_segment_ids);
+    return array_diff($data['segments'], $oldSegmentIds);
   }
 
   public function restore($data = []) {
@@ -453,7 +453,7 @@ class Subscribers extends APIEndpoint {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
     if ($subscriber instanceof Subscriber) {
-      if ($this->confirmation_email_mailer->sendConfirmationEmail($subscriber)) {
+      if ($this->confirmationEmailMailer->sendConfirmationEmail($subscriber)) {
         return $this->successResponse();
       }
       return $this->errorResponse();
@@ -469,11 +469,11 @@ class Subscribers extends APIEndpoint {
       if (!isset($data['listing']['filter']['segment'])) {
         return $this->successResponse(
           null,
-          $this->bulk_action_controller->apply('\MailPoet\Models\Subscriber', $data)
+          $this->bulkActionController->apply('\MailPoet\Models\Subscriber', $data)
         );
       } else {
-        $bulk_action = new BulkAction($data);
-        return $this->successResponse(null, $bulk_action->apply());
+        $bulkAction = new BulkAction($data);
+        return $this->successResponse(null, $bulkAction->apply());
       }
     } catch (\Exception $e) {
       return $this->errorResponse([

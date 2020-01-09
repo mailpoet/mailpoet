@@ -60,12 +60,12 @@ class ScheduledTaskTest extends \MailPoetTest {
       'task_id' => $task3->id(),
     ]);
     ScheduledTask::setScheduledAllByNewsletter($newsletter);
-    $task1_found = ScheduledTask::findOne($task1->id());
-    expect($task1_found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
-    $task2_found = ScheduledTask::findOne($task2->id());
-    expect($task2_found->status)->equals(ScheduledTask::STATUS_COMPLETED);
-    $task3_found = ScheduledTask::findOne($task3->id());
-    expect($task3_found->status)->equals(ScheduledTask::STATUS_PAUSED);
+    $task1Found = ScheduledTask::findOne($task1->id());
+    expect($task1Found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+    $task2Found = ScheduledTask::findOne($task2->id());
+    expect($task2Found->status)->equals(ScheduledTask::STATUS_COMPLETED);
+    $task3Found = ScheduledTask::findOne($task3->id());
+    expect($task3Found->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
   public function testItPauseAllByNewsletters() {
@@ -87,31 +87,31 @@ class ScheduledTaskTest extends \MailPoetTest {
       'task_id' => $task2->id(),
     ]);
     ScheduledTask::pauseAllByNewsletter($newsletter);
-    $task1_found = ScheduledTask::findOne($task1->id());
-    expect($task1_found->status)->equals(ScheduledTask::STATUS_COMPLETED);
-    $task2_found = ScheduledTask::findOne($task2->id());
-    expect($task2_found->status)->equals(ScheduledTask::STATUS_PAUSED);
+    $task1Found = ScheduledTask::findOne($task1->id());
+    expect($task1Found->status)->equals(ScheduledTask::STATUS_COMPLETED);
+    $task2Found = ScheduledTask::findOne($task2->id());
+    expect($task2Found->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
   public function testItDeletesRelatedScheduledTaskSubscriber() {
-    $task_id = $this->task->id;
+    $taskId = $this->task->id;
     ScheduledTaskSubscriber::createOrUpdate([
-      'task_id' => $task_id,
+      'task_id' => $taskId,
       'subscriber_id' => 1,
     ]);
     ScheduledTaskSubscriber::createOrUpdate([
-      'task_id' => $task_id,
+      'task_id' => $taskId,
       'subscriber_id' => 2,
     ]);
     ScheduledTaskSubscriber::createOrUpdate([
-      'task_id' => $task_id,
+      'task_id' => $taskId,
       'subscriber_id' => 3,
     ]);
-    $count = ScheduledTaskSubscriber::where('task_id', $task_id)->count();
+    $count = ScheduledTaskSubscriber::where('task_id', $taskId)->count();
     expect($count)->equals(3);
 
     $this->task->delete();
-    $count = ScheduledTaskSubscriber::where('task_id', $task_id)->count();
+    $count = ScheduledTaskSubscriber::where('task_id', $taskId)->count();
     expect($count)->equals(0);
   }
 
@@ -126,9 +126,9 @@ class ScheduledTaskTest extends \MailPoetTest {
     $task = ScheduledTask::findOne($task->id);
 
     /** @var string $task_meta */
-    $task_meta = $task->meta;
-    expect(Helpers::isJson($task_meta))->true();
-    expect(json_decode($task_meta, true))->equals($meta);
+    $taskMeta = $task->meta;
+    expect(Helpers::isJson($taskMeta))->true();
+    expect(json_decode($taskMeta, true))->equals($meta);
   }
 
   public function testItDoesNotJsonEncodesMetaEqualToNull() {
@@ -146,17 +146,17 @@ class ScheduledTaskTest extends \MailPoetTest {
   public function testItCanRescheduleTasksProgressively() {
     $task = $this->task;
     $task->status = null;
-    $scheduled_at = $task->scheduled_at;
+    $scheduledAt = $task->scheduledAt;
 
     $timeout = $task->rescheduleProgressively();
     expect($timeout)->equals(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT);
-    expect($scheduled_at < $task->scheduled_at)->true();
+    expect($scheduledAt < $task->scheduledAt)->true();
     expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
 
     $timeout = $task->rescheduleProgressively();
     expect($timeout)->equals(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT * 2);
 
-    $task->reschedule_count = 123456; // too many
+    $task->rescheduleCount = 123456; // too many
     $timeout = $task->rescheduleProgressively();
     expect($timeout)->equals(ScheduledTask::MAX_RESCHEDULE_TIMEOUT);
   }

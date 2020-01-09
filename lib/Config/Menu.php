@@ -48,16 +48,16 @@ class Menu {
   private $features_controller;
 
   public function __construct(
-    AccessControl $access_control,
+    AccessControl $accessControl,
     WPFunctions $wp,
-    ServicesChecker $services_checker,
-    FeaturesController $features_controller,
+    ServicesChecker $servicesChecker,
+    FeaturesController $featuresController,
     ContainerWrapper $container
   ) {
-    $this->access_control = $access_control;
+    $this->accessControl = $accessControl;
     $this->wp = $wp;
-    $this->services_checker = $services_checker;
-    $this->features_controller = $features_controller;
+    $this->servicesChecker = $servicesChecker;
+    $this->featuresController = $featuresController;
     $this->container = $container;
   }
 
@@ -75,7 +75,7 @@ class Menu {
   }
 
   public function setup() {
-    if (!$this->access_control->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) return;
+    if (!$this->accessControl->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) return;
     if (self::isOnMailPoetAdminPage()) {
       $this->wp->doAction('mailpoet_conflict_resolver_styles');
       $this->wp->doAction('mailpoet_conflict_resolver_scripts');
@@ -115,7 +115,7 @@ class Menu {
     );
 
     // Emails page
-    $newsletters_page = $this->wp->addSubmenuPage(
+    $newslettersPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Emails', 'mailpoet')),
       $this->wp->__('Emails', 'mailpoet'),
@@ -128,7 +128,7 @@ class Menu {
     );
 
     // add limit per page to screen options
-    $this->wp->addAction('load-' . $newsletters_page, function() {
+    $this->wp->addAction('load-' . $newslettersPage, function() {
       $this->wp->addScreenOption('per_page', [
         'label' => $this->wp->_x(
           'Number of newsletters per page',
@@ -153,7 +153,7 @@ class Menu {
     );
 
     // Forms page
-    $forms_page = $this->wp->addSubmenuPage(
+    $formsPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Forms', 'mailpoet')),
       $this->wp->__('Forms', 'mailpoet'),
@@ -166,7 +166,7 @@ class Menu {
     );
 
     // add limit per page to screen options
-    $this->wp->addAction('load-' . $forms_page, function() {
+    $this->wp->addAction('load-' . $formsPage, function() {
       $this->wp->addScreenOption('per_page', [
         'label' => $this->wp->_x(
           'Number of forms per page',
@@ -178,7 +178,7 @@ class Menu {
     });
 
     // form editor
-    $form_editor_page = $this->wp->addSubmenuPage(
+    $formEditorPage = $this->wp->addSubmenuPage(
       true,
       $this->setPageTitle(__('Form Editor', 'mailpoet')),
       $this->wp->__('Form Editor', 'mailpoet'),
@@ -191,8 +191,8 @@ class Menu {
     );
 
     // add body class for form editor page
-    if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
-      $this->wp->addAction('load-' . $form_editor_page, function() {
+    if ($this->featuresController->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
+      $this->wp->addAction('load-' . $formEditorPage, function() {
         $this->wp->addAction('admin_body_class', function ($classes) {
           return ltrim($classes . ' block-editor-page');
         });
@@ -200,7 +200,7 @@ class Menu {
     }
 
     // Subscribers page
-    $subscribers_page = $this->wp->addSubmenuPage(
+    $subscribersPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Subscribers', 'mailpoet')),
       $this->wp->__('Subscribers', 'mailpoet'),
@@ -213,7 +213,7 @@ class Menu {
     );
 
     // add limit per page to screen options
-    $this->wp->addAction('load-' . $subscribers_page, function() {
+    $this->wp->addAction('load-' . $subscribersPage, function() {
       $this->wp->addScreenOption('per_page', [
         'label' => $this->wp->_x(
           'Number of subscribers per page',
@@ -251,7 +251,7 @@ class Menu {
     );
 
     // Segments page
-    $segments_page = $this->wp->addSubmenuPage(
+    $segmentsPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Lists', 'mailpoet')),
       $this->wp->__('Lists', 'mailpoet'),
@@ -264,7 +264,7 @@ class Menu {
     );
 
     // add limit per page to screen options
-    $this->wp->addAction('load-' . $segments_page, function() {
+    $this->wp->addAction('load-' . $segmentsPage, function() {
       $this->wp->addScreenOption('per_page', [
         'label' => $this->wp->_x(
           'Number of segments per page',
@@ -276,7 +276,7 @@ class Menu {
     });
 
     // Dynamic segments page
-    $dynamic_segments_page = $this->wp->addSubmenuPage(
+    $dynamicSegmentsPage = $this->wp->addSubmenuPage(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Segments', 'mailpoet')),
       $this->wp->__('Segments', 'mailpoet'),
@@ -289,7 +289,7 @@ class Menu {
     );
 
     // add limit per page to screen options
-    $this->wp->addAction('load-' . $dynamic_segments_page, function() {
+    $this->wp->addAction('load-' . $dynamicSegmentsPage, function() {
       $this->wp->addScreenOption('per_page', [
         'label' => WPFunctions::get()->_x('Number of segments per page', 'segments per page (screen options)', 'mailpoet'),
         'option' => 'mailpoet_dynamic_segments_per_page',
@@ -470,7 +470,7 @@ class Menu {
   }
 
   public function newsletters() {
-    if (isset($this->mp_api_key_valid) && $this->mp_api_key_valid === false) {
+    if (isset($this->mpApiKeyValid) && $this->mpApiKeyValid === false) {
       return $this->displayMailPoetAPIKeyInvalid();
     }
     $this->container->get(Newsletters::class)->render();
@@ -505,28 +505,28 @@ class Menu {
     );
   }
 
-  public static function isOnMailPoetAdminPage(array $exclude = null, $screen_id = null) {
-    if (is_null($screen_id)) {
+  public static function isOnMailPoetAdminPage(array $exclude = null, $screenId = null) {
+    if (is_null($screenId)) {
       if (empty($_REQUEST['page'])) {
         return false;
       }
-      $screen_id = $_REQUEST['page'];
+      $screenId = $_REQUEST['page'];
     }
     if (!empty($exclude)) {
       foreach ($exclude as $slug) {
-        if (stripos($screen_id, $slug) !== false) {
+        if (stripos($screenId, $slug) !== false) {
           return false;
         }
       }
     }
-    return (stripos($screen_id, 'mailpoet-') !== false);
+    return (stripos($screenId, 'mailpoet-') !== false);
   }
 
   /**
    * This error page is used when the initialization is failed
    * to display admin notices only
    */
-  public static function addErrorPage(AccessControl $access_control) {
+  public static function addErrorPage(AccessControl $accessControl) {
     if (!self::isOnMailPoetAdminPage()) {
       return false;
     }
@@ -555,17 +555,17 @@ class Menu {
 
   public function checkMailPoetAPIKey(ServicesChecker $checker = null) {
     if (self::isOnMailPoetAdminPage()) {
-      $show_notices = isset($_REQUEST['page'])
+      $showNotices = isset($_REQUEST['page'])
         && stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) === false;
-      $checker = $checker ?: $this->services_checker;
-      $this->mp_api_key_valid = $checker->isMailPoetAPIKeyValid($show_notices);
+      $checker = $checker ?: $this->servicesChecker;
+      $this->mpApiKeyValid = $checker->isMailPoetAPIKeyValid($showNotices);
     }
   }
 
   public function checkPremiumKey(ServicesChecker $checker = null) {
-    $show_notices = isset($_SERVER['SCRIPT_NAME'])
+    $showNotices = isset($_SERVER['SCRIPT_NAME'])
       && stripos($_SERVER['SCRIPT_NAME'], 'plugins.php') !== false;
-    $checker = $checker ?: $this->services_checker;
-    $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
+    $checker = $checker ?: $this->servicesChecker;
+    $this->premiumKeyValid = $checker->isPremiumKeyValid($showNotices);
   }
 }

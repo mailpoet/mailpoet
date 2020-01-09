@@ -31,22 +31,22 @@ class MigrationTest extends \MailPoetTest {
     // Alter table to test migration
     $this->downgradeTable();
 
-    $this->subscriber_to_process = Subscriber::createOrUpdate([
+    $this->subscriberToProcess = Subscriber::createOrUpdate([
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'email' => 'to_process@example.com',
     ]);
-    $this->subscriber_processed = Subscriber::createOrUpdate([
+    $this->subscriberProcessed = Subscriber::createOrUpdate([
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'email' => 'processed@example.com',
     ]);
 
     // subscribers should be migrated
-    $this->queue_running = $this->createSendingQueue();
-    $this->queue_paused = $this->createSendingQueue(SendingQueue::STATUS_PAUSED);
+    $this->queueRunning = $this->createSendingQueue();
+    $this->queuePaused = $this->createSendingQueue(SendingQueue::STATUS_PAUSED);
 
     // subscribers should not be migrated
-    $this->queue_completed = $this->createSendingQueue(SendingQueue::STATUS_COMPLETED);
-    $this->queue_scheduled = $this->createSendingQueue(SendingQueue::STATUS_SCHEDULED);
+    $this->queueCompleted = $this->createSendingQueue(SendingQueue::STATUS_COMPLETED);
+    $this->queueScheduled = $this->createSendingQueue(SendingQueue::STATUS_SCHEDULED);
 
     $this->worker = new Migration();
   }
@@ -97,16 +97,16 @@ class MigrationTest extends \MailPoetTest {
     expect(ScheduledTask::where('type', SendingTask::TASK_TYPE)->findMany())->count(4);
     expect(ScheduledTaskSubscriber::whereGt('task_id', 0)->count())->equals(4); // 2 for running, 2 for paused
 
-    $queue = SendingQueue::findOne($this->queue_running->id);
-    $task = ScheduledTask::findOne($queue->task_id);
+    $queue = SendingQueue::findOne($this->queueRunning->id);
+    $task = ScheduledTask::findOne($queue->taskId);
     expect($task->type)->equals(SendingTask::TASK_TYPE);
 
-    $migrated_subscribers = ScheduledTaskSubscriber::where('task_id', $queue->task_id)
+    $migratedSubscribers = ScheduledTaskSubscriber::where('task_id', $queue->taskId)
       ->orderByAsc('subscriber_id')
       ->findMany();
-    expect($migrated_subscribers)->count(2);
-    expect($migrated_subscribers[0]->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
-    expect($migrated_subscribers[1]->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
+    expect($migratedSubscribers)->count(2);
+    expect($migratedSubscribers[0]->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
+    expect($migratedSubscribers[1]->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
   }
 
   public function testItResumesSendingAfterMigratingSendingQueuesAndSubscribers() {
@@ -128,15 +128,15 @@ class MigrationTest extends \MailPoetTest {
       },
     ]);
 
-    $next_run_date = $this->worker->getNextRunDate($wp);
-    expect($next_run_date->getTimestamp())->equals($timestamp);
+    $nextRunDate = $this->worker->getNextRunDate($wp);
+    expect($nextRunDate->getTimestamp())->equals($timestamp);
   }
 
   private function createScheduledTask() {
     $task = ScheduledTask::create();
     $task->type = Migration::TASK_TYPE;
     $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
@@ -145,7 +145,7 @@ class MigrationTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = Migration::TASK_TYPE;
     $task->status = null;
-    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
@@ -154,22 +154,22 @@ class MigrationTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = Migration::TASK_TYPE;
     $task->status = ScheduledTask::STATUS_COMPLETED;
-    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
 
   private function createSendingQueue($status = null) {
     $queue = SendingQueue::create();
-    $queue->newsletter_id = 0;
-    $queue->task_id = 0;
+    $queue->newsletterId = 0;
+    $queue->taskId = 0;
     $queue->subscribers = serialize([
-      'to_process' => [$this->subscriber_to_process->id],
-      'processed' => [$this->subscriber_processed->id],
+      'to_process' => [$this->subscriberToProcess->id],
+      'processed' => [$this->subscriberProcessed->id],
     ]);
-    $queue->count_total = 2;
-    $queue->count_processed = 1;
-    $queue->count_to_process = 1;
+    $queue->countTotal = 2;
+    $queue->countProcessed = 1;
+    $queue->countToProcess = 1;
     $queue->status = $status;
     return $queue->save();
   }
@@ -199,7 +199,7 @@ class MigrationTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);

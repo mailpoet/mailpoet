@@ -17,11 +17,11 @@ class StatsNotificationsRepository extends Repository {
    * @param int $newsletter_id
    * @return StatsNotificationEntity|null
    */
-  public function findOneByNewsletterId($newsletter_id) {
-    return $this->doctrine_repository
+  public function findOneByNewsletterId($newsletterId) {
+    return $this->doctrineRepository
       ->createQueryBuilder('sn')
       ->andWhere('sn.newsletter = :newsletterId')
-      ->setParameter('newsletterId', $newsletter_id)
+      ->setParameter('newsletterId', $newsletterId)
       ->setMaxResults(1)
       ->getQuery()
       ->getOneOrNullResult();
@@ -33,7 +33,7 @@ class StatsNotificationsRepository extends Repository {
    */
   public function findScheduled($limit = null) {
     $date = new Carbon();
-    $query = $this->doctrine_repository
+    $query = $this->doctrineRepository
       ->createQueryBuilder('sn')
       ->join('sn.task', 'tasks')
       ->join('sn.newsletter', 'n')

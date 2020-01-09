@@ -37,8 +37,8 @@ class DatabaseTest extends \MailPoetTest {
       )
       ->findOne();
     // disable ONLY_FULL_GROUP_BY
-    expect($result->sql_mode)->notContains('ONLY_FULL_GROUP_BY');
+    expect($result->sqlMode)->notContains('ONLY_FULL_GROUP_BY');
     // time zone should be set based on WP's time zone
-    expect($result->time_zone)->equals(Env::$db_timezone_offset);
+    expect($result->timeZone)->equals(Env::$dbTimezoneOffset);
   }
 }

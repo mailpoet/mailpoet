@@ -20,19 +20,19 @@ class UserFlagsTest extends \MailPoetTest {
 
   public function _before() {
     $this->cleanup();
-    $this->user_flags = Stub::make(UserFlagsController::class, [
-      'user_flags_repository' => $this->di_container->get(UserFlagsRepository::class),
+    $this->userFlags = Stub::make(UserFlagsController::class, [
+      'user_flags_repository' => $this->diContainer->get(UserFlagsRepository::class),
       'defaults' => [
         'flag_1' => 'default_value_1',
         'flag_2' => 'default_value_2',
       ],
     ]);
-    $this->user_flags->set('flag_1', 'value_1');
-    $this->endpoint = new UserFlags($this->user_flags);
+    $this->userFlags->set('flag_1', 'value_1');
+    $this->endpoint = new UserFlags($this->userFlags);
   }
 
   public function testItCanSetUserFlags() {
-    $new_flags = [
+    $newFlags = [
       'flag_1' => 'new_value_1',
       'flag_3' => 'new_value_3',
     ];
@@ -41,15 +41,15 @@ class UserFlagsTest extends \MailPoetTest {
     expect($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
-    expect($this->user_flags->getAll())->equals([
+    expect($this->userFlags->getAll())->equals([
       'flag_1' => 'value_1',
       'flag_2' => 'default_value_2',
     ]);
 
-    $response = $this->endpoint->set($new_flags);
+    $response = $this->endpoint->set($newFlags);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    expect($this->user_flags->getAll())->equals([
+    expect($this->userFlags->getAll())->equals([
       'flag_1' => 'new_value_1',
       'flag_2' => 'default_value_2',
       'flag_3' => 'new_value_3',
@@ -61,7 +61,7 @@ class UserFlagsTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    $table_name = $this->entity_manager->getClassMetadata(UserFlagEntity::class)->getTableName();
-    $this->entity_manager->getConnection()->executeUpdate("TRUNCATE $table_name");
+    $tableName = $this->entityManager->getClassMetadata(UserFlagEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("TRUNCATE $table_name");
   }
 }

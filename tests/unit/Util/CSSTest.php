@@ -42,32 +42,32 @@ class CSSTest extends \MailPoetUnitTest {
     $styles = 'p { color: red; }';
     $content = '<p>Foo</p>';
     $html = $this->buildHtml($styles, $content);
-    $result_html = (string)$this->css->inlineCSS($html);
-    $this->assertContains('<p style="color:red">', $result_html);
+    $resultHtml = (string)$this->css->inlineCSS($html);
+    $this->assertContains('<p style="color:red">', $resultHtml);
   }
 
   public function testItInlinesMoreSpecificRule() {
     $styles = 'p { color: red; } .blue { color: blue; }';
     $content = '<p class="blue">Foo</p>';
     $html = $this->buildHtml($styles, $content);
-    $result_html = (string)$this->css->inlineCSS($html);
-    $this->assertContains('<p class="blue" style="color:blue">', $result_html);
+    $resultHtml = (string)$this->css->inlineCSS($html);
+    $this->assertContains('<p class="blue" style="color:blue">', $resultHtml);
   }
 
   public function testItPreserveInlinedRule() {
     $styles = 'p { color: red; }';
     $content = '<p style="color:green">Foo</p>';
     $html = $this->buildHtml($styles, $content);
-    $result_html = (string)$this->css->inlineCSS($html);
-    $this->assertContains('<p style="color:green">', $result_html);
+    $resultHtml = (string)$this->css->inlineCSS($html);
+    $this->assertContains('<p style="color:green">', $resultHtml);
   }
 
   public function testItAlwaysInlinesGlobalImportantRule() {
     $styles = 'p { color: red !important; }';
     $content = '<p style="color:green !important">Foo</p>';
     $html = $this->buildHtml($styles, $content);
-    $result_html = (string)$this->css->inlineCSS($html);
-    $this->assertContains('<p style="color:red">', $result_html);
+    $resultHtml = (string)$this->css->inlineCSS($html);
+    $this->assertContains('<p style="color:red">', $resultHtml);
   }
 
   public function testItMergesInlineStylesCorrectly() {

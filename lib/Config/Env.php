@@ -36,50 +36,50 @@ class Env {
   static $db_charset_collate;
   static $db_timezone_offset;
 
-  public static function init($file, $version, $db_host, $db_user, $db_password, $db_name) {
+  public static function init($file, $version, $dbHost, $dbUser, $dbPassword, $dbName) {
     self::$version = $version;
     self::$file = $file;
     self::$path = dirname(self::$file);
-    self::$plugin_name = 'mailpoet';
-    self::$plugin_path = 'mailpoet/mailpoet.php';
-    self::$base_url = WPFunctions::get()->pluginsUrl('', $file);
-    self::$views_path = self::$path . '/views';
-    self::$assets_path = self::$path . '/assets';
-    self::$assets_url = WPFunctions::get()->pluginsUrl('/assets', $file);
-    self::$util_path = self::$path . '/lib/Util';
-    $wp_upload_dir = WPFunctions::get()->wpUploadDir();
-    self::$temp_path = $wp_upload_dir['basedir'] . '/' . self::$plugin_name;
-    self::$cache_path = self::$temp_path . '/cache';
-    self::$temp_url = $wp_upload_dir['baseurl'] . '/' . self::$plugin_name;
-    self::$languages_path = self::$path . '/lang';
-    self::$lib_path = self::$path . '/lib';
-    self::$plugin_prefix = 'mailpoet_';
-    self::initDbParameters($db_host, $db_user, $db_password, $db_name);
+    self::$pluginName = 'mailpoet';
+    self::$pluginPath = 'mailpoet/mailpoet.php';
+    self::$baseUrl = WPFunctions::get()->pluginsUrl('', $file);
+    self::$viewsPath = self::$path . '/views';
+    self::$assetsPath = self::$path . '/assets';
+    self::$assetsUrl = WPFunctions::get()->pluginsUrl('/assets', $file);
+    self::$utilPath = self::$path . '/lib/Util';
+    $wpUploadDir = WPFunctions::get()->wpUploadDir();
+    self::$tempPath = $wpUploadDir['basedir'] . '/' . self::$pluginName;
+    self::$cachePath = self::$tempPath . '/cache';
+    self::$tempUrl = $wpUploadDir['baseurl'] . '/' . self::$pluginName;
+    self::$languagesPath = self::$path . '/lang';
+    self::$libPath = self::$path . '/lib';
+    self::$pluginPrefix = 'mailpoet_';
+    self::initDbParameters($dbHost, $dbUser, $dbPassword, $dbName);
   }
 
   /**
    * @see https://codex.wordpress.org/Editing_wp-config.php#Set_Database_Host for possible DB_HOSTS values
    */
-  private static function initDbParameters($db_host, $db_user, $db_password, $db_name) {
-    $parsed_host = WPFunctions::get()->parseDbHost($db_host);
-    if ($parsed_host === false) {
+  private static function initDbParameters($dbHost, $dbUser, $dbPassword, $dbName) {
+    $parsedHost = WPFunctions::get()->parseDbHost($dbHost);
+    if ($parsedHost === false) {
       throw new \InvalidArgumentException('Invalid db host configuration.');
     }
-    list($host, $port, $socket, $is_ipv6) = $parsed_host;
+    list($host, $port, $socket, $isIpv6) = $parsedHost;
 
     global $wpdb;
-    self::$db_prefix = $wpdb->prefix . self::$plugin_prefix;
-    self::$db_host = $host;
-    self::$db_is_ipv6 = $is_ipv6;
-    self::$db_port = $port ?: 3306;
-    self::$db_socket = $socket;
-    self::$db_name = $db_name;
-    self::$db_username = $db_user;
-    self::$db_password = $db_password;
-    self::$db_charset = $wpdb->charset;
-    self::$db_collation = $wpdb->collate;
-    self::$db_charset_collate = $wpdb->get_charset_collate();
-    self::$db_timezone_offset = self::getDbTimezoneOffset();
+    self::$dbPrefix = $wpdb->prefix . self::$pluginPrefix;
+    self::$dbHost = $host;
+    self::$dbIsIpv6 = $isIpv6;
+    self::$dbPort = $port ?: 3306;
+    self::$dbSocket = $socket;
+    self::$dbName = $dbName;
+    self::$dbUsername = $dbUser;
+    self::$dbPassword = $dbPassword;
+    self::$dbCharset = $wpdb->charset;
+    self::$dbCollation = $wpdb->collate;
+    self::$dbCharsetCollate = $wpdb->get_charset_collate();
+    self::$dbTimezoneOffset = self::getDbTimezoneOffset();
   }
 
   public static function getDbTimezoneOffset($offset = false) {

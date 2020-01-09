@@ -13,20 +13,20 @@ class MailChimp {
   private $lists_url;
   const API_KEY_REGEX = '/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,4}$/';
 
-  public function __construct($api_key) {
-    $this->api_key = $this->getAPIKey($api_key);
-    $this->max_post_size = Helpers::getMaxPostSize('bytes');
-    $this->data_center = $this->getDataCenter($this->api_key);
-    $this->lists_url = 'https://%s.api.mailchimp.com/2.0/lists/list?apikey=%s';
-    $this->export_url = 'https://%s.api.mailchimp.com/export/1.0/list/?apikey=%s&id=%s';
+  public function __construct($apiKey) {
+    $this->apiKey = $this->getAPIKey($apiKey);
+    $this->maxPostSize = Helpers::getMaxPostSize('bytes');
+    $this->dataCenter = $this->getDataCenter($this->apiKey);
+    $this->listsUrl = 'https://%s.api.mailchimp.com/2.0/lists/list?apikey=%s';
+    $this->exportUrl = 'https://%s.api.mailchimp.com/export/1.0/list/?apikey=%s&id=%s';
   }
 
   public function getLists() {
-    if (!$this->api_key || !$this->data_center) {
+    if (!$this->apiKey || !$this->dataCenter) {
       return $this->throwException('API');
     }
 
-    $url = sprintf($this->lists_url, $this->data_center, $this->api_key);
+    $url = sprintf($this->listsUrl, $this->dataCenter, $this->apiKey);
     $connection = @fopen($url, 'r');
 
     if (!$connection) {
@@ -60,7 +60,7 @@ class MailChimp {
   }
 
   public function getSubscribers($lists = []) {
-    if (!$this->api_key || !$this->data_center) {
+    if (!$this->apiKey || !$this->dataCenter) {
       return $this->throwException('API');
     }
 
@@ -68,12 +68,12 @@ class MailChimp {
       return $this->throwException('lists');
     }
 
-    $bytes_fetched = 0;
+    $bytesFetched = 0;
     $subscribers = [];
     $duplicate = [];
     $header = [];
     foreach ($lists as $list) {
-      $url = sprintf($this->export_url, $this->data_center, $this->api_key, $list);
+      $url = sprintf($this->exportUrl, $this->dataCenter, $this->apiKey, $list);
       $connection = @fopen($url, 'r');
       if (!$connection) {
         return $this->throwException('connection');
@@ -88,9 +88,9 @@ class MailChimp {
             if (is_object($header) && isset($header->error)) {
               return $this->throwException('lists');
             }
-            if (!isset($header_hash)) {
-              $header_hash = md5(implode(',', $header));
-            } elseif (md5(implode(',', $header)) !== $header_hash) {
+            if (!isset($headerHash)) {
+              $headerHash = md5(implode(',', $header));
+            } elseif (md5(implode(',', $header)) !== $headerHash) {
               return $this->throwException('headers');
             }
           } elseif (isset($subscribers[$obj[0]])) {
@@ -100,8 +100,8 @@ class MailChimp {
           }
           $i++;
         }
-        $bytes_fetched += strlen($buffer);
-        if ($bytes_fetched > $this->max_post_size) {
+        $bytesFetched += strlen($buffer);
+        if ($bytesFetched > $this->maxPostSize) {
           return $this->throwException('size');
         }
       }
@@ -122,14 +122,14 @@ class MailChimp {
     ];
   }
 
-  public function getDataCenter($api_key) {
-    if (!$api_key) return false;
-    $api_key_parts = explode('-', $api_key);
-    return end($api_key_parts);
+  public function getDataCenter($apiKey) {
+    if (!$apiKey) return false;
+    $apiKeyParts = explode('-', $apiKey);
+    return end($apiKeyParts);
   }
 
-  public function getAPIKey($api_key) {
-    return (preg_match(self::API_KEY_REGEX, $api_key)) ? $api_key : false;
+  public function getAPIKey($apiKey) {
+    return (preg_match(self::API_KEY_REGEX, $apiKey)) ? $apiKey : false;
   }
 
   public function throwException($error) {

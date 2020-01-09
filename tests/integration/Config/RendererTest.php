@@ -22,48 +22,48 @@ class RendererTest extends \MailPoetTest {
       }]
     );
     $renderer->__construct();
-    expect($renderer->assets_manifest_js)->equals(Env::$assets_path . '/dist/js/manifest.json');
-    expect($renderer->assets_manifest_css)->equals(Env::$assets_path . '/dist/css/manifest.json');
+    expect($renderer->assetsManifestJs)->equals(Env::$assetsPath . '/dist/js/manifest.json');
+    expect($renderer->assetsManifestCss)->equals(Env::$assetsPath . '/dist/css/manifest.json');
   }
 
   public function testItGetsAssetManifest() {
-    $assets_manifest_js = [
+    $assetsManifestJs = [
       'script1.js' => 'script1.hash.js',
       'script2.js' => 'script2.hash.js',
     ];
-    $assets_manifest_css = [
+    $assetsManifestCss = [
       'style1.css' => 'style1.hash.css',
       'style2.css' => 'style2.hash.css',
     ];
-    file_put_contents(Env::$temp_path . '/js.json', json_encode($assets_manifest_js));
-    file_put_contents(Env::$temp_path . '/css.json', json_encode($assets_manifest_css));
+    file_put_contents(Env::$tempPath . '/js.json', json_encode($assetsManifestJs));
+    file_put_contents(Env::$tempPath . '/css.json', json_encode($assetsManifestCss));
 
-    expect($this->renderer->getAssetManifest(Env::$temp_path . '/js.json'))->equals($assets_manifest_js);
-    expect($this->renderer->getAssetManifest(Env::$temp_path . '/css.json'))->equals($assets_manifest_css);
+    expect($this->renderer->getAssetManifest(Env::$tempPath . '/js.json'))->equals($assetsManifestJs);
+    expect($this->renderer->getAssetManifest(Env::$tempPath . '/css.json'))->equals($assetsManifestCss);
   }
 
   public function testItReturnsFalseAssetManifestDoesNotExist() {
-    expect($this->renderer->getAssetManifest(Env::$temp_path . '/js.json'))->false();
+    expect($this->renderer->getAssetManifest(Env::$tempPath . '/js.json'))->false();
   }
 
   public function testItCanGetCssAsset() {
-    $assets_manifest_css = [
+    $assetsManifestCss = [
       'style1.css' => 'style1.hash.css',
       'style2.css' => 'style2.hash.css',
     ];
     $renderer = $this->renderer;
-    $renderer->assets_manifest_css = $assets_manifest_css;
+    $renderer->assetsManifestCss = $assetsManifestCss;
     expect($renderer->getCssAsset('style1.css'))->equals('style1.hash.css');
     expect($renderer->getCssAsset('style2.css'))->equals('style2.hash.css');
   }
 
   public function testItCanGetJsAsset() {
-    $assets_manifest_js = [
+    $assetsManifestJs = [
       'script1.js' => 'script1.hash.js',
       'script2.js' => 'script2.hash.js',
     ];
     $renderer = $this->renderer;
-    $renderer->assets_manifest_js = $assets_manifest_js;
+    $renderer->assetsManifestJs = $assetsManifestJs;
     expect($renderer->getJsAsset('script1.js'))->equals('script1.hash.js');
     expect($renderer->getJsAsset('script2.js'))->equals('script2.hash.js');
   }
@@ -93,15 +93,15 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRethrowsTwigCacheExceptions() {
-    $exception_message = 'this is a test error';
+    $exceptionMessage = 'this is a test error';
     $renderer = Stub::construct(
       $this->renderer,
       [true, false],
       [
         'renderer' => Stub::makeEmpty(Twig_Environment::class,
           [
-            'render' => Expected::atLeastOnce(function() use ($exception_message) {
-              throw new \RuntimeException($exception_message);
+            'render' => Expected::atLeastOnce(function() use ($exceptionMessage) {
+              throw new \RuntimeException($exceptionMessage);
             }),
           ],
           $this
@@ -113,8 +113,8 @@ class RendererTest extends \MailPoetTest {
       $renderer->render('non-existing-template.html', ['somekey' => 'someval']);
       self::fail('Twig exception was not rethrown');
     } catch (\Exception $e) {
-      expect($e->getMessage())->contains($exception_message);
-      expect($e->getMessage())->notEquals($exception_message);
+      expect($e->getMessage())->contains($exceptionMessage);
+      expect($e->getMessage())->notEquals($exceptionMessage);
     }
   }
 
@@ -123,7 +123,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function _removeAssetsManifests() {
-    if (is_readable(Env::$temp_path . '/js.json')) unlink(Env::$temp_path . '/js.json');
-    if (is_readable(Env::$temp_path . '/css.json')) unlink(Env::$temp_path . '/css.json');
+    if (is_readable(Env::$tempPath . '/js.json')) unlink(Env::$tempPath . '/js.json');
+    if (is_readable(Env::$tempPath . '/css.json')) unlink(Env::$tempPath . '/css.json');
   }
 }

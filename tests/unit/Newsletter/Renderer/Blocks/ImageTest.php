@@ -21,24 +21,24 @@ class ImageTest extends \MailPoetUnitTest {
 
   public function testItRendersCorrectly() {
     $output = Image::render($this->block, 200);
-    $expected_result = '
+    $expectedResult = '
       <tr>
         <td class="mailpoet_image mailpoet_padded_vertical mailpoet_padded_side" align="center" valign="top">
           <a href="http://example.com"><img src="http://mailpoet.localhost/image.jpg" width="160" alt="Alt text"/></a>
         </td>
       </tr>';
-    expect($output)->equals($expected_result);
+    expect($output)->equals($expectedResult);
   }
 
   public function testItRendersWithoutLink() {
     $this->block['link'] = null;
     $output = Image::render($this->block, 200);
-    $expected_result = '
+    $expectedResult = '
       <tr>
         <td class="mailpoet_image mailpoet_padded_vertical mailpoet_padded_side" align="center" valign="top">
           <img src="http://mailpoet.localhost/image.jpg" width="160" alt="Alt text"/>
         </td>
       </tr>';
-    expect($output)->equals($expected_result);
+    expect($output)->equals($expectedResult);
   }
 }

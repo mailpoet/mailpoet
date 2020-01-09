@@ -6,50 +6,50 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class DeleteNewsletterCest {
 
-  public function moveNewsletterToTrash(\AcceptanceTester $I) {
-    $newsletter_name = 'Trash Newsletter';
+  public function moveNewsletterToTrash(\AcceptanceTester $i) {
+    $newsletterName = 'Trash Newsletter';
     $newsletter = new Newsletter();
-    $newsletter->withSubject($newsletter_name)->create();
-    $I->wantTo('Move a newsletter to trash');
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($newsletter_name);
-    $I->clickItemRowActionByItemName($newsletter_name, 'Move to trash');
-    $I->waitForText('1 email was moved to the trash.');
-    $I->waitForElement('[data-automation-id="filters_trash"]');
-    $I->click('[data-automation-id="filters_trash"]');
-    $I->waitForText($newsletter_name);
+    $newsletter->withSubject($newsletterName)->create();
+    $i->wantTo('Move a newsletter to trash');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
+    $i->waitForText('1 email was moved to the trash.');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newsletterName);
   }
 
-  public function restoreFormFromTrash(\AcceptanceTester $I) {
-    $newsletter_name = 'Restore Trashed Newsletter';
+  public function restoreFormFromTrash(\AcceptanceTester $i) {
+    $newsletterName = 'Restore Trashed Newsletter';
     $newsletter = new Newsletter();
-    $newsletter->withSubject($newsletter_name)->withDeleted()->create();
-    $I->wantTo('Restore a newsletter from trash');
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForElement('[data-automation-id="filters_trash"]');
-    $I->click('[data-automation-id="filters_trash"]');
-    $I->waitForText($newsletter_name);
-    $I->clickItemRowActionByItemName($newsletter_name, 'Restore');
-    $I->waitForText('1 email has been restored from the Trash.');
-    $I->waitForElement('[data-automation-id="filters_all"]');
-    $I->click('[data-automation-id="filters_all"]');
-    $I->waitForText($newsletter_name);
+    $newsletter->withSubject($newsletterName)->withDeleted()->create();
+    $i->wantTo('Restore a newsletter from trash');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Restore');
+    $i->waitForText('1 email has been restored from the Trash.');
+    $i->waitForElement('[data-automation-id="filters_all"]');
+    $i->click('[data-automation-id="filters_all"]');
+    $i->waitForText($newsletterName);
   }
 
-  public function deleteFormPermanently(\AcceptanceTester $I) {
-    $newsletter_name = 'Goodbye Forever Newsletter';
+  public function deleteFormPermanently(\AcceptanceTester $i) {
+    $newsletterName = 'Goodbye Forever Newsletter';
     $newsletter = new Newsletter();
-    $newsletter->withSubject($newsletter_name)->withDeleted()->create();
-    $I->wantTo('Forever delete a newsletter');
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForElement('[data-automation-id="filters_trash"]');
-    $I->click('[data-automation-id="filters_trash"]');
-    $I->waitForText($newsletter_name);
-    $I->clickItemRowActionByItemName($newsletter_name, 'Delete Permanently');
-    $I->waitForText('1 email was permanently deleted.');
-    $I->waitForElementNotVisible($newsletter_name);
+    $newsletter->withSubject($newsletterName)->withDeleted()->create();
+    $i->wantTo('Forever delete a newsletter');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
+    $i->waitForText('1 email was permanently deleted.');
+    $i->waitForElementNotVisible($newsletterName);
   }
 }

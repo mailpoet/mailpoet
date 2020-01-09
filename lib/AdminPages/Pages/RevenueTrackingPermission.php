@@ -14,10 +14,10 @@ class RevenueTrackingPermission {
   private $wp;
 
   public function __construct(
-    PageRenderer $page_renderer,
+    PageRenderer $pageRenderer,
     WPFunctions $wp
   ) {
-    $this->page_renderer = $page_renderer;
+    $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
   }
 
@@ -26,6 +26,6 @@ class RevenueTrackingPermission {
     $data = [
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG),
     ];
-    $this->page_renderer->displayPage('revenue_tracking_permission.html', $data);
+    $this->pageRenderer->displayPage('revenue_tracking_permission.html', $data);
   }
 }

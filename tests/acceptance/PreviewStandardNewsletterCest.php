@@ -6,16 +6,16 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class PreviewStandardNewsletterCest {
 
-  public function previewStandardNewsletter(\AcceptanceTester $I) {
+  public function previewStandardNewsletter(\AcceptanceTester $i) {
     $newsletterName = 'Preview in Browser Newsletter';
     $newsletter = new Newsletter();
     $newsletter->withSubject($newsletterName)->create();
-    $I->wantTo('Preview a standard newsletter');
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($newsletterName);
-    $I->clickItemRowActionByItemName($newsletterName, 'Preview');
-    $I->switchToNextTab();
-    $I->waitForElement('.mailpoet_template');
+    $i->wantTo('Preview a standard newsletter');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Preview');
+    $i->switchToNextTab();
+    $i->waitForElement('.mailpoet_template');
   }
 }

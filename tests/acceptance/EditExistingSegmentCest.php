@@ -5,33 +5,33 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\DynamicSegment;
 
 class EditExistingSegmentCest {
-  public function editUserRoleSegment(\AcceptanceTester $I) {
-    $I->wantTo('Edit an existing WP user role segment');
+  public function editUserRoleSegment(\AcceptanceTester $i) {
+    $i->wantTo('Edit an existing WP user role segment');
 
-    $segment_title = 'Edit User Role Segment Test';
-    $segment_edited_title = 'Edit User Role Segment Test Edited';
+    $segmentTitle = 'Edit User Role Segment Test';
+    $segmentEditedTitle = 'Edit User Role Segment Test Edited';
 
-    $segment_factory = new DynamicSegment();
-    $segment = $segment_factory
-      ->withName($segment_title)
+    $segmentFactory = new DynamicSegment();
+    $segment = $segmentFactory
+      ->withName($segmentTitle)
       ->withUserRoleFilter('Administrator')
       ->create();
 
-    $I->login();
-    $I->amOnMailpoetPage('Segments');
-    $listing_automation_selector = '[data-automation-id="listing_item_' . $segment->id . '"]';
-    $I->waitForText($segment_title, 10, $listing_automation_selector);
-    $I->clickItemRowActionByItemName($segment_title, 'Edit');
+    $i->login();
+    $i->amOnMailpoetPage('Segments');
+    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->id . '"]';
+    $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
+    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
 
-    $I->seeInCurrentUrl('mailpoet-dynamic-segments#/edit/' . $segment->id);
-    $I->waitForElementNotVisible('.mailpoet_form_loading');
-    $I->fillField(['name' => 'name'], $segment_edited_title);
-    $I->fillField(['name' => 'description'], 'Lorem ipsum dolor amed edited');
-    $I->selectOption('form select[name=segmentType]', 'WordPress user roles');
-    $I->selectOption('form select[name=wordpressRole]', 'Editor');
-    $I->click('Save');
+    $i->seeInCurrentUrl('mailpoet-dynamic-segments#/edit/' . $segment->id);
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
+    $i->fillField(['name' => 'name'], $segmentEditedTitle);
+    $i->fillField(['name' => 'description'], 'Lorem ipsum dolor amed edited');
+    $i->selectOption('form select[name=segmentType]', 'WordPress user roles');
+    $i->selectOption('form select[name=wordpressRole]', 'Editor');
+    $i->click('Save');
 
-    $I->waitForText($segment_edited_title, 20, $listing_automation_selector);
-    $I->seeNoJSErrors();
+    $i->waitForText($segmentEditedTitle, 20, $listingAutomationSelector);
+    $i->seeNoJSErrors();
   }
 }

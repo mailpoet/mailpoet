@@ -11,11 +11,11 @@ class RequirementsChecker {
   /** @var Helper */
   private $woocommerce_helper;
 
-  public function __construct(Helper $woocommerce_helper = null) {
-    if (!$woocommerce_helper) {
-      $woocommerce_helper = new Helper();
+  public function __construct(Helper $woocommerceHelper = null) {
+    if (!$woocommerceHelper) {
+      $woocommerceHelper = new Helper();
     }
-    $this->woocommerce_helper = $woocommerce_helper;
+    $this->woocommerceHelper = $woocommerceHelper;
   }
 
   public function shouldSkipSegment(DynamicSegment $segment) {
@@ -28,12 +28,12 @@ class RequirementsChecker {
   }
 
   private function shouldSkipFilter(Filter $filter) {
-    if ($this->woocommerce_helper->isWooCommerceActive()) {
+    if ($this->woocommerceHelper->isWooCommerceActive()) {
       return false;
     }
 
-    $class_name = get_class($filter);
-    $ref = new \ReflectionClass($class_name);
+    $className = get_class($filter);
+    $ref = new \ReflectionClass($className);
     $constants = $ref->getConstants();
     if (!array_key_exists('SEGMENT_TYPE', $constants)) {
       return true;

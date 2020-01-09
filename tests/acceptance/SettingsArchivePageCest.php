@@ -6,38 +6,38 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 
 class SettingsArchivePageCest {
-  public function createArchivePageNoSentNewsletters(\AcceptanceTester $I) {
-    $I->wantTo('Create page with MP archive shortcode, showing no sent newsletters');
-    $segment_factory = new Segment();
-    $segment = $segment_factory->withName('Empty Send')->create();
+  public function createArchivePageNoSentNewsletters(\AcceptanceTester $i) {
+    $i->wantTo('Create page with MP archive shortcode, showing no sent newsletters');
+    $segmentFactory = new Segment();
+    $segment = $segmentFactory->withName('Empty Send')->create();
     $pageTitle = 'EmptyNewsletterArchive';
     $pageContent = "[mailpoet_archive segments=\"$segment->id\"]";
-    $I->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle", "--post_content=$pageContent"]);
-    $I->login();
-    $I->amOnPage('/wp-admin/edit.php?post_type=page');
-    $I->waitForText($pageTitle);
-    $I->click($pageTitle);
+    $i->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle", "--post_content=$pageContent"]);
+    $i->login();
+    $i->amOnPage('/wp-admin/edit.php?post_type=page');
+    $i->waitForText($pageTitle);
+    $i->click($pageTitle);
     //see live page with shortcode output
-    $I->click('View Page');
-    $I->waitForText($pageTitle);
-    $I->waitForText('Oops! There are no newsletters to display.');
+    $i->click('View Page');
+    $i->waitForText($pageTitle);
+    $i->waitForText('Oops! There are no newsletters to display.');
   }
-  public function createArchivePageWithSentNewsletters(\AcceptanceTester $I) {
-    $I->wantTo('Create page with MP archive shortcode, showing sent newsletters');
-    $segment_factory = new Segment();
-    $segment2 = $segment_factory->withName('SentNewsletters')->create();
+  public function createArchivePageWithSentNewsletters(\AcceptanceTester $i) {
+    $i->wantTo('Create page with MP archive shortcode, showing sent newsletters');
+    $segmentFactory = new Segment();
+    $segment2 = $segmentFactory->withName('SentNewsletters')->create();
     $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject('SentNewsletter')->withSentStatus()->withSendingQueue()->withSegments([$segment2])->create();
     $pageTitle2 = 'SentNewsletterArchive';
     $pageContent2 = "[mailpoet_archive segments=\"$segment2->id\"]";
-    $I->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle2", "--post_content=$pageContent2"]);
-    $I->login();
-    $I->amOnPage('/wp-admin/edit.php?post_type=page');
-    $I->waitForText($pageTitle2);
-    $I->click($pageTitle2);
+    $i->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle2", "--post_content=$pageContent2"]);
+    $i->login();
+    $i->amOnPage('/wp-admin/edit.php?post_type=page');
+    $i->waitForText($pageTitle2);
+    $i->click($pageTitle2);
     //see live page with shortcode output
-    $I->click('View Page');
-    $I->waitForText($pageTitle2);
-    $I->waitForText('SentNewsletter');
+    $i->click('View Page');
+    $i->waitForText($pageTitle2);
+    $i->waitForText('SentNewsletter');
   }
 }

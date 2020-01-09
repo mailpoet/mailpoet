@@ -20,19 +20,19 @@ class CaptchaRenderer {
   /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
-  public function __construct(UrlHelper $url_helper, WPFunctions $wp, CaptchaSession $captcha_session, SubscriptionUrlFactory $subscription_url_factory) {
-    $this->url_helper = $url_helper;
+  public function __construct(UrlHelper $urlHelper, WPFunctions $wp, CaptchaSession $captchaSession, SubscriptionUrlFactory $subscriptionUrlFactory) {
+    $this->urlHelper = $urlHelper;
     $this->wp = $wp;
-    $this->captcha_session = $captcha_session;
-    $this->subscription_url_factory = $subscription_url_factory;
+    $this->captchaSession = $captchaSession;
+    $this->subscriptionUrlFactory = $subscriptionUrlFactory;
   }
 
   public function getCaptchaPageTitle() {
     return $this->wp->__("Confirm you’re not a robot", 'mailpoet');
   }
 
-  public function getCaptchaPageContent($session_id) {
-    $this->captcha_session->init($session_id);
+  public function getCaptchaPageContent($sessionId) {
+    $this->captchaSession->init($sessionId);
     $fields = [
       [
         'id' => 'captcha',
@@ -58,69 +58,69 @@ class CaptchaRenderer {
       ]
     );
 
-    $captcha_session_form = $this->captcha_session->getFormData();
-    $form_id = 0;
+    $captchaSessionForm = $this->captchaSession->getFormData();
+    $formId = 0;
 
-    $show_success_message = !empty($_GET['mailpoet_success']);
-    $show_error_message = !empty($_GET['mailpoet_error']);
+    $showSuccessMessage = !empty($_GET['mailpoet_success']);
+    $showErrorMessage = !empty($_GET['mailpoet_error']);
 
-    if (isset($captcha_session_form['form_id'])) {
-      $form_id = (int)$captcha_session_form['form_id'];
-    } elseif ($show_success_message) {
-      $form_id = (int)$_GET['mailpoet_success'];
-    } elseif ($show_error_message) {
-      $form_id = (int)$_GET['mailpoet_error'];
+    if (isset($captchaSessionForm['form_id'])) {
+      $formId = (int)$captchaSessionForm['form_id'];
+    } elseif ($showSuccessMessage) {
+      $formId = (int)$_GET['mailpoet_success'];
+    } elseif ($showErrorMessage) {
+      $formId = (int)$_GET['mailpoet_error'];
     }
 
-    $form_model = FormModel::findOne($form_id);
-    if (!$form_model instanceof FormModel) {
+    $formModel = FormModel::findOne($formId);
+    if (!$formModel instanceof FormModel) {
       return false;
     }
-    $form_model = $form_model->asArray();
+    $formModel = $formModel->asArray();
 
-    if ($show_success_message) {
+    if ($showSuccessMessage) {
       // Display a success message in a no-JS flow
-      return $this->renderFormMessages($form_model, $show_success_message);
+      return $this->renderFormMessages($formModel, $showSuccessMessage);
     }
 
-    $form_html = '<form method="POST" ' .
+    $formHtml = '<form method="POST" ' .
       'action="' . admin_url('admin-post.php?action=mailpoet_subscription_form') . '" ' .
       'class="mailpoet_form mailpoet_captcha_form" ' .
       'novalidate>';
-    $form_html .= '<input type="hidden" name="data[form_id]" value="' . $form_id . '" />';
-    $form_html .= '<input type="hidden" name="data[captcha_session_id]" value="' . $this->captcha_session->getId() . '" />';
-    $form_html .= '<input type="hidden" name="api_version" value="v1" />';
-    $form_html .= '<input type="hidden" name="endpoint" value="subscribers" />';
-    $form_html .= '<input type="hidden" name="mailpoet_method" value="subscribe" />';
-    $form_html .= '<input type="hidden" name="mailpoet_redirect" ' .
-      'value="' . htmlspecialchars($this->url_helper->getCurrentUrl(), ENT_QUOTES) . '" />';
+    $formHtml .= '<input type="hidden" name="data[form_id]" value="' . $formId . '" />';
+    $formHtml .= '<input type="hidden" name="data[captcha_session_id]" value="' . $this->captchaSession->getId() . '" />';
+    $formHtml .= '<input type="hidden" name="api_version" value="v1" />';
+    $formHtml .= '<input type="hidden" name="endpoint" value="subscribers" />';
+    $formHtml .= '<input type="hidden" name="mailpoet_method" value="subscribe" />';
+    $formHtml .= '<input type="hidden" name="mailpoet_redirect" ' .
+      'value="' . htmlspecialchars($this->urlHelper->getCurrentUrl(), ENT_QUOTES) . '" />';
 
     $width = 220;
     $height = 60;
-    $captcha_url = $this->subscription_url_factory->getCaptchaImageUrl($width, $height, $this->captcha_session->getId());
+    $captchaUrl = $this->subscriptionUrlFactory->getCaptchaImageUrl($width, $height, $this->captchaSession->getId());
 
-    $form_html .= '<div class="mailpoet_form_hide_on_success">';
-    $form_html .= '<p class="mailpoet_paragraph">';
-    $form_html .= '<img class="mailpoet_captcha mailpoet_captcha_update" src="' . $captcha_url . '" width="' . $width . '" height="' . $height . '" title="' . $this->wp->__('Click to refresh the captcha', 'mailpoet') . '" />';
-    $form_html .= '</p>';
+    $formHtml .= '<div class="mailpoet_form_hide_on_success">';
+    $formHtml .= '<p class="mailpoet_paragraph">';
+    $formHtml .= '<img class="mailpoet_captcha mailpoet_captcha_update" src="' . $captchaUrl . '" width="' . $width . '" height="' . $height . '" title="' . $this->wp->__('Click to refresh the captcha', 'mailpoet') . '" />';
+    $formHtml .= '</p>';
 
     // subscription form
-    $form_html .= FormRenderer::renderBlocks($form, $honeypot = false);
-    $form_html .= '</div>';
-    $form_html .= $this->renderFormMessages($form_model, $show_success_message, $show_error_message);
-    $form_html .= '</form>';
-    return $form_html;
+    $formHtml .= FormRenderer::renderBlocks($form, $honeypot = false);
+    $formHtml .= '</div>';
+    $formHtml .= $this->renderFormMessages($formModel, $showSuccessMessage, $showErrorMessage);
+    $formHtml .= '</form>';
+    return $formHtml;
   }
 
   private function renderFormMessages(
-    array $form_model,
-    $show_success_message = false,
-    $show_error_message = false
+    array $formModel,
+    $showSuccessMessage = false,
+    $showErrorMessage = false
   ) {
-    $form_html = '<div class="mailpoet_message">';
-    $form_html .= '<p class="mailpoet_validate_success" ' . ($show_success_message ? '' : ' style="display:none;"') . '>' . $form_model['settings']['success_message'] . '</p>';
-    $form_html .= '<p class="mailpoet_validate_error" ' . ($show_error_message ? '' : ' style="display:none;"') . '>' . $this->wp->__('The characters you entered did not match the CAPTCHA image. Please try again with this new image.', 'mailpoet') . '</p>';
-    $form_html .= '</div>';
-    return $form_html;
+    $formHtml = '<div class="mailpoet_message">';
+    $formHtml .= '<p class="mailpoet_validate_success" ' . ($showSuccessMessage ? '' : ' style="display:none;"') . '>' . $formModel['settings']['success_message'] . '</p>';
+    $formHtml .= '<p class="mailpoet_validate_error" ' . ($showErrorMessage ? '' : ' style="display:none;"') . '>' . $this->wp->__('The characters you entered did not match the CAPTCHA image. Please try again with this new image.', 'mailpoet') . '</p>';
+    $formHtml .= '</div>';
+    return $formHtml;
   }
 }

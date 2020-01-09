@@ -26,12 +26,12 @@ class Handlebars extends AbstractExtension {
   public function generatePartial($env, $context) {
     // get arguments (minus env & $context)
     $args = array_slice(func_get_args(), 2);
-    $args_count = count($args);
+    $argsCount = count($args);
 
     // default values
     $alias = null;
 
-    switch ($args_count) {
+    switch ($argsCount) {
       case 2:
         list($id, $file) = $args;
         break;
@@ -42,7 +42,7 @@ class Handlebars extends AbstractExtension {
         return;
     }
 
-    $rendered_template = \MailPoetVendor\twig_include($env, $context, $file);
+    $renderedTemplate = \MailPoetVendor\twig_include($env, $context, $file);
 
     $output = <<<EOL
 <script id="$id" type="text/x-handlebars-template">

@@ -30,27 +30,27 @@ class Subscription {
   }
 
   public function extendWooCommerceCheckoutForm() {
-    $input_name = self::CHECKOUT_OPTIN_INPUT_NAME;
+    $inputName = self::CHECKOUT_OPTIN_INPUT_NAME;
     $checked = $this->isCurrentUserSubscribed();
     if (!empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
       $checked = true;
     }
-    $label_string = $this->settings->get(self::OPTIN_MESSAGE_SETTING_NAME);
+    $labelString = $this->settings->get(self::OPTIN_MESSAGE_SETTING_NAME);
     $template = $this->wp->applyFilters(
       'mailpoet_woocommerce_checkout_optin_template',
-      $this->getSubscriptionField($input_name, $checked, $label_string),
-      $input_name,
+      $this->getSubscriptionField($inputName, $checked, $labelString),
+      $inputName,
       $checked,
-      $label_string
+      $labelString
     );
     echo $template;
   }
 
-  private function getSubscriptionField($input_name, $checked, $label_string) {
+  private function getSubscriptionField($inputName, $checked, $labelString) {
     return '<p class="form-row">
       <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
-      <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="' . $this->wp->escAttr($input_name) . '" id="' . $this->wp->escAttr($input_name) . '" ' . ($checked ? 'checked' : '') . ' />
-        <span class="woocommerce-terms-and-conditions-checkbox-text">' . $this->wp->escHtml($label_string) . '</label>
+      <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="' . $this->wp->escAttr($inputName) . '" id="' . $this->wp->escAttr($inputName) . '" ' . ($checked ? 'checked' : '') . ' />
+        <span class="woocommerce-terms-and-conditions-checkbox-text">' . $this->wp->escHtml($labelString) . '</label>
     </p>';
   }
 
@@ -59,15 +59,15 @@ class Subscription {
     if (!$subscriber instanceof Subscriber) {
       return false;
     }
-    $wc_segment = Segment::getWooCommerceSegment();
-    $subscriber_segment = SubscriberSegment::where('subscriber_id', $subscriber->id)
-      ->where('segment_id', $wc_segment->id)
+    $wcSegment = Segment::getWooCommerceSegment();
+    $subscriberSegment = SubscriberSegment::where('subscriber_id', $subscriber->id)
+      ->where('segment_id', $wcSegment->id)
       ->findOne();
-    return $subscriber_segment instanceof SubscriberSegment
-      && $subscriber_segment->status === Subscriber::STATUS_SUBSCRIBED;
+    return $subscriberSegment instanceof SubscriberSegment
+      && $subscriberSegment->status === Subscriber::STATUS_SUBSCRIBED;
   }
 
-  public function subscribeOnCheckout($order_id, $data) {
+  public function subscribeOnCheckout($orderId, $data) {
     if (empty($data['billing_email'])) {
       // no email in posted order data
       return null;
@@ -81,14 +81,14 @@ class Subscription {
       return null;
     }
 
-    $checkout_optin_enabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
-    $wc_segment = Segment::getWooCommerceSegment();
+    $checkoutOptinEnabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
+    $wcSegment = Segment::getWooCommerceSegment();
 
-    if (!$checkout_optin_enabled || empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
+    if (!$checkoutOptinEnabled || empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
       // Opt-in is disabled or checkbox is unchecked
       SubscriberSegment::unsubscribeFromSegments(
         $subscriber,
-        [$wc_segment->id]
+        [$wcSegment->id]
       );
       $this->updateSubscriberStatus($subscriber);
       return false;
@@ -97,15 +97,15 @@ class Subscription {
     // checkbox is checked
     $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    if (empty($subscriber->confirmed_ip) && empty($subscriber->confirmed_at)) {
-      $subscriber->confirmed_ip = Helpers::getIP();
+    if (empty($subscriber->confirmedIp) && empty($subscriber->confirmedAt)) {
+      $subscriber->confirmedIp = Helpers::getIP();
       $subscriber->setExpr('confirmed_at', 'NOW()');
     }
     $subscriber->save();
 
     SubscriberSegment::subscribeToSegments(
       $subscriber,
-      [$wc_segment->id]
+      [$wcSegment->id]
     );
 
     return true;

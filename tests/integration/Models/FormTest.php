@@ -49,47 +49,47 @@ class FormTest extends \MailPoetTest {
 
   public function testItHasACreatedAtOnCreation() {
     $form = Form::findOne($this->form->id);
-    expect($form->created_at)->notNull();
+    expect($form->createdAt)->notNull();
   }
 
   public function testItHasAnUpdatedAtOnCreation() {
     $form = Form::findOne($this->form->id);
-    expect($form->updated_at)
-      ->equals($form->created_at);
+    expect($form->updatedAt)
+      ->equals($form->createdAt);
   }
 
   public function testItUpdatesTheUpdatedAtOnUpdate() {
     $form = Form::findOne($this->form->id);
-    $created_at = $form->created_at;
+    $createdAt = $form->createdAt;
 
     sleep(1);
 
     $form->name = 'new name';
     $form->save();
 
-    $updated_form = Form::findOne($form->id);
-    expect($updated_form->created_at)->equals($created_at);
-    $is_time_updated = (
-      $updated_form->updated_at > $updated_form->created_at
+    $updatedForm = Form::findOne($form->id);
+    expect($updatedForm->createdAt)->equals($createdAt);
+    $isTimeUpdated = (
+      $updatedForm->updatedAt > $updatedForm->createdAt
     );
-    expect($is_time_updated)->true();
+    expect($isTimeUpdated)->true();
   }
 
   public function testItCanCreateOrUpdate() {
-    $created_form = Form::createOrUpdate([
+    $createdForm = Form::createOrUpdate([
       'name' => 'Created Form',
     ]);
-    expect($created_form->id > 0)->true();
-    expect($created_form->getErrors())->false();
+    expect($createdForm->id > 0)->true();
+    expect($createdForm->getErrors())->false();
 
-    $form = Form::findOne($created_form->id);
+    $form = Form::findOne($createdForm->id);
     expect($form->name)->equals('Created Form');
 
-    $is_updated = Form::createOrUpdate([
-      'id' => $created_form->id,
+    $isUpdated = Form::createOrUpdate([
+      'id' => $createdForm->id,
       'name' => 'Updated Form',
     ]);
-    $form = Form::findOne($created_form->id);
+    $form = Form::findOne($createdForm->id);
     expect($form->name)->equals('Updated Form');
   }
 

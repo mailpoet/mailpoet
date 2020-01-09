@@ -13,17 +13,17 @@ class ImportExportFactoryTest extends \MailPoetTest {
   public $importFactory;
   public function _before() {
     parent::_before();
-    $segment_1 = Segment::createOrUpdate(['name' => 'Unconfirmed Segment']);
-    $segment_2 = Segment::createOrUpdate(['name' => 'Confirmed Segment']);
+    $segment1 = Segment::createOrUpdate(['name' => 'Unconfirmed Segment']);
+    $segment2 = Segment::createOrUpdate(['name' => 'Confirmed Segment']);
 
-    $subscriber_1 = Subscriber::createOrUpdate([
+    $subscriber1 = Subscriber::createOrUpdate([
       'first_name' => 'John',
       'last_name' => 'Mailer',
       'status' => Subscriber::STATUS_UNCONFIRMED,
       'email' => 'john@mailpoet.com',
     ]);
 
-    $subscriber_2 = Subscriber::createOrUpdate([
+    $subscriber2 = Subscriber::createOrUpdate([
       'first_name' => 'Mike',
       'last_name' => 'Smith',
       'status' => Subscriber::STATUS_SUBSCRIBED,
@@ -31,13 +31,13 @@ class ImportExportFactoryTest extends \MailPoetTest {
     ]);
 
     $association = SubscriberSegment::create();
-    $association->subscriber_id = $subscriber_1->id;
-    $association->segment_id = $segment_1->id;
+    $association->subscriberId = $subscriber1->id;
+    $association->segmentId = $segment1->id;
     $association->save();
 
     $association = SubscriberSegment::create();
-    $association->subscriber_id = $subscriber_2->id;
-    $association->segment_id = $segment_2->id;
+    $association->subscriberId = $subscriber2->id;
+    $association->segmentId = $segment2->id;
     $association->save();
 
     CustomField::createOrUpdate([
@@ -66,7 +66,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $subscriber = Subscriber::where(
       'email', 'mike@mailpoet.com'
     )->findOne();
-    expect($subscriber->deleted_at)->null();
+    expect($subscriber->deletedAt)->null();
     $subscriber->trash();
 
     $subscriber = Subscriber::where(
@@ -84,7 +84,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect(count($segments))->equals(2);
     $subscriber = Subscriber::where('email', 'john@mailpoet.com')
       ->findOne();
-    $subscriber->deleted_at = date('Y-m-d H:i:s');
+    $subscriber->deletedAt = date('Y-m-d H:i:s');
     $subscriber->save();
     $segments = $this->exportFactory->getSegments();
     expect(count($segments))->equals(1);
@@ -113,7 +113,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     // export fields contain extra data
     $this->importFactory->action = 'export';
     $subsriberFields = $this->importFactory->getSubscriberFields();
-    $export_fields = [
+    $exportFields = [
       'email',
       'first_name',
       'last_name',
@@ -121,7 +121,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'global_status',
       'subscribed_ip',
     ];
-    foreach ($export_fields as $field) {
+    foreach ($exportFields as $field) {
       expect(in_array($field, array_keys($subsriberFields)))->true();
     }
   }
@@ -171,7 +171,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
   }
 
   public function testItCanFormatFieldsForSelect2Import() {
-    $ImportExportFactory = clone($this->importFactory);
+    $importExportFactory = clone($this->importFactory);
     $select2FieldsWithoutCustomFields = [
       [
         'name' => 'Actions',
@@ -188,8 +188,8 @@ class ImportExportFactoryTest extends \MailPoetTest {
       ],
       [
         'name' => 'System fields',
-        'children' => $ImportExportFactory->formatSubscriberFields(
-          $ImportExportFactory->getSubscriberFields()
+        'children' => $importExportFactory->formatSubscriberFields(
+          $importExportFactory->getSubscriberFields()
         ),
       ],
     ];
@@ -198,25 +198,25 @@ class ImportExportFactoryTest extends \MailPoetTest {
       [
         [
           'name' => 'User fields',
-          'children' => $ImportExportFactory->formatSubscriberCustomFields(
-            $ImportExportFactory->getSubscriberCustomFields()
+          'children' => $importExportFactory->formatSubscriberCustomFields(
+            $importExportFactory->getSubscriberCustomFields()
           ),
         ],
       ]);
-    $formattedFieldsForSelect2 = $ImportExportFactory->formatFieldsForSelect2(
-      $ImportExportFactory->getSubscriberFields(),
-      $ImportExportFactory->getSubscriberCustomFields()
+    $formattedFieldsForSelect2 = $importExportFactory->formatFieldsForSelect2(
+      $importExportFactory->getSubscriberFields(),
+      $importExportFactory->getSubscriberCustomFields()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
-    $formattedFieldsForSelect2 = $ImportExportFactory->formatFieldsForSelect2(
-      $ImportExportFactory->getSubscriberFields(),
+    $formattedFieldsForSelect2 = $importExportFactory->formatFieldsForSelect2(
+      $importExportFactory->getSubscriberFields(),
       []
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
 
   public function testItCanFormatFieldsForSelect2Export() {
-    $ImportExportFactory = clone($this->exportFactory);
+    $importExportFactory = clone($this->exportFactory);
     $select2FieldsWithoutCustomFields = [
       [
         'name' => 'Actions',
@@ -233,8 +233,8 @@ class ImportExportFactoryTest extends \MailPoetTest {
       ],
       [
         'name' => 'System fields',
-        'children' => $ImportExportFactory->formatSubscriberFields(
-          $ImportExportFactory->getSubscriberFields()
+        'children' => $importExportFactory->formatSubscriberFields(
+          $importExportFactory->getSubscriberFields()
         ),
       ],
     ];
@@ -243,18 +243,18 @@ class ImportExportFactoryTest extends \MailPoetTest {
       [
         [
           'name' => 'User fields',
-          'children' => $ImportExportFactory->formatSubscriberCustomFields(
-            $ImportExportFactory->getSubscriberCustomFields()
+          'children' => $importExportFactory->formatSubscriberCustomFields(
+            $importExportFactory->getSubscriberCustomFields()
           ),
         ],
       ]);
-    $formattedFieldsForSelect2 = $ImportExportFactory->formatFieldsForSelect2(
-      $ImportExportFactory->getSubscriberFields(),
-      $ImportExportFactory->getSubscriberCustomFields()
+    $formattedFieldsForSelect2 = $importExportFactory->formatFieldsForSelect2(
+      $importExportFactory->getSubscriberFields(),
+      $importExportFactory->getSubscriberCustomFields()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
-    $formattedFieldsForSelect2 = $ImportExportFactory->formatFieldsForSelect2(
-      $ImportExportFactory->getSubscriberFields(),
+    $formattedFieldsForSelect2 = $importExportFactory->formatFieldsForSelect2(
+      $importExportFactory->getSubscriberFields(),
       []
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);

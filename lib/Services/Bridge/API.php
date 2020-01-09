@@ -32,19 +32,19 @@ class API {
   public $url_stats = 'https://bridge.mailpoet.com/api/v0/stats';
   public $url_authorized_email_addresses = 'https://bridge.mailpoet.com/api/v0/authorized_email_addresses';
 
-  public function __construct($api_key, $wp = null) {
-    $this->setKey($api_key);
+  public function __construct($apiKey, $wp = null) {
+    $this->setKey($apiKey);
     if (is_null($wp)) {
       $this->wp = new WPFunctions();
     } else {
       $this->wp = $wp;
     }
-    $this->logger_factory = LoggerFactory::getInstance();
+    $this->loggerFactory = LoggerFactory::getInstance();
   }
 
   public function checkMSSKey() {
     $result = $this->request(
-      $this->url_me,
+      $this->urlMe,
       ['site' => WPFunctions::get()->homeUrl()]
     );
 
@@ -63,7 +63,7 @@ class API {
 
   public function checkPremiumKey() {
     $result = $this->request(
-      $this->url_premium,
+      $this->urlPremium,
       ['site' => WPFunctions::get()->homeUrl()]
     );
 
@@ -84,17 +84,17 @@ class API {
   }
 
   public function logCurlInformation($headers, $info) {
-    $this->logger_factory->getLogger(LoggerFactory::TOPIC_MSS)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_MSS)->addInfo(
       'requests-curl.after_request',
       ['headers' => $headers, 'curl_info' => $info]
     );
   }
 
-  public function sendMessages($message_body) {
+  public function sendMessages($messageBody) {
     add_action('requests-curl.after_request', [$this, 'logCurlInformation'], 10, 2);
     $result = $this->request(
-      $this->url_messages,
-      $message_body
+      $this->urlMessages,
+      $messageBody
     );
     remove_action('requests-curl.after_request', [$this, 'logCurlInformation']);
     if (is_wp_error($result)) {
@@ -104,15 +104,15 @@ class API {
       ];
     }
 
-    $response_code = $this->wp->wpRemoteRetrieveResponseCode($result);
-    if ($response_code !== 201) {
+    $responseCode = $this->wp->wpRemoteRetrieveResponseCode($result);
+    if ($responseCode !== 201) {
       $response = ($this->wp->wpRemoteRetrieveBody($result)) ?
         $this->wp->wpRemoteRetrieveBody($result) :
         $this->wp->wpRemoteRetrieveResponseMessage($result);
       return [
         'status' => self::SENDING_STATUS_SEND_ERROR,
         'message' => $response,
-        'code' => $response_code,
+        'code' => $responseCode,
       ];
     }
     return ['status' => self::SENDING_STATUS_OK];
@@ -120,7 +120,7 @@ class API {
 
   public function checkBounces(array $emails) {
     $result = $this->request(
-      $this->url_bounces,
+      $this->urlBounces,
       $emails
     );
     if ($this->wp->wpRemoteRetrieveResponseCode($result) === 200) {
@@ -131,7 +131,7 @@ class API {
 
   public function updateSubscriberCount($count) {
     $result = $this->request(
-      $this->url_stats,
+      $this->urlStats,
       ['subscriber_count' => (int)$count],
       'PUT'
     );
@@ -140,7 +140,7 @@ class API {
 
   public function getAuthorizedEmailAddresses() {
     $result = $this->request(
-      $this->url_authorized_email_addresses,
+      $this->urlAuthorizedEmailAddresses,
       null,
       'GET'
     );
@@ -150,16 +150,16 @@ class API {
     return false;
   }
 
-  public function setKey($api_key) {
-    $this->api_key = $api_key;
+  public function setKey($apiKey) {
+    $this->apiKey = $apiKey;
   }
 
   public function getKey() {
-    return $this->api_key;
+    return $this->apiKey;
   }
 
   private function auth() {
-    return 'Basic ' . base64_encode('api:' . $this->api_key);
+    return 'Basic ' . base64_encode('api:' . $this->apiKey);
   }
 
   private function request($url, $body, $method = 'POST') {

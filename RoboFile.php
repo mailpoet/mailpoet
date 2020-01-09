@@ -9,9 +9,9 @@ class RoboFile extends \Robo\Tasks {
   public function __construct() {
 
     // disable xdebug to avoid slowing down command execution
-    $xdebug_handler = new \Composer\XdebugHandler\XdebugHandler('mailpoet');
-    $xdebug_handler->setPersistent();
-    $xdebug_handler->check();
+    $xdebugHandler = new \Composer\XdebugHandler\XdebugHandler('mailpoet');
+    $xdebugHandler->setPersistent();
+    $xdebugHandler->check();
 
     $dotenv = Dotenv\Dotenv::create(__DIR__);
     $dotenv->load();
@@ -35,23 +35,23 @@ class RoboFile extends \Robo\Tasks {
 
   public function watch() {
     $this->say('Warning: this lints and compiles all files, not just the changed one. Use separate tasks watch:js and watch:css for faster and more efficient watching.');
-    $css_files = $this->rsearch('assets/css/src/', ['scss']);
-    $js_files = $this->rsearch('assets/js/src/', ['js', 'jsx']);
+    $cssFiles = $this->rsearch('assets/css/src/', ['scss']);
+    $jsFiles = $this->rsearch('assets/js/src/', ['js', 'jsx']);
 
     $this->taskWatch()
-      ->monitor($js_files, function() {
+      ->monitor($jsFiles, function() {
         $this->compileJs();
       })
-      ->monitor($css_files, function() {
+      ->monitor($cssFiles, function() {
         $this->compileCss();
       })
       ->run();
   }
 
   public function watchCss() {
-    $css_files = $this->rsearch('assets/css/src/', ['scss']);
+    $cssFiles = $this->rsearch('assets/css/src/', ['scss']);
     $this->taskWatch()
-      ->monitor($css_files, function($changedFile) {
+      ->monitor($cssFiles, function($changedFile) {
         $file = $changedFile->getResource()->getResource();
         $this->taskExecStack()
           ->stopOnFail()
@@ -97,26 +97,26 @@ class RoboFile extends \Robo\Tasks {
 
     $this->_exec('npm run stylelint -- "assets/css/src/components/**/*.scss"');
     $this->_exec('npm run scss');
-    $compilation_result = $this->_exec('npm run autoprefixer');
+    $compilationResult = $this->_exec('npm run autoprefixer');
 
     // Create manifest file
     $manifest = [];
     foreach (glob('assets/dist/css/*.css') as $style) {
       // Hash and rename styles if production environment
       if ($opts['env'] === 'production') {
-        $hashed_style = sprintf(
+        $hashedStyle = sprintf(
           '%s.%s.css',
           pathinfo($style)['filename'],
           substr(md5_file($style), 0, 8)
         );
-        $manifest[basename($style)] = $hashed_style;
-        rename($style, str_replace(basename($style), $hashed_style, $style));
+        $manifest[basename($style)] = $hashedStyle;
+        rename($style, str_replace(basename($style), $hashedStyle, $style));
       } else {
         $manifest[basename($style)] = basename($style);
       }
     }
     file_put_contents('assets/dist/css/manifest.json', json_encode($manifest, JSON_PRETTY_PRINT));
-    return $compilation_result;
+    return $compilationResult;
   }
 
   public function translationsInit() {
@@ -204,7 +204,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->execWithXDebug($command);
   }
 
-  public function testNewsletterEditor($xml_output_file = null) {
+  public function testNewsletterEditor($xmlOutputFile = null) {
     $this->compileJs();
 
     $command = join(' ', [
@@ -213,23 +213,23 @@ class RoboFile extends \Robo\Tasks {
       'tests/javascript_newsletter_editor/testBundles/**/*.js',
     ]);
 
-    if (!empty($xml_output_file)) {
+    if (!empty($xmlOutputFile)) {
       $command .= sprintf(
         ' --reporter xunit --reporter-options output="%s"',
-        $xml_output_file
+        $xmlOutputFile
       );
     }
 
     return $this->_exec($command);
   }
 
-  public function testJavascript($xml_output_file = null) {
+  public function testJavascript($xmlOutputFile = null) {
     $command = './node_modules/.bin/mocha --require @babel/register tests/javascript/**/*.spec.js';
 
-    if (!empty($xml_output_file)) {
+    if (!empty($xmlOutputFile)) {
       $command .= sprintf(
         ' --reporter xunit --reporter-options output="%s"',
-        $xml_output_file
+        $xmlOutputFile
       );
     }
 
@@ -296,16 +296,16 @@ class RoboFile extends \Robo\Tasks {
     }
 
     $configurator = new \MailPoet\DI\ContainerConfigurator();
-    $dump_file = __DIR__ . '/generated/' . $configurator->getDumpClassname() . '.php';
+    $dumpFile = __DIR__ . '/generated/' . $configurator->getDumpClassname() . '.php';
     $this->say('Deleting DI Container');
     $this->_exec("rm -f $dump_file");
     $this->say('Generating DI container cache');
-    $container_factory = new \MailPoet\DI\ContainerFactory($configurator);
-    $container = $container_factory->getConfiguredContainer();
+    $containerFactory = new \MailPoet\DI\ContainerFactory($configurator);
+    $container = $containerFactory->getConfiguredContainer();
     $container->compile();
     $dumper = new \MailPoetVendor\Symfony\Component\DependencyInjection\Dumper\PhpDumper($container);
     file_put_contents(
-      $dump_file,
+      $dumpFile,
       $dumper->dump([
         'class' => $configurator->getDumpClassname(),
         'namespace' => $configurator->getDumpNamespace(),
@@ -314,19 +314,19 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function doctrineGenerateMetadata() {
-    $doctrine_metadata_dir = \MailPoet\Doctrine\ConfigurationFactory::METADATA_DIR;
-    $validator_metadata_dir = \MailPoet\Doctrine\Validator\ValidatorFactory::METADATA_DIR;
+    $doctrineMetadataDir = \MailPoet\Doctrine\ConfigurationFactory::METADATA_DIR;
+    $validatorMetadataDir = \MailPoet\Doctrine\Validator\ValidatorFactory::METADATA_DIR;
     $this->_exec("rm -rf $doctrine_metadata_dir");
     $this->_exec("rm -rf $validator_metadata_dir");
 
-    $entity_manager = $this->createDoctrineEntityManager();
-    $doctrine_metadata = $entity_manager->getMetadataFactory()->getAllMetadata();
+    $entityManager = $this->createDoctrineEntityManager();
+    $doctrineMetadata = $entityManager->getMetadataFactory()->getAllMetadata();
 
-    $annotation_reader_provider = new \MailPoet\Doctrine\Annotations\AnnotationReaderProvider();
-    $validator_factory = new \MailPoet\Doctrine\Validator\ValidatorFactory($annotation_reader_provider);
-    $validator = $validator_factory->createValidator();
+    $annotationReaderProvider = new \MailPoet\Doctrine\Annotations\AnnotationReaderProvider();
+    $validatorFactory = new \MailPoet\Doctrine\Validator\ValidatorFactory($annotationReaderProvider);
+    $validator = $validatorFactory->createValidator();
 
-    foreach ($doctrine_metadata as $metadata) {
+    foreach ($doctrineMetadata as $metadata) {
       $validator->getMetadataFor($metadata->getName());
     }
 
@@ -335,14 +335,14 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function doctrineGenerateProxies() {
-    $proxy_dir = \MailPoet\Doctrine\ConfigurationFactory::PROXY_DIR;
+    $proxyDir = \MailPoet\Doctrine\ConfigurationFactory::PROXY_DIR;
     $this->_exec("rm -rf $proxy_dir");
 
     // set ArrayCache for metadata to avoid reading & writing them on filesystem as a side effect
-    $entity_manager = $this->createDoctrineEntityManager();
-    $entity_manager->getMetadataFactory()->setCacheDriver(new \MailPoetVendor\Doctrine\Common\Cache\ArrayCache());
-    $entity_manager->getProxyFactory()->generateProxyClasses(
-      $entity_manager->getMetadataFactory()->getAllMetadata()
+    $entityManager = $this->createDoctrineEntityManager();
+    $entityManager->getMetadataFactory()->setCacheDriver(new \MailPoetVendor\Doctrine\Common\Cache\ArrayCache());
+    $entityManager->getProxyFactory()->generateProxyClasses(
+      $entityManager->getMetadataFactory()->getAllMetadata()
     );
     $this->say("Doctrine proxies generated to: $proxy_dir");
   }
@@ -503,22 +503,22 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function svnCheckout() {
-    $svn_dir = ".mp_svn";
+    $svnDir = ".mp_svn";
 
     $collection = $this->collectionBuilder();
 
     // Clean up the SVN dir for faster shallow checkout
-    if (file_exists($svn_dir)) {
+    if (file_exists($svnDir)) {
       $collection->taskExecStack()
-        ->exec('rm -rf ' . $svn_dir);
+        ->exec('rm -rf ' . $svnDir);
     }
 
     $collection->taskFileSystemStack()
-        ->mkdir($svn_dir);
+        ->mkdir($svnDir);
 
     return $collection->taskExecStack()
       ->stopOnFail()
-      ->dir($svn_dir)
+      ->dir($svnDir)
       ->exec('svn co https://plugins.svn.wordpress.org/mailpoet/ -N .')
       ->exec('svn up trunk')
       ->exec('svn up assets')
@@ -541,25 +541,25 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function svnPublish() {
-    $svn_dir = ".mp_svn";
-    $plugin_version = $this->getPluginVersion('mailpoet.php');
-    $plugin_dist_name = 'mailpoet';
-    $plugin_dist_file = $plugin_dist_name . '.zip';
+    $svnDir = ".mp_svn";
+    $pluginVersion = $this->getPluginVersion('mailpoet.php');
+    $pluginDistName = 'mailpoet';
+    $pluginDistFile = $pluginDistName . '.zip';
 
-    if (!$plugin_version) {
+    if (!$pluginVersion) {
       throw new \Exception('Could not parse plugin version, check the plugin header');
     }
-    $this->say('Publishing version: ' . $plugin_version);
+    $this->say('Publishing version: ' . $pluginVersion);
 
     // Sanity checks
-    if (!is_readable($plugin_dist_file)) {
-      $this->say("Failed to access " . $plugin_dist_file);
+    if (!is_readable($pluginDistFile)) {
+      $this->say("Failed to access " . $pluginDistFile);
       return;
-    } elseif (!file_exists($svn_dir . "/.svn/")) {
+    } elseif (!file_exists($svnDir . "/.svn/")) {
       $this->say("$svn_dir/.svn/ dir not found, is it a SVN repository?");
       return;
-    } elseif (file_exists($svn_dir . "/tags/" . $plugin_version)) {
-      $this->say("A SVN tag already exists: " . $plugin_version);
+    } elseif (file_exists($svnDir . "/tags/" . $pluginVersion)) {
+      $this->say("A SVN tag already exists: " . $pluginVersion);
       return;
     }
 
@@ -573,7 +573,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Extract the distributable zip to tmp trunk dir
-    $collection->taskExtract($plugin_dist_file)
+    $collection->taskExtract($pluginDistFile)
       ->to("$svn_dir/trunk_new")
       ->preserveTopDirectory(false);
 
@@ -613,7 +613,7 @@ class RoboFile extends \Robo\Tasks {
     $collection->taskExecStack()
       ->stopOnFail()
       // Set SVN repo as working directory
-      ->dir($svn_dir)
+      ->dir($svnDir)
       // Remove files from SVN repo that have already been removed locally
       ->exec("svn st | grep ^! | awk '$awkCmd' | xargs $xargsFlag svn rm --keep-local")
       // Recursively add files to SVN that haven't been added yet
@@ -622,23 +622,23 @@ class RoboFile extends \Robo\Tasks {
     $result = $collection->run();
 
     if ($result->wasSuccessful()) {
-      $repo_url = "https://plugins.svn.wordpress.org/$plugin_dist_name";
-      $release_cmd = "svn ci -m \"Release $plugin_version\"";
-      $tag_cmd = "svn copy $repo_url/trunk $repo_url/tags/$plugin_version -m \"Tag $plugin_version\"";
-      $svn_login = getenv('WP_SVN_USERNAME');
-      $svn_password = getenv('WP_SVN_PASSWORD');
-      if ($svn_login && $svn_password) {
-        $release_cmd .= " --username $svn_login --password $svn_password";
-        $tag_cmd .= " --username $svn_login --password $svn_password";
+      $repoUrl = "https://plugins.svn.wordpress.org/$plugin_dist_name";
+      $releaseCmd = "svn ci -m \"Release $plugin_version\"";
+      $tagCmd = "svn copy $repo_url/trunk $repo_url/tags/$plugin_version -m \"Tag $plugin_version\"";
+      $svnLogin = getenv('WP_SVN_USERNAME');
+      $svnPassword = getenv('WP_SVN_PASSWORD');
+      if ($svnLogin && $svnPassword) {
+        $releaseCmd .= " --username $svn_login --password $svn_password";
+        $tagCmd .= " --username $svn_login --password $svn_password";
       } else {
-        $release_cmd .= ' --force-interactive';
-        $tag_cmd .= ' --force-interactive';
+        $releaseCmd .= ' --force-interactive';
+        $tagCmd .= ' --force-interactive';
       }
       $result = $this->taskExecStack()
         ->stopOnFail()
-        ->dir($svn_dir)
-        ->exec($release_cmd)
-        ->exec($tag_cmd)
+        ->dir($svnDir)
+        ->exec($releaseCmd)
+        ->exec($tagCmd)
         ->run();
     }
 
@@ -679,9 +679,9 @@ class RoboFile extends \Robo\Tasks {
     $jira = $this->createJiraController();
     $version = $jira->getVersion($this->releaseVersionGetNext($version));
     $issues = $jira->getIssuesDataForVersion($version);
-    $pull_requests_id = \MailPoetTasks\Release\JiraController::PULL_REQUESTS_ID;
+    $pullRequestsId = \MailPoetTasks\Release\JiraController::PULL_REQUESTS_ID;
     foreach ($issues as $issue) {
-      if (strpos($issue['fields'][$pull_requests_id], 'state=OPEN') !== false) {
+      if (strpos($issue['fields'][$pullRequestsId], 'state=OPEN') !== false) {
         $key = $issue['key'];
         $this->yell("Some pull request associated to task {$key} is not merged yet!", 40, 'red');
         exit(1);
@@ -691,11 +691,11 @@ class RoboFile extends \Robo\Tasks {
 
   public function releasePrepareGit() {
     // make sure working directory is clean
-    $git_status = $this->taskGitStack()
+    $gitStatus = $this->taskGitStack()
       ->printOutput(false)
       ->exec('git status --porcelain')
       ->run();
-    if (strlen(trim($git_status->getMessage())) > 0) {
+    if (strlen(trim($gitStatus->getMessage())) > 0) {
       $this->yell('Please make sure your working directory is clean before running release.', 40, 'red');
       exit(1);
     }
@@ -706,20 +706,20 @@ class RoboFile extends \Robo\Tasks {
       ->pull()
       ->run();
     // make sure release branch doesn't exist on github
-    $release_branch_status = $this->taskGitStack()
+    $releaseBranchStatus = $this->taskGitStack()
       ->printOutput(false)
       ->exec('git ls-remote --heads git@github.com:mailpoet/mailpoet.git release')
       ->run();
-    if (strlen(trim($release_branch_status->getMessage())) > 0) {
+    if (strlen(trim($releaseBranchStatus->getMessage())) > 0) {
       $this->yell('Delete old release branch before running release.', 40, 'red');
       exit(1);
     }
     // check if local branch with name "release" exists
-    $git_status = $this->taskGitStack()
+    $gitStatus = $this->taskGitStack()
       ->printOutput(false)
       ->exec('git rev-parse --verify release')
       ->run();
-    if ($git_status->wasSuccessful()) {
+    if ($gitStatus->wasSuccessful()) {
       // delete local "release" branch
       $this->taskGitStack()
         ->printOutput(false)
@@ -840,43 +840,43 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releaseDownloadZip() {
-    $circleci_controller = $this->createCircleCiController();
-    $path = $circleci_controller->downloadLatestBuild(self::ZIP_BUILD_PATH);
+    $circleciController = $this->createCircleCiController();
+    $path = $circleciController->downloadLatestBuild(self::ZIP_BUILD_PATH);
     $this->say('Release ZIP downloaded to: ' . $path);
     $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path) / pow(1024, 2)));
   }
 
   public function releasePublishGithub($version = null) {
-    $jira_controller = $this->createJiraController();
-    $version = $jira_controller->getVersion($version);
+    $jiraController = $this->createJiraController();
+    $version = $jiraController->getVersion($version);
     $changelog = $this->getChangelogController()->get($version['name']);
 
-    $github_controller = $this->createGitHubController();
-    $github_controller->publishRelease($version['name'], $changelog[1], self::ZIP_BUILD_PATH);
+    $githubController = $this->createGitHubController();
+    $githubController->publishRelease($version['name'], $changelog[1], self::ZIP_BUILD_PATH);
     $this->say("Release '$version[name]' was published to GitHub.");
   }
 
   public function releasePublishJira($version = null) {
     $version = $this->releaseVersionGetNext($version);
-    $jira_controller = $this->createJiraController();
-    $jira_version = $jira_controller->releaseVersion($version);
+    $jiraController = $this->createJiraController();
+    $jiraVersion = $jiraController->releaseVersion($version);
     $this->say("JIRA version '$jira_version[name]' was released.");
   }
 
   public function releasePublishSlack($version = null) {
-    $jira_controller = $this->createJiraController();
-    $version = $jira_controller->getVersion($version);
+    $jiraController = $this->createJiraController();
+    $version = $jiraController->getVersion($version);
     $changelog = $this->getChangelogController()->get($version['name']);
 
-    $slack_notifier = $this->createSlackNotifier();
-    $slack_notifier->notify($version['name'], $changelog[1], $version['id']);
+    $slackNotifier = $this->createSlackNotifier();
+    $slackNotifier->notify($version['name'], $changelog[1], $version['id']);
     $this->say("Release '$version[name]' info was published on Slack.");
   }
 
-  public function generateData($generator_name) {
+  public function generateData($generatorName) {
     require_once __DIR__ . '/tests/DataGenerator/_bootstrap.php';
     $generator = new \MailPoet\Test\DataGenerator\DataGenerator(new \Codeception\Lib\Console\Output([]));
-    $generator->run($generator_name);
+    $generator->run($generatorName);
   }
 
   protected function rsearch($folder, $extensions = []) {
@@ -976,27 +976,27 @@ class RoboFile extends \Robo\Tasks {
   }
 
   private function execWithXDebug($command) {
-    $php_config = new \Composer\XdebugHandler\PhpConfig();
-    $php_config->useOriginal();
+    $phpConfig = new \Composer\XdebugHandler\PhpConfig();
+    $phpConfig->useOriginal();
 
     // exec command in subprocess with original settings
     passthru($command, $exitCode);
 
-    $php_config->usePersistent();
+    $phpConfig->usePersistent();
     return $exitCode;
   }
 
   private function createDoctrineEntityManager() {
     define('ABSPATH', getenv('WP_ROOT') . '/');
-    if (\MailPoet\Config\Env::$db_prefix === null) {
-      \MailPoet\Config\Env::$db_prefix = ''; // ensure some prefix is set
+    if (\MailPoet\Config\Env::$dbPrefix === null) {
+      \MailPoet\Config\Env::$dbPrefix = ''; // ensure some prefix is set
     }
-    $annotation_reader_provider = new \MailPoet\Doctrine\Annotations\AnnotationReaderProvider();
-    $configuration = (new \MailPoet\Doctrine\ConfigurationFactory(true, $annotation_reader_provider))->createConfiguration();
-    $platform_class = \MailPoet\Doctrine\ConnectionFactory::PLATFORM_CLASS;
+    $annotationReaderProvider = new \MailPoet\Doctrine\Annotations\AnnotationReaderProvider();
+    $configuration = (new \MailPoet\Doctrine\ConfigurationFactory(true, $annotationReaderProvider))->createConfiguration();
+    $platformClass = \MailPoet\Doctrine\ConnectionFactory::PLATFORM_CLASS;
     return \MailPoetVendor\Doctrine\ORM\EntityManager::create([
       'driver' => \MailPoet\Doctrine\ConnectionFactory::DRIVER,
-      'platform' => new $platform_class,
+      'platform' => new $platformClass,
     ], $configuration);
   }
 }

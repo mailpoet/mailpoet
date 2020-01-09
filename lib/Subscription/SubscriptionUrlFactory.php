@@ -24,24 +24,24 @@ class SubscriptionUrlFactory {
   /** @var LinkTokens */
   private $link_tokens;
 
-  public function __construct(WPFunctions $wp, SettingsController $settings, LinkTokens $link_tokens) {
+  public function __construct(WPFunctions $wp, SettingsController $settings, LinkTokens $linkTokens) {
     $this->wp = $wp;
     $this->settings = $settings;
-    $this->link_tokens = $link_tokens;
+    $this->linkTokens = $linkTokens;
   }
 
-  public function getCaptchaUrl($session_id) {
+  public function getCaptchaUrl($sessionId) {
     $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
-    return $this->getSubscriptionUrl($post, 'captcha', null, ['captcha_session_id' => $session_id]);
+    return $this->getSubscriptionUrl($post, 'captcha', null, ['captcha_session_id' => $sessionId]);
   }
 
-  public function getCaptchaImageUrl($width, $height, $session_id) {
+  public function getCaptchaImageUrl($width, $height, $sessionId) {
     $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
     return $this->getSubscriptionUrl(
       $post,
       'captchaImage',
       null,
-      ['width' => $width, 'height' => $height, 'captcha_session_id' => $session_id]
+      ['width' => $width, 'height' => $height, 'captcha_session_id' => $sessionId]
     );
   }
 
@@ -71,7 +71,7 @@ class SubscriptionUrlFactory {
     $url = $this->wp->getPermalink($post);
     if ($subscriber !== null) {
       $data = [
-        'token' => $this->link_tokens->getToken($subscriber),
+        'token' => $this->linkTokens->getToken($subscriber),
         'email' => $subscriber->email,
       ];
     } elseif (is_null($data)) {
@@ -90,8 +90,8 @@ class SubscriptionUrlFactory {
     // add parameters
     $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
 
-    $url_params = parse_url($url);
-    if (empty($url_params['scheme'])) {
+    $urlParams = parse_url($url);
+    if (empty($urlParams['scheme'])) {
       $url = $this->wp->getBloginfo('url') . $url;
     }
 
@@ -110,9 +110,9 @@ class SubscriptionUrlFactory {
 
   private function getPost($post = null) {
     if ($post) {
-      $post_object = $this->wp->getPost($post);
-      if ($post_object) {
-        return $post_object;
+      $postObject = $this->wp->getPost($post);
+      if ($postObject) {
+        return $postObject;
       }
     }
     // Resort to a default MailPoet page if no page is selected

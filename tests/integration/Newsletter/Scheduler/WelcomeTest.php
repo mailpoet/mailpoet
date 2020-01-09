@@ -22,7 +22,7 @@ class WelcomeTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->welcome_scheduler = new WelcomeScheduler;
+    $this->welcomeScheduler = new WelcomeScheduler;
   }
 
   public function testItDoesNotCreateDuplicateWelcomeNotificationSendingTasks() {
@@ -31,18 +31,18 @@ class WelcomeTest extends \MailPoetTest {
       'afterTimeNumber' => 2,
       'afterTimeType' => 'hours',
     ];
-    $existing_subscriber = 678;
-    $existing_queue = SendingTask::create();
-    $existing_queue->newsletter_id = $newsletter->id;
-    $existing_queue->setSubscribers([$existing_subscriber]);
-    $existing_queue->save();
+    $existingSubscriber = 678;
+    $existingQueue = SendingTask::create();
+    $existingQueue->newsletterId = $newsletter->id;
+    $existingQueue->setSubscribers([$existingSubscriber]);
+    $existingQueue->save();
 
     // queue is not scheduled
-    $this->welcome_scheduler->createWelcomeNotificationSendingTask($newsletter, $existing_subscriber);
+    $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $existingSubscriber);
     expect(SendingQueue::findMany())->count(1);
 
     // queue is not scheduled
-    $this->welcome_scheduler->createWelcomeNotificationSendingTask($newsletter, 1);
+    $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, 1);
     expect(SendingQueue::findMany())->count(2);
   }
 
@@ -54,15 +54,15 @@ class WelcomeTest extends \MailPoetTest {
 
     // queue is scheduled delivery in 2 hours
     $newsletter->afterTimeType = 'hours';
-    $this->welcome_scheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
+    $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $subscriberId = 1);
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
-    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($current_time); // mock carbon to return current time
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    Carbon::setTestNow($currentTime); // mock carbon to return current time
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
-    expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
-      ->equals($current_time->addHours(2)->format('Y-m-d H:i'));
+    expect(Carbon::parse($queue->scheduledAt)->format('Y-m-d H:i'))
+      ->equals($currentTime->addHours(2)->format('Y-m-d H:i'));
   }
 
   public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInDays() {
@@ -73,15 +73,15 @@ class WelcomeTest extends \MailPoetTest {
 
     // queue is scheduled for delivery in 2 days
     $newsletter->afterTimeType = 'days';
-    $this->welcome_scheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
-    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($current_time); // mock carbon to return current time
+    $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $subscriberId = 1);
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    Carbon::setTestNow($currentTime); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
-    expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
-      ->equals($current_time->addDays(2)->format('Y-m-d H:i'));
+    expect(Carbon::parse($queue->scheduledAt)->format('Y-m-d H:i'))
+      ->equals($currentTime->addDays(2)->format('Y-m-d H:i'));
   }
 
   public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInWeeks() {
@@ -92,15 +92,15 @@ class WelcomeTest extends \MailPoetTest {
 
     // queue is scheduled for delivery in 2 weeks
     $newsletter->afterTimeType = 'weeks';
-    $this->welcome_scheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
-    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($current_time); // mock carbon to return current time
+    $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $subscriberId = 1);
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    Carbon::setTestNow($currentTime); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
-    expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
-      ->equals($current_time->addWeeks(2)->format('Y-m-d H:i'));
+    expect(Carbon::parse($queue->scheduledAt)->format('Y-m-d H:i'))
+      ->equals($currentTime->addWeeks(2)->format('Y-m-d H:i'));
   }
 
   public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendImmediately() {
@@ -111,21 +111,21 @@ class WelcomeTest extends \MailPoetTest {
 
     // queue is scheduled for immediate delivery
     $newsletter->afterTimeType = null;
-    $this->welcome_scheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber_id = 1);
-    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($current_time); // mock carbon to return current time
+    $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $subscriberId = 1);
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    Carbon::setTestNow($currentTime); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId(1)->findOne();
     expect($queue->id)->greaterOrEquals(1);
     expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
-    expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
-      ->equals($current_time->format('Y-m-d H:i'));
+    expect(Carbon::parse($queue->scheduledAt)->format('Y-m-d H:i'))
+      ->equals($currentTime->format('Y-m-d H:i'));
   }
 
   public function testItDoesNotSchedulesSubscriberWelcomeNotificationWhenSubscriberIsNotInSegment() {
     // do not schedule when subscriber is not in segment
     $newsletter = $this->_createNewsletter();
-    $this->welcome_scheduler->scheduleSubscriberWelcomeNotification(
-      $subscriber_id = 10,
+    $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
+      $subscriberId = 10,
       $segments = []
     );
 
@@ -148,20 +148,20 @@ class WelcomeTest extends \MailPoetTest {
     );
 
     // queue is created and scheduled for delivery one day later
-    $result = $this->welcome_scheduler->scheduleSubscriberWelcomeNotification(
-      $subscriber_id = 10,
+    $result = $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
+      $subscriberId = 10,
       $segments = [
         3,
         2,
         1,
       ]
     );
-    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($current_time); // mock carbon to return current time
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    Carbon::setTestNow($currentTime); // mock carbon to return current time
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
-    expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
-      ->equals($current_time->addDay()->format('Y-m-d H:i'));
+    expect(Carbon::parse($queue->scheduledAt)->format('Y-m-d H:i'))
+      ->equals($currentTime->addDay()->format('Y-m-d H:i'));
     expect($result[0]->id())->equals($queue->id());
   }
 
@@ -169,15 +169,15 @@ class WelcomeTest extends \MailPoetTest {
   public function itDoesNotScheduleAnythingWhenNewsletterDoesNotExist() {
 
     // subscriber welcome notification is not scheduled
-    $result = $this->welcome_scheduler->scheduleSubscriberWelcomeNotification(
-      $subscriber_id = 10,
+    $result = $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
+      $subscriberId = 10,
       $segments = []
     );
     expect($result)->false();
 
     // WP user welcome notification is not scheduled
-    $result = $this->welcome_scheduler->scheduleSubscriberWelcomeNotification(
-      $subscriber_id = 10,
+    $result = $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
+      $subscriberId = 10,
       $segments = []
     );
     expect($result)->false();
@@ -194,10 +194,10 @@ class WelcomeTest extends \MailPoetTest {
         'afterTimeNumber' => 1,
       ]
     );
-    $this->welcome_scheduler->scheduleWPUserWelcomeNotification(
-      $subscriber_id = 10,
-      $wp_user = ['roles' => ['editor']],
-      $old_user_data = ['roles' => ['editor']]
+    $this->welcomeScheduler->scheduleWPUserWelcomeNotification(
+      $subscriberId = 10,
+      $wpUser = ['roles' => ['editor']],
+      $oldUserData = ['roles' => ['editor']]
     );
 
     // queue is not created
@@ -217,9 +217,9 @@ class WelcomeTest extends \MailPoetTest {
         'afterTimeNumber' => 1,
       ]
     );
-    $this->welcome_scheduler->scheduleWPUserWelcomeNotification(
-      $subscriber_id = 10,
-      $wp_user = ['roles' => ['administrator']]
+    $this->welcomeScheduler->scheduleWPUserWelcomeNotification(
+      $subscriberId = 10,
+      $wpUser = ['roles' => ['administrator']]
     );
 
     // queue is not created
@@ -239,17 +239,17 @@ class WelcomeTest extends \MailPoetTest {
         'afterTimeNumber' => 1,
       ]
     );
-    $this->welcome_scheduler->scheduleWPUserWelcomeNotification(
-      $subscriber_id = 10,
-      $wp_user = ['roles' => ['administrator']]
+    $this->welcomeScheduler->scheduleWPUserWelcomeNotification(
+      $subscriberId = 10,
+      $wpUser = ['roles' => ['administrator']]
     );
-    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($current_time); // mock carbon to return current time
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    Carbon::setTestNow($currentTime); // mock carbon to return current time
     // queue is created and scheduled for delivery one day later
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
-    expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
-      ->equals($current_time->addDay()->format('Y-m-d H:i'));
+    expect(Carbon::parse($queue->scheduledAt)->format('Y-m-d H:i'))
+      ->equals($currentTime->addDay()->format('Y-m-d H:i'));
   }
 
   public function testItSchedulesWPUserWelcomeNotificationWhenUserHasAnyRole() {
@@ -263,17 +263,17 @@ class WelcomeTest extends \MailPoetTest {
         'afterTimeNumber' => 1,
       ]
     );
-    $this->welcome_scheduler->scheduleWPUserWelcomeNotification(
-      $subscriber_id = 10,
-      $wp_user = ['roles' => ['administrator']]
+    $this->welcomeScheduler->scheduleWPUserWelcomeNotification(
+      $subscriberId = 10,
+      $wpUser = ['roles' => ['administrator']]
     );
-    $current_time = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($current_time); // mock carbon to return current time
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    Carbon::setTestNow($currentTime); // mock carbon to return current time
     // queue is created and scheduled for delivery one day later
     $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->findOne();
-    expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
-      ->equals($current_time->addDay()->format('Y-m-d H:i'));
+    expect(Carbon::parse($queue->scheduledAt)->format('Y-m-d H:i'))
+      ->equals($currentTime->addDay()->format('Y-m-d H:i'));
   }
 
   public function _createNewsletter(
@@ -287,23 +287,23 @@ class WelcomeTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  public function _createNewsletterOptions($newsletter_id, $options) {
+  public function _createNewsletterOptions($newsletterId, $options) {
     foreach ($options as $option => $value) {
-      $newsletter_option_field = NewsletterOptionField::where('name', $option)->findOne();
-      if (!$newsletter_option_field) {
-        $newsletter_option_field = NewsletterOptionField::create();
-        $newsletter_option_field->name = $option;
-        $newsletter_option_field->newsletter_type = Newsletter::TYPE_WELCOME;
-        $newsletter_option_field->save();
-        expect($newsletter_option_field->getErrors())->false();
+      $newsletterOptionField = NewsletterOptionField::where('name', $option)->findOne();
+      if (!$newsletterOptionField) {
+        $newsletterOptionField = NewsletterOptionField::create();
+        $newsletterOptionField->name = $option;
+        $newsletterOptionField->newsletterType = Newsletter::TYPE_WELCOME;
+        $newsletterOptionField->save();
+        expect($newsletterOptionField->getErrors())->false();
       }
 
-      $newsletter_option = NewsletterOption::create();
-      $newsletter_option->option_field_id = (int)$newsletter_option_field->id;
-      $newsletter_option->newsletter_id = $newsletter_id;
-      $newsletter_option->value = $value;
-      $newsletter_option->save();
-      expect($newsletter_option->getErrors())->false();
+      $newsletterOption = NewsletterOption::create();
+      $newsletterOption->optionFieldId = (int)$newsletterOptionField->id;
+      $newsletterOption->newsletterId = $newsletterId;
+      $newsletterOption->value = $value;
+      $newsletterOption->save();
+      expect($newsletterOption->getErrors())->false();
     }
   }
 

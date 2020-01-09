@@ -31,8 +31,8 @@ class NewsletterLink {
    * @param string $created_at in format Y-m-d H:i:s
    * @return NewsletterLink
    */
-  public function withCreatedAt($created_at) {
-    $this->data['created_at'] = $created_at;
+  public function withCreatedAt($createdAt) {
+    $this->data['created_at'] = $createdAt;
     return $this;
   }
 

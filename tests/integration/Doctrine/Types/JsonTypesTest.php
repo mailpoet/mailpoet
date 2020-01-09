@@ -35,8 +35,8 @@ class JsonTypesTest extends \MailPoetTest {
 
   public function _before() {
     $this->wp = new WPFunctions();
-    $this->entity_manager = $this->createEntityManager();
-    $this->table_name = $this->entity_manager->getClassMetadata(JsonEntity::class)->getTableName();
+    $this->entityManager = $this->createEntityManager();
+    $this->tableName = $this->entityManager->getClassMetadata(JsonEntity::class)->getTableName();
     $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
     $this->connection->executeUpdate("
       CREATE TABLE $this->table_name (
@@ -49,14 +49,14 @@ class JsonTypesTest extends \MailPoetTest {
 
   public function testItSavesJsonData() {
     $entity = new JsonEntity();
-    $entity->setJsonData($this->test_data);
-    $entity->setJsonOrSerializedData($this->test_data);
-    $this->entity_manager->persist($entity);
-    $this->entity_manager->flush();
+    $entity->setJsonData($this->testData);
+    $entity->setJsonOrSerializedData($this->testData);
+    $this->entityManager->persist($entity);
+    $this->entityManager->flush();
 
-    $saved_data = $this->connection->executeQuery("SELECT * FROM $this->table_name")->fetch();
-    expect($saved_data['json_data'])->same(json_encode($this->test_data));
-    expect($saved_data['json_or_serialized_data'])->same(json_encode($this->test_data));
+    $savedData = $this->connection->executeQuery("SELECT * FROM $this->table_name")->fetch();
+    expect($savedData['json_data'])->same(json_encode($this->testData));
+    expect($savedData['json_or_serialized_data'])->same(json_encode($this->testData));
   }
 
   public function testItLoadsJsonData() {
@@ -64,14 +64,14 @@ class JsonTypesTest extends \MailPoetTest {
       "INSERT INTO $this->table_name (id, json_data, json_or_serialized_data) VALUES (?, ?, ?)",
       [
         1,
-        json_encode($this->test_data),
-        json_encode($this->test_data),
+        json_encode($this->testData),
+        json_encode($this->testData),
       ]
     );
 
-    $entity = $this->entity_manager->find(JsonEntity::class, 1);
-    expect($entity->getJsonData())->same($this->test_data);
-    expect($entity->getJsonOrSerializedData())->same($this->test_data);
+    $entity = $this->entityManager->find(JsonEntity::class, 1);
+    expect($entity->getJsonData())->same($this->testData);
+    expect($entity->getJsonOrSerializedData())->same($this->testData);
   }
 
   public function testItLoadsSerializedData() {
@@ -79,25 +79,25 @@ class JsonTypesTest extends \MailPoetTest {
       "INSERT INTO $this->table_name (id, json_or_serialized_data) VALUES (?, ?)",
       [
         1,
-        serialize($this->test_data),
+        serialize($this->testData),
       ]
     );
 
-    $entity = $this->entity_manager->find(JsonEntity::class, 1);
+    $entity = $this->entityManager->find(JsonEntity::class, 1);
     expect($entity->getJsonData())->null();
-    expect($entity->getJsonOrSerializedData())->same($this->test_data);
+    expect($entity->getJsonOrSerializedData())->same($this->testData);
   }
 
   public function testItSavesNullData() {
     $entity = new JsonEntity();
     $entity->setJsonData(null);
     $entity->setJsonOrSerializedData(null);
-    $this->entity_manager->persist($entity);
-    $this->entity_manager->flush();
+    $this->entityManager->persist($entity);
+    $this->entityManager->flush();
 
-    $saved_data = $this->connection->executeQuery("SELECT * FROM $this->table_name")->fetch();
-    expect($saved_data['json_data'])->null();
-    expect($saved_data['json_or_serialized_data'])->null();
+    $savedData = $this->connection->executeQuery("SELECT * FROM $this->table_name")->fetch();
+    expect($savedData['json_data'])->null();
+    expect($savedData['json_or_serialized_data'])->null();
   }
 
   public function testItLoadsNullData() {
@@ -110,7 +110,7 @@ class JsonTypesTest extends \MailPoetTest {
       ]
     );
 
-    $entity = $this->entity_manager->find(JsonEntity::class, 1);
+    $entity = $this->entityManager->find(JsonEntity::class, 1);
     expect($entity->getJsonData())->null();
     expect($entity->getJsonOrSerializedData())->null();
   }
@@ -125,7 +125,7 @@ class JsonTypesTest extends \MailPoetTest {
       ]
     );
 
-    $entity = $this->entity_manager->find(JsonEntity::class, 1);
+    $entity = $this->entityManager->find(JsonEntity::class, 1);
     expect($entity->getJsonData())->null();
     expect($entity->getJsonOrSerializedData())->null();
   }
@@ -133,11 +133,11 @@ class JsonTypesTest extends \MailPoetTest {
   public function testItDoesNotSaveInvalidData() {
     $entity = new JsonEntity();
     $entity->setJsonData(["\xB1\x31"]); // invalid unicode sequence
-    $this->entity_manager->persist($entity);
+    $this->entityManager->persist($entity);
 
     $exception = null;
     try {
-      $this->entity_manager->flush();
+      $this->entityManager->flush();
     } catch (Exception $e) {
       $exception = $e;
     }
@@ -155,7 +155,7 @@ class JsonTypesTest extends \MailPoetTest {
 
     $exception = null;
     try {
-      $this->entity_manager->find(JsonEntity::class, 1);
+      $this->entityManager->find(JsonEntity::class, 1);
     } catch (Exception $e) {
       $exception = $e;
     }
@@ -168,18 +168,18 @@ class JsonTypesTest extends \MailPoetTest {
   }
 
   private function createEntityManager() {
-    $annotation_reader_provider = new AnnotationReaderProvider();
-    $configuration_factory = new ConfigurationFactory(false, $annotation_reader_provider);
-    $configuration = $configuration_factory->createConfiguration();
+    $annotationReaderProvider = new AnnotationReaderProvider();
+    $configurationFactory = new ConfigurationFactory(false, $annotationReaderProvider);
+    $configuration = $configurationFactory->createConfiguration();
 
-    $metadata_driver = $configuration->newDefaultAnnotationDriver([__DIR__], false);
-    $configuration->setMetadataDriverImpl($metadata_driver);
+    $metadataDriver = $configuration->newDefaultAnnotationDriver([__DIR__], false);
+    $configuration->setMetadataDriverImpl($metadataDriver);
     $configuration->setMetadataCacheImpl(new ArrayCache());
 
-    $validator_factory = new ValidatorFactory($annotation_reader_provider);
-    $timestamp_listener = new TimestampListener($this->wp);
-    $validation_listener = new ValidationListener($validator_factory->createValidator());
-    $entity_manager_factory = new EntityManagerFactory($this->connection, $configuration, $timestamp_listener, $validation_listener);
-    return $entity_manager_factory->createEntityManager();
+    $validatorFactory = new ValidatorFactory($annotationReaderProvider);
+    $timestampListener = new TimestampListener($this->wp);
+    $validationListener = new ValidationListener($validatorFactory->createValidator());
+    $entityManagerFactory = new EntityManagerFactory($this->connection, $configuration, $timestampListener, $validationListener);
+    return $entityManagerFactory->createEntityManager();
   }
 }

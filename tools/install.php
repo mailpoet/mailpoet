@@ -7,25 +7,25 @@ $tools = [
 ];
 
 // ensure installation in dev-mode only
-$is_dev_mode = (bool)getenv('COMPOSER_DEV_MODE');
-if (!$is_dev_mode) {
+$isDevMode = (bool)getenv('COMPOSER_DEV_MODE');
+if (!$isDevMode) {
   fwrite(STDERR, "Skipping installing dev tools in non-dev mode.\n");
   return;
 }
 
 // prepare vendor dir
-$vendor_dir = __DIR__ . '/vendor';
-if (!file_exists($vendor_dir)) {
-  mkdir($vendor_dir);
+$vendorDir = __DIR__ . '/vendor';
+if (!file_exists($vendorDir)) {
+  mkdir($vendorDir);
 }
 
 // download all tools
 foreach ($tools as $url => $path) {
-  $phar_path = "$vendor_dir/$path";
-  $phar_info_path = "$phar_path.info";
+  $pharPath = "$vendor_dir/$path";
+  $pharInfoPath = "$phar_path.info";
 
   fwrite(STDERR, "Downloading '$url'...");
-  if (file_exists($phar_path) && file_exists($phar_info_path) && file_get_contents($phar_info_path) === $url) {
+  if (file_exists($pharPath) && file_exists($pharInfoPath) && file_get_contents($pharInfoPath) === $url) {
     fwrite(STDERR, " skipped (already exists).\n");
     continue;
   }
@@ -34,8 +34,8 @@ foreach ($tools as $url => $path) {
   if ($resource === false) {
     throw new \RuntimeException("Could not connect to '$url'");
   }
-  file_put_contents($phar_path, $resource);
-  file_put_contents($phar_info_path, $url);
-  chmod($phar_path, 0755);
+  file_put_contents($pharPath, $resource);
+  file_put_contents($pharInfoPath, $url);
+  chmod($pharPath, 0755);
   fwrite(STDERR, " done.\n");
 }

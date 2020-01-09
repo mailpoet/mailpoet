@@ -25,8 +25,8 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
 
   public function testItCanBeCreated() {
     $subscriberCustomField = SubscriberCustomField::create();
-    $subscriberCustomField->custom_field_id = $this->data[0]['custom_field_id'];
-    $subscriberCustomField->subscriber_id = $this->data[0]['subscriber_id'];
+    $subscriberCustomField->customFieldId = $this->data[0]['custom_field_id'];
+    $subscriberCustomField->subscriberId = $this->data[0]['subscriber_id'];
     $subscriberCustomField->value = $this->data[0]['value'];
     $subscriberCustomField->save();
     expect($subscriberCustomField->id())->greaterOrEquals(1);
@@ -45,10 +45,10 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
   public function testItCanUpdateMultipleRecords() {
     $data = array_map('array_values', $this->data);
     SubscriberCustomField::createMultiple($data);
-    $updated_data = $this->data;
-    $updated_data[0]['value'] = 'Updated';
-    $updated_data = array_map('array_values', $updated_data);
-    SubscriberCustomField::updateMultiple($updated_data);
+    $updatedData = $this->data;
+    $updatedData[0]['value'] = 'Updated';
+    $updatedData = array_map('array_values', $updatedData);
+    SubscriberCustomField::updateMultiple($updatedData);
     $records = SubscriberCustomField::findArray();
     expect($records[0]['value'])->equals('Updated');
     expect($records[1]['value'])->equals('Test 2');

@@ -24,25 +24,25 @@ class Beacon {
 
   public function getData() {
     global $wpdb;
-    $db_version = $wpdb->get_var('SELECT @@VERSION');
+    $dbVersion = $wpdb->get_var('SELECT @@VERSION');
     $mta = $this->settings->get('mta');
-    $current_theme = WPFunctions::get()->wpGetTheme();
-    $current_user = WPFunctions::get()->wpGetCurrentUser();
+    $currentTheme = WPFunctions::get()->wpGetTheme();
+    $currentUser = WPFunctions::get()->wpGetCurrentUser();
     $sender = $this->settings->get('sender');
-    $premium_key = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $this->settings->get(Bridge::API_KEY_SETTING_NAME);
-    $cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
-    $cron_ping_url = $cron_helper->getCronUrl(
+    $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $this->settings->get(Bridge::API_KEY_SETTING_NAME);
+    $cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $cronPingUrl = $cronHelper->getCronUrl(
       CronDaemon::ACTION_PING
     );
     return [
-      'name' => $current_user->display_name,
+      'name' => $currentUser->displayName,
       'email' => $sender['address'],
       'PHP version' => PHP_VERSION,
       'MailPoet Free version' => MAILPOET_VERSION,
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
-      'MailPoet Premium/MSS key' => $premium_key,
+      'MailPoet Premium/MSS key' => $premiumKey,
       'WordPress version' => $this->wp->getBloginfo('version'),
-      'Database version' => $db_version,
+      'Database version' => $dbVersion,
       'Web server' => (!empty($_SERVER["SERVER_SOFTWARE"])) ? $_SERVER["SERVER_SOFTWARE"] : 'N/A',
       'Server OS' => (function_exists('php_uname')) ? utf8_encode(php_uname()) : 'N/A',
       'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,
@@ -54,8 +54,8 @@ class Beacon {
       'PHP post_max_size' => ini_get('post_max_size'),
       'WordPress language' => $this->wp->getLocale(),
       'Multisite environment?' => (is_multisite() ? 'Yes' : 'No'),
-      'Current Theme' => $current_theme->get('Name') .
-        ' (version ' . $current_theme->get('Version') . ')',
+      'Current Theme' => $currentTheme->get('Name') .
+        ' (version ' . $currentTheme->get('Version') . ')',
       'Active Plugin names' => join(", ", $this->wp->getOption('active_plugins')),
       'Sending Method' => $mta['method'],
       'Sending Frequency' => sprintf('%d emails every %d minutes',
@@ -63,7 +63,7 @@ class Beacon {
         $mta['frequency']['interval']
       ),
       'Task Scheduler method' => $this->settings->get('cron_trigger.method'),
-      'Cron ping URL' => $cron_ping_url,
+      'Cron ping URL' => $cronPingUrl,
       'Default FROM address' => $this->settings->get('sender.address'),
       'Default Reply-To address' => $this->settings->get('reply_to.address'),
       'Bounce Email Address' => $this->settings->get('bounce.address'),

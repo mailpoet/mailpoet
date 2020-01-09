@@ -23,16 +23,16 @@ class ShortcodesHelperTest extends \MailPoetTest {
   public function testItGetsCustomShortShortcodes() {
     $shortcodes = ShortcodesHelper::getShortcodes();
     expect(count($shortcodes['Subscriber']))->equals(5);
-    $custom_field = CustomField::create();
-    $custom_field->name = 'name';
-    $custom_field->type = 'type';
-    $custom_field->save();
+    $customField = CustomField::create();
+    $customField->name = 'name';
+    $customField->type = 'type';
+    $customField->save();
     $shortcodes = ShortcodesHelper::getShortcodes();
     expect(count($shortcodes['Subscriber']))->equals(6);
-    $custom_subscriber_shortcode = end($shortcodes['Subscriber']);
-    expect($custom_subscriber_shortcode['text'])->equals($custom_field->name);
-    expect($custom_subscriber_shortcode['shortcode'])
-      ->equals('[subscriber:cf_' . $custom_field->id . ']');
+    $customSubscriberShortcode = end($shortcodes['Subscriber']);
+    expect($customSubscriberShortcode['text'])->equals($customField->name);
+    expect($customSubscriberShortcode['shortcode'])
+      ->equals('[subscriber:cf_' . $customField->id . ']');
   }
 
   public function _after() {

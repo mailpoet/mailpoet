@@ -12,37 +12,37 @@ class CaptchaSessionTest extends \MailPoetTest {
   private $captcha_session;
 
   public function _before() {
-    $this->captcha_session = new CaptchaSession(new WPFunctions);
-    $this->captcha_session->init(self::SESSION_ID);
+    $this->captchaSession = new CaptchaSession(new WPFunctions);
+    $this->captchaSession->init(self::SESSION_ID);
   }
 
   public function testItCanStoreAndRetrieveFormData() {
-    $form_data = ['email' => 'email@example.com'];
-    $this->captcha_session->setFormData($form_data);
-    expect($this->captcha_session->getFormData())->equals($form_data);
+    $formData = ['email' => 'email@example.com'];
+    $this->captchaSession->setFormData($formData);
+    expect($this->captchaSession->getFormData())->equals($formData);
   }
 
   public function testItCanStoreAndRetrieveCaptchaHash() {
     $hash = '1234';
-    $this->captcha_session->setCaptchaHash($hash);
-    expect($this->captcha_session->getCaptchaHash())->equals($hash);
+    $this->captchaSession->setCaptchaHash($hash);
+    expect($this->captchaSession->getCaptchaHash())->equals($hash);
   }
 
   public function testItCanResetSessionData() {
-    $this->captcha_session->setFormData(['email' => 'email@example.com']);
-    $this->captcha_session->setCaptchaHash('hash123');
-    $this->captcha_session->reset();
-    expect($this->captcha_session->getFormData())->false();
-    expect($this->captcha_session->getCaptchaHash())->false();
+    $this->captchaSession->setFormData(['email' => 'email@example.com']);
+    $this->captchaSession->setCaptchaHash('hash123');
+    $this->captchaSession->reset();
+    expect($this->captchaSession->getFormData())->false();
+    expect($this->captchaSession->getCaptchaHash())->false();
   }
 
   public function testItAssociatesDataWithSession() {
     $hash = '1234';
-    $this->captcha_session->setCaptchaHash($hash);
-    expect($this->captcha_session->getCaptchaHash())->equals($hash);
-    $this->captcha_session->init();
-    expect($this->captcha_session->getCaptchaHash())->false();
-    $this->captcha_session->init(self::SESSION_ID);
-    expect($this->captcha_session->getCaptchaHash())->equals($hash);
+    $this->captchaSession->setCaptchaHash($hash);
+    expect($this->captchaSession->getCaptchaHash())->equals($hash);
+    $this->captchaSession->init();
+    expect($this->captchaSession->getCaptchaHash())->false();
+    $this->captchaSession->init(self::SESSION_ID);
+    expect($this->captchaSession->getCaptchaHash())->equals($hash);
   }
 }

@@ -9,20 +9,20 @@ class MetaInformationManager {
   public function appendMetaInformation($content, $post, $args) {
     // Append author and categories above and below contents
     foreach (['above', 'below'] as $position) {
-      $position_field = $position . 'Text';
+      $positionField = $position . 'Text';
       $text = [];
 
-      if (isset($args['showAuthor']) && $args['showAuthor'] === $position_field) {
+      if (isset($args['showAuthor']) && $args['showAuthor'] === $positionField) {
         $text[] = self::getPostAuthor(
-          $post->post_author,
+          $post->postAuthor,
           $args['authorPrecededBy']
         );
       }
 
-      if (isset($args['showCategories']) && $args['showCategories'] === $position_field) {
+      if (isset($args['showCategories']) && $args['showCategories'] === $positionField) {
         $text[] = self::getPostCategories(
           $post->ID,
-          $post->post_type,
+          $post->postType,
           $args['categoriesPrecededBy']
         );
       }
@@ -38,19 +38,19 @@ class MetaInformationManager {
   }
 
 
-  private static function getPostCategories($post_id, $post_type, $preceded_by) {
-    $preceded_by = trim($preceded_by);
+  private static function getPostCategories($postId, $postType, $precededBy) {
+    $precededBy = trim($precededBy);
 
     // Get categories
     $categories = WPFunctions::get()->wpGetPostTerms(
-      $post_id,
+      $postId,
       ['category'],
       ['fields' => 'names']
     );
     if (!empty($categories)) {
       // check if the user specified a label to be displayed before the author's name
-      if (strlen($preceded_by) > 0) {
-        $content = stripslashes($preceded_by) . ' ';
+      if (strlen($precededBy) > 0) {
+        $content = stripslashes($precededBy) . ' ';
       } else {
         $content = '';
       }
@@ -61,14 +61,14 @@ class MetaInformationManager {
     }
   }
 
-  private static function getPostAuthor($author_id, $preceded_by) {
-    $author_name = WPFunctions::get()->getTheAuthorMeta('display_name', (int)$author_id);
+  private static function getPostAuthor($authorId, $precededBy) {
+    $authorName = WPFunctions::get()->getTheAuthorMeta('display_name', (int)$authorId);
 
-    $preceded_by = trim($preceded_by);
-    if (strlen($preceded_by) > 0) {
-      $author_name = stripslashes($preceded_by) . ' ' . $author_name;
+    $precededBy = trim($precededBy);
+    if (strlen($precededBy) > 0) {
+      $authorName = stripslashes($precededBy) . ' ' . $authorName;
     }
 
-    return $author_name;
+    return $authorName;
   }
 }

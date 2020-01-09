@@ -19,10 +19,10 @@ class Comment {
 
   public function __construct(
     SettingsController $settings,
-    SubscriberActions $subscriber_actions
+    SubscriberActions $subscriberActions
   ) {
     $this->settings = $settings;
-    $this->subscriber_actions = $subscriber_actions;
+    $this->subscriberActions = $subscriberActions;
   }
 
   public function extendLoggedInForm($field) {
@@ -52,59 +52,59 @@ class Comment {
     </p>';
   }
 
-  public function onSubmit($comment_id, $comment_status) {
-    if ($comment_status === Comment::SPAM) return;
+  public function onSubmit($commentId, $commentStatus) {
+    if ($commentStatus === Comment::SPAM) return;
 
     if (
       isset($_POST['mailpoet']['subscribe_on_comment'])
       && (bool)$_POST['mailpoet']['subscribe_on_comment'] === true
     ) {
-      if ($comment_status === Comment::PENDING_APPROVAL) {
+      if ($commentStatus === Comment::PENDING_APPROVAL) {
         // add a comment meta to remember to subscribe the user
         // once the comment gets approved
         WPFunctions::get()->addCommentMeta(
-          $comment_id,
+          $commentId,
           'mailpoet',
           'subscribe_on_comment',
           true
         );
-      } else if ($comment_status === Comment::APPROVED) {
-        $this->subscribeAuthorOfComment($comment_id);
+      } else if ($commentStatus === Comment::APPROVED) {
+        $this->subscribeAuthorOfComment($commentId);
       }
     }
   }
 
-  public function onStatusUpdate($comment_id, $action) {
+  public function onStatusUpdate($commentId, $action) {
     if ($action === 'approve') {
       // check if the comment's author wants to subscribe
-      $do_subscribe = (
+      $doSubscribe = (
         WPFunctions::get()->getCommentMeta(
-          $comment_id,
+          $commentId,
           'mailpoet',
           true
         ) === 'subscribe_on_comment'
       );
 
-      if ($do_subscribe === true) {
-        $this->subscribeAuthorOfComment($comment_id);
+      if ($doSubscribe === true) {
+        $this->subscribeAuthorOfComment($commentId);
 
-        WPFunctions::get()->deleteCommentMeta($comment_id, 'mailpoet');
+        WPFunctions::get()->deleteCommentMeta($commentId, 'mailpoet');
       }
     }
   }
 
-  private function subscribeAuthorOfComment($comment_id) {
-    $segment_ids = $this->settings->get('subscribe.on_comment.segments', []);
+  private function subscribeAuthorOfComment($commentId) {
+    $segmentIds = $this->settings->get('subscribe.on_comment.segments', []);
 
-    if (!empty($segment_ids)) {
-      $comment = WPFunctions::get()->getComment($comment_id);
+    if (!empty($segmentIds)) {
+      $comment = WPFunctions::get()->getComment($commentId);
 
-      $result = $this->subscriber_actions->subscribe(
+      $result = $this->subscriberActions->subscribe(
         [
-          'email' => $comment->comment_author_email,
-          'first_name' => $comment->comment_author,
+          'email' => $comment->commentAuthorEmail,
+          'first_name' => $comment->commentAuthor,
         ],
-        $segment_ids
+        $segmentIds
       );
     }
   }

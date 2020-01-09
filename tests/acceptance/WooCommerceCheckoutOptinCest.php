@@ -13,40 +13,40 @@ class WooCommerceCheckoutOptinCest {
   /** @var WooCommerceProduct */
   private $product_factory;
 
-  public function _before(\AcceptanceTester $I) {
-    $I->activateWooCommerce();
-    $this->product_factory = new WooCommerceProduct($I);
-    $this->settings_factory = new Settings();
-    $this->settings_factory->withWooCommerceListImportPageDisplayed(true);
-    $this->settings_factory->withCookieRevenueTrackingDisabled();
-    $this->settings_factory->withWooCommerceCheckoutOptinEnabled();
+  public function _before(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
+    $this->productFactory = new WooCommerceProduct($i);
+    $this->settingsFactory = new Settings();
+    $this->settingsFactory->withWooCommerceListImportPageDisplayed(true);
+    $this->settingsFactory->withCookieRevenueTrackingDisabled();
+    $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
   }
 
-  public function checkoutWithOptinCheckboxChecked(\AcceptanceTester $I) {
-    $customer_email = 'wc_customer_checked@example.com';
-    $product = $this->product_factory->create();
-    $I->orderProduct($product, $customer_email);
+  public function checkoutWithOptinCheckboxChecked(\AcceptanceTester $i) {
+    $customerEmail = 'wc_customer_checked@example.com';
+    $product = $this->productFactory->create();
+    $i->orderProduct($product, $customerEmail);
 
-    $I->login();
-    $I->amOnMailpoetPage('Subscribers');
-    $I->searchFor($customer_email);
-    $I->waitForListingItemsToLoad();
-    $I->waitForText($customer_email);
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->searchFor($customerEmail);
+    $i->waitForListingItemsToLoad();
+    $i->waitForText($customerEmail);
     // Customer is subscribed to the WC customers list
-    $I->see('WooCommerce Customers', 'td[data-colname="Lists"]');
+    $i->see('WooCommerce Customers', 'td[data-colname="Lists"]');
   }
 
-  public function checkoutWithOptinCheckboxUnchecked(\AcceptanceTester $I) {
-    $customer_email = 'wc_customer_unchecked@example.com';
-    $product = $this->product_factory->create();
-    $I->orderProduct($product, $customer_email, true, false);
+  public function checkoutWithOptinCheckboxUnchecked(\AcceptanceTester $i) {
+    $customerEmail = 'wc_customer_unchecked@example.com';
+    $product = $this->productFactory->create();
+    $i->orderProduct($product, $customerEmail, true, false);
 
-    $I->login();
-    $I->amOnMailpoetPage('Subscribers');
-    $I->searchFor($customer_email);
-    $I->waitForListingItemsToLoad();
-    $I->waitForText($customer_email);
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->searchFor($customerEmail);
+    $i->waitForListingItemsToLoad();
+    $i->waitForText($customerEmail);
     // Customer is unsubscribed from the WC customers list
-    $I->dontSee('WooCommerce Customers', 'td[data-colname="Lists"]');
+    $i->dontSee('WooCommerce Customers', 'td[data-colname="Lists"]');
   }
 }

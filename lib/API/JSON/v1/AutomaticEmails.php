@@ -21,10 +21,10 @@ class AutomaticEmails extends APIEndpoint {
   public function getEventOptions($data) {
     $query = (!empty($data['query'])) ? $data['query'] : null;
     $filter = (!empty($data['filter'])) ? $data['filter'] : null;
-    $email_slug = (!empty($data['email_slug'])) ? $data['email_slug'] : null;
-    $event_slug = (!empty($data['event_slug'])) ? $data['event_slug'] : null;
+    $emailSlug = (!empty($data['email_slug'])) ? $data['email_slug'] : null;
+    $eventSlug = (!empty($data['event_slug'])) ? $data['event_slug'] : null;
 
-    if (!$query || !$filter || !$email_slug || !$event_slug) {
+    if (!$query || !$filter || !$emailSlug || !$eventSlug) {
       return $this->errorResponse(
         [
           APIError::BAD_REQUEST => WPFunctions::get()->__('Improperly formatted request.', 'mailpoet'),
@@ -32,12 +32,12 @@ class AutomaticEmails extends APIEndpoint {
       );
     }
 
-    $automatic_emails = new \MailPoet\AutomaticEmails\AutomaticEmails();
-    $event = $automatic_emails->getAutomaticEmailEventBySlug($email_slug, $event_slug);
-    $event_filter = (!empty($event['options']['remoteQueryFilter'])) ? $event['options']['remoteQueryFilter'] : null;
+    $automaticEmails = new \MailPoet\AutomaticEmails\AutomaticEmails();
+    $event = $automaticEmails->getAutomaticEmailEventBySlug($emailSlug, $eventSlug);
+    $eventFilter = (!empty($event['options']['remoteQueryFilter'])) ? $event['options']['remoteQueryFilter'] : null;
 
-    return ($event_filter === $filter && WPFunctions::get()->hasFilter($event_filter)) ?
-      $this->successResponse($this->wp->applyFilters($event_filter, $query)) :
+    return ($eventFilter === $filter && WPFunctions::get()->hasFilter($eventFilter)) ?
+      $this->successResponse($this->wp->applyFilters($eventFilter, $query)) :
       $this->errorResponse(
         [
           APIError::BAD_REQUEST => WPFunctions::get()->__('Automatic email event filter does not exist.', 'mailpoet'),
@@ -46,10 +46,10 @@ class AutomaticEmails extends APIEndpoint {
   }
 
   public function getEventShortcodes($data) {
-    $email_slug = (!empty($data['email_slug'])) ? $data['email_slug'] : null;
-    $event_slug = (!empty($data['event_slug'])) ? $data['event_slug'] : null;
+    $emailSlug = (!empty($data['email_slug'])) ? $data['email_slug'] : null;
+    $eventSlug = (!empty($data['event_slug'])) ? $data['event_slug'] : null;
 
-    if (!$email_slug || !$event_slug) {
+    if (!$emailSlug || !$eventSlug) {
       return $this->errorResponse(
         [
           APIError::BAD_REQUEST => WPFunctions::get()->__('Improperly formatted request.', 'mailpoet'),
@@ -57,9 +57,9 @@ class AutomaticEmails extends APIEndpoint {
       );
     }
 
-    $automatic_emails = new \MailPoet\AutomaticEmails\AutomaticEmails();
-    $automatic_email = $automatic_emails->getAutomaticEmailBySlug($email_slug);
-    $event = $automatic_emails->getAutomaticEmailEventBySlug($email_slug, $event_slug);
+    $automaticEmails = new \MailPoet\AutomaticEmails\AutomaticEmails();
+    $automaticEmail = $automaticEmails->getAutomaticEmailBySlug($emailSlug);
+    $event = $automaticEmails->getAutomaticEmailEventBySlug($emailSlug, $eventSlug);
 
     if (!$event) {
       return $this->errorResponse(
@@ -69,12 +69,12 @@ class AutomaticEmails extends APIEndpoint {
       );
     }
 
-    $event_shortcodes = (!empty($event['shortcodes']) && is_array($event['shortcodes'])) ?
+    $eventShortcodes = (!empty($event['shortcodes']) && is_array($event['shortcodes'])) ?
       [
-        $automatic_email['title'] => $event['shortcodes'],
+        $automaticEmail['title'] => $event['shortcodes'],
       ] :
       null;
 
-    return $this->successResponse($event_shortcodes);
+    return $this->successResponse($eventShortcodes);
   }
 }

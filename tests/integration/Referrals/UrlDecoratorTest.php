@@ -17,22 +17,22 @@ class UrlDecoratorTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    $this->url_decorator = new UrlDecorator(WPFunctions::get(), $this->settings);
+    $this->urlDecorator = new UrlDecorator(WPFunctions::get(), $this->settings);
   }
 
   public function testItDoesntDoAnythingWhenNoReferralId() {
     $this->settings->set(ReferralDetector::REFERRAL_SETTING_NAME, null);
     $url = 'http://example.com';
-    expect($this->url_decorator->decorate($url))->equals($url);
+    expect($this->urlDecorator->decorate($url))->equals($url);
   }
 
   public function testItCorrectlyAddsReferralId() {
     $this->settings->set(ReferralDetector::REFERRAL_SETTING_NAME, 'abcdefgh');
-    expect($this->url_decorator->decorate('http://example.com/'))
+    expect($this->urlDecorator->decorate('http://example.com/'))
       ->equals('http://example.com/?ref=abcdefgh');
-    expect($this->url_decorator->decorate('http://example.com/?param=value'))
+    expect($this->urlDecorator->decorate('http://example.com/?param=value'))
       ->equals('http://example.com/?param=value&ref=abcdefgh');
-    expect($this->url_decorator->decorate('http://example.com/?param=value#hash/?param=val'))
+    expect($this->urlDecorator->decorate('http://example.com/?param=value#hash/?param=val'))
       ->equals('http://example.com/?param=value&ref=abcdefgh#hash/?param=val');
   }
 }

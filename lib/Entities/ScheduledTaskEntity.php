@@ -109,28 +109,28 @@ class ScheduledTaskEntity {
    * @return DateTimeInterface|null
    */
   public function getScheduledAt() {
-    return $this->scheduled_at;
+    return $this->scheduledAt;
   }
 
   /**
    * @param DateTimeInterface|null $scheduled_at
    */
-  public function setScheduledAt($scheduled_at) {
-    $this->scheduled_at = $scheduled_at;
+  public function setScheduledAt($scheduledAt) {
+    $this->scheduledAt = $scheduledAt;
   }
 
   /**
    * @return DateTimeInterface|null
    */
   public function getProcessedAt() {
-    return $this->processed_at;
+    return $this->processedAt;
   }
 
   /**
    * @param DateTimeInterface|null $processed_at
    */
-  public function setProcessedAt($processed_at) {
-    $this->processed_at = $processed_at;
+  public function setProcessedAt($processedAt) {
+    $this->processedAt = $processedAt;
   }
 
   /**

@@ -8,13 +8,13 @@ use MailPoet\WP\Posts as WPPosts;
 
 class Newsletter {
   public static function process(
-    $shortcode_details,
+    $shortcodeDetails,
     $newsletter,
     $subscriber,
     $queue,
     $content
   ) {
-    switch ($shortcode_details['action']) {
+    switch ($shortcodeDetails['action']) {
       case 'subject':
         return ($newsletter) ? $newsletter->subject : false;
 
@@ -23,17 +23,17 @@ class Newsletter {
 
       case 'post_title':
         preg_match_all('/data-post-id="(\d+)"/ism', $content, $posts);
-        $post_ids = array_unique($posts[1]);
-        $latest_post = (!empty($post_ids)) ? self::getLatestWPPost($post_ids) : false;
-        return ($latest_post) ? $latest_post['post_title'] : false;
+        $postIds = array_unique($posts[1]);
+        $latestPost = (!empty($postIds)) ? self::getLatestWPPost($postIds) : false;
+        return ($latestPost) ? $latestPost['post_title'] : false;
 
       case 'number':
         if ($newsletter->type !== NewsletterModel::TYPE_NOTIFICATION_HISTORY) return false;
-        $sent_newsletters =
-          NewsletterModel::where('parent_id', $newsletter->parent_id)
+        $sentNewsletters =
+          NewsletterModel::where('parent_id', $newsletter->parentId)
             ->where('status', NewsletterModel::STATUS_SENT)
             ->count();
-        return ++$sent_newsletters;
+        return ++$sentNewsletters;
 
       default:
         return false;
@@ -44,25 +44,25 @@ class Newsletter {
     // Queries with taxonomies are autodetected as 'is_archive=true' and 'is_home=false'
     // while queries without them end up being 'is_archive=false' and 'is_home=true'.
     // This is to fix that by always enforcing constistent behavior.
-    $query->is_archive = true;
-    $query->is_home = false;
+    $query->isArchive = true;
+    $query->isHome = false;
   }
 
-  private static function getLatestWPPost($post_ids) {
+  private static function getLatestWPPost($postIds) {
     // set low priority to execute 'ensureConstistentQueryType' before any other filter
-    $filter_priority = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
-    WPFunctions::get()->addAction('pre_get_posts', [get_called_class(), 'ensureConsistentQueryType'], $filter_priority);
+    $filterPriority = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
+    WPFunctions::get()->addAction('pre_get_posts', [get_called_class(), 'ensureConsistentQueryType'], $filterPriority);
     $posts = new \WP_Query(
       [
         'post_type' => WPPosts::getTypes(),
-        'post__in' => $post_ids,
+        'post__in' => $postIds,
         'posts_per_page' => 1,
         'ignore_sticky_posts' => true,
         'orderby' => 'post_date',
         'order' => 'DESC',
       ]
     );
-    WPFunctions::get()->removeAction('pre_get_posts', [get_called_class(), 'ensureConsistentQueryType'], $filter_priority);
+    WPFunctions::get()->removeAction('pre_get_posts', [get_called_class(), 'ensureConsistentQueryType'], $filterPriority);
     return (!empty($posts->posts[0])) ?
       $posts->posts[0]->to_array() :
       false;

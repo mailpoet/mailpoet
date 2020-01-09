@@ -12,7 +12,7 @@ class ShortcodesTest extends \MailPoetTest {
   public $WP_post;
   public function _before() {
     parent::_before();
-    $this->WP_post = wp_insert_post(
+    $this->wPPost = wp_insert_post(
       [
         'post_title' => 'Sample Post',
         'post_content' => 'contents',
@@ -31,27 +31,27 @@ class ShortcodesTest extends \MailPoetTest {
       'first_name' => 'John',
       'last_name' => 'Doe',
     ]);
-    $rendered_body = '[subscriber:firstname] [subscriber:lastname]';
-    $result = Shortcodes::process($rendered_body, null, $newsletter, $subscriber, $queue);
+    $renderedBody = '[subscriber:firstname] [subscriber:lastname]';
+    $result = Shortcodes::process($renderedBody, null, $newsletter, $subscriber, $queue);
     expect($result)->equals('John Doe');
   }
 
   public function testItCanReplaceShortcodesInOneStringUsingContentsFromAnother() {
-    $wp_post = get_post($this->WP_post);
+    $wpPost = get_post($this->wPPost);
     $content = 'Subject line with one shortcode: [newsletter:post_title]';
-    $content_source = '<a data-post-id="' . $this->WP_post . '" href="#">latest post</a>';
+    $contentSource = '<a data-post-id="' . $this->wPPost . '" href="#">latest post</a>';
 
     // [newsletter:post_title] depends on the "data-post-id" tag and the shortcode will
     // get replaced with an empty string if that tag is not found
     expect(trim(Shortcodes::process($content)))->equals('Subject line with one shortcode:');
 
     // when tag is found, the shortcode will be processed and replaced
-    expect(Shortcodes::process($content, $content_source))->equals('Subject line with one shortcode: ' . $wp_post->post_title);
+    expect(Shortcodes::process($content, $contentSource))->equals('Subject line with one shortcode: ' . $wpPost->postTitle);
   }
 
   public function _after() {
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    wp_delete_post($this->WP_post, true);
+    wp_delete_post($this->wPPost, true);
   }
 }

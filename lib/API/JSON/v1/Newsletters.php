@@ -81,45 +81,45 @@ class Newsletters extends APIEndpoint {
   private $subscribers_feature;
 
   public function __construct(
-    Listing\BulkActionController $bulk_action,
-    Listing\Handler $listing_handler,
+    Listing\BulkActionController $bulkAction,
+    Listing\Handler $listingHandler,
     WPFunctions $wp,
-    WCHelper $woocommerce_helper,
+    WCHelper $woocommerceHelper,
     SettingsController $settings,
-    CronHelper $cron_helper,
-    AuthorizedEmailsController $authorized_emails_controller,
-    NewslettersRepository $newsletters_repository,
-    NewslettersResponseBuilder $newsletters_response_builder,
-    PostNotificationScheduler $post_notification_scheduler,
+    CronHelper $cronHelper,
+    AuthorizedEmailsController $authorizedEmailsController,
+    NewslettersRepository $newslettersRepository,
+    NewslettersResponseBuilder $newslettersResponseBuilder,
+    PostNotificationScheduler $postNotificationScheduler,
     MailerFactory $mailer,
     MetaInfo $mailerMetaInfo,
     Emoji $emoji,
-    SubscribersFeature $subscribers_feature
+    SubscribersFeature $subscribersFeature
   ) {
-    $this->bulk_action = $bulk_action;
-    $this->listing_handler = $listing_handler;
+    $this->bulkAction = $bulkAction;
+    $this->listingHandler = $listingHandler;
     $this->wp = $wp;
-    $this->woocommerce_helper = $woocommerce_helper;
+    $this->woocommerceHelper = $woocommerceHelper;
     $this->settings = $settings;
-    $this->cron_helper = $cron_helper;
-    $this->authorized_emails_controller = $authorized_emails_controller;
-    $this->newsletters_repository = $newsletters_repository;
-    $this->newsletters_response_builder = $newsletters_response_builder;
-    $this->post_notification_scheduler = $post_notification_scheduler;
+    $this->cronHelper = $cronHelper;
+    $this->authorizedEmailsController = $authorizedEmailsController;
+    $this->newslettersRepository = $newslettersRepository;
+    $this->newslettersResponseBuilder = $newslettersResponseBuilder;
+    $this->postNotificationScheduler = $postNotificationScheduler;
     $this->mailer = $mailer;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->emoji = $emoji;
-    $this->subscribers_feature = $subscribers_feature;
+    $this->subscribersFeature = $subscribersFeature;
   }
 
   public function get($data = []) {
     $newsletter = isset($data['id'])
-      ? $this->newsletters_repository->findOneById((int)$data['id'])
+      ? $this->newslettersRepository->findOneById((int)$data['id'])
       : null;
 
     if ($newsletter) {
-      $response = $this->newsletters_response_builder->build($newsletter);
-      $preview_url = NewsletterUrl::getViewInBrowserUrl(
+      $response = $this->newslettersResponseBuilder->build($newsletter);
+      $previewUrl = NewsletterUrl::getViewInBrowserUrl(
         NewsletterUrl::TYPE_LISTING_EDITOR,
         (object)[
           'id' => $newsletter->getId(),
@@ -129,7 +129,7 @@ class Newsletters extends APIEndpoint {
       );
 
       $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
-      return $this->successResponse($response, ['preview_url' => $preview_url]);
+      return $this->successResponse($response, ['preview_url' => $previewUrl]);
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
@@ -146,16 +146,16 @@ class Newsletters extends APIEndpoint {
         ->withOptions()
         ->withSendingQueue()
         ->withTotalSent()
-        ->withStatistics($this->woocommerce_helper);
+        ->withStatistics($this->woocommerceHelper);
 
-      $preview_url = NewsletterUrl::getViewInBrowserUrl(
+      $previewUrl = NewsletterUrl::getViewInBrowserUrl(
         NewsletterUrl::TYPE_LISTING_EDITOR,
         $newsletter,
         Subscriber::getCurrentWPUser()
       );
 
       $newsletter = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $newsletter->asArray());
-      $newsletter['preview_url'] = $preview_url;
+      $newsletter['preview_url'] = $previewUrl;
       return $this->successResponse($newsletter);
     } else {
       return $this->errorResponse([
@@ -187,10 +187,10 @@ class Newsletters extends APIEndpoint {
       unset($data['template_id']);
     }
 
-    $old_newsletter = null;
+    $oldNewsletter = null;
     if (isset($data['id'])) {
       $fetched = Newsletter::findOne(intval($data['id']));
-      $old_newsletter = $fetched instanceof Newsletter ? $fetched : null;
+      $oldNewsletter = $fetched instanceof Newsletter ? $fetched : null;
     }
 
     if (!empty($data['body'])) {
@@ -211,8 +211,8 @@ class Newsletters extends APIEndpoint {
       foreach ($segments as $segment) {
         if (!is_array($segment)) continue;
         $relation = NewsletterSegment::create();
-        $relation->segment_id = (int)$segment['id'];
-        $relation->newsletter_id = $newsletter->id;
+        $relation->segmentId = (int)$segment['id'];
+        $relation->newsletterId = $newsletter->id;
         $relation->save();
       }
     }
@@ -226,18 +226,18 @@ class Newsletters extends APIEndpoint {
     }
 
     if (!empty($options)) {
-      $option_fields = NewsletterOptionField::where(
+      $optionFields = NewsletterOptionField::where(
         'newsletter_type',
         $newsletter->type
       )->findMany();
       // update newsletter options
-      foreach ($option_fields as $option_field) {
-        if (isset($options[$option_field->name])) {
-          $newsletter_option = NewsletterOption::createOrUpdate(
+      foreach ($optionFields as $optionField) {
+        if (isset($options[$optionField->name])) {
+          $newsletterOption = NewsletterOption::createOrUpdate(
             [
               'newsletter_id' => $newsletter->id,
-              'option_field_id' => $option_field->id,
-              'value' => $options[$option_field->name],
+              'option_field_id' => $optionField->id,
+              'value' => $options[$optionField->name],
             ]
           );
         }
@@ -248,13 +248,13 @@ class Newsletters extends APIEndpoint {
       // if this is a post notification, process newsletter options and update its schedule
       if ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         // generate the new schedule from options and get the new "next run" date
-        $newsletter->schedule = $this->post_notification_scheduler->processPostNotificationSchedule($newsletter);
-        $next_run_date = Scheduler::getNextRunDate($newsletter->schedule);
+        $newsletter->schedule = $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
+        $nextRunDate = Scheduler::getNextRunDate($newsletter->schedule);
         // find previously scheduled jobs and reschedule them using the new "next run" date
         SendingQueue::findTaskByNewsletterId($newsletter->id)
           ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
           ->findResultSet()
-          ->set('scheduled_at', $next_run_date)
+          ->set('scheduled_at', $nextRunDate)
           ->save();
       }
     }
@@ -267,23 +267,23 @@ class Newsletters extends APIEndpoint {
         $newsletter->status = Newsletter::STATUS_DRAFT;
         $newsletter->save();
       } else {
-        $queue->newsletter_rendered_body = null;
-        $queue->newsletter_rendered_subject = null;
+        $queue->newsletterRenderedBody = null;
+        $queue->newsletterRenderedSubject = null;
         $newsletterQueueTask = new NewsletterQueueTask();
         $newsletterQueueTask->preProcessNewsletter($newsletter, $queue);
       }
     }
 
     $this->wp->doAction('mailpoet_api_newsletters_save_after', $newsletter);
-    $this->authorized_emails_controller->onNewsletterUpdate($newsletter, $old_newsletter);
+    $this->authorizedEmailsController->onNewsletterUpdate($newsletter, $oldNewsletter);
 
-    $preview_url = NewsletterUrl::getViewInBrowserUrl(
+    $previewUrl = NewsletterUrl::getViewInBrowserUrl(
       NewsletterUrl::TYPE_LISTING_EDITOR,
       $newsletter,
       Subscriber::getCurrentWPUser()
     );
 
-    return $this->successResponse($newsletter->asArray(), ['preview_url' => $preview_url]);
+    return $this->successResponse($newsletter->asArray(), ['preview_url' => $previewUrl]);
   }
 
   public function setStatus($data = []) {
@@ -295,7 +295,7 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
-    if ($status === Newsletter::STATUS_ACTIVE && $this->subscribers_feature->check()) {
+    if ($status === Newsletter::STATUS_ACTIVE && $this->subscribersFeature->check()) {
       return $this->errorResponse([
         APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
       ], [], Response::STATUS_FORBIDDEN);
@@ -319,17 +319,17 @@ class Newsletters extends APIEndpoint {
 
     // if there are past due notifications, reschedule them for the next send date
     if ($newsletter->type === Newsletter::TYPE_NOTIFICATION && $status === Newsletter::STATUS_ACTIVE) {
-      $next_run_date = Scheduler::getNextRunDate($newsletter->schedule);
+      $nextRunDate = Scheduler::getNextRunDate($newsletter->schedule);
       $queue = $newsletter->queue()->findOne();
       if ($queue) {
         $queue->task()
           ->whereLte('scheduled_at', Carbon::createFromTimestamp($this->wp->currentTime('timestamp')))
           ->where('status', SendingQueue::STATUS_SCHEDULED)
           ->findResultSet()
-          ->set('scheduled_at', $next_run_date)
+          ->set('scheduled_at', $nextRunDate)
           ->save();
       }
-      $this->post_notification_scheduler->createPostNotificationSendingTask($newsletter);
+      $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
     }
 
     $newsletter = Newsletter::findOne($newsletter->id);
@@ -435,19 +435,19 @@ class Newsletters extends APIEndpoint {
       $newsletter->body = $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $newsletter->body);
       $newsletter->save();
       $subscriber = Subscriber::getCurrentWPUser();
-      $preview_url = NewsletterUrl::getViewInBrowserUrl(
+      $previewUrl = NewsletterUrl::getViewInBrowserUrl(
         NewsletterUrl::TYPE_LISTING_EDITOR,
         $newsletter,
         $subscriber
       );
       // strip protocol to avoid mix content error
-      $preview_url = preg_replace('{^https?:}i', '', $preview_url);
+      $previewUrl = preg_replace('{^https?:}i', '', $previewUrl);
 
       $newsletter = Newsletter::findOne($newsletter->id);
       if(!$newsletter instanceof Newsletter) return $this->errorResponse();
       return $this->successResponse(
         $newsletter->asArray(),
-        ['preview_url' => $preview_url]
+        ['preview_url' => $previewUrl]
       );
     } else {
       return $this->errorResponse([
@@ -468,14 +468,14 @@ class Newsletters extends APIEndpoint {
 
     if ($newsletter instanceof Newsletter) {
       $renderer = new Renderer($newsletter, $preview = true);
-      $rendered_newsletter = $renderer->render();
+      $renderedNewsletter = $renderer->render();
       $divider = '***MailPoet***';
-      $data_for_shortcodes = array_merge(
+      $dataForShortcodes = array_merge(
         [$newsletter->subject],
-        $rendered_newsletter
+        $renderedNewsletter
       );
 
-      $body = implode($divider, $data_for_shortcodes);
+      $body = implode($divider, $dataForShortcodes);
 
       $subscriber = Subscriber::getCurrentWPUser();
       $subscriber = ($subscriber) ? $subscriber : false;
@@ -484,22 +484,22 @@ class Newsletters extends APIEndpoint {
         $newsletter,
         $subscriber,
         $queue = false,
-        $wp_user_preview = true
+        $wpUserPreview = true
       );
 
       list(
-        $rendered_newsletter['subject'],
-        $rendered_newsletter['body']['html'],
-        $rendered_newsletter['body']['text']
+        $renderedNewsletter['subject'],
+        $renderedNewsletter['body']['html'],
+        $renderedNewsletter['body']['text']
         ) = explode($divider, $shortcodes->replace($body));
-      $rendered_newsletter['id'] = $newsletter->id;
+      $renderedNewsletter['id'] = $newsletter->id;
 
       try {
-        $extra_params = [
+        $extraParams = [
           'unsubscribe_url' => WPFunctions::get()->homeUrl(),
           'meta' => $this->mailerMetaInfo->getPreviewMetaInfo(),
         ];
-        $result = $this->mailer->send($rendered_newsletter, $data['subscriber'], $extra_params);
+        $result = $this->mailer->send($renderedNewsletter, $data['subscriber'], $extraParams);
 
         if ($result['response'] === false) {
           $error = sprintf(
@@ -528,23 +528,23 @@ class Newsletters extends APIEndpoint {
   }
 
   public function listing($data = []) {
-    $listing_data = $this->listing_handler->get('\MailPoet\Models\Newsletter', $data);
+    $listingData = $this->listingHandler->get('\MailPoet\Models\Newsletter', $data);
 
     $data = [];
-    foreach ($listing_data['items'] as $newsletter) {
+    foreach ($listingData['items'] as $newsletter) {
       $queue = false;
 
       if ($newsletter->type === Newsletter::TYPE_STANDARD) {
         $newsletter
           ->withSegments(true)
           ->withSendingQueue()
-          ->withStatistics($this->woocommerce_helper);
+          ->withStatistics($this->woocommerceHelper);
       } else if ($newsletter->type === Newsletter::TYPE_WELCOME || $newsletter->type === Newsletter::TYPE_AUTOMATIC) {
         $newsletter
           ->withOptions()
           ->withTotalSent()
           ->withScheduledToBeSent()
-          ->withStatistics($this->woocommerce_helper);
+          ->withStatistics($this->woocommerceHelper);
       } else if ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
           ->withOptions()
@@ -554,7 +554,7 @@ class Newsletters extends APIEndpoint {
         $newsletter
           ->withSegments(true)
           ->withSendingQueue()
-          ->withStatistics($this->woocommerce_helper);
+          ->withStatistics($this->woocommerceHelper);
       }
 
       if ($newsletter->status === Newsletter::STATUS_SENT ||
@@ -564,7 +564,7 @@ class Newsletters extends APIEndpoint {
       }
 
       // get preview url
-      $newsletter->preview_url = NewsletterUrl::getViewInBrowserUrl(
+      $newsletter->previewUrl = NewsletterUrl::getViewInBrowserUrl(
         NewsletterUrl::TYPE_LISTING_EDITOR,
         $newsletter,
         $subscriber = null,
@@ -575,19 +575,19 @@ class Newsletters extends APIEndpoint {
     }
 
     return $this->successResponse($data, [
-      'count' => $listing_data['count'],
-      'filters' => $listing_data['filters'],
-      'groups' => $listing_data['groups'],
+      'count' => $listingData['count'],
+      'filters' => $listingData['filters'],
+      'groups' => $listingData['groups'],
       'mta_log' => $this->settings->get('mta_log'),
       'mta_method' => $this->settings->get('mta.method'),
-      'cron_accessible' => $this->cron_helper->isDaemonAccessible(),
+      'cron_accessible' => $this->cronHelper->isDaemonAccessible(),
       'current_time' => $this->wp->currentTime('mysql'),
     ]);
   }
 
   public function bulkAction($data = []) {
     try {
-      $meta = $this->bulk_action->apply('\MailPoet\Models\Newsletter', $data);
+      $meta = $this->bulkAction->apply('\MailPoet\Models\Newsletter', $data);
       return $this->successResponse(null, $meta);
     } catch (\Exception $e) {
       return $this->errorResponse([
@@ -610,8 +610,8 @@ class Newsletters extends APIEndpoint {
       return $this->badRequest($errors);
     } else {
       // try to load template data
-      $template_id = (isset($data['template']) ? (int)$data['template'] : false);
-      $template = NewsletterTemplate::findOne($template_id);
+      $templateId = (isset($data['template']) ? (int)$data['template'] : false);
+      $template = NewsletterTemplate::findOne($templateId);
       if ($template instanceof NewsletterTemplate) {
         $newsletter->body = $template->body;
       } else {
@@ -625,16 +625,16 @@ class Newsletters extends APIEndpoint {
       return $this->badRequest($errors);
     } else {
       if (!empty($options)) {
-        $option_fields = NewsletterOptionField::where(
+        $optionFields = NewsletterOptionField::where(
           'newsletter_type', $newsletter->type
         )->findArray();
 
-        foreach ($option_fields as $option_field) {
-          if (isset($options[$option_field['name']])) {
+        foreach ($optionFields as $optionField) {
+          if (isset($options[$optionField['name']])) {
             $relation = NewsletterOption::create();
-            $relation->newsletter_id = $newsletter->id;
-            $relation->option_field_id = $option_field['id'];
-            $relation->value = $options[$option_field['name']];
+            $relation->newsletterId = $newsletter->id;
+            $relation->optionFieldId = $optionField['id'];
+            $relation->value = $options[$optionField['name']];
             $relation->save();
           }
         }
@@ -648,7 +648,7 @@ class Newsletters extends APIEndpoint {
         $data['type'] === Newsletter::TYPE_NOTIFICATION
       ) {
         $newsletter = Newsletter::filter('filterWithOptions', $data['type'])->findOne($newsletter->id);
-        $this->post_notification_scheduler->processPostNotificationSchedule($newsletter);
+        $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
       }
 
       $newsletter = Newsletter::findOne($newsletter->id);

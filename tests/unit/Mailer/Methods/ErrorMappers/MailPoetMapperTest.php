@@ -37,12 +37,12 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
   }
 
   public function testGetErrorNotArray() {
-    $api_result = [
+    $apiResult = [
       'code' => API::RESPONSE_CODE_NOT_ARRAY,
       'status' => API::SENDING_STATUS_SEND_ERROR,
       'message' => 'error not array',
     ];
-    $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
@@ -51,12 +51,12 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
   }
 
   public function testGetErrorBannedAccount() {
-    $api_result = [
+    $apiResult = [
       'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
       'status' => API::SENDING_STATUS_SEND_ERROR,
       'message' => 'this is a spam',
     ];
-    $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
@@ -65,12 +65,12 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
   }
 
   public function testGetErrorUnauthorizedEmail() {
-    $api_result = [
+    $apiResult = [
       'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
       'status' => API::SENDING_STATUS_SEND_ERROR,
       'message' => MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED,
     ];
-    $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_AUTHORIZATION);
@@ -79,12 +79,12 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
   }
 
   public function testGetErrorPayloadTooBig() {
-    $api_result = [
+    $apiResult = [
       'code' => API::RESPONSE_CODE_PAYLOAD_TOO_BIG,
       'status' => API::SENDING_STATUS_SEND_ERROR,
       'message' => 'error too big',
     ];
-    $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
@@ -92,12 +92,12 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
   }
 
   public function testGetPayloadError() {
-    $api_result = [
+    $apiResult = [
       'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
       'status' => API::SENDING_STATUS_SEND_ERROR,
       'message' => 'Api Error',
     ];
-    $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
@@ -105,30 +105,30 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
   }
 
   public function testGetPayloadErrorWithErrorMessage() {
-    $api_result = [
+    $apiResult = [
       'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
       'status' => API::SENDING_STATUS_SEND_ERROR,
       'message' => '[{"index":0,"errors":{"subject":"subject is missing"}},{"index":1,"errors":{"subject":"subject is missing"}}]',
     ];
-    $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
-    $subscriber_errors = $error->getSubscriberErrors();
-    expect(count($subscriber_errors))->equals(2);
-    expect($subscriber_errors[0]->getEmail())->equals('a@example.com');
-    expect($subscriber_errors[0]->getMessage())->equals('subject is missing');
-    expect($subscriber_errors[1]->getEmail())->equals('c d <b@example.com>');
-    expect($subscriber_errors[1]->getMessage())->equals('subject is missing');
+    $subscriberErrors = $error->getSubscriberErrors();
+    expect(count($subscriberErrors))->equals(2);
+    expect($subscriberErrors[0]->getEmail())->equals('a@example.com');
+    expect($subscriberErrors[0]->getMessage())->equals('subject is missing');
+    expect($subscriberErrors[1]->getEmail())->equals('c d <b@example.com>');
+    expect($subscriberErrors[1]->getMessage())->equals('subject is missing');
   }
 
   public function testGetPayloadErrorForMalformedMSSResponse() {
-    $api_result = [
+    $apiResult = [
       'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
       'status' => API::SENDING_STATUS_SEND_ERROR,
       'message' => '[{"errors":{"subject":"subject is missing"}},{"errors":{"subject":"subject is missing"}}]',
     ];
-    $error = $this->mapper->getErrorForResult($api_result, $this->subscribers);
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);

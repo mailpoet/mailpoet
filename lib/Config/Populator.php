@@ -55,13 +55,13 @@ class Populator {
     WPFunctions $wp,
     Captcha $captcha,
     ReferralDetector $referralDetector,
-    FeaturesController $flags_controller
+    FeaturesController $flagsController
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->captcha = $captcha;
     $this->referralDetector = $referralDetector;
-    $this->prefix = Env::$db_prefix;
+    $this->prefix = Env::$dbPrefix;
     $this->models = [
       'newsletter_option_fields',
       'newsletter_templates',
@@ -142,7 +142,7 @@ class Populator {
       'Painter',
       'FarmersMarket',
     ];
-    $this->flags_controller = $flags_controller;
+    $this->flagsController = $flagsController;
   }
 
   public function up() {
@@ -151,8 +151,8 @@ class Populator {
 
     array_map([$this, 'populate'], $this->models);
 
-    $default_segment = $this->createDefaultSegment();
-    $this->createDefaultForm($default_segment);
+    $defaultSegment = $this->createDefaultSegment();
+    $this->createDefaultForm($defaultSegment);
     $this->createDefaultSettings();
     $this->createDefaultUsersFlags();
     $this->createMailPoetPage();
@@ -182,34 +182,34 @@ class Populator {
     $page = null;
     if (!empty($pages)) {
       $page = array_shift($pages);
-      if (strpos($page->post_content, '[mailpoet_page]') === false) {
+      if (strpos($page->postContent, '[mailpoet_page]') === false) {
         $page = null;
       }
     }
 
     if ($page === null) {
-      $mailpoet_page_id = Pages::createMailPoetPage();
+      $mailpoetPageId = Pages::createMailPoetPage();
     } else {
-      $mailpoet_page_id = (int)$page->ID;
+      $mailpoetPageId = (int)$page->ID;
     }
 
     $subscription = $this->settings->get('subscription.pages', []);
     if (empty($subscription)) {
       $this->settings->set('subscription.pages', [
-        'unsubscribe' => $mailpoet_page_id,
-        'manage' => $mailpoet_page_id,
-        'confirmation' => $mailpoet_page_id,
-        'captcha' => $mailpoet_page_id,
+        'unsubscribe' => $mailpoetPageId,
+        'manage' => $mailpoetPageId,
+        'confirmation' => $mailpoetPageId,
+        'captcha' => $mailpoetPageId,
       ]);
-    } elseif (empty($subscription['captcha']) || $subscription['captcha'] !== $mailpoet_page_id) {
+    } elseif (empty($subscription['captcha']) || $subscription['captcha'] !== $mailpoetPageId) {
       // For existing installations
-      $this->settings->set('subscription.pages', array_merge($subscription, ['captcha' => $mailpoet_page_id]));
+      $this->settings->set('subscription.pages', array_merge($subscription, ['captcha' => $mailpoetPageId]));
     }
   }
 
   private function createDefaultSettings() {
-    $current_user = $this->wp->wpGetCurrentUser();
-    $settings_db_version = $this->settings->fetch('db_version');
+    $currentUser = $this->wp->wpGetCurrentUser();
+    $settingsDbVersion = $this->settings->fetch('db_version');
 
     // set cron trigger option to default method
     if (!$this->settings->fetch(CronTrigger::SETTING_NAME)) {
@@ -220,8 +220,8 @@ class Populator {
 
     // set default sender info based on current user
     $sender = [
-      'name' => $current_user->display_name,
-      'address' => $current_user->user_email,
+      'name' => $currentUser->displayName,
+      'address' => $currentUser->userEmail,
     ];
 
     // set default from name & address
@@ -243,23 +243,23 @@ class Populator {
 
     // set captcha settings
     $captcha = $this->settings->fetch('captcha');
-    $re_captcha = $this->settings->fetch('re_captcha');
+    $reCaptcha = $this->settings->fetch('re_captcha');
     if (empty($captcha)) {
-      $captcha_type = Captcha::TYPE_DISABLED;
-      if (!empty($re_captcha['enabled'])) {
-        $captcha_type = Captcha::TYPE_RECAPTCHA;
+      $captchaType = Captcha::TYPE_DISABLED;
+      if (!empty($reCaptcha['enabled'])) {
+        $captchaType = Captcha::TYPE_RECAPTCHA;
       } elseif ($this->captcha->isSupported()) {
-        $captcha_type = Captcha::TYPE_BUILTIN;
+        $captchaType = Captcha::TYPE_BUILTIN;
       }
       $this->settings->set('captcha', [
-        'type' => $captcha_type,
-        'recaptcha_site_token' => !empty($re_captcha['site_token']) ? $re_captcha['site_token'] : '',
-        'recaptcha_secret_token' => !empty($re_captcha['secret_token']) ? $re_captcha['secret_token'] : '',
+        'type' => $captchaType,
+        'recaptcha_site_token' => !empty($reCaptcha['site_token']) ? $reCaptcha['site_token'] : '',
+        'recaptcha_secret_token' => !empty($reCaptcha['secret_token']) ? $reCaptcha['secret_token'] : '',
       ]);
     }
 
-    $subscriber_email_notification = $this->settings->fetch(NewSubscriberNotificationMailer::SETTINGS_KEY);
-    if (empty($subscriber_email_notification)) {
+    $subscriberEmailNotification = $this->settings->fetch(NewSubscriberNotificationMailer::SETTINGS_KEY);
+    if (empty($subscriberEmailNotification)) {
       $sender = $this->settings->fetch('sender', []);
       $this->settings->set('subscriber_email_notification', [
         'enabled' => true,
@@ -268,8 +268,8 @@ class Populator {
       ]);
     }
 
-    $stats_notifications = $this->settings->fetch(Worker::SETTINGS_KEY);
-    if (empty($stats_notifications)) {
+    $statsNotifications = $this->settings->fetch(Worker::SETTINGS_KEY);
+    if (empty($statsNotifications)) {
       $sender = $this->settings->fetch('sender', []);
       $this->settings->set(Worker::SETTINGS_KEY, [
         'enabled' => true,
@@ -277,10 +277,10 @@ class Populator {
       ]);
     }
 
-    $woocommerce_optin_on_checkout = $this->settings->fetch('woocommerce.optin_on_checkout');
-    if (empty($woocommerce_optin_on_checkout)) {
+    $woocommerceOptinOnCheckout = $this->settings->fetch('woocommerce.optin_on_checkout');
+    if (empty($woocommerceOptinOnCheckout)) {
       $this->settings->set('woocommerce.optin_on_checkout', [
-        'enabled' => empty($settings_db_version), // enable on new installs only
+        'enabled' => empty($settingsDbVersion), // enable on new installs only
         'message' => $this->wp->_x('Yes, I would like to be added to your mailing list', "default email opt-in message displayed on checkout page for ecommerce websites"),
       ]);
       // this is here only for translators to pick it up, after it is translated we will replace the other message with this one
@@ -292,40 +292,40 @@ class Populator {
   }
 
   private function createDefaultUsersFlags() {
-    $last_announcement_seen = $this->settings->fetch('last_announcement_seen');
-    if (!empty($last_announcement_seen)) {
-      foreach ($last_announcement_seen as $user_id => $value) {
-        $this->createOrUpdateUserFlag($user_id, 'last_announcement_seen', $value);
+    $lastAnnouncementSeen = $this->settings->fetch('last_announcement_seen');
+    if (!empty($lastAnnouncementSeen)) {
+      foreach ($lastAnnouncementSeen as $userId => $value) {
+        $this->createOrUpdateUserFlag($userId, 'last_announcement_seen', $value);
       }
       $this->settings->delete('last_announcement_seen');
     }
 
     $prefix = 'user_seen_editor_tutorial';
-    $prefix_length = strlen($prefix);
+    $prefixLength = strlen($prefix);
     foreach ($this->settings->getAll() as $name => $value) {
-      if (substr($name, 0, $prefix_length) === $prefix) {
-        $user_id = substr($name, $prefix_length);
-        $this->createOrUpdateUserFlag($user_id, 'editor_tutorial_seen', $value);
+      if (substr($name, 0, $prefixLength) === $prefix) {
+        $userId = substr($name, $prefixLength);
+        $this->createOrUpdateUserFlag($userId, 'editor_tutorial_seen', $value);
         $this->settings->delete($name);
       }
     }
   }
 
-  private function createOrUpdateUserFlag($user_id, $name, $value) {
-    $user_flags_repository = \MailPoet\DI\ContainerWrapper::getInstance(WP_DEBUG)->get(UserFlagsRepository::class);
-    $flag = $user_flags_repository->findOneBy([
-      'user_id' => $user_id,
+  private function createOrUpdateUserFlag($userId, $name, $value) {
+    $userFlagsRepository = \MailPoet\DI\ContainerWrapper::getInstance(WP_DEBUG)->get(UserFlagsRepository::class);
+    $flag = $userFlagsRepository->findOneBy([
+      'user_id' => $userId,
       'name' => $name,
     ]);
 
     if (!$flag) {
       $flag = new UserFlagEntity();
-      $flag->setUserId($user_id);
+      $flag->setUserId($userId);
       $flag->setName($name);
-      $user_flags_repository->persist($flag);
+      $userFlagsRepository->persist($flag);
     }
     $flag->setValue($value);
-    $user_flags_repository->flush();
+    $userFlagsRepository->flush();
   }
 
   private function createDefaultSegment() {
@@ -339,37 +339,37 @@ class Populator {
 
     // Default segment
     if (Segment::where('type', 'default')->count() === 0) {
-      $default_segment = Segment::create();
-      $new_list = [
+      $defaultSegment = Segment::create();
+      $newList = [
         'name' => $this->wp->__('My First List', 'mailpoet'),
         'description' =>
           $this->wp->__('This list is automatically created when you install MailPoet.', 'mailpoet'),
       ];
-      if ($this->flags_controller->isSupported(FeaturesController::NEW_DEFAULT_LIST_NAME)) {
-        $new_list['name'] = $this->wp->__('Newsletter mailing list', 'mailpoet');
+      if ($this->flagsController->isSupported(FeaturesController::NEW_DEFAULT_LIST_NAME)) {
+        $newList['name'] = $this->wp->__('Newsletter mailing list', 'mailpoet');
       }
-      $default_segment->hydrate($new_list);
-      $default_segment->save();
+      $defaultSegment->hydrate($newList);
+      $defaultSegment->save();
     }
   }
 
-  private function createDefaultForm($default_segment) {
+  private function createDefaultForm($defaultSegment) {
     if (Form::count() === 0) {
-      $factory = new DefaultForm(new Styles($this->flags_controller));
-      if (!$default_segment) {
-        $default_segment = Segment::where('type', 'default')->orderByAsc('id')->limit(1)->findOne();
+      $factory = new DefaultForm(new Styles($this->flagsController));
+      if (!$defaultSegment) {
+        $defaultSegment = Segment::where('type', 'default')->orderByAsc('id')->limit(1)->findOne();
       }
       Form::createOrUpdate([
         'name' => $factory->getName(),
         'body' => serialize($factory->getBody()),
-        'settings' => serialize($factory->getSettings($default_segment)),
+        'settings' => serialize($factory->getSettings($defaultSegment)),
         'styles' => $factory->getStyles(),
       ]);
     }
   }
 
   protected function newsletterOptionFields() {
-    $option_fields = [
+    $optionFields = [
       [
         'name' => 'isScheduled',
         'newsletter_type' => 'standard',
@@ -453,7 +453,7 @@ class Populator {
     ];
 
     return [
-      'rows' => $option_fields,
+      'rows' => $optionFields,
       'identification_columns' => [
         'name',
         'newsletter_type',
@@ -465,7 +465,7 @@ class Populator {
     $templates = [];
     foreach ($this->templates as $template) {
       $template = self::TEMPLATES_NAMESPACE . $template;
-      $template = new $template(Env::$assets_url);
+      $template = new $template(Env::$assetsUrl);
       $templates[] = $template->get();
     }
     return [
@@ -480,28 +480,28 @@ class Populator {
   protected function populate($model) {
     $modelMethod = Helpers::underscoreToCamelCase($model);
     $table = $this->prefix . $model;
-    $data_descriptor = $this->$modelMethod();
-    $rows = $data_descriptor['rows'];
-    $identification_columns = array_fill_keys(
-      $data_descriptor['identification_columns'],
+    $dataDescriptor = $this->$modelMethod();
+    $rows = $dataDescriptor['rows'];
+    $identificationColumns = array_fill_keys(
+      $dataDescriptor['identification_columns'],
       ''
     );
-    $remove_duplicates =
-      isset($data_descriptor['remove_duplicates']) && $data_descriptor['remove_duplicates'];
+    $removeDuplicates =
+      isset($dataDescriptor['remove_duplicates']) && $dataDescriptor['remove_duplicates'];
 
     foreach ($rows as $row) {
-      $existence_comparison_fields = array_intersect_key(
+      $existenceComparisonFields = array_intersect_key(
         $row,
-        $identification_columns
+        $identificationColumns
       );
 
-      if (!$this->rowExists($table, $existence_comparison_fields)) {
+      if (!$this->rowExists($table, $existenceComparisonFields)) {
         $this->insertRow($table, $row);
       } else {
-        if ($remove_duplicates) {
-          $this->removeDuplicates($table, $row, $existence_comparison_fields);
+        if ($removeDuplicates) {
+          $this->removeDuplicates($table, $row, $existenceComparisonFields);
         }
-        $this->updateRow($table, $row, $existence_comparison_fields);
+        $this->updateRow($table, $row, $existenceComparisonFields);
       }
     }
   }
@@ -660,7 +660,7 @@ class Populator {
     $task = ScheduledTask::create();
     $task->type = $type;
     $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduled_at = $datetime;
+    $task->scheduledAt = $datetime;
     $task->save();
   }
 
@@ -689,15 +689,15 @@ class Populator {
     if (version_compare($this->settings->get('db_version', '3.38.2'), '3.38.1', '>')) {
       return;
     }
-    $premium_table_name = $wpdb->prefix . 'mailpoet_premium_newsletter_extra_data';
-    $premium_table_exists = (int)$wpdb->get_var(
+    $premiumTableName = $wpdb->prefix . 'mailpoet_premium_newsletter_extra_data';
+    $premiumTableExists = (int)$wpdb->get_var(
       $wpdb->prepare(
         "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema=%s AND table_name=%s;",
         $wpdb->dbname,
-        $premium_table_name
+        $premiumTableName
       )
     );
-    if ($premium_table_exists) {
+    if ($premiumTableExists) {
       $query = "
         UPDATE
           `%s` as n
@@ -708,7 +708,7 @@ class Populator {
         sprintf(
           $query,
           Newsletter::$_table,
-          $premium_table_name
+          $premiumTableName
         )
       );
     }

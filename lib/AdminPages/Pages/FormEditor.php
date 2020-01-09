@@ -28,15 +28,15 @@ class FormEditor {
   private $custom_fields_response_builder;
 
   public function __construct(
-    PageRenderer $page_renderer,
-    FeaturesController $features_controller,
-    CustomFieldsRepository $custom_fields_repository,
-    CustomFieldsResponseBuilder $custom_fields_response_builder
+    PageRenderer $pageRenderer,
+    FeaturesController $featuresController,
+    CustomFieldsRepository $customFieldsRepository,
+    CustomFieldsResponseBuilder $customFieldsResponseBuilder
   ) {
-    $this->page_renderer = $page_renderer;
-    $this->features_controller = $features_controller;
-    $this->custom_fields_repository = $custom_fields_repository;
-    $this->custom_fields_response_builder = $custom_fields_response_builder;
+    $this->pageRenderer = $pageRenderer;
+    $this->featuresController = $featuresController;
+    $this->customFieldsRepository = $customFieldsRepository;
+    $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
   }
 
   public function render() {
@@ -62,19 +62,19 @@ class FormEditor {
       'sub_menu' => 'mailpoet-forms',
     ];
 
-    if ($this->features_controller->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
+    if ($this->featuresController->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
       $data['form']['styles'] = FormRenderer::getStyles($form);
-      $custom_fields = $this->custom_fields_repository->findAll();
-      $data['custom_fields'] = $this->custom_fields_response_builder->buildBatch($custom_fields);
+      $customFields = $this->customFieldsRepository->findAll();
+      $data['custom_fields'] = $this->customFieldsResponseBuilder->buildBatch($customFields);
       $data['date_types'] = array_map(function ($label, $value) {
         return [
           'label' => $label,
           'value' => $value,
         ];
       }, $data['date_types'], array_keys($data['date_types']));
-      $this->page_renderer->displayPage('form/editor.html', $data);
+      $this->pageRenderer->displayPage('form/editor.html', $data);
     } else {
-      $this->page_renderer->displayPage('form/editor_legacy.html', $data);
+      $this->pageRenderer->displayPage('form/editor_legacy.html', $data);
     }
   }
 }

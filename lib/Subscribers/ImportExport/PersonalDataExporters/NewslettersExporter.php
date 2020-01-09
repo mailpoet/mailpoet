@@ -39,37 +39,37 @@ class NewslettersExporter {
     return $result;
   }
 
-  private function exportNewsletter($statistics_row, $newsletters, $subscriber) {
-    $newsletter_data = [];
-    $newsletter_data[] = [
+  private function exportNewsletter($statisticsRow, $newsletters, $subscriber) {
+    $newsletterData = [];
+    $newsletterData[] = [
       'name' => WPFunctions::get()->__('Email subject', 'mailpoet'),
-      'value' => $statistics_row['newsletter_rendered_subject'],
+      'value' => $statisticsRow['newsletter_rendered_subject'],
     ];
-    $newsletter_data[] = [
+    $newsletterData[] = [
       'name' => WPFunctions::get()->__('Sent at', 'mailpoet'),
-      'value' => $statistics_row['sent_at'],
+      'value' => $statisticsRow['sent_at'],
     ];
-    if (isset($statistics_row['opened_at'])) {
-      $newsletter_data[] = [
+    if (isset($statisticsRow['opened_at'])) {
+      $newsletterData[] = [
         'name' => WPFunctions::get()->__('Opened', 'mailpoet'),
         'value' => 'Yes',
       ];
-      $newsletter_data[] = [
+      $newsletterData[] = [
         'name' => WPFunctions::get()->__('Opened at', 'mailpoet'),
-        'value' => $statistics_row['opened_at'],
+        'value' => $statisticsRow['opened_at'],
       ];
     } else {
-      $newsletter_data[] = [
+      $newsletterData[] = [
         'name' => WPFunctions::get()->__('Opened', 'mailpoet'),
         'value' => WPFunctions::get()->__('No', 'mailpoet'),
       ];
     }
-    if (isset($newsletters[$statistics_row['newsletter_id']])) {
-      $newsletter_data[] = [
+    if (isset($newsletters[$statisticsRow['newsletter_id']])) {
+      $newsletterData[] = [
         'name' => WPFunctions::get()->__('Email preview', 'mailpoet'),
         'value' => Url::getViewInBrowserUrl(
           '',
-          $newsletters[$statistics_row['newsletter_id']],
+          $newsletters[$statisticsRow['newsletter_id']],
           $subscriber,
           false,
           true
@@ -79,19 +79,19 @@ class NewslettersExporter {
     return [
       'group_id' => 'mailpoet-newsletters',
       'group_label' => WPFunctions::get()->__('MailPoet Emails Sent', 'mailpoet'),
-      'item_id' => 'newsletter-' . $statistics_row['newsletter_id'],
-      'data' => $newsletter_data,
+      'item_id' => 'newsletter-' . $statisticsRow['newsletter_id'],
+      'data' => $newsletterData,
     ];
   }
 
   private function loadNewsletters($statistics) {
-    $newsletter_ids = array_map(function ($statistics_row) {
-      return $statistics_row['newsletter_id'];
+    $newsletterIds = array_map(function ($statisticsRow) {
+      return $statisticsRow['newsletter_id'];
     }, $statistics);
 
-    if (empty($newsletter_ids)) return [];
+    if (empty($newsletterIds)) return [];
 
-    $newsletters = Newsletter::whereIn('id', $newsletter_ids)->findMany();
+    $newsletters = Newsletter::whereIn('id', $newsletterIds)->findMany();
 
     $result = [];
     foreach ($newsletters as $newsletter) {

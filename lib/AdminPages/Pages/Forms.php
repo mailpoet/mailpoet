@@ -18,21 +18,21 @@ class Forms {
   private $installation;
 
   public function __construct(
-    PageRenderer $page_renderer,
-    PageLimit $listing_page_limit,
+    PageRenderer $pageRenderer,
+    PageLimit $listingPageLimit,
     Installation $installation
   ) {
-    $this->page_renderer = $page_renderer;
-    $this->listing_page_limit = $listing_page_limit;
+    $this->pageRenderer = $pageRenderer;
+    $this->listingPageLimit = $listingPageLimit;
     $this->installation = $installation;
   }
 
   public function render() {
     $data = [];
-    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('forms');
+    $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('forms');
     $data['segments'] = Segment::findArray();
     $data['is_new_user'] = $this->installation->isNewInstallation();
 
-    $this->page_renderer->displayPage('forms.html', $data);
+    $this->pageRenderer->displayPage('forms.html', $data);
   }
 }

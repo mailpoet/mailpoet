@@ -15,25 +15,25 @@ class WooCommerceSyncTest extends \MailPoetTest {
   public $woocommerce_helper;
   public $woocommerce_segment;
   public function _before() {
-    $this->woocommerce_segment = $this->createMock(WooCommerceSegment::class);
-    $this->woocommerce_helper = $this->createMock(WooCommerceHelper::class);
-    $this->worker = new WooCommerceSync($this->woocommerce_segment, $this->woocommerce_helper);
+    $this->woocommerceSegment = $this->createMock(WooCommerceSegment::class);
+    $this->woocommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $this->worker = new WooCommerceSync($this->woocommerceSegment, $this->woocommerceHelper);
   }
 
   public function testItWillNotRunIfWooCommerceIsDisabled() {
-    $this->woocommerce_helper->method('isWooCommerceActive')
+    $this->woocommerceHelper->method('isWooCommerceActive')
       ->willReturn(false);
     expect($this->worker->checkProcessingRequirements())->false();
   }
 
   public function testItWillRunIfWooCommerceIsEnabled() {
-    $this->woocommerce_helper->method('isWooCommerceActive')
+    $this->woocommerceHelper->method('isWooCommerceActive')
       ->willReturn(true);
     expect($this->worker->checkProcessingRequirements())->true();
   }
 
   public function testItCallsWooCommerceSync() {
-    $this->woocommerce_segment->expects($this->once())
+    $this->woocommerceSegment->expects($this->once())
       ->method('synchronizeCustomers');
     $task = $this->createScheduledTask();
     expect($this->worker->processTaskStrategy($task, microtime(true)))->equals(true);
@@ -43,7 +43,7 @@ class WooCommerceSyncTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = WooCommerceSync::TASK_TYPE;
     $task->status = null;
-    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }

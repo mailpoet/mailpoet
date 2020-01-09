@@ -22,47 +22,47 @@ class UnsubscribeTokensTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     parent::_before();
-    $this->subscriber_with_token = Subscriber::createOrUpdate(['email' => 'subscriber1@test.com']);
-    $this->subscriber_with_token->set('unsubscribe_token', 'aaabbbcccdddeee');
-    $this->subscriber_with_token->save();
+    $this->subscriberWithToken = Subscriber::createOrUpdate(['email' => 'subscriber1@test.com']);
+    $this->subscriberWithToken->set('unsubscribe_token', 'aaabbbcccdddeee');
+    $this->subscriberWithToken->save();
 
-    $this->subscriber_without_token = Subscriber::createOrUpdate(['email' => 'subscriber2@test.com']);
-    $this->subscriber_without_token->set('unsubscribe_token', null);
-    $this->subscriber_without_token->save();
+    $this->subscriberWithoutToken = Subscriber::createOrUpdate(['email' => 'subscriber2@test.com']);
+    $this->subscriberWithoutToken->set('unsubscribe_token', null);
+    $this->subscriberWithoutToken->save();
 
-    $this->newsletter_with_token = Newsletter::createOrUpdate([
+    $this->newsletterWithToken = Newsletter::createOrUpdate([
       'subject' => 'My Newsletter',
       'body' => Fixtures::get('newsletter_body_template'),
       'type' => Newsletter::TYPE_STANDARD,
     ]);
-    $this->newsletter_with_token->set('unsubscribe_token', 'aaabbbcccdddeee');
-    $this->newsletter_with_token->save();
+    $this->newsletterWithToken->set('unsubscribe_token', 'aaabbbcccdddeee');
+    $this->newsletterWithToken->save();
 
-    $this->newsletter_without_token = Newsletter::createOrUpdate([
+    $this->newsletterWithoutToken = Newsletter::createOrUpdate([
       'subject' => 'My Newsletter',
       'body' => Fixtures::get('newsletter_body_template'),
       'type' => Newsletter::TYPE_STANDARD,
     ]);
-    $this->newsletter_without_token->set('unsubscribe_token', null);
-    $this->newsletter_without_token->save();
+    $this->newsletterWithoutToken->set('unsubscribe_token', null);
+    $this->newsletterWithoutToken->save();
   }
 
   public function testItAddsTokensToSubscribers() {
     $worker = new UnsubscribeTokens();
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate(), microtime(true));
-    $this->subscriber_with_token = Subscriber::findOne($this->subscriber_with_token->id);
-    $this->subscriber_without_token = Subscriber::findOne($this->subscriber_without_token->id);
-    expect($this->subscriber_with_token->unsubscribe_token)->equals('aaabbbcccdddeee');
-    expect(strlen($this->subscriber_without_token->unsubscribe_token))->equals(15);
+    $this->subscriberWithToken = Subscriber::findOne($this->subscriberWithToken->id);
+    $this->subscriberWithoutToken = Subscriber::findOne($this->subscriberWithoutToken->id);
+    expect($this->subscriberWithToken->unsubscribe_token)->equals('aaabbbcccdddeee');
+    expect(strlen($this->subscriberWithoutToken->unsubscribe_token))->equals(15);
   }
 
   public function testItAddsTokensToNewsletters() {
     $worker = new UnsubscribeTokens();
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate(), microtime(true));
-    $this->newsletter_with_token = Newsletter::findOne($this->newsletter_with_token->id);
-    $this->newsletter_without_token = Newsletter::findOne($this->newsletter_without_token->id);
-    expect($this->newsletter_with_token->unsubscribe_token)->equals('aaabbbcccdddeee');
-    expect(strlen($this->newsletter_without_token->unsubscribe_token))->equals(15);
+    $this->newsletterWithToken = Newsletter::findOne($this->newsletterWithToken->id);
+    $this->newsletterWithoutToken = Newsletter::findOne($this->newsletterWithoutToken->id);
+    expect($this->newsletterWithToken->unsubscribe_token)->equals('aaabbbcccdddeee');
+    expect(strlen($this->newsletterWithoutToken->unsubscribe_token))->equals(15);
   }
 
   public function _after() {

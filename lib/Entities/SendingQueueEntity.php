@@ -85,28 +85,28 @@ class SendingQueueEntity {
    * @return array|null
    */
   public function getNewsletterRenderedBody() {
-    return $this->newsletter_rendered_body;
+    return $this->newsletterRenderedBody;
   }
 
   /**
    * @param array|null $newsletter_rendered_body
    */
-  public function setNewsletterRenderedBody($newsletter_rendered_body) {
-    $this->newsletter_rendered_body = $newsletter_rendered_body;
+  public function setNewsletterRenderedBody($newsletterRenderedBody) {
+    $this->newsletterRenderedBody = $newsletterRenderedBody;
   }
 
   /**
    * @return string|null
    */
   public function getNewsletterRenderedSubject() {
-    return $this->newsletter_rendered_subject;
+    return $this->newsletterRenderedSubject;
   }
 
   /**
    * @param string|null $newsletter_rendered_subject
    */
-  public function setNewsletterRenderedSubject($newsletter_rendered_subject) {
-    $this->newsletter_rendered_subject = $newsletter_rendered_subject;
+  public function setNewsletterRenderedSubject($newsletterRenderedSubject) {
+    $this->newsletterRenderedSubject = $newsletterRenderedSubject;
   }
 
   /**
@@ -127,42 +127,42 @@ class SendingQueueEntity {
    * @return int
    */
   public function getCountTotal() {
-    return $this->count_total;
+    return $this->countTotal;
   }
 
   /**
    * @param int $count_total
    */
-  public function setCountTotal($count_total) {
-    $this->count_total = $count_total;
+  public function setCountTotal($countTotal) {
+    $this->countTotal = $countTotal;
   }
 
   /**
    * @return int
    */
   public function getCountProcessed() {
-    return $this->count_processed;
+    return $this->countProcessed;
   }
 
   /**
    * @param int $count_processed
    */
-  public function setCountProcessed($count_processed) {
-    $this->count_processed = $count_processed;
+  public function setCountProcessed($countProcessed) {
+    $this->countProcessed = $countProcessed;
   }
 
   /**
    * @return int
    */
   public function getCountToProcess() {
-    return $this->count_to_process;
+    return $this->countToProcess;
   }
 
   /**
    * @param int $count_to_process
    */
-  public function setCountToProcess($count_to_process) {
-    $this->count_to_process = $count_to_process;
+  public function setCountToProcess($countToProcess) {
+    $this->countToProcess = $countToProcess;
   }
 
   /**

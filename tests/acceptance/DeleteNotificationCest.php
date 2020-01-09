@@ -6,68 +6,68 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class DeleteNotificationCest {
 
-  public function deleteNotification(\AcceptanceTester $I) {
+  public function deleteNotification(\AcceptanceTester $i) {
     // step 1 - Prepare post notification data
-    $I->wantTo('delete a notification');
-    $newsletter_name = 'Deletion Test Post Notification';
+    $i->wantTo('delete a notification');
+    $newsletterName = 'Deletion Test Post Notification';
     $factory = new Newsletter();
-    $factory->withSubject($newsletter_name)
+    $factory->withSubject($newsletterName)
       ->withPostNotificationsType()
       ->create();
     // step 2 - Open list of post notifications
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
     //step 3 - Delete Notification
-    $I->waitForText($newsletter_name);
-    $I->clickItemRowActionByItemName($newsletter_name, 'Move to trash');
-    $I->waitForElement('[data-automation-id="filters_trash"]');
-    $I->click('[data-automation-id="filters_trash"]');
-    $I->waitForText($newsletter_name);
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newsletterName);
   }
 
-  public function restoreNotificationFromTrash(\AcceptanceTester $I) {
+  public function restoreNotificationFromTrash(\AcceptanceTester $i) {
     // step 1 - Prepare post notification data
-    $I->wantTo('Restore a newsletter from trash');
-    $newsletter_name = 'Restore from Trash Test Post Notification';
+    $i->wantTo('Restore a newsletter from trash');
+    $newsletterName = 'Restore from Trash Test Post Notification';
     $factory = new Newsletter();
-    $factory->withSubject($newsletter_name)
+    $factory->withSubject($newsletterName)
       ->withPostNotificationsType()
       ->withDeleted()
       ->create();
     // step 2 - Open list of post notifications
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
     //step 3 - Restore notification from trash
-    $I->waitForElement('[data-automation-id="filters_trash"]');
-    $I->click('[data-automation-id="filters_trash"]');
-    $I->waitForText($newsletter_name);
-    $I->clickItemRowActionByItemName($newsletter_name, 'Restore');
-    $I->amOnMailpoetPage('Emails');
-    $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletter_name);
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Restore');
+    $i->amOnMailpoetPage('Emails');
+    $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
+    $i->waitForText($newsletterName);
   }
 
-  public function deleteNotificationPermanently(\AcceptanceTester $I) {
+  public function deleteNotificationPermanently(\AcceptanceTester $i) {
     // step 1 - Prepare post notification data
-    $I->wantTo('Permanently delete a notification');
-    $newsletter_name = 'Goodbye Forever Notification Test';
+    $i->wantTo('Permanently delete a notification');
+    $newsletterName = 'Goodbye Forever Notification Test';
     $factory = new Newsletter();
-    $factory->withSubject($newsletter_name)
+    $factory->withSubject($newsletterName)
       ->withPostNotificationsType()
       ->withDeleted()
       ->create();
     // step 2 - Open list of post notifications
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
     // step 3 - goodbye forever, notification
-    $I->waitForElement('[data-automation-id="filters_trash"]');
-    $I->click('[data-automation-id="filters_trash"]');
-    $I->waitForText($newsletter_name);
-    $I->clickItemRowActionByItemName($newsletter_name, 'Delete Permanently');
-    $I->waitForText('permanently deleted.');
-    $I->waitForElementNotVisible($newsletter_name);
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
+    $i->waitForText('permanently deleted.');
+    $i->waitForElementNotVisible($newsletterName);
   }
 }

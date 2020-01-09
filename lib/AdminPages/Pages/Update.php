@@ -20,53 +20,53 @@ class Update {
   /** @var SettingsController */
   private $settings;
 
-  public function __construct(PageRenderer $page_renderer, WPFunctions $wp, SettingsController $settings) {
-    $this->page_renderer = $page_renderer;
+  public function __construct(PageRenderer $pageRenderer, WPFunctions $wp, SettingsController $settings) {
+    $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
     $this->settings = $settings;
   }
 
   public function render() {
     global $wp;
-    $current_url = $this->wp->homeUrl(add_query_arg($wp->query_string, $wp->request));
-    $redirect_url =
+    $currentUrl = $this->wp->homeUrl(add_query_arg($wp->queryString, $wp->request));
+    $redirectUrl =
       (!empty($_GET['mailpoet_redirect']))
         ? urldecode($_GET['mailpoet_redirect'])
         : $this->wp->wpGetReferer();
 
     if (
-      $redirect_url === $current_url
+      $redirectUrl === $currentUrl
       or
-      strpos($redirect_url, 'mailpoet') === false
+      strpos($redirectUrl, 'mailpoet') === false
     ) {
-      $redirect_url = $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG);
+      $redirectUrl = $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG);
     }
 
     $data = [
       'settings' => $this->settings->getAll(),
       'current_user' => $this->wp->wpGetCurrentUser(),
-      'redirect_url' => $redirect_url,
+      'redirect_url' => $redirectUrl,
       'sub_menu' => Menu::MAIN_PAGE_SLUG,
     ];
 
     $data['is_new_user'] = true;
     $data['is_old_user'] = false;
     if (!empty($data['settings']['installed_at'])) {
-      $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
-      $current_time = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-      $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
-      $data['is_old_user'] = $current_time->diffInMonths($installed_at) >= 6;
+      $installedAt = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
+      $currentTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+      $data['is_new_user'] = $currentTime->diffInDays($installedAt) <= 30;
+      $data['is_old_user'] = $currentTime->diffInMonths($installedAt) >= 6;
       $data['stop_call_for_rating'] = isset($data['settings']['stop_call_for_rating']) ? $data['settings']['stop_call_for_rating'] : false;
     }
 
-    $readme_file = Env::$path . '/readme.txt';
-    if (is_readable($readme_file)) {
-      $changelog = Readme::parseChangelog(file_get_contents($readme_file), 1);
+    $readmeFile = Env::$path . '/readme.txt';
+    if (is_readable($readmeFile)) {
+      $changelog = Readme::parseChangelog(file_get_contents($readmeFile), 1);
       if ($changelog) {
         $data['changelog'] = $changelog;
       }
     }
 
-    $this->page_renderer->displayPage('update.html', $data);
+    $this->pageRenderer->displayPage('update.html', $data);
   }
 }

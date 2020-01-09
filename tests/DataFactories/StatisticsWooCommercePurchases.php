@@ -9,9 +9,9 @@ class StatisticsWooCommercePurchases {
 
   public function __construct(StatisticsClicks $click, $order) {
     $this->data = [
-      'newsletter_id' => $click->newsletter_id,
-      'subscriber_id' => $click->subscriber_id,
-      'queue_id' => $click->queue_id,
+      'newsletter_id' => $click->newsletterId,
+      'subscriber_id' => $click->subscriberId,
+      'queue_id' => $click->queueId,
       'click_id' => $click->id,
       'order_id' => $order['id'],
       'order_currency' => $order['currency'],

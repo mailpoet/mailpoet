@@ -18,8 +18,8 @@ class ErrorResponseTest extends \MailPoetUnitTest {
       'SQLSTATE[22001]: Some SQL error',
       'another valid error',
     ];
-    $error_response = new ErrorResponse($errors);
-    expect($error_response->getData())->equals(
+    $errorResponse = new ErrorResponse($errors);
+    expect($errorResponse->getData())->equals(
       [
         'errors' => [
           [

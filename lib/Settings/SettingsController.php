@@ -24,20 +24,20 @@ class SettingsController {
   /** @var SettingsRepository */
   private $settings_repository;
 
-  public function __construct(SettingsRepository $settings_repository) {
-    $this->settings_repository = $settings_repository;
+  public function __construct(SettingsRepository $settingsRepository) {
+    $this->settingsRepository = $settingsRepository;
   }
 
   public function get($key, $default = null) {
     $this->ensureLoaded();
-    $key_parts = explode('.', $key);
+    $keyParts = explode('.', $key);
     $setting = $this->settings;
     if ($default === null) {
-      $default = $this->getDefaultValue($key_parts);
+      $default = $this->getDefaultValue($keyParts);
     }
-    foreach ($key_parts as $key_part) {
-      if (is_array($setting) && array_key_exists($key_part, $setting)) {
-        $setting = $setting[$key_part];
+    foreach ($keyParts as $keyPart) {
+      if (is_array($setting) && array_key_exists($keyPart, $setting)) {
+        $setting = $setting[$keyPart];
       } else {
         return $default;
       }
@@ -86,8 +86,8 @@ class SettingsController {
    */
   public function fetch($key, $default = null) {
     $keys = explode('.', $key);
-    $main_key = $keys[0];
-    $this->settings[$main_key] = $this->fetchValue($main_key);
+    $mainKey = $keys[0];
+    $this->settings[$mainKey] = $this->fetchValue($mainKey);
     return $this->get($key, $default);
   }
 
@@ -98,25 +98,25 @@ class SettingsController {
 
   public function set($key, $value) {
     $this->ensureLoaded();
-    $key_parts = explode('.', $key);
-    $main_key = $key_parts[0];
-    $last_key = array_pop($key_parts);
+    $keyParts = explode('.', $key);
+    $mainKey = $keyParts[0];
+    $lastKey = array_pop($keyParts);
     $setting =& $this->settings;
-    foreach ($key_parts as $key_part) {
-      $setting =& $setting[$key_part];
+    foreach ($keyParts as $keyPart) {
+      $setting =& $setting[$keyPart];
       if (!is_array($setting)) {
         $setting = [];
       }
     }
-    $setting[$last_key] = $value;
-    $this->settings_repository->createOrUpdateByName($main_key, $this->settings[$main_key]);
+    $setting[$lastKey] = $value;
+    $this->settingsRepository->createOrUpdateByName($mainKey, $this->settings[$mainKey]);
   }
 
   public function delete($key) {
-    $setting = $this->settings_repository->findOneByName($key);
+    $setting = $this->settingsRepository->findOneByName($key);
     if ($setting) {
-      $this->settings_repository->remove($setting);
-      $this->settings_repository->flush();
+      $this->settingsRepository->remove($setting);
+      $this->settingsRepository->flush();
     }
     unset($this->settings[$key]);
   }
@@ -127,7 +127,7 @@ class SettingsController {
     }
 
     $this->settings = [];
-    foreach ($this->settings_repository->findAll() as $setting) {
+    foreach ($this->settingsRepository->findAll() as $setting) {
       $this->settings[$setting->getName()] = $setting->getValue();
     }
     $this->loaded = true;
@@ -146,7 +146,7 @@ class SettingsController {
   }
 
   private function fetchValue($key) {
-    $setting = $this->settings_repository->findOneByName($key);
+    $setting = $this->settingsRepository->findOneByName($key);
     return $setting ? $setting->getValue() : null;
   }
 

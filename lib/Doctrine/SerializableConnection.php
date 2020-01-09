@@ -13,12 +13,12 @@ class SerializableConnection extends Connection {
   private $config;
   private $event_manager;
 
-  public function __construct(array $params, Driver $driver, Configuration $config = null, EventManager $event_manager = null) {
+  public function __construct(array $params, Driver $driver, Configuration $config = null, EventManager $eventManager = null) {
     $this->params = $params;
     $this->driver = $driver;
     $this->config = $config;
-    $this->event_manager = $event_manager;
-    parent::__construct($params, $driver, $config, $event_manager);
+    $this->eventManager = $eventManager;
+    parent::__construct($params, $driver, $config, $eventManager);
   }
 
   public function __sleep() {
@@ -26,6 +26,6 @@ class SerializableConnection extends Connection {
   }
 
   public function __wakeup() {
-    parent::__construct($this->params, $this->driver, $this->config, $this->event_manager);
+    parent::__construct($this->params, $this->driver, $this->config, $this->eventManager);
   }
 }

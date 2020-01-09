@@ -31,28 +31,28 @@ class SettingsInactiveSubscribersChangeCest {
       ->withCronTriggerMethod('WordPress');
   }
 
-  public function inactiveSubscribersSettingsChange(\AcceptanceTester $I) {
-    $I->wantTo('Change inactive users settings and reactivate all subscribers');
-    $I->login();
-    $I->amOnMailPoetPage('Settings');
-    $I->click('[data-automation-id="settings-advanced-tab"]');
-    $I->waitForElement('[data-automation-id="inactive-subscribers-enabled"]');
-    $I->click('[data-automation-id="inactive-subscribers-option-never"]');
-    $I->click('[data-automation-id="settings-submit-button"]');
-    $I->waitForText('Settings saved');
-    $I->amOnMailPoetPage('Subscribers');
+  public function inactiveSubscribersSettingsChange(\AcceptanceTester $i) {
+    $i->wantTo('Change inactive users settings and reactivate all subscribers');
+    $i->login();
+    $i->amOnMailPoetPage('Settings');
+    $i->click('[data-automation-id="settings-advanced-tab"]');
+    $i->waitForElement('[data-automation-id="inactive-subscribers-enabled"]');
+    $i->click('[data-automation-id="inactive-subscribers-option-never"]');
+    $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
+    $i->amOnMailPoetPage('Subscribers');
     // Subscribers are activated in background so we do a couple of reloads
     for ($i = 0; $i < 15; $i++) {
       try {
-        $I->wait(2);
-        $I->reloadPage();
-        $I->waitForListingItemsToLoad();
-        $I->see('Inactive (0)');
+        $i->wait(2);
+        $i->reloadPage();
+        $i->waitForListingItemsToLoad();
+        $i->see('Inactive (0)');
         return;
       } catch (\PHPUnit_Framework_Exception $e) {
         continue;
       }
     }
-    $I->see('Inactive (0)');
+    $i->see('Inactive (0)');
   }
 }

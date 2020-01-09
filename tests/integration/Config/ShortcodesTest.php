@@ -26,7 +26,7 @@ class ShortcodesTest extends \MailPoetTest {
     $newsletter->status = Newsletter::STATUS_SENT;
     $this->newsletter = $newsletter->save();
     $queue = SendingTask::create();
-    $queue->newsletter_id = $newsletter->id;
+    $queue->newsletterId = $newsletter->id;
     $queue->status = SendingQueue::STATUS_COMPLETED;
     $this->queue = $queue->save();
   }
@@ -35,8 +35,8 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
       $args = func_get_args();
-      $filter_name = array_shift($args);
-      switch ($filter_name) {
+      $filterName = array_shift($args);
+      switch ($filterName) {
         case 'mailpoet_archive_date':
           return $shortcodes->renderArchiveDate($args[0]);
         case 'mailpoet_archive_subject':
@@ -53,22 +53,22 @@ class ShortcodesTest extends \MailPoetTest {
     $link = $link->attr('href');
     expect($link)->contains('endpoint=view_in_browser');
     // request data object contains newsletter hash but not newsletter id
-    $parsed_link = parse_url($link, PHP_URL_QUERY);
-    parse_str(html_entity_decode((string)$parsed_link), $data);
-    $request_data = Url::transformUrlDataObject(
+    $parsedLink = parse_url($link, PHP_URL_QUERY);
+    parse_str(html_entity_decode((string)$parsedLink), $data);
+    $requestData = Url::transformUrlDataObject(
       Router::decodeRequestData($data['data'])
     );
-    expect($request_data['newsletter_id'])->isEmpty();
-    expect($request_data['newsletter_hash'])->equals($this->newsletter->hash);
+    expect($requestData['newsletter_id'])->isEmpty();
+    expect($requestData['newsletter_hash'])->equals($this->newsletter->hash);
   }
 
   public function testItDisplaysManageSubscriptionFormForLoggedinExistingUsers() {
-    $wp_user = wp_set_current_user(1);
+    $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $wp_user->data->user_email;
-    $subscriber->wp_user_id = $wp_user->ID;
+    $subscriber->email = $wpUser->data->user_email;
+    $subscriber->wpUserId = $wpUser->ID;
     $subscriber->save();
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
@@ -79,9 +79,9 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDisplayManageSubscriptionFormForLoggedinNonexistentSubscribers() {
-    $wp_user = wp_set_current_user(1);
+    $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
-    expect(Subscriber::findOne($wp_user->data->user_email))->false();
+    expect(Subscriber::findOne($wpUser->data->user_email))->false();
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
@@ -100,12 +100,12 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItDisplaysLinkToManageSubscriptionPageForLoggedinExistingUsers() {
-    $wp_user = wp_set_current_user(1);
+    $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $wp_user->data->user_email;
-    $subscriber->wp_user_id = $wp_user->ID;
+    $subscriber->email = $wpUser->data->user_email;
+    $subscriber->wpUserId = $wpUser->ID;
     $subscriber->save();
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
@@ -115,9 +115,9 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
-    $wp_user = wp_set_current_user(1);
+    $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
-    expect(Subscriber::findOne($wp_user->data->user_email))->false();
+    expect(Subscriber::findOne($wpUser->data->user_email))->false();
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();

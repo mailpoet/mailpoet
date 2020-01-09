@@ -11,31 +11,31 @@ class Footer {
   public static function render($element) {
     $element['text'] = preg_replace('/\n/', '<br />', $element['text']);
     $element['text'] = preg_replace('/(<\/?p.*?>)/i', '', $element['text']);
-    $line_height = sprintf(
-      '%spx', StylesHelper::$default_line_height * (int)$element['styles']['text']['fontSize']
+    $lineHeight = sprintf(
+      '%spx', StylesHelper::$defaultLineHeight * (int)$element['styles']['text']['fontSize']
     );
-    $DOM_parser = new pQuery();
-    $DOM = $DOM_parser->parseStr($element['text']);
+    $dOMParser = new pQuery();
+    $DOM = $dOMParser->parseStr($element['text']);
     if (isset($element['styles']['link'])) {
       $links = $DOM->query('a');
       if ($links->count()) {
         $css = new CSS();
         foreach ($links as $link) {
-          $element_link_styles = StylesHelper::getStyles($element['styles'], 'link');
-          $link->style = $css->mergeInlineStyles($element_link_styles, $link->style);
+          $elementLinkStyles = StylesHelper::getStyles($element['styles'], 'link');
+          $link->style = $css->mergeInlineStyles($elementLinkStyles, $link->style);
         }
       }
     }
-    $background_color = $element['styles']['block']['backgroundColor'];
-    $background_color = ($background_color !== 'transparent') ?
-      'bgcolor="' . $background_color . '"' :
+    $backgroundColor = $element['styles']['block']['backgroundColor'];
+    $backgroundColor = ($backgroundColor !== 'transparent') ?
+      'bgcolor="' . $backgroundColor . '"' :
       false;
-    if (!$background_color) unset($element['styles']['block']['backgroundColor']);
-    $style = 'line-height: ' . $line_height . ';' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text');
+    if (!$backgroundColor) unset($element['styles']['block']['backgroundColor']);
+    $style = 'line-height: ' . $lineHeight . ';' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text');
     $style = EHelper::escapeHtmlStyleAttr($style);
     $template = '
       <tr>
-        <td class="mailpoet_header_footer_padded mailpoet_footer" ' . $background_color . ' style="' . $style . '">
+        <td class="mailpoet_header_footer_padded mailpoet_footer" ' . $backgroundColor . ' style="' . $style . '">
           ' . str_replace('&', '&amp;', $DOM->html()) . '
         </td>
       </tr>';

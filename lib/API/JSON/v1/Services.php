@@ -41,26 +41,26 @@ class Services extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
 
-  public function __construct(Bridge $bridge, SettingsController $settings, AnalyticsHelper $analytics, SPFCheck $spf_check, SendingServiceKeyCheck $mss_worker, PremiumKeyCheck $premium_worker) {
+  public function __construct(Bridge $bridge, SettingsController $settings, AnalyticsHelper $analytics, SPFCheck $spfCheck, SendingServiceKeyCheck $mssWorker, PremiumKeyCheck $premiumWorker) {
     $this->bridge = $bridge;
     $this->settings = $settings;
     $this->analytics = $analytics;
-    $this->spf_check = $spf_check;
-    $this->mss_worker = $mss_worker;
-    $this->premium_worker = $premium_worker;
-    $this->date_time = new DateTime();
+    $this->spfCheck = $spfCheck;
+    $this->mssWorker = $mssWorker;
+    $this->premiumWorker = $premiumWorker;
+    $this->dateTime = new DateTime();
   }
 
   public function checkSPFRecord($data = []) {
-    $sender_address = $this->settings->get('sender.address');
-    $domain_name = mb_substr($sender_address, mb_strpos($sender_address, '@') + 1);
+    $senderAddress = $this->settings->get('sender.address');
+    $domainName = mb_substr($senderAddress, mb_strpos($senderAddress, '@') + 1);
 
-    $result = $this->spf_check->checkSPFRecord($domain_name);
+    $result = $this->spfCheck->checkSPFRecord($domainName);
 
     if (!$result) {
       return $this->errorResponse(
         [APIError::BAD_REQUEST => WPFunctions::get()->__('SPF check has failed.', 'mailpoet')],
-        ['sender_address' => $sender_address]
+        ['sender_address' => $senderAddress]
       );
     }
 
@@ -87,13 +87,13 @@ class Services extends APIEndpoint {
 
     $state = !empty($result['state']) ? $result['state'] : null;
 
-    $success_message = null;
+    $successMessage = null;
     if ($state == Bridge::KEY_VALID) {
-      $success_message = WPFunctions::get()->__('Your MailPoet Sending Service key has been successfully validated.', 'mailpoet');
+      $successMessage = WPFunctions::get()->__('Your MailPoet Sending Service key has been successfully validated.', 'mailpoet');
     } elseif ($state == Bridge::KEY_EXPIRING) {
-      $success_message = sprintf(
+      $successMessage = sprintf(
         WPFunctions::get()->__('Your MailPoet Sending Service key expires on %s!', 'mailpoet'),
-        $this->date_time->formatDate(strtotime($result['data']['expire_at']))
+        $this->dateTime->formatDate(strtotime($result['data']['expire_at']))
       );
     }
 
@@ -101,8 +101,8 @@ class Services extends APIEndpoint {
       $this->analytics->setPublicId($result['data']['public_id']);
     }
 
-    if ($success_message) {
-      return $this->successResponse(['message' => $success_message]);
+    if ($successMessage) {
+      return $this->successResponse(['message' => $successMessage]);
     }
 
     switch ($state) {
@@ -149,13 +149,13 @@ class Services extends APIEndpoint {
 
     $state = !empty($result['state']) ? $result['state'] : null;
 
-    $success_message = null;
+    $successMessage = null;
     if ($state == Bridge::KEY_VALID) {
-      $success_message = WPFunctions::get()->__('Your Premium key has been successfully validated.', 'mailpoet');
+      $successMessage = WPFunctions::get()->__('Your Premium key has been successfully validated.', 'mailpoet');
     } elseif ($state == Bridge::KEY_EXPIRING) {
-      $success_message = sprintf(
+      $successMessage = sprintf(
         WPFunctions::get()->__('Your Premium key expires on %s.', 'mailpoet'),
-        $this->date_time->formatDate(strtotime($result['data']['expire_at']))
+        $this->dateTime->formatDate(strtotime($result['data']['expire_at']))
       );
     }
 
@@ -163,9 +163,9 @@ class Services extends APIEndpoint {
       $this->analytics->setPublicId($result['data']['public_id']);
     }
 
-    if ($success_message) {
+    if ($successMessage) {
       return $this->successResponse(
-        ['message' => $success_message],
+        ['message' => $successMessage],
         Installer::getPremiumStatus()
       );
     }
@@ -190,10 +190,10 @@ class Services extends APIEndpoint {
   }
 
   public function recheckKeys() {
-    $this->mss_worker->init();
-    $this->mss_worker->checkKey();
-    $this->premium_worker->init();
-    $this->premium_worker->checkKey();
+    $this->mssWorker->init();
+    $this->mssWorker->checkKey();
+    $this->premiumWorker->init();
+    $this->premiumWorker->checkKey();
     return $this->successResponse();
   }
 

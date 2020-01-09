@@ -95,19 +95,19 @@ class FormDataMapperTest extends \MailPoetTest {
   }
 
   public function testItSetsIdOnEdit() {
-    $dynamic_segment = DynamicSegment::createOrUpdate([
+    $dynamicSegment = DynamicSegment::createOrUpdate([
         'name' => 'segment',
         'description' => 'description',
     ]);
     $data = [
-      'id' => (string)$dynamic_segment->id(),
+      'id' => (string)$dynamicSegment->id(),
       'name' => 'Name',
       'description' => 'Description',
       'segmentType' => 'userRole',
       'wordpressRole' => 'administrator',
     ];
     $segment = $this->mapper->mapDataToDB($data);
-    $this->assertSame($dynamic_segment->id(), $segment->id);
+    $this->assertSame($dynamicSegment->id(), $segment->id);
 
   }
 

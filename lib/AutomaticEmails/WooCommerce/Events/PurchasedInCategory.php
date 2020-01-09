@@ -23,13 +23,13 @@ class PurchasedInCategory {
   /** @var LoggerFactory */
   private $logger_factory;
 
-  public function __construct(WCHelper $woocommerce_helper = null) {
-    if ($woocommerce_helper === null) {
-      $woocommerce_helper = new WCHelper();
+  public function __construct(WCHelper $woocommerceHelper = null) {
+    if ($woocommerceHelper === null) {
+      $woocommerceHelper = new WCHelper();
     }
-    $this->woocommerce_helper = $woocommerce_helper;
+    $this->woocommerceHelper = $woocommerceHelper;
     $this->scheduler = new AutomaticEmailScheduler();
-    $this->logger_factory = LoggerFactory::getInstance();
+    $this->loggerFactory = LoggerFactory::getInstance();
   }
 
   public function getEventDetails() {
@@ -56,8 +56,8 @@ class PurchasedInCategory {
       [$this, 'getCategories']
     );
 
-    $accepted_order_states = WPFunctions::get()->applyFilters('mailpoet_first_purchase_order_states', ['completed', 'processing']);
-    foreach ($accepted_order_states as $state) {
+    $acceptedOrderStates = WPFunctions::get()->applyFilters('mailpoet_first_purchase_order_states', ['completed', 'processing']);
+    foreach ($acceptedOrderStates as $state) {
       WPFunctions::get()->addAction(
         'woocommerce_order_status_' . $state,
         [$this, 'scheduleEmail'],
@@ -67,72 +67,72 @@ class PurchasedInCategory {
     }
   }
 
-  public function getCategories($search_query) {
+  public function getCategories($searchQuery) {
     $args = [
       'taxonomy' => 'product_cat',
-      'search' => $search_query,
+      'search' => $searchQuery,
       'orderby' => 'name',
       'hierarchical' => 0,
       'hide_empty' => 1,
       'order' => 'ASC',
     ];
-    $all_categories = get_categories($args);
+    $allCategories = get_categories($args);
 
     return array_map(function($category) {
       return [
-        'id' => $category->term_id,
+        'id' => $category->termId,
         'name' => $category->name,
       ];
-    }, $all_categories);
+    }, $allCategories);
   }
 
-  public function scheduleEmail($order_id) {
-    $order_details = $this->woocommerce_helper->wcGetOrder($order_id);
-    if (!$order_details || !$order_details->get_billing_email()) {
-      $this->logger_factory->getLogger(self::SLUG)->addInfo(
+  public function scheduleEmail($orderId) {
+    $orderDetails = $this->woocommerceHelper->wcGetOrder($orderId);
+    if (!$orderDetails || !$orderDetails->get_billing_email()) {
+      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
         'Email not scheduled because the order customer was not found',
-        ['order_id' => $order_id]
+        ['order_id' => $orderId]
       );
       return;
     }
-    $customer_email = $order_details->get_billing_email();
+    $customerEmail = $orderDetails->get_billing_email();
 
-    $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customer_email);
+    $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customerEmail);
 
     if (!$subscriber instanceof Subscriber) {
-      $this->logger_factory->getLogger(self::SLUG)->addInfo(
+      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
         'Email not scheduled because the customer was not found as WooCommerce list subscriber',
-        ['order_id' => $order_id, 'customer_email' => $customer_email]
+        ['order_id' => $orderId, 'customer_email' => $customerEmail]
       );
       return;
     }
 
-    $ordered_product_categories = [];
-    foreach ($order_details->get_items() as $order_item_product) {
-      $product = $order_item_product->get_product();
+    $orderedProductCategories = [];
+    foreach ($orderDetails->get_items() as $orderItemProduct) {
+      $product = $orderItemProduct->get_product();
       if (!$product instanceof \WC_Product) {
         continue;
       }
-      $ordered_product_categories = array_merge($ordered_product_categories, $product->get_category_ids());
+      $orderedProductCategories = array_merge($orderedProductCategories, $product->get_category_ids());
     }
 
-    $scheduling_condition = function($automatic_email) use ($ordered_product_categories, $subscriber) {
-      $meta = $automatic_email->getMeta();
-      if (empty($meta['option']) || $automatic_email->wasScheduledForSubscriber($subscriber->id)) return false;
+    $schedulingCondition = function($automaticEmail) use ($orderedProductCategories, $subscriber) {
+      $meta = $automaticEmail->getMeta();
+      if (empty($meta['option']) || $automaticEmail->wasScheduledForSubscriber($subscriber->id)) return false;
 
-      $meta_categories = array_column($meta['option'], 'id');
-      $matched_categories = array_intersect($meta_categories, $ordered_product_categories);
+      $metaCategories = array_column($meta['option'], 'id');
+      $matchedCategories = array_intersect($metaCategories, $orderedProductCategories);
 
-      return !empty($matched_categories);
+      return !empty($matchedCategories);
     };
 
-    $this->logger_factory->getLogger(self::SLUG)->addInfo(
+    $this->loggerFactory->getLogger(self::SLUG)->addInfo(
       'Email scheduled', [
-        'order_id' => $order_id,
-        'customer_email' => $customer_email,
+        'order_id' => $orderId,
+        'customer_email' => $customerEmail,
         'subscriber_id' => $subscriber->id,
       ]
     );
-    $this->scheduler->scheduleAutomaticEmail(WooCommerce::SLUG, self::SLUG, $scheduling_condition, $subscriber->id);
+    $this->scheduler->scheduleAutomaticEmail(WooCommerce::SLUG, self::SLUG, $schedulingCondition, $subscriber->id);
   }
 }

@@ -10,11 +10,11 @@ class AssetsTest extends \MailPoetTest {
   public $assets_url;
   public function _before() {
     parent::_before();
-    $this->assets_url = 'https://www.testing.com/wp-content/plugins/mailpoet/assets';
+    $this->assetsUrl = 'https://www.testing.com/wp-content/plugins/mailpoet/assets';
     $this->version = '1.2.3';
-    $this->assets_extension = new Assets(
+    $this->assetsExtension = new Assets(
       [
-        'assets_url' => $this->assets_url,
+        'assets_url' => $this->assetsUrl,
         'assets_manifest_js' => false,
         'assets_manifest_css' => false,
         'version' => $this->version,
@@ -28,26 +28,26 @@ class AssetsTest extends \MailPoetTest {
       'script2.js' => 'script2.hash.js',
     ];
 
-    $assets_extension = new Assets(
+    $assetsExtension = new Assets(
       [
-        'assets_url' => $this->assets_url,
+        'assets_url' => $this->assetsUrl,
         'assets_manifest_js' => $manifest,
         'version' => $this->version,
       ]
     );
 
-    expect($assets_extension->generateJavascript('script1.js', 'script2.js'))->equals(
-      '<script type="text/javascript" src="' . $this->assets_url . '/dist/js/script1.hash.js"></script>'
+    expect($assetsExtension->generateJavascript('script1.js', 'script2.js'))->equals(
+      '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script1.hash.js"></script>'
       . "\n"
-      . '<script type="text/javascript" src="' . $this->assets_url . '/dist/js/script2.hash.js"></script>'
+      . '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script2.hash.js"></script>'
     );
   }
 
   public function testItGeneratesJavascriptTagsForAssetsWhenManifestFileDoesNotExist() {
-    expect($this->assets_extension->generateJavascript('lib/script1.js', 'script2.js'))->equals(
-      '<script type="text/javascript" src="' . $this->assets_url . '/js/lib/script1.js"></script>'
+    expect($this->assetsExtension->generateJavascript('lib/script1.js', 'script2.js'))->equals(
+      '<script type="text/javascript" src="' . $this->assetsUrl . '/js/lib/script1.js"></script>'
       . "\n"
-      . '<script type="text/javascript" src="' . $this->assets_url . '/dist/js/script2.js"></script>'
+      . '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script2.js"></script>'
     );
   }
 
@@ -57,51 +57,51 @@ class AssetsTest extends \MailPoetTest {
       'style2.css' => 'style2.hash.css',
     ];
 
-    $assets_extension = new Assets(
+    $assetsExtension = new Assets(
       [
-        'assets_url' => $this->assets_url,
+        'assets_url' => $this->assetsUrl,
         'assets_manifest_css' => $manifest,
         'version' => $this->version,
       ]
     );
 
-    expect($assets_extension->generateStylesheet('style1.css', 'style2.css'))->equals(
-      '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/dist/css/style1.hash.css" />'
+    expect($assetsExtension->generateStylesheet('style1.css', 'style2.css'))->equals(
+      '<link rel="stylesheet" type="text/css" href="' . $this->assetsUrl . '/dist/css/style1.hash.css" />'
       . "\n"
-      . '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/dist/css/style2.hash.css" />'
+      . '<link rel="stylesheet" type="text/css" href="' . $this->assetsUrl . '/dist/css/style2.hash.css" />'
     );
   }
 
   public function testItGeneratesStylesheetTagsWhenManifestFileDoesNotExist() {
-    expect($this->assets_extension->generateStylesheet('style1.css', 'style2.css'))->equals(
-      '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/dist/css/style1.css" />'
+    expect($this->assetsExtension->generateStylesheet('style1.css', 'style2.css'))->equals(
+      '<link rel="stylesheet" type="text/css" href="' . $this->assetsUrl . '/dist/css/style1.css" />'
       . "\n"
-      . '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/dist/css/style2.css" />'
+      . '<link rel="stylesheet" type="text/css" href="' . $this->assetsUrl . '/dist/css/style2.css" />'
     );
   }
 
   public function testItGeneratesImageUrls() {
-    expect($this->assets_extension->generateImageUrl('image1.png'))->equals(
-      $this->assets_url . '/img/image1.png?mailpoet_version=' . $this->version
+    expect($this->assetsExtension->generateImageUrl('image1.png'))->equals(
+      $this->assetsUrl . '/img/image1.png?mailpoet_version=' . $this->version
     );
   }
 
   public function testItAppendsVersionToUrl() {
-    $without_file = 'http://url.com/';
-    expect($this->assets_extension->appendVersionToUrl($without_file))->equals(
-      $without_file . '?mailpoet_version=' . $this->version
+    $withoutFile = 'http://url.com/';
+    expect($this->assetsExtension->appendVersionToUrl($withoutFile))->equals(
+      $withoutFile . '?mailpoet_version=' . $this->version
     );
-    $with_file = 'http://url.com/file.php';
-    expect($this->assets_extension->appendVersionToUrl($with_file))->equals(
-      $with_file . '?mailpoet_version=' . $this->version
+    $withFile = 'http://url.com/file.php';
+    expect($this->assetsExtension->appendVersionToUrl($withFile))->equals(
+      $withFile . '?mailpoet_version=' . $this->version
     );
-    $with_folder = 'http://url.com/folder/file.php';
-    expect($this->assets_extension->appendVersionToUrl($with_folder))->equals(
-      $with_folder . '?mailpoet_version=' . $this->version
+    $withFolder = 'http://url.com/folder/file.php';
+    expect($this->assetsExtension->appendVersionToUrl($withFolder))->equals(
+      $withFolder . '?mailpoet_version=' . $this->version
     );
-    $with_query_string = 'http://url.com/folder/file.php?name=value';
-    expect($this->assets_extension->appendVersionToUrl($with_query_string))->equals(
-      $with_query_string . '&mailpoet_version=' . $this->version
+    $withQueryString = 'http://url.com/folder/file.php?name=value';
+    expect($this->assetsExtension->appendVersionToUrl($withQueryString))->equals(
+      $withQueryString . '&mailpoet_version=' . $this->version
     );
   }
 }

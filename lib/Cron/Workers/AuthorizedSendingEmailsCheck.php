@@ -13,8 +13,8 @@ class AuthorizedSendingEmailsCheck extends SimpleWorker {
   /** @var AuthorizedEmailsController */
   private $authorized_emails_controller;
 
-  public function __construct(AuthorizedEmailsController $authorized_emails_controller) {
-    $this->authorized_emails_controller = $authorized_emails_controller;
+  public function __construct(AuthorizedEmailsController $authorizedEmailsController) {
+    $this->authorizedEmailsController = $authorizedEmailsController;
     parent::__construct();
   }
 
@@ -23,7 +23,7 @@ class AuthorizedSendingEmailsCheck extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTask $task, $timer) {
-    $this->authorized_emails_controller->checkAuthorizedEmailAddresses();
+    $this->authorizedEmailsController->checkAuthorizedEmailAddresses();
     return true;
   }
 }

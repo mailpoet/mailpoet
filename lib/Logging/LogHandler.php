@@ -22,9 +22,9 @@ class LogHandler extends AbstractProcessingHandler {
   /** @var callable|null */
   private $rand_function;
 
-  public function __construct($level = \MailPoetVendor\Monolog\Logger::DEBUG, $bubble = \true, $rand_function = null) {
+  public function __construct($level = \MailPoetVendor\Monolog\Logger::DEBUG, $bubble = \true, $randFunction = null) {
     parent::__construct($level, $bubble);
-    $this->rand_function = $rand_function;
+    $this->randFunction = $randFunction;
   }
 
   protected function write(array $record) {
@@ -47,8 +47,8 @@ class LogHandler extends AbstractProcessingHandler {
   }
 
   private function getRandom() {
-    if ($this->rand_function) {
-      return call_user_func($this->rand_function, 0, 100);
+    if ($this->randFunction) {
+      return call_user_func($this->randFunction, 0, 100);
     }
     return rand(0, 100);
   }

@@ -178,4 +178,7 @@
 
   <!-- Visibility MUST be declared on all methods. -->
   <rule ref="Squiz.Scope.MethodScope"/>
+
+  <!-- Enforce camelCase naming of variables and properties -->
+  <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps"/>
 </ruleset>

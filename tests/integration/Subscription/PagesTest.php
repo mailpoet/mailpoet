@@ -33,50 +33,50 @@ class PagesTest extends \MailPoetTest {
     $this->subscriber->hydrate(Fixtures::get('subscriber_template'));
     $this->subscriber->status = Subscriber::STATUS_UNCONFIRMED;
     $this->subscriber->save();
-    $link_tokens = new LinkTokens;
+    $linkTokens = new LinkTokens;
     expect($this->subscriber->getErrors())->false();
-    $this->test_data['email'] = $this->subscriber->email;
-    $this->test_data['token'] = $link_tokens->getToken($this->subscriber);
+    $this->testData['email'] = $this->subscriber->email;
+    $this->testData['token'] = $linkTokens->getToken($this->subscriber);
     $this->pages = ContainerWrapper::getInstance()->get(Pages::class);
   }
 
   public function testItConfirmsSubscription() {
-    $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
-    $subscription = $this->pages->init($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
+    $newSubscriberNotificationSender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
+    $subscription = $this->pages->init($action = false, $this->testData, false, false, $newSubscriberNotificationSender);
     $subscription->confirm();
-    $confirmed_subscriber = Subscriber::findOne($this->subscriber->id);
-    expect($confirmed_subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($confirmed_subscriber->last_subscribed_at)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond(1));
-    expect($confirmed_subscriber->last_subscribed_at)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond(1));
+    $confirmedSubscriber = Subscriber::findOne($this->subscriber->id);
+    expect($confirmedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond(1));
+    expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond(1));
   }
 
   public function testItDoesNotConfirmSubscriptionOnDuplicateAttempt() {
-    $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
+    $newSubscriberNotificationSender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $subscriber = $this->subscriber;
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
-    $subscription = $this->pages->init($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
+    $subscription = $this->pages->init($action = false, $this->testData, false, false, $newSubscriberNotificationSender);
     expect($subscription->confirm())->false();
   }
 
   public function testItSendsWelcomeNotificationUponConfirmingSubscription() {
-    $new_subscriber_notification_sender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
-    $subscription = $this->pages->init($action = false, $this->test_data, false, false, $new_subscriber_notification_sender);
+    $newSubscriberNotificationSender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
+    $subscription = $this->pages->init($action = false, $this->testData, false, false, $newSubscriberNotificationSender);
     // create segment
     $segment = Segment::create();
     $segment->hydrate(['name' => 'List #1']);
     $segment->save();
     expect($segment->getErrors())->false();
     // create subscriber->segment relation
-    $subscriber_segment = SubscriberSegment::create();
-    $subscriber_segment->hydrate(
+    $subscriberSegment = SubscriberSegment::create();
+    $subscriberSegment->hydrate(
       [
         'subscriber_id' => $this->subscriber->id,
         'segment_id' => $segment->id,
       ]
     );
-    $subscriber_segment->save();
-    expect($subscriber_segment->getErrors())->false();
+    $subscriberSegment->save();
+    expect($subscriberSegment->getErrors())->false();
 
     // create welcome notification newsletter and relevant scheduling options
     $newsletter = Newsletter::create();
@@ -84,48 +84,48 @@ class PagesTest extends \MailPoetTest {
     $newsletter->status = Newsletter::STATUS_ACTIVE;
     $newsletter->save();
     expect($newsletter->getErrors())->false();
-    $newsletter_options = [
+    $newsletterOptions = [
       'event' => 'segment',
       'segment' => $segment->id,
       'afterTimeType' => 'days',
       'afterTimeNumber' => 1,
     ];
-    foreach ($newsletter_options as $option => $value) {
-      $newsletter_option_field = NewsletterOptionField::create();
-      $newsletter_option_field->name = $option;
-      $newsletter_option_field->newsletter_type = $newsletter->type;
-      $newsletter_option_field->save();
-      expect($newsletter_option_field->getErrors())->false();
+    foreach ($newsletterOptions as $option => $value) {
+      $newsletterOptionField = NewsletterOptionField::create();
+      $newsletterOptionField->name = $option;
+      $newsletterOptionField->newsletterType = $newsletter->type;
+      $newsletterOptionField->save();
+      expect($newsletterOptionField->getErrors())->false();
 
-      $newsletter_option = NewsletterOption::create();
-      $newsletter_option->option_field_id = (int)$newsletter_option_field->id;
-      $newsletter_option->newsletter_id = $newsletter->id;
-      $newsletter_option->value = (string)$value;
-      $newsletter_option->save();
-      expect($newsletter_option->getErrors())->false();
+      $newsletterOption = NewsletterOption::create();
+      $newsletterOption->optionFieldId = (int)$newsletterOptionField->id;
+      $newsletterOption->newsletterId = $newsletter->id;
+      $newsletterOption->value = (string)$value;
+      $newsletterOption->save();
+      expect($newsletterOption->getErrors())->false();
     }
 
     // confirm subscription and ensure that welcome email is scheduled
     $subscription->confirm();
-    $scheduled_notification = SendingQueue::findTaskByNewsletterId($newsletter->id)
+    $scheduledNotification = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
       ->findOne();
-    expect($scheduled_notification)->notEmpty();
+    expect($scheduledNotification)->notEmpty();
   }
 
   public function testItUnsubscribes() {
-    $pages = $this->pages->init($action = 'unsubscribe', $this->test_data);
+    $pages = $this->pages->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
-    $updated_subscriber = Subscriber::findOne($this->subscriber->id);
-    expect($updated_subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    $updatedSubscriber = Subscriber::findOne($this->subscriber->id);
+    expect($updatedSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
   public function testItDoesntUnsubscribeWhenPreviewing() {
-    $this->test_data['preview'] = 1;
-    $pages = $this->pages->init($action = 'unsubscribe', $this->test_data);
+    $this->testData['preview'] = 1;
+    $pages = $this->pages->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
-    $updated_subscriber = Subscriber::findOne($this->subscriber->id);
-    expect($updated_subscriber->status)->notEquals(Subscriber::STATUS_UNSUBSCRIBED);
+    $updatedSubscriber = Subscriber::findOne($this->subscriber->id);
+    expect($updatedSubscriber->status)->notEquals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
   public function _after() {

@@ -20,32 +20,32 @@ class PHPMail {
   /** @var BlacklistCheck */
   private $blacklist;
 
-  public function __construct($sender, $reply_to, $return_path, PHPMailMapper $error_mapper) {
+  public function __construct($sender, $replyTo, $returnPath, PHPMailMapper $errorMapper) {
     $this->sender = $sender;
-    $this->reply_to = $reply_to;
-    $this->return_path = ($return_path) ?
-      $return_path :
+    $this->replyTo = $replyTo;
+    $this->returnPath = ($returnPath) ?
+      $returnPath :
       $this->sender['from_email'];
     $this->mailer = $this->buildMailer();
-    $this->error_mapper = $error_mapper;
+    $this->errorMapper = $errorMapper;
     $this->blacklist = new BlacklistCheck();
   }
 
-  public function send($newsletter, $subscriber, $extra_params = []) {
+  public function send($newsletter, $subscriber, $extraParams = []) {
     if ($this->blacklist->isBlacklisted($subscriber)) {
-      $error = $this->error_mapper->getBlacklistError($subscriber);
+      $error = $this->errorMapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
     try {
-      $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extra_params);
+      $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extraParams);
       $result = $mailer->send();
     } catch (\Exception $e) {
-      return Mailer::formatMailerErrorResult($this->error_mapper->getErrorFromException($e, $subscriber));
+      return Mailer::formatMailerErrorResult($this->errorMapper->getErrorFromException($e, $subscriber));
     }
     if ($result === true) {
       return Mailer::formatMailerSendSuccessResult();
     } else {
-      $error = $this->error_mapper->getErrorForSubscriber($subscriber);
+      $error = $this->errorMapper->getErrorForSubscriber($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
   }
@@ -57,24 +57,24 @@ class PHPMail {
     return $mailer;
   }
 
-  public function configureMailerWithMessage($newsletter, $subscriber, $extra_params = []) {
+  public function configureMailerWithMessage($newsletter, $subscriber, $extraParams = []) {
     $mailer = $this->mailer;
     $mailer->clearAddresses();
     $mailer->clearCustomHeaders();
     $mailer->isHTML(!empty($newsletter['body']['html']));
-    $mailer->CharSet = 'UTF-8';
+    $mailer->charSet = 'UTF-8';
     $mailer->setFrom($this->sender['from_email'], $this->sender['from_name'], false);
-    $mailer->addReplyTo($this->reply_to['reply_to_email'], $this->reply_to['reply_to_name']);
+    $mailer->addReplyTo($this->replyTo['reply_to_email'], $this->replyTo['reply_to_name']);
     $subscriber = $this->processSubscriber($subscriber);
     $mailer->addAddress($subscriber['email'], $subscriber['name']);
-    $mailer->Subject = (!empty($newsletter['subject'])) ? $newsletter['subject'] : '';
-    $mailer->Body = (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text'];
-    if ($mailer->ContentType !== 'text/plain') {
-      $mailer->AltBody = (!empty($newsletter['body']['text'])) ? $newsletter['body']['text'] : '';
+    $mailer->subject = (!empty($newsletter['subject'])) ? $newsletter['subject'] : '';
+    $mailer->body = (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text'];
+    if ($mailer->contentType !== 'text/plain') {
+      $mailer->altBody = (!empty($newsletter['body']['text'])) ? $newsletter['body']['text'] : '';
     }
-    $mailer->Sender = $this->return_path;
-    if (!empty($extra_params['unsubscribe_url'])) {
-      $this->mailer->addCustomHeader('List-Unsubscribe', $extra_params['unsubscribe_url']);
+    $mailer->sender = $this->returnPath;
+    if (!empty($extraParams['unsubscribe_url'])) {
+      $this->mailer->addCustomHeader('List-Unsubscribe', $extraParams['unsubscribe_url']);
     }
 
     // Enforce base64 encoding when lines are too long, otherwise quoted-printable encoding
@@ -84,23 +84,23 @@ class PHPMail {
     //   sendmail command which expects only NL as line endings (POSIX). Since quoted-printable
     //   requires CRLF some of those commands convert LF to CRLF which can break the email body
     //   because it already (correctly) uses CRLF. Such CRLF then (wrongly) becomes CRCRLF.
-    if (\PHPMailer::hasLineLongerThanMax($mailer->Body)) {
-      $mailer->Encoding = 'base64';
+    if (\PHPMailer::hasLineLongerThanMax($mailer->body)) {
+      $mailer->encoding = 'base64';
     }
 
     return $mailer;
   }
 
   public function processSubscriber($subscriber) {
-    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
-    if (!isset($subscriber_data['email'])) {
-      $subscriber_data = [
+    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriberData);
+    if (!isset($subscriberData['email'])) {
+      $subscriberData = [
         'email' => $subscriber,
       ];
     }
     return [
-      'email' => $subscriber_data['email'],
-      'name' => (isset($subscriber_data['name'])) ? $subscriber_data['name'] : '',
+      'email' => $subscriberData['email'],
+      'name' => (isset($subscriberData['name'])) ? $subscriberData['name'] : '',
     ];
   }
 }

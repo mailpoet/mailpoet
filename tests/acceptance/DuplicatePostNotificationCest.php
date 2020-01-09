@@ -6,30 +6,30 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class DuplicatePostNotificationCest {
 
-  public function duplicatePostNotification(\AcceptanceTester $I) {
-    $I->wantTo('Duplicate post notification email');
+  public function duplicatePostNotification(\AcceptanceTester $i) {
+    $i->wantTo('Duplicate post notification email');
 
     // step 1 - Prepare post notification email
-    $newsletter_title = 'Post Notification Duplicate Test';
-    $newsletter_factory = new Newsletter();
-    $newsletter_factory->withSubject($newsletter_title)
+    $newsletterTitle = 'Post Notification Duplicate Test';
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory->withSubject($newsletterTitle)
       ->withPostNotificationsType()
       ->create();
 
     // step 2 - Open list of post notifications
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
 
     // step 3 - Duplicate post notification
-    $I->waitForText($newsletter_title);
-    $I->clickItemRowActionByItemName($newsletter_title, 'Duplicate');
-    $I->waitForText('Copy of ' . $newsletter_title);
-    $I->waitForListingItemsToLoad();
+    $i->waitForText($newsletterTitle);
+    $i->clickItemRowActionByItemName($newsletterTitle, 'Duplicate');
+    $i->waitForText('Copy of ' . $newsletterTitle);
+    $i->waitForListingItemsToLoad();
 
     // step 5 - Open Editor
-    $I->clickItemRowActionByItemName('Copy of ' . $newsletter_title, 'Edit');
-    $I->waitForElement('[data-automation-id="newsletter_title"]');
+    $i->clickItemRowActionByItemName('Copy of ' . $newsletterTitle, 'Edit');
+    $i->waitForElement('[data-automation-id="newsletter_title"]');
   }
 
 }

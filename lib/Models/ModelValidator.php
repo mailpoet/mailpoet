@@ -68,23 +68,23 @@ class ModelValidator extends \MailPoetVendor\Sudzy\Engine {
   }
 
   public function validateEmail($email) {
-    $permitted_length = (strlen($email) >= self::EMAIL_MIN_LENGTH && strlen($email) <= self::EMAIL_MAX_LENGTH);
-    $valid_email = WPFunctions::get()->isEmail($email) !== false && parent::_isEmail($email, null);
-    return ($permitted_length && $valid_email);
+    $permittedLength = (strlen($email) >= self::EMAIL_MIN_LENGTH && strlen($email) <= self::EMAIL_MAX_LENGTH);
+    $validEmail = WPFunctions::get()->isEmail($email) !== false && parent::_isEmail($email, null);
+    return ($permittedLength && $validEmail);
   }
 
   public function validateNonRoleEmail($email) {
     if (!$this->validateEmail($email)) return false;
-    $first_part = strtolower(substr($email, 0, strpos($email, '@')));
-    return array_search($first_part, self::ROLE_EMAILS) === false;
+    $firstPart = strtolower(substr($email, 0, strpos($email, '@')));
+    return array_search($firstPart, self::ROLE_EMAILS) === false;
   }
 
-  public function validateRenderedNewsletterBody($newsletter_body) {
-    if (is_serialized($newsletter_body)) {
-      $newsletter_body = unserialize($newsletter_body);
-    } else if (Helpers::isJson($newsletter_body)) {
-      $newsletter_body = json_decode($newsletter_body, true);
+  public function validateRenderedNewsletterBody($newsletterBody) {
+    if (is_serialized($newsletterBody)) {
+      $newsletterBody = unserialize($newsletterBody);
+    } else if (Helpers::isJson($newsletterBody)) {
+      $newsletterBody = json_decode($newsletterBody, true);
     }
-    return (is_null($newsletter_body) || (is_array($newsletter_body) && !empty($newsletter_body['html']) && !empty($newsletter_body['text'])));
+    return (is_null($newsletterBody) || (is_array($newsletterBody) && !empty($newsletterBody['html']) && !empty($newsletterBody['text'])));
   }
 }

@@ -22,11 +22,11 @@ class PageRenderer {
 
   public function __construct(
     Renderer $renderer,
-    FeaturesController $features_controller,
+    FeaturesController $featuresController,
     SettingsController $settings
   ) {
     $this->renderer = $renderer;
-    $this->features_controller = $features_controller;
+    $this->featuresController = $featuresController;
     $this->settings = $settings;
   }
 
@@ -37,7 +37,7 @@ class PageRenderer {
    */
   public function displayPage($template, array $data = []) {
     $defaults = [
-      'feature_flags' => $this->features_controller->getAllFlags(),
+      'feature_flags' => $this->featuresController->getAllFlags(),
       'referral_id' => $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME),
     ];
     try {

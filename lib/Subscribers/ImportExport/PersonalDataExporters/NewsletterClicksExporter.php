@@ -36,16 +36,16 @@ class NewsletterClicksExporter {
   }
 
   private function exportNewsletter($row) {
-    $newsletter_data = [];
-    $newsletter_data[] = [
+    $newsletterData = [];
+    $newsletterData[] = [
       'name' => WPFunctions::get()->__('Email subject', 'mailpoet'),
       'value' => $row['newsletter_rendered_subject'],
     ];
-    $newsletter_data[] = [
+    $newsletterData[] = [
       'name' => WPFunctions::get()->__('Timestamp of the click event', 'mailpoet'),
       'value' => $row['created_at'],
     ];
-    $newsletter_data[] = [
+    $newsletterData[] = [
       'name' => WPFunctions::get()->__('URL', 'mailpoet'),
       'value' => $row['url'],
     ];
@@ -53,7 +53,7 @@ class NewsletterClicksExporter {
       'group_id' => 'mailpoet-newsletter-clicks',
       'group_label' => WPFunctions::get()->__('MailPoet Emails Clicks', 'mailpoet'),
       'item_id' => 'newsletter-' . $row['id'],
-      'data' => $newsletter_data,
+      'data' => $newsletterData,
     ];
   }
 

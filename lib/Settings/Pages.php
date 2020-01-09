@@ -66,13 +66,13 @@ class Pages {
   }
 
   public static function getAll() {
-    $all_pages = array_merge(
+    $allPages = array_merge(
       static::getMailPoetPages(),
       WPFunctions::get()->getPages()
     );
 
     $pages = [];
-    foreach ($all_pages as $page) {
+    foreach ($allPages as $page) {
       $pages[] = static::getPageData($page);
     }
 
@@ -80,14 +80,14 @@ class Pages {
   }
 
   public static function getPageData($page) {
-    $subscription_url_factory = Subscription\SubscriptionUrlFactory::getInstance();
+    $subscriptionUrlFactory = Subscription\SubscriptionUrlFactory::getInstance();
     return [
       'id' => $page->ID,
-      'title' => $page->post_title,
+      'title' => $page->postTitle,
       'url' => [
-        'unsubscribe' => $subscription_url_factory->getSubscriptionUrl($page, 'unsubscribe'),
-        'manage' => $subscription_url_factory->getSubscriptionUrl($page, 'manage'),
-        'confirm' => $subscription_url_factory->getSubscriptionUrl($page, 'confirm'),
+        'unsubscribe' => $subscriptionUrlFactory->getSubscriptionUrl($page, 'unsubscribe'),
+        'manage' => $subscriptionUrlFactory->getSubscriptionUrl($page, 'manage'),
+        'confirm' => $subscriptionUrlFactory->getSubscriptionUrl($page, 'confirm'),
       ],
     ];
   }

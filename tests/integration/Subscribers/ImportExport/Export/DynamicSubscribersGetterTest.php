@@ -17,14 +17,14 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
   public $subscriber_fields;
   public function _before() {
     parent::_before();
-    $this->subscriber_fields = [
+    $this->subscriberFields = [
       'first_name' => 'First name',
       'last_name' => 'Last name',
       'email' => 'Email',
       1 => 'Country',
     ];
 
-    $this->subscribers_data = [
+    $this->subscribersData = [
       [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
@@ -49,14 +49,14 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
       ],
     ];
 
-    $this->custom_fields_data = [
+    $this->customFieldsData = [
       [
         'name' => 'Country',
         'type' => 'text',
       ],
     ];
 
-    $this->segments_data = [
+    $this->segmentsData = [
       [
         'name' => 'Newspapers',
       ],
@@ -65,7 +65,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
       ],
     ];
 
-    foreach ($this->subscribers_data as $subscriber) {
+    foreach ($this->subscribersData as $subscriber) {
       if (isset($subscriber[1])) {
         unset($subscriber[1]);
       }
@@ -74,31 +74,31 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
       $entity->save();
     }
 
-    foreach ($this->custom_fields_data as $custom_field) {
+    foreach ($this->customFieldsData as $customField) {
       $entity = CustomField::create();
-      $entity->hydrate($custom_field);
+      $entity->hydrate($customField);
       $entity->save();
     }
 
-    foreach ($this->segments_data as $segment) {
+    foreach ($this->segmentsData as $segment) {
       $entity = Segment::create();
       $entity->hydrate($segment);
       $entity->save();
     }
 
     $entity = SubscriberCustomField::create();
-    $entity->subscriber_id = 2;
-    $entity->custom_field_id = 1;
-    $entity->value = $this->subscribers_data[1][1];
+    $entity->subscriberId = 2;
+    $entity->customFieldId = 1;
+    $entity->value = $this->subscribersData[1][1];
     $entity->save();
     $wp = new WPFunctions;
     $wp->removeAllFilters('mailpoet_get_segment_filters');
     $wp->addAction(
       'mailpoet_get_segment_filters',
-      function($segment_id) {
-        if ($segment_id == 1) {
+      function($segmentId) {
+        if ($segmentId == 1) {
           return [new \DynamicSegmentFilter([1, 2])];
-        } else if ($segment_id == 2) {
+        } else if ($segmentId == 2) {
           return [new \DynamicSegmentFilter([1, 3, 4])];
         }
         return [];

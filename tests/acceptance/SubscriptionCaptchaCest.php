@@ -15,41 +15,41 @@ class SubscriptionCaptchaCest {
   /** @var string */
   private $subscriber_email;
 
-  public function _before(\AcceptanceTester $I) {
-    $this->subscriber_email = 'test-form@example.com';
-    $this->settings_factory = new Settings();
-    $this->settings_factory->withCaptchaType(Captcha::TYPE_BUILTIN);
-    $this->settings_factory
+  public function _before(\AcceptanceTester $i) {
+    $this->subscriberEmail = 'test-form@example.com';
+    $this->settingsFactory = new Settings();
+    $this->settingsFactory->withCaptchaType(Captcha::TYPE_BUILTIN);
+    $this->settingsFactory
       ->withConfirmationEmailSubject()
       ->withConfirmationEmailBody()
       ->withConfirmationEmailEnabled();
 
-    $form_name = 'Subscription Acceptance Test Form';
-    $form_factory = new Form();
-    $form = $form_factory->withName($form_name)->create();
+    $formName = 'Subscription Acceptance Test Form';
+    $formFactory = new Form();
+    $form = $formFactory->withName($formName)->create();
 
-    $subscriber_factory = new Subscriber();
-    $subscriber_factory->withEmail($this->subscriber_email)->withCountConfirmations(1)->create();
+    $subscriberFactory = new Subscriber();
+    $subscriberFactory->withEmail($this->subscriberEmail)->withCountConfirmations(1)->create();
 
-    $I->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter']);
+    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter']);
   }
 
-  public function checkCaptchaPageExistsAfterSubscription(\AcceptanceTester $I) {
-    $I->wantTo('See the built-in captcha after subscribing using form widget');
-    $I->amOnPage('/');
-    $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
-    $I->click('.mailpoet_submit');
-    $I->waitForText('Confirm you’re not a robot');
-    $I->seeNoJSErrors();
+  public function checkCaptchaPageExistsAfterSubscription(\AcceptanceTester $i) {
+    $i->wantTo('See the built-in captcha after subscribing using form widget');
+    $i->amOnPage('/');
+    $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Confirm you’re not a robot');
+    $i->seeNoJSErrors();
   }
 
-  public function checkCaptchaPageIsNotShownToLoggedInUsers(\AcceptanceTester $I) {
-    $I->wantTo('check that captcha page is not shown to logged in users');
-    $I->login();
-    $I->amOnPage('/');
-    $I->fillField('[data-automation-id="form_email"]', $this->subscriber_email);
-    $I->click('.mailpoet_submit');
-    $I->waitForText('Check your inbox or spam folder to confirm your subscription.');
-    $I->seeNoJSErrors();
+  public function checkCaptchaPageIsNotShownToLoggedInUsers(\AcceptanceTester $i) {
+    $i->wantTo('check that captcha page is not shown to logged in users');
+    $i->login();
+    $i->amOnPage('/');
+    $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Check your inbox or spam folder to confirm your subscription.');
+    $i->seeNoJSErrors();
   }
 }

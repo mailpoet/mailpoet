@@ -19,10 +19,10 @@ class UrlDecorator {
   }
 
   public function decorate($url) {
-    $referral_id = $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME, null);
-    if ($referral_id === null) {
+    $referralId = $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME, null);
+    if ($referralId === null) {
       return $url;
     }
-    return $this->wp->addQueryArg('ref', $referral_id, $url);
+    return $this->wp->addQueryArg('ref', $referralId, $url);
   }
 }

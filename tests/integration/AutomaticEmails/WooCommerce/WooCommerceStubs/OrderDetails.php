@@ -10,8 +10,8 @@ class OrderDetails
   public $total;
   public $order_id;
 
-  public function __construct($order_id = null) {
-    $this->order_id = $order_id;
+  public function __construct($orderId = null) {
+    $this->orderId = $orderId;
   }
 
   public function get_customer_id() {
@@ -24,7 +24,7 @@ class OrderDetails
   }
 
   public function get_id() {
-    return $this->order_id;
+    return $this->orderId;
   }
 
   public function get_total() {

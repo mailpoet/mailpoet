@@ -90,7 +90,7 @@ class SubscriberExporterTest extends \MailPoetTest {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'email.that@has.custom.fields',
     ]);
-    $custom_field1 = CustomField::createOrUpdate([
+    $customField1 = CustomField::createOrUpdate([
       'name' => 'Custom field1',
       'type' => 'input',
     ]);
@@ -98,7 +98,7 @@ class SubscriberExporterTest extends \MailPoetTest {
       'name' => 'Custom field2',
       'type' => 'input',
     ]);
-    $subscriber->setCustomField($custom_field1->id(), 'Value');
+    $subscriber->setCustomField($customField1->id(), 'Value');
     $subscriber->setCustomField('123545657', 'Value');
     $result = $this->exporter->export('email.that@has.custom.fields');
     expect($result['data'][0]['data'])->contains(['name' => 'Custom field1', 'value' => 'Value']);

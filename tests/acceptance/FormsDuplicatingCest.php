@@ -6,21 +6,21 @@ use MailPoet\Test\DataFactories\Form;
 
 class FormsDuplicatingCest {
 
-  public function duplicateForm(\AcceptanceTester $I) {
-    $form_name = 'Form for duplicate test';
+  public function duplicateForm(\AcceptanceTester $i) {
+    $formName = 'Form for duplicate test';
     $form = new Form();
-    $form->withName($form_name)->create();
+    $form->withName($formName)->create();
 
-    $I->wantTo('Duplicate a form');
+    $i->wantTo('Duplicate a form');
 
-    $I->login();
-    $I->amOnMailpoetPage('Forms');
-    $I->waitForText($form_name);
+    $i->login();
+    $i->amOnMailpoetPage('Forms');
+    $i->waitForText($formName);
 
-    $I->clickItemRowActionByItemName($form_name, 'Duplicate');
+    $i->clickItemRowActionByItemName($formName, 'Duplicate');
 
-    $I->waitForText('has been duplicated');
-    $I->waitForText('Copy of ' . $form_name);
+    $i->waitForText('has been duplicated');
+    $i->waitForText('Copy of ' . $formName);
   }
 
 }

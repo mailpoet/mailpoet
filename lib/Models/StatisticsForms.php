@@ -5,23 +5,23 @@ namespace MailPoet\Models;
 class StatisticsForms extends Model {
   public static $_table = MP_STATISTICS_FORMS_TABLE;
 
-  public static function getTotalSignups($form_id = false) {
-    return self::where('form_id', $form_id)->count();
+  public static function getTotalSignups($formId = false) {
+    return self::where('form_id', $formId)->count();
   }
 
-  public static function record($form_id, $subscriber_id) {
-    if ($form_id > 0 && $subscriber_id > 0) {
+  public static function record($formId, $subscriberId) {
+    if ($formId > 0 && $subscriberId > 0) {
       // check if we already have a record for today
-      $record = self::where('form_id', $form_id)
-        ->where('subscriber_id', $subscriber_id)
+      $record = self::where('form_id', $formId)
+        ->where('subscriber_id', $subscriberId)
         ->findOne();
 
       if ($record === false) {
         // create a new entry
         $record = self::create();
         $record->hydrate([
-          'form_id' => $form_id,
-          'subscriber_id' => $subscriber_id,
+          'form_id' => $formId,
+          'subscriber_id' => $subscriberId,
         ]);
         $record->save();
       }

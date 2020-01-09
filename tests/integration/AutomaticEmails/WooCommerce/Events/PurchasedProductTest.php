@@ -47,7 +47,7 @@ class PurchasedProductTest extends \MailPoetTest {
   }
 
   public function testItDoesNotScheduleEmailWhenCustomerEmailIsEmpty() {
-    $order_details = Stub::make(
+    $orderDetails = Stub::make(
       new OrderDetails(),
       [
         'get_billing_email' => Expected::once(),
@@ -55,7 +55,7 @@ class PurchasedProductTest extends \MailPoetTest {
       $this
     );
     $helper = Stub::make(WCHelper::class, [
-      'wcGetOrder' => $order_details,
+      'wcGetOrder' => $orderDetails,
     ]);
     $event = new PurchasedProduct($helper);
 
@@ -64,7 +64,7 @@ class PurchasedProductTest extends \MailPoetTest {
   }
 
   public function testItDoesNotScheduleEmailWhenCustomerIsNotAWCSegmentSubscriber() {
-    $order_details = Stub::make(
+    $orderDetails = Stub::make(
       new OrderDetails(),
       [
         'get_billing_email' => 'test@example.com',
@@ -80,9 +80,9 @@ class PurchasedProductTest extends \MailPoetTest {
         },
       ]
     );
-    $order_details->total = 'order_total';
+    $orderDetails->total = 'order_total';
     $helper = Stub::make(WCHelper::class, [
-      'wcGetOrder' => $order_details,
+      'wcGetOrder' => $orderDetails,
     ]);
     $event = new PurchasedProduct($helper);
 
@@ -101,8 +101,8 @@ class PurchasedProductTest extends \MailPoetTest {
         'status' => Newsletter::STATUS_ACTIVE,
       ]
     );
-    $product_id = 1000;
-    $incorrect_product_ids = [
+    $productId = 1000;
+    $incorrectProductIds = [
       2000,
       3000,
     ];
@@ -115,51 +115,51 @@ class PurchasedProductTest extends \MailPoetTest {
         'meta' => json_encode(
           [
             'option' => [
-              ['id' => $product_id],
+              ['id' => $productId],
             ],
           ]),
       ],
       $newsletter->id
     );
-    $customer_email = 'test@example.com';
+    $customerEmail = 'test@example.com';
     $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $customer_email;
-    $subscriber->is_woocommerce_user = 1;
+    $subscriber->email = $customerEmail;
+    $subscriber->isWoocommerceUser = 1;
     $subscriber->save();
 
-    $order_details = Stub::make(
+    $orderDetails = Stub::make(
       new OrderDetails(),
       [
         'get_billing_email' => 'test@example.com',
-        'get_items' => function() use ($incorrect_product_ids) {
+        'get_items' => function() use ($incorrectProductIds) {
           return [
             Stub::make(
               new ItemDetails(),
               [
-                'get_product_id' => $incorrect_product_ids[0],
+                'get_product_id' => $incorrectProductIds[0],
               ]
             ),
             Stub::make(
               new ItemDetails(),
               [
-                'get_product_id' => $incorrect_product_ids[1],
+                'get_product_id' => $incorrectProductIds[1],
               ]
             ),
           ];
         },
       ]
     );
-    $order_details->total = 'order_total';
-    $order_id = 12;
+    $orderDetails->total = 'order_total';
+    $orderId = 12;
     $helper = Stub::make(WCHelper::class, [
-      'wcGetOrder' => $order_details,
+      'wcGetOrder' => $orderDetails,
     ]);
     $event = new PurchasedProduct($helper);
 
-    WPFunctions::get()->doAction('woocommerce_order_status_completed', $order_id);
-    $event->scheduleEmailWhenProductIsPurchased($order_id);
-    $scheduled_task = Sending::getByNewsletterId($newsletter->id);
-    expect($scheduled_task)->isEmpty();
+    WPFunctions::get()->doAction('woocommerce_order_status_completed', $orderId);
+    $event->scheduleEmailWhenProductIsPurchased($orderId);
+    $scheduledTask = Sending::getByNewsletterId($newsletter->id);
+    expect($scheduledTask)->isEmpty();
   }
 
   public function testItSchedulesEmailForProcessingOrder() {
@@ -182,8 +182,8 @@ class PurchasedProductTest extends \MailPoetTest {
         'status' => Newsletter::STATUS_ACTIVE,
       ]
     );
-    $product_id = 1000;
-    $incorrect_product_id = 2000;
+    $productId = 1000;
+    $incorrectProductId = 2000;
     $this->_createNewsletterOption(
       [
         'group' => WooCommerce::SLUG,
@@ -193,98 +193,98 @@ class PurchasedProductTest extends \MailPoetTest {
         'meta' => json_encode(
           [
             'option' => [
-              ['id' => $product_id],
+              ['id' => $productId],
             ],
           ]),
       ],
       $newsletter->id
     );
-    $customer_email = 'test@example.com';
+    $customerEmail = 'test@example.com';
     $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $customer_email;
-    $subscriber->is_woocommerce_user = 1;
+    $subscriber->email = $customerEmail;
+    $subscriber->isWoocommerceUser = 1;
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
 
-    $subscriber_segment = SubscriberSegment::create();
-    $subscriber_segment->hydrate([
+    $subscriberSegment = SubscriberSegment::create();
+    $subscriberSegment->hydrate([
       'subscriber_id' => $subscriber->id,
       'segment_id' => Segment::getWooCommerceSegment()->id,
       'status' => Subscriber::STATUS_SUBSCRIBED,
     ]);
-    $subscriber_segment->save();
+    $subscriberSegment->save();
 
-    $order_details = Stub::make(
+    $orderDetails = Stub::make(
       new OrderDetails(),
       [
         'get_billing_email' => 'test@example.com',
-        'get_items' => function() use ($incorrect_product_id, $product_id) {
+        'get_items' => function() use ($incorrectProductId, $productId) {
           return [
             Stub::make(
               \WC_Order_Item_Product::class,
               [
-                'get_product_id' => $incorrect_product_id,
+                'get_product_id' => $incorrectProductId,
               ]
             ),
             Stub::make(
               \WC_Order_Item_Product::class,
               [
-                'get_product_id' => $product_id,
+                'get_product_id' => $productId,
               ]
             ),
           ];
         },
       ]
     );
-    $order_details->total = 'order_total';
-    $order_id = 12;
+    $orderDetails->total = 'order_total';
+    $orderId = 12;
     $helper = Stub::make(WCHelper::class, [
-      'wcGetOrder' => $order_details,
+      'wcGetOrder' => $orderDetails,
     ]);
 
     $event = new PurchasedProduct($helper);
 
     // ensure there are no existing scheduled tasks
-    $scheduled_task = Sending::getByNewsletterId($newsletter->id);
-    expect($scheduled_task)->false();
+    $scheduledTask = Sending::getByNewsletterId($newsletter->id);
+    expect($scheduledTask)->false();
 
     // when 'woocommerce_order_status_$state' hook is triggered, an email should be scheduled
-    WPFunctions::get()->doAction('woocommerce_order_status_' . $state, $order_id);
-    $event->scheduleEmailWhenProductIsPurchased($order_id);
-    $scheduled_task = Sending::getByNewsletterId($newsletter->id);
-    expect($scheduled_task)->notEmpty();
-    return $order_id;
+    WPFunctions::get()->doAction('woocommerce_order_status_' . $state, $orderId);
+    $event->scheduleEmailWhenProductIsPurchased($orderId);
+    $scheduledTask = Sending::getByNewsletterId($newsletter->id);
+    expect($scheduledTask)->notEmpty();
+    return $orderId;
   }
 
-  public function _createNewsletterOption(array $options, $newsletter_id) {
+  public function _createNewsletterOption(array $options, $newsletterId) {
     foreach ($options as $option => $value) {
-      $newsletter_option_field = NewsletterOptionField::where('name', $option)
+      $newsletterOptionField = NewsletterOptionField::where('name', $option)
         ->where('newsletter_type', Newsletter::TYPE_AUTOMATIC)
         ->findOne();
-      if (!$newsletter_option_field) {
-        $newsletter_option_field = NewsletterOptionField::create();
-        $newsletter_option_field->hydrate(
+      if (!$newsletterOptionField) {
+        $newsletterOptionField = NewsletterOptionField::create();
+        $newsletterOptionField->hydrate(
           [
             'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
             'name' => $option,
           ]
         );
-        $newsletter_option_field->save();
+        $newsletterOptionField->save();
       }
 
-      $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter_id)
-        ->where('option_field_id', $newsletter_option_field->id)
+      $newsletterOption = NewsletterOption::where('newsletter_id', $newsletterId)
+        ->where('option_field_id', $newsletterOptionField->id)
         ->findOne();
-      if (!$newsletter_option) {
-        $newsletter_option = NewsletterOption::create();
-        $newsletter_option->hydrate(
+      if (!$newsletterOption) {
+        $newsletterOption = NewsletterOption::create();
+        $newsletterOption->hydrate(
           [
-            'newsletter_id' => $newsletter_id,
-            'option_field_id' => $newsletter_option_field->id,
+            'newsletter_id' => $newsletterId,
+            'option_field_id' => $newsletterOptionField->id,
             'value' => $value,
           ]
         );
-        $newsletter_option->save();
+        $newsletterOption->save();
       }
     }
   }

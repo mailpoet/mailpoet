@@ -8,11 +8,11 @@ class ExperimentalFeatures {
   /** @var PageRenderer */
   private $page_renderer;
 
-  public function __construct(PageRenderer $page_renderer) {
-    $this->page_renderer = $page_renderer;
+  public function __construct(PageRenderer $pageRenderer) {
+    $this->pageRenderer = $pageRenderer;
   }
 
   public function render() {
-    $this->page_renderer->displayPage('experimental-features.html', []);
+    $this->pageRenderer->displayPage('experimental-features.html', []);
   }
 }

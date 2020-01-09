@@ -13,15 +13,15 @@ class Url {
   }
 
   public function getCurrentUrl() {
-    $home_url = parse_url($this->wp->homeUrl());
-    $query_args = $this->wp->addQueryArg(null, null);
+    $homeUrl = parse_url($this->wp->homeUrl());
+    $queryArgs = $this->wp->addQueryArg(null, null);
 
     // Remove $this->wp->homeUrl() path from add_query_arg
-    if (isset($home_url['path'])) {
-      $query_args = str_replace($home_url['path'], '', $query_args);
+    if (isset($homeUrl['path'])) {
+      $queryArgs = str_replace($homeUrl['path'], '', $queryArgs);
     }
 
-    return $this->wp->homeUrl($query_args);
+    return $this->wp->homeUrl($queryArgs);
   }
 
   public function redirectTo($url = null) {
@@ -51,15 +51,15 @@ class Url {
   }
 
   public function redirectWithReferer($url = null) {
-    $current_url = $this->getCurrentUrl();
+    $currentUrl = $this->getCurrentUrl();
     $url = $this->wp->addQueryArg(
       [
-        'mailpoet_redirect' => urlencode($current_url),
+        'mailpoet_redirect' => urlencode($currentUrl),
       ],
       $url
     );
 
-    if ($url !== $current_url) {
+    if ($url !== $currentUrl) {
       $this->redirectTo($url);
     }
     exit();

@@ -21,14 +21,14 @@ class ExportTest extends \MailPoetTest {
   public $JSON_data;
   public function _before() {
     parent::_before();
-    $this->JSON_data = json_decode((string)file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
-    $this->subscriber_fields = [
+    $this->jSONData = json_decode((string)file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
+    $this->subscriberFields = [
       'first_name' => 'First name',
       'last_name' => 'Last name',
       'email' => 'Email',
       1 => 'Country',
     ];
-    $this->subscribers_data = [
+    $this->subscribersData = [
       [
         'first_name' => 'Adam',
         'last_name' => 'Smith',
@@ -52,13 +52,13 @@ class ExportTest extends \MailPoetTest {
         'email' => 'paul@newman.com',
       ],
     ];
-    $this->custom_fields_data = [
+    $this->customFieldsData = [
       [
         'name' => 'Country',
         'type' => 'text',
       ],
     ];
-    $this->segments_data = [
+    $this->segmentsData = [
       [
         'name' => 'Newspapers',
       ],
@@ -66,7 +66,7 @@ class ExportTest extends \MailPoetTest {
         'name' => 'Journals',
       ],
     ];
-    foreach ($this->subscribers_data as $subscriber) {
+    foreach ($this->subscribersData as $subscriber) {
       if (isset($subscriber[1])) {
         unset($subscriber[1]);
       }
@@ -74,39 +74,39 @@ class ExportTest extends \MailPoetTest {
       $entity->hydrate($subscriber);
       $entity->save();
     }
-    foreach ($this->segments_data as $segment) {
+    foreach ($this->segmentsData as $segment) {
       $entity = Segment::create();
       $entity->hydrate($segment);
       $entity->save();
     }
-    foreach ($this->custom_fields_data as $custom_field) {
+    foreach ($this->customFieldsData as $customField) {
       $entity = CustomField::create();
-      $entity->hydrate($custom_field);
+      $entity->hydrate($customField);
       $entity->save();
     }
     $entity = SubscriberCustomField::create();
-    $entity->subscriber_id = 2;
-    $entity->custom_field_id = 1;
-    $entity->value = $this->subscribers_data[1][1];
+    $entity->subscriberId = 2;
+    $entity->customFieldId = 1;
+    $entity->value = $this->subscribersData[1][1];
     $entity->save();
     $entity = SubscriberSegment::create();
-    $entity->subscriber_id = 1;
-    $entity->segment_id = 1;
+    $entity->subscriberId = 1;
+    $entity->segmentId = 1;
     $entity->status = Subscriber::STATUS_UNSUBSCRIBED;
     $entity->save();
     $entity = SubscriberSegment::create();
-    $entity->subscriber_id = 1;
-    $entity->segment_id = 2;
+    $entity->subscriberId = 1;
+    $entity->segmentId = 2;
     $entity->save();
     $entity = SubscriberSegment::create();
-    $entity->subscriber_id = 2;
-    $entity->segment_id = 1;
+    $entity->subscriberId = 2;
+    $entity->segmentId = 1;
     $entity->save();
     $entity = SubscriberSegment::create();
-    $entity->subscriber_id = 3;
-    $entity->segment_id = 2;
+    $entity->subscriberId = 3;
+    $entity->segmentId = 2;
     $entity->save();
-    $this->export = new Export($this->JSON_data);
+    $this->export = new Export($this->jSONData);
   }
 
   public function testItCanConstruct() {
@@ -132,41 +132,41 @@ class ExportTest extends \MailPoetTest {
     expect(
       preg_match(
         '|' .
-        preg_quote(Env::$temp_path, '|') . '/MailPoet_export_[a-z0-9]{15}.' .
+        preg_quote(Env::$tempPath, '|') . '/MailPoet_export_[a-z0-9]{15}.' .
         $this->export->export_format_option .
         '|', $this->export->export_file)
     )->equals(1);
     expect(
       preg_match(
         '|' .
-        preg_quote(Env::$temp_url, '|') . '/' .
+        preg_quote(Env::$tempUrl, '|') . '/' .
         basename($this->export->export_file) .
         '|', $this->export->export_file_URL)
     )->equals(1);
   }
 
   public function testItCanGetSubscriberCustomFields() {
-    $source = CustomField::where('name', $this->custom_fields_data[0]['name'])
+    $source = CustomField::where('name', $this->customFieldsData[0]['name'])
       ->findOne();
     $target = $this->export->getSubscriberCustomFields();
     expect($target)->equals([$source->id => $source->name]);
   }
 
   public function testItCanFormatSubscriberFields() {
-    $formatted_subscriber_fields = $this->export->formatSubscriberFields(
-      array_keys($this->subscriber_fields),
+    $formattedSubscriberFields = $this->export->formatSubscriberFields(
+      array_keys($this->subscriberFields),
       $this->export->getSubscriberCustomFields()
     );
-    expect($formatted_subscriber_fields)
-      ->equals(array_values($this->subscriber_fields));
+    expect($formattedSubscriberFields)
+      ->equals(array_values($this->subscriberFields));
   }
 
   public function testItProperlyReturnsSubscriberCustomFields() {
     $subscribers = $this->export->getSubscribers(0, 10);
     foreach ($subscribers as $subscriber) {
-      if ($subscriber['email'] === $this->subscribers_data[1]) {
+      if ($subscriber['email'] === $this->subscribersData[1]) {
         expect($subscriber['Country'])
-          ->equals($this->subscribers_data[1][1]);
+          ->equals($this->subscribersData[1][1]);
       }
     }
   }

@@ -23,8 +23,8 @@ class ValidationTest extends \MailPoetTest {
 
   public function _before() {
     $this->wp = new WPFunctions();
-    $this->entity_manager = $this->createEntityManager();
-    $this->table_name = $this->entity_manager->getClassMetadata(ValidatedEntity::class)->getTableName();
+    $this->entityManager = $this->createEntityManager();
+    $this->tableName = $this->entityManager->getClassMetadata(ValidatedEntity::class)->getTableName();
     $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
     $this->connection->executeUpdate("
       CREATE TABLE $this->table_name (
@@ -36,12 +36,12 @@ class ValidationTest extends \MailPoetTest {
 
   public function testItValidatesNewEntity() {
     $entity = new ValidatedEntity();
-    $this->entity_manager->persist($entity);
+    $this->entityManager->persist($entity);
     try {
-      $this->entity_manager->flush();
+      $this->entityManager->flush();
       $this->fail('Validation exception was not thrown.');
     } catch (ValidationException $e) {
-      $entity_class = get_class($entity);
+      $entityClass = get_class($entity);
       expect($e->getMessage())->same("Validation failed for '$entity_class'.\nDetails:\n  [name] This value should not be blank.");
     }
   }
@@ -52,30 +52,30 @@ class ValidationTest extends \MailPoetTest {
     $this->connection->executeUpdate("INSERT INTO $this->table_name (id, name) VALUES (?, ?)", [$id, $name]);
 
     /** @var ValidatedEntity $entity */
-    $entity = $this->entity_manager->find(ValidatedEntity::class, $id);
+    $entity = $this->entityManager->find(ValidatedEntity::class, $id);
     $entity->setName('x');
     try {
-      $this->entity_manager->flush();
+      $this->entityManager->flush();
       $this->fail('Validation exception was not thrown.');
     } catch (ValidationException $e) {
-      $entity_class = get_class($entity);
+      $entityClass = get_class($entity);
       expect($e->getMessage())->same("Validation failed for '$entity_class'.\nDetails:\n  [name] This value is too short. It should have 3 characters or more.");
     }
   }
 
   private function createEntityManager() {
-    $annotation_reader_provider = new AnnotationReaderProvider();
-    $configuration_factory = new ConfigurationFactory(false, $annotation_reader_provider);
-    $configuration = $configuration_factory->createConfiguration();
+    $annotationReaderProvider = new AnnotationReaderProvider();
+    $configurationFactory = new ConfigurationFactory(false, $annotationReaderProvider);
+    $configuration = $configurationFactory->createConfiguration();
 
-    $metadata_driver = $configuration->newDefaultAnnotationDriver([__DIR__], false);
-    $configuration->setMetadataDriverImpl($metadata_driver);
+    $metadataDriver = $configuration->newDefaultAnnotationDriver([__DIR__], false);
+    $configuration->setMetadataDriverImpl($metadataDriver);
     $configuration->setMetadataCacheImpl(new ArrayCache());
 
-    $validator_factory = new ValidatorFactory($annotation_reader_provider);
-    $timestamp_listener = new TimestampListener($this->wp);
-    $validation_listener = new ValidationListener($validator_factory->createValidator());
-    $entity_manager_factory = new EntityManagerFactory($this->connection, $configuration, $timestamp_listener, $validation_listener);
-    return $entity_manager_factory->createEntityManager();
+    $validatorFactory = new ValidatorFactory($annotationReaderProvider);
+    $timestampListener = new TimestampListener($this->wp);
+    $validationListener = new ValidationListener($validatorFactory->createValidator());
+    $entityManagerFactory = new EntityManagerFactory($this->connection, $configuration, $timestampListener, $validationListener);
+    return $entityManagerFactory->createEntityManager();
   }
 }

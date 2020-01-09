@@ -19,7 +19,7 @@ class PremiumKeyCheckTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    $this->premium_key = '123457890abcdef';
+    $this->premiumKey = '123457890abcdef';
     $this->worker = new PremiumKeyCheck($this->settings);
   }
 
@@ -43,11 +43,11 @@ class PremiumKeyCheckTest extends \MailPoetTest {
     $this->worker->bridge = $bridge;
     $this->worker->bridge->expects($this->once())
       ->method('checkPremiumKey')
-      ->with($this->equalTo($this->premium_key));
+      ->with($this->equalTo($this->premiumKey));
     $this->worker->bridge->expects($this->once())
       ->method('storePremiumKeyAndState')
       ->with(
-        $this->equalTo($this->premium_key),
+        $this->equalTo($this->premiumKey),
         $this->equalTo($response)
       );
     $this->fillPremiumKey();
@@ -57,11 +57,11 @@ class PremiumKeyCheckTest extends \MailPoetTest {
   private function fillPremiumKey() {
     $this->settings->set(
       Bridge::PREMIUM_KEY_SETTING_NAME,
-      $this->premium_key
+      $this->premiumKey
     );
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

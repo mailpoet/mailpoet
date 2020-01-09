@@ -18,9 +18,9 @@ class Url {
     $queue = false,
     $preview = false
   ) {
-    $link_tokens = new LinkTokens;
+    $linkTokens = new LinkTokens;
     if ($subscriber instanceof SubscriberModel) {
-      $subscriber->token = $link_tokens->getToken($subscriber);
+      $subscriber->token = $linkTokens->getToken($subscriber);
     }
     switch ($type) {
       case self::TYPE_ARCHIVE:
@@ -69,13 +69,13 @@ class Url {
   public static function transformUrlDataObject($data) {
     reset($data);
     if (!is_int(key($data))) return $data;
-    $transformed_data = [];
-    $transformed_data['newsletter_id'] = (!empty($data[0])) ? $data[0] : false;
-    $transformed_data['newsletter_hash'] = (!empty($data[1])) ? $data[1] : false;
-    $transformed_data['subscriber_id'] = (!empty($data[2])) ? $data[2] : false;
-    $transformed_data['subscriber_token'] = (!empty($data[3])) ? $data[3] : false;
-    $transformed_data['queue_id'] = (!empty($data[4])) ? $data[4] : false;
-    $transformed_data['preview'] = (!empty($data[5])) ? $data[5] : false;
-    return $transformed_data;
+    $transformedData = [];
+    $transformedData['newsletter_id'] = (!empty($data[0])) ? $data[0] : false;
+    $transformedData['newsletter_hash'] = (!empty($data[1])) ? $data[1] : false;
+    $transformedData['subscriber_id'] = (!empty($data[2])) ? $data[2] : false;
+    $transformedData['subscriber_token'] = (!empty($data[3])) ? $data[3] : false;
+    $transformedData['queue_id'] = (!empty($data[4])) ? $data[4] : false;
+    $transformedData['preview'] = (!empty($data[5])) ? $data[5] : false;
+    return $transformedData;
   }
 }

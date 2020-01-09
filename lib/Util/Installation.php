@@ -21,12 +21,12 @@ class Installation {
   }
 
   public function isNewInstallation() {
-    $installed_at = $this->settings->get('installed_at');
-    if (is_null($installed_at)) {
+    $installedAt = $this->settings->get('installed_at');
+    if (is_null($installedAt)) {
       return true;
     }
-    $installed_at = Carbon::createFromTimestamp(strtotime($installed_at));
-    $current_time = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    return $current_time->diffInDays($installed_at) <= self::NEW_INSTALLATION_DAYS_LIMIT;
+    $installedAt = Carbon::createFromTimestamp(strtotime($installedAt));
+    $currentTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    return $currentTime->diffInDays($installedAt) <= self::NEW_INSTALLATION_DAYS_LIMIT;
   }
 }

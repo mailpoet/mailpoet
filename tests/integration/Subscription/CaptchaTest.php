@@ -22,13 +22,13 @@ class CaptchaTest extends \MailPoetTest {
   private $captcha_session;
 
   public function _before() {
-    $cookies_mock = $this->createMock(Cookies::class);
-    $cookies_mock->method('get')->willReturn('abcd');
-    $this->captcha_session = new CaptchaSession(new Functions());
-    $this->captcha_session->init(self::CAPTCHA_SESSION_ID);
-    $this->captcha = new Captcha(new WPFunctions, $this->captcha_session);
+    $cookiesMock = $this->createMock(Cookies::class);
+    $cookiesMock->method('get')->willReturn('abcd');
+    $this->captchaSession = new CaptchaSession(new Functions());
+    $this->captchaSession->init(self::CAPTCHA_SESSION_ID);
+    $this->captcha = new Captcha(new WPFunctions, $this->captchaSession);
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-    $this->captcha_session->reset();
+    $this->captchaSession->reset();
   }
 
   public function testItDoesNotRequireCaptchaForTheFirstSubscription() {
@@ -40,7 +40,7 @@ class CaptchaTest extends \MailPoetTest {
   public function testItRequiresCaptchaForRepeatedRecipient() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->count_confirmations = 1;
+    $subscriber->countConfirmations = 1;
     $subscriber->save();
     $result = $this->captcha->isRequired($subscriber->email);
     expect($result)->equals(true);
@@ -49,7 +49,7 @@ class CaptchaTest extends \MailPoetTest {
   public function testItRequiresCaptchaForRepeatedIPAddress() {
     $ip = SubscriberIP::create();
     $ip->ip = '127.0.0.1';
-    $ip->created_at = Carbon::now()->subMinutes(1);
+    $ip->createdAt = Carbon::now()->subMinutes(1);
     $ip->save();
     $email = 'non-existent-subscriber@example.com';
     $result = $this->captcha->isRequired($email);
@@ -57,10 +57,10 @@ class CaptchaTest extends \MailPoetTest {
   }
 
   public function testItRendersImageAndStoresHashToSession() {
-    expect($this->captcha_session->getCaptchaHash())->false();
+    expect($this->captchaSession->getCaptchaHash())->false();
     $image = $this->captcha->renderImage(null, null, self::CAPTCHA_SESSION_ID, true);
     expect($image)->notEmpty();
-    expect($this->captcha_session->getCaptchaHash())->notEmpty();
+    expect($this->captchaSession->getCaptchaHash())->notEmpty();
   }
 
   public function _after() {

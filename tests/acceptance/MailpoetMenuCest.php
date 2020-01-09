@@ -3,29 +3,29 @@
 namespace MailPoet\Test\Acceptance;
 
 class MailpoetMenuCest {
-  public function sendEmail(\AcceptanceTester $I) {
-    $I->wantTo('Use MailPoet menu in WordPress admin');
+  public function sendEmail(\AcceptanceTester $i) {
+    $i->wantTo('Use MailPoet menu in WordPress admin');
 
-    $I->login();
-    $I->amOnPage('/wp-admin');
-    $I->click('MailPoet');
+    $i->login();
+    $i->amOnPage('/wp-admin');
+    $i->click('MailPoet');
 
-    $I->click('Emails');
-    $I->seeInCurrentUrl('?page=mailpoet-newsletters');
+    $i->click('Emails');
+    $i->seeInCurrentUrl('?page=mailpoet-newsletters');
 
-    $I->click('Forms');
-    $I->seeInCurrentUrl('?page=mailpoet-forms');
+    $i->click('Forms');
+    $i->seeInCurrentUrl('?page=mailpoet-forms');
 
-    $I->click('Subscribers');
-    $I->seeInCurrentUrl('?page=mailpoet-subscribers');
+    $i->click('Subscribers');
+    $i->seeInCurrentUrl('?page=mailpoet-subscribers');
 
-    $I->click('Lists');
-    $I->seeInCurrentUrl('?page=mailpoet-segments');
+    $i->click('Lists');
+    $i->seeInCurrentUrl('?page=mailpoet-segments');
 
-    $I->click('Settings');
-    $I->seeInCurrentUrl('?page=mailpoet-settings');
+    $i->click('Settings');
+    $i->seeInCurrentUrl('?page=mailpoet-settings');
 
-    $I->click('Help');
-    $I->seeInCurrentUrl('?page=mailpoet-help');
+    $i->click('Help');
+    $i->seeInCurrentUrl('?page=mailpoet-help');
   }
 }

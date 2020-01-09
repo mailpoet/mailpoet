@@ -34,8 +34,8 @@ abstract class SimpleWorker implements CronWorkerInterface {
 
     if ($wp === null) $wp = ContainerWrapper::getInstance()->get(WPFunctions::class);
     $this->wp = $wp;
-    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
-    $this->cron_worker_scheduler = ContainerWrapper::getInstance()->get(CronWorkerScheduler::class);
+    $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->cronWorkerScheduler = ContainerWrapper::getInstance()->get(CronWorkerScheduler::class);
   }
 
   public function getTaskType() {
@@ -47,7 +47,7 @@ abstract class SimpleWorker implements CronWorkerInterface {
   }
 
   public function schedule() {
-    $this->cron_worker_scheduler->schedule(static::TASK_TYPE, $this->getNextRunDate());
+    $this->cronWorkerScheduler->schedule(static::TASK_TYPE, $this->getNextRunDate());
   }
 
   public function checkProcessingRequirements() {

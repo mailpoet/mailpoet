@@ -71,10 +71,10 @@ class CronHelper {
     }
   }
 
-  public function saveDaemonRunCompleted($run_completed_at) {
+  public function saveDaemonRunCompleted($runCompletedAt) {
     $daemon = $this->getDaemon();
     if ($daemon) {
-      $daemon['run_completed_at'] = $run_completed_at;
+      $daemon['run_completed_at'] = $runCompletedAt;
       $this->saveDaemon($daemon);
     }
   }
@@ -171,38 +171,38 @@ class CronHelper {
       $action,
       $data
     );
-    $custom_cron_url = $this->wp->applyFilters('mailpoet_cron_request_url', $url);
-    return ($custom_cron_url === $url) ?
+    $customCronUrl = $this->wp->applyFilters('mailpoet_cron_request_url', $url);
+    return ($customCronUrl === $url) ?
       str_replace(home_url(), $this->getSiteUrl(), $url) :
-      $custom_cron_url;
+      $customCronUrl;
   }
 
-  public function getSiteUrl($site_url = false) {
+  public function getSiteUrl($siteUrl = false) {
     // additional check for some sites running inside a virtual machine or behind
     // proxy where there could be different ports (e.g., host:8080 => guest:80)
-    $site_url = ($site_url) ? $site_url : WPFunctions::get()->homeUrl();
-    $parsed_url = parse_url($site_url);
+    $siteUrl = ($siteUrl) ? $siteUrl : WPFunctions::get()->homeUrl();
+    $parsedUrl = parse_url($siteUrl);
     $scheme = '';
-    if ($parsed_url['scheme'] === 'https') {
+    if ($parsedUrl['scheme'] === 'https') {
       $scheme = 'ssl://';
     }
     // 1. if site URL does not contain a port, return the URL
-    if (empty($parsed_url['port'])) return $site_url;
+    if (empty($parsedUrl['port'])) return $siteUrl;
     // 2. if site URL contains valid port, try connecting to it
-    $fp = @fsockopen($scheme . $parsed_url['host'], $parsed_url['port'], $errno, $errstr, 1);
-    if ($fp) return $site_url;
+    $fp = @fsockopen($scheme . $parsedUrl['host'], $parsedUrl['port'], $errno, $errstr, 1);
+    if ($fp) return $siteUrl;
     // 3. if connection fails, attempt to connect the standard port derived from URL
     // schema
-    $port = (strtolower($parsed_url['scheme']) === 'http') ? 80 : 443;
-    $fp = @fsockopen($scheme . $parsed_url['host'], $port, $errno, $errstr, 1);
-    if ($fp) return sprintf('%s://%s', $parsed_url['scheme'], $parsed_url['host']);
+    $port = (strtolower($parsedUrl['scheme']) === 'http') ? 80 : 443;
+    $fp = @fsockopen($scheme . $parsedUrl['host'], $port, $errno, $errstr, 1);
+    if ($fp) return sprintf('%s://%s', $parsedUrl['scheme'], $parsedUrl['host']);
     // 4. throw an error if all connection attempts failed
     throw new \Exception(__('Site URL is unreachable.', 'mailpoet'));
   }
 
   public function enforceExecutionLimit($timer) {
-    $elapsed_time = microtime(true) - $timer;
-    if ($elapsed_time >= $this->getDaemonExecutionLimit()) {
+    $elapsedTime = microtime(true) - $timer;
+    if ($elapsedTime >= $this->getDaemonExecutionLimit()) {
       throw new \Exception(__('Maximum execution time has been reached.', 'mailpoet'), self::DAEMON_EXECUTION_LIMIT_REACHED);
     }
   }

@@ -22,28 +22,28 @@ class DynamicSegments {
   private $woocommerce_helper;
 
   public function __construct(
-    PageRenderer $page_renderer,
-    PageLimit $listing_page_limit,
+    PageRenderer $pageRenderer,
+    PageLimit $listingPageLimit,
     WPFunctions $wp,
-    WooCommerceHelper $woocommerce_helper
+    WooCommerceHelper $woocommerceHelper
   ) {
-    $this->page_renderer = $page_renderer;
-    $this->listing_page_limit = $listing_page_limit;
+    $this->pageRenderer = $pageRenderer;
+    $this->listingPageLimit = $listingPageLimit;
     $this->wp = $wp;
-    $this->woocommerce_helper = $woocommerce_helper;
+    $this->woocommerceHelper = $woocommerceHelper;
   }
 
   public function render() {
     $data = [];
-    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('dynamic_segments');
+    $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('dynamic_segments');
 
-    $wp_roles = $this->wp->getEditableRoles();
-    $data['wordpress_editable_roles_list'] = array_map(function($role_id, $role) {
+    $wpRoles = $this->wp->getEditableRoles();
+    $data['wordpress_editable_roles_list'] = array_map(function($roleId, $role) {
       return [
-        'role_id' => $role_id,
+        'role_id' => $roleId,
         'role_name' => $role['name'],
       ];
-    }, array_keys($wp_roles), $wp_roles);
+    }, array_keys($wpRoles), $wpRoles);
 
     $data['newsletters_list'] = Newsletter::select(['id', 'subject', 'sent_at'])
       ->whereNull('deleted_at')
@@ -53,13 +53,13 @@ class DynamicSegments {
     $data['product_categories'] = $this->wp->getCategories(['taxonomy' => 'product_cat']);
 
     usort($data['product_categories'], function ($a, $b) {
-      return strcmp($a->cat_name, $b->cat_name);
+      return strcmp($a->catName, $b->catName);
     });
 
     $data['products'] = $this->getProducts();
-    $data['is_woocommerce_active'] = $this->woocommerce_helper->isWooCommerceActive();
+    $data['is_woocommerce_active'] = $this->woocommerceHelper->isWooCommerceActive();
 
-    $this->page_renderer->displayPage('dynamicSegments.html', $data);
+    $this->pageRenderer->displayPage('dynamicSegments.html', $data);
   }
 
   private function getProducts() {
@@ -67,7 +67,7 @@ class DynamicSegments {
     $products = $this->wp->getPosts($args);
     return array_map(function ($product) {
       return [
-        'title' => $product->post_title,
+        'title' => $product->postTitle,
         'ID' => $product->ID,
       ];
     }, $products);

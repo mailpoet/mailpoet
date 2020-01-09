@@ -30,20 +30,20 @@ class Acceptance extends \Codeception\Module
       foreach ($logEntries as $logEntry) {
         if ($this->isJSError($logEntry)) {
           // Collect JS errors into an array
-          $this->js_errors[] = $logEntry['message'];
+          $this->jsErrors[] = $logEntry['message'];
         }
       }
 
-      if (!empty($this->js_errors)) {
+      if (!empty($this->jsErrors)) {
         // phpcs:ignore Squiz.PHP.DiscouragedFunctions
-        $this->debug('JS errors : ' . print_r($this->js_errors, true));
+        $this->debug('JS errors : ' . print_r($this->jsErrors, true));
       }
     } catch (\Exception $e) {
       $this->debug('Unable to retrieve Selenium logs : ' . $e->getMessage());
     }
 
     // String comparison is used to show full error messages in test fail diffs
-    $this->assertEquals('', join(PHP_EOL, $this->js_errors), 'JS errors are present');
+    $this->assertEquals('', join(PHP_EOL, $this->jsErrors), 'JS errors are present');
   }
 
   public function getCurrentUrl() {
@@ -63,6 +63,6 @@ class Acceptance extends \Codeception\Module
   }
 
   public function _after(TestInterface $test) {
-    $this->js_errors = [];
+    $this->jsErrors = [];
   }
 }

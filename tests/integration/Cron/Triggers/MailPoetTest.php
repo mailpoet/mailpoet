@@ -25,11 +25,11 @@ class MailPoetTest extends \MailPoetTest {
 
   public function testItCanRun() {
     expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
-    $this->di_container->get(MailPoet::class)->run();
+    $this->diContainer->get(MailPoet::class)->run();
     expect($this->settings->get(CronHelper::DAEMON_SETTING))->notEmpty();
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

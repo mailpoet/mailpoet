@@ -15,8 +15,8 @@ class Updater {
   /** @var SettingsController */
   private $settings;
 
-  public function __construct($plugin_name, $slug, $version) {
-    $this->plugin = WPFunctions::get()->pluginBasename($plugin_name);
+  public function __construct($pluginName, $slug, $version) {
+    $this->plugin = WPFunctions::get()->pluginBasename($pluginName);
     $this->slug = $slug;
     $this->version = $version;
     $this->settings = SettingsController::getInstance();
@@ -26,22 +26,22 @@ class Updater {
     WPFunctions::get()->addFilter('pre_set_site_transient_update_plugins', [$this, 'checkForUpdate']);
   }
 
-  public function checkForUpdate($update_transient) {
-    if (!$update_transient instanceof \stdClass) {
-      $update_transient = new \stdClass;
+  public function checkForUpdate($updateTransient) {
+    if (!$updateTransient instanceof \stdClass) {
+      $updateTransient = new \stdClass;
     }
 
-    $latest_version = $this->getLatestVersion();
+    $latestVersion = $this->getLatestVersion();
 
-    if (isset($latest_version->new_version)) {
-      if (version_compare($this->version, $latest_version->new_version, '<')) {
-        $update_transient->response[$this->plugin] = $latest_version;
+    if (isset($latestVersion->newVersion)) {
+      if (version_compare($this->version, $latestVersion->newVersion, '<')) {
+        $updateTransient->response[$this->plugin] = $latestVersion;
       }
-      $update_transient->last_checked = time();
-      $update_transient->checked[$this->plugin] = $this->version;
+      $updateTransient->lastChecked = time();
+      $updateTransient->checked[$this->plugin] = $this->version;
     }
 
-    return $update_transient;
+    return $updateTransient;
   }
 
   public function getLatestVersion() {

@@ -7,26 +7,26 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Divider {
   public static function render($element) {
-    $background_color = $element['styles']['block']['backgroundColor'];
-    $divider_cell_style = "border-top-width: {$element['styles']['block']['borderWidth']};";
-    $divider_cell_style .= "border-top-style: {$element['styles']['block']['borderStyle']};";
-    $divider_cell_style .= "border-top-color: {$element['styles']['block']['borderColor']};";
+    $backgroundColor = $element['styles']['block']['backgroundColor'];
+    $dividerCellStyle = "border-top-width: {$element['styles']['block']['borderWidth']};";
+    $dividerCellStyle .= "border-top-style: {$element['styles']['block']['borderStyle']};";
+    $dividerCellStyle .= "border-top-color: {$element['styles']['block']['borderColor']};";
     $template = '
       <tr>
         <td class="mailpoet_divider" valign="top" ' .
         (($element['styles']['block']['backgroundColor'] !== 'transparent') ?
-          'bgColor="' . EHelper::escapeHtmlAttr($background_color) . '" style="background-color:' . EHelper::escapeHtmlStyleAttr($background_color) . ';' :
+          'bgColor="' . EHelper::escapeHtmlAttr($backgroundColor) . '" style="background-color:' . EHelper::escapeHtmlStyleAttr($backgroundColor) . ';' :
           'style="'
         ) .
       sprintf('padding: %s %spx %s %spx;',
               EHelper::escapeHtmlStyleAttr($element['styles']['block']['padding']),
-              StylesHelper::$padding_width,
+              StylesHelper::$paddingWidth,
               EHelper::escapeHtmlStyleAttr($element['styles']['block']['padding']),
-              StylesHelper::$padding_width) . '">
+              StylesHelper::$paddingWidth) . '">
           <table width="100%" border="0" cellpadding="0" cellspacing="0"
           style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;">
             <tr>
-              <td class="mailpoet_divider-cell" style="' . EHelper::escapeHtmlStyleAttr($divider_cell_style) . '">
+              <td class="mailpoet_divider-cell" style="' . EHelper::escapeHtmlStyleAttr($dividerCellStyle) . '">
              </td>
             </tr>
           </table>

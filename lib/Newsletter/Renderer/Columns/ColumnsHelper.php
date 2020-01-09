@@ -24,22 +24,22 @@ class ColumnsHelper {
   ];
 
   /** @return int[] */
-  public static function columnWidth($columns_count, $columns_layout) {
-    if (isset(self::$columns_width[$columns_layout])) {
-      return self::$columns_width[$columns_layout];
+  public static function columnWidth($columnsCount, $columnsLayout) {
+    if (isset(self::$columnsWidth[$columnsLayout])) {
+      return self::$columnsWidth[$columnsLayout];
     }
-    return self::$columns_width[$columns_count];
+    return self::$columnsWidth[$columnsCount];
   }
 
-  public static function columnClass($columns_count) {
-    return self::$columns_class[$columns_count];
+  public static function columnClass($columnsCount) {
+    return self::$columnsClass[$columnsCount];
   }
 
   public static function columnClasses() {
-    return self::$columns_class;
+    return self::$columnsClass;
   }
 
-  public static function columnAlignment($columns_count) {
-    return self::$columns_alignment[$columns_count];
+  public static function columnAlignment($columnsCount) {
+    return self::$columnsAlignment[$columnsCount];
   }
 }

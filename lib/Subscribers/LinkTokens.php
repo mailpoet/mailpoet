@@ -10,21 +10,21 @@ class LinkTokens {
   const LINK_TOKEN_LENGTH = 32;
 
   public function getToken(Subscriber $subscriber) {
-    if ($subscriber->link_token === null) {
-      $subscriber->link_token = $this->generateToken($subscriber->email);
+    if ($subscriber->linkToken === null) {
+      $subscriber->linkToken = $this->generateToken($subscriber->email);
       // `$subscriber->save()` fails if the subscriber has subscriptions, segments or custom fields
-      ORM::rawExecute(sprintf('UPDATE %s SET link_token = ? WHERE email = ?', Subscriber::$_table), [$subscriber->link_token, $subscriber->email]);
+      ORM::rawExecute(sprintf('UPDATE %s SET link_token = ? WHERE email = ?', Subscriber::$_table), [$subscriber->linkToken, $subscriber->email]);
     }
-    return $subscriber->link_token;
+    return $subscriber->linkToken;
   }
 
   public function verifyToken(Subscriber $subscriber, $token) {
-    $database_token = $this->getToken($subscriber);
-    $request_token = substr($token, 0, strlen($database_token));
+    $databaseToken = $this->getToken($subscriber);
+    $requestToken = substr($token, 0, strlen($databaseToken));
     return call_user_func(
       'hash_equals',
-      $database_token,
-      $request_token
+      $databaseToken,
+      $requestToken
     );
   }
 
@@ -33,11 +33,11 @@ class LinkTokens {
    */
   private function generateToken($email = null, $length = self::OBSOLETE_LINK_TOKEN_LENGTH) {
     if ($email !== null) {
-      $auth_key = '';
+      $authKey = '';
       if (defined('AUTH_KEY')) {
-        $auth_key = AUTH_KEY;
+        $authKey = AUTH_KEY;
       }
-      return substr(md5($auth_key . $email), 0, $length);
+      return substr(md5($authKey . $email), 0, $length);
     }
     return false;
   }

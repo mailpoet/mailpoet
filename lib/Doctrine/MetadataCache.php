@@ -19,8 +19,8 @@ class MetadataCache extends CacheProvider {
   /** @var string */
   private $directory;
 
-  public function __construct($dir, $is_read_only) {
-    $this->is_dev_mode = defined('WP_DEBUG') && WP_DEBUG && !$is_read_only;
+  public function __construct($dir, $isReadOnly) {
+    $this->isDevMode = defined('WP_DEBUG') && WP_DEBUG && !$isReadOnly;
     $this->directory = rtrim($dir, '/\\');
     if (!file_exists($this->directory)) {
       mkdir($this->directory);
@@ -36,14 +36,14 @@ class MetadataCache extends CacheProvider {
 
   protected function doContains($id) {
     $filename = $this->getFilename($id);
-    $file_exists = file_exists($filename);
+    $fileExists = file_exists($filename);
 
     // in dev mode invalidate cache if source file has changed
-    if ($file_exists && $this->is_dev_mode) {
-      $class_metadata = unserialize(file_get_contents($filename));
-      assert($class_metadata instanceof DoctrineClassMetadata || $class_metadata instanceof ValidatorClassMetadata);
+    if ($fileExists && $this->isDevMode) {
+      $classMetadata = unserialize(file_get_contents($filename));
+      assert($classMetadata instanceof DoctrineClassMetadata || $classMetadata instanceof ValidatorClassMetadata);
       try {
-        $reflection = new ReflectionClass($class_metadata->name);
+        $reflection = new ReflectionClass($classMetadata->name);
       } catch (ReflectionException $e) {
         return false;
       }
@@ -51,7 +51,7 @@ class MetadataCache extends CacheProvider {
       return filemtime($filename) >= filemtime($reflection->getFileName());
     }
 
-    return $file_exists;
+    return $fileExists;
   }
 
   protected function doSave($id, $data, $lifeTime = 0) {

@@ -14,12 +14,12 @@ class DynamicSegmentFilter extends Model {
   public static $_table = MP_DYNAMIC_SEGMENTS_FILTERS_TABLE;
 
   public function save() {
-    if (is_null($this->filter_data)) {
-      $this->filter_data = [];
+    if (is_null($this->filterData)) {
+      $this->filterData = [];
     }
 
-    if (!WPFunctions::get()->isSerialized($this->filter_data)) {
-      $this->filter_data = serialize($this->filter_data);
+    if (!WPFunctions::get()->isSerialized($this->filterData)) {
+      $this->filterData = serialize($this->filterData);
     }
 
     return parent::save();

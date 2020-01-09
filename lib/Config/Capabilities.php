@@ -22,7 +22,7 @@ class Capabilities {
       $wp = new WPFunctions;
     }
     $this->wp = $wp;
-    $this->access_control = new AccessControl;
+    $this->accessControl = new AccessControl;
   }
 
   public function init() {
@@ -30,29 +30,29 @@ class Capabilities {
   }
 
   public function setupWPCapabilities() {
-    $permissions = $this->access_control->getDefaultPermissions();
-    $role_objects = [];
+    $permissions = $this->accessControl->getDefaultPermissions();
+    $roleObjects = [];
     foreach ($permissions as $name => $roles) {
       foreach ($roles as $role) {
-        if (!isset($role_objects[$role])) {
-          $role_objects[$role] = WPFunctions::get()->getRole($role);
+        if (!isset($roleObjects[$role])) {
+          $roleObjects[$role] = WPFunctions::get()->getRole($role);
         }
-        if (!$role_objects[$role] instanceof WP_Role) continue;
-        $role_objects[$role]->add_cap($name);
+        if (!$roleObjects[$role] instanceof WP_Role) continue;
+        $roleObjects[$role]->add_cap($name);
       }
     }
   }
 
   public function removeWPCapabilities() {
-    $permissions = $this->access_control->getDefaultPermissions();
-    $role_objects = [];
+    $permissions = $this->accessControl->getDefaultPermissions();
+    $roleObjects = [];
     foreach ($permissions as $name => $roles) {
       foreach ($roles as $role) {
-        if (!isset($role_objects[$role])) {
-          $role_objects[$role] = WPFunctions::get()->getRole($role);
+        if (!isset($roleObjects[$role])) {
+          $roleObjects[$role] = WPFunctions::get()->getRole($role);
         }
-        if (!$role_objects[$role] instanceof WP_Role) continue;
-        $role_objects[$role]->remove_cap($name);
+        if (!$roleObjects[$role] instanceof WP_Role) continue;
+        $roleObjects[$role]->remove_cap($name);
       }
     }
   }
@@ -66,7 +66,7 @@ class Capabilities {
   public function enqueueMembersStyles() {
     WPFunctions::get()->wpEnqueueStyle(
       'mailpoet-admin-global',
-      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-admin.css')
+      Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-admin.css')
     );
   }
 
@@ -83,7 +83,7 @@ class Capabilities {
   }
 
   public function registerMembersCapabilities() {
-    $permissions = $this->access_control->getPermissionLabels();
+    $permissions = $this->accessControl->getPermissionLabels();
     foreach ($permissions as $name => $label) {
       $this->registerMembersCapability($name, $label);
     }

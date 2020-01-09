@@ -16,10 +16,10 @@ class Registration {
 
   public function __construct(
     SettingsController $settings,
-    SubscriberActions $subscriber_actions
+    SubscriberActions $subscriberActions
   ) {
     $this->settings = $settings;
-    $this->subscriber_actions = $subscriber_actions;
+    $this->subscriberActions = $subscriberActions;
   }
 
   public function extendForm() {
@@ -57,8 +57,8 @@ class Registration {
 
   public function onRegister(
     $errors,
-    $user_login,
-    $user_email = null
+    $userLogin,
+    $userEmail = null
   ) {
     if (
       empty($errors->errors)
@@ -66,24 +66,24 @@ class Registration {
       && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
     ) {
       $this->subscribeNewUser(
-        $user_login,
-        $user_email
+        $userLogin,
+        $userEmail
       );
     }
     return $errors;
   }
 
   private function subscribeNewUser($name, $email) {
-    $segment_ids = $this->settings->get(
+    $segmentIds = $this->settings->get(
       'subscribe.on_register.segments',
       []
     );
-    $this->subscriber_actions->subscribe(
+    $this->subscriberActions->subscribe(
       [
         'email' => $email,
         'first_name' => $name,
       ],
-      $segment_ids
+      $segmentIds
     );
   }
 }

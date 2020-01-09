@@ -19,33 +19,33 @@ class ReceivePostNotificationCest {
     $this->settings = $settings;
   }
 
-  public function receivePostNotification(\AcceptanceTester $I) {
-    $I->wantTo('Receive a post notification email');
-    $newsletter_subject = 'Post Notification Receive Test' . \MailPoet\Util\Security::generateRandomString();
-    $post_title = 'A post ' . \MailPoet\Util\Security::generateRandomString();
+  public function receivePostNotification(\AcceptanceTester $i) {
+    $i->wantTo('Receive a post notification email');
+    $newsletterSubject = 'Post Notification Receive Test' . \MailPoet\Util\Security::generateRandomString();
+    $postTitle = 'A post ' . \MailPoet\Util\Security::generateRandomString();
 
     $this->settings
       ->withTrackingDisabled()
       ->withCronTriggerMethod('WordPress');
 
-    $segment_factory = new Segment();
-    $segment = $segment_factory->withName('Receive Post Notification List')->create();
+    $segmentFactory = new Segment();
+    $segment = $segmentFactory->withName('Receive Post Notification List')->create();
 
-    $subscriber_factory = new Subscriber();
-    $subscriber_factory->withSegments([$segment])->create();
+    $subscriberFactory = new Subscriber();
+    $subscriberFactory->withSegments([$segment])->create();
 
     $newsletterFactory = new Newsletter();
-    $newsletter = $newsletterFactory->withSubject($newsletter_subject)
+    $newsletter = $newsletterFactory->withSubject($newsletterSubject)
       ->withPostNotificationsType()
       ->withActiveStatus()
       ->withImmediateSendingSettings()
       ->withSegments([$segment])
       ->create();
-    $I->wait(1); //waiting 1 second so that post created time is after the newsletter
+    $i->wait(1); //waiting 1 second so that post created time is after the newsletter
 
-    $I->cli(['post', 'create', "--post_title=$post_title", '--post_content=Lorem Ipsum', '--post_status=publish']);
+    $i->cli(['post', 'create', "--post_title=$post_title", '--post_content=Lorem Ipsum', '--post_status=publish']);
 
-    $I->login();
+    $i->login();
 
     // scheduler will create a task and schedule run in the next whole minute, that can break the test
     // I move the task to the past
@@ -58,21 +58,21 @@ class ReceivePostNotificationCest {
     );
 
     // confirm newsletter has been sent
-    $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="tab-Post Notifications"]');
-    $I->waitForText($newsletter_subject, 90);
+    $i->amOnMailpoetPage('Emails');
+    $i->click('[data-automation-id="tab-Post Notifications"]');
+    $i->waitForText($newsletterSubject, 90);
 
-    $I->waitForText('View history', 90);
+    $i->waitForText('View history', 90);
     $selector = sprintf('[data-automation-id="history-%d"]', $newsletter->id());
-    $I->click($selector);
-    $I->waitForText('Sent to 1 of 1', 90);
+    $i->click($selector);
+    $i->waitForText('Sent to 1 of 1', 90);
 
     // confirm newsletter is received
-    $I->amOnMailboxAppPage();
-    $I->waitForText($newsletter_subject, 90);
-    $I->click(Locator::contains('span.subject', $newsletter_subject));
-    $I->switchToIframe('preview-html');
-    $I->waitForText($post_title, 90);
+    $i->amOnMailboxAppPage();
+    $i->waitForText($newsletterSubject, 90);
+    $i->click(Locator::contains('span.subject', $newsletterSubject));
+    $i->switchToIframe('preview-html');
+    $i->waitForText($postTitle, 90);
   }
 
 }

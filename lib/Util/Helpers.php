@@ -12,14 +12,14 @@ class Helpers {
     return json_last_error() == JSON_ERROR_NONE;
   }
 
-  public static function replaceLinkTags($source, $link = false, $attributes = [], $link_tag = false) {
+  public static function replaceLinkTags($source, $link = false, $attributes = [], $linkTag = false) {
     if (!$link) return $source;
-    $link_tag = ($link_tag) ? $link_tag : self::LINK_TAG;
+    $linkTag = ($linkTag) ? $linkTag : self::LINK_TAG;
     $attributes = array_map(function($key) use ($attributes) {
       return sprintf('%s="%s"', $key, $attributes[$key]);
     }, array_keys($attributes));
     $source = str_replace(
-      '[' . $link_tag . ']',
+      '[' . $linkTag . ']',
       sprintf(
         '<a %s href="%s">',
         join(' ', $attributes),
@@ -27,7 +27,7 @@ class Helpers {
       ),
       $source
     );
-    $source = str_replace('[/' . $link_tag . ']', '</a>', $source);
+    $source = str_replace('[/' . $linkTag . ']', '</a>', $source);
     return preg_replace('/\s+/', ' ', $source);
   }
 
@@ -54,15 +54,15 @@ class Helpers {
 
   public static function flattenArray($array) {
     if (!$array) return;
-    $flattened_array = [];
-    array_walk_recursive($array, function ($a) use (&$flattened_array) {
-      $flattened_array[] = $a;
+    $flattenedArray = [];
+    array_walk_recursive($array, function ($a) use (&$flattenedArray) {
+      $flattenedArray[] = $a;
     });
-    return $flattened_array;
+    return $flattenedArray;
   }
 
-  public static function underscoreToCamelCase($str, $capitalise_first_char = false) {
-    if ($capitalise_first_char) {
+  public static function underscoreToCamelCase($str, $capitaliseFirstChar = false) {
+    if ($capitaliseFirstChar) {
       $str[0] = strtoupper($str[0]);
     }
     return preg_replace_callback('/_([a-z])/', function ($c) {

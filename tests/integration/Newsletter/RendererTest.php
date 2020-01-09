@@ -34,8 +34,8 @@ class RendererTest extends \MailPoetTest {
       'status' => 'active',
     ];
     $this->renderer = new Renderer($this->newsletter);
-    $this->column_renderer = new ColumnRenderer();
-    $this->DOM_parser = new \pQuery();
+    $this->columnRenderer = new ColumnRenderer();
+    $this->dOMParser = new \pQuery();
   }
 
   public function testItRendersCompleteNewsletter() {
@@ -43,7 +43,7 @@ class RendererTest extends \MailPoetTest {
     $template = $this->renderer->render();
     expect(isset($template['html']))->true();
     expect(isset($template['text']))->true();
-    $DOM = $this->DOM_parser->parseStr($template['html']);
+    $DOM = $this->dOMParser->parseStr($template['html']);
     // we expect to have 7 columns:
     //  1x column including header
     //  2x column
@@ -58,178 +58,178 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersOneColumn() {
-    $column_content = [
+    $columnContent = [
       'one',
     ];
-    $column_styles = [
+    $columnStyles = [
       'block' => [
         'backgroundColor' => "#999999",
       ],
     ];
-    $DOM = $this->DOM_parser->parseStr(
-      $this->column_renderer->render(
+    $DOM = $this->dOMParser->parseStr(
+      $this->columnRenderer->render(
         [
-          'styles' => $column_styles,
+          'styles' => $columnStyles,
           'blocks' => [[]],
         ],
-        $column_content
+        $columnContent
       )
     );
-    $rendered_column_content = [];
+    $renderedColumnContent = [];
     foreach ($DOM('table.mailpoet_cols-one > tbody') as $column) {
-      $rendered_column_content[] = trim($column->text());
+      $renderedColumnContent[] = trim($column->text());
     };
-    expect($rendered_column_content)->equals($column_content);
+    expect($renderedColumnContent)->equals($columnContent);
     expect((string)$DOM)->contains(' bgcolor="#999999"');
   }
 
   public function testItRendersTwoColumns() {
-    $column_content = [
+    $columnContent = [
       'one',
       'two',
     ];
-    $column_styles = [
+    $columnStyles = [
       'block' => [
         'backgroundColor' => "#999999",
       ],
     ];
-    $DOM = $this->DOM_parser->parseStr(
-      $this->column_renderer->render(
+    $DOM = $this->dOMParser->parseStr(
+      $this->columnRenderer->render(
         [
-          'styles' => $column_styles,
+          'styles' => $columnStyles,
           'blocks' => [[], []],
         ],
-        $column_content
+        $columnContent
       )
     );
-    $rendered_column_content = [];
+    $renderedColumnContent = [];
     foreach ($DOM('table.mailpoet_cols-two > tbody') as $column) {
-      $rendered_column_content[] = trim($column->text());
+      $renderedColumnContent[] = trim($column->text());
     };
-    expect($rendered_column_content)->equals($column_content);
+    expect($renderedColumnContent)->equals($columnContent);
     expect((string)$DOM)->contains(' bgcolor="#999999"');
   }
 
   public function testItRendersThreeColumns() {
-    $column_content = [
+    $columnContent = [
       'one',
       'two',
       'three',
     ];
-    $column_styles = [
+    $columnStyles = [
       'block' => [
         'backgroundColor' => "#999999",
       ],
     ];
-    $DOM = $this->DOM_parser->parseStr(
-      $this->column_renderer->render(
+    $DOM = $this->dOMParser->parseStr(
+      $this->columnRenderer->render(
         [
-          'styles' => $column_styles,
+          'styles' => $columnStyles,
           'blocks' => [[], [], []],
         ],
-        $column_content
+        $columnContent
       )
     );
-    $rendered_column_content = [];
+    $renderedColumnContent = [];
     foreach ($DOM('table.mailpoet_cols-three > tbody') as $column) {
-      $rendered_column_content[] = trim($column->text());
+      $renderedColumnContent[] = trim($column->text());
     };
-    expect($rendered_column_content)->equals($column_content);
+    expect($renderedColumnContent)->equals($columnContent);
     expect((string)$DOM)->contains(' bgcolor="#999999"');
   }
 
   public function testItRendersScaledColumnBackgroundImage() {
-    $column_content = ['one'];
-    $column_styles = ['block' => ['backgroundColor' => "#999999"]];
-    $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'scale', 'width' => '1000px', 'height' => '500px'];
-    $DOM = $this->DOM_parser->parseStr(
-      $this->column_renderer->render(
+    $columnContent = ['one'];
+    $columnStyles = ['block' => ['backgroundColor' => "#999999"]];
+    $columnImage = ['src' => 'https://example.com/image.jpg', 'display' => 'scale', 'width' => '1000px', 'height' => '500px'];
+    $DOM = $this->dOMParser->parseStr(
+      $this->columnRenderer->render(
         [
-          'styles' => $column_styles,
+          'styles' => $columnStyles,
           'blocks' => [[]],
-          'image' => $column_image,
+          'image' => $columnImage,
         ],
-        $column_content
+        $columnContent
       )
     );
-    $column_css = $DOM('td.mailpoet_content')[0]->attr('style');
-    expect($column_css)->contains('background: #999999 url(https://example.com/image.jpg) no-repeat center/cover;');
-    expect($column_css)->contains('background-color: #999999;');
-    expect($column_css)->contains('background-image: url(https://example.com/image.jpg);');
-    expect($column_css)->contains('background-repeat: no-repeat;');
-    expect($column_css)->contains('background-position: center;');
-    expect($column_css)->contains('background-size: cover;');
+    $columnCss = $DOM('td.mailpoet_content')[0]->attr('style');
+    expect($columnCss)->contains('background: #999999 url(https://example.com/image.jpg) no-repeat center/cover;');
+    expect($columnCss)->contains('background-color: #999999;');
+    expect($columnCss)->contains('background-image: url(https://example.com/image.jpg);');
+    expect($columnCss)->contains('background-repeat: no-repeat;');
+    expect($columnCss)->contains('background-position: center;');
+    expect($columnCss)->contains('background-size: cover;');
   }
 
   public function testItRendersFitColumnBackgroundImage() {
-    $column_content = ['one'];
-    $column_styles = ['block' => ['backgroundColor' => "#999999"]];
-    $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'fit', 'width' => '1000px', 'height' => '500px'];
-    $DOM = $this->DOM_parser->parseStr(
-      $this->column_renderer->render(
+    $columnContent = ['one'];
+    $columnStyles = ['block' => ['backgroundColor' => "#999999"]];
+    $columnImage = ['src' => 'https://example.com/image.jpg', 'display' => 'fit', 'width' => '1000px', 'height' => '500px'];
+    $DOM = $this->dOMParser->parseStr(
+      $this->columnRenderer->render(
         [
-          'styles' => $column_styles,
+          'styles' => $columnStyles,
           'blocks' => [[]],
-          'image' => $column_image,
+          'image' => $columnImage,
         ],
-        $column_content
+        $columnContent
       )
     );
-    $column_css = $DOM('td.mailpoet_content')[0]->attr('style');
-    expect($column_css)->contains('background: #999999 url(https://example.com/image.jpg) no-repeat center/contain;');
-    expect($column_css)->contains('background-color: #999999;');
-    expect($column_css)->contains('background-image: url(https://example.com/image.jpg);');
-    expect($column_css)->contains('background-repeat: no-repeat;');
-    expect($column_css)->contains('background-position: center;');
-    expect($column_css)->contains('background-size: contain;');
+    $columnCss = $DOM('td.mailpoet_content')[0]->attr('style');
+    expect($columnCss)->contains('background: #999999 url(https://example.com/image.jpg) no-repeat center/contain;');
+    expect($columnCss)->contains('background-color: #999999;');
+    expect($columnCss)->contains('background-image: url(https://example.com/image.jpg);');
+    expect($columnCss)->contains('background-repeat: no-repeat;');
+    expect($columnCss)->contains('background-position: center;');
+    expect($columnCss)->contains('background-size: contain;');
   }
 
   public function testItRendersTiledColumnBackgroundImage() {
-    $column_content = ['one'];
-    $column_styles = ['block' => ['backgroundColor' => "#999999"]];
-    $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'tile', 'width' => '1000px', 'height' => '500px'];
-    $DOM = $this->DOM_parser->parseStr(
-      $this->column_renderer->render(
+    $columnContent = ['one'];
+    $columnStyles = ['block' => ['backgroundColor' => "#999999"]];
+    $columnImage = ['src' => 'https://example.com/image.jpg', 'display' => 'tile', 'width' => '1000px', 'height' => '500px'];
+    $DOM = $this->dOMParser->parseStr(
+      $this->columnRenderer->render(
         [
-          'styles' => $column_styles,
+          'styles' => $columnStyles,
           'blocks' => [[]],
-          'image' => $column_image,
+          'image' => $columnImage,
         ],
-        $column_content
+        $columnContent
       )
     );
-    $column_css = $DOM('td.mailpoet_content')[0]->attr('style');
-    expect($column_css)->contains('background: #999999 url(https://example.com/image.jpg) repeat center/contain;');
-    expect($column_css)->contains('background-color: #999999;');
-    expect($column_css)->contains('background-image: url(https://example.com/image.jpg);');
-    expect($column_css)->contains('background-repeat: repeat;');
-    expect($column_css)->contains('background-position: center;');
-    expect($column_css)->contains('background-size: contain;');
+    $columnCss = $DOM('td.mailpoet_content')[0]->attr('style');
+    expect($columnCss)->contains('background: #999999 url(https://example.com/image.jpg) repeat center/contain;');
+    expect($columnCss)->contains('background-color: #999999;');
+    expect($columnCss)->contains('background-image: url(https://example.com/image.jpg);');
+    expect($columnCss)->contains('background-repeat: repeat;');
+    expect($columnCss)->contains('background-position: center;');
+    expect($columnCss)->contains('background-size: contain;');
   }
 
   public function testItRendersFallbackColumnBackgroundColorForBackgroundImage() {
-    $column_content = ['one'];
-    $column_styles = ['block' => ['backgroundColor' => 'transparent']];
-    $column_image = ['src' => 'https://example.com/image.jpg', 'display' => 'tile', 'width' => '1000px', 'height' => '500px'];
-    $DOM = $this->DOM_parser->parseStr(
-      $this->column_renderer->render(
+    $columnContent = ['one'];
+    $columnStyles = ['block' => ['backgroundColor' => 'transparent']];
+    $columnImage = ['src' => 'https://example.com/image.jpg', 'display' => 'tile', 'width' => '1000px', 'height' => '500px'];
+    $DOM = $this->dOMParser->parseStr(
+      $this->columnRenderer->render(
         [
-          'styles' => $column_styles,
+          'styles' => $columnStyles,
           'blocks' => [[]],
-          'image' => $column_image,
+          'image' => $columnImage,
         ],
-        $column_content
+        $columnContent
       )
     );
-    $column_css = $DOM('td.mailpoet_content')[0]->attr('style');
-    expect($column_css)->contains('background: #ffffff url(https://example.com/image.jpg) repeat center/contain;');
-    expect($column_css)->contains('background-color: #ffffff;');
+    $columnCss = $DOM('td.mailpoet_content')[0]->attr('style');
+    expect($columnCss)->contains('background: #ffffff url(https://example.com/image.jpg) repeat center/contain;');
+    expect($columnCss)->contains('background-color: #ffffff;');
   }
 
   public function testItRendersHeader() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][0];
-    $DOM = $this->DOM_parser->parseStr(Header::render($template));
+    $DOM = $this->dOMParser->parseStr(Header::render($template));
     // element should be properly nested, and styles should be applied
     expect($DOM('tr > td.mailpoet_header', 0)->html())->notEmpty();
     expect($DOM('tr > td > a', 0)->html())->notEmpty();
@@ -240,7 +240,7 @@ class RendererTest extends \MailPoetTest {
   public function testItRendersImage() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
-    $DOM = $this->DOM_parser->parseStr(Image::render($template, self::COLUMN_BASE_WIDTH));
+    $DOM = $this->dOMParser->parseStr(Image::render($template, self::COLUMN_BASE_WIDTH));
     // element should be properly nested, it's width set and style applied
     expect($DOM('tr > td > img', 0)->attr('width'))->equals(620);
   }
@@ -250,21 +250,21 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
     // default alignment (center)
     unset($template['styles']['block']['textAlign']);
-    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    $DOM = $this->dOMParser->parseStr(Image::render($template, $columnCount = 1));
     expect($DOM('tr > td', 0)->attr('align'))->equals('center');
     $template['styles']['block']['textAlign'] = 'center';
-    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    $DOM = $this->dOMParser->parseStr(Image::render($template, $columnCount = 1));
     expect($DOM('tr > td', 0)->attr('align'))->equals('center');
     $template['styles']['block']['textAlign'] = 'something odd';
-    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    $DOM = $this->dOMParser->parseStr(Image::render($template, $columnCount = 1));
     expect($DOM('tr > td', 0)->attr('align'))->equals('center');
     // left alignment
     $template['styles']['block']['textAlign'] = 'left';
-    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    $DOM = $this->dOMParser->parseStr(Image::render($template, $columnCount = 1));
     expect($DOM('tr > td', 0)->attr('align'))->equals('left');
     // right alignment
     $template['styles']['block']['textAlign'] = 'right';
-    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    $DOM = $this->dOMParser->parseStr(Image::render($template, $columnCount = 1));
     expect($DOM('tr > td', 0)->attr('align'))->equals('right');
   }
 
@@ -276,8 +276,8 @@ class RendererTest extends \MailPoetTest {
       'link' => '',
       'alt' => 'some test alt text',
     ];
-    $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
-    expect($rendered_image)->equals('');
+    $renderedImage = Image::render($image, self::COLUMN_BASE_WIDTH);
+    expect($renderedImage)->equals('');
   }
 
   public function testItForcesAbsoluteSrcForImages() {
@@ -289,9 +289,9 @@ class RendererTest extends \MailPoetTest {
       'fullWidth' => false,
       'alt' => 'some test alt text',
     ];
-    $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
-    $site_url = get_option('siteurl');
-    expect($rendered_image)->contains('src="' . $site_url . '/relative-path"');
+    $renderedImage = Image::render($image, self::COLUMN_BASE_WIDTH);
+    $siteUrl = get_option('siteurl');
+    expect($renderedImage)->contains('src="' . $siteUrl . '/relative-path"');
 
     $image = [
       'src' => '//path-without-protocol',
@@ -301,15 +301,15 @@ class RendererTest extends \MailPoetTest {
       'fullWidth' => false,
       'alt' => 'some test alt text',
     ];
-    $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
-    expect($rendered_image)->contains('src="//path-without-protocol"');
+    $renderedImage = Image::render($image, self::COLUMN_BASE_WIDTH);
+    expect($renderedImage)->contains('src="//path-without-protocol"');
   }
 
   public function testItRendersImageWithLink() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
     $template['link'] = 'http://example.com';
-    $DOM = $this->DOM_parser->parseStr(Image::render($template, self::COLUMN_BASE_WIDTH));
+    $DOM = $this->dOMParser->parseStr(Image::render($template, self::COLUMN_BASE_WIDTH));
     // element should be wrapped in <a> tag
     expect($DOM('tr > td > a', 0)->html())->contains('<img');
     expect($DOM('tr > td > a', 0)->attr('href'))->equals($template['link']);
@@ -322,26 +322,26 @@ class RendererTest extends \MailPoetTest {
       'height' => 600,
       'fullWidth' => true,
     ];
-    $new_image_dimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
-    expect($new_image_dimensions['width'])->equals(660);
-    expect($new_image_dimensions['height'])->equals(495);
+    $newImageDimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
+    expect($newImageDimensions['width'])->equals(660);
+    expect($newImageDimensions['height'])->equals(495);
     // nothing happens when image width = column width
     $image['width'] = 661;
-    $new_image_dimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
-    expect($new_image_dimensions['width'])->equals(660);
+    $newImageDimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
+    expect($newImageDimensions['width'])->equals(660);
     // nothing happens when image width < column width
     $image['width'] = 659;
-    $new_image_dimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
-    expect($new_image_dimensions['width'])->equals(659);
+    $newImageDimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
+    expect($newImageDimensions['width'])->equals(659);
     // image is reduced by 40px when it's width > padded column width
     $image['width'] = 621;
     $image['fullWidth'] = false;
-    $new_image_dimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
-    expect($new_image_dimensions['width'])->equals(620);
+    $newImageDimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
+    expect($newImageDimensions['width'])->equals(620);
     // nothing happens when image with < padded column width
     $image['width'] = 619;
-    $new_image_dimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
-    expect($new_image_dimensions['width'])->equals(619);
+    $newImageDimensions = Image::adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
+    expect($newImageDimensions['width'])->equals(619);
   }
 
   public function testItRendersImageWithAutoDimensions() {
@@ -353,8 +353,8 @@ class RendererTest extends \MailPoetTest {
       'fullWidth' => false,
       'alt' => 'some test alt text',
     ];
-    $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
-    expect($rendered_image)->contains('width="auto"');
+    $renderedImage = Image::render($image, self::COLUMN_BASE_WIDTH);
+    expect($renderedImage)->contains('width="auto"');
   }
 
   public function testItAdjustImageDimensionsWithPx() {
@@ -366,8 +366,8 @@ class RendererTest extends \MailPoetTest {
       'fullWidth' => false,
       'alt' => 'some test alt text',
     ];
-    $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
-    expect($rendered_image)->contains('width="620"');
+    $renderedImage = Image::render($image, self::COLUMN_BASE_WIDTH);
+    expect($renderedImage)->contains('width="620"');
   }
 
   public function testItAdjustImageDimensionsWithoutPx() {
@@ -379,14 +379,14 @@ class RendererTest extends \MailPoetTest {
       'fullWidth' => false,
       'alt' => 'some test alt text',
     ];
-    $rendered_image = Image::render($image, self::COLUMN_BASE_WIDTH);
-    expect($rendered_image)->contains('width="620"');
+    $renderedImage = Image::render($image, self::COLUMN_BASE_WIDTH);
+    expect($renderedImage)->contains('width="620"');
   }
 
   public function testItRendersText() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][2];
-    $DOM = $this->DOM_parser->parseStr(Text::render($template));
+    $DOM = $this->dOMParser->parseStr(Text::render($template));
     // blockquotes and paragraphs should be converted to spans and placed inside a table
     expect(
       $DOM('tr > td > table > tr > td.mailpoet_paragraph', 0)->html()
@@ -416,7 +416,7 @@ class RendererTest extends \MailPoetTest {
 
     // trailing line breaks should be cut off, but not inside an element
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][8];
-    $DOM = $this->DOM_parser->parseStr(Text::render($template));
+    $DOM = $this->dOMParser->parseStr(Text::render($template));
     expect(count($DOM('tr > td > br', 0)))
       ->equals(0);
     expect($DOM('tr > td > h3', 0)->html())
@@ -426,7 +426,7 @@ class RendererTest extends \MailPoetTest {
   public function testItRendersDivider() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][3];
-    $DOM = $this->DOM_parser->parseStr(Divider::render($template));
+    $DOM = $this->dOMParser->parseStr(Divider::render($template));
     // element should be properly nested and its border-top-width set
     expect(
       preg_match(
@@ -438,7 +438,7 @@ class RendererTest extends \MailPoetTest {
   public function testItRendersSpacer() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][4];
-    $DOM = $this->DOM_parser->parseStr(Spacer::render($template));
+    $DOM = $this->dOMParser->parseStr(Spacer::render($template));
     // element should be properly nested and its height set
     expect($DOM('tr > td.mailpoet_spacer', 0)->attr('height'))->equals(50);
   }
@@ -446,10 +446,10 @@ class RendererTest extends \MailPoetTest {
   public function testItSetsSpacerBackground() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][4];
-    $DOM = $this->DOM_parser->parseStr(Spacer::render($template));
+    $DOM = $this->dOMParser->parseStr(Spacer::render($template));
     expect($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))->null();
     $template['styles']['block']['backgroundColor'] = '#ffff';
-    $DOM = $this->DOM_parser->parseStr(Spacer::render($template));
+    $DOM = $this->dOMParser->parseStr(Spacer::render($template));
     expect($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))
       ->equals('#ffff');
   }
@@ -458,14 +458,14 @@ class RendererTest extends \MailPoetTest {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $template['styles']['block']['width'] = '700px';
-    $button_width = Button::calculateWidth($template, self::COLUMN_BASE_WIDTH);
-    expect($button_width)->equals('618px'); //(width - (2 * border width)
+    $buttonWidth = Button::calculateWidth($template, self::COLUMN_BASE_WIDTH);
+    expect($buttonWidth)->equals('618px'); //(width - (2 * border width)
   }
 
   public function testItRendersButton() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
-    $DOM = $this->DOM_parser->parseStr(Button::render($template, self::COLUMN_BASE_WIDTH));
+    $DOM = $this->dOMParser->parseStr(Button::render($template, self::COLUMN_BASE_WIDTH));
     // element should be properly nested with arcsize/styles/fillcolor set
     expect(
       $DOM('tr > td > div > table > tr > td > a.mailpoet_button', 0)->html()
@@ -501,7 +501,7 @@ class RendererTest extends \MailPoetTest {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $template['styles']['block']['fontFamily'] = 'Lucida';
-    $DOM = $this->DOM_parser->parseStr(Button::render($template, self::COLUMN_BASE_WIDTH));
+    $DOM = $this->dOMParser->parseStr(Button::render($template, self::COLUMN_BASE_WIDTH));
     expect(
       preg_match(
         '/font-family: \'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif/',
@@ -512,7 +512,7 @@ class RendererTest extends \MailPoetTest {
   public function testItRendersSocialIcons() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][6];
-    $DOM = $this->DOM_parser->parseStr(Social::render($template));
+    $DOM = $this->dOMParser->parseStr(Social::render($template));
     // element should be properly nested, contain social icons and
     // image source/link href/alt should be  properly set
     expect($DOM('tr > td', 0)->html())->notEmpty();
@@ -533,14 +533,14 @@ class RendererTest extends \MailPoetTest {
         'iconType' => 'custom',
       ],
     ];
-    $rendered_block = Social::render($block);
-    expect($rendered_block)->equals('');
+    $renderedBlock = Social::render($block);
+    expect($renderedBlock)->equals('');
   }
 
   public function testItRendersFooter() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][3]['blocks'][0]['blocks'][0];
-    $DOM = $this->DOM_parser->parseStr(Footer::render($template));
+    $DOM = $this->dOMParser->parseStr(Footer::render($template));
     // element should be properly nested, and styles should be applied
     expect($DOM('tr > td.mailpoet_footer', 0)->html())->notEmpty();
     expect($DOM('tr > td > a', 0)->html())->notEmpty();
@@ -551,7 +551,7 @@ class RendererTest extends \MailPoetTest {
   public function testItSetsSubject() {
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render();
-    $DOM = $this->DOM_parser->parseStr($template['html']);
+    $DOM = $this->dOMParser->parseStr($template['html']);
     $subject = trim($DOM('title')->text());
     expect($subject)->equals($this->newsletter['subject']);
   }
@@ -559,7 +559,7 @@ class RendererTest extends \MailPoetTest {
   public function testItSetsPreheader() {
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render();
-    $DOM = $this->DOM_parser->parseStr($template['html']);
+    $DOM = $this->dOMParser->parseStr($template['html']);
     $preheader = trim($DOM('td.mailpoet_preheader')->text());
     expect($preheader)->equals($this->newsletter['preheader']);
   }

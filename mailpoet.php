@@ -15,7 +15,7 @@
  * @since 3.0.0-beta.1
  */
 
-$mailpoet_plugin = [
+$mailpoetPlugin = [
   'version' => '3.42.3',
   'filename' => __FILE__,
   'path' => dirname(__FILE__),
@@ -82,7 +82,7 @@ function mailpoet_microsoft_iis_notice() {
 }
 
 // Check for presence of core dependencies
-if (!file_exists($mailpoet_plugin['autoloader']) || !file_exists($mailpoet_plugin['initializer'])) {
+if (!file_exists($mailpoetPlugin['autoloader']) || !file_exists($mailpoetPlugin['initializer'])) {
   add_action('admin_notices', 'mailpoet_core_dependency_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
@@ -96,4 +96,4 @@ function mailpoet_core_dependency_notice() {
 }
 
 // Initialize plugin
-require_once($mailpoet_plugin['initializer']);
+require_once($mailpoetPlugin['initializer']);

@@ -45,9 +45,9 @@ class Bridge {
 
   public static function isMPSendingServiceEnabled() {
     try {
-      $mailer_config = SettingsController::getInstance()->get(Mailer::MAILER_CONFIG_SETTING_NAME);
-      return !empty($mailer_config['method'])
-        && $mailer_config['method'] === Mailer::METHOD_MAILPOET;
+      $mailerConfig = SettingsController::getInstance()->get(Mailer::MAILER_CONFIG_SETTING_NAME);
+      return !empty($mailerConfig['method'])
+        && $mailerConfig['method'] === Mailer::METHOD_MAILPOET;
     } catch (\Exception $e) {
       return false;
     }
@@ -75,11 +75,11 @@ class Bridge {
     return $wp->wpRemoteRetrieveResponseCode($result) === 200;
   }
 
-  public function initApi($api_key) {
+  public function initApi($apiKey) {
     if ($this->api) {
-      $this->api->setKey($api_key);
+      $this->api->setKey($apiKey);
     } else {
-      $this->api = new Bridge\API($api_key);
+      $this->api = new Bridge\API($apiKey);
     }
   }
 
@@ -99,9 +99,9 @@ class Bridge {
       ->getAuthorizedEmailAddresses();
   }
 
-  public function checkMSSKey($api_key) {
+  public function checkMSSKey($apiKey) {
     $result = $this
-      ->getApi($api_key)
+      ->getApi($apiKey)
       ->checkMSSKey();
     return $this->processKeyCheckResult($result);
   }
@@ -134,27 +134,27 @@ class Bridge {
   }
 
   private function processKeyCheckResult(array $result) {
-    $state_map = [
+    $stateMap = [
       200 => self::KEY_VALID,
       401 => self::KEY_INVALID,
       402 => self::KEY_ALREADY_USED,
       403 => self::KEY_INVALID,
     ];
 
-    if (!empty($result['code']) && isset($state_map[$result['code']])) {
-      if ($state_map[$result['code']] == self::KEY_VALID
+    if (!empty($result['code']) && isset($stateMap[$result['code']])) {
+      if ($stateMap[$result['code']] == self::KEY_VALID
         && !empty($result['data']['expire_at'])
       ) {
-        $key_state = self::KEY_EXPIRING;
+        $keyState = self::KEY_EXPIRING;
       } else {
-        $key_state = $state_map[$result['code']];
+        $keyState = $stateMap[$result['code']];
       }
     } else {
-      $key_state = self::KEY_CHECK_ERROR;
+      $keyState = self::KEY_CHECK_ERROR;
     }
 
     return $this->buildKeyState(
-      $key_state,
+      $keyState,
       $result
     );
   }
@@ -179,9 +179,9 @@ class Bridge {
     );
   }
 
-  private function buildKeyState($key_state, $result) {
+  private function buildKeyState($keyState, $result) {
     $state = [
-      'state' => $key_state,
+      'state' => $keyState,
       'data' => !empty($result['data']) ? $result['data'] : null,
       'code' => !empty($result['code']) ? $result['code'] : self::CHECK_ERROR_UNKNOWN,
     ];
@@ -214,20 +214,20 @@ class Bridge {
   }
 
   public function onSettingsSave($settings) {
-    $api_key_set = !empty($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
-    $premium_key_set = !empty($settings['premium']['premium_key']);
-    if ($api_key_set) {
-      $api_key = $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'];
-      $state = $this->checkMSSKey($api_key);
-      $this->storeMSSKeyAndState($api_key, $state);
+    $apiKeySet = !empty($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
+    $premiumKeySet = !empty($settings['premium']['premium_key']);
+    if ($apiKeySet) {
+      $apiKey = $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'];
+      $state = $this->checkMSSKey($apiKey);
+      $this->storeMSSKeyAndState($apiKey, $state);
       if (self::isMPSendingServiceEnabled()) {
         $this->updateSubscriberCount($state);
       }
     }
-    if ($premium_key_set) {
-      $premium_key = $settings['premium']['premium_key'];
-      $state = $this->checkPremiumKey($premium_key);
-      $this->storePremiumKeyAndState($premium_key, $state);
+    if ($premiumKeySet) {
+      $premiumKey = $settings['premium']['premium_key'];
+      $state = $this->checkPremiumKey($premiumKey);
+      $this->storePremiumKeyAndState($premiumKey, $state);
     }
   }
 }

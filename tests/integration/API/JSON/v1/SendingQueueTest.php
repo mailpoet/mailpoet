@@ -41,31 +41,31 @@ class SendingQueueTest extends \MailPoetTest {
     $newsletter = $this->newsletter;
     $newsletter->status = Newsletter::STATUS_SCHEDULED;
     $newsletter->save();
-    $newletter_options = [
+    $newletterOptions = [
       'isScheduled' => 1,
       'scheduledAt' => '2018-10-10 10:00:00',
     ];
     $this->_createOrUpdateNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_STANDARD,
-      $newletter_options
+      $newletterOptions
     );
 
-    $sending_queue = new SendingQueueAPI(new SubscribersFeature(ContainerWrapper::getInstance()->get(SettingsController::class), ContainerWrapper::getInstance()->get(SubscribersRepository::class)));
-    $result = $sending_queue->add(['newsletter_id' => $newsletter->id]);
-    $scheduled_task = ScheduledTask::findOne($result->data['task_id']);
-    expect($scheduled_task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
-    expect($scheduled_task->scheduled_at)->equals($newletter_options['scheduledAt']);
-    expect($scheduled_task->type)->equals(Sending::TASK_TYPE);
+    $sendingQueue = new SendingQueueAPI(new SubscribersFeature(ContainerWrapper::getInstance()->get(SettingsController::class), ContainerWrapper::getInstance()->get(SubscribersRepository::class)));
+    $result = $sendingQueue->add(['newsletter_id' => $newsletter->id]);
+    $scheduledTask = ScheduledTask::findOne($result->data['task_id']);
+    expect($scheduledTask->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+    expect($scheduledTask->scheduledAt)->equals($newletterOptions['scheduledAt']);
+    expect($scheduledTask->type)->equals(Sending::TASK_TYPE);
   }
 
   public function testItReturnsErrorIfSubscribersLimitReached() {
-    $sending_queue = new SendingQueueAPI(Stub::make(SubscribersFeature::class, [
+    $sendingQueue = new SendingQueueAPI(Stub::make(SubscribersFeature::class, [
       'check' => true,
     ]));
-    $res = $sending_queue->add(['newsletter_id' => $this->newsletter->id]);
+    $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->id]);
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
-    $res = $sending_queue->resume(['newsletter_id' => $this->newsletter->id]);
+    $res = $sendingQueue->resume(['newsletter_id' => $this->newsletter->id]);
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
   }
 
@@ -73,61 +73,61 @@ class SendingQueueTest extends \MailPoetTest {
     $newsletter = $this->newsletter;
     $newsletter->status = Newsletter::STATUS_SCHEDULED;
     $newsletter->save();
-    $newletter_options = [
+    $newletterOptions = [
       'isScheduled' => 1,
       'scheduledAt' => '2018-10-10 10:00:00',
     ];
     $this->_createOrUpdateNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_STANDARD,
-      $newletter_options
+      $newletterOptions
     );
-    $sending_queue = new SendingQueueAPI(new SubscribersFeature(ContainerWrapper::getInstance()->get(SettingsController::class), ContainerWrapper::getInstance()->get(SubscribersRepository::class)));
+    $sendingQueue = new SendingQueueAPI(new SubscribersFeature(ContainerWrapper::getInstance()->get(SettingsController::class), ContainerWrapper::getInstance()->get(SubscribersRepository::class)));
 
     // add scheduled task
-    $result = $sending_queue->add(['newsletter_id' => $newsletter->id]);
-    $scheduled_task = ScheduledTask::findOne($result->data['task_id']);
-    expect($scheduled_task->scheduled_at)->equals('2018-10-10 10:00:00');
+    $result = $sendingQueue->add(['newsletter_id' => $newsletter->id]);
+    $scheduledTask = ScheduledTask::findOne($result->data['task_id']);
+    expect($scheduledTask->scheduledAt)->equals('2018-10-10 10:00:00');
 
     // update scheduled time
-    $newletter_options = [
+    $newletterOptions = [
       'scheduledAt' => '2018-11-11 11:00:00',
     ];
     $this->_createOrUpdateNewsletterOptions(
       $newsletter->id,
       Newsletter::TYPE_STANDARD,
-      $newletter_options
+      $newletterOptions
     );
-    $result = $sending_queue->add(['newsletter_id' => $newsletter->id]);
-    $rescheduled_task = ScheduledTask::findOne($result->data['task_id']);
+    $result = $sendingQueue->add(['newsletter_id' => $newsletter->id]);
+    $rescheduledTask = ScheduledTask::findOne($result->data['task_id']);
     // new task was not created
-    expect($rescheduled_task->id)->equals($scheduled_task->id);
+    expect($rescheduledTask->id)->equals($scheduledTask->id);
     // scheduled time was updated
-    expect($rescheduled_task->scheduled_at)->equals('2018-11-11 11:00:00');
+    expect($rescheduledTask->scheduledAt)->equals('2018-11-11 11:00:00');
   }
 
-  private function _createOrUpdateNewsletterOptions($newsletter_id, $newsletter_type, $options) {
+  private function _createOrUpdateNewsletterOptions($newsletterId, $newsletterType, $options) {
     foreach ($options as $option => $value) {
-      $newsletter_option_field = NewsletterOptionField::where('name', $option)->findOne();
-      if (!$newsletter_option_field) {
-        $newsletter_option_field = NewsletterOptionField::create();
-        $newsletter_option_field->name = $option;
-        $newsletter_option_field->newsletter_type = $newsletter_type;
-        $newsletter_option_field->save();
-        expect($newsletter_option_field->getErrors())->false();
+      $newsletterOptionField = NewsletterOptionField::where('name', $option)->findOne();
+      if (!$newsletterOptionField) {
+        $newsletterOptionField = NewsletterOptionField::create();
+        $newsletterOptionField->name = $option;
+        $newsletterOptionField->newsletterType = $newsletterType;
+        $newsletterOptionField->save();
+        expect($newsletterOptionField->getErrors())->false();
       }
 
-      $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter_id)
-        ->where('option_field_id', $newsletter_option_field->id)
+      $newsletterOption = NewsletterOption::where('newsletter_id', $newsletterId)
+        ->where('option_field_id', $newsletterOptionField->id)
         ->findOne();
-      if (!$newsletter_option) {
-        $newsletter_option = NewsletterOption::create();
-        $newsletter_option->option_field_id = (int)$newsletter_option_field->id;
-        $newsletter_option->newsletter_id = $newsletter_id;
+      if (!$newsletterOption) {
+        $newsletterOption = NewsletterOption::create();
+        $newsletterOption->optionFieldId = (int)$newsletterOptionField->id;
+        $newsletterOption->newsletterId = $newsletterId;
       }
-      $newsletter_option->value = $value;
-      $newsletter_option->save();
-      expect($newsletter_option->getErrors())->false();
+      $newsletterOption->value = $value;
+      $newsletterOption->save();
+      expect($newsletterOption->getErrors())->false();
     }
   }
 
@@ -135,7 +135,7 @@ class SendingQueueTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . SendingQueueModel::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }

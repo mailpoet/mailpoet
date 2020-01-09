@@ -31,22 +31,22 @@ class CronTrigger {
   private $settings;
 
   public function __construct(
-    MailPoet $mailpoet_trigger,
-    WordPress $wordpress_trigger,
+    MailPoet $mailpoetTrigger,
+    WordPress $wordpressTrigger,
     SettingsController $settings
   ) {
-    $this->mailpoet_trigger = $mailpoet_trigger;
-    $this->wordpress_trigger = $wordpress_trigger;
+    $this->mailpoetTrigger = $mailpoetTrigger;
+    $this->wordpressTrigger = $wordpressTrigger;
     $this->settings = $settings;
   }
 
   public function init() {
-    $current_method = $this->settings->get(self::SETTING_NAME . '.method');
+    $currentMethod = $this->settings->get(self::SETTING_NAME . '.method');
     try {
-      if ($current_method === self::METHOD_MAILPOET) {
-        return $this->mailpoet_trigger->run();
-      } elseif ($current_method === self::METHOD_WORDPRESS) {
-        return $this->wordpress_trigger->run();
+      if ($currentMethod === self::METHOD_MAILPOET) {
+        return $this->mailpoetTrigger->run();
+      } elseif ($currentMethod === self::METHOD_WORDPRESS) {
+        return $this->wordpressTrigger->run();
       }
       return false;
     } catch (\Exception $e) {

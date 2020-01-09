@@ -33,23 +33,23 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'eraser.test.email.that@has.custom.fields',
     ]);
-    $custom_field1 = CustomField::createOrUpdate([
+    $customField1 = CustomField::createOrUpdate([
       'name' => 'Custom field1',
       'type' => 'input',
     ]);
-    $custom_field2 = CustomField::createOrUpdate([
+    $customField2 = CustomField::createOrUpdate([
       'name' => 'Custom field2',
       'type' => 'input',
     ]);
-    $subscriber->setCustomField($custom_field1->id(), 'Value');
-    $subscriber->setCustomField($custom_field2->id(), 'Value');
+    $subscriber->setCustomField($customField1->id(), 'Value');
+    $subscriber->setCustomField($customField2->id(), 'Value');
 
     $this->eraser->erase('eraser.test.email.that@has.custom.fields');
 
-    $subscriber_custom_fields = SubscriberCustomField::where('subscriber_id', $subscriber->id())->findMany();
-    expect($subscriber_custom_fields)->count(2);
-    expect($subscriber_custom_fields[0]->value)->equals('');
-    expect($subscriber_custom_fields[1]->value)->equals('');
+    $subscriberCustomFields = SubscriberCustomField::where('subscriber_id', $subscriber->id())->findMany();
+    expect($subscriberCustomFields)->count(2);
+    expect($subscriberCustomFields[0]->value)->equals('');
+    expect($subscriberCustomFields[1]->value)->equals('');
 
   }
 
@@ -65,13 +65,13 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
       'unconfirmed_data' => 'xyz',
     ]);
     $this->eraser->erase('subscriber@for.anon.test');
-    $subscriber_after = Subscriber::findOne($subscriber->id());
-    expect($subscriber_after->first_name)->equals('Anonymous');
-    expect($subscriber_after->last_name)->equals('Anonymous');
-    expect($subscriber_after->status)->equals('unsubscribed');
-    expect($subscriber_after->subscribed_ip)->equals('0.0.0.0');
-    expect($subscriber_after->confirmed_ip)->equals('0.0.0.0');
-    expect($subscriber_after->unconfirmed_data)->equals('');
+    $subscriberAfter = Subscriber::findOne($subscriber->id());
+    expect($subscriberAfter->firstName)->equals('Anonymous');
+    expect($subscriberAfter->lastName)->equals('Anonymous');
+    expect($subscriberAfter->status)->equals('unsubscribed');
+    expect($subscriberAfter->subscribedIp)->equals('0.0.0.0');
+    expect($subscriberAfter->confirmedIp)->equals('0.0.0.0');
+    expect($subscriberAfter->unconfirmedData)->equals('');
   }
 
   public function testItDeletesSubscriberEmailAddress() {
@@ -79,7 +79,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
       'email' => 'subscriber@for.anon.test',
     ]);
     $this->eraser->erase('subscriber@for.anon.test');
-    $subscriber_after = Subscriber::findOne($subscriber->id());
-    expect($subscriber_after->email)->notEquals('subscriber@for.anon.test');
+    $subscriberAfter = Subscriber::findOne($subscriber->id());
+    expect($subscriberAfter->email)->notEquals('subscriber@for.anon.test');
   }
 }

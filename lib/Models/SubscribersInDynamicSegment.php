@@ -11,12 +11,12 @@ class SubscribersInDynamicSegment extends Subscriber {
 
   public static function listingQuery(array $data = []) {
     $query = self::select(self::$_table . '.*');
-    $single_segment_loader = new SingleSegmentLoader(new DBMapper());
-    $dynamic_segment = $single_segment_loader->load($data['filter']['segment']);
-    if (self::shouldSkip($dynamic_segment)) {
+    $singleSegmentLoader = new SingleSegmentLoader(new DBMapper());
+    $dynamicSegment = $singleSegmentLoader->load($data['filter']['segment']);
+    if (self::shouldSkip($dynamicSegment)) {
       return $query->whereRaw('0=1');
     }
-    foreach ($dynamic_segment->getFilters() as $filter) {
+    foreach ($dynamicSegment->getFilters() as $filter) {
       $query = $filter->toSql($query);
     }
     if (isset($data['group'])) {
@@ -28,9 +28,9 @@ class SubscribersInDynamicSegment extends Subscriber {
     return $query;
   }
 
-  private static function shouldSkip($dynamic_segment) {
-    $requirements_checker = new RequirementsChecker(new WooCommerceHelper());
-    return $requirements_checker->shouldSkipSegment($dynamic_segment);
+  private static function shouldSkip($dynamicSegment) {
+    $requirementsChecker = new RequirementsChecker(new WooCommerceHelper());
+    return $requirementsChecker->shouldSkipSegment($dynamicSegment);
   }
 
 

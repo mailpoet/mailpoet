@@ -20,10 +20,10 @@ class GATrackingTest extends \MailPoetTest {
   private $rendered_newsletter;
 
   public function _before() {
-    $this->internal_host = 'newsletters.mailpoet.com';
-    $this->ga_campaign = 'Spring email';
+    $this->internalHost = 'newsletters.mailpoet.com';
+    $this->gaCampaign = 'Spring email';
     $this->link = add_query_arg(['foo' => 'bar', 'baz' => 'xyz'], 'http://www.mailpoet.com/');
-    $this->rendered_newsletter = [
+    $this->renderedNewsletter = [
       'html' => '<p><a href="' . $this->link . '">Click here</a>. <a href="http://somehost.com/fff/?abc=123&email=[subscriber:email]">Do not process this</a> [link:some_link_shortcode]</p>',
       'text' => '[Click here](' . $this->link . '). [Do not process this](http://somehost.com/fff/?abc=123&email=[subscriber:email]) [link:some_link_shortcode]',
     ];
@@ -33,13 +33,13 @@ class GATrackingTest extends \MailPoetTest {
     // No process (empty GA campaign)
     $newsletter = Newsletter::createOrUpdate(['id' => 123]);
     $tracking = new GATracking();
-    $result = $tracking->applyGATracking($this->rendered_newsletter, $newsletter, $this->internal_host);
-    expect($result)->equals($this->rendered_newsletter);
+    $result = $tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
+    expect($result)->equals($this->renderedNewsletter);
     // Process (filled GA campaign)
-    $newsletter->ga_campaign = $this->ga_campaign;
+    $newsletter->gaCampaign = $this->gaCampaign;
     $newsletter->save();
-    $result = $tracking->applyGATracking($this->rendered_newsletter, $newsletter, $this->internal_host);
-    expect($result)->notEquals($this->rendered_newsletter);
+    $result = $tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
+    expect($result)->notEquals($this->renderedNewsletter);
   }
 
   public function testItGetsGACampaignFromParentNewsletterForPostNotifications() {
@@ -47,35 +47,35 @@ class GATrackingTest extends \MailPoetTest {
     $notification = Newsletter::create();
     $notification->hydrate([
       'type' => Newsletter::TYPE_NOTIFICATION,
-      'ga_campaign' => $this->ga_campaign,
+      'ga_campaign' => $this->gaCampaign,
     ]);
     $notification->save();
-    $notification_history = Newsletter::create();
-    $notification_history->hydrate([
+    $notificationHistory = Newsletter::create();
+    $notificationHistory->hydrate([
       'parent_id' => $notification->id,
       'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
     ]);
-    $notification_history->save();
-    $result = $tracking->applyGATracking($this->rendered_newsletter, $notification_history, $this->internal_host);
-    expect($result)->notEquals($this->rendered_newsletter);
+    $notificationHistory->save();
+    $result = $tracking->applyGATracking($this->renderedNewsletter, $notificationHistory, $this->internalHost);
+    expect($result)->notEquals($this->renderedNewsletter);
   }
 
   public function testItCanAddGAParamsToLinks() {
     $tracking = new GATracking();
     $newsletter = Newsletter::createOrUpdate([
-      'ga_campaign' => $this->ga_campaign,
+      'ga_campaign' => $this->gaCampaign,
     ]);
-    $result = $tracking->applyGATracking($this->rendered_newsletter, $newsletter, $this->internal_host);
-    expect($result['text'])->contains('utm_campaign=' . urlencode($this->ga_campaign));
-    expect($result['html'])->contains('utm_campaign=' . urlencode($this->ga_campaign));
+    $result = $tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
+    expect($result['text'])->contains('utm_campaign=' . urlencode($this->gaCampaign));
+    expect($result['html'])->contains('utm_campaign=' . urlencode($this->gaCampaign));
   }
 
   public function testItKeepsShorcodes() {
     $tracking = new GATracking();
     $newsletter = Newsletter::createOrUpdate([
-      'ga_campaign' => $this->ga_campaign,
+      'ga_campaign' => $this->gaCampaign,
     ]);
-    $result = $tracking->applyGATracking($this->rendered_newsletter, $newsletter, $this->internal_host);
+    $result = $tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
     expect($result['text'])->contains('email=[subscriber:email]');
     expect($result['html'])->contains('email=[subscriber:email]');
   }

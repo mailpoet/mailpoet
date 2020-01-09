@@ -12,23 +12,23 @@ class SecurityTest extends \MailPoetUnitTest {
     expect(strlen($hash))->equals(5);
 
     // it has a min length of 5
-    $short_hash = Security::generateRandomString(1);
-    expect(strlen($short_hash))->equals(5);
+    $shortHash = Security::generateRandomString(1);
+    expect(strlen($shortHash))->equals(5);
 
-    $long_hash = Security::generateRandomString(64);
-    expect(strlen($long_hash))->equals(64);
+    $longHash = Security::generateRandomString(64);
+    expect(strlen($longHash))->equals(64);
 
     // expect only alphanumerical characters
     expect(ctype_alnum($hash))->true();
-    expect(ctype_alnum($short_hash))->true();
-    expect(ctype_alnum($long_hash))->true();
+    expect(ctype_alnum($shortHash))->true();
+    expect(ctype_alnum($longHash))->true();
   }
 
   public function testItGeneratesRandomHash() {
-    $hash_1 = Security::generateHash();
-    $hash_2 = Security::generateHash();
-    expect($hash_1)->notEquals($hash_2);
-    expect(strlen($hash_1))->equals(Security::HASH_LENGTH);
+    $hash1 = Security::generateHash();
+    $hash2 = Security::generateHash();
+    expect($hash1)->notEquals($hash2);
+    expect(strlen($hash1))->equals(Security::HASH_LENGTH);
   }
 
   public function testItGeneratesRandomHashWithCustomLength() {

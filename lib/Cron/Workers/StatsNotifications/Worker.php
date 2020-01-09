@@ -64,52 +64,52 @@ class Worker {
     Mailer $mailer,
     Renderer $renderer,
     SettingsController $settings,
-    CronHelper $cron_helper,
+    CronHelper $cronHelper,
     MetaInfo $mailerMetaInfo,
     StatsNotificationsRepository $repository,
-    NewsletterLinkRepository $newsletter_link_repository,
-    NewsletterStatisticsRepository $newsletter_statistics_repository,
-    EntityManager $entity_manager,
-    SubscribersFeature $subscribers_feature,
-    SubscribersRepository $subscribers_repository
+    NewsletterLinkRepository $newsletterLinkRepository,
+    NewsletterStatisticsRepository $newsletterStatisticsRepository,
+    EntityManager $entityManager,
+    SubscribersFeature $subscribersFeature,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->renderer = $renderer;
     $this->mailer = $mailer;
     $this->settings = $settings;
-    $this->cron_helper = $cron_helper;
+    $this->cronHelper = $cronHelper;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->repository = $repository;
-    $this->entity_manager = $entity_manager;
-    $this->newsletter_link_repository = $newsletter_link_repository;
-    $this->newsletter_statistics_repository = $newsletter_statistics_repository;
-    $this->subscribers_feature = $subscribers_feature;
-    $this->subscribers_repository = $subscribers_repository;
+    $this->entityManager = $entityManager;
+    $this->newsletterLinkRepository = $newsletterLinkRepository;
+    $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
+    $this->subscribersFeature = $subscribersFeature;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   /** @throws \Exception */
   public function process($timer = false) {
     $timer = $timer ?: microtime(true);
     $settings = $this->settings->get(self::SETTINGS_KEY);
-    foreach ($this->repository->findScheduled(Sending::RESULT_BATCH_SIZE) as $stats_notification_entity) {
+    foreach ($this->repository->findScheduled(Sending::RESULT_BATCH_SIZE) as $statsNotificationEntity) {
       try {
-        $extra_params = [
+        $extraParams = [
           'meta' => $this->mailerMetaInfo->getStatsNotificationMetaInfo(),
         ];
-        $this->mailer->send($this->constructNewsletter($stats_notification_entity), $settings['address'], $extra_params);
+        $this->mailer->send($this->constructNewsletter($statsNotificationEntity), $settings['address'], $extraParams);
       } catch (\Exception $e) {
         if (WP_DEBUG) {
           throw $e;
         }
       } finally {
-        $this->markTaskAsFinished($stats_notification_entity->getTask());
+        $this->markTaskAsFinished($statsNotificationEntity->getTask());
       }
-      $this->cron_helper->enforceExecutionLimit($timer);
+      $this->cronHelper->enforceExecutionLimit($timer);
     }
   }
 
-  private function constructNewsletter(StatsNotificationEntity $stats_notification_entity) {
-    $newsletter = $stats_notification_entity->getNewsletter();
-    $link = $this->newsletter_link_repository->findTopLinkForNewsletter((int)$newsletter->getId());
+  private function constructNewsletter(StatsNotificationEntity $statsNotificationEntity) {
+    $newsletter = $statsNotificationEntity->getNewsletter();
+    $link = $this->newsletterLinkRepository->findTopLinkForNewsletter((int)$newsletter->getId());
     $context = $this->prepareContext($newsletter, $link);
     $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
     return [
@@ -122,13 +122,13 @@ class Worker {
   }
 
   private function prepareContext(NewsletterEntity $newsletter, NewsletterLinkEntity $link = null) {
-    $statistics = $this->newsletter_statistics_repository->getStatistics($newsletter);
+    $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
     $clicked = ($statistics->getClickCount() * 100) / $statistics->getTotalSentCount();
     $opened = ($statistics->getOpenCount() * 100) / $statistics->getTotalSentCount();
     $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $statistics->getTotalSentCount();
     $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
-    $subscribers_count = $this->subscribers_repository->getTotalSubscribers();
-    $has_valid_api_key = $this->subscribers_feature->hasValidApiKey();
+    $subscribersCount = $this->subscribersRepository->getTotalSubscribers();
+    $hasValidApiKey = $this->subscribersFeature->hasValidApiKey();
     $context = [
       'subject' => $subject,
       'preheader' => sprintf(_x(
@@ -142,10 +142,10 @@ class Worker {
       'linkStats' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->getId()),
       'clicked' => $clicked,
       'opened' => $opened,
-      'subscribersLimitReached' => $this->subscribers_feature->check(),
-      'hasValidApiKey' => $has_valid_api_key,
-      'subscribersLimit' => $this->subscribers_feature->getSubscribersLimit(),
-      'upgradeNowLink' => $has_valid_api_key ? 'https://account.mailpoet.com/upgrade' : 'https://account.mailpoet.com/?s=' . ($subscribers_count + 1),
+      'subscribersLimitReached' => $this->subscribersFeature->check(),
+      'hasValidApiKey' => $hasValidApiKey,
+      'subscribersLimit' => $this->subscribersFeature->getSubscribersLimit(),
+      'upgradeNowLink' => $hasValidApiKey ? 'https://account.mailpoet.com/upgrade' : 'https://account.mailpoet.com/?s=' . ($subscribersCount + 1),
     ];
     if ($link) {
       $context['topLinkClicks'] = $link->getTotalClicksCount();
@@ -159,7 +159,7 @@ class Worker {
     $task->setStatus(ScheduledTask::STATUS_COMPLETED);
     $task->setProcessedAt(new Carbon);
     $task->setScheduledAt(null);
-    $this->entity_manager->flush();
+    $this->entityManager->flush();
   }
 
   public static function getShortcodeLinksMapping() {

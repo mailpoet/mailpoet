@@ -11,18 +11,18 @@ class Localizer {
   }
 
   public function loadGlobalText() {
-    $language_path = sprintf(
+    $languagePath = sprintf(
       '%s/%s-%s.mo',
-      Env::$languages_path,
-      Env::$plugin_name,
+      Env::$languagesPath,
+      Env::$pluginName,
       $this->locale()
     );
-    WPFunctions::get()->loadTextdomain(Env::$plugin_name, $language_path);
+    WPFunctions::get()->loadTextdomain(Env::$pluginName, $languagePath);
   }
 
   public function loadPluginText() {
     WPFunctions::get()->loadPluginTextdomain(
-      Env::$plugin_name,
+      Env::$pluginName,
       false,
       dirname(plugin_basename(Env::$file)) . '/lang/'
     );
@@ -32,19 +32,19 @@ class Localizer {
     $locale = WPFunctions::get()->applyFilters(
       'plugin_locale',
       WPFunctions::get()->getUserLocale(),
-      Env::$plugin_name
+      Env::$pluginName
     );
     return $locale;
   }
 
   public function forceLoadWebsiteLocaleText() {
-    $language_path = sprintf(
+    $languagePath = sprintf(
       '%s/%s-%s.mo',
-      Env::$languages_path,
-      Env::$plugin_name,
+      Env::$languagesPath,
+      Env::$pluginName,
       WPFunctions::get()->getLocale()
     );
-    WPFunctions::get()->unloadTextdomain(Env::$plugin_name);
-    WPFunctions::get()->loadTextdomain(Env::$plugin_name, $language_path);
+    WPFunctions::get()->unloadTextdomain(Env::$pluginName);
+    WPFunctions::get()->loadTextdomain(Env::$pluginName, $languagePath);
   }
 }

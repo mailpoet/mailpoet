@@ -14,10 +14,10 @@ trait UpdatedAtTrait {
 
   /** @return DateTimeInterface */
   public function getUpdatedAt() {
-    return $this->updated_at;
+    return $this->updatedAt;
   }
 
-  public function setUpdatedAt(DateTimeInterface $updated_at) {
-    $this->updated_at = $updated_at;
+  public function setUpdatedAt(DateTimeInterface $updatedAt) {
+    $this->updatedAt = $updatedAt;
   }
 }

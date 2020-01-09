@@ -57,11 +57,11 @@ class MetaInfo {
     return $this->makeMetaInfo($type, $subscriber->status, $subscriber->source);
   }
 
-  private function makeMetaInfo($email_type,  $subscriber_status, $subscriber_source) {
+  private function makeMetaInfo($emailType,  $subscriberStatus, $subscriberSource) {
     return [
-      'email_type' => $email_type,
-      'subscriber_status' => $subscriber_status,
-      'subscriber_source' => $subscriber_source ?: 'unknown',
+      'email_type' => $emailType,
+      'subscriber_status' => $subscriberStatus,
+      'subscriber_source' => $subscriberSource ?: 'unknown',
     ];
   }
 }

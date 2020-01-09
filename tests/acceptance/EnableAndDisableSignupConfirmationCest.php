@@ -7,43 +7,43 @@ use MailPoet\Test\DataFactories\Settings;
 
 class EnableAndDisableSignupConfirmationCest {
 
-  public function disableSignupConfirmation(AcceptanceTester $I) {
+  public function disableSignupConfirmation(AcceptanceTester $i) {
     $settings = new Settings();
     $settings
       ->withConfirmationEmailEnabled()
       ->withConfirmationEmailSubject('Disable signup confirmation subject');
-    $I->wantTo('Disable signup confirmation');
-    $I->login();
-    $this->setSignupConfirmationSetting($I, $enabled = false);
-    $I->createFormAndSubscribe();
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
-    $I->dontSee('Disable signup confirmation subject');
+    $i->wantTo('Disable signup confirmation');
+    $i->login();
+    $this->setSignupConfirmationSetting($i, $enabled = false);
+    $i->createFormAndSubscribe();
+    $i->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $i->dontSee('Disable signup confirmation subject');
   }
 
-  public function enableSignupConfirmation(AcceptanceTester $I) {
+  public function enableSignupConfirmation(AcceptanceTester $i) {
     $settings = new Settings();
     $settings
       ->withConfirmationEmailDisabled()
       ->withConfirmationEmailSubject('Enable signup confirmation subject');
-    $I->wantTo('Enable signup confirmation');
-    $I->login();
-    $this->setSignupConfirmationSetting($I, $enabled = true);
-    $I->createFormAndSubscribe();
-    $I->amOnUrl(\AcceptanceTester::MAIL_URL);
-    $I->waitForText('Enable signup confirmation subject');
-    $I->see('Enable signup confirmation subject');
+    $i->wantTo('Enable signup confirmation');
+    $i->login();
+    $this->setSignupConfirmationSetting($i, $enabled = true);
+    $i->createFormAndSubscribe();
+    $i->amOnUrl(\AcceptanceTester::MAIL_URL);
+    $i->waitForText('Enable signup confirmation subject');
+    $i->see('Enable signup confirmation subject');
   }
 
-  private function setSignupConfirmationSetting(AcceptanceTester $I, $enabled) {
-    $choice_selector = $enabled ?
+  private function setSignupConfirmationSetting(AcceptanceTester $i, $enabled) {
+    $choiceSelector = $enabled ?
       '[data-automation-id="enable_signup_confirmation"]' :
       '[data-automation-id="disable_signup_confirmation"]';
-    $I->amOnMailPoetPage('Settings');
-    $I->click('[data-automation-id="signup_settings_tab"]');
-    $I->waitForText('Enable sign-up confirmation');
-    $I->click($choice_selector);
-    $I->acceptPopup();
-    $I->click('[data-automation-id="settings-submit-button"]');
-    $I->waitForText('Settings saved');
+    $i->amOnMailPoetPage('Settings');
+    $i->click('[data-automation-id="signup_settings_tab"]');
+    $i->waitForText('Enable sign-up confirmation');
+    $i->click($choiceSelector);
+    $i->acceptPopup();
+    $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
   }
 }

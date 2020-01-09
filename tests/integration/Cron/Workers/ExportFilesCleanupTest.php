@@ -8,17 +8,17 @@ use MailPoet\Models\ScheduledTask;
 class ExportFilesCleanupTest extends \MailPoetTest {
 
   public function testItWorks() {
-    $wp_upload_dir = wp_upload_dir();
-    $old_file_path = $wp_upload_dir['basedir'] . '/mailpoet/MailPoet_export_old_file.csv';
-    $new_file_path = $wp_upload_dir['basedir'] . '/mailpoet/MailPoet_export_new_file.csv';
-    touch($old_file_path, time() - (60 * 60 * 24 * 7));
-    touch($new_file_path);
+    $wpUploadDir = wp_upload_dir();
+    $oldFilePath = $wpUploadDir['basedir'] . '/mailpoet/MailPoet_export_old_file.csv';
+    $newFilePath = $wpUploadDir['basedir'] . '/mailpoet/MailPoet_export_new_file.csv';
+    touch($oldFilePath, time() - (60 * 60 * 24 * 7));
+    touch($newFilePath);
 
     $cleanup = new ExportFilesCleanup();
     $cleanup->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
 
-    $this->assertFileExists($new_file_path);
-    $this->assertFileNotExists($old_file_path);
+    $this->assertFileExists($newFilePath);
+    $this->assertFileNotExists($oldFilePath);
   }
 
 }

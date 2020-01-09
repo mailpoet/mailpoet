@@ -58,22 +58,22 @@ class WorkerTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     $this->repository = ContainerWrapper::getInstance()->get(StatsNotificationsRepository::class);
-    $this->newsletter_link_repository = ContainerWrapper::getInstance()->get(NewsletterLinkRepository::class);
+    $this->newsletterLinkRepository = ContainerWrapper::getInstance()->get(NewsletterLinkRepository::class);
     $this->repository->truncate();
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = SettingsController::getInstance();
-    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
-    $this->stats_notifications = new Worker(
+    $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->statsNotifications = new Worker(
       $this->mailer,
       $this->renderer,
       $this->settings,
-      $this->cron_helper,
+      $this->cronHelper,
       new MetaInfo,
       $this->repository,
-      $this->newsletter_link_repository,
+      $this->newsletterLinkRepository,
       ContainerWrapper::getInstance()->get(NewsletterStatisticsRepository::class),
-      $this->entity_manager,
+      $this->entityManager,
       ContainerWrapper::getInstance()->get(SubscribersFeature::class),
       ContainerWrapper::getInstance()->get(SubscribersRepository::class)
     );
@@ -85,26 +85,26 @@ class WorkerTest extends \MailPoetTest {
       'subject' => 'Email Subject1',
       'type' => Newsletter::TYPE_STANDARD,
     ]);
-    $sending_task = ScheduledTask::createOrUpdate([
+    $sendingTask = ScheduledTask::createOrUpdate([
       'type' => 'sending',
       'status' => ScheduledTask::STATUS_COMPLETED,
     ]);
-    $stats_notifications_task = ScheduledTask::createOrUpdate([
+    $statsNotificationsTask = ScheduledTask::createOrUpdate([
       'type' => Worker::TASK_TYPE,
       'status' => ScheduledTask::STATUS_SCHEDULED,
       'scheduled_at' => '2017-01-02 12:13:14',
       'processed_at' => null,
     ]);
-    $cmd = $this->entity_manager->getClassMetadata(StatsNotificationEntity::class);
+    $cmd = $this->entityManager->getClassMetadata(StatsNotificationEntity::class);
     ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
       . $this->newsletter->id()
       . ','
-      . $stats_notifications_task->id()
+      . $statsNotificationsTask->id()
       . ')'
     );
     $this->queue = SendingQueue::createOrUpdate([
       'newsletter_rendered_subject' => 'Rendered Email Subject',
-      'task_id' => $sending_task->id(),
+      'task_id' => $sendingTask->id(),
       'newsletter_id' => $this->newsletter->id(),
       'count_processed' => 5,
     ]);
@@ -175,7 +175,7 @@ class WorkerTest extends \MailPoetTest {
       ->method('render')
       ->with($this->equalTo('emails/statsNotification.txt'));
 
-    $this->stats_notifications->process();
+    $this->statsNotifications->process();
   }
 
   public function testAddsSubjectToContext() {
@@ -187,7 +187,7 @@ class WorkerTest extends \MailPoetTest {
          return $context['subject'] === 'Rendered Email Subject';
        }));
 
-    $this->stats_notifications->process();
+    $this->statsNotifications->process();
   }
 
   public function testAddsPreHeaderToContext() {
@@ -199,7 +199,7 @@ class WorkerTest extends \MailPoetTest {
          return $context['preheader'] === '40.00% opens, 60.00% clicks, 20.00% unsubscribes in a nutshell.';
        }));
 
-    $this->stats_notifications->process();
+    $this->statsNotifications->process();
   }
 
   public function testAddsWPUrlsToContext() {
@@ -212,7 +212,7 @@ class WorkerTest extends \MailPoetTest {
             && strpos($context['linkStats'], 'mailpoet-newsletters#/stats');
         }));
 
-    $this->stats_notifications->process();
+    $this->statsNotifications->process();
   }
 
   public function testAddsLinksToContext() {
@@ -225,7 +225,7 @@ class WorkerTest extends \MailPoetTest {
             && ($context['topLinkClicks'] === 2);
         }));
 
-    $this->stats_notifications->process();
+    $this->statsNotifications->process();
   }
 
   public function testReplacesShortcodeLinks() {
@@ -267,14 +267,14 @@ class WorkerTest extends \MailPoetTest {
           return ($context['topLink'] === 'Manage subscription link');
         }));
 
-    $this->stats_notifications->process();
+    $this->statsNotifications->process();
   }
 
   public function testSends() {
     $this->mailer->expects($this->once())
       ->method('send');
 
-    $this->stats_notifications->process();
+    $this->statsNotifications->process();
   }
 
   public function testItWorksForNewsletterWithNoStats() {
@@ -282,26 +282,26 @@ class WorkerTest extends \MailPoetTest {
       'subject' => 'Email Subject2',
       'type' => Newsletter::TYPE_STANDARD,
     ]);
-    $sending_task = ScheduledTask::createOrUpdate([
+    $sendingTask = ScheduledTask::createOrUpdate([
       'type' => 'sending',
       'status' => ScheduledTask::STATUS_COMPLETED,
     ]);
-    $stats_notifications_task = ScheduledTask::createOrUpdate([
+    $statsNotificationsTask = ScheduledTask::createOrUpdate([
       'type' => Worker::TASK_TYPE,
       'status' => ScheduledTask::STATUS_SCHEDULED,
       'scheduled_at' => '2016-01-02 12:13:14',
       'processed_at' => null,
     ]);
-    $cmd = $this->entity_manager->getClassMetadata(StatsNotificationEntity::class);
+    $cmd = $this->entityManager->getClassMetadata(StatsNotificationEntity::class);
     ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
       . $this->newsletter->id()
       . ','
-      . $stats_notifications_task->id()
+      . $statsNotificationsTask->id()
       . ')'
     );
     SendingQueue::createOrUpdate([
       'newsletter_rendered_subject' => 'Rendered Email Subject2',
-      'task_id' => $sending_task->id(),
+      'task_id' => $sendingTask->id(),
       'newsletter_id' => $newsletter->id(),
       'count_processed' => 15,
     ]);
@@ -309,7 +309,7 @@ class WorkerTest extends \MailPoetTest {
     $this->mailer->expects($this->exactly(2))
       ->method('send');
 
-    $this->stats_notifications->process();
+    $this->statsNotifications->process();
   }
 
 }

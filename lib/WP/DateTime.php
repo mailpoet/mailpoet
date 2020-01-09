@@ -21,15 +21,15 @@ class DateTime {
   }
 
   public function getTimeFormat() {
-    $time_format = $this->wp->getOption('time_format');
-    if (empty($time_format)) $time_format = self::DEFAULT_TIME_FORMAT;
-    return $time_format;
+    $timeFormat = $this->wp->getOption('time_format');
+    if (empty($timeFormat)) $timeFormat = self::DEFAULT_TIME_FORMAT;
+    return $timeFormat;
   }
 
   public function getDateFormat() {
-    $date_format = $this->wp->getOption('date_format');
-    if (empty($date_format)) $date_format = self::DEFAULT_DATE_FORMAT;
-    return $date_format;
+    $dateFormat = $this->wp->getOption('date_format');
+    if (empty($dateFormat)) $dateFormat = self::DEFAULT_DATE_FORMAT;
+    return $dateFormat;
   }
 
   public function getCurrentTime($format=false) {
@@ -59,21 +59,21 @@ class DateTime {
    * formatted and mapped from DEFAULT_TIME_FORMAT to WordPress time strings.
    */
   public function getTimeInterval(
-    $start_time='00:00:00',
-    $time_step='+1 hour',
-    $total_steps=24
+    $startTime='00:00:00',
+    $timeStep='+1 hour',
+    $totalSteps=24
   ) {
     $steps = [];
 
-    $formatted_time = $start_time;
-    $timestamp = strtotime($formatted_time);
+    $formattedTime = $startTime;
+    $timestamp = strtotime($formattedTime);
 
-    for ($step = 0; $step < $total_steps; $step += 1) {
-      $formatted_time = $this->formatTime($timestamp, self::DEFAULT_TIME_FORMAT);
-      $label_time = $this->formatTime($timestamp);
-      $steps[$formatted_time] = $label_time;
+    for ($step = 0; $step < $totalSteps; $step += 1) {
+      $formattedTime = $this->formatTime($timestamp, self::DEFAULT_TIME_FORMAT);
+      $labelTime = $this->formatTime($timestamp);
+      $steps[$formattedTime] = $labelTime;
 
-      $timestamp = strtotime($time_step, $timestamp);
+      $timestamp = strtotime($timeStep, $timestamp);
     }
 
     return $steps;

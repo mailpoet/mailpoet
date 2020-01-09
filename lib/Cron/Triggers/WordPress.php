@@ -46,15 +46,15 @@ class WordPress {
   private $wp;
 
   public function __construct(
-    CronHelper $cron_helper,
-    MailPoet $mailpoet_trigger,
+    CronHelper $cronHelper,
+    MailPoet $mailpoetTrigger,
     SettingsController $settings,
     WPFunctions $wp
   ) {
-    $this->mailpoet_trigger = $mailpoet_trigger;
+    $this->mailpoetTrigger = $mailpoetTrigger;
     $this->settings = $settings;
     $this->wp = $wp;
-    $this->cron_helper = $cron_helper;
+    $this->cronHelper = $cronHelper;
   }
 
   public function run() {
@@ -62,15 +62,15 @@ class WordPress {
       return false;
     }
     return ($this->checkExecutionRequirements()) ?
-      $this->mailpoet_trigger->run() :
+      $this->mailpoetTrigger->run() :
       self::stop();
   }
 
   private function checkRunInterval() {
-    $last_run_at = (int)$this->settings->get(self::LAST_RUN_AT_SETTING, 0);
-    $run_interval = $this->wp->applyFilters('mailpoet_cron_trigger_wordpress_run_interval', self::RUN_INTERVAL);
-    $run_interval_elapsed = (time() - $last_run_at) >= $run_interval;
-    if ($run_interval_elapsed) {
+    $lastRunAt = (int)$this->settings->get(self::LAST_RUN_AT_SETTING, 0);
+    $runInterval = $this->wp->applyFilters('mailpoet_cron_trigger_wordpress_run_interval', self::RUN_INTERVAL);
+    $runIntervalElapsed = (time() - $lastRunAt) >= $runInterval;
+    if ($runIntervalElapsed) {
       $this->settings->set(self::LAST_RUN_AT_SETTING, time());
       return true;
     }
@@ -86,155 +86,155 @@ class WordPress {
     $this->loadTasksCounts();
 
     // migration
-    $migration_disabled = $this->settings->get('cron_trigger.method') === 'none';
-    $migration_due_tasks = $this->getTasksCount([
+    $migrationDisabled = $this->settings->get('cron_trigger.method') === 'none';
+    $migrationDueTasks = $this->getTasksCount([
       'type' => MigrationWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
-    $migration_completed_tasks = $this->getTasksCount([
+    $migrationCompletedTasks = $this->getTasksCount([
       'type' => MigrationWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST, self::SCHEDULED_IN_THE_FUTURE],
       'status' => [ScheduledTask::STATUS_COMPLETED],
     ]);
-    $migration_future_tasks = $this->getTasksCount([
+    $migrationFutureTasks = $this->getTasksCount([
       'type' => MigrationWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
       'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
     // sending queue
-    $scheduled_queues = SchedulerWorker::getScheduledQueues();
-    $running_queues = SendingQueueWorker::getRunningQueues();
-    $sending_limit_reached = MailerLog::isSendingLimitReached();
-    $sending_is_paused = MailerLog::isSendingPaused();
+    $scheduledQueues = SchedulerWorker::getScheduledQueues();
+    $runningQueues = SendingQueueWorker::getRunningQueues();
+    $sendingLimitReached = MailerLog::isSendingLimitReached();
+    $sendingIsPaused = MailerLog::isSendingPaused();
     // sending service
-    $mp_sending_enabled = Bridge::isMPSendingServiceEnabled();
+    $mpSendingEnabled = Bridge::isMPSendingServiceEnabled();
     // bounce sync
-    $bounce_due_tasks = $this->getTasksCount([
+    $bounceDueTasks = $this->getTasksCount([
       'type' => BounceWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
-    $bounce_future_tasks = $this->getTasksCount([
+    $bounceFutureTasks = $this->getTasksCount([
       'type' => BounceWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
       'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
     // sending service key check
-    $msskeycheck_due_tasks = $this->getTasksCount([
+    $msskeycheckDueTasks = $this->getTasksCount([
       'type' => SendingServiceKeyCheckWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
-    $msskeycheck_future_tasks = $this->getTasksCount([
+    $msskeycheckFutureTasks = $this->getTasksCount([
       'type' => SendingServiceKeyCheckWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
       'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
     // premium key check
-    $premium_key_specified = Bridge::isPremiumKeySpecified();
-    $premium_keycheck_due_tasks = $this->getTasksCount([
+    $premiumKeySpecified = Bridge::isPremiumKeySpecified();
+    $premiumKeycheckDueTasks = $this->getTasksCount([
       'type' => PremiumKeyCheckWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
-    $premium_keycheck_future_tasks = $this->getTasksCount([
+    $premiumKeycheckFutureTasks = $this->getTasksCount([
       'type' => PremiumKeyCheckWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
       'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
     // stats notifications
-    $stats_notifications_tasks = $this->getTasksCount([
+    $statsNotificationsTasks = $this->getTasksCount([
       'type' => StatsNotificationsWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     // stats notifications for auto emails
-    $auto_stats_notifications_tasks = $this->getTasksCount([
+    $autoStatsNotificationsTasks = $this->getTasksCount([
       'type' => AutomatedEmails::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     // inactive subscribers check
-    $inactive_subscribers_tasks = $this->getTasksCount([
+    $inactiveSubscribersTasks = $this->getTasksCount([
       'type' => InactiveSubscribers::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     // unsubscribe tokens check
-    $unsubscribe_tokens_tasks = $this->getTasksCount([
+    $unsubscribeTokensTasks = $this->getTasksCount([
       'type' => UnsubscribeTokens::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     // subscriber link tokens check
-    $subscriber_link_tokens_tasks = $this->getTasksCount([
+    $subscriberLinkTokensTasks = $this->getTasksCount([
       'type' => SubscriberLinkTokens::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     // WooCommerce sync
-    $woo_commerce_sync_tasks = $this->getTasksCount([
+    $wooCommerceSyncTasks = $this->getTasksCount([
       'type' => WooCommerceSyncWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
     // Beamer
-    $beamer_due_checks = $this->getTasksCount([
+    $beamerDueChecks = $this->getTasksCount([
       'type' => BeamerWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
-    $beamer_future_checks = $this->getTasksCount([
+    $beamerFutureChecks = $this->getTasksCount([
       'type' => BeamerWorker::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
       'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
 
     // Authorized email addresses check
-    $authorized_email_addresses_tasks = $this->getTasksCount([
+    $authorizedEmailAddressesTasks = $this->getTasksCount([
       'type' => AuthorizedSendingEmailsCheck::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
 
     // WooCommerce past orders revenues sync
-    $woo_commerce_past_orders_tasks = $this->getTasksCount([
+    $wooCommercePastOrdersTasks = $this->getTasksCount([
       'type' => WooCommercePastOrders::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
 
     // check requirements for each worker
-    $sending_queue_active = (($scheduled_queues || $running_queues) && !$sending_limit_reached && !$sending_is_paused);
-    $bounce_sync_active = ($mp_sending_enabled && ($bounce_due_tasks || !$bounce_future_tasks));
-    $sending_service_key_check_active = ($mp_sending_enabled && ($msskeycheck_due_tasks || !$msskeycheck_future_tasks));
-    $premium_key_check_active = ($premium_key_specified && ($premium_keycheck_due_tasks || !$premium_keycheck_future_tasks));
-    $migration_active = !$migration_disabled && ($migration_due_tasks || (!$migration_completed_tasks && !$migration_future_tasks));
-    $beamer_active = $beamer_due_checks || !$beamer_future_checks;
+    $sendingQueueActive = (($scheduledQueues || $runningQueues) && !$sendingLimitReached && !$sendingIsPaused);
+    $bounceSyncActive = ($mpSendingEnabled && ($bounceDueTasks || !$bounceFutureTasks));
+    $sendingServiceKeyCheckActive = ($mpSendingEnabled && ($msskeycheckDueTasks || !$msskeycheckFutureTasks));
+    $premiumKeyCheckActive = ($premiumKeySpecified && ($premiumKeycheckDueTasks || !$premiumKeycheckFutureTasks));
+    $migrationActive = !$migrationDisabled && ($migrationDueTasks || (!$migrationCompletedTasks && !$migrationFutureTasks));
+    $beamerActive = $beamerDueChecks || !$beamerFutureChecks;
 
     return (
-      $migration_active
-      || $sending_queue_active
-      || $bounce_sync_active
-      || $sending_service_key_check_active
-      || $premium_key_check_active
-      || $stats_notifications_tasks
-      || $auto_stats_notifications_tasks
-      || $inactive_subscribers_tasks
-      || $woo_commerce_sync_tasks
-      || $authorized_email_addresses_tasks
-      || $beamer_active
-      || $woo_commerce_past_orders_tasks
-      || $unsubscribe_tokens_tasks
-      || $subscriber_link_tokens_tasks
+      $migrationActive
+      || $sendingQueueActive
+      || $bounceSyncActive
+      || $sendingServiceKeyCheckActive
+      || $premiumKeyCheckActive
+      || $statsNotificationsTasks
+      || $autoStatsNotificationsTasks
+      || $inactiveSubscribersTasks
+      || $wooCommerceSyncTasks
+      || $authorizedEmailAddressesTasks
+      || $beamerActive
+      || $wooCommercePastOrdersTasks
+      || $unsubscribeTokensTasks
+      || $subscriberLinkTokensTasks
     );
   }
 
   public function stop() {
-    $cron_daemon = $this->cron_helper->getDaemon();
-    if ($cron_daemon) {
-      $this->cron_helper->deactivateDaemon($cron_daemon);
+    $cronDaemon = $this->cronHelper->getDaemon();
+    if ($cronDaemon) {
+      $this->cronHelper->deactivateDaemon($cronDaemon);
     }
   }
 
@@ -255,25 +255,25 @@ class WordPress {
       ScheduledTask::$_table
     );
     $rows = ScheduledTask::rawQuery($query)->findMany();
-    $this->tasks_counts = [];
+    $this->tasksCounts = [];
     foreach ($rows as $r) {
-      if (empty($this->tasks_counts[$r->type])) {
-        $this->tasks_counts[$r->type] = [];
+      if (empty($this->tasksCounts[$r->type])) {
+        $this->tasksCounts[$r->type] = [];
       }
-      if (empty($this->tasks_counts[$r->type][$r->scheduled_in])) {
-        $this->tasks_counts[$r->type][$r->scheduled_in] = [];
+      if (empty($this->tasksCounts[$r->type][$r->scheduledIn])) {
+        $this->tasksCounts[$r->type][$r->scheduledIn] = [];
       }
-      $this->tasks_counts[$r->type][$r->scheduled_in][$r->status ?: 'null'] = $r->count;
+      $this->tasksCounts[$r->type][$r->scheduledIn][$r->status ?: 'null'] = $r->count;
     }
   }
 
   private function getTasksCount(array $options) {
     $count = 0;
     $type = $options['type'];
-    foreach ($options['scheduled_in'] as $scheduled_in) {
+    foreach ($options['scheduled_in'] as $scheduledIn) {
       foreach ($options['status'] as $status) {
-        if (! empty($this->tasks_counts[$type][$scheduled_in][$status])) {
-          $count += $this->tasks_counts[$type][$scheduled_in][$status];
+        if (! empty($this->tasksCounts[$type][$scheduledIn][$status])) {
+          $count += $this->tasksCounts[$type][$scheduledIn][$status];
         }
       }
     }

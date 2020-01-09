@@ -20,9 +20,9 @@ class AbandonedCartPageVisitTracker {
   /** @var Cookies */
   private $cookies;
 
-  public function __construct(WPFunctions $wp, WooCommerceHelper $woo_commerce_helper, Cookies $cookies) {
+  public function __construct(WPFunctions $wp, WooCommerceHelper $wooCommerceHelper, Cookies $cookies) {
     $this->wp = $wp;
-    $this->woo_commerce_helper = $woo_commerce_helper;
+    $this->wooCommerceHelper = $wooCommerceHelper;
     $this->cookies = $cookies;
   }
 
@@ -32,9 +32,9 @@ class AbandonedCartPageVisitTracker {
 
   public function trackVisit(callable $onTrackCallback = null) {
     // track at most once per minute to avoid processing many calls at the same time, i.e. AJAX
-    $last_visit_timestamp = $this->loadLastVisitTimestamp();
-    $minute_ago_timestamp = Carbon::now()->getTimestamp() - 60;
-    if ($last_visit_timestamp && $last_visit_timestamp < $minute_ago_timestamp && $this->isPageVisit()) {
+    $lastVisitTimestamp = $this->loadLastVisitTimestamp();
+    $minuteAgoTimestamp = Carbon::now()->getTimestamp() - 60;
+    if ($lastVisitTimestamp && $lastVisitTimestamp < $minuteAgoTimestamp && $this->isPageVisit()) {
       if ($onTrackCallback) {
         $onTrackCallback();
       }
@@ -47,27 +47,27 @@ class AbandonedCartPageVisitTracker {
   }
 
   private function saveLastVisitTimestamp() {
-    $woo_commerce_session = $this->woo_commerce_helper->WC()->session;
-    if (!$woo_commerce_session) {
+    $wooCommerceSession = $this->wooCommerceHelper->WC()->session;
+    if (!$wooCommerceSession) {
       return;
     }
-    $woo_commerce_session->set(self::LAST_VISIT_TIMESTAMP_OPTION_NAME, Carbon::now()->getTimestamp());
+    $wooCommerceSession->set(self::LAST_VISIT_TIMESTAMP_OPTION_NAME, Carbon::now()->getTimestamp());
   }
 
   private function loadLastVisitTimestamp() {
-    $woo_commerce_session = $this->woo_commerce_helper->WC()->session;
-    if (!$woo_commerce_session) {
+    $wooCommerceSession = $this->wooCommerceHelper->WC()->session;
+    if (!$wooCommerceSession) {
       return;
     }
-    return $woo_commerce_session->get(self::LAST_VISIT_TIMESTAMP_OPTION_NAME);
+    return $wooCommerceSession->get(self::LAST_VISIT_TIMESTAMP_OPTION_NAME);
   }
 
   private function removeLastVisitTimestamp() {
-    $woo_commerce_session = $this->woo_commerce_helper->WC()->session;
-    if (!$woo_commerce_session) {
+    $wooCommerceSession = $this->wooCommerceHelper->WC()->session;
+    if (!$wooCommerceSession) {
       return;
     }
-    $woo_commerce_session->__unset(self::LAST_VISIT_TIMESTAMP_OPTION_NAME);
+    $wooCommerceSession->__unset(self::LAST_VISIT_TIMESTAMP_OPTION_NAME);
   }
 
   private function isPageVisit() {
