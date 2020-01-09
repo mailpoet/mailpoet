@@ -18,7 +18,20 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
   );
-  const { saveCustomField } = useDispatch('mailpoet-form-editor');
+  const displayCustomFieldDeleteConfirm = useSelect(
+    (sel) => sel('mailpoet-form-editor').getDisplayCustomFieldDeleteConfirm(),
+    []
+  );
+  const isDeleting = useSelect(
+    (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
+    []
+  );
+  const {
+    saveCustomField,
+    onCustomFieldDeleteClick,
+    onCustomFieldDeleteConfirm,
+    onCustomFieldDeleteCancel,
+  } = useDispatch('mailpoet-form-editor');
 
   const inspectorControls = (
     <InspectorControls>
@@ -44,6 +57,14 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
                 values: params.values,
               }),
             })}
+            displayCustomFieldDeleteConfirm={displayCustomFieldDeleteConfirm}
+            onCustomFieldDeleteClick={onCustomFieldDeleteClick}
+            onCustomFieldDeleteConfirm={() => onCustomFieldDeleteConfirm(
+              attributes.customFieldId,
+              clientId
+            )}
+            onCustomFieldDeleteCancel={onCustomFieldDeleteCancel}
+            isDeleting={isDeleting}
           />
         </PanelBody>
       </Panel>

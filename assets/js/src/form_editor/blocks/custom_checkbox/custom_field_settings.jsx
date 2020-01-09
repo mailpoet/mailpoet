@@ -5,6 +5,7 @@ import {
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+import CustomFieldDelete from '../custom_field_delete.jsx';
 
 const CustomFieldSettings = ({
   mandatory,
@@ -12,6 +13,11 @@ const CustomFieldSettings = ({
   onSave,
   isChecked,
   checkboxLabel,
+  isDeleting,
+  displayCustomFieldDeleteConfirm,
+  onCustomFieldDeleteClick,
+  onCustomFieldDeleteCancel,
+  onCustomFieldDeleteConfirm,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localIsChecked, setLocalIsChecked] = useState(isChecked);
@@ -40,6 +46,13 @@ const CustomFieldSettings = ({
       >
         {MailPoet.I18n.t('customFieldSaveCTA')}
       </Button>
+      <CustomFieldDelete
+        isBusy={isSaving || isDeleting}
+        displayConfirm={displayCustomFieldDeleteConfirm}
+        onDeleteClick={onCustomFieldDeleteClick}
+        onDeleteConfirm={onCustomFieldDeleteConfirm}
+        onDeleteCancel={onCustomFieldDeleteCancel}
+      />
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -66,6 +79,11 @@ CustomFieldSettings.propTypes = {
   isSaving: PropTypes.bool,
   isChecked: PropTypes.bool,
   checkboxLabel: PropTypes.string,
+  isDeleting: PropTypes.bool,
+  displayCustomFieldDeleteConfirm: PropTypes.bool,
+  onCustomFieldDeleteClick: PropTypes.func,
+  onCustomFieldDeleteConfirm: PropTypes.func,
+  onCustomFieldDeleteCancel: PropTypes.func,
 };
 
 CustomFieldSettings.defaultProps = {
@@ -73,6 +91,11 @@ CustomFieldSettings.defaultProps = {
   isSaving: false,
   isChecked: false,
   checkboxLabel: '',
+  isDeleting: false,
+  displayCustomFieldDeleteConfirm: false,
+  onCustomFieldDeleteClick: () => {},
+  onCustomFieldDeleteConfirm: () => {},
+  onCustomFieldDeleteCancel: () => {},
 };
 
 export default CustomFieldSettings;

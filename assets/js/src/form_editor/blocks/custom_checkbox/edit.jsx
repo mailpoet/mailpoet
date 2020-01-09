@@ -12,12 +12,25 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import CustomFieldSettings from './custom_field_settings.jsx';
 
-const CustomCheckboxEdit = ({ attributes, setAttributes }) => {
+const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
   );
-  const { saveCustomField } = useDispatch('mailpoet-form-editor');
+  const displayCustomFieldDeleteConfirm = useSelect(
+    (sel) => sel('mailpoet-form-editor').getDisplayCustomFieldDeleteConfirm(),
+    []
+  );
+  const isDeleting = useSelect(
+    (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
+    []
+  );
+  const {
+    saveCustomField,
+    onCustomFieldDeleteClick,
+    onCustomFieldDeleteConfirm,
+    onCustomFieldDeleteCancel,
+  } = useDispatch('mailpoet-form-editor');
 
   const getCheckboxLabel = () => {
     if (Array.isArray(attributes.values)) {
@@ -68,6 +81,14 @@ const CustomCheckboxEdit = ({ attributes, setAttributes }) => {
                 }],
               }),
             })}
+            displayCustomFieldDeleteConfirm={displayCustomFieldDeleteConfirm}
+            onCustomFieldDeleteClick={onCustomFieldDeleteClick}
+            onCustomFieldDeleteConfirm={() => onCustomFieldDeleteConfirm(
+              attributes.customFieldId,
+              clientId
+            )}
+            onCustomFieldDeleteCancel={onCustomFieldDeleteCancel}
+            isDeleting={isDeleting}
           />
         </PanelBody>
       </Panel>
@@ -128,6 +149,7 @@ CustomCheckboxEdit.propTypes = {
     })),
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
+  clientId: PropTypes.string.isRequired,
 };
 
 export default CustomCheckboxEdit;
