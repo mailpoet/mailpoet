@@ -24,7 +24,7 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracyPath)) {
     }
 
     if (!is_writable($logDir)) {
-      throw new RuntimeException("Logging directory '$log_dir' is not writable.'");
+      throw new RuntimeException("Logging directory '$logDir' is not writable.'");
     }
 
     Debugger::enable(Debugger::PRODUCTION, $logDir);
@@ -42,7 +42,7 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracyPath)) {
 
       // set higher number of displayed AJAX rows
       $maxAjaxRows = 4;
-      $tracyScriptHtml .= "<script>window.TracyMaxAjaxRows = $max_ajax_rows;</script>\n";
+      $tracyScriptHtml .= "<script>window.TracyMaxAjaxRows = $maxAjaxRows;</script>\n";
       echo $tracyScriptHtml;
     }
     add_action('admin_enqueue_scripts', 'render_tracy', PHP_INT_MAX, 0);

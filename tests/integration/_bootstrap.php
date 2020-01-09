@@ -60,7 +60,7 @@ foreach ($entities as $entity) {
   $tableName = $entityManager->getClassMetadata($entity)->getTableName();
   $connection->transactional(function(Connection $connection) use ($tableName) {
     $connection->query('SET FOREIGN_KEY_CHECKS=0');
-    $connection->executeUpdate("TRUNCATE $table_name");
+    $connection->executeUpdate("TRUNCATE $tableName");
     $connection->query('SET FOREIGN_KEY_CHECKS=1');
   });
 }

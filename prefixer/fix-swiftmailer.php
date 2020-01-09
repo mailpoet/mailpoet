@@ -24,7 +24,7 @@ foreach ($files as $file) {
       $nestingLevel = substr_count(str_replace('\\', '/', $path), '/');
       $search = 'namespace MailPoetVendor;';
       $requirePath = str_repeat('/..', $nestingLevel) . '/swift_init.php';
-      $data = str_replace($search, "$search\n\nrequire_once __DIR__ . '$require_path';", $data);
+      $data = str_replace($search, "$search\n\nrequire_once __DIR__ . '$requirePath';", $data);
     }
     file_put_contents($file, $data);
   }

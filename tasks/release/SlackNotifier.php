@@ -32,10 +32,10 @@ class SlackNotifier {
     $pluginType = $this->project === self::PROJECT_MAILPOET ? 'Free' : 'Premium';
     $githubPath = $this->project === self::PROJECT_MAILPOET ? 'mailpoet' : 'mailpoet-premium';
 
-    $message = "*$plugin_type plugin `$version` released :tada:!*\n";
+    $message = "*$pluginType plugin `$version` released :tada:!*\n";
     $message .= "\n";
-    $message .= "GitHub: https://github.com/mailpoet/$github_path/releases/tag/$version\n";
-    $message .= "JIRA: https://mailpoet.atlassian.net/projects/$this->project/versions/$release_id\n";
+    $message .= "GitHub: https://github.com/mailpoet/$githubPath/releases/tag/$version\n";
+    $message .= "JIRA: https://mailpoet.atlassian.net/projects/$this->project/versions/$releaseId\n";
     if ($this->project === self::PROJECT_MAILPOET) {
       $message .= "WordPress: https://wordpress.org/plugins/mailpoet/#developers\n";
     }

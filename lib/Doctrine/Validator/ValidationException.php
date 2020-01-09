@@ -17,8 +17,8 @@ class ValidationException extends \RuntimeException {
     $this->violations = $violations;
 
     $linePrefix = '  ';
-    $message = "Validation failed for '$resource_name'.\nDetails:\n";
-    $message .= $linePrefix . implode("\n$line_prefix", $this->getErrors());
+    $message = "Validation failed for '$resourceName'.\nDetails:\n";
+    $message .= $linePrefix . implode("\n$linePrefix", $this->getErrors());
     parent::__construct($message);
   }
 

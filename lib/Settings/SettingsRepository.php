@@ -27,7 +27,7 @@ class SettingsRepository extends Repository {
     $now = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeUpdate("
-      INSERT INTO $table_name (name, value, created_at, updated_at)
+      INSERT INTO $tableName (name, value, created_at, updated_at)
       VALUES (:name, :value, :now, :now)
       ON DUPLICATE KEY UPDATE value = :value, updated_at = :now
     ", [

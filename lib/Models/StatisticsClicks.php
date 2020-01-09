@@ -66,7 +66,7 @@ class StatisticsClicks extends Model {
     ";
 
     return static::tableAlias('clicks')
-      ->whereRaw("clicks.id IN ($latest_click_ids_per_newsletter_query)", [
+      ->whereRaw("clicks.id IN ($latestClickIdsPerNewsletterQuery)", [
         'subscriber_id' => $subscriber->id,
         'from' => $from->format('Y-m-d H:i:s'),
         'to' => $to->format('Y-m-d H:i:s'),

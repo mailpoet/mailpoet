@@ -62,9 +62,9 @@ class UnauthorizedEmailNotice {
     $email = $validationError['invalid_sender_address'];
     $authorizeLink = $this->wp->_x('Authorize %s', 'Link for user to authorize their email address', 'mailpoet');
     $authorizeLink = str_replace('%s', EscapeHelper::escapeHtmlText($email), $authorizeLink);
-    $authorizeLink = Helpers::replaceLinkTags("[link]{$authorize_link}[/link]", 'https://account.mailpoet.com/authorization', ['target' => '_blank']);
+    $authorizeLink = Helpers::replaceLinkTags("[link]{$authorizeLink}[/link]", 'https://account.mailpoet.com/authorization', ['target' => '_blank']);
     $html = '<p><b>' . $this->wp->_x('OR', 'User has to choose between two options', 'mailpoet') . '</b></p>';
-    $html .= "<p>$authorize_link</p>";
+    $html .= "<p>$authorizeLink</p>";
     return $html;
   }
 

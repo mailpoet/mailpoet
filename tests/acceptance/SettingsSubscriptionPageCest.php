@@ -16,7 +16,7 @@ class SettingsSubscriptionPageCest {
     $pageContent = '[mailpoet_manage_subscription]';
     $i->login();
     $i->amOnMailPoetPage('Settings');
-    $i->cli(['post', 'create', '--post_type=page', "--post_title=$page_title", "--post_content=$page_content"]);
+    $i->cli(['post', 'create', '--post_type=page', "--post_title=$pageTitle", "--post_content=$pageContent"]);
     $i->click(['css' => '#subscription_manage_page.mailpoet_page_selection']);
     $i->checkOption('select#subscription_manage_page', $pageTitle);
     $i->click('[data-automation-id="preview_manage_subscription_page_link"]');

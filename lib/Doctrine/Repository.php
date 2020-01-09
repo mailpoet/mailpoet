@@ -71,7 +71,7 @@ abstract class Repository {
     $connection = $this->entityManager->getConnection();
     $connection->transactional(function(Connection $connection) use ($tableName) {
       $connection->query('SET FOREIGN_KEY_CHECKS=0');
-      $q = "TRUNCATE $table_name";
+      $q = "TRUNCATE $tableName";
       $connection->executeUpdate($q);
       $connection->query('SET FOREIGN_KEY_CHECKS=1');
     });

@@ -21,8 +21,8 @@ if (!file_exists($vendorDir)) {
 
 // download all tools
 foreach ($tools as $url => $path) {
-  $pharPath = "$vendor_dir/$path";
-  $pharInfoPath = "$phar_path.info";
+  $pharPath = "$vendorDir/$path";
+  $pharInfoPath = "$pharPath.info";
 
   fwrite(STDERR, "Downloading '$url'...");
   if (file_exists($pharPath) && file_exists($pharInfoPath) && file_get_contents($pharInfoPath) === $url) {

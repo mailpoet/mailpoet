@@ -129,6 +129,6 @@ class MailPoetMapper {
       ]
     );
 
-    return "$message<br><br>$subscriber_limit_message<br>$deliverability_message<br>";
+    return "$message<br><br>$subscriberLimitMessage<br>$deliverabilityMessage<br>";
   }
 }

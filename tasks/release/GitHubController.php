@@ -30,7 +30,7 @@ class GitHubController {
       'headers' => [
         'Accept' => 'application/vnd.github.v3+json',
       ],
-      'base_uri' => "https://api.github.com/repos/mailpoet/$github_path/",
+      'base_uri' => "https://api.github.com/repos/mailpoet/$githubPath/",
     ]);
   }
 
@@ -51,10 +51,10 @@ class GitHubController {
   }
 
   private function assignPullRequest($pullRequestNumber) {
-    $this->httpClient->post("pulls/$pull_request_number/requested_reviewers", [
+    $this->httpClient->post("pulls/$pullRequestNumber/requested_reviewers", [
       'json' => ['reviewers' => [self::QA_GITHUB_LOGIN]],
     ]);
-    $this->httpClient->post("issues/$pull_request_number/assignees", [
+    $this->httpClient->post("issues/$pullRequestNumber/assignees", [
       'json' => ['assignees' => [self::QA_GITHUB_LOGIN]],
     ]);
   }
@@ -108,7 +108,7 @@ class GitHubController {
   }
 
   private function checkPullRequestReviews($pullRequestNumber) {
-    $response = $this->httpClient->get("pulls/$pull_request_number/reviews");
+    $response = $this->httpClient->get("pulls/$pullRequestNumber/reviews");
     $response = json_decode($response->getBody()->getContents(), true);
     $approved = 0;
     foreach ($response as $review) {

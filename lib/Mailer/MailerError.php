@@ -96,7 +96,7 @@ class MailerError {
     $message .= implode(
       ', ',
       array_map(function (SubscriberError $subscriberError) {
-        return "($subscriber_error)";
+        return "($subscriberError)";
       }, $this->subscribersErrors)
     );
     return $message;
