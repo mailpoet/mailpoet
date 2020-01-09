@@ -17,10 +17,7 @@ const CustomFieldSettings = ({
   isSaving,
   onSave,
   isDeleting,
-  displayCustomFieldDeleteConfirm,
-  onCustomFieldDeleteClick,
-  onCustomFieldDeleteCancel,
-  onCustomFieldDeleteConfirm,
+  onCustomFieldDelete,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localDefaultToday, setLocalLocalDefaultToday] = useState(defaultToday);
@@ -72,10 +69,7 @@ const CustomFieldSettings = ({
       </Button>
       <CustomFieldDelete
         isBusy={isSaving || isDeleting}
-        displayConfirm={displayCustomFieldDeleteConfirm}
-        onDeleteClick={onCustomFieldDeleteClick}
-        onDeleteConfirm={onCustomFieldDeleteConfirm}
-        onDeleteCancel={onCustomFieldDeleteCancel}
+        onDelete={onCustomFieldDelete}
       />
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
@@ -120,10 +114,7 @@ CustomFieldSettings.propTypes = {
     months: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   isDeleting: PropTypes.bool,
-  displayCustomFieldDeleteConfirm: PropTypes.bool,
-  onCustomFieldDeleteClick: PropTypes.func,
-  onCustomFieldDeleteConfirm: PropTypes.func,
-  onCustomFieldDeleteCancel: PropTypes.func,
+  onCustomFieldDelete: PropTypes.func,
 };
 
 CustomFieldSettings.defaultProps = {
@@ -133,10 +124,7 @@ CustomFieldSettings.defaultProps = {
   dateFormat: null,
   defaultToday: false,
   isDeleting: false,
-  displayCustomFieldDeleteConfirm: false,
-  onCustomFieldDeleteClick: () => {},
-  onCustomFieldDeleteConfirm: () => {},
-  onCustomFieldDeleteCancel: () => {},
+  onCustomFieldDelete: () => {},
 };
 
 export default CustomFieldSettings;

@@ -17,19 +17,13 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
   );
-  const displayCustomFieldDeleteConfirm = useSelect(
-    (sel) => sel('mailpoet-form-editor').getDisplayCustomFieldDeleteConfirm(),
-    []
-  );
   const isDeleting = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
     []
   );
   const {
     saveCustomField,
-    onCustomFieldDeleteClick,
-    onCustomFieldDeleteConfirm,
-    onCustomFieldDeleteCancel,
+    deleteCustomField,
   } = useDispatch('mailpoet-form-editor');
 
   const getCheckboxLabel = () => {
@@ -81,13 +75,10 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
                 }],
               }),
             })}
-            displayCustomFieldDeleteConfirm={displayCustomFieldDeleteConfirm}
-            onCustomFieldDeleteClick={onCustomFieldDeleteClick}
-            onCustomFieldDeleteConfirm={() => onCustomFieldDeleteConfirm(
+            onCustomFieldDelete={() => deleteCustomField(
               attributes.customFieldId,
               clientId
             )}
-            onCustomFieldDeleteCancel={onCustomFieldDeleteCancel}
             isDeleting={isDeleting}
           />
         </PanelBody>

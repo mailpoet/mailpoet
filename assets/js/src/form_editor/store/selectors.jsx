@@ -32,9 +32,6 @@ export default {
   getIsCustomFieldSaving(state) {
     return state.isCustomFieldSaving;
   },
-  getDisplayCustomFieldDeleteConfirm(state) {
-    return state.displayCustomFieldDeleteConfirm;
-  },
   getIsCustomFieldDeleting(state) {
     return state.isCustomFieldDeleting;
   },

@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React from 'react';
 import {
   Button,
 } from '@wordpress/components';
@@ -7,28 +7,21 @@ import MailPoet from 'mailpoet';
 
 const CustomFieldDelete = ({
   isBusy,
-  displayConfirm,
-  onDeleteCancel,
-  onDeleteClick,
-  onDeleteConfirm,
+  onDelete,
 }) => {
-  useLayoutEffect(() => {
-    if (displayConfirm) {
-      const result = window.confirm(MailPoet.I18n.t('customFieldDeleteConfirm'));// eslint-disable-line no-alert
-      if (result) {
-        onDeleteConfirm();
-      } else {
-        onDeleteCancel();
-      }
+  function displayConfirm() {
+    const result = window.confirm(MailPoet.I18n.t('customFieldDeleteConfirm'));// eslint-disable-line no-alert
+    if (result) {
+      onDelete();
     }
-  });
+  }
 
   return (
     <Button
       isDestructive
       isLink
       isBusy={isBusy}
-      onClick={onDeleteClick}
+      onClick={displayConfirm}
       className="button-on-top"
     >
       {MailPoet.I18n.t('customFieldDeleteCTA')}
@@ -38,18 +31,12 @@ const CustomFieldDelete = ({
 
 CustomFieldDelete.propTypes = {
   isBusy: PropTypes.bool,
-  displayConfirm: PropTypes.bool,
-  onDeleteClick: PropTypes.func,
-  onDeleteCancel: PropTypes.func,
-  onDeleteConfirm: PropTypes.func,
+  onDelete: PropTypes.func,
 };
 
 CustomFieldDelete.defaultProps = {
   isBusy: false,
-  displayConfirm: false,
-  onDeleteCancel: () => {},
-  onDeleteClick: () => {},
-  onDeleteConfirm: () => {},
+  onDelete: () => {},
 };
 
 export default CustomFieldDelete;

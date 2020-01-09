@@ -14,10 +14,7 @@ const CustomFieldSettings = ({
   isChecked,
   checkboxLabel,
   isDeleting,
-  displayCustomFieldDeleteConfirm,
-  onCustomFieldDeleteClick,
-  onCustomFieldDeleteCancel,
-  onCustomFieldDeleteConfirm,
+  onCustomFieldDelete,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localIsChecked, setLocalIsChecked] = useState(isChecked);
@@ -48,10 +45,7 @@ const CustomFieldSettings = ({
       </Button>
       <CustomFieldDelete
         isBusy={isSaving || isDeleting}
-        displayConfirm={displayCustomFieldDeleteConfirm}
-        onDeleteClick={onCustomFieldDeleteClick}
-        onDeleteConfirm={onCustomFieldDeleteConfirm}
-        onDeleteCancel={onCustomFieldDeleteCancel}
+        onDelete={onCustomFieldDelete}
       />
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
@@ -80,10 +74,7 @@ CustomFieldSettings.propTypes = {
   isChecked: PropTypes.bool,
   checkboxLabel: PropTypes.string,
   isDeleting: PropTypes.bool,
-  displayCustomFieldDeleteConfirm: PropTypes.bool,
-  onCustomFieldDeleteClick: PropTypes.func,
-  onCustomFieldDeleteConfirm: PropTypes.func,
-  onCustomFieldDeleteCancel: PropTypes.func,
+  onCustomFieldDelete: PropTypes.func,
 };
 
 CustomFieldSettings.defaultProps = {
@@ -92,10 +83,7 @@ CustomFieldSettings.defaultProps = {
   isChecked: false,
   checkboxLabel: '',
   isDeleting: false,
-  displayCustomFieldDeleteConfirm: false,
-  onCustomFieldDeleteClick: () => {},
-  onCustomFieldDeleteConfirm: () => {},
-  onCustomFieldDeleteCancel: () => {},
+  onCustomFieldDelete: () => {},
 };
 
 export default CustomFieldSettings;

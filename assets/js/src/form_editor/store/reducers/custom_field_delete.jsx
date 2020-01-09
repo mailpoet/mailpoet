@@ -1,19 +1,8 @@
-export const customFieldDeleteCancel = (state) => ({
-  ...state,
-  displayCustomFieldDeleteConfirm: false,
-});
-
-export const customFieldDeleteClick = (state) => ({
-  ...state,
-  displayCustomFieldDeleteConfirm: true,
-});
-
 export const customFieldDeleteStart = (state) => {
   const notices = state.notices.filter((notice) => notice.id !== 'custom-field');
   return ({
     ...state,
     ...notices,
-    displayCustomFieldDeleteConfirm: false,
     isCustomFieldDeleting: true,
   });
 };
