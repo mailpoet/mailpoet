@@ -23,8 +23,21 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
     (sel) => sel('mailpoet-form-editor').getDateSettingsData(),
     []
   );
+  const displayCustomFieldDeleteConfirm = useSelect(
+    (sel) => sel('mailpoet-form-editor').getDisplayCustomFieldDeleteConfirm(),
+    []
+  );
+  const isDeleting = useSelect(
+    (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
+    []
+  );
 
-  const { saveCustomField } = useDispatch('mailpoet-form-editor');
+  const {
+    saveCustomField,
+    onCustomFieldDeleteClick,
+    onCustomFieldDeleteConfirm,
+    onCustomFieldDeleteCancel,
+  } = useDispatch('mailpoet-form-editor');
   const inspectorControls = (
     <InspectorControls>
       <Panel>
@@ -53,6 +66,14 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
                 defaultToday: params.defaultToday,
               }),
             })}
+            displayCustomFieldDeleteConfirm={displayCustomFieldDeleteConfirm}
+            onCustomFieldDeleteClick={onCustomFieldDeleteClick}
+            onCustomFieldDeleteConfirm={() => onCustomFieldDeleteConfirm(
+              attributes.customFieldId,
+              clientId
+            )}
+            onCustomFieldDeleteCancel={onCustomFieldDeleteCancel}
+            isDeleting={isDeleting}
           />
         </PanelBody>
       </Panel>

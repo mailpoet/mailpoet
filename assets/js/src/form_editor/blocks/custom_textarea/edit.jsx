@@ -13,12 +13,25 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import CustomFieldSettings from '../custom_text/custom_field_settings.jsx';
 import formatLabel from '../label_formatter.jsx';
 
-const CustomTextAreaEdit = ({ attributes, setAttributes }) => {
+const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
   );
-  const { saveCustomField } = useDispatch('mailpoet-form-editor');
+  const displayCustomFieldDeleteConfirm = useSelect(
+    (sel) => sel('mailpoet-form-editor').getDisplayCustomFieldDeleteConfirm(),
+    []
+  );
+  const isDeleting = useSelect(
+    (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
+    []
+  );
+  const {
+    saveCustomField,
+    onCustomFieldDeleteClick,
+    onCustomFieldDeleteConfirm,
+    onCustomFieldDeleteCancel,
+  } = useDispatch('mailpoet-form-editor');
   const inspectorControls = (
     <InspectorControls>
       <Panel>
@@ -42,6 +55,14 @@ const CustomTextAreaEdit = ({ attributes, setAttributes }) => {
                 lines: params.lines,
               }),
             })}
+            displayCustomFieldDeleteConfirm={displayCustomFieldDeleteConfirm}
+            onCustomFieldDeleteClick={onCustomFieldDeleteClick}
+            onCustomFieldDeleteConfirm={() => onCustomFieldDeleteConfirm(
+              attributes.customFieldId,
+              clientId
+            )}
+            onCustomFieldDeleteCancel={onCustomFieldDeleteCancel}
+            isDeleting={isDeleting}
           />
         </PanelBody>
       </Panel>
@@ -125,6 +146,7 @@ CustomTextAreaEdit.propTypes = {
     mandatory: PropTypes.bool.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
+  clientId: PropTypes.string.isRequired,
 };
 
 export default CustomTextAreaEdit;
