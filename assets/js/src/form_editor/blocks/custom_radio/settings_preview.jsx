@@ -161,18 +161,20 @@ const Preview = ({
 
   return (
     <DndProvider>
-      {valuesWhileMoved.map((value, index) => (
-        <PreviewItem
-          key={value.id}
-          index={index}
-          value={value}
-          moveItem={moveItem}
-          remove={remove}
-          onCheck={onCheck}
-          onUpdate={onUpdate}
-          dragFinished={() => onReorder(valuesWhileMoved)}
-        />
-      ))}
+      <div className="mailpoet-dnd-items-list">
+        {valuesWhileMoved.map((value, index) => (
+          <PreviewItem
+            key={value.id}
+            index={index}
+            value={value}
+            moveItem={moveItem}
+            remove={remove}
+            onCheck={onCheck}
+            onUpdate={onUpdate}
+            dragFinished={() => onReorder(valuesWhileMoved)}
+          />
+        ))}
+      </div>
     </DndProvider>
   );
 };
