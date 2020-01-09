@@ -10,7 +10,9 @@ class Subscribers {
   const SUBSCRIBERS_OLD_LIMIT = 2000;
   const SUBSCRIBERS_NEW_LIMIT = 1000;
   const NEW_LIMIT_DATE = '2019-11-00';
+  const MSS_KEY_STATE = 'mta.mailpoet_api_key_state.state';
   const MSS_SUBSCRIBERS_LIMIT_SETTING_KEY = 'mta.mailpoet_api_key_state.data.site_active_subscriber_limit';
+  const PREMIUM_KEY_STATE = 'premium.premium_key_state.state';
   const PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY = 'premium.premium_key_state.data.site_active_subscriber_limit';
 
   /** @var SettingsController */
@@ -32,22 +34,50 @@ class Subscribers {
   }
 
   public function hasAPIKey() {
-    $has_mss_key = !empty($this->settings->get(Bridge::API_KEY_SETTING_NAME));
-    $has_premium_key = !empty($this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME));
-    return $has_mss_key || $has_premium_key;
+    return $this->hasValidMssKey() || $this->hasValidPremiumKey();
   }
 
   public function getSubscribersLimit() {
-    $has_mss_key = !empty($this->settings->get(Bridge::API_KEY_SETTING_NAME));
-    $mss_subscribers_limit = $this->settings->get(self::MSS_SUBSCRIBERS_LIMIT_SETTING_KEY);
-    if ($has_mss_key && !empty($mss_subscribers_limit)) return (int)$mss_subscribers_limit;
+    if (!$this->hasAPIKey()) {
+      return $this->getFreeSubscribersLimit();
+    }
 
-    $has_premium_key = !empty($this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME));
-    $premium_subscribers_limit = $this->settings->get(self::PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY);
-    if ($has_premium_key && !empty($premium_subscribers_limit)) return (int)$premium_subscribers_limit;
+    if ($this->hasValidMssKey() && $this->hasMssSubscribersLimit()) {
+      return $this->getMssSubscribersLimit();
+    }
 
-    if ($has_mss_key || $has_premium_key) return false;
+    if ($this->hasValidPremiumKey() && $this->hasPremiumSubscribersLimit()) {
+      return $this->getPremiumSubscribersLimit();
+    }
 
+    return false;
+  }
+
+  private function hasValidMssKey() {
+    return $this->settings->get(self::MSS_KEY_STATE) === 'valid';
+  }
+
+  private function hasMssSubscribersLimit() {
+    return !empty($this->settings->get(self::MSS_SUBSCRIBERS_LIMIT_SETTING_KEY));
+  }
+
+  private function getMssSubscribersLimit() {
+    return (int)$this->settings->get(self::MSS_SUBSCRIBERS_LIMIT_SETTING_KEY);
+  }
+
+  private function hasValidPremiumKey() {
+    return $this->settings->get(self::PREMIUM_KEY_STATE) === 'valid';
+  }
+
+  private function hasPremiumSubscribersLimit() {
+    return !empty($this->settings->get(self::PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY));
+  }
+
+  private function getPremiumSubscribersLimit() {
+    return (int)$this->settings->get(self::PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY);
+  }
+
+  private function getFreeSubscribersLimit() {
     $installation_time = strtotime($this->settings->get('installed_at'));
     $old_user = $installation_time < strtotime(self::NEW_LIMIT_DATE);
     return $old_user ? self::SUBSCRIBERS_OLD_LIMIT : self::SUBSCRIBERS_NEW_LIMIT;

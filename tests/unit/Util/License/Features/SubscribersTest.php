@@ -134,8 +134,8 @@ class SubscribersTest extends \MailPoetUnitTest {
     $settings = Stub::make(SettingsController::class, [
       'get' => function($name) use($specs) {
         if ($name === 'installed_at') return $specs['installed_at'];
-        if ($name === Bridge::API_KEY_SETTING_NAME) return $specs['has_mss_key'];
-        if ($name === Bridge::PREMIUM_KEY_SETTING_NAME) return $specs['has_premium_key'];
+        if ($name === SubscribersFeature::MSS_KEY_STATE) return $specs['has_mss_key'] ? 'valid' : 'invalid';
+        if ($name === SubscribersFeature::PREMIUM_KEY_STATE) return $specs['has_premium_key'] ? 'valid' : 'invalid';
         if ($name === SubscribersFeature::PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY) return $specs['premium_subscribers_limit'];
         if ($name === SubscribersFeature::MSS_SUBSCRIBERS_LIMIT_SETTING_KEY) return $specs['mss_subscribers_limit'];
       },
