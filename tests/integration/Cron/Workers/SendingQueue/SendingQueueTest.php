@@ -74,8 +74,8 @@ class SendingQueueTest extends \MailPoetTest {
     $populator->up();
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'john@doe.com';
-    $this->subscriber->first_name = 'John';
-    $this->subscriber->last_name = 'Doe';
+    $this->subscriber->firstName = 'John';
+    $this->subscriber->lastName = 'Doe';
     $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $this->subscriber->source = 'administrator';
     $this->subscriber->save();
@@ -83,8 +83,8 @@ class SendingQueueTest extends \MailPoetTest {
     $this->segment->name = 'segment';
     $this->segment->save();
     $this->subscriberSegment = SubscriberSegment::create();
-    $this->subscriberSegment->subscriber_id = $this->subscriber->id;
-    $this->subscriberSegment->segment_id = (int)$this->segment->id;
+    $this->subscriberSegment->subscriberId = $this->subscriber->id;
+    $this->subscriberSegment->segmentId = (int)$this->segment->id;
     $this->subscriberSegment->save();
     $this->newsletter = Newsletter::create();
     $this->newsletter->type = Newsletter::TYPE_STANDARD;
@@ -93,17 +93,17 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletter->body = Fixtures::get('newsletter_body_template');
     $this->newsletter->save();
     $this->newsletterSegment = NewsletterSegment::create();
-    $this->newsletterSegment->newsletter_id = $this->newsletter->id;
-    $this->newsletterSegment->segment_id = (int)$this->segment->id;
+    $this->newsletterSegment->newsletterId = $this->newsletter->id;
+    $this->newsletterSegment->segmentId = (int)$this->segment->id;
     $this->newsletterSegment->save();
     $this->queue = SendingTask::create();
-    $this->queue->newsletter_id = $this->newsletter->id;
+    $this->queue->newsletterId = $this->newsletter->id;
     $this->queue->setSubscribers([$this->subscriber->id]);
-    $this->queue->count_total = 1;
+    $this->queue->countCotal = 1;
     $this->queue->save();
     $this->newsletterLink = NewsletterLink::create();
-    $this->newsletterLink->newsletter_id = $this->newsletter->id;
-    $this->newsletterLink->queue_id = $this->queue->id;
+    $this->newsletterLink->newsletterId = $this->newsletter->id;
+    $this->newsletterLink->queueId = $this->queue->id;
     $this->newsletterLink->url = '[link:subscription_unsubscribe_url]';
     $this->newsletterLink->hash = 'abcde';
     $this->newsletterLink->save();
@@ -141,9 +141,9 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItConstructs() {
-    expect($this->sendingQueueWorker->batch_size)->equals(SendingQueueWorker::BATCH_SIZE);
-    expect($this->sendingQueueWorker->mailer_task instanceof MailerTask);
-    expect($this->sendingQueueWorker->newsletter_task instanceof NewsletterTask);
+    expect($this->sendingQueueWorker->batchSize)->equals(SendingQueueWorker::BATCH_SIZE);
+    expect($this->sendingQueueWorker->mailerTask instanceof MailerTask);
+    expect($this->sendingQueueWorker->newsletterTask instanceof NewsletterTask);
   }
 
   public function testItEnforcesExecutionLimitsBeforeQueueProcessing() {

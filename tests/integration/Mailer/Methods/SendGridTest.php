@@ -85,7 +85,7 @@ class SendGridTest extends \MailPoetTest {
 
   public function testItCannotSendWithoutProperApiKey() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
-    $this->mailer->api_key = 'someapi';
+    $this->mailer->apiKey = 'someapi';
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

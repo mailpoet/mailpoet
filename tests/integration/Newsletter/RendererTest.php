@@ -566,8 +566,8 @@ class RendererTest extends \MailPoetTest {
 
   public function testItDoesNotAddMailpoetLogoWhenPremiumIsActive() {
     $this->renderer->preview = false;
-    $this->renderer->mss_activated = false;
-    $this->renderer->premium_activated = true;
+    $this->renderer->mssActivated = false;
+    $this->renderer->premiumActivated = true;
 
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render();
@@ -576,8 +576,8 @@ class RendererTest extends \MailPoetTest {
 
   public function testItDoesNotAddMailpoetLogoWhenMSSIsActive() {
     $this->renderer->preview = false;
-    $this->renderer->premium_activated = false;
-    $this->renderer->mss_activated = true;
+    $this->renderer->premiumActivated = false;
+    $this->renderer->mssActivated = true;
 
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render();
@@ -585,8 +585,8 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAddMailpoetLogoWhenPreviewIsEnabled() {
-    $this->renderer->mss_activated = false;
-    $this->renderer->premium_activated = false;
+    $this->renderer->mssActivated = false;
+    $this->renderer->premiumActivated = false;
     $this->renderer->preview = true;
 
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
@@ -596,8 +596,8 @@ class RendererTest extends \MailPoetTest {
 
   public function testItAddsMailpoetLogo() {
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
-    $this->renderer->mss_activated = false;
-    $this->renderer->premium_activated = false;
+    $this->renderer->mssActivated = false;
+    $this->renderer->premiumActivated = false;
     $this->renderer->preview = false;
 
     $template = $this->renderer->render();

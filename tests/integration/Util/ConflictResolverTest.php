@@ -30,7 +30,7 @@ class ConflictResolverTest extends \MailPoetTest {
   public function testItUnloadsAllStylesFromLocationsNotOnPermittedList() {
     expect(!empty($this->wpFilter['mailpoet_conflict_resolver_styles']))->true();
     // grab a random permitted style location
-    $permittedAssetLocation = $this->conflictResolver->permitted_assets_locations['styles'][array_rand($this->conflictResolver->permitted_assets_locations['styles'], 1)];
+    $permittedAssetLocation = $this->conflictResolver->permittedAssetsLocations['styles'][array_rand($this->conflictResolver->permittedAssetsLocations['styles'], 1)];
     // enqueue styles
     wp_enqueue_style('select2', '/wp-content/some/offending/plugin/select2.css');
     wp_enqueue_style('permitted_style', trim($permittedAssetLocation, '^'));
@@ -68,7 +68,7 @@ class ConflictResolverTest extends \MailPoetTest {
   public function testItUnloadsAllScriptsFromLocationsNotOnPermittedList() {
     expect(!empty($this->wpFilter['mailpoet_conflict_resolver_scripts']))->true();
     // grab a random permitted script location
-    $permittedAssetLocation = $this->conflictResolver->permitted_assets_locations['scripts'][array_rand($this->conflictResolver->permitted_assets_locations['scripts'], 1)];
+    $permittedAssetLocation = $this->conflictResolver->permittedAssetsLocations['scripts'][array_rand($this->conflictResolver->permittedAssetsLocations['scripts'], 1)];
     // enqueue scripts
     wp_enqueue_script('select2', '/wp-content/some/offending/plugin/select2.js');
     wp_enqueue_script('some_random_script', 'http://example.com/some_script.js', [], null, $inFooter = true); // test inside footer

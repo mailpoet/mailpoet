@@ -48,8 +48,8 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletterTask = new NewsletterTask();
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'test@example.com';
-    $this->subscriber->first_name = 'John';
-    $this->subscriber->last_name = 'Doe';
+    $this->subscriber->firstName = 'John';
+    $this->subscriber->lastName = 'Doe';
     $this->subscriber->save();
     $this->newsletter = Newsletter::create();
     $this->newsletter->type = Newsletter::TYPE_STANDARD;
@@ -72,7 +72,7 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItConstructs() {
-    expect($this->newsletterTask->tracking_enabled)->true();
+    expect($this->newsletterTask->trackingEnabled)->true();
   }
 
   public function testItDoesNotGetNewsletterWhenStatusIsNotActiveOrSending() {
@@ -217,7 +217,7 @@ class NewsletterTest extends \MailPoetTest {
 
   public function testItSavesNewsletterPosts() {
     $this->newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
-    $this->newsletter->parent_id = $this->newsletter->id;
+    $this->newsletter->parentId = $this->newsletter->id;
     $postsTask = $this->make(PostsTask::class, [
       'getAlcPostsCount' => 1,
       'logger_factory' => $this->loggerFactory,
@@ -314,7 +314,7 @@ class NewsletterTest extends \MailPoetTest {
       $this->subscriber,
       $this->queue
     );
-    expect($result['subject'])->contains($this->subscriber->first_name);
+    expect($result['subject'])->contains($this->subscriber->firstName);
     expect($result['body']['html'])
       ->contains(Router::NAME . '&endpoint=track&action=click&data=');
     expect($result['body']['text'])

@@ -20,7 +20,7 @@ class MP2Migration {
   public function render() {
     $this->mp2Migrator->init();
     $data = [
-      'log_file_url' => $this->mp2Migrator->log_file_url,
+      'log_file_url' => $this->mp2Migrator->logFileUrl,
       'progress_url' => $this->mp2Migrator->progressbar->url,
     ];
     $this->pageRenderer->displayPage('mp2migration.html', $data);

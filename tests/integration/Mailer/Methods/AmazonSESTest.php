@@ -65,7 +65,7 @@ class AmazonSESTest extends \MailPoetTest {
   }
 
   public function testItsConstructorWorks() {
-    expect($this->mailer->aws_endpoint)
+    expect($this->mailer->awsEndpoint)
       ->equals(
         sprintf('email.%s.amazonaws.com', $this->settings['region'])
       );
@@ -74,7 +74,7 @@ class AmazonSESTest extends \MailPoetTest {
         sprintf('https://email.%s.amazonaws.com', $this->settings['region'])
       );
     expect(preg_match('!^\d{8}T\d{6}Z$!', $this->mailer->date))->equals(1);
-    expect(preg_match('!^\d{8}$!', $this->mailer->date_without_time))->equals(1);
+    expect(preg_match('!^\d{8}$!', $this->mailer->dateWithoutTime))->equals(1);
   }
 
   public function testWhenReturnPathIsNullItIsSetToSenderEmail() {
@@ -148,7 +148,7 @@ class AmazonSESTest extends \MailPoetTest {
     expect($request['timeout'])->equals(10);
     expect($request['httpversion'])->equals('1.1');
     expect($request['method'])->equals('POST');
-    expect($request['headers']['Host'])->equals($this->mailer->aws_endpoint);
+    expect($request['headers']['Host'])->equals($this->mailer->awsEndpoint);
     expect($request['headers']['Authorization'])
       ->equals($this->mailer->signRequest($body));
     expect($request['headers']['X-Amz-Date'])->equals($this->mailer->date);
@@ -167,11 +167,11 @@ class AmazonSESTest extends \MailPoetTest {
           'POST',
           '/',
           '',
-          'host:' . $this->mailer->aws_endpoint,
+          'host:' . $this->mailer->awsEndpoint,
           'x-amz-date:' . $this->mailer->date,
           '',
           'host;x-amz-date',
-          hash($this->mailer->hash_algorithm,
+          hash($this->mailer->hashAlgorithm,
                urldecode(http_build_query($body))
           ),
         ]
@@ -182,10 +182,10 @@ class AmazonSESTest extends \MailPoetTest {
     $credentialScope = $this->mailer->getCredentialScope();
     expect($credentialScope)
       ->equals(
-        $this->mailer->date_without_time . '/' .
-        $this->mailer->aws_region . '/' .
-        $this->mailer->aws_service . '/' .
-        $this->mailer->aws_termination_string
+        $this->mailer->dateWithoutTime . '/' .
+        $this->mailer->awsRegion . '/' .
+        $this->mailer->awsService . '/' .
+        $this->mailer->awsTerminationString
       );
   }
 
@@ -201,10 +201,10 @@ class AmazonSESTest extends \MailPoetTest {
     expect($stringToSing)
       ->equals(
         [
-          $this->mailer->aws_signing_algorithm,
+          $this->mailer->awsSigningAlgorithm,
           $this->mailer->date,
           $credentialScope,
-          hash($this->mailer->hash_algorithm, $canonicalRequest),
+          hash($this->mailer->hashAlgorithm, $canonicalRequest),
         ]
       );
   }
@@ -214,8 +214,8 @@ class AmazonSESTest extends \MailPoetTest {
     $signedRequest = $this->mailer->signRequest($body);
     expect($signedRequest)
       ->contains(
-        $this->mailer->aws_signing_algorithm . ' Credential=' .
-        $this->mailer->aws_access_key . '/' .
+        $this->mailer->awsSigningAlgorithm . ' Credential=' .
+        $this->mailer->awsAccessKey . '/' .
         $this->mailer->getCredentialScope() . ', ' .
         'SignedHeaders=host;x-amz-date, Signature='
       );
@@ -225,7 +225,7 @@ class AmazonSESTest extends \MailPoetTest {
 
   public function testItCannotSendWithoutProperAccessKey() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
-    $this->mailer->aws_access_key = 'somekey';
+    $this->mailer->awsAccessKey = 'somekey';
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

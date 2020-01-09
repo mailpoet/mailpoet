@@ -89,7 +89,7 @@ class NewslettersTest extends \MailPoetTest {
       $sentNewsletters[$i] = Newsletter::create();
       $sentNewsletters[$i]->type = Newsletter::TYPE_STANDARD;
       $sentNewsletters[$i]->subject = 'Sent newsletter ' . $i;
-      $sentNewsletters[$i]->sent_at = '2017-01-0' . $i . ' 01:01:01';
+      $sentNewsletters[$i]->sentAt = '2017-01-0' . $i . ' 01:01:01';
       $sentNewsletters[$i]->save();
     };
 
