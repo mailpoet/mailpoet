@@ -20,18 +20,6 @@ export function changeFormName(name) {
   };
 }
 
-export function onCustomFieldDeleteClick() {
-  return {
-    type: 'CUSTOM_FIELD_DELETE_CLICK',
-  };
-}
-
-export function onCustomFieldDeleteCancel() {
-  return {
-    type: 'CUSTOM_FIELD_DELETE_CANCEL',
-  };
-}
-
 export function deleteCustomFieldStarted() {
   return {
     type: 'DELETE_CUSTOM_FIELD_STARTED',
@@ -148,7 +136,7 @@ export function* saveCustomField(data) {
   };
 }
 
-export function* onCustomFieldDeleteConfirm(customFieldId, clientId) {
+export function* deleteCustomField(customFieldId, clientId) {
   yield {
     type: 'DELETE_CUSTOM_FIELD',
     customFieldId,
