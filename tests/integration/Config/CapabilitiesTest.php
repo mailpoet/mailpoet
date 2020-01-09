@@ -120,7 +120,7 @@ class CapabilitiesTest extends \MailPoetTest {
         'registerMembersCapabilities',
         [
           'registerMembersCapability' => Expected::exactly($permissionCount),
-          'access_control' => $this->accessControl,
+          'accessControl' => $this->accessControl,
         ],
         $this
       );

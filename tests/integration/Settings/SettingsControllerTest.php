@@ -53,7 +53,7 @@ class SettingsControllerTest extends \MailPoetTest {
 
   public function testItReturnsDefaultValueAsFallback() {
     $settings = Stub::make($this->controller, [
-      'settings_repository' => $this->make(SettingsRepository::class, [
+      'settingsRepository' => $this->make(SettingsRepository::class, [
          'findOneByName' => null,
          'findAll' => [],
        ]),

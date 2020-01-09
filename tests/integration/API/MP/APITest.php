@@ -530,8 +530,8 @@ class APITest extends \MailPoetTest {
       \MailPoet\API\MP\v1\API::class,
       'addSubscriber',
       [
-        'new_subscriber_notification_mailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
-        'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
         '_scheduleWelcomeNotification' => Expected::once(),
       ], $this);
     $subscriber = [
@@ -578,10 +578,10 @@ class APITest extends \MailPoetTest {
       'addSubscriber',
       [
         '_scheduleWelcomeNotification' => Expected::never(),
-        'new_subscriber_notification_mailer' => Stub::makeEmpty(
+        'newSubscriberNotificationMailer' => Stub::makeEmpty(
           NewSubscriberNotificationMailer::class, ['send' => Expected::never()]
         ),
-        'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
       ], $this);
     $subscriber = [
       'email' => 'test@example.com',
@@ -596,8 +596,8 @@ class APITest extends \MailPoetTest {
       'addSubscriber',
       [
         '_scheduleWelcomeNotification' => Expected::never(),
-        'new_subscriber_notification_mailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
-        'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
       ], $this);
     $subscriber = [
       'email' => 'test@example.com',
@@ -617,8 +617,8 @@ class APITest extends \MailPoetTest {
           expect($options)->contains('send_confirmation_email');
           expect($options['send_confirmation_email'])->equals(true);
         }),
-        'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-        'new_subscriber_notification_mailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
       ]
     );
     $subscriber = [
@@ -638,7 +638,7 @@ class APITest extends \MailPoetTest {
       });
 
     $API = Stub::copy($this->getApi(), [
-      'confirmation_email_mailer' => $confirmationMailer,
+      'confirmationEmailMailer' => $confirmationMailer,
     ]);
     $segment = Segment::createOrUpdate(
       [
@@ -659,8 +659,8 @@ class APITest extends \MailPoetTest {
       'addSubscriber',
       [
         '__sendConfirmationEmail' => Expected::never(),
-        'required_custom_field_validator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-        'new_subscriber_notification_mailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
       ], $this);
     $subscriber = [
       'email' => 'test@example.com',

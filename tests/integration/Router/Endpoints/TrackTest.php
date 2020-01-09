@@ -90,7 +90,7 @@ class TrackTest extends \MailPoetTest {
     );
     $data->subscriber->email = 'random@email.com';
     $track = Stub::make(Track::class, [
-      'link_tokens' => new LinkTokens,
+      'linkTokens' => new LinkTokens,
       'terminate' => function($code) {
         expect($code)->equals(403);
       },

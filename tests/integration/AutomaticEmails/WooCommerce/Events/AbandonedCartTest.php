@@ -248,9 +248,9 @@ class AbandonedCartTest extends \MailPoetTest {
   private function createAbandonedCartEmail() {
     return $this->make(AbandonedCart::class, [
       'wp' => $this->wp,
-      'woo_commerce_helper' => $this->wooCommerceHelperMock,
+      'wooCommerceHelper' => $this->wooCommerceHelperMock,
       'cookies' => new Cookies(),
-      'page_visit_tracker' => $this->pageVisitTrackerMock,
+      'pageVisitTracker' => $this->pageVisitTrackerMock,
       'scheduler' => new AutomaticEmailScheduler(),
     ]);
   }

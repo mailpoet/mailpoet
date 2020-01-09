@@ -188,7 +188,7 @@ class SMTPTest extends \MailPoetTest {
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
-      ['blacklist' => $blacklist, 'error_mapper' => new SMTPMapper()],
+      ['blacklist' => $blacklist, 'errorMapper' => new SMTPMapper()],
       $this
     );
     $result = $mailer->send(

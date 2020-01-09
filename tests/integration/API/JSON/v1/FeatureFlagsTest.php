@@ -130,8 +130,8 @@ class FeatureFlagsTest extends \MailPoetTest {
       'defaults' => $defaults,
     ]);
     $featureFlags = Stub::make(FeatureFlagsController::class, [
-      'features_controller' => $featuresController,
-      'feature_flags_repository' => $this->diContainer->get(FeatureFlagsRepository::class),
+      'featuresController' => $featuresController,
+      'featureFlagsRepository' => $this->diContainer->get(FeatureFlagsRepository::class),
     ]);
     return new FeatureFlags($featuresController, $featureFlags);
   }

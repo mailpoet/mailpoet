@@ -220,7 +220,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletter->parentId = $this->newsletter->id;
     $postsTask = $this->make(PostsTask::class, [
       'getAlcPostsCount' => 1,
-      'logger_factory' => $this->loggerFactory,
+      'loggerFactory' => $this->loggerFactory,
     ]);
     $newsletterTask = new NewsletterTask(new WPFunctions, $postsTask);
     $result = $newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);

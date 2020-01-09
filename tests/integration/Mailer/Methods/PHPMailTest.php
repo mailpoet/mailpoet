@@ -142,7 +142,7 @@ class PHPMailTest extends \MailPoetTest {
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
-      ['blacklist' => $blacklist, 'error_mapper' => new PHPMailMapper()],
+      ['blacklist' => $blacklist, 'errorMapper' => new PHPMailMapper()],
       $this
     );
     $result = $mailer->send(

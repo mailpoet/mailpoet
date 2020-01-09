@@ -32,7 +32,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
     $this->currentUserId = $currentUserId;
     $this->userFlagsRepository = $this->diContainer->get(UserFlagsRepository::class);
     $this->userFlags = Stub::make(UserFlagsController::class, [
-      'user_flags_repository' => $this->userFlagsRepository,
+      'userFlagsRepository' => $this->userFlagsRepository,
       'defaults' => [
         'flag_1' => 'default_value_1',
         'flag_2' => 'default_value_2',

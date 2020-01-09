@@ -249,7 +249,7 @@ class AmazonSESTest extends \MailPoetTest {
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
-      ['blacklist' => $blacklist, 'error_mapper' => new AmazonSESMapper()],
+      ['blacklist' => $blacklist, 'errorMapper' => new AmazonSESMapper()],
       $this
     );
     $result = $mailer->send(

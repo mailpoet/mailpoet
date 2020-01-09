@@ -98,7 +98,7 @@ class SendGridTest extends \MailPoetTest {
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
-      ['blacklist' => $blacklist, 'error_mapper' => new SendGridMapper()],
+      ['blacklist' => $blacklist, 'errorMapper' => new SendGridMapper()],
       $this
     );
     $result = $mailer->send(

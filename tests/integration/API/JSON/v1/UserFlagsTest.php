@@ -21,7 +21,7 @@ class UserFlagsTest extends \MailPoetTest {
   public function _before() {
     $this->cleanup();
     $this->userFlags = Stub::make(UserFlagsController::class, [
-      'user_flags_repository' => $this->diContainer->get(UserFlagsRepository::class),
+      'userFlagsRepository' => $this->diContainer->get(UserFlagsRepository::class),
       'defaults' => [
         'flag_1' => 'default_value_1',
         'flag_2' => 'default_value_2',

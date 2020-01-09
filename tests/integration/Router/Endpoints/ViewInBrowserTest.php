@@ -70,7 +70,7 @@ class ViewInBrowserTest extends \MailPoetTest {
 
   public function testItAbortsWhenBrowserPreviewDataIsInvalid() {
     $viewInBrowser = Stub::make($this->viewInBrowser, [
-      'link_tokens' => new LinkTokens,
+      'linkTokens' => new LinkTokens,
       '_abort' => Expected::exactly(3),
     ], $this);
     // newsletter ID is invalid
@@ -215,7 +215,7 @@ class ViewInBrowserTest extends \MailPoetTest {
 
   public function testItReturnsViewActionResult() {
     $viewInBrowser = Stub::make($this->viewInBrowser, [
-      'link_tokens' => new LinkTokens,
+      'linkTokens' => new LinkTokens,
       '_displayNewsletter' => Expected::exactly(1),
       'settings' => SettingsController::getInstance(),
       'emoji' => new Emoji(),
