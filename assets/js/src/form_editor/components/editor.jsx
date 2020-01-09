@@ -52,6 +52,7 @@ export default () => {
             onInput={changeFormBlocks}
             onChange={changeFormBlocks}
             settings={editorSettings}
+            useSubRegistry={false}
           >
             <div className="edit-post-layout__content">
               <Notices />
