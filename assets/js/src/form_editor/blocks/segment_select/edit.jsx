@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   CheckboxControl,
-  BaseControl,
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
@@ -36,10 +35,9 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
           ],
         })}
       />
-      <BaseControl
-        label={attributes.label}
-        className="mailpoet_segments_label"
-      />
+      <span className="mailpoet_segment_label">
+        {attributes.label}
+      </span>
       {renderValues()}
     </>
   );
