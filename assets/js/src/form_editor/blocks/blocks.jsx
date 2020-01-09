@@ -11,7 +11,7 @@ import * as firstName from './first_name/first_name.jsx';
 import * as lastName from './last_name/last_name.jsx';
 import * as segmentSelect from './segment_select/segment_select.jsx';
 import * as html from './html/html.jsx';
-
+import * as addCustomField from './add_custom_field/add_custom_field.jsx';
 
 const registerCustomFieldBlock = (customField) => {
   const namesMap = getCustomFieldBlocksSettings(customField);
@@ -43,6 +43,7 @@ export default () => {
   registerBlockType(lastName.name, lastName.settings);
   registerBlockType(segmentSelect.name, segmentSelect.settings);
   registerBlockType(html.name, html.settings);
+  registerBlockType(addCustomField.name, addCustomField.settings);
 
   if (Array.isArray(customFields)) {
     customFields.forEach(registerCustomFieldBlock);
