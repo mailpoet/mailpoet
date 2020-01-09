@@ -1,7 +1,10 @@
 import { select, dispatch } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import { merge } from 'lodash';
+import { unregisterBlockType } from '@wordpress/blocks';
 import blocksToFormBody from './blocks_to_form_body.jsx';
+import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
+import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
 
 export default {
   SAVE_FORM() {
@@ -64,6 +67,9 @@ export default {
 
   DELETE_CUSTOM_FIELD(actionData) {
     dispatch('mailpoet-form-editor').deleteCustomFieldStarted();
+    const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
+    const customField = customFields.find((cf) => cf.id === actionData.customFieldId);
+    const namesMap = getCustomFieldBlockSettings(customField);
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'customFields',
@@ -75,6 +81,9 @@ export default {
       .then(() => {
         dispatch('mailpoet-form-editor').deleteCustomFieldDone(actionData.customFieldId, actionData.clientId);
         dispatch('core/block-editor').removeBlock(actionData.clientId);
+        unregisterBlockType(
+          formatCustomFieldBlockName(namesMap[customField.type].name, customField)
+        );
       })
       .fail((response) => {
         let errorMessage = null;
