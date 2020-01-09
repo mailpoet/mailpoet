@@ -26,7 +26,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTest extends \MailPoetTest {
   /** @var NewsletterTask */
-  private $newsletter_task;
+  private $newsletterTask;
 
   /** @var Subscriber */
   private $subscriber;
@@ -35,13 +35,13 @@ class NewsletterTest extends \MailPoetTest {
   private $newsletter;
 
   /** @var Newsletter */
-  private $parent_newsletter;
+  private $parentNewsletter;
 
   /** @var SendingTask */
   private $queue;
 
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   public function _before() {
     parent::_before();

@@ -8,7 +8,7 @@ use MailPoetVendor\Idiorm\ORM;
 class LinkTokensTest extends \MailPoetTest {
 
   /** @var LinkTokens */
-  private $link_tokens;
+  private $linkTokens;
 
   public function _before() {
     parent::_before();

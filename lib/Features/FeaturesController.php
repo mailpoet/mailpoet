@@ -22,7 +22,7 @@ class FeaturesController {
   private $flags;
 
   /** @var FeatureFlagsRepository */
-  private $feature_flags_repository;
+  private $featureFlagsRepository;
 
   public function __construct(FeatureFlagsRepository $featureFlagsRepository) {
     $this->featureFlagsRepository = $featureFlagsRepository;

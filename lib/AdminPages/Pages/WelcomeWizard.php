@@ -14,19 +14,19 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class WelcomeWizard {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var SettingsController */
   private $settings;
 
   /** @var WooCommerceHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var WPFunctions */
   private $wp;
 
   /** @var FeaturesController */
-  private $features_controller;
+  private $featuresController;
 
   public function __construct(
     PageRenderer $pageRenderer,

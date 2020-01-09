@@ -27,9 +27,9 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SchedulerTest extends \MailPoetTest {
-  public $cron_helper;
+  public $cronHelper;
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   public function _before() {
     parent::_before();

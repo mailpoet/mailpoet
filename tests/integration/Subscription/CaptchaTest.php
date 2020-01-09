@@ -19,7 +19,7 @@ class CaptchaTest extends \MailPoetTest {
   private $captcha;
 
   /** @var CaptchaSession */
-  private $captcha_session;
+  private $captchaSession;
 
   public function _before() {
     $cookiesMock = $this->createMock(Cookies::class);

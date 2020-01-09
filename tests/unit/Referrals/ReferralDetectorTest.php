@@ -9,10 +9,10 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 class ReferralDetectorTest extends \MailPoetUnitTest {
 
   /** @var SettingsController&MockObject */
-  private $settings_mock;
+  private $settingsMock;
 
   /** @var WPFunctions&MockObject */
-  private $wp_mock;
+  private $wpMock;
 
   public function _before() {
     $this->settingsMock = $this->createMock(SettingsController::class);

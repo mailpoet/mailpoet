@@ -14,11 +14,11 @@ use MailPoetVendor\Idiorm\ORM;
 
 class ExportTest extends \MailPoetTest {
   public $export;
-  public $segments_data;
-  public $custom_fields_data;
-  public $subscribers_data;
-  public $subscriber_fields;
-  public $JSON_data;
+  public $segmentsData;
+  public $customFieldsData;
+  public $subscribersData;
+  public $subscriberFields;
+  public $jSONData;
   public function _before() {
     parent::_before();
     $this->jSONData = json_decode((string)file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);

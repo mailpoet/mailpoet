@@ -9,7 +9,7 @@ use MailPoet\Test\DataFactories\WooCommerceProduct;
 class WooCommerceCustomerListCest {
 
   /** @var WooCommerceProduct */
-  private $product_factory;
+  private $productFactory;
 
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();

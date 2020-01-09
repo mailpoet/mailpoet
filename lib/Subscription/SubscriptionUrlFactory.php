@@ -22,7 +22,7 @@ class SubscriptionUrlFactory {
   private $settings;
 
   /** @var LinkTokens */
-  private $link_tokens;
+  private $linkTokens;
 
   public function __construct(WPFunctions $wp, SettingsController $settings, LinkTokens $linkTokens) {
     $this->wp = $wp;

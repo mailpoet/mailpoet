@@ -19,7 +19,7 @@ class ValidationTest extends \MailPoetTest {
   private $wp;
 
   /** @var string */
-  private $table_name;
+  private $tableName;
 
   public function _before() {
     $this->wp = new WPFunctions();

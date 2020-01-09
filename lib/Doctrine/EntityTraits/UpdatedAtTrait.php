@@ -10,7 +10,7 @@ trait UpdatedAtTrait {
    * @ORM\Column(type="datetimetz")
    * @var DateTimeInterface
    */
-  private $updated_at;
+  private $updatedAt;
 
   /** @return DateTimeInterface */
   public function getUpdatedAt() {

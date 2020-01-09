@@ -16,16 +16,16 @@ use MailPoet\WP\Functions as WPFunctions;
 class Forms extends APIEndpoint {
 
   /** @var Listing\BulkActionController */
-  private $bulk_action;
+  private $bulkAction;
 
   /** @var Listing\Handler */
-  private $listing_handler;
+  private $listingHandler;
 
   /** @var FeaturesController */
-  private $features_controller;
+  private $featuresController;
 
   /** @var Util\Styles */
-  private $form_styles_utils;
+  private $formStylesUtils;
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,

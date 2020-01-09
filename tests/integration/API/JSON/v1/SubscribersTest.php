@@ -37,10 +37,10 @@ use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersTest extends \MailPoetTest {
   public $form;
-  public $subscriber_2;
-  public $subscriber_1;
-  public $segment_2;
-  public $segment_1;
+  public $subscriber2;
+  public $subscriber1;
+  public $segment2;
+  public $segment1;
   public $obfuscatedSegments;
   public $obfuscatedEmail;
 
@@ -51,7 +51,7 @@ class SubscribersTest extends \MailPoetTest {
   private $settings;
 
   /** @var CaptchaSession */
-  private $captcha_session;
+  private $captchaSession;
 
   public function _before() {
     parent::_before();

@@ -12,7 +12,7 @@ class AmazonSESMapperTest extends \MailPoetUnitTest {
   private $mapper;
 
   /** @var array */
-  private $response_data = [];
+  private $responseData = [];
 
   public function _before() {
     parent::_before();

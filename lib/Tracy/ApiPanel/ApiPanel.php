@@ -15,13 +15,13 @@ class ApiPanel implements IBarPanel {
   protected $endpoint;
 
   /** @var string */
-  protected $request_method;
+  protected $requestMethod;
 
   /** @var array */
-  protected $request_data;
+  protected $requestData;
 
   /** @var ReflectionClass */
-  protected $endpoint_reflection;
+  protected $endpointReflection;
 
   public function __construct($endpoint, $requestMethod, $requestData) {
     $this->endpoint = $endpoint;

@@ -20,7 +20,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class TrackTest extends \MailPoetTest {
   public $track;
-  public $track_data;
+  public $trackData;
   public $link;
   public $queue;
   public $subscriber;

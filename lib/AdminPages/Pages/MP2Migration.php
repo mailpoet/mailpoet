@@ -7,10 +7,10 @@ use MailPoet\Config\MP2Migrator;
 
 class MP2Migration {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var MP2Migrator */
-  private $mp2_migrator;
+  private $mp2Migrator;
 
   public function __construct(PageRenderer $pageRenderer, MP2Migrator $mp2Migrator) {
     $this->pageRenderer = $pageRenderer;

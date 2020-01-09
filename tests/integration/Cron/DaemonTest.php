@@ -13,7 +13,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 
 class DaemonTest extends \MailPoetTest {
-  public $cron_helper;
+  public $cronHelper;
 
   /** @var SettingsController */
   private $settings;

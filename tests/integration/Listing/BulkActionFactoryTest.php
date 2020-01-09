@@ -8,7 +8,7 @@ require_once('BulkActionClassStub.php');
 
 class BulkActionFactoryTest extends \MailPoetTest {
   /** @var BulkActionFactory */
-  private $bulk_action_factory;
+  private $bulkActionFactory;
 
   public function _before() {
     $this->bulkActionFactory = new BulkActionFactory();

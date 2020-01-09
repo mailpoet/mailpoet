@@ -16,7 +16,7 @@ require_once __DIR__ . '/SimpleWorkerMockImplementation.php';
 
 class SimpleWorkerTest extends \MailPoetTest {
   public $worker;
-  public $cron_helper;
+  public $cronHelper;
   public function _before() {
     parent::_before();
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);

@@ -11,7 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
  */
 class DynamicSubscribersGetter extends SubscribersGetter {
 
-  protected $segment_index = 0;
+  protected $segmentIndex = 0;
 
   /** @var WPFunctions */
   private $wp;

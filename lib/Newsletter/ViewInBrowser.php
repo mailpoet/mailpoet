@@ -12,7 +12,7 @@ class ViewInBrowser {
   private $emoji;
 
   /** @var bool */
-  private $is_tracking_enabled;
+  private $isTrackingEnabled;
 
   public function __construct(Emoji $emoji, $isTrackingEnabled) {
     $this->isTrackingEnabled = $isTrackingEnabled;

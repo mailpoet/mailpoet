@@ -23,7 +23,7 @@ class ScheduledTaskSubscriber extends Model {
   const SENDING_STATUS_UNPROCESSED = 'unprocessed';
 
   public static $_table = MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE;
-  public static $_id_column = ['task_id', 'subscriber_id'];
+  public static $idColumn = ['task_id', 'subscriber_id'];
 
   public function task() {
     return $this->hasOne(__NAMESPACE__ . '\ScheduledTask', 'id', 'task_id');

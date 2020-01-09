@@ -35,7 +35,7 @@ class AutomatedEmails extends SimpleWorker {
   private $repository;
 
   /** @var NewsletterStatisticsRepository */
-  private $newsletter_statistics_repository;
+  private $newsletterStatisticsRepository;
 
   public function __construct(
     Mailer $mailer,

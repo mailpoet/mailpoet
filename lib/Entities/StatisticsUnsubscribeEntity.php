@@ -33,6 +33,6 @@ class StatisticsUnsubscribeEntity {
    * @ORM\Column(type="integer")
    * @var int|null
    */
-  private $subscriber_id;
+  private $subscriberId;
 
 }

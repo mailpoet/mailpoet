@@ -20,13 +20,13 @@ class Scheduler {
   /** @var SettingsController */
   private $settings;
 
-  private $supported_types = [
+  private $supportedTypes = [
     NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
     NewsletterEntity::TYPE_STANDARD,
   ];
 
   /** @var EntityManager */
-  private $entity_manager;
+  private $entityManager;
 
   /** @var StatsNotificationsRepository */
   private $repository;

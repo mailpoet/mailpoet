@@ -12,7 +12,7 @@ class Capabilities {
   /** @var WPFunctions  */
   private $wp;
   /** @var AccessControl */
-  private $access_control;
+  private $accessControl;
 
   public function __construct($renderer = null, WPFunctions $wp = null) {
     if ($renderer !== null) {

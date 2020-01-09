@@ -20,10 +20,10 @@ class Preprocessor {
     </table>';
 
   /** @var BlocksRenderer */
-  private $blocks_renderer;
+  private $blocksRenderer;
 
   /** @var TransactionalEmails */
-  private $transactional_emails;
+  private $transactionalEmails;
 
   public function __construct(BlocksRenderer $blocksRenderer, TransactionalEmails $transactionalEmails) {
     $this->blocksRenderer = $blocksRenderer;

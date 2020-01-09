@@ -13,10 +13,10 @@ class WooCommerceSync extends SimpleWorker {
   const SUPPORT_MULTIPLE_INSTANCES = false;
 
   /** @var WooCommerceSegment */
-  private $woocommerce_segment;
+  private $woocommerceSegment;
 
   /** @var WooCommerceHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   public function __construct(WooCommerceSegment $woocommerceSegment, WooCommerceHelper $woocommerceHelper) {
     $this->woocommerceSegment = $woocommerceSegment;

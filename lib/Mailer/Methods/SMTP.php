@@ -20,14 +20,14 @@ class SMTP {
   public $password;
   public $encryption;
   public $sender;
-  public $reply_to;
-  public $return_path;
+  public $replyTo;
+  public $returnPath;
   public $mailer;
-  private $mailer_logger;
+  private $mailerLogger;
   const SMTP_CONNECTION_TIMEOUT = 15; // seconds
 
   /** @var SMTPMapper */
-  private $error_mapper;
+  private $errorMapper;
 
   /** @var BlacklistCheck */
   private $blacklist;

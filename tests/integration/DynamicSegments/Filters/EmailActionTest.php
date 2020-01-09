@@ -9,10 +9,10 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 
 class EmailActionTest extends \MailPoetTest {
-  public $subscriber_opened_not_clicked;
-  public $subscriber_not_sent;
-  public $subscriber_not_opened;
-  public $subscriber_opened_clicked;
+  public $subscriberOpenedNotClicked;
+  public $subscriberNotSent;
+  public $subscriberNotOpened;
+  public $subscriberOpenedClicked;
   public $newsletter;
 
   public function _before() {

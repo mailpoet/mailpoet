@@ -16,22 +16,22 @@ use Tracy\Debugger;
 use Tracy\ILogger;
 
 class API {
-  private $_request_api_version;
-  private $_request_endpoint;
-  private $_request_method;
-  private $_request_token;
-  private $_request_type;
-  private $_request_endpoint_class;
-  private $_request_data = [];
-  private $_endpoint_namespaces = [];
-  private $_available_api_versions = [
+  private $requestApiVersion;
+  private $requestEndpoint;
+  private $requestMethod;
+  private $requestToken;
+  private $requestType;
+  private $requestEndpointClass;
+  private $requestData = [];
+  private $endpointNamespaces = [];
+  private $availableApiVersions = [
       'v1',
   ];
   /** @var ContainerInterface */
   private $container;
 
   /** @var AccessControl */
-  private $access_control;
+  private $accessControl;
 
   /** @var WPFunctions */
   private $wp;

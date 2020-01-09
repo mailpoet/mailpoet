@@ -29,23 +29,23 @@ use MailPoet\WP\Functions as WPFunctions;
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
 
-  public $mp_api_key_valid;
-  public $premium_key_valid;
+  public $mpApiKeyValid;
+  public $premiumKeyValid;
 
   /** @var AccessControl */
-  private $access_control;
+  private $accessControl;
 
   /** @var WPFunctions */
   private $wp;
 
   /** @var ServicesChecker */
-  private $services_checker;
+  private $servicesChecker;
 
   /** @var ContainerWrapper */
   private $container;
 
   /** @var FeaturesController */
-  private $features_controller;
+  private $featuresController;
 
   public function __construct(
     AccessControl $accessControl,

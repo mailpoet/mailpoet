@@ -21,7 +21,7 @@ class SendingQueue extends APIEndpoint {
   ];
 
   /** @var SubscribersFeature */
-  private $subscribers_feature;
+  private $subscribersFeature;
 
   public function __construct(SubscribersFeature $subscribersFeature) {
     $this->subscribersFeature = $subscribersFeature;

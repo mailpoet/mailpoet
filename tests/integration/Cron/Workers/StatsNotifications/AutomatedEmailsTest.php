@@ -22,7 +22,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 class AutomatedEmailsTest extends \MailPoetTest {
 
   /** @var AutomatedEmails */
-  private $stats_notifications;
+  private $statsNotifications;
 
   /** @var MockObject */
   private $mailer;
@@ -34,7 +34,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
   private $settings;
 
   /** @var CronWorkerRunner */
-  private $cron_worker_runner;
+  private $cronWorkerRunner;
 
   public function _before() {
     parent::_before();

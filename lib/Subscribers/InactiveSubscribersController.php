@@ -14,10 +14,10 @@ use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersController {
 
-  private $inactives_task_ids_table_created = false;
+  private $inactivesTaskIdsTableCreated = false;
 
   /** @var SettingsRepository */
-  private $settings_repository;
+  private $settingsRepository;
 
   public function __construct(SettingsRepository $settingsRepository) {
     $this->settingsRepository = $settingsRepository;

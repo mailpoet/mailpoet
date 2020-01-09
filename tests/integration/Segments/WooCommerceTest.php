@@ -23,7 +23,7 @@ class WooCommerceTest extends \MailPoetTest  {
   private $userEmails = [];
 
   /** @var WooCommerce */
-  private $woocommerce_segment;
+  private $woocommerceSegment;
 
   /** @var SettingsController */
   private $settings;

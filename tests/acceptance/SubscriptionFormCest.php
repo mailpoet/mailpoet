@@ -11,7 +11,7 @@ class SubscriptionFormCest {
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;
 
   /** @var string */
-  private $subscriber_email;
+  private $subscriberEmail;
 
   public function __construct() {
     $this->subscriberEmail = 'test-form@example.com';

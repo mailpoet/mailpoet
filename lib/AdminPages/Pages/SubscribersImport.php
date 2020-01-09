@@ -10,7 +10,7 @@ use MailPoet\Util\Installation;
 
 class SubscribersImport {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var Installation */
   private $installation;

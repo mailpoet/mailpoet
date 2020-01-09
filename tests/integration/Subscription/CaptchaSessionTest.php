@@ -9,7 +9,7 @@ class CaptchaSessionTest extends \MailPoetTest {
   const SESSION_ID = 'ABCD';
 
   /** @var CaptchaSession */
-  private $captcha_session;
+  private $captchaSession;
 
   public function _before() {
     $this->captchaSession = new CaptchaSession(new WPFunctions);

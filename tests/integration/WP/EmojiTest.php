@@ -10,8 +10,8 @@ use MailPoetVendor\Idiorm\ORM;
 class EmojiTest extends \MailPoetTest {
   public $emoji;
   public $column;
-  public $data_decoded;
-  public $data_encoded;
+  public $dataDecoded;
+  public $dataEncoded;
   public function _before() {
     parent::_before();
     $this->dataEncoded = "Emojis: &#x1f603;&#x1f635;&#x1f4aa;, not emojis: &#046;&#0142;";

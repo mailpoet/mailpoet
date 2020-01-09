@@ -181,4 +181,5 @@
 
   <!-- Enforce camelCase naming of variables and properties -->
   <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps"/>
+  <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps"/>
 </ruleset>

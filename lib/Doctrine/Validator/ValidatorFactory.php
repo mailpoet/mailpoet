@@ -11,7 +11,7 @@ class ValidatorFactory {
   const METADATA_DIR = __DIR__ . '/../../../generated/validator-metadata';
 
   /** @var AnnotationReaderProvider */
-  private $annotation_reader_provider;
+  private $annotationReaderProvider;
 
   public function __construct(AnnotationReaderProvider $annotationReaderProvider) {
     $this->annotationReaderProvider = $annotationReaderProvider;

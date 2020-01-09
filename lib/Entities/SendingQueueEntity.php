@@ -31,13 +31,13 @@ class SendingQueueEntity {
    * @Assert\NotBlank()
    * @var array|null
    */
-  private $newsletter_rendered_body;
+  private $newsletterRenderedBody;
 
   /**
    * @ORM\Column(type="string")
    * @var string|null
    */
-  private $newsletter_rendered_subject;
+  private $newsletterRenderedSubject;
 
   /**
    * @ORM\Column(type="text")
@@ -49,19 +49,19 @@ class SendingQueueEntity {
    * @ORM\Column(type="integer")
    * @var int
    */
-  private $count_total = 0;
+  private $countTotal = 0;
 
   /**
    * @ORM\Column(type="integer")
    * @var int
    */
-  private $count_processed = 0;
+  private $countProcessed = 0;
 
   /**
    * @ORM\Column(type="integer")
    * @var int
    */
-  private $count_to_process = 0;
+  private $countToProcess = 0;
 
   /**
    * @ORM\Column(type="json")

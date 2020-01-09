@@ -21,10 +21,10 @@ class JsonTypesTest extends \MailPoetTest {
   private $wp;
 
   /** @var string */
-  private $table_name;
+  private $tableName;
 
   /** @var array */
-  private $test_data = [
+  private $testData = [
     'key' => [
       'a' => 'string',
       'b' => 10,

@@ -10,10 +10,10 @@ class MailerTest extends \MailPoetTest {
   public $newsletter;
   public $subscriber;
   public $mailer;
-  public $return_path;
-  public $reply_to;
+  public $returnPath;
+  public $replyTo;
   public $sender;
-  public $available_mailer_methods;
+  public $availableMailerMethods;
 
   /** @var SettingsController */
   private $settings;

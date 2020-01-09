@@ -8,7 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use Tracy\Debugger;
 
 class DaemonHttpRunner {
-  public $settings_daemon_data;
+  public $settingsDaemonData;
   public $timer;
   public $token;
 
@@ -16,7 +16,7 @@ class DaemonHttpRunner {
   private $daemon;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   /** @var SettingsController */
   private $settings;
@@ -24,7 +24,7 @@ class DaemonHttpRunner {
   const PING_SUCCESS_RESPONSE = 'pong';
 
   /** @var WordPress */
-  private $wordpress_trigger;
+  private $wordpressTrigger;
 
   public function __construct(Daemon $daemon = null, CronHelper $cronHelper, SettingsController $settings, WordPress $wordpressTrigger) {
     $this->cronHelper = $cronHelper;

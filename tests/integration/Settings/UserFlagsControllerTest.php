@@ -11,13 +11,13 @@ use MailPoet\WP\Functions as WPFunctions;
 class UserFlagsControllerTest extends \MailPoetTest {
 
   /** @var UserFlagsController */
-  private $user_flags;
+  private $userFlags;
 
   /** @var UserFlagsRepository */
-  private $user_flags_repository;
+  private $userFlagsRepository;
 
   /** @var int */
-  private $current_user_id;
+  private $currentUserId;
 
   public function _before() {
     parent::_before();

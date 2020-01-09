@@ -8,7 +8,7 @@ require_once __DIR__ . '/ItemDetails.php';
 class OrderDetails
 {
   public $total;
-  public $order_id;
+  public $orderId;
 
   public function __construct($orderId = null) {
     $this->orderId = $orderId;

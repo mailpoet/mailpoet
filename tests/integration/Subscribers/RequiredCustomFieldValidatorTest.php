@@ -8,7 +8,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class RequiredCustomFieldValidatorTest extends \MailPoetTest {
 
-  private $custom_field;
+  private $customField;
 
   public function _before() {
     parent::_before();

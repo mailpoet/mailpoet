@@ -11,7 +11,7 @@ class WoocommerceSettings extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
-  private $allowed_settings = [
+  private $allowedSettings = [
     'woocommerce_email_base_color',
   ];
 

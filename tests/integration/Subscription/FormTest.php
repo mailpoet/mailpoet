@@ -20,7 +20,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class FormTest extends \MailPoetTest {
   public $post;
-  public $request_data;
+  public $requestData;
   public $form;
   public $segment;
   public $testEmail;

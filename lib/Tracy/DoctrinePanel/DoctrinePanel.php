@@ -14,7 +14,7 @@ use Tracy\IBarPanel;
  */
 class DoctrinePanel implements IBarPanel {
   /** @var DebugStack */
-  private $sql_logger;
+  private $sqlLogger;
 
   public function __construct(Configuration $doctrineConfiguration) {
     $this->sqlLogger = new DebugStack();

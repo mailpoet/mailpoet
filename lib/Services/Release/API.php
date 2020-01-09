@@ -5,9 +5,9 @@ namespace MailPoet\Services\Release;
 use MailPoet\WP\Functions as WPFunctions;
 
 class API {
-  private $api_key;
+  private $apiKey;
   private $wp;
-  public $url_products = 'https://release.mailpoet.com/products/';
+  public $urlProducts = 'https://release.mailpoet.com/products/';
 
   public function __construct($apiKey) {
     $this->setKey($apiKey);

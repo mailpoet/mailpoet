@@ -9,7 +9,7 @@ use MailPoet\Test\DataFactories\WooCommerceProduct;
 
 class SendProductPurchaseEmailCest {
   /** @var Settings */
-  private $settings_factory;
+  private $settingsFactory;
 
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();

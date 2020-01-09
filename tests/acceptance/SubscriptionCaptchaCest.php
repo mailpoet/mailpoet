@@ -10,10 +10,10 @@ use MailPoet\Test\DataFactories\Subscriber;
 class SubscriptionCaptchaCest {
 
   /** @var Settings */
-  private $settings_factory;
+  private $settingsFactory;
 
   /** @var string */
-  private $subscriber_email;
+  private $subscriberEmail;
 
   public function _before(\AcceptanceTester $i) {
     $this->subscriberEmail = 'test-form@example.com';

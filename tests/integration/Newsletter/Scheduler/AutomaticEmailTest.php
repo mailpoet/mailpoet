@@ -19,7 +19,7 @@ use MailPoetVendor\Idiorm\ORM;
 class AutomaticEmailTest extends \MailPoetTest {
 
   /** @var AutomaticEmailScheduler */
-  private $automatic_email_scheduler;
+  private $automaticEmailScheduler;
 
   public function _before() {
     parent::_before();

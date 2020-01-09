@@ -21,19 +21,19 @@ use MailPoet\WP\Notice as WPNotice;
 
 class Settings {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var SettingsController */
   private $settings;
 
   /** @var WooCommerceHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var WPFunctions */
   private $wp;
 
   /** @var ServicesChecker */
-  private $services_checker;
+  private $servicesChecker;
 
   /** @var Captcha */
   private $captcha;

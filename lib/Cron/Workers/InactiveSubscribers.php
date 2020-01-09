@@ -14,7 +14,7 @@ class InactiveSubscribers extends SimpleWorker {
   const SUPPORT_MULTIPLE_INSTANCES = false;
 
   /** @var InactiveSubscribersController */
-  private $inactive_subscribers_controller;
+  private $inactiveSubscribersController;
 
   /** @var SettingsController */
   private $settings;

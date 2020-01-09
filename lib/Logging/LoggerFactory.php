@@ -31,7 +31,7 @@ class LoggerFactory {
   private static $instance;
 
   /** @var \MailPoetVendor\Monolog\Logger[] */
-  private $logger_instances = [];
+  private $loggerInstances = [];
 
   /** @var SettingsController */
   private $settings;

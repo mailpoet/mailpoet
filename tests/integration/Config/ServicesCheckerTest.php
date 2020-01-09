@@ -10,7 +10,7 @@ use MailPoet\Settings\SettingsController;
 class ServicesCheckerTest extends \MailPoetTest {
 
   /** @var ServicesChecker */
-  private $services_checker;
+  private $servicesChecker;
 
   /** @var SettingsController */
   private $settings;

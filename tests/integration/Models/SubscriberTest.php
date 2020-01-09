@@ -23,7 +23,7 @@ class SubscriberTest extends \MailPoetTest {
   public $subscriber;
 
   /** @var array */
-  private $test_data;
+  private $testData;
 
   /** @var SettingsController */
   private $settings;

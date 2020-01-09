@@ -13,13 +13,13 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
 
   /** @var SingleSegmentLoader|MockObject */
-  private $single_segment_loader;
+  private $singleSegmentLoader;
 
   /** @var SubscribersIds|MockObject */
-  private $subscribers_ids_loader;
+  private $subscribersIdsLoader;
 
   /** @var SendingNewslettersSubscribersFinder */
-  private $subscribers_in_segments_finder;
+  private $subscribersInSegmentsFinder;
 
   public function _before() {
     $this->singleSegmentLoader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader');

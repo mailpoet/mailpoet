@@ -10,12 +10,12 @@ use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SMTPTest extends \MailPoetTest {
-  public $extra_params;
+  public $extraParams;
   public $newsletter;
   public $subscriber;
   public $mailer;
-  public $return_path;
-  public $reply_to;
+  public $returnPath;
+  public $replyTo;
   public $sender;
   public $settings;
   public function _before() {

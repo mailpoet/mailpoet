@@ -9,10 +9,10 @@ use MailPoet\Util\Installation;
 
 class Forms {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var PageLimit */
-  private $listing_page_limit;
+  private $listingPageLimit;
 
   /** @var Installation */
   private $installation;

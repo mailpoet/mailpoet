@@ -19,7 +19,7 @@ class WordpressMailerReplacer {
   private $settings;
 
   /** @var SubscribersRepository */
-  private $subscribers_repository;
+  private $subscribersRepository;
 
   public function __construct(
     Mailer $mailer,

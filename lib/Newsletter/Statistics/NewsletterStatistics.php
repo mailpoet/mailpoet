@@ -5,16 +5,16 @@ namespace MailPoet\Newsletter\Statistics;
 class NewsletterStatistics {
 
   /** @var int */
-  private $click_count;
+  private $clickCount;
 
   /** @var int */
-  private $open_count;
+  private $openCount;
 
   /** @var int */
-  private $unsubscribe_count;
+  private $unsubscribeCount;
 
   /** @var int */
-  private $total_sent_count;
+  private $totalSentCount;
 
   public function __construct($clickCount, $openCount, $unsubscribeCount, $totalSentCount) {
     $this->clickCount = $clickCount;

@@ -11,7 +11,7 @@ class AuthorizedSendingEmailsCheck extends SimpleWorker {
   const AUTOMATIC_SCHEDULING = false;
 
   /** @var AuthorizedEmailsController */
-  private $authorized_emails_controller;
+  private $authorizedEmailsController;
 
   public function __construct(AuthorizedEmailsController $authorizedEmailsController) {
     $this->authorizedEmailsController = $authorizedEmailsController;

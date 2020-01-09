@@ -14,10 +14,10 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Subscribers {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var PageLimit */
-  private $listing_page_limit;
+  private $listingPageLimit;
 
   /** @var WPFunctions */
   private $wp;

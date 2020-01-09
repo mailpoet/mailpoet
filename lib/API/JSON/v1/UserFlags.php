@@ -11,7 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class UserFlags extends APIEndpoint {
 
   /** @var UserFlagsController */
-  private $user_flags;
+  private $userFlags;
 
   public $permissions = [
     'global' => AccessControl::ALL_ROLES_ACCESS,

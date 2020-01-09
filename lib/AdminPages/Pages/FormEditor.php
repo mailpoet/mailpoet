@@ -16,16 +16,16 @@ use MailPoet\Settings\Pages;
 
 class FormEditor {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var FeaturesController */
-  private $features_controller;
+  private $featuresController;
 
   /** @var CustomFieldsRepository */
-  private $custom_fields_repository;
+  private $customFieldsRepository;
 
   /** @var CustomFieldsResponseBuilder */
-  private $custom_fields_response_builder;
+  private $customFieldsResponseBuilder;
 
   public function __construct(
     PageRenderer $pageRenderer,

@@ -9,7 +9,7 @@ class FunctionsTest extends \MailPoetTest {
   public $wp;
   public $filter;
   public $action;
-  public $_content_width;
+  public $contentWidth;
   public function _before() {
     parent::_before();
     global $contentWidth;

@@ -18,8 +18,8 @@ use MailPoet\WP\Functions;
 use MailPoetVendor\Idiorm\ORM;
 
 class ViewInBrowserTest extends \MailPoetTest {
-  public $view_in_browser;
-  public $browser_preview_data;
+  public $viewInBrowser;
+  public $browserPreviewData;
   public $queue;
   public $subscriber;
   public $newsletter;

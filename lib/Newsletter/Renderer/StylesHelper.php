@@ -3,7 +3,7 @@
 namespace MailPoet\Newsletter\Renderer;
 
 class StylesHelper {
-  static $css_attributes = [
+  static $cssAttributes = [
     'backgroundColor' => 'background-color',
     'fontColor' => 'color',
     'fontFamily' => 'font-family',
@@ -42,7 +42,7 @@ class StylesHelper {
     'Permanent Marker' => "'Permanent Marker', Tahoma, Verdana, Segoe, sans-serif",
     'Pacifico' => "Pacifico, 'Arial Narrow', Arial, sans-serif",
   ];
-  static $custom_fonts = [
+  static $customFonts = [
     'Arvo',
     'Lato',
     'Lora',
@@ -58,9 +58,9 @@ class StylesHelper {
     'Permanent Marker',
     'Pacifico',
   ];
-  static $default_line_height = 1.6;
-  static $heading_margin_multiplier = 0.3;
-  static $padding_width = 20;
+  static $defaultLineHeight = 1.6;
+  static $headingMarginMultiplier = 0.3;
+  static $paddingWidth = 20;
 
   public static function getBlockStyles($element, $ignoreSpecificStyles = false) {
     if (!isset($element['styles']['block'])) {

@@ -15,7 +15,7 @@ class Widget extends \WP_Widget {
   private $wp;
 
   /** @var AssetsController */
-  private $assets_controller;
+  private $assetsController;
 
   public function __construct() {
     parent::__construct(

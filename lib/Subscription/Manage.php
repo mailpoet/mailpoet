@@ -11,13 +11,13 @@ use MailPoet\Util\Url as UrlHelper;
 class Manage {
 
   /** @var UrlHelper */
-  private $url_helper;
+  private $urlHelper;
 
   /** @var FieldNameObfuscator */
-  private $field_name_obfuscator;
+  private $fieldNameObfuscator;
 
   /** @var LinkTokens */
-  private $link_tokens;
+  private $linkTokens;
 
   public function __construct(UrlHelper $urlHelper, FieldNameObfuscator $fieldNameObfuscator, LinkTokens $linkTokens) {
     $this->urlHelper = $urlHelper;

@@ -13,7 +13,7 @@ class WooCommerceCategory implements Filter {
   const ACTION_CATEGORY = 'purchasedCategory';
 
   /** @var int */
-  private $category_id;
+  private $categoryId;
 
   /** @var string */
   private $connect;

@@ -31,16 +31,16 @@ class DynamicSegments extends APIEndpoint {
   private $saver;
 
   /** @var SingleSegmentLoader */
-  private $dynamic_segments_loader;
+  private $dynamicSegmentsLoader;
 
   /** @var SubscribersCount */
-  private $subscribers_counts_loader;
+  private $subscribersCountsLoader;
 
   /** @var BulkActionController */
-  private $bulk_action;
+  private $bulkAction;
 
   /** @var Handler */
-  private $listing_handler;
+  private $listingHandler;
 
   public function __construct(BulkActionController $bulkAction, Handler $handler, $mapper = null, $saver = null, $dynamicSegmentsLoader = null, $subscribersCountsLoader = null) {
     $this->bulkAction = $bulkAction;

@@ -12,15 +12,15 @@ class WooCommerce {
   const EVENTS_FILTER = 'mailpoet_woocommerce_events';
 
   /** @var WooCommerceHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
-  public $available_events = [
+  public $availableEvents = [
     'AbandonedCart',
     'FirstPurchase',
     'PurchasedInCategory',
     'PurchasedProduct',
   ];
-  private $_woocommerce_enabled;
+  private $woocommerceEnabled;
   private $wp;
 
   public function __construct() {

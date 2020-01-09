@@ -10,10 +10,10 @@ use MailPoet\WooCommerce\Helper;
 class RequirementsCheckerTest extends \MailPoetUnitTest {
 
   /** @var Helper|\PHPUnit_Framework_MockObject_MockObject */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var RequirementsChecker */
-  private $requirements_checker;
+  private $requirementsChecker;
 
   public function _before() {
     parent::_before();

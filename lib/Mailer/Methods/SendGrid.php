@@ -9,12 +9,12 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class SendGrid {
   public $url = 'https://api.sendgrid.com/api/mail.send.json';
-  public $api_key;
+  public $apiKey;
   public $sender;
-  public $reply_to;
+  public $replyTo;
 
   /** @var SendGridMapper */
-  private $error_mapper;
+  private $errorMapper;
 
   /** @var BlacklistCheck */
   private $blacklist;

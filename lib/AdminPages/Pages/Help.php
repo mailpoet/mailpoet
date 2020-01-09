@@ -13,16 +13,16 @@ use MailPoet\Tasks\State;
 
 class Help {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var State */
-  private $tasks_state;
+  private $tasksState;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   /** @var Beacon */
-  private $helpscout_beacon;
+  private $helpscoutBeacon;
 
   public function __construct(PageRenderer $pageRenderer, State $tasksState, CronHelper $cronHelper, Beacon $helpscoutBeacon) {
     $this->pageRenderer = $pageRenderer;

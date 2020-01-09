@@ -6,7 +6,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class BridgeTestMockAPI extends API {
-  public $api_key;
+  public $apiKey;
 
   public function __construct($apiKey) {
     parent::__construct($apiKey);

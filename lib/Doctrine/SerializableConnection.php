@@ -11,7 +11,7 @@ class SerializableConnection extends Connection {
   private $params;
   private $driver;
   private $config;
-  private $event_manager;
+  private $eventManager;
 
   public function __construct(array $params, Driver $driver, Configuration $config = null, EventManager $eventManager = null) {
     $this->params = $params;

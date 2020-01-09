@@ -12,7 +12,7 @@ class ErrorsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDecl
     __DIR__ . '/../_output/exceptions/exception.log',
   ];
 
-  private $known_error_counts = [];
+  private $knownErrorCounts = [];
   private $errors = [];
 
   static $events = [

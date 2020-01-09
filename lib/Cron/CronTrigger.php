@@ -22,10 +22,10 @@ class CronTrigger {
   const SETTING_NAME = 'cron_trigger';
 
   /** @var MailPoet */
-  private $mailpoet_trigger;
+  private $mailpoetTrigger;
 
   /** @var WordPress */
-  private $wordpress_trigger;
+  private $wordpressTrigger;
 
   /** @var SettingsController */
   private $settings;

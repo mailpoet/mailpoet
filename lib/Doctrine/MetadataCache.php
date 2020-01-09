@@ -14,7 +14,7 @@ use ReflectionException;
 // and it calls realpath() that could fail on some hostings due to filesystem permissions.
 class MetadataCache extends CacheProvider {
   /** @var bool */
-  private $is_dev_mode;
+  private $isDevMode;
 
   /** @var string */
   private $directory;

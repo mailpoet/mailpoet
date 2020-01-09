@@ -24,7 +24,7 @@ class PostNotificationScheduler {
   const INTERVAL_MONTHLY = 'monthly';
 
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   public function __construct() {
     $this->loggerFactory = LoggerFactory::getInstance();

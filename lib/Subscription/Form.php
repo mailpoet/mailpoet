@@ -13,7 +13,7 @@ class Form {
   private $api;
 
   /** @var UrlHelper */
-  private $url_helper;
+  private $urlHelper;
 
   public function __construct(API $api, UrlHelper $urlHelper) {
     $this->api = $api;

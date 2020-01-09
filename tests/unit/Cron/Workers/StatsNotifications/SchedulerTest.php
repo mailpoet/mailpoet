@@ -11,7 +11,7 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 class SchedulerTest extends \MailPoetUnitTest {
 
   /** @var Scheduler */
-  private $stats_notifications;
+  private $statsNotifications;
 
   /** @var SettingsController|\PHPUnit_Framework_MockObject_MockObject */
   private $settings;

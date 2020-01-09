@@ -32,7 +32,7 @@ class NewsletterOptionEntity {
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterOptionFieldEntity", inversedBy="options")
    * @var NewsletterOptionFieldEntity
    */
-  private $option_field;
+  private $optionField;
 
   /**
    * @return string|null

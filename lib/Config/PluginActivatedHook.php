@@ -5,7 +5,7 @@ namespace MailPoet\Config;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PluginActivatedHook {
-  private $deferred_admin_notices;
+  private $deferredAdminNotices;
 
   public function __construct(DeferredAdminNotices $deferredAdminNotices) {
     $this->deferredAdminNotices = $deferredAdminNotices;

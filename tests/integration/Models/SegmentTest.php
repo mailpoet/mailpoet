@@ -11,9 +11,9 @@ use MailPoetVendor\Idiorm\ORM;
 
 class SegmentTest extends \MailPoetTest {
   public $segment;
-  public $newsletters_data;
-  public $subscribers_data;
-  public $segment_data;
+  public $newslettersData;
+  public $subscribersData;
+  public $segmentData;
   public function _before() {
     parent::_before();
     $this->segmentData = [

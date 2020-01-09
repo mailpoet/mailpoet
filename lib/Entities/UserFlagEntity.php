@@ -20,7 +20,7 @@ class UserFlagEntity {
    * @ORM\Column(type="integer")
    * @var int
    */
-  private $user_id;
+  private $userId;
 
   /**
    * @ORM\Column(type="string")

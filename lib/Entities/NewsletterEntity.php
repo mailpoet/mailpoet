@@ -63,13 +63,13 @@ class NewsletterEntity {
    * @ORM\Column(type="string")
    * @var string
    */
-  private $sender_address = '';
+  private $senderAddress = '';
 
   /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $sender_name = '';
+  private $senderName = '';
 
   /**
    * @ORM\Column(type="string")
@@ -81,13 +81,13 @@ class NewsletterEntity {
    * @ORM\Column(type="string")
    * @var string
    */
-  private $reply_to_address = '';
+  private $replyToAddress = '';
 
   /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $reply_to_name = '';
+  private $replyToName = '';
 
   /**
    * @ORM\Column(type="string")
@@ -105,19 +105,19 @@ class NewsletterEntity {
    * @ORM\Column(type="datetimetz")
    * @var DateTimeInterface|null
    */
-  private $sent_at;
+  private $sentAt;
 
   /**
    * @ORM\Column(type="string")
    * @var string|null
    */
-  private $unsubscribe_token;
+  private $unsubscribeToken;
 
   /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $ga_campaign = '';
+  private $gaCampaign = '';
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
@@ -129,7 +129,7 @@ class NewsletterEntity {
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\NewsletterSegmentEntity", mappedBy="newsletter")
    * @var NewsletterSegmentEntity[]|ArrayCollection
    */
-  private $newsletter_segments;
+  private $newsletterSegments;
 
   /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\NewsletterOptionEntity", mappedBy="newsletter")

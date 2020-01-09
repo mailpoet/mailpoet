@@ -16,10 +16,10 @@ require_once __DIR__ . '/Workers/SimpleWorkerMockImplementation.php';
 
 class CronWorkerRunnerTest extends \MailPoetTest {
   /** @var CronWorkerRunner */
-  private $cron_worker_runner;
+  private $cronWorkerRunner;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   public function _before() {
     $this->cronWorkerRunner = $this->diContainer->get(CronWorkerRunner::class);

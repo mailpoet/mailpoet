@@ -13,7 +13,7 @@ use MailPoetVendor\Idiorm\ORM;
 class StateTest extends \MailPoetTest {
 
   /** @var State */
-  private $tasks_state;
+  private $tasksState;
 
   public function _before() {
     parent::_before();

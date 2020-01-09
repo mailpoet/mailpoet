@@ -14,7 +14,7 @@ class ConnectionFactory {
   const DRIVER = 'pdo_mysql';
   const PLATFORM_CLASS = MySqlPlatform::class;
 
-  private $min_wait_timeout = 60;
+  private $minWaitTimeout = 60;
 
   private $types = [
     JsonType::NAME => JsonType::class,

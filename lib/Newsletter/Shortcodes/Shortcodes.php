@@ -8,7 +8,7 @@ class Shortcodes {
   public $newsletter;
   public $subscriber;
   public $queue;
-  public $wp_user_preview;
+  public $wpUserPreview;
   const SHORTCODE_CATEGORY_NAMESPACE = 'MailPoet\Newsletter\Shortcodes\Categories\\';
 
   public function __construct(

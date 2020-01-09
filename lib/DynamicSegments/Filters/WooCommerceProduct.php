@@ -12,7 +12,7 @@ class WooCommerceProduct implements Filter {
   const ACTION_PRODUCT = 'purchasedProduct';
 
   /** @var int */
-  private $product_id;
+  private $productId;
 
   /** @var string */
   private $connect;

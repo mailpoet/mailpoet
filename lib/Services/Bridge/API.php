@@ -20,17 +20,17 @@ class API {
   const RESPONSE_CODE_PAYLOAD_ERROR = 400;
   const RESPONSE_CODE_CAN_NOT_SEND = 403;
 
-  private $api_key;
+  private $apiKey;
   private $wp;
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
-  public $url_me = 'https://bridge.mailpoet.com/api/v0/me';
-  public $url_premium = 'https://bridge.mailpoet.com/api/v0/premium';
-  public $url_messages = 'https://bridge.mailpoet.com/api/v0/messages';
-  public $url_bounces = 'https://bridge.mailpoet.com/api/v0/bounces/search';
-  public $url_stats = 'https://bridge.mailpoet.com/api/v0/stats';
-  public $url_authorized_email_addresses = 'https://bridge.mailpoet.com/api/v0/authorized_email_addresses';
+  public $urlMe = 'https://bridge.mailpoet.com/api/v0/me';
+  public $urlPremium = 'https://bridge.mailpoet.com/api/v0/premium';
+  public $urlMessages = 'https://bridge.mailpoet.com/api/v0/messages';
+  public $urlBounces = 'https://bridge.mailpoet.com/api/v0/bounces/search';
+  public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
+  public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v0/authorized_email_addresses';
 
   public function __construct($apiKey, $wp = null) {
     $this->setKey($apiKey);

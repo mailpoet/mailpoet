@@ -11,16 +11,16 @@ use Tracy\IBarPanel;
 class DIPanel implements IBarPanel {
 
   /** @var string[] */
-  private $free_services = [];
+  private $freeServices = [];
 
   /** @var string[] */
-  private $premium_services = [];
+  private $premiumServices = [];
 
   /** @var \MailPoetVendor\Symfony\Component\DependencyInjection\Definition[] */
   private $definitions = [];
 
   /** @var string[][] */
-  private $arguments_flattened = [];
+  private $argumentsFlattened = [];
 
   public function getTab() {
     $this->loadServices();

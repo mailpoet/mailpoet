@@ -22,7 +22,7 @@ class SettingsController {
   private $defaults = null;
 
   /** @var SettingsRepository */
-  private $settings_repository;
+  private $settingsRepository;
 
   public function __construct(SettingsRepository $settingsRepository) {
     $this->settingsRepository = $settingsRepository;

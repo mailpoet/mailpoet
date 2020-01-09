@@ -6,7 +6,7 @@ use MailPoet\Config\AccessControl;
 
 class RouterTestMockEndpoint {
   const ACTION_TEST = 'test';
-  public $allowed_actions = [
+  public $allowedActions = [
     self::ACTION_TEST,
   ];
   public $data;

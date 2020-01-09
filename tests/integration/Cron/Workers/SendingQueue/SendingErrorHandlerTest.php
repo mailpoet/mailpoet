@@ -12,7 +12,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 class SendingErrorHandlerTest extends \MailPoetTest {
 
   /** @var SendingErrorHandler */
-  private $error_handler;
+  private $errorHandler;
 
   public function _before() {
     parent::_before();

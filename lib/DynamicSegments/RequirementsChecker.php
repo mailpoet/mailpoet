@@ -9,7 +9,7 @@ use MailPoet\WooCommerce\Helper;
 class RequirementsChecker {
 
   /** @var Helper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   public function __construct(Helper $woocommerceHelper = null) {
     if (!$woocommerceHelper) {

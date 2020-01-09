@@ -9,8 +9,8 @@ use MailPoet\Models\Subscriber;
 use MailPoetVendor\Idiorm\ORM;
 
 class ScheduledTaskSubscriberTest extends \MailPoetTest {
-  public $subscribers_counter;
-  public $task_subscriber;
+  public $subscribersCounter;
+  public $taskSubscriber;
   public $subscriber;
   public $task;
   public function _before() {

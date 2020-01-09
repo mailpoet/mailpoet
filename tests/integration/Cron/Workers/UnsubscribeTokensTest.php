@@ -12,10 +12,10 @@ use MailPoetVendor\Idiorm\ORM;
 
 class UnsubscribeTokensTest extends \MailPoetTest {
 
-  private $subscriber_with_token;
-  private $newsletter_with_token;
-  private $subscriber_without_token;
-  private $newsletter_without_token;
+  private $subscriberWithToken;
+  private $newsletterWithToken;
+  private $subscriberWithoutToken;
+  private $newsletterWithoutToken;
 
   public function _before() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);

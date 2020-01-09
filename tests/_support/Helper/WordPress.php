@@ -7,7 +7,7 @@ namespace Helper;
 
 class WordPress extends \Codeception\Module
 {
-  private static $functions_to_intercept = [];
+  private static $functionsToIntercept = [];
 
   public static function interceptFunction($functionName, $callback) {
     self::$functionsToIntercept[$functionName] = $callback;

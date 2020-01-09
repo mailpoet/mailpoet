@@ -15,10 +15,10 @@ class WooCommercePastOrders extends SimpleWorker {
   const BATCH_SIZE = 20;
 
   /** @var WCHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var WooCommercePurchases */
-  private $woocommerce_purchases;
+  private $woocommercePurchases;
 
   public function __construct(
     WCHelper $woocommerceHelper,

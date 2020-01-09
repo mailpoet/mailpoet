@@ -13,7 +13,7 @@ class NewsletterTemplates extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
-  protected static $get_methods = [
+  protected static $getMethods = [
     'getAll',
   ];
 

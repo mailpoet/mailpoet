@@ -28,7 +28,7 @@ class EditorProductsCest {
   const PRODUCTS_COUNT = 2;
 
   /** @var WooCommerceProduct */
-  private $product_factory;
+  private $productFactory;
 
   /** @var NewsletterModel */
   private $newsletter;

@@ -29,31 +29,31 @@ class Pages {
   private $subscriber;
 
   /** @var NewSubscriberNotificationMailer */
-  private $new_subscriber_notification_sender;
+  private $newSubscriberNotificationSender;
 
   /** @var SettingsController */
   private $settings;
 
   /** @var UrlHelper */
-  private $url_helper;
+  private $urlHelper;
 
   /** @var WPFunctions */
   private $wp;
 
   /** @var CaptchaRenderer */
-  private $captcha_renderer;
+  private $captchaRenderer;
 
   /** @var WelcomeScheduler */
-  private $welcome_scheduler;
+  private $welcomeScheduler;
 
   /** @var LinkTokens */
-  private $link_tokens;
+  private $linkTokens;
 
   /** @var SubscriptionUrlFactory */
-  private $subscription_url_factory;
+  private $subscriptionUrlFactory;
 
   /** @var AssetsController */
-  private $assets_controller;
+  private $assetsController;
 
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,

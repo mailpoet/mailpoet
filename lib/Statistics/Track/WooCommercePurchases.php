@@ -13,7 +13,7 @@ class WooCommercePurchases {
   const USE_CLICKS_SINCE_DAYS_AGO = 14;
 
   /** @var Helper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var Cookies */
   private $cookies;

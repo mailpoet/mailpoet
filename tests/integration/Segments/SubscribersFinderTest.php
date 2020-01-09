@@ -17,12 +17,12 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class SubscribersFinderTest extends \MailPoetTest {
   public $sending;
-  public $subscriber_3;
-  public $subscriber_2;
-  public $subscriber_1;
-  public $segment_3;
-  public $segment_2;
-  public $segment_1;
+  public $subscriber3;
+  public $subscriber2;
+  public $subscriber1;
+  public $segment3;
+  public $segment2;
+  public $segment1;
 
   public function _before() {
     parent::_before();

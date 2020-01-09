@@ -17,15 +17,15 @@ use MailPoet\Util\Security;
 use function MailPoetVendor\array_column;
 
 class Import {
-  public $subscribers_data;
-  public $segments_ids;
-  public $update_subscribers;
-  public $subscribers_fields;
-  public $subscribers_custom_fields;
-  public $subscribers_count;
-  public $created_at;
-  public $updated_at;
-  public $required_subscribers_fields;
+  public $subscribersData;
+  public $segmentsIds;
+  public $updateSubscribers;
+  public $subscribersFields;
+  public $subscribersCustomFields;
+  public $subscribersCount;
+  public $createdAt;
+  public $updatedAt;
+  public $requiredSubscribersFields;
   const DB_QUERY_CHUNK_SIZE = 100;
 
   public function __construct($data) {

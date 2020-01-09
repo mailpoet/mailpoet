@@ -17,7 +17,7 @@ class AuthorizedEmailsController {
   /** @var SettingsController */
   private $settings;
 
-  private $automatic_email_types = [
+  private $automaticEmailTypes = [
     Newsletter::TYPE_WELCOME,
     Newsletter::TYPE_NOTIFICATION,
     Newsletter::TYPE_AUTOMATIC,

@@ -14,7 +14,7 @@ require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 class Migrator {
 
   public $prefix;
-  private $charset_collate;
+  private $charsetCollate;
   private $models;
 
   public function __construct() {

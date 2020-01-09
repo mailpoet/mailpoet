@@ -7,7 +7,7 @@ use MailPoetVendor\Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class ValidationException extends \RuntimeException {
   /** @var string */
-  private $resource_name;
+  private $resourceName;
 
   /** @var ConstraintViolationListInterface|ConstraintViolationInterface[] */
   private $violations;

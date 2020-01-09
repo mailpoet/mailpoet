@@ -7,10 +7,10 @@ use MailPoet\Entities\FeatureFlagEntity;
 class FeatureFlagsController {
 
   /** @var FeaturesController */
-  private $features_controller;
+  private $featuresController;
 
   /** @var FeatureFlagsRepository */
-  private $feature_flags_repository;
+  private $featureFlagsRepository;
 
   public function __construct(FeaturesController $featuresController, FeatureFlagsRepository $featureFlagsRepository) {
     $this->featuresController = $featuresController;

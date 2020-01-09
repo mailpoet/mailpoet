@@ -23,29 +23,29 @@ use MailPoet\WP\Functions as WPFunctions;
 use function MailPoetVendor\array_column;
 
 class SendingQueue {
-  public $mailer_task;
-  public $newsletter_task;
-  public $batch_size;
+  public $mailerTask;
+  public $newsletterTask;
+  public $batchSize;
   const BATCH_SIZE = 20;
   const TASK_BATCH_SIZE = 5;
 
   /** @var StatsNotificationsScheduler */
-  public $stats_notifications_scheduler;
+  public $statsNotificationsScheduler;
 
   /** @var SendingErrorHandler */
-  private $error_handler;
+  private $errorHandler;
 
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   /** @var NewslettersRepository */
-  private $newsletters_repository;
+  private $newslettersRepository;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   public function __construct(
     SendingErrorHandler $errorHandler,

@@ -20,16 +20,16 @@ use MailPoet\WP\Functions as WPFunctions;
 class Hooks {
 
   /** @var Form */
-  private $subscription_form;
+  private $subscriptionForm;
 
   /** @var Comment */
-  private $subscription_comment;
+  private $subscriptionComment;
 
   /** @var Manage */
-  private $subscription_manage;
+  private $subscriptionManage;
 
   /** @var Registration */
-  private $subscription_registration;
+  private $subscriptionRegistration;
 
   /** @var SettingsController */
   private $settings;
@@ -38,25 +38,25 @@ class Hooks {
   private $wp;
 
   /** @var WooCommerceSubscription */
-  private $woocommerce_subscription;
+  private $woocommerceSubscription;
 
   /** @var WooCommerceSegment */
-  private $woocommerce_segment;
+  private $woocommerceSegment;
 
   /** @var WooCommerceSettings */
-  private $woocommerce_settings;
+  private $woocommerceSettings;
 
   /** @var WooCommercePurchases */
-  private $woocommerce_purchases;
+  private $woocommercePurchases;
 
   /** @var PostNotificationScheduler */
-  private $post_notification_scheduler;
+  private $postNotificationScheduler;
 
   /** @var WordpressMailerReplacer */
-  private $wordpress_mailer_replacer;
+  private $wordpressMailerReplacer;
 
   /** @var DynamicSegmentHooks */
-  private $dynamic_segment_hooks;
+  private $dynamicSegmentHooks;
 
   public function __construct(
     Form $subscriptionForm,

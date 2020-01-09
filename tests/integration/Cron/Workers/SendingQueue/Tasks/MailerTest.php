@@ -18,7 +18,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class MailerTest extends \MailPoetTest {
   /** @var MailerTask */
-  public $mailer_task;
+  public $mailerTask;
   public $sender;
   /** @var SettingsController */
   private $settings;

@@ -25,7 +25,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 class WorkerTest extends \MailPoetTest {
 
   /** @var Worker */
-  private $stats_notifications;
+  private $statsNotifications;
 
   /** @var MockObject */
   private $mailer;
@@ -37,7 +37,7 @@ class WorkerTest extends \MailPoetTest {
   private $settings;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   /** @var Newsletter */
   private $newsletter;
@@ -49,7 +49,7 @@ class WorkerTest extends \MailPoetTest {
   private $repository;
 
   /** @var NewsletterLinkRepository */
-  private $newsletter_link_repository;
+  private $newsletterLinkRepository;
 
   public function _before() {
     parent::_before();

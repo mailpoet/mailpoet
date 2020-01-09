@@ -8,16 +8,16 @@ use MailPoetVendor\Idiorm\ORM;
 class GATrackingTest extends \MailPoetTest {
 
   /** @var string */
-  private $internal_host;
+  private $internalHost;
 
   /** @var string */
-  private $ga_campaign;
+  private $gaCampaign;
 
   /** @var string */
   private $link;
 
   /** @var string[] */
-  private $rendered_newsletter;
+  private $renderedNewsletter;
 
   public function _before() {
     $this->internalHost = 'newsletters.mailpoet.com';

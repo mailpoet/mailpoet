@@ -15,10 +15,10 @@ class CronWorkerRunner {
   private $timer;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   /** @var CronWorkerScheduler */
-  private $cron_worker_scheduler;
+  private $cronWorkerScheduler;
 
   /** @var WPFunctions */
   private $wp;

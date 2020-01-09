@@ -10,7 +10,7 @@ use MailPoetVendor\Idiorm\ORM;
 class PostsTest extends \MailPoetTest {
 
   /** @var PostsTask */
-  private $posts_task;
+  private $postsTask;
 
   public function _before() {
     parent::_before();

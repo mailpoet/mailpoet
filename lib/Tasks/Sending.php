@@ -31,9 +31,9 @@ class Sending {
   private $queue;
 
   /** @var Subscribers */
-  private $task_subscribers;
+  private $taskSubscribers;
 
-  private $queue_fields = [
+  private $queueFields = [
     'id',
     'task_id',
     'newsletter_id',
@@ -45,7 +45,7 @@ class Sending {
     'meta',
   ];
 
-  private $common_fields = [
+  private $commonFields = [
     'created_at',
     'updated_at',
     'deleted_at',

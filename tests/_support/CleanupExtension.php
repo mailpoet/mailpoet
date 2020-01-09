@@ -22,7 +22,7 @@ class CleanupExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDec
   ];
 
   /** @var PDO */
-  private $root_connection;
+  private $rootConnection;
 
   public function __construct($config, $options) {
     parent::__construct($config, $options);

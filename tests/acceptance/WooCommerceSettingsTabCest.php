@@ -10,7 +10,7 @@ class WooCommerceSettingsTabCest {
   const DISABLE_SELECTOR = '[data-automation-id="mailpoet_woocommerce_disable"]';
 
   /** @var Settings */
-  private $settings_factory;
+  private $settingsFactory;
 
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();

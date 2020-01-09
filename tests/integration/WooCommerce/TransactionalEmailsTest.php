@@ -23,13 +23,13 @@ class TransactionalEmailsTest extends \MailPoetTest {
   private $settings;
 
   /** @var array */
-  private $original_wc_settings;
+  private $originalWcSettings;
 
   /** @var TransactionalEmails */
-  private $transactional_emails;
+  private $transactionalEmails;
 
   /** @var NewslettersRepository */
-  private $newsletters_repository;
+  private $newslettersRepository;
 
   public function _before() {
     $this->wp = new WPFunctions();

@@ -8,10 +8,10 @@ use MailPoet\WP\Functions as WPFunctions;
 class PostContentManager {
   const WP_POST_CLASS = 'mailpoet_wp_post';
 
-  public $max_excerpt_length = 60;
+  public $maxExcerptLength = 60;
 
   /** @var WooCommerceHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   public function __construct(WooCommerceHelper $woocommerceHelper = null) {
     $wp = new WPFunctions;

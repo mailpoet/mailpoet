@@ -16,18 +16,18 @@ use MailPoet\WP\Functions as WPFunctions;
 class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
   const ACTION_VIEW = 'view';
-  public $allowed_actions = [self::ACTION_VIEW];
+  public $allowedActions = [self::ACTION_VIEW];
   public $permissions = [
     'global' => AccessControl::NO_ACCESS_RESTRICTION,
   ];
   /** @var AccessControl */
-  private $access_control;
+  private $accessControl;
 
   /** @var SettingsController */
   private $settings;
 
   /** @var LinkTokens */
-  private $link_tokens;
+  private $linkTokens;
 
   /** @var Emoji */
   private $emoji;

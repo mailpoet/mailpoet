@@ -9,29 +9,29 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Swift_Message;
 
 class AmazonSES {
-  public $aws_access_key;
-  public $aws_secret_key;
-  public $aws_region;
-  public $aws_endpoint;
-  public $aws_signing_algorithm;
-  public $aws_service;
-  public $aws_termination_string;
-  public $hash_algorithm;
+  public $awsAccessKey;
+  public $awsSecretKey;
+  public $awsRegion;
+  public $awsEndpoint;
+  public $awsSigningAlgorithm;
+  public $awsService;
+  public $awsTerminationString;
+  public $hashAlgorithm;
   public $url;
   public $sender;
-  public $reply_to;
-  public $return_path;
+  public $replyTo;
+  public $returnPath;
   public $message;
   public $date;
-  public $date_without_time;
-  private $available_regions = [
+  public $dateWithoutTime;
+  private $availableRegions = [
     'US East (N. Virginia)' => 'us-east-1',
     'US West (Oregon)' => 'us-west-2',
     'EU (Ireland)' => 'eu-west-1',
   ];
 
   /** @var AmazonSESMapper */
-  private $error_mapper;
+  private $errorMapper;
 
   /** @var BlacklistCheck */
   private $blacklist;

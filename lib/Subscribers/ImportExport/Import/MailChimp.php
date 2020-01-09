@@ -6,11 +6,11 @@ use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MailChimp {
-  public $api_key;
-  public $max_post_size;
-  public $data_center;
-  private $export_url;
-  private $lists_url;
+  public $apiKey;
+  public $maxPostSize;
+  public $dataCenter;
+  private $exportUrl;
+  private $listsUrl;
   const API_KEY_REGEX = '/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,4}$/';
 
   public function __construct($apiKey) {

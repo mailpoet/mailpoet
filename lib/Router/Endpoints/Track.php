@@ -18,7 +18,7 @@ class Track {
   const ENDPOINT = 'track';
   const ACTION_CLICK = 'click';
   const ACTION_OPEN = 'open';
-  public $allowed_actions = [
+  public $allowedActions = [
     self::ACTION_CLICK,
     self::ACTION_OPEN,
   ];
@@ -33,7 +33,7 @@ class Track {
   private $opens;
 
   /** @var LinkTokens */
-  private $link_tokens;
+  private $linkTokens;
 
   public function __construct(Clicks $clicks, Opens $opens, LinkTokens $linkTokens) {
     $this->clicks = $clicks;

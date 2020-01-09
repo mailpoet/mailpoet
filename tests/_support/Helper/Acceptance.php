@@ -11,7 +11,7 @@ use Codeception\TestInterface;
 
 class Acceptance extends \Codeception\Module
 {
-  protected $js_errors = [];
+  protected $jsErrors = [];
 
   /**
    * Note: Selenium JS error log buffer is cleared after logs retrieval:

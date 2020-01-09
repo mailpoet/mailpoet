@@ -7,7 +7,7 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PostContentManagerTest extends \MailPoetTest {
-  public $post_content;
+  public $postContent;
 
   public function _before() {
     parent::_before();

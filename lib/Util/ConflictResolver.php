@@ -5,7 +5,7 @@ namespace MailPoet\Util;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ConflictResolver {
-  public $permitted_assets_locations = [
+  public $permittedAssetsLocations = [
     'styles' => [
       'mailpoet',
       // WP default

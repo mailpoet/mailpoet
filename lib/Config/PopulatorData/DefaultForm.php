@@ -9,7 +9,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class DefaultForm {
   /** @var Styles */
-  private $form_styles;
+  private $formStyles;
 
   public function __construct(Styles $formStyles) {
     $this->formStyles = $formStyles;

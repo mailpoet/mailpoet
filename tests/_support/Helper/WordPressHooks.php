@@ -7,10 +7,10 @@ namespace Helper;
 
 class WordPressHooks extends \Codeception\Module
 {
-  private static $filters_applied = [];
-  private static $filters_added = [];
-  private static $actions_done = [];
-  private static $actions_added = [];
+  private static $filtersApplied = [];
+  private static $filtersAdded = [];
+  private static $actionsDone = [];
+  private static $actionsAdded = [];
 
   public static function interceptApplyFilters() {
     WordPress::interceptFunction('apply_filters', [__CLASS__, 'applyFilters']);

@@ -9,7 +9,7 @@ use MailPoet\Test\DataFactories\Segment;
 
 class DynamicSegment extends Segment {
 
-  private $filter_data = [];
+  private $filterData = [];
 
   public function withUserRoleFilter($role) {
     $this->filterData['segmentType'] = 'userRole';

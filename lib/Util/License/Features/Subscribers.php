@@ -19,7 +19,7 @@ class Subscribers {
   private $settings;
 
   /** @var SubscribersRepository */
-  private $subscribers_repository;
+  private $subscribersRepository;
 
   public function __construct(SettingsController $settings, SubscribersRepository $subscribersRepository) {
     $this->settings = $settings;

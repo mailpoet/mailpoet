@@ -23,17 +23,17 @@ use MailPoetVendor\Idiorm\ORM;
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 class ShortcodesTest extends \MailPoetTest {
-  public $newsletter_id;
-  public $shortcodes_object;
-  public $WP_post;
-  public $WP_user;
-  public $rendered_newsletter;
+  public $newsletterId;
+  public $shortcodesObject;
+  public $wPPost;
+  public $wPUser;
+  public $renderedNewsletter;
   public $newsletter;
   public $subscriber;
   /** @var SettingsController */
   private $settings;
   /** @var SubscriptionUrlFactory */
-  private $subscription_url_factory;
+  private $subscriptionUrlFactory;
 
   public function _before() {
     parent::_before();

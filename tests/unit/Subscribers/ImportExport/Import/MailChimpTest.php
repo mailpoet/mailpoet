@@ -8,7 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class MailChimpTest extends \MailPoetUnitTest {
   /** @var string */
-  private $api_key;
+  private $apiKey;
 
   /** @var MailChimp */
   private $mailchimp;

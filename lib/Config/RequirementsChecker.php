@@ -13,8 +13,8 @@ class RequirementsChecker {
   const TEST_XML_EXTENSION = 'XmlExtension';
   const TEST_VENDOR_SOURCE = 'VendorSource';
 
-  public $display_error_notice;
-  public $vendor_classes = [
+  public $displayErrorNotice;
+  public $vendorClasses = [
     '\pQuery',
     '\Cron\CronExpression',
     '\Html2Text\Html2Text',

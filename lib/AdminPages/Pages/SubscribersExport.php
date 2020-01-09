@@ -7,7 +7,7 @@ use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 
 class SubscribersExport {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   public function __construct(PageRenderer $pageRenderer) {
     $this->pageRenderer = $pageRenderer;

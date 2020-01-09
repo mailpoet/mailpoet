@@ -26,16 +26,16 @@ class Services extends APIEndpoint {
   private $analytics;
 
   /** @var SPFCheck */
-  private $spf_check;
+  private $spfCheck;
 
   /** @var DateTime */
-  public $date_time;
+  public $dateTime;
 
   /** @var SendingServiceKeyCheck */
-  private $mss_worker;
+  private $mssWorker;
 
   /** @var PremiumKeyCheck */
-  private $premium_worker;
+  private $premiumWorker;
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,

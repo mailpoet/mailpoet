@@ -37,7 +37,7 @@ class Worker {
   private $settings;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   /** @var MetaInfo */
   private $mailerMetaInfo;
@@ -46,19 +46,19 @@ class Worker {
   private $repository;
 
   /** @var EntityManager */
-  private $entity_manager;
+  private $entityManager;
 
   /** @var NewsletterLinkRepository */
-  private $newsletter_link_repository;
+  private $newsletterLinkRepository;
 
   /** @var NewsletterStatisticsRepository */
-  private $newsletter_statistics_repository;
+  private $newsletterStatisticsRepository;
 
   /** @var SubscribersFeature */
-  private $subscribers_feature;
+  private $subscribersFeature;
 
   /** @var SubscribersRepository */
-  private $subscribers_repository;
+  private $subscribersRepository;
 
   public function __construct(
     Mailer $mailer,

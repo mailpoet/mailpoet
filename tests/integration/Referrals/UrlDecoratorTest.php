@@ -12,7 +12,7 @@ class UrlDecoratorTest extends \MailPoetTest {
   private $settings;
 
   /** @var UrlDecorator */
-  private $url_decorator;
+  private $urlDecorator;
 
   public function _before() {
     parent::_before();

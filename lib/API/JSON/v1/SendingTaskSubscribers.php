@@ -20,13 +20,13 @@ class SendingTaskSubscribers extends APIEndpoint {
   ];
 
   /** @var Listing\Handler */
-  private $listing_handler;
+  private $listingHandler;
 
   /** @var SettingsController */
   private $settings;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   /** @var WPFunctions */
   private $wp;

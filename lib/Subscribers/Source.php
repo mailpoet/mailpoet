@@ -15,7 +15,7 @@ class Source {
   const WOOCOMMERCE_CHECKOUT = 'woocommerce_checkout';
   const UNKNOWN = 'unknown';
 
-  private static $allowed_sources = [
+  private static $allowedSources = [
     Source::FORM,
     Source::IMPORTED,
     Source::ADMINISTRATOR,
