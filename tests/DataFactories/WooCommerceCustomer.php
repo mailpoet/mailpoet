@@ -14,10 +14,10 @@ class WooCommerceCustomer {
     $unique_id = bin2hex(random_bytes(7)); // phpcs:ignore
     $this->tester = $tester;
     $this->data = [
-      'first_name' => "FirstName_$unique_id",
-      'last_name' => "LastName_$unique_id",
-      'email' => "woo_customer_$unique_id@example.com",
-      'password' => "woo_customer_$unique_id",
+      'first_name' => "FirstName_$uniqueId",
+      'last_name' => "LastName_$uniqueId",
+      'email' => "woo_customer_$uniqueId@example.com",
+      'password' => "woo_customer_$uniqueId",
     ];
   }
 

@@ -46,7 +46,7 @@ class Handlebars extends AbstractExtension {
 
     $output = <<<EOL
 <script id="$id" type="text/x-handlebars-template">
-  $rendered_template
+  $renderedTemplate
 </script>
 EOL;
 

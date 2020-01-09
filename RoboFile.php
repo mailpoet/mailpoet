@@ -298,7 +298,7 @@ class RoboFile extends \Robo\Tasks {
     $configurator = new \MailPoet\DI\ContainerConfigurator();
     $dumpFile = __DIR__ . '/generated/' . $configurator->getDumpClassname() . '.php';
     $this->say('Deleting DI Container');
-    $this->_exec("rm -f $dump_file");
+    $this->_exec("rm -f $dumpFile");
     $this->say('Generating DI container cache');
     $containerFactory = new \MailPoet\DI\ContainerFactory($configurator);
     $container = $containerFactory->getConfiguredContainer();
@@ -316,8 +316,8 @@ class RoboFile extends \Robo\Tasks {
   public function doctrineGenerateMetadata() {
     $doctrineMetadataDir = \MailPoet\Doctrine\ConfigurationFactory::METADATA_DIR;
     $validatorMetadataDir = \MailPoet\Doctrine\Validator\ValidatorFactory::METADATA_DIR;
-    $this->_exec("rm -rf $doctrine_metadata_dir");
-    $this->_exec("rm -rf $validator_metadata_dir");
+    $this->_exec("rm -rf $doctrineMetadataDir");
+    $this->_exec("rm -rf $validatorMetadataDir");
 
     $entityManager = $this->createDoctrineEntityManager();
     $doctrineMetadata = $entityManager->getMetadataFactory()->getAllMetadata();
@@ -330,13 +330,13 @@ class RoboFile extends \Robo\Tasks {
       $validator->getMetadataFor($metadata->getName());
     }
 
-    $this->say("Doctrine metadata generated to: $doctrine_metadata_dir");
-    $this->say("Validator metadata generated to: $validator_metadata_dir");
+    $this->say("Doctrine metadata generated to: $doctrineMetadataDir");
+    $this->say("Validator metadata generated to: $validatorMetadataDir");
   }
 
   public function doctrineGenerateProxies() {
     $proxyDir = \MailPoet\Doctrine\ConfigurationFactory::PROXY_DIR;
-    $this->_exec("rm -rf $proxy_dir");
+    $this->_exec("rm -rf $proxyDir");
 
     // set ArrayCache for metadata to avoid reading & writing them on filesystem as a side effect
     $entityManager = $this->createDoctrineEntityManager();
@@ -344,7 +344,7 @@ class RoboFile extends \Robo\Tasks {
     $entityManager->getProxyFactory()->generateProxyClasses(
       $entityManager->getMetadataFactory()->getAllMetadata()
     );
-    $this->say("Doctrine proxies generated to: $proxy_dir");
+    $this->say("Doctrine proxies generated to: $proxyDir");
   }
 
   public function qa() {
@@ -556,7 +556,7 @@ class RoboFile extends \Robo\Tasks {
       $this->say("Failed to access " . $pluginDistFile);
       return;
     } elseif (!file_exists($svnDir . "/.svn/")) {
-      $this->say("$svn_dir/.svn/ dir not found, is it a SVN repository?");
+      $this->say("$svnDir/.svn/ dir not found, is it a SVN repository?");
       return;
     } elseif (file_exists($svnDir . "/tags/" . $pluginVersion)) {
       $this->say("A SVN tag already exists: " . $pluginVersion);
@@ -566,44 +566,44 @@ class RoboFile extends \Robo\Tasks {
     $collection = $this->collectionBuilder();
 
     // Clean up tmp dirs if the previous run was halted
-    if (file_exists("$svn_dir/trunk_new") || file_exists("$svn_dir/trunk_old")) {
+    if (file_exists("$svnDir/trunk_new") || file_exists("$svnDir/trunk_old")) {
       $collection->taskFileSystemStack()
         ->stopOnFail()
-        ->remove(["$svn_dir/trunk_new", "$svn_dir/trunk_old"]);
+        ->remove(["$svnDir/trunk_new", "$svnDir/trunk_old"]);
     }
 
     // Extract the distributable zip to tmp trunk dir
     $collection->taskExtract($pluginDistFile)
-      ->to("$svn_dir/trunk_new")
+      ->to("$svnDir/trunk_new")
       ->preserveTopDirectory(false);
 
     // Rename current trunk
-    if (file_exists("$svn_dir/trunk")) {
+    if (file_exists("$svnDir/trunk")) {
       $collection->taskFileSystemStack()
-        ->rename("$svn_dir/trunk", "$svn_dir/trunk_old");
+        ->rename("$svnDir/trunk", "$svnDir/trunk_old");
     }
 
     // Replace old trunk with a new one
     $collection->taskFileSystemStack()
       ->stopOnFail()
-      ->rename("$svn_dir/trunk_new", "$svn_dir/trunk")
-      ->remove("$svn_dir/trunk_old");
+      ->rename("$svnDir/trunk_new", "$svnDir/trunk")
+      ->remove("$svnDir/trunk_old");
 
     // Add new repository assets
     $collection->taskFileSystemStack()
-      ->mirror('./plugin_repository/assets', "$svn_dir/assets_new");
+      ->mirror('./plugin_repository/assets', "$svnDir/assets_new");
 
     // Rename current assets folder
-    if (file_exists("$svn_dir/assets")) {
+    if (file_exists("$svnDir/assets")) {
       $collection->taskFileSystemStack()
-        ->rename("$svn_dir/assets", "$svn_dir/assets_old");
+        ->rename("$svnDir/assets", "$svnDir/assets_old");
     }
 
     // Replace old assets with new ones
     $collection->taskFileSystemStack()
       ->stopOnFail()
-      ->rename("$svn_dir/assets_new", "$svn_dir/assets")
-      ->remove("$svn_dir/assets_old");
+      ->rename("$svnDir/assets_new", "$svnDir/assets")
+      ->remove("$svnDir/assets_old");
 
     // Windows compatibility
     $awkCmd = '{print " --force \""$2"\""}';
@@ -622,14 +622,14 @@ class RoboFile extends \Robo\Tasks {
     $result = $collection->run();
 
     if ($result->wasSuccessful()) {
-      $repoUrl = "https://plugins.svn.wordpress.org/$plugin_dist_name";
-      $releaseCmd = "svn ci -m \"Release $plugin_version\"";
-      $tagCmd = "svn copy $repo_url/trunk $repo_url/tags/$plugin_version -m \"Tag $plugin_version\"";
+      $repoUrl = "https://plugins.svn.wordpress.org/$pluginDistName";
+      $releaseCmd = "svn ci -m \"Release $pluginVersion\"";
+      $tagCmd = "svn copy $repoUrl/trunk $repoUrl/tags/$pluginVersion -m \"Tag $pluginVersion\"";
       $svnLogin = getenv('WP_SVN_USERNAME');
       $svnPassword = getenv('WP_SVN_PASSWORD');
       if ($svnLogin && $svnPassword) {
-        $releaseCmd .= " --username $svn_login --password $svn_password";
-        $tagCmd .= " --username $svn_login --password $svn_password";
+        $releaseCmd .= " --username $svnLogin --password $svnPassword";
+        $tagCmd .= " --username $svnLogin --password $svnPassword";
       } else {
         $releaseCmd .= ' --force-interactive';
         $tagCmd .= ' --force-interactive';
@@ -860,7 +860,7 @@ class RoboFile extends \Robo\Tasks {
     $version = $this->releaseVersionGetNext($version);
     $jiraController = $this->createJiraController();
     $jiraVersion = $jiraController->releaseVersion($version);
-    $this->say("JIRA version '$jira_version[name]' was released.");
+    $this->say("JIRA version '$jiraVersion[name]' was released.");
   }
 
   public function releasePublishSlack($version = null) {

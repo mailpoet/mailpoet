@@ -367,7 +367,7 @@ class MP2Migrator {
     $sql = "
       SELECT l.list_id, l.name, l.description, l.is_enabled, l.created_at
       FROM `$table` l
-      WHERE l.list_id > '$last_id'
+      WHERE l.list_id > '$lastId'
       ORDER BY l.list_id
       LIMIT $limit
       ";
@@ -604,7 +604,7 @@ class MP2Migrator {
     $sql = "
       SELECT u.*
       FROM `$table` u
-      WHERE u.user_id > '$last_id'
+      WHERE u.user_id > '$lastId'
       ORDER BY u.user_id
       LIMIT $limit
       ";
@@ -701,7 +701,7 @@ class MP2Migrator {
     $sql = "
       SELECT ul.list_id, ul.sub_date, ul.unsub_date
       FROM `$table` ul
-      WHERE ul.user_id = '$user_id'
+      WHERE ul.user_id = '$userId'
       ";
     $userLists = $wpdb->get_results($sql, ARRAY_A);
 
@@ -852,7 +852,7 @@ class MP2Migrator {
     $sql = "
       SELECT f.*
       FROM `$table` f
-      WHERE f.form_id > '$last_id'
+      WHERE f.form_id > '$lastId'
       ORDER BY f.form_id
       LIMIT $limit
       ";
@@ -1116,7 +1116,7 @@ class MP2Migrator {
     $sql = "
       SELECT e.*
       FROM `$table` e
-      WHERE e.email_id = '$email_id'
+      WHERE e.email_id = '$emailId'
       ";
     $email = $wpdb->get_row($sql, ARRAY_A);
 

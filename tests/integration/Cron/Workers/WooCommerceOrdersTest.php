@@ -173,7 +173,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $click->linkId = 1;
     $click->count = 1;
 
-    $timestamp = new DateTime("-$created_days_ago days");
+    $timestamp = new DateTime("-$createdDaysAgo days");
     $click->createdAt = $timestamp->format('Y-m-d H:i:s');
     $click->updatedAt = $timestamp->format('Y-m-d H:i:s');
     return $click->save();

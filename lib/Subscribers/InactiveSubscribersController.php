@@ -92,13 +92,13 @@ class InactiveSubscribersController {
       $inactivesTaskIdsTable = sprintf("
       CREATE TEMPORARY TABLE IF NOT EXISTS inactives_task_ids
       (INDEX task_id_ids (id))
-      SELECT DISTINCT task_id as id FROM $sending_queues_table as sq
-        JOIN $scheduled_tasks_table as st ON sq.task_id = st.id
+      SELECT DISTINCT task_id as id FROM $sendingQueuesTable as sq
+        JOIN $scheduledTasksTable as st ON sq.task_id = st.id
         WHERE st.processed_at > '%s'
         AND st.processed_at < '%s'
         AND EXISTS (
           SELECT 1
-          FROM $statistics_opens_table as so
+          FROM $statisticsOpensTable as so
           WHERE so.created_at > '%s'
           AND so.newsletter_id = sq.newsletter_id
         )",
@@ -113,23 +113,23 @@ class InactiveSubscribersController {
     $endId = $startId + $batchSize;
     $inactiveSubscriberIdsTmpTable = 'inactive_subscriber_ids';
     ORM::rawExecute("
-      CREATE TEMPORARY TABLE IF NOT EXISTS $inactive_subscriber_ids_tmp_table
+      CREATE TEMPORARY TABLE IF NOT EXISTS $inactiveSubscriberIdsTmpTable
       (UNIQUE subscriber_id (id))
-      SELECT DISTINCT s.id FROM $subscribers_table as s
-        JOIN $scheduled_task_subcribres_table as sts USE INDEX (subscriber_id) ON s.id = sts.subscriber_id
+      SELECT DISTINCT s.id FROM $subscribersTable as s
+        JOIN $scheduledTaskSubcribresTable as sts USE INDEX (subscriber_id) ON s.id = sts.subscriber_id
         JOIN inactives_task_ids task_ids ON task_ids.id = sts.task_id
       WHERE s.last_subscribed_at < ? AND s.status = ? AND s.id >= ? AND s.id < ?",
       [$thresholdDateIso, Subscriber::STATUS_SUBSCRIBED, $startId, $endId]
     );
 
     $idsToDeactivate = ORM::forTable($inactiveSubscriberIdsTmpTable)->rawQuery("
-      SELECT s.id FROM $inactive_subscriber_ids_tmp_table s
-        LEFT OUTER JOIN $statistics_opens_table as so ON s.id = so.subscriber_id AND so.created_at > ?
+      SELECT s.id FROM $inactiveSubscriberIdsTmpTable s
+        LEFT OUTER JOIN $statisticsOpensTable as so ON s.id = so.subscriber_id AND so.created_at > ?
         WHERE so.id IS NULL",
       [$thresholdDateIso]
     )->findArray();
 
-    ORM::rawExecute("DROP TABLE $inactive_subscriber_ids_tmp_table");
+    ORM::rawExecute("DROP TABLE $inactiveSubscriberIdsTmpTable");
 
     $idsToDeactivate = array_map(
       function ($id) {
@@ -160,19 +160,19 @@ class InactiveSubscribersController {
     $mp2MigrationDate = $this->getMP2MigrationDate();
     if ($mp2MigrationDate && $mp2MigrationDate > $thresholdDate) {
       // If MP2 migration occurred during detection interval re-activate all subscribers created before migration
-      $idsToActivate = ORM::forTable($subscribersTable)->select("$subscribers_table.id")
-        ->whereLt("$subscribers_table.created_at", $mp2MigrationDate)
-        ->where("$subscribers_table.status", Subscriber::STATUS_INACTIVE)
+      $idsToActivate = ORM::forTable($subscribersTable)->select("$subscribersTable.id")
+        ->whereLt("$subscribersTable.created_at", $mp2MigrationDate)
+        ->where("$subscribersTable.status", Subscriber::STATUS_INACTIVE)
         ->limit($batchSize)
         ->findArray();
     } else {
-      $idsToActivate = ORM::forTable($subscribersTable)->select("$subscribers_table.id")
-        ->leftOuterJoin($statsOpensTable, "$subscribers_table.id = $stats_opens_table.subscriber_id AND $stats_opens_table.created_at > '$threshold_date'")
-        ->whereLt("$subscribers_table.last_subscribed_at", $thresholdDate)
-        ->where("$subscribers_table.status", Subscriber::STATUS_INACTIVE)
-        ->whereRaw("$stats_opens_table.id IS NOT NULL")
+      $idsToActivate = ORM::forTable($subscribersTable)->select("$subscribersTable.id")
+        ->leftOuterJoin($statsOpensTable, "$subscribersTable.id = $statsOpensTable.subscriber_id AND $statsOpensTable.created_at > '$thresholdDate'")
+        ->whereLt("$subscribersTable.last_subscribed_at", $thresholdDate)
+        ->where("$subscribersTable.status", Subscriber::STATUS_INACTIVE)
+        ->whereRaw("$statsOpensTable.id IS NOT NULL")
         ->limit($batchSize)
-        ->groupByExpr("$subscribers_table.id")
+        ->groupByExpr("$subscribersTable.id")
         ->findArray();
     }
 

@@ -71,7 +71,7 @@ class ChangelogController {
   private function updateReadme($heading, $changesList) {
     $headingPrefix = explode(self::HEADING_GLUE, $heading)[0];
     $readme = file_get_contents($this->readmeFile);
-    $changelog = "$heading\n$changes_list";
+    $changelog = "$heading\n$changesList";
 
     if (strpos($readme, $headingPrefix) !== false) {
       $start = preg_quote($headingPrefix);

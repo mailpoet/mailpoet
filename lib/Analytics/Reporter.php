@@ -36,7 +36,7 @@ class Reporter {
     $segments = Segment::getAnalytics();
     $hasWc = $this->woocommerceHelper->isWooCommerceActive();
     $inactiveSubscribersMonths = (int)round((int)$this->settings->get('deactivate_subscriber_after_inactive_days') / 30);
-    $inactiveSubscribersStatus = $inactiveSubscribersMonths === 0 ? 'never' : "$inactive_subscribers_months months";
+    $inactiveSubscribersStatus = $inactiveSubscribersMonths === 0 ? 'never' : "$inactiveSubscribersMonths months";
 
     $result = [
       'PHP version' => PHP_VERSION,

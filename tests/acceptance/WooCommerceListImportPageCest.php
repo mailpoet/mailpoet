@@ -74,10 +74,10 @@ class WooCommerceListImportPageCest {
     $submitButton = '[data-automation-id="submit_woo_commerce_list_import"]';
     $i->cantSeeCheckboxIsChecked($unsubscribedRadio);
     $i->cantSeeCheckboxIsChecked($subscribedRadio);
-    $i->seeElement("$submit_button:disabled");
+    $i->seeElement("$submitButton:disabled");
     $i->selectOption($unsubscribedRadio, 'unsubscribed');
     $i->canSeeCheckboxIsChecked($unsubscribedRadio);
-    $i->seeElement("$submit_button:not(:disabled)");
+    $i->seeElement("$submitButton:not(:disabled)");
     $i->seeNoJSErrors();
     $i->click($submitButton);
     $i->seeNoJSErrors();

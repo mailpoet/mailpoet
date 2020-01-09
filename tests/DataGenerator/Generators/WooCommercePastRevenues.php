@@ -243,7 +243,7 @@ class WooCommercePastRevenues {
     if ($generatedCount % self::LOG_BATCH_SIZE !== 0) {
       return;
     }
-    return "$data_type: $generated_count";
+    return "$dataType: $generatedCount";
   }
 
   private function prepareDatabaseTables() {
@@ -335,7 +335,7 @@ class WooCommercePastRevenues {
     // Add subscribers to task
     $batchData = [];
     foreach ($subscribersIds as $subscriberId) {
-      $batchData[] = "({$task->id}, $subscriber_id, 1, '$sent_at')";
+      $batchData[] = "({$task->id}, $subscriberId, 1, '$sentAt')";
       if (count($batchData) % 1000 === 0) {
         ORM::rawExecute(
           "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
@@ -426,12 +426,12 @@ class WooCommercePastRevenues {
    */
   private function createCompletedWooCommerceOrder($subscriberId, $email, $products = [], Carbon $completedAt = null) {
     $address = [
-      'first_name' => "name_$subscriber_id",
-      'last_name' => "lastname_$subscriber_id",
+      'first_name' => "name_$subscriberId",
+      'last_name' => "lastname_$subscriberId",
       'email' => $email,
       'phone' => '123-456-789',
-      'address_1' => "$subscriber_id Main st.",
-      'city' => "City of $subscriber_id",
+      'address_1' => "$subscriberId Main st.",
+      'city' => "City of $subscriberId",
       'postcode' => '92121',
       'country' => 'France',
     ];

@@ -36,7 +36,7 @@ class CircleCiController {
       'headers' => [
         'Accept' => 'application/json',
       ],
-      'base_uri' => 'https://circleci.com/api/v1.1/project/github/' . urlencode($username) . "/$circle_ci_project/",
+      'base_uri' => 'https://circleci.com/api/v1.1/project/github/' . urlencode($username) . "/$circleCiProject/",
     ]);
     $this->githubController = $githubController;
   }
@@ -70,7 +70,7 @@ class CircleCiController {
   private function checkZipBuildJob(array $job) {
     if ($job['status'] !== self::JOB_STATUS_SUCCESS) {
       $expectedStatus = self::JOB_STATUS_SUCCESS;
-      throw new \Exception("Job has invalid status '$job[status]', '$expected_status' expected");
+      throw new \Exception("Job has invalid status '$job[status]', '$expectedStatus' expected");
     }
 
     if ($job['has_artifacts'] === false) {
@@ -87,7 +87,7 @@ class CircleCiController {
   }
 
   private function getReleaseZipUrl($buildNumber) {
-    $response = $this->httpClient->get("$build_number/artifacts");
+    $response = $this->httpClient->get("$buildNumber/artifacts");
     $artifacts = json_decode($response->getBody()->getContents(), true);
 
     $pattern = preg_quote($this->zipFilename, '~');

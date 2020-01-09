@@ -40,7 +40,7 @@ class JiraController {
     $urlToken = urlencode($this->token);
     $jiraDomain = self::JIRA_DOMAIN;
     $jiraApiVersion = self::JIRA_API_VERSION;
-    $baseUri = "https://$url_user:$url_token@$jira_domain/rest/api/$jira_api_version/";
+    $baseUri = "https://$urlUser:$urlToken@$jiraDomain/rest/api/$jiraApiVersion/";
     $this->httpClient = new Client(['base_uri' => $baseUri]);
   }
 

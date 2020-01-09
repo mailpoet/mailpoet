@@ -56,7 +56,7 @@ class UnauthorizedEmailInNewslettersNotice {
       $linkText = $this->wp->_x('Update the from address of %s', '%s will be replaced by a newsletter subject', 'mailpoet');
       $linkText = str_replace('%s', EscapeHelper::escapeHtmlText($error['subject']), $linkText);
       $linkUrl = $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG . '#/send/' . $error['newsletter_id']);
-      $link = Helpers::replaceLinkTags("[link]{$link_text}[/link]", $linkUrl, ['target' => '_blank']);
+      $link = Helpers::replaceLinkTags("[link]{$linkText}[/link]", $linkUrl, ['target' => '_blank']);
       $links .= "<p>$link</p>";
     }
     return $links;
@@ -73,9 +73,9 @@ class UnauthorizedEmailInNewslettersNotice {
       $authorizeLink = str_replace('%s', EscapeHelper::escapeHtmlText($emails[0]), $authorizeLink);
     }
 
-    $authorizeLink = Helpers::replaceLinkTags("[link]{$authorize_link}[/link]", 'https://account.mailpoet.com/authorization', ['target' => '_blank']);
+    $authorizeLink = Helpers::replaceLinkTags("[link]{$authorizeLink}[/link]", 'https://account.mailpoet.com/authorization', ['target' => '_blank']);
     $html = '<p><b>' . $this->wp->_x('OR', 'User has to choose between two options', 'mailpoet') . '</b></p>';
-    $html .= "<p>$authorize_link</p>";
+    $html .= "<p>$authorizeLink</p>";
     return $html;
   }
 

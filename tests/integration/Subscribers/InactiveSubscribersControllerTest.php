@@ -300,13 +300,13 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   private function createSetting($name, $value, $createdAt) {
     $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
     $this->connection->executeUpdate(
-      "INSERT INTO $table_name (name, value, created_at) VALUES (?, ?, ?)",
+      "INSERT INTO $tableName (name, value, created_at) VALUES (?, ?, ?)",
       [$name, $value, $createdAt]
     );
   }
 
   private function removeSetting($name) {
     $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
-    $this->connection->executeUpdate("DELETE FROM $table_name WHERE name = ?", [$name]);
+    $this->connection->executeUpdate("DELETE FROM $tableName WHERE name = ?", [$name]);
   }
 }

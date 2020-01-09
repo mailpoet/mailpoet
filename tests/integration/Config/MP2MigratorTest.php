@@ -366,7 +366,7 @@ class MP2MigratorTest extends \MailPoetTest {
     $table = MP_SUBSCRIBER_SEGMENT_TABLE;
     $segmentId = $importedSegmentsMapping[$listId];
     $subscriberId = $importedSubscribersMapping[$userId];
-    $subscriberSegment = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriber_id' AND segment_id='$segment_id'");
+    $subscriberSegment = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriberId' AND segment_id='$segmentId'");
     expect($subscriberSegment)->notNull();
   }
 
@@ -422,7 +422,7 @@ class MP2MigratorTest extends \MailPoetTest {
     $importedSubscribersMapping = $this->MP2Migrator->getImportedMapping('subscribers');
     $table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE;
     $subscriberId = $importedSubscribersMapping[$userId];
-    $subscriberCustomField = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriber_id' AND custom_field_id='$cf_id'");
+    $subscriberCustomField = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriberId' AND custom_field_id='$cfId'");
     expect($subscriberCustomField->value)->equals($customFieldValue);
   }
 
