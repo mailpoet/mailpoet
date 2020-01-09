@@ -46,7 +46,7 @@ parameters:
 			path: ../../tests/acceptance/ViewSegmentSubscribersCest.php
 
 		-
-			message: "#^Property MailPoet\\\\Test\\\\Subscribers\\\\ImportExport\\\\Import\\\\MailChimpTest\\:\\:\\$api_key \\(string\\) does not accept string\\|false\\.$#"
+			message: "#^Property MailPoet\\\\Test\\\\Subscribers\\\\ImportExport\\\\Import\\\\MailChimpTest\\:\\:\\$apiKey \\(string\\) does not accept string\\|false\\.$#"
 			count: 1
 			path: ../../tests/unit/Subscribers/ImportExport/Import/MailChimpTest.php
 
