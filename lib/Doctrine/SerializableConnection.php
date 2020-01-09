@@ -22,7 +22,7 @@ class SerializableConnection extends Connection {
   }
 
   public function __sleep() {
-    return ['params', 'driver', 'config', 'event_manager'];
+    return ['params', 'driver', 'config', 'eventManager'];
   }
 
   public function __wakeup() {

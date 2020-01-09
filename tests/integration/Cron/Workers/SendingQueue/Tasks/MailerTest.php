@@ -120,14 +120,14 @@ class MailerTest extends \MailPoetTest {
     // mock mailer instance and ensure that send method is invoked
     $mailerTask = new MailerTask(
       (object)[
-        'mailer_instance' => Stub::make(
+        'mailerInstance' => Stub::make(
           $phpMailClass,
           ['send' => Expected::exactly(1, function() {
               return true;
           })],
           $this
         ),
-        'mailer_config' => [
+        'mailerConfig' => [
           'method' => null,
         ],
       ]

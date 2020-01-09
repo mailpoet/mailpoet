@@ -276,8 +276,8 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->mailer,
       [
         'blacklist' => $blacklist,
-        'error_mapper' => new MailPoetMapper(),
-        'services_checker' => Stub::make(
+        'errorMapper' => new MailPoetMapper(),
+        'servicesChecker' => Stub::make(
           new ServicesChecker(),
           ['isMailPoetAPIKeyValid' => true],
           $this
@@ -302,8 +302,8 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->mailer,
       [
         'blacklist' => $blacklist,
-        'error_mapper' => new MailPoetMapper(),
-        'services_checker' => Stub::make(
+        'errorMapper' => new MailPoetMapper(),
+        'servicesChecker' => Stub::make(
           new ServicesChecker(),
           ['isMailPoetAPIKeyValid' => true],
           $this

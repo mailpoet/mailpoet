@@ -114,7 +114,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
   public function testItSelectivelyUpdatesWaitTimeoutOption() {
     // timeout will be kept from DB defaults
     $connectionFactory = $this->make(ConnectionFactory::class, [
-      'min_wait_timeout' => 1,
+      'minWaitTimeout' => 1,
     ]);
     $connection = $connectionFactory->createConnection();
     $current = $connection->executeQuery('SELECT @@session.wait_timeout')->fetchColumn();
@@ -122,7 +122,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
 
     // timeout will be set to higher value
     $connectionFactory = $this->make(ConnectionFactory::class, [
-      'min_wait_timeout' => 999999,
+      'minWaitTimeout' => 999999,
     ]);
     $connection = $connectionFactory->createConnection();
     $current = $connection->executeQuery('SELECT @@session.wait_timeout')->fetchColumn();

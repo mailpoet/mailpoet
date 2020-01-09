@@ -32,8 +32,8 @@ class DatabaseTest extends \MailPoetTest {
     $result = ORM::for_table("")
       ->raw_query(
         'SELECT ' .
-        '@@sql_mode as sql_mode, ' .
-        '@@session.time_zone as time_zone'
+        '@@sql_mode as sqlMode, ' .
+        '@@session.time_zone as timeZone'
       )
       ->findOne();
     // disable ONLY_FULL_GROUP_BY

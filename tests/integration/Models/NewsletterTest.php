@@ -281,7 +281,7 @@ class NewsletterTest extends \MailPoetTest {
 
   public function testItCanHaveOptions() {
     $newsletterOptions = [
-      'name' => 'Event',
+      'name' => 'event',
       'newsletter_type' => Newsletter::TYPE_WELCOME,
     ];
     $optionField = NewsletterOptionField::create();
