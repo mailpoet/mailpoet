@@ -8,12 +8,30 @@ export const customFieldDeleteClick = (state) => ({
   displayCustomFieldDeleteConfirm: true,
 });
 
-export const customFieldDeleteStart = (state) => ({
-  ...state,
-  displayCustomFieldDeleteConfirm: false,
-  isCustomFieldDeleting: true,
-});
+export const customFieldDeleteStart = (state) => {
+  const notices = state.notices.filter((notice) => notice.id !== 'custom-field');
+  return ({
+    ...state,
+    ...notices,
+    displayCustomFieldDeleteConfirm: false,
+    isCustomFieldDeleting: true,
+  });
+};
 
+export const customFieldDeleteFailed = (state, action) => {
+  const notices = state.notices.filter((notice) => notice.id !== 'custom-field');
+  notices.push({
+    id: 'custom-field',
+    content: action.message,
+    isDismissible: true,
+    status: 'error',
+  });
+  return {
+    ...state,
+    isCustomFieldSaving: false,
+    notices,
+  };
+};
 
 export const customFieldDeleteDone = (state, action) => {
   const customFields = state
@@ -23,7 +41,7 @@ export const customFieldDeleteDone = (state, action) => {
   const formBlocks = state
     .formBlocks
     .filter((block) => block.clientId !== action.clientId);
-  console.log('blocks', formBlocks);
+
   return {
     ...state,
     formBlocks,

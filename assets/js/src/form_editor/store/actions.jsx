@@ -46,6 +46,12 @@ export function deleteCustomFieldDone(customFieldId, clientId) {
   };
 }
 
+export function deleteCustomFieldFailed(message = undefined) {
+  return {
+    type: 'DELETE_CUSTOM_FIELD_FAILED',
+    message,
+  };
+}
 export function changeFormStyles(styles) {
   return {
     type: 'CHANGE_FORM_STYLES',
