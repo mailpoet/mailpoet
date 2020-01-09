@@ -62,8 +62,8 @@ class Track {
       $data->queue = SendingTask::createFromQueue($data->queue);
     }
     $data->subscriber = Subscriber::findOne($data->subscriberId) ?: null;
-    $data->newsletter = (!empty($data->queue->newsletter_id)) ?
-      Newsletter::findOne($data->queue->newsletter_id) :
+    $data->newsletter = (!empty($data->queue->newsletterId)) ?
+      Newsletter::findOne($data->queue->newsletterId) :
       false;
     if (!empty($data->linkHash)) {
       $data->link = NewsletterLink::where('hash', $data->linkHash)

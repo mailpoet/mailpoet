@@ -29,7 +29,7 @@ class UserFlags {
 
   public function withFlag($name, $value) {
     $userFlag = $this->userFlagsRepository->findOneBy([
-      'user_id' => $this->userId,
+      'userId' => $this->userId,
       'name' => $name,
     ]);
 

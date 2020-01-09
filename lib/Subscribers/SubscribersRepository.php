@@ -25,7 +25,7 @@ class SubscribersRepository extends Repository {
       ->createQueryBuilder()
       ->select('count(n.id)')
       ->from(SubscriberEntity::class, 'n')
-      ->where('n.deleted_at IS NULL AND n.status IN (:statuses)')
+      ->where('n.deletedAt IS NULL AND n.status IN (:statuses)')
       ->setParameter('statuses', [
         SubscriberEntity::STATUS_SUBSCRIBED,
         SubscriberEntity::STATUS_UNCONFIRMED,
