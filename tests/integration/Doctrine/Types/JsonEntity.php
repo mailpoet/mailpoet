@@ -40,27 +40,27 @@ class JsonEntity {
    * @return array|null
    */
   public function getJsonData() {
-    return $this->json_data;
+    return $this->jsonData;
   }
 
   /**
    * @param array|null $json_data
    */
-  public function setJsonData($json_data) {
-    $this->json_data = $json_data;
+  public function setJsonData($jsonData) {
+    $this->jsonData = $jsonData;
   }
 
   /**
    * @return array|null
    */
   public function getJsonOrSerializedData() {
-    return $this->json_or_serialized_data;
+    return $this->jsonOrSerializedData;
   }
 
   /**
    * @param array|null $json_or_serialized_data
    */
-  public function setJsonOrSerializedData($json_or_serialized_data) {
-    $this->json_or_serialized_data = $json_or_serialized_data;
+  public function setJsonOrSerializedData($jsonOrSerializedData) {
+    $this->jsonOrSerializedData = $jsonOrSerializedData;
   }
 }

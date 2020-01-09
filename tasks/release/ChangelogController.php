@@ -13,19 +13,19 @@ class ChangelogController {
   /** @var JiraController */
   private $jira;
 
-  public function __construct(JiraController $jira, $readme_file) {
+  public function __construct(JiraController $jira, $readmeFile) {
     $this->jira = $jira;
-    $this->readme_file = $readme_file;
+    $this->readmeFile = $readmeFile;
   }
 
-  public function update($version_name = null) {
-    $changelog_data = $this->get($version_name);
-    $this->updateReadme($changelog_data[0], $changelog_data[1]);
-    return $changelog_data;
+  public function update($versionName = null) {
+    $changelogData = $this->get($versionName);
+    $this->updateReadme($changelogData[0], $changelogData[1]);
+    return $changelogData;
   }
 
-  public function get($version_name = null) {
-    $version = $this->jira->getVersion($version_name);
+  public function get($versionName = null) {
+    $version = $this->jira->getVersion($versionName);
     $issues = $this->jira->getIssuesDataForVersion($version);
     $heading = $this->renderHeading($version);
     $changelog = $this->renderList($issues, JiraController::CHANGELOG_FIELD_ID);
@@ -60,25 +60,25 @@ class ChangelogController {
   }
 
   private function sanitizePunctuation($message, $fallback) {
-    $valid_punctuation = ['?','.','!'];
+    $validPunctuation = ['?','.','!'];
     $message = rtrim($message, ';, ');
-    if (!in_array(substr($message, -1), $valid_punctuation)) {
+    if (!in_array(substr($message, -1), $validPunctuation)) {
       $message .= $fallback;
     }
     return $message;
   }
 
-  private function updateReadme($heading, $changes_list) {
-    $heading_prefix = explode(self::HEADING_GLUE, $heading)[0];
-    $readme = file_get_contents($this->readme_file);
+  private function updateReadme($heading, $changesList) {
+    $headingPrefix = explode(self::HEADING_GLUE, $heading)[0];
+    $readme = file_get_contents($this->readmeFile);
     $changelog = "$heading\n$changes_list";
 
-    if (strpos($readme, $heading_prefix) !== false) {
-      $start = preg_quote($heading_prefix);
+    if (strpos($readme, $headingPrefix) !== false) {
+      $start = preg_quote($headingPrefix);
       $readme = preg_replace("/$start.*?(?:\r*\n){2}/us", "$changelog\n\n", $readme);
     } else {
       $readme = preg_replace("/== Changelog ==\n/u", "== Changelog ==\n\n$changelog\n", $readme);
     }
-    file_put_contents($this->readme_file, $readme);
+    file_put_contents($this->readmeFile, $readme);
   }
 }

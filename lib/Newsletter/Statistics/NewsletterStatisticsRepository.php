@@ -21,7 +21,7 @@ class NewsletterStatisticsRepository extends Repository {
    */
   public function getTotalSentCount(NewsletterEntity $newsletter) {
     try {
-      return (int)$this->doctrine_repository
+      return (int)$this->doctrineRepository
         ->createQueryBuilder('n')
         ->join('n.queues', 'q')
         ->join('q.task', 't')
@@ -74,12 +74,12 @@ class NewsletterStatisticsRepository extends Repository {
     return $this->getStatisticsCount($newsletter, StatisticsUnsubscribeEntity::class);
   }
 
-  private function getStatisticsCount(NewsletterEntity $newsletter, $statistics_entity_name) {
+  private function getStatisticsCount(NewsletterEntity $newsletter, $statisticsEntityName) {
     try {
-      $qb = $this->entity_manager
+      $qb = $this->entityManager
         ->createQueryBuilder();
       return $qb->select('COUNT(DISTINCT stats.subscriber_id) as cnt')
-        ->from($statistics_entity_name, 'stats')
+        ->from($statisticsEntityName, 'stats')
         ->where('stats.newsletter = :newsletter')
         ->setParameter('newsletter', $newsletter)
         ->getQuery()

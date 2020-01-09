@@ -26,41 +26,41 @@ class DaemonHttpRunner {
   /** @var WordPress */
   private $wordpress_trigger;
 
-  public function __construct(Daemon $daemon = null, CronHelper $cron_helper, SettingsController $settings, WordPress $wordpress_trigger) {
-    $this->cron_helper = $cron_helper;
-    $this->settings_daemon_data = $this->cron_helper->getDaemon();
-    $this->token = $this->cron_helper->createToken();
+  public function __construct(Daemon $daemon = null, CronHelper $cronHelper, SettingsController $settings, WordPress $wordpressTrigger) {
+    $this->cronHelper = $cronHelper;
+    $this->settingsDaemonData = $this->cronHelper->getDaemon();
+    $this->token = $this->cronHelper->createToken();
     $this->timer = microtime(true);
     $this->daemon = $daemon;
     $this->settings = $settings;
-    $this->wordpress_trigger = $wordpress_trigger;
+    $this->wordpressTrigger = $wordpressTrigger;
   }
 
   public function ping() {
     // if Tracy enabled & called by 'MailPoet Cron' user agent, disable Tracy Bar
     // (happens in CronHelperTest because it's not a real integration test - calls other WP instance)
-    $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
-    if (class_exists(Debugger::class) && $user_agent === 'MailPoet Cron') {
+    $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
+    if (class_exists(Debugger::class) && $userAgent === 'MailPoet Cron') {
       Debugger::$showBar = false;
     }
     $this->addCacheHeaders();
     $this->terminateRequest(self::PING_SUCCESS_RESPONSE);
   }
 
-  public function run($request_data) {
+  public function run($requestData) {
     ignore_user_abort(true);
     if (strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
     $this->addCacheHeaders();
-    if (!$request_data) {
+    if (!$requestData) {
       $error = WPFunctions::get()->__('Invalid or missing request data.', 'mailpoet');
     } else {
-      if (!$this->settings_daemon_data) {
+      if (!$this->settingsDaemonData) {
         $error = WPFunctions::get()->__('Daemon does not exist.', 'mailpoet');
       } else {
-        if (!isset($request_data['token']) ||
-          $request_data['token'] !== $this->settings_daemon_data['token']
+        if (!isset($requestData['token']) ||
+          $requestData['token'] !== $this->settingsDaemonData['token']
         ) {
           $error = 'Invalid or missing token.';
         }
@@ -69,11 +69,11 @@ class DaemonHttpRunner {
     if (!empty($error)) {
       return $this->abortWithError($error);
     }
-    $this->settings_daemon_data['token'] = $this->token;
-    $this->daemon->run($this->settings_daemon_data);
+    $this->settingsDaemonData['token'] = $this->token;
+    $this->daemon->run($this->settingsDaemonData);
     // If we're using the WordPress trigger, check the conditions to stop cron if necessary
-    $enable_cron_self_deactivation = WPFunctions::get()->applyFilters('mailpoet_cron_enable_self_deactivation', false);
-    if ($enable_cron_self_deactivation
+    $enableCronSelfDeactivation = WPFunctions::get()->applyFilters('mailpoet_cron_enable_self_deactivation', false);
+    if ($enableCronSelfDeactivation
       && $this->isCronTriggerMethodWordPress()
       && !$this->checkWPTriggerExecutionRequirements()
     ) {
@@ -81,25 +81,25 @@ class DaemonHttpRunner {
     } else {
       // if workers took less time to execute than the daemon execution limit,
       // pause daemon execution to ensure that daemon runs only once every X seconds
-      $elapsed_time = microtime(true) - $this->timer;
-      if ($elapsed_time < $this->cron_helper->getDaemonExecutionLimit()) {
-        $this->pauseExecution($this->cron_helper->getDaemonExecutionLimit() - $elapsed_time);
+      $elapsedTime = microtime(true) - $this->timer;
+      if ($elapsedTime < $this->cronHelper->getDaemonExecutionLimit()) {
+        $this->pauseExecution($this->cronHelper->getDaemonExecutionLimit() - $elapsedTime);
       }
     }
     // after each execution, re-read daemon data in case it changed
-    $settings_daemon_data = $this->cron_helper->getDaemon();
-    if ($this->shouldTerminateExecution($settings_daemon_data)) {
+    $settingsDaemonData = $this->cronHelper->getDaemon();
+    if ($this->shouldTerminateExecution($settingsDaemonData)) {
       return $this->terminateRequest();
     }
     return $this->callSelf();
   }
 
-  public function pauseExecution($pause_time) {
-    return sleep($pause_time);
+  public function pauseExecution($pauseTime) {
+    return sleep($pauseTime);
   }
 
   public function callSelf() {
-    $this->cron_helper->accessDaemon($this->token);
+    $this->cronHelper->accessDaemon($this->token);
     $this->terminateRequest();
   }
 
@@ -117,11 +117,11 @@ class DaemonHttpRunner {
   }
 
   public function checkWPTriggerExecutionRequirements() {
-    return $this->wordpress_trigger->checkExecutionRequirements();
+    return $this->wordpressTrigger->checkExecutionRequirements();
   }
 
   public function stopCron() {
-    return $this->wordpress_trigger->stop();
+    return $this->wordpressTrigger->stop();
   }
 
   /**
@@ -129,10 +129,10 @@ class DaemonHttpRunner {
    *
    * @return boolean
    */
-  private function shouldTerminateExecution(array $settings_daemon_data = null) {
-    return !$settings_daemon_data ||
-       $settings_daemon_data['token'] !== $this->token ||
-       (isset($settings_daemon_data['status']) && $settings_daemon_data['status'] !== CronHelper::DAEMON_STATUS_ACTIVE);
+  private function shouldTerminateExecution(array $settingsDaemonData = null) {
+    return !$settingsDaemonData ||
+       $settingsDaemonData['token'] !== $this->token ||
+       (isset($settingsDaemonData['status']) && $settingsDaemonData['status'] !== CronHelper::DAEMON_STATUS_ACTIVE);
   }
 
   private function addCacheHeaders() {

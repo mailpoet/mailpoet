@@ -7,8 +7,8 @@ class Segment extends Base {
   public static function render($block) {
     $html = '';
 
-    $field_name = 'data[' . static::getFieldName($block) . ']';
-    $field_validation = static::getInputValidation($block);
+    $fieldName = 'data[' . static::getFieldName($block) . ']';
+    $fieldValidation = static::getInputValidation($block);
 
     $html .= '<p class="mailpoet_paragraph">';
 
@@ -22,13 +22,13 @@ class Segment extends Base {
     foreach ($options as $option) {
       if (!isset($option['id']) || !isset($option['name'])) continue;
 
-      $is_checked = (isset($option['is_checked']) && $option['is_checked']) ? 'checked="checked"' : '';
+      $isChecked = (isset($option['is_checked']) && $option['is_checked']) ? 'checked="checked"' : '';
 
       $html .= '<label class="mailpoet_checkbox_label">';
       $html .= '<input type="checkbox" class="mailpoet_checkbox" ';
-      $html .= 'name="' . $field_name . '[]" ';
-      $html .= 'value="' . $option['id'] . '" ' . $is_checked . ' ';
-      $html .= $field_validation;
+      $html .= 'name="' . $fieldName . '[]" ';
+      $html .= 'value="' . $option['id'] . '" ' . $isChecked . ' ';
+      $html .= $fieldValidation;
       $html .= ' /> ' . esc_attr($option['name']);
       $html .= '</label>';
     }

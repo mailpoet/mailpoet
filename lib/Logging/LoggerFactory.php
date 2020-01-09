@@ -46,22 +46,22 @@ class LoggerFactory {
    *
    * @return \MailPoetVendor\Monolog\Logger
    */
-  public function getLogger($name = 'MailPoet', $attach_processors = WP_DEBUG) {
-    if (!isset($this->logger_instances[$name])) {
-      $this->logger_instances[$name] = new \MailPoetVendor\Monolog\Logger($name);
+  public function getLogger($name = 'MailPoet', $attachProcessors = WP_DEBUG) {
+    if (!isset($this->loggerInstances[$name])) {
+      $this->loggerInstances[$name] = new \MailPoetVendor\Monolog\Logger($name);
 
-      if ($attach_processors) {
+      if ($attachProcessors) {
         // Adds the line/file/class/method from which the log call originated
-        $this->logger_instances[$name]->pushProcessor(new IntrospectionProcessor());
+        $this->loggerInstances[$name]->pushProcessor(new IntrospectionProcessor());
         // Adds the current request URI, request method and client IP to a log record
-        $this->logger_instances[$name]->pushProcessor(new WebProcessor());
+        $this->loggerInstances[$name]->pushProcessor(new WebProcessor());
         // Adds the current memory usage to a log record
-        $this->logger_instances[$name]->pushProcessor(new MemoryUsageProcessor());
+        $this->loggerInstances[$name]->pushProcessor(new MemoryUsageProcessor());
       }
 
-      $this->logger_instances[$name]->pushHandler(new LogHandler($this->getDefaultLogLevel()));
+      $this->loggerInstances[$name]->pushHandler(new LogHandler($this->getDefaultLogLevel()));
     }
-    return $this->logger_instances[$name];
+    return $this->loggerInstances[$name];
   }
 
   public static function getInstance() {
@@ -72,8 +72,8 @@ class LoggerFactory {
   }
 
   private function getDefaultLogLevel() {
-    $log_level = $this->settings->get('logging', 'errors');
-    switch ($log_level) {
+    $logLevel = $this->settings->get('logging', 'errors');
+    switch ($logLevel) {
       case 'everything':
         return \MailPoetVendor\Monolog\Logger::DEBUG;
       case 'nothing':

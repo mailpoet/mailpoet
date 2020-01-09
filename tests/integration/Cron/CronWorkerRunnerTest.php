@@ -22,8 +22,8 @@ class CronWorkerRunnerTest extends \MailPoetTest {
   private $cron_helper;
 
   public function _before() {
-    $this->cron_worker_runner = $this->di_container->get(CronWorkerRunner::class);
-    $this->cron_helper = $this->di_container->get(CronHelper::class);
+    $this->cronWorkerRunner = $this->diContainer->get(CronWorkerRunner::class);
+    $this->cronHelper = $this->diContainer->get(CronHelper::class);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 
@@ -32,7 +32,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
       'init' => Expected::once(),
       'scheduleAutomatically' => Expected::once(false),
     ]);
-    $this->cron_worker_runner->run($worker);
+    $this->cronWorkerRunner->run($worker);
   }
 
   public function testItPreparesTask() {
@@ -42,7 +42,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     ]);
 
     $task = $this->createScheduledTask();
-    $result = $this->cron_worker_runner->run($worker);
+    $result = $this->cronWorkerRunner->run($worker);
     expect($result)->true();
     expect(ScheduledTask::findOne($task->id)->status)->null();
   }
@@ -54,7 +54,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     ]);
 
     $task = $this->createRunningTask();
-    $result = $this->cron_worker_runner->run($worker);
+    $result = $this->cronWorkerRunner->run($worker);
     expect($result)->true();
     expect(ScheduledTask::findOne($task->id)->status)->same(ScheduledTask::STATUS_COMPLETED);
   }
@@ -66,7 +66,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
       'processTaskStrategy' => Expected::never(),
     ]);
 
-    $result = $this->cron_worker_runner->run($worker);
+    $result = $this->cronWorkerRunner->run($worker);
     expect($result)->false();
   }
 
@@ -80,21 +80,21 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $this->createScheduledTask();
     $this->createRunningTask();
 
-    $result = $this->cron_worker_runner->run($worker);
+    $result = $this->cronWorkerRunner->run($worker);
     expect($result)->false();
   }
 
   public function testItCanScheduleTaskAutomatically() {
-    $in_one_week = Carbon::now()->addWeek()->startOfDay();
+    $inOneWeek = Carbon::now()->addWeek()->startOfDay();
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'scheduleAutomatically' => Expected::once(true),
       'getTaskType' => Expected::atLeastOnce(SimpleWorkerMockImplementation::TASK_TYPE),
-      'getNextRunDate' => Expected::once($in_one_week),
+      'getNextRunDate' => Expected::once($inOneWeek),
     ]);
 
-    $result = $this->cron_worker_runner->run($worker);
+    $result = $this->cronWorkerRunner->run($worker);
     expect($result)->false();
-    expect(ScheduledTask::findOne()->scheduled_at)->same($in_one_week->format('Y-m-d H:i:s'));
+    expect(ScheduledTask::findOne()->scheduled_at)->same($inOneWeek->format('Y-m-d H:i:s'));
   }
 
   public function testItWillRescheduleTaskIfItIsRunningForTooLong() {
@@ -106,21 +106,21 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $task = $this->createRunningTask();
     $task = ScheduledTask::findOne($task->id); // make sure `updated_at` is set by the DB
 
-    $result = $this->cron_worker_runner->run($worker);
+    $result = $this->cronWorkerRunner->run($worker);
     expect($result)->true();
 
-    $scheduled_at = $task->scheduled_at;
-    $task->updated_at = Carbon::createFromTimestamp((int)strtotime((string)$task->updated_at))
+    $scheduledAt = $task->scheduledAt;
+    $task->updatedAt = Carbon::createFromTimestamp((int)strtotime((string)$task->updatedAt))
       ->subMinutes(CronWorkerRunner::TASK_RUN_TIMEOUT + 1);
     $task->save();
 
-    $result = $this->cron_worker_runner->run($worker);
+    $result = $this->cronWorkerRunner->run($worker);
     expect($result)->true();
 
     $task = ScheduledTask::findOne($task->id);
-    expect($task->scheduled_at)->greaterThan($scheduled_at);
+    expect($task->scheduledAt)->greaterThan($scheduledAt);
     expect($task->status)->same(ScheduledTask::STATUS_SCHEDULED);
-    expect($task->in_progress)->isEmpty();
+    expect($task->inProgress)->isEmpty();
   }
 
   public function testItWillRescheduleATaskIfItFails() {
@@ -131,38 +131,38 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     ]);
 
     $task = $this->createRunningTask();
-    $scheduled_at = $task->scheduled_at;
+    $scheduledAt = $task->scheduledAt;
     try {
-      $this->cron_worker_runner->run($worker);
+      $this->cronWorkerRunner->run($worker);
       $this->fail('An exception should be thrown');
     } catch (\Exception $e) {
       expect($e->getMessage())->equals('test error');
       $task = ScheduledTask::findOne($task->id);
-      expect($task->scheduled_at)->greaterThan($scheduled_at);
+      expect($task->scheduledAt)->greaterThan($scheduledAt);
       expect($task->status)->same(ScheduledTask::STATUS_SCHEDULED);
-      expect($task->reschedule_count)->equals(1);
-      expect($task->in_progress)->isEmpty();
+      expect($task->rescheduleCount)->equals(1);
+      expect($task->inProgress)->isEmpty();
     }
   }
 
   public function testWillNotRescheduleATaskOnCronTimeout() {
     $worker = $this->make(SimpleWorkerMockImplementation::class, [
       'processTaskStrategy' => Expected::once(function () {
-        $this->cron_helper->enforceExecutionLimit(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT - 1);
+        $this->cronHelper->enforceExecutionLimit(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT - 1);
       }),
     ]);
 
     $task = $this->createRunningTask();
-    $scheduled_at = $task->scheduled_at;
+    $scheduledAt = $task->scheduledAt;
     try {
-      $this->cron_worker_runner->run($worker);
+      $this->cronWorkerRunner->run($worker);
       $this->fail('An exception should be thrown');
     } catch (\Exception $e) {
       expect($e->getCode())->same(CronHelper::DAEMON_EXECUTION_LIMIT_REACHED);
       $task = ScheduledTask::findOne($task->id);
-      expect($scheduled_at)->equals($task->scheduled_at);
+      expect($scheduledAt)->equals($task->scheduledAt);
       expect($task->status)->null();
-      expect($task->reschedule_count)->equals(0);
+      expect($task->rescheduleCount)->equals(0);
     }
   }
 
@@ -173,10 +173,10 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     ]);
 
     $task = $this->createRunningTask();
-    $task->in_progress = true;
+    $task->inProgress = true;
     $task->save();
 
-    $this->cron_worker_runner->run($worker);
+    $this->cronWorkerRunner->run($worker);
   }
 
   public function testItThrowsExceptionWhenExecutionLimitIsReached() {
@@ -184,11 +184,11 @@ class CronWorkerRunnerTest extends \MailPoetTest {
       'processTaskStrategy' => Expected::never(),
     ]);
 
-    $cron_worker_runner = Stub::copy($this->cron_worker_runner, [
-      'timer' => microtime(true) - $this->di_container->get(CronHelper::class)->getDaemonExecutionLimit(),
+    $cronWorkerRunner = Stub::copy($this->cronWorkerRunner, [
+      'timer' => microtime(true) - $this->diContainer->get(CronHelper::class)->getDaemonExecutionLimit(),
     ]);
     try {
-      $cron_worker_runner->run($worker);
+      $cronWorkerRunner->run($worker);
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch (\Exception $e) {
       expect($e->getMessage())->same('Maximum execution time has been reached.');
@@ -199,7 +199,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = SimpleWorkerMockImplementation::TASK_TYPE;
     $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }
@@ -208,7 +208,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $task = ScheduledTask::create();
     $task->type = SimpleWorkerMockImplementation::TASK_TYPE;
     $task->status = null;
-    $task->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
   }

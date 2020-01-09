@@ -42,13 +42,13 @@ class DynamicSegments extends APIEndpoint {
   /** @var Handler */
   private $listing_handler;
 
-  public function __construct(BulkActionController $bulk_action, Handler $handler, $mapper = null, $saver = null, $dynamic_segments_loader = null, $subscribers_counts_loader = null) {
-    $this->bulk_action = $bulk_action;
-    $this->listing_handler = $handler;
+  public function __construct(BulkActionController $bulkAction, Handler $handler, $mapper = null, $saver = null, $dynamicSegmentsLoader = null, $subscribersCountsLoader = null) {
+    $this->bulkAction = $bulkAction;
+    $this->listingHandler = $handler;
     $this->mapper = $mapper ?: new FormDataMapper();
     $this->saver = $saver ?: new Saver();
-    $this->dynamic_segments_loader = $dynamic_segments_loader ?: new SingleSegmentLoader(new DBMapper());
-    $this->subscribers_counts_loader = $subscribers_counts_loader ?: new SubscribersCount();
+    $this->dynamicSegmentsLoader = $dynamicSegmentsLoader ?: new SingleSegmentLoader(new DBMapper());
+    $this->subscribersCountsLoader = $subscribersCountsLoader ?: new SubscribersCount();
   }
 
   public function get($data = []) {
@@ -61,7 +61,7 @@ class DynamicSegments extends APIEndpoint {
     }
 
     try {
-      $segment = $this->dynamic_segments_loader->load($id);
+      $segment = $this->dynamicSegmentsLoader->load($id);
 
       $filters = $segment->getFilters();
 
@@ -79,8 +79,8 @@ class DynamicSegments extends APIEndpoint {
 
   public function save($data) {
     try {
-      $dynamic_segment = $this->mapper->mapDataToDB($data);
-      $this->saver->save($dynamic_segment);
+      $dynamicSegment = $this->mapper->mapDataToDB($data);
+      $this->saver->save($dynamicSegment);
 
       return $this->successResponse($data);
     } catch (InvalidSegmentTypeException $e) {
@@ -127,7 +127,7 @@ class DynamicSegments extends APIEndpoint {
     }
 
     try {
-      $segment = $this->dynamic_segments_loader->load($id);
+      $segment = $this->dynamicSegmentsLoader->load($id);
       $segment->trash();
       return $this->successResponse(
         $segment->asArray(),
@@ -150,7 +150,7 @@ class DynamicSegments extends APIEndpoint {
     }
 
     try {
-      $segment = $this->dynamic_segments_loader->load($id);
+      $segment = $this->dynamicSegmentsLoader->load($id);
       $segment->restore();
       return $this->successResponse(
         $segment->asArray(),
@@ -173,7 +173,7 @@ class DynamicSegments extends APIEndpoint {
     }
 
     try {
-      $segment = $this->dynamic_segments_loader->load($id);
+      $segment = $this->dynamicSegmentsLoader->load($id);
       $segment->delete();
       return $this->successResponse(null, ['count' => 1]);
     } catch (\InvalidArgumentException $e) {
@@ -184,31 +184,31 @@ class DynamicSegments extends APIEndpoint {
   }
 
   public function listing($data = []) {
-    $listing_data = $this->listing_handler->get('\MailPoet\Models\DynamicSegment', $data);
+    $listingData = $this->listingHandler->get('\MailPoet\Models\DynamicSegment', $data);
 
     $data = [];
-    foreach ($listing_data['items'] as $segment) {
-      $segment->subscribers_url = WPFunctions::get()->adminUrl(
+    foreach ($listingData['items'] as $segment) {
+      $segment->subscribersUrl = WPFunctions::get()->adminUrl(
         'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->id . ']'
       );
 
       $row = $segment->asArray();
-      $segment_with_filters = $this->dynamic_segments_loader->load($segment->id);
-      $row['count'] = $this->subscribers_counts_loader->getSubscribersCount($segment_with_filters);
+      $segmentWithFilters = $this->dynamicSegmentsLoader->load($segment->id);
+      $row['count'] = $this->subscribersCountsLoader->getSubscribersCount($segmentWithFilters);
       $data[] = $row;
     }
 
     return $this->successResponse($data, [
-      'count' => $listing_data['count'],
-      'filters' => $listing_data['filters'],
-      'groups' => $listing_data['groups'],
+      'count' => $listingData['count'],
+      'filters' => $listingData['filters'],
+      'groups' => $listingData['groups'],
     ]);
 
   }
 
   public function bulkAction($data = []) {
     try {
-      $meta = $this->bulk_action->apply('\MailPoet\Models\DynamicSegment', $data);
+      $meta = $this->bulkAction->apply('\MailPoet\Models\DynamicSegment', $data);
       return $this->successResponse(null, $meta);
     } catch (\Exception $e) {
       return $this->errorResponse([

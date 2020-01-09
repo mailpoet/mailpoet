@@ -45,7 +45,7 @@ abstract class Endpoint {
   public function isMethodAllowed($name, $type) {
     // Block GET requests on POST endpoints, but allow POST requests on GET endpoints (some plugins
     // change REQUEST_METHOD to POST on GET requests, which caused them to be blocked)
-    if ($type === self::TYPE_GET && !in_array($name, static::$get_methods)) {
+    if ($type === self::TYPE_GET && !in_array($name, static::$getMethods)) {
       return false;
     }
     return true;

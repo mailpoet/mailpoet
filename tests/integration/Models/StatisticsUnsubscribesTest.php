@@ -7,23 +7,23 @@ use MailPoetVendor\Idiorm\ORM;
 
 class StatisticsUnsubscribesTest extends \MailPoetTest {
   public function testItCanGetExistingStatisticsRecord() {
-    $unsubscribe_statistics = StatisticsUnsubscribes::create();
-    $unsubscribe_statistics->newsletter_id = 123;
-    $unsubscribe_statistics->subscriber_id = 456;
-    $unsubscribe_statistics->queue_id = 789;
-    $unsubscribe_statistics->save();
-    $unsubscribe_statistics = StatisticsUnsubscribes::getOrCreate(456, 123, 789);
-    expect($unsubscribe_statistics->newsletter_id)->equals(123);
-    expect($unsubscribe_statistics->subscriber_id)->equals(456);
-    expect($unsubscribe_statistics->queue_id)->equals(789);
+    $unsubscribeStatistics = StatisticsUnsubscribes::create();
+    $unsubscribeStatistics->newsletterId = 123;
+    $unsubscribeStatistics->subscriberId = 456;
+    $unsubscribeStatistics->queueId = 789;
+    $unsubscribeStatistics->save();
+    $unsubscribeStatistics = StatisticsUnsubscribes::getOrCreate(456, 123, 789);
+    expect($unsubscribeStatistics->newsletterId)->equals(123);
+    expect($unsubscribeStatistics->subscriberId)->equals(456);
+    expect($unsubscribeStatistics->queueId)->equals(789);
   }
 
   public function testItCanCreateNewStatisticsRecord() {
     expect(count(StatisticsUnsubscribes::findMany()))->equals(0);
-    $unsubscribe_statistics = StatisticsUnsubscribes::getOrCreate(456, 123, 789);
-    expect($unsubscribe_statistics->newsletter_id)->equals(123);
-    expect($unsubscribe_statistics->subscriber_id)->equals(456);
-    expect($unsubscribe_statistics->queue_id)->equals(789);
+    $unsubscribeStatistics = StatisticsUnsubscribes::getOrCreate(456, 123, 789);
+    expect($unsubscribeStatistics->newsletterId)->equals(123);
+    expect($unsubscribeStatistics->subscriberId)->equals(456);
+    expect($unsubscribeStatistics->queueId)->equals(789);
   }
 
   public function _after() {

@@ -21,22 +21,22 @@ class AutomaticEmails {
   }
 
   public function init() {
-    foreach ($this->available_groups as $group) {
-      $group_class = sprintf(
+    foreach ($this->availableGroups as $group) {
+      $groupClass = sprintf(
         '%1$s\%2$s\%2$s',
         __NAMESPACE__,
         $group
       );
 
-      if (!class_exists($group_class)) {
+      if (!class_exists($groupClass)) {
         $this->displayGroupWarning($group);
         continue;
       }
 
-      $group_instance = new $group_class();
+      $groupInstance = new $groupClass();
 
-      if (method_exists($group_instance, 'init')) {
-        $group_instance->init();
+      if (method_exists($groupInstance, 'init')) {
+        $groupInstance->init();
       } else {
         $this->displayGroupWarning($group);
         continue;
@@ -45,97 +45,97 @@ class AutomaticEmails {
   }
 
   public function getAutomaticEmails() {
-    global $wp_filter;
+    global $wpFilter;
 
-    $registered_groups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wp_filter));
+    $registeredGroups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wpFilter));
 
-    if (empty($registered_groups)) return null;
+    if (empty($registeredGroups)) return null;
 
-    $automatic_emails = [];
-    foreach ($registered_groups as $group) {
-      $automatic_email = $this->wp->applyFilters($group, []);
+    $automaticEmails = [];
+    foreach ($registeredGroups as $group) {
+      $automaticEmail = $this->wp->applyFilters($group, []);
 
-      if (!$this->validateAutomaticEmailDataFields($automatic_email) ||
-        !$this->validateAutomaticEmailEventsDataFields($automatic_email['events'])
+      if (!$this->validateAutomaticEmailDataFields($automaticEmail) ||
+        !$this->validateAutomaticEmailEventsDataFields($automaticEmail['events'])
       ) {
         continue;
       }
 
       // keys associative events array by slug
-      $automatic_email['events'] = array_column($automatic_email['events'], null, 'slug');
+      $automaticEmail['events'] = array_column($automaticEmail['events'], null, 'slug');
       // keys associative automatic email array by slug
-      $automatic_emails[$automatic_email['slug']] = $automatic_email;
+      $automaticEmails[$automaticEmail['slug']] = $automaticEmail;
     }
 
-    return $automatic_emails;
+    return $automaticEmails;
   }
 
-  public function getAutomaticEmailBySlug($email_slug) {
-    $automatic_emails = $this->getAutomaticEmails();
+  public function getAutomaticEmailBySlug($emailSlug) {
+    $automaticEmails = $this->getAutomaticEmails();
 
-    if (empty($automatic_emails)) return null;
+    if (empty($automaticEmails)) return null;
 
-    foreach ($automatic_emails as $email) {
-      if (!empty($email['slug']) && $email['slug'] === $email_slug) return $email;
-    }
-
-    return null;
-  }
-
-  public function getAutomaticEmailEventBySlug($email_slug, $event_slug) {
-    $automatic_email = $this->getAutomaticEmailBySlug($email_slug);
-
-    if (empty($automatic_email)) return null;
-
-    foreach ($automatic_email['events'] as $event) {
-      if (!empty($event['slug']) && $event['slug'] === $event_slug) return $event;
+    foreach ($automaticEmails as $email) {
+      if (!empty($email['slug']) && $email['slug'] === $emailSlug) return $email;
     }
 
     return null;
   }
 
-  public function validateAutomaticEmailDataFields(array $automatic_email) {
-    $required_fields = [
+  public function getAutomaticEmailEventBySlug($emailSlug, $eventSlug) {
+    $automaticEmail = $this->getAutomaticEmailBySlug($emailSlug);
+
+    if (empty($automaticEmail)) return null;
+
+    foreach ($automaticEmail['events'] as $event) {
+      if (!empty($event['slug']) && $event['slug'] === $eventSlug) return $event;
+    }
+
+    return null;
+  }
+
+  public function validateAutomaticEmailDataFields(array $automaticEmail) {
+    $requiredFields = [
       'slug',
       'title',
       'description',
       'events',
     ];
 
-    foreach ($required_fields as $field) {
-      if (empty($automatic_email[$field])) return false;
+    foreach ($requiredFields as $field) {
+      if (empty($automaticEmail[$field])) return false;
     }
 
     return true;
   }
 
-  public function validateAutomaticEmailEventsDataFields(array $automatic_email_events) {
-    $required_fields = [
+  public function validateAutomaticEmailEventsDataFields(array $automaticEmailEvents) {
+    $requiredFields = [
       'slug',
       'title',
       'description',
       'listingScheduleDisplayText',
     ];
 
-    foreach ($automatic_email_events as $event) {
-      $valid_event = array_diff($required_fields, array_keys($event));
-      if (!empty($valid_event)) return false;
+    foreach ($automaticEmailEvents as $event) {
+      $validEvent = array_diff($requiredFields, array_keys($event));
+      if (!empty($validEvent)) return false;
     }
 
     return true;
   }
 
   public function unregisterAutomaticEmails() {
-    global $wp_filter;
+    global $wpFilter;
 
-    $registered_groups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wp_filter));
+    $registeredGroups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wpFilter));
 
-    if (empty($registered_groups)) return null;
+    if (empty($registeredGroups)) return null;
 
     $self = $this;
     array_map(function($group) use($self) {
       $self->wp->removeAllFilters($group);
-    }, $registered_groups);
+    }, $registeredGroups);
   }
 
   private function displayGroupWarning($group) {

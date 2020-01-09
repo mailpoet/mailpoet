@@ -19,61 +19,61 @@ class NewsletterStatisticsCest {
     $this->settings = $settings;
   }
 
-  public function _before(\AcceptanceTester $I) {
-    $I->activateWooCommerce();
+  public function _before(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
     $this->settings->withWooCommerceListImportPageDisplayed(true);
     $this->settings->withCookieRevenueTrackingDisabled();
   }
 
-  public function showWooCommercePurchaseStatistics(\AcceptanceTester $I) {
+  public function showWooCommercePurchaseStatistics(\AcceptanceTester $i) {
     $title = 'Newsletter Title';
     $currency = 'EUR';
-    $I->cli(['option', 'set', 'woocommerce_currency', $currency]);
+    $i->cli(['option', 'set', 'woocommerce_currency', $currency]);
 
     $newsletter = $this->createNewsletter($title);
     $click1 = $this->createClickInNewsletter($newsletter);
     $click2 = $this->createClickInNewsletter($newsletter);
 
     // order 1: EUR
-    $woocommerce_order = $this->createWooCommerceOrder($I, $currency, 1);
-    (new StatisticsWooCommercePurchases($click1, $woocommerce_order))->create();
+    $woocommerceOrder = $this->createWooCommerceOrder($i, $currency, 1);
+    (new StatisticsWooCommercePurchases($click1, $woocommerceOrder))->create();
 
     // order 2: EUR, two clicks from two subscribers
-    $woocommerce_order = $this->createWooCommerceOrder($I, $currency, 2);
-    (new StatisticsWooCommercePurchases($click1, $woocommerce_order))->create();
-    (new StatisticsWooCommercePurchases($click2, $woocommerce_order))->create();
+    $woocommerceOrder = $this->createWooCommerceOrder($i, $currency, 2);
+    (new StatisticsWooCommercePurchases($click1, $woocommerceOrder))->create();
+    (new StatisticsWooCommercePurchases($click2, $woocommerceOrder))->create();
 
     // order 3: USD
-    $woocommerce_order = $this->createWooCommerceOrder($I, 'USD', 100);
-    (new StatisticsWooCommercePurchases($click1, $woocommerce_order))->create();
+    $woocommerceOrder = $this->createWooCommerceOrder($i, 'USD', 100);
+    (new StatisticsWooCommercePurchases($click1, $woocommerceOrder))->create();
 
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($title);
-    $I->see('5,00€', '.mailpoet_stats_text a');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForText($title);
+    $i->see('5,00€', '.mailpoet_stats_text a');
   }
 
-  public function dontShowWooCommercePurchaseStatisticsWithZeroValue(\AcceptanceTester $I) {
+  public function dontShowWooCommercePurchaseStatisticsWithZeroValue(\AcceptanceTester $i) {
     $title = 'Newsletter Title';
     $currency = 'EUR';
-    $I->cli(['option', 'set', 'woocommerce_currency', $currency]);
+    $i->cli(['option', 'set', 'woocommerce_currency', $currency]);
 
     $newsletter = $this->createNewsletter($title);
     $click = $this->createClickInNewsletter($newsletter);
 
     // order with zero value
-    $woocommerce_order = $this->createWooCommerceOrder($I, $currency, 0);
-    (new StatisticsWooCommercePurchases($click, $woocommerce_order))->create();
+    $woocommerceOrder = $this->createWooCommerceOrder($i, $currency, 0);
+    (new StatisticsWooCommercePurchases($click, $woocommerceOrder))->create();
 
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->waitForText($title);
-    $I->dontSee('€', '.mailpoet_stats_text');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForText($title);
+    $i->dontSee('€', '.mailpoet_stats_text');
   }
 
-  private function createNewsletter($newsletter_title) {
+  private function createNewsletter($newsletterTitle) {
     return (new Newsletter())
-      ->withSubject($newsletter_title)
+      ->withSubject($newsletterTitle)
       ->loadBodyFrom('newsletterWithText.json')
       ->withSentStatus()
       ->withActiveStatus()
@@ -83,19 +83,19 @@ class NewsletterStatisticsCest {
 
   private function createClickInNewsletter($newsletter) {
     $subscriber = (new Subscriber())->create();
-    $newsletter_link = (new NewsletterLink($newsletter))->create();
-    return (new StatisticsClicks($newsletter_link, $subscriber))->create();
+    $newsletterLink = (new NewsletterLink($newsletter))->create();
+    return (new StatisticsClicks($newsletterLink, $subscriber))->create();
   }
 
-  private function createWooCommerceOrder(\AcceptanceTester $I, $currency, $product_price) {
-    return (new WooCommerceOrder($I))
+  private function createWooCommerceOrder(\AcceptanceTester $i, $currency, $productPrice) {
+    return (new WooCommerceOrder($i))
       ->withStatus(WooCommerceOrder::STATUS_COMPLETED)
       ->withCurrency($currency)
       ->withProducts([
         [
           'id' => 1,
           'name' => 'Product 1',
-          'total' => $product_price,
+          'total' => $productPrice,
         ],
       ])
       ->create();

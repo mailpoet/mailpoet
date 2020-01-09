@@ -8,46 +8,46 @@ use MailPoetVendor\Carbon\Carbon;
 
 class Scheduler {
 
-  public static function getNextRunDate($schedule, $from_timestamp = false) {
+  public static function getNextRunDate($schedule, $fromTimestamp = false) {
     $wp = new WPFunctions();
-    $from_timestamp = ($from_timestamp) ? $from_timestamp : $wp->currentTime('timestamp');
+    $fromTimestamp = ($fromTimestamp) ? $fromTimestamp : $wp->currentTime('timestamp');
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
-      $next_run_date = $schedule->getNextRunDate(Carbon::createFromTimestamp($from_timestamp))
+      $nextRunDate = $schedule->getNextRunDate(Carbon::createFromTimestamp($fromTimestamp))
         ->format('Y-m-d H:i:s');
     } catch (\Exception $e) {
-      $next_run_date = false;
+      $nextRunDate = false;
     }
-    return $next_run_date;
+    return $nextRunDate;
   }
 
-  public static function getPreviousRunDate($schedule, $from_timestamp = false) {
+  public static function getPreviousRunDate($schedule, $fromTimestamp = false) {
     $wp = WPFunctions::get();
-    $from_timestamp = ($from_timestamp) ? $from_timestamp : $wp->currentTime('timestamp');
+    $fromTimestamp = ($fromTimestamp) ? $fromTimestamp : $wp->currentTime('timestamp');
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
-      $previous_run_date = $schedule->getPreviousRunDate(Carbon::createFromTimestamp($from_timestamp))
+      $previousRunDate = $schedule->getPreviousRunDate(Carbon::createFromTimestamp($fromTimestamp))
         ->format('Y-m-d H:i:s');
     } catch (\Exception $e) {
-      $previous_run_date = false;
+      $previousRunDate = false;
     }
-    return $previous_run_date;
+    return $previousRunDate;
   }
 
-  public static function getScheduledTimeWithDelay($after_time_type, $after_time_number) {
+  public static function getScheduledTimeWithDelay($afterTimeType, $afterTimeNumber) {
     $wp = WPFunctions::get();
-    $current_time = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
-    switch ($after_time_type) {
+    $currentTime = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
+    switch ($afterTimeType) {
       case 'minutes':
-        return $current_time->addMinutes($after_time_number);
+        return $currentTime->addMinutes($afterTimeNumber);
       case 'hours':
-        return $current_time->addHours($after_time_number);
+        return $currentTime->addHours($afterTimeNumber);
       case 'days':
-        return $current_time->addDays($after_time_number);
+        return $currentTime->addDays($afterTimeNumber);
       case 'weeks':
-        return $current_time->addWeeks($after_time_number);
+        return $currentTime->addWeeks($afterTimeNumber);
       default:
-        return $current_time;
+        return $currentTime;
     }
   }
 
@@ -59,7 +59,7 @@ class Scheduler {
       ->findMany();
   }
 
-  public static function formatDatetimeString($datetime_string) {
-    return Carbon::parse($datetime_string)->format('Y-m-d H:i:s');
+  public static function formatDatetimeString($datetimeString) {
+    return Carbon::parse($datetimeString)->format('Y-m-d H:i:s');
   }
 }

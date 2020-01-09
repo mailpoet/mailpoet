@@ -7,7 +7,7 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Image {
-  public static function render($element, $column_base_width) {
+  public static function render($element, $columnBaseWidth) {
     if (empty($element['src'])) {
       return '';
     }
@@ -17,25 +17,25 @@ class Image {
 
     $element['width'] = str_replace('px', '', $element['width']);
     $element['height'] = str_replace('px', '', $element['height']);
-    $original_width = 0;
+    $originalWidth = 0;
     if (is_numeric($element['width']) && is_numeric($element['height'])) {
       $element['width'] = (int)$element['width'];
       $element['height'] = (int)$element['height'];
-      $original_width = $element['width'];
-      $element = self::adjustImageDimensions($element, $column_base_width);
+      $originalWidth = $element['width'];
+      $element = self::adjustImageDimensions($element, $columnBaseWidth);
     }
 
     // If image was downsized because of column width set width to aways fill full column (e.g. on mobile)
     $style = '';
-    if ($element['fullWidth'] === true && $original_width > $element['width']) {
+    if ($element['fullWidth'] === true && $originalWidth > $element['width']) {
       $style = 'style="width:100%"';
     }
 
-    $image_template = '
+    $imageTemplate = '
       <img src="' . EHelper::escapeHtmlLinkAttr($element['src']) . '" width="' . EHelper::escapeHtmlAttr($element['width']) . '" alt="' . EHelper::escapeHtmlAttr($element['alt']) . '"' . $style . '/>
       ';
     if (!empty($element['link'])) {
-      $image_template = '<a href="' . EHelper::escapeHtmlLinkAttr($element['link']) . '">' . trim($image_template) . '</a>';
+      $imageTemplate = '<a href="' . EHelper::escapeHtmlLinkAttr($element['link']) . '">' . trim($imageTemplate) . '</a>';
     }
     $align = 'center';
     if (!empty($element['styles']['block']['textAlign']) && in_array($element['styles']['block']['textAlign'], ['left', 'right'])) {
@@ -45,26 +45,26 @@ class Image {
     $template = '
       <tr>
         <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_vertical mailpoet_padded_side' : '') . '" align="' . EHelper::escapeHtmlAttr($align) . '" valign="top">
-          ' . trim($image_template) . '
+          ' . trim($imageTemplate) . '
         </td>
       </tr>';
     return $template;
   }
 
-  public static function adjustImageDimensions($element, $column_base_width) {
-    $padded_width = StylesHelper::$padding_width * 2;
+  public static function adjustImageDimensions($element, $columnBaseWidth) {
+    $paddedWidth = StylesHelper::$paddingWidth * 2;
     // scale image to fit column width
-    if ($element['width'] > $column_base_width) {
-      $ratio = $element['width'] / $column_base_width;
-      $element['width'] = $column_base_width;
+    if ($element['width'] > $columnBaseWidth) {
+      $ratio = $element['width'] / $columnBaseWidth;
+      $element['width'] = $columnBaseWidth;
       $element['height'] = (int)ceil($element['height'] / $ratio);
     }
     // resize image if the image is padded and wider than padded column width
     if ($element['fullWidth'] === false &&
-      $element['width'] > ($column_base_width - $padded_width)
+      $element['width'] > ($columnBaseWidth - $paddedWidth)
     ) {
-      $ratio = $element['width'] / ($column_base_width - $padded_width);
-      $element['width'] = $column_base_width - $padded_width;
+      $ratio = $element['width'] / ($columnBaseWidth - $paddedWidth);
+      $element['width'] = $columnBaseWidth - $paddedWidth;
       $element['height'] = (int)ceil($element['height'] / $ratio);
     }
     return $element;

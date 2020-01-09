@@ -18,56 +18,56 @@ class LinksTest extends \MailPoetTest {
     $newsletter = (object)['id' => 1];
     $queue = (object)['id' => 2];
     $result = Links::saveLinks($links, $newsletter, $queue);
-    $newsletter_link = NewsletterLink::where('hash', $links[0]['hash'])
+    $newsletterLink = NewsletterLink::where('hash', $links[0]['hash'])
       ->findOne();
-    expect($newsletter_link->newsletter_id)->equals($newsletter->id);
-    expect($newsletter_link->queue_id)->equals($queue->id);
-    expect($newsletter_link->url)->equals($links[0]['link']);
+    expect($newsletterLink->newsletterId)->equals($newsletter->id);
+    expect($newsletterLink->queueId)->equals($queue->id);
+    expect($newsletterLink->url)->equals($links[0]['link']);
   }
 
   public function testItCanHashAndReplaceLinks() {
-    $rendered_newsletter = [
+    $renderedNewsletter = [
       'html' => '<a href="http://example.com">Example Link</a>',
       'text' => '<a href="http://example.com">Example Link</a>',
     ];
-    $result = Links::hashAndReplaceLinks($rendered_newsletter, 0, 0);
-    $processed_rendered_newsletter_body = $result[0];
-    $processed_and_hashed_links = $result[1];
-    expect($processed_rendered_newsletter_body['html'])
-      ->contains($processed_and_hashed_links[0]['hash']);
-    expect($processed_rendered_newsletter_body['text'])
-      ->contains($processed_and_hashed_links[0]['hash']);
-    expect($processed_and_hashed_links[0]['link'])->equals('http://example.com');
+    $result = Links::hashAndReplaceLinks($renderedNewsletter, 0, 0);
+    $processedRenderedNewsletterBody = $result[0];
+    $processedAndHashedLinks = $result[1];
+    expect($processedRenderedNewsletterBody['html'])
+      ->contains($processedAndHashedLinks[0]['hash']);
+    expect($processedRenderedNewsletterBody['text'])
+      ->contains($processedAndHashedLinks[0]['hash']);
+    expect($processedAndHashedLinks[0]['link'])->equals('http://example.com');
   }
 
   public function testItCanProcessRenderedBody() {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->save();
-    $rendered_newsletter = [
+    $renderedNewsletter = [
       'html' => '<a href="http://example.com">Example Link</a>',
       'text' => '<a href="http://example.com">Example Link</a>',
     ];
     $queue = (object)['id' => 2];
-    $result = Links::process($rendered_newsletter, $newsletter, $queue);
-    $newsletter_link = NewsletterLink::where('newsletter_id', $newsletter->id)
+    $result = Links::process($renderedNewsletter, $newsletter, $queue);
+    $newsletterLink = NewsletterLink::where('newsletter_id', $newsletter->id)
       ->findOne();
-    expect($result['html'])->contains($newsletter_link->hash);
+    expect($result['html'])->contains($newsletterLink->hash);
   }
 
   public function testItCanEnsureThatUnsubscribeLinkIsAlwaysPresent() {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->save();
-    $rendered_newsletter = [
+    $renderedNewsletter = [
       'html' => '<a href="http://example.com">Example Link</a>',
       'text' => '<a href="http://example.com">Example Link</a>',
     ];
     $queue = (object)['id' => 2];
-    Links::process($rendered_newsletter, $newsletter, $queue);
-    $unsubscribe_count = NewsletterLink::where('newsletter_id', $newsletter->id)
+    Links::process($renderedNewsletter, $newsletter, $queue);
+    $unsubscribeCount = NewsletterLink::where('newsletter_id', $newsletter->id)
       ->where('url', NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE)->count();
-    expect($unsubscribe_count)->equals(1);
+    expect($unsubscribeCount)->equals(1);
   }
 
   public function _after() {

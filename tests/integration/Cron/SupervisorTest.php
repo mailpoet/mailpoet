@@ -24,7 +24,7 @@ class SupervisorTest extends \MailPoetTest {
     $this->settings->set('cron_trigger', [
       'method' => 'none',
     ]);
-    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->supervisor = ContainerWrapper::getInstance()->get(Supervisor::class);
   }
 
@@ -58,7 +58,7 @@ class SupervisorTest extends \MailPoetTest {
   public function testRestartsDaemonWhenExecutionDurationIsAboveLimit() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $this->supervisor->init();
-    $this->supervisor->daemon['updated_at'] = time() - $this->cron_helper->getDaemonExecutionTimeout();
+    $this->supervisor->daemon['updated_at'] = time() - $this->cronHelper->getDaemonExecutionTimeout();
     $daemon = $this->supervisor->checkDaemon();
     expect(is_int($daemon['updated_at']))->true();
     expect($daemon['updated_at'])->notEquals($this->supervisor->daemon['updated_at']);
@@ -75,6 +75,6 @@ class SupervisorTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

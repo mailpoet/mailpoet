@@ -13,23 +13,23 @@ class ValidatorFactory {
   /** @var AnnotationReaderProvider */
   private $annotation_reader_provider;
 
-  public function __construct(AnnotationReaderProvider $annotation_reader_provider) {
-    $this->annotation_reader_provider = $annotation_reader_provider;
+  public function __construct(AnnotationReaderProvider $annotationReaderProvider) {
+    $this->annotationReaderProvider = $annotationReaderProvider;
   }
 
   public function createValidator() {
     $builder = Validation::createValidatorBuilder();
 
     // annotation reader exists only in dev environment, on production cache is pre-generated
-    $annotation_reader = $this->annotation_reader_provider->getAnnotationReader();
-    if ($annotation_reader) {
-      $builder->enableAnnotationMapping($annotation_reader);
+    $annotationReader = $this->annotationReaderProvider->getAnnotationReader();
+    if ($annotationReader) {
+      $builder->enableAnnotationMapping($annotationReader);
     }
 
     // metadata cache (for production cache is pre-generated at build time)
-    $is_read_only = !$annotation_reader;
-    $metadata_cache = new MetadataCache(self::METADATA_DIR, $is_read_only);
-    $builder->setMetadataCache(new DoctrineCache($metadata_cache));
+    $isReadOnly = !$annotationReader;
+    $metadataCache = new MetadataCache(self::METADATA_DIR, $isReadOnly);
+    $builder->setMetadataCache(new DoctrineCache($metadataCache));
 
     return $builder->getValidator();
   }

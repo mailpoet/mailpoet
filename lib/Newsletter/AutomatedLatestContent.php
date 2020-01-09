@@ -15,16 +15,16 @@ class AutomatedLatestContent {
   /** @var LoggerFactory */
   private $logger_factory;
 
-  public function __construct($newsletter_id = false, $newer_than_timestamp = false) {
-    $this->newsletter_id = $newsletter_id;
-    $this->newer_than_timestamp = $newer_than_timestamp;
-    $this->logger_factory = LoggerFactory::getInstance();
+  public function __construct($newsletterId = false, $newerThanTimestamp = false) {
+    $this->newsletterId = $newsletterId;
+    $this->newerThanTimestamp = $newerThanTimestamp;
+    $this->loggerFactory = LoggerFactory::getInstance();
   }
 
   public function filterOutSentPosts($where) {
     $sentPostsQuery = 'SELECT ' . MP_NEWSLETTER_POSTS_TABLE . '.post_id FROM '
       . MP_NEWSLETTER_POSTS_TABLE . ' WHERE '
-      . MP_NEWSLETTER_POSTS_TABLE . ".newsletter_id='" . $this->newsletter_id . "'";
+      . MP_NEWSLETTER_POSTS_TABLE . ".newsletter_id='" . $this->newsletterId . "'";
 
     $wherePostUnsent = 'ID NOT IN (' . $sentPostsQuery . ')';
 
@@ -37,24 +37,24 @@ class AutomatedLatestContent {
     // Queries with taxonomies are autodetected as 'is_archive=true' and 'is_home=false'
     // while queries without them end up being 'is_archive=false' and 'is_home=true'.
     // This is to fix that by always enforcing constistent behavior.
-    $query->is_archive = true;
-    $query->is_home = false;
+    $query->isArchive = true;
+    $query->isHome = false;
   }
 
-  public function getPosts($args, $posts_to_exclude = []) {
+  public function getPosts($args, $postsToExclude = []) {
     // Get posts as logged out user, so private posts hidden by other plugins (e.g. UAM) are also excluded
-    $current_user_id = WPFunctions::get()->getCurrentUserId();
+    $currentUserId = WPFunctions::get()->getCurrentUserId();
     WPFunctions::get()->wpSetCurrentUser(0);
 
-    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'loading automated latest content',
-      ['args' => $args, 'posts_to_exclude' => $posts_to_exclude, 'newsletter_id' => $this->newsletter_id, 'newer_than_timestamp' => $this->newer_than_timestamp]
+      ['args' => $args, 'posts_to_exclude' => $postsToExclude, 'newsletter_id' => $this->newsletterId, 'newer_than_timestamp' => $this->newerThanTimestamp]
     );
-    $posts_per_page = (!empty($args['amount']) && (int)$args['amount'] > 0)
+    $postsPerPage = (!empty($args['amount']) && (int)$args['amount'] > 0)
       ? (int)$args['amount']
       : self::DEFAULT_POSTS_PER_PAGE;
     $parameters = [
-      'posts_per_page' => $posts_per_page,
+      'posts_per_page' => $postsPerPage,
       'post_type' => (isset($args['contentType'])) ? $args['contentType'] : 'post',
       'post_status' => (isset($args['postStatus'])) ? $args['postStatus'] : 'publish',
       'orderby' => 'date',
@@ -70,8 +70,8 @@ class AutomatedLatestContent {
       $parameters['post__in'] = $args['posts'];
       $parameters['posts_per_page'] = -1; // Get all posts with matching IDs
     }
-    if (!empty($posts_to_exclude)) {
-      $parameters['post__not_in'] = $posts_to_exclude;
+    if (!empty($postsToExclude)) {
+      $parameters['post__not_in'] = $postsToExclude;
     }
     $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
 
@@ -81,30 +81,30 @@ class AutomatedLatestContent {
     // the query.
     $parameters['suppress_filters'] = false;
 
-    if ($this->newer_than_timestamp) {
+    if ($this->newerThanTimestamp) {
       $parameters['date_query'] = [
         [
           'column' => 'post_date',
-          'after' => $this->newer_than_timestamp,
+          'after' => $this->newerThanTimestamp,
         ],
       ];
     }
 
     // set low priority to execute 'ensureConstistentQueryType' before any other filter
-    $filter_priority = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
-    WPFunctions::get()->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filter_priority);
+    $filterPriority = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
+    WPFunctions::get()->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
     $this->_attachSentPostsFilter();
 
-    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'getting automated latest content',
       ['parameters' => $parameters]
     );
     $posts = WPFunctions::get()->getPosts($parameters);
     $this->logPosts($posts);
 
-    WPFunctions::get()->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filter_priority);
+    WPFunctions::get()->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
     $this->_detachSentPostsFilter();
-    WPFunctions::get()->wpSetCurrentUser($current_user_id);
+    WPFunctions::get()->wpSetCurrentUser($currentUserId);
     return $posts;
   }
 
@@ -114,7 +114,7 @@ class AutomatedLatestContent {
   }
 
   public function constructTaxonomiesQuery($args) {
-    $taxonomies_query = [];
+    $taxonomiesQuery = [];
     if (isset($args['terms']) && is_array($args['terms'])) {
       $taxonomies = [];
       // Categorize terms based on their taxonomies
@@ -134,45 +134,45 @@ class AutomatedLatestContent {
             'terms' => $terms,
           ];
           if ($args['inclusionType'] === 'exclude') $tax['operator'] = 'NOT IN';
-          $taxonomies_query[] = $tax;
+          $taxonomiesQuery[] = $tax;
         }
       }
-      if (!empty($taxonomies_query)) {
+      if (!empty($taxonomiesQuery)) {
         // With exclusion we want to use 'AND', because we want posts that
         // don't have excluded tags/categories. But with inclusion we want to
         // use 'OR', because we want posts that have any of the included
         // tags/categories
-        $taxonomies_query['relation'] = ($args['inclusionType'] === 'exclude') ? 'AND' : 'OR';
+        $taxonomiesQuery['relation'] = ($args['inclusionType'] === 'exclude') ? 'AND' : 'OR';
       }
     }
 
     // make $taxonomies_query nested to avoid conflicts with plugins that use taxonomies
-    return empty($taxonomies_query) ? [] : [$taxonomies_query];
+    return empty($taxonomiesQuery) ? [] : [$taxonomiesQuery];
   }
 
   private function _attachSentPostsFilter() {
-    if ($this->newsletter_id > 0) {
+    if ($this->newsletterId > 0) {
       WPFunctions::get()->addAction('posts_where', [$this, 'filterOutSentPosts']);
     }
   }
 
   private function _detachSentPostsFilter() {
-    if ($this->newsletter_id > 0) {
+    if ($this->newsletterId > 0) {
       WPFunctions::get()->removeAction('posts_where', [$this, 'filterOutSentPosts']);
     }
   }
 
   private function logPosts(array $posts) {
-    $posts_to_log = [];
+    $postsToLog = [];
     foreach ($posts as $post) {
-      $posts_to_log[] = [
+      $postsToLog[] = [
         'id' => $post->ID,
-        'post_date' => $post->post_date,
+        'post_date' => $post->postDate,
       ];
     }
-    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'automated latest content loaded posts',
-      ['posts' => $posts_to_log]
+      ['posts' => $postsToLog]
     );
   }
 }

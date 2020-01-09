@@ -19,7 +19,7 @@ class SimpleWorkerTest extends \MailPoetTest {
   public $cron_helper;
   public function _before() {
     parent::_before();
-    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->worker = new MockSimpleWorker();
   }
 
@@ -29,12 +29,12 @@ class SimpleWorkerTest extends \MailPoetTest {
       [],
       $this
     );
-    $worker_class = get_class($worker);
+    $workerClass = get_class($worker);
     try {
-      new $worker_class();
+      new $workerClass();
       $this->fail('SimpleWorker did not throw an exception');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('Constant TASK_TYPE is not defined on subclass ' . $worker_class);
+      expect($e->getMessage())->equals('Constant TASK_TYPE is not defined on subclass ' . $workerClass);
     }
   }
 
@@ -54,18 +54,18 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   public function testItCalculatesNextRunDateWithinNextWeekBoundaries() {
-    $current_date = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentDate = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     /** @var Carbon $next_run_date */
-    $next_run_date = (new MockSimpleWorker())->getNextRunDate();
-    $difference = $next_run_date->diffInDays($current_date);
+    $nextRunDate = (new MockSimpleWorker())->getNextRunDate();
+    $difference = $nextRunDate->diffInDays($currentDate);
     // Subtract days left in the current week
-    $difference -= (Carbon::DAYS_PER_WEEK - (int)$current_date->format('N'));
+    $difference -= (Carbon::DAYS_PER_WEEK - (int)$currentDate->format('N'));
     expect($difference)->lessOrEquals(7);
     expect($difference)->greaterOrEquals(0);
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

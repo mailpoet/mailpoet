@@ -23,24 +23,24 @@ class AddToNewslettersSegments {
    *
    * @return array
    */
-  public function add(array $initial_segments) {
-    $dynamic_segments = $this->getListings();
-    return array_merge($initial_segments, $dynamic_segments);
+  public function add(array $initialSegments) {
+    $dynamicSegments = $this->getListings();
+    return array_merge($initialSegments, $dynamicSegments);
   }
 
   private function getListings() {
-    $dynamic_segments = $this->loader->load();
-    return $this->buildResult($dynamic_segments);
+    $dynamicSegments = $this->loader->load();
+    return $this->buildResult($dynamicSegments);
   }
 
-  private function buildResult($dynamic_segments) {
+  private function buildResult($dynamicSegments) {
     $result = [];
-    foreach ($dynamic_segments as $dynamic_segment) {
+    foreach ($dynamicSegments as $dynamicSegment) {
       $result[] = [
-        'id' => $dynamic_segment->id,
-        'name' => $dynamic_segment->name,
-        'subscribers' => $this->subscribersCountLoader->getSubscribersCount($dynamic_segment),
-        'deleted_at' => $dynamic_segment->deleted_at,
+        'id' => $dynamicSegment->id,
+        'name' => $dynamicSegment->name,
+        'subscribers' => $this->subscribersCountLoader->getSubscribersCount($dynamicSegment),
+        'deleted_at' => $dynamicSegment->deletedAt,
       ];
     }
     return $result;

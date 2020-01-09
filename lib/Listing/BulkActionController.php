@@ -14,17 +14,17 @@ class BulkActionController {
     $this->handler = $handler;
   }
 
-  public function apply($model_class, array $data) {
-    $bulk_action_method = 'bulk' . ucfirst($data['action']);
+  public function apply($modelClass, array $data) {
+    $bulkActionMethod = 'bulk' . ucfirst($data['action']);
     unset($data['action']);
 
-    $action_class = $this->factory->getActionClass($model_class, $bulk_action_method);
-    $callback = [$action_class, $bulk_action_method];
+    $actionClass = $this->factory->getActionClass($modelClass, $bulkActionMethod);
+    $callback = [$actionClass, $bulkActionMethod];
 
     if (is_callable($callback)) {
       return call_user_func_array(
         $callback,
-        [$this->handler->getSelection($model_class, $data['listing']), $data]
+        [$this->handler->getSelection($modelClass, $data['listing']), $data]
       );
     }
   }

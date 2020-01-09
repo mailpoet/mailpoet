@@ -5,14 +5,14 @@ if (!file_exists($path)) {
   mkdir($path);
 }
 $filename = $path . '/mailpoet-' . microtime(true) . '.txt';
-$file_handle = fopen($filename, "w");
+$fileHandle = fopen($filename, "w");
 
 // phpcs:ignore Squiz.PHP.DiscouragedFunctions
-$call_arguments = print_r($argv, true) . "\n";
-fwrite($file_handle, $call_arguments);
+$callArguments = print_r($argv, true) . "\n";
+fwrite($fileHandle, $callArguments);
 
 while ($line = fgets(STDIN)) {
-  fwrite($file_handle, $line);
+  fwrite($fileHandle, $line);
 }
 
-fclose($file_handle);
+fclose($fileHandle);

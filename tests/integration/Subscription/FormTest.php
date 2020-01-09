@@ -57,7 +57,7 @@ class FormTest extends \MailPoetTest {
     );
     $obfuscator = new FieldNameObfuscator();
     $obfuscatedEmail = $obfuscator->obfuscate('email');
-    $this->request_data = [
+    $this->requestData = [
       'action' => 'mailpoet_subscription_form',
       'data' => [
         'form_id' => $this->form->id,
@@ -79,13 +79,13 @@ class FormTest extends \MailPoetTest {
   }
 
   public function testItSubscribesAndRedirectsBackWithSuccessResponse() {
-    $url_helper = Stub::make(UrlHelper::class, [
+    $urlHelper = Stub::make(UrlHelper::class, [
       'redirectBack' => function($params) {
         return $params;
       },
     ], $this);
-    $form_controller = new Form(ContainerWrapper::getInstance()->get(API::class), $url_helper);
-    $result = $form_controller->onSubmit($this->request_data);
+    $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
+    $result = $formController->onSubmit($this->requestData);
     expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
     expect($result['mailpoet_success'])->equals($this->form->id);
     expect($result['mailpoet_error'])->null();
@@ -94,12 +94,12 @@ class FormTest extends \MailPoetTest {
   public function testItSubscribesAndRedirectsToCustomUrlWithSuccessResponse() {
     // update form with a redirect setting
     $form = $this->form;
-    $form_settings = unserialize($form->settings);
-    $form_settings['on_success'] = 'page';
-    $form_settings['success_page'] = $this->post;
-    $form->settings = serialize($form_settings);
+    $formSettings = unserialize($form->settings);
+    $formSettings['on_success'] = 'page';
+    $formSettings['success_page'] = $this->post;
+    $form->settings = serialize($formSettings);
     $form->save();
-    $url_helper = Stub::make(UrlHelper::class, [
+    $urlHelper = Stub::make(UrlHelper::class, [
       'redirectTo' => function($params) {
         return $params;
       },
@@ -107,43 +107,43 @@ class FormTest extends \MailPoetTest {
         return $params;
       },
     ], $this);
-    $form_controller = new Form(ContainerWrapper::getInstance()->get(API::class), $url_helper);
-    $result = $form_controller->onSubmit($this->request_data);
+    $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
+    $result = $formController->onSubmit($this->requestData);
     expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
     expect($result)->regExp('/http.*?sample-post/i');
   }
 
   public function testItDoesNotSubscribeAndRedirectsBackWithErrorResponse() {
     // clear subscriber email so that subscription fails
-    $request_data = $this->request_data;
-    $request_data['data']['email'] = false;
-    $url_helper = Stub::make(UrlHelper::class, [
+    $requestData = $this->requestData;
+    $requestData['data']['email'] = false;
+    $urlHelper = Stub::make(UrlHelper::class, [
       'redirectBack' => function($params) {
         return $params;
       },
     ], $this);
-    $form_controller = new Form(ContainerWrapper::getInstance()->get(API::class), $url_helper);
-    $result = $form_controller->onSubmit($request_data);
+    $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
+    $result = $formController->onSubmit($requestData);
     expect(SubscriberModel::findMany())->isEmpty();
     expect($result['mailpoet_error'])->equals($this->form->id);
     expect($result['mailpoet_success'])->null();
   }
 
   public function testItDoesNotSubscribeAndRedirectsToRedirectUrlIfPresent() {
-    $redirect_url = 'http://test/';
-    $url_helper = Stub::make(UrlHelper::class, [
+    $redirectUrl = 'http://test/';
+    $urlHelper = Stub::make(UrlHelper::class, [
       'redirectTo' => function($params) {
         return $params;
       },
     ], $this);
     $api = Stub::makeEmpty(API::class, [
-      'processRoute' => function() use ($redirect_url) {
-        return new ErrorResponse([], ['redirect_url' => $redirect_url], Response::STATUS_BAD_REQUEST);
+      'processRoute' => function() use ($redirectUrl) {
+        return new ErrorResponse([], ['redirect_url' => $redirectUrl], Response::STATUS_BAD_REQUEST);
       },
     ], $this);
-    $form_controller = new Form($api, $url_helper);
-    $result = $form_controller->onSubmit($this->request_data);
-    expect($result)->equals($redirect_url);
+    $formController = new Form($api, $urlHelper);
+    $result = $formController->onSubmit($this->requestData);
+    expect($result)->equals($redirectUrl);
   }
 
   public function _after() {
@@ -151,6 +151,6 @@ class FormTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
     ORM::raw_execute('TRUNCATE ' . FormModel::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberModel::$_table);
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

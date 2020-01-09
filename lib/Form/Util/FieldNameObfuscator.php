@@ -10,8 +10,8 @@ class FieldNameObfuscator {
   const HASH_LENGTH = 12;
 
   public function obfuscate($name) {
-    $auth_key = defined('AUTH_KEY') ? AUTH_KEY : '';
-    $hash = substr(md5($auth_key . WPFunctions::get()->homeUrl() . $name), 0, self::HASH_LENGTH);
+    $authKey = defined('AUTH_KEY') ? AUTH_KEY : '';
+    $hash = substr(md5($authKey . WPFunctions::get()->homeUrl() . $name), 0, self::HASH_LENGTH);
     return self::OBFUSCATED_FIELD_PREFIX . base64_encode($hash . '_' . $name);
   }
 

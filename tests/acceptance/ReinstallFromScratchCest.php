@@ -11,9 +11,9 @@ use PHPUnit_Framework_Assert as Asserts;
 
 class ReinstallFromScratchCest {
 
-  public function reinstallFromScratch(\AcceptanceTester $I) {
-    $I->wantTo('Reinstall from scratch');
-    $I->login();
+  public function reinstallFromScratch(\AcceptanceTester $i) {
+    $i->wantTo('Reinstall from scratch');
+    $i->login();
 
     // Step 1 - create email, form, list and subscribers
     $newsletter = new Newsletter();
@@ -30,11 +30,11 @@ class ReinstallFromScratchCest {
     }
 
     // Step 2 - reinstall from scratch
-    $I->amOnPage('/wp-admin/admin.php?page=mailpoet-settings#advanced');
-    $I->waitForElement('#mailpoet_reinstall');
-    $I->click('Reinstall now...');
-    $I->acceptPopup();
-    $I->waitForText('Welcome! Let’s get you started on the right foot.');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-settings#advanced');
+    $i->waitForElement('#mailpoet_reinstall');
+    $i->click('Reinstall now...');
+    $i->acceptPopup();
+    $i->waitForText('Welcome! Let’s get you started on the right foot.');
 
     // Step 3 - skip all tutorials, which could interfere with other tests
     $settings = new Settings();
@@ -42,22 +42,22 @@ class ReinstallFromScratchCest {
 
     // Step 4 - check if data are emptied and repopulated
     // Check emails
-    $I->amOnMailpoetPage('Emails');
-    $I->seeInCurrentUrl('#/new');
+    $i->amOnMailpoetPage('Emails');
+    $i->seeInCurrentUrl('#/new');
     // Check forms
-    $I->amOnMailpoetPage('Forms');
-    $I->waitForText('My First Form', 30, '[data-automation-id="listing_item_1"]');
-    $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 1);
+    $i->amOnMailpoetPage('Forms');
+    $i->waitForText('My First Form', 30, '[data-automation-id="listing_item_1"]');
+    $i->seeNumberOfElements('[data-automation-id^=listing_item_]', 1);
     // Check lists
-    $I->amOnMailpoetPage('Lists');
-    $I->waitForText('WordPress Users', 30, '[data-automation-id="listing_item_1"]');
-    $I->see('My First List', '[data-automation-id="listing_item_3"]');
-    $I->seeNumberOfElements('[data-automation-id^=listing_item_]', 2);
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForText('WordPress Users', 30, '[data-automation-id="listing_item_1"]');
+    $i->see('My First List', '[data-automation-id="listing_item_3"]');
+    $i->seeNumberOfElements('[data-automation-id^=listing_item_]', 2);
     // Check subscribers
-    $I->amOnMailPoetPage('Subscribers');
-    $I->waitForText('admin', 30, '.mailpoet_listing_table');
-    $wp_users_count = count_users();
-    $subscribers_count = (int)$I->grabTextFrom('.displaying-num');
-    Asserts::assertEquals($wp_users_count['total_users'], $subscribers_count);
+    $i->amOnMailPoetPage('Subscribers');
+    $i->waitForText('admin', 30, '.mailpoet_listing_table');
+    $wpUsersCount = count_users();
+    $subscribersCount = (int)$i->grabTextFrom('.displaying-num');
+    Asserts::assertEquals($wpUsersCount['total_users'], $subscribersCount);
   }
 }

@@ -40,12 +40,12 @@ class ClicksTest extends \MailPoetTest {
     // create subscriber
     $subscriber = Subscriber::create();
     $subscriber->email = 'test@example.com';
-    $subscriber->first_name = 'First';
-    $subscriber->last_name = 'Last';
+    $subscriber->firstName = 'First';
+    $subscriber->lastName = 'Last';
     $this->subscriber = $subscriber->save();
     // create queue
     $queue = SendingTask::create();
-    $queue->newsletter_id = $newsletter->id;
+    $queue->newsletterId = $newsletter->id;
     $queue->setSubscribers([$subscriber->id]);
     $queue->updateProcessedSubscribers([$subscriber->id]);
     $this->queue = $queue->save();
@@ -53,32 +53,32 @@ class ClicksTest extends \MailPoetTest {
     $link = NewsletterLink::create();
     $link->hash = 'hash';
     $link->url = 'url';
-    $link->newsletter_id = $newsletter->id;
-    $link->queue_id = $queue->id;
+    $link->newsletterId = $newsletter->id;
+    $link->queueId = $queue->id;
     $this->link = $link->save();
-    $link_tokens = new LinkTokens;
+    $linkTokens = new LinkTokens;
     // build track data
-    $this->track_data = (object)[
+    $this->trackData = (object)[
       'queue' => $queue,
       'subscriber' => $subscriber,
       'newsletter' => $newsletter,
-      'subscriber_token' => $link_tokens->getToken($subscriber),
+      'subscriber_token' => $linkTokens->getToken($subscriber),
       'link' => $link,
       'preview' => false,
     ];
     // instantiate class
-    $this->settings_controller = Stub::makeEmpty(SettingsController::class, [
+    $this->settingsController = Stub::makeEmpty(SettingsController::class, [
       'get' => false,
     ], $this);
-    $this->clicks = new Clicks($this->settings_controller, new Cookies());
+    $this->clicks = new Clicks($this->settingsController, new Cookies());
   }
 
   public function testItAbortsWhenTrackDataIsEmptyOrMissingLink() {
     // abort function should be called twice:
-    $clicks = Stub::construct($this->clicks, [$this->settings_controller, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
       'abort' => Expected::exactly(2),
     ], $this);
-    $data = $this->track_data;
+    $data = $this->trackData;
     // 1. when tracking data does not exist
     $clicks->track(null);
     // 2. when link model object is missing
@@ -87,10 +87,10 @@ class ClicksTest extends \MailPoetTest {
   }
 
   public function testItDoesNotTrackEventsFromWpUserWhenPreviewIsEnabled() {
-    $data = $this->track_data;
+    $data = $this->trackData;
     $data->subscriber->wp_user_id = 99;
     $data->preview = true;
-    $clicks = Stub::construct($this->clicks, [$this->settings_controller, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($data);
@@ -99,8 +99,8 @@ class ClicksTest extends \MailPoetTest {
   }
 
   public function testItTracksClickAndOpenEvent() {
-    $data = $this->track_data;
-    $clicks = Stub::construct($this->clicks, [$this->settings_controller, new Cookies()], [
+    $data = $this->trackData;
+    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($data);
@@ -109,19 +109,19 @@ class ClicksTest extends \MailPoetTest {
   }
 
   public function testItRedirectsToUrlAfterTracking() {
-    $clicks = Stub::construct($this->clicks, [$this->settings_controller, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
       'redirectToUrl' => Expected::exactly(1),
     ], $this);
-    $clicks->track($this->track_data);
+    $clicks->track($this->trackData);
   }
 
   public function testItIncrementsClickEventCount() {
-    $clicks = Stub::construct($this->clicks, [$this->settings_controller, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
       'redirectToUrl' => null,
     ], $this);
-    $clicks->track($this->track_data);
+    $clicks->track($this->trackData);
     expect(StatisticsClicks::findMany()[0]->count)->equals(1);
-    $clicks->track($this->track_data);
+    $clicks->track($this->trackData);
     expect(StatisticsClicks::findMany()[0]->count)->equals(2);
   }
 
@@ -137,7 +137,7 @@ class ClicksTest extends \MailPoetTest {
   }
 
   public function testItFailsToConvertsInvalidShortcodeToUrl() {
-    $clicks = Stub::construct($this->clicks, [$this->settings_controller, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
       'abort' => Expected::exactly(1),
     ], $this);
     // should call abort() method if shortcode action does not exist

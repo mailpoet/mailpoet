@@ -12,25 +12,25 @@ class Subscribers {
     $this->task = $task;
   }
 
-  public function setSubscribers(array $subscriber_ids) {
-    ScheduledTaskSubscriber::setSubscribers($this->task->id, $subscriber_ids);
+  public function setSubscribers(array $subscriberIds) {
+    ScheduledTaskSubscriber::setSubscribers($this->task->id, $subscriberIds);
   }
 
   public function getSubscribers() {
     return ScheduledTaskSubscriber::where('task_id', $this->task->id);
   }
 
-  public function isSubscriberProcessed($subscriber_id) {
+  public function isSubscriberProcessed($subscriberId) {
     $subscriber = $this->getSubscribers()
-      ->where('subscriber_id', $subscriber_id)
+      ->where('subscriber_id', $subscriberId)
       ->where('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
       ->findOne();
     return !empty($subscriber);
   }
 
-  public function removeSubscribers(array $subscribers_to_remove) {
+  public function removeSubscribers(array $subscribersToRemove) {
     $this->getSubscribers()
-      ->whereIn('subscriber_id', $subscribers_to_remove)
+      ->whereIn('subscriber_id', $subscribersToRemove)
       ->deleteMany();
     $this->checkCompleted();
   }
@@ -41,10 +41,10 @@ class Subscribers {
     $this->checkCompleted();
   }
 
-  public function updateProcessedSubscribers(array $processed_subscribers) {
-    if (!empty($processed_subscribers)) {
+  public function updateProcessedSubscribers(array $processedSubscribers) {
+    if (!empty($processedSubscribers)) {
       $this->getSubscribers()
-        ->whereIn('subscriber_id', $processed_subscribers)
+        ->whereIn('subscriber_id', $processedSubscribers)
         ->findResultSet()
         ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
         ->save();
@@ -52,12 +52,12 @@ class Subscribers {
     $this->checkCompleted();
   }
 
-  public function saveSubscriberError($subcriber_id, $error_message) {
+  public function saveSubscriberError($subcriberId, $errorMessage) {
     $this->getSubscribers()
-      ->where('subscriber_id', $subcriber_id)
+      ->where('subscriber_id', $subcriberId)
       ->findResultSet()
       ->set('failed', ScheduledTaskSubscriber::FAIL_STATUS_FAILED)
-      ->set('error', $error_message)
+      ->set('error', $errorMessage)
       ->save();
   }
 

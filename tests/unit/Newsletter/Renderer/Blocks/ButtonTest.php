@@ -28,7 +28,7 @@ class ButtonTest extends \MailPoetUnitTest {
 
   public function testItRendersCorrectly() {
     $output = Button::render($this->block, 200);
-    $expected_result = '
+    $expectedResult = '
       <tr>
         <td class="mailpoet_padded_vertical mailpoet_padded_side" valign="top">
           <div>
@@ -58,6 +58,6 @@ class ButtonTest extends \MailPoetUnitTest {
           </div>
         </td>
       </tr>';
-    expect($output)->equals($expected_result);
+    expect($output)->equals($expectedResult);
   }
 }

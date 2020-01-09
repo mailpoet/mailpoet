@@ -237,10 +237,10 @@ $replacements = [
   ],
 ];
 
-foreach ($replacements as $single_file) {
-  $data = file_get_contents($single_file['file']);
-  $data = str_replace($single_file['find'], $single_file['replace'], $data);
-  file_put_contents($single_file['file'], $data);
+foreach ($replacements as $singleFile) {
+  $data = file_get_contents($singleFile['file']);
+  $data = str_replace($singleFile['find'], $singleFile['replace'], $data);
+  file_put_contents($singleFile['file'], $data);
 }
 
 // Remove unwanted class aliases

@@ -28,8 +28,8 @@ class Text {
   }
 
   public static function convertBlockquotesToTables($html) {
-    $DOM_parser = new pQuery();
-    $DOM = $DOM_parser->parseStr($html);
+    $dOMParser = new pQuery();
+    $DOM = $dOMParser->parseStr($html);
     $blockquotes = $DOM->query('blockquote');
     foreach ($blockquotes as $blockquote) {
       $contents = [];
@@ -73,27 +73,27 @@ class Text {
   }
 
   public static function convertParagraphsToTables($html) {
-    $DOM_parser = new pQuery();
-    $DOM = $DOM_parser->parseStr($html);
+    $dOMParser = new pQuery();
+    $DOM = $dOMParser->parseStr($html);
     $paragraphs = $DOM->query('p');
     if (!$paragraphs->count()) return $html;
     foreach ($paragraphs as $paragraph) {
       // process empty paragraphs
       if (!trim($paragraph->html())) {
-          $next_element = ($paragraph->getNextSibling()) ?
+          $nextElement = ($paragraph->getNextSibling()) ?
             trim($paragraph->getNextSibling()->text()) :
             false;
-          $previous_element = ($paragraph->getPreviousSibling()) ?
+          $previousElement = ($paragraph->getPreviousSibling()) ?
             trim($paragraph->getPreviousSibling()->text()) :
             false;
-        $previous_element_tag = ($previous_element) ?
+        $previousElementTag = ($previousElement) ?
           $paragraph->getPreviousSibling()->tag :
           false;
         // if previous or next paragraphs are empty OR previous paragraph
         // is a heading, insert a break line
-        if (!$next_element ||
-            !$previous_element ||
-            (preg_match('/h\d+/', $previous_element_tag))
+        if (!$nextElement ||
+            !$previousElement ||
+            (preg_match('/h\d+/', $previousElementTag))
         ) {
           $paragraph = self::insertLineBreak($paragraph);
         }
@@ -109,26 +109,26 @@ class Text {
       $paragraph->style = 'border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;';
       $paragraph->width = '100%';
       $paragraph->cellpadding = 0;
-      $next_element = $paragraph->getNextSibling();
+      $nextElement = $paragraph->getNextSibling();
       // unless this is the last element in column, add double line breaks
-      $line_breaks = ($next_element && !trim($next_element->text())) ?
+      $lineBreaks = ($nextElement && !trim($nextElement->text())) ?
         '<br /><br />' :
         '';
       // if this element is followed by a list, add single line break
-      $line_breaks = ($next_element && preg_match('/<li/i', $next_element->getOuterText())) ?
+      $lineBreaks = ($nextElement && preg_match('/<li/i', $nextElement->getOuterText())) ?
         '<br />' :
-        $line_breaks;
+        $lineBreaks;
       if ($paragraph->hasClass(PostContentManager::WP_POST_CLASS)) {
         $paragraph->removeClass(PostContentManager::WP_POST_CLASS);
         // if this element is followed by a paragraph, add double line breaks
-        $line_breaks = ($next_element && preg_match('/<p/i', $next_element->getOuterText())) ?
+        $lineBreaks = ($nextElement && preg_match('/<p/i', $nextElement->getOuterText())) ?
           '<br /><br />' :
-          $line_breaks;
+          $lineBreaks;
       }
       $paragraph->html('
         <tr>
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . EHelper::escapeHtmlStyleAttr($style) . '">
-            ' . $contents . $line_breaks . '
+            ' . $contents . $lineBreaks . '
           </td>
         </tr>'
       );
@@ -137,8 +137,8 @@ class Text {
   }
 
   public static function styleLists($html) {
-    $DOM_parser = new pQuery();
-    $DOM = $DOM_parser->parseStr($html);
+    $dOMParser = new pQuery();
+    $DOM = $dOMParser->parseStr($html);
     $lists = $DOM->query('ol, ul, li');
     if (!$lists->count()) return $html;
     foreach ($lists as $list) {
@@ -157,8 +157,8 @@ class Text {
   }
 
   public static function styleHeadings($html) {
-    $DOM_parser = new pQuery();
-    $DOM = $DOM_parser->parseStr($html);
+    $dOMParser = new pQuery();
+    $DOM = $dOMParser->parseStr($html);
     $headings = $DOM->query('h1, h2, h3, h4');
     if (!$headings->count()) return $html;
     foreach ($headings as $heading) {

@@ -28,33 +28,33 @@ class EntityManagerFactory {
   public function __construct(
     Connection $connection,
     Configuration $configuration,
-    TimestampListener $timestamp_listener,
-    ValidationListener $validation_listener
+    TimestampListener $timestampListener,
+    ValidationListener $validationListener
   ) {
     $this->connection = $connection;
     $this->configuration = $configuration;
-    $this->timestamp_listener = $timestamp_listener;
-    $this->validation_listener = $validation_listener;
+    $this->timestampListener = $timestampListener;
+    $this->validationListener = $validationListener;
   }
 
   public function createEntityManager() {
-    $entity_manager = EntityManager::create($this->connection, $this->configuration);
-    $this->setupListeners($entity_manager);
+    $entityManager = EntityManager::create($this->connection, $this->configuration);
+    $this->setupListeners($entityManager);
     if (class_exists(Debugger::class)) {
-      DoctrinePanel::init($entity_manager);
+      DoctrinePanel::init($entityManager);
     }
-    return $entity_manager;
+    return $entityManager;
   }
 
-  private function setupListeners(EntityManager $entity_manager) {
-    $entity_manager->getEventManager()->addEventListener(
+  private function setupListeners(EntityManager $entityManager) {
+    $entityManager->getEventManager()->addEventListener(
       [Events::prePersist, Events::preUpdate],
-      $this->timestamp_listener
+      $this->timestampListener
     );
 
-    $entity_manager->getEventManager()->addEventListener(
+    $entityManager->getEventManager()->addEventListener(
       [Events::onFlush],
-      $this->validation_listener
+      $this->validationListener
     );
   }
 }

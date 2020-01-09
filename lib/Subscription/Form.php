@@ -15,31 +15,31 @@ class Form {
   /** @var UrlHelper */
   private $url_helper;
 
-  public function __construct(API $api, UrlHelper $url_helper) {
+  public function __construct(API $api, UrlHelper $urlHelper) {
     $this->api = $api;
-    $this->url_helper = $url_helper;
+    $this->urlHelper = $urlHelper;
   }
 
-  public function onSubmit($request_data = false) {
-    $request_data = ($request_data) ? $request_data : $_REQUEST;
-    $this->api->setRequestData($request_data, Endpoint::TYPE_POST);
-    $form_id = (!empty($request_data['data']['form_id'])) ? (int)$request_data['data']['form_id'] : false;
+  public function onSubmit($requestData = false) {
+    $requestData = ($requestData) ? $requestData : $_REQUEST;
+    $this->api->setRequestData($requestData, Endpoint::TYPE_POST);
+    $formId = (!empty($requestData['data']['form_id'])) ? (int)$requestData['data']['form_id'] : false;
     $response = $this->api->processRoute();
     if ($response->status !== APIResponse::STATUS_OK) {
       return (isset($response->meta['redirect_url'])) ?
-      $this->url_helper->redirectTo($response->meta['redirect_url']) :
-      $this->url_helper->redirectBack(
+      $this->urlHelper->redirectTo($response->meta['redirect_url']) :
+      $this->urlHelper->redirectBack(
         [
-          'mailpoet_error' => ($form_id) ? $form_id : true,
+          'mailpoet_error' => ($formId) ? $formId : true,
           'mailpoet_success' => null,
         ]
       );
     } else {
       return (isset($response->meta['redirect_url'])) ?
-        $this->url_helper->redirectTo($response->meta['redirect_url']) :
-        $this->url_helper->redirectBack(
+        $this->urlHelper->redirectTo($response->meta['redirect_url']) :
+        $this->urlHelper->redirectBack(
           [
-            'mailpoet_success' => $form_id,
+            'mailpoet_success' => $formId,
             'mailpoet_error' => null,
           ]
         );

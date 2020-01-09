@@ -29,24 +29,24 @@ class WelcomeWizard {
   private $features_controller;
 
   public function __construct(
-    PageRenderer $page_renderer,
+    PageRenderer $pageRenderer,
     SettingsController $settings,
-    WooCommerceHelper $woocommerce_helper,
+    WooCommerceHelper $woocommerceHelper,
     WPFunctions $wp,
-    FeaturesController $features_controller
+    FeaturesController $featuresController
   ) {
-    $this->page_renderer = $page_renderer;
+    $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
-    $this->woocommerce_helper = $woocommerce_helper;
+    $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
-    $this->features_controller = $features_controller;
+    $this->featuresController = $featuresController;
   }
 
   public function render() {
     if ((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
     $data = [
       'is_mp2_migration_complete' => (bool)$this->settings->get(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY),
-      'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
+      'is_woocommerce_active' => $this->woocommerceHelper->isWooCommerceActive(),
       'finish_wizard_url' => $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG),
       'sender' => $this->settings->get('sender'),
       'admin_email' => $this->wp->getOption('admin_email'),
@@ -54,7 +54,7 @@ class WelcomeWizard {
       'subscriber_count' => Subscriber::getTotalSubscribers(),
       'has_mss_key_specified' => Bridge::isMSSKeySpecified(),
     ];
-    $data['mailpoet_feature_flags'] = $this->features_controller->getAllFlags();
-    $this->page_renderer->displayPage('welcome_wizard.html', $data);
+    $data['mailpoet_feature_flags'] = $this->featuresController->getAllFlags();
+    $this->pageRenderer->displayPage('welcome_wizard.html', $data);
   }
 }

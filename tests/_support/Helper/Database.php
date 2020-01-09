@@ -19,8 +19,8 @@ class Database extends \Codeception\Module
     global $wpdb;
 
     $db = ORM::getDb();
-    $full_filename = Env::$path . '/tests/_data/' . $filename . '.sql';
-    $sql = file_get_contents($full_filename);
+    $fullFilename = Env::$path . '/tests/_data/' . $filename . '.sql';
+    $sql = file_get_contents($fullFilename);
     $sql = preg_replace('/`wp_/', '`' . $wpdb->prefix, $sql); // Use the current database prefix
     $db->exec($sql);
   }

@@ -20,11 +20,11 @@ class BlacklistCheck {
     return $this->blacklist->isBlacklisted($email);
   }
 
-  private function getSubscriberEmailForBlacklistCheck($subscriber_string) {
-    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber_string, $subscriber_data);
-    if (!isset($subscriber_data['email'])) {
-      return $subscriber_string;
+  private function getSubscriberEmailForBlacklistCheck($subscriberString) {
+    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriberString, $subscriberData);
+    if (!isset($subscriberData['email'])) {
+      return $subscriberString;
     }
-    return $subscriber_data['email'];
+    return $subscriberData['email'];
   }
 }

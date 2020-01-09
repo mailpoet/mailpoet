@@ -33,14 +33,14 @@ class SubscribersCountTest extends \MailPoetTest {
       'role' => 'editor',
       'user_pass' => '12123154',
     ]);
-    $this->requirement_checker = $this
+    $this->requirementChecker = $this
       ->getMockBuilder(RequirementsChecker::class)
       ->setMethods(['shouldSkipSegment'])
       ->getMock();
   }
 
   public function testItConstructsQuery() {
-    $this->requirement_checker->method('shouldSkipSegment')->willReturn(false);
+    $this->requirementChecker->method('shouldSkipSegment')->willReturn(false);
     $userRole = DynamicSegment::create();
     $userRole->hydrate([
       'name' => 'segment',
@@ -48,13 +48,13 @@ class SubscribersCountTest extends \MailPoetTest {
     ]);
     $userRole->setFilters([new UserRole('editor', 'and')]);
 
-    $loader = new SubscribersCount($this->requirement_checker);
+    $loader = new SubscribersCount($this->requirementChecker);
     $count = $loader->getSubscribersCount($userRole);
     expect($count)->equals(2);
   }
 
   public function testItSkipsIfRequirementNotMet() {
-    $this->requirement_checker->method('shouldSkipSegment')->willReturn(true);
+    $this->requirementChecker->method('shouldSkipSegment')->willReturn(true);
     $userRole = DynamicSegment::create();
     $userRole->hydrate([
       'name' => 'segment',
@@ -62,7 +62,7 @@ class SubscribersCountTest extends \MailPoetTest {
     ]);
     $userRole->setFilters([new UserRole('editor', 'and')]);
 
-    $loader = new SubscribersCount($this->requirement_checker);
+    $loader = new SubscribersCount($this->requirementChecker);
     $count = $loader->getSubscribersCount($userRole);
     expect($count)->equals(0);
   }

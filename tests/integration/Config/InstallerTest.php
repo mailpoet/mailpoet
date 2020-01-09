@@ -43,19 +43,19 @@ class InstallerTest extends \MailPoetTest {
         'retrievePluginInformation' => function () {
           $obj = new \stdClass();
           $obj->slug = $this->slug;
-          $obj->plugin_name = 'MailPoet Premium';
-          $obj->new_version = '3.0.0-alpha.0.0.3.1';
+          $obj->pluginName = 'MailPoet Premium';
+          $obj->newVersion = '3.0.0-alpha.0.0.3.1';
           $obj->requires = '4.6';
           $obj->tested = '4.7.4';
           $obj->downloaded = 12540;
-          $obj->last_updated = date('Y-m-d');
+          $obj->lastUpdated = date('Y-m-d');
           $obj->sections = [
             'description' => 'The new version of the Premium plugin',
             'another_section' => 'This is another section',
             'changelog' => 'Some new features',
           ];
-          $obj->download_link = home_url() . '/wp-content/uploads/mailpoet-premium.zip';
-          $obj->package = $obj->download_link;
+          $obj->downloadLink = home_url() . '/wp-content/uploads/mailpoet-premium.zip';
+          $obj->package = $obj->downloadLink;
           return $obj;
         },
       ],
@@ -63,14 +63,14 @@ class InstallerTest extends \MailPoetTest {
     );
     $result = $installer->getPluginInformation(false, 'plugin_information', $args);
     expect($result->slug)->equals($this->slug);
-    expect($result->new_version)->notEmpty();
-    expect($result->download_link)->notEmpty();
+    expect($result->newVersion)->notEmpty();
+    expect($result->downloadLink)->notEmpty();
     expect($result->package)->notEmpty();
   }
 
   public function testItIgnoresNonMatchingRequestsWhenGettingPluginInformation() {
     $data = new \stdClass;
-    $data->some_property = '123';
+    $data->someProperty = '123';
     $result = $this->installer->getPluginInformation($data, 'some_action', null);
     expect($result)->equals($data);
     $args = new \stdClass;
@@ -88,17 +88,17 @@ class InstallerTest extends \MailPoetTest {
   }
 
   public function testItChecksIfAPluginIsInstalled() {
-    expect(Installer::isPluginInstalled(Env::$plugin_name))->true();
+    expect(Installer::isPluginInstalled(Env::$pluginName))->true();
     expect(Installer::isPluginInstalled('some-non-existent-plugin-123'))->false();
   }
 
   public function testItGetsPluginInstallUrl() {
-    expect(Installer::getPluginInstallationUrl(Env::$plugin_name))
+    expect(Installer::getPluginInstallationUrl(Env::$pluginName))
       ->startsWith(home_url() . '/wp-admin/update.php?action=install-plugin&plugin=mailpoet&_wpnonce=');
   }
 
   public function testItGetsPluginActivateUrl() {
-    expect(Installer::getPluginActivationUrl(Env::$plugin_name))
+    expect(Installer::getPluginActivationUrl(Env::$pluginName))
       ->startsWith(home_url() . '/wp-admin/plugins.php?action=activate&plugin=mailpoet/mailpoet.php&_wpnonce=');
   }
 }

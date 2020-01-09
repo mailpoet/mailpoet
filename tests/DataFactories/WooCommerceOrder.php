@@ -50,12 +50,12 @@ class WooCommerceOrder {
    * @param array $customer_data Customer created via WooCommerceCustomer factory
    * @return $this
    */
-  public function withCustomer($customer_data) {
+  public function withCustomer($customerData) {
     $billing = $this->data['billing'];
-    $billing['first_name'] = $customer_data['first_name'];
-    $billing['last_name'] = $customer_data['last_name'];
-    $billing['email'] = $customer_data['email'];
-    return $this->update(['customer_id' => $customer_data['id'], 'billing' => $billing]);
+    $billing['first_name'] = $customerData['first_name'];
+    $billing['last_name'] = $customerData['last_name'];
+    $billing['email'] = $customerData['email'];
+    return $this->update(['customer_id' => $customerData['id'], 'billing' => $billing]);
   }
 
   public function withCurrency($currency) {
@@ -68,16 +68,16 @@ class WooCommerceOrder {
    * @return $this
    */
   public function withProducts($products, $quantities = null) {
-    $products_data = [];
+    $productsData = [];
     foreach ($products as $key => $product) {
-      $products_data[] = [
+      $productsData[] = [
         'product_id' => $product['id'],
         'name' => $product['name'],
         'qty' => isset($quantities[$key]) ? (int)$quantities[$key] : 1,
         'total' => (string)(isset($product['total']) ? $product['total'] : 10),
       ];
     }
-    return $this->update(['products' => $products_data]);
+    return $this->update(['products' => $productsData]);
   }
 
 
@@ -90,9 +90,9 @@ class WooCommerceOrder {
     if (is_array($this->data['products']) && !empty($this->data['products'])) {
       $cmd[] = '--line_items=' . json_encode($this->data['products']);
     }
-    $create_output = $this->tester->cliToArray($cmd);
-    $order_out = $this->tester->cliToArray(['wc', 'shop_order', 'get', $create_output[0], '--format=json', '--user=admin']);
-    $order = json_decode($order_out[0], true);
+    $createOutput = $this->tester->cliToArray($cmd);
+    $orderOut = $this->tester->cliToArray(['wc', 'shop_order', 'get', $createOutput[0], '--format=json', '--user=admin']);
+    $order = json_decode($orderOut[0], true);
     if (isset($this->data['date_created'])) {
       wp_update_post([
         'ID' => $order['id'],
@@ -117,9 +117,9 @@ class WooCommerceOrder {
     }
   }
 
-  private function update($update_data) {
+  private function update($updateData) {
     $data = $this->data;
-    foreach ($update_data as $item => $value) {
+    foreach ($updateData as $item => $value) {
       $data[$item] = $value;
     }
     $new = clone $this;

@@ -13,26 +13,26 @@ class Mailer {
   }
 
   public function configureMailer($newsletter = null) {
-    $sender['address'] = (!empty($newsletter->sender_address)) ?
-      $newsletter->sender_address :
+    $sender['address'] = (!empty($newsletter->senderAddress)) ?
+      $newsletter->senderAddress :
       false;
-    $sender['name'] = (!empty($newsletter->sender_name)) ?
-      $newsletter->sender_name :
+    $sender['name'] = (!empty($newsletter->senderName)) ?
+      $newsletter->senderName :
       false;
-    $reply_to['address'] = (!empty($newsletter->reply_to_address)) ?
-      $newsletter->reply_to_address :
+    $replyTo['address'] = (!empty($newsletter->replyToAddress)) ?
+      $newsletter->replyToAddress :
       false;
-    $reply_to['name'] = (!empty($newsletter->reply_to_name)) ?
-      $newsletter->reply_to_name :
+    $replyTo['name'] = (!empty($newsletter->replyToName)) ?
+      $newsletter->replyToName :
       false;
     if (!$sender['address']) {
       $sender = false;
     }
-    if (!$reply_to['address']) {
-      $reply_to = false;
+    if (!$replyTo['address']) {
+      $replyTo = false;
     }
     $this->mailer = new MailerFactory();
-    $this->mailer->init($method = false, $sender, $reply_to);
+    $this->mailer->init($method = false, $sender, $replyTo);
     return $this->mailer;
   }
 
@@ -54,25 +54,25 @@ class Mailer {
     return $this->mailer->formatSubscriberNameAndEmailAddress($subscriber);
   }
 
-  public function sendBulk($prepared_newsletters, $prepared_subscribers, $extra_params = []) {
+  public function sendBulk($preparedNewsletters, $preparedSubscribers, $extraParams = []) {
     if ($this->getProcessingMethod() === 'individual') {
       throw new \LogicException('Trying to send a batch with individual processing method');
     }
     return $this->mailer->mailer_instance->send(
-      $prepared_newsletters,
-      $prepared_subscribers,
-      $extra_params
+      $preparedNewsletters,
+      $preparedSubscribers,
+      $extraParams
     );
   }
 
-  public function send($prepared_newsletter, $prepared_subscriber, $extra_params = []) {
+  public function send($preparedNewsletter, $preparedSubscriber, $extraParams = []) {
     if ($this->getProcessingMethod() === 'bulk') {
       throw new \LogicException('Trying to send an individual email with a bulk processing method');
     }
     return $this->mailer->mailer_instance->send(
-      $prepared_newsletter,
-      $prepared_subscriber,
-      $extra_params
+      $preparedNewsletter,
+      $preparedSubscriber,
+      $extraParams
     );
   }
 }

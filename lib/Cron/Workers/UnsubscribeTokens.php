@@ -18,31 +18,31 @@ class UnsubscribeTokens extends SimpleWorker {
   public function processTaskStrategy(ScheduledTask $task, $timer) {
     $meta = $task->getMeta();
     do {
-      $this->cron_helper->enforceExecutionLimit($timer);
-      $subscribers_count = $this->addTokens(Subscriber::class, $meta['last_subscriber_id']);
+      $this->cronHelper->enforceExecutionLimit($timer);
+      $subscribersCount = $this->addTokens(Subscriber::class, $meta['last_subscriber_id']);
       $task->meta = $meta;
       $task->save();
-    } while ($subscribers_count === self::BATCH_SIZE);
+    } while ($subscribersCount === self::BATCH_SIZE);
     do {
-      $this->cron_helper->enforceExecutionLimit($timer);
-      $newsletters_count = $this->addTokens(Newsletter::class, $meta['last_newsletter_id']);
+      $this->cronHelper->enforceExecutionLimit($timer);
+      $newslettersCount = $this->addTokens(Newsletter::class, $meta['last_newsletter_id']);
       $task->meta = $meta;
       $task->save();
-    } while ($newsletters_count === self::BATCH_SIZE);
-    if ($subscribers_count > 0 || $newsletters_count > 0) {
+    } while ($newslettersCount === self::BATCH_SIZE);
+    if ($subscribersCount > 0 || $newslettersCount > 0) {
       return false;
     }
     return true;
   }
 
-  private function addTokens($model, &$last_processed_id = 0) {
+  private function addTokens($model, &$lastProcessedId = 0) {
     $instances = $model::whereNull('unsubscribe_token')
-      ->whereGt('id', (int)$last_processed_id)
+      ->whereGt('id', (int)$lastProcessedId)
       ->orderByAsc('id')
       ->limit(self::BATCH_SIZE)
       ->findMany();
     foreach ($instances as $instance) {
-      $last_processed_id = $instance->id;
+      $lastProcessedId = $instance->id;
       $instance->set('unsubscribe_token', Security::generateUnsubscribeToken($model));
       $instance->save();
     }

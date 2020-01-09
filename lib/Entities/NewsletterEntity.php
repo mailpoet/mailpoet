@@ -144,7 +144,7 @@ class NewsletterEntity {
   private $queues;
 
   public function __construct() {
-    $this->newsletter_segments = new ArrayCollection();
+    $this->newsletterSegments = new ArrayCollection();
     $this->options = new ArrayCollection();
     $this->queues = new ArrayCollection();
   }
@@ -195,28 +195,28 @@ class NewsletterEntity {
    * @return string
    */
   public function getSenderAddress() {
-    return $this->sender_address;
+    return $this->senderAddress;
   }
 
   /**
    * @param string $sender_address
    */
-  public function setSenderAddress($sender_address) {
-    $this->sender_address = $sender_address;
+  public function setSenderAddress($senderAddress) {
+    $this->senderAddress = $senderAddress;
   }
 
   /**
    * @return string
    */
   public function getSenderName() {
-    return $this->sender_name;
+    return $this->senderName;
   }
 
   /**
    * @param string $sender_name
    */
-  public function setSenderName($sender_name) {
-    $this->sender_name = $sender_name;
+  public function setSenderName($senderName) {
+    $this->senderName = $senderName;
   }
 
   /**
@@ -237,28 +237,28 @@ class NewsletterEntity {
    * @return string
    */
   public function getReplyToAddress() {
-    return $this->reply_to_address;
+    return $this->replyToAddress;
   }
 
   /**
    * @param string $reply_to_address
    */
-  public function setReplyToAddress($reply_to_address) {
-    $this->reply_to_address = $reply_to_address;
+  public function setReplyToAddress($replyToAddress) {
+    $this->replyToAddress = $replyToAddress;
   }
 
   /**
    * @return string
    */
   public function getReplyToName() {
-    return $this->reply_to_name;
+    return $this->replyToName;
   }
 
   /**
    * @param string $reply_to_name
    */
-  public function setReplyToName($reply_to_name) {
-    $this->reply_to_name = $reply_to_name;
+  public function setReplyToName($replyToName) {
+    $this->replyToName = $replyToName;
   }
 
   /**
@@ -293,43 +293,43 @@ class NewsletterEntity {
    * @return DateTimeInterface|null
    */
   public function getSentAt() {
-    return $this->sent_at;
+    return $this->sentAt;
   }
 
   /**
    * @param DateTimeInterface|null $sent_at
    */
-  public function setSentAt($sent_at) {
-    $this->sent_at = $sent_at;
+  public function setSentAt($sentAt) {
+    $this->sentAt = $sentAt;
   }
 
   /**
    * @return string|null
    */
   public function getUnsubscribeToken() {
-    return $this->unsubscribe_token;
+    return $this->unsubscribeToken;
   }
 
   /**
    * @return string
    */
   public function getGaCampaign() {
-    return $this->ga_campaign;
+    return $this->gaCampaign;
   }
 
   /**
    * @param string $ga_campaign
    */
-  public function setGaCampaign($ga_campaign) {
-    $this->ga_campaign = $ga_campaign;
+  public function setGaCampaign($gaCampaign) {
+    $this->gaCampaign = $gaCampaign;
   }
 
 
   /**
    * @param string|null $unsubscribe_token
    */
-  public function setUnsubscribeToken($unsubscribe_token) {
-    $this->unsubscribe_token = $unsubscribe_token;
+  public function setUnsubscribeToken($unsubscribeToken) {
+    $this->unsubscribeToken = $unsubscribeToken;
   }
 
   /**
@@ -357,7 +357,7 @@ class NewsletterEntity {
    * @return NewsletterSegmentEntity[]|ArrayCollection
    */
   public function getNewsletterSegments() {
-    return $this->newsletter_segments;
+    return $this->newsletterSegments;
   }
 
   /**

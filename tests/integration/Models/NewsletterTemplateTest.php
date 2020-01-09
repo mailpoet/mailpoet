@@ -26,8 +26,8 @@ class NewsletterTemplateTest extends \MailPoetTest {
   }
 
   public function testItHasToBeValid() {
-    $invalid_newsletter_template = NewsletterTemplate::create();
-    $result = $invalid_newsletter_template->save();
+    $invalidNewsletterTemplate = NewsletterTemplate::create();
+    $result = $invalidNewsletterTemplate->save();
     $errors = $result->getErrors();
 
     expect(is_array($errors))->true();
@@ -48,26 +48,26 @@ class NewsletterTemplateTest extends \MailPoetTest {
   }
 
   public function testItCanCreateOrUpdate() {
-    $created_template = NewsletterTemplate::createOrUpdate(
+    $createdTemplate = NewsletterTemplate::createOrUpdate(
       [
         'name' => 'Another template',
         'body' => '{content: {}, globalStyles: {}}',
       ]);
-    expect($created_template->id() > 0)->true();
-    expect($created_template->getErrors())->false();
+    expect($createdTemplate->id() > 0)->true();
+    expect($createdTemplate->getErrors())->false();
 
     $template = NewsletterTemplate::where('name', 'Another template')
       ->findOne();
     expect($template->name)->equals('Another template');
 
-    $updated_template = NewsletterTemplate::createOrUpdate(
+    $updatedTemplate = NewsletterTemplate::createOrUpdate(
       [
         'id' => $template->id,
         'name' => 'Another template updated',
         'body' => '{}',
       ]);
-    expect($updated_template->id() > 0)->true();
-    expect($updated_template->getErrors())->false();
+    expect($updatedTemplate->id() > 0)->true();
+    expect($updatedTemplate->getErrors())->false();
 
     $template = NewsletterTemplate::findOne($template->id);
     expect($template->name)->equals('Another template updated');

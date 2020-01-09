@@ -8,31 +8,31 @@ class PQueryTest extends \MailPoetUnitTest {
   public function testBreakingQuoteAreNotRendered() {
     $html = '<a href="#" title="Escape " this"></a>';
     $domnode = pQuery::parseStr($html);
-    $inner_text = $domnode->getInnerText();
-    expect($inner_text)->equals("");
+    $innerText = $domnode->getInnerText();
+    expect($innerText)->equals("");
   }
 
   public function testQuotesAreCorrectlyEscaped() {
-    $html_characters = ['&quot;', '&#34;', '&#39;'];
+    $htmlCharacters = ['&quot;', '&#34;', '&#39;'];
 
-    foreach ($html_characters as $char) {
+    foreach ($htmlCharacters as $char) {
       $this->parseTest($char);
     }
   }
 
   public function testEncodedHtmlNamesAreDecoded() {
-    $html_names = ['&amp;', '&lt;', '&gt;', '&nbsp;', '&iexcl;', '&cent;', '&pound;', '&curren;', '&yen;', '&brvbar;', '&sect;', '&uml;', '&copy;', '&ordf;', '&laquo;', '&not;', '&shy;', '&reg;', '&macr;', '&deg;', '&plusmn;', '&sup2;', '&sup3;', '&acute;', '&micro;', '&para;', '&middot;', '&cedil;', '&sup1;', '&ordm;', '&raquo;', '&frac14;', '&frac12;', '&frac34;', '&iquest;', '&Agrave;', '&Aacute;', '&Acirc;', '&Atilde;', '&Auml;', '&Aring;', '&AElig;', '&Ccedil;', '&Egrave;', '&Eacute;', '&Ecirc;', '&Euml;', '&Igrave;', '&Iacute;', '&Icirc;', '&Iuml;', '&ETH;', '&Ntilde;', '&Ograve;', '&Oacute;', '&Ocirc;', '&Otilde;', '&Ouml;', '&times;', '&Oslash;', '&Ugrave;', '&Uacute;', '&Ucirc;', '&Uuml;', '&Yacute;', '&THORN;', '&szlig;', '&agrave;', '&aacute;', '&acirc;', '&atilde;', '&auml;', '&aring;', '&aelig;', '&ccedil;', '&egrave;', '&eacute;', '&ecirc;', '&euml;', '&igrave;', '&iacute;', '&icirc;', '&iuml;', '&eth;', '&ntilde;', '&ograve;', '&oacute;', '&ocirc;', '&otilde;', '&ouml;', '&divide;', '&oslash;', '&ugrave;', '&uacute;', '&ucirc;', '&uuml;', '&yacute;', '&thorn;', '&yuml;'];
+    $htmlNames = ['&amp;', '&lt;', '&gt;', '&nbsp;', '&iexcl;', '&cent;', '&pound;', '&curren;', '&yen;', '&brvbar;', '&sect;', '&uml;', '&copy;', '&ordf;', '&laquo;', '&not;', '&shy;', '&reg;', '&macr;', '&deg;', '&plusmn;', '&sup2;', '&sup3;', '&acute;', '&micro;', '&para;', '&middot;', '&cedil;', '&sup1;', '&ordm;', '&raquo;', '&frac14;', '&frac12;', '&frac34;', '&iquest;', '&Agrave;', '&Aacute;', '&Acirc;', '&Atilde;', '&Auml;', '&Aring;', '&AElig;', '&Ccedil;', '&Egrave;', '&Eacute;', '&Ecirc;', '&Euml;', '&Igrave;', '&Iacute;', '&Icirc;', '&Iuml;', '&ETH;', '&Ntilde;', '&Ograve;', '&Oacute;', '&Ocirc;', '&Otilde;', '&Ouml;', '&times;', '&Oslash;', '&Ugrave;', '&Uacute;', '&Ucirc;', '&Uuml;', '&Yacute;', '&THORN;', '&szlig;', '&agrave;', '&aacute;', '&acirc;', '&atilde;', '&auml;', '&aring;', '&aelig;', '&ccedil;', '&egrave;', '&eacute;', '&ecirc;', '&euml;', '&igrave;', '&iacute;', '&icirc;', '&iuml;', '&eth;', '&ntilde;', '&ograve;', '&oacute;', '&ocirc;', '&otilde;', '&ouml;', '&divide;', '&oslash;', '&ugrave;', '&uacute;', '&ucirc;', '&uuml;', '&yacute;', '&thorn;', '&yuml;'];
 
-    foreach ($html_names as $char) {
+    foreach ($htmlNames as $char) {
       $this->parseTest($char, $equals = false);
     }
   }
 
   public function testEncodedHtmlNumbersAreDecoded() {
     // Tested numbers are from https://www.ascii.cl/htmlcodes.htm
-    $html_numbers = array_merge(range(40, 126), range(160, 255), [32, 33, 35, 36, 37, 38, 338, 339, 352, 353, 376, 402, 8211, 8212, 8216, 8217, 8218, 8220, 8221, 8222, 8224, 8225, 8226, 8230, 8240, 8364, 8482]);
+    $htmlNumbers = array_merge(range(40, 126), range(160, 255), [32, 33, 35, 36, 37, 38, 338, 339, 352, 353, 376, 402, 8211, 8212, 8216, 8217, 8218, 8220, 8221, 8222, 8224, 8225, 8226, 8230, 8240, 8364, 8482]);
 
-    foreach ($html_numbers as $char) {
+    foreach ($htmlNumbers as $char) {
       $this->parseTest('&#' . $char . ';', $equals = false);
     }
   }
@@ -56,11 +56,11 @@ class PQueryTest extends \MailPoetUnitTest {
   }
 
   public function parseTest($html, $equals = true) {
-    $parsed_html = pQuery::parseStr($html)->getInnerText();
+    $parsedHtml = pQuery::parseStr($html)->getInnerText();
     if ($equals) {
-      expect($parsed_html)->equals($html);
+      expect($parsedHtml)->equals($html);
     } else {
-      expect($parsed_html)->notEquals($html);
+      expect($parsedHtml)->notEquals($html);
     }
   }
 }

@@ -23,11 +23,11 @@ class ApiPanel implements IBarPanel {
   /** @var ReflectionClass */
   protected $endpoint_reflection;
 
-  public function __construct($endpoint, $request_method, $request_data) {
+  public function __construct($endpoint, $requestMethod, $requestData) {
     $this->endpoint = $endpoint;
-    $this->request_method = $request_method;
-    $this->request_data = $request_data;
-    $this->endpoint_reflection = new ReflectionClass($endpoint);
+    $this->requestMethod = $requestMethod;
+    $this->requestData = $requestData;
+    $this->endpointReflection = new ReflectionClass($endpoint);
   }
 
   public function getTab() {
@@ -41,11 +41,11 @@ class ApiPanel implements IBarPanel {
     return ob_get_clean();
   }
 
-  public static function init($endpoint, $request_method, $request_data) {
-    Debugger::getBar()->addPanel(new ApiPanel($endpoint, $request_method, $request_data));
+  public static function init($endpoint, $requestMethod, $requestData) {
+    Debugger::getBar()->addPanel(new ApiPanel($endpoint, $requestMethod, $requestData));
   }
 
   private function getEndpointName() {
-    return $this->endpoint_reflection->getShortName() . '::' . $this->request_method . '()';
+    return $this->endpointReflection->getShortName() . '::' . $this->requestMethod . '()';
   }
 }

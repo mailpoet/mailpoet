@@ -20,11 +20,11 @@ class FormDataMapper {
    */
   public function mapDataToDB(array $data) {
     $filters = $this->getFilters($data);
-    $dynamic_segment = $this->createDynamicSegment($data);
+    $dynamicSegment = $this->createDynamicSegment($data);
 
-    $dynamic_segment->setFilters($filters);
+    $dynamicSegment->setFilters($filters);
 
-    return $dynamic_segment;
+    return $dynamicSegment;
   }
 
   private function createDynamicSegment($data) {
@@ -32,19 +32,19 @@ class FormDataMapper {
       'name' => isset($data['name']) ? $data['name'] : '',
       'description' => isset($data['description']) ? $data['description'] : '',
     ];
-    $dynamic_segment = null;
+    $dynamicSegment = null;
     if (isset($data['id'])) {
-      $dynamic_segment = DynamicSegment::findOne($data['id']);
+      $dynamicSegment = DynamicSegment::findOne($data['id']);
     }
-    if ($dynamic_segment instanceof DynamicSegment) {
-      $dynamic_segment->set($dataToSave);
+    if ($dynamicSegment instanceof DynamicSegment) {
+      $dynamicSegment->set($dataToSave);
     } else {
-      $dynamic_segment = DynamicSegment::create();
-      if ($dynamic_segment instanceof DynamicSegment) {
-        $dynamic_segment->hydrate($dataToSave);
+      $dynamicSegment = DynamicSegment::create();
+      if ($dynamicSegment instanceof DynamicSegment) {
+        $dynamicSegment->hydrate($dataToSave);
       }
     }
-    return $dynamic_segment;
+    return $dynamicSegment;
   }
 
   /**

@@ -25,12 +25,12 @@ class WordpressMailerReplacer {
     Mailer $mailer,
     MetaInfo $mailerMetaInfo,
     SettingsController $settings,
-    SubscribersRepository $subscribers_repository
+    SubscribersRepository $subscribersRepository
   ) {
     $this->mailer = $mailer;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->settings = $settings;
-    $this->subscribers_repository = $subscribers_repository;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function replaceWordPressMailer() {
@@ -40,7 +40,7 @@ class WordpressMailerReplacer {
         $this->mailer,
         new FallbackMailer($this->settings),
         $this->mailerMetaInfo,
-        $this->subscribers_repository
+        $this->subscribersRepository
       );
     }
     return $phpmailer;

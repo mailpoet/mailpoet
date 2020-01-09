@@ -14,13 +14,13 @@ class NewsletterLinkRepository extends Repository {
    * @param int $newsletter_id
    * @return NewsletterLinkEntity|null
    */
-  public function findTopLinkForNewsletter($newsletter_id) {
-    return $this->doctrine_repository
+  public function findTopLinkForNewsletter($newsletterId) {
+    return $this->doctrineRepository
       ->createQueryBuilder('nl')
       ->join('nl.clicks', 'c')
       ->addSelect('COUNT(c.id) AS HIDDEN counter')
       ->where('nl.newsletter = :newsletterId')
-      ->setParameter('newsletterId', $newsletter_id)
+      ->setParameter('newsletterId', $newsletterId)
       ->groupBy('nl.id')
       ->orderBy('counter', 'desc')
       ->setMaxResults(1)

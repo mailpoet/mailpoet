@@ -84,7 +84,7 @@ class ScheduledTask extends Model {
   }
 
   public function complete() {
-    $this->processed_at = $this->wp->currentTime('mysql');
+    $this->processedAt = $this->wp->currentTime('mysql');
     $this->set('status', self::STATUS_COMPLETED);
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);
@@ -130,10 +130,10 @@ class ScheduledTask extends Model {
   }
 
   public function rescheduleProgressively() {
-    $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    $timeout = (int)min(self::BASIC_RESCHEDULE_TIMEOUT * pow(2, $this->reschedule_count), self::MAX_RESCHEDULE_TIMEOUT);
-    $this->scheduled_at = $scheduled_at->addMinutes($timeout);
-    $this->reschedule_count++;
+    $scheduledAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $timeout = (int)min(self::BASIC_RESCHEDULE_TIMEOUT * pow(2, $this->rescheduleCount), self::MAX_RESCHEDULE_TIMEOUT);
+    $this->scheduledAt = $scheduledAt->addMinutes($timeout);
+    $this->rescheduleCount++;
     $this->status = ScheduledTask::STATUS_SCHEDULED;
     $this->save();
     return $timeout;
@@ -150,14 +150,14 @@ class ScheduledTask extends Model {
   /**
    * @return ScheduledTask|null
    */
-  public static function findOneScheduledByNewsletterIdAndSubscriberId($newsletter_id, $subscriber_id) {
+  public static function findOneScheduledByNewsletterIdAndSubscriberId($newsletterId, $subscriberId) {
     return ScheduledTask::tableAlias('tasks')
       ->select('tasks.*')
       ->innerJoin(SendingQueue::$_table, 'queues.task_id = tasks.id', 'queues')
       ->innerJoin(ScheduledTaskSubscriber::$_table, 'task_subscribers.task_id = tasks.id', 'task_subscribers')
-      ->where('queues.newsletter_id', $newsletter_id)
+      ->where('queues.newsletter_id', $newsletterId)
       ->where('tasks.status', ScheduledTask::STATUS_SCHEDULED)
-      ->where('task_subscribers.subscriber_id', $subscriber_id)
+      ->where('task_subscribers.subscriber_id', $subscriberId)
       ->whereNull('queues.deleted_at')
       ->whereNull('tasks.deleted_at')
       ->findOne() ?: null;

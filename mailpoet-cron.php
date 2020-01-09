@@ -8,15 +8,15 @@ if (!isset($argv[1]) || !$argv[1]) {
   exit(1);
 }
 
-$wp_load_file = $argv[1] . '/wp-load.php';
-if (!file_exists($wp_load_file)) {
+$wpLoadFile = $argv[1] . '/wp-load.php';
+if (!file_exists($wpLoadFile)) {
   echo 'WordPress root argument is not valid.';
   exit(1);
 }
 
 if (!defined('ABSPATH')) {
   /** Set up WordPress environment */
-  require_once($wp_load_file);
+  require_once($wpLoadFile);
 }
 
 if (!is_plugin_active('mailpoet/mailpoet.php')) {
@@ -44,7 +44,7 @@ if ($settings->get('cron_trigger.method') !== \MailPoet\Cron\CronTrigger::METHOD
 }
 
 // Run Cron Daemon
-$cron_helper = $container->get(\MailPoet\Cron\CronHelper::class);
-$data = $cron_helper->createDaemon(null);
+$cronHelper = $container->get(\MailPoet\Cron\CronHelper::class);
+$data = $cronHelper->createDaemon(null);
 $trigger = $container->get(\MailPoet\Cron\Daemon::class);
 $trigger->run($data);

@@ -22,66 +22,66 @@ class WooCommerceListImportPageCest {
     $this->settings = $settings;
   }
 
-  public function _before(\AcceptanceTester $I) {
-    $I->activateWooCommerce();
-    $this->customer_factory = new WooCommerceCustomer($I);
-    $this->order_factory = new WooCommerceOrder($I);
+  public function _before(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
+    $this->customerFactory = new WooCommerceCustomer($i);
+    $this->orderFactory = new WooCommerceOrder($i);
   }
 
-  public function importListPageImportTest(\AcceptanceTester $I) {
+  public function importListPageImportTest(\AcceptanceTester $i) {
     $this->settings
       ->withWooCommerceListImportPageDisplayed(false)
       ->withCronTriggerMethod('WordPress');
-    $order = $this->order_factory->create();
-    $guest_user_data = $order['billing'];
-    $registered_customer = $this->customer_factory->withEmail('customer1@email.com')->create();
-    $I->login();
-    $I->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
-    $subscribed_radio = '[data-automation-id="import_as_subscribed"]';
-    $submit_button = '[data-automation-id="submit_woo_commerce_list_import"]';
-    $I->selectOption($subscribed_radio, 'subscribed');
-    $I->click($submit_button);
-    $I->seeNoJSErrors();
-    $I->waitForElement('[data-automation-id="create_standard"]');
-    $I->amOnMailpoetPage('Lists');
-    $I->waitForText('WooCommerce Customers');
-    $I->moveMouseOver('[data-automation-id="segment_name_WooCommerce Customers"]');
-    $I->click('[data-automation-id="view_subscribers_WooCommerce Customers"]');
-    $I->waitForListingItemsToLoad();
-    $I->canSee($registered_customer['email']);
-    $I->reloadPage();
+    $order = $this->orderFactory->create();
+    $guestUserData = $order['billing'];
+    $registeredCustomer = $this->customerFactory->withEmail('customer1@email.com')->create();
+    $i->login();
+    $i->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
+    $subscribedRadio = '[data-automation-id="import_as_subscribed"]';
+    $submitButton = '[data-automation-id="submit_woo_commerce_list_import"]';
+    $i->selectOption($subscribedRadio, 'subscribed');
+    $i->click($submitButton);
+    $i->seeNoJSErrors();
+    $i->waitForElement('[data-automation-id="create_standard"]');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForText('WooCommerce Customers');
+    $i->moveMouseOver('[data-automation-id="segment_name_WooCommerce Customers"]');
+    $i->click('[data-automation-id="view_subscribers_WooCommerce Customers"]');
+    $i->waitForListingItemsToLoad();
+    $i->canSee($registeredCustomer['email']);
+    $i->reloadPage();
     // It takes more time to sync guest user
     // So we reload page several times and check for guest customer email
     for ($i = 0; $i < 15; $i++) {
       try {
-        $I->wait(2);
-        $I->reloadPage();
-        $I->see($guest_user_data['email']);
+        $i->wait(2);
+        $i->reloadPage();
+        $i->see($guestUserData['email']);
         return;
       } catch (\PHPUnit_Framework_Exception $e) {
         continue;
       }
     }
-    $I->see($guest_user_data['email']);
+    $i->see($guestUserData['email']);
   }
 
-  public function importPageFormBehaviourTest(\AcceptanceTester $I) {
-    $I->login();
-    $I->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
-    $I->see('WooCommerce customers now have their own list');
-    $unsubscribed_radio = '[data-automation-id="import_as_unsubscribed"]';
-    $subscribed_radio = '[data-automation-id="import_as_subscribed"]';
-    $submit_button = '[data-automation-id="submit_woo_commerce_list_import"]';
-    $I->cantSeeCheckboxIsChecked($unsubscribed_radio);
-    $I->cantSeeCheckboxIsChecked($subscribed_radio);
-    $I->seeElement("$submit_button:disabled");
-    $I->selectOption($unsubscribed_radio, 'unsubscribed');
-    $I->canSeeCheckboxIsChecked($unsubscribed_radio);
-    $I->seeElement("$submit_button:not(:disabled)");
-    $I->seeNoJSErrors();
-    $I->click($submit_button);
-    $I->seeNoJSErrors();
-    $I->waitForElement('[data-automation-id="create_standard"]');
+  public function importPageFormBehaviourTest(\AcceptanceTester $i) {
+    $i->login();
+    $i->amOnPage('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
+    $i->see('WooCommerce customers now have their own list');
+    $unsubscribedRadio = '[data-automation-id="import_as_unsubscribed"]';
+    $subscribedRadio = '[data-automation-id="import_as_subscribed"]';
+    $submitButton = '[data-automation-id="submit_woo_commerce_list_import"]';
+    $i->cantSeeCheckboxIsChecked($unsubscribedRadio);
+    $i->cantSeeCheckboxIsChecked($subscribedRadio);
+    $i->seeElement("$submit_button:disabled");
+    $i->selectOption($unsubscribedRadio, 'unsubscribed');
+    $i->canSeeCheckboxIsChecked($unsubscribedRadio);
+    $i->seeElement("$submit_button:not(:disabled)");
+    $i->seeNoJSErrors();
+    $i->click($submitButton);
+    $i->seeNoJSErrors();
+    $i->waitForElement('[data-automation-id="create_standard"]');
   }
 
   /**
@@ -89,16 +89,16 @@ class WooCommerceListImportPageCest {
    * can't go to another page unless he submits the form
    * @param \AcceptanceTester $I
    */
-  public function importListPageRedirectionTest(\AcceptanceTester $I) {
+  public function importListPageRedirectionTest(\AcceptanceTester $i) {
     $this->settings->withWooCommerceListImportPageDisplayed(false);
-    $order = $this->order_factory
+    $order = $this->orderFactory
       ->withDateCreated('2001-08-22T11:11:56') // any time in the past. Must be before the plugin activation
       ->create();
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->seeInCurrentUrl('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
-    $I->amOnMailpoetPage('Emails');
-    $I->seeInCurrentUrl('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
-    $this->order_factory->delete($order['id']);
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->seeInCurrentUrl('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
+    $i->amOnMailpoetPage('Emails');
+    $i->seeInCurrentUrl('wp-admin/admin.php?page=mailpoet-woocommerce-list-import');
+    $this->orderFactory->delete($order['id']);
   }
 }

@@ -19,9 +19,9 @@ class FeatureFlagsTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->repository = $this->di_container->get(FeatureFlagsRepository::class);
-    $table_name = $this->entity_manager->getClassMetadata(FeatureFlagEntity::class)->getTableName();
-    $this->entity_manager->getConnection()->executeUpdate("TRUNCATE $table_name");
+    $this->repository = $this->diContainer->get(FeatureFlagsRepository::class);
+    $tableName = $this->entityManager->getClassMetadata(FeatureFlagEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("TRUNCATE $table_name");
   }
 
   public function testItReturnsDefaults() {
@@ -72,7 +72,7 @@ class FeatureFlagsTest extends \MailPoetTest {
       'feature-a' => false,
     ]);
 
-    $this->entity_manager->clear();
+    $this->entityManager->clear();
     $features = $this->repository->findBy(['name' => 'feature-a']);
     expect($features)->count(1);
     expect($features[0]->getName())->equals('feature-a');
@@ -94,7 +94,7 @@ class FeatureFlagsTest extends \MailPoetTest {
       'feature-a' => true,
     ]);
 
-    $this->entity_manager->clear();
+    $this->entityManager->clear();
     $features = $this->repository->findBy(['name' => 'feature-a']);
     expect(count($features))->equals(1);
     expect($features[0]->getName())->equals('feature-a');
@@ -126,14 +126,14 @@ class FeatureFlagsTest extends \MailPoetTest {
 
   /** @return FeatureFlags */
   private function createEndpointWithFeatureDefaults(array $defaults) {
-    $features_controller = $this->make(FeaturesController::class, [
+    $featuresController = $this->make(FeaturesController::class, [
       'defaults' => $defaults,
     ]);
-    $feature_flags = Stub::make(FeatureFlagsController::class, [
-      'features_controller' => $features_controller,
-      'feature_flags_repository' => $this->di_container->get(FeatureFlagsRepository::class),
+    $featureFlags = Stub::make(FeatureFlagsController::class, [
+      'features_controller' => $featuresController,
+      'feature_flags_repository' => $this->diContainer->get(FeatureFlagsRepository::class),
     ]);
-    return new FeatureFlags($features_controller, $feature_flags);
+    return new FeatureFlags($featuresController, $featureFlags);
   }
 
 }

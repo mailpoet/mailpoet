@@ -11,13 +11,13 @@ class PreprocessorTest extends \MailPoetUnitTest {
 
   public function testProcessWooCommerceHeadingBlock() {
     $renderer = Stub::make(Renderer::class);
-    $transactional_emails = Stub::make(TransactionalEmails::class, [
+    $transactionalEmails = Stub::make(TransactionalEmails::class, [
       'getWCEmailSettings' => [
         'base_color' => '{base_color}',
         'base_text_color' => '{base_text_color}',
       ],
     ]);
-    $preprocessor = new Preprocessor($renderer, $transactional_emails);
+    $preprocessor = new Preprocessor($renderer, $transactionalEmails);
     expect($preprocessor->processBlock(['type' => 'woocommerceHeading']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',

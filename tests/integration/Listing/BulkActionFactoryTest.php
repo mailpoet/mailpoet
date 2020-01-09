@@ -11,24 +11,24 @@ class BulkActionFactoryTest extends \MailPoetTest {
   private $bulk_action_factory;
 
   public function _before() {
-    $this->bulk_action_factory = new BulkActionFactory();
+    $this->bulkActionFactory = new BulkActionFactory();
   }
 
   public function testItReturnsCustomActionClass() {
-    $model_class = Subscriber::class;
+    $modelClass = Subscriber::class;
     $method = 'bulkTestAction';
-    $action_class = new BulkActionClassStub;
-    $this->bulk_action_factory->registerAction($model_class, $method, $action_class);
-    $resulting_class = $this->bulk_action_factory->getActionClass($model_class, $method);
-    expect($resulting_class)->equals($action_class);
+    $actionClass = new BulkActionClassStub;
+    $this->bulkActionFactory->registerAction($modelClass, $method, $actionClass);
+    $resultingClass = $this->bulkActionFactory->getActionClass($modelClass, $method);
+    expect($resultingClass)->equals($actionClass);
   }
 
   public function testItThrowsIfANonExistentActionMethodIsBeingRegistered() {
-    $model_class = Subscriber::class;
+    $modelClass = Subscriber::class;
     $method = 'bulkDoesNotExist';
-    $action_class = new BulkActionClassStub;
+    $actionClass = new BulkActionClassStub;
     try {
-      $this->bulk_action_factory->registerAction($model_class, $method, $action_class);
+      $this->bulkActionFactory->registerAction($modelClass, $method, $actionClass);
       $this->fail('Exception was not thrown');
     } catch (\Exception $e) {
       expect($e->getMessage())->contains('has no method');
@@ -36,11 +36,11 @@ class BulkActionFactoryTest extends \MailPoetTest {
   }
 
   public function testItThrowsIfANonExistentActionClassIsBeingRegistered() {
-    $model_class = Subscriber::class;
+    $modelClass = Subscriber::class;
     $method = 'bulkDoesNotExist';
-    $action_class = '\MailPoet\Some\Non\Existent\Class';
+    $actionClass = '\MailPoet\Some\Non\Existent\Class';
     try {
-      $this->bulk_action_factory->registerAction($model_class, $method, $action_class);
+      $this->bulkActionFactory->registerAction($modelClass, $method, $actionClass);
       $this->fail('Exception was not thrown');
     } catch (\Exception $e) {
       expect($e->getMessage())->contains('has no method');
@@ -48,17 +48,17 @@ class BulkActionFactoryTest extends \MailPoetTest {
   }
 
   public function testItReturnsModelClassByDefault() {
-    $model_class = Subscriber::class;
+    $modelClass = Subscriber::class;
     $method = 'bulkTrash';
-    $resulting_class = $this->bulk_action_factory->getActionClass($model_class, $method);
-    expect($resulting_class)->equals($model_class);
+    $resultingClass = $this->bulkActionFactory->getActionClass($modelClass, $method);
+    expect($resultingClass)->equals($modelClass);
   }
 
   public function testItThrowsIfANonExistentModelMethodIsProvided() {
-    $model_class = Subscriber::class;
+    $modelClass = Subscriber::class;
     $method = 'bulkDoesNotExist';
     try {
-      $this->bulk_action_factory->getActionClass($model_class, $method);
+      $this->bulkActionFactory->getActionClass($modelClass, $method);
       $this->fail('Exception was not thrown');
     } catch (\Exception $e) {
       expect($e->getMessage())->contains('has no method');

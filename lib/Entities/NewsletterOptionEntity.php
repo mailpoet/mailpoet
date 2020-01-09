@@ -66,13 +66,13 @@ class NewsletterOptionEntity {
    * @return NewsletterOptionFieldEntity
    */
   public function getOptionField() {
-    return $this->option_field;
+    return $this->optionField;
   }
 
   /**
    * @param NewsletterOptionFieldEntity $option_field
    */
-  public function setOptionField($option_field) {
-    $this->option_field = $option_field;
+  public function setOptionField($optionField) {
+    $this->optionField = $optionField;
   }
 }

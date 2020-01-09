@@ -13,8 +13,8 @@ class Premium {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(PageRenderer $page_renderer, WPFunctions $wp) {
-    $this->page_renderer = $page_renderer;
+  public function __construct(PageRenderer $pageRenderer, WPFunctions $wp) {
+    $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
   }
 
@@ -23,6 +23,6 @@ class Premium {
       'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
       'subscriber_count' => Subscriber::getTotalSubscribers(),
     ];
-    $this->page_renderer->displayPage('premium.html', $data);
+    $this->pageRenderer->displayPage('premium.html', $data);
   }
 }

@@ -12,25 +12,25 @@ class TrashExistingSegmentCest {
     (new Settings())->withCookieRevenueTrackingDisabled();
   }
 
-  public function moveSegmentToTrash(\AcceptanceTester $I) {
-    $I->wantTo('Move an existing segment to trash');
+  public function moveSegmentToTrash(\AcceptanceTester $i) {
+    $i->wantTo('Move an existing segment to trash');
 
-    $segment_title = 'Move Segment To Trash Test';
+    $segmentTitle = 'Move Segment To Trash Test';
 
-    $segment_factory = new DynamicSegment();
-    $segment = $segment_factory
-      ->withName($segment_title)
+    $segmentFactory = new DynamicSegment();
+    $segment = $segmentFactory
+      ->withName($segmentTitle)
       ->withUserRoleFilter('Administrator')
       ->create();
 
-    $I->login();
-    $I->amOnMailpoetPage('Segments');
-    $listing_automation_selector = '[data-automation-id="listing_item_' . $segment->id . '"]';
-    $I->waitForText($segment_title, 10, $listing_automation_selector);
-    $I->clickItemRowActionByItemName($segment_title, 'Move to trash');
-    $I->waitForText('1 segment was moved to the trash.', 10);
-    $I->click('[data-automation-id="filters_trash"]');
-    $I->waitForText($segment_title, 20, $listing_automation_selector);
-    $I->seeNoJSErrors();
+    $i->login();
+    $i->amOnMailpoetPage('Segments');
+    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->id . '"]';
+    $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
+    $i->clickItemRowActionByItemName($segmentTitle, 'Move to trash');
+    $i->waitForText('1 segment was moved to the trash.', 10);
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($segmentTitle, 20, $listingAutomationSelector);
+    $i->seeNoJSErrors();
   }
 }

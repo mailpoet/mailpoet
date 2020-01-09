@@ -26,8 +26,8 @@ class SMTPMapper {
     if ($e instanceof Swift_RfcComplianceException) {
       $level = MailerError::LEVEL_SOFT;
     }
-    $subscriber_errors = [new SubscriberError($subscriber, null)];
-    return new MailerError(MailerError::OPERATION_SEND, $level, $message[0], null, $subscriber_errors);
+    $subscriberErrors = [new SubscriberError($subscriber, null)];
+    return new MailerError(MailerError::OPERATION_SEND, $level, $message[0], null, $subscriberErrors);
   }
 
   public function getErrorFromLog($log, $subscriber) {
@@ -40,7 +40,7 @@ class SMTPMapper {
     } else {
       $message = sprintf(WPFunctions::get()->__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SMTP);
     }
-    $subscriber_errors = [new SubscriberError($subscriber, null)];
-    return new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, $message, null, $subscriber_errors);
+    $subscriberErrors = [new SubscriberError($subscriber, null)];
+    return new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, $message, null, $subscriberErrors);
   }
 }

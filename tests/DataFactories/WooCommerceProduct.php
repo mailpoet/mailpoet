@@ -113,43 +113,43 @@ class WooCommerceProduct {
   }
 
   public function create() {
-    $create_command = ['wc', 'product', 'create', '--porcelain', '--user=admin'];
-    $create_command[] = "--name={$this->data['name']}";
-    $create_command[] = "--type={$this->data['type']}";
-    $create_command[] = "--regular_price={$this->data['price']}";
+    $createCommand = ['wc', 'product', 'create', '--porcelain', '--user=admin'];
+    $createCommand[] = "--name={$this->data['name']}";
+    $createCommand[] = "--type={$this->data['type']}";
+    $createCommand[] = "--regular_price={$this->data['price']}";
     if ($this->data['description']) {
-      $create_command[] = "--description={$this->data['description']}";
+      $createCommand[] = "--description={$this->data['description']}";
     }
     if ($this->data['shortDescription']) {
-      $create_command[] = "--short_description={$this->data['shortDescription']}";
+      $createCommand[] = "--short_description={$this->data['shortDescription']}";
     }
     if ($this->data['sku']) {
-      $create_command[] = "--sku={$this->data['sku']}";
+      $createCommand[] = "--sku={$this->data['sku']}";
     } else {
       $create_command[] = '--sku=WC_PR_' . bin2hex(random_bytes(7)); // phpcs:ignore
     }
     if ($this->data['categoryIds']) {
-      $create_command[] = '--categories=' . json_encode($this->data['categoryIds']);
+      $createCommand[] = '--categories=' . json_encode($this->data['categoryIds']);
     }
     if ($this->data['tagIds']) {
-      $create_command[] = '--tags=' . json_encode($this->data['tagIds']);
+      $createCommand[] = '--tags=' . json_encode($this->data['tagIds']);
     }
     if ($this->data['images']) {
-      $create_command[] = '--images=' . json_encode($this->data['images']);
+      $createCommand[] = '--images=' . json_encode($this->data['images']);
     }
-    $create_output = $this->tester->cliToArray($create_command);
-    $product_out = $this->tester->cliToArray(['wc', 'product', 'get', $create_output[0], '--format=json', '--user=admin']);
-    return json_decode($product_out[0], true);
+    $createOutput = $this->tester->cliToArray($createCommand);
+    $productOut = $this->tester->cliToArray(['wc', 'product', 'get', $createOutput[0], '--format=json', '--user=admin']);
+    return json_decode($productOut[0], true);
   }
 
   public function createCategory($name) {
-    $create_output = $this->tester->cliToArray(['wc', 'product_cat', 'create', '--porcelain', '--user=admin', "--name=$name"]);
-    return $create_output[0];
+    $createOutput = $this->tester->cliToArray(['wc', 'product_cat', 'create', '--porcelain', '--user=admin', "--name=$name"]);
+    return $createOutput[0];
   }
 
   public function createTag($name) {
-    $create_output = $this->tester->cliToArray(['wc', 'product_tag', 'create', '--porcelain', '--user=admin', "--name=$name"]);
-    return $create_output[0];
+    $createOutput = $this->tester->cliToArray(['wc', 'product_tag', 'create', '--porcelain', '--user=admin', "--name=$name"]);
+    return $createOutput[0];
   }
 
   /**

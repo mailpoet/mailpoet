@@ -35,10 +35,10 @@ class Track {
   /** @var LinkTokens */
   private $link_tokens;
 
-  public function __construct(Clicks $clicks, Opens $opens, LinkTokens $link_tokens) {
+  public function __construct(Clicks $clicks, Opens $opens, LinkTokens $linkTokens) {
     $this->clicks = $clicks;
     $this->opens = $opens;
-    $this->link_tokens = $link_tokens;
+    $this->linkTokens = $linkTokens;
   }
 
   public function click($data) {
@@ -51,23 +51,23 @@ class Track {
 
   public function _processTrackData($data) {
     $data = (object)Links::transformUrlDataObject($data);
-    if (empty($data->queue_id) ||
-      empty($data->subscriber_id) ||
-      empty($data->subscriber_token)
+    if (empty($data->queueId) ||
+      empty($data->subscriberId) ||
+      empty($data->subscriberToken)
     ) {
       return false;
     }
-    $data->queue = SendingQueue::findOne($data->queue_id);
+    $data->queue = SendingQueue::findOne($data->queueId);
     if ($data->queue instanceof SendingQueue) {
       $data->queue = SendingTask::createFromQueue($data->queue);
     }
-    $data->subscriber = Subscriber::findOne($data->subscriber_id) ?: null;
+    $data->subscriber = Subscriber::findOne($data->subscriberId) ?: null;
     $data->newsletter = (!empty($data->queue->newsletter_id)) ?
       Newsletter::findOne($data->queue->newsletter_id) :
       false;
-    if (!empty($data->link_hash)) {
-      $data->link = NewsletterLink::where('hash', $data->link_hash)
-        ->where('queue_id', $data->queue_id)
+    if (!empty($data->linkHash)) {
+      $data->link = NewsletterLink::where('hash', $data->linkHash)
+        ->where('queue_id', $data->queueId)
         ->findOne();
     }
     return $this->_validateTrackData($data);
@@ -75,8 +75,8 @@ class Track {
 
   public function _validateTrackData($data) {
     if (!$data->subscriber || !$data->queue || !$data->newsletter) return false;
-    $subscriber_token_match = $this->link_tokens->verifyToken($data->subscriber, $data->subscriber_token);
-    if (!$subscriber_token_match) {
+    $subscriberTokenMatch = $this->linkTokens->verifyToken($data->subscriber, $data->subscriberToken);
+    if (!$subscriberTokenMatch) {
       $this->terminate(403);
     }
     // return if this is a WP user previewing the newsletter

@@ -14,14 +14,14 @@ class ValidationListener {
     $this->validator = $validator;
   }
 
-  public function onFlush(OnFlushEventArgs $event_args) {
-    $unit_of_work = $event_args->getEntityManager()->getUnitOfWork();
+  public function onFlush(OnFlushEventArgs $eventArgs) {
+    $unitOfWork = $eventArgs->getEntityManager()->getUnitOfWork();
 
-    foreach ($unit_of_work->getScheduledEntityInsertions() as $entity) {
+    foreach ($unitOfWork->getScheduledEntityInsertions() as $entity) {
       $this->validate($entity);
     }
 
-    foreach ($unit_of_work->getScheduledEntityUpdates() as $entity) {
+    foreach ($unitOfWork->getScheduledEntityUpdates() as $entity) {
       $this->validate($entity);
     }
   }

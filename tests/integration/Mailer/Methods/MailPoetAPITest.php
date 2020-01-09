@@ -33,7 +33,7 @@ class MailPoetAPITest extends \MailPoetTest {
       'from_email' => 'staff@mailpoet.com',
       'from_name_email' => 'Sender <staff@mailpoet.com>',
     ];
-    $this->reply_to = [
+    $this->replyTo = [
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'reply-to@mailpoet.com',
       'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>',
@@ -41,7 +41,7 @@ class MailPoetAPITest extends \MailPoetTest {
     $this->mailer = new MailPoet(
       $this->settings['api_key'],
       $this->sender,
-      $this->reply_to,
+      $this->replyTo,
       new MailPoetMapper(),
       $this->makeEmpty(AuthorizedEmailsController::class)
     );
@@ -67,8 +67,8 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($body[0]['to']['name'])->equals($subscriber['name']);
     expect($body[0]['from']['address'])->equals($this->sender['from_email']);
     expect($body[0]['from']['name'])->equals($this->sender['from_name']);
-    expect($body[0]['reply_to']['address'])->equals($this->reply_to['reply_to_email']);
-    expect($body[0]['reply_to']['name'])->equals($this->reply_to['reply_to_name']);
+    expect($body[0]['reply_to']['address'])->equals($this->replyTo['reply_to_email']);
+    expect($body[0]['reply_to']['name'])->equals($this->replyTo['reply_to_name']);
     expect($body[0]['subject'])->equals($this->newsletter['subject']);
     expect($body[0]['html'])->equals($this->newsletter['body']['html']);
     expect($body[0]['text'])->equals($this->newsletter['body']['text']);
@@ -84,37 +84,37 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($body[0]['to']['name'])->equals($subscriber['name']);
     expect($body[0]['from']['address'])->equals($this->sender['from_email']);
     expect($body[0]['from']['name'])->equals($this->sender['from_name']);
-    expect($body[0]['reply_to']['address'])->equals($this->reply_to['reply_to_email']);
-    expect($body[0]['reply_to']['name'])->equals($this->reply_to['reply_to_name']);
+    expect($body[0]['reply_to']['address'])->equals($this->replyTo['reply_to_email']);
+    expect($body[0]['reply_to']['name'])->equals($this->replyTo['reply_to_name']);
     expect($body[0]['subject'])->equals($this->newsletter['subject']);
     expect($body[0]['html'])->equals($this->newsletter['body']['html']);
     expect($body[0]['text'])->equals($this->newsletter['body']['text']);
   }
 
   public function testItCanAddExtraParametersToSingleMessage() {
-    $extra_params = [
+    $extraParams = [
       'unsubscribe_url' => 'http://example.com',
       'meta' => $this->metaInfo,
     ];
-    $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $extra_params);
-    expect($body[0]['list_unsubscribe'])->equals($extra_params['unsubscribe_url']);
-    expect($body[0]['meta'])->equals($extra_params['meta']);
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $extraParams);
+    expect($body[0]['list_unsubscribe'])->equals($extraParams['unsubscribe_url']);
+    expect($body[0]['meta'])->equals($extraParams['meta']);
   }
 
   public function testItCanAddExtraParametersToMultipleMessages() {
     $newsletters = array_fill(0, 10, $this->newsletter);
     $subscribers = array_fill(0, 10, $this->subscriber);
-    $extra_params = [
+    $extraParams = [
       'unsubscribe_url' => array_fill(0, 10, 'http://example.com'),
       'meta' => array_fill(0, 10, $this->metaInfo),
     ];
 
-    $body = $this->mailer->getBody($newsletters, $subscribers, $extra_params);
+    $body = $this->mailer->getBody($newsletters, $subscribers, $extraParams);
     expect(count($body))->equals(10);
-    expect($body[0]['list_unsubscribe'])->equals($extra_params['unsubscribe_url'][0]);
-    expect($body[9]['list_unsubscribe'])->equals($extra_params['unsubscribe_url'][9]);
-    expect($body[0]['meta'])->equals($extra_params['meta'][0]);
-    expect($body[9]['meta'])->equals($extra_params['meta'][9]);
+    expect($body[0]['list_unsubscribe'])->equals($extraParams['unsubscribe_url'][0]);
+    expect($body[9]['list_unsubscribe'])->equals($extraParams['unsubscribe_url'][9]);
+    expect($body[0]['meta'])->equals($extraParams['meta'][0]);
+    expect($body[9]['meta'])->equals($extraParams['meta'][9]);
   }
 
   public function testItCanProcessSubscriber() {
@@ -254,7 +254,7 @@ class MailPoetAPITest extends \MailPoetTest {
     $mailer = new MailPoet(
       $this->settings['api_key'],
       $this->sender,
-      $this->reply_to,
+      $this->replyTo,
       new MailPoetMapper(),
       $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()])
     );
@@ -270,7 +270,7 @@ class MailPoetAPITest extends \MailPoetTest {
   }
 
   public function testItChecksBlacklistBeforeSendingToASingleSubscriber() {
-    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklistedSubscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
@@ -287,7 +287,7 @@ class MailPoetAPITest extends \MailPoetTest {
     );
     $result = $mailer->send(
       $this->newsletter,
-      $blacklisted_subscriber
+      $blacklistedSubscriber
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
@@ -296,7 +296,7 @@ class MailPoetAPITest extends \MailPoetTest {
   }
 
   public function testItChecksBlacklistBeforeSendingToMultipleSubscribers() {
-    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklistedSubscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
@@ -313,7 +313,7 @@ class MailPoetAPITest extends \MailPoetTest {
     );
     $result = $mailer->send(
       $this->newsletter,
-      ['good@example.com', $blacklisted_subscriber, 'good2@example.com']
+      ['good@example.com', $blacklistedSubscriber, 'good2@example.com']
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);

@@ -31,9 +31,9 @@ class AbandonedCart {
 
   public function __construct() {
     $this->wp = WPFunctions::get();
-    $this->woo_commerce_helper = new WooCommerceHelper();
+    $this->wooCommerceHelper = new WooCommerceHelper();
     $this->cookies = new Cookies();
-    $this->page_visit_tracker = new AbandonedCartPageVisitTracker($this->wp, $this->woo_commerce_helper, $this->cookies);
+    $this->pageVisitTracker = new AbandonedCartPageVisitTracker($this->wp, $this->wooCommerceHelper, $this->cookies);
     $this->scheduler = new AutomaticEmailScheduler();
   }
 
@@ -74,7 +74,7 @@ class AbandonedCart {
   }
 
   public function init() {
-    if (!$this->woo_commerce_helper->isWooCommerceActive()) {
+    if (!$this->wooCommerceHelper->isWooCommerceActive()) {
       return;
     }
 
@@ -128,19 +128,19 @@ class AbandonedCart {
   }
 
   public function handleCartChange() {
-    $cart = $this->woo_commerce_helper->WC()->cart;
+    $cart = $this->wooCommerceHelper->WC()->cart;
     if ($cart && !$cart->is_empty()) {
       $this->scheduleAbandonedCartEmail();
     } else {
       $this->cancelAbandonedCartEmail();
-      $this->page_visit_tracker->stopTracking();
+      $this->pageVisitTracker->stopTracking();
     }
   }
 
   public function trackPageVisit() {
     // on page visit reschedule all currently scheduled (not yet sent) emails for given subscriber
     // (it tracks at most once per minute to avoid processing many calls at the same time, i.e. AJAX)
-    $this->page_visit_tracker->trackVisit(function () {
+    $this->pageVisitTracker->trackVisit(function () {
       $this->rescheduleAbandonedCartEmail();
     });
   }
@@ -154,7 +154,7 @@ class AbandonedCart {
     $this->scheduler->scheduleOrRescheduleAutomaticEmail(WooCommerceEmail::SLUG, self::SLUG, $subscriber->id);
 
     // start tracking page visits to detect inactivity
-    $this->page_visit_tracker->startTracking();
+    $this->pageVisitTracker->startTracking();
   }
 
   private function rescheduleAbandonedCartEmail() {
@@ -174,15 +174,15 @@ class AbandonedCart {
   }
 
   private function getSubscriber() {
-    $wp_user = $this->wp->wpGetCurrentUser();
-    if ($wp_user->exists()) {
-      return Subscriber::where('wp_user_id', $wp_user->ID)->findOne() ?: null;
+    $wpUser = $this->wp->wpGetCurrentUser();
+    if ($wpUser->exists()) {
+      return Subscriber::where('wp_user_id', $wpUser->ID)->findOne() ?: null;
     }
 
     // if user not logged in, try to find subscriber by cookie
-    $cookie_data = $this->cookies->get(Clicks::ABANDONED_CART_COOKIE_NAME);
-    if ($cookie_data && isset($cookie_data['subscriber_id'])) {
-      return Subscriber::findOne($cookie_data['subscriber_id']) ?: null;
+    $cookieData = $this->cookies->get(Clicks::ABANDONED_CART_COOKIE_NAME);
+    if ($cookieData && isset($cookieData['subscriber_id'])) {
+      return Subscriber::findOne($cookieData['subscriber_id']) ?: null;
     }
     return null;
   }

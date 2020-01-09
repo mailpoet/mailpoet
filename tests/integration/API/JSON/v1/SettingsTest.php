@@ -44,7 +44,7 @@ class SettingsTest extends \MailPoetTest {
     expect($response->data)->notEmpty();
     expect($response->data['some']['setting']['key'])->true();
 
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
     $this->settings->resetCache();
     $response = $this->endpoint->get();
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -52,7 +52,7 @@ class SettingsTest extends \MailPoetTest {
   }
 
   public function testItCanSetSettings() {
-    $new_settings = [
+    $newSettings = [
       'some' => [
         'setting' => [
           'new_key' => true,
@@ -72,7 +72,7 @@ class SettingsTest extends \MailPoetTest {
     expect($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
-    $response = $this->endpoint->set($new_settings);
+    $response = $this->endpoint->set($newSettings);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     $response = $this->endpoint->get();
@@ -96,10 +96,10 @@ class SettingsTest extends \MailPoetTest {
     $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
       ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
       ->findOne();
-    expect($task->scheduled_at)->lessThan(Carbon::now());
+    expect($task->scheduledAt)->lessThan(Carbon::now());
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

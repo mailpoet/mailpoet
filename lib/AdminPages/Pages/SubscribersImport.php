@@ -15,8 +15,8 @@ class SubscribersImport {
   /** @var Installation */
   private $installation;
 
-  public function __construct(PageRenderer $page_renderer, Installation $installation) {
-    $this->page_renderer = $page_renderer;
+  public function __construct(PageRenderer $pageRenderer, Installation $installation) {
+    $this->pageRenderer = $pageRenderer;
     $this->installation = $installation;
   }
 
@@ -33,6 +33,6 @@ class SubscribersImport {
 
     $data['is_new_user'] = $this->installation->isNewInstallation();
 
-    $this->page_renderer->displayPage('subscribers/importExport/import.html', $data);
+    $this->pageRenderer->displayPage('subscribers/importExport/import.html', $data);
   }
 }

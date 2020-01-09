@@ -9,12 +9,12 @@ use MailPoet\Models\Subscriber;
 class StatisticsClicks {
   protected $data;
 
-  public function __construct(NewsletterLink $newsletter_link, Subscriber $subscriber) {
+  public function __construct(NewsletterLink $newsletterLink, Subscriber $subscriber) {
     $this->data = [
-      'newsletter_id' => $newsletter_link->newsletter_id,
+      'newsletter_id' => $newsletterLink->newsletterId,
       'subscriber_id' => $subscriber->id,
-      'queue_id' => $newsletter_link->queue_id,
-      'link_id' => $newsletter_link->id,
+      'queue_id' => $newsletterLink->queueId,
+      'link_id' => $newsletterLink->id,
       'count' => 1,
     ];
   }

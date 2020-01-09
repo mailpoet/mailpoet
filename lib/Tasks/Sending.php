@@ -59,8 +59,8 @@ class Sending {
     }
     if (!$queue instanceof SendingQueue) {
       $queue = SendingQueue::create();
-      $queue->newsletter_id = 0;
-      $queue->task_id = $task->id;
+      $queue->newsletterId = 0;
+      $queue->taskId = $task->id;
       $queue->save();
     }
 
@@ -70,7 +70,7 @@ class Sending {
 
     $this->task = $task;
     $this->queue = $queue;
-    $this->task_subscribers = new Subscribers($task);
+    $this->taskSubscribers = new Subscribers($task);
   }
 
   public static function create(ScheduledTask $task = null, SendingQueue $queue = null) {
@@ -82,20 +82,20 @@ class Sending {
       return [];
     }
 
-    $tasks_ids = array_map(function($task) {
+    $tasksIds = array_map(function($task) {
       return $task->id;
     }, $tasks);
 
-    $queues = SendingQueue::whereIn('task_id', $tasks_ids)->findMany();
-    $queues_index = [];
+    $queues = SendingQueue::whereIn('task_id', $tasksIds)->findMany();
+    $queuesIndex = [];
     foreach ($queues as $queue) {
-      $queues_index[$queue->task_id] = $queue;
+      $queuesIndex[$queue->taskId] = $queue;
     }
 
     $result = [];
     foreach ($tasks as $task) {
-      if (!empty($queues_index[$task->id])) {
-        $result[] = self::create($task, $queues_index[$task->id]);
+      if (!empty($queuesIndex[$task->id])) {
+        $result[] = self::create($task, $queuesIndex[$task->id]);
       }
     }
     return $result;
@@ -110,8 +110,8 @@ class Sending {
     return self::create($task, $queue);
   }
 
-  public static function getByNewsletterId($newsletter_id) {
-    $queue = SendingQueue::where('newsletter_id', $newsletter_id)
+  public static function getByNewsletterId($newsletterId) {
+    $queue = SendingQueue::where('newsletter_id', $newsletterId)
       ->orderByDesc('updated_at')
       ->findOne();
     if (!$queue instanceof SendingQueue) {
@@ -124,19 +124,19 @@ class Sending {
   public function asArray() {
     $queue = array_intersect_key(
       $this->queue->asArray(),
-      array_flip($this->queue_fields)
+      array_flip($this->queueFields)
     );
     $task = $this->task->asArray();
     return array_merge($task, $queue);
   }
 
   public function getErrors() {
-    $queue_errors = $this->queue->getErrors();
-    $task_errors = $this->task->getErrors();
-    if (empty($queue_errors) && empty($task_errors)) {
+    $queueErrors = $this->queue->getErrors();
+    $taskErrors = $this->task->getErrors();
+    if (empty($queueErrors) && empty($taskErrors)) {
       return false;
     }
-    return array_merge((array)$queue_errors, (array)$task_errors);
+    return array_merge((array)$queueErrors, (array)$taskErrors);
   }
 
   public function save() {
@@ -146,7 +146,7 @@ class Sending {
   }
 
   public function delete() {
-    $this->task_subscribers->removeAllSubscribers();
+    $this->taskSubscribers->removeAllSubscribers();
     $this->task->delete();
     $this->queue->delete();
   }
@@ -160,11 +160,11 @@ class Sending {
   }
 
   public function taskSubscribers() {
-    return $this->task_subscribers;
+    return $this->taskSubscribers;
   }
 
   public function getSubscribers($processed = null) {
-    $subscribers = $this->task_subscribers->getSubscribers();
+    $subscribers = $this->taskSubscribers->getSubscribers();
     if (!is_null($processed)) {
       $status = ($processed) ? ScheduledTaskSubscriber::STATUS_PROCESSED : ScheduledTaskSubscriber::STATUS_UNPROCESSED;
       $subscribers->where('processed', $status);
@@ -173,28 +173,28 @@ class Sending {
     return array_column($subscribers, 'subscriber_id');
   }
 
-  public function setSubscribers(array $subscriber_ids) {
-    $this->task_subscribers->setSubscribers($subscriber_ids);
+  public function setSubscribers(array $subscriberIds) {
+    $this->taskSubscribers->setSubscribers($subscriberIds);
     $this->updateCount();
   }
 
-  public function removeSubscribers(array $subscriber_ids) {
-    $this->task_subscribers->removeSubscribers($subscriber_ids);
+  public function removeSubscribers(array $subscriberIds) {
+    $this->taskSubscribers->removeSubscribers($subscriberIds);
     $this->updateCount();
   }
 
   public function removeAllSubscribers() {
-    $this->task_subscribers->removeAllSubscribers();
+    $this->taskSubscribers->removeAllSubscribers();
     $this->updateCount();
   }
 
-  public function updateProcessedSubscribers(array $processed_subscribers) {
-    $this->task_subscribers->updateProcessedSubscribers($processed_subscribers);
+  public function updateProcessedSubscribers(array $processedSubscribers) {
+    $this->taskSubscribers->updateProcessedSubscribers($processedSubscribers);
     return $this->updateCount()->getErrors() === false;
   }
 
-  public function saveSubscriberError($subcriber_id, $error_message) {
-    $this->task_subscribers->saveSubscriberError($subcriber_id, $error_message);
+  public function saveSubscriberError($subcriberId, $errorMessage) {
+    $this->taskSubscribers->saveSubscriberError($subcriberId, $errorMessage);
     return $this->updateCount()->getErrors() === false;
   }
 
@@ -251,11 +251,11 @@ class Sending {
   }
 
   private function isQueueProperty($prop) {
-    return in_array($prop, $this->queue_fields);
+    return in_array($prop, $this->queueFields);
   }
 
   private function isCommonProperty($prop) {
-    return in_array($prop, $this->common_fields);
+    return in_array($prop, $this->commonFields);
   }
 
   public static function getScheduledQueues($amount = self::RESULT_BATCH_SIZE) {

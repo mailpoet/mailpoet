@@ -105,24 +105,24 @@ class ShortcodesHelper {
         ],
       ],
     ];
-    $custom_fields = self::getCustomFields();
-    if ($custom_fields) {
+    $customFields = self::getCustomFields();
+    if ($customFields) {
       $shortcodes[__('Subscriber', 'mailpoet')] = array_merge(
         $shortcodes[__('Subscriber', 'mailpoet')],
-        $custom_fields
+        $customFields
       );
     }
     return $shortcodes;
   }
 
   public static function getCustomFields() {
-    $custom_fields = CustomField::findMany();
-    if (!$custom_fields) return false;
-    return array_map(function($custom_field) {
+    $customFields = CustomField::findMany();
+    if (!$customFields) return false;
+    return array_map(function($customField) {
       return [
-        'text' => $custom_field->name,
-        'shortcode' => '[subscriber:cf_' . $custom_field->id . ']',
+        'text' => $customField->name,
+        'shortcode' => '[subscriber:cf_' . $customField->id . ']',
       ];
-    }, $custom_fields);
+    }, $customFields);
   }
 }

@@ -22,9 +22,9 @@ class ConfigurationFactory {
   /** @var AnnotationReaderProvider */
   private $annotation_reader_provider;
 
-  public function __construct($is_dev_mode = null, AnnotationReaderProvider $annotation_reader_provider) {
-    $this->is_dev_mode = $is_dev_mode === null ? WP_DEBUG : $is_dev_mode;
-    $this->annotation_reader_provider = $annotation_reader_provider;
+  public function __construct($isDevMode = null, AnnotationReaderProvider $annotationReaderProvider) {
+    $this->isDevMode = $isDevMode === null ? WP_DEBUG : $isDevMode;
+    $this->annotationReaderProvider = $annotationReaderProvider;
   }
 
   public function createConfiguration() {
@@ -41,25 +41,25 @@ class ConfigurationFactory {
     $configuration->setClassMetadataFactoryName(TablePrefixMetadataFactory::class);
 
     // annotation reader exists only in dev environment, on production cache is pre-generated
-    $annotation_reader = $this->annotation_reader_provider->getAnnotationReader();
-    if ($annotation_reader) {
-      $configuration->setMetadataDriverImpl(new AnnotationDriver($annotation_reader, [self::ENTITY_DIR]));
+    $annotationReader = $this->annotationReaderProvider->getAnnotationReader();
+    if ($annotationReader) {
+      $configuration->setMetadataDriverImpl(new AnnotationDriver($annotationReader, [self::ENTITY_DIR]));
     } else {
       // Should never be called but Doctrine requires having driver set
       $configuration->setMetadataDriverImpl(new PHPDriver([]));
     }
 
     // metadata cache (for production cache is pre-generated at build time)
-    $is_read_only = !$annotation_reader;
-    $metadata_storage = new MetadataCache(self::METADATA_DIR, $is_read_only);
-    $configuration->setMetadataCacheImpl($metadata_storage);
+    $isReadOnly = !$annotationReader;
+    $metadataStorage = new MetadataCache(self::METADATA_DIR, $isReadOnly);
+    $configuration->setMetadataCacheImpl($metadataStorage);
   }
 
   private function configureProxies(Configuration $configuration) {
     $configuration->setProxyDir(self::PROXY_DIR);
     $configuration->setProxyNamespace(self::PROXY_NAMESPACE);
     $configuration->setAutoGenerateProxyClasses(
-      $this->is_dev_mode
+      $this->isDevMode
         ? AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS
         : AbstractProxyFactory::AUTOGENERATE_NEVER
     );

@@ -23,45 +23,45 @@ class AddToSubscribersFilters {
    *
    * @return array
    */
-  public function add(array $segment_filters) {
-    $dynamic_segments = $this->getListings();
-    return $this->sort(array_merge($segment_filters, $dynamic_segments));
+  public function add(array $segmentFilters) {
+    $dynamicSegments = $this->getListings();
+    return $this->sort(array_merge($segmentFilters, $dynamicSegments));
   }
 
   private function getListings() {
-    $dynamic_segments = $this->loader->load();
-    return $this->buildResult($dynamic_segments);
+    $dynamicSegments = $this->loader->load();
+    return $this->buildResult($dynamicSegments);
   }
 
-  private function buildResult($dynamic_segments) {
+  private function buildResult($dynamicSegments) {
     $result = [];
-    foreach ($dynamic_segments as $dynamic_segment) {
+    foreach ($dynamicSegments as $dynamicSegment) {
       $result[] = [
-        'value' => $dynamic_segment->id,
+        'value' => $dynamicSegment->id,
         'label' => sprintf(
           '%s (%s)',
-          $dynamic_segment->name,
-          number_format($this->subscribersCountLoader->getSubscribersCount($dynamic_segment))
+          $dynamicSegment->name,
+          number_format($this->subscribersCountLoader->getSubscribersCount($dynamicSegment))
         ),
       ];
     }
     return $result;
   }
 
-  private function sort($segment_filters) {
-    $special_segment_filters = [];
+  private function sort($segmentFilters) {
+    $specialSegmentFilters = [];
     $segments = [];
-    foreach ($segment_filters as $segment_filter) {
-      if (is_numeric($segment_filter['value'])) {
-        $segments[] = $segment_filter;
+    foreach ($segmentFilters as $segmentFilter) {
+      if (is_numeric($segmentFilter['value'])) {
+        $segments[] = $segmentFilter;
       } else {
-        $special_segment_filters[] = $segment_filter;
+        $specialSegmentFilters[] = $segmentFilter;
       }
     }
     usort($segments, function ($a, $b) {
       return strcasecmp($a["label"], $b["label"]);
     });
-    return array_merge($special_segment_filters, $segments);
+    return array_merge($specialSegmentFilters, $segments);
   }
 
 }

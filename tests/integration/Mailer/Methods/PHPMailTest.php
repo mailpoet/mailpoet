@@ -23,16 +23,16 @@ class PHPMailTest extends \MailPoetTest {
       'from_email' => 'staff@mailpoet.com',
       'from_name_email' => 'Sender <staff@mailpoet.com>',
     ];
-    $this->reply_to = [
+    $this->replyTo = [
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'reply-to@mailpoet.com',
       'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>',
     ];
-    $this->return_path = 'bounce@mailpoet.com';
+    $this->returnPath = 'bounce@mailpoet.com';
     $this->mailer = new PHPMail(
       $this->sender,
-      $this->reply_to,
-      $this->return_path,
+      $this->replyTo,
+      $this->returnPath,
       new PHPMailMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
@@ -43,7 +43,7 @@ class PHPMailTest extends \MailPoetTest {
         'text' => 'TEXT body',
       ],
     ];
-    $this->extra_params = [
+    $this->extraParams = [
       'unsubscribe_url' => 'http://www.mailpoet.com',
     ];
   }
@@ -51,23 +51,23 @@ class PHPMailTest extends \MailPoetTest {
   public function testItCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
     expect($mailer)->isInstanceOf('PHPMailer');
-    expect($mailer->Mailer)->equals('mail'); // uses PHP's mail() function
+    expect($mailer->mailer)->equals('mail'); // uses PHP's mail() function
   }
 
   public function testWhenReturnPathIsNullItIsSetToSenderEmail() {
     $mailer = new PHPMail(
       $this->sender,
-      $this->reply_to,
-      $return_path = false,
+      $this->replyTo,
+      $returnPath = false,
       new PHPMailMapper()
     );
-    expect($mailer->return_path)->equals($this->sender['from_email']);
+    expect($mailer->returnPath)->equals($this->sender['from_email']);
   }
 
   public function testItCanConfigureMailerWithMessage() {
     $mailer = $this->mailer
-      ->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extra_params);
-    expect($mailer->CharSet)->equals('UTF-8');
+      ->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extraParams);
+    expect($mailer->charSet)->equals('UTF-8');
     expect($mailer->getToAddresses())->equals(
       [
         [
@@ -78,8 +78,8 @@ class PHPMailTest extends \MailPoetTest {
     );
     expect($mailer->getAllRecipientAddresses())
       ->equals(['mailpoet-phoenix-test@mailinator.com' => true]);
-    expect($mailer->From)->equals($this->sender['from_email']);
-    expect($mailer->FromName)->equals($this->sender['from_name']);
+    expect($mailer->from)->equals($this->sender['from_email']);
+    expect($mailer->fromName)->equals($this->sender['from_name']);
     expect($mailer->getReplyToAddresses())->equals(
       [
         'reply-to@mailpoet.com' => [
@@ -88,12 +88,12 @@ class PHPMailTest extends \MailPoetTest {
         ],
       ]
     );
-    expect($mailer->Sender)->equals($this->return_path);
-    expect($mailer->ContentType)->equals('text/html');
-    expect($mailer->Subject)->equals($this->newsletter['subject']);
-    expect($mailer->Body)
+    expect($mailer->sender)->equals($this->returnPath);
+    expect($mailer->contentType)->equals('text/html');
+    expect($mailer->subject)->equals($this->newsletter['subject']);
+    expect($mailer->body)
       ->equals($this->newsletter['body']['html']);
-    expect($mailer->AltBody)
+    expect($mailer->altBody)
       ->equals($this->newsletter['body']['text']);
     expect($mailer->getCustomHeaders())->equals(
       [
@@ -113,8 +113,8 @@ class PHPMailTest extends \MailPoetTest {
           'text' => 'TEXT body',
         ],
       ], $this->subscriber);
-    expect($mailer->ContentType)->equals('text/plain');
-    expect($mailer->Body)->equals('TEXT body');
+    expect($mailer->contentType)->equals('text/plain');
+    expect($mailer->body)->equals('TEXT body');
   }
 
   public function testItCanProcessSubscriber() {
@@ -136,7 +136,7 @@ class PHPMailTest extends \MailPoetTest {
   }
 
   public function testItChecksBlacklistBeforeSending() {
-    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklistedSubscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
@@ -145,7 +145,7 @@ class PHPMailTest extends \MailPoetTest {
     );
     $result = $mailer->send(
       $this->newsletter,
-      $blacklisted_subscriber
+      $blacklistedSubscriber
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);

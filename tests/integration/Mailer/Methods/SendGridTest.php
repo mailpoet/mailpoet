@@ -29,7 +29,7 @@ class SendGridTest extends \MailPoetTest {
       'from_email' => 'staff@mailpoet.com',
       'from_name_email' => 'Sender <staff@mailpoet.com>',
     ];
-    $this->reply_to = [
+    $this->replyTo = [
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'reply-to@mailpoet.com',
       'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>',
@@ -37,7 +37,7 @@ class SendGridTest extends \MailPoetTest {
     $this->mailer = new SendGrid(
       $this->settings['api_key'],
       $this->sender,
-      $this->reply_to,
+      $this->replyTo,
       new SendGridMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
@@ -48,21 +48,21 @@ class SendGridTest extends \MailPoetTest {
         'text' => 'TEXT body',
       ],
     ];
-    $this->extra_params = [
+    $this->extraParams = [
       'unsubscribe_url' => 'http://www.mailpoet.com',
     ];
   }
 
   public function testItCanGenerateBody() {
-    $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->extra_params);
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->extraParams);
     expect($body['to'])->contains($this->subscriber);
     expect($body['from'])->equals($this->sender['from_email']);
     expect($body['fromname'])->equals($this->sender['from_name']);
-    expect($body['replyto'])->equals($this->reply_to['reply_to_email']);
+    expect($body['replyto'])->equals($this->replyTo['reply_to_email']);
     expect($body['subject'])->equals($this->newsletter['subject']);
     $headers = json_decode($body['headers'], true);
     expect($headers['List-Unsubscribe'])
-      ->equals('<' . $this->extra_params['unsubscribe_url'] . '>');
+      ->equals('<' . $this->extraParams['unsubscribe_url'] . '>');
     expect($body['html'])->equals($this->newsletter['body']['html']);
     expect($body['text'])->equals($this->newsletter['body']['text']);
   }
@@ -94,7 +94,7 @@ class SendGridTest extends \MailPoetTest {
   }
 
   public function testItChecksBlacklistBeforeSending() {
-    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklistedSubscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
@@ -103,7 +103,7 @@ class SendGridTest extends \MailPoetTest {
     );
     $result = $mailer->send(
       $this->newsletter,
-      $blacklisted_subscriber
+      $blacklistedSubscriber
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);

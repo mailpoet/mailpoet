@@ -31,8 +31,8 @@ class TimestampListenerTest extends \MailPoetTest {
       'currentTime' => $timestamp,
     ]);
 
-    $this->entity_manager = $this->createEntityManager();
-    $this->table_name = $this->entity_manager->getClassMetadata(TimestampEntity::class)->getTableName();
+    $this->entityManager = $this->createEntityManager();
+    $this->tableName = $this->entityManager->getClassMetadata(TimestampEntity::class)->getTableName();
     $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->table_name");
     $this->connection->executeUpdate("
       CREATE TABLE $this->table_name (
@@ -48,8 +48,8 @@ class TimestampListenerTest extends \MailPoetTest {
     $entity = new TimestampEntity();
     $entity->setName('Created');
 
-    $this->entity_manager->persist($entity);
-    $this->entity_manager->flush();
+    $this->entityManager->persist($entity);
+    $this->entityManager->flush();
 
     expect($entity->getCreatedAt())->equals($this->now);
     expect($entity->getUpdatedAt())->equals($this->now);
@@ -65,9 +65,9 @@ class TimestampListenerTest extends \MailPoetTest {
       )
     ");
 
-    $entity = $this->entity_manager->find(TimestampEntity::class, 123);
+    $entity = $this->entityManager->find(TimestampEntity::class, 123);
     $entity->setName('Updated');
-    $this->entity_manager->flush();
+    $this->entityManager->flush();
 
     expect($entity->getCreatedAt()->format('Y-m-d H:i:s'))->equals('2000-01-01 12:00:00');
     expect($entity->getUpdatedAt())->equals($this->now);
@@ -79,18 +79,18 @@ class TimestampListenerTest extends \MailPoetTest {
   }
 
   private function createEntityManager() {
-    $annotation_reader_provider = new AnnotationReaderProvider();
-    $configuration_factory = new ConfigurationFactory(false, $annotation_reader_provider);
-    $configuration = $configuration_factory->createConfiguration();
+    $annotationReaderProvider = new AnnotationReaderProvider();
+    $configurationFactory = new ConfigurationFactory(false, $annotationReaderProvider);
+    $configuration = $configurationFactory->createConfiguration();
 
-    $metadata_driver = $configuration->newDefaultAnnotationDriver([__DIR__], false);
-    $configuration->setMetadataDriverImpl($metadata_driver);
+    $metadataDriver = $configuration->newDefaultAnnotationDriver([__DIR__], false);
+    $configuration->setMetadataDriverImpl($metadataDriver);
     $configuration->setMetadataCacheImpl(new ArrayCache());
 
-    $validator_factory = new ValidatorFactory($annotation_reader_provider);
-    $timestamp_listener = new TimestampListener($this->wp);
-    $validation_listener = new ValidationListener($validator_factory->createValidator());
-    $entity_manager_factory = new EntityManagerFactory($this->connection, $configuration, $timestamp_listener, $validation_listener);
-    return $entity_manager_factory->createEntityManager();
+    $validatorFactory = new ValidatorFactory($annotationReaderProvider);
+    $timestampListener = new TimestampListener($this->wp);
+    $validationListener = new ValidationListener($validatorFactory->createValidator());
+    $entityManagerFactory = new EntityManagerFactory($this->connection, $configuration, $timestampListener, $validationListener);
+    return $entityManagerFactory->createEntityManager();
   }
 }

@@ -37,8 +37,8 @@ class LinksTest extends \MailPoetTest {
 
   public function testItDoesNotRehashExistingLinks() {
     $link = NewsletterLink::create();
-    $link->newsletter_id = 3;
-    $link->queue_id = 3;
+    $link->newsletterId = 3;
+    $link->queueId = 3;
     $link->hash = '123';
     $link->url = 'http://example.com';
     $link->save();
@@ -68,16 +68,16 @@ class LinksTest extends \MailPoetTest {
 
   public function testItHashesAndReplacesLinks() {
     $template = '<a href="http://example.com">some site</a> [link:some_link_shortcode]';
-    list($updated_content, $hashed_links) = Links::process($template, 0, 0);
+    list($updatedContent, $hashedLinks) = Links::process($template, 0, 0);
 
     // 2 links were hashed
-    expect(count($hashed_links))->equals(2);
+    expect(count($hashedLinks))->equals(2);
     // links in returned content were replaced with hashes
-    expect($updated_content)
-      ->contains(Links::DATA_TAG_CLICK . '-' . $hashed_links[0]['hash']);
-    expect($updated_content)
-      ->contains(Links::DATA_TAG_CLICK . '-' . $hashed_links[1]['hash']);
-    expect($updated_content)->notContains('link');
+    expect($updatedContent)
+      ->contains(Links::DATA_TAG_CLICK . '-' . $hashedLinks[0]['hash']);
+    expect($updatedContent)
+      ->contains(Links::DATA_TAG_CLICK . '-' . $hashedLinks[1]['hash']);
+    expect($updatedContent)->notContains('link');
   }
 
 
@@ -96,7 +96,7 @@ class LinksTest extends \MailPoetTest {
   public function testItDoesNotReplaceUnprocessedLinks() {
     $template = '<a href="http://example.com">some site</a> [link:some_link_shortcode]';
 
-    $processed_links = [
+    $processedLinks = [
       'http://example.com' => [
         'type' => Links::LINK_TYPE_URL,
         'link' => 'http://example.com',
@@ -104,28 +104,28 @@ class LinksTest extends \MailPoetTest {
       ],
     ];
 
-    list($updated_content, $replaced_links) =
-      Links::replace($template, $processed_links);
+    list($updatedContent, $replacedLinks) =
+      Links::replace($template, $processedLinks);
 
-    expect($replaced_links)->count(1);
+    expect($replacedLinks)->count(1);
     // links in returned content were replaced with hashes
-    expect($updated_content)
+    expect($updatedContent)
       ->contains('replace by this');
-    expect($updated_content)
+    expect($updatedContent)
       ->contains('[link:some_link_shortcode]');
-    expect($updated_content)->notContains('http://example.com');
+    expect($updatedContent)->notContains('http://example.com');
   }
 
   public function testItCreatesAndTransformsUrlDataObject() {
-    $subscriber_email = 'test@example.com';
+    $subscriberEmail = 'test@example.com';
     $data = [
       'subscriber_id' => 1,
-      'subscriber_token' => md5($subscriber_email),
+      'subscriber_token' => md5($subscriberEmail),
       'queue_id' => 2,
       'link_hash' => 'hash',
       'preview' => false,
     ];
-    $url_data_object = Links::createUrlDataObject(
+    $urlDataObject = Links::createUrlDataObject(
       $data['subscriber_id'],
       $data['subscriber_token'],
       $data['queue_id'],
@@ -133,10 +133,10 @@ class LinksTest extends \MailPoetTest {
       $data['preview']
     );
     // URL data object should be an indexed array
-    expect($url_data_object)->equals(array_values($data));
+    expect($urlDataObject)->equals(array_values($data));
     // transformed URL object should be an associative array
-    $transformed_url_data_object = Links::transformUrlDataObject($url_data_object);
-    expect($transformed_url_data_object)->equals($data);
+    $transformedUrlDataObject = Links::transformUrlDataObject($urlDataObject);
+    expect($transformedUrlDataObject)->equals($data);
   }
 
   public function testItReplacesHashedLinksWithSubscriberData() {
@@ -144,7 +144,7 @@ class LinksTest extends \MailPoetTest {
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
     $queue = SendingQueue::create();
-    $queue->newsletter_id = 1;
+    $queue->newsletterId = 1;
     $queue->save();
     $template = '<a href="[mailpoet_click_data]-1234">some site</a> <img src="[mailpoet_open_data]"/>';
     $result = Links::replaceSubscriberData($subscriber->id, $queue->id, $template);
@@ -179,29 +179,29 @@ class LinksTest extends \MailPoetTest {
     ];
     Links::save(
       $links,
-      $newsletter_id = 1,
-      $queue_id = 1
+      $newsletterId = 1,
+      $queueId = 1
     );
 
     // 1 database record was created
-    $newsltter_link = NewsletterLink::where('newsletter_id', 1)
+    $newsltterLink = NewsletterLink::where('newsletter_id', 1)
       ->where('queue_id', 1)
       ->findOne();
-    expect($newsltter_link->hash)->equals('123');
-    expect($newsltter_link->url)->equals('http://example.com');
+    expect($newsltterLink->hash)->equals('123');
+    expect($newsltterLink->url)->equals('http://example.com');
   }
 
   public function testItCanReuseAlreadySavedLinks() {
     $link = NewsletterLink::create();
-    $link->newsletter_id = 1;
-    $link->queue_id = 2;
+    $link->newsletterId = 1;
+    $link->queueId = 2;
     $link->hash = '123';
     $link->url = 'http://example.com';
     $link->save();
 
     $link = NewsletterLink::create();
-    $link->newsletter_id = 1;
-    $link->queue_id = 3;
+    $link->newsletterId = 1;
+    $link->queueId = 3;
     $link->hash = '456';
     $link->url = 'http://demo.com';
     $link->save();
@@ -223,18 +223,18 @@ class LinksTest extends \MailPoetTest {
 
   public function testItCanConvertOnlyHashedLinkShortcodes() {
     // create newsletter link association
-    $queue_id = 1;
-    $newsletter_link = NewsletterLink::create();
-    $newsletter_link->newsletter_id = 1;
-    $newsletter_link->queue_id = $queue_id;
-    $newsletter_link->hash = '90e56';
-    $newsletter_link->url = '[link:newsletter_view_in_browser_url]';
-    $newsletter_link = $newsletter_link->save();
+    $queueId = 1;
+    $newsletterLink = NewsletterLink::create();
+    $newsletterLink->newsletterId = 1;
+    $newsletterLink->queueId = $queueId;
+    $newsletterLink->hash = '90e56';
+    $newsletterLink->url = '[link:newsletter_view_in_browser_url]';
+    $newsletterLink = $newsletterLink->save();
     $content = '
       <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
-    $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queue_id);
-    expect($result)->contains($newsletter_link->url);
+    $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queueId);
+    expect($result)->contains($newsletterLink->url);
     expect($result)->contains('[mailpoet_click_data]-123');
   }
 
@@ -259,25 +259,25 @@ class LinksTest extends \MailPoetTest {
 
   public function testItCanConvertAllHashedLinksToUrls() {
     // create newsletter link associations
-    $queue_id = 1;
-    $newsletter_link_1 = NewsletterLink::create();
-    $newsletter_link_1->newsletter_id = 1;
-    $newsletter_link_1->queue_id = $queue_id;
-    $newsletter_link_1->hash = '90e56';
-    $newsletter_link_1->url = '[link:newsletter_view_in_browser_url]';
-    $newsletter_link_1 = $newsletter_link_1->save();
-    $newsletter_link_2 = NewsletterLink::create();
-    $newsletter_link_2->newsletter_id = 1;
-    $newsletter_link_2->queue_id = $queue_id;
-    $newsletter_link_2->hash = '123';
-    $newsletter_link_2->url = 'http://google.com';
-    $newsletter_link_2 = $newsletter_link_2->save();
+    $queueId = 1;
+    $newsletterLink1 = NewsletterLink::create();
+    $newsletterLink1->newsletterId = 1;
+    $newsletterLink1->queueId = $queueId;
+    $newsletterLink1->hash = '90e56';
+    $newsletterLink1->url = '[link:newsletter_view_in_browser_url]';
+    $newsletterLink1 = $newsletterLink1->save();
+    $newsletterLink2 = NewsletterLink::create();
+    $newsletterLink2->newsletterId = 1;
+    $newsletterLink2->queueId = $queueId;
+    $newsletterLink2->hash = '123';
+    $newsletterLink2->url = 'http://google.com';
+    $newsletterLink2 = $newsletterLink2->save();
     $content = '
       <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
-    $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queue_id, $convert_all = true);
-    expect($result)->contains($newsletter_link_1->url);
-    expect($result)->contains($newsletter_link_2->url);
+    $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = true);
+    expect($result)->contains($newsletterLink1->url);
+    expect($result)->contains($newsletterLink2->url);
   }
 
   public function _after() {

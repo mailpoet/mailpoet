@@ -10,22 +10,22 @@ class CustomFieldsResponseBuilder {
    * @param CustomFieldEntity[] $custom_fields
    * @return array
    */
-  public function buildBatch(array $custom_fields) {
-    return array_map([$this, 'build'], $custom_fields);
+  public function buildBatch(array $customFields) {
+    return array_map([$this, 'build'], $customFields);
   }
 
   /**
    * @param CustomFieldEntity $custom_field
    * @return array
    */
-  public function build(CustomFieldEntity $custom_field) {
+  public function build(CustomFieldEntity $customField) {
     return [
-      'id' => $custom_field->getId(),
-      'name' => $custom_field->getName(),
-      'type' => $custom_field->getType(),
-      'params' => $custom_field->getParams(),
-      'created_at' => $custom_field->getCreatedAt()->format('Y-m-d H:i:s'),
-      'updated_at' => $custom_field->getUpdatedAt()->format('Y-m-d H:i:s'),
+      'id' => $customField->getId(),
+      'name' => $customField->getName(),
+      'type' => $customField->getType(),
+      'params' => $customField->getParams(),
+      'created_at' => $customField->getCreatedAt()->format('Y-m-d H:i:s'),
+      'updated_at' => $customField->getUpdatedAt()->format('Y-m-d H:i:s'),
     ];
   }
 }

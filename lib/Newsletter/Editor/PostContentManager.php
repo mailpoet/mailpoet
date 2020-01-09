@@ -13,32 +13,32 @@ class PostContentManager {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
-  public function __construct(WooCommerceHelper $woocommerce_helper = null) {
+  public function __construct(WooCommerceHelper $woocommerceHelper = null) {
     $wp = new WPFunctions;
-    $this->max_excerpt_length = $wp->applyFilters('mailpoet_newsletter_post_excerpt_length', $this->max_excerpt_length);
-    $this->woocommerce_helper = $woocommerce_helper ?: new WooCommerceHelper();
+    $this->maxExcerptLength = $wp->applyFilters('mailpoet_newsletter_post_excerpt_length', $this->maxExcerptLength);
+    $this->woocommerceHelper = $woocommerceHelper ?: new WooCommerceHelper();
   }
 
   public function getContent($post, $displayType) {
     if ($displayType === 'titleOnly') {
       return '';
     }
-    if ($this->woocommerce_helper->isWooCommerceActive() && $post->post_type === 'product') {
-      $product = $this->woocommerce_helper->wcGetProduct($post->ID);
+    if ($this->woocommerceHelper->isWooCommerceActive() && $post->postType === 'product') {
+      $product = $this->woocommerceHelper->wcGetProduct($post->ID);
       if ($product) {
         return $this->getContentForProduct($product, $displayType);
       }
     }
     if ($displayType === 'excerpt') {
-      if (!empty($post->post_excerpt)) {
-        return self::stripShortCodes($post->post_excerpt);
+      if (!empty($post->postExcerpt)) {
+        return self::stripShortCodes($post->postExcerpt);
       }
-      return $this->generateExcerpt($post->post_content);
+      return $this->generateExcerpt($post->postContent);
     }
-    return self::stripShortCodes($post->post_content);
+    return self::stripShortCodes($post->postContent);
   }
 
-  public function filterContent($content, $display_type, $with_post_class = true) {
+  public function filterContent($content, $displayType, $withPostClass = true) {
     $content = self::convertEmbeddedContent($content);
 
     // convert h4 h5 h6 to h3
@@ -52,16 +52,16 @@ class PostContentManager {
     );
 
     // strip useless tags
-    $tags_not_being_stripped = [
+    $tagsNotBeingStripped = [
       '<p>', '<em>', '<span>', '<b>', '<strong>', '<i>',
       '<a>', '<ul>', '<ol>', '<li>', '<br>', '<blockquote>',
     ];
-    if ($display_type === 'full') {
-      $tags_not_being_stripped = array_merge($tags_not_being_stripped, ['<figure>', '<img>', '<h1>', '<h2>', '<h3>']);
+    if ($displayType === 'full') {
+      $tagsNotBeingStripped = array_merge($tagsNotBeingStripped, ['<figure>', '<img>', '<h1>', '<h2>', '<h3>']);
     }
 
-    $content = strip_tags($content, implode('', $tags_not_being_stripped));
-    if ($with_post_class) {
+    $content = strip_tags($content, implode('', $tagsNotBeingStripped));
+    if ($withPostClass) {
       $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS . '"', WPFunctions::get()->wpautop($content));
     } else {
       $content = WPFunctions::get()->wpautop($content);
@@ -101,7 +101,7 @@ class PostContentManager {
       return $excerpts[0];
     } else {
       // Separator not present, try to shorten long posts
-      return WPFunctions::get()->wpTrimWords($content, $this->max_excerpt_length, ' &hellip;');
+      return WPFunctions::get()->wpTrimWords($content, $this->maxExcerptLength, ' &hellip;');
     }
   }
 

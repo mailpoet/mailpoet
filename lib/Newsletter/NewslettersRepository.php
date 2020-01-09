@@ -22,7 +22,7 @@ class NewslettersRepository extends Repository {
    * @return NewsletterEntity[]
    */
   public function findActiveByTypes($types) {
-    return $this->entity_manager
+    return $this->entityManager
       ->createQueryBuilder()
       ->select('n')
       ->from(NewsletterEntity::class, 'n')

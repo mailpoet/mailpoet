@@ -22,10 +22,10 @@ class NewslettersResponseBuilder {
       'reply_to_name' => $newsletter->getReplyToName(),
       'preheader' => $newsletter->getPreheader(),
       'body' => $newsletter->getBody(),
-      'sent_at' => ($sent_at = $newsletter->getSentAt()) ? $sent_at->format(self::DATE_FORMAT) : null,
+      'sent_at' => ($sentAt = $newsletter->getSentAt()) ? $sentAt->format(self::DATE_FORMAT) : null,
       'created_at' => $newsletter->getCreatedAt()->format(self::DATE_FORMAT),
       'updated_at' => $newsletter->getUpdatedAt()->format(self::DATE_FORMAT),
-      'deleted_at' => ($deleted_at = $newsletter->getDeletedAt()) ? $deleted_at->format(self::DATE_FORMAT) : null,
+      'deleted_at' => ($deletedAt = $newsletter->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'parent_id' => ($parent = $newsletter->getParent()) ? $parent->getId() : null,
       'segments' => $this->buildSegments($newsletter),
       'options' => $this->buildOptions($newsletter),
@@ -37,8 +37,8 @@ class NewslettersResponseBuilder {
 
   private function buildSegments(NewsletterEntity $newsletter) {
     $output = [];
-    foreach ($newsletter->getNewsletterSegments() as $newsletter_segment) {
-      $segment = $newsletter_segment->getSegment();
+    foreach ($newsletter->getNewsletterSegments() as $newsletterSegment) {
+      $segment = $newsletterSegment->getSegment();
       if ($segment->getDeletedAt()) {
         continue;
       }
@@ -69,7 +69,7 @@ class NewslettersResponseBuilder {
       'description' => $segment->getDescription(),
       'created_at' => $segment->getCreatedAt()->format(self::DATE_FORMAT),
       'updated_at' => $segment->getUpdatedAt()->format(self::DATE_FORMAT),
-      'deleted_at' => ($deleted_at = $segment->getDeletedAt()) ? $deleted_at->format(self::DATE_FORMAT) : null,
+      'deleted_at' => ($deletedAt = $segment->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
     ];
   }
 
@@ -83,11 +83,11 @@ class NewslettersResponseBuilder {
       'type' => $task->getType(),
       'status' => $task->getStatus(),
       'priority' => (string)$task->getPriority(), // (string) for BC
-      'scheduled_at' => ($scheduled_at = $task->getScheduledAt()) ? $scheduled_at->format(self::DATE_FORMAT) : null,
-      'processed_at' => ($processed_at = $task->getProcessedAt()) ? $processed_at->format(self::DATE_FORMAT) : null,
+      'scheduled_at' => ($scheduledAt = $task->getScheduledAt()) ? $scheduledAt->format(self::DATE_FORMAT) : null,
+      'processed_at' => ($processedAt = $task->getProcessedAt()) ? $processedAt->format(self::DATE_FORMAT) : null,
       'created_at' => $queue->getCreatedAt()->format(self::DATE_FORMAT),
       'updated_at' => $queue->getUpdatedAt()->format(self::DATE_FORMAT),
-      'deleted_at' => ($deleted_at = $queue->getDeletedAt()) ? $deleted_at->format(self::DATE_FORMAT) : null,
+      'deleted_at' => ($deletedAt = $queue->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'meta' => $queue->getMeta(),
       'task_id' => (string)$queue->getTask()->getId(), // (string) for BC
       'newsletter_id' => (string)$queue->getNewsletter()->getId(), // (string) for BC

@@ -27,35 +27,35 @@ class PostNotificationScheduler {
   private $logger_factory;
 
   public function __construct() {
-    $this->logger_factory = LoggerFactory::getInstance();
+    $this->loggerFactory = LoggerFactory::getInstance();
   }
 
-  public function transitionHook($new_status, $old_status, $post) {
-    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+  public function transitionHook($newStatus, $oldStatus, $post) {
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'transition post notification hook initiated',
       [
         'post_id' => $post->ID,
-        'new_status' => $new_status,
-        'old_status' => $old_status,
+        'new_status' => $newStatus,
+        'old_status' => $oldStatus,
       ]
     );
     $types = Posts::getTypes();
-    if (($new_status !== 'publish') || !isset($types[$post->post_type])) {
+    if (($newStatus !== 'publish') || !isset($types[$post->postType])) {
       return;
     }
     $this->schedulePostNotification($post->ID);
   }
 
-  public function schedulePostNotification($post_id) {
-    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+  public function schedulePostNotification($postId) {
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'schedule post notification hook',
-      ['post_id' => $post_id]
+      ['post_id' => $postId]
     );
     $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_NOTIFICATION);
     if (!count($newsletters)) return false;
     foreach ($newsletters as $newsletter) {
       $post = NewsletterPost::where('newsletter_id', $newsletter->id)
-        ->where('post_id', $post_id)
+        ->where('post_id', $postId)
         ->findOne();
       if ($post === false) {
         $this->createPostNotificationSendingTask($newsletter);
@@ -64,7 +64,7 @@ class PostNotificationScheduler {
   }
 
   public function createPostNotificationSendingTask($newsletter) {
-    $existing_notification_history = Newsletter::tableAlias('newsletters')
+    $existingNotificationHistory = Newsletter::tableAlias('newsletters')
       ->where('newsletters.parent_id', $newsletter->id)
       ->where('newsletters.type', Newsletter::TYPE_NOTIFICATION_HISTORY)
       ->where('newsletters.status', Newsletter::STATUS_SENDING)
@@ -80,49 +80,49 @@ class PostNotificationScheduler {
       )
       ->whereNotEqual('tasks.status', ScheduledTask::STATUS_PAUSED)
       ->findOne();
-    if ($existing_notification_history) {
+    if ($existingNotificationHistory) {
       return;
     }
-    $next_run_date = Scheduler::getNextRunDate($newsletter->schedule);
-    if (!$next_run_date) return;
+    $nextRunDate = Scheduler::getNextRunDate($newsletter->schedule);
+    if (!$nextRunDate) return;
     // do not schedule duplicate queues for the same time
-    $existing_queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
-      ->where('tasks.scheduled_at', $next_run_date)
+    $existingQueue = SendingQueue::findTaskByNewsletterId($newsletter->id)
+      ->where('tasks.scheduled_at', $nextRunDate)
       ->findOne();
-    if ($existing_queue) return;
-    $sending_task = SendingTask::create();
-    $sending_task->newsletter_id = $newsletter->id;
-    $sending_task->status = SendingQueue::STATUS_SCHEDULED;
-    $sending_task->scheduled_at = $next_run_date;
-    $sending_task->save();
-    $this->logger_factory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+    if ($existingQueue) return;
+    $sendingTask = SendingTask::create();
+    $sendingTask->newsletterId = $newsletter->id;
+    $sendingTask->status = SendingQueue::STATUS_SCHEDULED;
+    $sendingTask->scheduledAt = $nextRunDate;
+    $sendingTask->save();
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'schedule post notification',
-      ['sending_task' => $sending_task->id(), 'scheduled_at' => $next_run_date]
+      ['sending_task' => $sendingTask->id(), 'scheduled_at' => $nextRunDate]
     );
-    return $sending_task;
+    return $sendingTask;
   }
 
   public function processPostNotificationSchedule($newsletter) {
-    $interval_type = $newsletter->intervalType;
+    $intervalType = $newsletter->intervalType;
     $hour = (int)$newsletter->timeOfDay / self::SECONDS_IN_HOUR;
-    $week_day = $newsletter->weekDay;
-    $month_day = $newsletter->monthDay;
-    $nth_week_day = ($newsletter->nthWeekDay === self::LAST_WEEKDAY_FORMAT) ?
+    $weekDay = $newsletter->weekDay;
+    $monthDay = $newsletter->monthDay;
+    $nthWeekDay = ($newsletter->nthWeekDay === self::LAST_WEEKDAY_FORMAT) ?
       $newsletter->nthWeekDay :
       '#' . $newsletter->nthWeekDay;
-    switch ($interval_type) {
+    switch ($intervalType) {
       case self::INTERVAL_IMMEDIATE:
       case self::INTERVAL_DAILY:
         $schedule = sprintf('0 %s * * *', $hour);
         break;
       case self::INTERVAL_WEEKLY:
-        $schedule = sprintf('0 %s * * %s', $hour, $week_day);
+        $schedule = sprintf('0 %s * * %s', $hour, $weekDay);
         break;
       case self::INTERVAL_NTHWEEKDAY:
-        $schedule = sprintf('0 %s ? * %s%s', $hour, $week_day, $nth_week_day);
+        $schedule = sprintf('0 %s ? * %s%s', $hour, $weekDay, $nthWeekDay);
         break;
       case self::INTERVAL_MONTHLY:
-        $schedule = sprintf('0 %s %s * *', $hour, $month_day);
+        $schedule = sprintf('0 %s %s * *', $hour, $monthDay);
         break;
       case self::INTERVAL_IMMEDIATELY:
       default:
@@ -130,18 +130,18 @@ class PostNotificationScheduler {
         break;
     }
     $relation = null;
-    $option_field = NewsletterOptionField::where('name', 'schedule')->findOne();
-    if ($option_field instanceof NewsletterOptionField) {
+    $optionField = NewsletterOptionField::where('name', 'schedule')->findOne();
+    if ($optionField instanceof NewsletterOptionField) {
       $relation = NewsletterOption::where('newsletter_id', $newsletter->id)
-        ->where('option_field_id', $option_field->id)
+        ->where('option_field_id', $optionField->id)
         ->findOne();
     } else {
       throw new \Exception('NewsletterOptionField for schedule doesn’t exist.');
     }
     if (!$relation instanceof NewsletterOption) {
       $relation = NewsletterOption::create();
-      $relation->newsletter_id = $newsletter->id;
-      $relation->option_field_id = (int)$option_field->id;
+      $relation->newsletterId = $newsletter->id;
+      $relation->optionFieldId = (int)$optionField->id;
     }
     $relation->value = $schedule;
     $relation->save();

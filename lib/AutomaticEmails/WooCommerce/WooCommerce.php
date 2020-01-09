@@ -25,8 +25,8 @@ class WooCommerce {
 
   public function __construct() {
     $this->wp = new WPFunctions;
-    $this->woocommerce_helper = new WooCommerceHelper();
-    $this->_woocommerce_enabled = $this->isWoocommerceEnabled();
+    $this->woocommerceHelper = new WooCommerceHelper();
+    $this->woocommerceEnabled = $this->isWoocommerceEnabled();
   }
 
   public function init() {
@@ -56,46 +56,46 @@ class WooCommerce {
   }
 
   public function setupEvents($events) {
-    $custom_event_details = (!$this->_woocommerce_enabled) ? [
+    $customEventDetails = (!$this->woocommerceEnabled) ? [
       'actionButtonTitle' => WPFunctions::get()->__('WooCommerce is required', 'mailpoet'),
       'actionButtonLink' => 'https://wordpress.org/plugins/woocommerce/',
     ] : [];
 
-    foreach ($this->available_events as $event) {
-      $event_class = sprintf(
+    foreach ($this->availableEvents as $event) {
+      $eventClass = sprintf(
         '%s\Events\%s',
         __NAMESPACE__,
         $event
       );
 
-      if (!class_exists($event_class)) {
+      if (!class_exists($eventClass)) {
         $this->displayEventWarning($event);
         continue;
       }
 
-      $event_instance = new $event_class();
+      $eventInstance = new $eventClass();
 
-      if (method_exists($event_instance, 'init')) {
-        $event_instance->init();
+      if (method_exists($eventInstance, 'init')) {
+        $eventInstance->init();
       } else {
         $this->displayEventWarning($event);
         continue;
       }
 
-      if (method_exists($event_instance, 'getEventDetails')) {
-        $event_details = array_merge($event_instance->getEventDetails(), $custom_event_details);
+      if (method_exists($eventInstance, 'getEventDetails')) {
+        $eventDetails = array_merge($eventInstance->getEventDetails(), $customEventDetails);
       } else {
         $this->displayEventWarning($event);
         continue;
       }
-      $events[] = $event_details;
+      $events[] = $eventDetails;
     }
 
     return $events;
   }
 
   public function isWoocommerceEnabled() {
-    return $this->woocommerce_helper->isWooCommerceActive();
+    return $this->woocommerceHelper->isWooCommerceActive();
   }
 
   private function displayEventWarning($event) {

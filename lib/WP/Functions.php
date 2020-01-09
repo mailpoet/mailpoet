@@ -47,7 +47,7 @@ class Functions {
    * @param int $accepted_args
    * @return boolean
    */
-  public function addAction($tag, $function_to_add, $priority = 10, $accepted_args = 1) {
+  public function addAction($tag, $functionToAdd, $priority = 10, $acceptedArgs = 1) {
     return call_user_func_array('add_action', func_get_args());
   }
 
@@ -67,12 +67,12 @@ class Functions {
     return _x($text, $context, $domain);
   }
 
-  public function addCommentMeta($comment_id, $meta_key, $meta_value, $unique = false) {
-    return add_comment_meta($comment_id, $meta_key, $meta_value, $unique);
+  public function addCommentMeta($commentId, $metaKey, $metaValue, $unique = false) {
+    return add_comment_meta($commentId, $metaKey, $metaValue, $unique);
   }
 
-  public function addFilter($tag, callable $function_to_add, $priority = 10, $accepted_args = 1) {
-    return add_filter($tag, $function_to_add, $priority, $accepted_args);
+  public function addFilter($tag, callable $functionToAdd, $priority = 10, $acceptedArgs = 1) {
+    return add_filter($tag, $functionToAdd, $priority, $acceptedArgs);
   }
 
   /**
@@ -82,12 +82,12 @@ class Functions {
     return add_image_size($name, $width, $height, $crop);
   }
 
-  public function addMenuPage($page_title, $menu_title, $capability, $menu_slug, callable $function = null, $icon_url = '', $position = null) {
+  public function addMenuPage($pageTitle, $menuTitle, $capability, $menuSlug, callable $function = null, $iconUrl = '', $position = null) {
     if (is_null($function)) {
       $function = function () {
       };
     }
-    return add_menu_page($page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position);
+    return add_menu_page($pageTitle, $menuTitle, $capability, $menuSlug, $function, $iconUrl, $position);
   }
 
   public function addQueryArg($key, $value = false, $url = false) {
@@ -102,8 +102,8 @@ class Functions {
     return add_shortcode($tag, $callback);
   }
 
-  public function addSubmenuPage($parent_slug, $page_title, $menu_title, $capability, $menu_slug, callable $function) {
-    return add_submenu_page($parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function);
+  public function addSubmenuPage($parentSlug, $pageTitle, $menuTitle, $capability, $menuSlug, callable $function) {
+    return add_submenu_page($parentSlug, $pageTitle, $menuTitle, $capability, $menuSlug, $function);
   }
 
   public function adminUrl($path = '', $scheme = 'admin') {
@@ -122,20 +122,20 @@ class Functions {
     return current_user_can($capability);
   }
 
-  public function dateI18n($dateformatstring, $timestamp_with_offset = false, $gmt = false) {
-    return date_i18n($dateformatstring, $timestamp_with_offset, $gmt);
+  public function dateI18n($dateformatstring, $timestampWithOffset = false, $gmt = false) {
+    return date_i18n($dateformatstring, $timestampWithOffset, $gmt);
   }
 
-  public function deleteCommentMeta($comment_id, $meta_key, $meta_value = '') {
-    return delete_comment_meta($comment_id, $meta_key, $meta_value);
+  public function deleteCommentMeta($commentId, $metaKey, $metaValue = '') {
+    return delete_comment_meta($commentId, $metaKey, $metaValue);
   }
 
   public function deleteOption($option) {
     return delete_option($option);
   }
 
-  public function doShortcode($content, $ignore_html = false) {
-    return do_shortcode($content, $ignore_html);
+  public function doShortcode($content, $ignoreHtml = false) {
+    return do_shortcode($content, $ignoreHtml);
   }
 
   public function escAttr($text) {
@@ -162,8 +162,8 @@ class Functions {
     return get_comment($comment, $output);
   }
 
-  public function getCommentMeta($comment_id, $key = '', $single = false) {
-    return get_comment_meta($comment_id, $key, $single);
+  public function getCommentMeta($commentId, $key = '', $single = false) {
+    return get_comment_meta($commentId, $key, $single);
   }
 
   public function getCurrentScreen() {
@@ -178,8 +178,8 @@ class Functions {
     return get_date_from_gmt($string, $format);
   }
 
-  public function getEditProfileUrl($user_id = 0, $scheme = 'admin') {
-    return get_edit_profile_url($user_id, $scheme);
+  public function getEditProfileUrl($userId = 0, $scheme = 'admin') {
+    return get_edit_profile_url($userId, $scheme);
   }
 
   public function getEditableRoles() {
@@ -206,16 +206,16 @@ class Functions {
     return get_permalink($post, $leavename);
   }
 
-  public function getPluginPageHook($plugin_page, $parent_page) {
-    return get_plugin_page_hook($plugin_page, $parent_page);
+  public function getPluginPageHook($pluginPage, $parentPage) {
+    return get_plugin_page_hook($pluginPage, $parentPage);
   }
 
   public function getPluginUpdates() {
     return get_plugin_updates();
   }
 
-  public function getPlugins($plugin_folder = '') {
-    return get_plugins($plugin_folder);
+  public function getPlugins($pluginFolder = '') {
+    return get_plugins($pluginFolder);
   }
 
   public function getPost($post = null, $output = OBJECT, $filter = 'raw') {
@@ -242,8 +242,8 @@ class Functions {
     return get_site_option($option, $default, $deprecated);
   }
 
-  public function getSiteUrl($blog_id = null, $path = '', $scheme = null) {
-    return get_site_url($blog_id, $path, $scheme);
+  public function getSiteUrl($blogId = null, $path = '', $scheme = null) {
+    return get_site_url($blogId, $path, $scheme);
   }
 
   public function getTemplatePart($slug, $name = null) {
@@ -262,31 +262,31 @@ class Functions {
   /**
    * @param int|false $user_id
    */
-  public function getTheAuthorMeta($field = '', $user_id = false) {
-    return get_the_author_meta($field, $user_id);
+  public function getTheAuthorMeta($field = '', $userId = false) {
+    return get_the_author_meta($field, $userId);
   }
 
   /**
    * @param  int|\WP_User $user_id
    */
-  public function getUserLocale($user_id = 0) {
-    return get_user_locale($user_id);
+  public function getUserLocale($userId = 0) {
+    return get_user_locale($userId);
   }
 
-  public function getUserMeta($user_id, $key = '', $single = false) {
-    return get_user_meta($user_id, $key, $single);
+  public function getUserMeta($userId, $key = '', $single = false) {
+    return get_user_meta($userId, $key, $single);
   }
 
-  public function getUserdata($user_id) {
-    return get_userdata($user_id);
+  public function getUserdata($userId) {
+    return get_userdata($userId);
   }
 
   public function getUserBy($field, $value) {
     return get_user_by($field, $value);
   }
 
-  public function hasFilter($tag, $function_to_check = false) {
-    return has_filter($tag, $function_to_check);
+  public function hasFilter($tag, $functionToCheck = false) {
+    return has_filter($tag, $functionToCheck);
   }
 
   public function homeUrl($path = '', $scheme = null) {
@@ -329,8 +329,8 @@ class Functions {
    * @param  string|false $deprecated
    * @param  string|false $plugin_rel_path
    */
-  public function loadPluginTextdomain($domain, $deprecated = false, $plugin_rel_path = false) {
-    return load_plugin_textdomain($domain, $deprecated, $plugin_rel_path);
+  public function loadPluginTextdomain($domain, $deprecated = false, $pluginRelPath = false) {
+    return load_plugin_textdomain($domain, $deprecated, $pluginRelPath);
   }
 
   public function loadTextdomain($domain, $mofile) {
@@ -353,8 +353,8 @@ class Functions {
     return register_activation_hook($file, $function);
   }
 
-  public function registerPostType($post_type, $args = []) {
-    return register_post_type($post_type, $args);
+  public function registerPostType($postType, $args = []) {
+    return register_post_type($postType, $args);
   }
 
   public function registerWidget($widget) {
@@ -366,8 +366,8 @@ class Functions {
    * @param callable $function_to_remove
    * @param int $priority
    */
-  public function removeAction($tag, $function_to_remove, $priority = 10) {
-    return remove_action($tag, $function_to_remove, $priority);
+  public function removeAction($tag, $functionToRemove, $priority = 10) {
+    return remove_action($tag, $functionToRemove, $priority);
   }
 
   public function removeAllActions($tag, $priority = false) {
@@ -378,8 +378,8 @@ class Functions {
     return remove_all_filters($tag, $priority);
   }
 
-  public function removeFilter($tag, callable $function_to_remove, $priority = 10) {
-    return remove_filter($tag, $function_to_remove, $priority);
+  public function removeFilter($tag, callable $functionToRemove, $priority = 10) {
+    return remove_filter($tag, $functionToRemove, $priority);
   }
 
   public function removeShortcode($tag) {
@@ -454,48 +454,48 @@ class Functions {
     return wp_enqueue_media($args);
   }
 
-  public function wpEnqueueScript($handle, $src = '', array $deps = [], $ver = false, $in_footer = false) {
-    return wp_enqueue_script($handle, $src, $deps, $ver, $in_footer);
+  public function wpEnqueueScript($handle, $src = '', array $deps = [], $ver = false, $inFooter = false) {
+    return wp_enqueue_script($handle, $src, $deps, $ver, $inFooter);
   }
 
   public function wpEnqueueStyle($handle, $src = '', array $deps = [], $ver = false, $media = 'all') {
     return wp_enqueue_style($handle, $src, $deps, $ver, $media);
   }
 
-  public function wpGetAttachmentImageSrc($attachment_id, $size = 'thumbnail', $icon = false) {
-    return wp_get_attachment_image_src($attachment_id, $size, $icon);
+  public function wpGetAttachmentImageSrc($attachmentId, $size = 'thumbnail', $icon = false) {
+    return wp_get_attachment_image_src($attachmentId, $size, $icon);
   }
 
   public function wpGetCurrentUser() {
     return wp_get_current_user();
   }
 
-  public function wpGetPostTerms($post_id, $taxonomy = 'post_tag', array $args = []) {
-    return wp_get_post_terms($post_id, $taxonomy, $args);
+  public function wpGetPostTerms($postId, $taxonomy = 'post_tag', array $args = []) {
+    return wp_get_post_terms($postId, $taxonomy, $args);
   }
 
   public function wpGetReferer() {
     return wp_get_referer();
   }
 
-  public function wpGetTheme($stylesheet = null, $theme_root = null) {
-    return wp_get_theme($stylesheet, $theme_root);
+  public function wpGetTheme($stylesheet = null, $themeRoot = null) {
+    return wp_get_theme($stylesheet, $themeRoot);
   }
 
-  public function wpInsertPost(array $postarr, $wp_error = false) {
-    return wp_insert_post($postarr, $wp_error);
+  public function wpInsertPost(array $postarr, $wpError = false) {
+    return wp_insert_post($postarr, $wpError);
   }
 
   public function wpJsonEncode($data, $options = 0, $depth = 512) {
     return wp_json_encode($data, $options, $depth);
   }
 
-  public function wpLocalizeScript($handle, $object_name, array $l10n) {
-    return wp_localize_script($handle, $object_name, $l10n);
+  public function wpLocalizeScript($handle, $objectName, array $l10n) {
+    return wp_localize_script($handle, $objectName, $l10n);
   }
 
-  public function wpLoginUrl($redirect = '', $force_reauth = false) {
-    return wp_login_url($redirect, $force_reauth);
+  public function wpLoginUrl($redirect = '', $forceReauth = false) {
+    return wp_login_url($redirect, $forceReauth);
   }
 
   public function wpParseArgs($args, $defaults = '') {
@@ -506,8 +506,8 @@ class Functions {
     return wp_parse_url($url, $component);
   }
 
-  public function wpSpecialcharsDecode($string, $quote_style = ENT_NOQUOTES ) {
-    return wp_specialchars_decode($string, $quote_style);
+  public function wpSpecialcharsDecode($string, $quoteStyle = ENT_NOQUOTES ) {
+    return wp_specialchars_decode($string, $quoteStyle);
   }
 
   public function wpPrintScripts($handles = false) {
@@ -546,12 +546,12 @@ class Functions {
     return wp_staticize_emoji($text);
   }
 
-  public function wpTrimWords($text, $num_words = 55, $more = null) {
-    return wp_trim_words($text, $num_words, $more);
+  public function wpTrimWords($text, $numWords = 55, $more = null) {
+    return wp_trim_words($text, $numWords, $more);
   }
 
-  public function wpUploadDir($time = null, $create_dir = true, $refresh_cache = false) {
-    return wp_upload_dir($time, $create_dir, $refresh_cache);
+  public function wpUploadDir($time = null, $createDir = true, $refreshCache = false) {
+    return wp_upload_dir($time, $createDir, $refreshCache);
   }
 
   public function wpVerifyNonce($nonce, $action = -1) {
@@ -574,20 +574,20 @@ class Functions {
       // Backward compatibility for WP 4.7 and 4.8
       $port = null;
       $socket = null;
-      $is_ipv6 = false;
+      $isIpv6 = false;
 
       // First peel off the socket parameter from the right, if it exists.
-      $socket_pos = strpos( $host, ':/' );
-      if ($socket_pos !== false) {
-        $socket = substr($host, $socket_pos + 1);
-        $host = substr($host, 0, $socket_pos);
+      $socketPos = strpos( $host, ':/' );
+      if ($socketPos !== false) {
+        $socket = substr($host, $socketPos + 1);
+        $host = substr($host, 0, $socketPos);
       }
 
       // We need to check for an IPv6 address first.
       // An IPv6 address will always contain at least two colons.
       if (substr_count( $host, ':' ) > 1) {
         $pattern = '#^(?:\[)?(?P<host>[0-9a-fA-F:]+)(?:\]:(?P<port>[\d]+))?#';
-        $is_ipv6 = true;
+        $isIpv6 = true;
       } else {
         // We seem to be dealing with an IPv4 address.
         $pattern = '#^(?P<host>[^:/]*)(?::(?P<port>[\d]+))?#';
@@ -606,7 +606,7 @@ class Functions {
           $$component = $matches[$component];
         }
       }
-      return [$host, $port, $socket, $is_ipv6];
+      return [$host, $port, $socket, $isIpv6];
     }
   }
 

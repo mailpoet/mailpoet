@@ -13,23 +13,23 @@ use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 
 class Links {
-  public static function process($rendered_newsletter, $newsletter, $queue) {
-    list($rendered_newsletter, $links) =
-      self::hashAndReplaceLinks($rendered_newsletter, $newsletter->id, $queue->id);
+  public static function process($renderedNewsletter, $newsletter, $queue) {
+    list($renderedNewsletter, $links) =
+      self::hashAndReplaceLinks($renderedNewsletter, $newsletter->id, $queue->id);
     self::saveLinks($links, $newsletter, $queue);
-    return $rendered_newsletter;
+    return $renderedNewsletter;
   }
 
-  public static function hashAndReplaceLinks($rendered_newsletter, $newsletter_id, $queue_id) {
+  public static function hashAndReplaceLinks($renderedNewsletter, $newsletterId, $queueId) {
     // join HTML and TEXT rendered body into a text string
-    $content = Helpers::joinObject($rendered_newsletter);
-    list($content, $links) = NewsletterLinks::process($content, $newsletter_id, $queue_id);
+    $content = Helpers::joinObject($renderedNewsletter);
+    list($content, $links) = NewsletterLinks::process($content, $newsletterId, $queueId);
     $links = NewsletterLinks::ensureUnsubscribeLink($links);
     // split the processed body with hashed links back to HTML and TEXT
-    list($rendered_newsletter['html'], $rendered_newsletter['text'])
+    list($renderedNewsletter['html'], $renderedNewsletter['text'])
       = Helpers::splitObject($content);
     return [
-      $rendered_newsletter,
+      $renderedNewsletter,
       $links,
     ];
   }
@@ -38,22 +38,22 @@ class Links {
     return NewsletterLinks::save($links, $newsletter->id, $queue->id);
   }
 
-  public static function getUnsubscribeUrl($queue, $subscriber_id) {
-    $subscriber = Subscriber::where('id', $subscriber_id)->findOne();
+  public static function getUnsubscribeUrl($queue, $subscriberId) {
+    $subscriber = Subscriber::where('id', $subscriberId)->findOne();
     $settings = SettingsController::getInstance();
     if ((boolean)$settings->get('tracking.enabled')) {
-      $link_hash = NewsletterLinkModel::where('queue_id', $queue->id)
+      $linkHash = NewsletterLinkModel::where('queue_id', $queue->id)
         ->where('url', NewsletterLinkModel::UNSUBSCRIBE_LINK_SHORT_CODE)
         ->findOne();
-      if (!$link_hash instanceof NewsletterLinkModel) {
+      if (!$linkHash instanceof NewsletterLinkModel) {
         return '';
       }
-      $link_tokens = new LinkTokens;
+      $linkTokens = new LinkTokens;
       $data = NewsletterLinks::createUrlDataObject(
         $subscriber->id,
-        $link_tokens->getToken($subscriber),
+        $linkTokens->getToken($subscriber),
         $queue->id,
-        $link_hash->hash,
+        $linkHash->hash,
         false
       );
       $url = Router::buildRequest(
@@ -62,8 +62,8 @@ class Links {
         $data
       );
     } else {
-      $subscription_url_factory = SubscriptionUrlFactory::getInstance();
-      $url = $subscription_url_factory->getUnsubscribeUrl($subscriber);
+      $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
+      $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber);
     }
     return $url;
   }

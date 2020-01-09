@@ -46,23 +46,23 @@ class AbandonedCartTest extends \MailPoetTest {
   public function _before() {
     $this->cleanup();
 
-    $this->current_time = Carbon::createFromTimestamp((new WPFunctions())->currentTime('timestamp'));
-    Carbon::setTestNow($this->current_time);
+    $this->currentTime = Carbon::createFromTimestamp((new WPFunctions())->currentTime('timestamp'));
+    Carbon::setTestNow($this->currentTime);
 
     $this->wp = $this->makeEmpty(WPFunctions::class, [
-      'currentTime' => $this->current_time->getTimestamp(),
+      'currentTime' => $this->currentTime->getTimestamp(),
     ]);
     WPFunctions::set($this->wp);
 
-    $this->woo_commerce_mock = $this->mockWooCommerceClass(WooCommerce::class, []);
-    $this->woo_commerce_cart_mock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty']);
-    $this->woo_commerce_mock->cart = $this->woo_commerce_cart_mock;
-    $this->woo_commerce_helper_mock = $this->make(WooCommerceHelper::class, [
+    $this->wooCommerceMock = $this->mockWooCommerceClass(WooCommerce::class, []);
+    $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty']);
+    $this->wooCommerceMock->cart = $this->wooCommerceCartMock;
+    $this->wooCommerceHelperMock = $this->make(WooCommerceHelper::class, [
       'isWooCommerceActive' => true,
-      'WC' => $this->woo_commerce_mock,
+      'WC' => $this->wooCommerceMock,
     ]);
 
-    $this->page_visit_tracker_mock = $this->makeEmpty(AbandonedCartPageVisitTracker::class);
+    $this->pageVisitTrackerMock = $this->makeEmpty(AbandonedCartPageVisitTracker::class);
   }
 
   public function testItGetsEventDetails() {
@@ -73,42 +73,42 @@ class AbandonedCartTest extends \MailPoetTest {
   }
 
   public function testItRegistersWooCommerceCartEvents() {
-    $abandoned_cart_email = $this->createAbandonedCartEmail();
+    $abandonedCartEmail = $this->createAbandonedCartEmail();
 
-    $registered_actions = [];
-    $this->wp->method('addAction')->willReturnCallback(function ($name) use (&$registered_actions) {
-      $registered_actions[] = $name;
+    $registeredActions = [];
+    $this->wp->method('addAction')->willReturnCallback(function ($name) use (&$registeredActions) {
+      $registeredActions[] = $name;
     });
-    $abandoned_cart_email->init();
+    $abandonedCartEmail->init();
 
-    expect($registered_actions)->contains('woocommerce_add_to_cart');
-    expect($registered_actions)->contains('woocommerce_cart_item_removed');
-    expect($registered_actions)->contains('woocommerce_after_cart_item_quantity_update');
-    expect($registered_actions)->contains('woocommerce_before_cart_item_quantity_zero');
-    expect($registered_actions)->contains('woocommerce_cart_emptied');
-    expect($registered_actions)->contains('woocommerce_cart_item_restored');
+    expect($registeredActions)->contains('woocommerce_add_to_cart');
+    expect($registeredActions)->contains('woocommerce_cart_item_removed');
+    expect($registeredActions)->contains('woocommerce_after_cart_item_quantity_update');
+    expect($registeredActions)->contains('woocommerce_before_cart_item_quantity_zero');
+    expect($registeredActions)->contains('woocommerce_cart_emptied');
+    expect($registeredActions)->contains('woocommerce_cart_item_restored');
   }
 
   public function testItRegistersPageVisitEvent() {
-    $abandoned_cart_email = $this->createAbandonedCartEmail();
+    $abandonedCartEmail = $this->createAbandonedCartEmail();
 
-    $registered_actions = [];
-    $this->wp->method('addAction')->willReturnCallback(function ($name) use (&$registered_actions) {
-      $registered_actions[] = $name;
+    $registeredActions = [];
+    $this->wp->method('addAction')->willReturnCallback(function ($name) use (&$registeredActions) {
+      $registeredActions[] = $name;
     });
-    $abandoned_cart_email->init();
+    $abandonedCartEmail->init();
 
-    expect($registered_actions)->contains('wp');
+    expect($registeredActions)->contains('wp');
   }
 
   public function testItFindsUserByWordPressSession() {
     $this->createNewsletter();
     $this->createSubscriberAsCurrentUser();
-    $this->woo_commerce_cart_mock->method('is_empty')->willReturn(false);
+    $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
 
-    $abandoned_cart_email = $this->createAbandonedCartEmail();
-    $abandoned_cart_email->init();
-    $abandoned_cart_email->handleCartChange();
+    $abandonedCartEmail = $this->createAbandonedCartEmail();
+    $abandonedCartEmail->init();
+    $abandonedCartEmail->handleCartChange();
     expect(ScheduledTask::findMany())->count(1);
   }
 
@@ -127,10 +127,10 @@ class AbandonedCartTest extends \MailPoetTest {
       'subscriber_id' => $subscriber->id,
     ]);
 
-    $this->woo_commerce_cart_mock->method('is_empty')->willReturn(false);
-    $abandoned_cart_email = $this->createAbandonedCartEmail();
-    $abandoned_cart_email->init();
-    $abandoned_cart_email->handleCartChange();
+    $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
+    $abandonedCartEmail = $this->createAbandonedCartEmail();
+    $abandonedCartEmail->init();
+    $abandonedCartEmail->handleCartChange();
     expect(ScheduledTask::findMany())->count(1);
   }
 
@@ -139,55 +139,55 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->createSubscriberAsCurrentUser();
 
     // ensure tracking started
-    $this->page_visit_tracker_mock->expects($this->once())->method('startTracking');
+    $this->pageVisitTrackerMock->expects($this->once())->method('startTracking');
 
-    $this->woo_commerce_cart_mock->method('is_empty')->willReturn(false);
-    $abandoned_cart_email = $this->createAbandonedCartEmail();
-    $abandoned_cart_email->init();
-    $abandoned_cart_email->handleCartChange();
+    $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
+    $abandonedCartEmail = $this->createAbandonedCartEmail();
+    $abandonedCartEmail->init();
+    $abandonedCartEmail->handleCartChange();
 
-    $expected_time = $this->getExpectedScheduledTime();
-    $scheduled_tasks = ScheduledTask::findMany();
-    expect($scheduled_tasks)->count(1);
-    expect($scheduled_tasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
-    expect($scheduled_tasks[0]->scheduled_at)->same($expected_time->format('Y-m-d H:i:s'));
+    $expectedTime = $this->getExpectedScheduledTime();
+    $scheduledTasks = ScheduledTask::findMany();
+    expect($scheduledTasks)->count(1);
+    expect($scheduledTasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
+    expect($scheduledTasks[0]->scheduled_at)->same($expectedTime->format('Y-m-d H:i:s'));
   }
 
   public function testItPostponesEmailWhenCartEdited() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
 
-    $scheduled_in_near_future = clone $this->current_time;
-    $scheduled_in_near_future->addMinutes(5);
-    $this->createSendingTask($newsletter, $subscriber, $scheduled_in_near_future);
+    $scheduledInNearFuture = clone $this->currentTime;
+    $scheduledInNearFuture->addMinutes(5);
+    $this->createSendingTask($newsletter, $subscriber, $scheduledInNearFuture);
 
-    $this->woo_commerce_cart_mock->method('is_empty')->willReturn(false);
-    $abandoned_cart_email = $this->createAbandonedCartEmail();
-    $abandoned_cart_email->init();
-    $abandoned_cart_email->handleCartChange();
+    $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
+    $abandonedCartEmail = $this->createAbandonedCartEmail();
+    $abandonedCartEmail->init();
+    $abandonedCartEmail->handleCartChange();
 
-    $expected_time = $this->getExpectedScheduledTime();
-    $scheduled_tasks = ScheduledTask::findMany();
-    expect($scheduled_tasks)->count(1);
-    expect($scheduled_tasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
-    expect($scheduled_tasks[0]->scheduled_at)->same($expected_time->format('Y-m-d H:i:s'));
+    $expectedTime = $this->getExpectedScheduledTime();
+    $scheduledTasks = ScheduledTask::findMany();
+    expect($scheduledTasks)->count(1);
+    expect($scheduledTasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
+    expect($scheduledTasks[0]->scheduled_at)->same($expectedTime->format('Y-m-d H:i:s'));
   }
 
   public function testItCancelsEmailWhenCartEmpty() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
 
-    $scheduled_in_future = clone $this->current_time;
-    $scheduled_in_future->addHours(2);
-    $this->createSendingTask($newsletter, $subscriber, $scheduled_in_future);
+    $scheduledInFuture = clone $this->currentTime;
+    $scheduledInFuture->addHours(2);
+    $this->createSendingTask($newsletter, $subscriber, $scheduledInFuture);
 
     // ensure tracking cancelled
-    $this->page_visit_tracker_mock->expects($this->once())->method('stopTracking');
+    $this->pageVisitTrackerMock->expects($this->once())->method('stopTracking');
 
-    $this->woo_commerce_cart_mock->method('is_empty')->willReturn(true);
-    $abandoned_cart_email = $this->createAbandonedCartEmail();
-    $abandoned_cart_email->init();
-    $abandoned_cart_email->handleCartChange();
+    $this->wooCommerceCartMock->method('is_empty')->willReturn(true);
+    $abandonedCartEmail = $this->createAbandonedCartEmail();
+    $abandonedCartEmail->init();
+    $abandonedCartEmail->handleCartChange();
 
     expect(ScheduledTask::findMany())->count(0);
     expect(ScheduledTaskSubscriber::findMany())->count(0);
@@ -198,59 +198,59 @@ class AbandonedCartTest extends \MailPoetTest {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
 
-    $scheduled_in_past = clone $this->current_time;
-    $scheduled_in_past->addHours(-10);
-    $this->createSendingTask($newsletter, $subscriber, $scheduled_in_past);
+    $scheduledInPast = clone $this->currentTime;
+    $scheduledInPast->addHours(-10);
+    $this->createSendingTask($newsletter, $subscriber, $scheduledInPast);
 
-    $this->woo_commerce_cart_mock->method('is_empty')->willReturn(false);
-    $abandoned_cart_email = $this->createAbandonedCartEmail();
-    $abandoned_cart_email->init();
-    $abandoned_cart_email->handleCartChange();
+    $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
+    $abandonedCartEmail = $this->createAbandonedCartEmail();
+    $abandonedCartEmail->init();
+    $abandonedCartEmail->handleCartChange();
 
-    $expected_time = $this->getExpectedScheduledTime();
+    $expectedTime = $this->getExpectedScheduledTime();
     expect(ScheduledTask::findMany())->count(2);
 
     $completed = ScheduledTask::where('status', ScheduledTask::STATUS_COMPLETED)->findOne();
-    expect($completed->scheduled_at)->same($scheduled_in_past->format('Y-m-d H:i:s'));
+    expect($completed->scheduledAt)->same($scheduledInPast->format('Y-m-d H:i:s'));
 
     $scheduled = ScheduledTask::where('status', ScheduledTask::STATUS_SCHEDULED)->findOne();
-    expect($scheduled->scheduled_at)->same($expected_time->format('Y-m-d H:i:s'));
+    expect($scheduled->scheduledAt)->same($expectedTime->format('Y-m-d H:i:s'));
   }
 
   public function testItPostponesEmailWhenPageVisited() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
 
-    $scheduled_in_near_future = clone $this->current_time;
-    $scheduled_in_near_future->addMinutes(5);
-    $this->createSendingTask($newsletter, $subscriber, $scheduled_in_near_future);
+    $scheduledInNearFuture = clone $this->currentTime;
+    $scheduledInNearFuture->addMinutes(5);
+    $this->createSendingTask($newsletter, $subscriber, $scheduledInNearFuture);
 
     // ensure last visit timestamp updated & execute tracking callback
-    $this->page_visit_tracker_mock
+    $this->pageVisitTrackerMock
       ->expects($this->once())
       ->method('trackVisit')
       ->willReturnCallback(function (callable $onTrackCallback) {
         $onTrackCallback();
       });
 
-    $this->woo_commerce_cart_mock->method('is_empty')->willReturn(false);
-    $abandoned_cart_email = $this->createAbandonedCartEmail();
-    $abandoned_cart_email->init();
-    $abandoned_cart_email->trackPageVisit();
+    $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
+    $abandonedCartEmail = $this->createAbandonedCartEmail();
+    $abandonedCartEmail->init();
+    $abandonedCartEmail->trackPageVisit();
 
-    $expected_time = $this->getExpectedScheduledTime();
-    $scheduled_tasks = ScheduledTask::findMany();
-    expect($scheduled_tasks)->count(1);
-    expect($scheduled_tasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
-    expect($scheduled_tasks[0]->scheduled_at)->same($expected_time->format('Y-m-d H:i:s'));
+    $expectedTime = $this->getExpectedScheduledTime();
+    $scheduledTasks = ScheduledTask::findMany();
+    expect($scheduledTasks)->count(1);
+    expect($scheduledTasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
+    expect($scheduledTasks[0]->scheduled_at)->same($expectedTime->format('Y-m-d H:i:s'));
   }
 
   private function createAbandonedCartEmail() {
     return $this->make(AbandonedCart::class, [
       'wp' => $this->wp,
-      'woo_commerce_helper' => $this->woo_commerce_helper_mock,
+      'woo_commerce_helper' => $this->wooCommerceHelperMock,
       'cookies' => new Cookies(),
-      'page_visit_tracker' => $this->page_visit_tracker_mock,
+      'page_visit_tracker' => $this->pageVisitTrackerMock,
       'scheduler' => new AutomaticEmailScheduler(),
     ]);
   }
@@ -271,50 +271,50 @@ class AbandonedCartTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  private function createSendingTask(Newsletter $newsletter, Subscriber $subscriber, Carbon $schedule_at) {
+  private function createSendingTask(Newsletter $newsletter, Subscriber $subscriber, Carbon $scheduleAt) {
     $task = SendingTask::create();
-    $task->newsletter_id = $newsletter->id;
+    $task->newsletterId = $newsletter->id;
     $task->setSubscribers([$subscriber->id]);
     $task->updateProcessedSubscribers([$subscriber->id]);
     $task->save();
 
-    $scheduled_task = $task->task();
-    $scheduled_task->scheduled_at = $schedule_at;
-    $scheduled_task->status = $this->current_time < $schedule_at
+    $scheduledTask = $task->task();
+    $scheduledTask->scheduledAt = $scheduleAt;
+    $scheduledTask->status = $this->currentTime < $scheduleAt
       ? ScheduledTask::STATUS_SCHEDULED
       : ScheduledTask::STATUS_COMPLETED;
-    $scheduled_task->save();
+    $scheduledTask->save();
 
     return $task;
   }
 
   private function createNewsletterOptions(Newsletter $newsletter, array $options) {
     foreach ($options as $option => $value) {
-      $newsletter_option_field = NewsletterOptionField::where('name', $option)
+      $newsletterOptionField = NewsletterOptionField::where('name', $option)
         ->where('newsletter_type', $newsletter->type)
         ->findOne();
 
-      if (!$newsletter_option_field) {
-        $newsletter_option_field = NewsletterOptionField::create();
-        $newsletter_option_field->hydrate([
+      if (!$newsletterOptionField) {
+        $newsletterOptionField = NewsletterOptionField::create();
+        $newsletterOptionField->hydrate([
           'newsletter_type' => $newsletter->type,
           'name' => $option,
         ]);
-        $newsletter_option_field->save();
+        $newsletterOptionField->save();
       }
 
-      $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
-        ->where('option_field_id', $newsletter_option_field->id)
+      $newsletterOption = NewsletterOption::where('newsletter_id', $newsletter->id)
+        ->where('option_field_id', $newsletterOptionField->id)
         ->findOne();
 
-      if (!$newsletter_option) {
-        $newsletter_option = NewsletterOption::create();
-        $newsletter_option->hydrate([
+      if (!$newsletterOption) {
+        $newsletterOption = NewsletterOption::create();
+        $newsletterOption->hydrate([
           'newsletter_id' => $newsletter->id,
-          'option_field_id' => $newsletter_option_field->id,
+          'option_field_id' => $newsletterOptionField->id,
           'value' => $value,
         ]);
-        $newsletter_option->save();
+        $newsletterOption->save();
       }
     }
   }
@@ -323,9 +323,9 @@ class AbandonedCartTest extends \MailPoetTest {
     $subscriber = Subscriber::create();
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->email = 'subscriber@example.com';
-    $subscriber->first_name = 'First';
-    $subscriber->last_name = 'Last';
-    $subscriber->wp_user_id = 123;
+    $subscriber->firstName = 'First';
+    $subscriber->lastName = 'Last';
+    $subscriber->wpUserId = 123;
     return $subscriber->save();
   }
 
@@ -333,7 +333,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $subscriber = $this->createSubscriber();
     $this->wp->method('wpGetCurrentUser')->willReturn(
       $this->makeEmpty(WP_User::class, [
-        'ID' => $subscriber->wp_user_id,
+        'ID' => $subscriber->wpUserId,
         'exists' => true,
       ])
     );
@@ -341,15 +341,15 @@ class AbandonedCartTest extends \MailPoetTest {
   }
 
   private function getExpectedScheduledTime() {
-    $expected_time = clone $this->current_time;
-    $expected_time->addHours(self::SCHEDULE_EMAIL_AFTER_HOURS);
-    return $expected_time;
+    $expectedTime = clone $this->currentTime;
+    $expectedTime->addHours(self::SCHEDULE_EMAIL_AFTER_HOURS);
+    return $expectedTime;
   }
 
-  private function mockWooCommerceClass($class_name, array $methods) {
+  private function mockWooCommerceClass($className, array $methods) {
     // WooCommerce class needs to be mocked without default 'disallowMockingUnknownTypes'
     // since WooCommerce may not be active (would result in error mocking undefined class)
-    return $this->getMockBuilder($class_name)
+    return $this->getMockBuilder($className)
       ->disableOriginalConstructor()
       ->disableOriginalClone()
       ->disableArgumentCloning()

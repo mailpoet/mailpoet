@@ -21,23 +21,23 @@ class DaemonTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    $this->cron_helper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
   }
 
   public function testItCanRun() {
-    $cron_worker_runner = $this->make(CronWorkerRunner::class, [
+    $cronWorkerRunner = $this->make(CronWorkerRunner::class, [
       'run' => null,
     ]);
     $data = [
       'token' => 123,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon = new Daemon($this->cron_helper, $cron_worker_runner, $this->createWorkersFactoryMock());
+    $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $this->createWorkersFactoryMock());
     $daemon->run($data);
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 
   private function createWorkersFactoryMock(array $workers = []) {

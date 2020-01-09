@@ -17,8 +17,8 @@ class UserFlags extends APIEndpoint {
     'global' => AccessControl::ALL_ROLES_ACCESS,
   ];
 
-  public function __construct(UserFlagsController $user_flags) {
-    $this->user_flags = $user_flags;
+  public function __construct(UserFlagsController $userFlags) {
+    $this->userFlags = $userFlags;
   }
 
   public function set(array $flags = []) {
@@ -30,7 +30,7 @@ class UserFlags extends APIEndpoint {
         ]);
     } else {
       foreach ($flags as $name => $value) {
-        $this->user_flags->set($name, $value);
+        $this->userFlags->set($name, $value);
       }
       return $this->successResponse([]);
     }

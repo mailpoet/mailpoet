@@ -7,48 +7,48 @@ use MailPoet\Test\DataFactories\Subscriber;
 
 class SubscribersListingCest {
 
-  public function subscribersListing(\AcceptanceTester $I) {
-    $I->wantTo('Open subscribers listings page');
+  public function subscribersListing(\AcceptanceTester $i) {
+    $i->wantTo('Open subscribers listings page');
 
     (new Subscriber())
       ->withEmail('wp@example.com')
       ->create();
 
-    $I->login();
-    $I->amOnMailpoetPage('Subscribers');
-    $I->searchFor('wp@example.com');
-    $I->waitForText('wp@example.com');
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
+    $i->searchFor('wp@example.com');
+    $i->waitForText('wp@example.com');
   }
 
-  public function sendConfirmationEmail(\AcceptanceTester $I) {
-    $I->wantTo('Send confirmation email');
+  public function sendConfirmationEmail(\AcceptanceTester $i) {
+    $i->wantTo('Send confirmation email');
 
-    $disallowed_email = 'disallowed@example.com';
-    $allowed_email = 'allowed@example.com';
+    $disallowedEmail = 'disallowed@example.com';
+    $allowedEmail = 'allowed@example.com';
 
-    $subscriber_resend_disallowed = (new Subscriber())
-      ->withEmail($disallowed_email)
+    $subscriberResendDisallowed = (new Subscriber())
+      ->withEmail($disallowedEmail)
       ->withStatus('unconfirmed')
       ->withCountConfirmations(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS)
       ->create();
 
-    $subscriber_resend_allowed = (new Subscriber())
-      ->withEmail($allowed_email)
+    $subscriberResendAllowed = (new Subscriber())
+      ->withEmail($allowedEmail)
       ->withStatus('unconfirmed')
       ->withCountConfirmations(0)
       ->create();
 
-    $I->login();
-    $I->amOnMailpoetPage('Subscribers');
+    $i->login();
+    $i->amOnMailpoetPage('Subscribers');
 
-    $I->moveMouseOver(['xpath' => '//*[text()="' . $disallowed_email . '"]//ancestor::tr']);
-    $I->dontSee('Resend confirmation email', '//*[text()="' . $disallowed_email . '"]//ancestor::tr');
+    $i->moveMouseOver(['xpath' => '//*[text()="' . $disallowedEmail . '"]//ancestor::tr']);
+    $i->dontSee('Resend confirmation email', '//*[text()="' . $disallowedEmail . '"]//ancestor::tr');
 
-    $I->clickItemRowActionByItemName($allowed_email, 'Resend confirmation email');
-    $I->waitForText('1 confirmation email has been sent.');
+    $i->clickItemRowActionByItemName($allowedEmail, 'Resend confirmation email');
+    $i->waitForText('1 confirmation email has been sent.');
 
-    $I->amOnMailboxAppPage();
-    $I->waitForText('Confirm your subscription');
+    $i->amOnMailboxAppPage();
+    $i->waitForText('Confirm your subscription');
   }
 
 }

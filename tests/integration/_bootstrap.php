@@ -8,14 +8,14 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 if ((boolean)getenv('MULTISITE') === true) {
   // REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated
   $_SERVER['REQUEST_URI'] = '/' . getenv('WP_TEST_MULTISITE_SLUG');
-  $wp_load_file = getenv('WP_ROOT_MULTISITE') . '/wp-load.php';
+  $wpLoadFile = getenv('WP_ROOT_MULTISITE') . '/wp-load.php';
 } else {
-  $wp_load_file = getenv('WP_ROOT') . '/wp-load.php';
+  $wpLoadFile = getenv('WP_ROOT') . '/wp-load.php';
 }
-require_once($wp_load_file);
+require_once($wpLoadFile);
 
 $console = new \Codeception\Lib\Console\Output([]);
-$console->writeln('Loading WP core... (' . $wp_load_file . ')');
+$console->writeln('Loading WP core... (' . $wpLoadFile . ')');
 
 $console->writeln('Cleaning up database...');
 $models = [
@@ -55,10 +55,10 @@ $destroy = function($model) use ($connection) {
 };
 array_map($destroy, $models);
 
-$entity_manager = ContainerWrapper::getInstance(WP_DEBUG)->get(EntityManager::class);
+$entityManager = ContainerWrapper::getInstance(WP_DEBUG)->get(EntityManager::class);
 foreach ($entities as $entity) {
-  $table_name = $entity_manager->getClassMetadata($entity)->getTableName();
-  $connection->transactional(function(Connection $connection) use ($table_name) {
+  $tableName = $entityManager->getClassMetadata($entity)->getTableName();
+  $connection->transactional(function(Connection $connection) use ($tableName) {
     $connection->query('SET FOREIGN_KEY_CHECKS=0');
     $connection->executeUpdate("TRUNCATE $table_name");
     $connection->query('SET FOREIGN_KEY_CHECKS=1');
@@ -159,16 +159,16 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $entity_manager;
 
   public function setUp() {
-    $this->di_container = ContainerWrapper::getInstance(WP_DEBUG);
-    $this->connection = $this->di_container->get(Connection::class);
-    $this->entity_manager = $this->di_container->get(EntityManager::class);
-    $this->di_container->get(SettingsController::class)->resetCache();
-    $this->entity_manager->clear();
+    $this->diContainer = ContainerWrapper::getInstance(WP_DEBUG);
+    $this->connection = $this->diContainer->get(Connection::class);
+    $this->entityManager = $this->diContainer->get(EntityManager::class);
+    $this->diContainer->get(SettingsController::class)->resetCache();
+    $this->entityManager->clear();
     parent::setUp();
   }
 
   public function tearDown() {
-    $this->entity_manager->clear();
+    $this->entityManager->clear();
     parent::tearDown();
   }
 
@@ -190,8 +190,8 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
   }
 
   public static function markTestSkipped($message = '') {
-    $branch_name = getenv('CIRCLE_BRANCH');
-    if ($branch_name === 'master' || $branch_name === 'release') {
+    $branchName = getenv('CIRCLE_BRANCH');
+    if ($branchName === 'master' || $branchName === 'release') {
       self::fail('Cannot skip tests on this branch.');
     } else {
       parent::markTestSkipped($message);

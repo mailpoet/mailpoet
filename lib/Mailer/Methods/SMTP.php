@@ -36,7 +36,7 @@ class SMTP {
 
   public function __construct(
     $host, $port, $authentication, $login = null, $password = null, $encryption,
-    $sender, $reply_to, $return_path, SMTPMapper $error_mapper) {
+    $sender, $replyTo, $returnPath, SMTPMapper $errorMapper) {
     $this->wp = new WPFunctions;
     $this->host = $host;
     $this->port = $port;
@@ -45,34 +45,34 @@ class SMTP {
     $this->password = $password;
     $this->encryption = $encryption;
     $this->sender = $sender;
-    $this->reply_to = $reply_to;
-    $this->return_path = ($return_path) ?
-      $return_path :
+    $this->replyTo = $replyTo;
+    $this->returnPath = ($returnPath) ?
+      $returnPath :
       $this->sender['from_email'];
     $this->mailer = $this->buildMailer();
-    $this->mailer_logger = new Swift_Plugins_Loggers_ArrayLogger();
-    $this->mailer->registerPlugin(new Swift_Plugins_LoggerPlugin($this->mailer_logger));
-    $this->error_mapper = $error_mapper;
+    $this->mailerLogger = new Swift_Plugins_Loggers_ArrayLogger();
+    $this->mailer->registerPlugin(new Swift_Plugins_LoggerPlugin($this->mailerLogger));
+    $this->errorMapper = $errorMapper;
     $this->blacklist = new BlacklistCheck();
   }
 
-  public function send($newsletter, $subscriber, $extra_params = []) {
+  public function send($newsletter, $subscriber, $extraParams = []) {
     if ($this->blacklist->isBlacklisted($subscriber)) {
-      $error = $this->error_mapper->getBlacklistError($subscriber);
+      $error = $this->errorMapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
     try {
-      $message = $this->createMessage($newsletter, $subscriber, $extra_params);
+      $message = $this->createMessage($newsletter, $subscriber, $extraParams);
       $result = $this->mailer->send($message);
     } catch (\Exception $e) {
       return Mailer::formatMailerErrorResult(
-        $this->error_mapper->getErrorFromException($e, $subscriber)
+        $this->errorMapper->getErrorFromException($e, $subscriber)
       );
     }
     if ($result === 1) {
       return Mailer::formatMailerSendSuccessResult();
     } else {
-      $error = $this->error_mapper->getErrorFromLog($this->mailer_logger->dump(), $subscriber);
+      $error = $this->errorMapper->getErrorFromLog($this->mailerLogger->dump(), $subscriber);
       return Mailer::formatMailerErrorResult($error);
     }
   }
@@ -80,8 +80,8 @@ class SMTP {
   public function buildMailer() {
     $transport = Swift_SmtpTransport::newInstance(
       $this->host, $this->port, $this->encryption);
-    $connection_timeout = $this->wp->applyFilters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT);
-    $transport->setTimeout($connection_timeout);
+    $connectionTimeout = $this->wp->applyFilters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT);
+    $transport->setTimeout($connectionTimeout);
     if ($this->authentication) {
       $transport
         ->setUsername($this->login)
@@ -91,7 +91,7 @@ class SMTP {
     return Swift_Mailer::newInstance($transport);
   }
 
-  public function createMessage($newsletter, $subscriber, $extra_params = []) {
+  public function createMessage($newsletter, $subscriber, $extraParams = []) {
     $message = Swift_Message::newInstance()
       ->setTo($this->processSubscriber($subscriber))
       ->setFrom(
@@ -102,14 +102,14 @@ class SMTP {
       ->setSender($this->sender['from_email'])
       ->setReplyTo(
         [
-          $this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name'],
+          $this->replyTo['reply_to_email'] => $this->replyTo['reply_to_name'],
         ]
       )
-      ->setReturnPath($this->return_path)
+      ->setReturnPath($this->returnPath)
       ->setSubject($newsletter['subject']);
-    if (!empty($extra_params['unsubscribe_url'])) {
+    if (!empty($extraParams['unsubscribe_url'])) {
       $headers = $message->getHeaders();
-      $headers->addTextHeader('List-Unsubscribe', '<' . $extra_params['unsubscribe_url'] . '>');
+      $headers->addTextHeader('List-Unsubscribe', '<' . $extraParams['unsubscribe_url'] . '>');
     }
     if (!empty($newsletter['body']['html'])) {
       $message = $message->setBody($newsletter['body']['html'], 'text/html');
@@ -121,15 +121,15 @@ class SMTP {
   }
 
   public function processSubscriber($subscriber) {
-    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
-    if (!isset($subscriber_data['email'])) {
-      $subscriber_data = [
+    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriberData);
+    if (!isset($subscriberData['email'])) {
+      $subscriberData = [
         'email' => $subscriber,
       ];
     }
     return [
-      $subscriber_data['email'] =>
-        (isset($subscriber_data['name'])) ? $subscriber_data['name'] : '',
+      $subscriberData['email'] =>
+        (isset($subscriberData['name'])) ? $subscriberData['name'] : '',
     ];
   }
 }

@@ -39,14 +39,14 @@ class Analytics {
 
   /** @return boolean */
   public function isEnabled() {
-    $analytics_settings = $this->settings->get('analytics', []);
-    return !empty($analytics_settings['enabled']) === true;
+    $analyticsSettings = $this->settings->get('analytics', []);
+    return !empty($analyticsSettings['enabled']) === true;
   }
 
-  public function setPublicId($new_public_id) {
-    $current_public_id = $this->settings->get('public_id');
-    if ($current_public_id !== $new_public_id) {
-      $this->settings->set('public_id', $new_public_id);
+  public function setPublicId($newPublicId) {
+    $currentPublicId = $this->settings->get('public_id');
+    if ($currentPublicId !== $newPublicId) {
+      $this->settings->set('public_id', $newPublicId);
       $this->settings->set('new_public_id', 'true');
       // Force user data to be resent
       $this->settings->delete(Analytics::SETTINGS_LAST_SENT_KEY);
@@ -55,16 +55,16 @@ class Analytics {
 
   /** @return string */
   public function getPublicId() {
-    $public_id = $this->settings->get('public_id', '');
+    $publicId = $this->settings->get('public_id', '');
     // if we didn't get the user public_id from the shop yet : we create one based on mixpanel distinct_id
-    if (empty($public_id) && !empty($_COOKIE['mixpanel_distinct_id'])) {
+    if (empty($publicId) && !empty($_COOKIE['mixpanel_distinct_id'])) {
       // the public id has to be diffent that mixpanel_distinct_id in order to be used on different browser
-      $mixpanel_distinct_id = md5($_COOKIE['mixpanel_distinct_id']);
-      $this->settings->set('public_id', $mixpanel_distinct_id);
+      $mixpanelDistinctId = md5($_COOKIE['mixpanel_distinct_id']);
+      $this->settings->set('public_id', $mixpanelDistinctId);
       $this->settings->set('new_public_id', 'true');
-      return $mixpanel_distinct_id;
+      return $mixpanelDistinctId;
     }
-    return $public_id;
+    return $publicId;
   }
 
   /**
@@ -72,8 +72,8 @@ class Analytics {
    * @return boolean
    */
   public function isPublicIdNew() {
-    $new_public_id = $this->settings->get('new_public_id');
-    if ($new_public_id === 'true') {
+    $newPublicId = $this->settings->get('new_public_id');
+    if ($newPublicId === 'true') {
       $this->settings->set('new_public_id', 'false');
       return true;
     }

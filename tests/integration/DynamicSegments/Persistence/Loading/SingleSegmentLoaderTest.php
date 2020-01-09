@@ -24,12 +24,12 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
       'description' => 'description',
     ]);
     $filter = new UserRole('Administrator', 'and');
-    $filter_data = DynamicSegmentFilter::create();
-    $filter_data->hydrate([
+    $filterData = DynamicSegmentFilter::create();
+    $filterData->hydrate([
       'segment_id' => $this->segment->id,
       'filter_data' => $filter->toArray(),
     ]);
-    $filter_data->save();
+    $filterData->save();
   }
 
   public function testItLoadsSegments() {

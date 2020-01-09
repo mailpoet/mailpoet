@@ -41,37 +41,37 @@ class ScheduledTaskSubscriber extends Model {
     ]);
   }
 
-  public static function setSubscribers($task_id, array $subscriber_ids) {
-    static::clearSubscribers($task_id);
-    return static::addSubscribers($task_id, $subscriber_ids);
+  public static function setSubscribers($taskId, array $subscriberIds) {
+    static::clearSubscribers($taskId);
+    return static::addSubscribers($taskId, $subscriberIds);
   }
 
   /**
    * For large batches use MailPoet\Segments\SubscribersFinder::addSubscribersToTaskFromSegments()
    */
-  public static function addSubscribers($task_id, array $subscriber_ids) {
-    foreach ($subscriber_ids as $subscriber_id) {
+  public static function addSubscribers($taskId, array $subscriberIds) {
+    foreach ($subscriberIds as $subscriberId) {
       self::createOrUpdate([
-        'task_id' => $task_id,
-        'subscriber_id' => $subscriber_id,
+        'task_id' => $taskId,
+        'subscriber_id' => $subscriberId,
       ]);
     }
   }
 
-  public static function clearSubscribers($task_id) {
-    return self::where('task_id', $task_id)->deleteMany();
+  public static function clearSubscribers($taskId) {
+    return self::where('task_id', $taskId)->deleteMany();
   }
 
-  public static function getUnprocessedCount($task_id) {
-    return self::getCount($task_id, self::STATUS_UNPROCESSED);
+  public static function getUnprocessedCount($taskId) {
+    return self::getCount($taskId, self::STATUS_UNPROCESSED);
   }
 
-  public static function getProcessedCount($task_id) {
-    return self::getCount($task_id, self::STATUS_PROCESSED);
+  public static function getProcessedCount($taskId) {
+    return self::getCount($taskId, self::STATUS_PROCESSED);
   }
 
-  public static function getTotalCount($task_id) {
-    return self::getCount($task_id);
+  public static function getTotalCount($taskId) {
+    return self::getCount($taskId);
   }
 
   public static function listingQuery($data) {
@@ -135,8 +135,8 @@ class ScheduledTaskSubscriber extends Model {
       ->where('processed', self::STATUS_UNPROCESSED);
   }
 
-  private static function getCount($task_id, $processed = null) {
-    $orm = self::where('task_id', $task_id);
+  private static function getCount($taskId, $processed = null) {
+    $orm = self::where('task_id', $taskId);
     if (!is_null($processed)) {
       $orm->where('processed', $processed);
     }

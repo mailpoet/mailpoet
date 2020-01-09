@@ -18,10 +18,10 @@ class SubscriberLinkTokens extends SimpleWorker {
   public function processTaskStrategy(ScheduledTask $task, $timer) {
     $count = Subscriber::whereNull('link_token')->count();
     if ($count) {
-      $auth_key = defined('AUTH_KEY') ? AUTH_KEY : '';
+      $authKey = defined('AUTH_KEY') ? AUTH_KEY : '';
       ORM::rawExecute(
         sprintf('UPDATE %s SET link_token = SUBSTRING(MD5(CONCAT(?, email)), 1, ?) WHERE link_token IS NULL LIMIT ?', Subscriber::$_table),
-        [$auth_key, Subscriber::OBSOLETE_LINK_TOKEN_LENGTH, self::BATCH_SIZE]
+        [$authKey, Subscriber::OBSOLETE_LINK_TOKEN_LENGTH, self::BATCH_SIZE]
       );
       $this->schedule();
     }

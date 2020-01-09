@@ -5,8 +5,8 @@ namespace MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\Config\Env;
 
 class Template {
-  public function create($wc_email_settings) {
-    $social_icon_url = Env::$assets_url . '/img/newsletter_editor/social-icons';
+  public function create($wcEmailSettings) {
+    $socialIconUrl = Env::$assetsUrl . '/img/newsletter_editor/social-icons';
     return  [
       'content' =>
        [
@@ -81,7 +81,7 @@ class Template {
                    [
                     'type' => 'image',
                     'link' => '',
-                    'src' => $wc_email_settings['header_image'],
+                    'src' => $wcEmailSettings['header_image'],
                     'alt' => '',
                     'fullWidth' => false,
                     'width' => '180px',
@@ -279,7 +279,7 @@ class Template {
                   1 =>
                    [
                     'type' => 'text',
-                    'text' => '<p style="text-align: center;">' . $wc_email_settings['footer_text'] . '</p>',
+                    'text' => '<p style="text-align: center;">' . $wcEmailSettings['footer_text'] . '</p>',
                    ],
                  ],
                ],
@@ -291,49 +291,49 @@ class Template {
        [
         'text' =>
          [
-          'fontColor' => $wc_email_settings['text_color'],
+          'fontColor' => $wcEmailSettings['text_color'],
           'fontFamily' => 'Arial',
           'fontSize' => '14px',
           'lineHeight' => '1.6',
          ],
         'h1' =>
          [
-          'fontColor' => $wc_email_settings['base_color'],
+          'fontColor' => $wcEmailSettings['base_color'],
           'fontFamily' => 'Source Sans Pro',
           'fontSize' => '36px',
           'lineHeight' => '1.6',
          ],
         'h2' =>
          [
-          'fontColor' => $wc_email_settings['base_color'],
+          'fontColor' => $wcEmailSettings['base_color'],
           'fontFamily' => 'Verdana',
           'fontSize' => '24px',
           'lineHeight' => '1.6',
          ],
         'h3' =>
          [
-          'fontColor' => $wc_email_settings['base_color'],
+          'fontColor' => $wcEmailSettings['base_color'],
           'fontFamily' => 'Trebuchet MS',
           'fontSize' => '22px',
           'lineHeight' => '1.6',
          ],
         'link' =>
          [
-          'fontColor' => $wc_email_settings['link_color'],
+          'fontColor' => $wcEmailSettings['link_color'],
           'textDecoration' => 'underline',
          ],
         'wrapper' =>
          [
-          'backgroundColor' => $wc_email_settings['body_background_color'],
+          'backgroundColor' => $wcEmailSettings['body_background_color'],
          ],
         'body' =>
          [
-          'backgroundColor' => $wc_email_settings['background_color'],
+          'backgroundColor' => $wcEmailSettings['background_color'],
          ],
         'woocommerce' =>
          [
-          'brandingColor' => $wc_email_settings['base_color'],
-          'headingFontColor' => $wc_email_settings['base_text_color'],
+          'brandingColor' => $wcEmailSettings['base_color'],
+          'headingFontColor' => $wcEmailSettings['base_text_color'],
          ],
        ],
       'blockDefaults' =>
@@ -662,7 +662,7 @@ class Template {
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
-              'image' => $social_icon_url . '/01-social/Facebook.png',
+              'image' => $socialIconUrl . '/01-social/Facebook.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
@@ -672,7 +672,7 @@ class Template {
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
-              'image' => $social_icon_url . '/01-social/Twitter.png',
+              'image' => $socialIconUrl . '/01-social/Twitter.png',
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',

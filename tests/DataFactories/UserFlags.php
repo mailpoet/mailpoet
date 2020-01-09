@@ -13,9 +13,9 @@ class UserFlags {
   /** @var UserFlagsRepository */
   private $user_flags_repository;
 
-  public function __construct($user_id) {
-    $this->user_id = $user_id;
-    $this->user_flags_repository = ContainerWrapper::getInstance()->get(UserFlagsRepository::class);
+  public function __construct($userId) {
+    $this->userId = $userId;
+    $this->userFlagsRepository = ContainerWrapper::getInstance()->get(UserFlagsRepository::class);
   }
 
   public function withDefaultFlags() {
@@ -28,21 +28,21 @@ class UserFlags {
   }
 
   public function withFlag($name, $value) {
-    $user_flag = $this->user_flags_repository->findOneBy([
-      'user_id' => $this->user_id,
+    $userFlag = $this->userFlagsRepository->findOneBy([
+      'user_id' => $this->userId,
       'name' => $name,
     ]);
 
-    if (!$user_flag) {
-      $user_flag = new UserFlagEntity();
-      $user_flag->setUserId($this->user_id);
-      $user_flag->setName($name);
-      $this->user_flags_repository->persist($user_flag);
+    if (!$userFlag) {
+      $userFlag = new UserFlagEntity();
+      $userFlag->setUserId($this->userId);
+      $userFlag->setName($name);
+      $this->userFlagsRepository->persist($userFlag);
     }
 
-    $user_flag->setValue($value);
-    $this->user_flags_repository->persist($user_flag);
-    $this->user_flags_repository->flush();
+    $userFlag->setValue($value);
+    $this->userFlagsRepository->persist($userFlag);
+    $this->userFlagsRepository->flush();
     return $this;
   }
 }

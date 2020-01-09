@@ -23,26 +23,26 @@ class SubscribersFinder {
     $this->wp = $wp;
   }
 
-  public function findSubscribersInSegments($subscribers_to_process_ids, $newsletter_segments_ids) {
+  public function findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds) {
     $result = [];
-    foreach ($newsletter_segments_ids as $segment_id) {
-      $segment = Segment::findOne($segment_id);
+    foreach ($newsletterSegmentsIds as $segmentId) {
+      $segment = Segment::findOne($segmentId);
       if (!$segment instanceof Segment) {
         continue; // skip deleted segments
       }
-      $result = array_merge($result, $this->findSubscribersInSegment($segment, $subscribers_to_process_ids));
+      $result = array_merge($result, $this->findSubscribersInSegment($segment, $subscribersToProcessIds));
     }
     return $this->unique($result);
   }
 
-  private function findSubscribersInSegment(Segment $segment, $subscribers_to_process_ids) {
+  private function findSubscribersInSegment(Segment $segment, $subscribersToProcessIds) {
     if ($this->isStaticSegment($segment)) {
-      $subscribers = Subscriber::findSubscribersInSegments($subscribers_to_process_ids, [$segment->id])->findMany();
+      $subscribers = Subscriber::findSubscribersInSegments($subscribersToProcessIds, [$segment->id])->findMany();
       return Subscriber::extractSubscribersIds($subscribers);
     }
     $finders = $this->wp->applyFilters('mailpoet_get_subscribers_in_segment_finders', []);
     foreach ($finders as $finder) {
-      $subscribers = $finder->findSubscribersInSegment($segment, $subscribers_to_process_ids);
+      $subscribers = $finder->findSubscribersInSegment($segment, $subscribersToProcessIds);
       if ($subscribers) {
         return Subscriber::extractSubscribersIds($subscribers);
       }
@@ -76,7 +76,7 @@ class SubscribersFinder {
   }
 
   private function addSubscribersToTaskFromStaticSegments(ScheduledTask $task, array $segments) {
-    $segment_ids = array_map(function($segment) {
+    $segmentIds = array_map(function($segment) {
       return $segment->id;
     }, $segments);
     Subscriber::rawExecute(
@@ -88,7 +88,7 @@ class SubscribersFinder {
        WHERE subscribers.`deleted_at` IS NULL
        AND subscribers.`status` = ?
        AND relation.`status` = ?
-       AND relation.`segment_id` IN (' . join(',', array_map('intval', $segment_ids)) . ')',
+       AND relation.`segment_id` IN (' . join(',', array_map('intval', $segmentIds)) . ')',
       [
         $task->id,
         ScheduledTaskSubscriber::STATUS_UNPROCESSED,

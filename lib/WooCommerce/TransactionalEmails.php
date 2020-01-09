@@ -35,14 +35,14 @@ class TransactionalEmails {
   /** @var NewslettersRepository */
   private $newsletters_repository;
 
-  public function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer, Helper $woocommerce_helper, NewslettersRepository $newsletters_repository) {
+  public function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer, Helper $woocommerceHelper, NewslettersRepository $newslettersRepository) {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->template = $template;
     $this->renderer = $renderer;
-    $this->woocommerce_helper = $woocommerce_helper;
-    $this->newsletters_repository = $newsletters_repository;
-    $this->email_headings = [
+    $this->woocommerceHelper = $woocommerceHelper;
+    $this->newslettersRepository = $newslettersRepository;
+    $this->emailHeadings = [
       'new_account' => [
         'option_name' => 'woocommerce_new_order_settings',
         'default' => __('New Order: #{order_number}', 'woocommerce'),
@@ -63,8 +63,8 @@ class TransactionalEmails {
   }
 
   public function init() {
-    $saved_email_id = (bool)$this->settings->get(self::SETTING_EMAIL_ID, false);
-    if (!$saved_email_id) {
+    $savedEmailId = (bool)$this->settings->get(self::SETTING_EMAIL_ID, false);
+    if (!$savedEmailId) {
       $email = $this->createNewsletter();
       $this->settings->set(self::SETTING_EMAIL_ID, $email->getId());
     }
@@ -72,7 +72,7 @@ class TransactionalEmails {
 
   public function getEmailHeadings() {
     $values = [];
-    foreach ($this->email_headings as $name => $heading) {
+    foreach ($this->emailHeadings as $name => $heading) {
       $settings = $this->wp->getOption($heading['option_name']);
       if (!$settings) {
         $values[$name] = $this->replacePlaceholders($heading['default']);
@@ -87,14 +87,14 @@ class TransactionalEmails {
   public function useTemplateForWoocommerceEmails() {
     $this->wp->addAction('woocommerce_init', function() {
       /** @var callable */
-      $email_header_callback = [\WC()->mailer(), 'email_header'];
+      $emailHeaderCallback = [\WC()->mailer(), 'email_header'];
       /** @var callable */
-      $email_footer_callback = [\WC()->mailer(), 'email_footer'];
-      $this->wp->removeAction('woocommerce_email_header', $email_header_callback);
-      $this->wp->removeAction('woocommerce_email_footer', $email_footer_callback);
-      $this->wp->addAction('woocommerce_email_header', function($email_heading) {
+      $emailFooterCallback = [\WC()->mailer(), 'email_footer'];
+      $this->wp->removeAction('woocommerce_email_header', $emailHeaderCallback);
+      $this->wp->removeAction('woocommerce_email_footer', $emailFooterCallback);
+      $this->wp->addAction('woocommerce_email_header', function($emailHeading) {
         $this->renderer->render($this->getNewsletter());
-        echo $this->renderer->getHTMLBeforeContent($email_heading);
+        echo $this->renderer->getHTMLBeforeContent($emailHeading);
       });
       $this->wp->addAction('woocommerce_email_footer', function() {
         echo $this->renderer->getHTMLAfterContent();
@@ -104,13 +104,13 @@ class TransactionalEmails {
   }
 
   private function createNewsletter() {
-    $wc_email_settings = $this->getWCEmailSettings();
+    $wcEmailSettings = $this->getWCEmailSettings();
     $newsletter = new NewsletterEntity;
     $newsletter->setType(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
     $newsletter->setSubject('WooCommerce Transactional Email');
-    $newsletter->setBody($this->template->create($wc_email_settings));
-    $this->newsletters_repository->persist($newsletter);
-    $this->newsletters_repository->flush();
+    $newsletter->setBody($this->template->create($wcEmailSettings));
+    $this->newslettersRepository->persist($newsletter);
+    $this->newslettersRepository->flush();
     return $newsletter;
   }
 
@@ -121,10 +121,10 @@ class TransactionalEmails {
   private function replacePlaceholders($text) {
     $title = $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES);
     $address = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
-    $order_date = date('Y-m-d');
+    $orderDate = date('Y-m-d');
     return str_replace(
       ['{site_title}','{site_address}', '{order_date}', '{order_number}'],
-      [$title, $address, $order_date, '0001'],
+      [$title, $address, $orderDate, '0001'],
       $text
     );
   }
@@ -137,39 +137,39 @@ class TransactionalEmails {
     if ($newsletter->type !== NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL) {
       return false;
     }
-    $newsletter_array = $newsletter->asArray();
-    $styles = $newsletter_array['body']['globalStyles'];
-    $options_to_sync = [
+    $newsletterArray = $newsletter->asArray();
+    $styles = $newsletterArray['body']['globalStyles'];
+    $optionsToSync = [
       'woocommerce_email_background_color' => $styles['body']['backgroundColor'],
       'woocommerce_email_base_color' => $styles['woocommerce']['brandingColor'],
       'woocommerce_email_body_background_color' => $styles['wrapper']['backgroundColor'],
       'woocommerce_email_text_color' => $styles['text']['fontColor'],
     ];
-    foreach ($options_to_sync as $wc_name => $value) {
-      $this->wp->updateOption($wc_name, $value);
+    foreach ($optionsToSync as $wcName => $value) {
+      $this->wp->updateOption($wcName, $value);
     }
   }
 
   public function getWCEmailSettings() {
-    $wc_email_settings = [
+    $wcEmailSettings = [
       'woocommerce_email_background_color' => '#f7f7f7',
       'woocommerce_email_base_color' => '#333333',
       'woocommerce_email_body_background_color' => '#ffffff',
       'woocommerce_email_footer_text' => $this->wp->_x('Footer text', 'Default footer text for a WooCommerce transactional email', 'mailpoet'),
-      'woocommerce_email_header_image' => Env::$assets_url . '/img/newsletter_editor/wc-default-logo.png',
+      'woocommerce_email_header_image' => Env::$assetsUrl . '/img/newsletter_editor/wc-default-logo.png',
       'woocommerce_email_text_color' => '#111111',
     ];
     $result = [];
-    foreach ($wc_email_settings as $name => $default) {
+    foreach ($wcEmailSettings as $name => $default) {
       $value = $this->wp->getOption($name);
       $key = preg_replace('/^woocommerce_email_/', '', $name);
       $result[$key] = $value ?: $default;
     }
-    $result['base_text_color'] = $this->woocommerce_helper->wcLightOrDark($result['base_color'], '#202020', '#ffffff');
-    if ($this->woocommerce_helper->wcHexIsLight($result['body_background_color'])) {
-      $result['link_color'] = $this->woocommerce_helper->wcHexIsLight($result['base_color']) ? $result['base_text_color'] : $result['base_color'];
+    $result['base_text_color'] = $this->woocommerceHelper->wcLightOrDark($result['base_color'], '#202020', '#ffffff');
+    if ($this->woocommerceHelper->wcHexIsLight($result['body_background_color'])) {
+      $result['link_color'] = $this->woocommerceHelper->wcHexIsLight($result['base_color']) ? $result['base_text_color'] : $result['base_color'];
     } else {
-      $result['link_color'] = $this->woocommerce_helper->wcHexIsLight($result['base_color']) ? $result['base_color'] : $result['base_text_color'];
+      $result['link_color'] = $this->woocommerceHelper->wcHexIsLight($result['base_color']) ? $result['base_color'] : $result['base_text_color'];
     }
     $result['footer_text'] = $this->replacePlaceholders($result['footer_text']);
     return $result;

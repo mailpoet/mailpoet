@@ -21,27 +21,27 @@ class Reporter {
   /** @var WooCommerceHelper */
   private $woocommerce_helper;
 
-  public function __construct(SettingsController $settings, WooCommerceHelper $woocommerce_helper) {
+  public function __construct(SettingsController $settings, WooCommerceHelper $woocommerceHelper) {
     $this->settings = $settings;
-    $this->woocommerce_helper = $woocommerce_helper;
+    $this->woocommerceHelper = $woocommerceHelper;
   }
 
   public function getData() {
-    global $wpdb, $wp_version, $woocommerce;
+    global $wpdb, $wpVersion, $woocommerce;
     $mta = $this->settings->get('mta', []);
     $newsletters = Newsletter::getAnalytics();
     $isCronTriggerMethodWP = $this->settings->get('cron_trigger.method') === CronTrigger::METHOD_WORDPRESS;
     $checker = new ServicesChecker();
     $bounceAddress = $this->settings->get('bounce.address');
     $segments = Segment::getAnalytics();
-    $has_wc = $this->woocommerce_helper->isWooCommerceActive();
-    $inactive_subscribers_months = (int)round((int)$this->settings->get('deactivate_subscriber_after_inactive_days') / 30);
-    $inactive_subscribers_status = $inactive_subscribers_months === 0 ? 'never' : "$inactive_subscribers_months months";
+    $hasWc = $this->woocommerceHelper->isWooCommerceActive();
+    $inactiveSubscribersMonths = (int)round((int)$this->settings->get('deactivate_subscriber_after_inactive_days') / 30);
+    $inactiveSubscribersStatus = $inactiveSubscribersMonths === 0 ? 'never' : "$inactive_subscribers_months months";
 
     $result = [
       'PHP version' => PHP_VERSION,
       'MySQL version' => $wpdb->db_version(),
-      'WordPress version' => $wp_version,
+      'WordPress version' => $wpVersion,
       'Multisite environment' => WPFunctions::get()->isMultisite() ? 'yes' : 'no',
       'RTL' => WPFunctions::get()->isRtl() ? 'yes' : 'no',
       'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,
@@ -72,13 +72,13 @@ class Reporter {
       'Total number of standard newsletters sent' => $newsletters['sent_newsletters_count'],
       'Number of segments' => isset($segments['dynamic']) ? (int)$segments['dynamic'] : 0,
       'Number of lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
-      'Stop sending to inactive subscribers' => $inactive_subscribers_status,
+      'Stop sending to inactive subscribers' => $inactiveSubscribersStatus,
       'Plugin > MailPoet Premium' => WPFunctions::get()->isPluginActive('mailpoet-premium/mailpoet-premium.php'),
       'Plugin > bounce add-on' => WPFunctions::get()->isPluginActive('mailpoet-bounce-handler/mailpoet-bounce-handler.php'),
       'Plugin > Bloom' => WPFunctions::get()->isPluginActive('bloom-for-publishers/bloom.php'),
       'Plugin > WP Holler' => WPFunctions::get()->isPluginActive('holler-box/holler-box.php'),
       'Plugin > WP-SMTP' => WPFunctions::get()->isPluginActive('wp-mail-smtp/wp_mail_smtp.php'),
-      'Plugin > WooCommerce' => $has_wc,
+      'Plugin > WooCommerce' => $hasWc,
       'Plugin > WooCommerce Subscription' => WPFunctions::get()->isPluginActive('woocommerce-subscriptions/woocommerce-subscriptions.php'),
       'Plugin > WooCommerce Follow Up Emails' => WPFunctions::get()->isPluginActive('woocommerce-follow-up-emails/woocommerce-follow-up-emails.php'),
       'Plugin > WooCommerce Email Customizer' => WPFunctions::get()->isPluginActive('woocommerce-email-customizer/woocommerce-email-customizer.php'),
@@ -96,7 +96,7 @@ class Reporter {
       'Plugin > Multi Currency for WooCommerce' => WPFunctions::get()->isPluginActive('woo-multi-currency/woo-multi-currency.php'),
       'Web host' => $this->settings->get('mta_group') == 'website' ? $this->settings->get('web_host') : null,
     ];
-    if ($has_wc) {
+    if ($hasWc) {
       $result['WooCommerce version'] = $woocommerce->version;
       $result['Number of WooCommerce subscribers'] = isset($segments['woocommerce_users']) ? (int)$segments['woocommerce_users'] : 0;
       $result['WooCommerce: opt-in on checkout is active'] = $this->settings->get('woocommerce.optin_on_checkout.enabled') ?: false;
@@ -115,9 +115,9 @@ class Reporter {
     $newsletters = Newsletter::getAnalytics();
     $segments = Segment::getAnalytics();
     $mta = $this->settings->get('mta', []);
-    $installed_at = new Carbon($this->settings->get('installed_at'));
+    $installedAt = new Carbon($this->settings->get('installed_at'));
     return [
-      'installedAtIso' => $installed_at->format(Carbon::ISO8601),
+      'installedAtIso' => $installedAt->format(Carbon::ISO8601),
       'newslettersSent' => $newsletters['sent_newsletters_count'],
       'welcomeEmails' => $newsletters['welcome_newsletters_count'],
       'postnotificationEmails' => $newsletters['notifications_count'],
@@ -125,7 +125,7 @@ class Reporter {
       'subscribers' => Subscriber::getTotalSubscribers(),
       'lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
       'sendingMethod' => isset($mta['method']) ? $mta['method'] : null,
-      'woocommerceIsInstalled' => $this->woocommerce_helper->isWooCommerceActive(),
+      'woocommerceIsInstalled' => $this->woocommerceHelper->isWooCommerceActive(),
     ];
   }
 }

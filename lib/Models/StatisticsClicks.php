@@ -14,18 +14,18 @@ use DateTimeInterface;
 class StatisticsClicks extends Model {
   public static $_table = MP_STATISTICS_CLICKS_TABLE;
 
-  public static function createOrUpdateClickCount($link_id, $subscriber_id, $newsletter_id, $queue_id) {
-    $statistics = self::where('link_id', $link_id)
-      ->where('subscriber_id', $subscriber_id)
-      ->where('newsletter_id', $newsletter_id)
-      ->where('queue_id', $queue_id)
+  public static function createOrUpdateClickCount($linkId, $subscriberId, $newsletterId, $queueId) {
+    $statistics = self::where('link_id', $linkId)
+      ->where('subscriber_id', $subscriberId)
+      ->where('newsletter_id', $newsletterId)
+      ->where('queue_id', $queueId)
       ->findOne();
     if (!$statistics instanceof self) {
       $statistics = self::create();
-      $statistics->link_id = $link_id;
-      $statistics->subscriber_id = $subscriber_id;
-      $statistics->newsletter_id = $newsletter_id;
-      $statistics->queue_id = $queue_id;
+      $statistics->linkId = $linkId;
+      $statistics->subscriberId = $subscriberId;
+      $statistics->newsletterId = $newsletterId;
+      $statistics->queueId = $queueId;
       $statistics->count = 1;
     } else {
       $statistics->count++;
@@ -56,7 +56,7 @@ class StatisticsClicks extends Model {
   public static function findLatestPerNewsletterBySubscriber(Subscriber $subscriber, DateTimeInterface $from, DateTimeInterface $to) {
     // subquery to find latest click IDs for each newsletter
     $table = self::$_table;
-    $latest_click_ids_per_newsletter_query = "
+    $latestClickIdsPerNewsletterQuery = "
       SELECT MAX(id)
       FROM $table
       WHERE subscriber_id = :subscriber_id

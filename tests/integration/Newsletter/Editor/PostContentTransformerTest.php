@@ -19,16 +19,16 @@ class PostContentTransformerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->content_mock = [
+    $this->contentMock = [
       [
         'type' => 'button',
         'text' => 'foo',
       ],
     ];
-    $this->title_mock = [
+    $this->titleMock = [
       'text' => 'Title',
     ];
-    $this->image_mock = [
+    $this->imageMock = [
       'type' => 'image',
     ];
   }
@@ -40,9 +40,9 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'aboveTitle',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    expect($result)->equals([$this->image_mock, $this->title_mock, $this->content_mock[0]]);
+    expect($result)->equals([$this->imageMock, $this->titleMock, $this->contentMock[0]]);
   }
 
   public function testShouldAddImageBelowTitleForExcerptWithoutLayout() {
@@ -52,9 +52,9 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'belowTitle',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    expect($result)->equals([$this->title_mock, $this->image_mock, $this->content_mock[0]]);
+    expect($result)->equals([$this->titleMock, $this->imageMock, $this->contentMock[0]]);
   }
 
   public function testShouldTransformContentWithoutLayoutWhenImageIsMissing() {
@@ -64,9 +64,9 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'belowTitle',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, null);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, null);
     $result = $transformer->transform([]);
-    expect($result)->equals([$this->title_mock, $this->content_mock[0]]);
+    expect($result)->equals([$this->titleMock, $this->contentMock[0]]);
   }
 
   public function testShouldNotAddImageForTitleOnlyWhenImageIsPresentWithoutLayout() {
@@ -76,9 +76,9 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'aboveTitle',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    expect($result)->equals([$this->title_mock, $this->content_mock[0]]);
+    expect($result)->equals([$this->titleMock, $this->contentMock[0]]);
   }
 
   public function testShouldPrependTitleTextToContentTextIfFirstContentBlockIsTextual() {
@@ -88,11 +88,11 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'aboveTitle',
     ];
 
-    $this->content_mock[0]['type'] = 'text';
+    $this->contentMock[0]['type'] = 'text';
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    $expected = $this->content_mock[0];
+    $expected = $this->contentMock[0];
     $expected['text'] = 'Titlefoo';
     expect($result)->equals([$expected]);
   }
@@ -104,7 +104,7 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'centered',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
     expect($result[0]['type'])->equals('container');
     expect($result[0]['orientation'])->equals('horizontal');
@@ -112,10 +112,10 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[0]['blocks'][0]['type'])->equals('container');
     expect($result[0]['blocks'][0]['orientation'])->equals('vertical');
     expect($result[0]['blocks'][0]['styles'])->notEmpty();
-    $result_blocks = $result[0]['blocks'][0]['blocks'];
-    expect(count($result_blocks))->equals(3);
-    expect($result_blocks[0]['text'])->equals('Title');
-    expect($result_blocks[1]['type'])->equals('image');
+    $resultBlocks = $result[0]['blocks'][0]['blocks'];
+    expect(count($resultBlocks))->equals(3);
+    expect($resultBlocks[0]['text'])->equals('Title');
+    expect($resultBlocks[1]['type'])->equals('image');
   }
 
   public function testShouldCreateLayoutStructureForCenteredImageWithLayoutWithTitleAboveExcerpt() {
@@ -126,12 +126,12 @@ class PostContentTransformerTest extends \MailPoetTest {
       'titlePosition' => 'aboveExcerpt',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    $result_blocks = $result[0]['blocks'][0]['blocks'];
-    expect(count($result_blocks))->equals(3);
-    expect($result_blocks[0])->equals($this->image_mock);
-    expect($result_blocks[1])->equals($this->title_mock);
+    $resultBlocks = $result[0]['blocks'][0]['blocks'];
+    expect(count($resultBlocks))->equals(3);
+    expect($resultBlocks[0])->equals($this->imageMock);
+    expect($resultBlocks[1])->equals($this->titleMock);
 
   }
 
@@ -142,7 +142,7 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'alternate',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
     expect($result[0]['type'])->equals('container');
     expect($result[0]['orientation'])->equals('horizontal');
@@ -161,9 +161,9 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'centered',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    expect($result[0]['blocks'][0]['blocks'])->equals([$this->title_mock, $this->image_mock, $this->content_mock[0]]);
+    expect($result[0]['blocks'][0]['blocks'])->equals([$this->titleMock, $this->imageMock, $this->contentMock[0]]);
   }
 
   public function testShouldHandleOldStructureImagePositionValueAndAddImageForExcerptWithLayout() {
@@ -173,9 +173,9 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'aboveTitle',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    expect($result[0]['blocks'][0]['blocks'])->equals([$this->title_mock, $this->image_mock, $this->content_mock[0]]);
+    expect($result[0]['blocks'][0]['blocks'])->equals([$this->titleMock, $this->imageMock, $this->contentMock[0]]);
   }
 
   public function testShouldAddLeftPositionedImageForExcerptWithLayout() {
@@ -185,11 +185,11 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'left',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    expect($result[0]['blocks'][0]['blocks'])->equals([$this->title_mock]);
-    expect($result[1]['blocks'][0]['blocks'])->equals([$this->image_mock]);
-    expect($result[1]['blocks'][1]['blocks'])->equals([$this->content_mock[0]]);
+    expect($result[0]['blocks'][0]['blocks'])->equals([$this->titleMock]);
+    expect($result[1]['blocks'][0]['blocks'])->equals([$this->imageMock]);
+    expect($result[1]['blocks'][1]['blocks'])->equals([$this->contentMock[0]]);
   }
 
   public function testShouldAddLeftPositionedImageForExcerptWithTitleAboveExcerpt() {
@@ -200,11 +200,11 @@ class PostContentTransformerTest extends \MailPoetTest {
       'titlePosition' => 'aboveExcerpt',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    expect($result[0]['blocks'][0]['blocks'])->equals([$this->image_mock]);
-    expect($result[0]['blocks'][1]['blocks'][0])->equals($this->title_mock);
-    expect($result[0]['blocks'][1]['blocks'][1])->equals($this->content_mock[0]);
+    expect($result[0]['blocks'][0]['blocks'])->equals([$this->imageMock]);
+    expect($result[0]['blocks'][1]['blocks'][0])->equals($this->titleMock);
+    expect($result[0]['blocks'][1]['blocks'][1])->equals($this->contentMock[0]);
   }
 
   public function testShouldAddRightPositionedImageForExcerptWithLayout() {
@@ -214,11 +214,11 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'right',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    expect($result[0]['blocks'][0]['blocks'])->equals([$this->title_mock]);
-    expect($result[1]['blocks'][0]['blocks'])->equals([$this->content_mock[0]]);
-    expect($result[1]['blocks'][1]['blocks'])->equals([$this->image_mock]);
+    expect($result[0]['blocks'][0]['blocks'])->equals([$this->titleMock]);
+    expect($result[1]['blocks'][0]['blocks'])->equals([$this->contentMock[0]]);
+    expect($result[1]['blocks'][1]['blocks'])->equals([$this->imageMock]);
   }
 
   public function testShouldNotAddImageForTitleOnlyWithLayout() {
@@ -228,9 +228,9 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'centered',
     ];
 
-    $transformer = $this->getTransformer($args, $this->content_mock, $this->title_mock, $this->image_mock);
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
     $result = $transformer->transform([]);
-    expect($result[0]['blocks'][0]['blocks'])->equals([$this->title_mock, $this->content_mock[0]]);
+    expect($result[0]['blocks'][0]['blocks'])->equals([$this->titleMock, $this->contentMock[0]]);
   }
 
   public function testShouldAddClassToParagraphsInFullPostsWithLayout() {
@@ -241,13 +241,13 @@ class PostContentTransformerTest extends \MailPoetTest {
     ];
 
     $post = [];
-    $expected_with_post_class = true;
+    $expectedWithPostClass = true;
 
     /** @var PostTransformerContentsExtractor&MockObject $extractor */
     $extractor = $this->make(
       PostTransformerContentsExtractor::class,
       [
-        'getContent' => Expected::once($this->content_mock),
+        'getContent' => Expected::once($this->contentMock),
         'getFeaturedImage' => null,
         'getTitle' => 'Title',
       ]
@@ -256,7 +256,7 @@ class PostContentTransformerTest extends \MailPoetTest {
       ->method('getContent')
       ->with(
         $this->equalTo($post),
-        $this->equalTo($expected_with_post_class),
+        $this->equalTo($expectedWithPostClass),
         $this->equalTo('full')
       );
 
@@ -272,13 +272,13 @@ class PostContentTransformerTest extends \MailPoetTest {
     ];
 
     $post = [];
-    $expected_with_post_class = false;
+    $expectedWithPostClass = false;
 
     /** @var PostTransformerContentsExtractor&MockObject $extractor */
     $extractor = $this->make(
       PostTransformerContentsExtractor::class,
       [
-        'getContent' => Expected::once($this->content_mock),
+        'getContent' => Expected::once($this->contentMock),
         'getFeaturedImage' => null,
         'getTitle' => 'Title',
       ]
@@ -287,7 +287,7 @@ class PostContentTransformerTest extends \MailPoetTest {
       ->method('getContent')
       ->with(
         $this->equalTo($post),
-        $this->equalTo($expected_with_post_class),
+        $this->equalTo($expectedWithPostClass),
         $this->equalTo('excerpt')
       );
 

@@ -30,7 +30,7 @@ class PurchasedProduct {
     }
     $this->helper = $helper;
     $this->scheduler = new AutomaticEmailScheduler();
-    $this->logger_factory = LoggerFactory::getInstance();
+    $this->loggerFactory = LoggerFactory::getInstance();
   }
 
   public function init() {
@@ -44,8 +44,8 @@ class PurchasedProduct {
     );
 
 
-    $accepted_order_states = WPFunctions::get()->applyFilters('mailpoet_first_purchase_order_states', ['completed', 'processing']);
-    foreach ($accepted_order_states as $state) {
+    $acceptedOrderStates = WPFunctions::get()->applyFilters('mailpoet_first_purchase_order_states', ['completed', 'processing']);
+    foreach ($acceptedOrderStates as $state) {
       WPFunctions::get()->addAction('woocommerce_order_status_' . $state, [
         $this,
         'scheduleEmailWhenProductIsPurchased',
@@ -70,76 +70,76 @@ class PurchasedProduct {
     ];
   }
 
-  public function getProducts($product_search_query) {
+  public function getProducts($productSearchQuery) {
     $args = [
       'post_type' => 'product',
       'post_status' => 'publish',
-      's' => $product_search_query,
+      's' => $productSearchQuery,
       'orderby' => 'title',
       'order' => 'ASC',
     ];
-    $woocommerce_products = new \WP_Query($args);
-    $woocommerce_products = $woocommerce_products->get_posts();
-    if (empty($woocommerce_products)) {
-      $this->logger_factory->getLogger(self::SLUG)->addInfo(
-        'no products found', ['search_query' => $product_search_query]
+    $woocommerceProducts = new \WP_Query($args);
+    $woocommerceProducts = $woocommerceProducts->get_posts();
+    if (empty($woocommerceProducts)) {
+      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+        'no products found', ['search_query' => $productSearchQuery]
       );
       return;
     }
 
-    $woocommerce_products = array_map(function($product) {
+    $woocommerceProducts = array_map(function($product) {
       return [
         'id' => $product->ID,
-        'name' => $product->post_title,
+        'name' => $product->postTitle,
       ];
-    }, $woocommerce_products);
-    return $woocommerce_products;
+    }, $woocommerceProducts);
+    return $woocommerceProducts;
   }
 
-  public function scheduleEmailWhenProductIsPurchased($order_id) {
-    $order_details = $this->helper->wcGetOrder($order_id);
-    if (!$order_details || !$order_details->get_billing_email()) {
-      $this->logger_factory->getLogger(self::SLUG)->addInfo(
+  public function scheduleEmailWhenProductIsPurchased($orderId) {
+    $orderDetails = $this->helper->wcGetOrder($orderId);
+    if (!$orderDetails || !$orderDetails->get_billing_email()) {
+      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
         'Email not scheduled because the order customer was not found',
-        ['order_id' => $order_id]
+        ['order_id' => $orderId]
       );
       return;
     }
-    $customer_email = $order_details->get_billing_email();
+    $customerEmail = $orderDetails->get_billing_email();
 
-    $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customer_email);
+    $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customerEmail);
 
     if (!$subscriber instanceof Subscriber) {
-      $this->logger_factory->getLogger(self::SLUG)->addInfo(
+      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
         'Email not scheduled because the customer was not found as WooCommerce list subscriber',
-        ['order_id' => $order_id, 'customer_email' => $customer_email]
+        ['order_id' => $orderId, 'customer_email' => $customerEmail]
       );
       return;
     }
 
-    $ordered_products = array_map(function($product) {
+    $orderedProducts = array_map(function($product) {
       return ($product instanceof \WC_Order_Item_Product) ? $product->get_product_id() : null;
-    }, $order_details->get_items());
-    $ordered_products = array_values(array_filter($ordered_products));
+    }, $orderDetails->get_items());
+    $orderedProducts = array_values(array_filter($orderedProducts));
 
-    $scheduling_condition = function($automatic_email) use ($ordered_products, $subscriber) {
-      $meta = $automatic_email->getMeta();
+    $schedulingCondition = function($automaticEmail) use ($orderedProducts, $subscriber) {
+      $meta = $automaticEmail->getMeta();
 
-      if (empty($meta['option']) || $automatic_email->wasScheduledForSubscriber($subscriber->id)) return false;
+      if (empty($meta['option']) || $automaticEmail->wasScheduledForSubscriber($subscriber->id)) return false;
 
-      $meta_products = array_column($meta['option'], 'id');
-      $matched_products = array_intersect($meta_products, $ordered_products);
+      $metaProducts = array_column($meta['option'], 'id');
+      $matchedProducts = array_intersect($metaProducts, $orderedProducts);
 
-      return !empty($matched_products);
+      return !empty($matchedProducts);
     };
 
-    $this->logger_factory->getLogger(self::SLUG)->addInfo(
+    $this->loggerFactory->getLogger(self::SLUG)->addInfo(
       'Email scheduled', [
-        'order_id' => $order_id,
-        'customer_email' => $customer_email,
+        'order_id' => $orderId,
+        'customer_email' => $customerEmail,
         'subscriber_id' => $subscriber->id,
       ]
     );
-    $this->scheduler->scheduleAutomaticEmail(WooCommerce::SLUG, self::SLUG, $scheduling_condition, $subscriber->id);
+    $this->scheduler->scheduleAutomaticEmail(WooCommerce::SLUG, self::SLUG, $schedulingCondition, $subscriber->id);
   }
 }

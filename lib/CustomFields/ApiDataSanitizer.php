@@ -29,12 +29,12 @@ class ApiDataSanitizer {
     ];
   }
 
-  private function checkMandatoryStringParameter(array $data, $parameter_name) {
-    if (empty($data[$parameter_name])) {
-      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" is missing', 'mailpoet'), $parameter_name), self::ERROR_MANDATORY_ARGUMENT_MISSING);
+  private function checkMandatoryStringParameter(array $data, $parameterName) {
+    if (empty($data[$parameterName])) {
+      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" is missing', 'mailpoet'), $parameterName), self::ERROR_MANDATORY_ARGUMENT_MISSING);
     }
-    if (!is_string($data[$parameter_name])) {
-      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" has to be string', 'mailpoet'), $parameter_name), self::ERROR_MANDATORY_ARGUMENT_WRONG_TYPE);
+    if (!is_string($data[$parameterName])) {
+      throw new InvalidArgumentException(sprintf(__('Mandatory argument "%s" has to be string', 'mailpoet'), $parameterName), self::ERROR_MANDATORY_ARGUMENT_WRONG_TYPE);
     }
   }
 
@@ -108,43 +108,43 @@ class ApiDataSanitizer {
   }
 
   private function getExtraParamsForDate($params) {
-    $date_type = (isset($params['date_type'])
+    $dateType = (isset($params['date_type'])
       ? $params['date_type']
       : 'year_month_day'
     );
-    $input_date_format = (isset($params['date_format'])
+    $inputDateFormat = (isset($params['date_format'])
       ? $params['date_format']
       : ''
     );
 
-    switch ($date_type) {
+    switch ($dateType) {
       case 'year_month_day':
-        if (!in_array($input_date_format, ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'], true)) {
+        if (!in_array($inputDateFormat, ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'], true)) {
           throw new InvalidArgumentException(__('Invalid date_format for year_month_day', 'mailpoet'), self::ERROR_INVALID_DATE_FORMAT);
         }
-        $date_format = $input_date_format;
+        $dateFormat = $inputDateFormat;
         break;
       case 'year_month':
-        if (!in_array($input_date_format, ['YYYY/MM', 'MM/YY'], true)) {
+        if (!in_array($inputDateFormat, ['YYYY/MM', 'MM/YY'], true)) {
           throw new InvalidArgumentException(__('Invalid date_format for year_month', 'mailpoet'), self::ERROR_INVALID_DATE_FORMAT);
         }
-        $date_format = $input_date_format;
+        $dateFormat = $inputDateFormat;
         break;
       case 'month':
-        $date_format = 'MM';
+        $dateFormat = 'MM';
         break;
       case 'year':
-        $date_format = 'YYYY';
+        $dateFormat = 'YYYY';
         break;
       case 'day':
-        $date_format = 'DD';
+        $dateFormat = 'DD';
         break;
       default:
         throw new InvalidArgumentException(__('Invalid value for date_type', 'mailpoet'), self::ERROR_INVALID_DATE_TYPE);
     }
     return [
-      'date_type' => $date_type,
-      'date_format' => $date_format,
+      'date_type' => $dateType,
+      'date_format' => $dateFormat,
     ];
   }
 

@@ -12,14 +12,14 @@ class Segments {
   /** @var PageLimit */
   private $listing_page_limit;
 
-  public function __construct(PageRenderer $page_renderer, PageLimit $listing_page_limit) {
-    $this->page_renderer = $page_renderer;
-    $this->listing_page_limit = $listing_page_limit;
+  public function __construct(PageRenderer $pageRenderer, PageLimit $listingPageLimit) {
+    $this->pageRenderer = $pageRenderer;
+    $this->listingPageLimit = $listingPageLimit;
   }
 
   public function render() {
     $data = [];
-    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('segments');
-    $this->page_renderer->displayPage('segments.html', $data);
+    $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('segments');
+    $this->pageRenderer->displayPage('segments.html', $data);
   }
 }

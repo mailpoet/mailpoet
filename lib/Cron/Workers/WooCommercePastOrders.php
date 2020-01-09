@@ -21,51 +21,51 @@ class WooCommercePastOrders extends SimpleWorker {
   private $woocommerce_purchases;
 
   public function __construct(
-    WCHelper $woocommerce_helper,
-    WooCommercePurchases $woocommerce_purchases
+    WCHelper $woocommerceHelper,
+    WooCommercePurchases $woocommercePurchases
   ) {
-    $this->woocommerce_helper = $woocommerce_helper;
-    $this->woocommerce_purchases = $woocommerce_purchases;
+    $this->woocommerceHelper = $woocommerceHelper;
+    $this->woocommercePurchases = $woocommercePurchases;
     parent::__construct();
   }
 
   public function checkProcessingRequirements() {
-    return $this->woocommerce_helper->isWooCommerceActive() && empty($this->getCompletedTasks()); // run only once
+    return $this->woocommerceHelper->isWooCommerceActive() && empty($this->getCompletedTasks()); // run only once
   }
 
   public function processTaskStrategy(ScheduledTask $task, $timer) {
-    $oldest_click = StatisticsClicks::orderByAsc('created_at')->limit(1)->findOne();
-    if (!$oldest_click instanceof StatisticsClicks) {
+    $oldestClick = StatisticsClicks::orderByAsc('created_at')->limit(1)->findOne();
+    if (!$oldestClick instanceof StatisticsClicks) {
       return true;
     }
 
     // continue from 'last_processed_id' from previous run
     $meta = $task->getMeta();
-    $last_id = isset($meta['last_processed_id']) ? $meta['last_processed_id'] : 0;
-    add_filter('posts_where', function ($where = '') use ($last_id) {
+    $lastId = isset($meta['last_processed_id']) ? $meta['last_processed_id'] : 0;
+    add_filter('posts_where', function ($where = '') use ($lastId) {
       global $wpdb;
-      return $where . " AND {$wpdb->prefix}posts.ID > " . $last_id;
+      return $where . " AND {$wpdb->prefix}posts.ID > " . $lastId;
     }, 10, 2);
 
-    $order_ids = $this->woocommerce_helper->wcGetOrders([
+    $orderIds = $this->woocommerceHelper->wcGetOrders([
       'status' => 'completed',
-      'date_completed' => '>=' . $oldest_click->created_at,
+      'date_completed' => '>=' . $oldestClick->createdAt,
       'orderby' => 'ID',
       'order' => 'ASC',
       'limit' => self::BATCH_SIZE,
       'return' => 'ids',
     ]);
 
-    if (empty($order_ids)) {
+    if (empty($orderIds)) {
       return true;
     }
 
-    foreach ($order_ids as $order_id) {
+    foreach ($orderIds as $orderId) {
       // clean all records for given order to fix wrong data inserted by a past buggy version
-      StatisticsWooCommercePurchases::where('order_id', $order_id)->deleteMany();
-      $this->woocommerce_purchases->trackPurchase($order_id, false);
+      StatisticsWooCommercePurchases::where('order_id', $orderId)->deleteMany();
+      $this->woocommercePurchases->trackPurchase($orderId, false);
     }
-    $task->meta = ['last_processed_id' => end($order_ids)];
+    $task->meta = ['last_processed_id' => end($orderIds)];
     $task->save();
     return false;
   }

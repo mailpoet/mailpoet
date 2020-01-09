@@ -5,20 +5,20 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class DuplicateAutomaticEmailCest {
-  public function duplicateAutomaticEmail(\AcceptanceTester $I) {
-    $I->wantTo('Duplicate an automatic email');
-    $I->activateWooCommerce();
-    $email_subject = 'Duplicate Automatic Email Test';
-    $newsletter_factory = new Newsletter();
-    $newsletter_factory->withSubject($email_subject)->withAutomaticTypeWooCommerceFirstPurchase()->create();
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="tab-WooCommerce"]');
-    $I->waitForText($email_subject);
-    $I->clickItemRowActionByItemName($email_subject, 'Duplicate');
-    $I->waitForText('Email "Copy of ' . $email_subject . '" has been duplicated.', 20);
-    $I->waitForListingItemsToLoad();
-    $I->clickItemRowActionByItemName('Copy of ' . $email_subject, 'Edit');
-    $I->waitForElement('[data-automation-id="newsletter_title"]', 20);
+  public function duplicateAutomaticEmail(\AcceptanceTester $i) {
+    $i->wantTo('Duplicate an automatic email');
+    $i->activateWooCommerce();
+    $emailSubject = 'Duplicate Automatic Email Test';
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory->withSubject($emailSubject)->withAutomaticTypeWooCommerceFirstPurchase()->create();
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('[data-automation-id="tab-WooCommerce"]');
+    $i->waitForText($emailSubject);
+    $i->clickItemRowActionByItemName($emailSubject, 'Duplicate');
+    $i->waitForText('Email "Copy of ' . $emailSubject . '" has been duplicated.', 20);
+    $i->waitForListingItemsToLoad();
+    $i->clickItemRowActionByItemName('Copy of ' . $emailSubject, 'Edit');
+    $i->waitForElement('[data-automation-id="newsletter_title"]', 20);
   }
 }

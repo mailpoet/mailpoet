@@ -7,8 +7,8 @@ class Radio extends Base {
   public static function render($block) {
     $html = '';
 
-    $field_name = 'data[' . static::getFieldName($block) . ']';
-    $field_validation = static::getInputValidation($block);
+    $fieldName = 'data[' . static::getFieldName($block) . ']';
+    $fieldValidation = static::getInputValidation($block);
 
     $html .= '<p class="mailpoet_paragraph">';
 
@@ -19,14 +19,14 @@ class Radio extends Base {
       : []
     );
 
-    $selected_value = self::getFieldValue($block);
+    $selectedValue = self::getFieldValue($block);
 
     foreach ($options as $option) {
       $html .= '<label class="mailpoet_radio_label">';
 
       $html .= '<input type="radio" class="mailpoet_radio" ';
 
-      $html .= 'name="' . $field_name . '" ';
+      $html .= 'name="' . $fieldName . '" ';
 
       if (is_array($option['value'])) {
         $value = key($option['value']);
@@ -40,13 +40,13 @@ class Radio extends Base {
 
       $html .= (
         (
-          $selected_value === ''
+          $selectedValue === ''
           && isset($option['is_checked'])
           && $option['is_checked']
-        ) || ($selected_value === $value)
+        ) || ($selectedValue === $value)
       ) ? 'checked="checked"' : '';
 
-      $html .= $field_validation;
+      $html .= $fieldValidation;
       $html .= ' /> ' . esc_attr($label);
       $html .= '</label>';
     }

@@ -16,8 +16,8 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
   public $mss_key;
   public function _before() {
     parent::_before();
-    $this->mss_key = 'some_key';
-    $this->worker = new SendingServiceKeyCheck($this->di_container->get(SettingsController::class));
+    $this->mssKey = 'some_key';
+    $this->worker = new SendingServiceKeyCheck($this->diContainer->get(SettingsController::class));
   }
 
   public function testItRequiresMailPoetMethodToBeSetUp() {
@@ -41,11 +41,11 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     $this->worker->bridge = $bridge;
     $this->worker->bridge->expects($this->once())
       ->method('checkMSSKey')
-      ->with($this->equalTo($this->mss_key));
+      ->with($this->equalTo($this->mssKey));
     $this->worker->bridge->expects($this->once())
       ->method('storeMSSKeyAndState')
       ->with(
-        $this->equalTo($this->mss_key),
+        $this->equalTo($this->mssKey),
         $this->equalTo($response)
       );
     $this->setMailPoetSendingMethod();
@@ -58,12 +58,12 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
       Mailer::MAILER_CONFIG_SETTING_NAME,
       [
         'method' => 'MailPoet',
-        'mailpoet_api_key' => $this->mss_key,
+        'mailpoet_api_key' => $this->mssKey,
       ]
     );
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

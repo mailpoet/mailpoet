@@ -39,12 +39,12 @@ class Security {
    */
   public static function generateHash($length = null) {
     $length = ($length) ? $length : self::HASH_LENGTH;
-    $auth_key = '';
+    $authKey = '';
     if (defined('AUTH_KEY')) {
-      $auth_key = AUTH_KEY;
+      $authKey = AUTH_KEY;
     }
     return substr(
-      md5($auth_key . self::generateRandomString(64)),
+      md5($authKey . self::generateRandomString(64)),
       0,
       $length
     );

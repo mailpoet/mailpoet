@@ -36,19 +36,19 @@ class AmazonSESTest extends \MailPoetTest {
       'from_email' => 'staff@mailpoet.com',
       'from_name_email' => 'Sender <staff@mailpoet.com>',
     ];
-    $this->reply_to = [
+    $this->replyTo = [
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'reply-to@mailpoet.com',
       'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>',
     ];
-    $this->return_path = 'bounce@mailpoet.com';
+    $this->returnPath = 'bounce@mailpoet.com';
     $this->mailer = new AmazonSES(
       $this->settings['region'],
       $this->settings['access_key'],
       $this->settings['secret_key'],
       $this->sender,
-      $this->reply_to,
-      $this->return_path,
+      $this->replyTo,
+      $this->returnPath,
       new AmazonSESMapper()
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
@@ -59,7 +59,7 @@ class AmazonSESTest extends \MailPoetTest {
         'text' => 'TEXT body',
       ],
     ];
-    $this->extra_params = [
+    $this->extraParams = [
       'unsubscribe_url' => 'http://www.mailpoet.com',
     ];
   }
@@ -83,11 +83,11 @@ class AmazonSESTest extends \MailPoetTest {
       $this->settings['access_key'],
       $this->settings['secret_key'],
       $this->sender,
-      $this->reply_to,
-      $return_path = false,
+      $this->replyTo,
+      $returnPath = false,
       new AmazonSESMapper()
     );
-    expect($mailer->return_path)->equals($this->sender['from_email']);
+    expect($mailer->returnPath)->equals($this->sender['from_email']);
   }
 
   public function testItChecksForValidRegion() {
@@ -97,8 +97,8 @@ class AmazonSESTest extends \MailPoetTest {
         $this->settings['access_key'],
         $this->settings['secret_key'],
         $this->sender,
-        $this->reply_to,
-        $this->return_path,
+        $this->replyTo,
+        $this->returnPath,
         new AmazonSESMapper()
       );
       $this->fail('Unsupported region exception was not thrown');
@@ -118,7 +118,7 @@ class AmazonSESTest extends \MailPoetTest {
 
   public function testItCanCreateMessage() {
     $message = $this->mailer
-      ->createMessage($this->newsletter, $this->subscriber, $this->extra_params);
+      ->createMessage($this->newsletter, $this->subscriber, $this->extraParams);
     expect($message->getTo())
       ->equals(['mailpoet-phoenix-test@mailinator.com' => 'Recipient']);
     expect($message->getFrom())
@@ -126,7 +126,7 @@ class AmazonSESTest extends \MailPoetTest {
     expect($message->getSender())
       ->equals([$this->sender['from_email'] => null]);
     expect($message->getReplyTo())
-      ->equals([$this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name']]);
+      ->equals([$this->replyTo['reply_to_email'] => $this->replyTo['reply_to_name']]);
     expect($message->getSubject())
       ->equals($this->newsletter['subject']);
     expect($message->getBody())
@@ -134,16 +134,16 @@ class AmazonSESTest extends \MailPoetTest {
     expect($message->getChildren()[0]->getContentType())
       ->equals('text/plain');
     expect($message->getHeaders()->get('List-Unsubscribe')->getValue())
-      ->equals('<' . $this->extra_params['unsubscribe_url'] . '>');
+      ->equals('<' . $this->extraParams['unsubscribe_url'] . '>');
   }
 
   public function testItCanCreateRequest() {
     $request = $this->mailer->request($this->newsletter, $this->subscriber);
     // preserve the original message
-    $raw_message = $this->mailer->encodeMessage($this->mailer->message);
+    $rawMessage = $this->mailer->encodeMessage($this->mailer->message);
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     // substitute the message to synchronize hashes
-    $body['RawMessage.Data'] = $raw_message;
+    $body['RawMessage.Data'] = $rawMessage;
     $body = array_map('urlencode', $body);
     expect($request['timeout'])->equals(10);
     expect($request['httpversion'])->equals('1.1');
@@ -234,10 +234,10 @@ class AmazonSESTest extends \MailPoetTest {
   }
 
   public function testItCatchesSendingErrors() {
-    $invalid_subscriber = 'john.@doe.com';
+    $invalidSubscriber = 'john.@doe.com';
     $result = $this->mailer->send(
       $this->newsletter,
-      $invalid_subscriber
+      $invalidSubscriber
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
@@ -245,7 +245,7 @@ class AmazonSESTest extends \MailPoetTest {
   }
 
   public function testItChecksBlacklistBeforeSending() {
-    $blacklisted_subscriber = 'blacklist_test@example.com';
+    $blacklistedSubscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
     $mailer = Stub::make(
       $this->mailer,
@@ -254,7 +254,7 @@ class AmazonSESTest extends \MailPoetTest {
     );
     $result = $mailer->send(
       $this->newsletter,
-      $blacklisted_subscriber
+      $blacklistedSubscriber
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);

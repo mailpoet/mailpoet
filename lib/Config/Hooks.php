@@ -59,33 +59,33 @@ class Hooks {
   private $dynamic_segment_hooks;
 
   public function __construct(
-    Form $subscription_form,
-    Comment $subscription_comment,
-    Manage $subscription_manage,
-    Registration $subscription_registration,
+    Form $subscriptionForm,
+    Comment $subscriptionComment,
+    Manage $subscriptionManage,
+    Registration $subscriptionRegistration,
     SettingsController $settings,
     WPFunctions $wp,
-    WooCommerceSubscription $woocommerce_subscription,
-    WooCommerceSegment $woocommerce_segment,
-    WooCommerceSettings $woocommerce_settings,
-    WooCommercePurchases $woocommerce_purchases,
-    PostNotificationScheduler $post_notification_scheduler,
-    WordpressMailerReplacer $wordpress_mailer_replacer,
-    DynamicSegmentHooks $dynamic_segment_hooks
+    WooCommerceSubscription $woocommerceSubscription,
+    WooCommerceSegment $woocommerceSegment,
+    WooCommerceSettings $woocommerceSettings,
+    WooCommercePurchases $woocommercePurchases,
+    PostNotificationScheduler $postNotificationScheduler,
+    WordpressMailerReplacer $wordpressMailerReplacer,
+    DynamicSegmentHooks $dynamicSegmentHooks
   ) {
-    $this->subscription_form = $subscription_form;
-    $this->subscription_comment = $subscription_comment;
-    $this->subscription_manage = $subscription_manage;
-    $this->subscription_registration = $subscription_registration;
+    $this->subscriptionForm = $subscriptionForm;
+    $this->subscriptionComment = $subscriptionComment;
+    $this->subscriptionManage = $subscriptionManage;
+    $this->subscriptionRegistration = $subscriptionRegistration;
     $this->settings = $settings;
     $this->wp = $wp;
-    $this->woocommerce_subscription = $woocommerce_subscription;
-    $this->woocommerce_segment = $woocommerce_segment;
-    $this->woocommerce_settings = $woocommerce_settings;
-    $this->woocommerce_purchases = $woocommerce_purchases;
-    $this->post_notification_scheduler = $post_notification_scheduler;
-    $this->wordpress_mailer_replacer = $wordpress_mailer_replacer;
-    $this->dynamic_segment_hooks = $dynamic_segment_hooks;
+    $this->woocommerceSubscription = $woocommerceSubscription;
+    $this->woocommerceSegment = $woocommerceSegment;
+    $this->woocommerceSettings = $woocommerceSettings;
+    $this->woocommercePurchases = $woocommercePurchases;
+    $this->postNotificationScheduler = $postNotificationScheduler;
+    $this->wordpressMailerReplacer = $wordpressMailerReplacer;
+    $this->dynamicSegmentHooks = $dynamicSegmentHooks;
   }
 
   public function init() {
@@ -98,7 +98,7 @@ class Hooks {
     $this->setupWooCommerceSubscriptionEvents();
     $this->setupPostNotifications();
     $this->setupWooCommerceSettings();
-    $this->dynamic_segment_hooks->init();
+    $this->dynamicSegmentHooks->init();
   }
 
   public function initEarlyHooks() {
@@ -117,25 +117,25 @@ class Hooks {
       if ($this->wp->isUserLoggedIn()) {
         $this->wp->addAction(
           'comment_form_field_comment',
-          [$this->subscription_comment, 'extendLoggedInForm']
+          [$this->subscriptionComment, 'extendLoggedInForm']
         );
       } else {
         $this->wp->addAction(
           'comment_form_after_fields',
-          [$this->subscription_comment, 'extendLoggedOutForm']
+          [$this->subscriptionComment, 'extendLoggedOutForm']
         );
       }
 
       $this->wp->addAction(
         'comment_post',
-        [$this->subscription_comment, 'onSubmit'],
+        [$this->subscriptionComment, 'onSubmit'],
         60,
         2
       );
 
       $this->wp->addAction(
         'wp_set_comment_status',
-        [$this->subscription_comment, 'onStatusUpdate'],
+        [$this->subscriptionComment, 'onStatusUpdate'],
         60,
         2
       );
@@ -150,18 +150,18 @@ class Hooks {
       if (is_multisite()) {
         $this->wp->addAction(
           'signup_extra_fields',
-          [$this->subscription_registration, 'extendForm']
+          [$this->subscriptionRegistration, 'extendForm']
         );
         $this->wp->addAction(
           'wpmu_validate_user_signup',
-          [$this->subscription_registration, 'onMultiSiteRegister'],
+          [$this->subscriptionRegistration, 'onMultiSiteRegister'],
           60,
           1
         );
       } else {
         $this->wp->addAction(
           'register_form',
-          [$this->subscription_registration, 'extendForm']
+          [$this->subscriptionRegistration, 'extendForm']
         );
         // we need to process new users while they are registered.
         // We used `register_post` before but that is too soon
@@ -169,7 +169,7 @@ class Hooks {
         // So we are hooking to `registration_error` with a low priority.
         $this->wp->addFilter(
           'registration_errors',
-          [$this->subscription_registration, 'onRegister'],
+          [$this->subscriptionRegistration, 'onRegister'],
           60,
           3
         );
@@ -179,35 +179,35 @@ class Hooks {
     // Manage subscription
     $this->wp->addAction(
       'admin_post_mailpoet_subscription_update',
-      [$this->subscription_manage, 'onSave']
+      [$this->subscriptionManage, 'onSave']
     );
     $this->wp->addAction(
       'admin_post_nopriv_mailpoet_subscription_update',
-      [$this->subscription_manage, 'onSave']
+      [$this->subscriptionManage, 'onSave']
     );
 
     // Subscription form
     $this->wp->addAction(
       'admin_post_mailpoet_subscription_form',
-      [$this->subscription_form, 'onSubmit']
+      [$this->subscriptionForm, 'onSubmit']
     );
     $this->wp->addAction(
       'admin_post_nopriv_mailpoet_subscription_form',
-      [$this->subscription_form, 'onSubmit']
+      [$this->subscriptionForm, 'onSubmit']
     );
   }
 
   public function setupMailer() {
     $this->wp->addAction('plugins_loaded', [
-      $this->wordpress_mailer_replacer,
+      $this->wordpressMailerReplacer,
       'replaceWordPressMailer',
     ]);
     $this->wp->addAction('login_init', [
-      $this->wordpress_mailer_replacer,
+      $this->wordpressMailerReplacer,
       'replaceWordPressMailer',
     ]);
     $this->wp->addAction('lostpassword_post', [
-      $this->wordpress_mailer_replacer,
+      $this->wordpressMailerReplacer,
       'replaceWordPressMailer',
     ]);
   }
@@ -218,13 +218,13 @@ class Hooks {
     if (!empty($woocommerce['optin_on_checkout']['enabled'])) {
       $this->wp->addAction(
         'woocommerce_checkout_before_terms_and_conditions',
-        [$this->woocommerce_subscription, 'extendWooCommerceCheckoutForm']
+        [$this->woocommerceSubscription, 'extendWooCommerceCheckoutForm']
       );
     }
 
     $this->wp->addAction(
       'woocommerce_checkout_update_order_meta',
-      [$this->woocommerce_subscription, 'subscribeOnCheckout'],
+      [$this->woocommerceSubscription, 'subscribeOnCheckout'],
       10, // this should execute after the WC sync call on the same hook
       2
     );
@@ -267,7 +267,7 @@ class Hooks {
 
   public function setupWooCommerceSettings() {
     $this->wp->addAction('woocommerce_settings_start', [
-      $this->woocommerce_settings,
+      $this->woocommerceSettings,
       'disableWooCommerceSettings',
     ]);
   }
@@ -276,27 +276,27 @@ class Hooks {
     // WooCommerce Customers synchronization
     $this->wp->addAction(
       'woocommerce_new_customer',
-      [$this->woocommerce_segment, 'synchronizeRegisteredCustomer'],
+      [$this->woocommerceSegment, 'synchronizeRegisteredCustomer'],
       7
     );
     $this->wp->addAction(
       'woocommerce_update_customer',
-      [$this->woocommerce_segment, 'synchronizeRegisteredCustomer'],
+      [$this->woocommerceSegment, 'synchronizeRegisteredCustomer'],
       7
     );
     $this->wp->addAction(
       'woocommerce_delete_customer',
-      [$this->woocommerce_segment, 'synchronizeRegisteredCustomer'],
+      [$this->woocommerceSegment, 'synchronizeRegisteredCustomer'],
       7
     );
     $this->wp->addAction(
       'woocommerce_checkout_update_order_meta',
-      [$this->woocommerce_segment, 'synchronizeGuestCustomer'],
+      [$this->woocommerceSegment, 'synchronizeGuestCustomer'],
       7
     );
     $this->wp->addAction(
       'woocommerce_process_shop_order_meta',
-      [$this->woocommerce_segment, 'synchronizeGuestCustomer'],
+      [$this->woocommerceSegment, 'synchronizeGuestCustomer'],
       7
     );
   }
@@ -304,15 +304,15 @@ class Hooks {
   public function setupWooCommercePurchases() {
     // use both 'processing' and 'completed' states since payment hook and 'processing' status
     // may be skipped with some payment methods (cheque) or when state transitioned manually
-    $accepted_order_states = WPFunctions::get()->applyFilters(
+    $acceptedOrderStates = WPFunctions::get()->applyFilters(
       'mailpoet_purchase_order_states',
       ['processing', 'completed']
     );
 
-    foreach ($accepted_order_states as $status) {
+    foreach ($acceptedOrderStates as $status) {
       WPFunctions::get()->addAction(
         'woocommerce_order_status_' . $status,
-        [$this->woocommerce_purchases, 'trackPurchase'],
+        [$this->woocommercePurchases, 'trackPurchase'],
         10,
         1
       );
@@ -352,7 +352,7 @@ class Hooks {
   public function setupPostNotifications() {
     $this->wp->addAction(
       'transition_post_status',
-      [$this->post_notification_scheduler, 'transitionHook'],
+      [$this->postNotificationScheduler, 'transitionHook'],
       10, 3
     );
   }

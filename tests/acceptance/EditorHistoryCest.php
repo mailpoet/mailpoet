@@ -11,53 +11,53 @@ class EditorHistoryCest {
   const UNDO_SELECTOR = '#mailpoet-history-arrow-undo';
   const INACTIVE_SELECTOR = '.mailpoet_history_arrow_inactive';
 
-  public function undoRedo(\AcceptanceTester $I) {
-    $I->wantTo('Undo and redo');
+  public function undoRedo(\AcceptanceTester $i) {
+    $i->wantTo('Undo and redo');
     $newsletter = (new Newsletter())
         ->loadBodyFrom('newsletterWithText.json')
         ->withSubject('Undo redo test')
         ->create();
 
-    $I->login();
-    $I->amEditingNewsletter($newsletter->id);
-    $this->assessButtons($I, false, false);
+    $i->login();
+    $i->amEditingNewsletter($newsletter->id);
+    $this->assessButtons($i, false, false);
 
-    $I->dragAndDrop('#automation_editor_block_button', '#mce_0');
-    $I->waitForElementVisible(self::BUTTON_SELECTOR);
-    $I->waitForText('Autosaved');
-    $this->assessButtons($I, true, false);
+    $i->dragAndDrop('#automation_editor_block_button', '#mce_0');
+    $i->waitForElementVisible(self::BUTTON_SELECTOR);
+    $i->waitForText('Autosaved');
+    $this->assessButtons($i, true, false);
 
     // Mouse undo
-    $I->click(self::UNDO_SELECTOR);
-    $I->waitForElementNotVisible(self::BUTTON_SELECTOR);
-    $this->assessButtons($I, false, true);
+    $i->click(self::UNDO_SELECTOR);
+    $i->waitForElementNotVisible(self::BUTTON_SELECTOR);
+    $this->assessButtons($i, false, true);
 
     // Mouse redo
-    $I->click(self::REDO_SELECTOR);
-    $I->waitForElementVisible(self::BUTTON_SELECTOR);
-    $this->assessButtons($I, true, false);
+    $i->click(self::REDO_SELECTOR);
+    $i->waitForElementVisible(self::BUTTON_SELECTOR);
+    $this->assessButtons($i, true, false);
 
     // Keyboard undo
-    $I->pressKey('body', [\WebDriverKeys::CONTROL, 'z']);
-    $I->waitForElementNotVisible(self::BUTTON_SELECTOR);
-    $this->assessButtons($I, false, true);
+    $i->pressKey('body', [\WebDriverKeys::CONTROL, 'z']);
+    $i->waitForElementNotVisible(self::BUTTON_SELECTOR);
+    $this->assessButtons($i, false, true);
 
     // Keyboard redo
-    $I->pressKey('body', [\WebDriverKeys::SHIFT, \WebDriverKeys::CONTROL, 'z']);
-    $I->waitForElementVisible(self::BUTTON_SELECTOR);
-    $this->assessButtons($I, true, false);
+    $i->pressKey('body', [\WebDriverKeys::SHIFT, \WebDriverKeys::CONTROL, 'z']);
+    $i->waitForElementVisible(self::BUTTON_SELECTOR);
+    $this->assessButtons($i, true, false);
   }
 
-  private function assessButtons(\AcceptanceTester $I, $undo_clickable, $redo_clickable) {
-    if ($undo_clickable) {
-        $I->dontSeeElement(self::UNDO_SELECTOR . self::INACTIVE_SELECTOR);
+  private function assessButtons(\AcceptanceTester $i, $undoClickable, $redoClickable) {
+    if ($undoClickable) {
+        $i->dontSeeElement(self::UNDO_SELECTOR . self::INACTIVE_SELECTOR);
     } else {
-        $I->seeElement(self::UNDO_SELECTOR . self::INACTIVE_SELECTOR);
+        $i->seeElement(self::UNDO_SELECTOR . self::INACTIVE_SELECTOR);
     }
-    if ($redo_clickable) {
-        $I->dontSeeElement(self::REDO_SELECTOR . self::INACTIVE_SELECTOR);
+    if ($redoClickable) {
+        $i->dontSeeElement(self::REDO_SELECTOR . self::INACTIVE_SELECTOR);
     } else {
-        $I->seeElement(self::REDO_SELECTOR . self::INACTIVE_SELECTOR);
+        $i->seeElement(self::REDO_SELECTOR . self::INACTIVE_SELECTOR);
     }
   }
 

@@ -64,7 +64,7 @@ class MP2MigratorTest extends \MailPoetTest {
 
     // Check if the subscribers number is equal to the WordPress users number
     // On multisite environment, there's only 1 users table that's shared by subsites
-    $WPUsersCount = ORM::for_table($wpdb->base_prefix . 'users')->count();
+    $WPUsersCount = ORM::for_table($wpdb->basePrefix . 'users')->count();
     expect(Subscriber::count())->equals($WPUsersCount);
 
     // Check if the custom fields number is 0
@@ -188,14 +188,14 @@ class MP2MigratorTest extends \MailPoetTest {
     ]);
     $this->invokeMethod($this->MP2Migrator, 'importCustomFields');
     $table = MP_CUSTOM_FIELDS_TABLE;
-    $custom_field = $wpdb->get_row("SELECT * FROM $table WHERE id=$id");
-    expect($custom_field->id)->equals($id);
-    expect($custom_field->name)->equals($name);
-    expect($custom_field->type)->equals('text');
-    $custom_field_params = unserialize($custom_field->params);
-    expect($custom_field_params['required'])->equals($settings['required']);
-    expect($custom_field_params['validate'])->equals('alphanum');
-    expect($custom_field_params['label'])->equals($name);
+    $customField = $wpdb->get_row("SELECT * FROM $table WHERE id=$id");
+    expect($customField->id)->equals($id);
+    expect($customField->name)->equals($name);
+    expect($customField->type)->equals('text');
+    $customFieldParams = unserialize($customField->params);
+    expect($customFieldParams['required'])->equals($settings['required']);
+    expect($customFieldParams['validate'])->equals('alphanum');
+    expect($customFieldParams['label'])->equals($name);
   }
 
   public function testImportSubscribers() {
@@ -204,30 +204,30 @@ class MP2MigratorTest extends \MailPoetTest {
     // Check a subscriber data
     $this->initImport();
     $id = 999;
-    $wp_id = 1;
+    $wpId = 1;
     $email = 'test@test.com';
     $firstname = 'Test firstname';
     $lastname = 'Test lastname';
     $ip = '127.0.0.1';
-    $confirmed_ip = $ip;
+    $confirmedIp = $ip;
     $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $id,
-      'wpuser_id' => $wp_id,
+      'wpuser_id' => $wpId,
       'email' => $email,
       'firstname' => $firstname,
       'lastname' => $lastname,
       'ip' => $ip,
-      'confirmed_ip' => $confirmed_ip,
+      'confirmed_ip' => $confirmedIp,
       'status' => '1',
     ]);
     $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $id + 1,
-      'wpuser_id' => $wp_id,
+      'wpuser_id' => $wpId,
       'email' => '1' . $email,
       'firstname' => $firstname,
       'lastname' => $lastname,
       'ip' => $ip,
-      'confirmed_ip' => $confirmed_ip,
+      'confirmed_ip' => $confirmedIp,
       'status' => '0',
     ]);
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
@@ -242,34 +242,34 @@ class MP2MigratorTest extends \MailPoetTest {
 
     $this->initImport();
     $values = ['confirm_dbleoptin' => '0'];
-    $encoded_option = base64_encode(serialize($values));
-    update_option('wysija', $encoded_option);
+    $encodedOption = base64_encode(serialize($values));
+    update_option('wysija', $encodedOption);
 
     $id = 999;
-    $wp_id = 1;
+    $wpId = 1;
     $email = 'test@test.com';
     $firstname = 'Test firstname';
     $lastname = 'Test lastname';
     $ip = '127.0.0.1';
-    $confirmed_ip = $ip;
+    $confirmedIp = $ip;
     $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $id,
-      'wpuser_id' => $wp_id,
+      'wpuser_id' => $wpId,
       'email' => $email,
       'firstname' => $firstname,
       'lastname' => $lastname,
       'ip' => $ip,
-      'confirmed_ip' => $confirmed_ip,
+      'confirmed_ip' => $confirmedIp,
       'status' => '1',
     ]);
     $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $id + 1,
-      'wpuser_id' => $wp_id,
+      'wpuser_id' => $wpId,
       'email' => '1' . $email,
       'firstname' => $firstname,
       'lastname' => $lastname,
       'ip' => $ip,
-      'confirmed_ip' => $confirmed_ip,
+      'confirmed_ip' => $confirmedIp,
       'status' => '0',
     ]);
     $this->invokeMethod($this->MP2Migrator, 'loadDoubleOptinSettings');
@@ -290,30 +290,30 @@ class MP2MigratorTest extends \MailPoetTest {
 
     $this->initImport();
     $id = 999;
-    $wp_id = 1;
+    $wpId = 1;
     $email = 'test@test.com';
     $firstname = 'Test firstname';
     $lastname = 'Test lastname';
     $ip = '127.0.0.1';
-    $confirmed_ip = $ip;
+    $confirmedIp = $ip;
     $wpdb->insert($wpdb->prefix . 'wysija_user', [
       'user_id' => $id,
-      'wpuser_id' => $wp_id,
+      'wpuser_id' => $wpId,
       'email' => $email,
       'firstname' => $firstname,
       'lastname' => $lastname,
       'ip' => $ip,
-      'confirmed_ip' => $confirmed_ip,
+      'confirmed_ip' => $confirmedIp,
       'status' => '1',
     ]);
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
     $table = MP_SUBSCRIBERS_TABLE;
     $subscriber = $wpdb->get_row("SELECT * FROM $table WHERE email='$email'");
     expect($subscriber->email)->equals($email);
-    expect($subscriber->first_name)->equals($firstname);
-    expect($subscriber->last_name)->equals($lastname);
-    expect($subscriber->subscribed_ip)->equals($ip);
-    expect($subscriber->confirmed_ip)->equals($confirmed_ip);
+    expect($subscriber->firstName)->equals($firstname);
+    expect($subscriber->lastName)->equals($lastname);
+    expect($subscriber->subscribedIp)->equals($ip);
+    expect($subscriber->confirmedIp)->equals($confirmedIp);
     expect($subscriber->status)->equals('subscribed');
   }
 
@@ -329,13 +329,13 @@ class MP2MigratorTest extends \MailPoetTest {
 
     // Insert a list
     $this->initImport();
-    $list_id = 998;
-    $list_name = 'Test list';
+    $listId = 998;
+    $listName = 'Test list';
     $description = 'Description of the test list';
     $timestamp = 1486319877;
     $wpdb->insert($wpdb->prefix . 'wysija_list', [
-      'list_id' => $list_id,
-      'name' => $list_name,
+      'list_id' => $listId,
+      'name' => $listName,
       'description' => $description,
       'is_enabled' => 1,
       'is_public' => 1,
@@ -343,19 +343,19 @@ class MP2MigratorTest extends \MailPoetTest {
     ]);
 
     // Insert a user
-    $user_id = 999;
-    $wp_id = 1;
+    $userId = 999;
+    $wpId = 1;
     $email = 'test@test.com';
     $wpdb->insert($wpdb->prefix . 'wysija_user', [
-      'user_id' => $user_id,
-      'wpuser_id' => $wp_id,
+      'user_id' => $userId,
+      'wpuser_id' => $wpId,
       'email' => $email,
     ]);
 
     // Insert a user list
     $wpdb->insert($wpdb->prefix . 'wysija_user_list', [
-      'list_id' => $list_id,
-      'user_id' => $user_id,
+      'list_id' => $listId,
+      'user_id' => $userId,
       'sub_date' => $timestamp,
     ]);
 
@@ -364,10 +364,10 @@ class MP2MigratorTest extends \MailPoetTest {
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
     $importedSubscribersMapping = $this->MP2Migrator->getImportedMapping('subscribers');
     $table = MP_SUBSCRIBER_SEGMENT_TABLE;
-    $segment_id = $importedSegmentsMapping[$list_id];
-    $subscriber_id = $importedSubscribersMapping[$user_id];
-    $subscriber_segment = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriber_id' AND segment_id='$segment_id'");
-    expect($subscriber_segment)->notNull();
+    $segmentId = $importedSegmentsMapping[$listId];
+    $subscriberId = $importedSubscribersMapping[$userId];
+    $subscriberSegment = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriber_id' AND segment_id='$segment_id'");
+    expect($subscriberSegment)->notNull();
   }
 
   /**
@@ -389,41 +389,41 @@ class MP2MigratorTest extends \MailPoetTest {
 
     $this->initImport();
     // Insert a custom field
-    $cf_id = 1;
-    $cf_name = 'Custom field key';
-    $cf_type = 'input';
-    $cf_required = 1;
-    $cf_settings = [
+    $cfId = 1;
+    $cfName = 'Custom field key';
+    $cfType = 'input';
+    $cfRequired = 1;
+    $cfSettings = [
       'required' => '1',
       'validate' => 'onlyLetterSp',
     ];
     $wpdb->insert($wpdb->prefix . 'wysija_custom_field', [
-      'id' => $cf_id,
-      'name' => $cf_name,
-      'type' => $cf_type,
-      'required' => $cf_required,
-      'settings' => serialize($cf_settings),
+      'id' => $cfId,
+      'name' => $cfName,
+      'type' => $cfType,
+      'required' => $cfRequired,
+      'settings' => serialize($cfSettings),
     ]);
 
     // Insert a user
-    $user_id = 999;
-    $wp_id = 1;
+    $userId = 999;
+    $wpId = 1;
     $email = 'test@test.com';
-    $custom_field_value = 'Test custom field value';
+    $customFieldValue = 'Test custom field value';
     $wpdb->insert($wpdb->prefix . 'wysija_user', [
-      'user_id' => $user_id,
-      'wpuser_id' => $wp_id,
+      'user_id' => $userId,
+      'wpuser_id' => $wpId,
       'email' => $email,
-      'cf_' . $cf_id => $custom_field_value,
+      'cf_' . $cfId => $customFieldValue,
     ]);
 
     $this->invokeMethod($this->MP2Migrator, 'importCustomFields');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
     $importedSubscribersMapping = $this->MP2Migrator->getImportedMapping('subscribers');
     $table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE;
-    $subscriber_id = $importedSubscribersMapping[$user_id];
-    $subscriber_custom_field = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriber_id' AND custom_field_id='$cf_id'");
-    expect($subscriber_custom_field->value)->equals($custom_field_value);
+    $subscriberId = $importedSubscribersMapping[$userId];
+    $subscriberCustomField = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriber_id' AND custom_field_id='$cf_id'");
+    expect($subscriberCustomField->value)->equals($customFieldValue);
   }
 
   /**
@@ -433,16 +433,16 @@ class MP2MigratorTest extends \MailPoetTest {
   public function testGetImportedMapping() {
     $this->initImport();
     $mapping = new MappingToExternalEntities();
-    $old_id = 999;
-    $new_id = 500;
+    $oldId = 999;
+    $newId = 500;
     $type = 'testMapping';
     $mapping->create([
-      'old_id' => $old_id,
+      'old_id' => $oldId,
       'type' => $type,
-      'new_id' => $new_id,
+      'new_id' => $newId,
     ]);
     $result = $this->invokeMethod($this->MP2Migrator, 'getImportedMapping', ['testMapping']);
-    expect($result[$old_id])->equals($new_id);
+    expect($result[$oldId])->equals($newId);
   }
 
   /**
@@ -463,11 +463,11 @@ class MP2MigratorTest extends \MailPoetTest {
     $this->initImport();
     $id = 999;
     $name = 'Test form';
-    $list_id = 2;
+    $listId = 2;
 
     // Insert a MP2 list
     $wpdb->insert($wpdb->prefix . 'wysija_list', [
-      'list_id' => $list_id,
+      'list_id' => $listId,
       'name' => 'Test list',
       'description' => 'Test list description',
       'is_enabled' => 1,
@@ -483,7 +483,7 @@ class MP2MigratorTest extends \MailPoetTest {
       'settings' => [
         'on_success' => 'message',
         'success_message' => 'Test message',
-        'lists' => [$list_id],
+        'lists' => [$listId],
         'lists_selected_by' => 'admin',
       ],
       'body' => [
@@ -510,7 +510,7 @@ class MP2MigratorTest extends \MailPoetTest {
     $settings = unserialize(($form->settings));
     expect($settings['on_success'])->equals('message');
     expect($settings['success_message'])->equals('Test message');
-    expect($settings['segments'][0])->equals($importedSegmentsMapping[$list_id]);
+    expect($settings['segments'][0])->equals($importedSegmentsMapping[$listId]);
     $body = unserialize(($form->body));
     expect($body[0]['name'])->equals('E-mail');
     expect($body[0]['type'])->equals('text');
@@ -554,8 +554,8 @@ class MP2MigratorTest extends \MailPoetTest {
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
     $result = $this->invokeMethod($this->MP2Migrator, 'getMappedSegmentIds', [$lists]);
-    $expected_lists = [$importedSegmentsMapping[1],$importedSegmentsMapping[2]];
-    expect($result)->equals($expected_lists);
+    $expectedLists = [$importedSegmentsMapping[1],$importedSegmentsMapping[2]];
+    expect($result)->equals($expectedLists);
   }
 
   /**
@@ -579,7 +579,7 @@ class MP2MigratorTest extends \MailPoetTest {
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
     $result = $this->invokeMethod($this->MP2Migrator, 'replaceListIds', [$lists]);
-    $expected_lists = [
+    $expectedLists = [
       [
         'id' => $importedSegmentsMapping[1],
         'name' => 'List 1',
@@ -589,7 +589,7 @@ class MP2MigratorTest extends \MailPoetTest {
         'name' => 'List 2',
         ],
     ];
-    expect($result)->equals($expected_lists);
+    expect($result)->equals($expectedLists);
   }
 
   /**
@@ -635,9 +635,9 @@ class MP2MigratorTest extends \MailPoetTest {
     expect($sender['name'])->equals('Sender');
     expect($sender['address'])->equals('sender@email.com');
 
-    $reply_to = $this->settings->get('reply_to');
-    expect($reply_to['name'])->equals('Reply');
-    expect($reply_to['address'])->equals('reply@email.com');
+    $replyTo = $this->settings->get('reply_to');
+    expect($replyTo['name'])->equals('Reply');
+    expect($replyTo['address'])->equals('reply@email.com');
 
     $bounce = $this->settings->get('bounce');
     expect($bounce['address'])->equals('bounce@email.com');
@@ -656,14 +656,14 @@ class MP2MigratorTest extends \MailPoetTest {
     expect($subscription['pages']['confirmation'])->equals(4);
     expect($subscription['pages']['manage'])->equals(4);
 
-    $signup_confirmation = $this->settings->get('signup_confirmation');
-    expect($signup_confirmation['enabled'])->equals(1);
+    $signupConfirmation = $this->settings->get('signup_confirmation');
+    expect($signupConfirmation['enabled'])->equals(1);
 
     $analytics = $this->settings->get('analytics');
     expect($analytics['enabled'])->equals(1);
 
-    $mta_group = $this->settings->get('mta_group');
-    expect($mta_group)->equals('smtp');
+    $mtaGroup = $this->settings->get('mta_group');
+    expect($mtaGroup)->equals('smtp');
 
     $mta = $this->settings->get('mta');
     expect($mta['method'])->equals('SMTP');
@@ -682,7 +682,7 @@ class MP2MigratorTest extends \MailPoetTest {
    *
    */
   private function loadMP2OptionsFixtures() {
-    $wysija_options = [
+    $wysijaOptions = [
       'from_name' => 'Sender',
       'replyto_name' => 'Reply',
       'emails_notified' => 'notification@email.com',
@@ -799,7 +799,7 @@ class MP2MigratorTest extends \MailPoetTest {
       'rolescap---contributor---style_tab' => false,
       'rolescap---subscriber---style_tab' => false,
     ];
-    update_option('wysija', base64_encode(serialize($wysija_options)));
+    update_option('wysija', base64_encode(serialize($wysijaOptions)));
   }
 
 }

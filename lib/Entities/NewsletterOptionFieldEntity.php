@@ -49,13 +49,13 @@ class NewsletterOptionFieldEntity {
    * @return string
    */
   public function getNewsletterType() {
-    return $this->newsletter_type;
+    return $this->newsletterType;
   }
 
   /**
    * @param string $newsletter_type
    */
-  public function setNewsletterType($newsletter_type) {
-    $this->newsletter_type = $newsletter_type;
+  public function setNewsletterType($newsletterType) {
+    $this->newsletterType = $newsletterType;
   }
 }

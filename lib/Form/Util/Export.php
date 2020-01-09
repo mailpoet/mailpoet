@@ -20,7 +20,7 @@ class Export {
     switch ($type) {
       case 'iframe':
         // generate url to load iframe's content
-        $iframe_url = WPFunctions::get()->addQueryArg([
+        $iframeUrl = WPFunctions::get()->addQueryArg([
           'mailpoet_form_iframe' => $form['id'],
         ], WPFunctions::get()->siteUrl());
 
@@ -31,7 +31,7 @@ class Export {
           'height="100%"',
           'scrolling="no"',
           'frameborder="0"',
-          'src="' . $iframe_url . '"',
+          'src="' . $iframeUrl . '"',
           'class="mailpoet_form_iframe"',
           'id="mailpoet_form_iframe"',
           'vspace="0"',
@@ -64,7 +64,7 @@ class Export {
 
         // CSS
         $output[] = '<link rel="stylesheet" type="text/css" href="' .
-          Env::$assets_url . '/dist/css/mailpoet-public.css?mp_ver=' . MAILPOET_VERSION .
+          Env::$assetsUrl . '/dist/css/mailpoet-public.css?mp_ver=' . MAILPOET_VERSION .
         '" />';
 
         // jQuery
@@ -74,10 +74,10 @@ class Export {
 
         // JS
         $output[] = '<script type="text/javascript" src="' .
-          Env::$assets_url . '/dist/js/vendor.js?mp_ver=' . MAILPOET_VERSION .
+          Env::$assetsUrl . '/dist/js/vendor.js?mp_ver=' . MAILPOET_VERSION .
         '"></script>';
         $output[] = '<script type="text/javascript" src="' .
-          Env::$assets_url . '/dist/js/public.js?mp_ver=' . MAILPOET_VERSION .
+          Env::$assetsUrl . '/dist/js/public.js?mp_ver=' . MAILPOET_VERSION .
         '"></script>';
 
         // (JS) variables...
@@ -91,8 +91,8 @@ class Export {
           WPFunctions::get()->__('END Scripts', 'mailpoet') .
         '-->';
 
-        $form_widget = new Widget();
-        $output[] = $form_widget->widget([
+        $formWidget = new Widget();
+        $output[] = $formWidget->widget([
           'form' => (int)$form['id'],
           'form_type' => 'php',
         ]);

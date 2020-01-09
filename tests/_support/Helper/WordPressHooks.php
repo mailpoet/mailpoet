@@ -30,66 +30,66 @@ class WordPressHooks extends \Codeception\Module
 
   public static function applyFilters() {
     $args = func_get_args();
-    $hook_name = array_shift($args);
-    self::$filters_applied[$hook_name] = $args;
+    $hookName = array_shift($args);
+    self::$filtersApplied[$hookName] = $args;
     return func_get_arg(1);
   }
 
   public static function addFilter() {
     $args = func_get_args();
-    $hook_name = array_shift($args);
-    self::$filters_added[$hook_name] = $args;
+    $hookName = array_shift($args);
+    self::$filtersAdded[$hookName] = $args;
   }
 
   public static function doAction() {
     $args = func_get_args();
-    $hook_name = array_shift($args);
-    self::$actions_done[$hook_name] = $args;
+    $hookName = array_shift($args);
+    self::$actionsDone[$hookName] = $args;
   }
 
   public static function addAction() {
     $args = func_get_args();
-    $hook_name = array_shift($args);
-    self::$actions_added[$hook_name] = $args;
+    $hookName = array_shift($args);
+    self::$actionsAdded[$hookName] = $args;
   }
 
-  public static function isFilterApplied($hook_name) {
-    return isset(self::$filters_applied[$hook_name]);
+  public static function isFilterApplied($hookName) {
+    return isset(self::$filtersApplied[$hookName]);
   }
 
-  public static function isFilterAdded($hook_name) {
-    return isset(self::$filters_added[$hook_name]);
+  public static function isFilterAdded($hookName) {
+    return isset(self::$filtersAdded[$hookName]);
   }
 
-  public static function isActionDone($hook_name) {
-    return isset(self::$actions_done[$hook_name]);
+  public static function isActionDone($hookName) {
+    return isset(self::$actionsDone[$hookName]);
   }
 
-  public static function isActionAdded($hook_name) {
-    return isset(self::$actions_added[$hook_name]);
+  public static function isActionAdded($hookName) {
+    return isset(self::$actionsAdded[$hookName]);
   }
 
-  public static function getFilterApplied($hook_name) {
-    return self::isFilterApplied($hook_name) ? self::$filters_applied[$hook_name] : null;
+  public static function getFilterApplied($hookName) {
+    return self::isFilterApplied($hookName) ? self::$filtersApplied[$hookName] : null;
   }
 
-  public static function getFilterAdded($hook_name) {
-    return self::isFilterAdded($hook_name) ? self::$filters_added[$hook_name] : null;
+  public static function getFilterAdded($hookName) {
+    return self::isFilterAdded($hookName) ? self::$filtersAdded[$hookName] : null;
   }
 
-  public static function getActionDone($hook_name) {
-    return self::isActionDone($hook_name) ? self::$actions_done[$hook_name] : null;
+  public static function getActionDone($hookName) {
+    return self::isActionDone($hookName) ? self::$actionsDone[$hookName] : null;
   }
 
-  public static function getActionAdded($hook_name) {
-    return self::isActionAdded($hook_name) ? self::$actions_added[$hook_name] : null;
+  public static function getActionAdded($hookName) {
+    return self::isActionAdded($hookName) ? self::$actionsAdded[$hookName] : null;
   }
 
   public static function releaseAllHooks() {
     WordPress::releaseAllFunctions();
-    self::$filters_applied = [];
-    self::$filters_added = [];
-    self::$actions_done = [];
-    self::$actions_added = [];
+    self::$filtersApplied = [];
+    self::$filtersAdded = [];
+    self::$actionsDone = [];
+    self::$actionsAdded = [];
   }
 }

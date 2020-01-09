@@ -27,15 +27,15 @@ class SubscriberExporter {
   }
 
   private function getSubscriberExportData($subscriber) {
-    $custom_fields = $this->getCustomFields();
+    $customFields = $this->getCustomFields();
     $result = [
       [
         'name' => WPFunctions::get()->__('First Name', 'mailpoet'),
-        'value' => $subscriber->first_name,
+        'value' => $subscriber->firstName,
       ],
       [
         'name' => WPFunctions::get()->__('Last Name', 'mailpoet'),
-        'value' => $subscriber->last_name,
+        'value' => $subscriber->lastName,
       ],
       [
         'name' => WPFunctions::get()->__('Email', 'mailpoet'),
@@ -46,29 +46,29 @@ class SubscriberExporter {
         'value' => $subscriber->status,
       ],
     ];
-    if ($subscriber->subscribed_ip) {
+    if ($subscriber->subscribedIp) {
       $result[] = [
         'name' => WPFunctions::get()->__('Subscribed IP', 'mailpoet'),
-        'value' => $subscriber->subscribed_ip,
+        'value' => $subscriber->subscribedIp,
       ];
     }
-    if ($subscriber->confirmed_ip) {
+    if ($subscriber->confirmedIp) {
       $result[] = [
         'name' => WPFunctions::get()->__('Confirmed IP', 'mailpoet'),
-        'value' => $subscriber->confirmed_ip,
+        'value' => $subscriber->confirmedIp,
       ];
     }
     $result[] = [
       'name' => WPFunctions::get()->__('Created at', 'mailpoet'),
-      'value' => $subscriber->created_at,
+      'value' => $subscriber->createdAt,
     ];
 
-    foreach ($custom_fields as $custom_field_id => $custom_field_name) {
-      $custom_field_value = $subscriber->{$custom_field_id};
-      if ($custom_field_value) {
+    foreach ($customFields as $customFieldId => $customFieldName) {
+      $customFieldValue = $subscriber->{$customFieldId};
+      if ($customFieldValue) {
         $result[] = [
-          'name' => $custom_field_name,
-          'value' => $custom_field_value,
+          'name' => $customFieldName,
+          'value' => $customFieldValue,
         ];
       }
     }

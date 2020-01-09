@@ -21,8 +21,8 @@ class WooCommerceProduct implements Filter {
    * @param int $product_id
    * @param string $connect
    */
-  public function __construct($product_id, $connect = null) {
-    $this->product_id = (int)$product_id;
+  public function __construct($productId, $connect = null) {
+    $this->productId = (int)$productId;
     $this->connect = $connect;
   }
 
@@ -39,7 +39,7 @@ class WooCommerceProduct implements Filter {
       'INNER JOIN ' . $wpdb->prefix . 'woocommerce_order_itemmeta',
       "itemmeta.order_item_id=items.order_item_id
        AND itemmeta.meta_key='_product_id'
-       AND itemmeta.meta_value=" . $this->product_id,
+       AND itemmeta.meta_value=" . $this->productId,
       'itemmeta'
     );
     $orm->where('status', Subscriber::STATUS_SUBSCRIBED);
@@ -49,7 +49,7 @@ class WooCommerceProduct implements Filter {
   public function toArray() {
     return [
       'action' => WooCommerceProduct::ACTION_PRODUCT,
-      'product_id' => $this->product_id,
+      'product_id' => $this->productId,
       'connect' => $this->connect,
       'segmentType' => WooCommerceProduct::SEGMENT_TYPE,
     ];

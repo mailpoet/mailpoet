@@ -35,16 +35,16 @@ class APITest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     // create WP user
-    $this->wp_user_id = null;
-    $wp_user_id = wp_create_user('WP User', 'pass', 'wp_user@mailpoet.com');
-    if (is_wp_error($wp_user_id)) {
+    $this->wpUserId = null;
+    $wpUserId = wp_create_user('WP User', 'pass', 'wp_user@mailpoet.com');
+    if (is_wp_error($wpUserId)) {
       // user already exists
-      $this->wp_user_id = email_exists('wp_user@mailpoet.com');
+      $this->wpUserId = email_exists('wp_user@mailpoet.com');
     } else {
-      $this->wp_user_id = $wp_user_id;
+      $this->wpUserId = $wpUserId;
     }
-    $container_factory = new ContainerFactory(new ContainerConfigurator());
-    $this->container = $container_factory->getConfiguredContainer();
+    $containerFactory = new ContainerFactory(new ContainerConfigurator());
+    $this->container = $containerFactory->getConfiguredContainer();
     $this->container->autowire(APITestNamespacedEndpointStubV1::class)->setPublic(true);
     $this->container->autowire(APITestNamespacedEndpointStubV2::class)->setPublic(true);
     $this->container->compile();
@@ -206,12 +206,12 @@ class APITest extends \MailPoetTest {
       'api_version' => 'v1',
       'data' => ['test' => 'data'],
     ];
-    $access_control = Stub::make(
+    $accessControl = Stub::make(
       new AccessControl(),
       ['validatePermission' => false]
     );
 
-    $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->settings, new WPFunctions);
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $api->processRoute();
@@ -223,7 +223,7 @@ class APITest extends \MailPoetTest {
       'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
     ];
 
-    $access_control = Stub::make(
+    $accessControl = Stub::make(
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
@@ -233,10 +233,10 @@ class APITest extends \MailPoetTest {
       ]
     );
 
-    $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->settings, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->false();
 
-    $access_control = Stub::make(
+    $accessControl = Stub::make(
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
@@ -245,7 +245,7 @@ class APITest extends \MailPoetTest {
         }),
       ]
     );
-    $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->settings, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->true();
   }
 
@@ -257,7 +257,7 @@ class APITest extends \MailPoetTest {
       ],
     ];
 
-    $access_control = Stub::make(
+    $accessControl = Stub::make(
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
@@ -267,10 +267,10 @@ class APITest extends \MailPoetTest {
       ]
     );
 
-    $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->settings, new WPFunctions);
     expect($api->validatePermissions('test', $permissions))->false();
 
-    $access_control = Stub::make(
+    $accessControl = Stub::make(
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
@@ -280,7 +280,7 @@ class APITest extends \MailPoetTest {
       ]
     );
 
-    $api = new JSONAPI($this->container, $access_control, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->settings, new WPFunctions);
     expect($api->validatePermissions('test', $permissions))->true();
   }
 
@@ -304,6 +304,6 @@ class APITest extends \MailPoetTest {
   }
 
   public function _after() {
-    wp_delete_user($this->wp_user_id);
+    wp_delete_user($this->wpUserId);
   }
 }

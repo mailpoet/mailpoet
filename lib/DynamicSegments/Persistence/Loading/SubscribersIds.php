@@ -12,11 +12,11 @@ class SubscribersIds {
   /** @var RequirementsChecker */
   private $requirements_checker;
 
-  public function __construct(RequirementsChecker $requirements_checker = null) {
-    if (!$requirements_checker) {
-      $requirements_checker = new RequirementsChecker(new WooCommerceHelper());
+  public function __construct(RequirementsChecker $requirementsChecker = null) {
+    if (!$requirementsChecker) {
+      $requirementsChecker = new RequirementsChecker(new WooCommerceHelper());
     }
-    $this->requirements_checker = $requirements_checker;
+    $this->requirementsChecker = $requirementsChecker;
   }
 
   /**
@@ -27,16 +27,16 @@ class SubscribersIds {
    *
    * @return Subscriber[]
    */
-  public function load(DynamicSegment $dynamic_segment, $limit_to_subscribers_ids = null) {
+  public function load(DynamicSegment $dynamicSegment, $limitToSubscribersIds = null) {
     $orm = Subscriber::selectExpr(Subscriber::$_table . '.id');
-    if ($this->requirements_checker->shouldSkipSegment($dynamic_segment)) {
+    if ($this->requirementsChecker->shouldSkipSegment($dynamicSegment)) {
       return [];
     }
-    foreach ($dynamic_segment->getFilters() as $filter) {
+    foreach ($dynamicSegment->getFilters() as $filter) {
       $orm = $filter->toSql($orm);
     }
-    if ($limit_to_subscribers_ids) {
-      $orm->whereIn(Subscriber::$_table . '.id', $limit_to_subscribers_ids);
+    if ($limitToSubscribersIds) {
+      $orm->whereIn(Subscriber::$_table . '.id', $limitToSubscribersIds);
     }
     return $orm->findMany();
   }

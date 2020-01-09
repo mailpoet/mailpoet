@@ -49,7 +49,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = SettingsController::getInstance();
-    $this->stats_notifications = new AutomatedEmails(
+    $this->statsNotifications = new AutomatedEmails(
       $this->mailer,
       $this->renderer,
       $this->settings,
@@ -57,7 +57,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(NewsletterStatisticsRepository::class),
       new MetaInfo
     );
-    $this->cron_worker_runner = Stub::copy($this->di_container->get(CronWorkerRunner::class), [
+    $this->cronWorkerRunner = Stub::copy($this->diContainer->get(CronWorkerRunner::class), [
       'timer' => microtime(true), // reset timer to avoid timeout during full test suite run
     ]);
 
@@ -73,7 +73,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
       'automated' => false,
       'address' => 'email@example.com',
     ]);
-    expect($this->stats_notifications->checkProcessingRequirements())->equals(false);
+    expect($this->statsNotifications->checkProcessingRequirements())->equals(false);
   }
 
   public function testItDoesntWorkIfNoEmail() {
@@ -81,16 +81,16 @@ class AutomatedEmailsTest extends \MailPoetTest {
       'automated' => true,
       'address' => '',
     ]);
-    expect($this->stats_notifications->checkProcessingRequirements())->equals(false);
+    expect($this->statsNotifications->checkProcessingRequirements())->equals(false);
   }
 
   public function testItDoesntWorkIfTrackingIsDisabled() {
     $this->settings->set('tracking.enabled', false);
-    expect($this->stats_notifications->checkProcessingRequirements())->equals(false);
+    expect($this->statsNotifications->checkProcessingRequirements())->equals(false);
   }
 
   public function testItDoesWorkIfEnabled() {
-    expect($this->stats_notifications->checkProcessingRequirements())->equals(true);
+    expect($this->statsNotifications->checkProcessingRequirements())->equals(true);
   }
 
   public function testItDoesntRenderIfNoNewslettersFound() {
@@ -99,7 +99,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
     $this->mailer->expects($this->never())
       ->method('send');
 
-    $result = $this->cron_worker_runner->run($this->stats_notifications);
+    $result = $this->cronWorkerRunner->run($this->statsNotifications);
 
     expect($result)->equals(true);
   }
@@ -127,7 +127,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
     $this->mailer->expects($this->once())
       ->method('send');
 
-    $result = $this->cron_worker_runner->run($this->stats_notifications);
+    $result = $this->cronWorkerRunner->run($this->statsNotifications);
 
     expect($result)->equals(true);
   }
@@ -150,14 +150,14 @@ class AutomatedEmailsTest extends \MailPoetTest {
     $this->mailer->expects($this->once())
       ->method('send')
       ->with(
-        $this->callback(function($rendered_newsletter){
-          return ($rendered_newsletter['subject'] === 'Your monthly stats are in!')
-            && isset($rendered_newsletter['body']);
+        $this->callback(function($renderedNewsletter){
+          return ($renderedNewsletter['subject'] === 'Your monthly stats are in!')
+            && isset($renderedNewsletter['body']);
         }),
         $this->equalTo('email@example.com')
       );
 
-    $result = $this->cron_worker_runner->run($this->stats_notifications);
+    $result = $this->cronWorkerRunner->run($this->statsNotifications);
 
     expect($result)->equals(true);
   }
@@ -180,7 +180,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
           return strpos($context['linkSettings'], 'mailpoet-settings');
         }));
 
-    $this->cron_worker_runner->run($this->stats_notifications);
+    $this->cronWorkerRunner->run($this->statsNotifications);
   }
 
   public function testItAddsNewsletterStatsToContext() {
@@ -205,13 +205,13 @@ class AutomatedEmailsTest extends \MailPoetTest {
             && $context['newsletters'][0]['subject'] === 'Subject';
         }));
 
-    $this->cron_worker_runner->run($this->stats_notifications);
+    $this->cronWorkerRunner->run($this->statsNotifications);
   }
 
-  private function createClicks($newsletter_id, $count) {
+  private function createClicks($newsletterId, $count) {
     for ($i = 0; $i < $count; $i++) {
       StatisticsClicks::createOrUpdate([
-        'newsletter_id' => $newsletter_id,
+        'newsletter_id' => $newsletterId,
         'subscriber_id' => $i + 1,
         'queue_id' => 5,
         'link_id' => 4,
@@ -220,26 +220,26 @@ class AutomatedEmailsTest extends \MailPoetTest {
     }
   }
 
-  private function createOpens($newsletter_id, $count) {
+  private function createOpens($newsletterId, $count) {
     for ($i = 0; $i < $count; $i++) {
       StatisticsOpens::createOrUpdate([
-        'newsletter_id' => $newsletter_id,
+        'newsletter_id' => $newsletterId,
         'subscriber_id' => $i + 1,
         'queue_id' => 5,
       ]);
     }
   }
 
-  private function createQueue($newsletter_id, $count_processed) {
-    $sending_task = ScheduledTask::createOrUpdate([
+  private function createQueue($newsletterId, $countProcessed) {
+    $sendingTask = ScheduledTask::createOrUpdate([
       'type' => 'sending',
       'status' => ScheduledTask::STATUS_COMPLETED,
     ]);
     SendingQueue::createOrUpdate([
       'newsletter_rendered_subject' => 'Email Subject',
-      'task_id' => $sending_task->id,
-      'newsletter_id' => $newsletter_id,
-      'count_processed' => $count_processed,
+      'task_id' => $sendingTask->id,
+      'newsletter_id' => $newsletterId,
+      'count_processed' => $countProcessed,
     ]);
   }
 

@@ -19,53 +19,53 @@ class Captcha {
   /** @var CaptchaSession  */
   private $captcha_session;
 
-  public function __construct(WPFunctions $wp = null, CaptchaSession $captcha_session = null) {
+  public function __construct(WPFunctions $wp = null, CaptchaSession $captchaSession = null) {
     if ($wp === null) {
       $wp = new WPFunctions;
     }
-    if ($captcha_session === null) {
-      $captcha_session = new CaptchaSession($wp);
+    if ($captchaSession === null) {
+      $captchaSession = new CaptchaSession($wp);
     }
     $this->wp = $wp;
-    $this->captcha_session = $captcha_session;
+    $this->captchaSession = $captchaSession;
   }
 
   public function isSupported() {
     return extension_loaded('gd') && function_exists('imagettftext');
   }
 
-  public function isRequired($subscriber_email = null) {
+  public function isRequired($subscriberEmail = null) {
     if ($this->isUserExemptFromCaptcha()) {
       return false;
     }
 
     // Check limits per recipient
-    $subscription_captcha_recipient_limit = $this->wp->applyFilters('mailpoet_subscription_captcha_recipient_limit', 1);
-    if ($subscriber_email) {
-      $subscriber = Subscriber::where('email', $subscriber_email)->findOne();
+    $subscriptionCaptchaRecipientLimit = $this->wp->applyFilters('mailpoet_subscription_captcha_recipient_limit', 1);
+    if ($subscriberEmail) {
+      $subscriber = Subscriber::where('email', $subscriberEmail)->findOne();
       if ($subscriber instanceof Subscriber
-        && $subscriber->count_confirmations >= $subscription_captcha_recipient_limit
+        && $subscriber->countConfirmations >= $subscriptionCaptchaRecipientLimit
       ) {
         return true;
       }
     }
 
     // Check limits per IP address
-    $subscription_captcha_window = $this->wp->applyFilters('mailpoet_subscription_captcha_window', MONTH_IN_SECONDS);
+    $subscriptionCaptchaWindow = $this->wp->applyFilters('mailpoet_subscription_captcha_window', MONTH_IN_SECONDS);
 
-    $subscriber_ip = Helpers::getIP();
+    $subscriberIp = Helpers::getIP();
 
-    if (empty($subscriber_ip)) {
+    if (empty($subscriberIp)) {
       return false;
     }
 
-    $subscription_count = SubscriberIP::where('ip', $subscriber_ip)
+    $subscriptionCount = SubscriberIP::where('ip', $subscriberIp)
       ->whereRaw(
         '(`created_at` >= NOW() - INTERVAL ? SECOND)',
-        [(int)$subscription_captcha_window]
+        [(int)$subscriptionCaptchaWindow]
       )->count();
 
-    if ($subscription_count > 0) {
+    if ($subscriptionCount > 0) {
       return true;
     }
 
@@ -81,17 +81,17 @@ class Captcha {
     return !empty(array_intersect($roles, (array)$user->roles));
   }
 
-  public function renderImage($width = null, $height = null, $session_id = null, $return = false) {
+  public function renderImage($width = null, $height = null, $sessionId = null, $return = false) {
     if (!$this->isSupported()) {
       return false;
     }
 
-    $font_numbers = array_merge(range(0, 3), [5]); // skip font #4
-    $font_number = $font_numbers[mt_rand(0, count($font_numbers) - 1)];
+    $fontNumbers = array_merge(range(0, 3), [5]); // skip font #4
+    $fontNumber = $fontNumbers[mt_rand(0, count($fontNumbers) - 1)];
 
     $reflector = new \ReflectionClass(CaptchaBuilder::class);
-    $captcha_directory = dirname($reflector->getFileName());
-    $font = $captcha_directory . '/Font/captcha' . $font_number . '.ttf';
+    $captchaDirectory = dirname($reflector->getFileName());
+    $font = $captchaDirectory . '/Font/captcha' . $fontNumber . '.ttf';
 
     $builder = CaptchaBuilder::create()
       ->setBackgroundColor(255, 255, 255)
@@ -99,8 +99,8 @@ class Captcha {
       ->setMaxBehindLines(0)
       ->build($width ?: 220, $height ?: 60, $font);
 
-    $this->captcha_session->init($session_id);
-    $this->captcha_session->setCaptchaHash($builder->getPhrase());
+    $this->captchaSession->init($sessionId);
+    $this->captchaSession->setCaptchaHash($builder->getPhrase());
 
     if ($return) {
       return $builder->get();

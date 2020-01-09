@@ -61,22 +61,22 @@ class ImportExportFactory {
     return $fields;
   }
 
-  public function formatSubscriberFields($subscriber_fields) {
-    return array_map(function($field_id, $field_name) {
+  public function formatSubscriberFields($subscriberFields) {
+    return array_map(function($fieldId, $fieldName) {
       return [
-        'id' => $field_id,
-        'name' => $field_name,
-        'type' => ($field_id === 'confirmed_at') ? 'date' : null,
+        'id' => $fieldId,
+        'name' => $fieldName,
+        'type' => ($fieldId === 'confirmed_at') ? 'date' : null,
         'custom' => false,
       ];
-    }, array_keys($subscriber_fields), $subscriber_fields);
+    }, array_keys($subscriberFields), $subscriberFields);
   }
 
   public function getSubscriberCustomFields() {
     return CustomField::findArray();
   }
 
-  public function formatSubscriberCustomFields($subscriber_custom_fields) {
+  public function formatSubscriberCustomFields($subscriberCustomFields) {
     return array_map(function($field) {
       return [
         'id' => $field['id'],
@@ -85,12 +85,12 @@ class ImportExportFactory {
         'params' => unserialize($field['params']),
         'custom' => true,
       ];
-    }, $subscriber_custom_fields);
+    }, $subscriberCustomFields);
   }
 
   public function formatFieldsForSelect2(
-    $subscriber_fields,
-    $subscriber_custom_fields) {
+    $subscriberFields,
+    $subscriberCustomFields) {
     $actions = ($this->action === 'import') ?
       [
         [
@@ -119,14 +119,14 @@ class ImportExportFactory {
       ],
       [
         'name' => WPFunctions::get()->__('System fields', 'mailpoet'),
-        'children' => $this->formatSubscriberFields($subscriber_fields),
+        'children' => $this->formatSubscriberFields($subscriberFields),
       ],
     ];
-    if ($subscriber_custom_fields) {
+    if ($subscriberCustomFields) {
       array_push($select2Fields, [
         'name' => WPFunctions::get()->__('User fields', 'mailpoet'),
         'children' => $this->formatSubscriberCustomFields(
-          $subscriber_custom_fields
+          $subscriberCustomFields
         ),
       ]);
     }
@@ -134,20 +134,20 @@ class ImportExportFactory {
   }
 
   public function bootstrap() {
-    $subscriber_fields = $this->getSubscriberFields();
-    $subscriber_custom_fields = $this->getSubscriberCustomFields();
+    $subscriberFields = $this->getSubscriberFields();
+    $subscriberCustomFields = $this->getSubscriberCustomFields();
     $data['segments'] = json_encode($this->getSegments());
     $data['subscriberFieldsSelect2'] = json_encode(
       $this->formatFieldsForSelect2(
-        $subscriber_fields,
-        $subscriber_custom_fields
+        $subscriberFields,
+        $subscriberCustomFields
       )
     );
     if ($this->action === 'import') {
       $data['subscriberFields'] = json_encode(
         array_merge(
-          $this->formatSubscriberFields($subscriber_fields),
-          $this->formatSubscriberCustomFields($subscriber_custom_fields)
+          $this->formatSubscriberFields($subscriberFields),
+          $this->formatSubscriberCustomFields($subscriberCustomFields)
         )
       );
       $data['maxPostSizeBytes'] = Helpers::getMaxPostSize('bytes');

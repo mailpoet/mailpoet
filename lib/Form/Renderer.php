@@ -42,22 +42,22 @@ class Renderer {
     }
   }
 
-  public static function renderBlocks($blocks = [], $honeypot_enabled = true) {
+  public static function renderBlocks($blocks = [], $honeypotEnabled = true) {
     $settings = SettingsController::getInstance();
     // add honeypot for spambots
-    $html = ($honeypot_enabled) ?
+    $html = ($honeypotEnabled) ?
       '<label class="mailpoet_hp_email_label">' . WPFunctions::get()->__('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :
       '';
     foreach ($blocks as $key => $block) {
       if ($block['type'] == 'submit' && $settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
-        $site_key = $settings->get('captcha.recaptcha_site_token');
-        $html .= '<div class="mailpoet_recaptcha" data-sitekey="' . $site_key . '">
+        $siteKey = $settings->get('captcha.recaptcha_site_token');
+        $html .= '<div class="mailpoet_recaptcha" data-sitekey="' . $siteKey . '">
           <div class="mailpoet_recaptcha_container"></div>
           <noscript>
             <div>
               <div style="width: 302px; height: 422px; position: relative;">
                 <div style="width: 302px; height: 422px; position: absolute;">
-                  <iframe src="https://www.google.com/recaptcha/api/fallback?k=' . $site_key . '" frameborder="0" scrolling="no" style="width: 302px; height:422px; border-style: none;">
+                  <iframe src="https://www.google.com/recaptcha/api/fallback?k=' . $siteKey . '" frameborder="0" scrolling="no" style="width: 302px; height:422px; border-style: none;">
                   </iframe>
                 </div>
               </div>

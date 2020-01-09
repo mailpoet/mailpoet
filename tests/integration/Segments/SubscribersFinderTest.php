@@ -31,44 +31,44 @@ class SubscribersFinderTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    $this->segment_1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
-    $this->segment_2 = Segment::createOrUpdate(['name' => 'Segment 2', 'type' => 'default']);
-    $this->segment_3 = Segment::createOrUpdate(['name' => 'Segment 3', 'type' => 'not default']);
-    $this->subscriber_1 = Subscriber::createOrUpdate([
+    $this->segment1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
+    $this->segment2 = Segment::createOrUpdate(['name' => 'Segment 2', 'type' => 'default']);
+    $this->segment3 = Segment::createOrUpdate(['name' => 'Segment 3', 'type' => 'not default']);
+    $this->subscriber1 = Subscriber::createOrUpdate([
       'email' => 'john@mailpoet.com',
       'first_name' => 'John',
       'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED,
     ]);
-    $this->subscriber_2 = Subscriber::createOrUpdate([
+    $this->subscriber2 = Subscriber::createOrUpdate([
       'email' => 'jane@mailpoet.com',
       'first_name' => 'Jane',
       'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'segments' => [
-        $this->segment_1->id,
+        $this->segment1->id,
       ],
     ]);
-    $this->subscriber_3 = Subscriber::createOrUpdate([
+    $this->subscriber3 = Subscriber::createOrUpdate([
       'email' => 'jake@mailpoet.com',
       'first_name' => 'Jake',
       'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'segments' => [
-        $this->segment_3->id,
+        $this->segment3->id,
       ],
     ]);
-    SubscriberSegment::resubscribeToAllSegments($this->subscriber_2);
-    SubscriberSegment::resubscribeToAllSegments($this->subscriber_3);
+    SubscriberSegment::resubscribeToAllSegments($this->subscriber2);
+    SubscriberSegment::resubscribeToAllSegments($this->subscriber3);
     $this->sending = SendingTask::create();
   }
 
   public function testFindSubscribersInSegmentInSegmentDefaultSegment() {
     $finder = new SubscribersFinder();
-    $deleted_segment_id = 1000; // non-existent segment
-    $subscribers = $finder->findSubscribersInSegments([$this->subscriber_2->id], [$this->segment_1->id, $deleted_segment_id]);
+    $deletedSegmentId = 1000; // non-existent segment
+    $subscribers = $finder->findSubscribersInSegments([$this->subscriber2->id], [$this->segment1->id, $deletedSegmentId]);
     expect($subscribers)->count(1);
-    expect($subscribers[$this->subscriber_2->id])->equals($this->subscriber_2->id);
+    expect($subscribers[$this->subscriber2->id])->equals($this->subscriber2->id);
   }
 
   public function testFindSubscribersInSegmentUsingFinder() {
@@ -77,7 +77,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     $mock
       ->expects($this->once())
       ->method('findSubscribersInSegment')
-      ->will($this->returnValue([$this->subscriber_3]));
+      ->will($this->returnValue([$this->subscriber3]));
 
     remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
     (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
@@ -85,9 +85,9 @@ class SubscribersFinderTest extends \MailPoetTest {
     });
 
     $finder = new SubscribersFinder();
-    $subscribers = $finder->findSubscribersInSegments([$this->subscriber_3->id], [$this->segment_3->id]);
+    $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->id], [$this->segment3->id]);
     expect($subscribers)->count(1);
-    expect($subscribers)->contains($this->subscriber_3->id);
+    expect($subscribers)->contains($this->subscriber3->id);
   }
 
   public function testFindSubscribersInSegmentUsingFinderMakesResultUnique() {
@@ -96,7 +96,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     $mock
       ->expects($this->exactly(2))
       ->method('findSubscribersInSegment')
-      ->will($this->returnValue([$this->subscriber_3]));
+      ->will($this->returnValue([$this->subscriber3]));
 
     remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
     (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
@@ -104,32 +104,32 @@ class SubscribersFinderTest extends \MailPoetTest {
     });
 
     $finder = new SubscribersFinder();
-    $subscribers = $finder->findSubscribersInSegments([$this->subscriber_3->id], [$this->segment_3->id, $this->segment_3->id]);
+    $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->id], [$this->segment3->id, $this->segment3->id]);
     expect($subscribers)->count(1);
   }
 
   public function testItAddsSubscribersToTaskFromStaticSegments() {
     $finder = new SubscribersFinder();
-    $subscribers_count = $finder->addSubscribersToTaskFromSegments(
+    $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
-        $this->getDummySegment($this->segment_1->id, Segment::TYPE_DEFAULT),
-        $this->getDummySegment($this->segment_2->id, Segment::TYPE_DEFAULT),
+        $this->getDummySegment($this->segment1->id, Segment::TYPE_DEFAULT),
+        $this->getDummySegment($this->segment2->id, Segment::TYPE_DEFAULT),
       ]
     );
-    expect($subscribers_count)->equals(1);
-    expect($this->sending->getSubscribers())->equals([$this->subscriber_2->id]);
+    expect($subscribersCount)->equals(1);
+    expect($this->sending->getSubscribers())->equals([$this->subscriber2->id]);
   }
 
   public function testItDoesNotAddSubscribersToTaskFromNoSegment() {
     $finder = new SubscribersFinder();
-    $subscribers_count = $finder->addSubscribersToTaskFromSegments(
+    $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
-        $this->getDummySegment($this->segment_1->id, 'UNKNOWN SEGMENT'),
+        $this->getDummySegment($this->segment1->id, 'UNKNOWN SEGMENT'),
       ]
     );
-    expect($subscribers_count)->equals(0);
+    expect($subscribersCount)->equals(0);
   }
 
   public function testItAddsSubscribersToTaskFromDynamicSegments() {
@@ -138,7 +138,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')
-      ->will($this->returnValue([['id' => $this->subscriber_1->id]]));
+      ->will($this->returnValue([['id' => $this->subscriber1->id]]));
 
     remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
     (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
@@ -146,14 +146,14 @@ class SubscribersFinderTest extends \MailPoetTest {
     });
 
     $finder = new SubscribersFinder();
-    $subscribers_count = $finder->addSubscribersToTaskFromSegments(
+    $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
-        $this->getDummySegment($this->segment_2->id, ''),
+        $this->getDummySegment($this->segment2->id, ''),
       ]
     );
-    expect($subscribers_count)->equals(1);
-    expect($this->sending->getSubscribers())->equals([$this->subscriber_1->id]);
+    expect($subscribersCount)->equals(1);
+    expect($this->sending->getSubscribers())->equals([$this->subscriber1->id]);
   }
 
   public function testItAddsSubscribersToTaskFromStaticAndDynamicSegments() {
@@ -164,23 +164,23 @@ class SubscribersFinderTest extends \MailPoetTest {
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')
-      ->will($this->returnValue([['id' => $this->subscriber_2->id]]));
+      ->will($this->returnValue([['id' => $this->subscriber2->id]]));
     remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
     (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
       return [$mock];
     });
 
-    $subscribers_count = $finder->addSubscribersToTaskFromSegments(
+    $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
-        $this->getDummySegment($this->segment_1->id, Segment::TYPE_DEFAULT),
-        $this->getDummySegment($this->segment_2->id, Segment::TYPE_DEFAULT),
-        $this->getDummySegment($this->segment_3->id, ''),
+        $this->getDummySegment($this->segment1->id, Segment::TYPE_DEFAULT),
+        $this->getDummySegment($this->segment2->id, Segment::TYPE_DEFAULT),
+        $this->getDummySegment($this->segment3->id, ''),
       ]
     );
 
-    expect($subscribers_count)->equals(1);
-    expect($this->sending->getSubscribers())->equals([$this->subscriber_2->id]);
+    expect($subscribersCount)->equals(1);
+    expect($this->sending->getSubscribers())->equals([$this->subscriber2->id]);
   }
 
   private function getDummySegment($id, $type) {

@@ -15,10 +15,10 @@ class FunctionsTest extends \MailPoetTest {
     ]));
 
     $twig->addExtension(new Functions());
-    $result_rtl = $twig->render('template');
-    expect($result_rtl)->equals('rtl');
-    $result_no_rtl = $twig->render('template');
-    expect($result_no_rtl)->isEmpty();
+    $resultRtl = $twig->render('template');
+    expect($resultRtl)->equals('rtl');
+    $resultNoRtl = $twig->render('template');
+    expect($resultNoRtl)->isEmpty();
   }
 
   public function _after() {

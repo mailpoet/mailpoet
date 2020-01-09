@@ -10,41 +10,41 @@ use MailPoet\Util\Security;
 
 class SendCategoryPurchaseEmailCest {
 
-  public function _before(\AcceptanceTester $I) {
-    $I->activateWooCommerce();
-    $settings_factory = new Settings();
-    $settings_factory->withWooCommerceListImportPageDisplayed(true);
-    $settings_factory->withWooCommerceCheckoutOptinEnabled();
-    $settings_factory->withCronTriggerMethod('WordPress');
+  public function _before(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
+    $settingsFactory = new Settings();
+    $settingsFactory->withWooCommerceListImportPageDisplayed(true);
+    $settingsFactory->withWooCommerceCheckoutOptinEnabled();
+    $settingsFactory->withCronTriggerMethod('WordPress');
   }
 
-  public function sendCategoryPurchaseEmail(\AcceptanceTester $I) {
-    $I->wantTo('Buy a product in category and receive a "Purchased In This Category" email');
+  public function sendCategoryPurchaseEmail(\AcceptanceTester $i) {
+    $i->wantTo('Buy a product in category and receive a "Purchased In This Category" email');
 
-    $product_name = 'Category Purchase Test Product';
+    $productName = 'Category Purchase Test Product';
 
-    $product_factory = new WooCommerceProduct($I);
+    $productFactory = new WooCommerceProduct($i);
 
-    $category_id = $product_factory->createCategory('Category 1');
-    $product = $product_factory
-      ->withName($product_name)
-      ->withCategoryIds([$category_id])
+    $categoryId = $productFactory->createCategory('Category 1');
+    $product = $productFactory
+      ->withName($productName)
+      ->withCategoryIds([$categoryId])
       ->create();
 
-    $email_subject = 'Product In Category Purchase Test';
-    $newsletter_factory = new Newsletter();
-    $newsletter_factory
-      ->withSubject($email_subject)
+    $emailSubject = 'Product In Category Purchase Test';
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory
+      ->withSubject($emailSubject)
       ->withAutomaticTypeWooCommerceProductInCategoryPurchased([$product])
       ->withActiveStatus()
       ->create();
 
-    $user_email = Security::generateRandomString() . '-user@email.example';
-    $I->orderProduct($product, $user_email);
+    $userEmail = Security::generateRandomString() . '-user@email.example';
+    $i->orderProduct($product, $userEmail);
 
-    $I->amOnMailboxAppPage();
-    $I->waitForText($email_subject, 20);
-    $I->click(Locator::contains('span.subject', $email_subject));
-    $I->waitForText($user_email, 20);
+    $i->amOnMailboxAppPage();
+    $i->waitForText($emailSubject, 20);
+    $i->click(Locator::contains('span.subject', $emailSubject));
+    $i->waitForText($userEmail, 20);
   }
 }

@@ -16,15 +16,15 @@ class DoctrinePanel implements IBarPanel {
   /** @var DebugStack */
   private $sql_logger;
 
-  public function __construct(Configuration $doctrine_configuration) {
-    $this->sql_logger = new DebugStack();
-    $doctrine_configuration->setSQLLogger($this->sql_logger);
+  public function __construct(Configuration $doctrineConfiguration) {
+    $this->sqlLogger = new DebugStack();
+    $doctrineConfiguration->setSQLLogger($this->sqlLogger);
   }
 
   public function getTab() {
-    $queries = $this->sql_logger->queries;
+    $queries = $this->sqlLogger->queries;
     $count = count($queries);
-    $count_suffix = $count === 1 ? 'query' : 'queries';
+    $countSuffix = $count === 1 ? 'query' : 'queries';
     $time = $this->formatTime(array_sum(array_column($queries, 'executionMS')));
 
     $img = '<img
@@ -40,8 +40,8 @@ class DoctrinePanel implements IBarPanel {
     return ob_get_clean();
   }
 
-  public static function init(EntityManagerInterface $entity_manager) {
-    Debugger::getBar()->addPanel(new DoctrinePanel($entity_manager->getConnection()->getConfiguration()));
+  public static function init(EntityManagerInterface $entityManager) {
+    Debugger::getBar()->addPanel(new DoctrinePanel($entityManager->getConnection()->getConfiguration()));
   }
 
   protected function formatSql($sql) {
@@ -49,30 +49,30 @@ class DoctrinePanel implements IBarPanel {
     preg_match('/^(SELECT\s+)(.*?)(\s+FROM\s+)(.*?)$/iu', trim($sql), $matches);
     if (count($matches) >= 5) {
       // if SELECT clause over 50 chars, make it wrappable
-      $select_html = mb_strlen($matches[2]) > 50 ? ($matches[1] . '
+      $selectHtml = mb_strlen($matches[2]) > 50 ? ($matches[1] . '
         <span class="tracy-toggle tracy-collapsed">...</span>
         <div class="tracy-collapsed" style="padding-left: 10px">' . $matches[2] . '</div>
       ') : ($matches[1] . $matches[2]);
-      $from_keyword = $matches[3];
+      $fromKeyword = $matches[3];
       $rest = $matches[4];
 
       // try to match & indent WHERE clause
-      $where_html = '';
+      $whereHtml = '';
       preg_match('/^(.*)(\s+WHERE\s+)(.*?)$/iu', $rest, $matches);
       if (count($matches) >= 4) {
-        $where_html = $matches[1] . '<br/>' . $matches[2];
+        $whereHtml = $matches[1] . '<br/>' . $matches[2];
         $rest = $matches[3];
       }
 
       // try to match & indent ORDER BY/GROUP BY/LIMIT/OFFSET
-      $end_html = '';
+      $endHtml = '';
       preg_match('/^(.*?)(\s+(?:ORDER\s+BY|GROUP\s+BY|LIMIT|OFFSET)\s+)(.*)$/iu', $rest, $matches);
       if (count($matches) >= 4) {
-        $end_html = $matches[1] . '<br/>' . $matches[2];
+        $endHtml = $matches[1] . '<br/>' . $matches[2];
         $rest = $matches[3];
       }
 
-      $sql = $select_html . '<div></div>' . $from_keyword . $where_html . $end_html . $rest;
+      $sql = $selectHtml . '<div></div>' . $fromKeyword . $whereHtml . $endHtml . $rest;
     }
 
     // highlight keywords
@@ -108,7 +108,7 @@ class DoctrinePanel implements IBarPanel {
     return preg_replace($search, $replace, $data);
   }
 
-  protected function formatTime($doctrine_time) {
-    return number_format($doctrine_time * 1000, 1, '.', ' ');
+  protected function formatTime($doctrineTime) {
+    return number_format($doctrineTime * 1000, 1, '.', ' ');
   }
 }

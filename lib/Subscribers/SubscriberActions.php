@@ -26,32 +26,32 @@ class SubscriberActions {
 
   public function __construct(
     SettingsController $settings,
-    NewSubscriberNotificationMailer $new_subscriber_notification_mailer,
-    ConfirmationEmailMailer $confirmation_email_mailer,
-    WelcomeScheduler $welcome_scheduler
+    NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
+    ConfirmationEmailMailer $confirmationEmailMailer,
+    WelcomeScheduler $welcomeScheduler
   ) {
     $this->settings = $settings;
-    $this->new_subscriber_notification_mailer = $new_subscriber_notification_mailer;
-    $this->confirmation_email_mailer = $confirmation_email_mailer;
-    $this->welcome_scheduler = $welcome_scheduler;
+    $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
+    $this->confirmationEmailMailer = $confirmationEmailMailer;
+    $this->welcomeScheduler = $welcomeScheduler;
   }
 
-  public function subscribe($subscriber_data = [], $segment_ids = []) {
+  public function subscribe($subscriberData = [], $segmentIds = []) {
     // filter out keys from the subscriber_data array
     // that should not be editable when subscribing
-    $subscriber_data = Subscriber::filterOutReservedColumns($subscriber_data);
+    $subscriberData = Subscriber::filterOutReservedColumns($subscriberData);
 
-    $signup_confirmation_enabled = (bool)$this->settings->get(
+    $signupConfirmationEnabled = (bool)$this->settings->get(
       'signup_confirmation.enabled'
     );
 
-    $subscriber_data['subscribed_ip'] = Helpers::getIP();
+    $subscriberData['subscribed_ip'] = Helpers::getIP();
 
-    $subscriber = Subscriber::findOne($subscriber_data['email']);
+    $subscriber = Subscriber::findOne($subscriberData['email']);
 
-    if ($subscriber === false || !$signup_confirmation_enabled) {
+    if ($subscriber === false || !$signupConfirmationEnabled) {
       // create new subscriber or update if no confirmation is required
-      $subscriber = Subscriber::createOrUpdate($subscriber_data);
+      $subscriber = Subscriber::createOrUpdate($subscriberData);
       if ($subscriber->getErrors() !== false) {
         $subscriber = Source::setSource($subscriber, Source::FORM);
         $subscriber->save();
@@ -61,18 +61,18 @@ class SubscriberActions {
       $subscriber = Subscriber::findOne($subscriber->id);
     } else {
       // store subscriber data to be updated after confirmation
-      $subscriber->setUnconfirmedData($subscriber_data);
+      $subscriber->setUnconfirmedData($subscriberData);
       $subscriber->setExpr('updated_at', 'NOW()');
     }
 
     // restore trashed subscriber
-    if ($subscriber->deleted_at !== null) {
+    if ($subscriber->deletedAt !== null) {
       $subscriber->setExpr('deleted_at', 'NULL');
     }
 
     // set status depending on signup confirmation setting
     if ($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
-      if ($signup_confirmation_enabled === true) {
+      if ($signupConfirmationEnabled === true) {
         $subscriber->set('status', Subscriber::STATUS_UNCONFIRMED);
       } else {
         $subscriber->set('status', Subscriber::STATUS_SUBSCRIBED);
@@ -83,16 +83,16 @@ class SubscriberActions {
 
     if ($subscriber->save()) {
       // link subscriber to segments
-      SubscriberSegment::subscribeToSegments($subscriber, $segment_ids);
+      SubscriberSegment::subscribeToSegments($subscriber, $segmentIds);
 
-      $this->confirmation_email_mailer->sendConfirmationEmail($subscriber);
+      $this->confirmationEmailMailer->sendConfirmationEmail($subscriber);
 
       if ($subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
-        $this->new_subscriber_notification_mailer->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
+        $this->newSubscriberNotificationMailer->send($subscriber, Segment::whereIn('id', $segmentIds)->findMany());
 
-        $this->welcome_scheduler->scheduleSubscriberWelcomeNotification(
+        $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
           $subscriber->id,
-          $segment_ids
+          $segmentIds
         );
       }
     }

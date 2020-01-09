@@ -54,9 +54,9 @@ class DynamicSegmentHooks {
     );
   }
 
-  public function addSegmentsWithSubscribersCount($initial_segments) {
-    $newsletters_add_segments = new AddToNewslettersSegments(new Loader(new DBMapper()), new SubscribersCount());
-    return $newsletters_add_segments->add($initial_segments);
+  public function addSegmentsWithSubscribersCount($initialSegments) {
+    $newslettersAddSegments = new AddToNewslettersSegments(new Loader(new DBMapper()), new SubscribersCount());
+    return $newslettersAddSegments->add($initialSegments);
   }
 
   public function getSubscribersInSegmentsFinders(array $finders) {
@@ -69,9 +69,9 @@ class DynamicSegmentHooks {
     return $handlers;
   }
 
-  public function addDynamicFiltersToSubscribersListingsFilters($segment_filters) {
-    $newsletters_add_segments = new AddToSubscribersFilters(new Loader(new DBMapper()), new SubscribersCount());
-    return $newsletters_add_segments->add($segment_filters);
+  public function addDynamicFiltersToSubscribersListingsFilters($segmentFilters) {
+    $newslettersAddSegments = new AddToSubscribersFilters(new Loader(new DBMapper()), new SubscribersCount());
+    return $newslettersAddSegments->add($segmentFilters);
   }
 
   public function applySubscriberBulkAction(array $handlers) {
@@ -79,8 +79,8 @@ class DynamicSegmentHooks {
     return $handlers;
   }
 
-  public function getSegmentFilters($segment_id) {
-    $single_segment_loader = new SingleSegmentLoader(new DBMapper());
-    return $single_segment_loader->load($segment_id)->getFilters();
+  public function getSegmentFilters($segmentId) {
+    $singleSegmentLoader = new SingleSegmentLoader(new DBMapper());
+    return $singleSegmentLoader->load($segmentId)->getFilters();
   }
 }

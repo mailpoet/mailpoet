@@ -21,7 +21,7 @@ class SubscribersRepository extends Repository {
    * @return int
    */
   public function getTotalSubscribers() {
-    $query = $this->entity_manager
+    $query = $this->entityManager
       ->createQueryBuilder()
       ->select('count(n.id)')
       ->from(SubscriberEntity::class, 'n')

@@ -31,12 +31,12 @@ class PermanentNotices {
 
   public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
-    $this->php_version_warnings = new PHPVersionWarnings();
-    $this->after_migration_notice = new AfterMigrationNotice();
-    $this->unauthorized_emails_notice = new UnauthorizedEmailNotice(SettingsController::getInstance(), $wp);
-    $this->unauthorized_emails_in_newsletters_notice = new UnauthorizedEmailInNewslettersNotice(SettingsController::getInstance(), $wp);
-    $this->inactive_subscribers_notice = new InactiveSubscribersNotice(SettingsController::getInstance(), $wp);
-    $this->black_friday_notice = new BlackFridayNotice();
+    $this->phpVersionWarnings = new PHPVersionWarnings();
+    $this->afterMigrationNotice = new AfterMigrationNotice();
+    $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice(SettingsController::getInstance(), $wp);
+    $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice(SettingsController::getInstance(), $wp);
+    $this->inactiveSubscribersNotice = new InactiveSubscribersNotice(SettingsController::getInstance(), $wp);
+    $this->blackFridayNotice = new BlackFridayNotice();
   }
 
   public function init() {
@@ -50,23 +50,23 @@ class PermanentNotices {
       'ajaxDismissNoticeHandler',
     ]);
 
-    $this->php_version_warnings->init(
+    $this->phpVersionWarnings->init(
       phpversion(),
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
-    $this->after_migration_notice->init(
+    $this->afterMigrationNotice->init(
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
-    $this->unauthorized_emails_notice->init(
+    $this->unauthorizedEmailsNotice->init(
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
-    $this->unauthorized_emails_in_newsletters_notice->init(
-      Menu::isOnMailPoetAdminPage($exclude = null, $page_id = 'mailpoet-newsletters')
+    $this->unauthorizedEmailsInNewslettersNotice->init(
+      Menu::isOnMailPoetAdminPage($exclude = null, $pageId = 'mailpoet-newsletters')
     );
-    $this->inactive_subscribers_notice->init(
+    $this->inactiveSubscribersNotice->init(
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
-    $this->black_friday_notice->init(
+    $this->blackFridayNotice->init(
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
   }
@@ -75,16 +75,16 @@ class PermanentNotices {
     if (!isset($_POST['type'])) return;
     switch ($_POST['type']) {
       case (PHPVersionWarnings::OPTION_NAME):
-        $this->php_version_warnings->disable();
+        $this->phpVersionWarnings->disable();
         break;
       case (AfterMigrationNotice::OPTION_NAME):
-        $this->after_migration_notice->disable();
+        $this->afterMigrationNotice->disable();
         break;
       case (BlackFridayNotice::OPTION_NAME):
-        $this->black_friday_notice->disable();
+        $this->blackFridayNotice->disable();
         break;
       case (InactiveSubscribersNotice::OPTION_NAME):
-        $this->inactive_subscribers_notice->disable();
+        $this->inactiveSubscribersNotice->disable();
         break;
     }
   }

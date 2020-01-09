@@ -28,19 +28,19 @@ class LoaderTest extends \MailPoetTest {
       'description' => 'description',
     ]);
     $filter = new UserRole('Administrator', 'and');
-    $filter_data = DynamicSegmentFilter::create();
-    $filter_data->hydrate([
+    $filterData = DynamicSegmentFilter::create();
+    $filterData->hydrate([
       'segment_id' => $this->segments[1]->id,
       'filter_data' => $filter->toArray(),
     ]);
-    $filter_data->save();
+    $filterData->save();
     $filter = new UserRole('Editor', 'or');
-    $filter_data = DynamicSegmentFilter::create();
-    $filter_data->hydrate([
+    $filterData = DynamicSegmentFilter::create();
+    $filterData->hydrate([
       'segment_id' => $this->segments[0]->id,
       'filter_data' => $filter->toArray(),
     ]);
-    $filter_data->save();
+    $filterData->save();
   }
 
   public function testItLoadsSegments() {

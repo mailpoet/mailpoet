@@ -32,48 +32,48 @@ class ConfirmationEmailMailer {
   /** @var SubscriptionUrlFactory */
   private $subscription_url_factory;
 
-  public function __construct(Mailer $mailer, WPFunctions $wp, SettingsController $settings, SubscriptionUrlFactory $subscription_url_factory) {
+  public function __construct(Mailer $mailer, WPFunctions $wp, SettingsController $settings, SubscriptionUrlFactory $subscriptionUrlFactory) {
     $this->mailer = $mailer;
     $this->wp = $wp;
     $this->settings = $settings;
     $this->mailerMetaInfo = new MetaInfo;
-    $this->subscription_url_factory = $subscription_url_factory;
+    $this->subscriptionUrlFactory = $subscriptionUrlFactory;
   }
 
   public function sendConfirmationEmail(Subscriber $subscriber) {
-    $signup_confirmation = $this->settings->get('signup_confirmation');
-    if ((bool)$signup_confirmation['enabled'] === false) {
+    $signupConfirmation = $this->settings->get('signup_confirmation');
+    if ((bool)$signupConfirmation['enabled'] === false) {
       return false;
     }
 
-    if (!$this->wp->isUserLoggedIn() && $subscriber->count_confirmations >= self::MAX_CONFIRMATION_EMAILS) {
+    if (!$this->wp->isUserLoggedIn() && $subscriber->countConfirmations >= self::MAX_CONFIRMATION_EMAILS) {
       return false;
     }
 
-    $authorization_emails_validation = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
-    $unauthorized_sender_email = isset($authorization_emails_validation['invalid_sender_address']);
-    if (Bridge::isMPSendingServiceEnabled() && $unauthorized_sender_email) {
+    $authorizationEmailsValidation = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
+    $unauthorizedSenderEmail = isset($authorizationEmailsValidation['invalid_sender_address']);
+    if (Bridge::isMPSendingServiceEnabled() && $unauthorizedSenderEmail) {
       return false;
     }
 
     $segments = $subscriber->segments()->findMany();
-    $segment_names = array_map(function($segment) {
+    $segmentNames = array_map(function($segment) {
       return $segment->name;
     }, $segments);
 
-    $body = nl2br($signup_confirmation['body']);
+    $body = nl2br($signupConfirmation['body']);
 
     // replace list of segments shortcode
     $body = str_replace(
       '[lists_to_confirm]',
-      '<strong>' . join(', ', $segment_names) . '</strong>',
+      '<strong>' . join(', ', $segmentNames) . '</strong>',
       $body
     );
 
     // replace activation link
     $body = Helpers::replaceLinkTags(
       $body,
-      $this->subscription_url_factory->getConfirmationUrl($subscriber),
+      $this->subscriptionUrlFactory->getConfirmationUrl($subscriber),
       ['target' => '_blank'],
       'activation_link'
     );
@@ -83,7 +83,7 @@ class ConfirmationEmailMailer {
 
     // build email data
     $email = [
-      'subject' => $signup_confirmation['subject'],
+      'subject' => $signupConfirmation['subject'],
       'body' => [
         'html' => $body,
         'text' => $text,
@@ -92,16 +92,16 @@ class ConfirmationEmailMailer {
 
     // send email
     try {
-      $extra_params = [
+      $extraParams = [
         'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriber),
       ];
-      $result = $this->mailer->send($email, $subscriber, $extra_params);
+      $result = $this->mailer->send($email, $subscriber, $extraParams);
       if ($result['response'] === false) {
         $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
         return false;
       };
       if (!$this->wp->isUserLoggedIn()) {
-        $subscriber->count_confirmations++;
+        $subscriber->countConfirmations++;
         $subscriber->save();
       }
       return true;

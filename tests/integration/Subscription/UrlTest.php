@@ -26,9 +26,9 @@ class UrlTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    $referral_detector = new ReferralDetector(WPFunctions::get(), $this->settings);
-    $features_controller = Stub::makeEmpty(FeaturesController::class);
-    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referral_detector, $features_controller);
+    $referralDetector = new ReferralDetector(WPFunctions::get(), $this->settings);
+    $featuresController = Stub::makeEmpty(FeaturesController::class);
+    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referralDetector, $featuresController);
     $populator->up();
     $this->url = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, new LinkTokens);
   }
@@ -117,8 +117,8 @@ class UrlTest extends \MailPoetTest {
 
   private function checkData($url) {
     // extract & decode data from url
-    $url_params_query = parse_url($url, PHP_URL_QUERY);
-    parse_str((string)$url_params_query, $params);
+    $urlParamsQuery = parse_url($url, PHP_URL_QUERY);
+    parse_str((string)$urlParamsQuery, $params);
     $data = Router::decodeRequestData($params['data']);
 
     expect($data['email'])->contains('john@mailpoet.com');
@@ -126,7 +126,7 @@ class UrlTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
     Subscriber::deleteMany();
   }
 }

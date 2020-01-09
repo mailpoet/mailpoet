@@ -21,24 +21,24 @@ class AutomatedLatestContent extends APIEndpoint {
   }
 
   public function getPostTypes() {
-    $post_types = array_map(function($post_type) {
+    $postTypes = array_map(function($postType) {
       return [
-        'name' => $post_type->name,
-        'label' => $post_type->label,
+        'name' => $postType->name,
+        'label' => $postType->label,
       ];
     }, WPPosts::getTypes([], 'objects'));
     return $this->successResponse(
-      array_filter($post_types)
+      array_filter($postTypes)
     );
   }
 
   public function getTaxonomies($data = []) {
-    $post_type = (isset($data['postType'])) ? $data['postType'] : 'post';
-    $all_taxonomies = WPFunctions::get()->getObjectTaxonomies($post_type, 'objects');
-    $taxonomies_with_label = array_filter($all_taxonomies, function($taxonomy) {
+    $postType = (isset($data['postType'])) ? $data['postType'] : 'post';
+    $allTaxonomies = WPFunctions::get()->getObjectTaxonomies($postType, 'objects');
+    $taxonomiesWithLabel = array_filter($allTaxonomies, function($taxonomy) {
       return $taxonomy->label;
     });
-    return $this->successResponse($taxonomies_with_label);
+    return $this->successResponse($taxonomiesWithLabel);
   }
 
   public function getTerms($data = []) {
@@ -76,18 +76,18 @@ class AutomatedLatestContent extends APIEndpoint {
   }
 
   public function getBulkTransformedPosts($data = []) {
-    $used_posts = [];
-    $rendered_posts = [];
+    $usedPosts = [];
+    $renderedPosts = [];
 
     foreach ($data['blocks'] as $block) {
-      $posts = $this->ALC->getPosts($block, $used_posts);
-      $rendered_posts[] = $this->ALC->transformPosts($block, $posts);
+      $posts = $this->ALC->getPosts($block, $usedPosts);
+      $renderedPosts[] = $this->ALC->transformPosts($block, $posts);
 
       foreach ($posts as $post) {
-        $used_posts[] = $post->ID;
+        $usedPosts[] = $post->ID;
       }
     }
 
-    return $this->successResponse($rendered_posts);
+    return $this->successResponse($renderedPosts);
   }
 }

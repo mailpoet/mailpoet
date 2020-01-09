@@ -42,19 +42,19 @@ class Settings {
   private $installation;
 
   public function __construct(
-    PageRenderer $page_renderer,
+    PageRenderer $pageRenderer,
     SettingsController $settings,
-    WooCommerceHelper $woocommerce_helper,
+    WooCommerceHelper $woocommerceHelper,
     WPFunctions $wp,
-    ServicesChecker $services_checker,
+    ServicesChecker $servicesChecker,
     Installation $installation,
     Captcha $captcha
   ) {
-    $this->page_renderer = $page_renderer;
+    $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
-    $this->woocommerce_helper = $woocommerce_helper;
+    $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
-    $this->services_checker = $services_checker;
+    $this->servicesChecker = $servicesChecker;
     $this->installation = $installation;
     $this->captcha = $captcha;
   }
@@ -63,9 +63,9 @@ class Settings {
     $settings = $this->settings->getAll();
     $flags = $this->getFlags();
 
-    $premium_key_valid = $this->services_checker->isPremiumKeyValid(false);
+    $premiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
     // force MSS key check even if the method isn't active
-    $mp_api_key_valid = $this->services_checker->isMailPoetAPIKeyValid(false, true);
+    $mpApiKeyValid = $this->servicesChecker->isMailPoetAPIKeyValid(false, true);
 
     $data = [
       'settings' => $settings,
@@ -73,15 +73,15 @@ class Settings {
       'cron_trigger' => CronTrigger::METHODS,
       'total_subscribers' => Subscriber::getTotalSubscribers(),
       'premium_plugin_active' => License::getLicense(),
-      'premium_key_valid' => !empty($premium_key_valid),
+      'premium_key_valid' => !empty($premiumKeyValid),
       'mss_active' => Bridge::isMPSendingServiceEnabled(),
-      'mss_key_valid' => !empty($mp_api_key_valid),
+      'mss_key_valid' => !empty($mpApiKeyValid),
       'members_plugin_active' => $this->wp->isPluginActive('members/members.php'),
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => $this->wp->wpGetCurrentUser(),
       'linux_cron_path' => dirname(dirname(dirname(__DIR__))),
-      'is_woocommerce_active' => $this->woocommerce_helper->isWooCommerceActive(),
+      'is_woocommerce_active' => $this->woocommerceHelper->isWooCommerceActive(),
       'ABSPATH' => ABSPATH,
       'hosts' => [
         'web' => Hosts::getWebHosts(),
@@ -101,7 +101,7 @@ class Settings {
       ), 'mailpoet');
       $notice->displayWPNotice();
     }
-    $this->page_renderer->displayPage('settings.html', $data);
+    $this->pageRenderer->displayPage('settings.html', $data);
   }
 
   private function getFlags() {

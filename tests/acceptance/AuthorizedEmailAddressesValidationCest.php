@@ -8,41 +8,41 @@ use MailPoet\Test\DataFactories\Settings;
 use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedEmailAddressesValidationCest {
-  public function _before(\AcceptanceTester $I, Scenario $scenario) {
+  public function _before(\AcceptanceTester $i, Scenario $scenario) {
     if (!getenv('WP_TEST_MAILER_MAILPOET_API')) {
       $scenario->skip("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
     }
   }
 
-  public function authorizedEmailsValidation(\AcceptanceTester $I) {
-    $unauthorized_sending_email = 'unauthorized1@email.com';
-    $error_message_prefix = 'Sending all of your emails has been paused because your email address ';
-    $error_notice_element = '[data-notice="unauthorized-email-addresses-notice"]';
+  public function authorizedEmailsValidation(\AcceptanceTester $i) {
+    $unauthorizedSendingEmail = 'unauthorized1@email.com';
+    $errorMessagePrefix = 'Sending all of your emails has been paused because your email address ';
+    $errorNoticeElement = '[data-notice="unauthorized-email-addresses-notice"]';
     $settings = new Settings();
     $settings->withSendingMethodMailPoet();
     $settings->withInstalledAt(new Carbon('2019-03-07'));
-    $I->wantTo('Check that emails are validated on setting change');
-    $I->login();
-    $I->amOnMailPoetPage('Settings');
-    $I->cantSee($error_message_prefix);
+    $i->wantTo('Check that emails are validated on setting change');
+    $i->login();
+    $i->amOnMailPoetPage('Settings');
+    $i->cantSee($errorMessagePrefix);
 
     // default sender is invalid
-    $I->fillField('[data-automation-id="settings-page-from-email-field"]', $unauthorized_sending_email);
-    $I->click('[data-automation-id="settings-submit-button"]');
-    $I->waitForText('Settings saved');
-    $I->reloadPage();
-    $I->canSee($error_message_prefix, $error_notice_element);
-    $I->canSee($unauthorized_sending_email, $error_notice_element);
+    $i->fillField('[data-automation-id="settings-page-from-email-field"]', $unauthorizedSendingEmail);
+    $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
+    $i->reloadPage();
+    $i->canSee($errorMessagePrefix, $errorNoticeElement);
+    $i->canSee($unauthorizedSendingEmail, $errorNoticeElement);
 
     // Error message disappears after email is replaced with authorized email
-    $I->fillField('[data-automation-id="settings-page-from-email-field"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
-    $I->click('[data-automation-id="settings-submit-button"]');
-    $I->waitForText('Settings saved');
-    $I->reloadPage();
-    $I->cantSee($error_message_prefix);
+    $i->fillField('[data-automation-id="settings-page-from-email-field"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
+    $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
+    $i->reloadPage();
+    $i->cantSee($errorMessagePrefix);
   }
 
-  public function authorizedEmailsInNewslettersValidation(\AcceptanceTester $I) {
+  public function authorizedEmailsInNewslettersValidation(\AcceptanceTester $i) {
     $subject = 'Subject Unauthorized Welcome Email';
     (new Newsletter())->withSubject($subject)
       ->withActiveStatus()
@@ -52,33 +52,33 @@ class AuthorizedEmailAddressesValidationCest {
     $settings = new Settings();
     $settings->withSendingMethodMailPoet();
     $settings->withInstalledAt(new Carbon('2019-03-07'));
-    $I->wantTo('Check that emails are validated on setting change');
-    $I->login();
+    $i->wantTo('Check that emails are validated on setting change');
+    $i->login();
 
     // Save settings to trigger initial validation
-    $I->amOnMailPoetPage('Settings');
-    $I->click('[data-automation-id="settings-submit-button"]');
-    $I->waitForText('Settings saved');
+    $i->amOnMailPoetPage('Settings');
+    $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
 
     // Error notice is visible
-    $I->amOnMailPoetPage('Emails');
-    $update_link_text = 'Update the from address of ' . $subject;
-    $I->waitForText('Your automatic emails have been paused, because some email addresses haven’t been authorized yet.');
-    $I->waitForText($update_link_text);
+    $i->amOnMailPoetPage('Emails');
+    $updateLinkText = 'Update the from address of ' . $subject;
+    $i->waitForText('Your automatic emails have been paused, because some email addresses haven’t been authorized yet.');
+    $i->waitForText($updateLinkText);
 
     // Setting the correct address will fix the error
-    $I->click($update_link_text);
-    $I->switchToNextTab();
-    $I->waitForElement('[name="sender_address"]');
-    $I->fillField('[name="sender_address"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
-    $I->click('Activate');
-    $I->waitForListingItemsToLoad();
-    $I->cantSee('Your automatic emails have been paused, because some email addresses haven’t been authorized yet.');
-    $I->cantSee('Update the from address of Subject 1');
+    $i->click($updateLinkText);
+    $i->switchToNextTab();
+    $i->waitForElement('[name="sender_address"]');
+    $i->fillField('[name="sender_address"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
+    $i->click('Activate');
+    $i->waitForListingItemsToLoad();
+    $i->cantSee('Your automatic emails have been paused, because some email addresses haven’t been authorized yet.');
+    $i->cantSee('Update the from address of Subject 1');
   }
 
-  public function validationBeforeSendingNewsletter(\AcceptanceTester $I) {
-    $I->wantTo('Validate from address before sending newsletter');
+  public function validationBeforeSendingNewsletter(\AcceptanceTester $i) {
+    $i->wantTo('Validate from address before sending newsletter');
 
     $settings = new Settings();
     $settings->withSendingMethodMailPoet();
@@ -87,13 +87,13 @@ class AuthorizedEmailAddressesValidationCest {
         ->withSubject('Invalid from address')
         ->create();
 
-    $I->login();
-    $I->amEditingNewsletter($newsletter->id);
-    $I->click('Next');
-    $I->waitForText('Sender');
-    $I->fillField('[name="sender_address"]', 'unauthorized@email.com');
-    $I->selectOptionInSelect2('WordPress Users');
-    $I->click('Send');
-    $I->waitForElement('.parsley-invalidFromAddress');
+    $i->login();
+    $i->amEditingNewsletter($newsletter->id);
+    $i->click('Next');
+    $i->waitForText('Sender');
+    $i->fillField('[name="sender_address"]', 'unauthorized@email.com');
+    $i->selectOptionInSelect2('WordPress Users');
+    $i->click('Send');
+    $i->waitForElement('.parsley-invalidFromAddress');
   }
 }

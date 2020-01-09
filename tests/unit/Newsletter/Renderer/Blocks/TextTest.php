@@ -21,13 +21,13 @@ class TextTest extends \MailPoetUnitTest {
 
   public function testItRendersPlainText() {
     $output = Text::render($this->block);
-    $expected_result = '
+    $expectedResult = '
       <tr>
         <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;">
           Text
         </td>
       </tr>';
-    expect($output)->equals($expected_result);
+    expect($output)->equals($expectedResult);
   }
 
   public function testItRendersParagraph() {
@@ -35,14 +35,14 @@ class TextTest extends \MailPoetUnitTest {
     $output = Text::render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
     assert($table instanceof \pQuery);
-    $paragraph_table = $table[0]->toString();
-    $expected_result = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
+    $paragraphTable = $table[0]->toString();
+    $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
         <tr>
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
             Text
           </td>
         </tr></table>';
-    expect($paragraph_table)->equals($expected_result);
+    expect($paragraphTable)->equals($expectedResult);
   }
 
   public function testItRendersList() {
@@ -51,8 +51,8 @@ class TextTest extends \MailPoetUnitTest {
     $ul = $this->parser->parseStr($output)->query('ul');
     assert($ul instanceof \pQuery);
     $list = $ul[0]->toString();
-    $expected_result = '<ul class="mailpoet_paragraph" style="padding-top:0;padding-bottom:0;margin-top:10px;text-align:left;margin-bottom:10px;"><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 1</li><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 2</li></ul>';
-    expect($list)->equals($expected_result);
+    $expectedResult = '<ul class="mailpoet_paragraph" style="padding-top:0;padding-bottom:0;margin-top:10px;text-align:left;margin-bottom:10px;"><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 1</li><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 2</li></ul>';
+    expect($list)->equals($expectedResult);
   }
 
   public function testItRendersBlockquotes() {
@@ -60,8 +60,8 @@ class TextTest extends \MailPoetUnitTest {
     $output = Text::render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
     assert($table instanceof \pQuery);
-    $blockquote_table = $table[0]->toString();
-    $expected_result = '<table class="mailpoet_blockquote" width="100%" spacing="0" border="0" cellpadding="0">
+    $blockquoteTable = $table[0]->toString();
+    $expectedResult = '<table class="mailpoet_blockquote" width="100%" spacing="0" border="0" cellpadding="0">
         <tbody>
           <tr>
             <td width="2" bgcolor="#565656"></td>
@@ -77,7 +77,7 @@ class TextTest extends \MailPoetUnitTest {
             </td>
           </tr>
         </tbody></table>';
-    expect($blockquote_table)->equals($expected_result);
+    expect($blockquoteTable)->equals($expectedResult);
   }
 
   public function testItStylesHeadings() {

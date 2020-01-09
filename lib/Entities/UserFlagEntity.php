@@ -36,12 +36,12 @@ class UserFlagEntity {
 
   /** @return int */
   public function getUserId() {
-    return $this->user_id;
+    return $this->userId;
   }
 
   /** @param int $user_id */
-  public function setUserId($user_id) {
-    $this->user_id = $user_id;
+  public function setUserId($userId) {
+    $this->userId = $userId;
   }
 
   /** @return string */

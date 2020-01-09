@@ -5,17 +5,17 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class PreviewPostNotificationNewsletterCest {
-  public function previewStandardNewsletter(\AcceptanceTester $I) {
+  public function previewStandardNewsletter(\AcceptanceTester $i) {
     $newsletterName = 'Preview in Browser Post Notification';
     $newsletter = new Newsletter();
     $newsletter->withSubject($newsletterName)->withPostNotificationsType()->create();
-    $I->wantTo('Preview a post notification');
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
-    $I->waitForText($newsletterName);
-    $I->clickItemRowActionByItemName($newsletterName, 'Preview');
-    $I->switchToNextTab();
-    $I->waitForElement('.mailpoet_template');
+    $i->wantTo('Preview a post notification');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Preview');
+    $i->switchToNextTab();
+    $i->waitForElement('.mailpoet_template');
   }
 }

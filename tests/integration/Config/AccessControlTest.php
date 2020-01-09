@@ -13,7 +13,7 @@ class AccessControlTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->access_control = new AccessControl;
+    $this->accessControl = new AccessControl;
   }
 
   public function testItAllowsSettingCustomPermissions() {
@@ -61,7 +61,7 @@ class AccessControlTest extends \MailPoetTest {
       }
     );
 
-    expect($this->access_control->getDefaultPermissions())->equals(
+    expect($this->accessControl->getDefaultPermissions())->equals(
       [
         AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN => [
           'custom_access_plugin_admin_role',
@@ -89,19 +89,19 @@ class AccessControlTest extends \MailPoetTest {
   }
 
   public function testItGetsPermissionLabels() {
-    $permissions = $this->access_control->getDefaultPermissions();
-    $labels = $this->access_control->getPermissionLabels();
+    $permissions = $this->accessControl->getDefaultPermissions();
+    $labels = $this->accessControl->getPermissionLabels();
     expect(count($permissions))->equals(count($labels));
   }
 
   public function testItValidatesIfUserHasCapability() {
     $capability = 'some_capability';
-    $access_control = new AccessControl();
+    $accessControl = new AccessControl();
     WPFunctions::set(Stub::make(new WPFunctions, [
       'currentUserCan' => true,
     ]));
 
-    expect($access_control->validatePermission($capability))->true();
+    expect($accessControl->validatePermission($capability))->true();
   }
 
   public function _after() {

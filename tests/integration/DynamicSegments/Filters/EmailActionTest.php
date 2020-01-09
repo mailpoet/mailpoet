@@ -21,26 +21,26 @@ class EmailActionTest extends \MailPoetTest {
       'status' => 'sent',
       'type' => Newsletter::TYPE_NOTIFICATION,
     ]);
-    $this->subscriber_opened_clicked = Subscriber::createOrUpdate([
+    $this->subscriberOpenedClicked = Subscriber::createOrUpdate([
       'email' => 'opened_clicked@example.com',
     ]);
-    $this->subscriber_opened_not_clicked = Subscriber::createOrUpdate([
+    $this->subscriberOpenedNotClicked = Subscriber::createOrUpdate([
       'email' => 'opened_not_clicked@example.com',
     ]);
-    $this->subscriber_not_opened = Subscriber::createOrUpdate([
+    $this->subscriberNotOpened = Subscriber::createOrUpdate([
       'email' => 'not_opened@example.com',
     ]);
-    $this->subscriber_not_sent = Subscriber::createOrUpdate([
+    $this->subscriberNotSent = Subscriber::createOrUpdate([
       'email' => 'not_sent@example.com',
     ]);
     StatisticsNewsletters::createMultiple([
-      ['newsletter_id' => $this->newsletter->id, 'subscriber_id' => $this->subscriber_opened_clicked->id, 'queue_id' => 1],
-      ['newsletter_id' => $this->newsletter->id, 'subscriber_id' => $this->subscriber_opened_not_clicked->id, 'queue_id' => 1],
-      ['newsletter_id' => $this->newsletter->id, 'subscriber_id' => $this->subscriber_not_opened->id, 'queue_id' => 1],
+      ['newsletter_id' => $this->newsletter->id, 'subscriber_id' => $this->subscriberOpenedClicked->id, 'queue_id' => 1],
+      ['newsletter_id' => $this->newsletter->id, 'subscriber_id' => $this->subscriberOpenedNotClicked->id, 'queue_id' => 1],
+      ['newsletter_id' => $this->newsletter->id, 'subscriber_id' => $this->subscriberNotOpened->id, 'queue_id' => 1],
     ]);
-    StatisticsOpens::getOrCreate($this->subscriber_opened_clicked->id, $this->newsletter->id, 1);
-    StatisticsOpens::getOrCreate($this->subscriber_opened_not_clicked->id, $this->newsletter->id, 1);
-    StatisticsClicks::createOrUpdateClickCount(1, $this->subscriber_opened_clicked->id, $this->newsletter->id, 1);
+    StatisticsOpens::getOrCreate($this->subscriberOpenedClicked->id, $this->newsletter->id, 1);
+    StatisticsOpens::getOrCreate($this->subscriberOpenedNotClicked->id, $this->newsletter->id, 1);
+    StatisticsClicks::createOrUpdateClickCount(1, $this->subscriberOpenedClicked->id, $this->newsletter->id, 1);
   }
 
   public function testGetOpened() {
@@ -100,9 +100,9 @@ class EmailActionTest extends \MailPoetTest {
     StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)->findResultSet()->delete();
     StatisticsOpens::where('newsletter_id', $this->newsletter->id)->findResultSet()->delete();
     $this->newsletter->delete();
-    $this->subscriber_opened_clicked->delete();
-    $this->subscriber_opened_not_clicked->delete();
-    $this->subscriber_not_opened->delete();
-    $this->subscriber_not_sent->delete();
+    $this->subscriberOpenedClicked->delete();
+    $this->subscriberOpenedNotClicked->delete();
+    $this->subscriberNotOpened->delete();
+    $this->subscriberNotSent->delete();
   }
 }

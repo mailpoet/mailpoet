@@ -17,38 +17,38 @@ class SubscriberPersonalDataEraser {
       ];
     }
     $subscriber = Subscriber::findOne(trim($email));
-    $item_removed = false;
-    $items_retained = true;
+    $itemRemoved = false;
+    $itemsRetained = true;
     if ($subscriber) {
       $this->eraseCustomFields($subscriber->id());
       $this->anonymizeSubscriberData($subscriber);
-      $item_removed = true;
-      $items_retained = false;
+      $itemRemoved = true;
+      $itemsRetained = false;
     }
 
     return [
-      'items_removed' => $item_removed,
-      'items_retained' => $items_retained,
+      'items_removed' => $itemRemoved,
+      'items_retained' => $itemsRetained,
       'messages' => [],
       'done' => true,
     ];
   }
 
-  private function eraseCustomFields($subscriber_id) {
-    $custom_fields = SubscriberCustomField::where('subscriber_id', $subscriber_id)->findMany();
-    foreach ($custom_fields as $custom_field) {
-      $custom_field->value = '';
-      $custom_field->save();
+  private function eraseCustomFields($subscriberId) {
+    $customFields = SubscriberCustomField::where('subscriber_id', $subscriberId)->findMany();
+    foreach ($customFields as $customField) {
+      $customField->value = '';
+      $customField->save();
     }
   }
 
   private function anonymizeSubscriberData($subscriber) {
     $subscriber->email = sprintf('deleted-%s@site.invalid', bin2hex(random_bytes(12))); // phpcs:ignore
-    $subscriber->first_name = 'Anonymous';
-    $subscriber->last_name = 'Anonymous';
+    $subscriber->firstName = 'Anonymous';
+    $subscriber->lastName = 'Anonymous';
     $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-    $subscriber->subscribed_ip = '0.0.0.0';
-    $subscriber->confirmed_ip = '0.0.0.0';
+    $subscriber->subscribedIp = '0.0.0.0';
+    $subscriber->confirmedIp = '0.0.0.0';
     $subscriber->save();
   }
 

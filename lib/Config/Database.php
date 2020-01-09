@@ -18,36 +18,36 @@ class Database {
 
   public function defineTables() {
     if (!defined('MP_SETTINGS_TABLE')) {
-      define('MP_SETTINGS_TABLE', Env::$db_prefix . 'settings');
-      define('MP_SEGMENTS_TABLE', Env::$db_prefix . 'segments');
-      define('MP_FORMS_TABLE', Env::$db_prefix . 'forms');
-      define('MP_CUSTOM_FIELDS_TABLE', Env::$db_prefix . 'custom_fields');
-      define('MP_SUBSCRIBERS_TABLE', Env::$db_prefix . 'subscribers');
-      define('MP_SUBSCRIBER_SEGMENT_TABLE', Env::$db_prefix . 'subscriber_segment');
-      define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', Env::$db_prefix . 'subscriber_custom_field');
-      define('MP_SUBSCRIBER_IPS_TABLE', Env::$db_prefix . 'subscriber_ips');
-      define('MP_NEWSLETTER_SEGMENT_TABLE', Env::$db_prefix . 'newsletter_segment');
-      define('MP_SCHEDULED_TASKS_TABLE', Env::$db_prefix . 'scheduled_tasks');
-      define('MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE', Env::$db_prefix . 'scheduled_task_subscribers');
-      define('MP_SENDING_QUEUES_TABLE', Env::$db_prefix . 'sending_queues');
-      define('MP_NEWSLETTERS_TABLE', Env::$db_prefix . 'newsletters');
-      define('MP_NEWSLETTER_TEMPLATES_TABLE', Env::$db_prefix . 'newsletter_templates');
-      define('MP_NEWSLETTER_OPTION_FIELDS_TABLE', Env::$db_prefix . 'newsletter_option_fields');
-      define('MP_NEWSLETTER_OPTION_TABLE', Env::$db_prefix . 'newsletter_option');
-      define('MP_NEWSLETTER_LINKS_TABLE', Env::$db_prefix . 'newsletter_links');
-      define('MP_NEWSLETTER_POSTS_TABLE', Env::$db_prefix . 'newsletter_posts');
-      define('MP_STATISTICS_NEWSLETTERS_TABLE', Env::$db_prefix . 'statistics_newsletters');
-      define('MP_STATISTICS_CLICKS_TABLE', Env::$db_prefix . 'statistics_clicks');
-      define('MP_STATISTICS_OPENS_TABLE', Env::$db_prefix . 'statistics_opens');
-      define('MP_STATISTICS_UNSUBSCRIBES_TABLE', Env::$db_prefix . 'statistics_unsubscribes');
-      define('MP_STATISTICS_FORMS_TABLE', Env::$db_prefix . 'statistics_forms');
-      define('MP_STATISTICS_WOOCOMMERCE_PURCHASES_TABLE', Env::$db_prefix . 'statistics_woocommerce_purchases');
-      define('MP_MAPPING_TO_EXTERNAL_ENTITIES_TABLE', Env::$db_prefix . 'mapping_to_external_entities');
-      define('MP_LOG_TABLE', Env::$db_prefix . 'log');
-      define('MP_STATS_NOTIFICATIONS_TABLE', Env::$db_prefix . 'stats_notifications');
-      define('MP_USER_FLAGS_TABLE', Env::$db_prefix . 'user_flags');
-      define('MP_FEATURE_FLAGS_TABLE', Env::$db_prefix . 'feature_flags');
-      define('MP_DYNAMIC_SEGMENTS_FILTERS_TABLE', Env::$db_prefix . 'dynamic_segment_filters');
+      define('MP_SETTINGS_TABLE', Env::$dbPrefix . 'settings');
+      define('MP_SEGMENTS_TABLE', Env::$dbPrefix . 'segments');
+      define('MP_FORMS_TABLE', Env::$dbPrefix . 'forms');
+      define('MP_CUSTOM_FIELDS_TABLE', Env::$dbPrefix . 'custom_fields');
+      define('MP_SUBSCRIBERS_TABLE', Env::$dbPrefix . 'subscribers');
+      define('MP_SUBSCRIBER_SEGMENT_TABLE', Env::$dbPrefix . 'subscriber_segment');
+      define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', Env::$dbPrefix . 'subscriber_custom_field');
+      define('MP_SUBSCRIBER_IPS_TABLE', Env::$dbPrefix . 'subscriber_ips');
+      define('MP_NEWSLETTER_SEGMENT_TABLE', Env::$dbPrefix . 'newsletter_segment');
+      define('MP_SCHEDULED_TASKS_TABLE', Env::$dbPrefix . 'scheduled_tasks');
+      define('MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE', Env::$dbPrefix . 'scheduled_task_subscribers');
+      define('MP_SENDING_QUEUES_TABLE', Env::$dbPrefix . 'sending_queues');
+      define('MP_NEWSLETTERS_TABLE', Env::$dbPrefix . 'newsletters');
+      define('MP_NEWSLETTER_TEMPLATES_TABLE', Env::$dbPrefix . 'newsletter_templates');
+      define('MP_NEWSLETTER_OPTION_FIELDS_TABLE', Env::$dbPrefix . 'newsletter_option_fields');
+      define('MP_NEWSLETTER_OPTION_TABLE', Env::$dbPrefix . 'newsletter_option');
+      define('MP_NEWSLETTER_LINKS_TABLE', Env::$dbPrefix . 'newsletter_links');
+      define('MP_NEWSLETTER_POSTS_TABLE', Env::$dbPrefix . 'newsletter_posts');
+      define('MP_STATISTICS_NEWSLETTERS_TABLE', Env::$dbPrefix . 'statistics_newsletters');
+      define('MP_STATISTICS_CLICKS_TABLE', Env::$dbPrefix . 'statistics_clicks');
+      define('MP_STATISTICS_OPENS_TABLE', Env::$dbPrefix . 'statistics_opens');
+      define('MP_STATISTICS_UNSUBSCRIBES_TABLE', Env::$dbPrefix . 'statistics_unsubscribes');
+      define('MP_STATISTICS_FORMS_TABLE', Env::$dbPrefix . 'statistics_forms');
+      define('MP_STATISTICS_WOOCOMMERCE_PURCHASES_TABLE', Env::$dbPrefix . 'statistics_woocommerce_purchases');
+      define('MP_MAPPING_TO_EXTERNAL_ENTITIES_TABLE', Env::$dbPrefix . 'mapping_to_external_entities');
+      define('MP_LOG_TABLE', Env::$dbPrefix . 'log');
+      define('MP_STATS_NOTIFICATIONS_TABLE', Env::$dbPrefix . 'stats_notifications');
+      define('MP_USER_FLAGS_TABLE', Env::$dbPrefix . 'user_flags');
+      define('MP_FEATURE_FLAGS_TABLE', Env::$dbPrefix . 'feature_flags');
+      define('MP_DYNAMIC_SEGMENTS_FILTERS_TABLE', Env::$dbPrefix . 'dynamic_segment_filters');
     }
   }
 }

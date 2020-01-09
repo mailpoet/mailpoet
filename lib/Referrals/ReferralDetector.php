@@ -21,17 +21,17 @@ class ReferralDetector {
   }
 
   public function detect() {
-    $referral_id = $this->settings->get(self::REFERRAL_SETTING_NAME, null);
-    if ($referral_id) {
-      return $referral_id;
+    $referralId = $this->settings->get(self::REFERRAL_SETTING_NAME, null);
+    if ($referralId) {
+      return $referralId;
     }
-    $referral_id = $this->wp->getOption(self::REFERRAL_CONSTANT_NAME, null);
-    if ($referral_id === null && defined(self::REFERRAL_CONSTANT_NAME)) {
-      $referral_id = constant(self::REFERRAL_CONSTANT_NAME);
+    $referralId = $this->wp->getOption(self::REFERRAL_CONSTANT_NAME, null);
+    if ($referralId === null && defined(self::REFERRAL_CONSTANT_NAME)) {
+      $referralId = constant(self::REFERRAL_CONSTANT_NAME);
     }
-    if ($referral_id !== null) {
-      $this->settings->set(self::REFERRAL_SETTING_NAME, $referral_id);
+    if ($referralId !== null) {
+      $this->settings->set(self::REFERRAL_SETTING_NAME, $referralId);
     }
-    return $referral_id;
+    return $referralId;
   }
 }

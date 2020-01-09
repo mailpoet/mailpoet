@@ -34,21 +34,21 @@ class TransactionalEmailsTest extends \MailPoetTest {
   public function _before() {
     $this->wp = new WPFunctions();
     $this->settings = SettingsController::getInstance();
-    $this->original_wc_settings = $this->settings->get('woocommerce');
-    $this->newsletters_repository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
-    $this->transactional_emails = new TransactionalEmails(
+    $this->originalWcSettings = $this->settings->get('woocommerce');
+    $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
+    $this->transactionalEmails = new TransactionalEmails(
       $this->wp,
       $this->settings,
       ContainerWrapper::getInstance()->get(Template::class),
       ContainerWrapper::getInstance()->get(Renderer::class),
       Stub::makeEmpty(WooCommerceHelper::class),
-      $this->newsletters_repository
+      $this->newslettersRepository
     );
   }
 
   public function testInitCreatesTransactionalEmailAndSavesItsId() {
-    $this->transactional_emails->init();
-    $email = $this->newsletters_repository->findOneBy(['type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL]);
+    $this->transactionalEmails->init();
+    $email = $this->newslettersRepository->findOneBy(['type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL]);
     $id = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
     expect($email)->notEmpty();
     expect($id)->notNull();
@@ -57,8 +57,8 @@ class TransactionalEmailsTest extends \MailPoetTest {
 
   public function testInitDoesntCreateTransactionalEmailIfSettingAlreadySet() {
     $this->settings->set(TransactionalEmails::SETTING_EMAIL_ID, 1);
-    $this->transactional_emails->init();
-    $email = $this->newsletters_repository->findOneBy(['type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL]);
+    $this->transactionalEmails->init();
+    $email = $this->newslettersRepository->findOneBy(['type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL]);
     expect($email)->equals(null);
   }
 
@@ -68,16 +68,16 @@ class TransactionalEmailsTest extends \MailPoetTest {
         return 'my-awesome-image-url';
       }
     }]);
-    $transactional_emails = new TransactionalEmails(
+    $transactionalEmails = new TransactionalEmails(
       $wp,
       $this->settings,
       ContainerWrapper::getInstance()->get(Template::class),
       ContainerWrapper::getInstance()->get(Renderer::class),
       Stub::makeEmpty(WooCommerceHelper::class),
-      $this->newsletters_repository
+      $this->newslettersRepository
     );
-    $transactional_emails->init();
-    $email = $this->newsletters_repository->findOneBy([
+    $transactionalEmails->init();
+    $email = $this->newslettersRepository->findOneBy([
       'type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL,
     ]);
     expect($email)->notEmpty();
@@ -138,8 +138,8 @@ class TransactionalEmailsTest extends \MailPoetTest {
          ],
       ],
     ]);
-    $this->newsletters_repository->persist($newsletter);
-    $this->newsletters_repository->flush();
+    $this->newslettersRepository->persist($newsletter);
+    $this->newslettersRepository->flush();
 
     $options = [];
     $wp = Stub::make(new WPFunctions, [
@@ -151,15 +151,15 @@ class TransactionalEmailsTest extends \MailPoetTest {
       },
     ]);
 
-    $transactional_emails = new TransactionalEmails(
+    $transactionalEmails = new TransactionalEmails(
       $wp,
       $this->settings,
       ContainerWrapper::getInstance()->get(Template::class),
       ContainerWrapper::getInstance()->get(Renderer::class),
       Stub::makeEmpty(WooCommerceHelper::class),
-      $this->newsletters_repository
+      $this->newslettersRepository
     );
-    $transactional_emails->enableEmailSettingsSyncToWooCommerce();
+    $transactionalEmails->enableEmailSettingsSyncToWooCommerce();
 
     $newsletter = Newsletter::findOne($newsletter->getId());
     $wp->doAction('mailpoet_api_newsletters_save_after', $newsletter);
@@ -171,8 +171,8 @@ class TransactionalEmailsTest extends \MailPoetTest {
   }
 
   public function testUseTemplateForWCEmails() {
-    $added_actions = [];
-    $removed_actions = [];
+    $addedActions = [];
+    $removedActions = [];
     $newsletter = new NewsletterEntity;
     $newsletter->setType(Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL);
     $newsletter->setSubject('WooCommerce Transactional Email');
@@ -185,26 +185,26 @@ class TransactionalEmailsTest extends \MailPoetTest {
         L::row([L::col([['type' => 'text', 'text' => 'Some text after content']])]),
       ]),
     ]);
-    $this->newsletters_repository->persist($newsletter);
-    $this->newsletters_repository->flush();
+    $this->newslettersRepository->persist($newsletter);
+    $this->newslettersRepository->flush();
     $this->settings->set(TransactionalEmails::SETTING_EMAIL_ID, $newsletter->getId());
     $wp = Stub::make(new WPFunctions, [
       'getOption' => function($name) {
         return '';
       },
-      'addAction' => function ($name, $action) use(&$added_actions) {
-        $added_actions[$name] = $action;
+      'addAction' => function ($name, $action) use(&$addedActions) {
+        $addedActions[$name] = $action;
       },
-      'removeAction' => function ($name, $action) use(&$removed_actions) {
-        $removed_actions[$name] = $action;
+      'removeAction' => function ($name, $action) use(&$removedActions) {
+        $removedActions[$name] = $action;
       },
     ]);
     $renderer = Stub::make(Renderer::class, [
       'render' => function($email) use(&$newsletter) {
         expect($email->id)->equals($newsletter->getId());
       },
-      'getHTMLBeforeContent' => function($heading_text) {
-        return 'HTML before content with ' . $heading_text;
+      'getHTMLBeforeContent' => function($headingText) {
+        return 'HTML before content with ' . $headingText;
       },
       'getHTMLAfterContent' => function() {
         return 'HTML after content';
@@ -214,7 +214,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
       },
     ]);
 
-    $transactional_emails = new TransactionalEmails(
+    $transactionalEmails = new TransactionalEmails(
       $wp,
       $this->settings,
       ContainerWrapper::getInstance()->get(Template::class),
@@ -222,31 +222,31 @@ class TransactionalEmailsTest extends \MailPoetTest {
       Stub::makeEmpty(WooCommerceHelper::class),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class)
     );
-    $transactional_emails->useTemplateForWoocommerceEmails();
-    expect($added_actions)->count(1);
-    expect($added_actions['woocommerce_init'])->isCallable();
-    $added_actions['woocommerce_init']();
-    expect($removed_actions)->count(2);
-    expect($added_actions)->count(4);
-    expect($added_actions['woocommerce_email_header'])->isCallable();
+    $transactionalEmails->useTemplateForWoocommerceEmails();
+    expect($addedActions)->count(1);
+    expect($addedActions['woocommerce_init'])->isCallable();
+    $addedActions['woocommerce_init']();
+    expect($removedActions)->count(2);
+    expect($addedActions)->count(4);
+    expect($addedActions['woocommerce_email_header'])->isCallable();
     ob_start();
-    $added_actions['woocommerce_email_header']('heading text');
+    $addedActions['woocommerce_email_header']('heading text');
     expect(ob_get_clean())->equals('HTML before content with heading text');
-    expect($added_actions['woocommerce_email_footer'])->isCallable();
+    expect($addedActions['woocommerce_email_footer'])->isCallable();
     ob_start();
-    $added_actions['woocommerce_email_footer']();
+    $addedActions['woocommerce_email_footer']();
     expect(ob_get_clean())->equals('HTML after content');
-    expect($added_actions['woocommerce_email_styles'])->isCallable();
-    expect($added_actions['woocommerce_email_styles']('some css'))->equals('prefixed some css');
+    expect($addedActions['woocommerce_email_styles'])->isCallable();
+    expect($addedActions['woocommerce_email_styles']('some css'))->equals('prefixed some css');
   }
 
   public function _after() {
-    $this->entity_manager
+    $this->entityManager
       ->createQueryBuilder()
       ->delete()
       ->from(NewsletterEntity::class, 'n')
       ->getQuery()
       ->execute();
-    $this->settings->set('woocommerce', $this->original_wc_settings);
+    $this->settings->set('woocommerce', $this->originalWcSettings);
   }
 }

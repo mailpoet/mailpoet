@@ -6,18 +6,18 @@ use MailPoet\Test\DataFactories\Form;
 
 class FormsListingCest {
 
-  public function formsListing(\AcceptanceTester $I) {
+  public function formsListing(\AcceptanceTester $i) {
     $form = new Form();
     $form->withName('Test Form');
     $form->create();
 
-    $I->wantTo('Open forms listings page');
+    $i->wantTo('Open forms listings page');
 
-    $I->login();
-    $I->amOnMailpoetPage('Forms');
+    $i->login();
+    $i->amOnMailpoetPage('Forms');
 
-    $I->waitForText('Test Form', 5, '.mailpoet_listing_table');
-    $I->seeNoJSErrors();
+    $i->waitForText('Test Form', 5, '.mailpoet_listing_table');
+    $i->seeNoJSErrors();
   }
 
 }

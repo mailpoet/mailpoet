@@ -12,11 +12,11 @@ class SubscribersCount {
   /** @var RequirementsChecker */
   private $requirements_checker;
 
-  public function __construct(RequirementsChecker $requirements_checker = null) {
-    if (!$requirements_checker) {
-      $requirements_checker = new RequirementsChecker(new WooCommerceHelper());
+  public function __construct(RequirementsChecker $requirementsChecker = null) {
+    if (!$requirementsChecker) {
+      $requirementsChecker = new RequirementsChecker(new WooCommerceHelper());
     }
-    $this->requirements_checker = $requirements_checker;
+    $this->requirementsChecker = $requirementsChecker;
   }
 
   /**
@@ -24,12 +24,12 @@ class SubscribersCount {
    *
    * @return int
    */
-  public function getSubscribersCount(DynamicSegment $dynamic_segment) {
+  public function getSubscribersCount(DynamicSegment $dynamicSegment) {
     $orm = Subscriber::selectExpr('count(distinct ' . Subscriber::$_table . '.id) as cnt');
-    if ($this->requirements_checker->shouldSkipSegment($dynamic_segment)) {
+    if ($this->requirementsChecker->shouldSkipSegment($dynamicSegment)) {
       return 0;
     }
-    foreach ($dynamic_segment->getFilters() as $filter) {
+    foreach ($dynamicSegment->getFilters() as $filter) {
       $orm = $filter->toSql($orm);
     }
     return $orm->findOne()->cnt;

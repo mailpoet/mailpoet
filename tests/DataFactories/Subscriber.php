@@ -24,8 +24,8 @@ class Subscriber {
    * @param string $first_name
    * @return $this
    */
-  public function withFirstName($first_name) {
-    $this->data['first_name'] = $first_name;
+  public function withFirstName($firstName) {
+    $this->data['first_name'] = $firstName;
     return $this;
   }
 
@@ -33,8 +33,8 @@ class Subscriber {
    * @param string $last_name
    * @return $this
    */
-  public function withLastName($last_name) {
-    $this->data['last_name'] = $last_name;
+  public function withLastName($lastName) {
+    $this->data['last_name'] = $lastName;
     return $this;
   }
 

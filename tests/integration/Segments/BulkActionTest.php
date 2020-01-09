@@ -21,28 +21,28 @@ class BulkActionTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->cleanData();
-    $this->segment_1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
-    $this->segment_2 = Segment::createOrUpdate(['name' => 'Segment 3', 'type' => 'not default']);
-    $this->subscriber_1 = Subscriber::createOrUpdate([
+    $this->segment1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
+    $this->segment2 = Segment::createOrUpdate(['name' => 'Segment 3', 'type' => 'not default']);
+    $this->subscriber1 = Subscriber::createOrUpdate([
       'email' => 'john@mailpoet.com',
       'first_name' => 'John',
       'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'segments' => [
-        $this->segment_1->id,
+        $this->segment1->id,
       ],
     ]);
-    $this->subscriber_2 = Subscriber::createOrUpdate([
+    $this->subscriber2 = Subscriber::createOrUpdate([
       'email' => 'jake@mailpoet.com',
       'first_name' => 'Jake',
       'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'segments' => [
-        $this->segment_2->id,
+        $this->segment2->id,
       ],
     ]);
-    SubscriberSegment::resubscribeToAllSegments($this->subscriber_1);
-    SubscriberSegment::resubscribeToAllSegments($this->subscriber_2);
+    SubscriberSegment::resubscribeToAllSegments($this->subscriber1);
+    SubscriberSegment::resubscribeToAllSegments($this->subscriber2);
   }
 
   public function _after() {
@@ -63,7 +63,7 @@ class BulkActionTest extends \MailPoetTest {
 
   public function testBulkActionForDefaultSegment() {
     $handler = new BulkAction([
-      'listing' => ['filter' => ['segment' => $this->segment_1->id]],
+      'listing' => ['filter' => ['segment' => $this->segment1->id]],
       'action' => 'trash',
     ]);
     $result = $handler->apply();
@@ -81,7 +81,7 @@ class BulkActionTest extends \MailPoetTest {
 
   public function testForUnknownSegmentTypeWithoutHandler() {
     $handler = new BulkAction([
-      'listing' => ['filter' => ['segment' => $this->segment_2->id]],
+      'listing' => ['filter' => ['segment' => $this->segment2->id]],
       'action' => 'trash',
     ]);
     $this->setExpectedException('InvalidArgumentException');
@@ -103,7 +103,7 @@ class BulkActionTest extends \MailPoetTest {
     });
 
     $handler = new BulkAction([
-      'listing' => ['filter' => ['segment' => $this->segment_2->id]],
+      'listing' => ['filter' => ['segment' => $this->segment2->id]],
       'action' => 'trash',
     ]);
     $result = $handler->apply();

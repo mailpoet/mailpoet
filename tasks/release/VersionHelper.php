@@ -9,21 +9,21 @@ class VersionHelper {
   const MINOR = 'Minor';
   const PATCH = 'Patch';
 
-  public static function incrementVersion($version, $part_to_increment = self::PATCH) {
-    $parsed_version = is_array($version) ? $version : self::parseVersion($version);
+  public static function incrementVersion($version, $partToIncrement = self::PATCH) {
+    $parsedVersion = is_array($version) ? $version : self::parseVersion($version);
 
-    switch ($part_to_increment) {
+    switch ($partToIncrement) {
       case self::MINOR:
-        $parsed_version[self::MINOR]++;
-        $parsed_version[self::PATCH] = 0;
+        $parsedVersion[self::MINOR]++;
+        $parsedVersion[self::PATCH] = 0;
         break;
       case self::PATCH:
       default:
-        $parsed_version[self::PATCH]++;
+        $parsedVersion[self::PATCH]++;
         break;
     }
 
-    return is_array($version) ? $parsed_version : self::buildVersion($parsed_version);
+    return is_array($version) ? $parsedVersion : self::buildVersion($parsedVersion);
   }
 
   public static function parseVersion($version) {

@@ -17,13 +17,13 @@ class StateTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->tasks_state = new State();
+    $this->tasksState = new State();
   }
 
   public function testItCanFetchBasicTasksData() {
     $this->createNewScheduledTask(SendingTask::TASK_TYPE);
     $this->createNewScheduledTask(Migration::TASK_TYPE);
-    $data = $this->tasks_state->getLatestTasks();
+    $data = $this->tasksState->getLatestTasks();
     expect(count($data))->equals(2);
     expect($data[0]['id'])->equals(1);
     expect($data[0]['type'])->equals(SendingTask::TASK_TYPE);
@@ -37,7 +37,7 @@ class StateTest extends \MailPoetTest {
   public function testItCanFilterTasksByType() {
     $this->createNewScheduledTask(SendingTask::TASK_TYPE);
     $this->createNewScheduledTask(Migration::TASK_TYPE);
-    $data = $this->tasks_state->getLatestTasks(Migration::TASK_TYPE);
+    $data = $this->tasksState->getLatestTasks(Migration::TASK_TYPE);
     expect(count($data))->equals(1);
     expect($data[0]['type'])->equals(Migration::TASK_TYPE);
   }
@@ -45,7 +45,7 @@ class StateTest extends \MailPoetTest {
   public function testItCanFilterTasksByStatus() {
     $this->createNewScheduledTask(SendingTask::TASK_TYPE, ScheduledTask::STATUS_COMPLETED);
     $this->createNewScheduledTask(SendingTask::TASK_TYPE, ScheduledTask::STATUS_PAUSED);
-    $data = $this->tasks_state->getLatestTasks(null, [ScheduledTask::STATUS_COMPLETED]);
+    $data = $this->tasksState->getLatestTasks(null, [ScheduledTask::STATUS_COMPLETED]);
     expect(count($data))->equals(1);
     expect($data[0]['status'])->equals(ScheduledTask::STATUS_COMPLETED);
   }
@@ -54,7 +54,7 @@ class StateTest extends \MailPoetTest {
     $task = $this->createNewScheduledTask(SendingTask::TASK_TYPE);
     $newsletter = $this->createNewNewsletter();
     $this->createNewSendingQueue($task->id, $newsletter->id, 'Rendered Subject');
-    $data = $this->tasks_state->getLatestTasks();
+    $data = $this->tasksState->getLatestTasks();
     expect($data[0]['newsletter']['newsletter_id'])->equals(1);
     expect($data[0]['newsletter']['queue_id'])->equals(1);
     expect($data[0]['newsletter']['subject'])->equals('Rendered Subject');
@@ -64,7 +64,7 @@ class StateTest extends \MailPoetTest {
   public function testItDoesNotFailForSendingTaskWithMissingNewsletterInconsistentData() {
     $task = $this->createNewScheduledTask(SendingTask::TASK_TYPE);
     $this->createNewSendingQueue($task->id);
-    $data = $this->tasks_state->getLatestTasks();
+    $data = $this->tasksState->getLatestTasks();
     expect($data[0]['newsletter']['newsletter_id'])->equals(null);
     expect($data[0]['newsletter']['queue_id'])->equals(null);
     expect($data[0]['newsletter']['subject'])->equals(null);
@@ -73,7 +73,7 @@ class StateTest extends \MailPoetTest {
 
   public function testItDoesNotFailForSendingTaskWithoutQueue() {
     $this->createNewScheduledTask(SendingTask::TASK_TYPE);
-    $data = $this->tasks_state->getLatestTasks();
+    $data = $this->tasksState->getLatestTasks();
     expect(count($data))->equals(1);
   }
 
@@ -91,11 +91,11 @@ class StateTest extends \MailPoetTest {
     return $newsletter->save();
   }
 
-  public function createNewSendingQueue($task_id, $newsletter_id = null, $rendered_subject = null) {
+  public function createNewSendingQueue($taskId, $newsletterId = null, $renderedSubject = null) {
     $queue = SendingQueue::create();
-    $queue->newsletter_id = $newsletter_id;
-    $queue->task_id = $task_id;
-    $queue->newsletter_rendered_subject = $rendered_subject;
+    $queue->newsletterId = $newsletterId;
+    $queue->taskId = $taskId;
+    $queue->newsletterRenderedSubject = $renderedSubject;
     return $queue->save();
   }
 

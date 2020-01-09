@@ -31,7 +31,7 @@ class Source {
       // we don't want to override source
       return $subscriber;
     }
-    if (!in_array($source, Source::$allowed_sources)) {
+    if (!in_array($source, Source::$allowedSources)) {
       throw new \InvalidArgumentException('Invalid source "' . $source . '""');
     }
     $subscriber->set('source', $source);

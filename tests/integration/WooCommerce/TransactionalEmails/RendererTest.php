@@ -37,9 +37,9 @@ class RendererTest extends \MailPoetTest {
 
   public function testGetHTMLBeforeContent() {
     $renderer = new Renderer(new csstidy);
-    $newsletter_renderer = new NewsletterRenderer($this->newsletter, true);
-    $newsletter_renderer->preprocessor = new Preprocessor(
-      $newsletter_renderer->blocks_renderer,
+    $newsletterRenderer = new NewsletterRenderer($this->newsletter, true);
+    $newsletterRenderer->preprocessor = new Preprocessor(
+      $newsletterRenderer->blocksRenderer,
       Stub::make(
         \MailPoet\WooCommerce\TransactionalEmails::class,
         [
@@ -50,7 +50,7 @@ class RendererTest extends \MailPoetTest {
         ]
       )
     );
-    $renderer->render($this->newsletter, $newsletter_renderer);
+    $renderer->render($this->newsletter, $newsletterRenderer);
     $html = $renderer->getHTMLBeforeContent('Heading Text');
     expect($html)->contains('Some text before heading');
     expect($html)->contains('Heading Text');
@@ -60,9 +60,9 @@ class RendererTest extends \MailPoetTest {
 
   public function testGetHTMLAfterContent() {
     $renderer = new Renderer(new csstidy);
-    $newsletter_renderer = new NewsletterRenderer($this->newsletter, true);
-    $newsletter_renderer->preprocessor = new Preprocessor(
-      $newsletter_renderer->blocks_renderer,
+    $newsletterRenderer = new NewsletterRenderer($this->newsletter, true);
+    $newsletterRenderer->preprocessor = new Preprocessor(
+      $newsletterRenderer->blocksRenderer,
       Stub::make(
         \MailPoet\WooCommerce\TransactionalEmails::class,
         [
@@ -73,7 +73,7 @@ class RendererTest extends \MailPoetTest {
         ]
       )
     );
-    $renderer->render($this->newsletter, $newsletter_renderer);
+    $renderer->render($this->newsletter, $newsletterRenderer);
     $html = $renderer->getHTMLAfterContent();
     expect($html)->notContains('Some text before heading');
     expect($html)->notContains('Heading Text');

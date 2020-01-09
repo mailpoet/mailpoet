@@ -33,11 +33,11 @@ class Scheduler {
 
   public function __construct(
     SettingsController $settings,
-    EntityManager $entity_manager,
+    EntityManager $entityManager,
     StatsNotificationsRepository $repository
   ) {
     $this->settings = $settings;
-    $this->entity_manager = $entity_manager;
+    $this->entityManager = $entityManager;
     $this->repository = $repository;
   }
 
@@ -50,19 +50,19 @@ class Scheduler {
     $task->setType(Worker::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
     $task->setScheduledAt($this->getNextRunDate());
-    $this->entity_manager->persist($task);
-    $this->entity_manager->flush();
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
 
-    $stats_notifications = new StatsNotificationEntity($newsletter, $task);
-    $this->entity_manager->persist($stats_notifications);
-    $this->entity_manager->flush();
+    $statsNotifications = new StatsNotificationEntity($newsletter, $task);
+    $this->entityManager->persist($statsNotifications);
+    $this->entityManager->flush();
   }
 
   private function shouldSchedule(NewsletterEntity $newsletter) {
     if ($this->isDisabled()) {
       return false;
     }
-    if (!in_array($newsletter->getType(), $this->supported_types)) {
+    if (!in_array($newsletter->getType(), $this->supportedTypes)) {
       return false;
     }
     if ($this->hasTaskBeenScheduled($newsletter->getId())) {
@@ -91,8 +91,8 @@ class Scheduler {
     return !(bool)$settings['enabled'];
   }
 
-  private function hasTaskBeenScheduled($newsletter_id) {
-    $existing = $this->repository->findOneByNewsletterId($newsletter_id);
+  private function hasTaskBeenScheduled($newsletterId) {
+    $existing = $this->repository->findOneByNewsletterId($newsletterId);
     return $existing instanceof StatsNotificationEntity;
   }
 

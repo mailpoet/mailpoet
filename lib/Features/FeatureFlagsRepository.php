@@ -26,16 +26,16 @@ class FeatureFlagsRepository extends Repository {
     if (!$data['name']) {
       throw new \InvalidArgumentException('Missing name');
     }
-    $feature_flag = $this->findOneBy([
+    $featureFlag = $this->findOneBy([
       'name' => $data['name'],
     ]);
-    if (!$feature_flag) {
-      $feature_flag = new FeatureFlagEntity($data['name']);
-      $this->persist($feature_flag);
+    if (!$featureFlag) {
+      $featureFlag = new FeatureFlagEntity($data['name']);
+      $this->persist($featureFlag);
     }
 
     if (array_key_exists('value', $data)) {
-      $feature_flag->setValue($data['value']);
+      $featureFlag->setValue($data['value']);
     }
 
     try {
@@ -43,6 +43,6 @@ class FeatureFlagsRepository extends Repository {
     } catch (\Exception $e) {
       throw new \RuntimeException("Error when saving feature " . $data['name']);
     }
-    return $feature_flag;
+    return $featureFlag;
   }
 }

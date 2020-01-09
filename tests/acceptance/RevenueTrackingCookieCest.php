@@ -15,85 +15,85 @@ class RevenueTrackingCookieCest {
     $this->settings = $settings;
   }
 
-  public function _before(\AcceptanceTester $I) {
-    $I->activateWooCommerce();
+  public function _before(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
     $this->settings->withCronTriggerMethod('WordPress');
   }
 
-  public function cookieIsStoredOnClick(\AcceptanceTester $I) {
-    $I->wantTo('Test Revenue cookie is saved');
-    $newsletter_subject = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
-    $newsletter = (new Newsletter())->withSubject($newsletter_subject)->create();
+  public function cookieIsStoredOnClick(\AcceptanceTester $i) {
+    $i->wantTo('Test Revenue cookie is saved');
+    $newsletterSubject = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
+    $newsletter = (new Newsletter())->withSubject($newsletterSubject)->create();
     // make sure the settings is disabled
     $this->settings->withTrackingEnabled()->withCookieRevenueTrackingDisabled();
-    $segment_name = $I->createListWithSubscriber();
+    $segmentName = $i->createListWithSubscriber();
     // make sure a post exists
-    $I->cli(['post', 'create', '--post_status=publish', '--post_type=post', '--post_title=Lorem', '--post_content=Ipsum']);
+    $i->cli(['post', 'create', '--post_status=publish', '--post_type=post', '--post_title=Lorem', '--post_content=Ipsum']);
 
-    $I->login();
+    $i->login();
     // enable the settings
-    $I->amOnMailPoetPage('Settings');
-    $I->click('[data-automation-id="woocommerce_settings_tab"]');
-    $I->dontSeeCheckboxIsChecked('[data-automation-id="accept_cookie_revenue_tracking"]');
-    $I->checkOption('[data-automation-id="accept_cookie_revenue_tracking"]');
-    $I->click('[data-automation-id="settings-submit-button"]');
-    $I->waitForText('Settings saved');
+    $i->amOnMailPoetPage('Settings');
+    $i->click('[data-automation-id="woocommerce_settings_tab"]');
+    $i->dontSeeCheckboxIsChecked('[data-automation-id="accept_cookie_revenue_tracking"]');
+    $i->checkOption('[data-automation-id="accept_cookie_revenue_tracking"]');
+    $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
 
     // send any newsletter with a link
-    $I->amEditingNewsletter($newsletter->id);
-    $I->click('Next');
+    $i->amEditingNewsletter($newsletter->id);
+    $i->click('Next');
 
-    $I->waitForElement('[data-automation-id="newsletter_send_form"]');
-    $I->selectOptionInSelect2($segment_name);
-    $I->click('Send');
-    $I->waitForElement('.mailpoet_progress_label');
+    $i->waitForElement('[data-automation-id="newsletter_send_form"]');
+    $i->selectOptionInSelect2($segmentName);
+    $i->click('Send');
+    $i->waitForElement('.mailpoet_progress_label');
 
-    $I->logOut();
-    $this->checkEmailWasReceived($I, $newsletter_subject);
+    $i->logOut();
+    $this->checkEmailWasReceived($i, $newsletterSubject);
 
     // click a link in the newsletter and check the cookie has been created
-    $I->click(Locator::contains('span.subject', $newsletter_subject));
-    $I->switchToIframe('preview-html');
-    $I->click('Read the post');
-    $I->switchToNextTab();
-    $I->canSeeCookie('mailpoet_revenue_tracking');
+    $i->click(Locator::contains('span.subject', $newsletterSubject));
+    $i->switchToIframe('preview-html');
+    $i->click('Read the post');
+    $i->switchToNextTab();
+    $i->canSeeCookie('mailpoet_revenue_tracking');
   }
 
-  public function cookieIsNotStoredWhenSettingsDisabled(\AcceptanceTester $I) {
-    $I->wantTo('Test Revenue cookie is not saved');
-    $newsletter_subject = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
-    $newsletter = (new Newsletter())->withSubject($newsletter_subject)->create();
+  public function cookieIsNotStoredWhenSettingsDisabled(\AcceptanceTester $i) {
+    $i->wantTo('Test Revenue cookie is not saved');
+    $newsletterSubject = 'Receive Test' . \MailPoet\Util\Security::generateRandomString();
+    $newsletter = (new Newsletter())->withSubject($newsletterSubject)->create();
     // make sure the settings is enabled
     $this->settings->withTrackingEnabled()->withCookieRevenueTracking();
-    $segment_name = $I->createListWithSubscriber();
+    $segmentName = $i->createListWithSubscriber();
     // make sure a post exists
-    $I->cli(['post', 'create', '--post_status=publish', '--post_type=post', '--post_title=Lorem', '--post_content=Ipsum']);
+    $i->cli(['post', 'create', '--post_status=publish', '--post_type=post', '--post_title=Lorem', '--post_content=Ipsum']);
 
-    $I->login();
+    $i->login();
     // dis the settings
-    $I->amOnMailPoetPage('Settings');
-    $I->click('[data-automation-id="woocommerce_settings_tab"]');
-    $I->seeCheckboxIsChecked('[data-automation-id="accept_cookie_revenue_tracking"]');
-    $I->uncheckOption('[data-automation-id="accept_cookie_revenue_tracking"]');
-    $I->click('[data-automation-id="settings-submit-button"]');
-    $I->waitForText('Settings saved');
+    $i->amOnMailPoetPage('Settings');
+    $i->click('[data-automation-id="woocommerce_settings_tab"]');
+    $i->seeCheckboxIsChecked('[data-automation-id="accept_cookie_revenue_tracking"]');
+    $i->uncheckOption('[data-automation-id="accept_cookie_revenue_tracking"]');
+    $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
     // send any newsletter with a link
-    $I->amEditingNewsletter($newsletter->id);
-    $I->click('Next');
+    $i->amEditingNewsletter($newsletter->id);
+    $i->click('Next');
 
-    $I->waitForElement('[data-automation-id="newsletter_send_form"]');
-    $I->selectOptionInSelect2($segment_name);
-    $I->click('Send');
-    $I->waitForElement('.mailpoet_progress_label');
+    $i->waitForElement('[data-automation-id="newsletter_send_form"]');
+    $i->selectOptionInSelect2($segmentName);
+    $i->click('Send');
+    $i->waitForElement('.mailpoet_progress_label');
 
-    $I->logOut();
-    $this->checkEmailWasReceived($I, $newsletter_subject);
+    $i->logOut();
+    $this->checkEmailWasReceived($i, $newsletterSubject);
     // click a link in the newsletter and check the cookie has NOT been created
-    $I->click(Locator::contains('span.subject', $newsletter_subject));
-    $I->switchToIframe('preview-html');
-    $I->click('Read the post');
-    $I->switchToNextTab();
-    $I->dontSeeCookie('mailpoet_revenue_tracking');
+    $i->click(Locator::contains('span.subject', $newsletterSubject));
+    $i->switchToIframe('preview-html');
+    $i->click('Read the post');
+    $i->switchToNextTab();
+    $i->dontSeeCookie('mailpoet_revenue_tracking');
   }
 
   /**
@@ -104,13 +104,13 @@ class RevenueTrackingCookieCest {
    * @param string $subject
    * @throws \Exception
    */
-  private function checkEmailWasReceived(\AcceptanceTester $I, $subject) {
-    $I->amOnMailboxAppPage();
+  private function checkEmailWasReceived(\AcceptanceTester $i, $subject) {
+    $i->amOnMailboxAppPage();
     try {
-      $I->waitForText($subject);
+      $i->waitForText($subject);
     } catch (\Exception $e) {
-      $I->amOnMailboxAppPage();
-      $I->waitForText($subject);
+      $i->amOnMailboxAppPage();
+      $i->waitForText($subject);
     }
   }
 }

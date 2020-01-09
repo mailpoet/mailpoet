@@ -17,8 +17,8 @@ class Shortcodes {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(Pages $subscription_pages, WPFunctions $wp) {
-    $this->subscription_pages = $subscription_pages;
+  public function __construct(Pages $subscriptionPages, WPFunctions $wp) {
+    $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
   }
 
@@ -46,9 +46,9 @@ class Shortcodes {
       $this, 'renderArchiveSubject',
     ], 2, 3);
     // initialize subscription pages data
-    $this->subscription_pages->init();
+    $this->subscriptionPages->init();
     // initialize subscription management shortcodes
-    $this->subscription_pages->initShortcodes();
+    $this->subscriptionPages->initShortcodes();
   }
 
   public function formWidget($params = []) {
@@ -56,8 +56,8 @@ class Shortcodes {
     $this->wp->removeShortcode('user_list');
 
     if (isset($params['id']) && (int)$params['id'] > 0) {
-      $form_widget = new Widget();
-      return $form_widget->widget([
+      $formWidget = new Widget();
+      return $formWidget->widget([
         'form' => (int)$params['id'],
         'form_type' => 'shortcode',
       ]);
@@ -66,16 +66,16 @@ class Shortcodes {
 
   public function getSubscribersCount($params) {
     if (!empty($params['segments'])) {
-      $segment_ids = array_map(function($segment_id) {
-        return (int)trim($segment_id);
+      $segmentIds = array_map(function($segmentId) {
+        return (int)trim($segmentId);
       }, explode(',', $params['segments']));
     }
 
-    if (empty($segment_ids)) {
+    if (empty($segmentIds)) {
       return $this->wp->numberFormatI18n(Subscriber::filter('subscribed')->count());
     } else {
       return $this->wp->numberFormatI18n(
-        SubscriberSegment::whereIn('segment_id', $segment_ids)
+        SubscriberSegment::whereIn('segment_id', $segmentIds)
           ->select('subscriber_id')->distinct()
           ->filter('subscribed')
           ->findResultSet()->count()
@@ -84,16 +84,16 @@ class Shortcodes {
   }
 
   public function getArchive($params) {
-    $segment_ids = [];
+    $segmentIds = [];
     if (!empty($params['segments'])) {
-      $segment_ids = array_map(function($segment_id) {
-        return (int)trim($segment_id);
+      $segmentIds = array_map(function($segmentId) {
+        return (int)trim($segmentId);
       }, explode(',', $params['segments']));
     }
 
     $html = '';
 
-    $newsletters = Newsletter::getArchives($segment_ids);
+    $newsletters = Newsletter::getArchives($segmentIds);
 
     $subscriber = Subscriber::getCurrentWPUser();
 
@@ -127,20 +127,20 @@ class Shortcodes {
   public function renderArchiveDate($newsletter) {
     return $this->wp->dateI18n(
       $this->wp->getOption('date_format'),
-      strtotime($newsletter->processed_at)
+      strtotime($newsletter->processedAt)
     );
   }
 
   public function renderArchiveSubject($newsletter, $subscriber, $queue) {
-    $preview_url = NewsletterUrl::getViewInBrowserUrl(
+    $previewUrl = NewsletterUrl::getViewInBrowserUrl(
       NewsletterUrl::TYPE_ARCHIVE,
       $newsletter,
       $subscriber,
       $queue
     );
-    return '<a href="' . esc_attr($preview_url) . '" target="_blank" title="'
+    return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
-      . esc_attr($newsletter->newsletter_rendered_subject) .
+      . esc_attr($newsletter->newsletterRenderedSubject) .
     '</a>';
   }
 }

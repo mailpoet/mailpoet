@@ -11,12 +11,12 @@ class BlackFridayNotice {
   const OPTION_NAME = 'dismissed-black-friday-notice';
   const DISMISS_NOTICE_TIMEOUT_SECONDS = 2592000; // 30 days
 
-  public function init($should_display) {
-    $should_display = $should_display
+  public function init($shouldDisplay) {
+    $shouldDisplay = $shouldDisplay
       && (time() <= strtotime('2019-11-30 23:59:59'))
       && (time() >= strtotime('2019-11-08 00:00:00'))
       && !get_transient(self::OPTION_NAME);
-    if ($should_display) {
+    if ($shouldDisplay) {
       $this->display();
     }
   }
@@ -31,9 +31,9 @@ class BlackFridayNotice {
       . __('Buy Now', 'mailpoet')
       . '</a>';
 
-    $extra_classes = 'mailpoet-dismissible-notice is-dismissible';
+    $extraClasses = 'mailpoet-dismissible-notice is-dismissible';
 
-    WPNotice::displaySuccess($header . $body . $link, $extra_classes, self::OPTION_NAME);
+    WPNotice::displaySuccess($header . $body . $link, $extraClasses, self::OPTION_NAME);
   }
 
   public function disable() {

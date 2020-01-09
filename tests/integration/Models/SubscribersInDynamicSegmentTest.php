@@ -12,15 +12,15 @@ class SubscribersInDynamicSegmentTest extends \MailPoetTest {
 
   public function _before() {
     $this->cleanData();
-    $this->dynamic_segment = DynamicSegment::createOrUpdate([
+    $this->dynamicSegment = DynamicSegment::createOrUpdate([
       'name' => 'name',
       'description' => 'desc',
     ]);
     $filter = new UserRole('editor', 'and');
-    $data_filter = DynamicSegmentFilter::create();
-    $data_filter->segment_id = $this->dynamic_segment->id;
-    $data_filter->filter_data = $filter->toArray();
-    $data_filter->save();
+    $dataFilter = DynamicSegmentFilter::create();
+    $dataFilter->segmentId = $this->dynamicSegment->id;
+    $dataFilter->filterData = $filter->toArray();
+    $dataFilter->save();
     wp_insert_user([
       'user_login' => 'user-role-test1',
       'user_email' => 'user-role-test1@example.com',
@@ -42,12 +42,12 @@ class SubscribersInDynamicSegmentTest extends \MailPoetTest {
   }
 
   public function testListingQuery() {
-    $listing_data = [
-      'filter' => ['segment' => $this->dynamic_segment->id],
+    $listingData = [
+      'filter' => ['segment' => $this->dynamicSegment->id],
       'group' => 'all',
       'search' => '',
     ];
-    $query = SubscribersInDynamicSegment::listingQuery($listing_data);
+    $query = SubscribersInDynamicSegment::listingQuery($listingData);
     $data = $query->orderByAsc('email')->findMany();
     expect($data)->count(2);
     expect($data[0]->email)->equals('user-role-test1@example.com');
@@ -55,12 +55,12 @@ class SubscribersInDynamicSegmentTest extends \MailPoetTest {
   }
 
   public function testListingQueryWithSearch() {
-    $listing_data = [
-      'filter' => ['segment' => $this->dynamic_segment->id],
+    $listingData = [
+      'filter' => ['segment' => $this->dynamicSegment->id],
       'group' => 'all',
       'search' => 'user-role-test1',
     ];
-    $query = SubscribersInDynamicSegment::listingQuery($listing_data);
+    $query = SubscribersInDynamicSegment::listingQuery($listingData);
     $data = $query->findMany();
     expect($data)->count(1);
     expect($data[0]->email)->equals('user-role-test1@example.com');

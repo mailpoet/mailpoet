@@ -11,58 +11,58 @@ class SendFirstPurchaseEmailCest {
   /** @var Settings */
   private $settings_factory;
 
-  public function _before(\AcceptanceTester $I) {
-    $I->activateWooCommerce();
-    $this->settings_factory = new Settings();
-    $this->settings_factory->withWooCommerceListImportPageDisplayed(true);
-    $this->settings_factory->withWooCommerceCheckoutOptinEnabled();
-    $this->settings_factory->withCronTriggerMethod('WordPress');
+  public function _before(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
+    $this->settingsFactory = new Settings();
+    $this->settingsFactory->withWooCommerceListImportPageDisplayed(true);
+    $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
+    $this->settingsFactory->withCronTriggerMethod('WordPress');
   }
 
-  public function sendFirstPurchaseEmail(\AcceptanceTester $I) {
-    $I->wantTo('Send a "First purchase email"');
+  public function sendFirstPurchaseEmail(\AcceptanceTester $i) {
+    $i->wantTo('Send a "First purchase email"');
 
-    $product_name = 'First Purchase Product';
-    $product_factory = new WooCommerceProduct($I);
-    $product = $product_factory->withName($product_name)->create();
+    $productName = 'First Purchase Product';
+    $productFactory = new WooCommerceProduct($i);
+    $product = $productFactory->withName($productName)->create();
 
-    $email_subject = 'First Purchase Test';
-    $newsletter_factory = new Newsletter();
-    $newsletter_factory
-      ->withSubject($email_subject)
+    $emailSubject = 'First Purchase Test';
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory
+      ->withSubject($emailSubject)
       ->withAutomaticTypeWooCommerceFirstPurchase()
       ->withActiveStatus()
       ->create();
 
-    $user_email = 'user@email.test';
-    $I->orderProduct($product, $user_email);
+    $userEmail = 'user@email.test';
+    $i->orderProduct($product, $userEmail);
 
-    $I->amOnMailboxAppPage();
-    $I->waitForText($email_subject, 20);
-    $I->click(Locator::contains('span.subject', $email_subject));
-    $I->waitForText($user_email, 20);
+    $i->amOnMailboxAppPage();
+    $i->waitForText($emailSubject, 20);
+    $i->click(Locator::contains('span.subject', $emailSubject));
+    $i->waitForText($userEmail, 20);
   }
 
-  public function doNotSendFirstPurchaseEmailIfUserHasNotOptedIn(\AcceptanceTester $I) {
-    $I->wantTo('Buy a product, do not opt-in and don\'t receive a "First purchase email"');
+  public function doNotSendFirstPurchaseEmailIfUserHasNotOptedIn(\AcceptanceTester $i) {
+    $i->wantTo('Buy a product, do not opt-in and don\'t receive a "First purchase email"');
 
-    $product_name = 'First Purchase Product';
-    $product_factory = new WooCommerceProduct($I);
-    $product = $product_factory->withName($product_name)->create();
+    $productName = 'First Purchase Product';
+    $productFactory = new WooCommerceProduct($i);
+    $product = $productFactory->withName($productName)->create();
 
-    $email_subject = 'First Purchase Test 2';
-    $newsletter_factory = new Newsletter();
-    $newsletter_factory
-      ->withSubject($email_subject)
+    $emailSubject = 'First Purchase Test 2';
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory
+      ->withSubject($emailSubject)
       ->withAutomaticTypeWooCommerceFirstPurchase()
       ->withActiveStatus()
       ->create();
 
-    $user_email = 'user3@email.test';
-    $I->orderProduct($product, $user_email, true, false);
+    $userEmail = 'user3@email.test';
+    $i->orderProduct($product, $userEmail, true, false);
 
-    $I->amOnMailboxAppPage();
-    $I->dontSee($email_subject);
-    $I->dontSee($user_email);
+    $i->amOnMailboxAppPage();
+    $i->dontSee($emailSubject);
+    $i->dontSee($userEmail);
   }
 }

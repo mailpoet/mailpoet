@@ -12,8 +12,8 @@ class DateTest extends \MailPoetUnitTest {
       'YYYY/MM/DD' => '2016/05/10',
       'YYYY/DD/MM' => '2016/10/05',
     ];
-    foreach ($date as $date_format => $date) {
-      expect(Date::convertDateToDatetime($date, $date_format))
+    foreach ($date as $dateFormat => $date) {
+      expect(Date::convertDateToDatetime($date, $dateFormat))
         ->equals('2016-05-10 00:00:00');
     }
   }
@@ -23,16 +23,16 @@ class DateTest extends \MailPoetUnitTest {
       'MM/YYYY' => '05/2016',
       'YYYY/MM' => '2016/05',
     ];
-    foreach ($date as $date_format => $date) {
-      expect(Date::convertDATEToDatetime($date, $date_format))
+    foreach ($date as $dateFormat => $date) {
+      expect(Date::convertDATEToDatetime($date, $dateFormat))
         ->equals('2016-05-01 00:00:00');
     }
   }
 
   public function testItCanConvertMonthToDatetime() {
-    $current_year = date('Y');
+    $currentYear = date('Y');
     expect(Date::convertDateToDatetime('05', 'MM'))
-      ->equals(sprintf('%s-05-01 00:00:00', $current_year));
+      ->equals(sprintf('%s-05-01 00:00:00', $currentYear));
   }
 
   public function testItCanConvertYearToDatetime() {

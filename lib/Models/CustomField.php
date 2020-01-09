@@ -56,14 +56,14 @@ class CustomField extends Model {
   public function formatValue($value = null) {
     // format custom field data depending on type
     if (is_array($value) && $this->type === self::TYPE_DATE) {
-      $custom_field_data = $this->asArray();
-      $date_format = $custom_field_data['params']['date_format'];
-      $date_type = (isset($custom_field_data['params']['date_type'])
-        ? $custom_field_data['params']['date_type']
+      $customFieldData = $this->asArray();
+      $dateFormat = $customFieldData['params']['date_format'];
+      $dateType = (isset($customFieldData['params']['date_type'])
+        ? $customFieldData['params']['date_type']
         : 'year_month_day'
       );
-      $date_parts = explode('_', $date_type);
-      switch ($date_type) {
+      $dateParts = explode('_', $dateType);
+      switch ($dateType) {
         case 'year_month_day':
           $value = sprintf(
             '%s/%s/%s',
@@ -116,7 +116,7 @@ class CustomField extends Model {
       }
 
       if (!empty($value)) {
-        $value = Date::convertDateToDatetime($value, $date_format);
+        $value = Date::convertDateToDatetime($value, $dateFormat);
       }
     }
 

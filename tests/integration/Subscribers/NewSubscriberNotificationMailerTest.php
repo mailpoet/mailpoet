@@ -34,14 +34,14 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
   public function testItDoesNotSendIfNoSettings() {
     $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, null);
     $mailer = Stub::makeEmpty(Mailer::class, ['send' => Expected::never()], $this);
-    $service = new NewSubscriberNotificationMailer($mailer, $this->di_container->get(Renderer::class), $this->di_container->get(SettingsController::class));
+    $service = new NewSubscriberNotificationMailer($mailer, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
     $service->send($this->subscriber, $this->segments);
   }
 
   public function testItDoesNotSendIfSettingsDoesNotHaveEnabled() {
     $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, []);
     $mailer = Stub::makeEmpty(Mailer::class, ['send' => Expected::never()], $this);
-    $service = new NewSubscriberNotificationMailer($mailer, $this->di_container->get(Renderer::class), $this->di_container->get(SettingsController::class));
+    $service = new NewSubscriberNotificationMailer($mailer, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
     $service->send($this->subscriber, $this->segments);
   }
 
@@ -49,14 +49,14 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
   public function testItDoesNotSendIfSettingsDoesNotHaveAddress() {
     $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false]);
     $mailer = Stub::makeEmpty(Mailer::class, ['send' => Expected::never()], $this);
-    $service = new NewSubscriberNotificationMailer($mailer, $this->di_container->get(Renderer::class), $this->di_container->get(SettingsController::class));
+    $service = new NewSubscriberNotificationMailer($mailer, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
     $service->send($this->subscriber, $this->segments);
   }
 
   public function testItDoesNotSendIfDisabled() {
     $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false, 'address' => 'a@b.c']);
     $mailer = Stub::makeEmpty(Mailer::class, ['send' => Expected::never()], $this);
-    $service = new NewSubscriberNotificationMailer($mailer, $this->di_container->get(Renderer::class), $this->di_container->get(SettingsController::class));
+    $service = new NewSubscriberNotificationMailer($mailer, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
     $service->send($this->subscriber, $this->segments);
   }
 
@@ -65,7 +65,7 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
-        Expected::once(function($newsletter, $subscriber, $extra_params) {
+        Expected::once(function($newsletter, $subscriber, $extraParams) {
           expect($subscriber)->equals('a@b.c');
           expect($newsletter)->hasKey('subject');
           expect($newsletter)->hasKey('body');
@@ -76,7 +76,7 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
           expect($newsletter['body'])->count(2);
           expect($newsletter['body']['text'])->contains('subscriber@example.com');
           expect($newsletter['body']['html'])->contains('subscriber@example.com');
-          expect($extra_params['meta'])->equals([
+          expect($extraParams['meta'])->equals([
             'email_type' => 'new_subscriber_notification',
             'subscriber_status' => 'unknown',
             'subscriber_source' => 'administrator',
@@ -84,11 +84,11 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
         }),
     ], $this);
 
-    $service = new NewSubscriberNotificationMailer($mailer, $this->di_container->get(Renderer::class), $this->di_container->get(SettingsController::class));
+    $service = new NewSubscriberNotificationMailer($mailer, $this->diContainer->get(Renderer::class), $this->diContainer->get(SettingsController::class));
     $service->send($this->subscriber, $this->segments);
   }
 
   public function _after() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }

@@ -37,8 +37,8 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     WPFunctions::set(new WPFunctions);
     WPFunctions::get()->removeAllFilters('woocommerce_payment_complete');
-    $this->woocommerce_helper = $this->makeEmpty(WCHelper::class, []);
-    $this->event = new PurchasedInCategory($this->woocommerce_helper);
+    $this->woocommerceHelper = $this->makeEmpty(WCHelper::class, []);
+    $this->event = new PurchasedInCategory($this->woocommerceHelper);
   }
 
   public function testItGetsEventDetails() {
@@ -48,7 +48,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
   }
 
   public function testItDoesNotScheduleEmailWhenOrderDetailsAreNotAvailable() {
-    $this->woocommerce_helper
+    $this->woocommerceHelper
       ->expects($this->once())
       ->method('wcGetOrder')
       ->will($this->returnValue(false));
@@ -57,7 +57,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
 
   public function testItDoesNotScheduleEmailWhenNoSubscriber() {
     $order = $this->getOrderMock();
-    $this->woocommerce_helper
+    $this->woocommerceHelper
       ->expects($this->once())
       ->method('wcGetOrder')
       ->will($this->returnValue($order));
@@ -93,96 +93,96 @@ class PurchasedInCategoryTest extends \MailPoetTest {
       $newsletter->id
     );
 
-    $customer_email = 'email@example.com';
+    $customerEmail = 'email@example.com';
     $order = $this->getOrderMock(['15', '16']);
-    $this->woocommerce_helper
+    $this->woocommerceHelper
       ->expects($this->once())
       ->method('wcGetOrder')
       ->will($this->returnValue($order));
     $order
       ->expects($this->atLeastOnce())
       ->method('get_billing_email')
-      ->will($this->returnValue($customer_email));
+      ->will($this->returnValue($customerEmail));
 
     $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $customer_email;
-    $subscriber->is_woocommerce_user = 1;
+    $subscriber->email = $customerEmail;
+    $subscriber->isWoocommerceUser = 1;
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
 
-    $subscriber_segment = SubscriberSegment::create();
-    $subscriber_segment->hydrate([
+    $subscriberSegment = SubscriberSegment::create();
+    $subscriberSegment->hydrate([
       'subscriber_id' => $subscriber->id,
       'segment_id' => Segment::getWooCommerceSegment()->id,
       'status' => Subscriber::STATUS_SUBSCRIBED,
     ]);
-    $subscriber_segment->save();
+    $subscriberSegment->save();
 
     $this->event->scheduleEmail(3);
-    $scheduled_task = Sending::getByNewsletterId($newsletter->id);
-    expect($scheduled_task)->notEmpty();
+    $scheduledTask = Sending::getByNewsletterId($newsletter->id);
+    expect($scheduledTask)->notEmpty();
   }
 
   private function getOrderMock($categories = ['123']) {
-    $product_mock = $this->getMockBuilder(\WC_Product::class)
+    $productMock = $this->getMockBuilder(\WC_Product::class)
       ->disableOriginalConstructor()
       ->disableOriginalClone()
       ->disableArgumentCloning()
       ->setMethods(['get_category_ids'])
       ->getMock();
 
-    $product_mock->method('get_category_ids')->willReturn($categories);
+    $productMock->method('get_category_ids')->willReturn($categories);
 
-    $order_item_product_mock = $this->getMockBuilder(\WC_Order_Item_Product::class)
+    $orderItemProductMock = $this->getMockBuilder(\WC_Order_Item_Product::class)
       ->disableOriginalConstructor()
       ->disableOriginalClone()
       ->disableArgumentCloning()
       ->setMethods(['get_product'])
       ->getMock();
 
-    $order_item_product_mock->method('get_product')->willReturn($product_mock);
+    $orderItemProductMock->method('get_product')->willReturn($productMock);
 
-    $order_mock = $this->getMockBuilder(\WC_Order::class)
+    $orderMock = $this->getMockBuilder(\WC_Order::class)
       ->disableOriginalConstructor()
       ->disableOriginalClone()
       ->disableArgumentCloning()
       ->setMethods(['get_billing_email', 'get_items'])
       ->getMock();
 
-    $order_mock->method('get_items')->willReturn([$order_item_product_mock]);
+    $orderMock->method('get_items')->willReturn([$orderItemProductMock]);
 
-    return $order_mock;
+    return $orderMock;
   }
 
-  public function _createNewsletterOption(array $options, $newsletter_id) {
+  public function _createNewsletterOption(array $options, $newsletterId) {
     foreach ($options as $option => $value) {
-      $newsletter_option_field = NewsletterOptionField::where('name', $option)
+      $newsletterOptionField = NewsletterOptionField::where('name', $option)
         ->where('newsletter_type', Newsletter::TYPE_AUTOMATIC)
         ->findOne();
-      if (!$newsletter_option_field) {
-        $newsletter_option_field = NewsletterOptionField::create();
-        $newsletter_option_field->hydrate(
+      if (!$newsletterOptionField) {
+        $newsletterOptionField = NewsletterOptionField::create();
+        $newsletterOptionField->hydrate(
           [
             'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
             'name' => $option,
           ]
         );
-        $newsletter_option_field->save();
+        $newsletterOptionField->save();
       }
 
-      $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter_id)
-        ->where('option_field_id', $newsletter_option_field->id)
+      $newsletterOption = NewsletterOption::where('newsletter_id', $newsletterId)
+        ->where('option_field_id', $newsletterOptionField->id)
         ->findOne();
-      if (!$newsletter_option) {
-        $newsletter_option = NewsletterOption::create();
-        $newsletter_option->hydrate(
+      if (!$newsletterOption) {
+        $newsletterOption = NewsletterOption::create();
+        $newsletterOption->hydrate(
           [
-            'newsletter_id' => $newsletter_id,
-            'option_field_id' => $newsletter_option_field->id,
+            'newsletter_id' => $newsletterId,
+            'option_field_id' => $newsletterOptionField->id,
             'value' => $value,
           ]
         );
-        $newsletter_option->save();
+        $newsletterOption->save();
       }
     }
   }

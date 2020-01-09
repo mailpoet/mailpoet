@@ -207,23 +207,23 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     }
   }
 
-  public function setError($error = '', $error_code = null) {
-    if (!$error_code) {
-      $error_code = count($this->_errors);
+  public function setError($error = '', $errorCode = null) {
+    if (!$errorCode) {
+      $errorCode = count($this->_errors);
     }
     if (!empty($error)) {
       if (is_array($error)) {
         $this->_errors = array_merge($this->_errors, $error);
         $this->_errors = array_unique($this->_errors);
       } else {
-        $this->_errors[$error_code] = $error;
+        $this->_errors[$errorCode] = $error;
       }
     }
   }
 
   public function save() {
     $this->setTimestamp();
-    $this->_new_record = $this->isNew();
+    $this->newRecord = $this->isNew();
     try {
       parent::save();
     } catch (\MailPoetVendor\Sudzy\ValidationException $e) {
@@ -253,8 +253,8 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
   }
 
   public function isNew() {
-    return (isset($this->_new_record)) ?
-      $this->_new_record :
+    return (isset($this->newRecord)) ?
+      $this->newRecord :
       parent::isNew();
   }
 
@@ -326,14 +326,14 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
 
   public function duplicate($data = []) {
     $model = get_called_class();
-    $model_data = array_merge($this->asArray(), $data);
-    unset($model_data['id']);
+    $modelData = array_merge($this->asArray(), $data);
+    unset($modelData['id']);
 
     $duplicate = $model::create();
-    $duplicate->hydrate($model_data);
+    $duplicate->hydrate($modelData);
     $duplicate->set_expr('created_at', 'NOW()');
     $duplicate->set_expr('updated_at', 'NOW()');
-    if (isset($model_data['deleted_at'])) {
+    if (isset($modelData['deleted_at'])) {
       $duplicate->set_expr('deleted_at', 'NULL');
     }
 
@@ -342,7 +342,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
   }
 
   public function setTimestamp() {
-    if ($this->created_at === null) {
+    if ($this->createdAt === null) {
       $this->set_expr('created_at', 'NOW()');
     }
   }

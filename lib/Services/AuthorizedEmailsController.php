@@ -35,77 +35,77 @@ class AuthorizedEmailsController {
       return;
     }
 
-    $authorized_emails = $this->bridge->getAuthorizedEmailAddresses();
+    $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
     // Keep previous check result for an invalid response from API
-    if ($authorized_emails === false) {
+    if ($authorizedEmails === false) {
       return;
     }
-    $authorized_emails = array_map('strtolower', $authorized_emails);
+    $authorizedEmails = array_map('strtolower', $authorizedEmails);
 
     $result = [];
-    $result = $this->validateAddressesInSettings($authorized_emails, $result);
-    $result = $this->validateAddressesInScheduledAndAutomaticEmails($authorized_emails, $result);
+    $result = $this->validateAddressesInSettings($authorizedEmails, $result);
+    $result = $this->validateAddressesInScheduledAndAutomaticEmails($authorizedEmails, $result);
     $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, $result ?: null);
     $this->updateMailerLog($result);
   }
 
   public function onSettingsSave($settings) {
-    $sender_address_set = !empty($settings['sender']['address']);
-    if ($sender_address_set) {
+    $senderAddressSet = !empty($settings['sender']['address']);
+    if ($senderAddressSet) {
       $this->checkAuthorizedEmailAddresses();
     }
   }
 
-  public function onNewsletterUpdate(Newsletter $newsletter, Newsletter $old_newsletter = null) {
-    if ($old_newsletter === null || $newsletter->sender_address === $old_newsletter->sender_address) {
+  public function onNewsletterUpdate(Newsletter $newsletter, Newsletter $oldNewsletter = null) {
+    if ($oldNewsletter === null || $newsletter->senderAddress === $oldNewsletter->senderAddress) {
       return;
     }
     if ($newsletter->type === Newsletter::TYPE_STANDARD && $newsletter->status === Newsletter::STATUS_SCHEDULED) {
       $this->checkAuthorizedEmailAddresses();
     }
-    if (in_array($newsletter->type, $this->automatic_email_types, true) && $newsletter->status === Newsletter::STATUS_ACTIVE) {
+    if (in_array($newsletter->type, $this->automaticEmailTypes, true) && $newsletter->status === Newsletter::STATUS_ACTIVE) {
       $this->checkAuthorizedEmailAddresses();
     }
   }
 
-  private function validateAddressesInSettings($authorized_emails, $result = []) {
-    $default_sender_address = $this->settings->get('sender.address');
+  private function validateAddressesInSettings($authorizedEmails, $result = []) {
+    $defaultSenderAddress = $this->settings->get('sender.address');
 
-    if (!$this->validateAuthorizedEmail($authorized_emails, $default_sender_address)) {
-      $result['invalid_sender_address'] = $default_sender_address;
+    if (!$this->validateAuthorizedEmail($authorizedEmails, $defaultSenderAddress)) {
+      $result['invalid_sender_address'] = $defaultSenderAddress;
     }
 
     return $result;
   }
 
-  private function validateAddressesInScheduledAndAutomaticEmails($authorized_emails, $result = []) {
+  private function validateAddressesInScheduledAndAutomaticEmails($authorizedEmails, $result = []) {
     $condittion = sprintf(
       "(`type` = '%s' AND `status` = '%s') OR (`type` IN ('%s') AND `status` = '%s')",
       Newsletter::TYPE_STANDARD,
       Newsletter::STATUS_SCHEDULED,
-      implode("', '", $this->automatic_email_types),
+      implode("', '", $this->automaticEmailTypes),
       Newsletter::STATUS_ACTIVE
     );
 
     $newsletters = Newsletter::whereRaw($condittion)->findMany();
 
-    $invalid_senders_in_newsletters = [];
+    $invalidSendersInNewsletters = [];
     foreach ($newsletters as $newsletter) {
-      if ($this->validateAuthorizedEmail($authorized_emails, $newsletter->sender_address)) {
+      if ($this->validateAuthorizedEmail($authorizedEmails, $newsletter->senderAddress)) {
         continue;
       }
-      $invalid_senders_in_newsletters[] = [
+      $invalidSendersInNewsletters[] = [
         'newsletter_id' => $newsletter->id,
         'subject' => $newsletter->subject,
-        'sender_address' => $newsletter->sender_address,
+        'sender_address' => $newsletter->senderAddress,
       ];
     }
 
-    if (!count($invalid_senders_in_newsletters)) {
+    if (!count($invalidSendersInNewsletters)) {
       return $result;
     }
 
-    $result['invalid_senders_in_newsletters'] = $invalid_senders_in_newsletters;
+    $result['invalid_senders_in_newsletters'] = $invalidSendersInNewsletters;
     return $result;
   }
 
@@ -116,13 +116,13 @@ class AuthorizedEmailsController {
     if ($error) {
       return;
     }
-    $mailer_log_error = MailerLog::getError();
-    if ($mailer_log_error && $mailer_log_error['operation'] === MailerError::OPERATION_AUTHORIZATION) {
+    $mailerLogError = MailerLog::getError();
+    if ($mailerLogError && $mailerLogError['operation'] === MailerError::OPERATION_AUTHORIZATION) {
       MailerLog::resumeSending();
     }
   }
 
-  private function validateAuthorizedEmail($authorized_emails, $email) {
-    return in_array(strtolower($email), $authorized_emails, true);
+  private function validateAuthorizedEmail($authorizedEmails, $email) {
+    return in_array(strtolower($email), $authorizedEmails, true);
   }
 }

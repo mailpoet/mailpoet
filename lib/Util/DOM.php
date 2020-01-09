@@ -11,24 +11,24 @@ class DOM {
    * ancestor and splitting left and right siblings into subtrees along
    * the way, retaining order and nesting level.
    */
-  public static function splitOn(DomNode $bound, DomNode $cut_element) {
-    $ignore_text_and_comment_nodes = false;
-    for ($parent = $cut_element->parent; $bound != $parent; $parent = $grandparent) {
+  public static function splitOn(DomNode $bound, DomNode $cutElement) {
+    $ignoreTextAndCommentNodes = false;
+    for ($parent = $cutElement->parent; $bound != $parent; $parent = $grandparent) {
       // Clone parent node without children, but with attributes
       $parent->after($parent->toString());
-      $right = $parent->getNextSibling($ignore_text_and_comment_nodes);
+      $right = $parent->getNextSibling($ignoreTextAndCommentNodes);
       $right->clear();
 
-      while ($sibling = $cut_element->getNextSibling($ignore_text_and_comment_nodes)) {
+      while ($sibling = $cutElement->getNextSibling($ignoreTextAndCommentNodes)) {
         $sibling->move($right);
       }
 
       // Reattach cut_element and right siblings to grandparent
       $grandparent = $parent->parent;
-      $index_after_parent = $parent->index() + 1;
-      $right->move($grandparent, $index_after_parent);
-      $index_after_parent = $parent->index() + 1;
-      $cut_element->move($grandparent, $index_after_parent);
+      $indexAfterParent = $parent->index() + 1;
+      $right->move($grandparent, $indexAfterParent);
+      $indexAfterParent = $parent->index() + 1;
+      $cutElement->move($grandparent, $indexAfterParent);
     }
   }
 

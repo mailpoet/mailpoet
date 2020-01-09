@@ -21,16 +21,16 @@ class Subscribers {
   /** @var SubscribersRepository */
   private $subscribers_repository;
 
-  public function __construct(SettingsController $settings, SubscribersRepository $subscribers_repository) {
+  public function __construct(SettingsController $settings, SubscribersRepository $subscribersRepository) {
     $this->settings = $settings;
-    $this->subscribers_repository = $subscribers_repository;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function check() {
     $limit = $this->getSubscribersLimit();
     if ($limit === false) return false;
-    $subscribers_count = $this->subscribers_repository->getTotalSubscribers();
-    return $subscribers_count > $limit;
+    $subscribersCount = $this->subscribersRepository->getTotalSubscribers();
+    return $subscribersCount > $limit;
   }
 
   public function hasValidApiKey() {
@@ -78,8 +78,8 @@ class Subscribers {
   }
 
   private function getFreeSubscribersLimit() {
-    $installation_time = strtotime($this->settings->get('installed_at'));
-    $old_user = $installation_time < strtotime(self::NEW_LIMIT_DATE);
-    return $old_user ? self::SUBSCRIBERS_OLD_LIMIT : self::SUBSCRIBERS_NEW_LIMIT;
+    $installationTime = strtotime($this->settings->get('installed_at'));
+    $oldUser = $installationTime < strtotime(self::NEW_LIMIT_DATE);
+    return $oldUser ? self::SUBSCRIBERS_OLD_LIMIT : self::SUBSCRIBERS_NEW_LIMIT;
   }
 }

@@ -21,16 +21,16 @@ if (!class_exists('ProgressBar', false)) {
      * Initialize the class and set its properties.
      *
      */
-    public function __construct($progress_bar_id) {
-      $filename = $progress_bar_id . '-progress.json';
-      $this->filename = Env::$temp_path . '/' . $filename;
-      $this->url = Env::$temp_url . '/' . $filename;
+    public function __construct($progressBarId) {
+      $filename = $progressBarId . '-progress.json';
+      $this->filename = Env::$tempPath . '/' . $filename;
+      $this->url = Env::$tempUrl . '/' . $filename;
       $counters = $this->readProgress();
       if (isset($counters->total)) {
-        $this->total_count = $counters->total;
+        $this->totalCount = $counters->total;
       }
       if (isset($counters->current)) {
-        $this->current_count = $counters->current;
+        $this->currentCount = $counters->current;
       }
     }
 
@@ -52,9 +52,9 @@ if (!class_exists('ProgressBar', false)) {
       if (!file_exists($this->filename)) {
         return false;
       }
-      $json_content = file_get_contents($this->filename);
-      if (is_string($json_content)) {
-        return json_decode($json_content);
+      $jsonContent = file_get_contents($this->filename);
+      if (is_string($jsonContent)) {
+        return json_decode($jsonContent);
       }
       return false;
     }
@@ -65,9 +65,9 @@ if (!class_exists('ProgressBar', false)) {
      * @param int $count Count
      */
     public function setTotalCount($count) {
-      if (($count != $this->total_count) || ($count == 0)) {
-        $this->total_count = $count;
-        $this->current_count = 0;
+      if (($count != $this->totalCount) || ($count == 0)) {
+        $this->totalCount = $count;
+        $this->currentCount = 0;
         $this->saveProgress();
       }
     }
@@ -78,7 +78,7 @@ if (!class_exists('ProgressBar', false)) {
      * @param int $count Count
      */
     public function incrementCurrentCount($count) {
-      $this->current_count += $count;
+      $this->currentCount += $count;
       $this->saveProgress();
     }
 
@@ -88,8 +88,8 @@ if (!class_exists('ProgressBar', false)) {
      */
     private function saveProgress() {
       file_put_contents($this->filename, json_encode([
-        'total' => $this->total_count,
-        'current' => $this->current_count,
+        'total' => $this->totalCount,
+        'current' => $this->currentCount,
       ]));
     }
 

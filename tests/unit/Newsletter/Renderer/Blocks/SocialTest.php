@@ -36,7 +36,7 @@ class SocialTest extends \MailPoetUnitTest {
 
   public function testItRendersCorrectly() {
     $output = Social::render($this->block);
-    $expected_result = '
+    $expectedResult = '
       <tr>
         <td class="mailpoet_padded_side mailpoet_padded_vertical" valign="top" align="center">
           <a href="http://www.facebook.com" style="text-decoration:none!important;"
@@ -56,6 +56,6 @@ class SocialTest extends \MailPoetUnitTest {
         ></a>&nbsp;
         </td>
       </tr>';
-    expect($output)->equals($expected_result);
+    expect($output)->equals($expectedResult);
   }
 }

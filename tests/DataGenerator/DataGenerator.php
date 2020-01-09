@@ -16,11 +16,11 @@ class DataGenerator {
     $this->console = $console;
   }
 
-  public function run($generator_name) {
+  public function run($generatorName) {
     ini_set('memory_limit', '1024M');
     $timer = time();
     try {
-      $generator = $this->createGenerator($generator_name);
+      $generator = $this->createGenerator($generatorName);
       foreach ($generator->generate() as $message) {
         $this->log($timer, $message);
       }
@@ -30,8 +30,8 @@ class DataGenerator {
     $this->log($timer, 'DONE!');
   }
 
-  private function createGenerator($generator_name) {
-    switch ($generator_name) {
+  private function createGenerator($generatorName) {
+    switch ($generatorName) {
       case self::PAST_REVENUES_GENERATOR:
         return new WooCommercePastRevenues();
       default:

@@ -27,14 +27,14 @@ class UnitTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes.Class
   }
 
   public function generateSubscriber($data = []) {
-    $subscriber_data = [
+    $subscriberData = [
       'email' => sprintf('user%s@mailpoet.com', bin2hex(random_bytes(7))), // phpcs:ignore PHPCompatibility
       'first_name' => $this->generateName(),
       'last_name' => $this->generateName(),
     ];
 
     $subscriber = \MailPoet\Models\Subscriber::create();
-    $subscriber->hydrate(array_merge($subscriber_data, $data));
+    $subscriber->hydrate(array_merge($subscriberData, $data));
     $subscriber->save();
   }
 

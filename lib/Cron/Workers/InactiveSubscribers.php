@@ -20,44 +20,44 @@ class InactiveSubscribers extends SimpleWorker {
   private $settings;
 
   public function __construct(
-    InactiveSubscribersController $inactive_subscribers_controller,
+    InactiveSubscribersController $inactiveSubscribersController,
     SettingsController $settings
   ) {
-    $this->inactive_subscribers_controller = $inactive_subscribers_controller;
+    $this->inactiveSubscribersController = $inactiveSubscribersController;
     $this->settings = $settings;
     parent::__construct();
   }
 
 
   public function processTaskStrategy(ScheduledTask $task, $timer) {
-    $tracking_enabled = (bool)$this->settings->get('tracking.enabled');
-    if (!$tracking_enabled) {
+    $trackingEnabled = (bool)$this->settings->get('tracking.enabled');
+    if (!$trackingEnabled) {
       $this->schedule();
       return true;
     }
-    $days_to_inactive = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
+    $daysToInactive = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
     // Activate all inactive subscribers in case the feature is turned off
-    if ($days_to_inactive === 0) {
-      $this->inactive_subscribers_controller->reactivateInactiveSubscribers();
+    if ($daysToInactive === 0) {
+      $this->inactiveSubscribersController->reactivateInactiveSubscribers();
       $this->schedule();
       return true;
     }
     // Handle activation/deactivation within interval
     $meta = $task->getMeta();
-    $last_subscriber_id = isset($meta['last_subscriber_id']) ? $meta['last_subscriber_id'] : 0;
-    $max_subscriber_id = isset($meta['max_subscriber_id']) ? $meta['max_subscriber_id'] : (int)Subscriber::max('id');
-    while ($last_subscriber_id <= $max_subscriber_id) {
-      $count = $this->inactive_subscribers_controller->markInactiveSubscribers($days_to_inactive, self::BATCH_SIZE, $last_subscriber_id);
+    $lastSubscriberId = isset($meta['last_subscriber_id']) ? $meta['last_subscriber_id'] : 0;
+    $maxSubscriberId = isset($meta['max_subscriber_id']) ? $meta['max_subscriber_id'] : (int)Subscriber::max('id');
+    while ($lastSubscriberId <= $maxSubscriberId) {
+      $count = $this->inactiveSubscribersController->markInactiveSubscribers($daysToInactive, self::BATCH_SIZE, $lastSubscriberId);
       if ($count === false) {
         break;
       }
-      $last_subscriber_id += self::BATCH_SIZE;
-      $task->meta = ['last_subscriber_id' => $last_subscriber_id];
+      $lastSubscriberId += self::BATCH_SIZE;
+      $task->meta = ['last_subscriber_id' => $lastSubscriberId];
       $task->save();
-      $this->cron_helper->enforceExecutionLimit($timer);
+      $this->cronHelper->enforceExecutionLimit($timer);
     };
-    while ($this->inactive_subscribers_controller->markActiveSubscribers($days_to_inactive, self::BATCH_SIZE) === self::BATCH_SIZE) {
-      $this->cron_helper->enforceExecutionLimit($timer);
+    while ($this->inactiveSubscribersController->markActiveSubscribers($daysToInactive, self::BATCH_SIZE) === self::BATCH_SIZE) {
+      $this->cronHelper->enforceExecutionLimit($timer);
     };
     $this->schedule();
     return true;

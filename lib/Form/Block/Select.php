@@ -9,12 +9,12 @@ class Select extends Base {
   public static function render($block) {
     $html = '';
 
-    $field_name = 'data[' . static::getFieldName($block) . ']';
-    $field_validation = static::getInputValidation($block);
-    $automation_id = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
+    $fieldName = 'data[' . static::getFieldName($block) . ']';
+    $fieldValidation = static::getInputValidation($block);
+    $automationId = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
     $html .= '<p class="mailpoet_paragraph">';
     $html .= static::renderLabel($block);
-    $html .= '<select class="mailpoet_select" name="' . $field_name . '" ' . $automation_id . '>';
+    $html .= '<select class="mailpoet_select" name="' . $fieldName . '" ' . $automationId . '>';
 
     if (isset($block['params']['label_within']) && $block['params']['label_within']) {
       $html .= '<option value="">' . static::getFieldLabel($block) . '</option>';
@@ -34,13 +34,13 @@ class Select extends Base {
         continue;
       }
 
-      $is_selected = (
+      $isSelected = (
         (isset($option['is_checked']) && $option['is_checked'])
         ||
         (self::getFieldValue($block) === $option['value'])
       ) ? ' selected="selected"' : '';
 
-      $is_disabled = (!empty($option['is_disabled'])) ? ' disabled="disabled"' : '';
+      $isDisabled = (!empty($option['is_disabled'])) ? ' disabled="disabled"' : '';
 
       if (is_array($option['value'])) {
         $value = key($option['value']);
@@ -50,7 +50,7 @@ class Select extends Base {
         $label = $option['value'];
       }
 
-      $html .= '<option value="' . $value . '"' . $is_selected . $is_disabled . '>';
+      $html .= '<option value="' . $value . '"' . $isSelected . $isDisabled . '>';
       $html .= WPFunctions::get()->escAttr($label);
       $html .= '</option>';
     }

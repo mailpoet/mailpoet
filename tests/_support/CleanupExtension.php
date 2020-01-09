@@ -26,8 +26,8 @@ class CleanupExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDec
 
   public function __construct($config, $options) {
     parent::__construct($config, $options);
-    $this->root_connection = new PDO($this->createDsnConnectionString(), self::DB_USERNAME, self::DB_PASSWORD);
-    $this->root_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $this->rootConnection = new PDO($this->createDsnConnectionString(), self::DB_USERNAME, self::DB_PASSWORD);
+    $this->rootConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   }
 
   public function backupDatabase(SuiteEvent $event) {
@@ -66,7 +66,7 @@ class CleanupExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDec
   }
 
   public function cleanupEnvironment(TestEvent $event) {
-    $this->root_connection->exec(file_get_contents(self::DB_BACKUP_PATH));
+    $this->rootConnection->exec(file_get_contents(self::DB_BACKUP_PATH));
     exec('rm -rf ' . self::MAILHOG_DATA_PATH . '/*', $output);
 
     // cleanup EntityManager for data factories that are using it

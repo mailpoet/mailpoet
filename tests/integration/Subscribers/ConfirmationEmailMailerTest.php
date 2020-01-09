@@ -16,8 +16,8 @@ use MailPoetVendor\Idiorm\ORM;
 class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   public function testItSendsConfirmationEmail() {
-    $subcription_url_facrory_mock = $this->createMock(SubscriptionUrlFactory::class);
-    $subcription_url_facrory_mock->method('getConfirmationUrl')->willReturn('http://example.com');
+    $subcriptionUrlFacroryMock = $this->createMock(SubscriptionUrlFactory::class);
+    $subcriptionUrlFacroryMock->method('getConfirmationUrl')->willReturn('http://example.com');
 
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
@@ -30,10 +30,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
-        Stub\Expected::once(function($email, $subscriber, $extra_params) {
+        Stub\Expected::once(function($email, $subscriber, $extraParams) {
           expect($email['body']['html'])->contains('<strong>Test segment</strong>');
           expect($email['body']['html'])->contains('<a target="_blank" href="http://example.com">I confirm my subscription!</a>');
-          expect($extra_params['meta'])->equals([
+          expect($extraParams['meta'])->equals([
             'email_type' => 'confirmation',
             'subscriber_status' => 'unconfirmed',
             'subscriber_source' => 'api',
@@ -43,9 +43,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
     $sender = new ConfirmationEmailMailer(
       $mailer,
-      $this->di_container->get(WPFunctions::class),
-      $this->di_container->get(SettingsController::class),
-      $subcription_url_facrory_mock
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $subcriptionUrlFacroryMock
     );
 
 
@@ -79,9 +79,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
     $sender = new ConfirmationEmailMailer(
       $mailer,
-      $this->di_container->get(WPFunctions::class),
-      $this->di_container->get(SettingsController::class),
-      $this->di_container->get(SubscriptionUrlFactory::class)
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class)
     );
 
     $sender->sendConfirmationEmail($subscriber);
@@ -106,9 +106,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $sender = new ConfirmationEmailMailer(
       $mailer,
-      $this->di_container->get(WPFunctions::class),
-      $this->di_container->get(SettingsController::class),
-      $this->di_container->get(SubscriptionUrlFactory::class)
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class)
     );
 
     $result = $sender->sendConfirmationEmail($subscriber);
@@ -133,9 +133,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     ], $this);
     $sender = new ConfirmationEmailMailer(
       $mailer,
-      $this->di_container->get(WPFunctions::class),
-      $this->di_container->get(SettingsController::class),
-      $this->di_container->get(SubscriptionUrlFactory::class)
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class)
     );
 
     for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
@@ -161,9 +161,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     ], $this);
     $sender = new ConfirmationEmailMailer(
       $mailer,
-      $this->di_container->get(WPFunctions::class),
-      $this->di_container->get(SettingsController::class),
-      $this->di_container->get(SubscriptionUrlFactory::class)
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class)
     );
 
     for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {

@@ -33,39 +33,39 @@ class ReleaseVersionController {
   }
 
   public function determineNextVersion() {
-    $last_version = $this->jira->getLastReleasedVersion();
+    $lastVersion = $this->jira->getLastReleasedVersion();
 
-    $part_to_increment = VersionHelper::PATCH;
+    $partToIncrement = VersionHelper::PATCH;
 
     if ($this->project === JiraController::PROJECT_MAILPOET) {
-      $free_increment = $this->checkProjectVersionIncrement(JiraController::PROJECT_MAILPOET);
-      $premium_increment = $this->checkProjectVersionIncrement(JiraController::PROJECT_PREMIUM);
+      $freeIncrement = $this->checkProjectVersionIncrement(JiraController::PROJECT_MAILPOET);
+      $premiumIncrement = $this->checkProjectVersionIncrement(JiraController::PROJECT_PREMIUM);
 
-      if (in_array(VersionHelper::MINOR, [$free_increment, $premium_increment])) {
-        $part_to_increment = VersionHelper::MINOR;
+      if (in_array(VersionHelper::MINOR, [$freeIncrement, $premiumIncrement])) {
+        $partToIncrement = VersionHelper::MINOR;
       }
     }
 
-    $next_version = VersionHelper::incrementVersion($last_version['name'], $part_to_increment);
-    return $next_version;
+    $nextVersion = VersionHelper::incrementVersion($lastVersion['name'], $partToIncrement);
+    return $nextVersion;
   }
 
   private function checkProjectVersionIncrement($project) {
     $issues = $this->getUnreleasedDoneIssues($project);
 
-    $part_to_increment = VersionHelper::PATCH;
-    $field_id = JiraController::VERSION_INCREMENT_FIELD_ID;
+    $partToIncrement = VersionHelper::PATCH;
+    $fieldId = JiraController::VERSION_INCREMENT_FIELD_ID;
 
     foreach ($issues as $issue) {
-      if (!empty($issue['fields'][$field_id]['value'])
-        && $issue['fields'][$field_id]['value'] === VersionHelper::MINOR
+      if (!empty($issue['fields'][$fieldId]['value'])
+        && $issue['fields'][$fieldId]['value'] === VersionHelper::MINOR
       ) {
-        $part_to_increment = VersionHelper::MINOR;
+        $partToIncrement = VersionHelper::MINOR;
         break;
       }
     }
 
-    return $part_to_increment;
+    return $partToIncrement;
   }
 
   private function getUnreleasedDoneIssues($project = null) {
@@ -77,23 +77,23 @@ class ReleaseVersionController {
 
   private function ensureCorrectVersion($version) {
     try {
-      $version_data = $this->jira->getVersion($version);
+      $versionData = $this->jira->getVersion($version);
     } catch (\Exception $e) {
-      $version_data = false;
+      $versionData = false;
     }
-    if (!empty($version_data['released'])) {
+    if (!empty($versionData['released'])) {
       // version is already released
       return false;
-    } else if (empty($version_data)) {
+    } else if (empty($versionData)) {
       // version does not exist
       $this->jira->createVersion($version);
       return $version;
     }
     // version exists
-    return $version_data['name'];
+    return $versionData['name'];
   }
 
-  private function setIssueFixVersion($issue_key, $version) {
+  private function setIssueFixVersion($issueKey, $version) {
     $data = [
       'update' => [
         'fixVersions' => [
@@ -101,6 +101,6 @@ class ReleaseVersionController {
         ],
       ],
     ];
-    return $this->jira->updateIssue($issue_key, $data);
+    return $this->jira->updateIssue($issueKey, $data);
   }
 }

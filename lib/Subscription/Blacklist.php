@@ -29,14 +29,14 @@ class Blacklist {
   }
 
   public function isBlacklisted($email) {
-    $hashed_email = $this->hash($email);
-    if (isset($this->blacklistedEmails[$hashed_email])) {
+    $hashedEmail = $this->hash($email);
+    if (isset($this->blacklistedEmails[$hashedEmail])) {
       return true;
     }
-    $email_parts = explode('@', $email);
-    $domain = end($email_parts);
-    $hashed_domain = $this->hash($domain);
-    return isset($this->blacklistedDomains[$hashed_domain]);
+    $emailParts = explode('@', $email);
+    $domain = end($emailParts);
+    $hashedDomain = $this->hash($domain);
+    return isset($this->blacklistedDomains[$hashedDomain]);
   }
 
   private function hash($key) {

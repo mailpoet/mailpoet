@@ -33,8 +33,8 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
   public function testItDoesntDisplayWhenInactiveTimeRangeChanged() {
     $this->createSubscribers(50);
 
-    $settings_factory = new Settings();
-    $settings_factory->withDeactivateSubscriberAfter3Months();
+    $settingsFactory = new Settings();
+    $settingsFactory->withDeactivateSubscriberAfter3Months();
 
     $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
     $result = $notice->init(true);
@@ -60,15 +60,15 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    $this->di_container->get(SettingsRepository::class)->truncate();
+    $this->diContainer->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 
   private function createSubscribers($count) {
     for ($i = 0; $i < $count; $i++) {
-      $subscriber_factory = new SubscriberFactory();
-      $subscriber_factory->withStatus(Subscriber::STATUS_INACTIVE);
-      $subscriber_factory->create();
+      $subscriberFactory = new SubscriberFactory();
+      $subscriberFactory->withStatus(Subscriber::STATUS_INACTIVE);
+      $subscriberFactory->create();
     }
   }
 }

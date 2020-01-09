@@ -28,16 +28,16 @@ class SegmentsExporter {
   }
 
   private function exportSegment($segment) {
-    $segment_data = [];
-    $segment_data[] = [
+    $segmentData = [];
+    $segmentData[] = [
       'name' => WPFunctions::get()->__('List name', 'mailpoet'),
       'value' => $segment['name'],
     ];
-    $segment_data[] = [
+    $segmentData[] = [
       'name' => WPFunctions::get()->__('Subscription status', 'mailpoet'),
       'value' => $segment['status'],
     ];
-    $segment_data[] = [
+    $segmentData[] = [
       'name' => WPFunctions::get()->__('Timestamp of the subscription (or last change of the subscription status)', 'mailpoet'),
       'value' => $segment['updated_at'],
     ];
@@ -45,7 +45,7 @@ class SegmentsExporter {
       'group_id' => 'mailpoet-lists',
       'group_label' => WPFunctions::get()->__('MailPoet Mailing Lists', 'mailpoet'),
       'item_id' => 'list-' . $segment['segment_id'],
-      'data' => $segment_data,
+      'data' => $segmentData,
     ];
   }
 

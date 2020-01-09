@@ -27,21 +27,21 @@ class Changelog {
     SettingsController $settings,
     WPFunctions $wp,
     Helper $wooCommerceHelper,
-    Url $url_helper,
-    MP2Migrator $mp2_migrator
+    Url $urlHelper,
+    MP2Migrator $mp2Migrator
   ) {
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->settings = $settings;
     $this->wp = $wp;
-    $this->url_helper = $url_helper;
-    $this->mp2_migrator = $mp2_migrator;
+    $this->urlHelper = $urlHelper;
+    $this->mp2Migrator = $mp2Migrator;
   }
 
   public function init() {
-    $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
+    $doingAjax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
 
     // don't run any check when it's an ajax request
-    if ($doing_ajax) {
+    if ($doingAjax) {
       return;
     }
 
@@ -72,12 +72,12 @@ class Changelog {
   }
 
   private function checkMp2Migration($version) {
-    if (!in_array($_GET['page'], ['mailpoet-migration', 'mailpoet-settings']) && $this->mp2_migrator->isMigrationStartedAndNotCompleted()) {
+    if (!in_array($_GET['page'], ['mailpoet-migration', 'mailpoet-settings']) && $this->mp2Migrator->isMigrationStartedAndNotCompleted()) {
       // Force the redirection if the migration has started but is not completed
       return $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-migration'));
     }
 
-    if ($version === null && $this->mp2_migrator->isMigrationNeeded()) {
+    if ($version === null && $this->mp2Migrator->isMigrationNeeded()) {
        $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-migration'));
     }
   }
@@ -88,8 +88,8 @@ class Changelog {
   }
 
   private function checkWelcomeWizard() {
-    $skip_wizard = $this->wp->applyFilters('mailpoet_skip_welcome_wizard', false);
-    if (!$skip_wizard) {
+    $skipWizard = $this->wp->applyFilters('mailpoet_skip_welcome_wizard', false);
+    if (!$skipWizard) {
       $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-welcome-wizard'));
     }
   }
@@ -105,7 +105,7 @@ class Changelog {
       && $this->wooCommerceHelper->getOrdersCountCreatedBefore($this->settings->get('installed_at')) > 0
       && $this->wp->currentUserCan('administrator')
     ) {
-      $this->url_helper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-list-import'));
+      $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-list-import'));
     }
   }
 
@@ -117,13 +117,13 @@ class Changelog {
       && $this->wooCommerceHelper->isWooCommerceActive()
       && $this->wp->currentUserCan('administrator')
     ) {
-      $this->url_helper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-revenue-tracking-permission'));
+      $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-revenue-tracking-permission'));
     }
   }
 
-  private function terminateWithRedirect($redirect_url) {
+  private function terminateWithRedirect($redirectUrl) {
     // save version number
     $this->settings->set('version', Env::$version);
-    $this->url_helper->redirectWithReferer($redirect_url);
+    $this->urlHelper->redirectWithReferer($redirectUrl);
   }
 }

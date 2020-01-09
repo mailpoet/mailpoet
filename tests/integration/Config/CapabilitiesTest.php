@@ -22,7 +22,7 @@ class CapabilitiesTest extends \MailPoetTest {
     parent::_before();
     $renderer = new Renderer();
     $this->caps = new Capabilities($renderer);
-    $this->access_control = new AccessControl();
+    $this->accessControl = new AccessControl();
   }
 
   public function testItInitializes() {
@@ -36,7 +36,7 @@ class CapabilitiesTest extends \MailPoetTest {
   }
 
   public function testItSetsUpWPCapabilities() {
-    $permissions = $this->access_control->getDefaultPermissions();
+    $permissions = $this->accessControl->getDefaultPermissions();
     $this->caps->setupWPCapabilities();
     $checked = false;
     foreach ($permissions as $name => $roles) {
@@ -49,7 +49,7 @@ class CapabilitiesTest extends \MailPoetTest {
   }
 
   public function testItRemovesWPCapabilities() {
-    $permissions = $this->access_control->getDefaultPermissions();
+    $permissions = $this->accessControl->getDefaultPermissions();
     $this->caps->removeWPCapabilities();
     $checked = false;
     foreach ($permissions as $name => $roles) {
@@ -77,17 +77,17 @@ class CapabilitiesTest extends \MailPoetTest {
     expect(get_role('nonexistent_role'))->null();
 
     // other MailPoet capabilities were successfully configured
-    $editor_role = get_role('editor');
-    expect($editor_role->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->false();
-    expect($editor_role->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
+    $editorRole = get_role('editor');
+    expect($editorRole->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->false();
+    expect($editorRole->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
 
     // Restore capabilities
     $wp->removeFilter('mailpoet_permission_access_plugin_admin', $filter);
     $this->caps->setupWPCapabilities();
 
-    $editor_role = get_role('editor');
-    expect($editor_role->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->true();
-    expect($editor_role->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
+    $editorRole = get_role('editor');
+    expect($editorRole->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->true();
+    expect($editorRole->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
   }
 
   public function testItSetsUpMembersCapabilities() {
@@ -98,29 +98,29 @@ class CapabilitiesTest extends \MailPoetTest {
 
     $this->caps->setupMembersCapabilities();
 
-    $hook_name = 'members_register_cap_groups';
-    expect(WPHooksHelper::isActionAdded($hook_name))->true();
-    expect(is_callable(WPHooksHelper::getActionAdded($hook_name)[0]))->true();
+    $hookName = 'members_register_cap_groups';
+    expect(WPHooksHelper::isActionAdded($hookName))->true();
+    expect(is_callable(WPHooksHelper::getActionAdded($hookName)[0]))->true();
 
-    $hook_name = 'members_register_caps';
-    expect(WPHooksHelper::isActionAdded($hook_name))->true();
-    expect(is_callable(WPHooksHelper::getActionAdded($hook_name)[0]))->true();
+    $hookName = 'members_register_caps';
+    expect(WPHooksHelper::isActionAdded($hookName))->true();
+    expect(is_callable(WPHooksHelper::getActionAdded($hookName)[0]))->true();
   }
 
   public function testItRegistersMembersCapabilities() {
-    $permissions = $this->access_control->getPermissionLabels();
-    $permission_count = count($permissions);
+    $permissions = $this->accessControl->getPermissionLabels();
+    $permissionCount = count($permissions);
     if (function_exists('members_register_cap')) { // Members plugin active
       $this->caps->registerMembersCapabilities();
       expect(members_get_cap_group(Capabilities::MEMBERS_CAP_GROUP_NAME)->caps)
-        ->count($permission_count);
+        ->count($permissionCount);
     } else {
       $caps = Stub::makeEmptyExcept(
         $this->caps,
         'registerMembersCapabilities',
         [
-          'registerMembersCapability' => Expected::exactly($permission_count),
-          'access_control' => $this->access_control,
+          'registerMembersCapability' => Expected::exactly($permissionCount),
+          'access_control' => $this->accessControl,
         ],
         $this
       );

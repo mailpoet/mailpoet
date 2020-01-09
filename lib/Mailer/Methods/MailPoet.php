@@ -26,35 +26,35 @@ class MailPoet {
   /** @var BlacklistCheck */
   private $blacklist;
 
-  public function __construct($api_key, $sender, $reply_to, MailPoetMapper $error_mapper, AuthorizedEmailsController $authorized_emails_controller) {
-    $this->api = new API($api_key);
+  public function __construct($apiKey, $sender, $replyTo, MailPoetMapper $errorMapper, AuthorizedEmailsController $authorizedEmailsController) {
+    $this->api = new API($apiKey);
     $this->sender = $sender;
-    $this->reply_to = $reply_to;
-    $this->services_checker = new ServicesChecker();
-    $this->error_mapper = $error_mapper;
-    $this->authorized_emails_controller = $authorized_emails_controller;
+    $this->replyTo = $replyTo;
+    $this->servicesChecker = new ServicesChecker();
+    $this->errorMapper = $errorMapper;
+    $this->authorizedEmailsController = $authorizedEmailsController;
     $this->blacklist = new BlacklistCheck();
   }
 
-  public function send($newsletter, $subscriber, $extra_params = []) {
-    if ($this->services_checker->isMailPoetAPIKeyValid() === false) {
-      return Mailer::formatMailerErrorResult($this->error_mapper->getInvalidApiKeyError());
+  public function send($newsletter, $subscriber, $extraParams = []) {
+    if ($this->servicesChecker->isMailPoetAPIKeyValid() === false) {
+      return Mailer::formatMailerErrorResult($this->errorMapper->getInvalidApiKeyError());
     }
 
-    $subscribers_for_blacklist_check = is_array($subscriber) ? $subscriber : [$subscriber];
-    foreach ($subscribers_for_blacklist_check as $sub) {
+    $subscribersForBlacklistCheck = is_array($subscriber) ? $subscriber : [$subscriber];
+    foreach ($subscribersForBlacklistCheck as $sub) {
       if ($this->blacklist->isBlacklisted($sub)) {
-        $error = $this->error_mapper->getBlacklistError($sub);
+        $error = $this->errorMapper->getBlacklistError($sub);
         return Mailer::formatMailerErrorResult($error);
       }
     }
 
-    $message_body = $this->getBody($newsletter, $subscriber, $extra_params);
-    $result = $this->api->sendMessages($message_body);
+    $messageBody = $this->getBody($newsletter, $subscriber, $extraParams);
+    $result = $this->api->sendMessages($messageBody);
 
     switch ($result['status']) {
       case API::SENDING_STATUS_CONNECTION_ERROR:
-        $error = $this->error_mapper->getConnectionError($result['message']);
+        $error = $this->errorMapper->getConnectionError($result['message']);
         return Mailer::formatMailerErrorResult($error);
       case API::SENDING_STATUS_SEND_ERROR:
         $error = $this->processSendError($result, $subscriber, $newsletter);
@@ -72,47 +72,47 @@ class MailPoet {
       && $result['code'] === API::RESPONSE_CODE_CAN_NOT_SEND
       && $result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED
     ) {
-      $this->authorized_emails_controller->checkAuthorizedEmailAddresses();
+      $this->authorizedEmailsController->checkAuthorizedEmailAddresses();
     }
-    return $this->error_mapper->getErrorForResult($result, $subscriber, $this->sender, $newsletter);
+    return $this->errorMapper->getErrorForResult($result, $subscriber, $this->sender, $newsletter);
   }
 
   public function processSubscriber($subscriber) {
-    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
-    if (!isset($subscriber_data['email'])) {
-      $subscriber_data = [
+    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriberData);
+    if (!isset($subscriberData['email'])) {
+      $subscriberData = [
         'email' => $subscriber,
       ];
     }
     return [
-      'email' => $subscriber_data['email'],
-      'name' => (isset($subscriber_data['name'])) ? $subscriber_data['name'] : '',
+      'email' => $subscriberData['email'],
+      'name' => (isset($subscriberData['name'])) ? $subscriberData['name'] : '',
     ];
   }
 
-  public function getBody($newsletter, $subscriber, $extra_params = []) {
+  public function getBody($newsletter, $subscriber, $extraParams = []) {
     if (is_array($newsletter) && is_array($subscriber)) {
       $body = [];
       for ($record = 0; $record < count($newsletter); $record++) {
         $body[] = $this->composeBody(
           $newsletter[$record],
           $this->processSubscriber($subscriber[$record]),
-          (!empty($extra_params['unsubscribe_url'][$record])) ? $extra_params['unsubscribe_url'][$record] : false,
-          (!empty($extra_params['meta'][$record])) ? $extra_params['meta'][$record] : false
+          (!empty($extraParams['unsubscribe_url'][$record])) ? $extraParams['unsubscribe_url'][$record] : false,
+          (!empty($extraParams['meta'][$record])) ? $extraParams['meta'][$record] : false
         );
       }
     } else {
       $body[] = $this->composeBody(
         $newsletter,
         $this->processSubscriber($subscriber),
-        (!empty($extra_params['unsubscribe_url'])) ? $extra_params['unsubscribe_url'] : false,
-        (!empty($extra_params['meta'])) ? $extra_params['meta'] : false
+        (!empty($extraParams['unsubscribe_url'])) ? $extraParams['unsubscribe_url'] : false,
+        (!empty($extraParams['meta'])) ? $extraParams['meta'] : false
       );
     }
     return $body;
   }
 
-  private function composeBody($newsletter, $subscriber, $unsubscribe_url, $meta) {
+  private function composeBody($newsletter, $subscriber, $unsubscribeUrl, $meta) {
     $body = [
       'to' => ([
         'address' => $subscriber['email'],
@@ -123,8 +123,8 @@ class MailPoet {
         'name' => $this->sender['from_name'],
       ]),
       'reply_to' => ([
-        'address' => $this->reply_to['reply_to_email'],
-        'name' => $this->reply_to['reply_to_name'],
+        'address' => $this->replyTo['reply_to_email'],
+        'name' => $this->replyTo['reply_to_name'],
       ]),
       'subject' => $newsletter['subject'],
     ];
@@ -134,8 +134,8 @@ class MailPoet {
     if (!empty($newsletter['body']['text'])) {
       $body['text'] = $newsletter['body']['text'];
     }
-    if ($unsubscribe_url) {
-      $body['list_unsubscribe'] = $unsubscribe_url;
+    if ($unsubscribeUrl) {
+      $body['list_unsubscribe'] = $unsubscribeUrl;
     }
     if ($meta) {
       $body['meta'] = $meta;

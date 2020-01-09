@@ -5,49 +5,49 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditAutomaticWooCommerceEmailCest {
-  public function dontSeeWooCommerceTabWhenWooCommerceIsNotActive(\AcceptanceTester $I) {
-    $I->wantTo('Not see WooCommerce tab');
-    $I->deactivateWooCommerce();
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->dontSee('[data-automation-id="tab-WooCommerce"]');
+  public function dontSeeWooCommerceTabWhenWooCommerceIsNotActive(\AcceptanceTester $i) {
+    $i->wantTo('Not see WooCommerce tab');
+    $i->deactivateWooCommerce();
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->dontSee('[data-automation-id="tab-WooCommerce"]');
   }
 
-  public function editAutomaticWooCommerceEmail(\AcceptanceTester $I) {
-    $newsletter_name = 'Edit Automatic WooCommerce Email Test';
-    $newsletter_edited_name = 'Edit Automatic WooCommerce Email Test Edited';
+  public function editAutomaticWooCommerceEmail(\AcceptanceTester $i) {
+    $newsletterName = 'Edit Automatic WooCommerce Email Test';
+    $newsletterEditedName = 'Edit Automatic WooCommerce Email Test Edited';
 
-    $newsletter_factory = new Newsletter();
-    $newsletter_factory
-      ->withSubject($newsletter_name)
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory
+      ->withSubject($newsletterName)
       ->withAutomaticTypeWooCommerceFirstPurchase()
       ->create();
 
     // open editation
-    $I->wantTo('Edit automatic WooCommerce email');
-    $I->activateWooCommerce();
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="tab-WooCommerce"]');
-    $I->waitForText($newsletter_name);
-    $I->clickItemRowActionByItemName($newsletter_name, 'Edit');
+    $i->wantTo('Edit automatic WooCommerce email');
+    $i->activateWooCommerce();
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('[data-automation-id="tab-WooCommerce"]');
+    $i->waitForText($newsletterName);
+    $i->clickItemRowActionByItemName($newsletterName, 'Edit');
 
     // edit subject
-    $title_element = '[data-automation-id="newsletter_title"]';
-    $I->waitForElement($title_element);
-    $I->seeInCurrentUrl('mailpoet-newsletter-editor');
-    $I->fillField($title_element, $newsletter_edited_name);
+    $titleElement = '[data-automation-id="newsletter_title"]';
+    $i->waitForElement($titleElement);
+    $i->seeInCurrentUrl('mailpoet-newsletter-editor');
+    $i->fillField($titleElement, $newsletterEditedName);
 
     // edit sending
-    $I->click('Next');
-    $I->waitForElementVisible('#field_sender_name');
-    $I->fillField('#field_sender_name', 'Test sender');
-    $I->click('Save as draft and close');
+    $i->click('Next');
+    $i->waitForElementVisible('#field_sender_name');
+    $i->fillField('#field_sender_name', 'Test sender');
+    $i->click('Save as draft and close');
 
     // check update success
-    $I->waitForText('Email was updated successfully!');
-    $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="tab-WooCommerce"]');
-    $I->waitForText($newsletter_edited_name);
+    $i->waitForText('Email was updated successfully!');
+    $i->amOnMailpoetPage('Emails');
+    $i->click('[data-automation-id="tab-WooCommerce"]');
+    $i->waitForText($newsletterEditedName);
   }
 }

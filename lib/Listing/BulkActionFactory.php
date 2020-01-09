@@ -6,24 +6,24 @@ class BulkActionFactory {
   /** @var array */
   private $actions = [];
 
-  public function registerAction($model_class, $bulk_action_method, $action_class) {
-    $this->ensureMethodExists($action_class, $bulk_action_method);
-    $this->actions[$model_class][$bulk_action_method] = $action_class;
+  public function registerAction($modelClass, $bulkActionMethod, $actionClass) {
+    $this->ensureMethodExists($actionClass, $bulkActionMethod);
+    $this->actions[$modelClass][$bulkActionMethod] = $actionClass;
   }
 
-  public function getActionClass($model_class, $bulk_action_method) {
-    $resulting_class = $model_class;
-    if (!empty($this->actions[$model_class][$bulk_action_method])) {
-      $resulting_class = $this->actions[$model_class][$bulk_action_method];
+  public function getActionClass($modelClass, $bulkActionMethod) {
+    $resultingClass = $modelClass;
+    if (!empty($this->actions[$modelClass][$bulkActionMethod])) {
+      $resultingClass = $this->actions[$modelClass][$bulkActionMethod];
     }
-    $this->ensureMethodExists($resulting_class, $bulk_action_method);
-    return $resulting_class;
+    $this->ensureMethodExists($resultingClass, $bulkActionMethod);
+    return $resultingClass;
   }
 
-  private function ensureMethodExists($action_class, $bulk_action_method) {
-    if (!method_exists($action_class, $bulk_action_method)) {
+  private function ensureMethodExists($actionClass, $bulkActionMethod) {
+    if (!method_exists($actionClass, $bulkActionMethod)) {
       throw new \Exception(
-        (is_object($action_class) ? get_class($action_class) : $action_class) . ' has no method "' . $bulk_action_method . '"'
+        (is_object($actionClass) ? get_class($actionClass) : $actionClass) . ' has no method "' . $bulkActionMethod . '"'
       );
     }
   }

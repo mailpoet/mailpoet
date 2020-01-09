@@ -48,7 +48,7 @@ class SendingQueue extends Model {
   }
 
   public function pause() {
-    if ($this->count_processed === $this->count_total) {
+    if ($this->countProcessed === $this->countTotal) {
       return false;
     } else {
       return $this->task()->findOne()->pause();
@@ -56,7 +56,7 @@ class SendingQueue extends Model {
   }
 
   public function resume() {
-    if ($this->count_processed === $this->count_total) {
+    if ($this->countProcessed === $this->countTotal) {
       return $this->complete();
     } else {
       return $this->task()->findOne()->resume();
@@ -68,11 +68,11 @@ class SendingQueue extends Model {
   }
 
   public function save() {
-    $this->newsletter_rendered_body = $this->getNewsletterRenderedBody();
-    if (!Helpers::isJson($this->newsletter_rendered_body) && !is_null($this->newsletter_rendered_body)) {
+    $this->newsletterRenderedBody = $this->getNewsletterRenderedBody();
+    if (!Helpers::isJson($this->newsletterRenderedBody) && !is_null($this->newsletterRenderedBody)) {
       $this->set(
         'newsletter_rendered_body',
-        json_encode($this->newsletter_rendered_body)
+        json_encode($this->newsletterRenderedBody)
       );
     }
     if (!is_null($this->meta) && !Helpers::isJson($this->meta)) {
@@ -82,7 +82,7 @@ class SendingQueue extends Model {
       );
     }
     parent::save();
-    $this->newsletter_rendered_body = $this->getNewsletterRenderedBody();
+    $this->newsletterRenderedBody = $this->getNewsletterRenderedBody();
     return $this;
   }
 
@@ -101,27 +101,27 @@ class SendingQueue extends Model {
   }
 
   public function getNewsletterRenderedBody($type = false) {
-    $rendered_newsletter = $this->decodeRenderedNewsletterBodyObject($this->newsletter_rendered_body);
-    return ($type && !empty($rendered_newsletter[$type])) ?
-      $rendered_newsletter[$type] :
-      $rendered_newsletter;
+    $renderedNewsletter = $this->decodeRenderedNewsletterBodyObject($this->newsletterRenderedBody);
+    return ($type && !empty($renderedNewsletter[$type])) ?
+      $renderedNewsletter[$type] :
+      $renderedNewsletter;
   }
 
   public function getMeta() {
     return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
   }
 
-  public function isSubscriberProcessed($subscriber_id) {
+  public function isSubscriberProcessed($subscriberId) {
     if (!empty($this->subscribers)
-      && ScheduledTaskSubscriber::getTotalCount($this->task_id) === 0
+      && ScheduledTaskSubscriber::getTotalCount($this->taskId) === 0
     ) {
       $subscribers = $this->getSubscribers();
-      return in_array($subscriber_id, $subscribers['processed']);
+      return in_array($subscriberId, $subscribers['processed']);
     } else {
       $task = $this->task()->findOne();
       if ($task) {
-        $task_subscribers = new TaskSubscribers($task);
-        return $task_subscribers->isSubscriberProcessed($subscriber_id);
+        $taskSubscribers = new TaskSubscribers($task);
+        return $taskSubscribers->isSubscriberProcessed($subscriberId);
       }
       return false;
     }
@@ -134,14 +134,14 @@ class SendingQueue extends Model {
     return $model;
   }
 
-  private function decodeRenderedNewsletterBodyObject($rendered_body) {
-    if (is_serialized($rendered_body)) {
-      return unserialize($rendered_body);
+  private function decodeRenderedNewsletterBodyObject($renderedBody) {
+    if (is_serialized($renderedBody)) {
+      return unserialize($renderedBody);
     }
-    if (Helpers::isJson($rendered_body)) {
-      return json_decode($rendered_body, true);
+    if (Helpers::isJson($renderedBody)) {
+      return json_decode($renderedBody, true);
     }
-    return $rendered_body;
+    return $renderedBody;
   }
 
   public static function getTasks() {
@@ -172,8 +172,8 @@ class SendingQueue extends Model {
     );
   }
 
-  public static function findTaskByNewsletterId($newsletter_id) {
+  public static function findTaskByNewsletterId($newsletterId) {
     return static::getTasks()
-    ->where('queues.newsletter_id', $newsletter_id);
+    ->where('queues.newsletter_id', $newsletterId);
   }
 }

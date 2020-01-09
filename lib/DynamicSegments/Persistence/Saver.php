@@ -21,10 +21,10 @@ class Saver {
     $db = ORM::get_db();
     $db->beginTransaction();
 
-    $data_segment = $this->saveSegment($db, $segment);
-    $this->saveFilters($db, $segment, $data_segment->id());
+    $dataSegment = $this->saveSegment($db, $segment);
+    $this->saveFilters($db, $segment, $dataSegment->id());
     $db->commit();
-    return $data_segment->id();
+    return $dataSegment->id();
   }
 
   /**
@@ -54,11 +54,11 @@ class Saver {
   /**
    * @throws ErrorSavingException
    */
-  private function saveFilters(\PDO $db, DynamicSegment $segment, $saved_data_id) {
+  private function saveFilters(\PDO $db, DynamicSegment $segment, $savedDataId) {
     $this->deleteFilters($segment);
     foreach ($segment->getFilters() as $filter) {
-      $data_filter = $this->saveFilter($filter, $saved_data_id);
-      $this->checkErrors($db, $data_filter);
+      $dataFilter = $this->saveFilter($filter, $savedDataId);
+      $this->checkErrors($db, $dataFilter);
     }
   }
 
@@ -66,13 +66,13 @@ class Saver {
     DynamicSegmentFilter::deleteAllBySegmentIds([$segment->id]);
   }
 
-  private function saveFilter(Filter $filter, $data_segment_id) {
-    $data_filter = DynamicSegmentFilter::create();
-    if ($data_filter instanceof DynamicSegmentFilter) {
-      $data_filter->segment_id = $data_segment_id;
-      $data_filter->filter_data = $filter->toArray();
-      $data_filter->save();
+  private function saveFilter(Filter $filter, $dataSegmentId) {
+    $dataFilter = DynamicSegmentFilter::create();
+    if ($dataFilter instanceof DynamicSegmentFilter) {
+      $dataFilter->segmentId = $dataSegmentId;
+      $dataFilter->filterData = $filter->toArray();
+      $dataFilter->save();
     }
-    return $data_filter;
+    return $dataFilter;
   }
 }

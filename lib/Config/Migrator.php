@@ -18,8 +18,8 @@ class Migrator {
   private $models;
 
   public function __construct() {
-    $this->prefix = Env::$db_prefix;
-    $this->charset_collate = Env::$db_charset_collate;
+    $this->prefix = Env::$dbPrefix;
+    $this->charsetCollate = Env::$dbCharsetCollate;
     $this->models = [
       'segments',
       'settings',
@@ -69,12 +69,12 @@ class Migrator {
     global $wpdb;
 
     $_this = $this;
-    $drop_table = function($model) use($wpdb, $_this) {
+    $dropTable = function($model) use($wpdb, $_this) {
       $table = $_this->prefix . $model;
       $wpdb->query("DROP TABLE {$table}");
     };
 
-    array_map($drop_table, $this->models);
+    array_map($dropTable, $this->models);
   }
 
   public function segments() {
@@ -559,7 +559,7 @@ class Migrator {
     $sql = [];
     $sql[] = "CREATE TABLE " . $table . " (";
     $sql = array_merge($sql, $attributes);
-    $sql[] = ") " . $this->charset_collate . ";";
+    $sql[] = ") " . $this->charsetCollate . ";";
 
     return implode("\n", $sql);
   }

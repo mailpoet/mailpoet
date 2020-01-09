@@ -44,12 +44,12 @@ class AssetsController {
   public function setupFrontEndDependencies() {
     $this->wp->wpEnqueueStyle(
       'mailpoet_public',
-      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-public.css')
+      Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-public.css')
     );
 
     $this->wp->wpEnqueueScript(
       'mailpoet_vendor',
-      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
       [],
       Env::$version,
       true
@@ -57,7 +57,7 @@ class AssetsController {
 
     $this->wp->wpEnqueueScript(
       'mailpoet_public',
-      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('public.js'),
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('public.js'),
       ['jquery'],
       Env::$version,
       true
@@ -77,9 +77,9 @@ class AssetsController {
       'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false),
     ]);
 
-    $ajax_failed_error_message = $this->wp->__('An error has happened while performing a request, please try again later.');
+    $ajaxFailedErrorMessage = $this->wp->__('An error has happened while performing a request, please try again later.');
 
-    $inline_script = <<<EOL
+    $inlineScript = <<<EOL
 function initMailpoetTranslation() {
   if (typeof MailPoet !== 'undefined') {
     MailPoet.I18n.add('ajaxFailedErrorMessage', '%s')
@@ -91,7 +91,7 @@ setTimeout(initMailpoetTranslation, 250);
 EOL;
     $this->wp->wpAddInlineScript(
       'mailpoet_public',
-      sprintf($inline_script, $ajax_failed_error_message),
+      sprintf($inlineScript, $ajaxFailedErrorMessage),
       'after'
     );
   }
@@ -99,7 +99,7 @@ EOL;
   public function setupAdminWidgetPageDependencies() {
     $this->wp->wpEnqueueScript(
       'mailpoet_vendor',
-      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
       [],
       Env::$version,
       true
@@ -107,7 +107,7 @@ EOL;
 
     $this->wp->wpEnqueueScript(
       'mailpoet_admin',
-      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('mailpoet.js'),
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('mailpoet.js'),
       [],
       Env::$version,
       true

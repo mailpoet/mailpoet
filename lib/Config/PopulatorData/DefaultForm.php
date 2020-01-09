@@ -11,8 +11,8 @@ class DefaultForm {
   /** @var Styles */
   private $form_styles;
 
-  public function __construct(Styles $form_styles) {
-    $this->form_styles = $form_styles;
+  public function __construct(Styles $formStyles) {
+    $this->formStyles = $formStyles;
   }
 
   public function getName() {
@@ -51,9 +51,9 @@ class DefaultForm {
     ];
   }
 
-  public function getSettings(Segment $default_segment) {
+  public function getSettings(Segment $defaultSegment) {
     return [
-      'segments' => [$default_segment->id()],
+      'segments' => [$defaultSegment->id()],
       'on_success' => 'message',
       'success_message' => Form::getDefaultSuccessMessage(),
       'success_page' => '5',
@@ -62,6 +62,6 @@ class DefaultForm {
   }
 
   public function getStyles() {
-    return $this->form_styles->getDefaultStyles();
+    return $this->formStyles->getDefaultStyles();
   }
 }

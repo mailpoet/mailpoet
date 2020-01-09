@@ -12,19 +12,19 @@ class ValidationException extends \RuntimeException {
   /** @var ConstraintViolationListInterface|ConstraintViolationInterface[] */
   private $violations;
 
-  public function __construct($resource_name, ConstraintViolationListInterface $violations) {
-    $this->resource_name = $resource_name;
+  public function __construct($resourceName, ConstraintViolationListInterface $violations) {
+    $this->resourceName = $resourceName;
     $this->violations = $violations;
 
-    $line_prefix = '  ';
+    $linePrefix = '  ';
     $message = "Validation failed for '$resource_name'.\nDetails:\n";
-    $message .= $line_prefix . implode("\n$line_prefix", $this->getErrors());
+    $message .= $linePrefix . implode("\n$line_prefix", $this->getErrors());
     parent::__construct($message);
   }
 
   /** @return string */
   public function getResourceName() {
-    return $this->resource_name;
+    return $this->resourceName;
   }
 
   /** @return ConstraintViolationListInterface|ConstraintViolationInterface[] */

@@ -14,8 +14,8 @@ class EmojiTest extends \MailPoetTest {
   public $data_encoded;
   public function _before() {
     parent::_before();
-    $this->data_encoded = "Emojis: &#x1f603;&#x1f635;&#x1f4aa;, not emojis: &#046;&#0142;";
-    $this->data_decoded = "Emojis: 😃😵💪, not emojis: &#046;&#0142;";
+    $this->dataEncoded = "Emojis: &#x1f603;&#x1f635;&#x1f4aa;, not emojis: &#046;&#0142;";
+    $this->dataDecoded = "Emojis: 😃😵💪, not emojis: &#046;&#0142;";
 
     $this->column = 'dummycol';
     $this->emoji = new Emoji();
@@ -44,28 +44,28 @@ class EmojiTest extends \MailPoetTest {
   }
 
   public function testItCanEncodeForUTF8Column() {
-    $table = Env::$db_prefix . 'dummytable_utf8';
+    $table = Env::$dbPrefix . 'dummytable_utf8';
     $this->createTable($table, 'utf8');
 
-    $result = $this->emoji->encodeForUTF8Column($table, $this->column, $this->data_decoded);
-    expect($result)->equals($this->data_encoded);
+    $result = $this->emoji->encodeForUTF8Column($table, $this->column, $this->dataDecoded);
+    expect($result)->equals($this->dataEncoded);
 
     $this->dropTable($table);
   }
 
   public function testItDoesNotEncodeForUTF8MB4Column() {
-    $table = Env::$db_prefix . 'dummytable_utf8mb4';
+    $table = Env::$dbPrefix . 'dummytable_utf8mb4';
     $this->createTable($table, 'utf8mb4');
 
-    $result = $this->emoji->encodeForUTF8Column($table, $this->column, $this->data_decoded);
-    expect($result)->equals($this->data_decoded);
+    $result = $this->emoji->encodeForUTF8Column($table, $this->column, $this->dataDecoded);
+    expect($result)->equals($this->dataDecoded);
 
     $this->dropTable($table);
   }
 
   public function testItCanDecodeEntities() {
-    $result = $this->emoji->decodeEntities($this->data_encoded);
-    expect($result)->equals($this->data_decoded);
+    $result = $this->emoji->decodeEntities($this->dataEncoded);
+    expect($result)->equals($this->dataDecoded);
   }
 
   private function createTable($table, $charset) {

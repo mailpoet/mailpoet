@@ -14,27 +14,27 @@ use MailPoet\Settings\SettingsController;
 class MailerTest extends \MailPoetTest {
   public function testItResumesSending() {
     // create mailer log with a "paused" status
-    $mailer_log = ['status' => MailerLog::STATUS_PAUSED];
-    MailerLog::updateMailerLog($mailer_log);
-    $mailer_log = MailerLog::getMailerLog();
-    expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);
+    $mailerLog = ['status' => MailerLog::STATUS_PAUSED];
+    MailerLog::updateMailerLog($mailerLog);
+    $mailerLog = MailerLog::getMailerLog();
+    expect($mailerLog['status'])->equals(MailerLog::STATUS_PAUSED);
     $settings = SettingsController::getInstance();
-    $authorized_emails_controller = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::never()]);
+    $authorizedEmailsController = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::never()]);
     // resumeSending() method should clear the mailer log's status
     $bridge = new Bridge($settings);
-    $mailer_endpoint = new Mailer($authorized_emails_controller, $settings, $bridge, new MetaInfo);
-    $response = $mailer_endpoint->resumeSending();
+    $mailerEndpoint = new Mailer($authorizedEmailsController, $settings, $bridge, new MetaInfo);
+    $response = $mailerEndpoint->resumeSending();
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    $mailer_log = MailerLog::getMailerLog();
-    expect($mailer_log['status'])->null();
+    $mailerLog = MailerLog::getMailerLog();
+    expect($mailerLog['status'])->null();
   }
 
   public function testItRunsAuhtorizedEmailsCheckIfErrorIsPresent() {
     $settings = SettingsController::getInstance();
     $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_sender_address' => 'a@b.c']);
-    $authorized_emails_controller = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()]);
+    $authorizedEmailsController = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()]);
     $bridge = new Bridge($settings);
-    $mailer_endpoint = new Mailer($authorized_emails_controller, $settings, $bridge, new MetaInfo);
-    $mailer_endpoint->resumeSending();
+    $mailerEndpoint = new Mailer($authorizedEmailsController, $settings, $bridge, new MetaInfo);
+    $mailerEndpoint->resumeSending();
   }
 }

@@ -38,7 +38,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
   public function testItReturnsNullWhenThereAreNoRegisteredAutomaticEmails() {
     $AM = $this->AM;
     $AM->unregisterAutomaticEmails();
-    $AM->available_groups = [];
+    $AM->availableGroups = [];
     $AM->init();
     expect($AM->getAutomaticEmails())->null();
   }

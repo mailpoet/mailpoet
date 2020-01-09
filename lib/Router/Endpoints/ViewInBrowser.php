@@ -32,17 +32,17 @@ class ViewInBrowser {
   /** @var Emoji */
   private $emoji;
 
-  public function __construct(AccessControl $access_control, SettingsController $settings, LinkTokens $link_tokens, Emoji $emoji) {
-    $this->access_control = $access_control;
+  public function __construct(AccessControl $accessControl, SettingsController $settings, LinkTokens $linkTokens, Emoji $emoji) {
+    $this->accessControl = $accessControl;
     $this->settings = $settings;
-    $this->link_tokens = $link_tokens;
+    $this->linkTokens = $linkTokens;
     $this->emoji = $emoji;
   }
 
   public function view($data) {
     $data = $this->_processBrowserPreviewData($data);
-    $view_in_browser = new NewsletterViewInBrowser($this->emoji, (bool)$this->settings->get('tracking.enabled'));
-    return $this->_displayNewsletter($view_in_browser->view($data));
+    $viewInBrowser = new NewsletterViewInBrowser($this->emoji, (bool)$this->settings->get('tracking.enabled'));
+    return $this->_displayNewsletter($viewInBrowser->view($data));
   }
 
   public function _processBrowserPreviewData($data) {
@@ -58,19 +58,19 @@ class ViewInBrowser {
    */
   public function _validateBrowserPreviewData($data) {
     // either newsletter ID or hash must be defined, and newsletter must exist
-    if (empty($data->newsletter_id) && empty($data->newsletter_hash)) return false;
-    $data->newsletter = (!empty($data->newsletter_hash)) ?
-      Newsletter::getByHash($data->newsletter_hash) :
-      Newsletter::findOne($data->newsletter_id);
+    if (empty($data->newsletterId) && empty($data->newsletterHash)) return false;
+    $data->newsletter = (!empty($data->newsletterHash)) ?
+      Newsletter::getByHash($data->newsletterHash) :
+      Newsletter::findOne($data->newsletterId);
     if (!$data->newsletter) return false;
 
     // subscriber is optional; if exists, token must validate
-    $data->subscriber = (!empty($data->subscriber_id)) ?
-      Subscriber::findOne($data->subscriber_id) :
+    $data->subscriber = (!empty($data->subscriberId)) ?
+      Subscriber::findOne($data->subscriberId) :
       false;
     if ($data->subscriber) {
-      if (empty($data->subscriber_token) ||
-         !$this->link_tokens->verifyToken($data->subscriber, $data->subscriber_token)
+      if (empty($data->subscriberToken) ||
+         !$this->linkTokens->verifyToken($data->subscriber, $data->subscriberToken)
       ) return false;
     } else if (!$data->subscriber && !empty($data->preview)) {
       // if this is a preview and subscriber does not exist,
@@ -79,12 +79,12 @@ class ViewInBrowser {
     }
 
     // if newsletter hash is not provided but newsletter ID is defined then subscriber must exist
-    if (empty($data->newsletter_hash) && $data->newsletter_id && !$data->subscriber) return false;
+    if (empty($data->newsletterHash) && $data->newsletterId && !$data->subscriber) return false;
 
     // queue is optional; try to find it if it's not defined and this is not a welcome email
     if ($data->newsletter->type !== Newsletter::TYPE_WELCOME) {
-      $data->queue = (!empty($data->queue_id)) ?
-        SendingQueue::findOne($data->queue_id) :
+      $data->queue = (!empty($data->queueId)) ?
+        SendingQueue::findOne($data->queueId) :
         SendingQueue::where('newsletter_id', $data->newsletter->id)
           ->findOne();
     } else {
@@ -97,11 +97,11 @@ class ViewInBrowser {
     }
 
     // allow users with permission to manage emails to preview any newsletter
-    if (!empty($data->preview) && $this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS)
+    if (!empty($data->preview) && $this->accessControl->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS)
     ) return $data;
 
     // allow others to preview newsletters only when newsletter hash is defined
-    if (!empty($data->preview) && empty($data->newsletter_hash)
+    if (!empty($data->preview) && empty($data->newsletterHash)
     ) return false;
 
     // if queue and subscriber exist, subscriber must have received the newsletter

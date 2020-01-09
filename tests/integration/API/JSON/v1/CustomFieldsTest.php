@@ -63,8 +63,8 @@ class CustomFieldsTest extends \MailPoetTest {
     parent::_before();
     $this->repository = ContainerWrapper::getInstance(WP_DEBUG)->get(CustomFieldsRepository::class);
     $this->repository->truncate();
-    foreach ($this->custom_fields as $custom_field) {
-      $this->repository->createOrUpdate($custom_field);
+    foreach ($this->customFields as $customField) {
+      $this->repository->createOrUpdate($customField);
     }
   }
 
@@ -72,39 +72,39 @@ class CustomFieldsTest extends \MailPoetTest {
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
     $response = $router->getAll();
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->count(count($this->custom_fields));
+    expect($response->data)->count(count($this->customFields));
 
-    foreach ($response->data as $custom_field) {
-      expect($custom_field['name'])->notEmpty();
-      expect($custom_field['type'])->notEmpty();
-      expect($custom_field['params'])->notEmpty();
+    foreach ($response->data as $customField) {
+      expect($customField['name'])->notEmpty();
+      expect($customField['type'])->notEmpty();
+      expect($customField['params'])->notEmpty();
     }
   }
 
   public function testItCanDeleteACustomField() {
-    $custom_field = CustomField::where('type', 'date')->findOne();
-    $custom_field_id = $custom_field->id();
+    $customField = CustomField::where('type', 'date')->findOne();
+    $customFieldId = $customField->id();
 
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
-    $response = $router->delete(['id' => $custom_field_id]);
+    $response = $router->delete(['id' => $customFieldId]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $custom_field = CustomField::where('type', 'date')->findOne();
-    expect($custom_field)->false();
+    $customField = CustomField::where('type', 'date')->findOne();
+    expect($customField)->false();
 
-    $response = $router->delete(['id' => $custom_field_id]);
+    $response = $router->delete(['id' => $customFieldId]);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   public function testItCanSaveACustomField() {
-    $new_custom_field = [
+    $newCustomField = [
       'name' => 'New custom field',
       'type' => 'text',
       'params' => [],
     ];
 
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
-    $response = $router->save($new_custom_field);
+    $response = $router->save($newCustomField);
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     // missing type
@@ -121,10 +121,10 @@ class CustomFieldsTest extends \MailPoetTest {
   }
 
   public function testItCanGetACustomField() {
-    $custom_field = $this->repository->findOneBy(['name' => 'CF: text']);
+    $customField = $this->repository->findOneBy(['name' => 'CF: text']);
 
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
-    $response = $router->get(['id' => $custom_field->getId()]);
+    $response = $router->get(['id' => $customField->getId()]);
 
     expect($response->data['name'])->equals('CF: text');
     expect($response->data['type'])->equals('text');

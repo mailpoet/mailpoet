@@ -120,56 +120,56 @@ class SubscriberEntity {
    * @return int|null
    */
   public function getWpUserId() {
-    return $this->wp_user_id;
+    return $this->wpUserId;
   }
 
   /**
    * @param int|null $wp_user_id
    */
-  public function setWpUserId($wp_user_id) {
-    $this->wp_user_id = $wp_user_id;
+  public function setWpUserId($wpUserId) {
+    $this->wpUserId = $wpUserId;
   }
 
   /**
    * @return bool
    */
   public function getIsWoocommerceUser() {
-    return $this->is_woocommerce_user;
+    return $this->isWoocommerceUser;
   }
 
   /**
    * @param bool $is_woocommerce_user
    */
-  public function setIsWoocommerceUser($is_woocommerce_user) {
-    $this->is_woocommerce_user = $is_woocommerce_user;
+  public function setIsWoocommerceUser($isWoocommerceUser) {
+    $this->isWoocommerceUser = $isWoocommerceUser;
   }
 
   /**
    * @return string
    */
   public function getFirstName() {
-    return $this->first_name;
+    return $this->firstName;
   }
 
   /**
    * @param string $first_name
    */
-  public function setFirstName($first_name) {
-    $this->first_name = $first_name;
+  public function setFirstName($firstName) {
+    $this->firstName = $firstName;
   }
 
   /**
    * @return string
    */
   public function getLastName() {
-    return $this->last_name;
+    return $this->lastName;
   }
 
   /**
    * @param string $last_name
    */
-  public function setLastName($last_name) {
-    $this->last_name = $last_name;
+  public function setLastName($lastName) {
+    $this->lastName = $lastName;
   }
 
   /**
@@ -213,70 +213,70 @@ class SubscriberEntity {
    * @return string|null
    */
   public function getSubscribedIp() {
-    return $this->subscribed_ip;
+    return $this->subscribedIp;
   }
 
   /**
    * @param string $subscribed_ip
    */
-  public function setSubscribedIp($subscribed_ip) {
-    $this->subscribed_ip = $subscribed_ip;
+  public function setSubscribedIp($subscribedIp) {
+    $this->subscribedIp = $subscribedIp;
   }
 
   /**
    * @return string|null
    */
   public function getConfirmedIp() {
-    return $this->confirmed_ip;
+    return $this->confirmedIp;
   }
 
   /**
    * @param string|null $confirmed_ip
    */
-  public function setConfirmedIp($confirmed_ip) {
-    $this->confirmed_ip = $confirmed_ip;
+  public function setConfirmedIp($confirmedIp) {
+    $this->confirmedIp = $confirmedIp;
   }
 
   /**
    * @return DateTimeInterface|null
    */
   public function getConfirmedAt() {
-    return $this->confirmed_at;
+    return $this->confirmedAt;
   }
 
   /**
    * @param DateTimeInterface|null $confirmed_at
    */
-  public function setConfirmedAt($confirmed_at) {
-    $this->confirmed_at = $confirmed_at;
+  public function setConfirmedAt($confirmedAt) {
+    $this->confirmedAt = $confirmedAt;
   }
 
   /**
    * @return DateTimeInterface|null
    */
   public function getLastSubscribedAt() {
-    return $this->last_subscribed_at;
+    return $this->lastSubscribedAt;
   }
 
   /**
    * @param DateTimeInterface|null $last_subscribed_at
    */
-  public function setLastSubscribedAt($last_subscribed_at) {
-    $this->last_subscribed_at = $last_subscribed_at;
+  public function setLastSubscribedAt($lastSubscribedAt) {
+    $this->lastSubscribedAt = $lastSubscribedAt;
   }
 
   /**
    * @return string|null
    */
   public function getUnconfirmedData() {
-    return $this->unconfirmed_data;
+    return $this->unconfirmedData;
   }
 
   /**
    * @param string|null $unconfirmed_data
    */
-  public function setUnconfirmedData($unconfirmed_data) {
-    $this->unconfirmed_data = $unconfirmed_data;
+  public function setUnconfirmedData($unconfirmedData) {
+    $this->unconfirmedData = $unconfirmedData;
   }
 
   /**
@@ -309,42 +309,42 @@ class SubscriberEntity {
    * @return int
    */
   public function getConfirmationsCount() {
-    return $this->count_confirmations;
+    return $this->countConfirmations;
   }
 
   /**
    * @param int $count_confirmations
    */
-  public function setConfirmationsCount($count_confirmations) {
-    $this->count_confirmations = $count_confirmations;
+  public function setConfirmationsCount($countConfirmations) {
+    $this->countConfirmations = $countConfirmations;
   }
 
   /**
    * @return string|null
    */
   public function getUnsubscribeToken() {
-    return $this->unsubscribe_token;
+    return $this->unsubscribeToken;
   }
 
   /**
    * @param string|null $unsubscribe_token
    */
-  public function setUnsubscribeToken($unsubscribe_token) {
-    $this->unsubscribe_token = $unsubscribe_token;
+  public function setUnsubscribeToken($unsubscribeToken) {
+    $this->unsubscribeToken = $unsubscribeToken;
   }
 
   /**
    * @return string|null
    */
   public function getLinkToken() {
-    return $this->link_token;
+    return $this->linkToken;
   }
 
   /**
    * @param string|null $link_token
    */
-  public function setLinkToken($link_token) {
-    $this->link_token = $link_token;
+  public function setLinkToken($linkToken) {
+    $this->linkToken = $linkToken;
   }
 
 }

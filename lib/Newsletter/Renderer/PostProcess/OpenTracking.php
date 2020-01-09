@@ -15,11 +15,11 @@ class OpenTracking {
     // url is a temporary data tag that will be further replaced with
     // the proper track API URL during sending
     $url = Links::DATA_TAG_OPEN;
-    $open_tracking_image = sprintf(
+    $openTrackingImage = sprintf(
       '<img alt="" class="" src="%s"/>',
       $url
     );
-    $template->html($template->html() . $open_tracking_image);
+    $template->html($template->html() . $openTrackingImage);
     return $DOM->__toString();
   }
 

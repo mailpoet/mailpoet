@@ -4,15 +4,15 @@ namespace MailPoet\Test\Acceptance;
 
 class ListsListingCest {
 
-  public function listsListing(\AcceptanceTester $I) {
-    $I->wantTo('Open lists listings page');
+  public function listsListing(\AcceptanceTester $i) {
+    $i->wantTo('Open lists listings page');
 
-    $I->login();
-    $I->amOnMailpoetPage('Lists');
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
 
-    $I->waitForText('WordPress Users', 5, '[data-automation-id="listing_item_1"]');
-    $I->see('My First List', '[data-automation-id="listing_item_3"]');
-    $I->seeNoJSErrors();
+    $i->waitForText('WordPress Users', 5, '[data-automation-id="listing_item_1"]');
+    $i->see('My First List', '[data-automation-id="listing_item_3"]');
+    $i->seeNoJSErrors();
   }
 
 }

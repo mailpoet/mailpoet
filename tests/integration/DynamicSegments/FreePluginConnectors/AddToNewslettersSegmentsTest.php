@@ -10,44 +10,44 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 class AddToNewslettersSegmentsTest extends \MailPoetTest {
 
   public function testItReturnsOriginalArray() {
-    $dynamic_segment = DynamicSegment::create();
-    $dynamic_segment->hydrate([
+    $dynamicSegment = DynamicSegment::create();
+    $dynamicSegment->hydrate([
       'name' => 'segment1',
       'description' => '',
     ]);
 
-    $segment_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () {
+    $segmentLoader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () {
       return [];
     })]);
 
-    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount' => Expected::never()]);
+    $subscribersCountLoader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount' => Expected::never()]);
 
-    $filter = new AddToNewslettersSegments($segment_loader, $subscribers_count_loader);
-    $result = $filter->add([$dynamic_segment]);
-    expect($result)->equals([$dynamic_segment]);
+    $filter = new AddToNewslettersSegments($segmentLoader, $subscribersCountLoader);
+    $result = $filter->add([$dynamicSegment]);
+    expect($result)->equals([$dynamicSegment]);
   }
 
   public function testItAddsDynamicSegments() {
-    $dynamic_segment = DynamicSegment::create();
-    $dynamic_segment->hydrate([
+    $dynamicSegment = DynamicSegment::create();
+    $dynamicSegment->hydrate([
       'name' => 'segment2',
       'description' => '',
       'id' => 1,
     ]);
 
-    $segment_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () use ($dynamic_segment) {
-      return [$dynamic_segment];
+    $segmentLoader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\Loader', ['load' => Expected::once(function () use ($dynamicSegment) {
+      return [$dynamicSegment];
     })]);
 
     /** @var \MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount|MockObject $subscribers_count_loader */
-    $subscribers_count_loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount']);
-    $subscribers_count_loader
+    $subscribersCountLoader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount', ['getSubscribersCount']);
+    $subscribersCountLoader
       ->expects($this->once())
       ->method('getSubscribersCount')
-      ->with($this->equalTo($dynamic_segment))
+      ->with($this->equalTo($dynamicSegment))
       ->will($this->returnValue(4));
 
-    $filter = new AddToNewslettersSegments($segment_loader, $subscribers_count_loader);
+    $filter = new AddToNewslettersSegments($segmentLoader, $subscribersCountLoader);
     $result = $filter->add([]);
 
     expect($result)->count(1);

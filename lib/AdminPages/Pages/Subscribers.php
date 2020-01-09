@@ -22,16 +22,16 @@ class Subscribers {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(PageRenderer $page_renderer, PageLimit $listing_page_limit, WPFunctions $wp) {
-    $this->page_renderer = $page_renderer;
-    $this->listing_page_limit = $listing_page_limit;
+  public function __construct(PageRenderer $pageRenderer, PageLimit $listingPageLimit, WPFunctions $wp) {
+    $this->pageRenderer = $pageRenderer;
+    $this->listingPageLimit = $listingPageLimit;
     $this->wp = $wp;
   }
 
   public function render() {
     $data = [];
 
-    $data['items_per_page'] = $this->listing_page_limit->getLimitPerPage('subscribers');
+    $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('subscribers');
     $segments = Segment::getSegmentsWithSubscriberCount($type = false);
     $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
     usort($segments, function ($a, $b) {
@@ -61,6 +61,6 @@ class Subscribers {
 
     $data['max_confirmation_emails'] = ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS;
 
-    $this->page_renderer->displayPage('subscribers/subscribers.html', $data);
+    $this->pageRenderer->displayPage('subscribers/subscribers.html', $data);
   }
 }

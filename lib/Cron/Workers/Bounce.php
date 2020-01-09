@@ -55,40 +55,40 @@ class Bounce extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTask $task, $timer) {
-    $subscriber_batches = new BatchIterator($task->id, self::BATCH_SIZE);
+    $subscriberBatches = new BatchIterator($task->id, self::BATCH_SIZE);
 
-    if (count($subscriber_batches) === 0) {
+    if (count($subscriberBatches) === 0) {
       ScheduledTaskSubscriber::where('task_id', $task->id)->deleteMany();
       return true; // mark completed
     }
 
-    $task_subscribers = new TaskSubscribers($task);
+    $taskSubscribers = new TaskSubscribers($task);
 
-    foreach ($subscriber_batches as $subscribers_to_process_ids) {
+    foreach ($subscriberBatches as $subscribersToProcessIds) {
       // abort if execution limit is reached
-      $this->cron_helper->enforceExecutionLimit($timer);
+      $this->cronHelper->enforceExecutionLimit($timer);
 
-      $subscriber_emails = Subscriber::select('email')
-        ->whereIn('id', $subscribers_to_process_ids)
+      $subscriberEmails = Subscriber::select('email')
+        ->whereIn('id', $subscribersToProcessIds)
         ->whereNull('deleted_at')
         ->findArray();
-      $subscriber_emails = array_column($subscriber_emails, 'email');
+      $subscriberEmails = array_column($subscriberEmails, 'email');
 
-      $this->processEmails($subscriber_emails);
+      $this->processEmails($subscriberEmails);
 
-      $task_subscribers->updateProcessedSubscribers($subscribers_to_process_ids);
+      $taskSubscribers->updateProcessedSubscribers($subscribersToProcessIds);
     }
 
     return true;
   }
 
-  public function processEmails(array $subscriber_emails) {
-    $checked_emails = $this->api->checkBounces($subscriber_emails);
-    $this->processApiResponse((array)$checked_emails);
+  public function processEmails(array $subscriberEmails) {
+    $checkedEmails = $this->api->checkBounces($subscriberEmails);
+    $this->processApiResponse((array)$checkedEmails);
   }
 
-  public function processApiResponse(array $checked_emails) {
-    foreach ($checked_emails as $email) {
+  public function processApiResponse(array $checkedEmails) {
+    foreach ($checkedEmails as $email) {
       if (!isset($email['address'], $email['bounce'])) {
         continue;
       }

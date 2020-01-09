@@ -15,64 +15,64 @@ class WooCommerceEmailCustomizationCest {
   /** @var string */
   private $wc_customizer_disabled_message;
 
-  public function _before(\AcceptanceTester $I) {
-    $I->activateWooCommerce();
+  public function _before(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
     $this->settings = new Settings();
 
-    $this->wc_customizer_disabled_message = 'The usage of this email template for your WooCommerce emails is not yet activated.';
+    $this->wcCustomizerDisabledMessage = 'The usage of this email template for your WooCommerce emails is not yet activated.';
   }
 
-  public function openEmailCustomizerWhenSettingIsEnabled(\AcceptanceTester $I) {
-    $I->wantTo('Open WooCommerce email customizer while setting is enabled');
+  public function openEmailCustomizerWhenSettingIsEnabled(\AcceptanceTester $i) {
+    $i->wantTo('Open WooCommerce email customizer while setting is enabled');
 
-    $this->createEmailTemplate($I);
-    $this->woocommerce_email_template_id = $this->getWooCommerceEmailTemplateId($I);
+    $this->createEmailTemplate($i);
+    $this->woocommerceEmailTemplateId = $this->getWooCommerceEmailTemplateId($i);
 
     $this->settings->withWooCommerceEmailCustomizerEnabled();
 
-    $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="new_email"]');
+    $i->amOnMailpoetPage('Emails');
+    $i->click('[data-automation-id="new_email"]');
 
-    $button_selector = '[data-automation-id="customize_woocommerce"]';
-    $I->seeNoJSErrors();
-    $I->waitForText('Customize', 30);
-    $I->dontSee('Activate', $button_selector);
-    $I->click($button_selector);
+    $buttonSelector = '[data-automation-id="customize_woocommerce"]';
+    $i->seeNoJSErrors();
+    $i->waitForText('Customize', 30);
+    $i->dontSee('Activate', $buttonSelector);
+    $i->click($buttonSelector);
 
-    $I->waitForText('Edit template for WooCommerce emails');
-    $I->seeInCurrentUrl('?page=mailpoet-newsletter-editor&id=' . $this->woocommerce_email_template_id);
+    $i->waitForText('Edit template for WooCommerce emails');
+    $i->seeInCurrentUrl('?page=mailpoet-newsletter-editor&id=' . $this->woocommerceEmailTemplateId);
 
-    $I->dontSee($this->wc_customizer_disabled_message);
+    $i->dontSee($this->wcCustomizerDisabledMessage);
   }
 
-  public function openEmailCustomizerWhenSettingIsDisabled(\AcceptanceTester $I) {
-    $I->wantTo('Open WooCommerce email customizer while setting is disabled');
+  public function openEmailCustomizerWhenSettingIsDisabled(\AcceptanceTester $i) {
+    $i->wantTo('Open WooCommerce email customizer while setting is disabled');
 
-    $this->createEmailTemplate($I);
-    $this->woocommerce_email_template_id = $this->getWooCommerceEmailTemplateId($I);
+    $this->createEmailTemplate($i);
+    $this->woocommerceEmailTemplateId = $this->getWooCommerceEmailTemplateId($i);
 
     $this->settings->withWooCommerceEmailCustomizerDisabled();
 
-    $I->amOnMailpoetPage('Emails');
-    $I->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletter-editor&id=' . $this->woocommerce_email_template_id);
-    $I->waitForText('Edit template for WooCommerce emails');
+    $i->amOnMailpoetPage('Emails');
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletter-editor&id=' . $this->woocommerceEmailTemplateId);
+    $i->waitForText('Edit template for WooCommerce emails');
 
-    $activation_selector = '.mailpoet_save_woocommerce_customizer_disabled';
-    $I->see($this->wc_customizer_disabled_message, $activation_selector);
-    $I->click('Activate now', $activation_selector);
-    $I->waitForElementNotVisible($activation_selector);
+    $activationSelector = '.mailpoet_save_woocommerce_customizer_disabled';
+    $i->see($this->wcCustomizerDisabledMessage, $activationSelector);
+    $i->click('Activate now', $activationSelector);
+    $i->waitForElementNotVisible($activationSelector);
   }
 
-  private function createEmailTemplate(\AcceptanceTester $I) {
-    $I->login();
-    $I->amOnMailpoetPage('Emails');
-    $I->click('[data-automation-id="customize_woocommerce"]');
-    $I->waitForText('Edit template for WooCommerce emails');
+  private function createEmailTemplate(\AcceptanceTester $i) {
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('[data-automation-id="customize_woocommerce"]');
+    $i->waitForText('Edit template for WooCommerce emails');
   }
 
-  private function getWooCommerceEmailTemplateId(\AcceptanceTester $I) {
-    $woocommerce_settings = $I->grabFromDatabase(MP_SETTINGS_TABLE, 'value', ['name' => 'woocommerce']);
-    $woocommerce_settings = unserialize($woocommerce_settings);
-    return $woocommerce_settings['transactional_email_id'];
+  private function getWooCommerceEmailTemplateId(\AcceptanceTester $i) {
+    $woocommerceSettings = $i->grabFromDatabase(MP_SETTINGS_TABLE, 'value', ['name' => 'woocommerce']);
+    $woocommerceSettings = unserialize($woocommerceSettings);
+    return $woocommerceSettings['transactional_email_id'];
   }
 }

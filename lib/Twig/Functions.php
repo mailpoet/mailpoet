@@ -28,9 +28,9 @@ class Functions extends AbstractExtension {
 
   public function __construct() {
     $this->settings = SettingsController::getInstance();
-    $this->woocommerce_helper = new WooCommerceHelper();
+    $this->woocommerceHelper = new WooCommerceHelper();
     $this->wp = WPFunctions::get();
-    $this->referral_url_decorator = new UrlDecorator($this->wp, $this->settings);
+    $this->referralUrlDecorator = new UrlDecorator($this->wp, $this->settings);
   }
 
   public function getFunctions() {
@@ -227,9 +227,9 @@ class Functions extends AbstractExtension {
   }
 
   public function installedInLastTwoWeeks() {
-    $max_number_of_weeks = 2;
-    $installed_at = Carbon::createFromFormat('Y-m-d H:i:s', $this->settings->get('installed_at'));
-    return $installed_at->diffInWeeks(Carbon::now()) < $max_number_of_weeks;
+    $maxNumberOfWeeks = 2;
+    $installedAt = Carbon::createFromFormat('Y-m-d H:i:s', $this->settings->get('installed_at'));
+    return $installedAt->diffInWeeks(Carbon::now()) < $maxNumberOfWeeks;
   }
 
   public function isRtl() {
@@ -245,7 +245,7 @@ class Functions extends AbstractExtension {
   }
 
   public function isWoocommerceActive() {
-    return $this->woocommerce_helper->isWooCommerceActive();
+    return $this->woocommerceHelper->isWooCommerceActive();
   }
 
   public function openedStatsColor($opened) {
@@ -289,6 +289,6 @@ class Functions extends AbstractExtension {
   }
 
   public function addReferralId($url) {
-    return $this->referral_url_decorator->decorate($url);
+    return $this->referralUrlDecorator->decorate($url);
   }
 }

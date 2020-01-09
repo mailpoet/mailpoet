@@ -12,8 +12,8 @@ class Helper {
     return WC();
   }
 
-  public function wcGetCustomerOrderCount($user_id) {
-    return wc_get_customer_order_count($user_id);
+  public function wcGetCustomerOrderCount($userId) {
+    return wc_get_customer_order_count($userId);
   }
 
   public function wcGetOrder($order = false) {
@@ -28,8 +28,8 @@ class Helper {
     return wc_price($price, $args);
   }
 
-  public function wcGetProduct($the_product = false) {
-    return wc_get_product($the_product);
+  public function wcGetProduct($theProduct = false) {
+    return wc_get_product($theProduct);
   }
 
   public function getWoocommerceCurrency() {
@@ -44,7 +44,7 @@ class Helper {
     return wc_hex_is_light($color);
   }
 
-  public function getOrdersCountCreatedBefore($date_time) {
+  public function getOrdersCountCreatedBefore($dateTime) {
     global $wpdb;
     $result = $wpdb->get_var( "
         SELECT DISTINCT count(p.ID) FROM {$wpdb->prefix}posts as p
@@ -54,7 +54,7 @@ class Helper {
   }
 
   public function getRawPrice($price, array $args = []) {
-    $html_price = $this->wcPrice($price, $args);
-    return html_entity_decode(strip_tags($html_price));
+    $htmlPrice = $this->wcPrice($price, $args);
+    return html_entity_decode(strip_tags($htmlPrice));
   }
 }

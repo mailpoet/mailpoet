@@ -6,10 +6,10 @@ class Text extends Base {
 
   public static function render($block) {
     $type = 'text';
-    $automation_id = ' ';
+    $automationId = ' ';
     if ($block['id'] === 'email') {
       $type = 'email';
-      $automation_id = 'data-automation-id="form_email" ';
+      $automationId = 'data-automation-id="form_email" ';
     }
 
     $html = '<p class="mailpoet_paragraph">';
@@ -24,7 +24,7 @@ class Text extends Base {
 
     $html .= 'value="' . static::getFieldValue($block) . '" ';
 
-    $html .= $automation_id;
+    $html .= $automationId;
 
     $html .= static::renderInputPlaceholder($block);
 

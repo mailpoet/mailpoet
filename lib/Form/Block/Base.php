@@ -7,7 +7,7 @@ use MailPoet\Models\ModelValidator;
 use MailPoet\WP\Functions as WPFunctions;
 
 abstract class Base {
-  protected static function getInputValidation($block, $extra_rules = []) {
+  protected static function getInputValidation($block, $extraRules = []) {
     $rules = [];
 
     if ($block['id'] === 'email') {
@@ -52,7 +52,7 @@ abstract class Base {
 
     $validation = [];
 
-    $rules = array_merge($rules, $extra_rules);
+    $rules = array_merge($rules, $extraRules);
 
     if (!empty($rules)) {
       $rules = array_unique($rules);

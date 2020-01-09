@@ -14,26 +14,26 @@ class CronWorkerScheduler {
     $this->wp = $wp;
   }
 
-  public function schedule($task_type, $next_run_date) {
-    $already_scheduled = ScheduledTask::where('type', $task_type)
+  public function schedule($taskType, $nextRunDate) {
+    $alreadyScheduled = ScheduledTask::where('type', $taskType)
       ->whereNull('deleted_at')
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
       ->findMany();
-    if ($already_scheduled) {
+    if ($alreadyScheduled) {
       return false;
     }
     $task = ScheduledTask::create();
-    $task->type = $task_type;
+    $task->type = $taskType;
     $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->priority = ScheduledTask::PRIORITY_LOW;
-    $task->scheduled_at = $next_run_date;
+    $task->scheduledAt = $nextRunDate;
     $task->save();
     return $task;
   }
 
   public function reschedule(ScheduledTask $task, $timeout) {
-    $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    $task->scheduled_at = $scheduled_at->addMinutes($timeout);
+    $scheduledAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $task->scheduledAt = $scheduledAt->addMinutes($timeout);
     $task->setExpr('updated_at', 'NOW()');
     $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->save();

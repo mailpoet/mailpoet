@@ -45,10 +45,10 @@ class NewSubscriberNotificationMailer {
       return;
     }
     try {
-      $extra_params = [
+      $extraParams = [
         'meta' => $this->mailerMetaInfo->getNewSubscriberNotificationMetaInfo(),
       ];
-      $this->mailer->send($this->constructNewsletter($subscriber, $segments), $settings['address'], $extra_params);
+      $this->mailer->send($this->constructNewsletter($subscriber, $segments), $settings['address'], $extraParams);
     } catch (\Exception $e) {
       if (WP_DEBUG) {
         throw $e;
@@ -80,15 +80,15 @@ class NewSubscriberNotificationMailer {
    * @throws \Exception
    */
   private function constructNewsletter(Subscriber $subscriber, array $segments) {
-    $segment_names = $this->getSegmentNames($segments);
+    $segmentNames = $this->getSegmentNames($segments);
     $context = [
       'subscriber_email' => $subscriber->get('email'),
-      'segments_names' => $segment_names,
+      'segments_names' => $segmentNames,
       'link_settings' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings'),
       'link_premium' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-premium'),
     ];
     return [
-      'subject' => sprintf(__('New subscriber to %s', 'mailpoet'), $segment_names),
+      'subject' => sprintf(__('New subscriber to %s', 'mailpoet'), $segmentNames),
       'body' => [
         'html' => $this->renderer->render('emails/newSubscriberNotification.html', $context),
         'text' => $this->renderer->render('emails/newSubscriberNotification.txt', $context),

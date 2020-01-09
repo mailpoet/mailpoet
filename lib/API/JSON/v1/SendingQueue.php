@@ -23,23 +23,23 @@ class SendingQueue extends APIEndpoint {
   /** @var SubscribersFeature */
   private $subscribers_feature;
 
-  public function __construct(SubscribersFeature $subscribers_feature) {
-    $this->subscribers_feature = $subscribers_feature;
+  public function __construct(SubscribersFeature $subscribersFeature) {
+    $this->subscribersFeature = $subscribersFeature;
   }
 
   public function add($data = []) {
-    if ($this->subscribers_feature->check()) {
+    if ($this->subscribersFeature->check()) {
       return $this->errorResponse([
         APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
       ], [], Response::STATUS_FORBIDDEN);
     }
-    $newsletter_id = (isset($data['newsletter_id'])
+    $newsletterId = (isset($data['newsletter_id'])
       ? (int)$data['newsletter_id']
       : false
     );
 
     // check that the newsletter exists
-    $newsletter = Newsletter::findOneWithOptions($newsletter_id);
+    $newsletter = Newsletter::findOneWithOptions($newsletterId);
 
     if (!$newsletter instanceof Newsletter) {
       return $this->errorResponse([
@@ -69,15 +69,15 @@ class SendingQueue extends APIEndpoint {
       ]);
     }
 
-    $scheduled_queue = SendingQueueModel::joinWithTasks()
+    $scheduledQueue = SendingQueueModel::joinWithTasks()
       ->where('queues.newsletter_id', $newsletter->id)
       ->where('tasks.status', SendingQueueModel::STATUS_SCHEDULED)
       ->findOne();
-    if ($scheduled_queue instanceof SendingQueueModel) {
-      $queue = SendingTask::createFromQueue($scheduled_queue);
+    if ($scheduledQueue instanceof SendingQueueModel) {
+      $queue = SendingTask::createFromQueue($scheduledQueue);
     } else {
       $queue = SendingTask::create();
-      $queue->newsletter_id = $newsletter->id;
+      $queue->newsletterId = $newsletter->id;
     }
 
     WordPress::resetRunInterval();
@@ -88,19 +88,19 @@ class SendingQueue extends APIEndpoint {
 
       // set queue status
       $queue->status = SendingQueueModel::STATUS_SCHEDULED;
-      $queue->scheduled_at = Scheduler::formatDatetimeString($newsletter->scheduledAt);
+      $queue->scheduledAt = Scheduler::formatDatetimeString($newsletter->scheduledAt);
     } else {
       $segments = $newsletter->segments()->findMany();
       $finder = new SubscribersFinder();
-      $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
-      if (!$subscribers_count) {
+      $subscribersCount = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
+      if (!$subscribersCount) {
         return $this->errorResponse([
           APIError::UNKNOWN => __('There are no subscribers in that list!', 'mailpoet'),
         ]);
       }
       $queue->updateCount();
       $queue->status = null;
-      $queue->scheduled_at = null;
+      $queue->scheduledAt = null;
 
       // set newsletter status
       $newsletter->setStatus(Newsletter::STATUS_SENDING);
@@ -118,11 +118,11 @@ class SendingQueue extends APIEndpoint {
   }
 
   public function pause($data = []) {
-    $newsletter_id = (isset($data['newsletter_id'])
+    $newsletterId = (isset($data['newsletter_id'])
       ? (int)$data['newsletter_id']
       : false
     );
-    $newsletter = Newsletter::findOne($newsletter_id);
+    $newsletter = Newsletter::findOne($newsletterId);
 
     if ($newsletter instanceof Newsletter) {
       $queue = $newsletter->getQueue();
@@ -145,16 +145,16 @@ class SendingQueue extends APIEndpoint {
   }
 
   public function resume($data = []) {
-    if ($this->subscribers_feature->check()) {
+    if ($this->subscribersFeature->check()) {
       return $this->errorResponse([
         APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
       ], [], Response::STATUS_FORBIDDEN);
     }
-    $newsletter_id = (isset($data['newsletter_id'])
+    $newsletterId = (isset($data['newsletter_id'])
       ? (int)$data['newsletter_id']
       : false
     );
-    $newsletter = Newsletter::findOne($newsletter_id);
+    $newsletter = Newsletter::findOne($newsletterId);
     if ($newsletter instanceof Newsletter) {
       $queue = $newsletter->getQueue();
 

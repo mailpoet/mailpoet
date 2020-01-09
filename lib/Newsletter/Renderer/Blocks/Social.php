@@ -6,7 +6,7 @@ use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Social {
   public static function render($element) {
-    $icons_block = '';
+    $iconsBlock = '';
     if (is_array($element['icons'])) {
       foreach ($element['icons'] as $index => $icon) {
         if (empty($icon['image'])) {
@@ -14,7 +14,7 @@ class Social {
         }
 
         $style = 'width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;';
-        $icons_block .= '<a href="' . EHelper::escapeHtmlLinkAttr($icon['link']) . '" style="text-decoration:none!important;"
+        $iconsBlock .= '<a href="' . EHelper::escapeHtmlLinkAttr($icon['link']) . '" style="text-decoration:none!important;"
         ><img
           src="' . EHelper::escapeHtmlLinkAttr($icon['image']) . '"
           width="' . (int)$icon['width'] . '"
@@ -25,11 +25,11 @@ class Social {
       }
     }
     $alignment = isset($element['styles']['block']['textAlign']) ? $element['styles']['block']['textAlign'] : 'center';
-    if (!empty($icons_block)) {
+    if (!empty($iconsBlock)) {
       $template = '
       <tr>
         <td class="mailpoet_padded_side mailpoet_padded_vertical" valign="top" align="' . EHelper::escapeHtmlAttr($alignment) . '">
-          ' . $icons_block . '
+          ' . $iconsBlock . '
         </td>
       </tr>';
       return $template;

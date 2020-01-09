@@ -19,11 +19,11 @@ class PageLimit {
       return self::DEFAULT_LIMIT_PER_PAGE;
     }
 
-    $listing_per_page = $this->wp->getUserMeta(
+    $listingPerPage = $this->wp->getUserMeta(
       $this->wp->getCurrentUserId(), 'mailpoet_' . $model . '_per_page', true
     );
-    return (!empty($listing_per_page))
-      ? (int)$listing_per_page
+    return (!empty($listingPerPage))
+      ? (int)$listingPerPage
       : self::DEFAULT_LIMIT_PER_PAGE;
   }
 }

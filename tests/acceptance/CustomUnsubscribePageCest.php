@@ -3,19 +3,19 @@
 namespace MailPoet\Test\Acceptance;
 
 class CustomUnsubscribePageCest {
-  public function createCustomUnsubscribePage(\AcceptanceTester $I) {
-    $I->wantTo('Create page with MP subscriber shortcode');
+  public function createCustomUnsubscribePage(\AcceptanceTester $i) {
+    $i->wantTo('Create page with MP subscriber shortcode');
     $pageTitle = 'SorryToSeeYouGo';
     $pageText = 'Manage your subscription';
     $pageContent = "[mailpoet_manage text=\"$pageText\"]";
-    $I->cli(['post', 'create', '--post_type=page', '--post_status=publish', '--post_title=' . $pageTitle, '--post_content=' . $pageContent]);
-    $I->login();
-    $I->amOnPage('/wp-admin/edit.php?post_type=page');
-    $I->waitForText($pageTitle);
-    $I->click($pageTitle);
+    $i->cli(['post', 'create', '--post_type=page', '--post_status=publish', '--post_title=' . $pageTitle, '--post_content=' . $pageContent]);
+    $i->login();
+    $i->amOnPage('/wp-admin/edit.php?post_type=page');
+    $i->waitForText($pageTitle);
+    $i->click($pageTitle);
     //see live page with shortcode output
-    $I->click('View Page');
-    $I->waitForText($pageTitle);
-    $I->waitForText($pageText);
+    $i->click('View Page');
+    $i->waitForText($pageTitle);
+    $i->waitForText($pageText);
   }
 }

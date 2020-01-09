@@ -21,9 +21,9 @@ foreach ($files as $file) {
     // require-once 'swift_init.php' in classes since prefixed version won't use Swift's autoloader
     if (strpos($file, 'classes') !== false) {
       $path = substr($file, strpos($file, 'classes'));
-      $nesting_level = substr_count(str_replace('\\', '/', $path), '/');
+      $nestingLevel = substr_count(str_replace('\\', '/', $path), '/');
       $search = 'namespace MailPoetVendor;';
-      $require_path = str_repeat('/..', $nesting_level) . '/swift_init.php';
+      $requirePath = str_repeat('/..', $nestingLevel) . '/swift_init.php';
       $data = str_replace($search, "$search\n\nrequire_once __DIR__ . '$require_path';", $data);
     }
     file_put_contents($file, $data);

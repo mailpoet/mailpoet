@@ -14,8 +14,8 @@ use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
 class ConfigurationFactoryTest extends \MailPoetTest {
   public function testItSetsUpBasicOptions() {
-    $configuration_factory = new ConfigurationFactory(false, new AnnotationReaderProvider());
-    $configuration = $configuration_factory->createConfiguration();
+    $configurationFactory = new ConfigurationFactory(false, new AnnotationReaderProvider());
+    $configuration = $configurationFactory->createConfiguration();
 
     expect($configuration)->isInstanceOf(Configuration::class);
     expect($configuration->getNamingStrategy())->isInstanceOf(UnderscoreNamingStrategy::class);
@@ -36,13 +36,13 @@ class ConfigurationFactoryTest extends \MailPoetTest {
 
   public function testItSetsUpEnvironmentSpecificOptions() {
     // dev mode
-    $configuration_factory = new ConfigurationFactory(true, new AnnotationReaderProvider());
-    $configuration = $configuration_factory->createConfiguration();
+    $configurationFactory = new ConfigurationFactory(true, new AnnotationReaderProvider());
+    $configuration = $configurationFactory->createConfiguration();
     expect($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
     // production mode
-    $configuration_factory = new ConfigurationFactory(false, new AnnotationReaderProvider());
-    $configuration = $configuration_factory->createConfiguration();
+    $configurationFactory = new ConfigurationFactory(false, new AnnotationReaderProvider());
+    $configuration = $configurationFactory->createConfiguration();
     expect($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_NEVER);
   }
 }

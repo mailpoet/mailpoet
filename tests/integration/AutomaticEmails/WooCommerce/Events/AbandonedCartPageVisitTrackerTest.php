@@ -25,32 +25,32 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
   private $page_visit_tracker;
 
   public function _before() {
-    $this->current_time = Carbon::now();
-    Carbon::setTestNow($this->current_time);
+    $this->currentTime = Carbon::now();
+    Carbon::setTestNow($this->currentTime);
 
     $this->wp = $this->makeEmpty(WPFunctions::class, [
-      'currentTime' => $this->current_time->getTimestamp(),
+      'currentTime' => $this->currentTime->getTimestamp(),
     ]);
 
-    $woo_commerce_mock = $this->mockWooCommerceClass(WooCommerce::class, []);
-    $woo_commerce_mock->session = $this->createWooCommerceSessionMock();
-    $woo_commerce_helper_mock = $this->make(WooCommerceHelper::class, [
+    $wooCommerceMock = $this->mockWooCommerceClass(WooCommerce::class, []);
+    $wooCommerceMock->session = $this->createWooCommerceSessionMock();
+    $wooCommerceHelperMock = $this->make(WooCommerceHelper::class, [
       'isWooCommerceActive' => true,
-      'WC' => $woo_commerce_mock,
+      'WC' => $wooCommerceMock,
     ]);
 
-    $this->session_store = [];
-    $this->page_visit_tracker = new AbandonedCartPageVisitTracker($this->wp, $woo_commerce_helper_mock, new Cookies());
+    $this->sessionStore = [];
+    $this->pageVisitTracker = new AbandonedCartPageVisitTracker($this->wp, $wooCommerceHelperMock, new Cookies());
   }
 
   public function testItSetsTimestampWhenTrackingStarted() {
-    $this->page_visit_tracker->startTracking();
-    expect($this->session_store['mailpoet_last_visit_timestamp'])->same($this->current_time->getTimestamp());
+    $this->pageVisitTracker->startTracking();
+    expect($this->sessionStore['mailpoet_last_visit_timestamp'])->same($this->currentTime->getTimestamp());
   }
 
   public function testItDeletesTimestampWhenTrackingStopped() {
-    $this->page_visit_tracker->stopTracking();
-    expect($this->session_store)->isEmpty();
+    $this->pageVisitTracker->stopTracking();
+    expect($this->sessionStore)->isEmpty();
   }
 
   public function testItTracks() {
@@ -59,15 +59,15 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
       $this->makeEmpty(WP_User::class, ['exists' => true])
     );
 
-    $hour_ago_timestamp = $this->current_time->getTimestamp() - 60 * 60;
-    $this->session_store['mailpoet_last_visit_timestamp'] = $hour_ago_timestamp;
+    $hourAgoTimestamp = $this->currentTime->getTimestamp() - 60 * 60;
+    $this->sessionStore['mailpoet_last_visit_timestamp'] = $hourAgoTimestamp;
 
-    $tracking_callback_executed = false;
-    $this->page_visit_tracker->trackVisit(function () use (&$tracking_callback_executed) {
-      $tracking_callback_executed = true;
+    $trackingCallbackExecuted = false;
+    $this->pageVisitTracker->trackVisit(function () use (&$trackingCallbackExecuted) {
+      $trackingCallbackExecuted = true;
     });
-    expect($this->session_store['mailpoet_last_visit_timestamp'])->same($this->current_time->getTimestamp());
-    expect($tracking_callback_executed)->true();
+    expect($this->sessionStore['mailpoet_last_visit_timestamp'])->same($this->currentTime->getTimestamp());
+    expect($trackingCallbackExecuted)->true();
   }
 
   public function testItTracksByCookie() {
@@ -77,10 +77,10 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     );
     $_COOKIE['mailpoet_abandoned_cart_tracking'] = true;
 
-    $hour_ago_timestamp = $this->current_time->getTimestamp() - 60 * 60;
-    $this->session_store['mailpoet_last_visit_timestamp'] = $hour_ago_timestamp;
-    $this->page_visit_tracker->trackVisit();
-    expect($this->session_store['mailpoet_last_visit_timestamp'])->same($this->current_time->getTimestamp());
+    $hourAgoTimestamp = $this->currentTime->getTimestamp() - 60 * 60;
+    $this->sessionStore['mailpoet_last_visit_timestamp'] = $hourAgoTimestamp;
+    $this->pageVisitTracker->trackVisit();
+    expect($this->sessionStore['mailpoet_last_visit_timestamp'])->same($this->currentTime->getTimestamp());
   }
 
   public function testItDoesNotTrackWhenUserNotFound() {
@@ -89,10 +89,10 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
       $this->makeEmpty(WP_User::class, ['exists' => false])
     );
 
-    $hour_ago_timestamp = $this->current_time->getTimestamp() - 60 * 60;
-    $this->session_store['mailpoet_last_visit_timestamp'] = $hour_ago_timestamp;
-    $this->page_visit_tracker->trackVisit();
-    expect($this->session_store['mailpoet_last_visit_timestamp'])->same($hour_ago_timestamp);
+    $hourAgoTimestamp = $this->currentTime->getTimestamp() - 60 * 60;
+    $this->sessionStore['mailpoet_last_visit_timestamp'] = $hourAgoTimestamp;
+    $this->pageVisitTracker->trackVisit();
+    expect($this->sessionStore['mailpoet_last_visit_timestamp'])->same($hourAgoTimestamp);
   }
 
   public function testItDoesNotTrackAdminPage() {
@@ -101,38 +101,38 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
       $this->makeEmpty(WP_User::class, ['exists' => true])
     );
 
-    $hour_ago_timestamp = $this->current_time->getTimestamp() - 60 * 60;
-    $this->session_store['mailpoet_last_visit_timestamp'] = $hour_ago_timestamp;
-    $this->page_visit_tracker->trackVisit();
-    expect($this->session_store['mailpoet_last_visit_timestamp'])->same($hour_ago_timestamp);
+    $hourAgoTimestamp = $this->currentTime->getTimestamp() - 60 * 60;
+    $this->sessionStore['mailpoet_last_visit_timestamp'] = $hourAgoTimestamp;
+    $this->pageVisitTracker->trackVisit();
+    expect($this->sessionStore['mailpoet_last_visit_timestamp'])->same($hourAgoTimestamp);
   }
 
   public function testItDoesNotTrackMultipleTimesPerMinute() {
-    $ten_seconds_ago_timestamp = $this->current_time->getTimestamp() - 10;
-    $this->session_store['mailpoet_last_visit_timestamp'] = $ten_seconds_ago_timestamp;
-    $this->page_visit_tracker->trackVisit();
-    expect($this->session_store['mailpoet_last_visit_timestamp'])->same($ten_seconds_ago_timestamp);
+    $tenSecondsAgoTimestamp = $this->currentTime->getTimestamp() - 10;
+    $this->sessionStore['mailpoet_last_visit_timestamp'] = $tenSecondsAgoTimestamp;
+    $this->pageVisitTracker->trackVisit();
+    expect($this->sessionStore['mailpoet_last_visit_timestamp'])->same($tenSecondsAgoTimestamp);
   }
 
   private function createWooCommerceSessionMock() {
     $mock = $this->mockWooCommerceClass(WC_Session::class, ['get', 'set', '__unset']);
 
     $mock->method('get')->willReturnCallback(function ($key) {
-      return isset($this->session_store[$key]) ? $this->session_store[$key] : null;
+      return isset($this->sessionStore[$key]) ? $this->sessionStore[$key] : null;
     });
     $mock->method('set')->willReturnCallback(function ($key, $value) {
-      $this->session_store[$key] = $value;
+      $this->sessionStore[$key] = $value;
     });
     $mock->method('__unset')->willReturnCallback(function ($key) {
-      unset($this->session_store[$key]);
+      unset($this->sessionStore[$key]);
     });
     return $mock;
   }
 
-  private function mockWooCommerceClass($class_name, array $methods) {
+  private function mockWooCommerceClass($className, array $methods) {
     // WooCommerce class needs to be mocked without default 'disallowMockingUnknownTypes'
     // since WooCommerce may not be active (would result in error mocking undefined class)
-    return $this->getMockBuilder($class_name)
+    return $this->getMockBuilder($className)
       ->disableOriginalConstructor()
       ->disableOriginalClone()
       ->disableArgumentCloning()

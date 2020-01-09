@@ -30,8 +30,8 @@ class Mailer extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
-  public function __construct(AuthorizedEmailsController $authorized_emails_controller, SettingsController $settings, Bridge $bridge, MetaInfo $mailerMetaInfo) {
-    $this->authorized_emails_controller = $authorized_emails_controller;
+  public function __construct(AuthorizedEmailsController $authorizedEmailsController, SettingsController $settings, Bridge $bridge, MetaInfo $mailerMetaInfo) {
+    $this->authorizedEmailsController = $authorizedEmailsController;
     $this->settings = $settings;
     $this->bridge = $bridge;
     $this->mailerMetaInfo = $mailerMetaInfo;
@@ -46,10 +46,10 @@ class Mailer extends APIEndpoint {
         (isset($data['reply_to'])) ? $data['reply_to'] : false
       );
       // report this as 'sending_test' in metadata since this endpoint is only used to test sending methods for now
-      $extra_params = [
+      $extraParams = [
         'meta' => $this->mailerMetaInfo->getSendingTestMetaInfo(),
       ];
-      $result = $mailer->send($data['newsletter'], $data['subscriber'], $extra_params);
+      $result = $mailer->send($data['newsletter'], $data['subscriber'], $extraParams);
     } catch (\Exception $e) {
       return $this->errorResponse([
         $e->getCode() => $e->getMessage(),
@@ -69,14 +69,14 @@ class Mailer extends APIEndpoint {
 
   public function resumeSending() {
     if ($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING)) {
-      $this->authorized_emails_controller->checkAuthorizedEmailAddresses();
+      $this->authorizedEmailsController->checkAuthorizedEmailAddresses();
     }
     MailerLog::resumeSending();
     return $this->successResponse(null);
   }
 
   public function getAuthorizedEmailAddresses() {
-    $authorized_emails = $this->bridge->getAuthorizedEmailAddresses();
-    return $this->successResponse($authorized_emails);
+    $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
+    return $this->successResponse($authorizedEmails);
   }
 }

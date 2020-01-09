@@ -19,10 +19,10 @@ class DBMapper {
  *
  * @return DynamicSegment
  */
-  public function mapSegment(DynamicSegment $segment_data, array $filters_data) {
-    $filters = $this->getFilters($segment_data->id, $filters_data);
-    $segment_data->setFilters($filters);
-    return $segment_data;
+  public function mapSegment(DynamicSegment $segmentData, array $filtersData) {
+    $filters = $this->getFilters($segmentData->id, $filtersData);
+    $segmentData->setFilters($filters);
+    return $segmentData;
   }
 
   /**
@@ -31,19 +31,19 @@ class DBMapper {
    *
    * @return DynamicSegment[]
    */
-  public function mapSegments(array $segments_data, array $filters_data) {
+  public function mapSegments(array $segmentsData, array $filtersData) {
     $result = [];
-    foreach ($segments_data as $segment_data) {
-      $result[] = $this->mapSegment($segment_data, $filters_data);
+    foreach ($segmentsData as $segmentData) {
+      $result[] = $this->mapSegment($segmentData, $filtersData);
     }
     return $result;
   }
 
-  private function getFilters($segment_id, $all_filters) {
+  private function getFilters($segmentId, $allFilters) {
     $result = [];
-    foreach ($all_filters as $filter) {
-      if ($filter->segment_id === $segment_id) {
-        $result[] = $this->createFilter($filter->filter_data);
+    foreach ($allFilters as $filter) {
+      if ($filter->segmentId === $segmentId) {
+        $result[] = $this->createFilter($filter->filterData);
       }
     }
     return $result;

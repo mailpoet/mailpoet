@@ -5,7 +5,7 @@
 $code = "if (!defined('ABSPATH')) exit;";
 
 // paths to skip (relative to given <directory> parameter)
-$skip_paths = [
+$skipPaths = [
   'mailpoet-cron.php',
 ];
 
@@ -31,8 +31,8 @@ foreach ($files as $file) {
     continue;
   }
 
-  $short_path = substr($file, strlen($directory));
-  if (in_array($short_path, $skip_paths, true)) {
+  $shortPath = substr($file, strlen($directory));
+  if (in_array($shortPath, $skipPaths, true)) {
     continue;
   }
 
@@ -65,17 +65,17 @@ foreach ($files as $file) {
     // try to find declare with 'strict_types'
     if (is_array($token) && $token[0] === T_DECLARE) {
       $found = false;
-      $line_increment = 0;
+      $lineIncrement = 0;
       while ($tokens[++$i] !== ';') {
-        $declare_token = $tokens[$i];
-        if (is_array($declare_token) && $declare_token[0] === T_STRING && $declare_token[1] === 'strict_types') {
+        $declareToken = $tokens[$i];
+        if (is_array($declareToken) && $declareToken[0] === T_STRING && $declareToken[1] === 'strict_types') {
           $found = true;
         }
-        $line_increment += substr_count(is_array($declare_token) ? $declare_token[1] : $declare_token, "\n");
+        $lineIncrement += substr_count(is_array($declareToken) ? $declareToken[1] : $declareToken, "\n");
       }
 
       if ($found) {
-        $line = $token[2] + $line_increment;
+        $line = $token[2] + $lineIncrement;
       }
     }
 

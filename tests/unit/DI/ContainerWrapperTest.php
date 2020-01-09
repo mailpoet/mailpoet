@@ -29,23 +29,23 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
   }
 
   public function testItProvidesFreePluginServices() {
-    $free_container_stub = Stub::make(Container::class, [
+    $freeContainerStub = Stub::make(Container::class, [
       'get' => function () {
           return 'service';
       },
     ]);
-    $instance = new ContainerWrapper($free_container_stub);
+    $instance = new ContainerWrapper($freeContainerStub);
     $service = $instance->get('service_id');
     expect($service)->equals('service');
   }
 
   public function testItThrowsFreePluginServices() {
-    $free_container_stub = Stub::make(Container::class, [
+    $freeContainerStub = Stub::make(Container::class, [
       'get' => function ($id) {
         throw new ServiceNotFoundException($id);
       },
     ]);
-    $instance = new ContainerWrapper($free_container_stub);
+    $instance = new ContainerWrapper($freeContainerStub);
     $exception = null;
     try {
       $instance->get('service');
@@ -56,27 +56,27 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
   }
 
   public function testItReturnServiceFromPremium() {
-    $free_container_stub = Stub::make(Container::class, [
+    $freeContainerStub = Stub::make(Container::class, [
       'get' => function ($id) {
         throw new ServiceNotFoundException($id);
       },
     ]);
-    $premium_container_stub = Stub::make(Container::class, [
+    $premiumContainerStub = Stub::make(Container::class, [
       'get' => function () {
         return 'service_1';
       },
     ]);
-    $instance = new ContainerWrapper($free_container_stub, $premium_container_stub);
+    $instance = new ContainerWrapper($freeContainerStub, $premiumContainerStub);
     expect($instance->get('service'))->equals('service_1');
   }
 
   public function testItThrowsIfServiceNotFoundInBothContainers() {
-    $container_stub = Stub::make(Container::class, [
+    $containerStub = Stub::make(Container::class, [
       'get' => function ($id) {
         throw new ServiceNotFoundException($id);
       },
     ]);
-    $instance = new ContainerWrapper($container_stub, $container_stub);
+    $instance = new ContainerWrapper($containerStub, $containerStub);
     $exception = null;
     try {
       $instance->get('service');
