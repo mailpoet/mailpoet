@@ -13,7 +13,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class CapabilitiesTest extends \MailPoetTest {
 
   /** @var AccessControl */
-  private $access_control;
+  private $accessControl;
 
   /** @var Capabilities */
   private $caps;

@@ -12,22 +12,22 @@ class PermanentNotices {
   private $wp;
 
   /** @var PHPVersionWarnings */
-  private $php_version_warnings;
+  private $phpVersionWarnings;
 
   /** @var AfterMigrationNotice */
-  private $after_migration_notice;
+  private $afterMigrationNotice;
 
   /** @var UnauthorizedEmailNotice */
-  private $unauthorized_emails_notice;
+  private $unauthorizedEmailsNotice;
 
   /** @var UnauthorizedEmailInNewslettersNotice */
-  private $unauthorized_emails_in_newsletters_notice;
+  private $unauthorizedEmailsInNewslettersNotice;
 
   /** @var InactiveSubscribersNotice */
-  private $inactive_subscribers_notice;
+  private $inactiveSubscribersNotice;
 
   /** @var BlackFridayNotice */
-  private $black_friday_notice;
+  private $blackFridayNotice;
 
   public function __construct(WPFunctions $wp) {
     $this->wp = $wp;

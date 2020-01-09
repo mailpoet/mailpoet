@@ -18,13 +18,13 @@ class AbandonedCart {
   private $wp;
 
   /** @var WooCommerceHelper */
-  private $woo_commerce_helper;
+  private $wooCommerceHelper;
 
   /** @var Cookies */
   private $cookies;
 
   /** @var AbandonedCartPageVisitTracker */
-  private $page_visit_tracker;
+  private $pageVisitTracker;
 
   /** @var AutomaticEmailScheduler */
   private $scheduler;

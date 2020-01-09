@@ -22,7 +22,7 @@ use MailPoetVendor\Idiorm\ORM;
 class PagesTest extends \MailPoetTest {
   public $pages;
 
-  private $test_data = [];
+  private $testData = [];
 
   /** @var Subscriber */
   private $subscriber;

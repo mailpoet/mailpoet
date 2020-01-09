@@ -12,7 +12,7 @@ class Registration {
   private $settings;
 
   /** @var SubscriberActions */
-  private $subscriber_actions;
+  private $subscriberActions;
 
   public function __construct(
     SettingsController $settings,

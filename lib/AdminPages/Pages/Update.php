@@ -12,7 +12,7 @@ use MailPoetVendor\Carbon\Carbon;
 
 class Update {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var WPFunctions */
   private $wp;

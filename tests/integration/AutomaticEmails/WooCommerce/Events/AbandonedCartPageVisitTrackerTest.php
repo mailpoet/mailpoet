@@ -13,16 +13,16 @@ use WP_User;
 
 class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
   /** @var Carbon */
-  private $current_time;
+  private $currentTime;
 
   /** @var WPFunctions|MockObject */
   private $wp;
 
   /** @var mixed[] */
-  private $session_store = [];
+  private $sessionStore = [];
 
   /** @var AbandonedCartPageVisitTracker */
-  private $page_visit_tracker;
+  private $pageVisitTracker;
 
   public function _before() {
     $this->currentTime = Carbon::now();

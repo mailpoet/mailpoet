@@ -30,25 +30,25 @@ class SubscriberEntity {
    * @ORM\Column(type="bigint")
    * @var int|null
    */
-  private $wp_user_id;
+  private $wpUserId;
 
   /**
    * @ORM\Column(type="boolean")
    * @var bool
    */
-  private $is_woocommerce_user = false;
+  private $isWoocommerceUser = false;
 
   /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $first_name = '';
+  private $firstName = '';
 
   /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $last_name = '';
+  private $lastName = '';
 
   /**
    * @ORM\Column(type="string")
@@ -66,31 +66,31 @@ class SubscriberEntity {
    * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
-  private $subscribed_ip;
+  private $subscribedIp;
 
   /**
    * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
-  private $confirmed_ip;
+  private $confirmedIp;
 
   /**
    * @ORM\Column(type="datetimetz", nullable=true)
    * @var DateTimeInterface|null
    */
-  private $confirmed_at;
+  private $confirmedAt;
 
   /**
    * @ORM\Column(type="datetimetz", nullable=true)
    * @var DateTimeInterface|null
    */
-  private $last_subscribed_at;
+  private $lastSubscribedAt;
 
   /**
    * @ORM\Column(type="text", nullable=true)
    * @var string|null
    */
-  private $unconfirmed_data;
+  private $unconfirmedData;
 
   /**
    * @ORM\Column(type="string")
@@ -102,19 +102,19 @@ class SubscriberEntity {
    * @ORM\Column(type="integer")
    * @var int
    */
-  private $count_confirmations = 0;
+  private $countConfirmations = 0;
 
   /**
    * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
-  private $unsubscribe_token;
+  private $unsubscribeToken;
 
   /**
    * @ORM\Column(type="string")
    * @var string|null
    */
-  private $link_token;
+  private $linkToken;
 
   /**
    * @return int|null

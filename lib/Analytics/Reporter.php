@@ -19,7 +19,7 @@ class Reporter {
   private $settings;
 
   /** @var WooCommerceHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   public function __construct(SettingsController $settings, WooCommerceHelper $woocommerceHelper) {
     $this->settings = $settings;

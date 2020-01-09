@@ -6,7 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 
 class ExperimentalFeatures {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   public function __construct(PageRenderer $pageRenderer) {
     $this->pageRenderer = $pageRenderer;

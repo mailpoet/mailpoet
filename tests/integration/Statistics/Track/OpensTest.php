@@ -16,7 +16,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class OpensTest extends \MailPoetTest {
   public $opens;
-  public $track_data;
+  public $trackData;
   public $queue;
   public $subscriber;
   public $newsletter;

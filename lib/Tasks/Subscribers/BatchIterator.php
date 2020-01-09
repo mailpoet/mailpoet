@@ -7,10 +7,10 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use function MailPoetVendor\array_column;
 
 class BatchIterator implements \Iterator, \Countable {
-  private $task_id;
-  private $batch_size;
-  private $last_processed_id = 0;
-  private $batch_last_id;
+  private $taskId;
+  private $batchSize;
+  private $lastProcessedId = 0;
+  private $batchLastId;
 
   public function __construct($taskId, $batchSize) {
     if ($taskId <= 0) {

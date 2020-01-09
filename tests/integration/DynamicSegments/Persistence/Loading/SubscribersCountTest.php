@@ -11,7 +11,7 @@ use MailPoet\Models\DynamicSegment;
 class SubscribersCountTest extends \MailPoetTest {
 
   /** @var RequirementsChecker|\PHPUnit_Framework_MockObject_MockObject */
-  private $requirement_checker;
+  private $requirementChecker;
 
   public function _before() {
     $this->cleanData();

@@ -11,7 +11,7 @@ class CronDaemon {
   const ACTION_RUN = 'run';
   const ACTION_PING = 'ping';
   const ACTION_PING_RESPONSE = 'pingResponse';
-  public $allowed_actions = [
+  public $allowedActions = [
     self::ACTION_RUN,
     self::ACTION_PING,
     self::ACTION_PING_RESPONSE,
@@ -22,10 +22,10 @@ class CronDaemon {
   ];
 
   /** @var DaemonHttpRunner */
-  private $daemon_runner;
+  private $daemonRunner;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   public function __construct(DaemonHttpRunner $daemonRunner, CronHelper $cronHelper) {
     $this->daemonRunner = $daemonRunner;

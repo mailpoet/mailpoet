@@ -29,7 +29,7 @@ class NewsletterOptionFieldEntity {
    * @Assert\NotBlank()
    * @var string
    */
-  private $newsletter_type;
+  private $newsletterType;
 
   /**
    * @return string

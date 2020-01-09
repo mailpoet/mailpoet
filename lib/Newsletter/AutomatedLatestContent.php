@@ -9,11 +9,11 @@ use MailPoet\WP\Functions as WPFunctions;
 class AutomatedLatestContent {
   const DEFAULT_POSTS_PER_PAGE = 10;
 
-  private $newsletter_id;
-  private $newer_than_timestamp;
+  private $newsletterId;
+  private $newerThanTimestamp;
 
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   public function __construct($newsletterId = false, $newerThanTimestamp = false) {
     $this->newsletterId = $newsletterId;

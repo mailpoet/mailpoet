@@ -30,19 +30,19 @@ class MP2Migrator {
   /** @var Activator */
   private $activator;
 
-  private $log_file;
-  public $log_file_url;
+  private $logFile;
+  public $logFileUrl;
   public $progressbar;
-  private $segments_mapping = []; // Mapping between old and new segment IDs
-  private $wp_users_segment;
-  private $double_optin_enabled = true;
-  private $mp2_campaign_table;
-  private $mp2_custom_field_table;
-  private $mp2_email_table;
-  private $mp2_form_table;
-  private $mp2_list_table;
-  private $mp2_user_table;
-  private $mp2_user_list_table;
+  private $segmentsMapping = []; // Mapping between old and new segment IDs
+  private $wpUsersSegment;
+  private $doubleOptinEnabled = true;
+  private $mp2CampaignTable;
+  private $mp2CustomFieldTable;
+  private $mp2EmailTable;
+  private $mp2FormTable;
+  private $mp2ListTable;
+  private $mp2UserTable;
+  private $mp2UserListTable;
 
 
   public function __construct(SettingsController $settings, Activator $activator) {

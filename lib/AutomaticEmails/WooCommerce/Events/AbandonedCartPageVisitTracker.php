@@ -15,7 +15,7 @@ class AbandonedCartPageVisitTracker {
   private $wp;
 
   /** @var WooCommerceHelper */
-  private $woo_commerce_helper;
+  private $wooCommerceHelper;
 
   /** @var Cookies */
   private $cookies;

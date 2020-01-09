@@ -150,13 +150,13 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $inIsolation = false;
 
   /** @var ContainerWrapper */
-  protected $di_container;
+  protected $diContainer;
 
   /** @var Connection */
   protected $connection;
 
   /** @var EntityManager */
-  protected $entity_manager;
+  protected $entityManager;
 
   public function setUp() {
     $this->diContainer = ContainerWrapper::getInstance(WP_DEBUG);

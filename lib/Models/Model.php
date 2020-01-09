@@ -134,7 +134,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
 
   public static $_table;
   protected $_errors;
-  protected $_new_record;
+  protected $newRecord;
 
   public function __construct() {
     $this->_errors = [];

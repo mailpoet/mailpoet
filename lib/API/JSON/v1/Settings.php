@@ -25,10 +25,10 @@ class Settings extends APIEndpoint {
   private $bridge;
 
   /** @var AuthorizedEmailsController */
-  private $authorized_emails_controller;
+  private $authorizedEmailsController;
 
   /** @var TransactionalEmails */
-  private $wc_transactional_emails;
+  private $wcTransactionalEmails;
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,

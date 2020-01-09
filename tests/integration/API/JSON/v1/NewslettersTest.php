@@ -41,16 +41,16 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewslettersTest extends \MailPoetTest {
-  public $post_notification;
+  public $postNotification;
   public $newsletter;
   /** @var Newsletters */
   private $endpoint;
 
   /** @var SubscriptionUrlFactory */
-  private $subscription_url_factory;
+  private $subscriptionUrlFactory;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   public function _before() {
     parent::_before();

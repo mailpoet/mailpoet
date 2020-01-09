@@ -7,7 +7,7 @@ use MailPoet\Features\FeaturesController;
 use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
 
 class Styles {
-  private $default_styles = <<<EOL
+  private $defaultStyles = <<<EOL
 /* form */
 .mailpoet_form {
 
@@ -82,7 +82,7 @@ class Styles {
 EOL;
 
   /** @var FeaturesController */
-  private $features_controller;
+  private $featuresController;
 
   /**
    * @param FeaturesController $features_controller

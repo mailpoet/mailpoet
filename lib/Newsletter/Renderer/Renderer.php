@@ -13,14 +13,14 @@ use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
-  public $blocks_renderer;
-  public $columns_renderer;
+  public $blocksRenderer;
+  public $columnsRenderer;
   public $preprocessor;
-  public $CSS_inliner;
+  public $cSSInliner;
   public $newsletter;
   public $preview;
-  public $premium_activated;
-  public $mss_activated;
+  public $premiumActivated;
+  public $mssActivated;
   private $template;
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';

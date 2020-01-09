@@ -49,13 +49,13 @@ class ScheduledTaskEntity {
    * @ORM\Column(type="datetimetz")
    * @var DateTimeInterface|null
    */
-  private $scheduled_at;
+  private $scheduledAt;
 
   /**
    * @ORM\Column(type="datetimetz")
    * @var DateTimeInterface|null
    */
-  private $processed_at;
+  private $processedAt;
 
   /**
    * @ORM\Column(type="json")

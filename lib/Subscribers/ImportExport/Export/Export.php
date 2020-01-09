@@ -14,15 +14,15 @@ use function MailPoetVendor\array_column;
 class Export {
   const SUBSCRIBER_BATCH_SIZE = 15000;
 
-  public $export_format_option;
-  public $subscriber_fields;
-  public $subscriber_custom_fields;
-  public $formatted_subscriber_fields;
-  public $export_path;
-  public $export_file;
-  public $export_file_URL;
-  public $default_subscribers_getter;
-  public $dynamic_subscribers_getter;
+  public $exportFormatOption;
+  public $subscriberFields;
+  public $subscriberCustomFields;
+  public $formattedSubscriberFields;
+  public $exportPath;
+  public $exportFile;
+  public $exportFileURL;
+  public $defaultSubscribersGetter;
+  public $dynamicSubscribersGetter;
 
   public function __construct($data) {
     if (strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {

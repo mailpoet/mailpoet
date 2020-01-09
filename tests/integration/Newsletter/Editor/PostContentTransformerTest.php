@@ -9,13 +9,13 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class PostContentTransformerTest extends \MailPoetTest {
   /** @var array */
-  private $content_mock;
+  private $contentMock;
 
   /** @var array */
-  private $title_mock;
+  private $titleMock;
 
   /** @var array */
-  private $image_mock;
+  private $imageMock;
 
   public function _before() {
     parent::_before();

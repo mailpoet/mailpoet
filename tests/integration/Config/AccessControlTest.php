@@ -9,7 +9,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class AccessControlTest extends \MailPoetTest {
 
   /** @var AccessControl */
-  private $access_control;
+  private $accessControl;
 
   public function _before() {
     parent::_before();

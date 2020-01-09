@@ -12,7 +12,7 @@ class AutomaticEmails {
 
   private $wp;
 
-  public $available_groups = [
+  public $availableGroups = [
     'WooCommerce',
   ];
 

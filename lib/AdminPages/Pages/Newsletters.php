@@ -24,10 +24,10 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Newsletters {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var PageLimit */
-  private $listing_page_limit;
+  private $listingPageLimit;
 
   /** @var WPFunctions */
   private $wp;
@@ -36,19 +36,19 @@ class Newsletters {
   private $settings;
 
   /** @var UserFlagsController */
-  private $user_flags;
+  private $userFlags;
 
   /** @var WooCommerceHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var Installation */
   private $installation;
 
   /** @var FeaturesController */
-  private $features_controller;
+  private $featuresController;
 
   /** @var SubscribersFeature */
-  private $subscribers_feature;
+  private $subscribersFeature;
 
   public function __construct(
     PageRenderer $pageRenderer,

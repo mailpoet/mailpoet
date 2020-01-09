@@ -15,8 +15,8 @@ use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnRenderer;
 use MailPoet\Newsletter\Renderer\Renderer;
 
 class RendererTest extends \MailPoetTest {
-  public $DOM_parser;
-  public $column_renderer;
+  public $dOMParser;
+  public $columnRenderer;
   public $renderer;
   public $newsletter;
   const COLUMN_BASE_WIDTH = 660;

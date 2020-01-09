@@ -19,7 +19,7 @@ use MailPoet\Util\Cookies;
 use MailPoetVendor\Idiorm\ORM;
 
 class ClicksTest extends \MailPoetTest {
-  public $track_data;
+  public $trackData;
   public $link;
   public $queue;
   public $subscriber;
@@ -28,7 +28,7 @@ class ClicksTest extends \MailPoetTest {
   /** @var Clicks */
   private $clicks;
 
-  private $settings_controller;
+  private $settingsController;
 
   public function _before() {
     parent::_before();

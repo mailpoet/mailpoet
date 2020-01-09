@@ -11,10 +11,10 @@ use MailPoet\Models\Subscriber;
 class SendingNewslettersSubscribersFinder {
 
   /** @var SingleSegmentLoader */
-  private $single_segment_loader;
+  private $singleSegmentLoader;
 
   /** @var SubscribersIds */
-  private $subscribers_ids_loader;
+  private $subscribersIdsLoader;
 
   public function __construct(SingleSegmentLoader $singleSegmentLoader, SubscribersIds $subscribersIdsLoader) {
     $this->singleSegmentLoader = $singleSegmentLoader;

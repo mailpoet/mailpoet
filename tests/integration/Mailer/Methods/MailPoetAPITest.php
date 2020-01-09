@@ -17,7 +17,7 @@ class MailPoetAPITest extends \MailPoetTest {
   public $newsletter;
   public $subscriber;
   public $mailer;
-  public $reply_to;
+  public $replyTo;
   public $sender;
   public $settings;
   public function _before() {

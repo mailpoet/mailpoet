@@ -11,7 +11,7 @@ require_once __DIR__ . '/Workers/SimpleWorkerMockImplementation.php';
 
 class CronWorkerSchedulerTest extends \MailPoetTest {
   /** @var CronWorkerScheduler */
-  private $cron_worker_scheduler;
+  private $cronWorkerScheduler;
 
   public function _before() {
     $this->cronWorkerScheduler = $this->diContainer->get(CronWorkerScheduler::class);

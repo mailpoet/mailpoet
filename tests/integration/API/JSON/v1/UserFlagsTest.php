@@ -16,7 +16,7 @@ class UserFlagsTest extends \MailPoetTest {
   private $endpoint;
 
   /** @var UserFlagsController */
-  private $user_flags;
+  private $userFlags;
 
   public function _before() {
     $this->cleanup();

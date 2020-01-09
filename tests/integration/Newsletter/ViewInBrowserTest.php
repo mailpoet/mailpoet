@@ -17,13 +17,13 @@ use MailPoet\WP\Emoji;
 use MailPoetVendor\Idiorm\ORM;
 
 class ViewInBrowserTest extends \MailPoetTest {
-  public $queue_rendered_newsletter_with_tracking;
-  public $queue_rendered_newsletter_without_tracking;
-  public $newsletter_link_2;
-  public $newsletter_link_1;
+  public $queueRenderedNewsletterWithTracking;
+  public $queueRenderedNewsletterWithoutTracking;
+  public $newsletterLink2;
+  public $newsletterLink1;
   public $queue;
   public $subscriber;
-  public $view_in_browser;
+  public $viewInBrowser;
   public $emoji;
   public $newsletter;
   public function _before() {

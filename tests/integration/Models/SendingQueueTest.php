@@ -10,7 +10,7 @@ use MailPoet\Util\Helpers;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
-  public $rendered_body;
+  public $renderedBody;
   public $queue;
   public function _before() {
     parent::_before();

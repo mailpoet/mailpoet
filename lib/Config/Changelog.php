@@ -18,10 +18,10 @@ class Changelog {
   private $wooCommerceHelper;
 
   /** @var Url */
-  private $url_helper;
+  private $urlHelper;
 
   /** @var MP2Migrator */
-  private $mp2_migrator;
+  private $mp2Migrator;
 
   public function __construct(
     SettingsController $settings,

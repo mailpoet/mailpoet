@@ -9,7 +9,7 @@ use MailPoetVendor\Twig\TwigFunction;
 
 class I18n extends AbstractExtension {
 
-  private $_text_domains;
+  private $textDomains;
 
   public function __construct($textDomain) {
     // set text domain

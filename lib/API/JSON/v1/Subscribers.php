@@ -36,22 +36,22 @@ class Subscribers extends APIEndpoint {
   ];
 
   /** @var Listing\BulkActionController */
-  private $bulk_action_controller;
+  private $bulkActionController;
 
   /** @var SubscribersListings */
-  private $subscribers_listings;
+  private $subscribersListings;
 
   /** @var SubscriberActions */
-  private $subscriber_actions;
+  private $subscriberActions;
 
   /** @var RequiredCustomFieldValidator */
-  private $required_custom_field_validator;
+  private $requiredCustomFieldValidator;
 
   /** @var Listing\Handler */
-  private $listing_handler;
+  private $listingHandler;
 
   /** @var Captcha */
-  private $subscription_captcha;
+  private $subscriptionCaptcha;
 
   /** @var WPFunctions */
   private $wp;
@@ -60,13 +60,13 @@ class Subscribers extends APIEndpoint {
   private $settings;
 
   /** @var CaptchaSession */
-  private $captcha_session;
+  private $captchaSession;
 
   /** @var ConfirmationEmailMailer; */
-  private $confirmation_email_mailer;
+  private $confirmationEmailMailer;
 
   /** @var SubscriptionUrlFactory */
-  private $subscription_url_factory;
+  private $subscriptionUrlFactory;
 
   public function __construct(
     Listing\BulkActionController $bulkActionController,

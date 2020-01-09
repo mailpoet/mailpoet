@@ -15,13 +15,13 @@ class PurchasedInCategory {
   const SLUG = 'woocommerce_product_purchased_in_category';
 
   /** @var WCHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var AutomaticEmailScheduler */
   private $scheduler;
 
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   public function __construct(WCHelper $woocommerceHelper = null) {
     if ($woocommerceHelper === null) {

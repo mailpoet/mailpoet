@@ -8,7 +8,7 @@ use MailPoet\Models\NewsletterPost;
 
 class Posts {
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   public function __construct() {
     $this->loggerFactory = LoggerFactory::getInstance();

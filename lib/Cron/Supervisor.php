@@ -7,7 +7,7 @@ class Supervisor {
   public $token;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   public function __construct(CronHelper $cronHelper) {
     $this->cronHelper = $cronHelper;

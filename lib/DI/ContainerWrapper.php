@@ -9,10 +9,10 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 class ContainerWrapper implements ContainerInterface {
 
   /** @var Container */
-  private $free_container;
+  private $freeContainer;
 
   /** @var Container|null */
-  private $premium_container;
+  private $premiumContainer;
 
   /** @var ContainerWrapper|null */
   private static $instance;

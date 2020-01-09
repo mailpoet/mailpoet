@@ -14,7 +14,7 @@ class CustomFieldsTest extends \MailPoetTest {
   /** @var CustomFieldsRepository */
   private $repository;
 
-  private $custom_fields = [
+  private $customFields = [
     [
       'name' => 'CF: text',
       'type' => 'text',

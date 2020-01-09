@@ -22,10 +22,10 @@ class DynamicSegmentsTest extends \MailPoetTest {
   const SERVER_ERROR_RESPONSE_CODE = 409;
 
   /** @var BulkActionController */
-  private $bulk_action;
+  private $bulkAction;
 
   /** @var Handler */
-  private $listing_handler;
+  private $listingHandler;
 
   public function _before() {
     $this->bulkAction = ContainerWrapper::getInstance()->get(BulkActionController::class);

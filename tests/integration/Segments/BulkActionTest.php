@@ -13,10 +13,10 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 require_once('SubscribersBulkActionHandlerMock.php');
 
 class BulkActionTest extends \MailPoetTest {
-  public $subscriber_2;
-  public $subscriber_1;
-  public $segment_2;
-  public $segment_1;
+  public $subscriber2;
+  public $subscriber1;
+  public $segment2;
+  public $segment1;
 
   public function _before() {
     parent::_before();

@@ -9,7 +9,7 @@ use MailPoet\Models\SubscriberCustomField;
 class CustomFieldTest extends \MailPoetTest {
   public $data;
   public $subscribers;
-  public $custom_field;
+  public $customField;
   public function _before() {
     parent::_before();
     $this->data = [

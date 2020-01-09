@@ -24,16 +24,16 @@ class TransactionalEmails {
   private $template;
 
   /** @var Helper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var Renderer */
   private $renderer;
 
   /** @var array */
-  private $email_headings;
+  private $emailHeadings;
 
   /** @var NewslettersRepository */
-  private $newsletters_repository;
+  private $newslettersRepository;
 
   public function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer, Helper $woocommerceHelper, NewslettersRepository $newslettersRepository) {
     $this->wp = $wp;

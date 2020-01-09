@@ -10,7 +10,7 @@ use MailPoet\Settings\SettingsRepository;
 
 class SupervisorTest extends \MailPoetTest {
   public $supervisor;
-  public $cron_helper;
+  public $cronHelper;
   /** @var SettingsController */
   private $settings;
 

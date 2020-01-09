@@ -12,7 +12,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {
   /** @var Pages */
-  private $subscription_pages;
+  private $subscriptionPages;
 
   /** @var WPFunctions */
   private $wp;

@@ -21,10 +21,10 @@ class Newsletter {
   private $segments;
 
   /** @var array */
-  private $queue_options;
+  private $queueOptions;
 
   /** @var array */
-  private $task_subscribers;
+  private $taskSubscribers;
 
   public function __construct() {
     $this->data = [

@@ -8,9 +8,9 @@ use MailPoetVendor\Idiorm\ORM;
 
 class BatchIteratorTest extends \MailPoetTest {
   public $iterator;
-  public $subscriber_count;
-  public $batch_size;
-  public $task_id;
+  public $subscriberCount;
+  public $batchSize;
+  public $taskId;
   public function _before() {
     parent::_before();
     $this->taskId = 123; // random ID

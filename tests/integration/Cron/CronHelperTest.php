@@ -15,7 +15,7 @@ class CronHelperTest extends \MailPoetTest {
   private $settings;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   public function _before() {
     parent::_before();

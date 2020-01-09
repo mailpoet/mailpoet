@@ -13,9 +13,9 @@ use MailPoet\Subscribers\Source;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscriptionTest extends \MailPoetTest {
-  public $original_settings;
+  public $originalSettings;
   /** @var int */
-  private $order_id;
+  private $orderId;
 
   /** @var Subscription */
   private $subscription;
@@ -24,7 +24,7 @@ class SubscriptionTest extends \MailPoetTest {
   private $settings;
 
   /** @var Segment */
-  private $wc_segment;
+  private $wcSegment;
 
   /** @var Subscriber */
   private $subscriber;

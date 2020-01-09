@@ -17,10 +17,10 @@ class ConfigurationFactory {
   const PROXY_NAMESPACE = 'MailPoetDoctrineProxies';
 
   /** @var bool */
-  private $is_dev_mode;
+  private $isDevMode;
 
   /** @var AnnotationReaderProvider */
-  private $annotation_reader_provider;
+  private $annotationReaderProvider;
 
   public function __construct($isDevMode = null, AnnotationReaderProvider $annotationReaderProvider) {
     $this->isDevMode = $isDevMode === null ? WP_DEBUG : $isDevMode;

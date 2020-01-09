@@ -8,7 +8,7 @@ use MailPoet\Form\Util\Styles;
 class StylesTest extends \MailPoetUnitTest {
 
   /** @var FeaturesController&\PHPUnit_Framework_MockObject_MockObject */
-  private $features_controller;
+  private $featuresController;
 
   public function _before() {
     parent::_before();

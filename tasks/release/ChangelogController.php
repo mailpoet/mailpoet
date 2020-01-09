@@ -8,7 +8,7 @@ class ChangelogController {
   const HEADING_GLUE = ' - ';
 
   /** @var string */
-  private $readme_file;
+  private $readmeFile;
 
   /** @var JiraController */
   private $jira;

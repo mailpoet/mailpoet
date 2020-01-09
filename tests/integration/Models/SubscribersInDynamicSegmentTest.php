@@ -8,7 +8,7 @@ use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersInDynamicSegmentTest extends \MailPoetTest {
-  public $dynamic_segment;
+  public $dynamicSegment;
 
   public function _before() {
     $this->cleanData();

@@ -10,12 +10,12 @@ require_once ABSPATH . WPINC . '/class-phpmailer.php';
 
 class PHPMail {
   public $sender;
-  public $reply_to;
-  public $return_path;
+  public $replyTo;
+  public $returnPath;
   public $mailer;
 
   /** @var PHPMailMapper  */
-  private $error_mapper;
+  private $errorMapper;
 
   /** @var BlacklistCheck */
   private $blacklist;

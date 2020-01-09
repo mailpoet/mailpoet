@@ -11,7 +11,7 @@ class ManageSubscriptionLinkCest {
   private $settings;
 
   /** @var string */
-  private $newsletter_title;
+  private $newsletterTitle;
 
   public function __construct() {
     $this->newsletterTitle = 'Subscription links Email ' . \MailPoet\Util\Security::generateRandomString();

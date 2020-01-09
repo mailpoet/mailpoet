@@ -8,10 +8,10 @@ use MailPoet\Test\DataFactories\WooCommerceProduct;
 class WooCommerceCheckoutOptinCest {
 
   /** @var Settings */
-  private $settings_factory;
+  private $settingsFactory;
 
   /** @var WooCommerceProduct */
-  private $product_factory;
+  private $productFactory;
 
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();

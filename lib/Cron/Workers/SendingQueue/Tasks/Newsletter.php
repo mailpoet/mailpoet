@@ -19,20 +19,20 @@ use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Newsletter {
-  public $tracking_enabled;
-  public $tracking_image_inserted;
+  public $trackingEnabled;
+  public $trackingImageInserted;
 
   /** @var WPFunctions */
   private $wp;
 
   /** @var PostsTask */
-  private $posts_task;
+  private $postsTask;
 
   /** @var GATracking */
-  private $ga_tracking;
+  private $gaTracking;
 
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   /** @var Emoji */
   private $emoji;

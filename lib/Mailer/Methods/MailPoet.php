@@ -14,14 +14,14 @@ use MailPoet\Services\Bridge\API;
 class MailPoet {
   public $api;
   public $sender;
-  public $reply_to;
-  public $services_checker;
+  public $replyTo;
+  public $servicesChecker;
 
   /** @var AuthorizedEmailsController */
-  private $authorized_emails_controller;
+  private $authorizedEmailsController;
 
   /** @var MailPoetMapper */
-  private $error_mapper;
+  private $errorMapper;
 
   /** @var BlacklistCheck */
   private $blacklist;

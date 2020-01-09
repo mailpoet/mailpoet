@@ -48,7 +48,7 @@ class Populator {
   private $referralDetector;
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
   /** @var FeaturesController */
-  private $flags_controller;
+  private $flagsController;
 
   public function __construct(
     SettingsController $settings,

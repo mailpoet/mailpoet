@@ -17,13 +17,13 @@ class WordPressMailer extends \PHPMailer {
   private $mailer;
 
   /** @var Mailer */
-  private $fallback_mailer;
+  private $fallbackMailer;
 
   /** @var MetaInfo */
   private $mailerMetaInfo;
 
   /** @var SubscribersRepository */
-  private $subscribers_repository;
+  private $subscribersRepository;
 
   public function __construct(
     Mailer $mailer,

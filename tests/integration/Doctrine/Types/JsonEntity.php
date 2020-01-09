@@ -21,13 +21,13 @@ class JsonEntity {
    * @ORM\Column(type="json")
    * @var array|null
    */
-  private $json_data;
+  private $jsonData;
 
   /**
    * @ORM\Column(type="json_or_serialized")
    * @var array|null
    */
-  private $json_or_serialized_data;
+  private $jsonOrSerializedData;
 
   /**
    * @return int|null

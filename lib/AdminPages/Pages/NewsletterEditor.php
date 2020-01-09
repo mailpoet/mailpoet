@@ -15,22 +15,22 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class NewsletterEditor {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var SettingsController */
   private $settings;
 
   /** @var UserFlagsController */
-  private $user_flags;
+  private $userFlags;
 
   /** @var WooCommerceHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var WPFunctions */
   private $wp;
 
   /** @var TransactionalEmails */
-  private $wc_transactional_emails;
+  private $wcTransactionalEmails;
 
   public function __construct(
     PageRenderer $pageRenderer,

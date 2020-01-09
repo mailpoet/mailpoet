@@ -10,7 +10,7 @@ trait CreatedAtTrait {
    * @ORM\Column(type="datetimetz")
    * @var DateTimeInterface
    */
-  private $created_at;
+  private $createdAt;
 
   /** @return DateTimeInterface */
   public function getCreatedAt() {

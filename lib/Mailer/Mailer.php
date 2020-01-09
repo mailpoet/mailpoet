@@ -17,11 +17,11 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
 class Mailer {
-  public $mailer_config;
+  public $mailerConfig;
   public $sender;
-  public $reply_to;
-  public $return_path;
-  public $mailer_instance;
+  public $replyTo;
+  public $returnPath;
+  public $mailerInstance;
   /** @var SettingsController */
   private $settings;
   const MAILER_CONFIG_SETTING_NAME = 'mta';

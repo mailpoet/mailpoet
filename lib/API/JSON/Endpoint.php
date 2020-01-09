@@ -14,7 +14,7 @@ abstract class Endpoint {
     'methods' => [],
   ];
 
-  protected static $get_methods = [];
+  protected static $getMethods = [];
 
   public function successResponse(
     $data = [], $meta = [], $status = Response::STATUS_OK

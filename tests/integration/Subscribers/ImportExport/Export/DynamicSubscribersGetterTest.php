@@ -11,10 +11,10 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 class DynamicSubscribersGetterTest extends \MailPoetTest {
-  public $segments_data;
-  public $custom_fields_data;
-  public $subscribers_data;
-  public $subscriber_fields;
+  public $segmentsData;
+  public $customFieldsData;
+  public $subscribersData;
+  public $subscriberFields;
   public function _before() {
     parent::_before();
     $this->subscriberFields = [

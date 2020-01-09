@@ -15,7 +15,7 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
   private $prefix;
 
   /** @var array */
-  private $prefixed_map = [];
+  private $prefixedMap = [];
 
   public function __construct() {
     if (Env::$dbPrefix === null) {

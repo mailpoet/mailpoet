@@ -21,7 +21,7 @@ use MailPoetVendor\Idiorm\ORM;
 class PostNotificationTest extends \MailPoetTest {
 
   /** @var PostNotificationScheduler */
-  private $post_notification_scheduler;
+  private $postNotificationScheduler;
 
   public function _before() {
     parent::_before();

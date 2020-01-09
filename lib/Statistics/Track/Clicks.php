@@ -18,7 +18,7 @@ class Clicks {
   const ABANDONED_CART_COOKIE_EXPIRY = 10 * 365 * 24 * 60 * 60; // 10 years (~ no expiry)
 
   /** @var SettingsController */
-  private $settings_controller;
+  private $settingsController;
 
   /** @var Cookies */
   private $cookies;

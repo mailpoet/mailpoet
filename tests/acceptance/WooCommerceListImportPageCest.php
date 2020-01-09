@@ -10,13 +10,13 @@ use MailPoet\Test\DataFactories\WooCommerceOrder;
 class WooCommerceListImportPageCest {
 
   /** @var WooCommerceCustomer */
-  private $customer_factory;
+  private $customerFactory;
 
   /** @var Settings */
   private $settings;
 
   /** @var WooCommerceOrder*/
-  private $order_factory;
+  private $orderFactory;
 
   protected function _inject(Settings $settings) {
     $this->settings = $settings;

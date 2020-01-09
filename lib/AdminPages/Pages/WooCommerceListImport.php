@@ -8,7 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class WooCommerceListImport {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var WPFunctions */
   private $wp;

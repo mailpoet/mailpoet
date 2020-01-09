@@ -45,23 +45,23 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
-  public $sending_queue_worker;
-  public $cron_helper;
-  public $newsletter_link;
+  public $sendingQueueWorker;
+  public $cronHelper;
+  public $newsletterLink;
   public $queue;
-  public $newsletter_segment;
+  public $newsletterSegment;
   public $newsletter;
-  public $subscriber_segment;
+  public $subscriberSegment;
   public $segment;
   public $subscriber;
   /** @var SendingErrorHandler */
-  private $sending_error_handler;
+  private $sendingErrorHandler;
   /** @var SettingsController */
   private $settings;
   /** @var StatsNotificationsScheduler */
-  private $stats_notifications_worker;
+  private $statsNotificationsWorker;
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   public function _before() {
     parent::_before();

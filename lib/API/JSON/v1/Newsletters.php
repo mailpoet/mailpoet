@@ -35,38 +35,38 @@ use MailPoetVendor\Carbon\Carbon;
 class Newsletters extends APIEndpoint {
 
   /** @var Listing\BulkActionController */
-  private $bulk_action;
+  private $bulkAction;
 
   /** @var Listing\Handler */
-  private $listing_handler;
+  private $listingHandler;
 
   /** @var WPFunctions */
   private $wp;
 
   /** @var WCHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var SettingsController */
   private $settings;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   /** @var AuthorizedEmailsController */
-  private $authorized_emails_controller;
+  private $authorizedEmailsController;
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
   /** @var NewslettersRepository */
-  private $newsletters_repository;
+  private $newslettersRepository;
 
   /** @var NewslettersResponseBuilder */
-  private $newsletters_response_builder;
+  private $newslettersResponseBuilder;
 
   /** @var PostNotificationScheduler */
-  private $post_notification_scheduler;
+  private $postNotificationScheduler;
 
   /** @var MetaInfo */
   private $mailerMetaInfo;
@@ -78,7 +78,7 @@ class Newsletters extends APIEndpoint {
   private $mailer;
 
   /** @var SubscribersFeature */
-  private $subscribers_feature;
+  private $subscribersFeature;
 
   public function __construct(
     Listing\BulkActionController $bulkAction,

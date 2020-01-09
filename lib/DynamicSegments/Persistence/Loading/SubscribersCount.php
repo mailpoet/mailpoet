@@ -10,7 +10,7 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 class SubscribersCount {
 
   /** @var RequirementsChecker */
-  private $requirements_checker;
+  private $requirementsChecker;
 
   public function __construct(RequirementsChecker $requirementsChecker = null) {
     if (!$requirementsChecker) {

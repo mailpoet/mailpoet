@@ -20,7 +20,7 @@ class LogHandler extends AbstractProcessingHandler {
   const DAYS_TO_KEEP_LOGS = 30;
 
   /** @var callable|null */
-  private $rand_function;
+  private $randFunction;
 
   public function __construct($level = \MailPoetVendor\Monolog\Logger::DEBUG, $bubble = \true, $randFunction = null) {
     parent::__construct($level, $bubble);

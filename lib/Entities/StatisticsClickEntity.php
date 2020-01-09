@@ -34,7 +34,7 @@ class StatisticsClickEntity {
    * @ORM\Column(type="integer")
    * @var int|null
    */
-  private $subscriber_id;
+  private $subscriberId;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterLinkEntity", inversedBy="clicks")

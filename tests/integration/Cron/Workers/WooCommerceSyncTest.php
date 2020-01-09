@@ -12,8 +12,8 @@ use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerceSyncTest extends \MailPoetTest {
   public $worker;
-  public $woocommerce_helper;
-  public $woocommerce_segment;
+  public $woocommerceHelper;
+  public $woocommerceSegment;
   public function _before() {
     $this->woocommerceSegment = $this->createMock(WooCommerceSegment::class);
     $this->woocommerceHelper = $this->createMock(WooCommerceHelper::class);

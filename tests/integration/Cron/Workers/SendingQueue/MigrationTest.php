@@ -17,12 +17,12 @@ use MailPoetVendor\Idiorm\ORM;
 
 class MigrationTest extends \MailPoetTest {
   public $altered;
-  public $queue_scheduled;
-  public $queue_completed;
-  public $queue_paused;
-  public $queue_running;
-  public $subscriber_processed;
-  public $subscriber_to_process;
+  public $queueScheduled;
+  public $queueCompleted;
+  public $queuePaused;
+  public $queueRunning;
+  public $subscriberProcessed;
+  public $subscriberToProcess;
   /** @var Migration */
   private $worker;
 

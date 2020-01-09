@@ -19,10 +19,10 @@ abstract class SimpleWorker implements CronWorkerInterface {
   public $timer;
 
   /** @var CronHelper */
-  protected $cron_helper;
+  protected $cronHelper;
 
   /** @var CronWorkerScheduler */
-  protected $cron_worker_scheduler;
+  protected $cronWorkerScheduler;
 
   /** @var WPFunctions */
   protected $wp;

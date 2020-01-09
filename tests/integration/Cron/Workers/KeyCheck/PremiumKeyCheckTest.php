@@ -11,7 +11,7 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class PremiumKeyCheckTest extends \MailPoetTest {
   public $worker;
-  public $premium_key;
+  public $premiumKey;
 
   /** @var SettingsController */
   private $settings;

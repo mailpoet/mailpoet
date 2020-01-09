@@ -16,7 +16,7 @@ use MailPoet\Settings\SettingsController;
 
 class ServicesTest extends \MailPoetTest {
   public $data;
-  public $services_endpoint;
+  public $servicesEndpoint;
   /** @var SettingsController */
   private $settings;
 

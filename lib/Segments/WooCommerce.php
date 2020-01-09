@@ -19,8 +19,8 @@ class WooCommerce {
   /** @var WPFunctions */
   private $wp;
 
-  private $mailpoet_email_collation;
-  private $wp_postmeta_value_collation;
+  private $mailpoetEmailCollation;
+  private $wpPostmetaValueCollation;
 
   public function __construct(SettingsController $settings, WPFunctions $wp) {
     $this->settings = $settings;

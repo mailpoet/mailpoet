@@ -19,19 +19,19 @@ use MailPoet\WP\Functions as WPFunctions;
 class API {
 
   /** @var NewSubscriberNotificationMailer */
-  private $new_subscriber_notification_mailer;
+  private $newSubscriberNotificationMailer;
 
   /** @var ConfirmationEmailMailer */
-  private $confirmation_email_mailer;
+  private $confirmationEmailMailer;
 
   /** @var RequiredCustomFieldValidator */
-  private $required_custom_field_validator;
+  private $requiredCustomFieldValidator;
 
   /** @var ApiDataSanitizer */
-  private $custom_fields_data_sanitizer;
+  private $customFieldsDataSanitizer;
 
   /** @var WelcomeScheduler */
-  private $welcome_scheduler;
+  private $welcomeScheduler;
 
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,

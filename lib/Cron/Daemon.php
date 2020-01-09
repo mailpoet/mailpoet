@@ -8,13 +8,13 @@ class Daemon {
   public $timer;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   /** @var CronWorkerRunner */
-  private $cron_worker_runner;
+  private $cronWorkerRunner;
 
   /** @var WorkersFactory */
-  private $workers_factory;
+  private $workersFactory;
 
   public function __construct(
     CronHelper $cronHelper,

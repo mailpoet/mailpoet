@@ -9,13 +9,13 @@ use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadata;
 
 abstract class Repository {
   /** @var EntityManager */
-  protected $entity_manager;
+  protected $entityManager;
 
   /** @var ClassMetadata */
-  protected $class_metadata;
+  protected $classMetadata;
 
   /** @var DoctrineEntityRepository */
-  protected $doctrine_repository;
+  protected $doctrineRepository;
 
   public function __construct(EntityManager $entityManager) {
     $this->entityManager = $entityManager;

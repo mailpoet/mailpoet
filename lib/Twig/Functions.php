@@ -18,13 +18,13 @@ class Functions extends AbstractExtension {
   private $settings;
 
   /** @var WooCommerceHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var WPFunctions */
   private $wp;
 
   /** @var UrlDecorator */
-  private $referral_url_decorator;
+  private $referralUrlDecorator;
 
   public function __construct() {
     $this->settings = SettingsController::getInstance();

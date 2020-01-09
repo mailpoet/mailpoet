@@ -16,8 +16,8 @@ require_once('RouterTestMockEndpoint.php');
 
 class RouterTest extends \MailPoetTest {
   public $router;
-  public $access_control;
-  public $router_data;
+  public $accessControl;
+  public $routerData;
   /** @var Container */
   private $container;
 

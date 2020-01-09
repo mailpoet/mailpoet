@@ -17,13 +17,13 @@ class Segments extends APIEndpoint {
   ];
 
   /** @var Listing\BulkActionController */
-  private $bulk_action;
+  private $bulkAction;
 
   /** @var Listing\Handler */
-  private $listing_handler;
+  private $listingHandler;
 
   /** @var WooCommerce */
-  private $woo_commerce_sync;
+  private $wooCommerceSync;
 
   public function __construct(
     Listing\BulkActionController $bulkAction,

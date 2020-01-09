@@ -6,8 +6,8 @@ use MailPoet\Util\ConflictResolver;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ConflictResolverTest extends \MailPoetTest {
-  public $conflict_resolver;
-  public $wp_filter;
+  public $conflictResolver;
+  public $wpFilter;
 
   public function __construct() {
     parent::__construct();

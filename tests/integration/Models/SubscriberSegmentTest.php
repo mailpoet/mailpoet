@@ -7,10 +7,10 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 
 class SubscriberSegmentTest extends \MailPoetTest {
-  public $wc_segment;
-  public $wp_segment;
-  public $segment_2;
-  public $segment_1;
+  public $wcSegment;
+  public $wpSegment;
+  public $segment2;
+  public $segment1;
   public $subscriber;
 
   public function _before() {

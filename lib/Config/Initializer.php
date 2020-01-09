@@ -18,16 +18,16 @@ use MailPoet\WP\Notice as WPNotice;
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
-  public $automatic_emails;
+  public $automaticEmails;
 
   /** @var AccessControl */
-  private $access_control;
+  private $accessControl;
 
   /** @var Renderer */
   private $renderer;
 
   /** @var RendererFactory */
-  private $renderer_factory;
+  private $rendererFactory;
 
   /** @var API */
   private $api;
@@ -51,22 +51,22 @@ class Initializer {
   private $menu;
 
   /** @var CronTrigger */
-  private $cron_trigger;
+  private $cronTrigger;
 
   /** @var PermanentNotices */
-  private $permanent_notices;
+  private $permanentNotices;
 
   /** @var Shortcodes */
   private $shortcodes;
 
   /** @var DatabaseInitializer */
-  private $database_initializer;
+  private $databaseInitializer;
 
   /** @var WCTransactionalEmails */
-  private $wc_transactional_emails;
+  private $wcTransactionalEmails;
 
   /** @var WooCommerceHelper */
-  private $wc_helper;
+  private $wcHelper;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 

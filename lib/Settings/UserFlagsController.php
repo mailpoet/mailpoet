@@ -14,7 +14,7 @@ class UserFlagsController {
   private $defaults;
 
   /** @var UserFlagsRepository */
-  private $user_flags_repository;
+  private $userFlagsRepository;
 
   public function __construct(UserFlagsRepository $userFlagsRepository) {
     $this->defaults = [

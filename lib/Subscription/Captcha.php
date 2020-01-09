@@ -17,7 +17,7 @@ class Captcha {
   private $wp;
 
   /** @var CaptchaSession  */
-  private $captcha_session;
+  private $captchaSession;
 
   public function __construct(WPFunctions $wp = null, CaptchaSession $captchaSession = null) {
     if ($wp === null) {

@@ -22,7 +22,7 @@ class TimestampListenerTest extends \MailPoetTest {
   private $wp;
 
   /** @var string */
-  private $table_name;
+  private $tableName;
 
   public function _before() {
     $timestamp = time();

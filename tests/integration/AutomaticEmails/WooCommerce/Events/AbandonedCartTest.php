@@ -26,22 +26,22 @@ class AbandonedCartTest extends \MailPoetTest {
   const SCHEDULE_EMAIL_AFTER_HOURS = 5;
 
   /** @var Carbon */
-  private $current_time;
+  private $currentTime;
 
   /** @var WPFunctions|MockObject */
   private $wp;
 
   /** @var WooCommerce|MockObject */
-  private $woo_commerce_mock;
+  private $wooCommerceMock;
 
   /** @var WC_Cart|MockObject */
-  private $woo_commerce_cart_mock;
+  private $wooCommerceCartMock;
 
   /** @var WooCommerceHelper|MockObject */
-  private $woo_commerce_helper_mock;
+  private $wooCommerceHelperMock;
 
   /** @var AbandonedCartPageVisitTracker|MockObject */
-  private $page_visit_tracker_mock;
+  private $pageVisitTrackerMock;
 
   public function _before() {
     $this->cleanup();

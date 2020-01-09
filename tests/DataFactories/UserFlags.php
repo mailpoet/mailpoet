@@ -8,10 +8,10 @@ use MailPoet\Settings\UserFlagsRepository;
 
 class UserFlags {
   /** @var int */
-  private $user_id;
+  private $userId;
 
   /** @var UserFlagsRepository */
-  private $user_flags_repository;
+  private $userFlagsRepository;
 
   public function __construct($userId) {
     $this->userId = $userId;

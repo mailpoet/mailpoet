@@ -8,12 +8,12 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 
 class Router {
-  public $api_request;
+  public $apiRequest;
   public $endpoint;
   public $action;
   public $data;
-  public $endpoint_action;
-  public $access_control;
+  public $endpointAction;
+  public $accessControl;
   /** @var ContainerInterface */
   private $container;
   const NAME = 'mailpoet_router';

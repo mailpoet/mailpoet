@@ -10,8 +10,8 @@ use MailPoetVendor\Idiorm\ORM;
  */
 abstract class SubscribersGetter {
 
-  protected $segments_ids;
-  protected $batch_size;
+  protected $segmentsIds;
+  protected $batchSize;
   protected $offset;
   protected $finished;
 

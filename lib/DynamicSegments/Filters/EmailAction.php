@@ -17,7 +17,7 @@ class EmailAction implements Filter {
   const ACTION_CLICKED = 'clicked';
   const ACTION_NOT_CLICKED = 'notClicked';
 
-  private static $allowed_actions = [
+  private static $allowedActions = [
     EmailAction::ACTION_OPENED,
     EmailAction::ACTION_NOT_OPENED,
     EmailAction::ACTION_CLICKED,
@@ -25,10 +25,10 @@ class EmailAction implements Filter {
   ];
 
   /** @var int */
-  private $newsletter_id;
+  private $newsletterId;
 
   /** @var int */
-  private $link_id;
+  private $linkId;
 
   /** @var string */
   private $action;

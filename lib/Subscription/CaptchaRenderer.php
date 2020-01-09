@@ -9,16 +9,16 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaRenderer {
   /** @var UrlHelper */
-  private $url_helper;
+  private $urlHelper;
 
   /** @var WPFunctions */
   private $wp;
 
   /** @var CaptchaSession */
-  private $captcha_session;
+  private $captchaSession;
 
   /** @var SubscriptionUrlFactory */
-  private $subscription_url_factory;
+  private $subscriptionUrlFactory;
 
   public function __construct(UrlHelper $urlHelper, WPFunctions $wp, CaptchaSession $captchaSession, SubscriptionUrlFactory $subscriptionUrlFactory) {
     $this->urlHelper = $urlHelper;

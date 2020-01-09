@@ -12,8 +12,8 @@ if (!class_exists('ProgressBar', false)) {
    */
   class ProgressBar {
 
-    private $total_count = 0;
-    private $current_count = 0;
+    private $totalCount = 0;
+    private $currentCount = 0;
     private $filename;
     public $url;
 

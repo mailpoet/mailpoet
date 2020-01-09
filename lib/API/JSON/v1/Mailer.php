@@ -15,7 +15,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class Mailer extends APIEndpoint {
 
   /** @var AuthorizedEmailsController */
-  private $authorized_emails_controller;
+  private $authorizedEmailsController;
 
   /** @var Bridge */
   private $bridge;

@@ -9,9 +9,9 @@ class PostTransformer {
   /** @var array */
   private $args;
   /** @var bool */
-  private $with_layout;
+  private $withLayout;
   /** @var string */
-  private $image_position;
+  private $imagePosition;
 
   public function __construct($args, PostTransformerContentsExtractor $extractor = null) {
     $this->args = $args;

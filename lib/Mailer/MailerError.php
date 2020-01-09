@@ -24,10 +24,10 @@ class MailerError {
   private $message;
 
   /** @var int|null */
-  private $retry_interval;
+  private $retryInterval;
 
   /** @var array */
-  private $subscribers_errors = [];
+  private $subscribersErrors = [];
 
   /**
    * @param string $operation

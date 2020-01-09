@@ -6,7 +6,7 @@ use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 
 class DatabaseInitializer {
-  private $di_container;
+  private $diContainer;
 
   public function __construct(ContainerInterface $diContainer) {
     $this->diContainer = $diContainer;

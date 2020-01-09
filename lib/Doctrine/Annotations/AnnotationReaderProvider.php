@@ -9,7 +9,7 @@ use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 
 class AnnotationReaderProvider {
   /** @var CachedReader */
-  private $annotation_reader;
+  private $annotationReader;
 
   public function __construct() {
     // register annotation reader if doctrine/annotations package is installed

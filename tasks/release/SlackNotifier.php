@@ -9,13 +9,13 @@ class SlackNotifier {
   const PROJECT_PREMIUM = 'PREMIUM';
 
   /** @var string */
-  private $webhook_url;
+  private $webhookUrl;
 
   /** @var string */
   private $project;
 
   /** @var Client */
-  private $http_client;
+  private $httpClient;
 
   public function __construct($webhookUrl, $project) {
     $this->webhookUrl = $webhookUrl;

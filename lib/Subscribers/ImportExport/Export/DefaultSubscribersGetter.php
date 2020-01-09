@@ -16,7 +16,7 @@ class DefaultSubscribersGetter extends SubscribersGetter {
   /**
    * @var bool
    */
-  protected $get_subscribers_without_segment;
+  protected $getSubscribersWithoutSegment;
 
   public function __construct($segmentsIds, $batchSize) {
     parent::__construct($segmentsIds, $batchSize);

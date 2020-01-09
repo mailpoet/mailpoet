@@ -7,10 +7,10 @@ use MailPoet\Listing\PageLimit;
 
 class Segments {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var PageLimit */
-  private $listing_page_limit;
+  private $listingPageLimit;
 
   public function __construct(PageRenderer $pageRenderer, PageLimit $listingPageLimit) {
     $this->pageRenderer = $pageRenderer;

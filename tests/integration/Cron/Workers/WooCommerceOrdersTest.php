@@ -16,16 +16,16 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class WooCommerceOrdersTest extends \MailPoetTest {
   /** @var MockObject */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var MockObject */
-  private $woocommerce_purchases;
+  private $woocommercePurchases;
 
   /** @var WooCommercePastOrders */
   private $worker;
 
   /** @var CronWorkerRunner */
-  private $cron_worker_runner;
+  private $cronWorkerRunner;
 
   public function _before() {
     $this->cleanup();

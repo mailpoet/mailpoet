@@ -30,7 +30,7 @@ class ConfirmationEmailMailer {
   private $mailerMetaInfo;
 
   /** @var SubscriptionUrlFactory */
-  private $subscription_url_factory;
+  private $subscriptionUrlFactory;
 
   public function __construct(Mailer $mailer, WPFunctions $wp, SettingsController $settings, SubscriptionUrlFactory $subscriptionUrlFactory) {
     $this->mailer = $mailer;

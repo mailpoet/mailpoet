@@ -9,12 +9,12 @@ use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 
 class AmazonSESTest extends \MailPoetTest {
-  public $extra_params;
+  public $extraParams;
   public $newsletter;
   public $subscriber;
   public $mailer;
-  public $return_path;
-  public $reply_to;
+  public $returnPath;
+  public $replyTo;
   public $sender;
   public $settings;
   public function _before() {

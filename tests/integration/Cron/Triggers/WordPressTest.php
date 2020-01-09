@@ -25,7 +25,7 @@ class WordPressTest extends \MailPoetTest {
   private $settings;
 
   /** @var WordPress */
-  private $wordpress_trigger;
+  private $wordpressTrigger;
 
   public function _before() {
     parent::_before();

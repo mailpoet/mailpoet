@@ -18,10 +18,10 @@ class CustomFields extends APIEndpoint {
   ];
 
   /** @var CustomFieldsRepository */
-  private $custom_fields_repository;
+  private $customFieldsRepository;
 
   /** @var CustomFieldsResponseBuilder */
-  private $custom_fields_response_builder;
+  private $customFieldsResponseBuilder;
 
   public function __construct(
     CustomFieldsRepository $customFieldsRepository,

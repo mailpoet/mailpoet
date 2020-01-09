@@ -21,13 +21,13 @@ class Scheduler {
   const TASK_BATCH_SIZE = 5;
 
   /** @var SubscribersFinder */
-  private $subscribers_finder;
+  private $subscribersFinder;
 
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   public function __construct(
     SubscribersFinder $subscribersFinder,

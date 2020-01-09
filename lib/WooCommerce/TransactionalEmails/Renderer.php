@@ -12,13 +12,13 @@ class Renderer {
   const CONTENT_CONTAINER_ID = 'mailpoet_woocommerce_container';
 
   /** @var csstidy */
-  private $css_parser;
+  private $cssParser;
 
   /** @var string */
-  private $html_before_content;
+  private $htmlBeforeContent;
 
   /** @var string */
-  private $html_after_content;
+  private $htmlAfterContent;
 
   public function __construct(csstidy $cssParser) {
     $this->cssParser = $cssParser;

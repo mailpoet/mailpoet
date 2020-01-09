@@ -16,13 +16,13 @@ class SubscriberActions {
   private $settings;
 
   /** @var NewSubscriberNotificationMailer */
-  private $new_subscriber_notification_mailer;
+  private $newSubscriberNotificationMailer;
 
   /** @var ConfirmationEmailMailer */
-  private $confirmation_email_mailer;
+  private $confirmationEmailMailer;
 
   /** @var WelcomeScheduler */
-  private $welcome_scheduler;
+  private $welcomeScheduler;
 
   public function __construct(
     SettingsController $settings,

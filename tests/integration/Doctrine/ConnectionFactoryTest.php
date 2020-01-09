@@ -13,7 +13,7 @@ use MailPoetVendor\Doctrine\DBAL\Types\Type;
 use PDO;
 
 class ConnectionFactoryTest extends \MailPoetTest {
-  private $env_backup = [];
+  private $envBackup = [];
 
   public function _before() {
     parent::_before();

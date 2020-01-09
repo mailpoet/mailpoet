@@ -13,7 +13,7 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 class SendingServiceKeyCheckTest extends \MailPoetTest {
   public $worker;
-  public $mss_key;
+  public $mssKey;
   public function _before() {
     parent::_before();
     $this->mssKey = 'some_key';

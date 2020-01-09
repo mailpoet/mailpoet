@@ -22,7 +22,7 @@ class PurchasedProduct {
   private $scheduler;
 
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   public function __construct(WCHelper $helper = null) {
     if ($helper === null) {

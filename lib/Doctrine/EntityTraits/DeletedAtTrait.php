@@ -10,7 +10,7 @@ trait DeletedAtTrait {
    * @ORM\Column(type="datetimetz", nullable=true)
    * @var DateTimeInterface|null
    */
-  private $deleted_at;
+  private $deletedAt;
 
   /** @return DateTimeInterface|null */
   public function getDeletedAt() {

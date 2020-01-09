@@ -10,16 +10,16 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class DynamicSegments {
   /** @var PageRenderer */
-  private $page_renderer;
+  private $pageRenderer;
 
   /** @var PageLimit */
-  private $listing_page_limit;
+  private $listingPageLimit;
 
   /** @var WPFunctions */
   private $wp;
 
   /** @var WooCommerceHelper */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   public function __construct(
     PageRenderer $pageRenderer,

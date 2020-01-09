@@ -22,7 +22,7 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 class PurchasedInCategoryTest extends \MailPoetTest {
 
   /** @var MockObject */
-  private $woocommerce_helper;
+  private $woocommerceHelper;
 
   /** @var PurchasedInCategory */
   private $event;

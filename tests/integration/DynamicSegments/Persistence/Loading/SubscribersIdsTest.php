@@ -11,10 +11,10 @@ use MailPoet\Models\Subscriber;
 
 class SubscribersIdsTest extends \MailPoetTest {
 
-  private $editors_wp_ids = [];
+  private $editorsWpIds = [];
 
   /** @var RequirementsChecker|\PHPUnit_Framework_MockObject_MockObject */
-  private $requirement_checker;
+  private $requirementChecker;
 
   public function _before() {
     $this->cleanData();

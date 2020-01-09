@@ -18,7 +18,7 @@ use MailPoetVendor\Idiorm\ORM;
 class WelcomeTest extends \MailPoetTest {
 
   /** @var WelcomeScheduler */
-  private $welcome_scheduler;
+  private $welcomeScheduler;
 
   public function _before() {
     parent::_before();

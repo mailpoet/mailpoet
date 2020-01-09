@@ -18,10 +18,10 @@ use MailPoetVendor\Idiorm\ORM;
 class SubscriberActionsTest extends \MailPoetTest {
 
   /** @var array */
-  private $test_data;
+  private $testData;
 
   /** @var SubscriberActions */
-  private $subscriber_actions;
+  private $subscriberActions;
 
   /** @var SettingsController */
   private $settings;

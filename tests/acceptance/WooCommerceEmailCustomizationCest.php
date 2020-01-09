@@ -10,10 +10,10 @@ class WooCommerceEmailCustomizationCest {
   private $settings;
 
   /** @var int */
-  private $woocommerce_email_template_id;
+  private $woocommerceEmailTemplateId;
 
   /** @var string */
-  private $wc_customizer_disabled_message;
+  private $wcCustomizerDisabledMessage;
 
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();

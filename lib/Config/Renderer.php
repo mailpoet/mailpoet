@@ -10,12 +10,12 @@ use MailPoetVendor\Twig\Lexer as TwigLexer;
 use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
 
 class Renderer {
-  protected $cache_path;
-  protected $caching_enabled;
-  protected $debugging_enabled;
+  protected $cachePath;
+  protected $cachingEnabled;
+  protected $debuggingEnabled;
   protected $renderer;
-  public $assets_manifest_js;
-  public $assets_manifest_css;
+  public $assetsManifestJs;
+  public $assetsManifestCss;
 
   public function __construct($cachingEnabled = false, $debuggingEnabled = false) {
     $this->cachingEnabled = $cachingEnabled;

@@ -31,13 +31,13 @@ class WordPress {
   const RUN_INTERVAL = -1; // seconds
   const LAST_RUN_AT_SETTING = 'cron_trigger_wordpress.last_run_at';
 
-  private $tasks_counts;
+  private $tasksCounts;
 
   /** @var CronHelper */
-  private $cron_helper;
+  private $cronHelper;
 
   /** @var MailPoet */
-  private $mailpoet_trigger;
+  private $mailpoetTrigger;
 
   /** @var SettingsController */
   private $settings;

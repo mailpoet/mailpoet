@@ -12,7 +12,7 @@ class Subscription {
   const ACTION_CONFIRM = 'confirm';
   const ACTION_MANAGE = 'manage';
   const ACTION_UNSUBSCRIBE = 'unsubscribe';
-  public $allowed_actions = [
+  public $allowedActions = [
     self::ACTION_CAPTCHA,
     self::ACTION_CAPTCHA_IMAGE,
     self::ACTION_CONFIRM,
@@ -24,7 +24,7 @@ class Subscription {
   ];
 
   /** @var UserSubscription\Pages */
-  private $subscription_pages;
+  private $subscriptionPages;
 
   public function __construct(UserSubscription\Pages $subscriptionPages) {
     $this->subscriptionPages = $subscriptionPages;

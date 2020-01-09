@@ -12,7 +12,7 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
   private $settings;
 
   /** @var LoggerFactory */
-  private $logger_factory;
+  private $loggerFactory;
 
   public function _before() {
     parent::_before();

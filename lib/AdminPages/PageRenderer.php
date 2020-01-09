@@ -15,7 +15,7 @@ class PageRenderer {
   private $renderer;
 
   /** @var FeaturesController */
-  private $features_controller;
+  private $featuresController;
 
   /** @var SettingsController */
   private $settings;

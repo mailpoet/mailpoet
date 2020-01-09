@@ -10,7 +10,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 
 class WordpressMailerTest extends \MailPoetTest {
   /** @var SubscribersRepository */
-  private $subscribers_repository;
+  private $subscribersRepository;
 
   public function _before() {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);

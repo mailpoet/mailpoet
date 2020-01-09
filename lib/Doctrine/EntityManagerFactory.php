@@ -20,10 +20,10 @@ class EntityManagerFactory {
   private $configuration;
 
   /** @var TimestampListener */
-  private $timestamp_listener;
+  private $timestampListener;
 
   /** @var ValidationListener */
-  private $validation_listener;
+  private $validationListener;
 
   public function __construct(
     Connection $connection,

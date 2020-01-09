@@ -15,14 +15,14 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 require_once('BridgeTestMockAPI.php');
 
 class BridgeTest extends \MailPoetTest {
-  public $used_premium_key;
-  public $expiring_premium_key;
-  public $uncheckable_key;
-  public $forbidden_endpoint_key;
-  public $used_key;
-  public $expiring_key;
-  public $invalid_key;
-  public $valid_key;
+  public $usedPremiumKey;
+  public $expiringPremiumKey;
+  public $uncheckableKey;
+  public $forbiddenEndpointKey;
+  public $usedKey;
+  public $expiringKey;
+  public $invalidKey;
+  public $validKey;
 
   /** @var SettingsController */
   private $settings;

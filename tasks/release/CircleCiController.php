@@ -19,13 +19,13 @@ class CircleCiController {
   private $token;
 
   /** @var string */
-  private $zip_filename;
+  private $zipFilename;
 
   /** @var Client */
-  private $http_client;
+  private $httpClient;
 
   /** @var GitHubController */
-  private $github_controller;
+  private $githubController;
 
   public function __construct($username, $token, $project, GitHubController $githubController) {
     $this->token = $token;
