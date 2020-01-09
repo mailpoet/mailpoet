@@ -28,7 +28,7 @@ class NewslettersRepository extends Repository {
       ->from(NewsletterEntity::class, 'n')
       ->where('n.status = :status')
       ->setParameter(':status', NewsletterEntity::STATUS_ACTIVE)
-      ->andWhere('n.deleted_at is null')
+      ->andWhere('n.deletedAt is null')
       ->andWhere('n.type IN (:types)')
       ->setParameter('types', $types)
       ->orderBy('n.subject')

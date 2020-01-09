@@ -314,7 +314,7 @@ class Populator {
   private function createOrUpdateUserFlag($userId, $name, $value) {
     $userFlagsRepository = \MailPoet\DI\ContainerWrapper::getInstance(WP_DEBUG)->get(UserFlagsRepository::class);
     $flag = $userFlagsRepository->findOneBy([
-      'user_id' => $userId,
+      'userId' => $userId,
       'name' => $name,
     ]);
 

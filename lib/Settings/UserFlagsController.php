@@ -44,7 +44,7 @@ class UserFlagsController {
   public function set($name, $value) {
     $currentUserId = WPFunctions::get()->getCurrentUserId();
     $flag = $this->userFlagsRepository->findOneBy([
-      'user_id' => $currentUserId,
+      'userId' => $currentUserId,
       'name' => $name,
     ]);
 
@@ -65,7 +65,7 @@ class UserFlagsController {
   public function delete($name) {
     $currentUserId = WPFunctions::get()->getCurrentUserId();
     $flag = $this->userFlagsRepository->findOneBy([
-      'user_id' => $currentUserId,
+      'userId' => $currentUserId,
       'name' => $name,
     ]);
 
@@ -83,7 +83,7 @@ class UserFlagsController {
 
   private function load() {
     $currentUserId = WPFunctions::get()->getCurrentUserId();
-    $flags = $this->userFlagsRepository->findBy(['user_id' => $currentUserId]);
+    $flags = $this->userFlagsRepository->findBy(['userId' => $currentUserId]);
     $this->data = [];
     foreach ($flags as $flag) {
       $this->data[$flag->getName()] = $flag->getValue();

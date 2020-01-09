@@ -32,7 +32,7 @@ class CustomFields extends APIEndpoint {
   }
 
   public function getAll() {
-    $collection = $this->customFieldsRepository->findBy([], ['created_at' => 'asc']);
+    $collection = $this->customFieldsRepository->findBy([], ['createdAt' => 'asc']);
     return $this->successResponse($this->customFieldsResponseBuilder->buildBatch($collection));
   }
 

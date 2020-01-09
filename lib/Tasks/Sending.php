@@ -200,9 +200,9 @@ class Sending {
   }
 
   public function updateCount() {
-    $this->queue->count_processed = ScheduledTaskSubscriber::getProcessedCount($this->task->id);
-    $this->queue->count_to_process = ScheduledTaskSubscriber::getUnprocessedCount($this->task->id);
-    $this->queue->count_total = $this->queue->count_processed + $this->queue->count_to_process;
+    $this->queue->countProcessed = ScheduledTaskSubscriber::getProcessedCount($this->task->id);
+    $this->queue->countToProcess = ScheduledTaskSubscriber::getUnprocessedCount($this->task->id);
+    $this->queue->countTotal = $this->queue->countProcessed + $this->queue->countToProcess;
     return $this->queue->save();
   }
 

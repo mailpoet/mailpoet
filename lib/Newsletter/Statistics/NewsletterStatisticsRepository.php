@@ -25,7 +25,7 @@ class NewsletterStatisticsRepository extends Repository {
         ->createQueryBuilder('n')
         ->join('n.queues', 'q')
         ->join('q.task', 't')
-        ->select('SUM(q.count_processed)')
+        ->select('SUM(q.countProcessed)')
         ->where('t.status = :status')
         ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
         ->andWhere('q.newsletter = :newsletter')
@@ -78,7 +78,7 @@ class NewsletterStatisticsRepository extends Repository {
     try {
       $qb = $this->entityManager
         ->createQueryBuilder();
-      return $qb->select('COUNT(DISTINCT stats.subscriber_id) as cnt')
+      return $qb->select('COUNT(DISTINCT stats.subscriberId) as cnt')
         ->from($statisticsEntityName, 'stats')
         ->where('stats.newsletter = :newsletter')
         ->setParameter('newsletter', $newsletter)

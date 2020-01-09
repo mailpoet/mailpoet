@@ -132,10 +132,10 @@ class Pages {
     $subscriberData = $this->subscriber->getUnconfirmedData();
 
     $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $this->subscriber->confirmed_ip = Helpers::getIP();
+    $this->subscriber->confirmedIp = Helpers::getIP();
     $this->subscriber->setExpr('confirmed_at', 'NOW()');
     $this->subscriber->setExpr('last_subscribed_at', 'NOW()');
-    $this->subscriber->unconfirmed_data = null;
+    $this->subscriber->unconfirmedData = null;
     $this->subscriber->save();
 
     if ($this->subscriber->getErrors() === false) {

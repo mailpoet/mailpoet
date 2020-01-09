@@ -68,7 +68,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
     $this->userFlags->set('flag_1', 'updated_value');
     expect($this->userFlags->get('flag_1'))->equals('updated_value');
     $flag = $this->userFlagsRepository->findOneBy([
-      'user_id' => $this->currentUserId,
+      'userId' => $this->currentUserId,
       'name' => 'flag_1',
     ]);
     expect($flag->getValue())->equals('updated_value');
@@ -79,7 +79,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
     $this->userFlags->delete('flag_1');
     expect($this->userFlags->get('flag_1'))->equals('default_value_1');
     $flag = $this->userFlagsRepository->findOneBy([
-      'user_id' => $this->currentUserId,
+      'userId' => $this->currentUserId,
       'name' => 'flag_1',
     ]);
     expect($flag)->null();
@@ -102,7 +102,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
 
   private function updateUserFlag($userId, $name, $value) {
     $flag = $this->userFlagsRepository->findOneBy([
-      'user_id' => $userId,
+      'userId' => $userId,
       'name' => $name,
     ]);
     if (!$flag) {
