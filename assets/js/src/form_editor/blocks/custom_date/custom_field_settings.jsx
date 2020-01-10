@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   ToggleControl,
@@ -18,11 +18,25 @@ const CustomFieldSettings = ({
   onSave,
   isDeleting,
   onCustomFieldDelete,
+  onChange,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
-  const [localDefaultToday, setLocalLocalDefaultToday] = useState(defaultToday);
-  const [localDateType, setLocalLocalDateType] = useState(dateType);
-  const [localDateFormat, setLocalLocalDateFormat] = useState(dateFormat);
+  const [localDefaultToday, setLocalDefaultToday] = useState(defaultToday);
+  const [localDateType, setLocalDateType] = useState(dateType);
+  const [localDateFormat, setLocalDateFormat] = useState(dateFormat);
+
+  const localData = useMemo(() => ({
+    mandatory: localMandatory,
+    dateType: localDateType,
+    dateFormat: localDateFormat,
+    defaultToday: localDefaultToday,
+  }), [localMandatory, localDateType, localDateFormat, localDefaultToday]);
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(localData);
+    }
+  }, [localData, onChange]);
 
   const createDateFormatsSelect = () => {
     const dateFormats = dateSettings.dateFormats[localDateType];
@@ -33,7 +47,7 @@ const CustomFieldSettings = ({
       <SelectControl
         label={MailPoet.I18n.t('customFieldDateFormat')}
         value={localDateFormat}
-        onChange={(value) => setLocalLocalDateFormat(value)}
+        onChange={(value) => setLocalDateFormat(value)}
         options={dateFormats.map((format) => ({
           value: format,
           label: format,
@@ -44,33 +58,37 @@ const CustomFieldSettings = ({
 
   return (
     <div className="custom-field-settings">
-      <Button
-        isPrimary
-        isDefault
-        onClick={() => onSave({
-          mandatory: localMandatory,
-          dateType: localDateType,
-          dateFormat: localDateFormat,
-          defaultToday: localDefaultToday,
-        })}
-        isBusy={isSaving}
-        disabled={
-          isSaving
-          || (
-            localMandatory === mandatory
-            && localDefaultToday === defaultToday
-            && localDateType === dateType
-            && localDateFormat === dateFormat
-          )
-        }
-        className="button-on-top"
-      >
-        {MailPoet.I18n.t('customFieldSaveCTA')}
-      </Button>
-      <CustomFieldDelete
-        isBusy={isSaving || isDeleting}
-        onDelete={onCustomFieldDelete}
-      />
+      {onSave ? (
+        <Button
+          isPrimary
+          isDefault
+          onClick={() => onSave({
+            mandatory: localMandatory,
+            dateType: localDateType,
+            dateFormat: localDateFormat,
+            defaultToday: localDefaultToday,
+          })}
+          isBusy={isSaving}
+          disabled={
+            isSaving
+            || (
+              localMandatory === mandatory
+              && localDefaultToday === defaultToday
+              && localDateType === dateType
+              && localDateFormat === dateFormat
+            )
+          }
+          className="button-on-top"
+        >
+          {MailPoet.I18n.t('customFieldSaveCTA')}
+        </Button>
+      ) : null}
+      {onCustomFieldDelete ? (
+        <CustomFieldDelete
+          isBusy={isSaving || isDeleting}
+          onDelete={onCustomFieldDelete}
+        />
+      ) : null}
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -79,17 +97,15 @@ const CustomFieldSettings = ({
       <ToggleControl
         label={MailPoet.I18n.t('customFieldDefaultToday')}
         checked={localDefaultToday}
-        onChange={setLocalLocalDefaultToday}
+        onChange={setLocalDefaultToday}
       />
       <SelectControl
         label={MailPoet.I18n.t('customFieldDateType')}
         value={localDateType}
         onChange={(value) => {
-          setLocalLocalDateType(value);
+          setLocalDateType(value);
           const dateFormats = dateSettings.dateFormats[value];
-          if (dateFormats.length === 1) {
-            setLocalLocalDateFormat(dateFormats[0]);
-          }
+          setLocalDateFormat(dateFormats[0]);
         }}
         options={dateSettings.dateTypes}
       />
@@ -103,7 +119,7 @@ CustomFieldSettings.propTypes = {
   dateType: PropTypes.string,
   dateFormat: PropTypes.string,
   defaultToday: PropTypes.bool,
-  onSave: PropTypes.func.isRequired,
+  onSave: PropTypes.func,
   isSaving: PropTypes.bool,
   dateSettings: PropTypes.shape({
     dateTypes: PropTypes.arrayOf(PropTypes.shape({
@@ -115,6 +131,7 @@ CustomFieldSettings.propTypes = {
   }).isRequired,
   isDeleting: PropTypes.bool,
   onCustomFieldDelete: PropTypes.func,
+  onChange: PropTypes.func,
 };
 
 CustomFieldSettings.defaultProps = {
@@ -124,7 +141,9 @@ CustomFieldSettings.defaultProps = {
   dateFormat: null,
   defaultToday: false,
   isDeleting: false,
-  onCustomFieldDelete: () => {},
+  onCustomFieldDelete: null,
+  onSave: null,
+  onChange: null,
 };
 
 export default CustomFieldSettings;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   ToggleControl,
@@ -17,6 +17,7 @@ const CustomFieldSettings = ({
   onSave,
   isDeleting,
   onCustomFieldDelete,
+  onChange,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValues, setLocalValues] = useState(JSON.parse(JSON.stringify(values)));
@@ -36,31 +37,47 @@ const CustomFieldSettings = ({
     );
   };
 
+  const localData = useMemo(() => ({
+    mandatory: localMandatory,
+    values: localValues,
+  }), [localMandatory, localValues]);
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(localData);
+    }
+  }, [localData, onChange]);
+
   return (
     <div className="custom-field-settings">
-      <Button
-        isPrimary
-        isDefault
-        onClick={() => onSave({
-          mandatory: localMandatory,
-          values: localValues,
-        })}
-        isBusy={isSaving}
-        disabled={
-          isSaving
-          || (
-            localMandatory === mandatory
-            && isEqualWith(values, localValues)
-          )
-        }
-        className="button-on-top"
-      >
-        {MailPoet.I18n.t('customFieldSaveCTA')}
-      </Button>
-      <CustomFieldDelete
-        isBusy={isSaving || isDeleting}
-        onDelete={onCustomFieldDelete}
-      />
+      {onSave ? (
+        <Button
+          isPrimary
+          isDefault
+          onClick={() => onSave({
+            mandatory: localMandatory,
+            values: localValues,
+          })}
+          isBusy={isSaving}
+          disabled={
+            isSaving
+            || (
+              localMandatory === mandatory
+              && isEqualWith(values, localValues)
+            )
+          }
+          className="button-on-top"
+        >
+          {MailPoet.I18n.t('customFieldSaveCTA')}
+        </Button>
+      ) : null}
+      {onCustomFieldDelete ? (
+        <CustomFieldDelete
+          isBusy={isSaving || isDeleting}
+          onDelete={onCustomFieldDelete}
+        />
+      ) : null}
+
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -95,10 +112,11 @@ CustomFieldSettings.propTypes = {
     name: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
   })),
-  onSave: PropTypes.func.isRequired,
+  onSave: PropTypes.func,
   isSaving: PropTypes.bool,
   isDeleting: PropTypes.bool,
   onCustomFieldDelete: PropTypes.func,
+  onChange: PropTypes.func,
 };
 
 CustomFieldSettings.defaultProps = {
@@ -106,7 +124,9 @@ CustomFieldSettings.defaultProps = {
   isSaving: false,
   values: [],
   isDeleting: false,
-  onCustomFieldDelete: () => {},
+  onCustomFieldDelete: null,
+  onSave: null,
+  onChange: null,
 };
 
 export default CustomFieldSettings;
