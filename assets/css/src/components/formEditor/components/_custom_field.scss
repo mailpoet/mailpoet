@@ -10,3 +10,12 @@
     padding: 0 24px 0 8px;
   }
 }
+
+.mailpoet_custom_field_add_form {
+  width: 100%;
+
+  .components-base-control,
+  .custom-field-settings {
+    text-align: left;
+  }
+}

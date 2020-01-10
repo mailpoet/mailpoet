@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Button,
   SelectControl,
@@ -16,36 +16,49 @@ const CustomFieldSettings = ({
   onSave,
   isDeleting,
   onCustomFieldDelete,
+  onChange,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValidate, setLocalValidate] = useState(validate);
 
+  const localData = useMemo(() => ({
+    mandatory: localMandatory,
+    validate: localValidate,
+  }), [localMandatory, localValidate]);
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(localData);
+    }
+  }, [localData, onChange]);
+
   return (
     <>
-      <Button
-        isPrimary
-        isDefault
-        onClick={() => onSave({
-          mandatory: localMandatory,
-          validate: localValidate,
-        })}
-        isBusy={isSaving}
-        disabled={
-          isSaving
-          || isDeleting
-          || (
-            localMandatory === mandatory
-            && localValidate === validate
-          )
-        }
-        className="button-on-top"
-      >
-        {MailPoet.I18n.t('customFieldSaveCTA')}
-      </Button>
-      <CustomFieldDelete
-        isBusy={isSaving || isDeleting}
-        onDelete={onCustomFieldDelete}
-      />
+      {onSave ? (
+        <Button
+          isPrimary
+          isDefault
+          onClick={() => onSave(localData)}
+          isBusy={isSaving}
+          disabled={
+            isSaving
+            || isDeleting
+            || (
+              localMandatory === mandatory
+              && localValidate === validate
+            )
+          }
+          className="button-on-top"
+        >
+          {MailPoet.I18n.t('customFieldSaveCTA')}
+        </Button>
+      ) : null }
+      {onCustomFieldDelete ? (
+        <CustomFieldDelete
+          isBusy={isSaving || isDeleting}
+          onDelete={onCustomFieldDelete}
+        />
+      ) : null }
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -81,10 +94,11 @@ const CustomFieldSettings = ({
 CustomFieldSettings.propTypes = {
   mandatory: PropTypes.bool,
   validate: PropTypes.string,
-  onSave: PropTypes.func.isRequired,
+  onSave: PropTypes.func,
   isSaving: PropTypes.bool,
   isDeleting: PropTypes.bool,
   onCustomFieldDelete: PropTypes.func,
+  onChange: PropTypes.func,
 };
 
 CustomFieldSettings.defaultProps = {
@@ -92,7 +106,9 @@ CustomFieldSettings.defaultProps = {
   isSaving: false,
   validate: '',
   isDeleting: false,
-  onCustomFieldDelete: () => {},
+  onCustomFieldDelete: null,
+  onSave: null,
+  onChange: null,
 };
 
 export default CustomFieldSettings;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   ToggleControl,
@@ -15,38 +15,51 @@ const CustomFieldSettings = ({
   checkboxLabel,
   isDeleting,
   onCustomFieldDelete,
+  onChange,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localIsChecked, setLocalIsChecked] = useState(isChecked);
   const [localCheckboxLabel, setLocalCheckboxLabel] = useState(checkboxLabel);
 
+  const localData = useMemo(() => ({
+    mandatory: localMandatory,
+    isChecked: localIsChecked,
+    checkboxLabel: localCheckboxLabel,
+  }), [localMandatory, localIsChecked, localCheckboxLabel]);
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(localData);
+    }
+  }, [localData, onChange]);
+
   return (
     <div className="custom-field-settings">
-      <Button
-        isPrimary
-        isDefault
-        onClick={() => onSave({
-          mandatory: localMandatory,
-          isChecked: localIsChecked,
-          checkboxLabel: localCheckboxLabel,
-        })}
-        isBusy={isSaving}
-        disabled={
-          isSaving
-          || (
-            localMandatory === mandatory
-            && localIsChecked === isChecked
-            && localCheckboxLabel === checkboxLabel
-          )
-        }
-        className="button-on-top"
-      >
-        {MailPoet.I18n.t('customFieldSaveCTA')}
-      </Button>
-      <CustomFieldDelete
-        isBusy={isSaving || isDeleting}
-        onDelete={onCustomFieldDelete}
-      />
+      {onSave ? (
+        <Button
+          isPrimary
+          isDefault
+          onClick={() => onSave(localData)}
+          isBusy={isSaving}
+          disabled={
+            isSaving
+            || (
+              localMandatory === mandatory
+              && localIsChecked === isChecked
+              && localCheckboxLabel === checkboxLabel
+            )
+          }
+          className="button-on-top"
+        >
+          {MailPoet.I18n.t('customFieldSaveCTA')}
+        </Button>
+      ) : null}
+      {onCustomFieldDelete ? (
+        <CustomFieldDelete
+          isBusy={isSaving || isDeleting}
+          onDelete={onCustomFieldDelete}
+        />
+      ) : null}
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -70,21 +83,24 @@ const CustomFieldSettings = ({
 
 CustomFieldSettings.propTypes = {
   mandatory: PropTypes.bool,
-  onSave: PropTypes.func.isRequired,
+  onSave: PropTypes.func,
   isSaving: PropTypes.bool,
   isChecked: PropTypes.bool,
   checkboxLabel: PropTypes.string,
   isDeleting: PropTypes.bool,
   onCustomFieldDelete: PropTypes.func,
+  onChange: PropTypes.func,
 };
 
 CustomFieldSettings.defaultProps = {
   mandatory: false,
+  onSave: null,
   isSaving: false,
   isChecked: false,
   checkboxLabel: '',
   isDeleting: false,
-  onCustomFieldDelete: () => {},
+  onCustomFieldDelete: null,
+  onChange: null,
 };
 
 export default CustomFieldSettings;
