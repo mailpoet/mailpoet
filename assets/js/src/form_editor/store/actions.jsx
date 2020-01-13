@@ -68,6 +68,26 @@ export function saveCustomFieldFailed(message = undefined) {
   };
 }
 
+export function createCustomFieldDone(response) {
+  return {
+    type: 'CREATE_CUSTOM_FIELD_DONE',
+    response,
+  };
+}
+
+export function createCustomFieldStarted() {
+  return {
+    type: 'CREATE_CUSTOM_FIELD_STARTED',
+  };
+}
+
+export function createCustomFieldFailed(message = undefined) {
+  return {
+    type: 'CREATE_CUSTOM_FIELD_FAILED',
+    message,
+  };
+}
+
 export function changeFormSettings(settings) {
   return {
     type: 'CHANGE_FORM_SETTINGS',
@@ -133,6 +153,14 @@ export function* saveCustomField(data) {
   yield {
     type: 'SAVE_CUSTOM_FIELD',
     ...data,
+  };
+}
+
+export function* createCustomField(data, clientId) {
+  yield {
+    type: 'CREATE_CUSTOM_FIELD',
+    clientId,
+    data,
   };
 }
 

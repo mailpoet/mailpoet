@@ -1,4 +1,7 @@
 import MailPoet from 'mailpoet';
+import createCustomFieldDone from './reducers/create_custom_field_done.jsx';
+import createCustomFieldFailed from './reducers/create_custom_field_failed.jsx';
+import createCustomFieldStarted from './reducers/create_custom_field_started.jsx';
 import changeFormName from './reducers/change_form_name.jsx';
 import changeFormSettings from './reducers/change_form_settings.jsx';
 import changeFormStyles from './reducers/change_form_styles.jsx';
@@ -23,6 +26,9 @@ const saveFormStarted = saveFormStartedFactory(MailPoet);
 
 export default (defaultState) => (state = defaultState, action) => {
   switch (action.type) {
+    case 'CREATE_CUSTOM_FIELD_DONE': return createCustomFieldDone(state, action);
+    case 'CREATE_CUSTOM_FIELD_FAILED': return createCustomFieldFailed(state, action);
+    case 'CREATE_CUSTOM_FIELD_STARTED': return createCustomFieldStarted(state, action);
     case 'CHANGE_FORM_BLOCKS': return changeFormBlocks(state, action);
     case 'CHANGE_FORM_NAME': return changeFormName(state, action);
     case 'CHANGE_FORM_SETTINGS': return changeFormSettings(state, action);

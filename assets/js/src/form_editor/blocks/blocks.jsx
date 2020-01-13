@@ -13,18 +13,17 @@ import * as segmentSelect from './segment_select/segment_select.jsx';
 import * as html from './html/html.jsx';
 import * as addCustomField from './add_custom_field/add_custom_field.jsx';
 
-const registerCustomFieldBlock = (customField) => {
+export const registerCustomFieldBlock = (customField) => {
   const namesMap = getCustomFieldBlocksSettings(customField);
 
-  if (!namesMap[customField.type]) return;
+  if (!namesMap[customField.type]) return null;
 
-  registerBlockType(
-    formatCustomFieldBlockName(namesMap[customField.type].name, customField),
-    namesMap[customField.type].settings
-  );
+  const blockName = formatCustomFieldBlockName(namesMap[customField.type].name, customField);
+  registerBlockType(blockName, namesMap[customField.type].settings);
+  return blockName;
 };
 
-export default () => {
+export const initBlocks = () => {
   const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
 
   const categories = [
