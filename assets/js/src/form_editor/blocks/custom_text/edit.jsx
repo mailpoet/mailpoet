@@ -12,6 +12,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import CustomFieldSettings from './custom_field_settings.jsx';
 import formatLabel from '../label_formatter.jsx';
+import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
 const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
@@ -42,10 +43,7 @@ const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
               saveCustomField({
                 customFieldId: attributes.customFieldId,
                 data: {
-                  params: {
-                    required: params.mandatory ? '1' : undefined,
-                    validate: params.validate,
-                  },
+                  params: mapCustomFieldFormData('text', params),
                 },
                 onFinish: () => setAttributes({
                   mandatory: params.mandatory,
