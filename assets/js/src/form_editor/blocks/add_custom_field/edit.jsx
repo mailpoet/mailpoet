@@ -7,7 +7,7 @@ import {
   TextControl,
 } from '@wordpress/components';
 import { BlockIcon } from '@wordpress/block-editor';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 
 import icon from './icon.jsx';
@@ -50,6 +50,8 @@ const AddCustomField = ({ clientId }) => {
   const [fieldSettings, setFieldSettings] = useState(null);
 
   const canSubmit = () => fieldName && fieldSettings;
+
+  const { createCustomField } = useDispatch('mailpoet-form-editor');
 
   const dateSettings = useSelect(
     (sel) => sel('mailpoet-form-editor').getDateSettingsData(),
@@ -109,7 +111,7 @@ const AddCustomField = ({ clientId }) => {
       icon={<BlockIcon icon={icon} showColors />}
       label="New Custom Field"
     >
-      <p id={clientId}>Create a new custom field for your subscribers.</p>
+      <p>Create a new custom field for your subscribers.</p>
       <div className="mailpoet_custom_field_add_form">
         <hr />
         <SelectControl
@@ -131,15 +133,12 @@ const AddCustomField = ({ clientId }) => {
           isDefault
           disabled={!canSubmit()}
           onClick={() => {
-            // eslint-disable-next-line no-console
-            console.log('Custom field data to store');
             const data = {
               name: fieldName,
               type: fieldType,
               params: mapCustomFieldFormData(fieldType, fieldSettings),
             };
-            // eslint-disable-next-line no-console
-            console.log(data);
+            createCustomField(data, clientId);
           }}
         >
           {'Create'}

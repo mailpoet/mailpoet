@@ -1,10 +1,11 @@
 import { select, dispatch } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import { merge } from 'lodash';
-import { unregisterBlockType, createBlock } from '@wordpress/blocks';
+import { createBlock, unregisterBlockType } from '@wordpress/blocks';
 import blocksToFormBody from './blocks_to_form_body.jsx';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
+import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
 
 export default {
   SAVE_FORM() {
@@ -62,6 +63,30 @@ export default {
           errorMessage = response.errors.map((error) => (error.message));
         }
         dispatch('mailpoet-form-editor').saveCustomFieldFailed(errorMessage);
+      });
+  },
+
+  CREATE_CUSTOM_FIELD(action) {
+    dispatch('mailpoet-form-editor').createCustomFieldStarted();
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'customFields',
+      action: 'save',
+      data: action.data,
+    })
+      .then((response) => {
+        const customField = response.data;
+        const blockName = registerCustomFieldBlock(customField);
+        const customFieldBlock = createBlock(blockName);
+        dispatch('core/block-editor').replaceBlock(action.clientId, customFieldBlock);
+        dispatch('mailpoet-form-editor').createCustomFieldDone(response.data);
+      })
+      .fail((response) => {
+        let errorMessage = null;
+        if (response.errors.length > 0) {
+          errorMessage = response.errors.map((error) => (error.message));
+        }
+        dispatch('mailpoet-form-editor').createCustomFieldFailed(errorMessage);
       });
   },
 
