@@ -4,12 +4,12 @@ import Notice from 'notices/notice.jsx';
 
 const SubscribersLimitNotice = () => {
   if (!window.mailpoet_subscribers_limit_reached) return null;
-  const hasKey = window.mailpoet_has_api_key;
+  const hasValidApiKey = window.mailpoet_has_valid_api_key;
   const title = MailPoet.I18n.t('subscribersLimitNoticeTitle')
     .replace('[subscribersLimit]', window.mailpoet_subscribers_limit);
-  const youReachedTheLimit = MailPoet.I18n.t(hasKey ? 'yourPlanLimit' : 'freeVersionLimit')
+  const youReachedTheLimit = MailPoet.I18n.t(hasValidApiKey ? 'yourPlanLimit' : 'freeVersionLimit')
     .replace('[subscribersLimit]', window.mailpoet_subscribers_limit);
-  const upgradeLink = hasKey
+  const upgradeLink = hasValidApiKey
     ? 'https://account.mailpoet.com/upgrade'
     : `https://account.mailpoet.com/?s=${window.mailpoet_subscribers_count + 1}`;
   const refreshSubscribers = async () => {
@@ -38,7 +38,7 @@ const SubscribersLimitNotice = () => {
         >
           {MailPoet.I18n.t('upgradeNow')}
         </a>
-        {hasKey && (
+        {hasValidApiKey && (
         <>
           {' '}
           <button

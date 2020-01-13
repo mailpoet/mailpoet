@@ -128,7 +128,7 @@ class Worker {
     $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $statistics->getTotalSentCount();
     $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
     $subscribers_count = $this->subscribers_repository->getTotalSubscribers();
-    $has_key = $this->subscribers_feature->hasAPIKey();
+    $has_valid_api_key = $this->subscribers_feature->hasValidApiKey();
     $context = [
       'subject' => $subject,
       'preheader' => sprintf(_x(
@@ -143,9 +143,9 @@ class Worker {
       'clicked' => $clicked,
       'opened' => $opened,
       'subscribersLimitReached' => $this->subscribers_feature->check(),
-      'hasKey' => $has_key,
+      'hasValidApiKey' => $has_valid_api_key,
       'subscribersLimit' => $this->subscribers_feature->getSubscribersLimit(),
-      'upgradeNowLink' => $has_key ? 'https://account.mailpoet.com/upgrade' : 'https://account.mailpoet.com/?s=' . ($subscribers_count + 1),
+      'upgradeNowLink' => $has_valid_api_key ? 'https://account.mailpoet.com/upgrade' : 'https://account.mailpoet.com/?s=' . ($subscribers_count + 1),
     ];
     if ($link) {
       $context['topLinkClicks'] = $link->getTotalClicksCount();

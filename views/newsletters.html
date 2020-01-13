@@ -10,7 +10,7 @@
       var mailpoet_display_nps_poll = <%= (sent_newsletters_count > 0 and settings.display_nps_poll) ? 'true' : 'false' %>;
       var mailpoet_subscribers_limit = <%= subscribers_limit ? subscribers_limit : 'false'  %>;
       var mailpoet_subscribers_limit_reached = <%= subscribers_limit_reached ? 'true' : 'false' %>;
-      var mailpoet_has_api_key = <%= has_api_key ? 'true' : 'false' %>;
+      var mailpoet_has_valid_api_key = <%= has_valid_api_key ? 'true' : 'false' %>;
       var mailpoet_segments = <%= json_encode(segments) %>;
       var mailpoet_show_congratulate_after_first_newsletter = <%= show_congratulate_after_first_newsletter %>;
       var mailpoet_installed_days_ago = <%= installed_days_ago %>;

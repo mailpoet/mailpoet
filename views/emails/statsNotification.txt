@@ -8,7 +8,7 @@
 <% if subscribersLimitReached %>
 <%= __('Congratulations, you now have more than [subscribersLimit] subscribers!')|replace({'[subscribersLimit]': subscribersLimit}) %>
 
-<% if hasKey %>
+<% if hasValidApiKey %>
 <%= __('Your plan is limited to [subscribersLimit] subscribers.')|replace({'[subscribersLimit]': subscribersLimit}) %>
 <% else %>
 <%= __('Our free version is limited to [subscribersLimit] subscribers.')|replace({'[subscribersLimit]': subscribersLimit}) %>
