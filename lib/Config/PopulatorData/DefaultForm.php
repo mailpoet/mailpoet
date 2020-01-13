@@ -16,7 +16,7 @@ class DefaultForm {
   }
 
   public function getName() {
-    return WPFunctions::get()->_x('My first form', 'default name of form (GDPR friendly) to capture emails', 'mailpoet');
+    return WPFunctions::get()->_x('My First Form', 'default name of form (GDPR friendly) to capture emails', 'mailpoet');
   }
 
   public function getBody() {
