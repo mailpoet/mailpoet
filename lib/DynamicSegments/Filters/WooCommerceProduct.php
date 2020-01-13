@@ -43,6 +43,11 @@ class WooCommerceProduct implements Filter {
       'itemmeta'
     );
     $orm->where('status', Subscriber::STATUS_SUBSCRIBED);
+    $orm->whereRaw(
+      'postmeta.post_id NOT IN (
+               SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed")
+      )'
+    );
     return $orm;
   }
 
