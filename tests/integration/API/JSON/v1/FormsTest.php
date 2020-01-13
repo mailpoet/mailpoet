@@ -68,13 +68,13 @@ class FormsTest extends \MailPoetTest {
 
   public function testItCanSaveAForm() {
     $form_data = [
-      'name' => 'My first form',
+      'name' => 'My First Form',
     ];
 
     $response = $this->endpoint->save($form_data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::where('name', 'My first form')->findOne()->asArray()
+      Form::where('name', 'My First Form')->findOne()->asArray()
     );
   }
 
