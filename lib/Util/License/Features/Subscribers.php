@@ -33,12 +33,12 @@ class Subscribers {
     return $subscribers_count > $limit;
   }
 
-  public function hasAPIKey() {
+  public function hasValidApiKey() {
     return $this->hasValidMssKey() || $this->hasValidPremiumKey();
   }
 
   public function getSubscribersLimit() {
-    if (!$this->hasAPIKey()) {
+    if (!$this->hasValidApiKey()) {
       return $this->getFreeSubscribersLimit();
     }
 

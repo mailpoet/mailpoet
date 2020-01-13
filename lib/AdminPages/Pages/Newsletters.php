@@ -97,7 +97,7 @@ class Newsletters {
     $data['installed_days_ago'] = (int)$installedAtDateTime->diff(new \DateTime())->format('%a');
     $data['subscribers_limit'] = $this->subscribers_feature->getSubscribersLimit();
     $data['subscribers_limit_reached'] = $this->subscribers_feature->check();
-    $data['has_api_key'] = $this->subscribers_feature->hasAPIKey();
+    $data['has_valid_api_key'] = $this->subscribers_feature->hasValidApiKey();
 
     $date_time = new DateTime();
     $data['current_date'] = $date_time->getCurrentDate(DateTime::DEFAULT_DATE_FORMAT);
