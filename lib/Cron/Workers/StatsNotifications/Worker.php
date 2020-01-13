@@ -139,7 +139,7 @@ class Worker {
       ),
       'topLinkClicks' => 0,
       'linkSettings' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings#basics'),
-      'linkStats' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->getId()),
+      'linkStats' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters&stats=' . $newsletter->getId()),
       'clicked' => $clicked,
       'opened' => $opened,
       'subscribersLimitReached' => $this->subscribersFeature->check(),

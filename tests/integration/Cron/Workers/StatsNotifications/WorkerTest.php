@@ -209,7 +209,7 @@ class WorkerTest extends \MailPoetTest {
         $this->anything(),
         $this->callback(function($context){
           return strpos($context['linkSettings'], 'mailpoet-settings')
-            && strpos($context['linkStats'], 'mailpoet-newsletters#/stats');
+            && strpos($context['linkStats'], 'mailpoet-newsletters&stats');
         }));
 
     $this->statsNotifications->process();
