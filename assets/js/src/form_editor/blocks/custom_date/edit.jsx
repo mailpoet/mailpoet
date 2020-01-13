@@ -13,6 +13,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import CustomFieldSettings from './custom_field_settings.jsx';
 import FormFieldDate from '../../../form/fields/date.jsx';
 import formatLabel from '../label_formatter.jsx';
+import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
 const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
@@ -46,12 +47,7 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
             onSave={(params) => saveCustomField({
               customFieldId: attributes.customFieldId,
               data: {
-                params: {
-                  required: params.mandatory ? '1' : undefined,
-                  date_type: params.dateType,
-                  date_format: params.dateFormat,
-                  is_default_today: params.defaultToday ? '1' : undefined,
-                },
+                params: mapCustomFieldFormData('date', params),
               },
               onFinish: () => setAttributes({
                 mandatory: params.mandatory,

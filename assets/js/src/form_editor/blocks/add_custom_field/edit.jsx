@@ -11,6 +11,7 @@ import { useSelect } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 
 import icon from './icon.jsx';
+import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import TextFieldSettings from '../custom_text/custom_field_settings.jsx';
 import CheckboxFieldSettings from '../custom_checkbox/custom_field_settings.jsx';
 import DateFieldSettings from '../custom_date/custom_field_settings.jsx';
@@ -131,11 +132,14 @@ const AddCustomField = ({ clientId }) => {
           disabled={!canSubmit()}
           onClick={() => {
             // eslint-disable-next-line no-console
-            console.log(fieldType);
+            console.log('Custom field data to store');
+            const data = {
+              name: fieldName,
+              type: fieldType,
+              params: mapCustomFieldFormData(fieldType, fieldSettings),
+            };
             // eslint-disable-next-line no-console
-            console.log(fieldName);
-            // eslint-disable-next-line no-console
-            console.log(fieldSettings);
+            console.log(data);
           }}
         >
           {'Create'}

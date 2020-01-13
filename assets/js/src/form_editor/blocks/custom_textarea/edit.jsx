@@ -12,6 +12,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import CustomFieldSettings from '../custom_text/custom_field_settings.jsx';
 import formatLabel from '../label_formatter.jsx';
+import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
 const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
@@ -37,11 +38,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
             onSave={(params) => saveCustomField({
               customFieldId: attributes.customFieldId,
               data: {
-                params: {
-                  required: params.mandatory ? '1' : undefined,
-                  validate: params.validate,
-                  lines: params.lines,
-                },
+                params: mapCustomFieldFormData('textarea', params),
               },
               onFinish: () => setAttributes({
                 mandatory: params.mandatory,

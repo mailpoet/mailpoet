@@ -12,6 +12,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import formatLabel from '../label_formatter.jsx';
 
 import CustomFieldSettings from '../custom_radio/custom_field_settings.jsx';
+import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
 const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
@@ -38,13 +39,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
             onSave={(params) => saveCustomField({
               customFieldId: attributes.customFieldId,
               data: {
-                params: {
-                  required: params.mandatory ? '1' : undefined,
-                  values: params.values.map((value) => ({
-                    value: value.name,
-                    is_checked: value.isChecked ? '1' : undefined,
-                  })),
-                },
+                params: mapCustomFieldFormData('select', params),
               },
               onFinish: () => setAttributes({
                 mandatory: params.mandatory,
