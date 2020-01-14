@@ -11,7 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class PremiumTest extends \MailPoetUnitTest {
   public function testItInstallsPlugin() {
-    $services_checker = $this->makeEmpty(ServicesChecker::class, [
+    $servicesChecker = $this->makeEmpty(ServicesChecker::class, [
       'isPremiumKeyValid' => Expected::once(true),
     ]);
 
@@ -22,13 +22,13 @@ class PremiumTest extends \MailPoetUnitTest {
       'installPlugin' => Expected::once(true),
     ]);
 
-    $premium = new Premium($services_checker, $wp);
+    $premium = new Premium($servicesChecker, $wp);
     $response = $premium->installPlugin();
     expect($response)->isInstanceOf(SuccessResponse::class);
   }
 
   public function testInstallationFailsWhenKeyInvalid() {
-    $services_checker = $this->makeEmpty(ServicesChecker::class, [
+    $servicesChecker = $this->makeEmpty(ServicesChecker::class, [
       'isPremiumKeyValid' => Expected::once(false),
     ]);
 
@@ -37,7 +37,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'installPlugin' => Expected::never(),
     ]);
 
-    $premium = new Premium($services_checker, $wp);
+    $premium = new Premium($servicesChecker, $wp);
     $response = $premium->installPlugin();
     expect($response)->isInstanceOf(ErrorResponse::class);
     expect($response->getData()['errors'][0])->same([
@@ -47,7 +47,7 @@ class PremiumTest extends \MailPoetUnitTest {
   }
 
   public function testInstallationFailsWhenNoPluginInfo() {
-    $services_checker = $this->makeEmpty(ServicesChecker::class, [
+    $servicesChecker = $this->makeEmpty(ServicesChecker::class, [
       'isPremiumKeyValid' => Expected::once(true),
     ]);
 
@@ -56,7 +56,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'installPlugin' => Expected::never(),
     ]);
 
-    $premium = new Premium($services_checker, $wp);
+    $premium = new Premium($servicesChecker, $wp);
     $response = $premium->installPlugin();
     expect($response)->isInstanceOf(ErrorResponse::class);
     expect($response->getData()['errors'][0])->same([
@@ -66,7 +66,7 @@ class PremiumTest extends \MailPoetUnitTest {
   }
 
   public function testInstallationFailsOnError() {
-    $services_checker = $this->makeEmpty(ServicesChecker::class, [
+    $servicesChecker = $this->makeEmpty(ServicesChecker::class, [
       'isPremiumKeyValid' => Expected::once(true),
     ]);
 
@@ -77,7 +77,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'installPlugin' => Expected::once(false),
     ]);
 
-    $premium = new Premium($services_checker, $wp);
+    $premium = new Premium($servicesChecker, $wp);
     $response = $premium->installPlugin();
     expect($response)->isInstanceOf(ErrorResponse::class);
     expect($response->getData()['errors'][0])->same([
@@ -87,7 +87,7 @@ class PremiumTest extends \MailPoetUnitTest {
   }
 
   public function testItActivatesPlugin() {
-    $services_checker = $this->makeEmpty(ServicesChecker::class, [
+    $servicesChecker = $this->makeEmpty(ServicesChecker::class, [
       'isPremiumKeyValid' => Expected::once(true),
     ]);
 
@@ -95,17 +95,17 @@ class PremiumTest extends \MailPoetUnitTest {
       'activatePlugin' => Expected::once(null),
     ]);
 
-    $premium = new Premium($services_checker, $wp);
+    $premium = new Premium($servicesChecker, $wp);
     $response = $premium->activatePlugin();
     expect($response)->isInstanceOf(SuccessResponse::class);
   }
 
   public function testActivationFailsWhenKeyInvalid() {
-    $services_checker = $this->makeEmpty(ServicesChecker::class, [
+    $servicesChecker = $this->makeEmpty(ServicesChecker::class, [
       'isPremiumKeyValid' => Expected::once(false),
     ]);
 
-    $premium = new Premium($services_checker, new WPFunctions());
+    $premium = new Premium($servicesChecker, new WPFunctions());
     $response = $premium->activatePlugin();
     expect($response)->isInstanceOf(ErrorResponse::class);
     expect($response->getData()['errors'][0])->same([
@@ -115,7 +115,7 @@ class PremiumTest extends \MailPoetUnitTest {
   }
 
   public function testActivationFailsOnError() {
-    $services_checker = $this->makeEmpty(ServicesChecker::class, [
+    $servicesChecker = $this->makeEmpty(ServicesChecker::class, [
       'isPremiumKeyValid' => Expected::once(true),
     ]);
 
@@ -123,7 +123,7 @@ class PremiumTest extends \MailPoetUnitTest {
       'activatePlugin' => Expected::once('error'),
     ]);
 
-    $premium = new Premium($services_checker, $wp);
+    $premium = new Premium($servicesChecker, $wp);
     $response = $premium->activatePlugin();
     expect($response)->isInstanceOf(ErrorResponse::class);
     expect($response->getData()['errors'][0])->same([

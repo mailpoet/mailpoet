@@ -70,9 +70,9 @@ class CleanupExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDec
     exec('rm -rf ' . self::MAILHOG_DATA_PATH . '/*', $output);
 
     // ensure Premium plugin is not installed
-    $premium_plugin_path = ABSPATH . 'wp-content/plugins/mailpoet-premium';
-    if (file_exists($premium_plugin_path)) {
-      exec("rm -rf $premium_plugin_path", $output);
+    $premiumPluginPath = ABSPATH . 'wp-content/plugins/mailpoet-premium';
+    if (file_exists($premiumPluginPath)) {
+      exec("rm -rf $premiumPluginPath", $output);
     }
 
     // cleanup EntityManager for data factories that are using it

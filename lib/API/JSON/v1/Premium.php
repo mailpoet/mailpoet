@@ -18,35 +18,35 @@ class Premium extends APIEndpoint {
   ];
 
   /** @var ServicesChecker */
-  private $services_checker;
+  private $servicesChecker;
 
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
-    ServicesChecker $services_checker,
+    ServicesChecker $servicesChecker,
     WPFunctions $wp
   ) {
-    $this->services_checker = $services_checker;
+    $this->servicesChecker = $servicesChecker;
     $this->wp = $wp;
   }
 
   public function installPlugin() {
-    $premium_key_valid = $this->services_checker->isPremiumKeyValid(false);
-    if (!$premium_key_valid) {
+    $premiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
+    if (!$premiumKeyValid) {
       return $this->error($this->wp->__('Premium key is not valid.', 'mailpoet'));
     }
 
-    $plugin_info = $this->wp->pluginsApi('plugin_information', [
+    $pluginInfo = $this->wp->pluginsApi('plugin_information', [
       'slug' => self::PREMIUM_PLUGIN_SLUG,
     ]);
 
-    if (!$plugin_info || $plugin_info instanceof WP_Error) {
+    if (!$pluginInfo || $pluginInfo instanceof WP_Error) {
       return $this->error($this->wp->__('Error when installing MailPoet Premium plugin.', 'mailpoet'));
     }
 
-    $plugin_info = (array)$plugin_info;
-    $result = $this->wp->installPlugin($plugin_info['download_link']);
+    $pluginInfo = (array)$pluginInfo;
+    $result = $this->wp->installPlugin($pluginInfo['download_link']);
     if ($result !== true) {
       return $this->error($this->wp->__('Error when installing MailPoet Premium plugin.', 'mailpoet'));
     }
@@ -54,8 +54,8 @@ class Premium extends APIEndpoint {
   }
 
   public function activatePlugin() {
-    $premium_key_valid = $this->services_checker->isPremiumKeyValid(false);
-    if (!$premium_key_valid) {
+    $premiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
+    if (!$premiumKeyValid) {
       return $this->error($this->wp->__('Premium key is not valid.', 'mailpoet'));
     }
 

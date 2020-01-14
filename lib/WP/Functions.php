@@ -590,12 +590,12 @@ class Functions {
   /**
    * @param string $plugin
    * @param string $redirect
-   * @param bool $network_wide
+   * @param bool $networkWide
    * @param bool $silent
    * @return WP_Error|null
    */
-  public function activatePlugin($plugin, $redirect = '', $network_wide = false, $silent = false) {
-    return activate_plugin($plugin, $redirect, $network_wide, $silent);
+  public function activatePlugin($plugin, $redirect = '', $networkWide = false, $silent = false) {
+    return activate_plugin($plugin, $redirect, $networkWide, $silent);
   }
 
   /**
