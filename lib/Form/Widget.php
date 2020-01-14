@@ -140,7 +140,7 @@ class Widget extends \WP_Widget {
       <a href="javascript:;" onClick="createSubscriptionForm()" class="mailpoet_form_new"><?php WPFunctions::get()->_e('Create a new form', 'mailpoet'); ?></a>
     </p>
     <script type="text/javascript">
-    public function createSubscriptionForm() {
+      function createSubscriptionForm() {
         MailPoet.Ajax.post({
           endpoint: 'forms',
           action: 'create',
@@ -159,7 +159,7 @@ class Widget extends \WP_Widget {
           }
         });
         return false;
-    }
+      }
     </script>
     <?php
   }
