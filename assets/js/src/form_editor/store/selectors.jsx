@@ -59,4 +59,7 @@ export default {
   getDateSettingsData(state) {
     return state.dateSettingData;
   },
+  getIsCustomFieldCrating(state) {
+    return state.isCustomFieldCreating;
+  },
 };
