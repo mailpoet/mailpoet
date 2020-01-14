@@ -1,11 +1,12 @@
+import MailPoet from 'mailpoet';
 import Icon from './icon.jsx';
 import Edit from './edit.jsx';
 
 export const name = 'mailpoet-form/add-custom-field';
 
 export const settings = {
-  title: 'Create Custom Field',
-  description: 'Create a new custom field for your subscribers.',
+  title: MailPoet.I18n.t('blockAddCustomField'),
+  description: MailPoet.I18n.t('blockAddCustomFieldDescription'),
   icon: Icon,
   category: 'custom-fields',
   attributes: {

@@ -115,7 +115,7 @@ const AddCustomField = ({ clientId }) => {
   return (
     <Placeholder
       icon={<BlockIcon icon={icon} showColors />}
-      label="New Custom Field"
+      label={MailPoet.I18n.t('blockAddCustomFieldFormHeading')}
     >
       {!isCreating ? (
         <>
@@ -123,7 +123,7 @@ const AddCustomField = ({ clientId }) => {
           <div className="mailpoet_custom_field_add_form">
             <hr />
             <SelectControl
-              label="Select a field type"
+              label={MailPoet.I18n.t('selectCustomFieldType')}
               options={customFieldTypes}
               onChange={(value) => {
                 setFieldSettings(null);
@@ -131,7 +131,7 @@ const AddCustomField = ({ clientId }) => {
               }}
             />
             <TextControl
-              label="Field name"
+              label={MailPoet.I18n.t('customFieldName')}
               onChange={setFieldName}
             />
             <hr />
@@ -149,7 +149,7 @@ const AddCustomField = ({ clientId }) => {
                 createCustomField(data, clientId);
               }}
             >
-              {'Create'}
+              {MailPoet.I18n.t('blockCreateButton')}
             </Button>
           </div>
         </>
