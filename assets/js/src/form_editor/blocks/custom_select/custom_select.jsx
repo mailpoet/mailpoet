@@ -1,5 +1,6 @@
 import Icon from '../custom_text/icon.jsx';
 import Edit from './edit.jsx';
+import { customFieldValuesToBlockValues } from '../../store/form_body_to_blocks.jsx';
 
 export const name = 'mailpoet-form/custom-select';
 
@@ -20,11 +21,12 @@ export function getSettings(customField) {
       },
       mandatory: {
         type: 'boolean',
-        default: false,
+        default: customField.params.required ? !!customField.params.required : false,
       },
       values: {
         type: 'array',
-        default: [],
+        default: customField.params.values
+          ? customFieldValuesToBlockValues(customField.params.values) : [],
       },
       customFieldId: {
         type: 'string',

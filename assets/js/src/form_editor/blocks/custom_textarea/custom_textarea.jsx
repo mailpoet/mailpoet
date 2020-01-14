@@ -20,11 +20,11 @@ export function getSettings(customField) {
       },
       mandatory: {
         type: 'boolean',
-        default: false,
+        default: customField.params.required ? !!customField.params.required : false,
       },
       validate: {
         type: 'string',
-        default: '',
+        default: customField.params.validate ? customField.params.validate : '',
       },
       lines: {
         type: 'string',
