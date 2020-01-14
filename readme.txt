@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.3
-Stable tag: 3.42.2
+Stable tag: 3.42.3
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -160,6 +160,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.42.3 - 2020-01-14 =
+* Fixed: subscribers moved to the trash no longer count against the subscribers limit.
 
 = 3.42.2 - 2020-01-07 =
 * Fixed: incorrect subscriber limit being applied to old plans.
