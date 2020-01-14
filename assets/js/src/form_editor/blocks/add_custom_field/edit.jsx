@@ -5,6 +5,7 @@ import {
   Button,
   SelectControl,
   TextControl,
+  Spinner,
 } from '@wordpress/components';
 import { BlockIcon } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -55,6 +56,11 @@ const AddCustomField = ({ clientId }) => {
 
   const dateSettings = useSelect(
     (sel) => sel('mailpoet-form-editor').getDateSettingsData(),
+    []
+  );
+
+  const isCreating = useSelect(
+    (sel) => sel('mailpoet-form-editor').getIsCustomFieldCrating(),
     []
   );
 
@@ -111,39 +117,43 @@ const AddCustomField = ({ clientId }) => {
       icon={<BlockIcon icon={icon} showColors />}
       label="New Custom Field"
     >
-      <p>Create a new custom field for your subscribers.</p>
-      <div className="mailpoet_custom_field_add_form">
-        <hr />
-        <SelectControl
-          label="Select a field type"
-          options={customFieldTypes}
-          onChange={(value) => {
-            setFieldSettings(null);
-            setFieldType(value);
-          }}
-        />
-        <TextControl
-          label="Field name"
-          onChange={setFieldName}
-        />
-        <hr />
-        {renderSettingsForType()}
-        <Button
-          isLarge
-          isDefault
-          disabled={!canSubmit()}
-          onClick={() => {
-            const data = {
-              name: fieldName,
-              type: fieldType,
-              params: mapCustomFieldFormData(fieldType, fieldSettings),
-            };
-            createCustomField(data, clientId);
-          }}
-        >
-          {'Create'}
-        </Button>
-      </div>
+      {!isCreating ? (
+        <>
+          <p>Create a new custom field for your subscribers.</p>
+          <div className="mailpoet_custom_field_add_form">
+            <hr />
+            <SelectControl
+              label="Select a field type"
+              options={customFieldTypes}
+              onChange={(value) => {
+                setFieldSettings(null);
+                setFieldType(value);
+              }}
+            />
+            <TextControl
+              label="Field name"
+              onChange={setFieldName}
+            />
+            <hr />
+            {renderSettingsForType()}
+            <Button
+              isLarge
+              isDefault
+              disabled={!canSubmit()}
+              onClick={() => {
+                const data = {
+                  name: fieldName,
+                  type: fieldType,
+                  params: mapCustomFieldFormData(fieldType, fieldSettings),
+                };
+                createCustomField(data, clientId);
+              }}
+            >
+              {'Create'}
+            </Button>
+          </div>
+        </>
+      ) : (<Spinner />)}
     </Placeholder>
   );
 };

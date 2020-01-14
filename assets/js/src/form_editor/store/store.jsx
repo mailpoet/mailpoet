@@ -32,6 +32,7 @@ export default () => {
     customFields: window.mailpoet_custom_fields,
     isFormSaving: false,
     isCustomFieldSaving: false,
+    isCustomFieldCreating: false,
     notices: [],
     sidebar: {
       activeTab: 'form',
