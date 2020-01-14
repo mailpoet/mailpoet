@@ -467,7 +467,7 @@ class Pages {
     if ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
       // check if subscriber's associated WP user is the currently logged in WP user
       $wpCurrentUser = $this->wp->wpGetCurrentUser();
-      if ($wpCurrentUser->userEmail === $subscriber->email) {
+      if ($wpCurrentUser->user_email === $subscriber->email) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         $formHtml .= Helpers::replaceLinkTags(
           $this->wp->__('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
           $this->wp->getEditProfileUrl(),

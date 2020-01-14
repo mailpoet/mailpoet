@@ -58,7 +58,7 @@ class WooCommerceCategory implements Filter {
     $subcategories = WPFunctions::get()->getTerms('product_cat', ['child_of' => $this->categoryId]);
     if (!is_array($subcategories)) return [];
     $ids = array_map(function($category) {
-      return $category->termId;
+      return $category->term_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     }, $subcategories);
     $ids[] = $this->categoryId;
     return $ids;

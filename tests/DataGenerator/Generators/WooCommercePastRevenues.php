@@ -61,7 +61,7 @@ class WooCommercePastRevenues {
     $productCategory = $this->createProductCategory('WC Revenues Test Category', 'revenues-test-cat');
     $products = [];
     for ($i = 1; $i <= self::PRODUCTS_COUNT; $i++) {
-      $products[] = $this->createProduct("Product $i", 100, [$productCategory->termId]);
+      $products[] = $this->createProduct("Product $i", 100, [$productCategory->term_id]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     }
     yield "Products done";
 
