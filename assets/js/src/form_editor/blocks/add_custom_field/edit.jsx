@@ -97,7 +97,7 @@ const AddCustomField = ({ clientId }) => {
         return (
           <RadioAndSelectFieldSettings
             mandatory={fieldSettings && fieldSettings.mandatory ? fieldSettings.mandatory : false}
-            values={fieldSettings && fieldSettings.values ? fieldSettings.values : []}
+            values={fieldSettings && fieldSettings.values ? fieldSettings.values : [{ name: '', id: Math.random().toString() }]}
             onChange={setFieldSettings}
           />
         );
