@@ -19,7 +19,13 @@ function mapFormDataToParams(fieldType, data) {
     case 'select':
       return {
         required: data.mandatory ? '1' : undefined,
-        values: data.values.map((value) => ({ value: value.name })),
+        values: data.values.map((value) => {
+          const mapped = { value: value.name };
+          if (value.isChecked) {
+            mapped.is_checked = '1';
+          }
+          return mapped;
+        }),
       };
     case 'text':
       return {
