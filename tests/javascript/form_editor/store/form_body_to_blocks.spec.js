@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import formBodyToBlocks from '../../../../assets/js/src/form_editor/store/form_body_to_blocks.jsx';
+import { formBodyToBlocks } from '../../../../assets/js/src/form_editor/store/form_body_to_blocks.jsx';
 
 const emailInput = {
   type: 'text',

@@ -1,6 +1,17 @@
 import { has } from 'lodash';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 
+export const customFieldValuesToBlockValues = (values) => values.map((value) => {
+  const mappedValue = {
+    name: value.value,
+    id: `${Math.random().toString()}-${Date.now()}`,
+  };
+  if (has(value, 'is_checked') && value.is_checked) {
+    mappedValue.isChecked = true;
+  }
+  return mappedValue;
+});
+
 const mapCustomField = (item, customFields, mappedCommonProperties) => {
   const customField = customFields.find((cf) => cf.id === parseInt(item.id, 10));
   if (!customField) return null;
@@ -38,16 +49,7 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
       mapped.attributes.defaultToday = !!item.params.is_default_today;
     }
     if (has(item.params, 'values') && Array.isArray(item.params.values)) {
-      mapped.attributes.values = item.params.values.map((value) => {
-        const mappedValue = {
-          name: value.value,
-          id: `${Math.random().toString()}-${Date.now()}`,
-        };
-        if (has(value, 'is_checked') && value.is_checked) {
-          mappedValue.isChecked = true;
-        }
-        return mappedValue;
-      });
+      mapped.attributes.values = customFieldValuesToBlockValues(item.params.values);
     }
   }
   return mapped;
@@ -58,7 +60,7 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
  * @param {array} data - from form.body property
  * @param {array} customFields - list of all custom fields
  */
-export default (data, customFields = []) => {
+export const formBodyToBlocks = (data, customFields = []) => {
   if (!Array.isArray(data)) {
     throw new Error('Mapper expects form body to be an array.');
   }

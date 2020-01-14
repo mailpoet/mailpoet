@@ -8,7 +8,7 @@ import createReducer from './reducer.jsx';
 import selectors from './selectors.jsx';
 import controls from './controls.jsx';
 import validateForm from './form_validator.jsx';
-import formBodyToBlocks from './form_body_to_blocks.jsx';
+import { formBodyToBlocks } from './form_body_to_blocks.jsx';
 
 export default () => {
   const formData = { ...window.mailpoet_form_data };

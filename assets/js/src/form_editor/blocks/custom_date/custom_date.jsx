@@ -16,7 +16,7 @@ export function getSettings(customField) {
       },
       mandatory: {
         type: 'boolean',
-        default: false,
+        default: customField.params.required ? !!customField.params.required : false,
       },
       defaultToday: {
         type: 'boolean',
