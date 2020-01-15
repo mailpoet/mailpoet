@@ -15,6 +15,7 @@ const PreviewItem = ({
 }) => (
   <div
     className="mailpoet-form-segments-settings-list"
+    data-automation-id="custom_field_value_settings"
     key={value.id}
   >
     <input
@@ -26,6 +27,7 @@ const PreviewItem = ({
     <input
       type="text"
       value={value.name}
+      data-automation-id="custom_field_value_settings_value"
       onChange={(event) => onUpdate(value.id, event.target.value)}
     />
     <Dashicon

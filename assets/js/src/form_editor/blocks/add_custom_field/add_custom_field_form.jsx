@@ -97,11 +97,12 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
   };
 
   return (
-    <div className="mailpoet_custom_field_add_form">
+    <div className="mailpoet_custom_field_add_form" data-automation-id="create_custom_field_form">
       <hr />
       <SelectControl
         label={MailPoet.I18n.t('selectCustomFieldType')}
         options={customFieldTypes}
+        data-automation-id="create_custom_field_type_select"
         onChange={(value) => {
           setFieldSettings(null);
           setFieldType(value);
@@ -110,6 +111,7 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
       <TextControl
         label={MailPoet.I18n.t('customFieldName')}
         onChange={setFieldName}
+        data-automation-id="create_custom_field_name_input"
       />
       <hr />
       {renderSettingsForType()}
@@ -117,6 +119,7 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
         isLarge
         isDefault
         disabled={!canSubmit()}
+        data-automation-id="create_custom_field_submit"
         onClick={() => {
           const data = {
             name: fieldName,
