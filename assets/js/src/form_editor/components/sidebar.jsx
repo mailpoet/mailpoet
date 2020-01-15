@@ -50,7 +50,7 @@ export default () => {
   }, [selectedBlockId, switchSidebarTab]);
 
   return (
-    <div className="edit-post-sidebar">
+    <div className="edit-post-sidebar mailpoet_form_editor_sidebar">
       <SidebarHeader closeSidebar={() => toggleSidebar(false)}>
         <ul>
           <li>
