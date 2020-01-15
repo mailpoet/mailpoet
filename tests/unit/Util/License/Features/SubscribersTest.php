@@ -12,8 +12,8 @@ class SubscribersTest extends \MailPoetUnitTest {
 
   public function testCheckReturnsTrueIfOldUserReachedLimit() {
     $subscribersFeature = $this->constructWith([
-      'has_mss_key' => false,
-      'has_premium_key' => false,
+      'mss_key_state' => 'invalid',
+      'premium_key_state' => 'invalid',
       'installed_at' => '2018-11-11',
       'subscribers_count' => 2500,
       'premium_subscribers_limit' => 500,
@@ -24,8 +24,8 @@ class SubscribersTest extends \MailPoetUnitTest {
 
   public function testCheckReturnsFalseIfOldUserDidntReachLimit() {
     $subscribersFeature = $this->constructWith([
-      'has_mss_key' => false,
-      'has_premium_key' => false,
+      'mss_key_state' => 'invalid',
+      'premium_key_state' => 'invalid',
       'installed_at' => '2018-11-11',
       'subscribers_count' => 1500,
       'premium_subscribers_limit' => 500,
@@ -36,8 +36,8 @@ class SubscribersTest extends \MailPoetUnitTest {
 
   public function testCheckReturnsTrueIfNewUserReachedLimit() {
     $subscribersFeature = $this->constructWith([
-      'has_mss_key' => false,
-      'has_premium_key' => false,
+      'mss_key_state' => 'invalid',
+      'premium_key_state' => 'invalid',
       'installed_at' => '2019-11-11',
       'subscribers_count' => 1500,
       'premium_subscribers_limit' => 500,
@@ -48,8 +48,8 @@ class SubscribersTest extends \MailPoetUnitTest {
 
   public function testCheckReturnsFalseIfNewUserDidntReachLimit() {
     $subscribersFeature = $this->constructWith([
-      'has_mss_key' => false,
-      'has_premium_key' => false,
+      'mss_key_state' => 'invalid',
+      'premium_key_state' => 'invalid',
       'installed_at' => '2019-11-11',
       'subscribers_count' => 900,
       'premium_subscribers_limit' => 500,
@@ -60,8 +60,8 @@ class SubscribersTest extends \MailPoetUnitTest {
 
   public function testCheckReturnsFalseIfMSSKeyExistsAndDidntReachLimit() {
     $subscribersFeature = $this->constructWith([
-      'has_mss_key' => true,
-      'has_premium_key' => false,
+      'mss_key_state' => 'valid',
+      'premium_key_state' => 'invalid',
       'installed_at' => '2019-11-11',
       'subscribers_count' => 2500,
       'premium_subscribers_limit' => 500,
@@ -72,8 +72,8 @@ class SubscribersTest extends \MailPoetUnitTest {
 
   public function testCheckReturnsTrueIfMSSKeyExistsAndReachedLimit() {
     $subscribersFeature = $this->constructWith([
-      'has_mss_key' => true,
-      'has_premium_key' => false,
+      'mss_key_state' => 'valid',
+      'premium_key_state' => 'invalid',
       'installed_at' => '2019-11-11',
       'subscribers_count' => 3000,
       'premium_subscribers_limit' => 500,
@@ -82,10 +82,34 @@ class SubscribersTest extends \MailPoetUnitTest {
     expect($subscribersFeature->check())->true();
   }
 
+  public function testCheckReturnsTrueIfMSSKeyIsExpiringAndReachedLimit() {
+    $subscribersFeature = $this->constructWith([
+      'mss_key_state' => 'expiring',
+      'premium_key_state' => 'invalid',
+      'installed_at' => '2019-11-11',
+      'subscribers_count' => 3000,
+      'premium_subscribers_limit' => 500,
+      'mss_subscribers_limit' => 2500,
+    ]);
+    expect($subscribersFeature->check())->true();
+  }
+
+  public function testCheckReturnsFalseIfMSSKeyIsAlreadyUsedAndReachedLimit() {
+    $subscribersFeature = $this->constructWith([
+      'mss_key_state' => 'already_used',
+      'premium_key_state' => 'invalid',
+      'installed_at' => '2019-11-11',
+      'subscribers_count' => 800,
+      'premium_subscribers_limit' => 500,
+      'mss_subscribers_limit' => 500,
+    ]);
+    expect($subscribersFeature->check())->false();
+  }
+
   public function testCheckReturnsFalseIfPremiumKeyExistsAndDidntReachLimit() {
     $subscribersFeature = $this->constructWith([
-      'has_mss_key' => false,
-      'has_premium_key' => true,
+      'mss_key_state' => 'invalid',
+      'premium_key_state' => 'valid',
       'installed_at' => '2019-11-11',
       'subscribers_count' => 2500,
       'premium_subscribers_limit' => 3500,
@@ -96,8 +120,8 @@ class SubscribersTest extends \MailPoetUnitTest {
 
   public function testCheckReturnsTrueIfPremiumKeyExistsAndReachedLimit() {
     $subscribersFeature = $this->constructWith([
-      'has_mss_key' => false,
-      'has_premium_key' => true,
+      'mss_key_state' => 'invalid',
+      'premium_key_state' => 'valid',
       'installed_at' => '2019-11-11',
       'subscribers_count' => 3000,
       'premium_subscribers_limit' => 2500,
@@ -108,8 +132,8 @@ class SubscribersTest extends \MailPoetUnitTest {
 
   public function testCheckReturnsFalseIfPremiumKeyExistsButLimitMissing() {
     $subscribersFeature = $this->constructWith([
-      'has_mss_key' => false,
-      'has_premium_key' => true,
+      'mss_key_state' => 'invalid',
+      'premium_key_state' => 'valid',
       'installed_at' => '2019-11-11',
       'subscribers_count' => 3000,
       'premium_subscribers_limit' => false,
@@ -120,8 +144,8 @@ class SubscribersTest extends \MailPoetUnitTest {
 
   public function testCheckReturnsFalseIfMSSKeyExistsButLimitMissing() {
     $subscribersFeature = $this->constructWith([
-      'has_mss_key' => true,
-      'has_premium_key' => false,
+      'mss_key_state' => 'valid',
+      'premium_key_state' => 'invalid',
       'installed_at' => '2019-11-11',
       'subscribers_count' => 3000,
       'premium_subscribers_limit' => false,
@@ -134,8 +158,8 @@ class SubscribersTest extends \MailPoetUnitTest {
     $settings = Stub::make(SettingsController::class, [
       'get' => function($name) use($specs) {
         if ($name === 'installed_at') return $specs['installed_at'];
-        if ($name === SubscribersFeature::MSS_KEY_STATE) return $specs['has_mss_key'] ? 'valid' : 'invalid';
-        if ($name === SubscribersFeature::PREMIUM_KEY_STATE) return $specs['has_premium_key'] ? 'valid' : 'invalid';
+        if ($name === SubscribersFeature::MSS_KEY_STATE) return $specs['mss_key_state'];
+        if ($name === SubscribersFeature::PREMIUM_KEY_STATE) return $specs['premium_key_state'];
         if ($name === SubscribersFeature::PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY) return $specs['premium_subscribers_limit'];
         if ($name === SubscribersFeature::MSS_SUBSCRIBERS_LIMIT_SETTING_KEY) return $specs['mss_subscribers_limit'];
       },

@@ -54,7 +54,8 @@ class Subscribers {
   }
 
   private function hasValidMssKey() {
-    return $this->settings->get(self::MSS_KEY_STATE) === 'valid';
+    $state = $this->settings->get(self::MSS_KEY_STATE);
+    return $state === Bridge::KEY_VALID || $state === Bridge::KEY_EXPIRING;
   }
 
   private function hasMssSubscribersLimit() {
@@ -66,7 +67,8 @@ class Subscribers {
   }
 
   private function hasValidPremiumKey() {
-    return $this->settings->get(self::PREMIUM_KEY_STATE) === 'valid';
+    $state = $this->settings->get(self::PREMIUM_KEY_STATE);
+    return $state === Bridge::KEY_VALID || $state === Bridge::KEY_EXPIRING;
   }
 
   private function hasPremiumSubscribersLimit() {
