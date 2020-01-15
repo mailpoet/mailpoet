@@ -18,6 +18,7 @@ const CustomFieldSettings = ({
   isDeleting,
   onCustomFieldDelete,
   onChange,
+  useDragAndDrop,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValues, setLocalValues] = useState(JSON.parse(JSON.stringify(values)));
@@ -88,6 +89,7 @@ const CustomFieldSettings = ({
         update={update}
         values={localValues}
         onReorder={setLocalValues}
+        useDragAndDrop={useDragAndDrop}
       />
       <Button
         isLink
@@ -117,6 +119,7 @@ CustomFieldSettings.propTypes = {
   isDeleting: PropTypes.bool,
   onCustomFieldDelete: PropTypes.func,
   onChange: PropTypes.func,
+  useDragAndDrop: PropTypes.bool,
 };
 
 CustomFieldSettings.defaultProps = {
@@ -127,6 +130,7 @@ CustomFieldSettings.defaultProps = {
   onCustomFieldDelete: null,
   onSave: null,
   onChange: null,
+  useDragAndDrop: true,
 };
 
 export default CustomFieldSettings;
