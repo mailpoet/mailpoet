@@ -164,7 +164,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Features
     $container->autowire(\MailPoet\Features\FeaturesController::class);
     $container->autowire(\MailPoet\Features\FeatureFlagsController::class)->setPublic(true);
-    $container->autowire(\MailPoet\Features\FeatureFlagsRepository::class);
+    $container->autowire(\MailPoet\Features\FeatureFlagsRepository::class)->setPublic(true);
     // Form
     $container->autowire(\MailPoet\Form\Util\FieldNameObfuscator::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\AssetsController::class);
