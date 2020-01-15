@@ -36,6 +36,11 @@ class Env {
   static $dbCharsetCollate;
   static $dbTimezoneOffset;
 
+  // back compatibility for older Premium plugin with underscore naming
+  // (we need to allow it to activate so it can render an update notice)
+  static $plugin_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  static $temp_path; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
   public static function init($file, $version, $dbHost, $dbUser, $dbPassword, $dbName) {
     self::$version = $version;
     self::$file = $file;
@@ -55,6 +60,10 @@ class Env {
     self::$libPath = self::$path . '/lib';
     self::$pluginPrefix = 'mailpoet_';
     self::initDbParameters($dbHost, $dbUser, $dbPassword, $dbName);
+
+    // back compatibility for older Premium plugin with underscore naming
+    self::$plugin_name = self::$pluginName; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    self::$temp_path = self::$tempPath; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
   /**
