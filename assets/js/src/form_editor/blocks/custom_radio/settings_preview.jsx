@@ -53,6 +53,7 @@ const Preview = ({
   update,
   remove,
   onReorder,
+  useDragAndDrop,
 }) => {
   const [valuesWhileMoved, setValues] = useState(values);
 
@@ -83,22 +84,31 @@ const Preview = ({
     update(value);
   };
 
-  return (
+  const renderItems = () => (valuesWhileMoved.map((value, index) => (
+    <PreviewItem
+      key={value.id}
+      index={index}
+      value={value}
+      remove={remove}
+      onCheck={onCheck}
+      onUpdate={onUpdate}
+    />
+  )));
+
+  return (useDragAndDrop ? (
+    <ReactSortable
+      list={valuesWhileMoved}
+      setList={onReorder}
+      className="mailpoet-dnd-items-list"
+      animation={100}
+    >
+      {renderItems()}
+    </ReactSortable>
+  ) : (
     <div className="mailpoet-dnd-items-list">
-      <ReactSortable list={valuesWhileMoved} setList={onReorder}>
-        {valuesWhileMoved.map((value, index) => (
-          <PreviewItem
-            key={value.id}
-            index={index}
-            value={value}
-            remove={remove}
-            onCheck={onCheck}
-            onUpdate={onUpdate}
-          />
-        ))}
-      </ReactSortable>
+      {renderItems()}
     </div>
-  );
+  ));
 };
 
 Preview.propTypes = {
@@ -109,6 +119,11 @@ Preview.propTypes = {
   update: PropTypes.func.isRequired,
   remove: PropTypes.func.isRequired,
   onReorder: PropTypes.func.isRequired,
+  useDragAndDrop: PropTypes.bool,
+};
+
+Preview.defaultProps = {
+  useDragAndDrop: true,
 };
 
 export default Preview;
