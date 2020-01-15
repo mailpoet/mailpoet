@@ -105,7 +105,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
   return (
     <>
       {inspectorControls}
-      <div className="mailpoet_custom_select">
+      <div className="mailpoet_custom_select" data-automation-id="custom_select_block">
         {!attributes.labelWithinInput ? (
           <label className="mailpoet_select_label" htmlFor={clientId}>
             {formatLabel(attributes)}

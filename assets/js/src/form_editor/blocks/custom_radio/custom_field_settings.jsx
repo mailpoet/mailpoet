@@ -50,7 +50,7 @@ const CustomFieldSettings = ({
   }, [localData, onChange]);
 
   return (
-    <div className="custom-field-settings">
+    <div className="custom-field-settings" data-automation-id="custom_field_settings">
       {onSave ? (
         <Button
           isPrimary
@@ -101,6 +101,7 @@ const CustomFieldSettings = ({
           },
         ])}
         className="button-on-top"
+        data-automation-id="custom_field_values_add_item"
       >
         {MailPoet.I18n.t('customFieldAddItem')}
       </Button>
