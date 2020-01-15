@@ -16,31 +16,30 @@ use MailPoetVendor\Idiorm\ORM;
 class ManageTest extends \MailPoetTest {
 
   private $settings;
-  private $segment_a;
-  private $segment_b;
-  private $hidden_segment;
+  private $segmentA;
+  private $segmentB;
+  private $hiddenSegment;
   private $subscriber;
 
   public function _before() {
     parent::_before();
     $this->_after();
-    $di = $this->di_container;
+    $di = $this->diContainer;
     $this->settings = $di->get(SettingsController::class);
-    $this->segment_a = Segment::createOrUpdate(['name' => 'List A']);
-    $this->segment_b = Segment::createOrUpdate(['name' => 'List B']);
-    $this->hidden_segment = Segment::createOrUpdate(['name' => 'Hidden List']);
-    $this->settings->set('subscription.segments', [$this->segment_a->id, $this->segment_b->id]);
+    $this->segmentA = Segment::createOrUpdate(['name' => 'List A']);
+    $this->segmentB = Segment::createOrUpdate(['name' => 'List B']);
+    $this->hiddenSegment = Segment::createOrUpdate(['name' => 'Hidden List']);
+    $this->settings->set('subscription.segments', [$this->segmentA->id, $this->segmentB->id]);
     $this->subscriber = Subscriber::createOrUpdate([
       'first_name' => 'John',
       'last_name' => 'John',
       'email' => 'john.doe@example.com',
       'status' => Subscriber::STATUS_SUBSCRIBED,
-      'segments' => [$this->segment_a->id, $this->hidden_segment->id],
+      'segments' => [$this->segmentA->id, $this->hiddenSegment->id],
     ]);
   }
 
   public function testItDoesntRemoveHiddenSegments() {
-    $di = $this->di_container;
     $manage = new Manage(
       Stub::make(UrlHelper::class, [
         'redirectBack' => null,
@@ -64,7 +63,7 @@ class ManageTest extends \MailPoetTest {
       'last_name' => 'John',
       'email' => 'john.doe@example.com',
       'status' => Subscriber::STATUS_SUBSCRIBED,
-      'segments' => [$this->segment_b->id],
+      'segments' => [$this->segmentB->id],
     ];
 
     $manage->onSave();
@@ -79,9 +78,9 @@ class ManageTest extends \MailPoetTest {
     });
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
     expect($subscriptions)->equals([
-      ['segment_id' => $this->segment_a->id, 'status' => Subscriber::STATUS_UNSUBSCRIBED],
-      ['segment_id' => $this->segment_b->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
-      ['segment_id' => $this->hidden_segment->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->segmentA->id, 'status' => Subscriber::STATUS_UNSUBSCRIBED],
+      ['segment_id' => $this->segmentB->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
     ]);
   }
 
