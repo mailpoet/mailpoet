@@ -1,7 +1,7 @@
 import { select, dispatch } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import { merge } from 'lodash';
-import { unregisterBlockType } from '@wordpress/blocks';
+import { unregisterBlockType, createBlock } from '@wordpress/blocks';
 import blocksToFormBody from './blocks_to_form_body.jsx';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
@@ -92,5 +92,39 @@ export default {
         }
         dispatch('mailpoet-form-editor').deleteCustomFieldFailed(errorMessage);
       });
+  },
+
+  /**
+   * We want to ensure that email input and submit are always present.
+   * @param actionData {{type: string, blocks: Object[]}} blocks property contains editor blocks
+   */
+  BLOCKS_CHANGED_IN_BLOCK_EDITOR(actionData) {
+    const newBlocks = actionData.blocks;
+    // Check if both required inputs are present
+    const emailInput = newBlocks.find((block) => block.name === 'mailpoet-form/email-input');
+    const submitInput = newBlocks.find((block) => block.name === 'mailpoet-form/submit-button');
+    if (emailInput && submitInput) {
+      dispatch('mailpoet-form-editor').changeFormBlocks(newBlocks);
+      return;
+    }
+
+    // In case that some of them is missing we restore it from previous state or insert new one
+    const currentBlocks = select('mailpoet-form-editor').getFormBlocks();
+    const fixedBlocks = [...newBlocks];
+    if (!emailInput) {
+      let currentEmailInput = currentBlocks.find((block) => block.name === 'mailpoet-form/email-input');
+      if (!currentEmailInput) {
+        currentEmailInput = createBlock('mailpoet-form/email-input');
+      }
+      fixedBlocks.unshift(currentEmailInput);
+    }
+    if (!submitInput) {
+      let currentSubmit = currentBlocks.find((block) => block.name === 'mailpoet-form/submit-button');
+      if (!currentSubmit) {
+        currentSubmit = createBlock('mailpoet-form/submit-button');
+      }
+      fixedBlocks.push(currentSubmit);
+    }
+    dispatch('core/block-editor').resetBlocks(fixedBlocks);
   },
 };

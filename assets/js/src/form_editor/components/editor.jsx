@@ -40,7 +40,7 @@ export default () => {
     'is-sidebar-opened': sidebarOpened,
   });
 
-  const { changeFormBlocks } = useDispatch('mailpoet-form-editor');
+  const { blocksChangedInBlockEditor } = useDispatch('mailpoet-form-editor');
 
   return (
     <div className={layoutClass}>
@@ -49,8 +49,8 @@ export default () => {
         <DropZoneProvider>
           <BlockEditorProvider
             value={select('mailpoet-form-editor').getFormBlocks()}
-            onInput={changeFormBlocks}
-            onChange={changeFormBlocks}
+            onInput={blocksChangedInBlockEditor}
+            onChange={blocksChangedInBlockEditor}
             settings={editorSettings}
             useSubRegistry={false}
           >

@@ -143,3 +143,10 @@ export function* deleteCustomField(customFieldId, clientId) {
     clientId,
   };
 }
+
+export function* blocksChangedInBlockEditor(blocks) {
+  yield {
+    type: 'BLOCKS_CHANGED_IN_BLOCK_EDITOR',
+    blocks,
+  };
+}
