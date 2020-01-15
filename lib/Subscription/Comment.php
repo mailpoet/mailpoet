@@ -101,8 +101,8 @@ class Comment {
 
       $result = $this->subscriberActions->subscribe(
         [
-          'email' => $comment->commentAuthorEmail,
-          'first_name' => $comment->commentAuthor,
+          'email' => $comment->comment_author_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          'first_name' => $comment->comment_author, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         ],
         $segmentIds
       );
