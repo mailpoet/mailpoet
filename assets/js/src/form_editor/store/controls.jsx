@@ -68,7 +68,14 @@ export default {
   },
 
   CREATE_CUSTOM_FIELD(action) {
-    dispatch('mailpoet-form-editor').createCustomFieldStarted();
+    if (select('mailpoet-form-editor').getIsCustomFieldCreating()) {
+      return;
+    }
+    dispatch('mailpoet-form-editor').createCustomFieldStarted(action.data);
+    // Check if it really started. Could been blocked by an error.
+    if (!select('mailpoet-form-editor').getIsCustomFieldCreating()) {
+      return;
+    }
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'customFields',

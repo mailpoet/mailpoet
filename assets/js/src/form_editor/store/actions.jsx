@@ -75,9 +75,10 @@ export function createCustomFieldDone(response) {
   };
 }
 
-export function createCustomFieldStarted() {
+export function createCustomFieldStarted(customField) {
   return {
     type: 'CREATE_CUSTOM_FIELD_STARTED',
+    customField,
   };
 }
 
