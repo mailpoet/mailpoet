@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  BaseControl,
   Button,
   ToggleControl,
 } from '@wordpress/components';
@@ -65,7 +66,7 @@ const CustomFieldSettings = ({
         checked={localMandatory}
         onChange={setLocalMandatory}
       />
-      <div>
+      <BaseControl>
         <input
           type="checkbox"
           checked={localIsChecked}
@@ -76,7 +77,7 @@ const CustomFieldSettings = ({
           type="text"
           onChange={(event) => setLocalCheckboxLabel(event.target.value)}
         />
-      </div>
+      </BaseControl>
     </div>
   );
 };
