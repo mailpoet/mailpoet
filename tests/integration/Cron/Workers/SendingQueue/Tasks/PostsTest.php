@@ -48,7 +48,7 @@ class PostsTest extends \MailPoetTest {
     $postId = 10;
     $newsletter = (object)[
       'id' => 2,
-      'parent_id' => 1,
+      'parentId' => 1,
       'type' => Newsletter::TYPE_WELCOME,
     ];
     $renderedNewsletter = [

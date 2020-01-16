@@ -22,7 +22,7 @@ class ViewInBrowser {
   public function view($data) {
     $wpUserPreview = (
       ($data->subscriber && $data->subscriber->isWPUser() && $data->preview) ||
-      ($data->preview && $data->newsletterHash)
+      ($data->preview && $data->newsletter_hash) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     );
     return $this->renderNewsletter(
       $data->newsletter,
