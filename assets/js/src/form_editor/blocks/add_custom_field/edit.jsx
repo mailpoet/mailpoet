@@ -21,7 +21,7 @@ const AddCustomField = ({ clientId }) => {
   );
 
   const isCreating = useSelect(
-    (sel) => sel('mailpoet-form-editor').getIsCustomFieldCrating(),
+    (sel) => sel('mailpoet-form-editor').getIsCustomFieldCreating(),
     []
   );
 
