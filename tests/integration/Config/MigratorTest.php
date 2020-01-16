@@ -18,9 +18,9 @@ class MigratorTest extends \MailPoetTest {
   }
 
   public function testItDoesNotMigrateWhenDatabaseIsUpToDate() {
-    $this->markTestSkipped('This is failing on the new MySQL version');
+    $changes = $this->migrator->up();
+    $this->assertIsArray($changes);
     // phpcs:disable Squiz.PHP.CommentedOutCode
-    //    $changes = $this->migrator->up();
     //    $this->assertEmpty(
     //      $changes,
     //      "Expected no migrations. However, the following changes are planned:\n\t" . implode($changes, "\n\t")
