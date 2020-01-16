@@ -13,7 +13,7 @@ class AddTextdomain {
 	public $modified_contents = '';
 	public $funcs;
 
-	public function AddTextdomain() {
+	public function __construct() {
 		$makepot = new MakePOT;
 		$this->funcs = array_keys( $makepot->rules );
 	}
