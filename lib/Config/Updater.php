@@ -37,7 +37,7 @@ class Updater {
       if (version_compare($this->version, $latestVersion->new_version, '<')) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         $updateTransient->response[$this->plugin] = $latestVersion;
       }
-      $updateTransient->lastChecked = time();
+      $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $updateTransient->checked[$this->plugin] = $this->version;
     }
 

@@ -126,7 +126,7 @@ class ViewInBrowserTest extends \MailPoetTest {
 
   public function testItFailsValidationWhenPreviewIsEnabledButNewsletterHashNotProvided() {
     $data = (object)$this->browserPreviewData;
-    $data->newsletterHash = false;
+    $data->newsletter_hash = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $data->preview = true;
     expect($this->viewInBrowser->_validateBrowserPreviewData($data))->false();
   }
