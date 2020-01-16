@@ -7,6 +7,15 @@ import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name
 import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
 
+const formatApiErrorMessage = (response) => {
+  let errorMessage = null;
+  if (response.errors.length > 0) {
+    errorMessage = response.errors.map((error) => (error.message));
+    errorMessage = errorMessage.join(', ');
+  }
+  return errorMessage;
+};
+
 export default {
   SAVE_FORM() {
     if (select('mailpoet-form-editor').getIsFormSaving()) {
@@ -32,11 +41,7 @@ export default {
     }).done(() => {
       dispatch('mailpoet-form-editor').saveFormDone();
     }).fail((response) => {
-      let errorMessage = null;
-      if (response.errors.length > 0) {
-        errorMessage = response.errors.map((error) => (error.message));
-      }
-      dispatch('mailpoet-form-editor').saveFormFailed(errorMessage);
+      dispatch('mailpoet-form-editor').saveFormFailed(formatApiErrorMessage(response));
     });
   },
 
@@ -58,11 +63,7 @@ export default {
       })
       .then(dispatch('mailpoet-form-editor').saveForm)
       .fail((response) => {
-        let errorMessage = null;
-        if (response.errors.length > 0) {
-          errorMessage = response.errors.map((error) => (error.message));
-        }
-        dispatch('mailpoet-form-editor').saveCustomFieldFailed(errorMessage);
+        dispatch('mailpoet-form-editor').saveCustomFieldFailed(formatApiErrorMessage(response));
       });
   },
 
@@ -82,11 +83,7 @@ export default {
         dispatch('mailpoet-form-editor').createCustomFieldDone(response.data);
       })
       .fail((response) => {
-        let errorMessage = null;
-        if (response.errors.length > 0) {
-          errorMessage = response.errors.map((error) => (error.message));
-        }
-        dispatch('mailpoet-form-editor').createCustomFieldFailed(errorMessage);
+        dispatch('mailpoet-form-editor').createCustomFieldFailed(formatApiErrorMessage(response));
       });
   },
 
@@ -111,11 +108,7 @@ export default {
         );
       })
       .fail((response) => {
-        let errorMessage = null;
-        if (response.errors.length > 0) {
-          errorMessage = response.errors.map((error) => (error.message));
-        }
-        dispatch('mailpoet-form-editor').deleteCustomFieldFailed(errorMessage);
+        dispatch('mailpoet-form-editor').deleteCustomFieldFailed(formatApiErrorMessage(response));
       });
   },
 
