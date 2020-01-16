@@ -7,6 +7,7 @@ import {
 } from '@wordpress/components';
 
 import MailPoet from 'mailpoet';
+import { isEmpty } from 'lodash';
 
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import TextFieldSettings from '../custom_text/custom_field_settings.jsx';
@@ -44,9 +45,9 @@ export const customFieldTypes = [
 const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
   const [fieldType, setFieldType] = useState('text');
   const [fieldName, setFieldName] = useState(null);
-  const [fieldSettings, setFieldSettings] = useState(null);
+  const [fieldSettings, setFieldSettings] = useState({});
 
-  const canSubmit = () => fieldName && fieldSettings;
+  const canSubmit = () => fieldName && !isEmpty(fieldSettings);
   const defaultType = dateSettings.dateTypes[0].value;
   const defaultFormat = dateSettings.dateFormats[defaultType][0];
 
@@ -55,9 +56,9 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
       case 'checkbox':
         return (
           <CheckboxFieldSettings
-            mandatory={fieldSettings && fieldSettings.mandatory ? fieldSettings.mandatory : false}
-            isChecked={fieldSettings && fieldSettings.isChecked ? fieldSettings.isChecked : false}
-            checkboxLabel={fieldSettings && fieldSettings.checkboxLabel ? fieldSettings.checkboxLabel : ''}
+            mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
+            isChecked={fieldSettings.isChecked ? fieldSettings.isChecked : false}
+            checkboxLabel={fieldSettings.checkboxLabel ? fieldSettings.checkboxLabel : ''}
             onChange={setFieldSettings}
           />
         );
@@ -65,13 +66,10 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
         return (
           <DateFieldSettings
             dateSettings={dateSettings}
-            mandatory={fieldSettings && fieldSettings.mandatory ? fieldSettings.mandatory : false}
-            dateFormat={fieldSettings && fieldSettings.dateFormat
-              ? fieldSettings.dateFormat : defaultFormat}
-            dateType={fieldSettings && fieldSettings.dateType
-              ? fieldSettings.dateType : defaultType}
-            defaultToday={fieldSettings && fieldSettings.defaultToday
-              ? fieldSettings.defaultToday : false}
+            mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
+            dateFormat={fieldSettings.dateFormat ? fieldSettings.dateFormat : defaultFormat}
+            dateType={fieldSettings.dateType ? fieldSettings.dateType : defaultType}
+            defaultToday={fieldSettings.defaultToday ? fieldSettings.defaultToday : false}
             onChange={setFieldSettings}
           />
         );
@@ -79,8 +77,8 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
       case 'select':
         return (
           <RadioAndSelectFieldSettings
-            mandatory={fieldSettings && fieldSettings.mandatory ? fieldSettings.mandatory : false}
-            values={fieldSettings && fieldSettings.values ? fieldSettings.values : [{ name: '', id: Math.random().toString() }]}
+            mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
+            values={fieldSettings.values ? fieldSettings.values : [{ name: '', id: Math.random().toString() }]}
             onChange={setFieldSettings}
             useDragAndDrop={false}
           />
@@ -88,8 +86,8 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
       default:
         return (
           <TextFieldSettings
-            mandatory={fieldSettings && fieldSettings.mandatory ? fieldSettings.mandatory : false}
-            validate={fieldSettings && fieldSettings.validate ? fieldSettings.validate : ''}
+            mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
+            validate={fieldSettings.validate ? fieldSettings.validate : ''}
             onChange={setFieldSettings}
           />
         );
@@ -104,7 +102,7 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
         options={customFieldTypes}
         data-automation-id="create_custom_field_type_select"
         onChange={(value) => {
-          setFieldSettings(null);
+          setFieldSettings({});
           setFieldType(value);
         }}
       />
