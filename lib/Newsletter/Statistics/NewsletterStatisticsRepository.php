@@ -8,9 +8,21 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
+use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
+use MailPoet\WooCommerce\Helper as WCHelper;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\UnexpectedResultException;
 
 class NewsletterStatisticsRepository extends Repository {
+
+  /** @var WCHelper */
+  private $wcHelper;
+
+  public function __construct(EntityManager $entity_manager, WCHelper $wcHelper) {
+    parent::__construct($entity_manager);
+    $this->wcHelper = $wcHelper;
+  }
+
   protected function getEntityClassName() {
     return NewsletterEntity::class;
   }
@@ -46,7 +58,8 @@ class NewsletterStatisticsRepository extends Repository {
       $this->getStatisticsClickCount($newsletter),
       $this->getStatisticsOpenCount($newsletter),
       $this->getStatisticsUnsubscribeCount($newsletter),
-      $this->getTotalSentCount($newsletter)
+      $this->getTotalSentCount($newsletter),
+      $this->getWooCommerceRevenue($newsletter)
     );
   }
 
@@ -72,6 +85,30 @@ class NewsletterStatisticsRepository extends Repository {
    */
   public function getStatisticsUnsubscribeCount(NewsletterEntity $newsletter) {
     return $this->getStatisticsCount($newsletter, StatisticsUnsubscribeEntity::class);
+  }
+
+  public function getWooCommerceRevenue(NewsletterEntity $newsletter) {
+    if (!$this->wcHelper->isWooCommerceActive()) {
+      return null;
+    }
+    try {
+      $currency = $this->wcHelper->getWoocommerceCurrency();
+      list($data) = $this->entityManager
+        ->createQueryBuilder()
+        ->select('SUM(stats.order_price_total) AS total, COUNT(stats.id) AS cnt')
+        ->from(StatisticsWooCommercePurchaseEntity::class, 'stats')
+        ->where('stats.newsletter = :newsletter')
+        ->andWhere('stats.order_currency = :currency')
+        ->setParameter('newsletter', $newsletter)
+        ->setParameter('currency', $currency)
+        ->getQuery()
+        ->getResult();
+      $value = (float)$data['total'];
+      $count = (int)$data['cnt'];
+      return new NewsletterWooCommerceRevenue($currency, $value, $count, $this->wcHelper);
+    } catch (UnexpectedResultException $e) {
+      return null;
+    }
   }
 
   private function getStatisticsCount(NewsletterEntity $newsletter, $statisticsEntityName) {
