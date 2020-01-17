@@ -14,6 +14,7 @@ class Subscribers {
   const MSS_SUBSCRIBERS_LIMIT_SETTING_KEY = 'mta.mailpoet_api_key_state.data.site_active_subscriber_limit';
   const PREMIUM_KEY_STATE = 'premium.premium_key_state.state';
   const PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY = 'premium.premium_key_state.data.site_active_subscriber_limit';
+  const PREMIUM_SUPPORT_SETTING_KEY = 'premium.premium_key_state.data.support_tier';
 
   /** @var SettingsController */
   private $settings;
@@ -29,7 +30,11 @@ class Subscribers {
   public function check() {
     $limit = $this->getSubscribersLimit();
     if ($limit === false) return false;
-    $subscribersCount = $this->subscribersRepository->getTotalSubscribers();
+    if ($this->hasPremiumSupport()) {
+      $subscribersCount = $this->subscribersRepository->getTotalSubscribersWithoutWPUsers();
+    } else {
+      $subscribersCount = $this->subscribersRepository->getTotalSubscribers();
+    }
     return $subscribersCount > $limit;
   }
 
@@ -77,6 +82,10 @@ class Subscribers {
 
   private function getPremiumSubscribersLimit() {
     return (int)$this->settings->get(self::PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY);
+  }
+
+  private function hasPremiumSupport() {
+    return $this->hasValidApiKey() && $this->settings->get(self::PREMIUM_SUPPORT_SETTING_KEY) === 'premium';
   }
 
   private function getFreeSubscribersLimit() {
