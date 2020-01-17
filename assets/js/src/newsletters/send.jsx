@@ -473,7 +473,6 @@ class NewsletterSend extends React.Component {
 
     return (
       <div>
-        <SubscribersLimitNotice />
         <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
 
         {breadcrumb}
@@ -487,6 +486,7 @@ class NewsletterSend extends React.Component {
           onChange={this.handleFormChange}
           onSubmit={this.handleSave}
         >
+          <SubscribersLimitNotice />
           <p className="submit">
             {
               isPaused
