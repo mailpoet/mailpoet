@@ -130,6 +130,20 @@ class SubscribersTest extends \MailPoetUnitTest {
     expect($subscribersFeature->check())->false();
   }
 
+  public function testCheckReturnsFalseIfPremiumPremiumSupportAndReachedLimit() {
+    $subscribersFeature = $this->constructWith([
+      'has_mss_key' => false,
+      'has_premium_key' => true,
+      'installed_at' => '2019-11-11',
+      'subscribers_count' => 3000,
+      'premium_subscribers_limit' => 2500,
+      'mss_subscribers_limit' => 500,
+      'support_tier' => 'premium',
+      'subscribers_count_without_wp_users' => 10,
+    ]);
+    expect($subscribersFeature->check())->false();
+  }
+
   private function constructWith($specs) {
     $settings = Stub::make(SettingsController::class, [
       'get' => function($name) use($specs) {
@@ -138,11 +152,15 @@ class SubscribersTest extends \MailPoetUnitTest {
         if ($name === SubscribersFeature::PREMIUM_KEY_STATE) return $specs['has_premium_key'] ? 'valid' : 'invalid';
         if ($name === SubscribersFeature::PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY) return $specs['premium_subscribers_limit'];
         if ($name === SubscribersFeature::MSS_SUBSCRIBERS_LIMIT_SETTING_KEY) return $specs['mss_subscribers_limit'];
+        if ($name === SubscribersFeature::PREMIUM_SUPPORT_SETTING_KEY) return isset($specs['support_tier']) ? $specs['support_tier'] : 'free';
       },
     ]);
     $subscribersRepository = Stub::make(SubscribersRepository::class, [
       'getTotalSubscribers' => function() use($specs) {
         return $specs['subscribers_count'];
+      },
+      'getTotalSubscribersWithoutWPUsers' => function() use($specs) {
+        return $specs['subscribers_count_without_wp_users'];
       },
     ]);
 
