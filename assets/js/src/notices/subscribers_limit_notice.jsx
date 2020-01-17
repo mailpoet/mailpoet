@@ -22,7 +22,7 @@ const SubscribersLimitNotice = () => {
   };
 
   return (
-    <Notice type="error" timeout={false} closable={false}>
+    <Notice type="error" timeout={false} closable={false} renderInPlace>
       <h3>{title}</h3>
       <p>
         {youReachedTheLimit}

@@ -3,12 +3,19 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
-const Notice = (props) => {
+const Notice = ({
+  onClose,
+  onDisplay,
+  renderInPlace,
+  timeout,
+  scroll,
+  children,
+  closable,
+  type,
+}) => {
   const [hidden, setHidden] = React.useState(false);
   const elementRef = React.useRef(null);
   const timeoutRef = React.useRef(null);
-
-  const { onClose, onDisplay } = props;
 
   const close = React.useCallback(() => {
     if (onClose) onClose();
@@ -16,32 +23,41 @@ const Notice = (props) => {
   }, [onClose]);
 
   React.useEffect(() => {
-    if (props.timeout) {
-      timeoutRef.current = setTimeout(close, props.timeout);
+    if (timeout) {
+      timeoutRef.current = setTimeout(close, timeout);
     }
     return () => (timeoutRef.current ? clearTimeout(timeoutRef.current) : null);
-  }, [close, props.timeout]);
+  }, [close, timeout]);
 
   React.useLayoutEffect(() => {
-    if (props.scroll && elementRef.current) {
+    if (scroll && elementRef.current) {
       elementRef.current.scrollIntoView(false);
     }
-  }, [props.scroll]);
+  }, [scroll]);
 
   React.useLayoutEffect(() => {
     if (onDisplay) onDisplay();
   }, [onDisplay]);
 
   if (hidden) return null;
-  return ReactDOM.createPortal(
-    <div ref={elementRef} className={`mailpoet_base_notice mailpoet_${props.type}_notice`}>
-      {props.children}
-      {props.closable && (
+
+  const content = (
+    <div ref={elementRef} className={`mailpoet_base_notice mailpoet_${type}_notice`}>
+      {children}
+      {closable && (
         <button type="button" className="notice-dismiss" onClick={close}>
           <span className="screen-reader-text">{MailPoet.I18n.t('dismissNotice')}</span>
         </button>
       )}
-    </div>,
+    </div>
+  );
+
+  if (renderInPlace) {
+    return content;
+  }
+
+  return ReactDOM.createPortal(
+    content,
     document.getElementById('mailpoet_notices')
   );
 };
@@ -49,6 +65,7 @@ Notice.propTypes = {
   type: PropTypes.oneOf(['success', 'info', 'warning', 'error']).isRequired,
   scroll: PropTypes.bool,
   closable: PropTypes.bool,
+  renderInPlace: PropTypes.bool,
   onDisplay: PropTypes.func,
   onClose: PropTypes.func,
   timeout: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf([false])]),
@@ -62,6 +79,7 @@ Notice.defaultProps = {
   timeout: 10000,
   scroll: false,
   closable: true,
+  renderInPlace: false,
   onDisplay: undefined,
   onClose: undefined,
 };
