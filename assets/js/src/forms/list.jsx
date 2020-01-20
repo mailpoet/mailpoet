@@ -131,7 +131,12 @@ class FormList extends React.Component {
       endpoint: 'forms',
       action: 'create',
     }).done((response) => {
-      window.location = window.mailpoet_form_edit_url + response.data.id;
+      MailPoet.trackEvent('Forms > Add New', {
+        'MailPoet Free version': window.mailpoet_version,
+      });
+      setTimeout(() => {
+        window.location = window.mailpoet_form_edit_url + response.data.id;
+      }, 200);
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
