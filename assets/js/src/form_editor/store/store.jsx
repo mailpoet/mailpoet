@@ -34,6 +34,7 @@ export default () => {
     isCustomFieldSaving: false,
     isCustomFieldCreating: false,
     notices: [],
+    hasUnsavedChanges: false,
     sidebar: {
       activeTab: 'form',
       openedPanels: ['basic-settings'],

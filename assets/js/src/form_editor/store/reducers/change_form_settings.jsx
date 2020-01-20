@@ -10,6 +10,7 @@ export default (state, action) => {
   };
   return {
     ...newState,
+    hasUnsavedChanges: true,
     formErrors: validateForm(newState.formData, newState.formBlocks),
   };
 };
