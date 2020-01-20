@@ -20,6 +20,10 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
 
   const exportLinkClicked = curry((type, event) => {
     event.preventDefault();
+    MailPoet.trackEvent('Forms > Embed', {
+      'Embed type': type,
+      'MailPoet Free version': window.mailpoet_version,
+    });
     if (type === 'php') {
       return setCopyAreaContent(formExports.php);
     }
