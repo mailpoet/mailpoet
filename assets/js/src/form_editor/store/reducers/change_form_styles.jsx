@@ -3,5 +3,6 @@ export default (state, action) => ({
   formData: {
     ...state.formData,
     styles: action.styles,
+    hasUnsavedChanges: true,
   },
 });

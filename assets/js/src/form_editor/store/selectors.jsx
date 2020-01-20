@@ -62,4 +62,7 @@ export default {
   getIsCustomFieldCreating(state) {
     return state.isCustomFieldCreating;
   },
+  hasUnsavedChanges(state) {
+    return state.hasUnsavedChanges;
+  },
 };

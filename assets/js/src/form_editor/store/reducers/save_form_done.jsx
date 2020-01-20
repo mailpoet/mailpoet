@@ -11,6 +11,7 @@ export default (state) => {
   return {
     ...state,
     isFormSaving: false,
+    hasUnsavedChanges: false,
     notices,
   };
 };
