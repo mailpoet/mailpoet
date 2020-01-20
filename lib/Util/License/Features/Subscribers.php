@@ -83,7 +83,7 @@ class Subscribers {
   }
 
   private function hasPremiumSupport() {
-    return $this->hasValidApiKey() && $this->settings->get(self::PREMIUM_SUPPORT_SETTING_KEY) === 'premium';
+    return $this->hasValidPremiumKey() && $this->settings->get(self::PREMIUM_SUPPORT_SETTING_KEY) === 'premium';
   }
 
   private function getFreeSubscribersLimit() {
