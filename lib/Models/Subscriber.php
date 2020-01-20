@@ -226,7 +226,14 @@ class Subscriber extends Model {
     if (isset($data['filter']['segment']) && $data['filter']['segment'] === $wpSegment->id) {
       return $query;
     }
-    $query->whereNull('wp_user_id');
+    $settings = SettingsController::getInstance();
+    if (
+      ($settings->get('premium.premium_key_state.state') === 'valid')
+      &&
+      ($settings->get('premium.premium_key_state.data.support_tier') === 'premium')
+    ) {
+      $query->whereNull('wp_user_id');
+    }
     return $query;
   }
 
