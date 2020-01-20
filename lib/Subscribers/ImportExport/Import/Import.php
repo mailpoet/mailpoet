@@ -356,10 +356,11 @@ class Import {
     }
     $createdOrUpdatedSubscribers = [];
     foreach (array_chunk($subscribersData['data']['email'], self::DB_QUERY_CHUNK_SIZE) as $data) {
-      $createdOrUpdatedSubscribers = array_merge(
-        $createdOrUpdatedSubscribers,
-        Subscriber::selectMany(['id', 'email'])->whereIn('email', $data)->findArray()
-      );
+      foreach (Subscriber::selectMany(['id', 'email'])->whereIn('email', $data)->findArray() as $createdOrUpdatedSubscriber) {
+        // ensure emails loaded from the DB are lowercased (imported emails are lowercased as well)
+        $createdOrUpdatedSubscriber['email'] = mb_strtolower($createdOrUpdatedSubscriber['email']);
+        $createdOrUpdatedSubscribers[] = $createdOrUpdatedSubscriber;
+      }
     }
     if (empty($createdOrUpdatedSubscribers)) return null;
     $createdOrUpdatedSubscribersIds = array_column($createdOrUpdatedSubscribers, 'id');
