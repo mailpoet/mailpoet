@@ -43,4 +43,5 @@ extensions:
     - ErrorsExtension
     - DefaultsExtension
     - CheckSkippedTestsExtension
+    - CleanupPremiumPluginExtension
     - CleanupExtension # register last to backup also effects of other extensions
