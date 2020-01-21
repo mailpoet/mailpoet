@@ -19,7 +19,7 @@ class NewslettersResponseBuilder {
   const RELATION_SCHEDULED = 'scheduled';
   const RELATION_STATISTICS = 'statistics';
 
-  /** @var NewslettersStatsRepository */
+  /** @var NewsletterStatisticsRepository */
   private $newslettersStatsRepository;
 
   public function __construct(NewsletterStatisticsRepository $newslettersStatsRepository) {
@@ -65,9 +65,9 @@ class NewslettersResponseBuilder {
         $data['childrenCount'] = count($newsletter->getChildren());
       }
       if ($relation === self::RELATION_SCHEDULED) {
-        $data['totalScheduled'] = (int)SendingQueue::findTaskByNewsletterId($this->id)
-        ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
-        ->count();
+        $data['totalScheduled'] = (int)SendingQueue::findTaskByNewsletterId($newsletter->getId())
+          ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
+          ->count();
       }
       if ($relation === self::RELATION_STATISTICS) {
         $data['statistics'] = $this->newslettersStatsRepository->getStatistics($newsletter);

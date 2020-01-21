@@ -18,8 +18,8 @@ class NewsletterStatisticsRepository extends Repository {
   /** @var WCHelper */
   private $wcHelper;
 
-  public function __construct(EntityManager $entity_manager, WCHelper $wcHelper) {
-    parent::__construct($entity_manager);
+  public function __construct(EntityManager $entityManager, WCHelper $wcHelper) {
+    parent::__construct($entityManager);
     $this->wcHelper = $wcHelper;
   }
 
@@ -95,10 +95,10 @@ class NewsletterStatisticsRepository extends Repository {
       $currency = $this->wcHelper->getWoocommerceCurrency();
       list($data) = $this->entityManager
         ->createQueryBuilder()
-        ->select('SUM(stats.order_price_total) AS total, COUNT(stats.id) AS cnt')
+        ->select('SUM(stats.orderPriceTotal) AS total, COUNT(stats.id) AS cnt')
         ->from(StatisticsWooCommercePurchaseEntity::class, 'stats')
         ->where('stats.newsletter = :newsletter')
-        ->andWhere('stats.order_currency = :currency')
+        ->andWhere('stats.orderCurrency = :currency')
         ->setParameter('newsletter', $newsletter)
         ->setParameter('currency', $currency)
         ->getQuery()
