@@ -20,6 +20,7 @@ class UserFlagsController {
     $this->defaults = [
       'last_announcement_seen' => false,
       'editor_tutorial_seen' => false,
+      'display_new_form_editor_nps_survey' => false,
     ];
     $this->userFlagsRepository = $userFlagsRepository;
   }
