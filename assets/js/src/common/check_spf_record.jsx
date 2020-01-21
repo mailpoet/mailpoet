@@ -13,7 +13,7 @@ const checkSPFRecord = () => MailPoet.Ajax.post({
   data: {},
 }).fail((response) => {
   if (response.meta.sender_address) {
-    MailPoet.Notice.error(
+    MailPoet.Notice.system(
       getErrorMessage(response.meta.sender_address),
       { static: true, scroll: true, id: 'spf_check_error' }
     );
