@@ -126,6 +126,12 @@ class NewsletterEntity {
   private $parent;
 
   /**
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\NewsletterEntity", mappedBy="parent")
+   * @var NewsletterEntity[]|ArrayCollection
+   */
+  private $children;
+
+  /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\NewsletterSegmentEntity", mappedBy="newsletter")
    * @var NewsletterSegmentEntity[]|ArrayCollection
    */
@@ -144,6 +150,7 @@ class NewsletterEntity {
   private $queues;
 
   public function __construct() {
+    $this->children = new ArrayCollection();
     $this->newsletterSegments = new ArrayCollection();
     $this->options = new ArrayCollection();
     $this->queues = new ArrayCollection();
@@ -351,6 +358,13 @@ class NewsletterEntity {
    */
   public function setParent($parent) {
     $this->parent = $parent;
+  }
+
+  /**
+   * @return NewsletterEntity[]|ArrayCollection
+   */
+  public function getChildren() {
+    return $this->children;
   }
 
   /**
