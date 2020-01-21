@@ -238,3 +238,8 @@ if (!function_exists('WC')) {
 }
 
 require_once '_fixtures.php';
+if (!function_exists('get_woocommerce_currency')) {
+  function get_woocommerce_currency() {
+    return 'USD';
+  }
+}
