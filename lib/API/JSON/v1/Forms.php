@@ -5,7 +5,6 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util;
 use MailPoet\Listing;
@@ -21,9 +20,6 @@ class Forms extends APIEndpoint {
   /** @var Listing\Handler */
   private $listingHandler;
 
-  /** @var FeaturesController */
-  private $featuresController;
-
   /** @var Util\Styles */
   private $formStylesUtils;
 
@@ -34,12 +30,10 @@ class Forms extends APIEndpoint {
   public function __construct(
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
-    FeaturesController $featuresController,
     Util\Styles $formStylesUtils
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
-    $this->featuresController = $featuresController;
     $this->formStylesUtils = $formStylesUtils;
   }
 
@@ -80,13 +74,9 @@ class Forms extends APIEndpoint {
   }
 
   public function create() {
-    $formName = WPFunctions::get()->__('New form', 'mailpoet');
-    if ($this->featuresController->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
-      $formName = '';
-    }
     // create new form
     $formData = [
-      'name' => $formName,
+      'name' => '',
       'body' => [
         [
           'id' => 'email',
@@ -96,6 +86,7 @@ class Forms extends APIEndpoint {
           'params' => [
             'label' => WPFunctions::get()->__('Email', 'mailpoet'),
             'required' => true,
+            'label_within' => true,
           ],
         ],
         [
@@ -115,11 +106,6 @@ class Forms extends APIEndpoint {
         'segments_selected_by' => 'admin',
       ],
     ];
-
-    if ($this->featuresController->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
-      $formData['body'][0]['params']['label_within'] = true;
-    }
-
     return $this->save($formData);
   }
 

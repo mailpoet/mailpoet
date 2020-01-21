@@ -355,7 +355,7 @@ class Populator {
 
   private function createDefaultForm($defaultSegment) {
     if (Form::count() === 0) {
-      $factory = new DefaultForm(new Styles($this->flagsController));
+      $factory = new DefaultForm(new Styles());
       if (!$defaultSegment) {
         $defaultSegment = Segment::where('type', 'default')->orderByAsc('id')->limit(1)->findOne();
       }

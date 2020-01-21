@@ -2,8 +2,6 @@
 
 namespace MailPoet\Form\Util;
 
-use MailPoet\DI\ContainerWrapper;
-use MailPoet\Features\FeaturesController;
 use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
 
 class Styles {
@@ -28,7 +26,7 @@ class Styles {
 .mailpoet_list_label,
 .mailpoet_date_label {
   display:block;
-  [LABELS_FONT_WEIGHT_RULE]
+  font-weight: normal;
 }
 
 /* inputs */
@@ -44,7 +42,7 @@ class Styles {
 
 .mailpoet_text,
 .mailpoet_textarea {
-  [TEXT_INPUTS_WIDTH_RULE]
+  width: 100%;
 }
 
 .mailpoet_checkbox {
@@ -81,32 +79,8 @@ class Styles {
 }
 EOL;
 
-  /** @var FeaturesController */
-  private $featuresController;
-
-  /**
-   * @param FeaturesController $featuresController
-   */
-  public function __construct(
-    FeaturesController $featuresController = null
-  ) {
-    if ($featuresController === null) {
-      $featuresController = ContainerWrapper::getInstance()->get(FeaturesController::class);
-    }
-    $this->featuresController = $featuresController;
-  }
-
   public function getDefaultStyles() {
-    if ($this->featuresController->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
-      $textInputWidth = 'width: 100%;';
-      $labelFontWeight = 'font-weight: normal;';
-    } else {
-      $textInputWidth = 'width: 200px;';
-      $labelFontWeight = 'font-weight: bold;';
-    }
-    $styles = str_replace('[TEXT_INPUTS_WIDTH_RULE]', $textInputWidth, $this->defaultStyles);
-    $styles = str_replace('[LABELS_FONT_WEIGHT_RULE]', $labelFontWeight, $styles);
-    return $styles;
+    return $this->defaultStyles;
   }
 
   public function render($stylesheet, $prefix = '') {

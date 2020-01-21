@@ -16,8 +16,6 @@ class FormEditorCreateCustomFieldCest {
     $formName = 'My fancy form';
     $form = new Form();
     $form->withName($formName)->withSegments([$segment])->create();
-    $features = new Features();
-    $features->withFeatureEnabled(FeaturesController::NEW_FORM_EDITOR);
     $i->wantTo('Add first and last name to the editor');
     $i->login();
     $i->amOnMailPoetPage('Forms');

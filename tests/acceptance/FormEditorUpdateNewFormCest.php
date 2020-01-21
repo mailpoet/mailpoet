@@ -11,8 +11,6 @@ class FormEditorUpdateNewFormCest {
     $segmentFactory = new Segment();
     $segmentName = 'Fancy List';
     $segmentFactory->withName($segmentName)->create();
-    $features = new Features();
-    $features->withFeatureEnabled(FeaturesController::NEW_FORM_EDITOR);
     $i->wantTo('Create and update form');
     $i->login();
     $i->amOnMailPoetPage('Forms');

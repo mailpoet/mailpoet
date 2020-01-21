@@ -90,7 +90,6 @@ class MenuTest extends \MailPoetTest {
       new AccessControl(),
       $wp,
       new ServicesChecker,
-      new FeaturesController(new FeatureFlagsRepository(ContainerWrapper::getInstance()->get(EntityManager::class))),
       ContainerWrapper::getInstance()
     );
   }

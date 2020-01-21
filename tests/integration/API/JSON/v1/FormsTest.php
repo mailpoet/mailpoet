@@ -63,7 +63,7 @@ class FormsTest extends \MailPoetTest {
     expect($response->data)->equals(
       Form::findOne($response->data['id'])->asArray()
     );
-    expect($response->data['name'])->equals('New form');
+    expect($response->data['name'])->equals('');
   }
 
   public function testItCanSaveAForm() {
@@ -82,7 +82,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::where('name', 'New form')->findOne()->asArray()
+      Form::where('id', $response->data['id'])->findOne()->asArray()
     );
 
     $response = $this->endpoint->previewEditor($response->data);

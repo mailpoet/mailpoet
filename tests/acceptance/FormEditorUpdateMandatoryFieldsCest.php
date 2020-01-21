@@ -9,8 +9,6 @@ use MailPoet\Test\DataFactories\Segment;
 
 class FormEditorUpdateMandatoryFieldsCest {
   public function updateEmailAndSubmit(\AcceptanceTester $i) {
-    $features = new Features();
-    $features->withFeatureEnabled(FeaturesController::NEW_FORM_EDITOR);
     $segmentFactory = new Segment();
     $formName = 'Mandatory fields test';
     $formFactory = new Form();
