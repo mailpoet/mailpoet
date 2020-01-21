@@ -32,6 +32,7 @@ export default {
     const requestData = {
       ...formData,
       body: blocksToFormBody(formBlocks, customFields),
+      editor_version: 2,
     };
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,

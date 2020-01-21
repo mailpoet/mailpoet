@@ -10,6 +10,7 @@ use MailPoet\Form\Util;
 use MailPoet\Listing;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
+use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Forms extends APIEndpoint {
@@ -23,6 +24,9 @@ class Forms extends APIEndpoint {
   /** @var Util\Styles */
   private $formStylesUtils;
 
+  /** @var UserFlagsController */
+  private $userFlags;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,
   ];
@@ -30,11 +34,13 @@ class Forms extends APIEndpoint {
   public function __construct(
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
-    Util\Styles $formStylesUtils
+    Util\Styles $formStylesUtils,
+    UserFlagsController $userFlags
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
     $this->formStylesUtils = $formStylesUtils;
+    $this->userFlags = $userFlags;
   }
 
   public function get($data = []) {
@@ -210,6 +216,10 @@ class Forms extends APIEndpoint {
     if (!empty($errors)) {
       return $this->badRequest($errors);
     }
+    if (isset($data['editor_version']) && $data['editor_version'] === "2") {
+      $this->userFlags->set('display_new_form_editor_nps_survey', true);
+    }
+
     $form = Form::findOne($form->id);
     if(!$form instanceof Form) return $this->errorResponse();
     return $this->successResponse(
