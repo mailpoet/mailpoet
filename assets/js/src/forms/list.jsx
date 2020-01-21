@@ -4,6 +4,7 @@ import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
 import Listing from 'listing/listing.jsx';
+import withNpsPoll from 'nps_poll.jsx';
 
 const columns = [
   {
@@ -229,4 +230,4 @@ FormList.propTypes = {
   }).isRequired,
 };
 
-export default FormList;
+export default withNpsPoll(FormList);
