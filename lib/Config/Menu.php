@@ -22,7 +22,6 @@ use MailPoet\AdminPages\Pages\Update;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceListImport;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -44,20 +43,15 @@ class Menu {
   /** @var ContainerWrapper */
   private $container;
 
-  /** @var FeaturesController */
-  private $featuresController;
-
   public function __construct(
     AccessControl $accessControl,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
-    FeaturesController $featuresController,
     ContainerWrapper $container
   ) {
     $this->accessControl = $accessControl;
     $this->wp = $wp;
     $this->servicesChecker = $servicesChecker;
-    $this->featuresController = $featuresController;
     $this->container = $container;
   }
 
@@ -191,13 +185,12 @@ class Menu {
     );
 
     // add body class for form editor page
-    if ($this->featuresController->isSupported(FeaturesController::NEW_FORM_EDITOR)) {
-      $this->wp->addAction('load-' . $formEditorPage, function() {
-        $this->wp->addAction('admin_body_class', function ($classes) {
-          return ltrim($classes . ' block-editor-page');
-        });
+    $this->wp->addAction('load-' . $formEditorPage, function() {
+      $this->wp->addAction('admin_body_class', function ($classes) {
+        return ltrim($classes . ' block-editor-page');
       });
-    }
+    });
+
 
     // Subscribers page
     $subscribersPage = $this->wp->addSubmenuPage(
