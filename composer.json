@@ -64,6 +64,7 @@
       "mkdir -p vendor-prefixed"
     ],
     "post-update-cmd": [
+      "@fixPHPUnit57MocksForPHP74",
       "@fixPHPUnit57CodeCoverageForPHP72",
       "./prefixer/process.sh",
       "./tools/vendor/composer.phar dump-autoload",
@@ -71,12 +72,14 @@
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
     ],
     "post-install-cmd": [
+      "@fixPHPUnit57MocksForPHP74",
       "@fixPHPUnit57CodeCoverageForPHP72",
       "./prefixer/process.sh",
       "./tools/vendor/composer.phar dump-autoload",
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
     ],
+    "fixPHPUnit57MocksForPHP74": "sed -i -e 's/(string) $method->getReturnType()/$method->getReturnType()->getName()/g' -e 's/(string) $parameter->getType()/$parameter->getType()->getName()/g' vendor/phpunit/phpunit-mock-objects/src/Framework/MockObject/Generator.php",
     "fixPHPUnit57CodeCoverageForPHP72": "sed -i -- 's/\\$numTests = count(\\$coverageData\\[\\$i\\]);/$numTests = (is_array($coverageData[$i]) ? count($coverageData[$i]) : 0);/g' vendor/phpunit/php-code-coverage/src/Report/Html/Renderer/File.php"
   },
   "config": {
