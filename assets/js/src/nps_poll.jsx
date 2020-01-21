@@ -29,8 +29,17 @@ const useNpsPoll = () => {
     const callSatismeter = (trackingData) => {
       const newUsersPollId = '6L479eVPXk7pBn6S';
       const oldUsersPollId = 'k0aJAsQAWI2ERyGv';
+      const formPollId = 'EqOgKsgZd832Sz9w';
+      let writeKey;
+      if (window.mailpoet_display_nps_form) {
+        writeKey = formPollId;
+      } else if (window.mailpoet_is_new_user) {
+        writeKey = newUsersPollId;
+      } else {
+        writeKey = oldUsersPollId;
+      }
       satismeter({
-        writeKey: window.mailpoet_is_new_user ? newUsersPollId : oldUsersPollId,
+        writeKey,
         userId: window.mailpoet_current_wp_user.ID + window.mailpoet_site_url,
         traits: {
           name: window.mailpoet_current_wp_user.user_nicename,

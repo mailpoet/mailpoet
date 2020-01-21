@@ -23,6 +23,18 @@
       '5ad9b1f22c7d3a0e93678640',
       '5d1f468504286369ad8d57ff'
     ];
+
+    var mailpoet_display_nps_poll = <%= json_encode(display_nps_survey) %>;
+
+    <%if display_nps_survey %>
+      var mailpoet_display_nps_form = true;
+      var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
+      var mailpoet_site_url = "<%= site_url %>";
+      var mailpoet_current_wp_user = <%= json_encode(current_wp_user) %>;
+      var mailpoet_current_wp_user_firstname = '<%= current_wp_user_firstname %>';
+      var mailpoet_review_request_illustration_url = '<%= cdn_url('review-request/review-request-illustration.20190815-1427.svg') %>';
+      var mailpoet_installed_days_ago = <%= installed_days_ago %>;
+    <%endif%>
   </script>
 <% endblock %>
 
