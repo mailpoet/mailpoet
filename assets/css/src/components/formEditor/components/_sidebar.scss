@@ -88,6 +88,7 @@ $gutenberg-control-border-color-focus: #007cba;
 }
 
 // Styles for old editor link
-.mailpoet_old_form_editor_link {
+.mailpoet_old_form_editor_link,
+#mailpoet_form_edit_old_editor_fallback_link {
   padding: 16px;
 }
