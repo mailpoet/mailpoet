@@ -118,7 +118,11 @@ class Newsletters extends APIEndpoint {
       : null;
 
     if ($newsletter) {
-      $response = $this->newslettersResponseBuilder->build($newsletter);
+      $response = $this->newslettersResponseBuilder->build($newsletter, [
+        NewslettersResponseBuilder::RELATION_SEGMENTS,
+        NewslettersResponseBuilder::RELATION_OPTIONS,
+        NewslettersResponseBuilder::RELATION_QUEUE,
+      ]);
       $previewUrl = NewsletterUrl::getViewInBrowserUrl(
         NewsletterUrl::TYPE_LISTING_EDITOR,
         (object)[
@@ -138,25 +142,27 @@ class Newsletters extends APIEndpoint {
   }
 
   public function getWithStats($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $newsletter = Newsletter::findOne($id);
-    if ($newsletter instanceof Newsletter) {
-      $newsletter = $newsletter
-        ->withSegments()
-        ->withOptions()
-        ->withSendingQueue()
-        ->withTotalSent()
-        ->withStatistics($this->woocommerceHelper);
-
-      $previewUrl = NewsletterUrl::getViewInBrowserUrl(
+    $newsletter = isset($data['id'])
+      ? $this->newslettersRepository->findOneById((int)$data['id'])
+      : null;
+    if ($newsletter) {
+      $response = $this->newslettersResponseBuilder->build($newsletter, [
+          NewslettersResponseBuilder::RELATION_SEGMENTS,
+          NewslettersResponseBuilder::RELATION_OPTIONS,
+          NewslettersResponseBuilder::RELATION_QUEUE,
+          NewslettersResponseBuilder::RELATION_TOTAL_SENT,
+          NewslettersResponseBuilder::RELATION_STATISTICS,
+      ]);
+      $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
+      $response['preview_url'] = NewsletterUrl::getViewInBrowserUrl(
         NewsletterUrl::TYPE_LISTING_EDITOR,
-        $newsletter,
+        (object)[
+          'id' => $newsletter->getId(),
+          'hash' => $newsletter->getHash(),
+        ],
         Subscriber::getCurrentWPUser()
       );
-
-      $newsletter = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $newsletter->asArray());
-      $newsletter['preview_url'] = $previewUrl;
-      return $this->successResponse($newsletter);
+      return $this->successResponse($response);
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),

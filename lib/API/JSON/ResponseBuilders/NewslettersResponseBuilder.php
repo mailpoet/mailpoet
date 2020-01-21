@@ -5,12 +5,29 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 
 class NewslettersResponseBuilder {
   const DATE_FORMAT = 'Y-m-d H:i:s';
 
-  public function build(NewsletterEntity $newsletter) {
-    return [
+  const RELATION_QUEUE = 'queue';
+  const RELATION_SEGMENTS = 'segments';
+  const RELATION_OPTIONS = 'options';
+  const RELATION_TOTAL_SENT = 'total_sent';
+  const RELATION_CHILDREN_COUNT = 'children_count';
+  const RELATION_SCHEDULED = 'scheduled';
+  const RELATION_STATISTICS = 'statistics';
+
+  /** @var NewslettersStatsRepository */
+  private $newslettersStatsRepository;
+
+  public function __construct(NewsletterStatisticsRepository $newslettersStatsRepository) {
+    $this->newslettersStatsRepository = $newslettersStatsRepository;
+  }
+
+  public function build(NewsletterEntity $newsletter, $relations = []) {
+    $data = [
       'id' => (string)$newsletter->getId(), // (string) for BC
       'hash' => $newsletter->getHash(),
       'subject' => $newsletter->getSubject(),
@@ -27,12 +44,36 @@ class NewslettersResponseBuilder {
       'updated_at' => $newsletter->getUpdatedAt()->format(self::DATE_FORMAT),
       'deleted_at' => ($deletedAt = $newsletter->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'parent_id' => ($parent = $newsletter->getParent()) ? $parent->getId() : null,
-      'segments' => $this->buildSegments($newsletter),
-      'options' => $this->buildOptions($newsletter),
-      'queue' => ($queue = $newsletter->getLatestQueue()) ? $this->buildQueue($queue) : false, // false for BC
       'unsubscribe_token' => $newsletter->getUnsubscribeToken(),
       'ga_campaign' => $newsletter->getGaCampaign(),
     ];
+
+    foreach ($relations as $relation) {
+      if ($relation === self::RELATION_QUEUE) {
+        $data['queue'] = ($queue = $newsletter->getLatestQueue()) ? $this->buildQueue($queue) : false; // false for BC
+      }
+      if ($relation === self::RELATION_SEGMENTS) {
+        $data['segments'] = $this->buildSegments($newsletter);
+      }
+      if ($relation === self::RELATION_OPTIONS) {
+        $data['options'] = $this->buildOptions($newsletter);
+      }
+      if ($relation === self::RELATION_TOTAL_SENT) {
+        $data['totalSent'] = $this->newslettersStatsRepository->getTotalSentCount($newsletter);
+      }
+      if ($relation === self::RELATION_CHILDREN_COUNT) {
+        $data['childrenCount'] = count($newsletter->getChildren());
+      }
+      if ($relation === self::RELATION_SCHEDULED) {
+        $data['totalScheduled'] = (int)SendingQueue::findTaskByNewsletterId($this->id)
+        ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
+        ->count();
+      }
+      if ($relation === self::RELATION_STATISTICS) {
+        $data['statistics'] = $this->newslettersStatsRepository->getStatistics($newsletter);
+      }
+    }
+    return $data;
   }
 
   private function buildSegments(NewsletterEntity $newsletter) {
