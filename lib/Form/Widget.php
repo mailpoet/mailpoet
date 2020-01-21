@@ -170,8 +170,10 @@ class Widget extends \WP_Widget {
   public function widget($args, $instance = null) {
     $this->assetsController->setupFrontEndDependencies();
 
-    // turn $args into variables
-    extract($args);
+    $beforeWidget = !empty($args['before_widget']) ? $args['before_widget'] : '';
+    $afterWidget = !empty($args['after_widget']) ? $args['after_widget'] : '';
+    $beforeTitle = !empty($args['before_title']) ? $args['before_title'] : '';
+    $afterTitle = !empty($args['after_title']) ? $args['after_title'] : '';
 
     if ($instance === null) {
       $instance = $args;
@@ -214,10 +216,10 @@ class Widget extends \WP_Widget {
         'title' => $title,
         'styles' => FormRenderer::renderStyles($form, '#' . $formId),
         'html' => FormRenderer::renderHTML($form),
-        'before_widget' => (!empty($beforeWidget) ? $beforeWidget : ''),
-        'after_widget' => (!empty($afterWidget) ? $afterWidget : ''),
-        'before_title' => (!empty($beforeTitle) ? $beforeTitle : ''),
-        'after_title' => (!empty($afterTitle) ? $afterTitle : ''),
+        'before_widget' => $beforeWidget,
+        'after_widget' => $afterWidget,
+        'before_title' => $beforeTitle,
+        'after_title' => $afterTitle,
       ];
 
       // (POST) non ajax success/error variables
