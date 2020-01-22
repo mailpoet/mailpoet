@@ -157,6 +157,8 @@ class SubscribersTest extends \MailPoetUnitTest {
   public function testCheckReturnsFalseIfPremiumPremiumSupportAndReachedLimit() {
     $subscribersFeature = $this->constructWith([
       'has_mss_key' => false,
+      'mss_key_state' => 'valid',
+      'premium_key_state' => 'valid',
       'has_premium_key' => true,
       'installed_at' => '2019-11-11',
       'subscribers_count' => 3000,
