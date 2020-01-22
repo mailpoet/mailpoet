@@ -21,3 +21,19 @@
     text-align: left;
   }
 }
+
+// Keep create custom field placeholder centered
+// @wordpress/components@9.0.0 changed default alignment to left
+.components-placeholder.mailpoet_custom_field_add_placeholder {
+  align-items: center;
+
+  .components-placeholder__label {
+    align-items: center;
+  }
+
+  .components-placeholder__fieldset {
+    justify-content: center;
+    max-width: 400px;
+    text-align: center;
+  }
+}

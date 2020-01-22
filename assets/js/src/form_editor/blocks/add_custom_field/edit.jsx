@@ -33,6 +33,7 @@ const AddCustomField = ({ clientId }) => {
     <Placeholder
       icon={<BlockIcon icon={icon} showColors />}
       label={MailPoet.I18n.t('blockAddCustomFieldFormHeading')}
+      className="mailpoet_custom_field_add_placeholder"
     >
       {!isCreating ? (
         <>
