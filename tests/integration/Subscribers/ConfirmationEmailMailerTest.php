@@ -128,7 +128,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => function() {
-        return true;
+        return ['response' => true];
       },
     ], $this);
     $sender = new ConfirmationEmailMailer(
@@ -156,7 +156,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => function() {
-        return true;
+        return ['response' => true];
       },
     ], $this);
     $sender = new ConfirmationEmailMailer(

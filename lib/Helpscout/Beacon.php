@@ -28,7 +28,7 @@ class Beacon {
     $mta = $this->settings->get('mta');
     $currentTheme = WPFunctions::get()->wpGetTheme();
     $currentUser = WPFunctions::get()->wpGetCurrentUser();
-    $sender = $this->settings->get('sender');
+    $sender = $this->settings->get('sender', ['address' => null]);
     $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $this->settings->get(Bridge::API_KEY_SETTING_NAME);
     $cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $cronPingUrl = $cronHelper->getCronUrl(

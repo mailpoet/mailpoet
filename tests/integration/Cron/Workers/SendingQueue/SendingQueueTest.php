@@ -54,6 +54,7 @@ class SendingQueueTest extends \MailPoetTest {
   public $subscriberSegment;
   public $segment;
   public $subscriber;
+  private $mailerTaskDummyResponse = ['response' => true];
   /** @var SendingErrorHandler */
   private $sendingErrorHandler;
   /** @var SettingsController */
@@ -185,7 +186,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         [
-          'sendBulk' => null,
+          'sendBulk' => $this->mailerTaskDummyResponse,
         ]
       )
     );
@@ -223,7 +224,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         [
-          'sendBulk' => null,
+          'sendBulk' => $this->mailerTaskDummyResponse,
         ]
       )
     );
@@ -291,7 +292,7 @@ class SendingQueueTest extends \MailPoetTest {
               'subscriber_status' => 'subscribed',
               'subscriber_source' => 'administrator',
             ]);
-            return true;
+            return $this->mailerTaskDummyResponse;
           }),
         ],
         $this
@@ -321,7 +322,7 @@ class SendingQueueTest extends \MailPoetTest {
               'subscriber_status' => 'subscribed',
               'subscriber_source' => 'administrator',
             ]);
-            return true;
+            return $this->mailerTaskDummyResponse;
           }),
         ],
         $this
@@ -344,7 +345,7 @@ class SendingQueueTest extends \MailPoetTest {
             // newsletter body should not be empty
             expect(!empty($newsletter['body']['html']))->true();
             expect(!empty($newsletter['body']['text']))->true();
-            return true;
+            return $this->mailerTaskDummyResponse;
           }),
         ],
         $this
@@ -393,7 +394,7 @@ class SendingQueueTest extends \MailPoetTest {
             // newsletter body should not be empty
             expect(!empty($newsletter[0]['body']['html']))->true();
             expect(!empty($newsletter[0]['body']['text']))->true();
-            return true;
+            return $this->mailerTaskDummyResponse;
           }),
           'getProcessingMethod' => Expected::exactly(1, function() {
             return 'bulk';
@@ -445,7 +446,7 @@ class SendingQueueTest extends \MailPoetTest {
             // newsletter body should not be empty
             expect(!empty($newsletter['body']['html']))->true();
             expect(!empty($newsletter['body']['text']))->true();
-            return true;
+            return $this->mailerTaskDummyResponse;
           }),
         ],
         $this
@@ -522,7 +523,7 @@ class SendingQueueTest extends \MailPoetTest {
             // newsletter body should not be empty
             expect(!empty($newsletter['body']['html']))->true();
             expect(!empty($newsletter['body']['text']))->true();
-            return true;
+            return $this->mailerTaskDummyResponse;
           }),
         ],
         $this
@@ -604,7 +605,7 @@ class SendingQueueTest extends \MailPoetTest {
       new MailerTask(),
       [
         'send' => Expected::exactly(1, function() {
-          return true;
+          return $this->mailerTaskDummyResponse;
         }),
       ],
       $this
@@ -639,7 +640,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker = $this->sendingQueueWorker;
     $sendingQueueWorker->mailerTask = Stub::make(
       new MailerTask(),
-      ['send' => true]
+      ['send' => $this->mailerTaskDummyResponse]
     );
     $sendingQueueWorker->process();
 
@@ -660,7 +661,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker = $this->sendingQueueWorker;
     $sendingQueueWorker->mailerTask = Stub::make(
       new MailerTask(),
-      ['send' => true]
+      ['send' => $this->mailerTaskDummyResponse]
     );
 
     // newsletter is sent to existing subscriber
@@ -687,7 +688,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker = $this->sendingQueueWorker;
     $sendingQueueWorker->mailerTask = Stub::make(
       new MailerTask(),
-      ['send' => true]
+      ['send' => $this->mailerTaskDummyResponse]
     );
 
     // newsletter is not sent to globally unsubscribed subscriber
@@ -705,7 +706,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker = $this->sendingQueueWorker;
     $sendingQueueWorker->mailerTask = Stub::make(
       new MailerTask(),
-      ['send' => true]
+      ['send' => $this->mailerTaskDummyResponse]
     );
 
     // newsletter is not sent to subscriber unsubscribed from segment
@@ -723,7 +724,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker = $this->sendingQueueWorker;
     $sendingQueueWorker->mailerTask = Stub::make(
       new MailerTask(),
-      ['send' => true]
+      ['send' => $this->mailerTaskDummyResponse]
     );
 
     // newsletter is not sent to inactive subscriber
@@ -762,7 +763,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         [
-          'sendBulk' => true,
+          'sendBulk' => $this->mailerTaskDummyResponse,
         ]
       )
     );
@@ -799,7 +800,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(
         new MailerTask(),
         [
-          'send' => Expected::once(),
+          'send' => Expected::once($this->mailerTaskDummyResponse),
         ],
         $this
       )
