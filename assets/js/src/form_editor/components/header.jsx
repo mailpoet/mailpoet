@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconButton, Button } from '@wordpress/components';
+import { Button } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import MailPoet from 'mailpoet';
@@ -22,7 +22,6 @@ export default () => {
         <Button
           isPrimary
           isLarge
-          isDefault
           className="editor-post-publish-button"
           data-automation-id="form_save_button"
           isBusy={isFormSaving}
@@ -30,12 +29,12 @@ export default () => {
         >
           {isFormSaving ? `${__('Saving')}` : __('Save')}
         </Button>
-        <IconButton
+        <Button
           icon="admin-generic"
           label={MailPoet.I18n.t('formSettings')}
-          labelPosition="down"
+          tooltipPosition="down"
           onClick={() => toggleSidebar(!sidebarOpened)}
-          isToggled={sidebarOpened}
+          isPressed={sidebarOpened}
         />
       </div>
     </div>

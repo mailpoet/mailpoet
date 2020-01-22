@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { IconButton } from '@wordpress/components';
+import { Button } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
@@ -12,7 +12,7 @@ const SidebarHeader = ({ children, closeSidebar }) => (
   <>
     <div className="components-panel__header edit-post-sidebar-header edit-post-sidebar__panel-tabs">
       { children }
-      <IconButton
+      <Button
         onClick={closeSidebar}
         icon="no-alt"
       />
