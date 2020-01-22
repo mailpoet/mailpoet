@@ -11,12 +11,13 @@
 }
 
 // Fix for broken drag and drop for blocks
-// This is fixed in Gutenberg's master branch
+// This should had been fixed in Gutenberg's master branch
 // https://github.com/WordPress/gutenberg/pull/15054
-// We should remove this fix after we update @wordpress/components to version newer than 8.4.0
-.edit-post-layout__content {
+// It doesn't work even after upgrading to package version with the fix.
+// It needs further investigation
+.edit-post-editor-regions__content {
   .block-editor-block-mover__control-drag-handle {
-    display: none;
+    display: none !important;
   }
 }
 
