@@ -13,6 +13,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property string $name
  * @property string $type
  * @property string $description
+ * @property string $countConfirmations
  */
 
 class Segment extends Model {
