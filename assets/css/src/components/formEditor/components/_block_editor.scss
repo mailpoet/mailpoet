@@ -13,8 +13,8 @@
 // There is no way to hide the delete button programmatically so we hide last toolbar that contains the delete option
 // There is a feature request for adding that into Gutenberg https://github.com/WordPress/gutenberg/issues/16364
 // We also hide options to prevent removing Email or Submit when they are in multi-select
-.wp-block[data-type='mailpoet-form/email-input'],
-.wp-block[data-type='mailpoet-form/submit-button'],
+.block-editor-block-contextual-toolbar[data-type='mailpoet-form/email-input'],
+.block-editor-block-contextual-toolbar[data-type='mailpoet-form/submit-button'],
 .is-multi-selected {
   .components-toolbar:last-child {
     display: none;

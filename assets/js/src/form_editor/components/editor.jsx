@@ -45,8 +45,8 @@ export default () => {
 
   return (
     <DropZoneProvider>
-      <div className={layoutClass}>
-        <SlotFillProvider>
+      <SlotFillProvider>
+        <div className={layoutClass}>
           <div className="edit-post-editor-regions__header">
             <Header />
           </div>
@@ -60,6 +60,7 @@ export default () => {
             >
               <div className="edit-post-editor-regions__content">
                 <Notices />
+                <Popover.Slot name="block-toolbar" />
                 <UnsavedChangesNotice />
                 <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
                   <BlockEditorKeyboardShortcuts />
@@ -79,9 +80,9 @@ export default () => {
               <Popover.Slot />
             </BlockEditorProvider>
           </div>
-        </SlotFillProvider>
-        <FormStyles />
-      </div>
+          <FormStyles />
+        </div>
+      </SlotFillProvider>
     </DropZoneProvider>
   );
 };
