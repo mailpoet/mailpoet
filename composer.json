@@ -67,6 +67,7 @@
       "@fixPHPUnit57MocksForPHP74",
       "@fixPHPUnit57CodeCoverageForPHP72",
       "./prefixer/process.sh",
+      "@fixDoctrineForPHP74",
       "./tools/vendor/composer.phar dump-autoload",
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
@@ -75,10 +76,12 @@
       "@fixPHPUnit57MocksForPHP74",
       "@fixPHPUnit57CodeCoverageForPHP72",
       "./prefixer/process.sh",
+      "@fixDoctrineForPHP74",
       "./tools/vendor/composer.phar dump-autoload",
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
     ],
+    "fixDoctrineForPHP74": "sed -i -e 's/return \\\\in_array(\\$token\\[/return $token !== null \\&\\& \\\\in_array(\\$token\\[/' vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Query/Parser.php",
     "fixPHPUnit57MocksForPHP74": "sed -i -e 's/(string) $method->getReturnType()/$method->getReturnType()->getName()/g' -e 's/(string) $parameter->getType()/$parameter->getType()->getName()/g' vendor/phpunit/phpunit-mock-objects/src/Framework/MockObject/Generator.php",
     "fixPHPUnit57CodeCoverageForPHP72": "sed -i -- 's/\\$numTests = count(\\$coverageData\\[\\$i\\]);/$numTests = (is_array($coverageData[$i]) ? count($coverageData[$i]) : 0);/g' vendor/phpunit/php-code-coverage/src/Report/Html/Renderer/File.php"
   },
