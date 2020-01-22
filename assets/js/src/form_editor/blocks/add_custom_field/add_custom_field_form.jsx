@@ -115,7 +115,7 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
       {renderSettingsForType()}
       <Button
         isLarge
-        isDefault
+        isSecondary
         disabled={!canSubmit}
         data-automation-id="create_custom_field_submit"
         onClick={() => {

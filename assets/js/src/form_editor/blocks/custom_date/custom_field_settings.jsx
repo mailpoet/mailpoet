@@ -61,7 +61,6 @@ const CustomFieldSettings = ({
       {onSave ? (
         <Button
           isPrimary
-          isDefault
           onClick={() => onSave({
             mandatory: localMandatory,
             dateType: localDateType,
