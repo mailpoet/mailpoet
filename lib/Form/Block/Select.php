@@ -17,7 +17,11 @@ class Select extends Base {
     $html .= '<select class="mailpoet_select" name="' . $fieldName . '" ' . $automationId . '>';
 
     if (isset($block['params']['label_within']) && $block['params']['label_within']) {
-      $html .= '<option value="">' . static::getFieldLabel($block) . '</option>';
+      $label = static::getFieldLabel($block);
+      if (!empty($block['params']['required'])) {
+        $label .= ' *';
+      }
+      $html .= '<option value="" disabled selected hidden>' . $label . '</option>';
     } else {
       if (empty($block['params']['required']) || !$block['params']['required']) {
         $html .= '<option value="">-</option>';
