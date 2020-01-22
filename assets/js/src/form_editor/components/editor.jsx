@@ -37,45 +37,51 @@ export default () => {
     []
   );
 
-  const layoutClass = classnames('edit-post-layout', {
+  const layoutClass = classnames('edit-post-layout edit-post-editor-regions', {
     'is-sidebar-opened': sidebarOpened,
   });
 
   const { blocksChangedInBlockEditor } = useDispatch('mailpoet-form-editor');
 
   return (
-    <div className={layoutClass}>
-      <SlotFillProvider>
-        <Header />
-        <DropZoneProvider>
-          <BlockEditorProvider
-            value={select('mailpoet-form-editor').getFormBlocks()}
-            onInput={blocksChangedInBlockEditor}
-            onChange={blocksChangedInBlockEditor}
-            settings={editorSettings}
-            useSubRegistry={false}
-          >
-            <div className="edit-post-layout__content">
-              <Notices />
-              <UnsavedChangesNotice />
-              <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
-                <BlockEditorKeyboardShortcuts />
-                <WritingFlow>
-                  <ObserveTyping>
-                    <FormTitle />
-                    <BlockList />
-                  </ObserveTyping>
-                </WritingFlow>
-              </BlockSelectionClearer>
-            </div>
-            <div>
-              { sidebarOpened ? <Sidebar /> : null }
-            </div>
-            <Popover.Slot />
-          </BlockEditorProvider>
-        </DropZoneProvider>
-      </SlotFillProvider>
-      <FormStyles />
-    </div>
+    <DropZoneProvider>
+      <div className={layoutClass}>
+        <SlotFillProvider>
+          <div className="edit-post-editor-regions__header">
+            <Header />
+          </div>
+          <div className="edit-post-editor-regions__body">
+            <BlockEditorProvider
+              value={select('mailpoet-form-editor').getFormBlocks()}
+              onInput={blocksChangedInBlockEditor}
+              onChange={blocksChangedInBlockEditor}
+              settings={editorSettings}
+              useSubRegistry={false}
+            >
+              <div className="edit-post-editor-regions__content">
+                <Notices />
+                <UnsavedChangesNotice />
+                <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
+                  <BlockEditorKeyboardShortcuts />
+                  <WritingFlow>
+                    <ObserveTyping>
+                      <FormTitle />
+                      <BlockList />
+                    </ObserveTyping>
+                  </WritingFlow>
+                </BlockSelectionClearer>
+              </div>
+              <div className="edit-post-editor-regions__sidebar">
+                <div>
+                  { sidebarOpened ? <Sidebar /> : null }
+                </div>
+              </div>
+              <Popover.Slot />
+            </BlockEditorProvider>
+          </div>
+        </SlotFillProvider>
+        <FormStyles />
+      </div>
+    </DropZoneProvider>
   );
 };

@@ -2,6 +2,8 @@
 @import '../../../node_modules/@wordpress/editor/build-style/style';
 @import '../../../node_modules/@wordpress/components/build-style/style';
 @import '../../../node_modules/@wordpress/block-editor/build-style/style';
+@import '../../../node_modules/@wordpress/block-library/build-style/style';
+@import '../../../node_modules/@wordpress/block-library/build-style/theme';
 @import '../../../node_modules/@wordpress/block-library/build-style/editor';
 @import './components/formEditor/components/form_title';
 @import './components/formEditor/components/sidebar';
