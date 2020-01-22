@@ -251,16 +251,6 @@ parameters:
 			path: ../../tests/integration/Config/ShortcodesTest.php
 
 		-
-			message: "#^Offset 'run_access' does not exist on array\\('run_access' \\=\\> int\\|null, 'run_start' \\=\\> int\\|null\\)\\|null\\.$#"
-			count: 1
-			path: ../../tests/integration/Cron/CronHelperTest.php
-
-		-
-			message: "#^Offset 'run_start' does not exist on array\\('run_access' \\=\\> int\\|null, 'run_start' \\=\\> int\\|null\\)\\|null\\.$#"
-			count: 1
-			path: ../../tests/integration/Cron/CronHelperTest.php
-
-		-
 			message: "#^Cannot access property \\$status on bool\\|MailPoet\\\\Models\\\\ScheduledTask\\.$#"
 			count: 5
 			path: ../../tests/integration/Cron/CronWorkerRunnerTest.php
