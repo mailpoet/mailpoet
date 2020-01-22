@@ -95,7 +95,12 @@ class State
           null,
           $queue
         ),
-      ] : null,
+      ] : [
+        'newsletter_id' => null,
+        'queue_id' => null,
+        'subject' => null,
+        'preview_url' => null,
+      ],
     ];
   }
 }

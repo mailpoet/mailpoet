@@ -13,7 +13,7 @@ class SubscribersListingsHandlerFactoryTest extends \MailPoetTest {
     $segment->name = 'name';
     $segment->type = 'unknown';
     $listings = new SubscribersListingsHandlerFactory();
-    $result = $listings->get($segment, []);
+    $result = $listings->get($segment, ['filter' => ['segment' => null]]);
     expect($result)->null();
   }
 
@@ -24,7 +24,7 @@ class SubscribersListingsHandlerFactoryTest extends \MailPoetTest {
       'type' => DynamicSegment::TYPE_DYNAMIC,
     ]);
     $listings = new SubscribersListingsHandlerFactory();
-    $result = $listings->get($segment, []);
+    $result = $listings->get($segment, ['filter' => ['segment' => null]]);
     expect($result)->notNull();
   }
 

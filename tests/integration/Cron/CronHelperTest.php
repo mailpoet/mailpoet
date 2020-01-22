@@ -166,7 +166,6 @@ class CronHelperTest extends \MailPoetTest {
         'run_access' => $time - 4,
         'run_start' => $time - 10,
       ],
-      null,
     ];
     foreach ($testInputs as $testInput) {
       $daemon = $this->getDeamonTestData();
