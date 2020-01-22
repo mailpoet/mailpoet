@@ -43,7 +43,6 @@ const CustomFieldSettings = ({
       {onSave ? (
         <Button
           isPrimary
-          isDefault
           onClick={() => onSave(localData)}
           isBusy={isSaving}
           disabled={isSaving || !hasUnsavedChanges}
