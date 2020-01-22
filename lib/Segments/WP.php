@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Segment;
 use MailPoet\Models\StatisticsClicks;
@@ -10,6 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -70,6 +72,10 @@ class WP {
             $subscriber,
             [$wpSegment->id]
           );
+          if ($subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
+            $confirmationEmailMailer = ContainerWrapper::getInstance()->get(ConfirmationEmailMailer::class);
+            $confirmationEmailMailer->sendConfirmationEmail($subscriber);
+          }
 
           // welcome email
           if ($scheduleWelcomeNewsletter === true) {

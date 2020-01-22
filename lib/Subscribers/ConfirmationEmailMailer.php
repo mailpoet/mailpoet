@@ -45,7 +45,6 @@ class ConfirmationEmailMailer {
     if ((bool)$signupConfirmation['enabled'] === false) {
       return false;
     }
-
     if (!$this->wp->isUserLoggedIn() && $subscriber->countConfirmations >= self::MAX_CONFIRMATION_EMAILS) {
       return false;
     }

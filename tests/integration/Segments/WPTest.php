@@ -43,12 +43,17 @@ class WPTest extends \MailPoetTest  {
   }
 
   public function testSynchronizeUserStatusIsUnconfirmedForNewUserWithSignUpConfirmationEnabled() {
+    $this->settings->set('sender', [
+      'address' => 'sender@mailpoet.com',
+      'name' => 'Sender',
+    ]);
     $this->settings->set('signup_confirmation', ['enabled' => '1']);
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
     WP::synchronizeUser($id);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+    expect($wpSubscriber->countConfirmations)->equals(1);
   }
 
   public function testSynchronizeUsersStatusIsSubscribedForNewUsersWithSignUpConfirmationDisabled() {
