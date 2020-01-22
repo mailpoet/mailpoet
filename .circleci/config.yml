@@ -56,6 +56,13 @@ executors:
       - image: circleci/mysql:8.0-ram
         command: [--default-authentication-plugin=mysql_native_password]
 
+  wordpress_mysql80_php74:
+    <<: *default_job_config
+    docker:
+      - image: mailpoet/wordpress:7.4_20200123.1
+      - image: circleci/mysql:8.0-ram
+        command: [--default-authentication-plugin=mysql_native_password]
+
 jobs:
   build_and_code_qa:
     executor: wordpress_php73
@@ -313,7 +320,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   php7_integration:
-    executor: wordpress_mysql80_php73
+    executor: wordpress_mysql80_php74
     steps:
       - attach_workspace:
          at: /home/circleci/mailpoet
@@ -339,7 +346,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   php7_integration_multisite:
-    executor: wordpress_mysql80_php73
+    executor: wordpress_mysql80_php74
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
