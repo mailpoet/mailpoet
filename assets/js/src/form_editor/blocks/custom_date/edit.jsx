@@ -95,7 +95,7 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
           },
         }}
         item={{
-          field: attributes.defaultToday ? moment().format('YYYY-MM-DD') : '',
+          [clientId]: attributes.defaultToday ? moment().format('YYYY-MM-DD') : '',
         }}
         onValueChange={() => {}}
       />
