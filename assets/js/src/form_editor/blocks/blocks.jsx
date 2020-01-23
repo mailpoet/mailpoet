@@ -30,8 +30,8 @@ export const initBlocks = () => {
     { slug: 'obligatory', title: '' }, // Blocks from this category are not in block insert popup
   ];
 
-  categories.push({ slug: 'custom-fields', title: MailPoet.I18n.t('customFieldsBlocksCategory') });
   categories.push({ slug: 'fields', title: MailPoet.I18n.t('fieldsBlocksCategory') });
+  categories.push({ slug: 'custom-fields', title: MailPoet.I18n.t('customFieldsBlocksCategory') });
   setCategories(categories);
 
   registerBlockType(divider.name, divider.settings);
