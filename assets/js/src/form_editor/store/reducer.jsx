@@ -1,6 +1,7 @@
 import MailPoet from 'mailpoet';
 import createCustomFieldDone from './reducers/create_custom_field_done.jsx';
 import createCustomFieldFailed from './reducers/create_custom_field_failed.jsx';
+import customFieldEdited from './reducers/custom_field_edited.jsx';
 import createCustomFieldStartedFactory from './reducers/create_custom_field_started.jsx';
 import changeFormName from './reducers/change_form_name.jsx';
 import changeFormSettings from './reducers/change_form_settings.jsx';
@@ -34,6 +35,7 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'CHANGE_FORM_NAME': return changeFormName(state, action);
     case 'CHANGE_FORM_SETTINGS': return changeFormSettings(state, action);
     case 'CHANGE_FORM_STYLES': return changeFormStyles(state, action);
+    case 'CUSTOM_FIELD_EDITED': return customFieldEdited(state);
     case 'REMOVE_NOTICE': return removeNotice(state, action);
     case 'SAVE_FORM_DONE': return saveFormDone(state);
     case 'SAVE_FORM_FAILED': return saveFormFailed(state, action);

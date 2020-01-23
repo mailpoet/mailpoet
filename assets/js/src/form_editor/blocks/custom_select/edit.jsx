@@ -26,6 +26,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
   const {
     saveCustomField,
     deleteCustomField,
+    customFieldEdited,
   } = useDispatch('mailpoet-form-editor');
 
   const inspectorControls = (
@@ -51,6 +52,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
               clientId
             )}
             isDeleting={isDeleting}
+            onChange={(data, hasUnsavedChanges) => hasUnsavedChanges && customFieldEdited()}
           />
         </PanelBody>
       </Panel>

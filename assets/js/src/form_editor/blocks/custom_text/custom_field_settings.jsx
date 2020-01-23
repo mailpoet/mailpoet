@@ -26,11 +26,14 @@ const CustomFieldSettings = ({
     validate: localValidate,
   }), [localMandatory, localValidate]);
 
+  const hasUnsavedChanges = localMandatory !== mandatory
+    || localValidate !== validate;
+
   useEffect(() => {
     if (onChange) {
-      onChange(localData);
+      onChange(localData, hasUnsavedChanges);
     }
-  }, [localData, onChange]);
+  }, [localData, onChange, hasUnsavedChanges]);
 
   return (
     <>
@@ -40,14 +43,7 @@ const CustomFieldSettings = ({
           isDefault
           onClick={() => onSave(localData)}
           isBusy={isSaving}
-          disabled={
-            isSaving
-            || isDeleting
-            || (
-              localMandatory === mandatory
-              && localValidate === validate
-            )
-          }
+          disabled={isSaving || isDeleting || !hasUnsavedChanges}
           className="button-on-top"
         >
           {MailPoet.I18n.t('customFieldSaveCTA')}
