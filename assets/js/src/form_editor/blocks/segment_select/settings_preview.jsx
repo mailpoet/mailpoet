@@ -18,7 +18,7 @@ const PreviewItem = ({
   >
     <CheckboxControl
       label={segment.name}
-      checked={!!segment.isChecked}
+      defaultChecked={!!segment.isChecked}
       onChange={partial(onCheck, segment.id)}
       key={`check-${segment.id}`}
     />

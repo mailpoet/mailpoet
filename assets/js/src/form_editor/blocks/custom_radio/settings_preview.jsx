@@ -20,7 +20,7 @@ const PreviewItem = ({
   >
     <input
       type="checkbox"
-      checked={value.isChecked || false}
+      defaultChecked={value.isChecked || false}
       onChange={(event) => onCheck(value.id, event.target.checked)}
       key={`check-${value.id}`}
     />
@@ -67,23 +67,33 @@ const Preview = ({
     return null;
   }
 
+  // Remove unwanted properties added by sortable
+  const sanitizeValue = (value) => {
+    const sanitized = { ...value };
+    delete sanitized.chosen;
+    delete sanitized.selected;
+    return sanitized;
+  };
+
   const onUpdate = (valueId, text) => {
     const value = valuesWhileMoved.find((v) => v.id === valueId);
     value.name = text;
-    update(value);
+    update(sanitizeValue(value));
   };
 
   const onCheck = (valueId, checked) => {
+    const value = valuesWhileMoved.find((v) => v.id === valueId);
     if (checked) {
       const checkedValue = valuesWhileMoved.find((v) => v.isChecked);
       if (checkedValue) {
-        checkedValue.isChecked = false;
-        update(checkedValue);
+        delete checkedValue.isChecked;
+        update(sanitizeValue(checkedValue));
       }
+      value.isChecked = true;
+    } else {
+      delete value.isChecked;
     }
-    const value = valuesWhileMoved.find((v) => v.id === valueId);
-    value.isChecked = checked;
-    update(value);
+    update(sanitizeValue(value));
   };
 
   const renderItems = () => (valuesWhileMoved.map((value, index) => (
@@ -100,7 +110,7 @@ const Preview = ({
   return (useDragAndDrop ? (
     <ReactSortable
       list={valuesWhileMoved}
-      setList={onReorder}
+      setList={(reorderedValues) => onReorder(reorderedValues.map(sanitizeValue))}
       className="mailpoet-dnd-items-list"
       animation={100}
     >
