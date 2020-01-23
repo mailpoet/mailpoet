@@ -18,76 +18,84 @@ use MailPoetVendor\Idiorm\ORM;
 class WP {
   public static function synchronizeUser($wpUserId, $oldWpUserData = false) {
     $wpUser = \get_userdata($wpUserId);
-    $wpSegment = Segment::getWPSegment();
-
-    if ($wpUser === false or $wpSegment === false) return;
+    if ($wpUser === false) return;
 
     $subscriber = Subscriber::where('wp_user_id', $wpUser->ID)
       ->findOne();
+
+    $currentFilter = current_filter();
+    if (in_array($currentFilter, ['delete_user', 'deleted_user', 'remove_user_from_blog'])) {
+      self::deleteSubscriber($subscriber);
+    } else {
+      self::updateSubscriber($currentFilter, $wpUser, $subscriber, $oldWpUserData);
+    }
+  }
+
+  private static function deleteSubscriber($subscriber) {
+    if ($subscriber !== false) {
+      // unlink subscriber from wp user and delete
+      $subscriber->set('wp_user_id', null);
+      $subscriber->delete();
+    }
+  }
+
+  private static function updateSubscriber($currentFilter, $wpUser, $subscriber = false, $oldWpUserData = false) {
+    $wpSegment = Segment::getWPSegment();
+    if (!$wpSegment) return;
+
     $scheduleWelcomeNewsletter = false;
+    $sendConfirmationEmail = false;
+    if (in_array($currentFilter, ['profile_update', 'user_register'])) {
+      $scheduleWelcomeNewsletter = true;
+    }
+    if ($currentFilter !== 'profile_update') {
+      $sendConfirmationEmail = true;
+    }
+    // get first name & last name
+    $firstName = $wpUser->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $lastName = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    if (empty($wpUser->first_name) && empty($wpUser->last_name)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $firstName = $wpUser->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    }
+    $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
+    // subscriber data
+    $data = [
+      'wp_user_id' => $wpUser->ID,
+      'email' => $wpUser->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'first_name' => $firstName,
+      'last_name' => $lastName,
+      'status' => $signupConfirmationEnabled ? Subscriber::STATUS_UNCONFIRMED : Subscriber::STATUS_SUBSCRIBED,
+      'source' => Source::WORDPRESS_USER,
+    ];
 
-    switch (current_filter()) {
-      case 'delete_user':
-      case 'deleted_user':
-      case 'remove_user_from_blog':
-        if ($subscriber !== false) {
-          // unlink subscriber from wp user and delete
-          $subscriber->set('wp_user_id', null);
-          $subscriber->delete();
-        }
-        break;
-      case 'profile_update':
-      case 'user_register':
-        $scheduleWelcomeNewsletter = true;
-      case 'added_existing_user':
-      default:
-        // get first name & last name
-        $firstName = $wpUser->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $lastName = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        if (empty($wpUser->first_name) && empty($wpUser->last_name)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-          $firstName = $wpUser->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        }
-        $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
-        // subscriber data
-        $data = [
-          'wp_user_id' => $wpUser->ID,
-          'email' => $wpUser->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-          'first_name' => $firstName,
-          'last_name' => $lastName,
-          'status' => $signupConfirmationEnabled ? Subscriber::STATUS_UNCONFIRMED : Subscriber::STATUS_SUBSCRIBED,
-          'source' => Source::WORDPRESS_USER,
-        ];
+    if ($subscriber !== false) {
+      $data['id'] = $subscriber->id();
+      $data['deleted_at'] = null; // remove the user from the trash
+      unset($data['status']); // don't override status for existing users
+      unset($data['source']); // don't override status for existing users
+    }
 
-        if ($subscriber !== false) {
-          $data['id'] = $subscriber->id();
-          $data['deleted_at'] = null; // remove the user from the trash
-          unset($data['status']); // don't override status for existing users
-          unset($data['source']); // don't override status for existing users
-        }
+    $subscriber = Subscriber::createOrUpdate($data);
+    if ($subscriber->getErrors() === false && $subscriber->id > 0) {
+      // add subscriber to the WP Users segment
+      SubscriberSegment::subscribeToSegments(
+        $subscriber,
+        [$wpSegment->id]
+      );
+      if ($sendConfirmationEmail && ($subscriber->status === Subscriber::STATUS_UNCONFIRMED)) {
+        $confirmationEmailMailer = ContainerWrapper::getInstance()->get(ConfirmationEmailMailer::class);
+        $confirmationEmailMailer->sendConfirmationEmail($subscriber);
+      }
 
-        $subscriber = Subscriber::createOrUpdate($data);
-        if ($subscriber->getErrors() === false && $subscriber->id > 0) {
-          // add subscriber to the WP Users segment
-          SubscriberSegment::subscribeToSegments(
-            $subscriber,
-            [$wpSegment->id]
-          );
-          if ($subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
-            $confirmationEmailMailer = ContainerWrapper::getInstance()->get(ConfirmationEmailMailer::class);
-            $confirmationEmailMailer->sendConfirmationEmail($subscriber);
-          }
-
-          // welcome email
-          if ($scheduleWelcomeNewsletter === true) {
-            $scheduler = new WelcomeScheduler();
-            $scheduler->scheduleWPUserWelcomeNotification(
-              $subscriber->id,
-              (array)$wpUser,
-              (array)$oldWpUserData
-            );
-          }
-        }
-        break;
+      // welcome email
+      if ($scheduleWelcomeNewsletter === true) {
+        $scheduler = new WelcomeScheduler();
+        $scheduler->scheduleWPUserWelcomeNotification(
+          $subscriber->id,
+          (array)$wpUser,
+          (array)$oldWpUserData
+        );
+      }
     }
   }
 
