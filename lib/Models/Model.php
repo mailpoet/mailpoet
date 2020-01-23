@@ -232,7 +232,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     } catch (\PDOException $e) {
       switch ($e->getCode()) {
         case 23000:
-          preg_match("/for key \'(.*?)\'/i", $e->getMessage(), $matches);
+          preg_match("/for key '(?:.*\.)*(.*?)'/i", $e->getMessage(), $matches);
           if (isset($matches[1])) {
             $column = $matches[1];
             $this->setError(

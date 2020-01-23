@@ -49,6 +49,7 @@ class SaverTest extends \MailPoetTest {
     ]);
     $this->expectException('\MailPoet\DynamicSegments\Exceptions\ErrorSavingException');
     $this->expectExceptionCode(Model::DUPLICATE_RECORD);
+    $this->expectExceptionMessage('Another record already exists. Please specify a different "PRIMARY".');
     $this->saver->save($dynamicSegment2);
   }
 
