@@ -36,40 +36,8 @@ class Date extends Base {
     // generate an array of selectors based on date format
     $dateSelectors = explode('/', $dateFormat);
 
-    // format value if present
-    $value = self::getFieldValue($block);
-    $day = null;
-    $month = null;
-    $year = null;
-
-    if (strlen(trim($value)) > 0) {
-      $value = explode('-', $value);
-
-      switch ($block['params']['date_type']) {
-        case 'year_month_day':
-          $year = (isset($value[0]) ? (int)$value[0] : null);
-          $month = (isset($value[1]) ? (int)$value[1] : null);
-          $day = (isset($value[2]) ? (int)$value[2] : null);
-          break;
-
-        case 'year_month':
-          $year = (isset($value[0]) ? (int)$value[0] : null);
-          $month = (isset($value[1]) ? (int)$value[1] : null);
-          break;
-
-        case 'month':
-          $month = (isset($value[0]) ? (int)$value[0] : null);
-          break;
-
-        case 'year':
-          $year = (isset($value[0]) ? (int)$value[0] : null);
-          break;
-      }
-    }
-
     foreach ($dateSelectors as $dateSelector) {
       if ($dateSelector === 'DD') {
-        $block['selected'] = $day;
         $html .= '<select class="mailpoet_date_day" ';
         $html .= static::getInputValidation($block, [
           'required-message' => WPFunctions::get()->__('Please select a day', 'mailpoet'),
@@ -78,7 +46,6 @@ class Date extends Base {
         $html .= static::getDays($block);
         $html .= '</select>';
       } else if ($dateSelector === 'MM') {
-        $block['selected'] = $month;
         $html .= '<select class="mailpoet_select mailpoet_date_month" ';
         $html .= static::getInputValidation($block, [
           'required-message' => WPFunctions::get()->__('Please select a month', 'mailpoet'),
@@ -87,7 +54,6 @@ class Date extends Base {
         $html .= static::getMonths($block);
         $html .= '</select>';
       } else if ($dateSelector === 'YYYY') {
-        $block['selected'] = $year;
         $html .= '<select class="mailpoet_date_year" ';
         $html .= static::getInputValidation($block, [
           'required-message' => WPFunctions::get()->__('Please select a year', 'mailpoet'),
@@ -132,6 +98,10 @@ class Date extends Base {
       'selected' => null,
     ];
 
+    // is default today
+    if (!empty($block['params']['is_default_today'])) {
+      $defaults['selected'] = (int)strftime('%m');
+    }
     // merge block with defaults
     $block = array_merge($defaults, $block);
 
