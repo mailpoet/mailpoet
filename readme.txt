@@ -126,13 +126,31 @@ Have a question for us? Reach us at security@ our domain.
 
 == Frequently Asked Questions ==
 
-= Does MailPoet have this feature? =
-
-Want to know if MailPoet has a specific feature without having to install the plugin? [Try the live demo](https://demo.mailpoet.com).
-
 = Does MailPoet store the data of the user's subscribers? =
 
 We do not store or keep any data from your subscribers. However, if you're sending with us, we do process all the emails to be sent. It means MailPoet only logs email addresses to ensure that our service runs effectively. We do not track anything else.
+
+= What is the MailPoet Sending Service? =
+
+The MailPoet Sending Service is built exclusively to send WordPress and WooCommerce emails. Our in-house technology provides unparalleled speed (over 50,000 emails per hour) and performance, 99% uptime, and zero loss.
+
+= Which sending methods can I use to send my newsletters? =
+
+You have the liberty to choose how you send your emails: your own host (default, but [not recommended](https://kb.mailpoet.com/article/154-why-you-shouldnt-send-with-your-host)), the MailPoet Sending Service, SendGrid, Amazon SES, or most SMTP providers including MailGun, etc.
+
+= Why should I use the MailPoet Sending Service? =
+
+Our free and paid plans offer unlimited amount of emails.
+
+Our global deliverability rate is 98.5%, often exceeding industry standards. We monitor each and every one of the millions of emails that we send for our users.
+
+Whether you send 10 or 100,000 emails a day, the MailPoet Sending Service routinely handles small business newsletters through to huge mailing lists with tens of thousands of subscribers.
+
+We highly encourage not to send with your host, [here’s why](https://kb.mailpoet.com/article/154-why-you-shouldnt-send-with-your-host).
+
+= Can I filter specific categories out of my post notification? =
+
+Yes! In MailPoet you can set either categories or tags to include/exclude. This allows you to only send posts from specific categories or tags, ensuring that non-relevant posts stay out of your emails. You can also set up multiple post notification emails to better target your subscribers' interests.
 
 = Is MailPoet GDPR compliant? =
 
@@ -141,6 +159,10 @@ Yes, we are GDPR compliant. We do not have a Data Processing Agreement though. O
 We suggest that you also add a link to our Privacy Notice in your own Privacy Notice page. What's important is to make sure that your subscribers are aware that MailPoet delivers your email, if you send with MailPoet that is.
 
 You can also read our [Guide to Conform to GDPR](https://kb.mailpoet.com/article/246-guide-to-conform-to-gdpr).
+
+= WooCommerce: can my customers subscribe to my newsletter at checkout? =
+
+Yes, with MailPoet your customers can subscribe at checkout to your mailing list. You will even be able to send them abandoned cart reminder if they forgot to complete their purchase.
 
 = Is it MailPoet or Mail poet? =
 
