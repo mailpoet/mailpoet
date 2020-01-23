@@ -51,6 +51,7 @@ class State
     $tasks = [];
     foreach ($statuses as $status) {
       $query = ScheduledTask::orderByDesc('created_at')
+        ->orderByAsc('id') // consistent order for tasks with equal timestamps
         ->whereNull('deleted_at')
         ->limit($limit);
       if ($type) {
