@@ -1,4 +1,5 @@
 import React from 'react';
+import { memoize } from 'lodash';
 import { NoticeList } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 
@@ -13,6 +14,11 @@ export default () => {
   );
 
   const { removeNotice } = useDispatch('mailpoet-form-editor');
+  const timedRemove = memoize((noticeId) => {
+    setTimeout(() => removeNotice(noticeId), 5000);
+  });
+
+  dismissibleNotices.forEach((notice) => timedRemove(notice.id));
 
   return (
     <>
