@@ -79,7 +79,7 @@ class SegmentsTest extends \MailPoetTest {
 
     $response = $this->endpoint->save($duplicateEntry);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->regExp('/Another record already exists. Please specify a different ".*name"./');
+    expect($response->errors[0]['message'])->equals('Another record already exists. Please specify a different "name".');
   }
 
   public function testItCanRestoreASegment() {
