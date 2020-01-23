@@ -23,6 +23,10 @@ const CustomFieldSettings = ({
   const [localIsChecked, setLocalIsChecked] = useState(isChecked);
   const [localCheckboxLabel, setLocalCheckboxLabel] = useState(checkboxLabel);
 
+  const hasUnsavedChanges = localMandatory !== mandatory
+    || localIsChecked !== isChecked
+    || localCheckboxLabel !== checkboxLabel;
+
   const localData = useMemo(() => ({
     mandatory: localMandatory,
     isChecked: localIsChecked,
@@ -31,8 +35,8 @@ const CustomFieldSettings = ({
   }), [localMandatory, localIsChecked, localCheckboxLabel]);
 
   useEffect(() => {
-    onChange(localData);
-  }, [localData, onChange]);
+    onChange(localData, hasUnsavedChanges);
+  }, [localData, onChange, hasUnsavedChanges]);
 
   return (
     <div className="custom-field-settings">
@@ -42,14 +46,7 @@ const CustomFieldSettings = ({
           isDefault
           onClick={() => onSave(localData)}
           isBusy={isSaving}
-          disabled={
-            isSaving
-            || (
-              localMandatory === mandatory
-              && localIsChecked === isChecked
-              && localCheckboxLabel === checkboxLabel
-            )
-          }
+          disabled={isSaving || !hasUnsavedChanges}
           className="button-on-top"
         >
           {MailPoet.I18n.t('customFieldSaveCTA')}

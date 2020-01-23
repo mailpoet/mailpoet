@@ -32,11 +32,16 @@ const CustomFieldSettings = ({
     defaultToday: localDefaultToday,
   }), [localMandatory, localDateType, localDateFormat, localDefaultToday]);
 
+  const hasUnsavedChanges = localMandatory !== mandatory
+    || localDefaultToday !== defaultToday
+    || localDateType !== dateType
+    || localDateFormat !== dateFormat;
+
   useEffect(() => {
     if (onChange) {
-      onChange(localData);
+      onChange(localData, hasUnsavedChanges);
     }
-  }, [localData, onChange]);
+  }, [localData, onChange, hasUnsavedChanges]);
 
   const createDateFormatsSelect = () => {
     const dateFormats = dateSettings.dateFormats[localDateType];
@@ -69,15 +74,7 @@ const CustomFieldSettings = ({
             defaultToday: localDefaultToday,
           })}
           isBusy={isSaving}
-          disabled={
-            isSaving
-            || (
-              localMandatory === mandatory
-              && localDefaultToday === defaultToday
-              && localDateType === dateType
-              && localDateFormat === dateFormat
-            )
-          }
+          disabled={isSaving || !hasUnsavedChanges}
           className="button-on-top"
         >
           {MailPoet.I18n.t('customFieldSaveCTA')}

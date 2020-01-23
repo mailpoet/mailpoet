@@ -47,6 +47,12 @@ export function changeFormStyles(styles) {
   };
 }
 
+export function customFieldEdited() {
+  return {
+    type: 'CUSTOM_FIELD_EDITED',
+  };
+}
+
 export function saveCustomFieldDone(customFieldId, response) {
   return {
     type: 'SAVE_CUSTOM_FIELD_DONE',
