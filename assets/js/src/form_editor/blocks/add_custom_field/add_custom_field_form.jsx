@@ -47,7 +47,7 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
   const [fieldName, setFieldName] = useState(null);
   const [fieldSettings, setFieldSettings] = useState({});
 
-  const canSubmit = fieldName && !isEmpty(fieldSettings);
+  const canSubmit = fieldName && !isEmpty(fieldSettings) && (fieldSettings.isValid !== false);
   const defaultType = dateSettings.dateTypes[0].value;
   const defaultFormat = dateSettings.dateFormats[defaultType][0];
 

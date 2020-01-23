@@ -4,6 +4,7 @@ import {
   Button,
   ToggleControl,
 } from '@wordpress/components';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import CustomFieldDelete from '../custom_field_delete.jsx';
@@ -26,12 +27,11 @@ const CustomFieldSettings = ({
     mandatory: localMandatory,
     isChecked: localIsChecked,
     checkboxLabel: localCheckboxLabel,
+    isValid: !isEmpty(localCheckboxLabel),
   }), [localMandatory, localIsChecked, localCheckboxLabel]);
 
   useEffect(() => {
-    if (onChange) {
-      onChange(localData);
-    }
+    onChange(localData);
   }, [localData, onChange]);
 
   return (
@@ -101,7 +101,7 @@ CustomFieldSettings.defaultProps = {
   checkboxLabel: '',
   isDeleting: false,
   onCustomFieldDelete: null,
-  onChange: null,
+  onChange: () => {},
 };
 
 export default CustomFieldSettings;
