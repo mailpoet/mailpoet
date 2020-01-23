@@ -335,7 +335,6 @@ Module.SidebarPreviewView = Marionette.View.extend({
       CommunicationComponent.previewNewsletter(data).always(function () {
         MailPoet.Modal.loading(false);
       }).done(function () {
-        var showSuccessDeliveryPoll;
         MailPoet.Notice.success(
           MailPoet.I18n.t('newsletterPreviewSent'),
           { scroll: true }
@@ -346,11 +345,6 @@ Module.SidebarPreviewView = Marionette.View.extend({
         });
         if (App.getConfig().get('validation.validateSPFRecord')) {
           checkSPFRecord();
-        }
-        showSuccessDeliveryPoll = MailPoet.Poll.successDelivery.canShow('preview');
-        if (showSuccessDeliveryPoll) {
-          MailPoet.Poll.successDelivery.showModal('preview', 'IHedf1');
-          MailPoet.Poll.successDelivery.setPollShown('preview');
         }
       }).fail(function (response) {
         if (response.errors.length > 0) {

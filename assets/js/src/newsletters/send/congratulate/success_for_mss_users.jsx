@@ -19,28 +19,10 @@ function renderHeader(newsletter) {
 }
 
 function MSSUserSuccess(props) {
-  const showSuccessDeliveryPoll = (
-    props.newsletter.type === 'standard'
-    && props.newsletter.status !== 'scheduled'
-  );
-  if (showSuccessDeliveryPoll) {
-    MailPoet.Poll.successDelivery.initTypeformScript();
-  }
   return (
     <div className="mailpoet_congratulate_success">
       <h1>{renderHeader(props.newsletter)}</h1>
       <img src={props.illustrationImageUrl} alt="" width="750" height="250" />
-      {showSuccessDeliveryPoll
-      && (
-        <div
-          className="typeform-widget"
-          data-url="https://mailpoet.typeform.com/to/ciWID6"
-          data-transparency="100"
-          data-hide-headers="true"
-          data-hide-footer="true"
-        />
-      )
-      }
       <button type="button" className="button" onClick={props.successClicked}>{MailPoet.I18n.t('close')}</button>
     </div>
   );

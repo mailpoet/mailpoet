@@ -84,7 +84,6 @@ class Changelog {
 
   private function setupNewInstallation() {
     $this->settings->set('show_congratulate_after_first_newsletter', true);
-    $this->settings->set('show_poll_success_delivery_preview', true);
   }
 
   private function checkWelcomeWizard() {

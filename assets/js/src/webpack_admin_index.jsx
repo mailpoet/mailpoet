@@ -14,7 +14,6 @@ import 'forms/forms.jsx'; // side effect - renders ReactDOM to document
 import 'settings/tabs.js'; // side effect - assigns to MailPoet.Router, executes code on doc ready
 import 'settings/premium_tab/premium_tab.jsx'; // side effect - renders ReactDOM to document
 import 'help/help.jsx'; // side effect - renders ReactDOM to document
-import 'poll.jsx'; // side effect - assigns to MailPoet.Poll
 import 'settings/reinstall_from_scratch.js'; // side effect - adds event handler to document
 import 'subscribers/importExport/import.jsx'; // side effect - executes on doc ready, adds events
 import 'subscribers/importExport/export.js'; // side effect - executes on doc ready
