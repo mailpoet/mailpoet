@@ -5,7 +5,7 @@ import {
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
-import { isEqualWith } from 'lodash';
+import { reduce, isEmpty, isEqualWith } from 'lodash';
 
 import SettingsPreview from './settings_preview.jsx';
 import CustomFieldDelete from '../custom_field_delete.jsx';
@@ -41,6 +41,7 @@ const CustomFieldSettings = ({
   const localData = useMemo(() => ({
     mandatory: localMandatory,
     values: localValues,
+    isValid: reduce(localValues, (acc, value) => !isEmpty(value.name) && acc, true),
   }), [localMandatory, localValues]);
 
   useEffect(() => {
