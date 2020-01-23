@@ -49,13 +49,6 @@ executors:
     - image: mailpoet/wordpress:7.3_20190705.2
     - image: circleci/mysql:5.7.27-ram
 
-  wordpress_mysql80_php73:
-    <<: *default_job_config
-    docker:
-      - image: mailpoet/wordpress:7.3_20190705.2
-      - image: circleci/mysql:8.0-ram
-        command: [--default-authentication-plugin=mysql_native_password]
-
   wordpress_mysql80_php74:
     <<: *default_job_config
     docker:
