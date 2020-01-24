@@ -56,19 +56,17 @@ $gutenberg-control-border-color-focus: #007cba;
   max-height: 30px;
 }
 
-.mailpoet-dnd-items-list {
-  align-content: flex-start;
-  align-items: flex-start;
+.mailpoet-dnd-items-list > div {
   display: flex;
   flex-direction: column;
 
   > * {
-    align-items: center;
     margin-bottom: 12px
   }
 }
 
 .mailpoet-form-segments-settings-list {
+  align-items: center;
   display: flex;
   flex-direction: row;
 

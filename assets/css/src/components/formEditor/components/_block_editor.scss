@@ -20,3 +20,9 @@
     display: none;
   }
 }
+
+// Drag and drop library we use for custom fields does not support nested scrollable
+// https://github.com/atlassian/react-beautiful-dnd/issues/131
+.edit-post-editor-regions__body {
+  overflow: hidden;
+}

@@ -5,7 +5,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { CheckboxControl, Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
-import { ReactSortable } from 'react-sortablejs';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const PreviewItem = ({
   segment,
@@ -63,18 +63,50 @@ const Preview = ({
     updateSegment(segment);
   };
 
+
+  const onDragEnd = (result) => {
+    const from = result.source.index;
+    const to = result.destination.index;
+    const newValues = [...segmentsWhileMoved];
+    const [movedItem] = newValues.splice(from, 1);
+    newValues.splice(to, 0, movedItem);
+    setSegments(newValues);
+    onSegmentsReorder(newValues);
+  };
+
+  const renderItems = () => (segmentsWhileMoved.map((segment, index) => (
+    <Draggable key={segment.id} draggableId={segment.id} index={index}>
+      {(provided) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          <PreviewItem
+            key={segment.id}
+            index={index}
+            segment={segment}
+            onCheck={onCheck}
+            removeSegment={removeSegment}
+          />
+        </div>
+      )}
+    </Draggable>
+  )));
   return (
-    <ReactSortable list={segmentsWhileMoved} setList={onSegmentsReorder}>
-      {segmentsWhileMoved.map((segment, index) => (
-        <PreviewItem
-          key={segment.id}
-          index={index}
-          segment={segment}
-          onCheck={onCheck}
-          removeSegment={removeSegment}
-        />
-      ))}
-    </ReactSortable>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="droppable">
+        {(provided) => (
+          <div
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            {renderItems()}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 };
 
