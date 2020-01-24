@@ -80,7 +80,6 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
             mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
             values={fieldSettings.values ? fieldSettings.values : [{ name: '', id: Math.random().toString() }]}
             onChange={setFieldSettings}
-            useDragAndDrop={false}
           />
         );
       default:

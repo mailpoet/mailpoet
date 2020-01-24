@@ -5,7 +5,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
-import { ReactSortable } from 'react-sortablejs';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const PreviewItem = ({
   value,
@@ -55,7 +55,6 @@ const Preview = ({
   update,
   remove,
   onReorder,
-  useDragAndDrop,
 }) => {
   const [valuesWhileMoved, setValues] = useState(values);
 
@@ -96,31 +95,54 @@ const Preview = ({
     update(sanitizeValue(value));
   };
 
+  const onDragEnd = (result) => {
+    const from = result.source.index;
+    const to = result.destination.index;
+    const newValues = [...valuesWhileMoved];
+    const [movedItem] = newValues.splice(from, 1);
+    newValues.splice(to, 0, movedItem);
+    setValues(newValues);
+    onReorder(newValues);
+  };
+
   const renderItems = () => (valuesWhileMoved.map((value, index) => (
-    <PreviewItem
-      key={value.id}
-      index={index}
-      value={value}
-      remove={remove}
-      onCheck={onCheck}
-      onUpdate={onUpdate}
-    />
+    <Draggable key={value.id} draggableId={value.id} index={index}>
+      {(provided) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          <PreviewItem
+            key={`inner${value.id}`}
+            index={index}
+            value={value}
+            remove={remove}
+            onCheck={onCheck}
+            onUpdate={onUpdate}
+          />
+        </div>
+      )}
+    </Draggable>
   )));
 
-  return (useDragAndDrop ? (
-    <ReactSortable
-      list={valuesWhileMoved}
-      setList={(reorderedValues) => onReorder(reorderedValues.map(sanitizeValue))}
-      className="mailpoet-dnd-items-list"
-      animation={100}
-    >
-      {renderItems()}
-    </ReactSortable>
-  ) : (
+  return (
     <div className="mailpoet-dnd-items-list">
-      {renderItems()}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {renderItems()}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
-  ));
+  );
 };
 
 Preview.propTypes = {
@@ -131,11 +153,6 @@ Preview.propTypes = {
   update: PropTypes.func.isRequired,
   remove: PropTypes.func.isRequired,
   onReorder: PropTypes.func.isRequired,
-  useDragAndDrop: PropTypes.bool,
-};
-
-Preview.defaultProps = {
-  useDragAndDrop: true,
 };
 
 export default Preview;
