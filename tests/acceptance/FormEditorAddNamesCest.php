@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 
@@ -24,12 +22,12 @@ class FormEditorAddNamesCest {
     $i->waitForElement('[data-automation-id="form_title_input"]');
 
     $i->click('.block-list-appender button');// CLICK the big button that adds new blocks
-    $i->waitForElement('.editor-inserter__results .components-panel__body-toggle');
-    $i->click('.editor-inserter__results .components-panel__body:nth-child(1) .components-panel__body-toggle'); // toggle fields
+    $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
+    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(1) .components-panel__body-toggle'); // toggle fields
     $i->click('.editor-block-list-item-mailpoet-form-first-name-input'); // add first name block to the editor
     $i->click('.block-list-appender button');// CLICK the big button that adds new blocks
-    $i->waitForElement('.editor-inserter__results .components-panel__body-toggle');
-    $i->click('.editor-inserter__results .components-panel__body:nth-child(2) .components-panel__body-toggle'); // toggle fields, get the second field, first one is now "Most Used"
+    $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
+    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(2) .components-panel__body-toggle'); // toggle fields, get the second field, first one is now "Most Used"
     $i->click('.editor-block-list-item-mailpoet-form-last-name-input'); // add last name block to the editor
 
     $i->click('[data-automation-id="form_save_button"]');

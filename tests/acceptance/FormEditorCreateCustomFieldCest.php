@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 
@@ -24,8 +22,9 @@ class FormEditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="form_title_input"]');
     // Insert create custom field block
     $i->click('.block-list-appender button');// CLICK the big button that adds new blocks
-    $i->waitForElement('.editor-inserter__results .components-panel__body-toggle');
-    $i->click('.editor-inserter__results .components-panel__body:nth-child(2) .components-panel__body-toggle'); // toggle custom fields
+
+    $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
+    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(2) .components-panel__body-toggle'); // toggle custom fields
     $i->click('.editor-block-list-item-mailpoet-form-add-custom-field'); // add create custom field block
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
 
