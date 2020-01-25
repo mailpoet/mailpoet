@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Segment;
 
 class FormEditorUpdateNewFormCest {
