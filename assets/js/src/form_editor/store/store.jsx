@@ -50,20 +50,4 @@ export default () => {
   };
 
   registerStore('mailpoet-form-editor', config);
-
-  // Workaround for @wordpress/block-editor dependency on @wordpress/editor's store
-  // Block editor store use is triggering an experimental action from core/editor
-  // This was already fixed in Gutenberg but it is not released yet
-  // https://github.com/WordPress/gutenberg/commit/c97ccf0bea983cc1042cea7a1171a5a7c0ff5770
-  const dummyEditorStoreConfig = {
-    reducer: (state) => (state),
-    actions: {
-      __experimentalFetchReusableBlocks: () => ({
-        type: 'DUMMY_EXPERIMENTAL',
-      }),
-    },
-    controls: {},
-    resolvers: {},
-  };
-  registerStore('core/editor', dummyEditorStoreConfig);
 };
