@@ -66,18 +66,10 @@ const Preview = ({
     return null;
   }
 
-  // Remove unwanted properties added by sortable
-  const sanitizeValue = (value) => {
-    const sanitized = { ...value };
-    delete sanitized.chosen;
-    delete sanitized.selected;
-    return sanitized;
-  };
-
   const onUpdate = (valueId, text) => {
     const value = valuesWhileMoved.find((v) => v.id === valueId);
     value.name = text;
-    update(sanitizeValue(value));
+    update(value);
   };
 
   const onCheck = (valueId, checked) => {
@@ -86,13 +78,13 @@ const Preview = ({
       const checkedValue = valuesWhileMoved.find((v) => v.isChecked);
       if (checkedValue) {
         delete checkedValue.isChecked;
-        update(sanitizeValue(checkedValue));
+        update(checkedValue);
       }
       value.isChecked = true;
     } else {
       delete value.isChecked;
     }
-    update(sanitizeValue(value));
+    update(value);
   };
 
   const onDragEnd = (result) => {
