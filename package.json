@@ -110,7 +110,7 @@
     "json-loader": "^0.5.7",
     "mocha": "^5.2.0",
     "node-sass": "^4.12.0",
-    "postcss-cli": "^6.1.2",
+    "postcss-cli": "^7.1.0",
     "sinon": "1.14.1",
     "sinon-chai": "2.7.0",
     "string-replace-loader": "^2.1.1",
@@ -118,7 +118,7 @@
     "stylelint-order": "^3.0.0",
     "stylelint-scss": "^3.8.0",
     "terser-webpack-plugin": "^1.4.3",
-    "webpack": "^4.28.1",
+    "webpack": "^4.41.5",
     "webpack-cli": "^3.2.1",
     "webpack-manifest-plugin": "^2.0.4"
   }
