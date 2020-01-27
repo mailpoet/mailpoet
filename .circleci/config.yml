@@ -17,7 +17,7 @@ anchors:
   multisite_acceptance_config: &multisite_acceptance_config
     multisite: 1
     requires:
-      - php5_unit
+      - php7_unit
     <<: *only_master_and_release
 
 executors:
@@ -148,52 +148,6 @@ jobs:
     - run:
         name: "Static analysis"
         command: ./do qa:phpstan
-  php5_unit:
-    executor: wordpress_mysql57_php56
-    steps:
-    - attach_workspace:
-       at: /home/circleci/mailpoet
-    - run:
-        name: "Set up virtual host"
-        command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
-    - run:
-        name: "Set up test environment"
-        command: source ./.circleci/setup.bash && setup php5
-    - run:
-        name: "PHP Unit tests"
-        command: |
-          WP_ROOT="/home/circleci/mailpoet/wordpress" ./do t:u --xml
-    - store_test_results:
-        path: tests/_output
-    - store_artifacts:
-        path: tests/_output
-        destination: codeception
-    - store_artifacts:
-        path: /tmp/fake-mailer/
-        destination: fake-mailer
-  php5_integration:
-    executor: wordpress_mysql55_php56
-    steps:
-    - attach_workspace:
-       at: /home/circleci/mailpoet
-    - run:
-        name: "Set up virtual host"
-        command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
-    - run:
-        name: "Set up test environment"
-        command: source ./.circleci/setup.bash && setup php5 4.7
-    - run:
-        name: "PHP Integration tests"
-        command: |
-          WP_ROOT="/home/circleci/mailpoet/wordpress" ./do test:integration --xml
-    - store_test_results:
-        path: tests/_output
-    - store_artifacts:
-        path: tests/_output
-        destination: codeception
-    - store_artifacts:
-        path: /tmp/fake-mailer/
-        destination: fake-mailer
   js_tests:
     executor: wordpress_php56
     steps:
@@ -406,9 +360,6 @@ workflows:
   build_and_test:
     jobs:
       - build_and_code_qa
-      - php5_unit:
-          requires:
-            - build_and_code_qa
       - php7_unit:
           requires:
             - build_and_code_qa
@@ -419,33 +370,30 @@ workflows:
           index: 1
           name: acceptance_tests_1
           requires:
-            - php5_unit
+            - php7_unit
       - acceptance_tests:
           index: 2
           name: acceptance_tests_2
           requires:
-            - php5_unit
+            - php7_unit
       - acceptance_tests:
           index: 3
           name: acceptance_tests_3
           requires:
-            - php5_unit
+            - php7_unit
       - acceptance_tests:
           index: 4
           name: acceptance_tests_4
           requires:
-            - php5_unit
+            - php7_unit
       - acceptance_tests:
           index: 5
           name: acceptance_tests_5
           requires:
-            - php5_unit
+            - php7_unit
       - js_tests:
           requires:
             - build_and_code_qa
-      - php5_integration:
-          requires:
-            - php5_unit
       - php7_integration:
           requires:
             - php7_unit
@@ -482,7 +430,6 @@ workflows:
             - acceptance_tests_4
             - acceptance_tests_5
             - js_tests
-            - php5_integration
             - php7_integration
       - test_deployment:
           <<: *only_master_and_release
