@@ -9,7 +9,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class SendingServiceKeyCheckTest extends \MailPoetTest {
   public $worker;

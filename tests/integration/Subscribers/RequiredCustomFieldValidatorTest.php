@@ -22,7 +22,7 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
 
   public function testItValidatesDataWithoutCustomField() {
     $validator = new RequiredCustomFieldValidator();
-    $this->setExpectedException('Exception');
+    $this->expectException('Exception');
     $validator->validate([]);
   }
 
@@ -38,13 +38,13 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
 
   public function testItValidatesDataWithEmptyCustomField() {
     $validator = new RequiredCustomFieldValidator();
-    $this->setExpectedException('Exception');
+    $this->expectException('Exception');
     $validator->validate([$this->customField->id() => '']);
   }
 
   public function testItValidatesDataWithEmptyCustomFieldAsCFId() {
     $validator = new RequiredCustomFieldValidator();
-    $this->setExpectedException('Exception');
+    $this->expectException('Exception');
     $validator->validate(['cf_' . $this->customField->id() => '']);
   }
 

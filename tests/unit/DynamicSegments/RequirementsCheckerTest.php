@@ -6,10 +6,11 @@ use MailPoet\DynamicSegments\Filters\EmailAction;
 use MailPoet\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Models\DynamicSegment;
 use MailPoet\WooCommerce\Helper;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class RequirementsCheckerTest extends \MailPoetUnitTest {
 
-  /** @var Helper|\PHPUnit_Framework_MockObject_MockObject */
+  /** @var Helper|MockObject */
   private $woocommerceHelper;
 
   /** @var RequirementsChecker */

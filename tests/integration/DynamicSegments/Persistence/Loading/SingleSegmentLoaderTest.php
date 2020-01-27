@@ -38,7 +38,7 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
   }
 
   public function testItThrowsForUnknownSegment() {
-    $this->setExpectedException('InvalidArgumentException');
+    $this->expectException('InvalidArgumentException');
     $this->loader->load($this->segment->id + 11564564);
   }
 

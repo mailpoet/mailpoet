@@ -7,7 +7,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
-use PHPUnit_Framework_Assert as Asserts;
+use PHPUnit\Framework\Assert;
 
 class ReinstallFromScratchCest {
 
@@ -58,6 +58,6 @@ class ReinstallFromScratchCest {
     $i->waitForText('admin', 30, '.mailpoet_listing_table');
     $wpUsersCount = count_users();
     $subscribersCount = (int)$i->grabTextFrom('.displaying-num');
-    Asserts::assertEquals($wpUsersCount['total_users'], $subscribersCount);
+    Assert::assertEquals($wpUsersCount['total_users'], $subscribersCount);
   }
 }

@@ -6,6 +6,7 @@ use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
+use PHPUnit\Framework\Exception;
 
 class SettingsInactiveSubscribersChangeCest {
 
@@ -49,7 +50,7 @@ class SettingsInactiveSubscribersChangeCest {
         $i->waitForListingItemsToLoad();
         $i->see('Inactive (0)');
         return;
-      } catch (\PHPUnit_Framework_Exception $e) {
+      } catch (Exception $e) {
         continue;
       }
     }

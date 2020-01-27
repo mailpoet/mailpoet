@@ -7,19 +7,20 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class SchedulerTest extends \MailPoetUnitTest {
 
   /** @var Scheduler */
   private $statsNotifications;
 
-  /** @var SettingsController|\PHPUnit_Framework_MockObject_MockObject */
+  /** @var SettingsController|MockObject */
   private $settings;
 
-  /** @var EntityManager|\PHPUnit_Framework_MockObject_MockObject */
+  /** @var EntityManager|MockObject */
   private $entityManager;
 
-  /** @var StatsNotificationsRepository|\PHPUnit_Framework_MockObject_MockObject */
+  /** @var StatsNotificationsRepository|MockObject */
   private $repository;
 
   public function _before() {

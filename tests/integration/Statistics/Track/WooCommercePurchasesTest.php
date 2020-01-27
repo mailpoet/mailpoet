@@ -14,7 +14,7 @@ use MailPoet\Tasks\Sending;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoetVendor\Idiorm\ORM;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use WC_Order;
 
 class WooCommercePurchasesTest extends \MailPoetTest {
@@ -321,7 +321,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     return $click->save();
   }
 
-  private function createWooCommerceHelperMock(PHPUnit_Framework_MockObject_MockObject $orderMock) {
+  private function createWooCommerceHelperMock(MockObject $orderMock) {
     $mock = $this->createMock(WooCommerceHelper::class);
     $mock->method('wcGetOrder')->willReturn($orderMock);
     return $mock;

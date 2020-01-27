@@ -186,22 +186,22 @@ parameters:
 			path: ../../tests/integration/API/JSON/v1/SettingsTest.php
 
 		-
-			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartPageVisitTrackerTest\\:\\:\\$wp \\(MailPoet\\\\WP\\\\Functions&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\WP\\\\Functions\\.$#"
+			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartPageVisitTrackerTest\\:\\:\\$wp \\(MailPoet\\\\WP\\\\Functions&PHPUnit\\\\Framework\\\\MockObject\\\\MockObject\\) does not accept MailPoet\\\\WP\\\\Functions\\.$#"
 			count: 1
 			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartPageVisitTrackerTest.php
 
 		-
-			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartTest\\:\\:\\$wp \\(MailPoet\\\\WP\\\\Functions&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\WP\\\\Functions\\.$#"
+			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartTest\\:\\:\\$wp \\(MailPoet\\\\WP\\\\Functions&PHPUnit\\\\Framework\\\\MockObject\\\\MockObject\\) does not accept MailPoet\\\\WP\\\\Functions\\.$#"
 			count: 1
 			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartTest.php
 
 		-
-			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartTest\\:\\:\\$wooCommerceHelperMock \\(MailPoet\\\\WooCommerce\\\\Helper&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\WooCommerce\\\\Helper\\.$#"
+			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartTest\\:\\:\\$wooCommerceHelperMock \\(MailPoet\\\\WooCommerce\\\\Helper&PHPUnit\\\\Framework\\\\MockObject\\\\MockObject\\) does not accept MailPoet\\\\WooCommerce\\\\Helper\\.$#"
 			count: 1
 			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartTest.php
 
 		-
-			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartTest\\:\\:\\$pageVisitTrackerMock \\(MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartPageVisitTracker&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartPageVisitTracker\\.$#"
+			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartTest\\:\\:\\$pageVisitTrackerMock \\(MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartPageVisitTracker&PHPUnit\\\\Framework\\\\MockObject\\\\MockObject\\) does not accept MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\AbandonedCartPageVisitTracker\\.$#"
 			count: 1
 			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartTest.php
 
@@ -221,7 +221,7 @@ parameters:
 			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/FirstPurchaseTest.php
 
 		-
-			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\PurchasedInCategoryTest\\:\\:\\$woocommerceHelper \\(PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\WooCommerce\\\\Helper\\.$#"
+			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\PurchasedInCategoryTest\\:\\:\\$woocommerceHelper \\(PHPUnit\\\\Framework\\\\MockObject\\\\MockObject\\) does not accept MailPoet\\\\WooCommerce\\\\Helper\\.$#"
 			count: 1
 			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/PurchasedInCategoryTest.php
 
@@ -476,12 +476,12 @@ parameters:
 			path: ../../tests/integration/DynamicSegments/Filters/UserRoleTest.php
 
 		-
-			message: "#^Property MailPoet\\\\DynamicSegments\\\\FreePluginConnectors\\\\SendingNewslettersSubscribersFinderTest\\:\\:\\$singleSegmentLoader \\(MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SingleSegmentLoader&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SingleSegmentLoader\\.$#"
+			message: "#^Property MailPoet\\\\DynamicSegments\\\\FreePluginConnectors\\\\SendingNewslettersSubscribersFinderTest\\:\\:\\$singleSegmentLoader \\(MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SingleSegmentLoader&PHPUnit\\\\Framework\\\\MockObject\\\\MockObject\\) does not accept MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SingleSegmentLoader\\.$#"
 			count: 1
 			path: ../../tests/integration/DynamicSegments/FreePluginConnectors/SendingNewslettersSubscribersFinderTest.php
 
 		-
-			message: "#^Property MailPoet\\\\DynamicSegments\\\\FreePluginConnectors\\\\SendingNewslettersSubscribersFinderTest\\:\\:\\$subscribersIdsLoader \\(MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SubscribersIds&PHPUnit_Framework_MockObject_MockObject\\) does not accept MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SubscribersIds\\.$#"
+			message: "#^Property MailPoet\\\\DynamicSegments\\\\FreePluginConnectors\\\\SendingNewslettersSubscribersFinderTest\\:\\:\\$subscribersIdsLoader \\(MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SubscribersIds&PHPUnit\\\\Framework\\\\MockObject\\\\MockObject\\) does not accept MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SubscribersIds\\.$#"
 			count: 1
 			path: ../../tests/integration/DynamicSegments/FreePluginConnectors/SendingNewslettersSubscribersFinderTest.php
 

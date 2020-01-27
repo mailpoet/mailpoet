@@ -120,7 +120,8 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = new InactiveSubscribers($controllerMock, $this->settings);
-    $this->setExpectedException(\Exception::class, 'Maximum execution time has been reached.');
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage('Maximum execution time has been reached.');
     $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true) - $this->cronHelper->getDaemonExecutionLimit());
   }
 }

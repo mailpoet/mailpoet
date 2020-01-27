@@ -7,10 +7,11 @@ require_once(ABSPATH . 'wp-admin/includes/user.php');
 use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoet\DynamicSegments\RequirementsChecker;
 use MailPoet\Models\DynamicSegment;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscribersCountTest extends \MailPoetTest {
 
-  /** @var RequirementsChecker|\PHPUnit_Framework_MockObject_MockObject */
+  /** @var RequirementsChecker|MockObject */
   private $requirementChecker;
 
   public function _before() {

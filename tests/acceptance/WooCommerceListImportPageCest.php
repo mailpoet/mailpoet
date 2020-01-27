@@ -6,6 +6,7 @@ use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceCustomer;
 use MailPoet\Test\DataFactories\WooCommerceOrder;
+use PHPUnit\Framework\Exception;
 
 class WooCommerceListImportPageCest {
 
@@ -58,7 +59,7 @@ class WooCommerceListImportPageCest {
         $i->reloadPage();
         $i->see($guestUserData['email']);
         return;
-      } catch (\PHPUnit_Framework_Exception $e) {
+      } catch (Exception $e) {
         continue;
       }
     }

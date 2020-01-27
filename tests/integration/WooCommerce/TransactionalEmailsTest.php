@@ -224,19 +224,19 @@ class TransactionalEmailsTest extends \MailPoetTest {
     );
     $transactionalEmails->useTemplateForWoocommerceEmails();
     expect($addedActions)->count(1);
-    expect($addedActions['woocommerce_init'])->isCallable();
+    expect($addedActions['woocommerce_init'])->callable();
     $addedActions['woocommerce_init']();
     expect($removedActions)->count(2);
     expect($addedActions)->count(4);
-    expect($addedActions['woocommerce_email_header'])->isCallable();
+    expect($addedActions['woocommerce_email_header'])->callable();
     ob_start();
     $addedActions['woocommerce_email_header']('heading text');
     expect(ob_get_clean())->equals('HTML before content with heading text');
-    expect($addedActions['woocommerce_email_footer'])->isCallable();
+    expect($addedActions['woocommerce_email_footer'])->callable();
     ob_start();
     $addedActions['woocommerce_email_footer']();
     expect(ob_get_clean())->equals('HTML after content');
-    expect($addedActions['woocommerce_email_styles'])->isCallable();
+    expect($addedActions['woocommerce_email_styles'])->callable();
     expect($addedActions['woocommerce_email_styles']('some css'))->equals('prefixed some css');
   }
 
