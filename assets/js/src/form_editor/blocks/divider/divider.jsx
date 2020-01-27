@@ -8,7 +8,7 @@ export const settings = {
   title: MailPoet.I18n.t('blockDivider'),
   description: null,
   icon,
-  category: 'fields',
+  category: 'layout',
   attributes: {},
   supports: {
     html: false,
