@@ -25,6 +25,10 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     expect($this->phpVersionWarning->isOutdatedPHPVersion('5.6.3'))->true();
   }
 
+  public function testPHP70IsOutdated() {
+    expect($this->phpVersionWarning->isOutdatedPHPVersion('7.0.8'))->true();
+  }
+
   public function testPHP72IsNotOutdated() {
     expect($this->phpVersionWarning->isOutdatedPHPVersion('7.2'))->false();
   }
@@ -35,8 +39,14 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     expect($warning->getMessage())->contains('https://www.mailpoet.com/let-us-handle-your-php-upgrade/');
   }
 
-  public function testItPrintsNoWarningFor70() {
-    $warning = $this->phpVersionWarning->init('7.0', true);
+  public function testItPrintsWarningFor70() {
+    $warning = $this->phpVersionWarning->init('7.0.0', true);
+    expect($warning->getMessage())->contains('Your website is running on PHP 7.0.0');
+    expect($warning->getMessage())->contains('https://www.mailpoet.com/let-us-handle-your-php-upgrade/');
+  }
+
+  public function testItPrintsNoWarningFor71() {
+    $warning = $this->phpVersionWarning->init('7.1', true);
     expect($warning)->null();
   }
 
