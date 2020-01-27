@@ -39,7 +39,7 @@ if (version_compare(get_bloginfo('version'), '4.6', '<')) {
 }
 
 // Check for minimum supported PHP version
-if (version_compare(phpversion(), '5.6.0', '<')) {
+if (version_compare(phpversion(), '7.0.0', '<')) {
   add_action('admin_notices', 'mailpoet_php_version_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
@@ -62,7 +62,7 @@ function mailpoet_php_version_notice() {
   $notice = str_replace(
     '[link]',
     '<a href="https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_version" target="_blank">',
-    __('MailPoet requires PHP version 5.6 or newer (version 7.2 recommended). Please read our [link]instructions[/link] on how to upgrade your site.', 'mailpoet')
+    __('MailPoet requires PHP version 7.0 or newer (version 7.2 recommended). Please read our [link]instructions[/link] on how to upgrade your site.', 'mailpoet')
   );
   $notice = str_replace('[/link]', '</a>', $notice);
   printf('<div class="error"><p>%1$s</p></div>', $notice);

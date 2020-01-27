@@ -381,9 +381,9 @@ class RoboFile extends \Robo\Tasks {
 
     return $this->collectionBuilder()
 
-      // PHP >= 5.6 for lib & tests
+      // PHP >= 7.0 for lib & tests
       ->taskExec($task)
-      ->rawArg('--runtime-set testVersion 5.6-7.3')
+      ->rawArg('--runtime-set testVersion 7.0-7.4')
       ->arg('--ignore=' . implode(',', [
           'lib/Config/PopulatorData/Templates',
           'tests/_data',
@@ -396,14 +396,14 @@ class RoboFile extends \Robo\Tasks {
         'tests',
       ])
 
-      // PHP >= 5.6 in plugin root directory
+      // PHP >= 7.0 in plugin root directory
       ->taskExec($task)
-      ->rawArg('--runtime-set testVersion 5.6-7.3')
+      ->rawArg('--runtime-set testVersion 7.0-7.4')
       ->rawArg('-l .')
 
       // PHP >= 7.2 for dev tools, etc.
       ->taskExec($task)
-      ->rawArg('--runtime-set testVersion 7.2-7.3')
+      ->rawArg('--runtime-set testVersion 7.2-7.4')
       ->arg('--ignore=' . implode(',', [
           'prefixer/build',
           'prefixer/vendor',
@@ -429,7 +429,7 @@ class RoboFile extends \Robo\Tasks {
         ->taskExec(
           './tasks/code_sniffer/vendor/bin/phpcbf ' .
             '--standard=./tasks/code_sniffer/MailPoet ' .
-            '--runtime-set testVersion 5.6-7.3 ' .
+            '--runtime-set testVersion 7.0-7.4 ' .
             $filePath . ' -n'
         )
         ->run();
