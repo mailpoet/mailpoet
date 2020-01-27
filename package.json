@@ -108,7 +108,7 @@
     "js-yaml": "^3.13.1",
     "jsdom": "^11.12.0",
     "json-loader": "^0.5.7",
-    "mocha": "^5.2.0",
+    "mocha": "^7.0.1",
     "node-sass": "^4.13.1",
     "postcss-cli": "^7.1.0",
     "sinon": "1.14.1",
