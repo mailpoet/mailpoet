@@ -129,6 +129,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
 CustomCheckboxEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
+    customFieldId: PropTypes.number.isRequired,
     mandatory: PropTypes.bool.isRequired,
     hideLabel: PropTypes.bool,
     values: PropTypes.arrayOf(PropTypes.shape({

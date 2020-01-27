@@ -20,7 +20,7 @@ class TimeSelect extends React.Component { // eslint-disable-line react/prefer-s
         value={this.props.value}
         disabled={this.props.disabled}
         onChange={this.props.onChange}
-        {...this.props.validation}
+        {...this.props.validation} // eslint-disable-line react/jsx-props-no-spreading
       >
         {options}
       </select>

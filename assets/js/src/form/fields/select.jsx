@@ -64,7 +64,7 @@ class FormFieldSelect extends React.Component {
         value={this.props.item[this.props.field.name] || ''}
         onChange={this.props.onValueChange}
         data-automation-id={this.props.automationId}
-        {...this.props.field.validation}
+        {...this.props.field.validation} // eslint-disable-line react/jsx-props-no-spreading
       >
         {placeholder}
         {options}

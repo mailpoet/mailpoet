@@ -158,15 +158,6 @@ let newsletterActions = [
 newsletterActions = addStatsCTAAction(newsletterActions);
 
 class NewsletterListWelcome extends React.Component {
-  static displayName = 'NewsletterListWelcome';
-
-  static propTypes = {
-    location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    match: PropTypes.shape({
-      params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-    }).isRequired,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -403,5 +394,12 @@ class NewsletterListWelcome extends React.Component {
     );
   }
 }
+
+NewsletterListWelcome.propTypes = {
+  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  match: PropTypes.shape({
+    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  }).isRequired,
+};
 
 export default NewsletterListWelcome;

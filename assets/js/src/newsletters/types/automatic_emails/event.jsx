@@ -67,8 +67,7 @@ class AutomaticEmailEvent extends React.PureComponent {
                 <span className={`mailpoet_badge mailpoet_badge_${event.badge.style}`}>
                   {event.badge.text}
                 </span>
-              ) : ''
-              }
+              ) : ''}
             </div>
             <p>{event.description}</p>
           </div>
@@ -91,6 +90,7 @@ AutomaticEmailEvent.propTypes = {
   event: PropTypes.shape({
     slug: PropTypes.string.isRequired,
     thumbnailImage: PropTypes.string,
+    actionButtonLink: PropTypes.string,
     title: PropTypes.string.isRequired,
     soon: PropTypes.bool,
     badge: PropTypes.shape({

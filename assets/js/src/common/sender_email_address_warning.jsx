@@ -11,7 +11,7 @@ const SenderEmailAddressWarning = ({ emailAddress, mssActive }) => {
   const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
   if (window.mailpoet_free_domains.indexOf(emailAddressDomain) > -1) {
     return (
-      <React.Fragment>
+      <>
         <p
           className="sender_email_address_warning"
           data-acceptance-id="freemail-sender-warning-old-installation"
@@ -39,7 +39,7 @@ const SenderEmailAddressWarning = ({ emailAddress, mssActive }) => {
             {MailPoet.I18n.t('senderEmailAddressWarning3')}
           </a>
         </p>
-      </React.Fragment>
+      </>
     );
   }
   return null;

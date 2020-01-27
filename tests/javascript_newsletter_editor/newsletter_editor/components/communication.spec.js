@@ -1,4 +1,5 @@
-/* eslint-disable-next-line max-len (ES6 -> CommonJS transform needed for inject-loader) */
+/* (ES6 -> CommonJS transform needed for inject-loader) */
+/* eslint-disable-next-line max-len  */
 import CommunicationInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/components/communication';
 
 const expect = global.expect;

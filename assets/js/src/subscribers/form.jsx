@@ -156,8 +156,7 @@ function beforeFormContent(subscriber) {
               { match }
             </a>
           )
-        )
-        }
+        )}
       </p>
     );
   }

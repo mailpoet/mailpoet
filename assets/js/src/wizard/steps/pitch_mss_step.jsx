@@ -113,8 +113,7 @@ const Step = (props) => (
           mailpoetAccountUrl={props.mailpoetAccountUrl}
           next={props.next}
         />
-      )
-    }
+      )}
   </div>
 );
 

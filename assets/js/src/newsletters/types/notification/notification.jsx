@@ -13,21 +13,18 @@ const field = {
 };
 
 class NewsletterNotification extends React.Component {
-  static propTypes = {
-    history: PropTypes.shape({
-      push: PropTypes.func.isRequired,
-    }).isRequired,
-  };
-
-  state = {
-    options: {
-      intervalType: 'daily',
-      timeOfDay: 0,
-      weekDay: 1,
-      monthDay: 0,
-      nthWeekDay: 1,
-    },
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      options: {
+        intervalType: 'daily',
+        timeOfDay: 0,
+        weekDay: 1,
+        monthDay: 0,
+        nthWeekDay: 1,
+      },
+    };
+  }
 
   handleValueChange = (event) => {
     const state = this.state;
@@ -86,5 +83,11 @@ class NewsletterNotification extends React.Component {
     );
   }
 }
+
+NewsletterNotification.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default withRouter(NewsletterNotification);

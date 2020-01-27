@@ -83,6 +83,7 @@ NewsletterStatsInfo.propTypes = {
     sender_address: PropTypes.string,
     sender_name: PropTypes.string,
     reply_to_address: PropTypes.string,
+    preview_url: PropTypes.string,
     reply_to_name: PropTypes.string,
     segments: PropTypes.array,
   }).isRequired,

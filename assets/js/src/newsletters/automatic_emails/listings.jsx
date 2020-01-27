@@ -151,17 +151,6 @@ const newsletterActions = [
 Hooks.addFilter('mailpoet_newsletters_listings_automatic_email_actions', 'mailpoet', addStatsCTAAction);
 
 class Listings extends React.Component {
-  static displayName = 'Listings';
-
-  static propTypes = {
-    match: PropTypes.shape({
-      params: PropTypes.shape({
-        tab: PropTypes.string,
-      }).isRequired,
-    }).isRequired,
-    location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -421,5 +410,14 @@ class Listings extends React.Component {
     );
   }
 }
+
+Listings.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      tab: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
+  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
 
 export default Listings;

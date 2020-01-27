@@ -11,8 +11,7 @@ const WelcomeWizardStepLayoutBody = (props) => (
       { props.displayProgressBar && (props.step <= props.stepsCount)
         ? (
           <SteppedProgressBar steps_count={props.stepsCount} step={props.step} />
-        ) : null
-      }
+        ) : null}
       {props.children}
     </div>
   </div>

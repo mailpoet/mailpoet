@@ -5,9 +5,12 @@ import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
 class ListingItem extends React.Component {
-  state = {
-    expanded: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: false,
+    };
+  }
 
   handleSelectItem = (e) => {
     this.props.onSelectItem(

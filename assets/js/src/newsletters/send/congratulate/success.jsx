@@ -28,7 +28,12 @@ function SuccessContent(props) {
 function Success(props) {
   return (
     <SuccessContent
-      {...props}
+      successClicked={props.successClicked}
+      illustrationImageUrl={props.illustrationImageUrl}
+      MSSPitchIllustrationUrl={props.MSSPitchIllustrationUrl}
+      newsletter={props.newsletter}
+      subscribersCount={props.subscribersCount}
+      mailpoetAccountUrl={props.mailpoetAccountUrl}
     />
   );
 }

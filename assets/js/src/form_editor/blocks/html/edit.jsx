@@ -58,6 +58,7 @@ const CustomHtmlEdit = ({ attributes, setAttributes }) => {
 CustomHtmlEdit.propTypes = {
   attributes: PropTypes.shape({
     content: PropTypes.string.isRequired,
+    nl2br: PropTypes.bool.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
 };

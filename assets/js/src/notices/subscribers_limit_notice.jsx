@@ -39,16 +39,16 @@ const SubscribersLimitNotice = () => {
           {MailPoet.I18n.t('upgradeNow')}
         </a>
         {hasValidApiKey && (
-        <>
-          {' '}
-          <button
-            type="button"
-            className="button"
-            onClick={refreshSubscribers}
-          >
-            {MailPoet.I18n.t('refreshMySubscribers')}
-          </button>
-        </>
+          <>
+            {' '}
+            <button
+              type="button"
+              className="button"
+              onClick={refreshSubscribers}
+            >
+              {MailPoet.I18n.t('refreshMySubscribers')}
+            </button>
+          </>
         )}
       </p>
     </Notice>

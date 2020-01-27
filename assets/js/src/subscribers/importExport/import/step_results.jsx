@@ -131,6 +131,7 @@ function StepResults({
 StepResults.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
+    replace: PropTypes.func.isRequired,
   }).isRequired,
   errors: PropTypes.arrayOf(PropTypes.string.isRequired),
   segments: PropTypes.arrayOf(PropTypes.string.isRequired),

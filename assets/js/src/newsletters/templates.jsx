@@ -241,7 +241,10 @@ class NewsletterTemplates extends React.Component {
             afterDelete={this.afterTemplateDelete}
             beforeSelect={() => this.setState({ loading: true })}
             afterSelect={this.afterTemplateSelect}
-            {...template}
+            id={template.id}
+            name={template.name}
+            thumbnail={template.thumbnail}
+            readonly={template.readonly}
           />
         ));
       }

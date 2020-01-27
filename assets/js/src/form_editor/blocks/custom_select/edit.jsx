@@ -121,6 +121,8 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
 
 CustomSelectEdit.propTypes = {
   attributes: PropTypes.shape({
+    customFieldId: PropTypes.number.isRequired,
+    labelWithinInput: PropTypes.bool.isRequired,
     label: PropTypes.string.isRequired,
     values: PropTypes.arrayOf(PropTypes.shape({
       name: PropTypes.string.isRequired,

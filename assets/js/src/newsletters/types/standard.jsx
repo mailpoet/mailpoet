@@ -5,12 +5,6 @@ import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import { withRouter } from 'react-router-dom';
 
 class NewsletterStandard extends React.Component {
-  static propTypes = {
-    history: PropTypes.shape({
-      push: PropTypes.func.isRequired,
-    }).isRequired,
-  };
-
   componentDidMount() {
     // No options for this type, create a newsletter upon mounting
     MailPoet.Ajax.post({
@@ -45,5 +39,11 @@ class NewsletterStandard extends React.Component {
     );
   }
 }
+
+NewsletterStandard.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default withRouter(NewsletterStandard);

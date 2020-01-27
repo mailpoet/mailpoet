@@ -132,6 +132,9 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
 CustomTextAreaEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
+    lines: PropTypes.string.isRequired,
+    customFieldId: PropTypes.number.isRequired,
+    validate: PropTypes.string,
     labelWithinInput: PropTypes.bool.isRequired,
     mandatory: PropTypes.bool.isRequired,
   }).isRequired,

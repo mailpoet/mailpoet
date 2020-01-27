@@ -15,63 +15,6 @@ import MailerError from 'listing/notices.jsx';
 import { withRouter } from 'react-router-dom';
 
 class Listing extends React.Component {
-  static displayName = 'Listing';
-
-  /* eslint-disable react/require-default-props */
-  static propTypes = {
-    limit: PropTypes.number,
-    sort_by: PropTypes.string,
-    sort_order: PropTypes.string,
-    params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    auto_refresh: PropTypes.bool,
-    location: PropTypes.shape({
-      pathname: PropTypes.string,
-    }),
-    base_url: PropTypes.string,
-    type: PropTypes.string,
-    endpoint: PropTypes.string.isRequired,
-    afterGetItems: PropTypes.func,
-    messages: PropTypes.shape({
-      onRestore: PropTypes.func,
-      onTrash: PropTypes.func,
-      onDelete: PropTypes.func,
-    }),
-    onRenderItem: PropTypes.func.isRequired,
-    columns: PropTypes.arrayOf(PropTypes.object),
-    bulk_actions: PropTypes.arrayOf(PropTypes.object),
-    item_actions: PropTypes.arrayOf(PropTypes.object),
-    search: PropTypes.bool,
-    groups: PropTypes.bool,
-    renderExtraActions: PropTypes.func,
-    onBeforeSelectFilter: PropTypes.func,
-    getListingItemKey: PropTypes.func,
-    history: PropTypes.shape({
-      push: PropTypes.func.isRequired,
-    }).isRequired,
-  };
-
-  /* eslint-enable react/require-default-props */
-
-  static defaultProps = {
-    limit: 10,
-    sort_by: null,
-    sort_order: undefined,
-    auto_refresh: false,
-    location: undefined,
-    base_url: '',
-    type: undefined,
-    afterGetItems: undefined,
-    messages: undefined,
-    columns: [],
-    bulk_actions: [],
-    item_actions: [],
-    search: true,
-    groups: true,
-    renderExtraActions: undefined,
-    onBeforeSelectFilter: undefined,
-    getListingItemKey: undefined,
-  };
-
   constructor(props) {
     super(props);
     this.formRef = React.createRef();
@@ -643,6 +586,7 @@ class Listing extends React.Component {
 
     return (
       <>
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         { this.state.meta.mta_method && <MailerError {...this.state.meta} /> }
         <div>
           { groups }
@@ -740,5 +684,59 @@ class Listing extends React.Component {
     );
   }
 }
+
+/* eslint-disable react/require-default-props */
+Listing.propTypes = {
+  limit: PropTypes.number,
+  sort_by: PropTypes.string,
+  sort_order: PropTypes.string,
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  auto_refresh: PropTypes.bool,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }),
+  base_url: PropTypes.string,
+  type: PropTypes.string,
+  endpoint: PropTypes.string.isRequired,
+  afterGetItems: PropTypes.func,
+  messages: PropTypes.shape({
+    onRestore: PropTypes.func,
+    onTrash: PropTypes.func,
+    onDelete: PropTypes.func,
+  }),
+  onRenderItem: PropTypes.func.isRequired,
+  columns: PropTypes.arrayOf(PropTypes.object),
+  bulk_actions: PropTypes.arrayOf(PropTypes.object),
+  item_actions: PropTypes.arrayOf(PropTypes.object),
+  search: PropTypes.bool,
+  groups: PropTypes.bool,
+  renderExtraActions: PropTypes.func,
+  onBeforeSelectFilter: PropTypes.func,
+  getListingItemKey: PropTypes.func,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
+/* eslint-enable react/require-default-props */
+
+Listing.defaultProps = {
+  limit: 10,
+  sort_by: null,
+  sort_order: undefined,
+  auto_refresh: false,
+  location: undefined,
+  base_url: '',
+  type: undefined,
+  afterGetItems: undefined,
+  messages: undefined,
+  columns: [],
+  bulk_actions: [],
+  item_actions: [],
+  search: true,
+  groups: true,
+  renderExtraActions: undefined,
+  onBeforeSelectFilter: undefined,
+  getListingItemKey: undefined,
+};
 
 export default withRouter(Listing);

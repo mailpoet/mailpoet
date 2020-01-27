@@ -49,7 +49,7 @@ class FormFieldText extends React.Component { // eslint-disable-line react/prefe
         defaultValue={defaultValue}
         placeholder={this.props.field.placeholder}
         onChange={this.props.onValueChange}
-        {...this.props.field.validation}
+        {...this.props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
       />
     );
   }

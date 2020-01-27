@@ -49,5 +49,13 @@ ConfirmAlert.defaultProps = {
 
 export default function confirmAlert(props) {
   // the below render is only to invoke proptypes on ConfirmAlert
-  ReactDOMServer.renderToString(<ConfirmAlert {...props} />);
+  ReactDOMServer.renderToString(
+    <ConfirmAlert
+      title={props.title}
+      message={props.message}
+      cancelLabel={props.cancelLabel}
+      confirmLabel={props.confirmLabel}
+      onConfirm={props.onConfirm}
+    />
+  );
 }

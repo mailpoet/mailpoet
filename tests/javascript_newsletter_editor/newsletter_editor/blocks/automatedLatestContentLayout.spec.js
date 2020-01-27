@@ -3,7 +3,8 @@ import AutomatedLatestContentBlock from 'newsletter_editor/blocks/automatedLates
 import ContainerBlock from 'newsletter_editor/blocks/container';
 import Communication from 'newsletter_editor/components/communication';
 
-/* eslint-disable-next-line max-len (ES6 -> CommonJS transform needed for inject-loader) */
+/*  (ES6 -> CommonJS transform needed for inject-loader) */
+/* eslint-disable-next-line max-len  */
 import AutomatedLatestContentInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/blocks/automatedLatestContentLayout';
 
 const expect = global.expect;

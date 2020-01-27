@@ -112,6 +112,7 @@ CustomDateEdit.propTypes = {
     dateType: PropTypes.string.isRequired,
     defaultToday: PropTypes.bool,
     mandatory: PropTypes.bool.isRequired,
+    customFieldId: PropTypes.number.isRequired,
   }).isRequired,
   clientId: PropTypes.string.isRequired,
   setAttributes: PropTypes.func.isRequired,

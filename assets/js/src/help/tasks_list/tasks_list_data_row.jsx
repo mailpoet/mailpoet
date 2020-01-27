@@ -21,8 +21,7 @@ const TasksListDataRow = (props) => (
         >
           {props.task.newsletter.subject || MailPoet.I18n.t('preview')}
         </a>
-      ) : MailPoet.I18n.t('none')
-      }
+      ) : MailPoet.I18n.t('none')}
     </td>
     <td className="column">
       { props.task.priority }
