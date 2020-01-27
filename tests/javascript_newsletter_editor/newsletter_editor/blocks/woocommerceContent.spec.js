@@ -18,7 +18,7 @@ describe('WoocommerceContent', function () {
       });
       global.stubAvailableStyles(EditorApplication);
       model = new (WCContentBlock.BlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function () {

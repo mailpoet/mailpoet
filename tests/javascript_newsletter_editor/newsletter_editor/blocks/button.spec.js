@@ -17,7 +17,7 @@ describe('Button', function () {
         blockDefaults: {},
       });
       model = new (ButtonBlock.ButtonBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function () {

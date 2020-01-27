@@ -18,7 +18,7 @@ describe('Spacer', function () {
       });
       global.stubAvailableStyles(EditorApplication);
       model = new (SpacerBlock.SpacerBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function () {

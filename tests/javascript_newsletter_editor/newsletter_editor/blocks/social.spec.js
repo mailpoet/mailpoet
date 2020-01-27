@@ -14,7 +14,7 @@ describe('Social', function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       model = new (SocialBlock.SocialBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function () {

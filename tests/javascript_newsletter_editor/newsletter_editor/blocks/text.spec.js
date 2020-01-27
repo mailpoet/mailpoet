@@ -12,7 +12,7 @@ describe('Text', function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       model = new (TextBlock.TextBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function () {
