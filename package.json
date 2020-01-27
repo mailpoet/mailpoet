@@ -116,7 +116,7 @@
     "string-replace-loader": "^2.1.1",
     "stylelint": "^13.0.0",
     "stylelint-order": "^4.0.0",
-    "stylelint-scss": "^3.13.0",
+    "stylelint-scss": "^3.14.0",
     "terser-webpack-plugin": "^1.4.3",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.2.1",
