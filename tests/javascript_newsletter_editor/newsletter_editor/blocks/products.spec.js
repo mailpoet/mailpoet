@@ -37,7 +37,7 @@ describe('Products', function () {
       EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
       model = new (ProductsBlock.ProductsBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function () {
@@ -227,7 +227,7 @@ describe('Products', function () {
     });
 
     it('triggers loading and loaded events for more products', function () {
-      var stub = sinon.stub(CommunicationComponent, 'getPosts', function () {
+      var stub = sinon.stub(CommunicationComponent, 'getPosts').callsFake(function () {
         var deferred = jQuery.Deferred();
         deferred.resolve([{}]); // 1 product
         return deferred;

@@ -60,7 +60,7 @@ describe('Container', function () {
       });
 
       it('do not update blockDefaults.container when changed', function () {
-        var sandbox = sinon.sandbox.create();
+        var sandbox = sinon.createSandbox();
         var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
         model.trigger('change');
         expect(stub.callCount).to.equal(0);

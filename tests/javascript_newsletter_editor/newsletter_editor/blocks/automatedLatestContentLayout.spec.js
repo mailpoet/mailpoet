@@ -80,7 +80,7 @@ describe('Automated latest content layout', function () {
       global.stubConfig(EditorApplication);
       EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
       model = new (module.AutomatedLatestContentLayoutBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function () {

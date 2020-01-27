@@ -16,7 +16,7 @@ describe('Footer', function () {
         blockDefaults: {},
       });
       model = new (FooterBlock.FooterBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function () {

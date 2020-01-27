@@ -16,7 +16,7 @@ describe('Header', function () {
         blockDefaults: {},
       });
       model = new (HeaderBlock.HeaderBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
     afterEach(function () {
       sandbox.restore();

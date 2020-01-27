@@ -16,7 +16,7 @@ describe('Image', function () {
         blockDefaults: {},
       });
       model = new (ImageBlock.ImageBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
     afterEach(function () {
       sandbox.restore();

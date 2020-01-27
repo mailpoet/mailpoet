@@ -37,7 +37,7 @@ describe('Posts', function () {
       EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
       model = new (PostsBlock.PostsBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function () {
@@ -240,7 +240,7 @@ describe('Posts', function () {
     });
 
     it('triggers loading and loaded events for more posts', function () {
-      var stub = sinon.stub(CommunicationComponent, 'getPosts', function () {
+      var stub = sinon.stub(CommunicationComponent, 'getPosts').callsFake(function () {
         var deferred = jQuery.Deferred();
         deferred.resolve([{}]); // 1 post
         return deferred;

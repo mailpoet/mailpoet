@@ -18,7 +18,7 @@ describe('Divider', function () {
       });
       global.stubAvailableStyles(EditorApplication);
       model = new (DividerBlock.DividerBlockModel)();
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function () {
