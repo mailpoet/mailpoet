@@ -502,7 +502,7 @@ class APITest extends \MailPoetTest {
       'email' => 'test@example.com',
     ];
 
-    $this->setExpectedException('Exception');
+    $this->expectException('Exception');
     $this->getApi()->addSubscriber($subscriber);
   }
 
@@ -568,7 +568,7 @@ class APITest extends \MailPoetTest {
       'email' => 'test@example.com',
     ];
     $segments = [$segment->id()];
-    $this->setExpectedException('\Exception');
+    $this->expectException('\Exception');
     $API->addSubscriber($subscriber, $segments, ['schedule_welcome_email' => true, 'send_confirmation_email' => false]);
   }
 
@@ -649,7 +649,8 @@ class APITest extends \MailPoetTest {
     $subscriber = [
       'email' => 'test@example.com',
     ];
-    $this->setExpectedException('\Exception', 'Subscriber added to lists, but confirmation email failed to send: big error');
+    $this->expectException('\Exception');
+    $this->expectExceptionMessage('Subscriber added to lists, but confirmation email failed to send: big error');
     $API->addSubscriber($subscriber, [$segment->id], ['send_confirmation_email' => true]);
   }
 

@@ -13,7 +13,7 @@ class CheckSkippedTestsExtension extends Extension { // phpcs:ignore PSR1.Classe
     $branch = getenv('CIRCLE_BRANCH');
     $skipped = $e->getResult()->skipped();
     if (in_array($branch, ['master', 'release']) && (count($skipped) !== 0)) {
-      throw new PHPUnit_Framework_ExpectationFailedException("Failed, Cannot skip tests on branch $branch.");
+      throw new \PHPUnit\Framework\ExpectationFailedException("Failed, Cannot skip tests on branch $branch.");
     }
   }
 }

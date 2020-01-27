@@ -13,7 +13,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscribersFinderTest extends \MailPoetTest {
   public $sending;

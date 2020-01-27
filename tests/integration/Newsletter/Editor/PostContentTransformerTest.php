@@ -5,7 +5,7 @@ namespace MailPoet\Test\Newsletter\Editor;
 use Codeception\Stub\Expected;
 use MailPoet\Newsletter\Editor\PostTransformer;
 use MailPoet\Newsletter\Editor\PostTransformerContentsExtractor;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class PostContentTransformerTest extends \MailPoetTest {
   /** @var array */

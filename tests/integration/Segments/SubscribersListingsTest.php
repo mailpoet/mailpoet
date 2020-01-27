@@ -11,7 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscribersListingsTest extends \MailPoetTest {
   public $subscriber2;
@@ -61,7 +61,7 @@ class SubscribersListingsTest extends \MailPoetTest {
   }
 
   public function testTryToGetListingsWithoutPassingSegment() {
-    $this->setExpectedException('InvalidArgumentException');
+    $this->expectException('InvalidArgumentException');
     $this->finder->getListingsInSegment([]);
   }
 
@@ -93,7 +93,7 @@ class SubscribersListingsTest extends \MailPoetTest {
   }
 
   public function testTryToGetListingsForSegmentWithoutHandler() {
-    $this->setExpectedException('InvalidArgumentException');
+    $this->expectException('InvalidArgumentException');
     remove_all_filters('mailpoet_get_subscribers_listings_in_segment_handlers');
     $this->finder->getListingsInSegment(['filter' => ['segment' => $this->segment2->id]]);
   }

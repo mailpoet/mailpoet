@@ -7,7 +7,7 @@ use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class PremiumKeyCheckTest extends \MailPoetTest {
   public $worker;

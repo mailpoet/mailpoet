@@ -8,12 +8,13 @@ use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoet\DynamicSegments\RequirementsChecker;
 use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\Subscriber;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscribersIdsTest extends \MailPoetTest {
 
   private $editorsWpIds = [];
 
-  /** @var RequirementsChecker|\PHPUnit_Framework_MockObject_MockObject */
+  /** @var RequirementsChecker|MockObject */
   private $requirementChecker;
 
   public function _before() {

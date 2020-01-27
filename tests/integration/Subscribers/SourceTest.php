@@ -18,7 +18,7 @@ class SourceTest extends \MailPoetTest {
     $subscriber = Subscriber::createOrUpdate([
       'source' => Source::UNKNOWN,
     ]);
-    $this->setExpectedException('\InvalidArgumentException');
+    $this->expectException('\InvalidArgumentException');
     Source::setSource($subscriber, 'invalid source');
   }
 

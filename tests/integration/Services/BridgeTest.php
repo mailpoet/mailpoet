@@ -10,7 +10,7 @@ use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WPFunctions;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 require_once('BridgeTestMockAPI.php');
 

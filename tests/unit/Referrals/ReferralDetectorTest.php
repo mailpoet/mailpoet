@@ -4,7 +4,7 @@ namespace MailPoet\Referrals;
 
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class ReferralDetectorTest extends \MailPoetUnitTest {
 

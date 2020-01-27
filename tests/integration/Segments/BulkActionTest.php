@@ -8,7 +8,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 require_once('SubscribersBulkActionHandlerMock.php');
 
@@ -57,7 +57,7 @@ class BulkActionTest extends \MailPoetTest {
 
   public function testBulkActionWithoutSegment() {
     $handler = new BulkAction([]);
-    $this->setExpectedException('InvalidArgumentException');
+    $this->expectException('InvalidArgumentException');
     $handler->apply();
   }
 
@@ -84,7 +84,7 @@ class BulkActionTest extends \MailPoetTest {
       'listing' => ['filter' => ['segment' => $this->segment2->id]],
       'action' => 'trash',
     ]);
-    $this->setExpectedException('InvalidArgumentException');
+    $this->expectException('InvalidArgumentException');
     remove_all_filters('mailpoet_subscribers_in_segment_apply_bulk_action_handlers');
     $handler->apply();
   }

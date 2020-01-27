@@ -5,7 +5,7 @@ namespace MailPoet\DynamicSegments\FreePluginConnectors;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Models\DynamicSegment;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class AddToNewslettersSegmentsTest extends \MailPoetTest {
 

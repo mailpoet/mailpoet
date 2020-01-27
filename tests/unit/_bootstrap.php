@@ -7,7 +7,7 @@ if (!function_exists('__')) {
 }
 
 // Fix for mocking WPFunctions
-// [PHPUnit_Framework_Exception] Use of undefined constant OBJECT - assumed 'OBJECT' (this will throw an Error in a future version of PHP)
+// [PHPUnit\Framework\Exception] Use of undefined constant OBJECT - assumed 'OBJECT' (this will throw an Error in a future version of PHP)
 if (!defined('OBJECT')) {
   define( 'OBJECT', 'OBJECT' );
 }

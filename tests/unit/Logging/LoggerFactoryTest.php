@@ -4,7 +4,7 @@ namespace MailPoet\Logging;
 
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Monolog\Handler\AbstractHandler;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class LoggerFactoryTest extends \MailPoetUnitTest {
 

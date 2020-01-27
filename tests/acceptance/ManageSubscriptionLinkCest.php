@@ -4,6 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Settings;
+use PHPUnit\Framework\Exception;
 
 class ManageSubscriptionLinkCest {
 
@@ -117,7 +118,7 @@ class ManageSubscriptionLinkCest {
         $i->waitForListingItemsToLoad();
         $i->see('Sent to 1 of 1');
         return;
-      } catch (\PHPUnit_Framework_Exception $e) {
+      } catch (Exception $e) {
         continue;
       }
     }
