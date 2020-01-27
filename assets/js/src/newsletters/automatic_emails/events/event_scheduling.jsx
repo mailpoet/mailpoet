@@ -55,7 +55,11 @@ class EventScheduling extends React.Component {
     };
 
     return (
-      <Text {...props} />
+      <Text
+        field={props.field}
+        item={props.item}
+        onValueChange={props.onValueChange}
+      />
     );
   }
 
@@ -86,7 +90,10 @@ class EventScheduling extends React.Component {
     };
 
     return (
-      <Selection {...props} />
+      <Selection
+        field={props.field}
+        onValueChange={props.onValueChange}
+      />
     );
   }
 

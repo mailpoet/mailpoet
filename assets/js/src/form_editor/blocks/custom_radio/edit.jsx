@@ -102,6 +102,7 @@ const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
 CustomRadioEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
+    customFieldId: PropTypes.number.isRequired,
     values: PropTypes.arrayOf(PropTypes.shape({
       name: PropTypes.string.isRequired,
       id: PropTypes.string.isRequired,

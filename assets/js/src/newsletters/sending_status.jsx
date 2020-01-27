@@ -83,7 +83,14 @@ const SendingStatusListing = React.memo(({ location, params }) => (
     params={params}
     endpoint="sending_task_subscribers"
     base_url="sending-status/:id"
-    onRenderItem={(item) => <div><ListingItem {...item} /></div>}
+    onRenderItem={
+      (item) => (
+        <div>
+          { /* eslint-disable-next-line react/jsx-props-no-spreading */ }
+          <ListingItem {...item} />
+        </div>
+      )
+    }
     getListingItemKey={(item) => `${item.taskId}-${item.subscriberId}`}
     columns={columns}
     messages={messages}

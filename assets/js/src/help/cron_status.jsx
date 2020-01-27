@@ -69,10 +69,13 @@ const CronStatus = (props) => {
 CronStatus.propTypes = {
   status_data: PropTypes.shape({
     accessible: PropTypes.bool,
+    last_error_date: PropTypes.string,
     status: PropTypes.string,
     updated_at: PropTypes.number,
     run_accessed_at: PropTypes.number,
     run_completed_at: PropTypes.number,
+    run_started_at: PropTypes.number,
+    last_error: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   }).isRequired,
 };
 

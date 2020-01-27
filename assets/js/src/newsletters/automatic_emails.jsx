@@ -69,6 +69,7 @@ if (newslettersContainer && !_.isEmpty(emails)) {
                 email,
                 name: event.slug,
               };
+              // eslint-disable-next-line react/jsx-props-no-spreading
               return (<EventsConditions {...componentProps} />);
             },
           });
@@ -83,6 +84,7 @@ if (newslettersContainer && !_.isEmpty(emails)) {
             ...props,
             email,
           };
+          // eslint-disable-next-line react/jsx-props-no-spreading
           return (<AutomaticEmailEventsList {...componentProps} />);
         },
       });

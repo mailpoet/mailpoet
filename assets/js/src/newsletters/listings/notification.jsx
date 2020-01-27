@@ -163,15 +163,6 @@ const newsletterActions = [
 ];
 
 class NewsletterListNotification extends React.Component {
-  static displayName = 'NewsletterListNotification';
-
-  static propTypes = {
-    location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    match: PropTypes.shape({
-      params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-    }).isRequired,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -387,5 +378,12 @@ class NewsletterListNotification extends React.Component {
     );
   }
 }
+
+NewsletterListNotification.propTypes = {
+  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  match: PropTypes.shape({
+    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  }).isRequired,
+};
 
 export default NewsletterListNotification;

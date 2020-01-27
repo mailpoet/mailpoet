@@ -155,7 +155,7 @@ class DateText extends React.Component {
         disabled={this.props.disabled}
         onChange={this.onChange}
         ref={this.dateInput}
-        {...this.props.validation}
+        {...this.props.validation} // eslint-disable-line react/jsx-props-no-spreading
       />
     );
   }

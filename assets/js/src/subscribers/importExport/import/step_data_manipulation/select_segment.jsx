@@ -38,6 +38,7 @@ function SelectSegment({ setSelectedSegments }) {
           data-placeholder={MailPoet.I18n.t('select')}
           multiple="multiple"
         >
+          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <option />
         </select>
       </label>

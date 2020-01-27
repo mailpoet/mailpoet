@@ -19,9 +19,10 @@ class SenderField extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <>
         <FormFieldText
-          {...this.props}
+          item={this.props.item}
+          field={this.props.field}
           onValueChange={this.onChange}
         />
         <div className="regular-text">
@@ -30,12 +31,13 @@ class SenderField extends React.Component {
             mssActive={window.mailpoet_mss_active}
           />
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }
 
 SenderField.propTypes = {
+  field: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   item: PropTypes.shape({
     sender_address: PropTypes.string.isRequired,
   }).isRequired,

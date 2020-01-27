@@ -27,35 +27,107 @@ class FormField extends React.Component {
 
     switch (dataField.type) {
       case 'text':
-        field = (<FormFieldText {...data} />);
+        field = (
+          <FormFieldText
+            onValueChange={data.onValueChange}
+            field={data.field}
+            item={data.item}
+            automationId={data.automationId}
+            inline={data.inline}
+            description={data.description}
+          />
+        );
         break;
 
       case 'textarea':
-        field = (<FormFieldTextarea {...data} />);
+        field = (
+          <FormFieldTextarea
+            onValueChange={data.onValueChange}
+            field={data.field}
+            item={data.item}
+            automationId={data.automationId}
+            inline={data.inline}
+            description={data.description}
+          />
+        );
         break;
 
       case 'select':
-        field = (<FormFieldSelect {...data} />);
+        field = (
+          <FormFieldSelect
+            onValueChange={data.onValueChange}
+            field={data.field}
+            item={data.item}
+            automationId={data.automationId}
+            inline={data.inline}
+            description={data.description}
+          />
+        );
         break;
 
       case 'radio':
-        field = (<FormFieldRadio {...data} />);
+        field = (
+          <FormFieldRadio
+            onValueChange={data.onValueChange}
+            field={data.field}
+            item={data.item}
+            automationId={data.automationId}
+            inline={data.inline}
+            description={data.description}
+          />
+        );
         break;
 
       case 'checkbox':
-        field = (<FormFieldCheckbox {...data} />);
+        field = (
+          <FormFieldCheckbox
+            onValueChange={data.onValueChange}
+            field={data.field}
+            item={data.item}
+            automationId={data.automationId}
+            inline={data.inline}
+            description={data.description}
+          />
+        );
         break;
 
       case 'selection':
-        field = (<FormFieldSelection {...data} />);
+        field = (
+          <FormFieldSelection
+            onValueChange={data.onValueChange}
+            field={data.field}
+            automationId={data.automationId}
+            inline={data.inline}
+            description={data.description}
+            item={data.item}
+          />
+        );
         break;
 
       case 'date':
-        field = (<FormFieldDate {...data} />);
+        field = (
+          <FormFieldDate
+            onValueChange={data.onValueChange}
+            field={data.field}
+            item={data.item}
+            automationId={data.automationId}
+            inline={data.inline}
+            description={data.description}
+          />
+        );
         break;
 
       case 'reactComponent':
-        field = (<data.field.component {...data} />);
+        field = (
+          <data.field.component
+            onValueChange={data.onValueChange}
+            field={data.field}
+            item={data.item}
+            automationId={data.automationId}
+            inline={data.inline}
+            description={data.description}
+          />
+        );
         break;
 
       default:

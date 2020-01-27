@@ -22,8 +22,7 @@ function Fail(props) {
               { match }
             </a>
           )
-        )
-        }
+        )}
       </p>
       <button type="button" className="button" onClick={props.failClicked}>{MailPoet.I18n.t('close')}</button>
     </div>

@@ -16,6 +16,7 @@ function ColumnDataMatch({ header, subscribers }) {
         matchedColumnTypes.map((columnType, i) => (
           // eslint-disable-next-line react/no-array-index-key
           <th key={columnType.column_id + i}>
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <select
               className="mailpoet_subscribers_column_data_match"
               data-column-id={columnType.column_id}

@@ -243,7 +243,11 @@ class Selection extends React.Component {
     // For single selects only, in order for the placeholder value to appear,
     // we must have a blank <option> as the first option in the <select> control.
     if (this.allowMultipleValues()) return undefined;
-    if (this.props.field.placeholder) return (<option className="default" />);
+    if (this.props.field.placeholder) {
+      return (
+        <option className="default" /> // eslint-disable-line jsx-a11y/control-has-associated-label
+      );
+    }
     return undefined;
   };
 
@@ -275,7 +279,7 @@ class Selection extends React.Component {
         data-placeholder={this.props.field.placeholder}
         multiple={this.props.field.multiple}
         defaultValue={selectedValues}
-        {...this.props.field.validation}
+        {...this.props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
       >
         { this.insertEmptyOption() }
         { options }

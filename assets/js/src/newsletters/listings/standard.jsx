@@ -173,17 +173,6 @@ let newsletterActions = [
 newsletterActions = addStatsCTAAction(newsletterActions);
 
 class NewsletterListStandard extends React.Component {
-  static displayName = 'NewsletterListStandard';
-
-  static contextType = GlobalContext;
-
-  static propTypes = {
-    location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    match: PropTypes.shape({
-      params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-    }).isRequired,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -281,5 +270,14 @@ class NewsletterListStandard extends React.Component {
     );
   }
 }
+
+NewsletterListStandard.contextType = GlobalContext;
+
+NewsletterListStandard.propTypes = {
+  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  match: PropTypes.shape({
+    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  }).isRequired,
+};
 
 export default NewsletterListStandard;

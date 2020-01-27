@@ -24,19 +24,6 @@ const generateGaTrackingCampaignName = (id, subject) => {
 };
 
 class NewsletterSend extends React.Component {
-  static displayName = 'NewsletterSend';
-
-  static propTypes = {
-    match: PropTypes.shape({
-      params: PropTypes.shape({
-        id: PropTypes.string,
-      }).isRequired,
-    }).isRequired,
-    history: PropTypes.shape({
-      push: PropTypes.func.isRequired,
-    }).isRequired,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -505,7 +492,7 @@ class NewsletterSend extends React.Component {
                     type="button"
                     onClick={this.handleSend}
                     value={MailPoet.I18n.t('send')}
-                    {...sendButtonOptions}
+                    {...sendButtonOptions} // eslint-disable-line react/jsx-props-no-spreading
                     disabled={window.mailpoet_subscribers_limit_reached}
                   />
                 )
@@ -540,5 +527,16 @@ class NewsletterSend extends React.Component {
     );
   }
 }
+
+NewsletterSend.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default withRouter(NewsletterSend);

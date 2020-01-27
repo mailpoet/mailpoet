@@ -75,7 +75,12 @@ class EventsConditions extends React.Component {
     };
 
     return (
-      <EventOptions {...props} />
+      <EventOptions
+        emailSlug={props.emailSlug}
+        eventSlug={props.eventSlug}
+        eventOptions={props.eventOptions}
+        onValueChange={props.onValueChange}
+      />
     );
   }
 
@@ -97,7 +102,10 @@ class EventsConditions extends React.Component {
 
     return (
       <div className="event-segment-selection">
-        <Selection {...props} />
+        <Selection
+          field={props.field}
+          onValueChange={props.onValueChange}
+        />
       </div>
     );
   }
@@ -114,7 +122,11 @@ class EventsConditions extends React.Component {
     };
 
     return (
-      <EventScheduling {...props} />
+      <EventScheduling
+        item={props.item}
+        event={props.event}
+        onValueChange={props.onValueChange}
+      />
     );
   }
 
@@ -242,7 +254,6 @@ EventsConditions.propTypes = {
     title: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
   }).isRequired,
-  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
 export default EventsConditions;

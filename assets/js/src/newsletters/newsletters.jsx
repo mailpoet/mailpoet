@@ -122,6 +122,6 @@ const App = () => (
 
 const container = document.getElementById('newsletters_container');
 if (container) {
-  // eslint-disable-line react/no-render-return-value
+  // eslint-disable-next-line react/no-render-return-value
   window.mailpoet_listing = ReactDOM.render(<App />, container);
 }

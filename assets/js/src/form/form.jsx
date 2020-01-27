@@ -7,29 +7,6 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 
 class Form extends React.Component {
-  static defaultProps = {
-    params: {},
-    errors: undefined,
-    fields: undefined,
-    item: undefined,
-    onItemLoad: undefined,
-    isValid: undefined,
-    onSuccess: undefined,
-    onChange: undefined,
-    loading: false,
-    beforeFormContent: undefined,
-    afterFormContent: undefined,
-    children: undefined,
-    id: '',
-    onSubmit: undefined,
-    automationId: '',
-    messages: {
-      onUpdate: () => { /* no-op */ },
-      onCreate: () => { /* no-op */ },
-    },
-    endpoint: undefined,
-  };
-
   constructor(props) {
     super(props);
     this.formRef = React.createRef();
@@ -289,6 +266,29 @@ Form.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+};
+
+Form.defaultProps = {
+  params: {},
+  errors: undefined,
+  fields: undefined,
+  item: undefined,
+  onItemLoad: undefined,
+  isValid: undefined,
+  onSuccess: undefined,
+  onChange: undefined,
+  loading: false,
+  beforeFormContent: undefined,
+  afterFormContent: undefined,
+  children: undefined,
+  id: '',
+  onSubmit: undefined,
+  automationId: '',
+  messages: {
+    onUpdate: () => { /* no-op */ },
+    onCreate: () => { /* no-op */ },
+  },
+  endpoint: undefined,
 };
 
 export default withRouter(Form);

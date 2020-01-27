@@ -90,8 +90,7 @@ const WelcomeWizardStepsController = (props) => {
               sender={sender}
             />
           </WelcomeWizardStepLayout>
-        ) : null
-      }
+        ) : null}
 
       { stepName === 'WelcomeWizardMigratedUserStep'
         ? (
@@ -104,8 +103,7 @@ const WelcomeWizardStepsController = (props) => {
               next={() => redirect(step)}
             />
           </WelcomeWizardStepLayout>
-        ) : null
-      }
+        ) : null}
 
       { stepName === 'WelcomeWizardEmailCourseStep'
         ? (
@@ -118,8 +116,7 @@ const WelcomeWizardStepsController = (props) => {
               next={() => redirect(step)}
             />
           </WelcomeWizardStepLayout>
-        ) : null
-      }
+        ) : null}
 
       { stepName === 'WelcomeWizardUsageTrackingStep'
         ? (
@@ -136,8 +133,7 @@ const WelcomeWizardStepsController = (props) => {
               loading={loading}
             />
           </WelcomeWizardStepLayout>
-        ) : null
-      }
+        ) : null}
 
       { stepName === 'WelcomeWizardWooCommerceStep'
         ? (
@@ -152,8 +148,7 @@ const WelcomeWizardStepsController = (props) => {
               loading={loading}
             />
           </WelcomeWizardStepLayout>
-        ) : null
-      }
+        ) : null}
 
       { stepName === 'WelcomeWizardPitchMSSStep'
         ? (
@@ -168,8 +163,7 @@ const WelcomeWizardStepsController = (props) => {
               mailpoetAccountUrl={window.mailpoet_account_url}
             />
           </WelcomeWizardStepLayout>
-        ) : null
-      }
+        ) : null}
     </div>
   );
 };

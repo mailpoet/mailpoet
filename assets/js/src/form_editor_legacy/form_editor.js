@@ -5,9 +5,6 @@
  * company: Wysija
  * framework: prototype 1.7.2
  */
-
-'use strict';
-
 var Observable;
 var WysijaHistory;
 var WysijaForm;
@@ -803,7 +800,7 @@ WysijaForm.DraggableItem = window.Class.create({
         window.Droppables.hideArea();
       },
       starteffect: function (element) {
-        new window.Effect.Opacity(element, {// eslint-disable-line no-new
+        new window.Effect.Opacity(element, { // eslint-disable-line no-new
           duration: 0.2,
           from: element.getOpacity(),
           to: 0.7,

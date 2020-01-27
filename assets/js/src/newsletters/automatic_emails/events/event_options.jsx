@@ -65,7 +65,10 @@ class EventOptions extends React.Component {
     }
 
     return (
-      <Selection {...props} />
+      <Selection
+        field={props.field}
+        onValueChange={props.onValueChange}
+      />
     );
   }
 

@@ -4,9 +4,12 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
 class ListingPages extends React.Component {
-  state = {
-    page: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      page: null,
+    };
+  }
 
   setPage = (page) => {
     this.setState({

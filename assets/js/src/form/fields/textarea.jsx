@@ -11,7 +11,7 @@ const FormFieldTextarea = (props) => (
     placeholder={props.field.placeholder}
     defaultValue={props.field.defaultValue}
     onChange={props.onValueChange}
-    {...props.field.validation}
+    {...props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
   />
 );
 

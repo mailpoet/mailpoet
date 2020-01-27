@@ -108,8 +108,7 @@ const MethodMailChimp = ({ onFinish }) => {
         <span className={statusClasses}>
           { Array.isArray(mailChimpLoadedLists) && mailChimpLoadedLists.length === 0
             ? MailPoet.I18n.t('noMailChimpLists')
-            : null
-          }
+            : null}
         </span>
       </div>
       {showListsSelection()}

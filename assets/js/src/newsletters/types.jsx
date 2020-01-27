@@ -7,19 +7,6 @@ import _ from 'underscore';
 import { withRouter } from 'react-router-dom';
 
 class NewsletterTypes extends React.Component {
-  static propTypes = {
-    filter: PropTypes.func,
-    history: PropTypes.shape({
-      push: PropTypes.func.isRequired,
-    }).isRequired,
-    showHeader: PropTypes.bool,
-  };
-
-  static defaultProps = {
-    filter: null,
-    showHeader: true,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -301,5 +288,18 @@ class NewsletterTypes extends React.Component {
     );
   }
 }
+
+NewsletterTypes.propTypes = {
+  filter: PropTypes.func,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  showHeader: PropTypes.bool,
+};
+
+NewsletterTypes.defaultProps = {
+  filter: null,
+  showHeader: true,
+};
 
 export default withRouter(NewsletterTypes);
