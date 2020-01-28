@@ -168,6 +168,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Form
     $container->autowire(\MailPoet\Form\Util\FieldNameObfuscator::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\AssetsController::class);
+    $container->autowire(\MailPoet\Form\DisplayFormInWPContent::class);
     $container->autowire(\MailPoet\Form\FormsRepository::class);
     $container->autowire(\MailPoet\Form\Util\Styles::class);
     // Helpscout
