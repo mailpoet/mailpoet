@@ -17,6 +17,12 @@ export default {
   getFormSettings(state) {
     return state.formData.settings;
   },
+  placeFormBellowAllPages(state) {
+    return state.formData.settings.placeFormBellowAllPages || false;
+  },
+  placeFormBellowAllPosts(state) {
+    return state.formData.settings.placeFormBellowAllPosts || false;
+  },
   getAllAvailableSegments(state) {
     return state.segments;
   },
