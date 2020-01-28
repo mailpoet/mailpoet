@@ -58,7 +58,7 @@ class MailPoetMapper {
       case API::RESPONSE_CODE_CAN_NOT_SEND:
         if ($result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED) {
           $operation = MailerError::OPERATION_AUTHORIZATION;
-          $message = $this->getUnauthorizedEmailMessage($sender, $newsletter[0]);
+          $message = $this->getUnauthorizedEmailMessage($sender);
         } else {
           $message = $this->getAccountBannedMessage();
         }
@@ -89,7 +89,7 @@ class MailPoetMapper {
     return $errors;
   }
 
-  private function getUnauthorizedEmailMessage($sender, $newsletter) {
+  private function getUnauthorizedEmailMessage($sender) {
     $email = $sender ? $sender['from_email'] : null;
     $message = '<p>';
     $message .= sprintf(WPFunctions::get()->__('The MailPoet Sending Service did not send your latest email because the address %s is not yet authorized.', 'mailpoet'), '<i>' . ( $email ?: WPFunctions::get()->__('Unknown address') ) . '</i>' );
