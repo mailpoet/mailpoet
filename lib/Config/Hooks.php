@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\DynamicSegments\DynamicSegmentHooks;
+use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Mailer\WordPress\Replacer;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
@@ -58,6 +59,9 @@ class Hooks {
   /** @var DynamicSegmentHooks */
   private $dynamicSegmentHooks;
 
+  /** @var DisplayFormInWPContent */
+  private $displayFormInWPContent;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -71,6 +75,7 @@ class Hooks {
     WooCommercePurchases $woocommercePurchases,
     PostNotificationScheduler $postNotificationScheduler,
     WordpressMailerReplacer $wordpressMailerReplacer,
+    DisplayFormInWPContent $displayFormInWPContent,
     DynamicSegmentHooks $dynamicSegmentHooks
   ) {
     $this->subscriptionForm = $subscriptionForm;
@@ -86,6 +91,7 @@ class Hooks {
     $this->postNotificationScheduler = $postNotificationScheduler;
     $this->wordpressMailerReplacer = $wordpressMailerReplacer;
     $this->dynamicSegmentHooks = $dynamicSegmentHooks;
+    $this->displayFormInWPContent = $displayFormInWPContent;
   }
 
   public function init() {
@@ -194,6 +200,10 @@ class Hooks {
     $this->wp->addAction(
       'admin_post_nopriv_mailpoet_subscription_form',
       [$this->subscriptionForm, 'onSubmit']
+    );
+    $this->wp->addFilter(
+      'the_content',
+      [$this->displayFormInWPContent, 'display']
     );
   }
 
