@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import formBlocksToBody from '../../../../assets/js/src/form_editor/store/blocks_to_form_body.jsx';
+import { nestedColumns } from './block_to_form_test_data.js';
 
 const emailBlock = {
   clientId: 'email',
@@ -450,20 +451,39 @@ describe('Blocks to Form Body', () => {
     expect(input.params.is_default_today).to.be.equal('1');
   });
 
-  it('Should map multiple blocks at once', () => {
-    const unknownBlock = {
-      name: 'unknown',
-      clientId: '1234',
-      attributes: {
-        id: 'unknowns',
-      },
-    };
-    const inputs = formBlocksToBody([submitBlock, emailBlock, unknownBlock]);
-    inputs.map(checkBodyInputBasics);
-    expect(inputs.length).to.be.equal(2);
-    expect(inputs[0].id).to.be.equal('submit');
-    expect(inputs[0].position).to.be.equal('1');
-    expect(inputs[1].id).to.be.equal('email');
-    expect(inputs[1].position).to.be.equal('2');
+  it('Should map nested columns blocks', () => {
+    const mapped = formBlocksToBody([emailBlock, nestedColumns, submitBlock]);
+    const columns = mapped[1];
+    expect(mapped.length).to.be.equal(3);
+    // First level
+    expect(columns.body.length).to.be.equal(2);
+    expect(columns.type).to.be.equal('columns');
+    expect(columns.position).to.be.equal('2');
+    const column1 = columns.body[0];
+    const column2 = columns.body[1];
+    expect(column1.type).to.be.equal('column');
+    expect(column1.params.width).to.be.equal(66.66);
+    expect(column1.body.length).to.be.equal(2);
+    expect(column2.type).to.be.equal('column');
+    expect(column2.body.length).to.be.equal(1);
+    expect(column2.params.width).to.be.equal(33.33);
+    const divider = column1.body[1];
+    checkBodyInputBasics(divider);
+    const submit = column2.body[0];
+    checkBodyInputBasics(submit);
+    const columns11 = column1.body[0];
+    expect(columns11.type).to.be.equal('columns');
+    expect(columns11.body.length).to.be.equal(2);
+    // Second level
+    const column11 = columns11.body[0];
+    const column12 = columns11.body[1];
+    expect(column11.type).to.be.equal('column');
+    expect(column11.params.width).to.be.equal(50);
+    expect(column11.body.length).to.be.equal(1);
+    expect(column12.type).to.be.equal('column');
+    expect(column12.body.length).to.be.equal(0);
+    expect(column12.params.width).to.be.equal(50);
+    const input = column11.body[0];
+    checkBodyInputBasics(input);
   });
 });
