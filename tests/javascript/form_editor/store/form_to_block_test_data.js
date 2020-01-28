@@ -174,3 +174,50 @@ export const customHtml = {
   },
   position: null,
 };
+
+export const nestedColumns = {
+  position: '2',
+  type: 'columns',
+  body: [
+    {
+      position: '1',
+      type: 'column',
+      params: {
+        width: 66.66,
+      },
+      body: [
+        {
+          position: '1',
+          type: 'columns',
+          body: [
+            {
+              position: '1',
+              type: 'column',
+              params: {
+                width: 50,
+              },
+              body: [firstNameInput],
+            },
+            {
+              position: '2',
+              type: 'column',
+              params: {
+                width: 50,
+              },
+              body: [],
+            },
+          ],
+        },
+        divider,
+      ],
+    },
+    {
+      position: '2',
+      type: 'column',
+      params: {
+        width: 33.33,
+      },
+      body: [submitInput],
+    },
+  ],
+};
