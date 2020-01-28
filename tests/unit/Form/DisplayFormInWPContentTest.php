@@ -137,6 +137,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   public function testAppendsRenderedFormAfterPageContent() {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->wp
+      ->expects($this->never())
+      ->method('setTransient');
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
@@ -157,11 +160,29 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   }
 
   public function testSetsTransientToImprovePerformance() {
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(false);
+    $this->wp
+      ->expects($this->once())
+      ->method('setTransient');
+    $form1 = new FormEntity('My Form');
+    $form2 = new FormEntity('My Form');
 
+    $this->repository->expects($this->once())->method('findAll')->willReturn([$form1, $form2]);
+
+    $this->hook->display('content');
   }
 
   public function testDoesNotQueryDatabaseIfTransientIsSet() {
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(false);
+    $this->wp
+      ->expects($this->once())
+      ->method('getTransient')
+      ->willReturn('true');
+    $this->repository->expects($this->never())->method('findAll');
 
+    $this->hook->display('content');
   }
 
 }

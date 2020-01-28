@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
+use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util;
 use MailPoet\Listing;
@@ -173,6 +174,8 @@ class Forms extends APIEndpoint {
         }
       }
     }
+
+    WPFunctions::get()->deleteTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
 
     // check if the user gets to pick his own lists
     // or if it's selected by the admin

@@ -392,7 +392,7 @@ class Functions {
     return self_admin_url($path, $scheme);
   }
 
-  public function setTransient($transient, $value, $expiration) {
+  public function setTransient($transient, $value, $expiration = 0) {
     return set_transient($transient, $value, $expiration);
   }
 
