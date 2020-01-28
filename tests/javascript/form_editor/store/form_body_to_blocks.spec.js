@@ -14,6 +14,7 @@ import {
   customDateInput,
   customHtml,
   divider,
+  nestedColumns,
 } from './form_to_block_test_data.js';
 
 const checkBlockBasics = (block) => {
@@ -310,5 +311,32 @@ describe('Form Body To Blocks', () => {
     blocks.map(checkBlockBasics);
     expect(blocks[0].name).to.be.equal('mailpoet-form/email-input');
     expect(blocks[1].name).to.be.equal('mailpoet-form/submit-button');
+  });
+
+  it('Should map nested columns', () => {
+    const email = { ...emailInput, position: '1' };
+    const nested = { ...nestedColumns, position: '2' };
+    const unknown = { id: 'unknown', position: '3' };
+    const blocks = formBodyToBlocks([email, nested, unknown]);
+    expect(blocks.length).to.be.equal(2);
+    expect(blocks[1].name).to.be.equal('core/columns');
+    // First level
+    const column1 = blocks[1].innerBlocks[0];
+    expect(column1.name).to.be.equal('core/column');
+    expect(column1.innerBlocks.length).to.be.equal(2);
+    const columns11 = column1.innerBlocks[0];
+    checkBlockBasics(column1.innerBlocks[1]);
+    const column2 = blocks[1].innerBlocks[1];
+    expect(column2.name).to.be.equal('core/column');
+    expect(column2.innerBlocks.length).to.be.equal(1);
+    checkBlockBasics(column1.innerBlocks[0]);
+
+    // Second level
+    expect(columns11.innerBlocks.length).to.be.equal(2);
+    const column11 = columns11.innerBlocks[0];
+    expect(column11.innerBlocks.length).to.be.equal(1);
+    checkBlockBasics(column11.innerBlocks[0]);
+    const column12 = columns11.innerBlocks[1];
+    expect(column12.innerBlocks.length).to.be.equal(0);
   });
 });

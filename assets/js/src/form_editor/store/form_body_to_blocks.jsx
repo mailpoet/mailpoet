@@ -1,10 +1,12 @@
 import { has } from 'lodash';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 
+const generateId = () => (`${Math.random().toString()}-${Date.now()}`);
+
 export const customFieldValuesToBlockValues = (values) => values.map((value) => {
   const mappedValue = {
     name: value.value,
-    id: `${Math.random().toString()}-${Date.now()}`,
+    id: generateId(),
   };
   if (has(value, 'is_checked') && value.is_checked) {
     mappedValue.isChecked = true;
@@ -55,6 +57,21 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
   return mapped;
 };
 
+const mapColumnBlocks = (data, customFields = []) => {
+  const mapped = {
+    clientId: generateId(),
+    name: `core/${data.type}`,
+    isValid: true,
+    attributes: {},
+    // eslint-disable-next-line no-use-before-define
+    innerBlocks: formBodyToBlocks(data.body ? data.body : [], customFields),
+  };
+  if (has(data.params, 'width')) {
+    mapped.attributes.width = parseFloat(data.params.width);
+  }
+  return mapped;
+};
+
 /**
  * Transforms form body items to array of blocks which can be passed to block editor.
  * @param {array} data - from form.body property
@@ -67,7 +84,12 @@ export const formBodyToBlocks = (data, customFields = []) => {
   if (!Array.isArray(customFields)) {
     throw new Error('Mapper expects customFields to be an array.');
   }
+
   return data.map((item, index) => {
+    if (['column', 'columns'].includes(item.type)) {
+      return mapColumnBlocks(item, customFields);
+    }
+
     const mapped = {
       clientId: `${item.id}_${index}`,
       isValid: true,
