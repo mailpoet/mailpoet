@@ -74,6 +74,7 @@ const Preview = ({
     onSegmentsReorder(newValues);
   };
 
+  /* eslint-disable react/jsx-props-no-spreading */
   const renderItems = () => (segmentsWhileMoved.map((segment, index) => (
     <Draggable key={segment.id} draggableId={segment.id} index={index}>
       {(provided) => (
