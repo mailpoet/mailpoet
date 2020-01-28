@@ -63,8 +63,9 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
  * Transforms blocks to form.body data structure.
  * @param blocks - blocks representation taken from @wordpress/block-editor
  * @param customFields - list of all custom Fields
+ * @param parent - parent block of nested block
  */
-export default (blocks, customFields = []) => {
+const mapBlocks = (blocks, customFields = [], parent = null) => {
   if (!Array.isArray(blocks)) {
     throw new Error('Mapper expects blocks to be an array.');
   }
@@ -89,6 +90,22 @@ export default (blocks, customFields = []) => {
     }
 
     switch (block.name) {
+      case 'core/column':
+        return {
+          position: (index + 1).toString(),
+          type: 'column',
+          params: {
+            width: block.attributes.width
+              ? block.attributes.width : Math.round(100 / parent.innerBlocks.length),
+          },
+          body: mapBlocks(block.innerBlocks, customFields, block),
+        };
+      case 'core/columns':
+        return {
+          position: (index + 1).toString(),
+          type: 'columns',
+          body: mapBlocks(block.innerBlocks, customFields, block),
+        };
       case 'mailpoet-form/email-input':
         return {
           ...mapped,
@@ -168,3 +185,5 @@ export default (blocks, customFields = []) => {
     }
   }).filter(Boolean);
 };
+
+export default mapBlocks;
