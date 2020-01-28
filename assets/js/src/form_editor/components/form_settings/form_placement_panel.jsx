@@ -3,6 +3,7 @@ import {
   Panel,
   PanelBody,
   TextareaControl,
+  ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import MailPoet from 'mailpoet';
@@ -15,6 +16,16 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
 
   const formExports = useSelect(
     (select) => select('mailpoet-form-editor').getFormExports(),
+    []
+  );
+
+  const placeFormBellowAllPages = useSelect(
+    (select) => select('mailpoet-form-editor').placeFormBellowAllPages(),
+    []
+  );
+
+  const placeFormBellowAllPosts = useSelect(
+    (select) => select('mailpoet-form-editor').placeFormBellowAllPosts(),
     []
   );
 
@@ -83,6 +94,16 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
   return (
     <Panel>
       <PanelBody title={MailPoet.I18n.t('formPlacement')} opened={isOpened} onToggle={onToggle}>
+        <ToggleControl
+          label={MailPoet.I18n.t('placeFormBellowAllPages')}
+          checked={placeFormBellowAllPages}
+          onChange={() => {}}
+        />
+        <ToggleControl
+          label={MailPoet.I18n.t('placeFormBellowAllPosts')}
+          checked={placeFormBellowAllPosts}
+          onChange={() => {}}
+        />
         <p>{addFormShortcodeHint}</p>
         <p>{addFormWidgetHint}</p>
         <p>{addFormPhpIframeHint}</p>
