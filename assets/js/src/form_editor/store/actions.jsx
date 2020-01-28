@@ -20,6 +20,20 @@ export function changeFormName(name) {
   };
 }
 
+export function setPlaceFormBellowAllPages(place) {
+  return {
+    type: 'PLACE_FORM_BELLOW_ALL_PAGES',
+    place,
+  };
+}
+
+export function setPlaceFormBellowAllPosts(place) {
+  return {
+    type: 'PLACE_FORM_BELLOW_ALL_POSTS',
+    place,
+  };
+}
+
 export function deleteCustomFieldStarted() {
   return {
     type: 'DELETE_CUSTOM_FIELD_STARTED',

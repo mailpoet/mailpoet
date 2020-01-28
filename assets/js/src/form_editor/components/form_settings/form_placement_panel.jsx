@@ -5,7 +5,7 @@ import {
   TextareaControl,
   ToggleControl,
 } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { curry } from 'lodash';
@@ -28,6 +28,8 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
     (select) => select('mailpoet-form-editor').placeFormBellowAllPosts(),
     []
   );
+
+  const { setPlaceFormBellowAllPages, setPlaceFormBellowAllPosts } = useDispatch('mailpoet-form-editor');
 
   const exportLinkClicked = curry((type, event) => {
     event.preventDefault();
@@ -97,12 +99,12 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
         <ToggleControl
           label={MailPoet.I18n.t('placeFormBellowAllPages')}
           checked={placeFormBellowAllPages}
-          onChange={() => {}}
+          onChange={setPlaceFormBellowAllPages}
         />
         <ToggleControl
           label={MailPoet.I18n.t('placeFormBellowAllPosts')}
           checked={placeFormBellowAllPosts}
-          onChange={() => {}}
+          onChange={setPlaceFormBellowAllPosts}
         />
         <p>{addFormShortcodeHint}</p>
         <p>{addFormWidgetHint}</p>

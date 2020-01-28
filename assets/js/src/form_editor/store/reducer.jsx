@@ -4,6 +4,10 @@ import createCustomFieldFailed from './reducers/create_custom_field_failed.jsx';
 import customFieldEdited from './reducers/custom_field_edited.jsx';
 import createCustomFieldStartedFactory from './reducers/create_custom_field_started.jsx';
 import changeFormName from './reducers/change_form_name.jsx';
+import {
+  placeFormBellowAllPages,
+  placeFormBellowAllPosts,
+} from './reducers/form_placement.jsx';
 import changeFormSettings from './reducers/change_form_settings.jsx';
 import changeFormStyles from './reducers/change_form_styles.jsx';
 import removeNotice from './reducers/remove_notice.jsx';
@@ -49,6 +53,8 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'DELETE_CUSTOM_FIELD_STARTED': return customFieldDeleteStart(state, action);
     case 'DELETE_CUSTOM_FIELD_DONE': return customFieldDeleteDone(state, action);
     case 'DELETE_CUSTOM_FIELD_FAILED': return customFieldDeleteFailed(state, action);
+    case 'PLACE_FORM_BELLOW_ALL_PAGES': return placeFormBellowAllPages(state, action);
+    case 'PLACE_FORM_BELLOW_ALL_POSTS': return placeFormBellowAllPosts(state, action);
     default:
       return state;
   }

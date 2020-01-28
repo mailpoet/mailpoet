@@ -9,6 +9,7 @@ import selectors from './selectors.jsx';
 import controls from './controls.jsx';
 import validateForm from './form_validator.jsx';
 import { formBodyToBlocks } from './form_body_to_blocks.jsx';
+import mapFormDataAfterLoading from './map_form_data_after_loading.jsx';
 
 export default () => {
   const formData = { ...window.mailpoet_form_data };
@@ -22,7 +23,7 @@ export default () => {
   formData.settings.segments = formData.settings.segments ? formData.settings.segments : [];
   const defaultState = {
     formBlocks,
-    formData,
+    formData: mapFormDataAfterLoading(formData),
     dateSettingData,
     sidebarOpened: true,
     formExports: window.mailpoet_form_exports,
