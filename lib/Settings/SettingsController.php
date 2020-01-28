@@ -24,6 +24,8 @@ class SettingsController {
   /** @var SettingsRepository */
   private $settingsRepository;
 
+  private static $instance;
+
   public function __construct(SettingsRepository $settingsRepository) {
     $this->settingsRepository = $settingsRepository;
   }
@@ -155,8 +157,13 @@ class SettingsController {
     $this->loaded = false;
   }
 
+  public static function setInstance($instance) {
+    self::$instance = $instance;
+  }
+
   /** @return SettingsController */
   public static function getInstance() {
+    if (isset(self::$instance)) return self::$instance;
     return ContainerWrapper::getInstance()->get(SettingsController::class);
   }
 }
