@@ -40,10 +40,7 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
     if (type === 'php') {
       return setCopyAreaContent(formExports.php);
     }
-    if (type === 'iframe') {
-      return setCopyAreaContent(formExports.iframe);
-    }
-    return setCopyAreaContent(formExports.shortcode);
+    return setCopyAreaContent(formExports.iframe);
   });
 
   const addFormWidgetHint = ReactStringReplace(
@@ -52,21 +49,6 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
     (match) => (
       <a key="addFormWidgetHintLink" href="widgets.php" target="_blank">{match}</a>
     )
-  );
-
-  const addFormShortcodeHint = ReactStringReplace(
-    MailPoet.I18n.t('addFormShortcodeHint'),
-    /(\[link].*\[\/link])|(\[shortcode])/g,
-    (match) => {
-      if (match === '[shortcode]') {
-        return (<code key={match}>{formExports.shortcode}</code>);
-      }
-      if (typeof match === 'string' && match.includes('[link]')) {
-        const link = match.replace(/\[.?link]/g, '');
-        return (<a key={match} href="TODO KB link" target="_blank">{link}</a>);
-      }
-      return match;
-    }
   );
 
   const addFormPhpIframeHint = ReactStringReplace(
@@ -106,7 +88,6 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
           checked={placeFormBellowAllPosts}
           onChange={setPlaceFormBellowAllPosts}
         />
-        <p>{addFormShortcodeHint}</p>
         <p>{addFormWidgetHint}</p>
         <p>{addFormPhpIframeHint}</p>
         {getCopyTextArea()}
