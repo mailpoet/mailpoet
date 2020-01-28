@@ -575,6 +575,22 @@ class Functions {
   }
 
   /**
+   * @param int|string|array $post Optional. Post ID, title, slug, or array of such. Default empty.
+   * @return bool Whether the query is for an existing single post.
+   */
+  public function isSingle($post = '') {
+    return is_single($post);
+  }
+
+  /**
+   * @param int|string|array $page Optional. Page ID, title, slug, or array of such. Default empty.
+   * @return bool Whether the query is for an existing single page.
+   */
+  public function isPage($page = '') {
+    return is_page($page);
+  }
+
+  /**
    * @param string $package
    * @param array $args
    * @return bool|WP_Error
