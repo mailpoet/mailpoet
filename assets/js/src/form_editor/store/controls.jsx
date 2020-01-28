@@ -6,6 +6,7 @@ import blocksToFormBody from './blocks_to_form_body.jsx';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
+import mapFormDataBeforeSaving from './map_form_data_before_saving.jsx';
 
 const formatApiErrorMessage = (response) => {
   let errorMessage = null;
@@ -30,7 +31,7 @@ export default {
     const formBlocks = select('mailpoet-form-editor').getFormBlocks();
     const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
     const requestData = {
-      ...formData,
+      ...mapFormDataBeforeSaving(formData),
       body: blocksToFormBody(formBlocks, customFields),
       editor_version: 2,
     };
