@@ -1,169 +1,20 @@
 import { expect } from 'chai';
 import formBlocksToBody from '../../../../assets/js/src/form_editor/store/blocks_to_form_body.jsx';
-import { nestedColumns } from './block_to_form_test_data.js';
-
-const emailBlock = {
-  clientId: 'email',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/email-input',
-  attributes: {
-    label: 'Email Address',
-    labelWithinInput: false,
-  },
-};
-
-const submitBlock = {
-  clientId: 'submit',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/submit-button',
-  attributes: {
-    label: 'Subscribe!',
-  },
-};
-
-const segmentsBlock = {
-  clientId: 'segments',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/segment-select',
-  attributes: {
-    labelWithinInput: false,
-    mandatory: false,
-    label: 'Select list(s):',
-    values: [
-      { id: '6', name: 'Unicorn Truthers' },
-      { id: '24', name: 'Carrots are lit', isChecked: true },
-      { id: '29', name: 'Daily' },
-    ],
-  },
-};
-
-const firstNameBlock = {
-  clientId: 'first_name',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/first-name-input',
-  attributes: {
-    label: 'First Name',
-    labelWithinInput: false,
-    mandatory: false,
-  },
-};
-
-const lastNameBlock = {
-  clientId: 'last_name',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/last-name-input',
-  attributes: {
-    label: 'Last Name',
-    labelWithinInput: false,
-    mandatory: false,
-  },
-};
-
-const customTextBlock = {
-  clientId: '2',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/custom-text',
-  attributes: {
-    label: 'Name of the street',
-    labelWithinInput: false,
-    mandatory: false,
-    validate: 'alphanum',
-    customFieldId: 1,
-  },
-};
-
-const customRadioBlock = {
-  clientId: '4',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/custom-radio',
-  attributes: {
-    label: 'Options',
-    hideLabel: true,
-    mandatory: true,
-    customFieldId: 2,
-    values: [
-      { name: 'option 1' },
-      { name: 'option 2' },
-    ],
-  },
-};
-
-const customCheckBox = {
-  clientId: '5',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/custom-checkbox',
-  attributes: {
-    label: 'Checkbox',
-    hideLabel: false,
-    mandatory: false,
-    customFieldId: 3,
-    values: [
-      {
-        name: 'Check this',
-        isChecked: true,
-      },
-    ],
-  },
-};
-
-const customSelectBlock = {
-  clientId: '5',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/custom-select',
-  attributes: {
-    label: 'Select',
-    labelWithinInput: false,
-    mandatory: false,
-    customFieldId: 6,
-    values: [
-      { name: 'option 1' },
-      { name: 'option 2' },
-    ],
-  },
-};
-
-const customDateBlock = {
-  clientId: '5',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/custom-date',
-  attributes: {
-    label: 'Date',
-    mandatory: false,
-    customFieldId: 6,
-    dateType: 'month_year',
-    dateFormat: 'MM/YYYY',
-    defaultToday: true,
-  },
-};
-
-const dividerBlock = {
-  clientId: 'some_random_123',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/divider',
-  attributes: {},
-};
-
-const customHtmlBlock = {
-  clientId: 'some_random_321',
-  isValid: true,
-  innerBlocks: [],
-  name: 'mailpoet-form/html',
-  attributes: {
-    content: 'HTML content',
-    nl2br: true,
-  },
-};
+import {
+  emailBlock,
+  lastNameBlock,
+  firstNameBlock,
+  submitBlock,
+  segmentsBlock,
+  customTextBlock,
+  customRadioBlock,
+  customCheckBox,
+  customDateBlock,
+  customHtmlBlock,
+  customSelectBlock,
+  dividerBlock,
+  nestedColumns,
+} from './block_to_form_test_data.js';
 
 const checkBodyInputBasics = (input) => {
   expect(input.id).to.be.a('string');
