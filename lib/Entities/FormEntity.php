@@ -1,0 +1,105 @@
+<?php
+
+namespace MailPoet\Entities;
+
+use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
+use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
+use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
+use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="forms")
+ */
+class FormEntity {
+  use AutoincrementedIdTrait;
+  use CreatedAtTrait;
+  use UpdatedAtTrait;
+  use DeletedAtTrait;
+
+  /**
+   * @ORM\Column(type="string")
+   * @var string
+   */
+  private $name;
+
+  /**
+   * @ORM\Column(type="array")
+   * @var array|null
+   */
+  private $body;
+
+  /**
+   * @ORM\Column(type="array")
+   * @var array|null
+   */
+  private $settings;
+
+  /**
+   * @ORM\Column(type="string")
+   * @var string|null
+   */
+  private $styles;
+
+  public function __construct($name) {
+    $this->name = $name;
+  }
+
+  /**
+   * @return string
+   */
+  public function getName() {
+    return $this->name;
+  }
+
+  /**
+   * @return array|null
+   */
+  public function getBody() {
+    return $this->body;
+  }
+
+  /**
+   * @return array|null
+   */
+  public function getSettings() {
+    return $this->settings;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getStyles() {
+    return $this->styles;
+  }
+
+  /**
+   * @param string $name
+   */
+  public function setName($name) {
+    $this->name = $name;
+  }
+
+  /**
+   * @param array|null $body
+   */
+  public function setBody($body) {
+    $this->body = $body;
+  }
+
+  /**
+   * @param array|null $settings
+   */
+  public function setSettings($settings) {
+    $this->settings = $settings;
+  }
+
+  /**
+   * @param string|null $styles
+   */
+  public function setStyles($styles) {
+    $this->styles = $styles;
+  }
+
+}
