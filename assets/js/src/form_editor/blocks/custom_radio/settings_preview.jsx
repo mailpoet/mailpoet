@@ -97,6 +97,7 @@ const Preview = ({
     onReorder(newValues);
   };
 
+  /* eslint-disable react/jsx-props-no-spreading */
   const renderItems = () => (valuesWhileMoved.map((value, index) => (
     <Draggable key={value.id} draggableId={value.id} index={index}>
       {(provided) => (
