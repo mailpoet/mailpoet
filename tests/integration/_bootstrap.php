@@ -237,4 +237,4 @@ if (!function_exists('WC')) {
   }
 }
 
-include '_fixtures.php';
+require_once '_fixtures.php';
