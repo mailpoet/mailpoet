@@ -59,13 +59,26 @@ function mailpoet_wp_version_notice() {
 
 // Display PHP version error notice
 function mailpoet_php_version_notice() {
-  $notice = str_replace(
+  $noticeP1 = __('MailPoet requires PHP version 7.0 or newer (7.3 recommended). You are running version [version].', 'mailpoet');
+  $noticeP1 = str_replace('[version]', phpversion(), $noticeP1);
+
+  $noticeP2 = __('Please read our [link]instructions[/link] on how to upgrade your site.', 'mailpoet');
+  $noticeP2 = str_replace(
     '[link]',
-    '<a href="https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_version" target="_blank">',
-    __('MailPoet requires PHP version 7.0 or newer (version 7.3 recommended). Please read our [link]instructions[/link] on how to upgrade your site.', 'mailpoet')
+    '<a href="https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version" target="_blank">',
+    $noticeP2
   );
-  $notice = str_replace('[/link]', '</a>', $notice);
-  printf('<div class="error"><p>%1$s</p></div>', $notice);
+  $noticeP2 = str_replace('[/link]', '</a>', $noticeP2);
+
+  $noticeP3 = __('If you can’t upgrade the PHP version, [link]install this version[/link] of MailPoet. Remember not to update MailPoet ever again!', 'mailpoet');
+  $noticeP3 = str_replace(
+    '[link]',
+    '<a href="https://downloads.wordpress.org/plugin/mailpoet.3.44.0.zip" target="_blank">',
+    $noticeP3
+  );
+  $noticeP3 = str_replace('[/link]', '</a>', $noticeP3);
+
+  printf('<div class="error"><p><strong>%s</strong></p><p>%s</p><p>%s</p></div>', $noticeP1, $noticeP2, $noticeP3);
 }
 
 if (isset($_SERVER['SERVER_SOFTWARE']) && strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'microsoft-iis') !== false) {
