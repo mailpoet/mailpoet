@@ -35,7 +35,7 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
 
   const addFormWidgetHint = ReactStringReplace(
     MailPoet.I18n.t('addFormWidgetHint'),
-    /\[link\](.*?)\[\/link\]/g,
+    /\[link](.*?)\[\/link]/g,
     (match) => (
       <a key="addFormWidgetHintLink" href="widgets.php" target="_blank">{match}</a>
     )
@@ -43,15 +43,22 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
 
   const addFormShortcodeHint = ReactStringReplace(
     MailPoet.I18n.t('addFormShortcodeHint'),
-    /\[link\](.*?)\[\/link\]/g,
-    (match) => (
-      <a key="exportShortcode" href="#" onClick={exportLinkClicked('shortcode')}>{match}</a>
-    )
+    /(\[link].*\[\/link])|(\[shortcode])/g,
+    (match) => {
+      if (match === '[shortcode]') {
+        return (<code key={match}>{formExports.shortcode}</code>);
+      }
+      if (typeof match === 'string' && match.includes('[link]')) {
+        const link = match.replace(/\[.?link]/g, '');
+        return (<a key={match} href="TODO KB link" target="_blank">{link}</a>);
+      }
+      return match;
+    }
   );
 
   const addFormPhpIframeHint = ReactStringReplace(
     MailPoet.I18n.t('addFormPhpIframeHint'),
-    /\[link\](.*?)\[\/link\]/g,
+    /\[link](.*?)\[\/link]/g,
     (match) => {
       if (match === 'PHP') {
         return (<a key="exportPHP" href="#" onClick={exportLinkClicked('php')}>{match}</a>);
@@ -76,8 +83,8 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
   return (
     <Panel>
       <PanelBody title={MailPoet.I18n.t('formPlacement')} opened={isOpened} onToggle={onToggle}>
-        <p>{addFormWidgetHint}</p>
         <p>{addFormShortcodeHint}</p>
+        <p>{addFormWidgetHint}</p>
         <p>{addFormPhpIframeHint}</p>
         {getCopyTextArea()}
       </PanelBody>
