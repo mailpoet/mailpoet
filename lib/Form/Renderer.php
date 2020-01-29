@@ -69,7 +69,7 @@ class Renderer {
     return $html;
   }
 
-  public static function renderBlock($block = []) {
+  private static function renderBlock($block = []) {
     $html = '';
     switch ($block['type']) {
       case 'html':
