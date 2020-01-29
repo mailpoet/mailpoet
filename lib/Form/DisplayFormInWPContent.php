@@ -15,32 +15,45 @@ class DisplayFormInWPContent {
   /** @var FormsRepository */
   private $formsRepository;
 
-  /** @var bool */
-  private $appendedForm = false;
-
   public function __construct(WPFunctions $wp, FormsRepository $formsRepository) {
     $this->wp = $wp;
     $this->formsRepository = $formsRepository;
   }
 
   public function display(string $content): string {
-    $this->appendedForm = false;
+    if(!$this->shouldDisplay()) return $content;
+
+    $forms = $this->getForms();
+    if (count($forms) === 0) {
+      $this->wp->setTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY, true);
+      return $content;
+    }
+
     $result = $content;
-    if (!$this->wp->isSingle()) return $result;
-    if ($this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY)) return $result;
-    $forms = $this->formsRepository->findAll();
     foreach ($forms as $form) {
       $result .= $this->getContentBellow($form);
     }
-    if (!$this->appendedForm) {
-      $this->wp->setTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY, true);
-    }
+
     return $result;
   }
 
+  private function shouldDisplay():bool {
+    if (!$this->wp->isSingle()) return false;
+    if ($this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY)) return false;
+    return true;
+  }
+
+  /**
+   * @return FormEntity[]
+   */
+  private function getForms():array {
+    $forms = $this->formsRepository->findAll();
+    return array_filter($forms, function($form) {
+      return $this->shouldDisplayFormBellowContent($form);
+    });
+  }
+
   private function getContentBellow(FormEntity $form): string {
-    if (!$this->shouldDisplayFormBellowContent($form)) return '';
-    $this->appendedForm = true;
     return Renderer::render([
       'body' => $form->getBody(),
       'styles' => $form->getStyles(),
