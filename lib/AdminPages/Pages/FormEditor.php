@@ -63,12 +63,6 @@ class FormEditor {
       'custom_fields' => $this->customFieldsResponseBuilder->buildBatch($customFields),
     ];
 
-    if (isset($_GET['legacy']) && (int)$_GET['legacy']) {
-      $data['date_types'] = $dateTypes;
-      $this->pageRenderer->displayPage('form/editor_legacy.html', $data);
-    } else {
-      $this->pageRenderer->displayPage('form/editor.html', $data);
-
-    }
+    $this->pageRenderer->displayPage('form/editor.html', $data);
   }
 }
