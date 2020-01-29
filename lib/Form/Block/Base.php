@@ -7,7 +7,7 @@ use MailPoet\Models\ModelValidator;
 use MailPoet\WP\Functions as WPFunctions;
 
 abstract class Base {
-  protected static function getInputValidation($block, $extraRules = []) {
+  protected function getInputValidation($block, $extraRules = []) {
     $rules = [];
 
     if ($block['id'] === 'email') {
@@ -66,7 +66,7 @@ abstract class Base {
     return join(' ', $validation);
   }
 
-  protected static function renderLabel($block) {
+  protected function renderLabel($block) {
     $html = '';
     if (
       isset($block['params']['hide_label'])
@@ -94,7 +94,7 @@ abstract class Base {
     return $html;
   }
 
-  protected static function renderInputPlaceholder($block) {
+  protected function renderInputPlaceholder($block) {
     $html = '';
     // if the label is displayed as a placeholder,
     if (
@@ -114,7 +114,7 @@ abstract class Base {
   }
 
   // return field name depending on block data
-  protected static function getFieldName($block = []) {
+  protected function getFieldName($block = []) {
     if ((int)$block['id'] > 0) {
       return 'cf_' . $block['id'];
     } elseif (isset($block['params']['obfuscate']) && !$block['params']['obfuscate']) {
@@ -125,19 +125,19 @@ abstract class Base {
     }
   }
 
-  protected static function getFieldLabel($block = []) {
+  protected function getFieldLabel($block = []) {
     return (isset($block['params']['label'])
             && strlen(trim($block['params']['label'])) > 0)
             ? trim($block['params']['label']) : '';
   }
 
-  protected static function getFieldValue($block = []) {
+  protected function getFieldValue($block = []) {
     return (isset($block['params']['value'])
             && strlen(trim($block['params']['value'])) > 0)
             ? WPFunctions::get()->escAttr(trim($block['params']['value'])) : '';
   }
 
-  protected static function getInputModifiers($block = []) {
+  protected function getInputModifiers($block = []) {
     $modifiers = [];
 
     if (isset($block['params']['readonly']) && $block['params']['readonly']) {

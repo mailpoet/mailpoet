@@ -3,26 +3,26 @@
 namespace MailPoet\Form\Block;
 
 class Textarea extends Base {
-  public static function render($block) {
+  public function render($block) {
     $html = '';
 
     $html .= '<p class="mailpoet_paragraph">';
 
-    $html .= static::renderLabel($block);
+    $html .= $this->renderLabel($block);
 
     $lines = (isset($block['params']['lines']) ? (int)$block['params']['lines'] : 1);
 
     $html .= '<textarea class="mailpoet_textarea" rows="' . $lines . '" ';
 
-    $html .= 'name="data[' . static::getFieldName($block) . ']"';
+    $html .= 'name="data[' . $this->getFieldName($block) . ']"';
 
-    $html .= static::renderInputPlaceholder($block);
+    $html .= $this->renderInputPlaceholder($block);
 
-    $html .= static::getInputValidation($block);
+    $html .= $this->getInputValidation($block);
 
-    $html .= static::getInputModifiers($block);
+    $html .= $this->getInputModifiers($block);
 
-    $html .= '>' . static::getFieldValue($block) . '</textarea>';
+    $html .= '>' . $this->getFieldValue($block) . '</textarea>';
 
     $html .= '</p>';
 

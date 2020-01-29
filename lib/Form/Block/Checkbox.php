@@ -4,15 +4,15 @@ namespace MailPoet\Form\Block;
 
 class Checkbox extends Base {
 
-  public static function render($block) {
+  public function render($block) {
     $html = '';
 
-    $fieldName = 'data[' . static::getFieldName($block) . ']';
-    $fieldValidation = static::getInputValidation($block);
+    $fieldName = 'data[' . $this->getFieldName($block) . ']';
+    $fieldValidation = $this->getInputValidation($block);
 
     $html .= '<p class="mailpoet_paragraph">';
 
-    $html .= static::renderLabel($block);
+    $html .= $this->renderLabel($block);
 
     $options = (!empty($block['params']['values'])
       ? $block['params']['values']

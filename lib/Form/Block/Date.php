@@ -7,22 +7,22 @@ use MailPoetVendor\Carbon\Carbon;
 
 class Date extends Base {
 
-  public static function render($block) {
+  public function render($block) {
     $html = '';
     $html .= '<p class="mailpoet_paragraph">';
-    $html .= static::renderLabel($block);
-    $html .= static::renderDateSelect($block);
+    $html .= $this->renderLabel($block);
+    $html .= $this->renderDateSelect($block);
     $html .= '</p>';
 
     return $html;
   }
 
-  private static function renderDateSelect($block = []) {
+  private function renderDateSelect($block = []) {
     $html = '';
 
-    $fieldName = 'data[' . static::getFieldName($block) . ']';
+    $fieldName = 'data[' . $this->getFieldName($block) . ']';
 
-    $dateFormats = static::getDateFormats();
+    $dateFormats = $this->getDateFormats();
 
     // automatically select first date format
     $dateFormat = $dateFormats[$block['params']['date_type']][0];
@@ -39,27 +39,27 @@ class Date extends Base {
     foreach ($dateSelectors as $dateSelector) {
       if ($dateSelector === 'DD') {
         $html .= '<select class="mailpoet_date_day" ';
-        $html .= static::getInputValidation($block, [
+        $html .= $this->getInputValidation($block, [
           'required-message' => WPFunctions::get()->__('Please select a day', 'mailpoet'),
         ]);
         $html .= 'name="' . $fieldName . '[day]" placeholder="' . __('Day', 'mailpoet') . '">';
-        $html .= static::getDays($block);
+        $html .= $this->getDays($block);
         $html .= '</select>';
       } else if ($dateSelector === 'MM') {
         $html .= '<select class="mailpoet_select mailpoet_date_month" ';
-        $html .= static::getInputValidation($block, [
+        $html .= $this->getInputValidation($block, [
           'required-message' => WPFunctions::get()->__('Please select a month', 'mailpoet'),
         ]);
         $html .= 'name="' . $fieldName . '[month]" placeholder="' . __('Month', 'mailpoet') . '">';
-        $html .= static::getMonths($block);
+        $html .= $this->getMonths($block);
         $html .= '</select>';
       } else if ($dateSelector === 'YYYY') {
         $html .= '<select class="mailpoet_date_year" ';
-        $html .= static::getInputValidation($block, [
+        $html .= $this->getInputValidation($block, [
           'required-message' => WPFunctions::get()->__('Please select a year', 'mailpoet'),
         ]);
         $html .= 'name="' . $fieldName . '[year]" placeholder="' . __('Year', 'mailpoet') . '">';
-        $html .= static::getYears($block);
+        $html .= $this->getYears($block);
         $html .= '</select>';
       }
     }
@@ -69,7 +69,7 @@ class Date extends Base {
     return $html;
   }
 
-  public static function getDateTypes() {
+  public function getDateTypes() {
     return [
       'year_month_day' => WPFunctions::get()->__('Year, month, day', 'mailpoet'),
       'year_month' => WPFunctions::get()->__('Year, month', 'mailpoet'),
@@ -78,7 +78,7 @@ class Date extends Base {
     ];
   }
 
-  public static function getDateFormats() {
+  public function getDateFormats() {
     return [
       'year_month_day' => ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'],
       'year_month' => ['MM/YYYY', 'YYYY/MM'],
@@ -86,14 +86,14 @@ class Date extends Base {
       'month' => ['MM'],
     ];
   }
-  public static function getMonthNames() {
+  public function getMonthNames() {
     return [__('January', 'mailpoet'), WPFunctions::get()->__('February', 'mailpoet'), WPFunctions::get()->__('March', 'mailpoet'), WPFunctions::get()->__('April', 'mailpoet'),
       WPFunctions::get()->__('May', 'mailpoet'), WPFunctions::get()->__('June', 'mailpoet'), WPFunctions::get()->__('July', 'mailpoet'), WPFunctions::get()->__('August', 'mailpoet'), WPFunctions::get()->__('September', 'mailpoet'),
       WPFunctions::get()->__('October', 'mailpoet'), WPFunctions::get()->__('November', 'mailpoet'), WPFunctions::get()->__('December', 'mailpoet'),
     ];
   }
 
-  public static function getMonths($block = []) {
+  private function getMonths($block = []) {
     $defaults = [
       'selected' => null,
     ];
@@ -105,7 +105,7 @@ class Date extends Base {
     // merge block with defaults
     $block = array_merge($defaults, $block);
 
-    $monthNames = static::getMonthNames();
+    $monthNames = $this->getMonthNames();
 
     $html = '';
 
@@ -122,7 +122,7 @@ class Date extends Base {
     return $html;
   }
 
-  public static function getYears($block = []) {
+  private function getYears($block = []) {
     $defaults = [
       'selected' => null,
       'from' => (int)strftime('%Y') - 100,
@@ -151,7 +151,7 @@ class Date extends Base {
     return $html;
   }
 
-  public static function getDays($block = []) {
+  private function getDays($block = []) {
     $defaults = [
       'selected' => null,
     ];
@@ -177,7 +177,7 @@ class Date extends Base {
     return $html;
   }
 
-  public static function convertDateToDatetime($date, $dateFormat) {
+  public function convertDateToDatetime($date, $dateFormat) {
     $datetime = false;
     if ($dateFormat === 'datetime') {
       $datetime = $date;
