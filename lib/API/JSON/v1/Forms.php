@@ -28,6 +28,9 @@ class Forms extends APIEndpoint {
   /** @var UserFlagsController */
   private $userFlags;
 
+  /** @var FormRenderer */
+  private $formRenderer;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,
   ];
@@ -36,12 +39,14 @@ class Forms extends APIEndpoint {
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
     Util\Styles $formStylesUtils,
-    UserFlagsController $userFlags
+    UserFlagsController $userFlags,
+    FormRenderer $formRenderer
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
     $this->formStylesUtils = $formStylesUtils;
     $this->userFlags = $userFlags;
+    $this->formRenderer = $formRenderer;
   }
 
   public function get($data = []) {
@@ -130,7 +135,7 @@ class Forms extends APIEndpoint {
 
   public function previewEditor($data = []) {
     // html
-    $html = FormRenderer::renderHTML($data);
+    $html = $this->formRenderer->renderHTML($data);
 
     // convert shortcodes
     $html = WPFunctions::get()->doShortcode($html);

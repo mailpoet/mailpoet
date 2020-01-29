@@ -18,7 +18,7 @@ class Renderer {
     return $html;
   }
 
-  public static function renderHTML($form = []) {
+  public function renderHTML($form = []) {
     if (isset($form['body']) && !empty($form['body'])) {
       return static::renderBlocks($form['body']);
     }
