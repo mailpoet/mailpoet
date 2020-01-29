@@ -13,10 +13,8 @@ foreach ($files as $file) {
     $data = file_get_contents($file);
     $data = preg_replace("/'(Swift_[^']*?::)/", "'MailPoetVendor\\\\\\\\$1", $data);
     $data = preg_replace("/InstanceOf\('(Swift_[^']*?')/", "InstanceOf('MailPoetVendor\\\\\\\\$1", $data);
-    $data = preg_replace("/registerAutoload\('(_swift[^']*?')/", "registerAutoload('MailPoetVendor\\\\\\\\$1", $data);
     $data = preg_replace("/'(Swift_[^']*?Listener)/", "'MailPoetVendor\\\\\\\\$1", $data);
     $data = str_replace("'Swift_CharacterReader_", "'MailPoetVendor\\\\Swift_CharacterReader_", $data);
-    $data = str_replace('SWIFT_INIT_LOADED', 'MAILPOET_SWIFT_INIT_LOADED', $data);
     file_put_contents($file, $data);
   }
 }
