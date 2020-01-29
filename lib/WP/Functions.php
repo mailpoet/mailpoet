@@ -232,6 +232,10 @@ class Functions {
     return get_post_types($args, $output, $operator);
   }
 
+  public function getPostType($post = null) {
+    return get_post_type($post);
+  }
+
   public function getPosts(array $args = null) {
     return get_posts($args);
   }
@@ -588,6 +592,14 @@ class Functions {
    */
   public function isPage($page = '') {
     return is_page($page);
+  }
+
+  /**
+   * @param string|array $postTypes Optional. Post type or array of post types. Default empty.
+   * @return bool Whether the query is for an existing single post of any of the given post types.
+   */
+  public function isSingular($postTypes = ''): bool {
+    return is_singular($postTypes);
   }
 
   /**
