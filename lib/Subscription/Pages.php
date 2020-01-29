@@ -55,6 +55,9 @@ class Pages {
   /** @var AssetsController */
   private $assetsController;
 
+  /** @var FormRenderer */
+  private $formRenderer;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -64,7 +67,8 @@ class Pages {
     WelcomeScheduler $welcomeScheduler,
     LinkTokens $linkTokens,
     SubscriptionUrlFactory $subscriptionUrlFactory,
-    AssetsController $assetsController
+    AssetsController $assetsController,
+    FormRenderer $formRenderer
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -75,6 +79,7 @@ class Pages {
     $this->linkTokens = $linkTokens;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->assetsController = $assetsController;
+    $this->formRenderer = $formRenderer;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -487,7 +492,7 @@ class Pages {
     $formHtml .= '</p>';
 
     // subscription form
-    $formHtml .= FormRenderer::renderBlocks($form, $honeypot = false);
+    $formHtml .= $this->formRenderer->renderBlocks($form, $honeypot = false);
     $formHtml .= '</form>';
     return $formHtml;
   }

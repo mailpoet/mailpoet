@@ -20,7 +20,7 @@ class Renderer {
 
   public function renderHTML($form = []) {
     if (isset($form['body']) && !empty($form['body'])) {
-      return static::renderBlocks($form['body']);
+      return $this->renderBlocks($form['body']);
     }
     return '';
   }
@@ -35,7 +35,7 @@ class Renderer {
     }
   }
 
-  public static function renderBlocks($blocks = [], $honeypotEnabled = true) {
+  public function renderBlocks($blocks = [], $honeypotEnabled = true) {
     $settings = SettingsController::getInstance();
     // add honeypot for spambots
     $html = ($honeypotEnabled) ?
@@ -63,13 +63,13 @@ class Renderer {
           <input class="mailpoet_recaptcha_field" type="hidden" name="recaptcha">
         </div>';
       }
-      $html .= static::renderBlock($block) . PHP_EOL;
+      $html .= $this->renderBlock($block) . PHP_EOL;
     }
 
     return $html;
   }
 
-  private static function renderBlock($block = []) {
+  private function renderBlock($block = []) {
     $html = '';
     switch ($block['type']) {
       case 'html':
