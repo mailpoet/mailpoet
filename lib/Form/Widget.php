@@ -4,8 +4,8 @@ namespace MailPoet\Form;
 
 use MailPoet\API\JSON\API;
 use MailPoet\Config\Renderer as ConfigRenderer;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Renderer as FormRenderer;
-use MailPoet\Form\Util\Styles;
 use MailPoet\Models\Form;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
@@ -30,7 +30,7 @@ class Widget extends \WP_Widget {
     $this->wp = new WPFunctions;
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
     $this->assetsController = new AssetsController($this->wp, $this->renderer, SettingsController::getInstance());
-    $this->formRenderer = new FormRenderer(new Styles(), SettingsController::getInstance());
+    $this->formRenderer = ContainerWrapper::getInstance()->get(FormRenderer::class);
     if (!is_admin()) {
       $this->setupIframe();
     } else {
