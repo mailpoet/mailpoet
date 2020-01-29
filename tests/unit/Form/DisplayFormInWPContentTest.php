@@ -30,7 +30,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
   public function testAppendsRenderedFormAfterPostContent() {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
-    $this->wp->expects($this->any())->method('isPage')->willReturn(false);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
@@ -53,6 +53,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   public function testDoesNotAppendFormIfDisabled() {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isPage')->willReturn(false);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
@@ -73,7 +74,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
   public function testAppendsMultipleRenderedFormAfterPostContent() {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
-    $this->wp->expects($this->any())->method('isPage')->willReturn(false);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
     $form1 = new FormEntity('My Form');
     $form1->setSettings([
       'segments' => ['3'],
@@ -114,8 +115,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   }
 
   public function testDoesNotAppendFormIfNotOnPost() {
-    $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
-    $this->wp->expects($this->once())->method('isPage')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(false);
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
@@ -176,10 +178,11 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   public function testDoesNotQueryDatabaseIfTransientIsSet() {
     $this->wp->expects($this->any())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isPage')->willReturn(false);
+    $this->wp->expects($this->any())->method('getPostType')->willReturn('post');
     $this->wp
       ->expects($this->once())
       ->method('getTransient')
-      ->willReturn('true');
+      ->willReturn(['post' => true]);
     $this->repository->expects($this->never())->method('findAll');
 
     $this->hook->display('content');

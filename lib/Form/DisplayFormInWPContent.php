@@ -25,7 +25,7 @@ class DisplayFormInWPContent {
 
     $forms = $this->getForms();
     if (count($forms) === 0) {
-      $this->wp->setTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY, true);
+      $this->saveNoPosts();
       return $content;
     }
 
@@ -39,8 +39,16 @@ class DisplayFormInWPContent {
 
   private function shouldDisplay():bool {
     if (!$this->wp->isSingle()) return false;
-    if ($this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY)) return false;
+    $cache = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
+    if (isset($cache[$this->wp->getPostType()])) return false;
     return true;
+  }
+
+  private function saveNoPosts() {
+    $stored = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
+    if (!is_array($stored)) $stored = [];
+    $stored[$this->wp->getPostType()] = true;
+    $this->wp->setTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY, $stored);
   }
 
   /**
@@ -66,7 +74,7 @@ class DisplayFormInWPContent {
     if (!isset($settings['placeFormBellowAllPosts'])) return false;
     if (
       ($settings['placeFormBellowAllPosts'] === '1')
-      && !$this->wp->isPage()
+      && $this->wp->isSingular('post')
     ) return true;
     if (
       ($settings['placeFormBellowAllPages'] === '1')
