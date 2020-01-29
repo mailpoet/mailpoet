@@ -38,6 +38,9 @@
       "lib-3rd-party",
       "vendor-prefixed"
     ],
+    "exclude-from-classmap": [
+      "vendor-prefixed/swiftmailer"
+    ],
     "files": [
       "lib-3rd-party/ArrayColumn.php"
     ],

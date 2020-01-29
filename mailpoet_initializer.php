@@ -8,6 +8,9 @@ if (empty($mailpoetPlugin)) exit;
 
 require_once($mailpoetPlugin['autoloader']);
 
+// register Swiftmailer's autoloader (not done via composer in the prefixed version)
+require_once __DIR__ . '/vendor-prefixed/swiftmailer/swiftmailer/lib/swift_required.php';
+
 // setup Tracy Debugger in dev mode and only for PHP version > 7.1
 $tracyPath = __DIR__ . '/tools/vendor/tracy.phar';
 if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracyPath)) {

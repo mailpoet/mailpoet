@@ -17,18 +17,15 @@ foreach ($files as $file) {
     $data = preg_replace("/'(Swift_[^']*?Listener)/", "'MailPoetVendor\\\\\\\\$1", $data);
     $data = str_replace("'Swift_CharacterReader_", "'MailPoetVendor\\\\Swift_CharacterReader_", $data);
     $data = str_replace('SWIFT_INIT_LOADED', 'MAILPOET_SWIFT_INIT_LOADED', $data);
-
-    // require-once 'swift_init.php' in classes since prefixed version won't use Swift's autoloader
-    if (strpos($file, 'classes') !== false) {
-      $path = substr($file, strpos($file, 'classes'));
-      $nestingLevel = substr_count(str_replace('\\', '/', $path), '/');
-      $search = 'namespace MailPoetVendor;';
-      $requirePath = str_repeat('/..', $nestingLevel) . '/swift_init.php';
-      $data = str_replace($search, "$search\n\nrequire_once __DIR__ . '$requirePath';", $data);
-    }
     file_put_contents($file, $data);
   }
 }
+
+// fix Swiftmailer autoloader by injecting code that strips 'MailPoetVendor\' from class names
+$file = __DIR__ . '/../vendor-prefixed/swiftmailer/swiftmailer/lib/classes/Swift.php';
+$data = file_get_contents($file);
+$data = preg_replace('/(function autoload\(\$class\)\s*\{)/', "$1\n        \$class = str_replace('MailPoetVendor\\\\\\\\', '', \$class);\n", $data);
+file_put_contents($file, $data);
 
 # remove unused PHP file that starts with shebang line instead of <?php and causes PHP lint on WP repo to fail
 exec('rm -f ' . __DIR__ . '/../vendor-prefixed/swiftmailer/swiftmailer/lib/swiftmailer_generate_mimes_config.php');
