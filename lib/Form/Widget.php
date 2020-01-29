@@ -17,6 +17,9 @@ class Widget extends \WP_Widget {
   /** @var AssetsController */
   private $assetsController;
 
+  /** @var FormRenderer */
+  private $formRenderer;
+
   public function __construct() {
     parent::__construct(
       'mailpoet_form',
@@ -26,6 +29,7 @@ class Widget extends \WP_Widget {
     $this->wp = new WPFunctions;
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
     $this->assetsController = new AssetsController($this->wp, $this->renderer, SettingsController::getInstance());
+    $this->formRenderer = new FormRenderer();
     if (!is_admin()) {
       $this->setupIframe();
     } else {
@@ -214,7 +218,7 @@ class Widget extends \WP_Widget {
         'form_type' => $formType,
         'form' => $form,
         'title' => $title,
-        'styles' => FormRenderer::renderStyles($form, '#' . $formId),
+        'styles' => $this->formRenderer->renderStyles($form, '#' . $formId),
         'html' => FormRenderer::renderHTML($form),
         'before_widget' => $beforeWidget,
         'after_widget' => $afterWidget,
