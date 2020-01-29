@@ -2,17 +2,27 @@
 
 namespace MailPoet\Form;
 
+use MailPoet\Form\Util\Styles;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
-  public function renderStyles(array $form = [], string $prefix = null): string {
-    $styles = new Util\Styles();
+  /** @var Styles */
+  private $styleUtils;
 
+  /** @var SettingsController */
+  private $settings;
+
+  public function __construct(Styles $styleUtils, SettingsController $settings) {
+    $this->styleUtils = $styleUtils;
+    $this->settings = $settings;
+  }
+
+  public function renderStyles(array $form = [], string $prefix = null): string {
     $html = '<style type="text/css">';
     $html .= '.mailpoet_hp_email_label{display:none;}'; // move honeypot field out of sight
-    $html .= $styles->render($this->getStyles($form), $prefix);
+    $html .= $this->styleUtils->render($this->getStyles($form), $prefix);
     $html .= '</style>';
 
     return $html;
@@ -30,20 +40,18 @@ class Renderer {
     && strlen(trim($form['styles'])) > 0) {
       return strip_tags($form['styles']);
     } else {
-      $styles = new Util\Styles();
-      return $styles->getDefaultStyles();
+      return $this->styleUtils->getDefaultStyles();
     }
   }
 
   public function renderBlocks(array $blocks = [], bool $honeypotEnabled = true): string {
-    $settings = SettingsController::getInstance();
     // add honeypot for spambots
     $html = ($honeypotEnabled) ?
       '<label class="mailpoet_hp_email_label">' . WPFunctions::get()->__('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :
       '';
     foreach ($blocks as $key => $block) {
-      if ($block['type'] == 'submit' && $settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
-        $siteKey = $settings->get('captcha.recaptcha_site_token');
+      if ($block['type'] == 'submit' && $this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
+        $siteKey = $this->settings->get('captcha.recaptcha_site_token');
         $html .= '<div class="mailpoet_recaptcha" data-sitekey="' . $siteKey . '">
           <div class="mailpoet_recaptcha_container"></div>
           <noscript>
