@@ -77,17 +77,24 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
 
   return (
     <Panel>
-      <PanelBody title={MailPoet.I18n.t('formPlacement')} opened={isOpened} onToggle={onToggle}>
+      <PanelBody
+        title={MailPoet.I18n.t('formPlacement')}
+        opened={isOpened}
+        onToggle={onToggle}
+        className="form-sidebar-form-placement-panel"
+      >
         <ToggleControl
           label={MailPoet.I18n.t('placeFormBellowAllPages')}
           checked={placeFormBellowAllPages}
           onChange={setPlaceFormBellowAllPages}
         />
-        <ToggleControl
-          label={MailPoet.I18n.t('placeFormBellowAllPosts')}
-          checked={placeFormBellowAllPosts}
-          onChange={setPlaceFormBellowAllPosts}
-        />
+        <div data-automation-id="place-form-bellow-all-posts-toggle">
+          <ToggleControl
+            label={MailPoet.I18n.t('placeFormBellowAllPosts')}
+            checked={placeFormBellowAllPosts}
+            onChange={setPlaceFormBellowAllPosts}
+          />
+        </div>
         <p>{addFormWidgetHint}</p>
         <p>{addFormPhpIframeHint}</p>
         {getCopyTextArea()}
