@@ -20,11 +20,21 @@ class CaptchaRenderer {
   /** @var SubscriptionUrlFactory */
   private $subscriptionUrlFactory;
 
-  public function __construct(UrlHelper $urlHelper, WPFunctions $wp, CaptchaSession $captchaSession, SubscriptionUrlFactory $subscriptionUrlFactory) {
+  /** @var FormRenderer */
+  private $formRenderer;
+
+  public function __construct(
+    UrlHelper $urlHelper,
+    WPFunctions $wp,
+    CaptchaSession $captchaSession,
+    SubscriptionUrlFactory $subscriptionUrlFactory,
+    FormRenderer $formRenderer
+  ) {
     $this->urlHelper = $urlHelper;
     $this->wp = $wp;
     $this->captchaSession = $captchaSession;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
+    $this->formRenderer = $formRenderer;
   }
 
   public function getCaptchaPageTitle() {
@@ -105,7 +115,7 @@ class CaptchaRenderer {
     $formHtml .= '</p>';
 
     // subscription form
-    $formHtml .= FormRenderer::renderBlocks($form, $honeypot = false);
+    $formHtml .= $this->formRenderer->renderBlocks($form, $honeypot = false);
     $formHtml .= '</div>';
     $formHtml .= $this->renderFormMessages($formModel, $showSuccessMessage, $showErrorMessage);
     $formHtml .= '</form>';
