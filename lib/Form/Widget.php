@@ -219,7 +219,7 @@ class Widget extends \WP_Widget {
         'form' => $form,
         'title' => $title,
         'styles' => $this->formRenderer->renderStyles($form, '#' . $formId),
-        'html' => FormRenderer::renderHTML($form),
+        'html' => $this->formRenderer->renderHTML($form),
         'before_widget' => $beforeWidget,
         'after_widget' => $afterWidget,
         'before_title' => $beforeTitle,
