@@ -184,6 +184,7 @@ export const nestedColumns = {
       type: 'column',
       params: {
         width: 66.66,
+        vertical_alignment: 'center',
       },
       body: [
         {

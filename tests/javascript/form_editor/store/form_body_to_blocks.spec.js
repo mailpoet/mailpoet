@@ -323,6 +323,8 @@ describe('Form Body To Blocks', () => {
     // First level
     const column1 = blocks[1].innerBlocks[0];
     expect(column1.name).to.be.equal('core/column');
+    expect(column1.attributes.width).to.be.equal(66.66);
+    expect(column1.attributes.verticalAlignment).to.be.equal('center');
     expect(column1.innerBlocks.length).to.be.equal(2);
     const columns11 = column1.innerBlocks[0];
     checkBlockBasics(column1.innerBlocks[1]);
@@ -330,7 +332,6 @@ describe('Form Body To Blocks', () => {
     expect(column2.name).to.be.equal('core/column');
     expect(column2.innerBlocks.length).to.be.equal(1);
     checkBlockBasics(column1.innerBlocks[0]);
-
     // Second level
     expect(columns11.innerBlocks.length).to.be.equal(2);
     const column11 = columns11.innerBlocks[0];

@@ -314,6 +314,7 @@ describe('Blocks to Form Body', () => {
     const column2 = columns.body[1];
     expect(column1.type).to.be.equal('column');
     expect(column1.params.width).to.be.equal(66.66);
+    expect(column1.params.vertical_alignment).to.be.equal('center');
     expect(column1.body.length).to.be.equal(2);
     expect(column2.type).to.be.equal('column');
     expect(column2.body.length).to.be.equal(1);
