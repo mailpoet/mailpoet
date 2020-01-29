@@ -13,9 +13,17 @@ class Renderer {
   /** @var SettingsController */
   private $settings;
 
-  public function __construct(Styles $styleUtils, SettingsController $settings) {
+  /** @var BlocksRenderer */
+  private $blocksRenderer;
+
+  public function __construct(
+    Styles $styleUtils,
+    SettingsController $settings,
+    BlocksRenderer $blocksRenderer
+  ) {
     $this->styleUtils = $styleUtils;
     $this->settings = $settings;
+    $this->blocksRenderer = $blocksRenderer;
   }
 
   public function renderStyles(array $form = [], string $prefix = null): string {
@@ -50,7 +58,7 @@ class Renderer {
       if ($block['type'] == 'submit' && $this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
         $html .= $this->renderReCaptcha();
       }
-      $html .= $this->renderBlock($block) . PHP_EOL;
+      $html .= $this->blocksRenderer->renderBlock($block) . PHP_EOL;
     }
     return $html;
   }
@@ -79,51 +87,5 @@ class Renderer {
       </noscript>
       <input class="mailpoet_recaptcha_field" type="hidden" name="recaptcha">
     </div>';
-  }
-
-  private function renderBlock(array $block = []): string {
-    $html = '';
-    switch ($block['type']) {
-      case 'html':
-        $html .= Block\Html::render($block);
-        break;
-
-      case 'divider':
-        $html .= Block\Divider::render();
-        break;
-
-      case 'checkbox':
-        $html .= Block\Checkbox::render($block);
-        break;
-
-      case 'radio':
-        $html .= Block\Radio::render($block);
-        break;
-
-      case 'segment':
-        $html .= Block\Segment::render($block);
-        break;
-
-      case 'date':
-        $html .= Block\Date::render($block);
-        break;
-
-      case 'select':
-        $html .= Block\Select::render($block);
-        break;
-
-      case 'text':
-        $html .= Block\Text::render($block);
-        break;
-
-      case 'textarea':
-        $html .= Block\Textarea::render($block);
-        break;
-
-      case 'submit':
-        $html .= Block\Submit::render($block);
-        break;
-    }
-    return $html;
   }
 }
