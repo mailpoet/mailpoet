@@ -109,7 +109,7 @@ class AmazonSES {
   }
 
   public function createMessage($newsletter, $subscriber, $extraParams = []) {
-    $message = Swift_Message::newInstance()
+    $message = (new Swift_Message())
       ->setTo($this->processSubscriber($subscriber))
       ->setFrom([
           $this->sender['from_email'] => $this->sender['from_name'],
