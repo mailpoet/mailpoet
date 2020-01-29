@@ -4,12 +4,12 @@ namespace MailPoet\Form\Block;
 
 class Submit extends Base {
 
-  public static function render($block) {
+  public function render($block) {
     $html = '';
 
     $html .= '<p class="mailpoet_paragraph"><input type="submit" class="mailpoet_submit" ';
 
-    $html .= 'value="' . static::getFieldLabel($block) . '" ';
+    $html .= 'value="' . $this->getFieldLabel($block) . '" ';
 
     $html .= 'data-automation-id="subscribe-submit-button" ';
 

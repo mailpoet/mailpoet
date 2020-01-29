@@ -172,6 +172,16 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Form\FormsRepository::class);
     $container->autowire(\MailPoet\Form\Renderer::class);
     $container->autowire(\MailPoet\Form\BlocksRenderer::class);
+    $container->autowire(\MailPoet\Form\Block\Checkbox::class);
+    $container->autowire(\MailPoet\Form\Block\Date::class);
+    $container->autowire(\MailPoet\Form\Block\Divider::class);
+    $container->autowire(\MailPoet\Form\Block\Html::class);
+    $container->autowire(\MailPoet\Form\Block\Radio::class);
+    $container->autowire(\MailPoet\Form\Block\Segment::class);
+    $container->autowire(\MailPoet\Form\Block\Select::class);
+    $container->autowire(\MailPoet\Form\Block\Submit::class);
+    $container->autowire(\MailPoet\Form\Block\Text::class);
+    $container->autowire(\MailPoet\Form\Block\Textarea::class);
     $container->autowire(\MailPoet\Form\Util\Styles::class);
     // Helpscout
     $container->autowire(\MailPoet\Helpscout\Beacon::class);

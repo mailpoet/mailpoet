@@ -6,18 +6,18 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Select extends Base {
 
-  public static function render($block) {
+  public function render($block) {
     $html = '';
 
-    $fieldName = 'data[' . static::getFieldName($block) . ']';
-    $fieldValidation = static::getInputValidation($block);
+    $fieldName = 'data[' . $this->getFieldName($block) . ']';
+    $fieldValidation = $this->getInputValidation($block);
     $automationId = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
     $html .= '<p class="mailpoet_paragraph">';
-    $html .= static::renderLabel($block);
+    $html .= $this->renderLabel($block);
     $html .= '<select class="mailpoet_select" name="' . $fieldName . '" ' . $automationId . '>';
 
     if (isset($block['params']['label_within']) && $block['params']['label_within']) {
-      $label = static::getFieldLabel($block);
+      $label = $this->getFieldLabel($block);
       if (!empty($block['params']['required'])) {
         $label .= ' *';
       }
