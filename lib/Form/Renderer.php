@@ -5,7 +5,6 @@ namespace MailPoet\Form;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
-use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
   /** @var Styles */
@@ -46,35 +45,40 @@ class Renderer {
 
   public function renderBlocks(array $blocks = [], bool $honeypotEnabled = true): string {
     // add honeypot for spambots
-    $html = ($honeypotEnabled) ?
-      '<label class="mailpoet_hp_email_label">' . WPFunctions::get()->__('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :
-      '';
+    $html = ($honeypotEnabled) ? $this->renderHoneypot() : '';
     foreach ($blocks as $key => $block) {
       if ($block['type'] == 'submit' && $this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
-        $siteKey = $this->settings->get('captcha.recaptcha_site_token');
-        $html .= '<div class="mailpoet_recaptcha" data-sitekey="' . $siteKey . '">
-          <div class="mailpoet_recaptcha_container"></div>
-          <noscript>
-            <div>
-              <div style="width: 302px; height: 422px; position: relative;">
-                <div style="width: 302px; height: 422px; position: absolute;">
-                  <iframe src="https://www.google.com/recaptcha/api/fallback?k=' . $siteKey . '" frameborder="0" scrolling="no" style="width: 302px; height:422px; border-style: none;">
-                  </iframe>
-                </div>
-              </div>
-              <div style="width: 300px; height: 60px; border-style: none; bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px; background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
-                <textarea id="g-recaptcha-response" name="data[recaptcha]" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid #c1c1c1; margin: 10px 25px; padding: 0px; resize: none;" >
-                </textarea>
-              </div>
-            </div>
-          </noscript>
-          <input class="mailpoet_recaptcha_field" type="hidden" name="recaptcha">
-        </div>';
+        $html .= $this->renderReCaptcha();
       }
       $html .= $this->renderBlock($block) . PHP_EOL;
     }
-
     return $html;
+  }
+
+  private function renderHoneypot(): string {
+    return '<label class="mailpoet_hp_email_label">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>';
+  }
+
+  private function renderReCaptcha(): string {
+    $siteKey = $this->settings->get('captcha.recaptcha_site_token');
+    return '<div class="mailpoet_recaptcha" data-sitekey="' . $siteKey . '">
+      <div class="mailpoet_recaptcha_container"></div>
+      <noscript>
+        <div>
+          <div style="width: 302px; height: 422px; position: relative;">
+            <div style="width: 302px; height: 422px; position: absolute;">
+              <iframe src="https://www.google.com/recaptcha/api/fallback?k=' . $siteKey . '" frameborder="0" scrolling="no" style="width: 302px; height:422px; border-style: none;">
+              </iframe>
+            </div>
+          </div>
+          <div style="width: 300px; height: 60px; border-style: none; bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px; background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
+            <textarea id="g-recaptcha-response" name="data[recaptcha]" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid #c1c1c1; margin: 10px 25px; padding: 0px; resize: none;" >
+            </textarea>
+          </div>
+        </div>
+      </noscript>
+      <input class="mailpoet_recaptcha_field" type="hidden" name="recaptcha">
+    </div>';
   }
 
   private function renderBlock(array $block = []): string {
