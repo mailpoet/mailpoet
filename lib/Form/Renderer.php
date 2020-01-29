@@ -7,7 +7,7 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
-  public function renderStyles($form = [], $prefix = null) {
+  public function renderStyles(array $form = [], string $prefix = null): string {
     $styles = new Util\Styles();
 
     $html = '<style type="text/css">';
@@ -18,14 +18,14 @@ class Renderer {
     return $html;
   }
 
-  public function renderHTML($form = []) {
+  public function renderHTML(array $form = []): string {
     if (isset($form['body']) && !empty($form['body'])) {
       return $this->renderBlocks($form['body']);
     }
     return '';
   }
 
-  public function getStyles($form = []) {
+  public function getStyles(array $form = []): string {
     if (isset($form['styles'])
     && strlen(trim($form['styles'])) > 0) {
       return strip_tags($form['styles']);
@@ -35,7 +35,7 @@ class Renderer {
     }
   }
 
-  public function renderBlocks($blocks = [], $honeypotEnabled = true) {
+  public function renderBlocks(array $blocks = [], bool $honeypotEnabled = true): string {
     $settings = SettingsController::getInstance();
     // add honeypot for spambots
     $html = ($honeypotEnabled) ?
@@ -69,7 +69,7 @@ class Renderer {
     return $html;
   }
 
-  private function renderBlock($block = []) {
+  private function renderBlock(array $block = []): string {
     $html = '';
     switch ($block['type']) {
       case 'html':
