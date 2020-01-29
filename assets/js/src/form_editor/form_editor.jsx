@@ -16,20 +16,14 @@ const App = () => (
 );
 
 const appElement = document.querySelector('#mailpoet_form_edit');
-const oldEditorLinkElement = document.querySelector('#mailpoet_form_edit_old_editor_fallback_link');
 
 if (appElement) {
-  try {
-    oldEditorLinkElement.style.display = 'none';
-    initStore();
-    initBlocks();
-    ReactDOM.render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>,
-      appElement
-    );
-  } catch (e) {
-    oldEditorLinkElement.style.display = 'block';
-  }
+  initStore();
+  initBlocks();
+  ReactDOM.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+    appElement
+  );
 }

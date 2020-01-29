@@ -28,9 +28,6 @@ SidebarHeader.propTypes = {
   ]).isRequired,
 };
 
-const oldEditorUrl = new URL(window.location.href);
-oldEditorUrl.searchParams.set('legacy', 1);
-
 export default () => {
   const activeTab = useSelect(
     (select) => select('mailpoet-form-editor').getSidebarActiveTab(),
@@ -81,8 +78,6 @@ export default () => {
         {MailPoet.I18n.t('editorIsUsingGutenberg')}
         <br />
         <a href="mailto:quentin@mailpoet.com">{MailPoet.I18n.t('giveFeedback')}</a>
-        {' '}
-        <a href={oldEditorUrl.toString()}>{MailPoet.I18n.t('useOldEditor')}</a>
       </p>
     </div>
   );
