@@ -95,6 +95,7 @@ const mapBlocks = (blocks, customFields = [], parent = null) => {
           position: (index + 1).toString(),
           type: 'column',
           params: {
+            vertical_alignment: block.attributes.verticalAlignment || null,
             width: block.attributes.width
               ? block.attributes.width : Math.round(100 / parent.innerBlocks.length),
           },

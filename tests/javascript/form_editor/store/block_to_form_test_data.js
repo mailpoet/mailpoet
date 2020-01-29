@@ -174,6 +174,7 @@ export const nestedColumns = {
       isValid: true,
       attributes: {
         width: 66.66,
+        verticalAlignment: 'center',
       },
       innerBlocks: [
         {

@@ -69,6 +69,9 @@ const mapColumnBlocks = (data, customFields = []) => {
   if (has(data.params, 'width')) {
     mapped.attributes.width = parseFloat(data.params.width);
   }
+  if (has(data.params, 'vertical_alignment')) {
+    mapped.attributes.verticalAlignment = data.params.vertical_alignment;
+  }
   return mapped;
 };
 
