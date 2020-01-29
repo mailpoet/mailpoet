@@ -7,7 +7,7 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
-  public static function renderStyles($form = [], $prefix = null) {
+  public function renderStyles($form = [], $prefix = null) {
     $styles = new Util\Styles();
 
     $html = '<style type="text/css">';
