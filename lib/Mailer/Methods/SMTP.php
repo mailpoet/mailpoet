@@ -78,8 +78,7 @@ class SMTP {
   }
 
   public function buildMailer() {
-    $transport = Swift_SmtpTransport::newInstance(
-      $this->host, $this->port, $this->encryption);
+    $transport = new Swift_SmtpTransport($this->host, $this->port, $this->encryption);
     $connectionTimeout = $this->wp->applyFilters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT);
     $transport->setTimeout($connectionTimeout);
     if ($this->authentication) {
@@ -88,11 +87,11 @@ class SMTP {
         ->setPassword($this->password);
     }
     $transport = $this->wp->applyFilters('mailpoet_mailer_smtp_transport_agent', $transport);
-    return Swift_Mailer::newInstance($transport);
+    return new Swift_Mailer($transport);
   }
 
   public function createMessage($newsletter, $subscriber, $extraParams = []) {
-    $message = Swift_Message::newInstance()
+    $message = (new Swift_Message())
       ->setTo($this->processSubscriber($subscriber))
       ->setFrom(
         [
