@@ -22,14 +22,19 @@ class FormEditor {
   /** @var CustomFieldsResponseBuilder */
   private $customFieldsResponseBuilder;
 
+  /** @var FormRenderer */
+  private $formRenderer;
+
   public function __construct(
     PageRenderer $pageRenderer,
     CustomFieldsRepository $customFieldsRepository,
-    CustomFieldsResponseBuilder $customFieldsResponseBuilder
+    CustomFieldsResponseBuilder $customFieldsResponseBuilder,
+    FormRenderer $formRenderer
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->customFieldsRepository = $customFieldsRepository;
     $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
+    $this->formRenderer = $formRenderer;
   }
 
   public function render() {
@@ -38,7 +43,7 @@ class FormEditor {
     if ($form instanceof Form) {
       $form = $form->asArray();
     }
-    $form['styles'] = FormRenderer::getStyles($form);
+    $form['styles'] = $this->formRenderer->getStyles($form);
     $customFields = $this->customFieldsRepository->findAll();
     $dateTypes = Block\Date::getDateTypes();
     $data = [
@@ -50,7 +55,7 @@ class FormEditor {
       ],
       'pages' => Pages::getAll(),
       'segments' => Segment::getSegmentsWithSubscriberCount(),
-      'styles' => FormRenderer::getStyles($form),
+      'styles' => $this->formRenderer->getStyles($form),
       'date_types' => array_map(function ($label, $value) {
         return [
           'label' => $label,

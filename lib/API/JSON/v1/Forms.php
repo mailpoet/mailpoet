@@ -141,7 +141,7 @@ class Forms extends APIEndpoint {
     $html = WPFunctions::get()->doShortcode($html);
 
     // styles
-    $css = $this->formStylesUtils->render(FormRenderer::getStyles($data));
+    $css = $this->formStylesUtils->render($this->formRenderer->getStyles($data));
 
     return $this->successResponse([
       'html' => $html,
