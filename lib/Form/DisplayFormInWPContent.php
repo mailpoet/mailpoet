@@ -37,7 +37,8 @@ class DisplayFormInWPContent {
     return $result;
   }
 
-  private function shouldDisplay():bool {
+  private function shouldDisplay(): bool {
+    // this code ensures that we display the form only on a page which is related to single post
     if (!$this->wp->isSingle()) return false;
     $cache = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
     if (isset($cache[$this->wp->getPostType()])) return false;
@@ -54,7 +55,7 @@ class DisplayFormInWPContent {
   /**
    * @return FormEntity[]
    */
-  private function getForms():array {
+  private function getForms(): array {
     $forms = $this->formsRepository->findAll();
     return array_filter($forms, function($form) {
       return $this->shouldDisplayFormBellowContent($form);
