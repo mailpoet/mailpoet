@@ -26,10 +26,10 @@ executors:
     docker:
     - image: mailpoet/wordpress:7.0_20200203.1
 
-  wordpress_php73:
+  wordpress_php74:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:7.3_20190705.2
+      - image: mailpoet/wordpress:7.4_20200123.1
 
   wordpress_mysql55_php70:
     <<: *default_job_config
@@ -43,12 +43,6 @@ executors:
     - image: mailpoet/wordpress:7.0_20200130.1
     - image: circleci/mysql:5.7.27-ram
 
-  wordpress_mysql57_php73:
-    <<: *default_job_config
-    docker:
-    - image: mailpoet/wordpress:7.3_20190705.2
-    - image: circleci/mysql:5.7.27-ram
-
   wordpress_mysql80_php74:
     <<: *default_job_config
     docker:
@@ -58,7 +52,7 @@ executors:
 
 jobs:
   build_and_code_qa:
-    executor: wordpress_php73
+    executor: wordpress_php74
     steps:
       - checkout
       - run:
@@ -137,7 +131,7 @@ jobs:
           paths:
             - .
   static_analysis:
-    executor: wordpress_mysql57_php73
+    executor: wordpress_mysql80_php74
     steps:
     - attach_workspace:
         at: /home/circleci/mailpoet
@@ -241,7 +235,7 @@ jobs:
       - store_test_results:
           path: tests/_output
   php7_unit:
-    executor: wordpress_mysql57_php73
+    executor: wordpress_mysql80_php74
     steps:
       - attach_workspace:
          at: /home/circleci/mailpoet
@@ -319,7 +313,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   build_release_zip:
-    executor: wordpress_mysql57_php73
+    executor: wordpress_mysql80_php74
     resource_class: medium
     steps:
       - attach_workspace:
@@ -344,7 +338,7 @@ jobs:
           paths:
           - release_zip_build_number.txt
   test_deployment:
-    executor: wordpress_php73
+    executor: wordpress_php74
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
