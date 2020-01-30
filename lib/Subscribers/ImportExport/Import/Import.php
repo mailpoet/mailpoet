@@ -2,7 +2,7 @@
 
 namespace MailPoet\Subscribers\ImportExport\Import;
 
-use MailPoet\Form\Block\Date;
+use MailPoet\Form\Util\DateConverter;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Newsletter;
@@ -162,7 +162,7 @@ class Import {
           $data = array_map(
             function($index, $date) use($validationRule, &$invalidRecords) {
               if (empty($date)) return $date;
-              $date = (new Date())->convertDateToDatetime($date, $validationRule);
+              $date = (new DateConverter())->convertDateToDatetime($date, $validationRule);
               if (!$date) {
                 $invalidRecords[] = $index;
               }

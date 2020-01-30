@@ -2,7 +2,7 @@
 
 namespace MailPoet\Models;
 
-use MailPoet\Form\Block\Date;
+use MailPoet\Form\Util\DateConverter;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
@@ -116,7 +116,7 @@ class CustomField extends Model {
       }
 
       if (!empty($value)) {
-        $value = (new Date())->convertDateToDatetime($value, $dateFormat);
+        $value = (new DateConverter())->convertDateToDatetime($value, $dateFormat);
       }
     }
 
