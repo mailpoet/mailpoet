@@ -6,7 +6,6 @@ import WelcomeWizardSenderStep from './steps/sender_step.jsx';
 import WelcomeWizardMigratedUserStep from './steps/migrated_user_step.jsx';
 import WelcomeWizardEmailCourseStep from './steps/email_course_step.jsx';
 import WelcomeWizardUsageTrackingStep from './steps/usage_tracking_step.jsx';
-import WelcomeWizardWooCommerceStep from './steps/woo_commerce_step.jsx';
 import WelcomeWizardPitchMSSStep from './steps/pitch_mss_step.jsx';
 import WelcomeWizardStepLayout from './layout/step_layout.jsx';
 
@@ -130,21 +129,6 @@ const WelcomeWizardStepsController = (props) => {
               allow_action={activateTracking}
               allow_text={stepsCount > 3
                 ? MailPoet.I18n.t('allowAndContinue') : MailPoet.I18n.t('allowAndFinish')}
-              loading={loading}
-            />
-          </WelcomeWizardStepLayout>
-        ) : null}
-
-      { stepName === 'WelcomeWizardWooCommerceStep'
-        ? (
-          <WelcomeWizardStepLayout
-            step={step}
-            stepsCount={stepsCount}
-            illustrationUrl={window.wizard_woocommerce_illustration_url}
-          >
-            <WelcomeWizardWooCommerceStep
-              next={() => redirect(step)}
-              screenshot_src={window.wizard_woocommerce_box_url}
               loading={loading}
             />
           </WelcomeWizardStepLayout>
