@@ -37,12 +37,6 @@ executors:
     - image: mailpoet/wordpress:7.0_20200203.1
     - image: circleci/mysql:5.5-ram
 
-  wordpress_mysql57_php70:
-    <<: *default_job_config
-    docker:
-    - image: mailpoet/wordpress:7.0_20200130.1
-    - image: circleci/mysql:5.7.27-ram
-
   wordpress_mysql80_php74:
     <<: *default_job_config
     docker:
