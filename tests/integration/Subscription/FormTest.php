@@ -16,6 +16,7 @@ use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Form;
 use MailPoet\Util\Security;
 use MailPoet\Util\Url as UrlHelper;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 class FormTest extends \MailPoetTest {
@@ -55,7 +56,7 @@ class FormTest extends \MailPoetTest {
         ],
       ]
     );
-    $obfuscator = new FieldNameObfuscator();
+    $obfuscator = new FieldNameObfuscator(WPFunctions::get());
     $obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->requestData = [
       'action' => 'mailpoet_subscription_form',
