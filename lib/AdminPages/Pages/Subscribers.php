@@ -27,11 +27,21 @@ class Subscribers {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(PageRenderer $pageRenderer, PageLimit $listingPageLimit, SubscribersFeature $subscribersFeature, WPFunctions $wp) {
+  /** @var Block\Date */
+  private $dateBlock;
+
+  public function __construct(
+    PageRenderer $pageRenderer,
+    PageLimit $listingPageLimit,
+    SubscribersFeature $subscribersFeature,
+    WPFunctions $wp,
+    Block\Date $dateBlock
+  ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
     $this->subscribersFeature = $subscribersFeature;
     $this->wp = $wp;
+    $this->dateBlock = $dateBlock;
   }
 
   public function render() {
@@ -59,8 +69,8 @@ class Subscribers {
       return $field;
     }, CustomField::findArray());
 
-    $data['date_formats'] = Block\Date::getDateFormats();
-    $data['month_names'] = Block\Date::getMonthNames();
+    $data['date_formats'] = $this->dateBlock->getDateFormats();
+    $data['month_names'] = $this->dateBlock->getMonthNames();
 
     $data['premium_plugin_active'] = License::getLicense();
     $data['mss_active'] = Bridge::isMPSendingServiceEnabled();

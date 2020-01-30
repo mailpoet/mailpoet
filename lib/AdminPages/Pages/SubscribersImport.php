@@ -15,18 +15,22 @@ class SubscribersImport {
   /** @var Installation */
   private $installation;
 
-  public function __construct(PageRenderer $pageRenderer, Installation $installation) {
+  /** @var Block\Date */
+  private $dateBlock;
+
+  public function __construct(PageRenderer $pageRenderer, Installation $installation, Block\Date $dateBlock) {
     $this->pageRenderer = $pageRenderer;
     $this->installation = $installation;
+    $this->dateBlock = $dateBlock;
   }
 
   public function render() {
     $import = new ImportExportFactory(ImportExportFactory::IMPORT_ACTION);
     $data = $import->bootstrap();
     $data = array_merge($data, [
-      'date_types' => Block\Date::getDateTypes(),
-      'date_formats' => Block\Date::getDateFormats(),
-      'month_names' => Block\Date::getMonthNames(),
+      'date_types' => $this->dateBlock->getDateTypes(),
+      'date_formats' => $this->dateBlock->getDateFormats(),
+      'month_names' => $this->dateBlock->getMonthNames(),
       'sub_menu' => 'mailpoet-subscribers',
       'role_based_emails' => json_encode(ModelValidator::ROLE_EMAILS),
     ]);

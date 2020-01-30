@@ -58,6 +58,9 @@ class Pages {
   /** @var FormRenderer */
   private $formRenderer;
 
+  /** @var FormBlockDate */
+  private $dateBlock;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -68,7 +71,8 @@ class Pages {
     LinkTokens $linkTokens,
     SubscriptionUrlFactory $subscriptionUrlFactory,
     AssetsController $assetsController,
-    FormRenderer $formRenderer
+    FormRenderer $formRenderer,
+    FormBlockDate $dateBlock
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -80,6 +84,7 @@ class Pages {
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->assetsController = $assetsController;
     $this->formRenderer = $formRenderer;
+    $this->dateBlock = $dateBlock;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -322,7 +327,7 @@ class Pages {
       $customField['params']['value'] = $subscriber->{$customField['id']};
 
       if ($customField['type'] === 'date') {
-        $dateFormats = FormBlockDate::getDateFormats();
+        $dateFormats = $this->dateBlock->getDateFormats();
         $customField['params']['date_format'] = array_shift(
           $dateFormats[$customField['params']['date_type']]
         );
