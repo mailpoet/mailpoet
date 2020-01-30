@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
+import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 
 const isWPUsersSegment = (segment) => segment.type === 'wp_users';
 const isWooCommerceCustomersSegment = (segment) => segment.type === 'woocommerce_users';
@@ -297,6 +298,8 @@ class SegmentList extends React.Component {
           {' '}
           <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
         </h1>
+
+        <SubscribersLimitNotice />
 
         <Listing
           limit={window.mailpoet_listing_per_page}
