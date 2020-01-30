@@ -6,8 +6,6 @@
   var wizard_sender_illustration_url = '<%= cdn_url('welcome-wizard/sender.20190409.png') %>';
   var wizard_email_course_illustration_url = '<%= cdn_url('welcome-wizard/email-course.20190409.png') %>';
   var wizard_tracking_illustration_url = '<%= cdn_url('welcome-wizard/tracking.20190409.png') %>';
-  var wizard_woocommerce_illustration_url = '<%= cdn_url('welcome-wizard/woocommerce.20190409.png') %>';
-  var wizard_woocommerce_box_url = '<%= cdn_url('welcome-wizard/woocommerce-box.20190409.png') %>';
   var wizard_MSS_pitch_illustration_url = '<%= cdn_url('welcome-wizard/illu-pitch-mss.20190912.png') %>';
   var is_mp2_migration_complete = <%=  json_encode(is_mp2_migration_complete) %>;
   var is_woocommerce_active = <%= json_encode(is_woocommerce_active)  %>;
@@ -36,7 +34,6 @@
 'welcomeWizardSenderMigratedUserText': __('We have a few things to tell you before you begin to ensure you have a good experience.'),
 'welcomeWizardUsageTrackingStepTitle': __('Help MailPoet improve with anonymous usage tracking.'),
 'welcomeWizardUsageTrackingStepSubTitle': __('Data we don’t gather:'),
-'welcomeWizardWooCommerceStepTitle': __('Automate your WooCommerce emails.'),
 'welcomeWizardTrackingText': __('Gathering usage data allows us to make MailPoet better — the way you use MailPoet will be considered as we evaluate new features, judge the quality of an update, or determine if an improvement makes sense.'),
 'welcomeWizardTrackingList1': __('Any personal data'),
 'welcomeWizardTrackingList2': __('Email addresses'),
@@ -44,8 +41,6 @@
 'welcomeWizardTrackingList4': __('Content of your emails'),
 'welcomeWizardTrackingList5': __('Open and click rates'),
 'welcomeWizardTrackingLink': __('Read more about what we collect.'),
-'welcomeWizardHelpingShopOwnersText': __('We’re making it easier for shop owners to send emails to their customers and make more money.'),
-'welcomeWizardWooCommerceEmailsText': __('Create a new email to find the WooCommerce type of emails:'),
 'welcomeWizardEmailCourseTitle': __('Sign up to our 4-part email course'),
 'welcomeWizardEmailCourseText': __('A must for every beginner (in English only)'),
 'seeVideoGuide': _x('See video guide', 'A label on a button'),
@@ -57,7 +52,6 @@
 'replyToAddress': _x('Reply-to Address', 'A form field label'),
 'senderName': _x('From Name', 'A form field label'),
 'next': _x('Next', 'A label on a button'),
-'gotIt': _x('Got it!', 'A label on a button'),
 }) %>
 <% include('mss_pitch_translations.html') %>
 <% endblock %>
