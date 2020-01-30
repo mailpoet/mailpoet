@@ -49,6 +49,36 @@ Fixtures::add(
 );
 
 Fixtures::add(
+  'simple_form_body',
+  [
+    [
+      'id' => 'email',
+      'name' => 'Email',
+      'position' => '1',
+      'type' => 'text',
+      'unique' => '0',
+      'static' => '1',
+      'params' => [
+        'label' => 'Email',
+        'label_within' => '1',
+        'required' => '1',
+      ],
+    ],
+    [
+      'id' => 'submit',
+      'name' => 'Submit',
+      'position' => '2',
+      'type' => 'submit',
+      'unique' => '0',
+      'static' => '1',
+      'params' => [
+        'label' => 'Subscribe!',
+      ],
+    ],
+  ]
+);
+
+Fixtures::add(
   'form_body_template',
   [
     [

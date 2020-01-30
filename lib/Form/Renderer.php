@@ -64,7 +64,7 @@ class Renderer {
   }
 
   private function renderHoneypot(): string {
-    return '<label class="mailpoet_hp_email_label">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>';
+    return '<label class="mailpoet_hp_email_label">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"/></label>';
   }
 
   private function renderReCaptcha(): string {
