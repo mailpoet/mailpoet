@@ -68,6 +68,9 @@ class Initializer {
   /** @var WooCommerceHelper */
   private $wcHelper;
 
+  /** @var PostEditorBlock */
+  private $postEditorBlock;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   public function __construct(
@@ -85,6 +88,7 @@ class Initializer {
     Shortcodes $shortcodes,
     DatabaseInitializer $databaseInitializer,
     WCTransactionalEmails $wcTransactionalEmails,
+    PostEditorBlock $postEditorBlock,
     WooCommerceHelper $wcHelper
   ) {
       $this->rendererFactory = $rendererFactory;
@@ -102,6 +106,7 @@ class Initializer {
       $this->databaseInitializer = $databaseInitializer;
       $this->wcTransactionalEmails = $wcTransactionalEmails;
       $this->wcHelper = $wcHelper;
+      $this->postEditorBlock = $postEditorBlock;
   }
 
   public function init() {
@@ -203,6 +208,7 @@ class Initializer {
       $this->setupPermanentNotices();
       $this->setupDeactivationSurvey();
       $this->setupAutomaticEmails();
+      $this->postEditorBlock->init();
 
       WPFunctions::get()->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (\Exception $e) {
