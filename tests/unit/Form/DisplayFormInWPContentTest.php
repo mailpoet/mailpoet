@@ -34,8 +34,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'placeFormBellowAllPages' => '',
-      'placeFormBellowAllPosts' => '1',
+      'place_form_bellow_all_pages' => '',
+      'place_form_bellow_all_posts' => '1',
     ]);
     $form->setBody([[
       'type' => 'submit',
@@ -57,8 +57,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'placeFormBellowAllPages' => '',
-      'placeFormBellowAllPosts' => '',
+      'place_form_bellow_all_pages' => '',
+      'place_form_bellow_all_posts' => '',
     ]);
     $form->setBody([[
       'type' => 'submit',
@@ -78,8 +78,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form1 = new FormEntity('My Form');
     $form1->setSettings([
       'segments' => ['3'],
-      'placeFormBellowAllPages' => '',
-      'placeFormBellowAllPosts' => '1',
+      'place_form_bellow_all_pages' => '',
+      'place_form_bellow_all_posts' => '1',
     ]);
     $form1->setBody([[
       'type' => 'submit',
@@ -90,8 +90,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form2 = new FormEntity('My Form');
     $form2->setSettings([
       'segments' => ['3'],
-      'placeFormBellowAllPages' => '',
-      'placeFormBellowAllPosts' => '1',
+      'place_form_bellow_all_pages' => '',
+      'place_form_bellow_all_posts' => '1',
     ]);
     $form2->setBody([[
       'type' => 'submit',
@@ -121,8 +121,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'placeFormBellowAllPages' => '',
-      'placeFormBellowAllPosts' => '1',
+      'place_form_bellow_all_pages' => '',
+      'place_form_bellow_all_posts' => '1',
     ]);
     $form->setBody([[
       'type' => 'submit',
@@ -145,8 +145,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'placeFormBellowAllPages' => '1',
-      'placeFormBellowAllPosts' => '',
+      'place_form_bellow_all_pages' => '1',
+      'place_form_bellow_all_posts' => '',
     ]);
     $form->setBody([[
       'type' => 'submit',

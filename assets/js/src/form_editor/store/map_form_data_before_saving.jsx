@@ -3,8 +3,8 @@ export default function mapFormDataBeforeSaving(data) {
     ...data,
     settings: {
       ...data.settings,
-      placeFormBellowAllPages: data.settings.placeFormBellowAllPages === true ? '1' : '',
-      placeFormBellowAllPosts: data.settings.placeFormBellowAllPosts === true ? '1' : '',
+      place_form_bellow_all_pages: data.settings.placeFormBellowAllPages === true ? '1' : '',
+      place_form_bellow_all_posts: data.settings.placeFormBellowAllPosts === true ? '1' : '',
     },
   };
 }

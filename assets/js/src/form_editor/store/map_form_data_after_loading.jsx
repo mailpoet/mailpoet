@@ -3,8 +3,8 @@ export default function mapFormDataAfterLoading(data) {
     ...data,
     settings: {
       ...data.settings,
-      placeFormBellowAllPages: data.settings.placeFormBellowAllPages === '1',
-      placeFormBellowAllPosts: data.settings.placeFormBellowAllPosts === '1',
+      placeFormBellowAllPages: data.settings.place_form_bellow_all_pages === '1',
+      placeFormBellowAllPosts: data.settings.place_form_bellow_all_posts === '1',
     },
   };
 }
