@@ -92,3 +92,21 @@ class WC_Mailer { // phpcs:ignore
   function email_footer() { // phpcs:ignore
   }
 }
+
+if (!class_exists(WC_Session::class)) {
+  /**
+   * @method void init()
+   * @method void cleanup_sessions()
+   * @method mixed __get(mixed $key)
+   * @method void __set(mixed $key, mixed $value)
+   * @method bool __isset(mixed $key)
+   * @method array|string get(string $key, mixed $default = null)
+   * @method void set(string $key, mixed $value)
+   * @method int get_customer_id()
+   */
+  class WC_Session { // phpcs:ignore
+    /** @param mixed $key */
+    public function __unset($key) {
+    }
+  }
+}
