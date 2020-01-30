@@ -60,6 +60,7 @@ class SubscribersTest extends \MailPoetTest {
     $settings = $container->get(SettingsController::class);
     $wp = $container->get(Functions::class);
     $this->captchaSession = new CaptchaSession($container->get(Functions::class));
+    $obfuscator = new FieldNameObfuscator($wp);
     $this->endpoint = new Subscribers(
       $container->get(BulkActionController::class),
       $container->get(SubscribersListings::class),
@@ -71,9 +72,9 @@ class SubscribersTest extends \MailPoetTest {
       $settings,
       $this->captchaSession,
       $container->get(ConfirmationEmailMailer::class),
-      new SubscriptionUrlFactory($wp, $settings, new LinkTokens)
+      new SubscriptionUrlFactory($wp, $settings, new LinkTokens),
+      $obfuscator
     );
-    $obfuscator = new FieldNameObfuscator();
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
     $this->segment1 = Segment::createOrUpdate(['name' => 'Segment 1']);

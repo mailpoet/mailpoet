@@ -2,46 +2,43 @@
 
 namespace MailPoet\Form\Util;
 
-use Codeception\Stub;
 use MailPoet\WP\Functions as WPFunctions;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class FieldNameObfuscatorTest extends \MailPoetUnitTest {
+
+  /** @var MockObject | WPFunctions */
+  private $wpMock;
+
+  /** @var FieldNameObfuscator */
+  private $obfuscator;
+
   public function _before() {
     parent::_before();
-    WPFunctions::set(
-      Stub::make(WPFunctions::class, [
-        'homeUrl' => 'http://example.com',
-      ])
-    );
+    $this->wpMock = $this->createMock(WPFunctions::class);
+    $this->wpMock->method('homeUrl')->willReturn('http://example.com');
+    $this->obfuscator = new FieldNameObfuscator($this->wpMock);
   }
 
   public function testObfuscateWorks() {
-    $obfuscator = new FieldNameObfuscator();
-    expect($obfuscator->obfuscate('email'))->notContains('email');
+    expect($this->obfuscator->obfuscate('email'))->notContains('email');
   }
 
   public function testObfuscateDeobfuscateWorks() {
-    $obfuscator = new FieldNameObfuscator();
-    $obfuscated = $obfuscator->obfuscate('email');
-    expect($obfuscator->deobfuscate($obfuscated))->equals('email');
+    $obfuscated = $this->obfuscator->obfuscate('email');
+    expect($this->obfuscator->deobfuscate($obfuscated))->equals('email');
   }
 
   public function testObfuscatePayloadWorks() {
-    $obfuscator = new FieldNameObfuscator();
-    $obfuscated = $obfuscator->obfuscate('email');
+    $obfuscated = $this->obfuscator->obfuscate('email');
     $data = [
       'regularField' => 'regularValue',
       $obfuscated => 'obfuscatedFieldValue',
     ];
-    $deobfuscatedPayload = $obfuscator->deobfuscateFormPayload($data);
+    $deobfuscatedPayload = $this->obfuscator->deobfuscateFormPayload($data);
     expect($deobfuscatedPayload)->equals([
       'regularField' => 'regularValue',
       'email' => 'obfuscatedFieldValue',
     ]);
-  }
-
-  public function _after() {
-    parent::_after();
-    WPFunctions::set(new WPFunctions());
   }
 }

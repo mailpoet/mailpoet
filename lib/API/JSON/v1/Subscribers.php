@@ -68,6 +68,9 @@ class Subscribers extends APIEndpoint {
   /** @var SubscriptionUrlFactory */
   private $subscriptionUrlFactory;
 
+  /** @var FieldNameObfuscator */
+  private $fieldNameObfuscator;
+
   public function __construct(
     Listing\BulkActionController $bulkActionController,
     SubscribersListings $subscribersListings,
@@ -79,7 +82,8 @@ class Subscribers extends APIEndpoint {
     SettingsController $settings,
     CaptchaSession $captchaSession,
     ConfirmationEmailMailer $confirmationEmailMailer,
-    SubscriptionUrlFactory $subscriptionUrlFactory
+    SubscriptionUrlFactory $subscriptionUrlFactory,
+    FieldNameObfuscator $fieldNameObfuscator
   ) {
     $this->bulkActionController = $bulkActionController;
     $this->subscribersListings = $subscribersListings;
@@ -92,6 +96,7 @@ class Subscribers extends APIEndpoint {
     $this->captchaSession = $captchaSession;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
+    $this->fieldNameObfuscator = $fieldNameObfuscator;
   }
 
   public function get($data = []) {
@@ -271,8 +276,7 @@ class Subscribers extends APIEndpoint {
   }
 
   private function deobfuscateFormPayload($data) {
-    $obfuscator = new FieldNameObfuscator();
-    return $obfuscator->deobfuscateFormPayload($data);
+    return $this->fieldNameObfuscator->deobfuscateFormPayload($data);
   }
 
   private function validateCaptcha($captchaSettings, $data) {
