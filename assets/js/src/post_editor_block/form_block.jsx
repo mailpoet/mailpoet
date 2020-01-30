@@ -1,11 +1,12 @@
 import React from 'react';
+import Icon from './icon.jsx';
 
 const wp = window.wp;
 const { registerBlockType } = wp.blocks;
 
 registerBlockType('mailpoet/form-block', {
   title: 'Example: Basic (esnext)',
-  icon: 'universal-access-alt',
+  icon: Icon,
   category: 'widgets',
   example: {},
   edit() {
