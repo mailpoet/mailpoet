@@ -8,7 +8,6 @@ class Select extends Base {
     $html = '';
 
     $fieldName = 'data[' . $this->getFieldName($block) . ']';
-    $fieldValidation = $this->getInputValidation($block);
     $automationId = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
     $html .= '<p class="mailpoet_paragraph">';
     $html .= $this->renderLabel($block);
