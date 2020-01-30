@@ -19,6 +19,10 @@
       '5cbf19622c7d3a026fd3efe1',
       '58a5a7502c7d3a576d353c78',
     ];
+    var mailpoet_subscribers_limit = <%= subscribers_limit ? subscribers_limit : 'false'  %>;
+    var mailpoet_subscribers_limit_reached = <%= subscribers_limit_reached ? 'true' : 'false' %>;
+    var mailpoet_has_valid_api_key = <%= has_valid_api_key ? 'true' : 'false' %>;
+    var mailpoet_subscribers_count = <%= subscriber_count %>;
   </script>
 <% endblock %>
 

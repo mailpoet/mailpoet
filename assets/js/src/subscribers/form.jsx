@@ -4,6 +4,7 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import Form from 'form/form.jsx';
 import ReactStringReplace from 'react-string-replace';
+import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 
 const fields = [
   {
@@ -183,6 +184,8 @@ class SubscriberForm extends React.Component { // eslint-disable-line react/pref
           {MailPoet.I18n.t('subscriber')}
           <Link className="page-title-action" to="/">{MailPoet.I18n.t('backToList')}</Link>
         </h1>
+
+        <SubscribersLimitNotice />
 
         <Form
           automationId="subscriber_edit_form"

@@ -7,8 +7,10 @@ use MailPoet\Form\Block;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -19,12 +21,16 @@ class Subscribers {
   /** @var PageLimit */
   private $listingPageLimit;
 
+  /** @var SubscribersFeature */
+  private $subscribersFeature;
+
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(PageRenderer $pageRenderer, PageLimit $listingPageLimit, WPFunctions $wp) {
+  public function __construct(PageRenderer $pageRenderer, PageLimit $listingPageLimit, SubscribersFeature $subscribersFeature, WPFunctions $wp) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
+    $this->subscribersFeature = $subscribersFeature;
     $this->wp = $wp;
   }
 
@@ -60,6 +66,11 @@ class Subscribers {
     $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
 
     $data['max_confirmation_emails'] = ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS;
+
+    $data['subscribers_limit'] = $this->subscribersFeature->getSubscribersLimit();
+    $data['subscribers_limit_reached'] = $this->subscribersFeature->check();
+    $data['has_valid_api_key'] = $this->subscribersFeature->hasValidApiKey();
+    $data['subscriber_count'] = Subscriber::getTotalSubscribers();
 
     $this->pageRenderer->displayPage('subscribers/subscribers.html', $data);
   }

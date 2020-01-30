@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
 import Selection from 'form/fields/selection.jsx';
+import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 
 const columns = [
   {
@@ -381,6 +382,8 @@ class SubscriberList extends React.Component {
             {MailPoet.I18n.t('export')}
           </a>
         </h1>
+
+        <SubscribersLimitNotice />
 
         <Listing
           limit={window.mailpoet_listing_per_page}
