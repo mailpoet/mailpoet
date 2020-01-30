@@ -2,8 +2,6 @@
 
 namespace MailPoet\Form\Block;
 
-use MailPoet\WP\Functions as WPFunctions;
-
 class Select extends Base {
 
   public function render($block) {
@@ -55,7 +53,7 @@ class Select extends Base {
       }
 
       $html .= '<option value="' . $value . '"' . $isSelected . $isDisabled . '>';
-      $html .= WPFunctions::get()->escAttr($label);
+      $html .= $this->wp->escAttr($label);
       $html .= '</option>';
     }
     $html .= '</select>';

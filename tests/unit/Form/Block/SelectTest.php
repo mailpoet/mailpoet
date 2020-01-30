@@ -3,12 +3,31 @@
 namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\Select;
+use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Subscriber;
+use MailPoet\WP\Functions;
+use PHPUnit\Framework\MockObject\MockObject;
 
-class SelectTest extends \MailPoetTest {
-  public $block;
+class SelectTest extends \MailPoetUnitTest {
+  /** @var array */
+  private $block;
+
+  /** @var Select */
+  private $selectBlock;
+
+  /** @var MockObject | Functions */
+  private $wpMock;
+
+  /** @var MockObject | FieldNameObfuscator */
+  private $fieldNameObfuscatorMock;
+
   public function _before() {
     parent::_before();
+    $this->wpMock = $this->createMock(Functions::class);
+    $this->wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->fieldNameObfuscatorMock = $this->createMock(FieldNameObfuscator::class);
+    $this->fieldNameObfuscatorMock->method('obfuscate')->will($this->returnArgument(0));
+    $this->selectBlock = new Select($this->fieldNameObfuscatorMock, $this->wpMock);
     $this->block = [
       'id' => 'status',
       'type' => 'select',
@@ -42,7 +61,7 @@ class SelectTest extends \MailPoetTest {
   }
 
   public function testItRendersSelectBlock() {
-    $rendered = Select::render($this->block);
+    $rendered = $this->selectBlock->render($this->block);
     expect($rendered)->contains(Subscriber::STATUS_SUBSCRIBED);
     expect($rendered)->contains(Subscriber::STATUS_UNSUBSCRIBED);
     expect($rendered)->contains(Subscriber::STATUS_BOUNCED);
@@ -50,19 +69,19 @@ class SelectTest extends \MailPoetTest {
 
   public function testItRendersSelectedOption() {
     $this->block['params']['values'][0]['is_checked'] = true;
-    $rendered = Select::render($this->block);
+    $rendered = $this->selectBlock->render($this->block);
     expect($rendered)->contains('selected="selected"');
   }
 
   public function testItRendersDisabledOptions() {
     $this->block['params']['values'][2]['is_disabled'] = true;
-    $rendered = Select::render($this->block);
+    $rendered = $this->selectBlock->render($this->block);
     expect($rendered)->contains('disabled="disabled"');
   }
 
   public function testItDoesNotRenderHiddenOptions() {
     $this->block['params']['values'][2]['is_hidden'] = true;
-    $rendered = Select::render($this->block);
+    $rendered = $this->selectBlock->render($this->block);
     expect($rendered)->notContains(Subscriber::STATUS_BOUNCED);
   }
 }
