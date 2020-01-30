@@ -370,7 +370,15 @@ const formEditorConfig = {
   },
 };
 
-module.exports = [adminConfig, publicConfig, migratorConfig, formEditorConfig, testConfig].map((config) => {
+// Block config
+const postEditorBlock = {
+  name: 'post_editor_block',
+  entry: {
+    post_editor_block: 'post_editor_block/blocks.jsx',
+  },
+};
+
+module.exports = [adminConfig, publicConfig, migratorConfig, formEditorConfig, testConfig, postEditorBlock].map((config) => {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(
