@@ -26,6 +26,12 @@ class Renderer {
     $this->blocksRenderer = $blocksRenderer;
   }
 
+  public function render(array $form = []): string {
+    $html = $this->renderStyles($form);
+    $html .= $this->renderHTML($form);
+    return $html;
+  }
+
   public function renderStyles(array $form = [], string $prefix = null): string {
     $html = '<style type="text/css">';
     $html .= '.mailpoet_hp_email_label{display:none;}'; // move honeypot field out of sight

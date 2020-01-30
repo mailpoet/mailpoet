@@ -15,9 +15,13 @@ class DisplayFormInWPContent {
   /** @var FormsRepository */
   private $formsRepository;
 
-  public function __construct(WPFunctions $wp, FormsRepository $formsRepository) {
+  /** @var Renderer */
+  private $formRenderer;
+
+  public function __construct(WPFunctions $wp, FormsRepository $formsRepository, Renderer $formRenderer) {
     $this->wp = $wp;
     $this->formsRepository = $formsRepository;
+    $this->formRenderer = $formRenderer;
   }
 
   public function display(string $content): string {
@@ -63,7 +67,7 @@ class DisplayFormInWPContent {
   }
 
   private function getContentBellow(FormEntity $form): string {
-    return Renderer::render([
+    return $this->formRenderer->render([
       'body' => $form->getBody(),
       'styles' => $form->getStyles(),
     ]);
