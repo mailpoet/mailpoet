@@ -7,6 +7,18 @@ use MailPoet\Models\ModelValidator;
 use MailPoet\WP\Functions as WPFunctions;
 
 abstract class Base {
+
+  /** @var FieldNameObfuscator */
+  private $fieldNameObfuscator;
+
+  /** @var WPFunctions */
+  protected $wp;
+
+  public function __construct(FieldNameObfuscator $fieldNameObfuscator, WPFunctions $wp) {
+    $this->fieldNameObfuscator = $fieldNameObfuscator;
+    $this->wp = $wp;
+  }
+
   protected function getInputValidation($block, $extraRules = []) {
     $rules = [];
 
@@ -14,7 +26,7 @@ abstract class Base {
       $rules['required'] = true;
       $rules['minlength'] = ModelValidator::EMAIL_MIN_LENGTH;
       $rules['maxlength'] = ModelValidator::EMAIL_MAX_LENGTH;
-      $rules['error-message'] = WPFunctions::get()->__('Please specify a valid email address.', 'mailpoet');
+      $rules['error-message'] = __('Please specify a valid email address.', 'mailpoet');
     }
 
     if ($block['id'] === 'segments') {
@@ -22,18 +34,18 @@ abstract class Base {
       $rules['mincheck'] = 1;
       $rules['group'] = $block['id'];
       $rules['errors-container'] = '.mailpoet_error_' . $block['id'];
-      $rules['required-message'] = WPFunctions::get()->__('Please select a list', 'mailpoet');
+      $rules['required-message'] = __('Please select a list', 'mailpoet');
     }
 
     if (!empty($block['params']['required'])) {
       $rules['required'] = true;
-      $rules['required-message'] = WPFunctions::get()->__('This field is required.', 'mailpoet');
+      $rules['required-message'] = __('This field is required.', 'mailpoet');
     }
 
     if (!empty($block['params']['validate'])) {
       if ($block['params']['validate'] === 'phone') {
         $rules['pattern'] = "^[\d\+\-\.\(\)\/\s]*$";
-        $rules['error-message'] = WPFunctions::get()->__('Please specify a valid phone number', 'mailpoet');
+        $rules['error-message'] = __('Please specify a valid phone number', 'mailpoet');
       } else {
         $rules['type'] = $block['params']['validate'];
       }
@@ -42,7 +54,7 @@ abstract class Base {
     if (in_array($block['type'], ['radio', 'checkbox'])) {
       $rules['group'] = 'custom_field_' . $block['id'];
       $rules['errors-container'] = '.mailpoet_error_' . $block['id'];
-      $rules['required-message'] = WPFunctions::get()->__('Please select at least one option', 'mailpoet');
+      $rules['required-message'] = __('Please select at least one option', 'mailpoet');
     }
 
     if ($block['type'] === 'date') {
@@ -120,8 +132,7 @@ abstract class Base {
     } elseif (isset($block['params']['obfuscate']) && !$block['params']['obfuscate']) {
       return $block['id'];
     } else {
-      $obfuscator = new FieldNameObfuscator();
-      return $obfuscator->obfuscate($block['id']);//obfuscate field name for spambots
+      return $this->fieldNameObfuscator->obfuscate($block['id']);//obfuscate field name for spambots
     }
   }
 
@@ -134,7 +145,7 @@ abstract class Base {
   protected function getFieldValue($block = []) {
     return (isset($block['params']['value'])
             && strlen(trim($block['params']['value'])) > 0)
-            ? WPFunctions::get()->escAttr(trim($block['params']['value'])) : '';
+            ? $this->wp->escAttr(trim($block['params']['value'])) : '';
   }
 
   protected function getInputModifiers($block = []) {
