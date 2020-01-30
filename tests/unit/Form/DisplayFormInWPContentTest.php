@@ -5,14 +5,18 @@ namespace MailPoet\Form;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
-  /** @var FormsRepository|\PHPUnit_Framework_MockObject_MockObject */
+  /** @var FormsRepository|MockObject */
   private $repository;
 
-  /** @var WPFunctions|\PHPUnit_Framework_MockObject_MockObject */
+  /** @var WPFunctions|MockObject */
   private $wp;
+
+  /** @var Renderer|MockObject */
+  private $renderer;
 
   /** @var DisplayFormInWPContent */
   private $hook;
@@ -25,12 +29,15 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $this->repository = $this->createMock(FormsRepository::class);
     $this->wp = $this->createMock(WPFunctions::class);
-    $this->hook = new DisplayFormInWPContent($this->wp, $this->repository);
+    $this->renderer = $this->createMock(Renderer::class);
+    $this->hook = new DisplayFormInWPContent($this->wp, $this->repository, $this->renderer);
   }
 
   public function testAppendsRenderedFormAfterPostContent() {
+    $renderedForm = '<div class="form"></div>';
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->renderer->expects($this->once())->method('render')->willReturn($renderedForm);
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
@@ -47,7 +54,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
-    expect($result)->regExp('/content.*input type="submit"/is');
+    expect($result)->endsWith($renderedForm);
   }
 
   public function testDoesNotAppendFormIfDisabled() {
@@ -99,11 +106,15 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'id' => 'submit',
       'name' => 'Submit',
     ]]);
+    $renderedForm1 = '<div class="form1"></div>';
+    $renderedForm2 = '<div class="form2"></div>';
     $this->repository->expects($this->once())->method('findAll')->willReturn([$form1, $form2]);
+    $this->renderer->expects($this->exactly(2))->method('render')->willReturnOnConsecutiveCalls($renderedForm1, $renderedForm2);
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
-    expect($result)->regExp('/content.*input.*value="Subscribe1".*input.*value="Subscribe2"/is');
+    expect($result)->contains($renderedForm1);
+    expect($result)->endsWith($renderedForm2);
   }
 
   public function testDoesNotAppendFormIfNotOnSinglePage() {
@@ -137,6 +148,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   }
 
   public function testAppendsRenderedFormAfterPageContent() {
+    $renderedForm = '<div class="form"></div>';
+    $this->renderer->expects($this->once())->method('render')->willReturn($renderedForm);
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isPage')->willReturn(true);
     $this->wp
@@ -158,7 +171,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
-    expect($result)->regExp('/content.*input type="submit"/is');
+    expect($result)->endsWith($renderedForm);
   }
 
   public function testSetsTransientToImprovePerformance() {
