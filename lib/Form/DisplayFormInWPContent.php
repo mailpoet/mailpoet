@@ -25,7 +25,7 @@ class DisplayFormInWPContent {
 
     $forms = $this->getForms();
     if (count($forms) === 0) {
-      $this->saveNoPosts();
+      $this->saveNoForms();
       return $content;
     }
 
@@ -45,7 +45,7 @@ class DisplayFormInWPContent {
     return true;
   }
 
-  private function saveNoPosts() {
+  private function saveNoForms() {
     $stored = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
     if (!is_array($stored)) $stored = [];
     $stored[$this->wp->getPostType()] = true;
