@@ -1,8 +1,6 @@
 @import 'components/mixins';
-
 @import '../../../node_modules/select2/dist/css/select2';
 @import '../../../node_modules/spectrum-colorpicker/spectrum';
-
 @import 'components/automaticEmails';
 @import 'components/datepicker/datepicker';
 @import 'components/dynamicSegments';
@@ -30,9 +28,7 @@
 @import 'components/discounts';
 @import 'components/reviewRequest';
 @import 'components/stats';
-
 @import 'components/importExport';
-
 @import 'components/newsletterEditor/mixins/transitions';
 @import 'components/newsletterEditor/variables';
 @import 'components/newsletterEditor/common';

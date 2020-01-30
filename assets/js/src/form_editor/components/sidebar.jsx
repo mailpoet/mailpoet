@@ -74,7 +74,7 @@ export default () => {
         </ul>
       </SidebarHeader>
       {activeTab === 'form' ? <FormSettings /> : <BlockSettings />}
-      <p className="mailpoet_old_form_editor_link">
+      <p className="mailpoet_sidebar_note">
         {MailPoet.I18n.t('editorIsUsingGutenberg')}
         <br />
         <a href="mailto:quentin@mailpoet.com">{MailPoet.I18n.t('giveFeedback')}</a>
