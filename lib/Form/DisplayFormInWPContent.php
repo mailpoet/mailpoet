@@ -72,13 +72,13 @@ class DisplayFormInWPContent {
   private function shouldDisplayFormBellowContent(FormEntity $form): bool {
     $settings = $form->getSettings();
     if (!is_array($settings)) return false;
-    if (!isset($settings['placeFormBellowAllPosts'])) return false;
+    if (!isset($settings['place_form_bellow_all_posts'])) return false;
     if (
-      ($settings['placeFormBellowAllPosts'] === '1')
+      ($settings['place_form_bellow_all_posts'] === '1')
       && $this->wp->isSingular('post')
     ) return true;
     if (
-      ($settings['placeFormBellowAllPages'] === '1')
+      ($settings['place_form_bellow_all_pages'] === '1')
       && $this->wp->isPage()
     ) return true;
     return false;

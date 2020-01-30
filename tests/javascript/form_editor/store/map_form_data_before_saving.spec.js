@@ -55,8 +55,8 @@ describe('Form Data Save Mapper', () => {
     });
 
     it('maps placement', () => {
-      expect(map(data).settings).to.have.property('placeFormBellowAllPages', '1');
-      expect(map(data).settings).to.have.property('placeFormBellowAllPosts', '');
+      expect(map(data).settings).to.have.property('place_form_bellow_all_pages', '1');
+      expect(map(data).settings).to.have.property('place_form_bellow_all_posts', '');
     });
   });
 });
