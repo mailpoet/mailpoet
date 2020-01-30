@@ -116,7 +116,7 @@ class CustomField extends Model {
       }
 
       if (!empty($value)) {
-        $value = Date::convertDateToDatetime($value, $dateFormat);
+        $value = (new Date())->convertDateToDatetime($value, $dateFormat);
       }
     }
 

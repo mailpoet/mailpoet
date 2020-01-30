@@ -162,7 +162,7 @@ class Import {
           $data = array_map(
             function($index, $date) use($validationRule, &$invalidRecords) {
               if (empty($date)) return $date;
-              $date = Date::convertDateToDatetime($date, $validationRule);
+              $date = (new Date())->convertDateToDatetime($date, $validationRule);
               if (!$date) {
                 $invalidRecords[] = $index;
               }

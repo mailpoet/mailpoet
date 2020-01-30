@@ -25,16 +25,21 @@ class FormEditor {
   /** @var FormRenderer */
   private $formRenderer;
 
+  /** @var Block\Date */
+  private $dateBlock;
+
   public function __construct(
     PageRenderer $pageRenderer,
     CustomFieldsRepository $customFieldsRepository,
     CustomFieldsResponseBuilder $customFieldsResponseBuilder,
-    FormRenderer $formRenderer
+    FormRenderer $formRenderer,
+    Block\Date $dateBlock
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->customFieldsRepository = $customFieldsRepository;
     $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
     $this->formRenderer = $formRenderer;
+    $this->dateBlock = $dateBlock;
   }
 
   public function render() {
@@ -45,7 +50,7 @@ class FormEditor {
     }
     $form['styles'] = $this->formRenderer->getStyles($form);
     $customFields = $this->customFieldsRepository->findAll();
-    $dateTypes = Block\Date::getDateTypes();
+    $dateTypes = $this->dateBlock->getDateTypes();
     $data = [
       'form' => $form,
       'form_exports' => [
@@ -62,8 +67,8 @@ class FormEditor {
           'value' => $value,
         ];
       }, $dateTypes, array_keys($dateTypes)),
-      'date_formats' => Block\Date::getDateFormats(),
-      'month_names' => Block\Date::getMonthNames(),
+      'date_formats' => $this->dateBlock->getDateFormats(),
+      'month_names' => $this->dateBlock->getMonthNames(),
       'sub_menu' => 'mailpoet-forms',
       'custom_fields' => $this->customFieldsResponseBuilder->buildBatch($customFields),
     ];
