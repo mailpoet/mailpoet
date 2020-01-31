@@ -21,23 +21,23 @@ anchors:
     <<: *only_master_and_release
 
 executors:
-  wordpress_php70:
+  wpcli_php_oldest:
     <<: *default_job_config
     docker:
     - image: mailpoet/wordpress:7.0_20200203.1
 
-  wordpress_php74:
+  wpcli_php_latest:
     <<: *default_job_config
     docker:
       - image: mailpoet/wordpress:7.4_20200123.1
 
-  wordpress_mysql55_php70:
+  wpcli_php_mysql_oldest:
     <<: *default_job_config
     docker:
     - image: mailpoet/wordpress:7.0_20200203.1
     - image: circleci/mysql:5.5-ram
 
-  wordpress_mysql80_php74:
+  wpcli_php_mysql_latest:
     <<: *default_job_config
     docker:
       - image: mailpoet/wordpress:7.4_20200123.1
@@ -46,7 +46,7 @@ executors:
 
 jobs:
   build_and_code_qa:
-    executor: wordpress_php74
+    executor: wpcli_php_latest
     steps:
       - checkout
       - run:
@@ -125,7 +125,7 @@ jobs:
           paths:
             - .
   static_analysis:
-    executor: wordpress_mysql80_php74
+    executor: wpcli_php_mysql_latest
     steps:
     - attach_workspace:
         at: /home/circleci/mailpoet
@@ -137,7 +137,7 @@ jobs:
         name: "Static analysis"
         command: ./do qa:phpstan
   js_tests:
-    executor: wordpress_php70
+    executor: wpcli_php_oldest
     steps:
     - attach_workspace:
        at: /home/circleci/mailpoet
@@ -229,7 +229,7 @@ jobs:
       - store_test_results:
           path: tests/_output
   php7_unit:
-    executor: wordpress_mysql80_php74
+    executor: wpcli_php_mysql_latest
     steps:
       - attach_workspace:
          at: /home/circleci/mailpoet
@@ -255,7 +255,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   php7_integration:
-    executor: wordpress_mysql80_php74
+    executor: wpcli_php_mysql_latest
     steps:
       - attach_workspace:
          at: /home/circleci/mailpoet
@@ -281,7 +281,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   php7_integration_multisite:
-    executor: wordpress_mysql80_php74
+    executor: wpcli_php_mysql_latest
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -307,7 +307,7 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   build_release_zip:
-    executor: wordpress_mysql80_php74
+    executor: wpcli_php_mysql_latest
     resource_class: medium
     steps:
       - attach_workspace:
@@ -332,7 +332,7 @@ jobs:
           paths:
           - release_zip_build_number.txt
   test_deployment:
-    executor: wordpress_php74
+    executor: wpcli_php_latest
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -439,7 +439,7 @@ workflows:
           mysql_command: --default-authentication-plugin=mysql_native_password
           mysql_image_version: 8.0-ram
           wordpress_image_version: wp-5.3_php7.4_20191209.1
-          name: acceptance_php74_mysql80_wp53
+          name: acceptance_latest
           requires:
             - build_and_code_qa
       # Oldest supported version - PHP 7.0, MySQL 5.5, WordPress 4.9
@@ -447,6 +447,6 @@ workflows:
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
           wordpress_image_version: wp-4.9_php7.0_20200130.1
-          name: acceptance_php70_mysql55_wp49
+          name: acceptance_oldest
           requires:
             - build_and_code_qa
