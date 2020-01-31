@@ -17,7 +17,7 @@ anchors:
   multisite_acceptance_config: &multisite_acceptance_config
     multisite: 1
     requires:
-      - php7_unit
+      - unit_tests
     <<: *only_master_and_release
 
 executors:
@@ -204,8 +204,12 @@ jobs:
           path: tests/_output
       - store_test_results:
           path: tests/_output
-  php7_unit:
-    executor: wpcli_php_mysql_latest
+  unit_tests:
+    parameters:
+      executor:
+        type: string
+        default: wpcli_php_mysql_latest
+    executor: << parameters.executor >>
     steps:
       - attach_workspace:
          at: /home/circleci/mailpoet
@@ -324,7 +328,8 @@ workflows:
   build_and_test:
     jobs:
       - build_and_code_qa
-      - php7_unit:
+      - unit_tests:
+          name: unit_tests
           requires:
             - build_and_code_qa
       - static_analysis:
@@ -334,33 +339,33 @@ workflows:
           name: acceptance_tests_1
           group_arg: -g acceptance_group_1
           requires:
-            - php7_unit
+            - unit_tests
       - acceptance_tests:
           name: acceptance_tests_2
           group_arg: -g acceptance_group_2
           requires:
-            - php7_unit
+            - unit_tests
       - acceptance_tests:
           name: acceptance_tests_3
           group_arg: -g acceptance_group_3
           requires:
-            - php7_unit
+            - unit_tests
       - acceptance_tests:
           name: acceptance_tests_4
           group_arg: -g acceptance_group_4
           requires:
-            - php7_unit
+            - unit_tests
       - acceptance_tests:
           name: acceptance_tests_5
           group_arg: -g acceptance_group_5
           requires:
-            - php7_unit
+            - unit_tests
       - js_tests:
           requires:
             - build_and_code_qa
       - php7_integration:
           requires:
-            - php7_unit
+            - unit_tests
       - acceptance_tests:
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_1
@@ -384,7 +389,7 @@ workflows:
       - php7_integration_multisite:
           <<: *only_master_and_release
           requires:
-            - php7_unit
+            - unit_tests
       - build_release_zip:
           requires:
             - build_and_code_qa
@@ -419,5 +424,14 @@ workflows:
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
           wordpress_image_version: wp-4.9_php7.0_20200130.1
+          requires:
+            - build_and_code_qa
+      - unit_tests:
+          name: unit_latest
+          requires:
+            - build_and_code_qa
+      - unit_tests:
+          name: unit_oldest
+          executor: wpcli_php_mysql_oldest
           requires:
             - build_and_code_qa

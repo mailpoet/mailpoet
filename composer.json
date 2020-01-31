@@ -82,7 +82,7 @@
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
     ],
-    "fixPHPUnit65MocksForPHP74": "sed -i -e 's/(string) $method->getReturnType()/$method->getReturnType()->getName()/g' vendor/phpunit/phpunit-mock-objects/src/Generator.php && sed -i -e 's/(string) $parameter->getType()/$parameter->getType()->getName()/g' vendor/phpunit/phpunit-mock-objects/src/Generator.php",
+    "fixPHPUnit65MocksForPHP74": "sed -i -e 's/(string) $method->getReturnType()/(method_exists($method->getReturnType(), \"getName\") ? $method->getReturnType()->getName() : \\0)/g' vendor/phpunit/phpunit-mock-objects/src/Generator.php && sed -i -e 's/(string) $parameter->getType()/(method_exists($parameter->getType(), \"getName\") ? $parameter->getType()->getName() : \\0)/g' vendor/phpunit/phpunit-mock-objects/src/Generator.php",
     "fixDoctrineForPHP74": "sed -i -e 's/return \\\\in_array(\\$token\\[/return $token !== null \\&\\& \\\\in_array(\\$token\\[/' vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Query/Parser.php"
   },
   "config": {
