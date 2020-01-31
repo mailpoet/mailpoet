@@ -162,45 +162,21 @@ jobs:
     working_directory: /home/circleci/mailpoet
     machine: true
     parameters:
-      index:
-        type: integer
+      group_arg:
+        type: string
+        default: ''
       multisite:
         type: integer
         default: 0
-    steps:
-      - attach_workspace:
-          at: /home/circleci/mailpoet
-      - run:
-          name: "Set up virtual host"
-          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
-      - run:
-          name: Run acceptance tests
-          command: |
-              mkdir -m 777 -p tests/_output/exceptions
-              cd tests/docker
-              docker-compose run -e SKIP_DEPS=1 -e CIRCLE_BRANCH=${CIRCLE_BRANCH} -e MULTISITE=<< parameters.multisite >> codeception -g acceptance_group_<< parameters.index >> --steps --debug -vvv --html --xml
-      - run:
-          name: Check exceptions
-          command: |
-              if [ "$(ls tests/_output/exceptions/*.html)" ]; then
-                echo "There were some exceptions during the tests run"
-                exit 1
-              fi
-      - store_artifacts:
-          path: tests/_output
-      - store_test_results:
-          path: tests/_output
-  nightly_acceptance_tests:
-    working_directory: /home/circleci/mailpoet
-    machine: true
-    parameters:
       mysql_command:
         type: string
-        default: --verbose
+        default: ''
       mysql_image_version:
         type: string
+        default: ''
       wordpress_image_version:
         type: string
+        default: ''
     environment:
       MYSQL_COMMAND: << parameters.mysql_command >>
       MYSQL_IMAGE_VERSION: << parameters.mysql_image_version >>
@@ -216,7 +192,7 @@ jobs:
           command: |
               mkdir -m 777 -p tests/_output/exceptions
               cd tests/docker
-              docker-compose run -e SKIP_DEPS=1 -e CIRCLE_BRANCH=${CIRCLE_BRANCH} codeception --steps --debug -vvv --html --xml
+              docker-compose run -e SKIP_DEPS=1 -e CIRCLE_BRANCH=${CIRCLE_BRANCH} -e MULTISITE=<< parameters.multisite >> codeception << parameters.group_arg >> --steps --debug -vvv --html --xml
       - run:
           name: Check exceptions
           command: |
@@ -355,28 +331,28 @@ workflows:
           requires:
             - build_and_code_qa
       - acceptance_tests:
-          index: 1
           name: acceptance_tests_1
+          group_arg: -g acceptance_group_1
           requires:
             - php7_unit
       - acceptance_tests:
-          index: 2
           name: acceptance_tests_2
+          group_arg: -g acceptance_group_2
           requires:
             - php7_unit
       - acceptance_tests:
-          index: 3
           name: acceptance_tests_3
+          group_arg: -g acceptance_group_3
           requires:
             - php7_unit
       - acceptance_tests:
-          index: 4
           name: acceptance_tests_4
+          group_arg: -g acceptance_group_4
           requires:
             - php7_unit
       - acceptance_tests:
-          index: 5
           name: acceptance_tests_5
+          group_arg: -g acceptance_group_5
           requires:
             - php7_unit
       - js_tests:
@@ -387,24 +363,24 @@ workflows:
             - php7_unit
       - acceptance_tests:
           <<: *multisite_acceptance_config
-          index: 1
           name: acceptance_tests_multisite_1
+          group_arg: -g acceptance_group_1
       - acceptance_tests:
           <<: *multisite_acceptance_config
-          index: 2
           name: acceptance_tests_multisite_2
+          group_arg: -g acceptance_group_2
       - acceptance_tests:
           <<: *multisite_acceptance_config
-          index: 3
           name: acceptance_tests_multisite_3
+          group_arg: -g acceptance_group_3
       - acceptance_tests:
           <<: *multisite_acceptance_config
-          index: 4
           name: acceptance_tests_multisite_4
+          group_arg: -g acceptance_group_4
       - acceptance_tests:
           <<: *multisite_acceptance_config
-          index: 5
           name: acceptance_tests_multisite_5
+          group_arg: -g acceptance_group_5
       - php7_integration_multisite:
           <<: *only_master_and_release
           requires:
@@ -434,19 +410,14 @@ workflows:
                 - master
     jobs:
       - build_and_code_qa
-      # Latest version - PHP 7.4, MySQL 8.0, WordPress 5.3
-      - nightly_acceptance_tests:
-          mysql_command: --default-authentication-plugin=mysql_native_password
-          mysql_image_version: 8.0-ram
-          wordpress_image_version: wp-5.3_php7.4_20191209.1
+      - acceptance_tests:
           name: acceptance_latest
           requires:
             - build_and_code_qa
-      # Oldest supported version - PHP 7.0, MySQL 5.5, WordPress 4.9
-      - nightly_acceptance_tests:
+      - acceptance_tests:
+          name: acceptance_oldest
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
           wordpress_image_version: wp-4.9_php7.0_20200130.1
-          name: acceptance_oldest
           requires:
             - build_and_code_qa
