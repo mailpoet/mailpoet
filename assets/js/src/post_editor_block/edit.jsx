@@ -1,7 +1,10 @@
 /* eslint-disable react/react-in-jsx-scope */
 import PropTypes from 'prop-types';
+import Icon from './icon.jsx';
 
 const wp = window.wp;
+const { Placeholder } = wp.components;
+const { BlockIcon } = wp.blockEditor;
 const ServerSideRender = wp.serverSideRender;
 const allForms = window.mailpoet_forms;
 
@@ -39,10 +42,15 @@ function Edit({ attributes, setAttributes }) {
 
   return (
     <div className="mailpoet-block-div">
-      <h2>MailPoet Subscription Form</h2>
       {
         attributes.selectedForm === null && (
-          displayFormsSelect()
+          <Placeholder
+            className="mailpoet-block-div"
+            icon={<BlockIcon icon={Icon} showColors />}
+            label="MailPoet Subscription Form"
+          >
+            {displayFormsSelect()}
+          </Placeholder>
         )
       }
       {
