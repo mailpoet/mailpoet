@@ -1,6 +1,8 @@
 /* eslint-disable react/react-in-jsx-scope */
 import PropTypes from 'prop-types';
 
+const wp = window.wp;
+const ServerSideRender = wp.serverSideRender;
 const allForms = window.mailpoet_forms;
 
 function Edit({ attributes, setAttributes }) {
@@ -26,10 +28,28 @@ function Edit({ attributes, setAttributes }) {
     );
   }
 
+  function renderForm() {
+    return (
+      <ServerSideRender
+        block="mailpoet/form-block-render"
+        attributes={{ form: attributes.selectedForm }}
+      />
+    );
+  }
+
   return (
     <div className="mailpoet-block-div">
       <h2>MailPoet Subscription Form</h2>
-      {displayFormsSelect()}
+      {
+        attributes.selectedForm === null && (
+          displayFormsSelect()
+        )
+      }
+      {
+        attributes.selectedForm !== null && (
+          renderForm()
+        )
+      }
     </div>
   );
 }
