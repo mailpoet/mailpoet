@@ -18,4 +18,14 @@ class FormsRepository extends Repository {
     return FormEntity::class;
   }
 
+  public function findAllNotDeleted() {
+    return $this->entityManager
+      ->createQueryBuilder()
+      ->select('f')
+      ->from(FormEntity::class, 'f')
+      ->where('f.deletedAt IS NULL')
+      ->getQuery()
+      ->getResult();
+  }
+
 }
