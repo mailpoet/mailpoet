@@ -421,3 +421,12 @@ workflows:
           executor: wpcli_php_mysql_oldest
           requires:
             - build_and_code_qa
+      - integration_tests:
+          name: integration_latest
+          requires:
+            - build_and_code_qa
+      - integration_tests:
+          name: integration_oldest
+          executor: wpcli_php_mysql_oldest
+          requires:
+            - build_and_code_qa
