@@ -62,7 +62,7 @@ class NewslettersResponseBuilder {
         $data['totalSent'] = $this->newslettersStatsRepository->getTotalSentCount($newsletter);
       }
       if ($relation === self::RELATION_CHILDREN_COUNT) {
-        $data['childrenCount'] = count($newsletter->getChildren());
+        $data['childrenCount'] = $this->newslettersStatsRepository->getChildrenCount($newsletter);
       }
       if ($relation === self::RELATION_SCHEDULED) {
         $data['totalScheduled'] = (int)SendingQueue::findTaskByNewsletterId($newsletter->getId())
