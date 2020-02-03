@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Form\FormsRepository;
+use MailPoet\Form\Widget;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PostEditorBlock {
@@ -32,7 +33,7 @@ class PostEditorBlock {
     $this->wp->wpEnqueueScript(
       'mailpoet-block-form-block-js',
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('post_editor_block.js'),
-      ['wp-blocks', 'wp-components'],
+      ['wp-blocks', 'wp-components', 'wp-server-side-render'],
       Env::$version,
       true
     );
@@ -49,6 +50,16 @@ class PostEditorBlock {
       'editor_script' => 'mailpoet/form-block',
     ]);
 
+    register_block_type( 'mailpoet/form-block-render', [
+      'attributes' => [
+        'form' => [
+          'type' => 'number',
+          'default' => null,
+        ],
+      ],
+      'render_callback' => [$this, 'renderForm'],
+    ]);
+
     if (is_admin()) {
       add_action('admin_head', function() {
         $forms = $this->formsRepository->findAllNotDeleted();
@@ -60,6 +71,17 @@ class PostEditorBlock {
       });
     }
 
+  }
+
+  public function renderForm($attributes) {
+    if (!$attributes) {
+      return '';
+    }
+    $basicForm = new Widget();
+    return $basicForm->widget([
+      'form' => (int)$attributes['form'],
+      'form_type' => 'html',
+    ]);
   }
 
 }
