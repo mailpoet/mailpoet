@@ -9,6 +9,12 @@ registerBlockType('mailpoet/form-block', {
   icon: Icon,
   category: 'widgets',
   example: {},
+  attributes: {
+    selectedForm: {
+      type: 'number',
+      default: null,
+    },
+  },
   edit: Edit,
   save() {
     return null;

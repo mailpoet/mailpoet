@@ -1,18 +1,26 @@
 /* eslint-disable react/react-in-jsx-scope */
-const wp = window.wp;
-const { useState } = wp.element;
+import PropTypes from 'prop-types';
 
 const allForms = window.mailpoet_forms;
 
-function Edit() {
+function Edit({ attributes, setAttributes }) {
   function displayFormsSelect() {
     if (!Array.isArray(allForms)) return null;
     if (allForms.length === 0) return null;
     return (
-      <select>
+      <select
+        onChange={(event) => {
+          setAttributes({
+            selectedForm: parseInt(event.target.value, 10),
+          });
+        }}
+        defaultValue={attributes.selectedForm}
+      >
         <option value="" disabled selected>Select a MailPoet form</option>
         {allForms.map((form) => (
-          <option value={form.id}>{form.name}</option>
+          <option value={form.id}>
+            {form.name}
+          </option>
         ))}
       </select>
     );
@@ -25,5 +33,12 @@ function Edit() {
     </div>
   );
 }
+
+Edit.propTypes = {
+  attributes: PropTypes.shape({
+    selectedForm: PropTypes.number,
+  }).isRequired,
+  setAttributes: PropTypes.func.isRequired,
+};
 
 export default Edit;
