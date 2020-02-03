@@ -62,4 +62,16 @@ class NewsletterStatistics {
     return $this->wooCommerceRevenue;
   }
 
+  /**
+   * @return array
+   */
+  public function asArray() {
+    return [
+      'clicked' => (int)$this->clickCount,
+      'opened' => (int)$this->openCount,
+      'unsubscribed' => (int)$this->unsubscribeCount,
+      'revenue' => empty($this->wooCommerceRevenue) ? null : $this->wooCommerceRevenue->asArray(),
+    ];
+  }
+
 }

@@ -42,7 +42,19 @@ class NewsletterWooCommerceRevenue {
 
   /** @return string */
   public function getFormattedValue() {
-    return $this->wooCommerceHelper->getRawPrice($this->value, ['currency' => $this->getCurrency()]);
+    return $this->wooCommerceHelper->getRawPrice($this->value, ['currency' => $this->currency]);
+  }
+
+  /**
+   * @return array
+   */
+  public function asArray() {
+    return [
+      'currency' => $this->currency,
+      'value' => (float)$this->value,
+      'count' => (int)$this->ordersCount,
+      'formatted' => $this->getFormattedValue(),
+    ];
   }
 
 }
