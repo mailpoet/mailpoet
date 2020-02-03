@@ -234,8 +234,18 @@ jobs:
       - store_artifacts:
           path: /tmp/fake-mailer/
           destination: fake-mailer
-  php7_integration:
-    executor: wpcli_php_mysql_latest
+  integration_tests:
+    parameters:
+      executor:
+        type: string
+        default: wpcli_php_mysql_latest
+      setup_command:
+        type: string
+        default: source ./.circleci/setup.bash && setup php7
+      run_command:
+        type: string
+        default: ./do test:integration --xml
+    executor: << parameters.executor >>
     steps:
       - attach_workspace:
          at: /home/circleci/mailpoet
@@ -247,37 +257,10 @@ jobs:
           command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
       - run:
           name: "Set up test environment"
-          command: source ./.circleci/setup.bash && setup php7
+          command: << parameters.setup_command >>
       - run:
           name: "PHP Integration tests"
-          command: |
-            ./do test:integration --xml
-      - store_test_results:
-          path: tests/_output
-      - store_artifacts:
-          path: tests/_output
-          destination: codeception
-      - store_artifacts:
-          path: /tmp/fake-mailer/
-          destination: fake-mailer
-  php7_integration_multisite:
-    executor: wpcli_php_mysql_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci/mailpoet
-      - run:
-          name: "Set up virtual host"
-          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
-      - run:
-          name: "Prepare example.com for testing"
-          command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
-      - run:
-          name: "Set up test environment"
-          command: source ./.circleci/setup.bash && setup php7_multisite
-      - run:
-          name: "PHP Integration tests"
-          command: |
-            ./do t:multisite-integration --xml
+          command:  << parameters.run_command >>
       - store_test_results:
           path: tests/_output
       - store_artifacts:
@@ -363,7 +346,7 @@ workflows:
       - js_tests:
           requires:
             - build_and_code_qa
-      - php7_integration:
+      - integration_tests:
           requires:
             - unit_tests
       - acceptance_tests:
@@ -386,8 +369,11 @@ workflows:
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_5
           group_arg: -g acceptance_group_5
-      - php7_integration_multisite:
+      - integration_tests:
           <<: *only_master_and_release
+          name: integration_tests_multisite
+          setup_command: source ./.circleci/setup.bash && setup php7_multisite
+          run_command: ./do test:multisite-integration --xml
           requires:
             - unit_tests
       - build_release_zip:
@@ -399,7 +385,7 @@ workflows:
             - acceptance_tests_4
             - acceptance_tests_5
             - js_tests
-            - php7_integration
+            - integration_tests
       - test_deployment:
           <<: *only_master_and_release
           requires:
