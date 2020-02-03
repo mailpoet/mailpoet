@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Form\FormsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PostEditorBlock {
@@ -11,9 +12,17 @@ class PostEditorBlock {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(Renderer $renderer, WPFunctions $wp) {
+  /** @var FormsRepository */
+  private $formsRepository;
+
+  public function __construct(
+    Renderer $renderer,
+    WPFunctions $wp,
+    FormsRepository $formsRepository
+  ) {
     $this->renderer = $renderer;
     $this->wp = $wp;
+    $this->formsRepository = $formsRepository;
   }
 
   public function init() {
@@ -23,7 +32,7 @@ class PostEditorBlock {
     $this->wp->wpEnqueueScript(
       'mailpoet-block-form-block-js',
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('post_editor_block.js'),
-      ['wp-blocks'],
+      ['wp-blocks', 'wp-components'],
       Env::$version,
       true
     );
@@ -39,6 +48,18 @@ class PostEditorBlock {
       'style' => 'mailpoetblock-form-block-css',
       'editor_script' => 'mailpoet/form-block',
     ]);
+
+    if (is_admin()) {
+      add_action('admin_head', function() {
+        $forms = $this->formsRepository->findAllNotDeleted();
+        ?>
+        <script type="text/javascript">
+          window.mailpoet_forms =<?php echo json_encode($forms) ?>;
+        </script>
+        <?php
+      });
+    }
+
   }
 
 }
