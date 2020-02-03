@@ -59,18 +59,18 @@ class NewslettersResponseBuilder {
         $data['options'] = $this->buildOptions($newsletter);
       }
       if ($relation === self::RELATION_TOTAL_SENT) {
-        $data['totalSent'] = $this->newslettersStatsRepository->getTotalSentCount($newsletter);
+        $data['total_sent'] = $this->newslettersStatsRepository->getTotalSentCount($newsletter);
       }
       if ($relation === self::RELATION_CHILDREN_COUNT) {
-        $data['childrenCount'] = $this->newslettersStatsRepository->getChildrenCount($newsletter);
+        $data['children_count'] = $this->newslettersStatsRepository->getChildrenCount($newsletter);
       }
       if ($relation === self::RELATION_SCHEDULED) {
-        $data['totalScheduled'] = (int)SendingQueue::findTaskByNewsletterId($newsletter->getId())
+        $data['total_scheduled'] = (int)SendingQueue::findTaskByNewsletterId($newsletter->getId())
           ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
           ->count();
       }
       if ($relation === self::RELATION_STATISTICS) {
-        $data['statistics'] = $this->newslettersStatsRepository->getStatistics($newsletter);
+        $data['statistics'] = $this->newslettersStatsRepository->getStatistics($newsletter)->asArray();
       }
     }
     return $data;
