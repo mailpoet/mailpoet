@@ -19,6 +19,7 @@ function Edit({ attributes, setAttributes }) {
             selectedForm: parseInt(event.target.value, 10),
           });
         }}
+        className="mailpoet-block-create-forms-list"
         defaultValue={attributes.selectedForm}
       >
         <option value="" disabled selected>Select a MailPoet form</option>
@@ -45,11 +46,20 @@ function Edit({ attributes, setAttributes }) {
       {
         attributes.selectedForm === null && (
           <Placeholder
-            className="mailpoet-block-div"
+            className="mailpoet-block-create-new"
             icon={<BlockIcon icon={Icon} showColors />}
             label="MailPoet Subscription Form"
           >
-            {displayFormsSelect()}
+            <div className="mailpoet-block-create-new-content">
+              <a
+                href="admin.php?page=mailpoet-forms"
+                target="_blank"
+                className="mailpoet-block-create-new-link"
+              >
+                Create a new form
+              </a>
+              {displayFormsSelect()}
+            </div>
           </Placeholder>
         )
       }
