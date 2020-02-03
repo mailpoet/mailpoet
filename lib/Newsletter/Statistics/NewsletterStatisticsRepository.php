@@ -111,6 +111,25 @@ class NewsletterStatisticsRepository extends Repository {
     }
   }
 
+  /**
+   * @param NewsletterEntity $newsletter
+   * @return int
+   */
+  public function getChildrenCount(NewsletterEntity $newsletter) {
+    try {
+      return (int)$this->entityManager
+        ->createQueryBuilder()
+        ->select('COUNT(n.id) as cnt')
+        ->from(NewsletterEntity::class, 'n')
+        ->where('n.parent = :newsletter')
+        ->setParameter('newsletter', $newsletter)
+        ->getQuery()
+        ->getSingleScalarResult();
+    } catch (UnexpectedResultException $e) {
+      return 0;
+    }
+  }
+
   private function getStatisticsCount(NewsletterEntity $newsletter, $statisticsEntityName) {
     try {
       $qb = $this->entityManager
