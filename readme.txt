@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.3
-Stable tag: 3.44.0
+Stable tag: 3.45.0
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -182,6 +182,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.45.0 - 2020-02-03 =
+* Improved: PHP 7 is now required;
+* Fixed: PHP warning from unauthorized email notice.
 
 = 3.44.0 - 2020-01-27 =
 * Added: all new form editor using Gutenberg;
