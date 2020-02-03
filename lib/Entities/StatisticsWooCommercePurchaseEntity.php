@@ -19,14 +19,14 @@ class StatisticsWooCommercePurchaseEntity {
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")
-   * @var NewsletterEntity|null
+   * @var NewsletterEntity
    */
   private $newsletter;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SendingQueueEntity")
    * @ORM\JoinColumn(name="queue_id", referencedColumnName="id")
-   * @var SendingQueueEntity|null
+   * @var SendingQueueEntity
    */
   private $queue;
 
@@ -40,13 +40,13 @@ class StatisticsWooCommercePurchaseEntity {
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\StatisticsClickEntity")
    * @ORM\JoinColumn(name="click_id", referencedColumnName="id")
-   * @var StatisticsClickEntity|null
+   * @var StatisticsClickEntity
    */
   private $click;
 
   /**
    * @ORM\Column(type="integer")
-   * @var int|null
+   * @var int
    */
   private $orderId;
 
@@ -61,4 +61,13 @@ class StatisticsWooCommercePurchaseEntity {
    * @var float
    */
   private $orderPriceTotal;
+
+  public function __construct(NewsletterEntity $newsletter, SendingQueueEntity $queue, StatisticsClickEntity $click, int $orderId, string $orderCurrency, float $orderPriceTotal ) {
+    $this->newsletter = $newsletter;
+    $this->queue = $queue;
+    $this->click = $click;
+    $this->orderId = $orderId;
+    $this->orderCurrency = $orderCurrency;
+    $this->orderPriceTotal = $orderPriceTotal;
+  }
 }
