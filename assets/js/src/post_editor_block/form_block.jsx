@@ -5,7 +5,7 @@ const wp = window.wp;
 const { registerBlockType } = wp.blocks;
 
 registerBlockType('mailpoet/form-block', {
-  title: 'MailPoet Subscription Form',
+  title: window.locale.subscriptionForm,
   icon: Icon,
   category: 'widgets',
   example: {},

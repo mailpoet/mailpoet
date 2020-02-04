@@ -23,7 +23,7 @@ function Edit({ attributes, setAttributes }) {
         className="mailpoet-block-create-forms-list"
         value={attributes.selectedForm}
       >
-        <option value="" disabled selected>Select a MailPoet form</option>
+        <option value="" disabled selected>{window.locale.selectForm}</option>
         {allForms.map((form) => (
           <option value={form.id}>
             {form.name}
@@ -50,7 +50,7 @@ function Edit({ attributes, setAttributes }) {
           target="_blank"
           className="mailpoet-block-create-new-link"
         >
-          Create a new form
+          {window.locale.createForm}
         </a>
         {displayFormsSelect()}
       </div>
@@ -70,7 +70,7 @@ function Edit({ attributes, setAttributes }) {
             <Placeholder
               className="mailpoet-block-create-new"
               icon={<BlockIcon icon={Icon} showColors />}
-              label="MailPoet Subscription Form"
+              label={window.locale.subscriptionForm}
             >
               {selectFormSettings()}
             </Placeholder>

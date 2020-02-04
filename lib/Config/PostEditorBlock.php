@@ -72,7 +72,12 @@ class PostEditorBlock {
       $forms = $this->formsRepository->findAllNotDeleted();
       ?>
       <script type="text/javascript">
-        window.mailpoet_forms =<?php echo json_encode($forms) ?>;
+        window.mailpoet_forms = <?php echo json_encode($forms) ?>;
+        window.locale = {
+          selectForm: '<?php echo __('Select a MailPoet form', 'mailpoet') ?>',
+          createForm: '<?php echo __('Create a new form', 'mailpoet') ?>',
+          subscriptionForm: '<?php echo __('MailPoet Subscription Form', 'mailpoet') ?>',
+        };
       </script>
       <?php
     });
@@ -85,12 +90,12 @@ class PostEditorBlock {
   }
 
   public function renderForm($attributes) {
-    if (!$attributes || !isset($attributes['selectedForm'])) {
+    if (!$attributes || !isset($attributes['form'])) {
       return '';
     }
     $basicForm = new Widget();
     return $basicForm->widget([
-      'form' => (int)$attributes['selectedForm'],
+      'form' => (int)$attributes['form'],
       'form_type' => 'html',
     ]);
   }
