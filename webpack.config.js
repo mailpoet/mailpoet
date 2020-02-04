@@ -148,10 +148,6 @@ const baseConfig = {
         loader: 'expose-loader?Handlebars',
       },
       {
-        include: /html2canvas.js$/,
-        loader: 'expose-loader?html2canvas',
-      },
-      {
         include: require.resolve('velocity-animate'),
         loader: 'imports-loader?jQuery=jquery',
       },
