@@ -6,6 +6,7 @@ const wp = window.wp;
 const { Placeholder, PanelBody } = wp.components;
 const { BlockIcon, InspectorControls } = wp.blockEditor;
 const ServerSideRender = wp.serverSideRender;
+
 const allForms = window.mailpoet_forms;
 
 function Edit({ attributes, setAttributes }) {
