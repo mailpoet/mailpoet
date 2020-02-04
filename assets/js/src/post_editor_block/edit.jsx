@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import Icon from './icon.jsx';
 
 const wp = window.wp;
-const { Placeholder } = wp.components;
-const { BlockIcon } = wp.blockEditor;
+const { Placeholder, PanelBody } = wp.components;
+const { BlockIcon, InspectorControls } = wp.blockEditor;
 const ServerSideRender = wp.serverSideRender;
 const allForms = window.mailpoet_forms;
 
@@ -20,7 +20,7 @@ function Edit({ attributes, setAttributes }) {
           });
         }}
         className="mailpoet-block-create-forms-list"
-        defaultValue={attributes.selectedForm}
+        value={attributes.selectedForm}
       >
         <option value="" disabled selected>Select a MailPoet form</option>
         {allForms.map((form) => (
@@ -41,34 +41,47 @@ function Edit({ attributes, setAttributes }) {
     );
   }
 
+  function selectFormSettings() {
+    return (
+      <div className="mailpoet-block-create-new-content">
+        <a
+          href="admin.php?page=mailpoet-forms"
+          target="_blank"
+          className="mailpoet-block-create-new-link"
+        >
+          Create a new form
+        </a>
+        {displayFormsSelect()}
+      </div>
+    );
+  }
+
   return (
-    <div className="mailpoet-block-div">
-      {
-        attributes.selectedForm === null && (
-          <Placeholder
-            className="mailpoet-block-create-new"
-            icon={<BlockIcon icon={Icon} showColors />}
-            label="MailPoet Subscription Form"
-          >
-            <div className="mailpoet-block-create-new-content">
-              <a
-                href="admin.php?page=mailpoet-forms"
-                target="_blank"
-                className="mailpoet-block-create-new-link"
-              >
-                Create a new form
-              </a>
-              {displayFormsSelect()}
-            </div>
-          </Placeholder>
-        )
-      }
-      {
-        attributes.selectedForm !== null && (
-          renderForm()
-        )
-      }
-    </div>
+    <>
+      <InspectorControls>
+        <PanelBody title="MailPoet Subscription Form" initialOpen>
+          {selectFormSettings()}
+        </PanelBody>
+      </InspectorControls>
+      <div className="mailpoet-block-div">
+        {
+          attributes.selectedForm === null && (
+            <Placeholder
+              className="mailpoet-block-create-new"
+              icon={<BlockIcon icon={Icon} showColors />}
+              label="MailPoet Subscription Form"
+            >
+              {selectFormSettings()}
+            </Placeholder>
+          )
+        }
+        {
+          attributes.selectedForm !== null && (
+            renderForm()
+          )
+        }
+      </div>
+    </>
   );
 }
 
