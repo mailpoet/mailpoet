@@ -446,14 +446,19 @@ class Newsletters extends APIEndpoint {
         $newsletter,
         $subscriber
       );
+      $publicPreviewUrl = NewsletterUrl::getViewInBrowserUrl($newsletter);
       // strip protocol to avoid mix content error
       $previewUrl = preg_replace('{^https?:}i', '', $previewUrl);
+      $publicPreviewUrl = preg_replace('{^https?:}i', '', $publicPreviewUrl);
 
       $newsletter = Newsletter::findOne($newsletter->id);
       if(!$newsletter instanceof Newsletter) return $this->errorResponse();
       return $this->successResponse(
         $newsletter->asArray(),
-        ['preview_url' => $previewUrl]
+        [
+          'preview_url' => $previewUrl,
+          'public_preview_url' => $publicPreviewUrl,
+        ]
       );
     } else {
       return $this->errorResponse([

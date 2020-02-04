@@ -280,6 +280,7 @@ Module.SidebarPreviewView = Marionette.View.extend({
       this.previewView = new Module.NewsletterPreviewView({
         previewType: window.localStorage.getItem(App.getConfig().get('newsletterPreview.previewTypeLocalStorageKey')),
         previewUrl: response.meta.preview_url,
+        publicPreviewUrl: response.meta.public_preview_url,
       });
 
       this.previewView.render();
@@ -401,6 +402,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
   initialize: function (options) {
     this.previewType = options.previewType;
     this.previewUrl = options.previewUrl;
+    this.publicPreviewUrl = options.publicPreviewUrl;
     this.width = '100%';
     this.height = '100%';
     // this.width = App.getConfig().get('newsletterPreview.width');
@@ -410,6 +412,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     return {
       previewType: this.previewType,
       previewUrl: this.previewUrl,
+      publicPreviewUrl: this.publicPreviewUrl,
       width: this.width,
       height: this.height,
     };

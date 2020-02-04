@@ -157,11 +157,15 @@ $widget-icon-width: 30px;
   width: 100%;
 }
 
+.mailpoet_browser_preview_link {
+  position: absolute;
+  top: -25px;
+}
+
 .mailpoet_browser_preview_toggle {
   flex: 0 1 auto;
   height: 30px;
-  padding: 10px 0;
-  position: absolute;
+  padding-bottom: 10px;
   text-align: center;
   top: -30px;
   width: 100%;
@@ -180,7 +184,7 @@ $widget-icon-width: 30px;
   flex: 1 1 auto;
   flex-direction: column;
   height: 100%;
-  margin: 15px auto 0;
+  margin: auto;
   padding: 20px;
   transition: width .5s;
 }
