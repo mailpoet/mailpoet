@@ -30,6 +30,24 @@ class PostEditorBlock {
     // this has to be here until we drop support for WordPress < 5.0
     if (!function_exists('register_block_type')) return;
 
+    if (is_admin()) {
+      $this->initAdmin();
+    } else {
+      $this->initFrontend();
+    }
+
+    register_block_type('mailpoet/form-block-render', [
+      'attributes' => [
+        'form' => [
+          'type' => 'number',
+          'default' => null,
+        ],
+      ],
+      'render_callback' => [$this, 'renderForm'],
+    ]);
+  }
+
+  private function initAdmin() {
     $this->wp->wpEnqueueScript(
       'mailpoet-block-form-block-js',
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('post_editor_block.js'),
@@ -45,41 +63,34 @@ class PostEditorBlock {
       Env::$version
     );
 
-    register_block_type( 'mailpoet/form-block', [
+    register_block_type('mailpoet/form-block', [
       'style' => 'mailpoetblock-form-block-css',
       'editor_script' => 'mailpoet/form-block',
     ]);
 
-    register_block_type( 'mailpoet/form-block-render', [
-      'attributes' => [
-        'form' => [
-          'type' => 'number',
-          'default' => null,
-        ],
-      ],
+    add_action('admin_head', function() {
+      $forms = $this->formsRepository->findAllNotDeleted();
+      ?>
+      <script type="text/javascript">
+        window.mailpoet_forms =<?php echo json_encode($forms) ?>;
+      </script>
+      <?php
+    });
+  }
+
+  private function initFrontend() {
+    register_block_type('mailpoet/form-block', [
       'render_callback' => [$this, 'renderForm'],
     ]);
-
-    if (is_admin()) {
-      add_action('admin_head', function() {
-        $forms = $this->formsRepository->findAllNotDeleted();
-        ?>
-        <script type="text/javascript">
-          window.mailpoet_forms =<?php echo json_encode($forms) ?>;
-        </script>
-        <?php
-      });
-    }
-
   }
 
   public function renderForm($attributes) {
-    if (!$attributes) {
+    if (!$attributes || !isset($attributes['selectedForm'])) {
       return '';
     }
     $basicForm = new Widget();
     return $basicForm->widget([
-      'form' => (int)$attributes['form'],
+      'form' => (int)$attributes['selectedForm'],
       'form_type' => 'html',
     ]);
   }
