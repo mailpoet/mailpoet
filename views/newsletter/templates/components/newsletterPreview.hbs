@@ -1,3 +1,6 @@
+<div class="mailpoet_browser_preview_link">
+  <a href="{{ publicPreviewUrl }}" target="_blank" rel="noopener noreferrer"><%= _x('Open in new tab', 'Open email preview in new tab') %></a>
+</div>
 <div class="mailpoet_browser_preview_toggle">
   <label>
     <input type="radio" name="mailpoet_browser_preview_type" class="mailpoet_browser_preview_type" value="desktop" {{#ifCond previewType '!=' 'mobile'}}CHECKED{{/ifCond}} /><%= _x('Desktop', 'Desktop browser preview mode') %>
