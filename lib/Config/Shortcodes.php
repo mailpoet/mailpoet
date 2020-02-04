@@ -132,12 +132,7 @@ class Shortcodes {
   }
 
   public function renderArchiveSubject($newsletter, $subscriber, $queue) {
-    $previewUrl = NewsletterUrl::getViewInBrowserUrl(
-      NewsletterUrl::TYPE_ARCHIVE,
-      $newsletter,
-      $subscriber,
-      $queue
-    );
+    $previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
       . esc_attr($newsletter->newsletterRenderedSubject) .

@@ -8,11 +8,7 @@ use MailPoet\Router\Router;
 use MailPoet\Subscribers\LinkTokens;
 
 class Url {
-  const TYPE_ARCHIVE = 'display_archive';
-  const TYPE_LISTING_EDITOR = 'display_listing_editor';
-
   public static function getViewInBrowserUrl(
-    $type,
     $newsletter,
     $subscriber = false,
     $queue = false,
@@ -21,16 +17,6 @@ class Url {
     $linkTokens = new LinkTokens;
     if ($subscriber instanceof SubscriberModel) {
       $subscriber->token = $linkTokens->getToken($subscriber);
-    }
-    switch ($type) {
-      case self::TYPE_ARCHIVE:
-        // do not expose newsletter id when displaying archive newsletters
-        $newsletter->id = null;
-        break;
-      default:
-        // hide hash for all other display types
-        $newsletter->hash = null;
-        break;
     }
     $data = self::createUrlDataObject($newsletter, $subscriber, $queue, $preview);
     return Router::buildRequest(

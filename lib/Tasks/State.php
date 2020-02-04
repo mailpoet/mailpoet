@@ -91,7 +91,6 @@ class State
         'queue_id' => (int)$queue->id,
         'subject' => $queue->newsletterRenderedSubject ?: $newsletter->subject,
         'preview_url' => NewsletterUrl::getViewInBrowserUrl(
-          NewsletterUrl::TYPE_LISTING_EDITOR,
           $newsletter,
           null,
           $queue
