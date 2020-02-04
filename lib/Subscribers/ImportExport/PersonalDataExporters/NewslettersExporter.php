@@ -68,7 +68,6 @@ class NewslettersExporter {
       $newsletterData[] = [
         'name' => WPFunctions::get()->__('Email preview', 'mailpoet'),
         'value' => Url::getViewInBrowserUrl(
-          '',
           $newsletters[$statisticsRow['newsletter_id']],
           $subscriber,
           false

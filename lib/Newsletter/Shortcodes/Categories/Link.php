@@ -39,7 +39,6 @@ class Link {
 
       case 'newsletter_view_in_browser_url':
         $url = NewsletterUrl::getViewInBrowserUrl(
-          $type = null,
           $newsletter,
           $wpUserPreview ? false : $subscriber,
           $queue,
@@ -90,7 +89,6 @@ class Link {
         break;
       case 'newsletter_view_in_browser_url':
         $url = NewsletterUrl::getViewInBrowserUrl(
-          $type = null,
           $newsletter,
           $subscriber,
           $queue,
