@@ -309,7 +309,7 @@ class ShortcodesTest extends \MailPoetTest {
     $links = [
       $this->subscriptionUrlFactory->getUnsubscribeUrl(null),
       $this->subscriptionUrlFactory->getManageUrl(null),
-      NewsletterUrl::getViewInBrowserUrl($this->newsletter, false, false),
+      NewsletterUrl::getViewInBrowserUrl($this->newsletter),
     ];
     $result = $shortcodesObject->process($shortcodes);
     // hash is returned
