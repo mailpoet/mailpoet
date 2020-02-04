@@ -19,15 +19,16 @@ class ViewInBrowser {
     $this->emoji = $emoji;
   }
 
-  public function view($data) {
+  public function view(array $data) {
     $wpUserPreview = (
-      ($data->subscriber && $data->subscriber->isWPUser() && $data->preview) ||
-      ($data->preview && $data->newsletter_hash) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      ($data['subscriber'] && $data['subscriber']->isWPUser() && $data['preview'])
+      ||
+      ($data['preview'] && $data['newsletter_hash'])
     );
     return $this->renderNewsletter(
-      $data->newsletter,
-      $data->subscriber,
-      $data->queue,
+      $data['newsletter'],
+      $data['subscriber'],
+      $data['queue'],
       $wpUserPreview
     );
   }
