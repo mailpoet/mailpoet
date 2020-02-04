@@ -40,7 +40,7 @@ class Link {
       case 'newsletter_view_in_browser_url':
         $url = NewsletterUrl::getViewInBrowserUrl(
           $newsletter,
-          $wpUserPreview ? false : $subscriber,
+          $wpUserPreview ? null : $subscriber,
           $queue,
           $wpUserPreview
         );

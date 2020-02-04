@@ -564,7 +564,7 @@ class Newsletters extends APIEndpoint {
       }
 
       // get preview url
-      $newsletter->previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber = null, $queue);
+      $newsletter->previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletter, null, $queue);
 
       $data[] = $this->wp->applyFilters('mailpoet_api_newsletters_listing_item', $newsletter->asArray());
     }
