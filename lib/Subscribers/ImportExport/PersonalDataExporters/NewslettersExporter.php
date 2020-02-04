@@ -71,8 +71,7 @@ class NewslettersExporter {
           '',
           $newsletters[$statisticsRow['newsletter_id']],
           $subscriber,
-          false,
-          true
+          false
         ),
       ];
     }

@@ -16,7 +16,7 @@ class Url {
     $newsletter,
     $subscriber = false,
     $queue = false,
-    $preview = false
+    bool $preview = true
   ) {
     $linkTokens = new LinkTokens;
     if ($subscriber instanceof SubscriberModel) {
@@ -26,11 +26,6 @@ class Url {
       case self::TYPE_ARCHIVE:
         // do not expose newsletter id when displaying archive newsletters
         $newsletter->id = null;
-        $preview = true;
-        break;
-      case self::TYPE_LISTING_EDITOR:
-        // enable preview when displaying from editor or listings
-        $preview = true;
         break;
       default:
         // hide hash for all other display types

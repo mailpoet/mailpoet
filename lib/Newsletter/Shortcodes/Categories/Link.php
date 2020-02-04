@@ -93,7 +93,8 @@ class Link {
           $type = null,
           $newsletter,
           $subscriber,
-          $queue
+          $queue,
+          false
         );
         break;
       default:
