@@ -92,7 +92,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     $subscriber = $this->subscriber;
     $subscriber->email = 'random@email.com';
     $subscriber->save();
-    $data = (object)array_merge(
+    $data = array_merge(
       $this->browserPreviewData,
       [
         'queue' => $this->queue,
@@ -105,7 +105,7 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   public function testItFailsValidationWhenNewsletterIdIsProvidedButSubscriberDoesNotExist() {
-    $data = (object)$this->browserPreviewData;
+    $data = $this->browserPreviewData;
     $data->subscriber_id = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     expect($this->viewInBrowser->_validateBrowserPreviewData($data))->false();
   }
@@ -115,7 +115,7 @@ class ViewInBrowserTest extends \MailPoetTest {
     $newsletter2 = Newsletter::create();
     $newsletter2->type = 'type';
     $newsletter2 = $newsletter2->save();
-    $data = (object)$this->browserPreviewData;
+    $data = $this->browserPreviewData;
     $data->newsletter_hash = $newsletter2->hash; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
     expect($result->newsletter->id)->equals($newsletter2->id);
@@ -125,14 +125,14 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   public function testItFailsValidationWhenPreviewIsEnabledButNewsletterHashNotProvided() {
-    $data = (object)$this->browserPreviewData;
+    $data = $this->browserPreviewData;
     $data->newsletter_hash = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $data->preview = true;
     expect($this->viewInBrowser->_validateBrowserPreviewData($data))->false();
   }
 
   public function testItFailsValidationWhenSubscriberIsNotOnProcessedList() {
-    $data = (object)$this->browserPreviewData;
+    $data = $this->browserPreviewData;
     $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
     expect($result)->notEmpty();
     $queue = $this->queue;
@@ -145,7 +145,7 @@ class ViewInBrowserTest extends \MailPoetTest {
 
   public function testItDoesNotRequireWpAdministratorToBeOnProcessedListWhenPreviewIsEnabled() {
     $viewInBrowser = $this->viewInBrowser;
-    $data = (object)array_merge(
+    $data = array_merge(
       $this->browserPreviewData,
       [
         'queue' => $this->queue,
@@ -172,7 +172,7 @@ class ViewInBrowserTest extends \MailPoetTest {
 
   public function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
     $viewInBrowser = $this->viewInBrowser;
-    $data = (object)array_merge(
+    $data = array_merge(
       $this->browserPreviewData,
       [
         'queue' => $this->queue,
@@ -188,7 +188,7 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   public function testItGetsOrFindsQueueWhenItIsNotAWelcomeEmail() {
-    $data = (object)$this->browserPreviewData;
+    $data = $this->browserPreviewData;
     // queue will be found when not defined
     $data->queueId = null;
     $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
