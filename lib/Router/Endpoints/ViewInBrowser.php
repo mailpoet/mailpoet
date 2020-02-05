@@ -16,10 +16,12 @@ use MailPoet\WP\Functions as WPFunctions;
 class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
   const ACTION_VIEW = 'view';
+
   public $allowedActions = [self::ACTION_VIEW];
   public $permissions = [
     'global' => AccessControl::NO_ACCESS_RESTRICTION,
   ];
+
   /** @var AccessControl */
   private $accessControl;
 
@@ -39,81 +41,59 @@ class ViewInBrowser {
     $this->emoji = $emoji;
   }
 
-  public function view($data) {
-    $data = $this->_processBrowserPreviewData($data);
-    $viewInBrowser = new NewsletterViewInBrowser($this->emoji, (bool)$this->settings->get('tracking.enabled'));
-    return $this->_displayNewsletter($viewInBrowser->view($data));
-  }
-
-  public function _processBrowserPreviewData(array $data) {
+  public function view(array $data) {
     $data = NewsletterUrl::transformUrlDataObject($data);
-    return $this->_validateBrowserPreviewData($data) ?: $this->_abort();
-  }
+    $isPreview = !empty($data['preview']);
 
-  /**
-   * @param array $data
-   * @return array|false
-   */
-  public function _validateBrowserPreviewData(array $data) {
-    // either newsletter ID or hash must be defined, and newsletter must exist
-    if (empty($data['newsletter_id']) && empty($data['newsletter_hash'])) {
-      return false;
-    }
-
-    $data['newsletter'] = (!empty($data['newsletter_hash']))
-      ? Newsletter::getByHash($data['newsletter_hash'])
-      : Newsletter::findOne($data['newsletter_id']);
-    if (!$data['newsletter']) {
-      return false;
+    // newsletter - ID is mandatory hash must be set and valid
+    $newsletter = empty($data['newsletter_id']) ? null : Newsletter::findOne($data['newsletter_id']);
+    if (!$newsletter || empty($data['newsletter_hash']) || $data['newsletter_hash'] !== $newsletter->hash) {
+      return $this->_abort();
     }
 
     // subscriber is optional; if exists, token must validate
-    $data['subscriber'] = !empty($data['subscriber_id']) ? Subscriber::findOne($data['subscriber_id']) : false;
-    if ($data['subscriber']) {
-      if (empty($data['subscriber_token']) || !$this->linkTokens->verifyToken($data['subscriber'], $data['subscriber_token'])) {
-        return false;
-      }
-    } else if (!$data['subscriber'] && !empty($data['preview'])) {
-      // if this is a preview and subscriber does not exist,
-      // attempt to set subscriber to the current logged-in WP user
-      $data['subscriber'] = Subscriber::getCurrentWPUser();
+    $subscriber = empty($data['subscriber_id']) ? null : Subscriber::findOne($data['subscriber_id']);
+    $subscriberToken = $data['subscriber_token'] ?? null;
+    if ($subscriber && (!$subscriberToken || !$this->linkTokens->verifyToken($subscriber, $subscriberToken))) {
+      return $this->_abort();
     }
 
-    // if newsletter hash is not provided but newsletter ID is defined then subscriber must exist
-    if (empty($data['newsletter_hash']) && $data['newsletter_id'] && !$data['subscriber']) {
-      return false;
-    }
-
-    // queue is optional; try to find it if it's not defined and this is not a welcome email
-    if ($data['newsletter']->type !== Newsletter::TYPE_WELCOME) {
-      $data['queue'] = (!empty($data['queue_id']))
-        ? SendingQueue::findOne($data['queue_id'])
-        : SendingQueue::where('newsletter_id', $data['newsletter']->id)->findOne();
-    } else {
-      $data['queue'] = false;
-    }
-
-    // reset queue when automatic email is being previewed
-    if ($data['newsletter']->type === Newsletter::TYPE_AUTOMATIC && !empty($data['preview'])) {
-      $data['queue'] = false;
+    // if this is a preview and subscriber does not exist,
+    // attempt to set subscriber to the current logged-in WP user
+    if (!$subscriber && $isPreview) {
+      $subscriber = Subscriber::getCurrentWPUser();
     }
 
     // allow users with permission to manage emails to preview any newsletter
-    if (!empty($data['preview']) && $this->accessControl->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS)) {
-      return $data;
-    }
-
-    // allow others to preview newsletters only when newsletter hash is defined
-    if (!empty($data['preview']) && empty($data['newsletter_hash'])) {
-      return false;
-    }
+    $canView = $isPreview && $this->accessControl->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS);
 
     // if queue and subscriber exist, subscriber must have received the newsletter
-    if ($data['queue'] instanceof SendingQueue && $data['subscriber'] && !$data['queue']->isSubscriberProcessed($data['subscriber']->id)) {
-      return false;
+    $queue = $this->getQueue($newsletter, $data);
+    if (!$canView && $queue && $subscriber && !$queue->isSubscriberProcessed($subscriber->id)) {
+      return $this->_abort();
     }
 
-    return $data;
+    $viewInBrowser = new NewsletterViewInBrowser($this->emoji, (bool)$this->settings->get('tracking.enabled'));
+    $viewData = $viewInBrowser->view($isPreview, $newsletter, $subscriber, $queue);
+    return $this->_displayNewsletter($viewData);
+  }
+
+  private function getQueue(Newsletter $newsletter, array $data) {
+    // queue is optional; try to find it if it's not defined and this is not a welcome email
+    if ($newsletter->type === Newsletter::TYPE_WELCOME) {
+      return null;
+    }
+
+    // reset queue when automatic email is being previewed
+    if ($newsletter->type === Newsletter::TYPE_AUTOMATIC && !empty($data['preview'])) {
+      return null;
+    }
+
+    $queue = !empty($data['queue_id'])
+      ? SendingQueue::findOne($data['queue_id'])
+      : SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
+
+    return $queue ?: null;
   }
 
   public function _displayNewsletter($result) {

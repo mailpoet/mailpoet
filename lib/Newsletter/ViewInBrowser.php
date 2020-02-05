@@ -2,6 +2,9 @@
 
 namespace MailPoet\Newsletter;
 
+use MailPoet\Models\Newsletter;
+use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -14,26 +17,18 @@ class ViewInBrowser {
   /** @var bool */
   private $isTrackingEnabled;
 
-  public function __construct(Emoji $emoji, $isTrackingEnabled) {
-    $this->isTrackingEnabled = $isTrackingEnabled;
+  public function __construct(Emoji $emoji, bool $isTrackingEnabled) {
     $this->emoji = $emoji;
+    $this->isTrackingEnabled = $isTrackingEnabled;
   }
 
-  public function view(array $data) {
-    $wpUserPreview = (
-      ($data['subscriber'] && $data['subscriber']->isWPUser() && $data['preview'])
-      ||
-      ($data['preview'] && $data['newsletter_hash'])
-    );
-    return $this->renderNewsletter(
-      $data['newsletter'],
-      $data['subscriber'],
-      $data['queue'],
-      $wpUserPreview
-    );
-  }
-
-  public function renderNewsletter($newsletter, $subscriber, $queue, $wpUserPreview) {
+  public function view(
+    bool $isPreview,
+    Newsletter $newsletter,
+    Subscriber $subscriber = null,
+    SendingQueue $queue = null
+  ) {
+    $wpUserPreview = $isPreview;
     if ($queue && $queue->getNewsletterRenderedBody()) {
       $newsletterBody = $queue->getNewsletterRenderedBody('html');
       $newsletterBody = $this->emoji->decodeEmojisInBody($newsletterBody);
