@@ -136,6 +136,12 @@ export function saveFormFailed(message = undefined) {
   };
 }
 
+export function showPreview() {
+  return {
+    type: 'SHOW_PREVIEW',
+  };
+}
+
 export function removeNotice(id) {
   return {
     type: 'REMOVE_NOTICE',

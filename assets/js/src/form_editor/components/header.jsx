@@ -13,11 +13,23 @@ export default () => {
     (select) => select('mailpoet-form-editor').getIsFormSaving(),
     []
   );
-  const { toggleSidebar, saveForm } = useDispatch('mailpoet-form-editor');
+  const isPreview = useSelect(
+    (select) => select('mailpoet-form-editor').getIsPreviewShown(),
+    []
+  );
+  const { toggleSidebar, saveForm, showPreview } = useDispatch('mailpoet-form-editor');
 
   return (
     <div className="edit-post-header">
       <div className="edit-post-header__settings">
+        <Button
+          isSecondary
+          isLarge
+          onClick={showPreview}
+          isPressed={isPreview}
+        >
+          {__('Preview')}
+        </Button>
         <Button
           isPrimary
           isLarge
