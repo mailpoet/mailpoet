@@ -142,6 +142,12 @@ export function showPreview() {
   };
 }
 
+export function hidePreview() {
+  return {
+    type: 'HIDE_PREVIEW',
+  };
+}
+
 export function removeNotice(id) {
   return {
     type: 'REMOVE_NOTICE',
