@@ -8,9 +8,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
-use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ViewInBrowser {
@@ -25,20 +23,20 @@ class ViewInBrowser {
   /** @var AccessControl */
   private $accessControl;
 
-  /** @var SettingsController */
-  private $settings;
-
   /** @var LinkTokens */
   private $linkTokens;
 
-  /** @var Emoji */
-  private $emoji;
+  /** @var NewsletterViewInBrowser */
+  private $newsletterViewInBrowser;
 
-  public function __construct(AccessControl $accessControl, SettingsController $settings, LinkTokens $linkTokens, Emoji $emoji) {
+  public function __construct(
+    AccessControl $accessControl,
+    LinkTokens $linkTokens,
+    NewsletterViewInBrowser $newsletterViewInBrowser
+  ) {
     $this->accessControl = $accessControl;
-    $this->settings = $settings;
     $this->linkTokens = $linkTokens;
-    $this->emoji = $emoji;
+    $this->newsletterViewInBrowser = $newsletterViewInBrowser;
   }
 
   public function view(array $data) {
@@ -73,8 +71,7 @@ class ViewInBrowser {
       return $this->_abort();
     }
 
-    $viewInBrowser = new NewsletterViewInBrowser($this->emoji, (bool)$this->settings->get('tracking.enabled'));
-    $viewData = $viewInBrowser->view($isPreview, $newsletter, $subscriber, $queue);
+    $viewData = $this->newsletterViewInBrowser->view($isPreview, $newsletter, $subscriber, $queue);
     return $this->_displayNewsletter($viewData);
   }
 
