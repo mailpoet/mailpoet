@@ -8,6 +8,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Emoji;
 
 class ViewInBrowser {
@@ -17,9 +18,9 @@ class ViewInBrowser {
   /** @var bool */
   private $isTrackingEnabled;
 
-  public function __construct(Emoji $emoji, bool $isTrackingEnabled) {
+  public function __construct(Emoji $emoji, SettingsController $settings) {
     $this->emoji = $emoji;
-    $this->isTrackingEnabled = $isTrackingEnabled;
+    $this->isTrackingEnabled = $settings->get('tracking.enabled');
   }
 
   public function view(
