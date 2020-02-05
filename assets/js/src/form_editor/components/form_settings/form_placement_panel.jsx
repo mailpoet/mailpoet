@@ -51,6 +51,30 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
     )
   );
 
+  const addFormShortcodeHint = ReactStringReplace(
+    MailPoet.I18n.t('addFormShortcodeHint'),
+    /(\[link].*\[\/link])|(\[shortcode])/g,
+    (match) => {
+      if (match === '[shortcode]') {
+        return (<code key={match}>{formExports.shortcode}</code>);
+      }
+      if (typeof match === 'string' && match.includes('[link]')) {
+        const link = match.replace(/\[.?link]/g, '');
+        return (
+          <button
+            key={match}
+            className="button-link"
+            type="button"
+            data-beacon-article="5e3a166204286364bc94dda4"
+          >
+            {link}
+          </button>
+        );
+      }
+      return match;
+    }
+  );
+
   const addFormPhpIframeHint = ReactStringReplace(
     MailPoet.I18n.t('addFormPhpIframeHint'),
     /\[link](.*?)\[\/link]/g,
@@ -95,6 +119,7 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
             onChange={setPlaceFormBellowAllPosts}
           />
         </div>
+        <p>{addFormShortcodeHint}</p>
         <p>{addFormWidgetHint}</p>
         <p>{addFormPhpIframeHint}</p>
         {getCopyTextArea()}
