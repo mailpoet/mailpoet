@@ -36,7 +36,7 @@ export default {
     return state.isFormSaving;
   },
   getIsPreviewShown(state) {
-    return false;
+    return state.isPreviewShown;
   },
   getIsCustomFieldSaving(state) {
     return state.isCustomFieldSaving;
