@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Newsletter;
+namespace MailPoet\Newsletter\ViewInBrowser;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
@@ -11,7 +11,7 @@ use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Emoji;
 
-class ViewInBrowser {
+class ViewInBrowserRenderer {
   /** @var Emoji */
   private $emoji;
 
@@ -23,7 +23,7 @@ class ViewInBrowser {
     $this->isTrackingEnabled = $settings->get('tracking.enabled');
   }
 
-  public function view(
+  public function render(
     bool $isPreview,
     Newsletter $newsletter,
     Subscriber $subscriber = null,
