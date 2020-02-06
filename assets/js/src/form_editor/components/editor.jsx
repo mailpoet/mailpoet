@@ -16,6 +16,7 @@ import FormTitle from './form_title.jsx';
 import Notices from './notices.jsx';
 import UnsavedChangesNotice from './unsaved_changes_notice.jsx';
 import FormStyles from './form_styles.jsx';
+import Preview from './preview.jsx';
 
 // Editor settings - see @wordpress/block-editor/src/store/defaults.js
 const editorSettings = {
@@ -44,46 +45,49 @@ export default () => {
   const { blocksChangedInBlockEditor } = useDispatch('mailpoet-form-editor');
 
   return (
-    <DropZoneProvider>
-      <SlotFillProvider>
-        <div className={layoutClass}>
-          <div className="block-editor-editor-skeleton__header">
-            <Header />
-          </div>
-          <div className="block-editor-editor-skeleton__body">
-            <BlockEditorProvider
-              value={select('mailpoet-form-editor').getFormBlocks()}
-              onInput={blocksChangedInBlockEditor}
-              onChange={blocksChangedInBlockEditor}
-              settings={editorSettings}
-              useSubRegistry={false}
-            >
-              <div className="block-editor-editor-skeleton__content">
-                <Notices />
-                <Popover.Slot name="block-toolbar" />
-                <UnsavedChangesNotice />
-                <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
-                  <BlockEditorKeyboardShortcuts />
-                  <BlockEditorKeyboardShortcuts.Register />
-                  <WritingFlow>
-                    <ObserveTyping>
-                      <FormTitle />
-                      <BlockList />
-                    </ObserveTyping>
-                  </WritingFlow>
-                </BlockSelectionClearer>
-              </div>
-              <div className="block-editor-editor-skeleton__sidebar">
-                <div>
-                  { sidebarOpened ? <Sidebar /> : null }
+    <>
+      <DropZoneProvider>
+        <SlotFillProvider>
+          <div className={layoutClass}>
+            <div className="block-editor-editor-skeleton__header">
+              <Header />
+            </div>
+            <div className="block-editor-editor-skeleton__body">
+              <BlockEditorProvider
+                value={select('mailpoet-form-editor').getFormBlocks()}
+                onInput={blocksChangedInBlockEditor}
+                onChange={blocksChangedInBlockEditor}
+                settings={editorSettings}
+                useSubRegistry={false}
+              >
+                <div className="block-editor-editor-skeleton__content">
+                  <Notices />
+                  <Popover.Slot name="block-toolbar" />
+                  <UnsavedChangesNotice />
+                  <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
+                    <BlockEditorKeyboardShortcuts />
+                    <BlockEditorKeyboardShortcuts.Register />
+                    <WritingFlow>
+                      <ObserveTyping>
+                        <FormTitle />
+                        <BlockList />
+                      </ObserveTyping>
+                    </WritingFlow>
+                  </BlockSelectionClearer>
                 </div>
-              </div>
-              <Popover.Slot />
-            </BlockEditorProvider>
+                <div className="block-editor-editor-skeleton__sidebar">
+                  <div>
+                    { sidebarOpened ? <Sidebar /> : null }
+                  </div>
+                </div>
+                <Popover.Slot />
+              </BlockEditorProvider>
+            </div>
+            <FormStyles />
           </div>
-          <FormStyles />
-        </div>
-      </SlotFillProvider>
-    </DropZoneProvider>
+        </SlotFillProvider>
+      </DropZoneProvider>
+      <Preview />
+    </>
   );
 };

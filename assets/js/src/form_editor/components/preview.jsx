@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Spinner } from '@wordpress/components';
+import { Spinner } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import Preview from '../../common/preview.jsx';
+import Modal from '../../common/modal/modal.jsx';
 
 const FormPreview = () => {
   const [form, setForm] = useState(null);
@@ -27,9 +28,6 @@ const FormPreview = () => {
 
   return (
     <Modal
-      isDismissible
-      shouldCloseOnEsc
-      shouldCloseOnClickOutside
       title="Form Preview"
       onRequestClose={hidePreview}
     >
