@@ -32,24 +32,13 @@ class ViewInBrowserController {
   public function view(array $data) {
     $data = NewsletterUrl::transformUrlDataObject($data);
     $isPreview = !empty($data['preview']);
-
-    // newsletter - ID is mandatory hash must be set and valid
-    $newsletter = empty($data['newsletter_id']) ? null : Newsletter::findOne($data['newsletter_id']);
-    if (!$newsletter || empty($data['newsletter_hash']) || $data['newsletter_hash'] !== $newsletter->hash) {
-      throw new \InvalidArgumentException();
-    }
-
-    // subscriber is optional; if exists, token must validate
-    $subscriber = empty($data['subscriber_id']) ? null : Subscriber::findOne($data['subscriber_id']);
-    $subscriberToken = $data['subscriber_token'] ?? null;
-    if ($subscriber && (!$subscriberToken || !$this->linkTokens->verifyToken($subscriber, $subscriberToken))) {
-      throw new \InvalidArgumentException();
-    }
+    $newsletter = $this->getNewsletter($data);
+    $subscriber = $this->getSubscriber($data);
 
     // if this is a preview and subscriber does not exist,
     // attempt to set subscriber to the current logged-in WP user
     if (!$subscriber && $isPreview) {
-      $subscriber = Subscriber::getCurrentWPUser();
+      $subscriber = Subscriber::getCurrentWPUser() ?: null;
     }
 
     // allow users with permission to manage emails to preview any newsletter
@@ -58,10 +47,51 @@ class ViewInBrowserController {
     // if queue and subscriber exist, subscriber must have received the newsletter
     $queue = $this->getQueue($newsletter, $data);
     if (!$canView && $queue && $subscriber && !$queue->isSubscriberProcessed($subscriber->id)) {
-      throw new \InvalidArgumentException();
+      throw new \InvalidArgumentException("Subscriber did not receive the newsletter yet");
     }
 
     return $this->viewInBrowserRenderer->render($isPreview, $newsletter, $subscriber, $queue);
+  }
+
+  private function getNewsletter(array $data) {
+    // newsletter - ID is mandatory, hash must be set and valid
+    if (empty($data['newsletter_id'])) {
+      throw new \InvalidArgumentException("Missing 'newsletter_id'");
+    }
+    if (empty($data['newsletter_hash'])) {
+      throw new \InvalidArgumentException("Missing 'newsletter_hash'");
+    }
+
+    $newsletter = Newsletter::findOne($data['newsletter_id']) ?: null;
+    if (!$newsletter) {
+      throw new \InvalidArgumentException("Invalid 'newsletter_id'");
+    }
+
+    if ($data['newsletter_hash'] !== $newsletter->hash) {
+      throw new \InvalidArgumentException("Invalid 'newsletter_hash'");
+    }
+    return $newsletter;
+  }
+
+  private function getSubscriber(array $data) {
+    // subscriber is optional; if exists, token must validate
+    if (empty($data['subscriber_id'])) {
+      return null;
+    }
+
+    $subscriber = Subscriber::findOne($data['subscriber_id']) ?: null;
+    if (!$subscriber) {
+      return null;
+    }
+
+    if (empty($data['subscriber_token'])) {
+      throw new \InvalidArgumentException("Missing 'subscriber_token'");
+    }
+
+    if (!$this->linkTokens->verifyToken($subscriber, $data['subscriber_token'])) {
+      throw new \InvalidArgumentException("Invalid 'subscriber_token'");
+    }
+    return $subscriber;
   }
 
   private function getQueue(Newsletter $newsletter, array $data) {
