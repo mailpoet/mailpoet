@@ -1,272 +1,157 @@
-$modal_title_color: #cfcfcf;
-$modal_highlight_background_color: #f1f1f1;
-$modal_background_color: #fff;
-$modal_popup_margin: 30px;
-$modal_popup_margin_mobile: 10px;
-$modal_popup_padding: 30px;
-$modal_popup_padding_mobile: 12px;
-$modal_close_button_size: 23px;
-$overlay_background_color: rgba(0, 0, 0, .6);
+$modal-min-width: 360px;
+$modal-screen-overlay-z-index: 100000;
+$modal-header-z-index: 10;
+$border-width: 1px;
+$light-gray-500: #e2e4e7;
+$dark-gray-900: #191e23;
+$shadow-modal: 0 3px 30px rgba($dark-gray-900, .2);
 
-body.mailpoet_modal_opened {
-  overflow: hidden;
+$grid-size: 8px;
+$grid-size-large: 16px;
+$grid-size-xlarge: 24px;
+
+$header-height: 56px;
+$icon-button-size: 36px;
+
+#mailpoet_modal {
+  display: block !important;
 }
 
-.mailpoet_modal_overlay {
-  align-items: center;
-  background-color: $overlay_background_color;
-  box-sizing: border-box;
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  left: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: $modal_popup_margin;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 100000;
-}
-
-.mailpoet_modal_highlight {
-  background-color: $modal_highlight_background_color;
-  box-shadow: 0 0 20px 2px rgba(#fff, 75%);
-  pointer-events: none;
-  position: relative;
-  z-index: 100001 !important;
-}
-
-.mailpoet_modal_overlay.mailpoet_overlay_transparent {
-  background-color: transparent;
-}
-
-.mailpoet_modal_overlay.mailpoet_overlay_loading {
-  background-color: $overlay_background_color !important;
-  display: flex !important;
-}
-
-.mailpoet_popup {
-  animation: mailpoet_popup_fadein .5s;
-  margin: auto;
-  max-width: 100%;
-  z-index: 25;
-}
-
-@keyframes mailpoet_popup_fadein {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.mailpoet_popup_wrapper {
-  background-color: $modal_background_color;
-  border-radius: 4px;
-  box-shadow: 1px 2px 4px #343434;
-  box-sizing: border-box;
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-  overflow: hidden;
-  padding: $modal_popup_padding;
-  position: relative;
-  width: 100%;
-  z-index: 0;
-}
-
-.mailpoet_overlay_transparent .mailpoet_popup_wrapper {
-  border: 1px solid #333;
-}
-
-.mailpoet_popup_title h2 {
-  font-size: 23px;
-  font-weight: 600;
-  line-height: 29px;
-  margin: 0 ($modal_close_button_size + 20) 0 0;
-}
-
-.mailpoet_popup_body {
-  flex-grow: 1;
-  margin-top: 20px;
-  position: relative;
-
-  .button + .button {
-    margin-left: 10px;
-  }
-}
-
-.mailpoet_popup_has_title .mailpoet_popup_body {
-  margin-top: 30px;
-}
-
-.mailpoet_modal_overlay.mailpoet_panel_overlay {
-  overflow: hidden;
-  top: 32px;
-}
-
-.mailpoet_panel {
+.mailpoet-modal-screen-overlay {
+  animation: edit-post__fade-in-animation .2s ease-out 0s;
+  animation-duration: 100ms;
+  animation-fill-mode: forwards;
+  background-color: rgba(#000, .7);
   bottom: 0;
-  display: none;
-  margin: 0;
-  padding: 0;
+  left: 0;
   position: fixed;
+  right: 0;
   top: 0;
-  transition: margin 350ms ease-out;
-  width: 100%;
-  z-index: 100002;
+  z-index: $modal-screen-overlay-z-index;
 }
 
-.mailpoet_panel_wrapper {
-  background-color: #f1f1f1;
-  border: 1px solid #e1e1e1;
-  border-top: 0 none;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  top: 0;
-  width: 100%;
-  z-index: 0;
-}
-
-.mailpoet_panel_title {
-  height: 0;
+.mailpoet-modal-frame {
+  background: white;
+  border: $border-width solid $light-gray-500;
+  bottom: 0;
+  box-shadow: $shadow-modal;
+  box-sizing: border-box;
+  left: 0;
   margin: 0;
-  padding: 0;
-  position: relative;
-}
-
-.mailpoet_panel_title h2 {
-  border-left: 1px solid #444;
-  border-right: 1px solid #444;
-  color: $modal_title_color;
-  font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
-  font-size: 1em;
-  font-weight: normal;
-  line-height: 32px;
-  margin: 0;
-  padding: 0 30px 0 10px;
-}
-
-.mailpoet_panel_body {
-  padding: 10px 10px 36px;
-}
-
-.mailpoet_modal_close {
-  cursor: pointer;
-  outline: 0 none;
-  overflow: hidden;
-  padding: 0;
+  overflow: auto;
+  // On small screens the content needs to be full width because of limited
+  // space.
   position: absolute;
-  z-index: 2;
+  right: 0;
+  top: 0;
 
-  svg {
-    opacity: .5;
-    stroke: #979797;
+  // Show a centered modal on bigger screens.
 
-    &:hover {
-      stroke: #636363;
-    }
+  @media screen and (min-width: 600px) {
+    // Animate the modal frame/contents appearing on the page.
+    animation: mailpoet-modal-appear-animation .1s ease-out;
+    animation-duration: 100ms;
+    animation-fill-mode: forwards;
+    bottom: auto;
+    left: 50%;
+    max-height: calc(100% - #{ $header-height } - #{ $header-height });
+    max-width: calc(100% - #{ $grid-size-large } - #{ $grid-size-large });
+    min-width: $modal-min-width;
+    right: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 
-.mailpoet_popup .mailpoet_modal_close {
-  height: $modal_close_button_size;
-  padding: 3px 0;
-  right: $modal_popup_padding;
-  top: $modal_popup_padding;
-  width: $modal_close_button_size;
-}
-
-.mailpoet_panel .mailpoet_modal_close {
-  height: 16px;
-  padding: 2px 0;
-  right: 20px;
-  top: 20px;
-  width: 16px;
-}
-
-.mailpoet_modal_close:focus {
-  outline: 0 none;
-}
-
-.mailpoet_align_left {
-  margin: 0;
-  text-align: left;
-}
-
-.mailpoet_align_center {
-  margin: 0;
-  text-align: center;
-}
-
-.mailpoet_align_right {
-  margin: 0;
-  text-align: right;
-}
-
-@media screen and (max-width: 782px) {
-  .mailpoet_modal_overlay {
-    padding: $modal_popup_margin_mobile;
+@keyframes mailpoet-modal-appear-animation {
+  from {
+    margin-top: $grid-size * 4;
   }
 
-  .mailpoet_popup {
-    min-width: auto !important;
+  to {
+    margin-top: 0;
+  }
+}
+
+// Fix header to the top so it is always there to provide context to the modal
+// if the content needs to be scrolled (for example, on the keyboard shortcuts
+// modal screen).
+.mailpoet-modal-header {
+  align-items: center;
+  background: white;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  height: $header-height;
+  justify-content: space-between;
+  margin: 0 -#{$grid-size-xlarge} $grid-size-xlarge;
+  padding: 0 $grid-size-xlarge;
+  // For z-index to take effect, the element must be positioned. A "sticky"
+  // element is positioned, but since this is not supported in IE11,
+  // "relative" is used as a fallback.
+  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: $modal-header-z-index;
+
+  // Rules inside this query are only run by Microsoft Edge.
+  // Edge has bugs around position: sticky;, so it needs a separate top rule.
+  // See also https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/17555420/.
+
+  @supports (-ms-ime-align:auto) {
+    position: fixed;
     width: 100%;
   }
 
-  .mailpoet_popup_wrapper {
-    padding: $modal_popup_padding_mobile;
+  .mailpoet-modal-header-heading {
+    font-size: 1rem;
+    font-weight: 600;
   }
 
-  .mailpoet_popup_title h2 {
-    margin-right: $modal_close_button_size + 10;
+  h1 {
+    line-height: 1;
+    margin: 0;
   }
 
-  .mailpoet_popup .mailpoet_modal_close {
-    right: $modal_popup_padding_mobile;
-    top: $modal_popup_padding_mobile;
+  .components-button {
+    left: $grid-size;
+    position: relative;
   }
 
-  .mailpoet_modal_overlay.mailpoet_panel_overlay {
-    top: 46px;
-  }
-
-  .mailpoet_panel_body {
-    padding-bottom: 52px;
+  .mailpoet-modal-close svg {
+    opacity: .5;
+    stroke: $dark-gray-900;
   }
 }
 
-.mailpoet_loading {
+.mailpoet-modal-header-heading-container {
+  align-items: center;
   display: flex;
   flex-direction: row;
-  height: 32px;
-  width: 150px;
+  flex-grow: 1;
+  justify-content: left;
 }
 
-.mailpoet_modal_loading {
-  animation-direction: linear;
-  animation-duration: 1.9500000000000002s;
-  animation-iteration-count: infinite;
-  animation-name: bounce_mailpoet_modal_loading;
-  background-color: #e01d4e;
-  border-radius: 21px;
-  height: 32px;
-  margin-left: 17px;
-  width: 32px;
+.mailpoet-modal-header-icon-container {
+  display: inline-block;
+
+  svg {
+    max-height: $icon-button-size;
+    max-width: $icon-button-size;
+    padding: $grid-size;
+  }
 }
 
-.mailpoet_modal_loading_1 {
-  animation-delay: .39s;
-}
+// Modal contents.
+.mailpoet-modal-content {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0 $grid-size-xlarge $grid-size-xlarge;
 
-.mailpoet_modal_loading_2 {
-  animation-delay: .9099999999999999s;
-}
+  // Rules inside this query are only run by Microsoft Edge.
+  // This is a companion top padding to the fixed rule in line 77.
 
-.mailpoet_modal_loading_3 {
-  animation-delay: 1.1700000000000002s;
-}
-
-@keyframes bounce_mailpoet_modal_loading {
-  0%,
-  50% { background-color: #064e6d; }
+  @supports (-ms-ime-align:auto) {
+    padding-top: $header-height;
+  }
 }
