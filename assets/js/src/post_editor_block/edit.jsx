@@ -17,11 +17,11 @@ function Edit({ attributes, setAttributes }) {
       <select
         onChange={(event) => {
           setAttributes({
-            selectedForm: parseInt(event.target.value, 10),
+            formId: parseInt(event.target.value, 10),
           });
         }}
         className="mailpoet-block-create-forms-list"
-        value={attributes.selectedForm}
+        value={attributes.formId}
       >
         <option value="" disabled selected>{window.locale.selectForm}</option>
         {allForms.map((form) => (
@@ -36,8 +36,8 @@ function Edit({ attributes, setAttributes }) {
   function renderForm() {
     return (
       <ServerSideRender
-        block="mailpoet/form-block-render"
-        attributes={{ form: attributes.selectedForm }}
+        block="mailpoet/subscription-form-block-render"
+        attributes={{ form: attributes.formId }}
       />
     );
   }
@@ -66,7 +66,7 @@ function Edit({ attributes, setAttributes }) {
       </InspectorControls>
       <div className="mailpoet-block-div">
         {
-          attributes.selectedForm === null && (
+          attributes.formId === null && (
             <Placeholder
               className="mailpoet-block-create-new"
               icon={<BlockIcon icon={Icon} showColors />}
@@ -77,7 +77,7 @@ function Edit({ attributes, setAttributes }) {
           )
         }
         {
-          attributes.selectedForm !== null && (
+          attributes.formId !== null && (
             renderForm()
           )
         }
@@ -88,7 +88,7 @@ function Edit({ attributes, setAttributes }) {
 
 Edit.propTypes = {
   attributes: PropTypes.shape({
-    selectedForm: PropTypes.number,
+    formId: PropTypes.number,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
 };

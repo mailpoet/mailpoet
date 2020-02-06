@@ -1,13 +1,15 @@
 <?php
 
-namespace MailPoet\Config;
+namespace MailPoet\PostEditorBlocks;
 
+use MailPoet\Config\Env;
+use MailPoet\Config\Renderer;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Widget;
 use MailPoet\WP\Functions as WPFunctions;
 
-class PostEditorBlock {
+class SubscriptionFormBlock {
   /** @var Renderer */
   private $renderer;
 
@@ -28,16 +30,7 @@ class PostEditorBlock {
   }
 
   public function init() {
-    // this has to be here until we drop support for WordPress < 5.0
-    if (!function_exists('register_block_type')) return;
-
-    if (is_admin()) {
-      $this->initAdmin();
-    } else {
-      $this->initFrontend();
-    }
-
-    $this->wp->registerBlockType('mailpoet/form-block-render', [
+    $this->wp->registerBlockType('mailpoet/subscription-form-block-render', [
       'attributes' => [
         'form' => [
           'type' => 'number',
@@ -48,25 +41,10 @@ class PostEditorBlock {
     ]);
   }
 
-  private function initAdmin() {
-    $this->wp->wpEnqueueScript(
-      'mailpoet-block-form-block-js',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('post_editor_block.js'),
-      ['wp-blocks', 'wp-components', 'wp-server-side-render', 'wp-block-editor'],
-      Env::$version,
-      true
-    );
-
-    $this->wp->wpEnqueueStyle(
-      'mailpoetblock-form-block-css',
-      Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('post-editor-block.css'),
-      ['wp-edit-blocks'],
-      Env::$version
-    );
-
-    $this->wp->registerBlockType('mailpoet/form-block', [
+  public function initAdmin() {
+    $this->wp->registerBlockType('mailpoet/subscription-form-block', [
       'style' => 'mailpoetblock-form-block-css',
-      'editor_script' => 'mailpoet/form-block',
+      'editor_script' => 'mailpoet/subscription-form-block',
     ]);
 
     $this->wp->addAction('admin_head', function() {
@@ -86,13 +64,13 @@ class PostEditorBlock {
     });
   }
 
-  private function initFrontend() {
-    $this->wp->registerBlockType('mailpoet/form-block', [
+  public function initFrontend() {
+    $this->wp->registerBlockType('mailpoet/subscription-form-block', [
       'render_callback' => [$this, 'renderForm'],
     ]);
   }
 
-  public function renderForm($attributes) {
+  public function renderForm(array $attributes = []): string {
     if (!$attributes || !isset($attributes['form'])) {
       return '';
     }
@@ -102,5 +80,4 @@ class PostEditorBlock {
       'form_type' => 'html',
     ]);
   }
-
 }
