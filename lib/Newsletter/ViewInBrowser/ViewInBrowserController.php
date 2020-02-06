@@ -7,7 +7,6 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url as NewsletterUrl;
-use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
 use MailPoet\Subscribers\LinkTokens;
 
 class ViewInBrowserController {
@@ -17,17 +16,17 @@ class ViewInBrowserController {
   /** @var LinkTokens */
   private $linkTokens;
 
-  /** @var NewsletterViewInBrowser */
-  private $newsletterViewInBrowser;
+  /** @var ViewInBrowserRenderer */
+  private $viewInBrowserRenderer;
 
   public function __construct(
     AccessControl $accessControl,
     LinkTokens $linkTokens,
-    NewsletterViewInBrowser $newsletterViewInBrowser
+    ViewInBrowserRenderer $viewInBrowserRenderer
   ) {
     $this->accessControl = $accessControl;
     $this->linkTokens = $linkTokens;
-    $this->newsletterViewInBrowser = $newsletterViewInBrowser;
+    $this->viewInBrowserRenderer = $viewInBrowserRenderer;
   }
 
   public function view(array $data) {
@@ -62,9 +61,8 @@ class ViewInBrowserController {
       throw new \InvalidArgumentException();
     }
 
-    return $this->newsletterViewInBrowser->view($isPreview, $newsletter, $subscriber, $queue);
+    return $this->viewInBrowserRenderer->render($isPreview, $newsletter, $subscriber, $queue);
   }
-
 
   private function getQueue(Newsletter $newsletter, array $data) {
     // queue is optional; try to find it if it's not defined and this is not a welcome email
