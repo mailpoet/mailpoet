@@ -24,6 +24,7 @@ class FormsRepository extends Repository {
       ->select('f')
       ->from(FormEntity::class, 'f')
       ->where('f.deletedAt IS NULL')
+      ->orderBy('f.updatedAt', 'desc')
       ->getQuery()
       ->getResult();
   }
