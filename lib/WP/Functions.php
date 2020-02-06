@@ -468,6 +468,15 @@ class Functions {
     return wp_enqueue_style($handle, $src, $deps, $ver, $media);
   }
 
+  /**
+   * @param string|\WP_Block_Type $name
+   * @param array $args {
+   * @return \WP_Block_Type|false
+   */
+  public function registerBlockType($name, $args = []) {
+    return register_block_type($name, $args);
+  }
+
   public function wpGetAttachmentImageSrc($attachmentId, $size = 'thumbnail', $icon = false) {
     return wp_get_attachment_image_src($attachmentId, $size, $icon);
   }

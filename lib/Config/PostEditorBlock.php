@@ -36,7 +36,7 @@ class PostEditorBlock {
       $this->initFrontend();
     }
 
-    register_block_type('mailpoet/form-block-render', [
+    $this->wp->registerBlockType('mailpoet/form-block-render', [
       'attributes' => [
         'form' => [
           'type' => 'number',
@@ -63,12 +63,12 @@ class PostEditorBlock {
       Env::$version
     );
 
-    register_block_type('mailpoet/form-block', [
+    $this->wp->registerBlockType('mailpoet/form-block', [
       'style' => 'mailpoetblock-form-block-css',
       'editor_script' => 'mailpoet/form-block',
     ]);
 
-    add_action('admin_head', function() {
+    $this->wp->addAction('admin_head', function() {
       $forms = $this->formsRepository->findAllNotDeleted();
       ?>
       <script type="text/javascript">
@@ -84,7 +84,7 @@ class PostEditorBlock {
   }
 
   private function initFrontend() {
-    register_block_type('mailpoet/form-block', [
+    $this->wp->registerBlockType('mailpoet/form-block', [
       'render_callback' => [$this, 'renderForm'],
     ]);
   }
