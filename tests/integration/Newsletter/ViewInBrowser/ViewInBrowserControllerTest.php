@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Test\Router\Endpoints;
+namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
@@ -9,6 +9,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\ViewInBrowser\ViewInBrowserRenderer as NewsletterViewInBrowser;
 use MailPoet\Router\Endpoints\ViewInBrowser;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
@@ -17,12 +18,13 @@ use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Idiorm\ORM;
 
-class ViewInBrowserTest extends \MailPoetTest {
+class ViewInBrowserControllerTest extends \MailPoetTest {
   public $viewInBrowser;
   public $browserPreviewData;
   public $queue;
   public $subscriber;
   public $newsletter;
+
   public function _before() {
     parent::_before();
     // create newsletter
@@ -47,48 +49,64 @@ class ViewInBrowserTest extends \MailPoetTest {
       'queue_id' => $queue->id,
       'subscriber_id' => $subscriber->id,
       'newsletter_id' => $newsletter->id,
+      'newsletter_hash' => $newsletter->hash,
       'subscriber_token' => $linkTokens->getToken($subscriber),
       'preview' => false,
     ];
     // instantiate class
-    $this->viewInBrowser = new ViewInBrowser(new AccessControl(), SettingsController::getInstance(), new LinkTokens(), new Emoji());
+    $this->viewInBrowser = new ViewInBrowser(new AccessControl(), new LinkTokens(), $this->diContainer->get(NewsletterViewInBrowser::class));
   }
 
   public function testItAbortsWhenBrowserPreviewDataIsMissing() {
-    $viewInBrowser = Stub::make($this->viewInBrowser, [
+    $viewInBrowser = $this->make($this->viewInBrowser, [
+      'linkTokens' => $this->make(LinkTokens::class, [
+        'verifyToken' => true,
+      ]),
       '_abort' => Expected::exactly(2),
-    ], $this);
+    ]);
+
     // newsletter ID is required
     $data = $this->browserPreviewData;
     unset($data['newsletter_id']);
-    $viewInBrowser->_processBrowserPreviewData($data);
+    $viewInBrowser->view($data);
+
+    // TODO: newsletter hash is required
+
     // subscriber token is required if subscriber is provided
     $data = $this->browserPreviewData;
     unset($data['subscriber_token']);
-    $viewInBrowser->_processBrowserPreviewData($data);
+    $viewInBrowser->view($data);
   }
 
   public function testItAbortsWhenBrowserPreviewDataIsInvalid() {
-    $viewInBrowser = Stub::make($this->viewInBrowser, [
+    $viewInBrowser = $this->make($this->viewInBrowser, [
       'linkTokens' => new LinkTokens,
       '_abort' => Expected::exactly(3),
-    ], $this);
+    ]);
+
     // newsletter ID is invalid
     $data = $this->browserPreviewData;
     $data['newsletter_id'] = 99;
-    $viewInBrowser->_processBrowserPreviewData($data);
+    $viewInBrowser->view($data);
+
     // subscriber token is invalid
     $data = $this->browserPreviewData;
     $data['subscriber_token'] = false;
-    $viewInBrowser->_processBrowserPreviewData($data);
+    $viewInBrowser->view($data);
+
     // subscriber token is invalid
     $data = $this->browserPreviewData;
     $data['subscriber_token'] = 'invalid';
-    $viewInBrowser->_processBrowserPreviewData($data);
+    $viewInBrowser->view($data);
     // subscriber has not received the newsletter
   }
 
-  public function testItFailsValidationWhenSubscriberTokenDoesNotMatch() {
+  public function testItAbortsWhenSubscriberTokenDoesNotMatch() {
+    $viewInBrowser = $this->make($this->viewInBrowser, [
+      'linkTokens' => new LinkTokens,
+      '_abort' => Expected::once(),
+    ]);
+
     $subscriber = $this->subscriber;
     $subscriber->email = 'random@email.com';
     $subscriber->save();
@@ -101,50 +119,52 @@ class ViewInBrowserTest extends \MailPoetTest {
         'subscriber_token' => 'somewrongtoken',
       ]
     );
-    expect($this->viewInBrowser->_validateBrowserPreviewData($data))->false();
+    $viewInBrowser->view($data);
   }
 
-  public function testItFailsValidationWhenNewsletterIdIsProvidedButSubscriberDoesNotExist() {
+  public function testItAbortsWhenNewsletterHashIsInvalid() {
+    $viewInBrowser = $this->make($this->viewInBrowser, [
+      '_abort' => Expected::once(),
+    ]);
     $data = $this->browserPreviewData;
-    $data->subscriber_id = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    expect($this->viewInBrowser->_validateBrowserPreviewData($data))->false();
+    $data['newsletter_hash'] = 'invalid-hash';
+    $viewInBrowser->view($data);
   }
 
-  public function testItValidatesThatNewsletterExistsByCheckingHashFirst() {
-    $newsletter1 = $this->newsletter;
-    $newsletter2 = Newsletter::create();
-    $newsletter2->type = 'type';
-    $newsletter2 = $newsletter2->save();
+  public function testItAbortsWhenSubscriberIsNotOnProcessedList() {
+    $viewInBrowser = $this->make($this->viewInBrowser, [
+      'linkTokens' => $this->make(LinkTokens::class, [
+        'verifyToken' => true,
+      ]),
+      'newsletterViewInBrowser' => $this->make(NewsletterViewInBrowser::class, [
+        'view' => Expected::once(),
+      ]),
+      '_abort' => Expected::once(),
+      '_displayNewsletter' => Expected::once(),
+    ]);
     $data = $this->browserPreviewData;
-    $data->newsletter_hash = $newsletter2->hash; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
-    expect($result->newsletter->id)->equals($newsletter2->id);
-    $data->newsletter_hash = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
-    expect($result->newsletter->id)->equals($newsletter1->id);
-  }
+    $viewInBrowser->view($data);
 
-  public function testItFailsValidationWhenPreviewIsEnabledButNewsletterHashNotProvided() {
-    $data = $this->browserPreviewData;
-    $data->newsletter_hash = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $data->preview = true;
-    expect($this->viewInBrowser->_validateBrowserPreviewData($data))->false();
-  }
-
-  public function testItFailsValidationWhenSubscriberIsNotOnProcessedList() {
-    $data = $this->browserPreviewData;
-    $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
-    expect($result)->notEmpty();
     $queue = $this->queue;
     $queue->setSubscribers([]);
     $queue->updateProcessedSubscribers([]);
     $queue->save();
-    $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
-    expect($result)->false();
+    $viewInBrowser->view($data);
   }
 
   public function testItDoesNotRequireWpAdministratorToBeOnProcessedListWhenPreviewIsEnabled() {
-    $viewInBrowser = $this->viewInBrowser;
+    $viewInBrowser = $this->make($this->viewInBrowser, [
+      'accessControl' => new AccessControl(),
+      'linkTokens' => $this->make(LinkTokens::class, [
+        'verifyToken' => true,
+      ]),
+      'newsletterViewInBrowser' => $this->make(NewsletterViewInBrowser::class, [
+        'view' => Expected::exactly(3),
+      ]),
+      '_abort' => Expected::once(),
+      '_displayNewsletter' => Expected::exactly(3),
+    ]);
+
     $data = array_merge(
       $this->browserPreviewData,
       [
@@ -153,21 +173,21 @@ class ViewInBrowserTest extends \MailPoetTest {
         'newsletter' => $this->newsletter,
       ]
     );
-    $data->preview = true;
+    $data['preview'] = true;
 
-    // when WP user is not logged, false should be returned
-    expect($viewInBrowser->_validateBrowserPreviewData($data))->false();
+    // when WP user is not logged, abort should be called
+    $viewInBrowser->view($data);
 
     $wpUser = wp_set_current_user(0);
     // when WP user does not have 'manage options' permission, false should be returned
     $wpUser->remove_role('administrator');
-    $viewInBrowser = new ViewInBrowser(new AccessControl(), SettingsController::getInstance(), new LinkTokens(), new Emoji());
-    expect($viewInBrowser->_validateBrowserPreviewData($data))->false();
+    //$viewInBrowser = new ViewInBrowser(new AccessControl(), SettingsController::getInstance(), new LinkTokens(), new Emoji());
+    $viewInBrowser->view($data);
 
     // when WP has 'manage options' permission, data should be returned
     $wpUser->add_role('administrator');
-    $viewInBrowser = new ViewInBrowser(new AccessControl(), SettingsController::getInstance(), new LinkTokens(), new Emoji());
-    expect($viewInBrowser->_validateBrowserPreviewData($data))->equals($data);
+    //$viewInBrowser = new ViewInBrowser(new AccessControl(), SettingsController::getInstance(), new LinkTokens(), new Emoji());
+    $viewInBrowser->view($data);
   }
 
   public function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
