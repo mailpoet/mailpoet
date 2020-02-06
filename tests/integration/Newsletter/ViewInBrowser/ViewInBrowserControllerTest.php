@@ -2,245 +2,237 @@
 
 namespace MailPoet\Newsletter\ViewInBrowser;
 
-use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\AccessControl;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
-use MailPoet\Newsletter\ViewInBrowser\ViewInBrowserRenderer as NewsletterViewInBrowser;
-use MailPoet\Router\Endpoints\ViewInBrowser;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\WP\Emoji;
-use MailPoet\WP\Functions;
 use MailPoetVendor\Idiorm\ORM;
 
 class ViewInBrowserControllerTest extends \MailPoetTest {
-  public $viewInBrowser;
-  public $browserPreviewData;
-  public $queue;
-  public $subscriber;
-  public $newsletter;
+  /** @var ViewInBrowserController */
+  private $viewInBrowserController;
+
+  /** @var Newsletter */
+  private $newsletter;
+
+  /** @var Subscriber */
+  private $subscriber;
+
+  /** @var SendingTask */
+  private $sendingTask;
+
+  /** @var mixed[] */
+  private $browserPreviewData;
 
   public function _before() {
-    parent::_before();
     // create newsletter
     $newsletter = Newsletter::create();
     $newsletter->type = 'type';
     $this->newsletter = $newsletter->save();
+
     // create subscriber
     $subscriber = Subscriber::create();
     $subscriber->email = 'test@example.com';
     $subscriber->firstName = 'First';
     $subscriber->lastName = 'Last';
     $this->subscriber = $subscriber->save();
-    // create queue
-    $queue = SendingTask::create();
-    $queue->newsletterId = $newsletter->id;
-    $queue->setSubscribers([$subscriber->id]);
-    $queue->updateProcessedSubscribers([$subscriber->id]);
-    $this->queue = $queue->save();
+
+    // create task & queue
+    $sendingTask = SendingTask::create();
+    $sendingTask->newsletterId = $newsletter->id;
+    $sendingTask->setSubscribers([$subscriber->id]);
+    $sendingTask->updateProcessedSubscribers([$subscriber->id]);
+    $this->sendingTask = $sendingTask->save();
     $linkTokens = new LinkTokens;
+
     // build browser preview data
     $this->browserPreviewData = [
-      'queue_id' => $queue->id,
+      'queue_id' => $sendingTask->queue()->id,
       'subscriber_id' => $subscriber->id,
       'newsletter_id' => $newsletter->id,
       'newsletter_hash' => $newsletter->hash,
       'subscriber_token' => $linkTokens->getToken($subscriber),
       'preview' => false,
     ];
+
     // instantiate class
-    $this->viewInBrowser = new ViewInBrowser(new AccessControl(), new LinkTokens(), $this->diContainer->get(NewsletterViewInBrowser::class));
+    $this->viewInBrowserController = $this->diContainer->get(ViewInBrowserController::class);
   }
 
-  public function testItAbortsWhenBrowserPreviewDataIsMissing() {
-    $viewInBrowser = $this->make($this->viewInBrowser, [
-      'linkTokens' => $this->make(LinkTokens::class, [
-        'verifyToken' => true,
-      ]),
-      '_abort' => Expected::exactly(2),
-    ]);
-
+  public function testItThrowsWhenDataIsMissing() {
     // newsletter ID is required
     $data = $this->browserPreviewData;
     unset($data['newsletter_id']);
-    $viewInBrowser->view($data);
+    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Missing 'newsletter_id'");
 
-    // TODO: newsletter hash is required
+    // newsletter hash is required
+    $data = $this->browserPreviewData;
+    unset($data['newsletter_hash']);
+    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Missing 'newsletter_hash'");
 
     // subscriber token is required if subscriber is provided
     $data = $this->browserPreviewData;
     unset($data['subscriber_token']);
-    $viewInBrowser->view($data);
+    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Missing 'subscriber_token'");
   }
 
-  public function testItAbortsWhenBrowserPreviewDataIsInvalid() {
-    $viewInBrowser = $this->make($this->viewInBrowser, [
-      'linkTokens' => new LinkTokens,
-      '_abort' => Expected::exactly(3),
-    ]);
-
+  public function testItThrowsWhenDataIsInvalid() {
     // newsletter ID is invalid
     $data = $this->browserPreviewData;
     $data['newsletter_id'] = 99;
-    $viewInBrowser->view($data);
+    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Invalid 'newsletter_id'");
 
-    // subscriber token is invalid
-    $data = $this->browserPreviewData;
-    $data['subscriber_token'] = false;
-    $viewInBrowser->view($data);
-
-    // subscriber token is invalid
-    $data = $this->browserPreviewData;
-    $data['subscriber_token'] = 'invalid';
-    $viewInBrowser->view($data);
-    // subscriber has not received the newsletter
-  }
-
-  public function testItAbortsWhenSubscriberTokenDoesNotMatch() {
-    $viewInBrowser = $this->make($this->viewInBrowser, [
-      'linkTokens' => new LinkTokens,
-      '_abort' => Expected::once(),
-    ]);
-
-    $subscriber = $this->subscriber;
-    $subscriber->email = 'random@email.com';
-    $subscriber->save();
-    $data = array_merge(
-      $this->browserPreviewData,
-      [
-        'queue' => $this->queue,
-        'subscriber' => $subscriber,
-        'newsletter' => $this->newsletter,
-        'subscriber_token' => 'somewrongtoken',
-      ]
-    );
-    $viewInBrowser->view($data);
-  }
-
-  public function testItAbortsWhenNewsletterHashIsInvalid() {
-    $viewInBrowser = $this->make($this->viewInBrowser, [
-      '_abort' => Expected::once(),
-    ]);
+    // newsletter hash is invalid
     $data = $this->browserPreviewData;
     $data['newsletter_hash'] = 'invalid-hash';
-    $viewInBrowser->view($data);
+    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Invalid 'newsletter_hash'");
+
+    // subscriber token is invalid
+    $data = $this->browserPreviewData;
+    $data['subscriber_token'] = 'invalid-token';
+    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Invalid 'subscriber_token'");
   }
 
-  public function testItAbortsWhenSubscriberIsNotOnProcessedList() {
-    $viewInBrowser = $this->make($this->viewInBrowser, [
-      'linkTokens' => $this->make(LinkTokens::class, [
-        'verifyToken' => true,
-      ]),
-      'newsletterViewInBrowser' => $this->make(NewsletterViewInBrowser::class, [
-        'view' => Expected::once(),
-      ]),
-      '_abort' => Expected::once(),
-      '_displayNewsletter' => Expected::once(),
-    ]);
+  public function testItThrowsWhenSubscriberIsNotOnProcessedList() {
     $data = $this->browserPreviewData;
-    $viewInBrowser->view($data);
-
-    $queue = $this->queue;
-    $queue->setSubscribers([]);
-    $queue->updateProcessedSubscribers([]);
-    $queue->save();
-    $viewInBrowser->view($data);
+    $sendingTask = $this->sendingTask;
+    $sendingTask->setSubscribers([]);
+    $sendingTask->updateProcessedSubscribers([]);
+    $sendingTask->save();
+    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, 'Subscriber did not receive the newsletter yet');
   }
 
   public function testItDoesNotRequireWpAdministratorToBeOnProcessedListWhenPreviewIsEnabled() {
-    $viewInBrowser = $this->make($this->viewInBrowser, [
-      'accessControl' => new AccessControl(),
-      'linkTokens' => $this->make(LinkTokens::class, [
-        'verifyToken' => true,
-      ]),
-      'newsletterViewInBrowser' => $this->make(NewsletterViewInBrowser::class, [
-        'view' => Expected::exactly(3),
-      ]),
-      '_abort' => Expected::once(),
-      '_displayNewsletter' => Expected::exactly(3),
-    ]);
-
-    $data = array_merge(
-      $this->browserPreviewData,
-      [
-        'queue' => $this->queue,
-        'subscriber' => $this->subscriber,
-        'newsletter' => $this->newsletter,
-      ]
-    );
+    $data = $this->browserPreviewData;
     $data['preview'] = true;
 
-    // when WP user is not logged, abort should be called
-    $viewInBrowser->view($data);
+    $sendingTask = $this->sendingTask;
+    $sendingTask->setSubscribers([]);
+    $sendingTask->updateProcessedSubscribers([]);
+    $sendingTask->save();
 
+    // when WP user is not logged, it should throw
+    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Subscriber did not receive the newsletter yet");
+
+    // when WP user does not have 'manage options' permission, it should throw
     $wpUser = wp_set_current_user(0);
-    // when WP user does not have 'manage options' permission, false should be returned
     $wpUser->remove_role('administrator');
-    //$viewInBrowser = new ViewInBrowser(new AccessControl(), SettingsController::getInstance(), new LinkTokens(), new Emoji());
-    $viewInBrowser->view($data);
+    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Subscriber did not receive the newsletter yet");
 
-    // when WP has 'manage options' permission, data should be returned
+    // when WP has 'manage options' permission, it should not throw
     $wpUser->add_role('administrator');
-    //$viewInBrowser = new ViewInBrowser(new AccessControl(), SettingsController::getInstance(), new LinkTokens(), new Emoji());
-    $viewInBrowser->view($data);
+    $this->viewInBrowserController->view($data);
   }
 
   public function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
-    $viewInBrowser = $this->viewInBrowser;
-    $data = array_merge(
-      $this->browserPreviewData,
-      [
-        'queue' => $this->queue,
-        'subscriber' => null,
-        'newsletter' => $this->newsletter,
-      ]
+    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
+      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
+        assert($subscriber !== null); // PHPStan
+        expect($subscriber)->notNull();
+        expect($subscriber->id)->equals(1);
+      }),
+    ]);
+
+    $viewInBrowserController = new ViewInBrowserController(
+      $this->diContainer->get(AccessControl::class),
+      $this->diContainer->get(LinkTokens::class),
+      $viewInBrowserRenderer
     );
-    $data->preview = true;
+
+    $data = $this->browserPreviewData;
+    unset($data['subscriber_id']);
+    $data['preview'] = true;
+
+    $this->subscriber->wpUserId = 1;
+    $this->subscriber->save();
     wp_set_current_user(1);
-    $viewInBrowser = new ViewInBrowser(new AccessControl(), SettingsController::getInstance(), new LinkTokens(), new Emoji());
-    $result = $viewInBrowser->_validateBrowserPreviewData($data);
-    expect($result->subscriber->id)->equals(1);
+    $viewInBrowserController->view($data);
   }
 
-  public function testItGetsOrFindsQueueWhenItIsNotAWelcomeEmail() {
+  public function testItGetsQueueByQueueId() {
+    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
+      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
+        assert($queue !== null); // PHPStan
+        expect($queue)->notNull();
+        expect($queue->id)->same($this->sendingTask->id);
+      }),
+    ]);
+
+    $viewInBrowserController = new ViewInBrowserController(
+      $this->diContainer->get(AccessControl::class),
+      $this->diContainer->get(LinkTokens::class),
+      $viewInBrowserRenderer
+    );
+
     $data = $this->browserPreviewData;
-    // queue will be found when not defined
-    $data->queueId = null;
-    $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
-    expect($result->queue->id)->equals($this->queue->id);
-    // queue will be found when defined
-    $data->queueId = $this->queue->id;
-    $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
-    expect($result->queue->id)->equals($this->queue->id);
-    // queue will not be found when it is a welcome email
+    $data['queueId'] = $this->sendingTask->queue()->id;
+    $viewInBrowserController->view($data);
+  }
+
+  public function testItGetsQueueByNewsletter() {
+    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
+      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
+        assert($queue !== null); // PHPStan
+        expect($queue)->notNull();
+        expect($queue->id)->same($this->sendingTask->queue()->id);
+      }),
+    ]);
+
+    $viewInBrowserController = new ViewInBrowserController(
+      $this->diContainer->get(AccessControl::class),
+      $this->diContainer->get(LinkTokens::class),
+      $viewInBrowserRenderer
+    );
+
+    $data = $this->browserPreviewData;
+    $data['queueId'] = null;
+    $viewInBrowserController->view($data);
+  }
+
+  public function testItResetsQueueForWelcomeEmails() {
+    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
+      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
+        expect($queue)->null();
+      }),
+    ]);
+
+    $viewInBrowserController = new ViewInBrowserController(
+      $this->diContainer->get(AccessControl::class),
+      $this->diContainer->get(LinkTokens::class),
+      $viewInBrowserRenderer
+    );
+
+    // queue will be set to null for welcome email
     $newsletter = $this->newsletter;
     $newsletter->type = Newsletter::TYPE_WELCOME;
     $newsletter->save();
-    $data->queueId = null;
-    $result = $this->viewInBrowser->_validateBrowserPreviewData($data);
-    expect($result->queue)->false();
+    $viewInBrowserController->view($this->browserPreviewData);
   }
 
-  public function testItProcessesBrowserPreviewData() {
-    $processedData = $this->viewInBrowser->_processBrowserPreviewData($this->browserPreviewData);
-    expect($processedData->queue->id)->equals($this->queue->id);
-    expect($processedData->subscriber->id)->equals($this->subscriber->id);
-    expect($processedData->newsletter->id)->equals($this->newsletter->id);
-  }
+  public function testItResetsQueueForAutomaticEmailsInPreview() {
+    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
+      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
+        expect($queue)->null();
+      }),
+    ]);
 
-  public function testItReturnsViewActionResult() {
-    $viewInBrowser = Stub::make($this->viewInBrowser, [
-      'linkTokens' => new LinkTokens,
-      '_displayNewsletter' => Expected::exactly(1),
-      'settings' => SettingsController::getInstance(),
-      'emoji' => new Emoji(),
-    ], $this);
-    $viewInBrowser->view($this->browserPreviewData);
+    $viewInBrowserController = new ViewInBrowserController(
+      $this->diContainer->get(AccessControl::class),
+      $this->diContainer->get(LinkTokens::class),
+      $viewInBrowserRenderer
+    );
+
+    // queue will be set to null for automatic email
+    $data = $this->browserPreviewData;
+    $data['preview'] = true;
+    $newsletter = $this->newsletter;
+    $newsletter->type = Newsletter::TYPE_AUTOMATIC;
+    $newsletter->save();
+    $viewInBrowserController->view($data);
   }
 
   public function _after() {
@@ -251,5 +243,14 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     // reset WP user role
     $wpUser = wp_get_current_user();
     $wpUser->add_role('administrator');
+  }
+
+  private function expectViewThrowsExceptionWithMessage(ViewInBrowserController $viewInBrowserController, array $data, string $message) {
+    try {
+      $viewInBrowserController->view($data);
+      $this->fail("Expected 'InvalidArgumentException' with message '$message' was not thrown");
+    } catch (\InvalidArgumentException $e) {
+      expect($e->getMessage())->same($message);
+    }
   }
 }
