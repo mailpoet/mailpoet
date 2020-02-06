@@ -101,7 +101,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Config\MP2Migrator::class);
     $container->autowire(\MailPoet\Config\RendererFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\ServicesChecker::class);
-    $container->autowire(\MailPoet\Config\PostEditorBlock::class);
     $container->autowire(\MailPoet\Config\Shortcodes::class)
       ->setShared(false); // Get a new instance each time $container->get() is called, needed for tests
     $container->register(\MailPoet\Config\Renderer::class)
@@ -125,6 +124,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Doctrine\Validator\ValidatorFactory::class);
     $container->autowire(\MailPoetVendor\Symfony\Component\Validator\Validator\ValidatorInterface::class)
       ->setFactory([new Reference(\MailPoet\Doctrine\Validator\ValidatorFactory::class), 'createValidator']);
+    $container->autowire(\MailPoet\PostEditorBlocks\PostEditorBlock::class);
+    $container->autowire(\MailPoet\PostEditorBlocks\SubscriptionFormBlock::class);
     // Dynamic segments
     $container->autowire(\MailPoet\DynamicSegments\DynamicSegmentHooks::class);
     // Cron

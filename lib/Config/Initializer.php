@@ -5,6 +5,7 @@ namespace MailPoet\Config;
 use MailPoet\API\JSON\API;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\PostEditorBlocks\PostEditorBlock;
 use MailPoet\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\ConflictResolver;
@@ -68,7 +69,7 @@ class Initializer {
   /** @var WooCommerceHelper */
   private $wcHelper;
 
-  /** @var PostEditorBlock */
+  /** @var \MailPoet\PostEditorBlocks\PostEditorBlock */
   private $postEditorBlock;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
