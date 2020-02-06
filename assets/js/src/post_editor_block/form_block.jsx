@@ -10,7 +10,7 @@ registerBlockType('mailpoet/form-block', {
   category: 'widgets',
   example: {},
   attributes: {
-    selectedForm: {
+    formId: {
       type: 'number',
       default: null,
     },
