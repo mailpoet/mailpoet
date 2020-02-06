@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Test\Newsletter;
+namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
 use MailPoet\Models\Newsletter;
@@ -9,14 +9,14 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
-use MailPoet\Newsletter\ViewInBrowser;
+use MailPoet\Newsletter\ViewInBrowserRenderer;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Emoji;
 use MailPoetVendor\Idiorm\ORM;
 
-class ViewInBrowserTest extends \MailPoetTest {
+class ViewInBrowserRendererTest extends \MailPoetTest {
   public $queueRenderedNewsletterWithTracking;
   public $queueRenderedNewsletterWithoutTracking;
   public $newsletterLink2;
@@ -85,7 +85,7 @@ class ViewInBrowserTest extends \MailPoetTest {
       'text' => 'test',
     ];
     $this->emoji = new Emoji();
-    $this->viewInBrowser = new ViewInBrowser($this->emoji, false);
+    $this->viewInBrowser = new ViewInBrowserRenderer($this->emoji, false);
     // create newsletter
     $newsletter = Newsletter::create();
     $newsletter->hydrate($this->newsletter);
@@ -134,7 +134,7 @@ class ViewInBrowserTest extends \MailPoetTest {
         return $params;
       })]
     );
-    $viewInBrowser = new ViewInBrowser($emoji, false);
+    $viewInBrowser = new ViewInBrowserRenderer($emoji, false);
     $renderedBody = $viewInBrowser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
@@ -160,7 +160,7 @@ class ViewInBrowserTest extends \MailPoetTest {
   public function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
     $settings = SettingsController::getInstance();
     $settings->set('tracking.enabled', true);
-    $viewInBrowser = new ViewInBrowser($this->emoji, true);
+    $viewInBrowser = new ViewInBrowserRenderer($this->emoji, true);
     $queue = $this->queue;
     $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithTracking;
     $renderedBody = $viewInBrowser->renderNewsletter(
