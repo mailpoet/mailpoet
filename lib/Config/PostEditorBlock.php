@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Widget;
 use MailPoet\WP\Functions as WPFunctions;
@@ -72,7 +73,9 @@ class PostEditorBlock {
       $forms = $this->formsRepository->findAllNotDeleted();
       ?>
       <script type="text/javascript">
-        window.mailpoet_forms = <?php echo json_encode($forms) ?>;
+        window.mailpoet_forms = <?php echo json_encode(array_map(function(FormEntity $form) {
+          return $form->toArray();
+        }, $forms)) ?>;
         window.locale = {
           selectForm: '<?php echo __('Select a MailPoet form', 'mailpoet') ?>',
           createForm: '<?php echo __('Create a new form', 'mailpoet') ?>',

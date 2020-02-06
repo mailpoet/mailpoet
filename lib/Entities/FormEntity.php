@@ -12,7 +12,7 @@ use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity()
  * @ORM\Table(name="forms")
  */
-class FormEntity implements \JsonSerializable {
+class FormEntity {
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
   use UpdatedAtTrait;
@@ -102,7 +102,7 @@ class FormEntity implements \JsonSerializable {
     $this->styles = $styles;
   }
 
-  public function jsonSerialize() {
+  public function toArray() {
     return [
       'id' => $this->getId(),
       'name' => $this->getName(),
