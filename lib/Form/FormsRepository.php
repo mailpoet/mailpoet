@@ -18,7 +18,10 @@ class FormsRepository extends Repository {
     return FormEntity::class;
   }
 
-  public function findAllNotDeleted() {
+  /**
+   * @return FormEntity[]
+   */
+  public function findAllNotDeleted(): array {
     return $this->entityManager
       ->createQueryBuilder()
       ->select('f')
