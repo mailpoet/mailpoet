@@ -37,7 +37,7 @@ function Edit({ attributes, setAttributes }) {
     return (
       <ServerSideRender
         block="mailpoet/subscription-form-block-render"
-        attributes={{ form: attributes.formId }}
+        attributes={{ formId: attributes.formId }}
       />
     );
   }

@@ -10,9 +10,6 @@ use MailPoet\Form\Widget;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriptionFormBlock {
-  /** @var Renderer */
-  private $renderer;
-
   /** @var WPFunctions */
   private $wp;
 
@@ -20,11 +17,9 @@ class SubscriptionFormBlock {
   private $formsRepository;
 
   public function __construct(
-    Renderer $renderer,
     WPFunctions $wp,
     FormsRepository $formsRepository
   ) {
-    $this->renderer = $renderer;
     $this->wp = $wp;
     $this->formsRepository = $formsRepository;
   }
@@ -32,7 +27,7 @@ class SubscriptionFormBlock {
   public function init() {
     $this->wp->registerBlockType('mailpoet/subscription-form-block-render', [
       'attributes' => [
-        'form' => [
+        'formId' => [
           'type' => 'number',
           'default' => null,
         ],
@@ -49,11 +44,17 @@ class SubscriptionFormBlock {
 
     $this->wp->addAction('admin_head', function() {
       $forms = $this->formsRepository->findAllNotDeleted();
+      $formsEncoded = json_encode(
+        array_map(
+          function(FormEntity $form) {
+            return $form->toArray();
+          },
+          $forms
+        )
+      );
       ?>
       <script type="text/javascript">
-        window.mailpoet_forms = <?php echo json_encode(array_map(function(FormEntity $form) {
-          return $form->toArray();
-        }, $forms)) ?>;
+        window.mailpoet_forms = <?php echo $formsEncoded ?>;
         window.locale = {
           selectForm: '<?php echo __('Select a MailPoet form', 'mailpoet') ?>',
           createForm: '<?php echo __('Create a new form', 'mailpoet') ?>',
