@@ -9,7 +9,6 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
-use MailPoet\Newsletter\ViewInBrowserRenderer;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -17,65 +16,75 @@ use MailPoet\WP\Emoji;
 use MailPoetVendor\Idiorm\ORM;
 
 class ViewInBrowserRendererTest extends \MailPoetTest {
-  public $queueRenderedNewsletterWithTracking;
-  public $queueRenderedNewsletterWithoutTracking;
-  public $newsletterLink2;
-  public $newsletterLink1;
-  public $queue;
-  public $subscriber;
-  public $viewInBrowser;
-  public $emoji;
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var ViewInBrowserRenderer */
+  private $viewInBrowserRenderer;
+
+  /** @var Newsletter */
   public $newsletter;
+
+  /** @var SendingTask */
+  private $sendingTask;
+
+  /** @var Subscriber */
+  private $subscriber;
+
+  /** @var mixed[] */
+  private $queueRenderedNewsletterWithTracking;
+
+  /** @var mixed[] */
+  private $queueRenderedNewsletterWithoutTracking;
+
   public function _before() {
-    parent::_before();
-    $this->newsletter =
-      [
-        'body' => json_decode(
-          '{
-          "content": {
-            "type": "container",
-            "orientation": "vertical",
-            "styles": {
-              "block": {
-                "backgroundColor": "transparent"
-              }
-            },
-            "blocks": [
-              {
-                "type": "container",
-                "orientation": "horizontal",
-                "styles": {
-                  "block": {
-                    "backgroundColor": "transparent"
-                  }
-                },
-                "blocks": [
-                  {
-                    "type": "container",
-                    "orientation": "vertical",
-                    "styles": {
-                      "block": {
-                        "backgroundColor": "transparent"
-                      }
-                    },
-                    "blocks": [
-                      {
-                        "type": "text",
-                        "text": "<p>Rendered newsletter. Hello, [subscriber:firstname | default:reader]. <a href=\"[link:newsletter_view_in_browser_url]\">Unsubscribe</a> or visit <a href=\"http://google.com\">Google</a></p>"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        }', true),
-        'id' => 1,
-        'subject' => 'Some subject',
-        'preheader' => 'Some preheader',
-        'type' => 'standard',
-        'status' => 'active',
-      ];
+    $newsletterData = [
+      'body' => json_decode(
+        '{
+        "content": {
+          "type": "container",
+          "orientation": "vertical",
+          "styles": {
+            "block": {
+              "backgroundColor": "transparent"
+            }
+          },
+          "blocks": [
+            {
+              "type": "container",
+              "orientation": "horizontal",
+              "styles": {
+                "block": {
+                  "backgroundColor": "transparent"
+                }
+              },
+              "blocks": [
+                {
+                  "type": "container",
+                  "orientation": "vertical",
+                  "styles": {
+                    "block": {
+                      "backgroundColor": "transparent"
+                    }
+                  },
+                  "blocks": [
+                    {
+                      "type": "text",
+                      "text": "<p>Rendered newsletter. Hello, [subscriber:firstname | default:reader]. <a href=\"[link:newsletter_view_in_browser_url]\">Unsubscribe</a> or visit <a href=\"http://google.com\">Google</a></p>"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }', true),
+      'id' => 1,
+      'subject' => 'Some subject',
+      'preheader' => 'Some preheader',
+      'type' => 'standard',
+      'status' => 'active',
+    ];
     $this->queueRenderedNewsletterWithoutTracking = [
       'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="[link:newsletter_view_in_browser_url]">Unsubscribe</a> or visit <a href="http://google.com">Google</a></p>',
       'text' => 'test',
@@ -84,102 +93,105 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="' . Links::DATA_TAG_CLICK . '-90e56">Unsubscribe</a> or visit <a href="' . Links::DATA_TAG_CLICK . '-i1893">Google</a><img alt="" class="" src="' . Links::DATA_TAG_OPEN . '"></p>',
       'text' => 'test',
     ];
-    $this->emoji = new Emoji();
-    $this->viewInBrowser = new ViewInBrowserRenderer($this->emoji, false);
+
     // create newsletter
     $newsletter = Newsletter::create();
-    $newsletter->hydrate($this->newsletter);
+    $newsletter->hydrate($newsletterData);
     $this->newsletter = $newsletter->save();
+
     // create subscriber
     $subscriber = Subscriber::create();
     $subscriber->email = 'test@example.com';
     $subscriber->firstName = 'First';
     $subscriber->lastName = 'Last';
     $this->subscriber = $subscriber->save();
+
     // create queue
     $queue = SendingTask::create();
     $queue->newsletterId = $newsletter->id;
     $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithoutTracking;
     $queue->setSubscribers([$subscriber->id]);
-    $this->queue = $queue->save();
+    $this->sendingTask = $queue->save();
+
     // create newsletter link associations
     $newsletterLink1 = NewsletterLink::create();
     $newsletterLink1->hash = '90e56';
     $newsletterLink1->url = '[link:newsletter_view_in_browser_url]';
     $newsletterLink1->newsletterId = $this->newsletter->id;
-    $newsletterLink1->queueId = $this->queue->id;
-    $this->newsletterLink1 = $newsletterLink1->save();
+    $newsletterLink1->queueId = $this->sendingTask->id;
+    $newsletterLink1->save();
+
     $newsletterLink2 = NewsletterLink::create();
     $newsletterLink2->hash = 'i1893';
     $newsletterLink2->url = 'http://google.com';
     $newsletterLink2->newsletterId = $this->newsletter->id;
-    $newsletterLink2->queueId = $this->queue->id;
-    $this->newsletterLink2 = $newsletterLink2->save();
+    $newsletterLink2->queueId = $this->sendingTask->id;
+    $newsletterLink2->save();
+
+    $this->settings = $this->diContainer->get(SettingsController::class);
+    $this->viewInBrowserRenderer = $this->diContainer->get(ViewInBrowserRenderer::class);
   }
 
   public function testItRendersNewsletter() {
-    $renderedBody = $this->viewInBrowser->renderNewsletter(
+    $renderedBody = $this->viewInBrowserRenderer->render(
+      $preview = false,
       $this->newsletter,
       $this->subscriber,
-      $queue = false,
-      $preview = false
+      $queue = null
     );
     expect($renderedBody)->regExp('/Rendered newsletter/');
   }
 
   public function testItReusesRenderedNewsletterBodyWhenQueueExists() {
-    $emoji = $this->make(
-      Emoji::class,
-      ['decodeEmojisInBody' => Expected::once(function ($params) {
+    $emoji = $this->make(Emoji::class, [
+      'decodeEmojisInBody' => Expected::once(function ($params) {
         return $params;
-      })]
-    );
-    $viewInBrowser = new ViewInBrowserRenderer($emoji, false);
-    $renderedBody = $viewInBrowser->renderNewsletter(
+      }),
+    ]);
+    $this->settings->set('tracking.enabled', false);
+    $viewInBrowser = new ViewInBrowserRenderer($emoji, $this->diContainer->get(SettingsController::class));
+    $renderedBody = $viewInBrowser->render(
+      $preview = false,
       $this->newsletter,
       $this->subscriber,
-      $this->queue,
-      $preview = false
+      $this->sendingTask->queue()
     );
     expect($renderedBody)->regExp('/Newsletter from queue/');
   }
 
   public function testItConvertsShortcodes() {
-    $settings = SettingsController::getInstance();
-    $settings->set('tracking.enabled', false);
-    $renderedBody = $this->viewInBrowser->renderNewsletter(
+    $this->settings->set('tracking.enabled', false);
+    $renderedBody = $this->viewInBrowserRenderer->render(
+      $preview = false,
       $this->newsletter,
       $this->subscriber,
-      $this->queue,
-      $preview = false
+      $this->sendingTask->queue()
     );
     expect($renderedBody)->contains('Hello, First');
     expect($renderedBody)->contains(Router::NAME . '&endpoint=view_in_browser');
   }
 
   public function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
-    $settings = SettingsController::getInstance();
-    $settings->set('tracking.enabled', true);
-    $viewInBrowser = new ViewInBrowserRenderer($this->emoji, true);
-    $queue = $this->queue;
+    $this->settings->set('tracking.enabled', true);
+    $queue = $this->sendingTask->queue();
     $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithTracking;
-    $renderedBody = $viewInBrowser->renderNewsletter(
+    $renderedBody = $this->viewInBrowserRenderer->render(
+      $preview = false,
       $this->newsletter,
       $this->subscriber,
-      $queue,
-      $preview = false
+      $queue
     );
     expect($renderedBody)->contains(Router::NAME . '&endpoint=track');
   }
 
   public function testItConvertsHashedLinksToUrlsWhenPreviewIsEnabledAndNewsletterWasSent() {
-    $queue = $this->queue;
+    $queue = $this->sendingTask->queue();
     $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithTracking;
-    $renderedBody = $this->viewInBrowser->renderNewsletter(
+    $renderedBody = $this->viewInBrowserRenderer->render(
+      $preview = true,
       $this->newsletter,
       $this->subscriber,
-      $queue,
-      $preview = true
+      $queue
     );
     // hashed link should be replaced with a URL
     expect($renderedBody)->notContains('[mailpoet_click_data]');
@@ -187,13 +199,13 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   }
 
   public function testRemovesOpenTrackingTagWhenPreviewIsEnabledAndNewsletterWasSent() {
-    $queue = $this->queue;
+    $queue = $this->sendingTask->queue();
     $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithTracking;
-    $renderedBody = $this->viewInBrowser->renderNewsletter(
+    $renderedBody = $this->viewInBrowserRenderer->render(
+      $preview = true,
       $this->newsletter,
       $this->subscriber,
-      $queue,
-      $preview = true
+      $queue
     );
     // open tracking data tag should be removed
     expect($renderedBody)->notContains('[mailpoet_open_data]');
