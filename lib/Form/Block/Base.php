@@ -19,7 +19,7 @@ class Base {
     $this->wp = $wp;
   }
 
-  public function getInputValidation($block, $extraRules = []) {
+  public function getInputValidation(array $block, array $extraRules = []): string {
     $rules = [];
 
     if ($block['id'] === 'email') {
@@ -78,7 +78,7 @@ class Base {
     return join(' ', $validation);
   }
 
-  public function renderLabel($block) {
+  public function renderLabel(array $block): string {
     $html = '';
     if (
       isset($block['params']['hide_label'])
@@ -106,7 +106,7 @@ class Base {
     return $html;
   }
 
-  public function renderInputPlaceholder($block) {
+  public function renderInputPlaceholder(array $block): string {
     $html = '';
     // if the label is displayed as a placeholder,
     if (
@@ -126,7 +126,7 @@ class Base {
   }
 
   // return field name depending on block data
-  public function getFieldName($block = []) {
+  public function getFieldName(array $block = []): string {
     if ((int)$block['id'] > 0) {
       return 'cf_' . $block['id'];
     } elseif (isset($block['params']['obfuscate']) && !$block['params']['obfuscate']) {
@@ -136,7 +136,7 @@ class Base {
     }
   }
 
-  public function getFieldLabel($block = []) {
+  public function getFieldLabel(array $block = []): string {
     return (isset($block['params']['label'])
             && strlen(trim($block['params']['label'])) > 0)
             ? trim($block['params']['label']) : '';
@@ -148,7 +148,7 @@ class Base {
             ? $this->wp->escAttr(trim($block['params']['value'])) : '';
   }
 
-  public function getInputModifiers($block = []) {
+  public function getInputModifiers(array $block = []): string {
     $modifiers = [];
 
     if (isset($block['params']['readonly']) && $block['params']['readonly']) {

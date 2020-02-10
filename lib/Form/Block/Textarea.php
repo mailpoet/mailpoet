@@ -10,7 +10,7 @@ class Textarea {
     $this->baseRenderer = $baseRenderer;
   }
 
-  public function render($block) {
+  public function render(array $block): string {
     $html = '';
 
     $html .= '<p class="mailpoet_paragraph">';

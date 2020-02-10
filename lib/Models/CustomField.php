@@ -115,7 +115,7 @@ class CustomField extends Model {
           break;
       }
 
-      if (!empty($value)) {
+      if (!empty($value) && is_string($value)) {
         $value = (new DateConverter())->convertDateToDatetime($value, $dateFormat);
       }
     }
