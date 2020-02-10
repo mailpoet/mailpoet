@@ -2,13 +2,19 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Radio {
 
   /** @var Base */
   private $baseRenderer;
 
-  public function __construct(Base $baseRenderer) {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(Base $baseRenderer, WPFunctions $wp) {
     $this->baseRenderer = $baseRenderer;
+    $this->wp = $wp;
   }
 
   public function render($block) {
@@ -43,7 +49,7 @@ class Radio {
         $label = $option['value'];
       }
 
-      $html .= 'value="' . esc_attr($value) . '" ';
+      $html .= 'value="' . $this->wp->escAttr($value) . '" ';
 
       $html .= (
         (
@@ -54,7 +60,7 @@ class Radio {
       ) ? 'checked="checked"' : '';
 
       $html .= $fieldValidation;
-      $html .= ' /> ' . esc_attr($label);
+      $html .= ' /> ' . $this->wp->escAttr($label);
       $html .= '</label>';
     }
 
