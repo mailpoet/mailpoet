@@ -2,19 +2,32 @@
 
 namespace MailPoet\Form\Block;
 
-class Select extends Base {
+use MailPoet\WP\Functions as WPFunctions;
+
+class Select {
+
+  /** @var Base */
+  private $baseRenderer;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(Base $baseRenderer, WPFunctions $wp) {
+    $this->baseRenderer = $baseRenderer;
+    $this->wp = $wp;
+  }
 
   public function render($block) {
     $html = '';
 
-    $fieldName = 'data[' . $this->getFieldName($block) . ']';
+    $fieldName = 'data[' . $this->baseRenderer->getFieldName($block) . ']';
     $automationId = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
     $html .= '<p class="mailpoet_paragraph">';
-    $html .= $this->renderLabel($block);
+    $html .= $this->baseRenderer->renderLabel($block);
     $html .= '<select class="mailpoet_select" name="' . $fieldName . '" ' . $automationId . '>';
 
     if (isset($block['params']['label_within']) && $block['params']['label_within']) {
-      $label = $this->getFieldLabel($block);
+      $label = $this->baseRenderer->getFieldLabel($block);
       if (!empty($block['params']['required'])) {
         $label .= ' *';
       }
@@ -38,7 +51,7 @@ class Select extends Base {
       $isSelected = (
         (isset($option['is_checked']) && $option['is_checked'])
         ||
-        (self::getFieldValue($block) === $option['value'])
+        ($this->baseRenderer->getFieldValue($block) === $option['value'])
       ) ? ' selected="selected"' : '';
 
       $isDisabled = (!empty($option['is_disabled'])) ? ' disabled="disabled"' : '';

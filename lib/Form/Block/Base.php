@@ -6,7 +6,7 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\ModelValidator;
 use MailPoet\WP\Functions as WPFunctions;
 
-abstract class Base {
+class Base {
 
   /** @var FieldNameObfuscator */
   private $fieldNameObfuscator;
@@ -19,7 +19,7 @@ abstract class Base {
     $this->wp = $wp;
   }
 
-  protected function getInputValidation($block, $extraRules = []) {
+  public function getInputValidation($block, $extraRules = []) {
     $rules = [];
 
     if ($block['id'] === 'email') {
@@ -78,7 +78,7 @@ abstract class Base {
     return join(' ', $validation);
   }
 
-  protected function renderLabel($block) {
+  public function renderLabel($block) {
     $html = '';
     if (
       isset($block['params']['hide_label'])
@@ -106,7 +106,7 @@ abstract class Base {
     return $html;
   }
 
-  protected function renderInputPlaceholder($block) {
+  public function renderInputPlaceholder($block) {
     $html = '';
     // if the label is displayed as a placeholder,
     if (
@@ -126,7 +126,7 @@ abstract class Base {
   }
 
   // return field name depending on block data
-  protected function getFieldName($block = []) {
+  public function getFieldName($block = []) {
     if ((int)$block['id'] > 0) {
       return 'cf_' . $block['id'];
     } elseif (isset($block['params']['obfuscate']) && !$block['params']['obfuscate']) {
@@ -136,19 +136,19 @@ abstract class Base {
     }
   }
 
-  protected function getFieldLabel($block = []) {
+  public function getFieldLabel($block = []) {
     return (isset($block['params']['label'])
             && strlen(trim($block['params']['label'])) > 0)
             ? trim($block['params']['label']) : '';
   }
 
-  protected function getFieldValue($block = []) {
+  public function getFieldValue($block = []) {
     return (isset($block['params']['value'])
             && strlen(trim($block['params']['value'])) > 0)
             ? $this->wp->escAttr(trim($block['params']['value'])) : '';
   }
 
-  protected function getInputModifiers($block = []) {
+  public function getInputModifiers($block = []) {
     $modifiers = [];
 
     if (isset($block['params']['readonly']) && $block['params']['readonly']) {

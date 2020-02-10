@@ -2,14 +2,21 @@
 
 namespace MailPoet\Form\Block;
 
-class Submit extends Base {
+class Submit {
+
+  /** @var Base */
+  private $baseRenderer;
+
+  public function __construct(Base $baseRenderer) {
+    $this->baseRenderer = $baseRenderer;
+  }
 
   public function render($block) {
     $html = '';
 
     $html .= '<p class="mailpoet_paragraph"><input type="submit" class="mailpoet_submit" ';
 
-    $html .= 'value="' . $this->getFieldLabel($block) . '" ';
+    $html .= 'value="' . $this->baseRenderer->getFieldLabel($block) . '" ';
 
     $html .= 'data-automation-id="subscribe-submit-button" ';
 

@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\Form\Block;
 
+use MailPoet\Form\Block\Base;
 use MailPoet\Form\Block\Select;
-use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -18,16 +18,19 @@ class SelectTest extends \MailPoetUnitTest {
   /** @var MockObject | Functions */
   private $wpMock;
 
-  /** @var MockObject | FieldNameObfuscator */
-  private $fieldNameObfuscatorMock;
+  /** @var MockObject | Base */
+  private $baseMock;
 
   public function _before() {
     parent::_before();
     $this->wpMock = $this->createMock(Functions::class);
     $this->wpMock->method('escAttr')->will($this->returnArgument(0));
-    $this->fieldNameObfuscatorMock = $this->createMock(FieldNameObfuscator::class);
-    $this->fieldNameObfuscatorMock->method('obfuscate')->will($this->returnArgument(0));
-    $this->selectBlock = new Select($this->fieldNameObfuscatorMock, $this->wpMock);
+    $this->baseMock = $this->createMock(Base::class);
+    $this->baseMock->method('getFieldName')->will($this->returnValue('select'));
+    $this->baseMock->method('renderLabel')->will($this->returnValue('<label></label>'));
+    $this->baseMock->method('getFieldLabel')->will($this->returnValue('Field label'));
+    $this->baseMock->method('getFieldValue')->will($this->returnValue('1'));
+    $this->selectBlock = new Select($this->baseMock, $this->wpMock);
     $this->block = [
       'id' => 'status',
       'type' => 'select',
