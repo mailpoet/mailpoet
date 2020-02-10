@@ -6,6 +6,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Form\DisplayFormInWPContent;
+use MailPoet\Form\FormFactory;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util;
 use MailPoet\Listing;
@@ -31,6 +32,9 @@ class Forms extends APIEndpoint {
   /** @var FormRenderer */
   private $formRenderer;
 
+  /** @var FormFactory */
+  private $formFactory;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,
   ];
@@ -40,13 +44,15 @@ class Forms extends APIEndpoint {
     Listing\Handler $listingHandler,
     Util\Styles $formStylesUtils,
     UserFlagsController $userFlags,
-    FormRenderer $formRenderer
+    FormRenderer $formRenderer,
+    FormFactory $formFactory
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
     $this->formStylesUtils = $formStylesUtils;
     $this->userFlags = $userFlags;
     $this->formRenderer = $formRenderer;
+    $this->formFactory = $formFactory;
   }
 
   public function get($data = []) {
@@ -86,43 +92,10 @@ class Forms extends APIEndpoint {
   }
 
   public function create() {
-    // create new form
-    $formData = [
-      'name' => '',
-      'body' => [
-        [
-          'id' => 'email',
-          'name' => WPFunctions::get()->__('Email', 'mailpoet'),
-          'type' => 'text',
-          'static' => true,
-          'params' => [
-            'label' => WPFunctions::get()->__('Email', 'mailpoet'),
-            'required' => true,
-            'label_within' => true,
-          ],
-        ],
-        [
-          'id' => 'submit',
-          'name' => WPFunctions::get()->__('Submit', 'mailpoet'),
-          'type' => 'submit',
-          'static' => true,
-          'params' => [
-            'label' => WPFunctions::get()->__('Subscribe!', 'mailpoet'),
-          ],
-        ],
-      ],
-      'settings' => [
-        'on_success' => 'message',
-        'success_message' => Form::getDefaultSuccessMessage(),
-        'segments' => null,
-        'segments_selected_by' => 'admin',
-      ],
-    ];
-    return $this->save($formData);
+    return $this->save($this->formFactory->createEmptyForm());
   }
 
-  public function save($data = []) {
-    $form = Form::createOrUpdate($data);
+  public function save(Form $form) {
     $errors = $form->getErrors();
 
     if (empty($errors)) {
