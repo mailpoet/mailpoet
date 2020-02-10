@@ -25,19 +25,19 @@ class ViewInBrowser {
   public function view(array $data) {
     try {
       $viewData = $this->viewInBrowserController->view($data);
-      $this->_displayNewsletter($viewData);
+      $this->displayNewsletter($viewData);
     } catch (\InvalidArgumentException $e) {
-      $this->_abort();
+      $this->abort();
     }
   }
 
-  public function _displayNewsletter($result) {
+  private function displayNewsletter($result) {
     header('Content-Type: text/html; charset=utf-8');
     echo $result;
     exit;
   }
 
-  public function _abort() {
+  private function abort() {
     WPFunctions::get()->statusHeader(404);
     exit;
   }
