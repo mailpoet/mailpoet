@@ -2,24 +2,37 @@
 
 namespace MailPoet\Form\Block;
 
-class Checkbox extends Base {
+use MailPoet\WP\Functions as WPFunctions;
+
+class Checkbox {
+
+  /** @var Base */
+  private $baseRenderer;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(Base $baseRenderer, WPFunctions $wp) {
+    $this->baseRenderer = $baseRenderer;
+    $this->wp = $wp;
+  }
 
   public function render($block) {
     $html = '';
 
-    $fieldName = 'data[' . $this->getFieldName($block) . ']';
-    $fieldValidation = $this->getInputValidation($block);
+    $fieldName = 'data[' . $this->baseRenderer->getFieldName($block) . ']';
+    $fieldValidation = $this->baseRenderer->getInputValidation($block);
 
     $html .= '<p class="mailpoet_paragraph">';
 
-    $html .= $this->renderLabel($block);
+    $html .= $this->baseRenderer->renderLabel($block);
 
     $options = (!empty($block['params']['values'])
       ? $block['params']['values']
       : []
     );
 
-    $selectedValue = self::getFieldValue($block);
+    $selectedValue = $this->baseRenderer->getFieldValue($block);
 
     foreach ($options as $option) {
       $html .= '<label class="mailpoet_checkbox_label">';
@@ -39,7 +52,7 @@ class Checkbox extends Base {
 
       $html .= $fieldValidation;
 
-      $html .= ' /> ' . esc_attr($option['value']);
+      $html .= ' /> ' . $this->wp->escAttr($option['value']);
 
       $html .= '</label>';
     }

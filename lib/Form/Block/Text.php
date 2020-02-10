@@ -2,7 +2,14 @@
 
 namespace MailPoet\Form\Block;
 
-class Text extends Base {
+class Text {
+
+  /** @var Base */
+  private $baseRenderer;
+
+  public function __construct(Base $baseRenderer) {
+    $this->baseRenderer = $baseRenderer;
+  }
 
   public function render($block) {
     $type = 'text';
@@ -14,23 +21,23 @@ class Text extends Base {
 
     $html = '<p class="mailpoet_paragraph">';
 
-    $html .= $this->renderLabel($block);
+    $html .= $this->baseRenderer->renderLabel($block);
 
     $html .= '<input type="' . $type . '" class="mailpoet_text" ';
 
-    $html .= 'name="data[' . $this->getFieldName($block) . ']" ';
+    $html .= 'name="data[' . $this->baseRenderer->getFieldName($block) . ']" ';
 
-    $html .= 'title="' . $this->getFieldLabel($block) . '" ';
+    $html .= 'title="' . $this->baseRenderer->getFieldLabel($block) . '" ';
 
-    $html .= 'value="' . $this->getFieldValue($block) . '" ';
+    $html .= 'value="' . $this->baseRenderer->getFieldValue($block) . '" ';
 
     $html .= $automationId;
 
-    $html .= $this->renderInputPlaceholder($block);
+    $html .= $this->baseRenderer->renderInputPlaceholder($block);
 
-    $html .= $this->getInputValidation($block);
+    $html .= $this->baseRenderer->getInputValidation($block);
 
-    $html .= $this->getInputModifiers($block);
+    $html .= $this->baseRenderer->getInputModifiers($block);
 
     $html .= '/>';
 

@@ -2,24 +2,31 @@
 
 namespace MailPoet\Form\Block;
 
-class Radio extends Base {
+class Radio {
+
+  /** @var Base */
+  private $baseRenderer;
+
+  public function __construct(Base $baseRenderer) {
+    $this->baseRenderer = $baseRenderer;
+  }
 
   public function render($block) {
     $html = '';
 
-    $fieldName = 'data[' . $this->getFieldName($block) . ']';
-    $fieldValidation = $this->getInputValidation($block);
+    $fieldName = 'data[' . $this->baseRenderer->getFieldName($block) . ']';
+    $fieldValidation = $this->baseRenderer->getInputValidation($block);
 
     $html .= '<p class="mailpoet_paragraph">';
 
-    $html .= $this->renderLabel($block);
+    $html .= $this->baseRenderer->renderLabel($block);
 
     $options = (!empty($block['params']['values'])
       ? $block['params']['values']
       : []
     );
 
-    $selectedValue = $this->getFieldValue($block);
+    $selectedValue = $this->baseRenderer->getFieldValue($block);
 
     foreach ($options as $option) {
       $html .= '<label class="mailpoet_radio_label">';

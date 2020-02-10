@@ -2,14 +2,19 @@
 
 namespace MailPoet\Form\Block;
 
-use MailPoet\WP\Functions as WPFunctions;
+class Date {
 
-class Date extends Base {
+  /** @var Base */
+  private $baseRenderer;
+
+  public function __construct(Base $baseRenderer) {
+    $this->baseRenderer = $baseRenderer;
+  }
 
   public function render($block) {
     $html = '';
     $html .= '<p class="mailpoet_paragraph">';
-    $html .= $this->renderLabel($block);
+    $html .= $this->baseRenderer->renderLabel($block);
     $html .= $this->renderDateSelect($block);
     $html .= '</p>';
 
@@ -19,7 +24,7 @@ class Date extends Base {
   private function renderDateSelect($block = []) {
     $html = '';
 
-    $fieldName = 'data[' . $this->getFieldName($block) . ']';
+    $fieldName = 'data[' . $this->baseRenderer->getFieldName($block) . ']';
 
     $dateFormats = $this->getDateFormats();
 
@@ -38,24 +43,24 @@ class Date extends Base {
     foreach ($dateSelectors as $dateSelector) {
       if ($dateSelector === 'DD') {
         $html .= '<select class="mailpoet_date_day" ';
-        $html .= $this->getInputValidation($block, [
-          'required-message' => WPFunctions::get()->__('Please select a day', 'mailpoet'),
+        $html .= $this->baseRenderer->getInputValidation($block, [
+          'required-message' => __('Please select a day', 'mailpoet'),
         ]);
         $html .= 'name="' . $fieldName . '[day]" placeholder="' . __('Day', 'mailpoet') . '">';
         $html .= $this->getDays($block);
         $html .= '</select>';
       } else if ($dateSelector === 'MM') {
         $html .= '<select class="mailpoet_select mailpoet_date_month" ';
-        $html .= $this->getInputValidation($block, [
-          'required-message' => WPFunctions::get()->__('Please select a month', 'mailpoet'),
+        $html .= $this->baseRenderer->getInputValidation($block, [
+          'required-message' => __('Please select a month', 'mailpoet'),
         ]);
         $html .= 'name="' . $fieldName . '[month]" placeholder="' . __('Month', 'mailpoet') . '">';
         $html .= $this->getMonths($block);
         $html .= '</select>';
       } else if ($dateSelector === 'YYYY') {
         $html .= '<select class="mailpoet_date_year" ';
-        $html .= $this->getInputValidation($block, [
-          'required-message' => WPFunctions::get()->__('Please select a year', 'mailpoet'),
+        $html .= $this->baseRenderer->getInputValidation($block, [
+          'required-message' => __('Please select a year', 'mailpoet'),
         ]);
         $html .= 'name="' . $fieldName . '[year]" placeholder="' . __('Year', 'mailpoet') . '">';
         $html .= $this->getYears($block);
@@ -70,10 +75,10 @@ class Date extends Base {
 
   public function getDateTypes() {
     return [
-      'year_month_day' => WPFunctions::get()->__('Year, month, day', 'mailpoet'),
-      'year_month' => WPFunctions::get()->__('Year, month', 'mailpoet'),
-      'month' => WPFunctions::get()->__('Month (January, February,...)', 'mailpoet'),
-      'year' => WPFunctions::get()->__('Year', 'mailpoet'),
+      'year_month_day' => __('Year, month, day', 'mailpoet'),
+      'year_month' => __('Year, month', 'mailpoet'),
+      'month' => __('Month (January, February,...)', 'mailpoet'),
+      'year' => __('Year', 'mailpoet'),
     ];
   }
 
@@ -86,9 +91,9 @@ class Date extends Base {
     ];
   }
   public function getMonthNames() {
-    return [__('January', 'mailpoet'), WPFunctions::get()->__('February', 'mailpoet'), WPFunctions::get()->__('March', 'mailpoet'), WPFunctions::get()->__('April', 'mailpoet'),
-      WPFunctions::get()->__('May', 'mailpoet'), WPFunctions::get()->__('June', 'mailpoet'), WPFunctions::get()->__('July', 'mailpoet'), WPFunctions::get()->__('August', 'mailpoet'), WPFunctions::get()->__('September', 'mailpoet'),
-      WPFunctions::get()->__('October', 'mailpoet'), WPFunctions::get()->__('November', 'mailpoet'), WPFunctions::get()->__('December', 'mailpoet'),
+    return [__('January', 'mailpoet'), __('February', 'mailpoet'), __('March', 'mailpoet'), __('April', 'mailpoet'),
+      __('May', 'mailpoet'), __('June', 'mailpoet'), __('July', 'mailpoet'), __('August', 'mailpoet'), __('September', 'mailpoet'),
+      __('October', 'mailpoet'), __('November', 'mailpoet'), __('December', 'mailpoet'),
     ];
   }
 
