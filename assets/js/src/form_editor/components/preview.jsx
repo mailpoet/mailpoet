@@ -58,7 +58,9 @@ const FormPreview = () => {
     >
       <Preview>
         {form === null && (
-          <Spinner />
+          <div className="mailpoet_spinner_wrapper">
+            <Spinner />
+          </div>
         )}
         {form !== null && (
           <div>
