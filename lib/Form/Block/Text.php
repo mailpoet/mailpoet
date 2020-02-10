@@ -11,7 +11,7 @@ class Text {
     $this->baseRenderer = $baseRenderer;
   }
 
-  public function render($block) {
+  public function render(array $block): string {
     $type = 'text';
     $automationId = ' ';
     if ($block['id'] === 'email') {

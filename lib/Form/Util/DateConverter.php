@@ -5,7 +5,10 @@ namespace MailPoet\Form\Util;
 use MailPoetVendor\Carbon\Carbon;
 
 class DateConverter {
-  public function convertDateToDatetime($date, $dateFormat) {
+  /**
+   * @return bool|string
+   */
+  public function convertDateToDatetime(string $date, string $dateFormat) {
     $datetime = false;
     if ($dateFormat === 'datetime') {
       $datetime = $date;

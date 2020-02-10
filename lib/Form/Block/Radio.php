@@ -17,7 +17,7 @@ class Radio {
     $this->wp = $wp;
   }
 
-  public function render($block) {
+  public function render(array $block): string {
     $html = '';
 
     $fieldName = 'data[' . $this->baseRenderer->getFieldName($block) . ']';

@@ -11,7 +11,7 @@ class Date {
     $this->baseRenderer = $baseRenderer;
   }
 
-  public function render($block) {
+  public function render(array $block): string {
     $html = '';
     $html .= '<p class="mailpoet_paragraph">';
     $html .= $this->baseRenderer->renderLabel($block);
@@ -21,7 +21,7 @@ class Date {
     return $html;
   }
 
-  private function renderDateSelect($block = []) {
+  private function renderDateSelect(array $block = []): string {
     $html = '';
 
     $fieldName = 'data[' . $this->baseRenderer->getFieldName($block) . ']';
@@ -73,7 +73,7 @@ class Date {
     return $html;
   }
 
-  public function getDateTypes() {
+  public function getDateTypes(): array {
     return [
       'year_month_day' => __('Year, month, day', 'mailpoet'),
       'year_month' => __('Year, month', 'mailpoet'),
@@ -82,7 +82,7 @@ class Date {
     ];
   }
 
-  public function getDateFormats() {
+  public function getDateFormats(): array {
     return [
       'year_month_day' => ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'],
       'year_month' => ['MM/YYYY', 'YYYY/MM'],
@@ -90,14 +90,14 @@ class Date {
       'month' => ['MM'],
     ];
   }
-  public function getMonthNames() {
+  public function getMonthNames(): array {
     return [__('January', 'mailpoet'), __('February', 'mailpoet'), __('March', 'mailpoet'), __('April', 'mailpoet'),
       __('May', 'mailpoet'), __('June', 'mailpoet'), __('July', 'mailpoet'), __('August', 'mailpoet'), __('September', 'mailpoet'),
       __('October', 'mailpoet'), __('November', 'mailpoet'), __('December', 'mailpoet'),
     ];
   }
 
-  private function getMonths($block = []) {
+  private function getMonths(array $block = []): string {
     $defaults = [
       'selected' => null,
     ];
@@ -126,7 +126,7 @@ class Date {
     return $html;
   }
 
-  private function getYears($block = []) {
+  private function getYears(array $block = []): string {
     $defaults = [
       'selected' => null,
       'from' => (int)strftime('%Y') - 100,
@@ -155,7 +155,7 @@ class Date {
     return $html;
   }
 
-  private function getDays($block = []) {
+  private function getDays(array $block = []): string {
     $defaults = [
       'selected' => null,
     ];
