@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
@@ -16,6 +16,7 @@ function ModalFrame({
   role,
   style,
 }) {
+  const wrapperRef = useRef(null);
   function onClose(event) {
     if (onRequestClose) {
       onRequestClose(event);
@@ -23,7 +24,10 @@ function ModalFrame({
   }
 
   function handleFocusOutside(event) {
-    if (shouldCloseOnClickOutside) {
+    if (shouldCloseOnClickOutside
+      && wrapperRef.current
+      && !wrapperRef.current.contains(event.target) // filter clicks inside the modal window
+    ) {
       onClose(event);
     }
   }
@@ -53,6 +57,7 @@ function ModalFrame({
       tabIndex="0"
     >
       <div
+        ref={wrapperRef}
         className={classnames(
           'mailpoet-modal-frame',
           className

@@ -64,7 +64,7 @@ const FormPreview = () => {
         )}
         {form !== null && (
           <div>
-            <style type="text/css" id="mailpoet_form_preview_styles">
+            <style type="text/css">
               {'.mailpoet_hp_email_label { display: none }' }
               {form.css}
             </style>
