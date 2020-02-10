@@ -2,13 +2,19 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Segment {
 
   /** @var Base */
   private $baseRenderer;
 
-  public function __construct(Base $baseRenderer) {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(Base $baseRenderer, WPFunctions $wp) {
     $this->baseRenderer = $baseRenderer;
+    $this->wp = $wp;
   }
 
   public function render($block) {
@@ -36,7 +42,7 @@ class Segment {
       $html .= 'name="' . $fieldName . '[]" ';
       $html .= 'value="' . $option['id'] . '" ' . $isChecked . ' ';
       $html .= $fieldValidation;
-      $html .= ' /> ' . esc_attr($option['name']);
+      $html .= ' /> ' . $this->wp->escAttr($option['name']);
       $html .= '</label>';
     }
 
