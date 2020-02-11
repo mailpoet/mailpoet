@@ -448,6 +448,7 @@ App.on('start', function (StartApp) {
   MailPoet.helpTooltip.show(document.getElementById('tooltip-send-preview'), {
     tooltipId: 'tooltip-editor-send-preview',
     tooltip: MailPoet.I18n.t('helpTooltipSendPreview'),
+    place: 'left',
   });
 });
 
