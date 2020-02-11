@@ -15,6 +15,7 @@ function ModalFrame({
   className,
   role,
   style,
+  fullScreen,
 }) {
   const wrapperRef = useRef(null);
   function onClose(event) {
@@ -60,6 +61,7 @@ function ModalFrame({
         ref={wrapperRef}
         className={classnames(
           'mailpoet-modal-frame',
+          { 'mailpoet-modal-full-screen': fullScreen },
           className
         )}
         style={style}
@@ -78,6 +80,7 @@ function ModalFrame({
 ModalFrame.propTypes = {
   onRequestClose: PropTypes.func,
   shouldCloseOnEsc: PropTypes.bool,
+  fullScreen: PropTypes.bool,
   shouldCloseOnClickOutside: PropTypes.bool,
   role: PropTypes.string,
   className: PropTypes.string,
@@ -95,6 +98,7 @@ ModalFrame.defaultProps = {
   onRequestClose: () => {},
   role: 'dialog',
   shouldCloseOnEsc: true,
+  fullScreen: false,
   shouldCloseOnClickOutside: true,
   className: '',
   style: {},

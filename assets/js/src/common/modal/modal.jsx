@@ -20,6 +20,7 @@ function Modal({
   contentClassName,
   contentLabel,
   overlayClassName,
+  fullScreen,
 }) {
   const headingId = aria.labelledby || 'components-modal-header';
 
@@ -36,6 +37,7 @@ function Modal({
       className={contentClassName}
       contentLabel={contentLabel}
       overlayClassName={overlayClassName}
+      fullScreen={fullScreen}
     >
       <div
         className="mailpoet-modal-content"
@@ -64,6 +66,7 @@ Modal.propTypes = {
   title: PropTypes.string,
   onRequestClose: PropTypes.func,
   displayTitle: PropTypes.bool,
+  fullScreen: PropTypes.bool,
   focusOnMount: PropTypes.bool,
   shouldCloseOnEsc: PropTypes.bool,
   shouldCloseOnClickOutside: PropTypes.bool,
@@ -83,6 +86,7 @@ Modal.defaultProps = {
   shouldCloseOnClickOutside: true,
   isDismissible: true,
   displayTitle: true,
+  fullScreen: false,
 };
 
 export default Modal;

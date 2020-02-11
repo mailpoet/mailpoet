@@ -155,3 +155,10 @@ $icon-button-size: 36px;
     padding-top: $header-height;
   }
 }
+
+.mailpoet-modal-full-screen {
+  height: 100%;
+  margin: 30px;
+  max-width: 100%;
+  min-width: 95%;
+}
