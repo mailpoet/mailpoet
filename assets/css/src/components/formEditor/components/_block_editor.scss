@@ -1,14 +1,3 @@
-// Fix for broken drag and drop for blocks
-// This should had been fixed in Gutenberg's master branch
-// https://github.com/WordPress/gutenberg/pull/15054
-// It doesn't work even after upgrading to package version with the fix.
-// It needs further investigation
-.block-editor-editor-skeleton__content {
-  .block-editor-block-mover__control-drag-handle {
-    display: none !important;
-  }
-}
-
 // We don't want to allow user to remove Submit or Email.
 // There is no way to hide the delete button programmatically so we hide last toolbar that contains the delete option
 // There is a feature request for adding that into Gutenberg https://github.com/WordPress/gutenberg/issues/16364
