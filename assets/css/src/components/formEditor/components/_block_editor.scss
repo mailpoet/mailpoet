@@ -3,7 +3,7 @@
 // https://github.com/WordPress/gutenberg/pull/15054
 // It doesn't work even after upgrading to package version with the fix.
 // It needs further investigation
-.edit-post-editor-regions__content {
+.block-editor-editor-skeleton__content {
   .block-editor-block-mover__control-drag-handle {
     display: none !important;
   }
@@ -23,6 +23,6 @@
 
 // Drag and drop library we use for custom fields does not support nested scrollable
 // https://github.com/atlassian/react-beautiful-dnd/issues/131
-.edit-post-editor-regions__body {
+.block-editor-editor-skeleton__body {
   overflow: hidden;
 }
