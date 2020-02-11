@@ -30,6 +30,30 @@ if (!function_exists('mb_strtoupper')) {
   }
 }
 
+if (!function_exists('mb_strtolower')) {
+  function mb_strtolower(...$args) {
+    return MbstringPolyfill::mb_strtolower(...$args);
+  }
+}
+
+if (!function_exists('mb_strpos')) {
+  function mb_strpos(...$args) {
+    return MbstringPolyfill::mb_strpos(...$args);
+  }
+}
+
+if (!function_exists('mb_substr')) {
+  function mb_substr(...$args) {
+    return MbstringPolyfill::mb_substr(...$args);
+  }
+}
+
+if (!function_exists('mb_strlen')) {
+  function mb_strlen(...$args) {
+    return MbstringPolyfill::mb_strlen(...$args);
+  }
+}
+
 if (!function_exists('mb_detect_order')) {
   function mb_detect_order($encodingList = null) {
     return MbstringPolyfill::mb_detect_order($encodingList);
