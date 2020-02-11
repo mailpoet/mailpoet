@@ -43,7 +43,7 @@ class DisplayFormBellowPostCest {
 
     // see the post
     $i->amOnPage('/wp-admin/post.php?action=edit&post=' . $post[0]);
-    $i->waitForText($postTitle);
+    $i->waitForText($postTitle, 30);
     $i->click('View Post');
     $i->waitForText($postTitle);
     $i->seeElement('[data-automation-id="subscribe-submit-button"]');
