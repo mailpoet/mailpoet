@@ -18,11 +18,14 @@ $icon-button-size: 36px;
 }
 
 .mailpoet-modal-screen-overlay {
+  align-items: center;
   animation: edit-post__fade-in-animation .2s ease-out 0s;
   animation-duration: 100ms;
   animation-fill-mode: forwards;
   background-color: rgba(#000, .7);
   bottom: 0;
+  display: flex;
+  justify-content: center;
   left: 0;
   position: fixed;
   right: 0;
@@ -30,36 +33,27 @@ $icon-button-size: 36px;
   z-index: $modal-screen-overlay-z-index;
 }
 
+// Full-screen on mobiles
 .mailpoet-modal-frame {
   background: white;
   border: $border-width solid $light-gray-500;
-  bottom: 0;
   box-shadow: $shadow-modal;
   box-sizing: border-box;
-  left: 0;
-  margin: 0;
+  height: 100%;
   overflow: auto;
-  // On small screens the content needs to be full width because of limited
-  // space.
-  position: absolute;
-  right: 0;
-  top: 0;
+  width: 100%;
 
-  // Show a centered modal on bigger screens.
-
+  // Centered on desktops
   @media screen and (min-width: 600px) {
     // Animate the modal frame/contents appearing on the page.
     animation: mailpoet-modal-appear-animation .1s ease-out;
     animation-duration: 100ms;
     animation-fill-mode: forwards;
-    bottom: auto;
-    left: 50%;
+    height: auto;
     max-height: calc(100% - #{ $header-height } - #{ $header-height });
     max-width: calc(100% - #{ $grid-size-large } - #{ $grid-size-large });
     min-width: $modal-min-width;
-    right: auto;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    width: auto;
   }
 }
 
