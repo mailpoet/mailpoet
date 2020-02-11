@@ -56,13 +56,13 @@ const FormPreview = () => {
       title={MailPoet.I18n.t('formPreview')}
       onRequestClose={onClose}
     >
-      <Preview>
-        {form === null && (
-          <div className="mailpoet_spinner_wrapper">
-            <Spinner />
-          </div>
-        )}
-        {form !== null && (
+      {form === null && (
+        <div className="mailpoet_spinner_wrapper">
+          <Spinner />
+        </div>
+      )}
+      {form !== null && (
+        <Preview>
           <div>
             <style type="text/css">
               {'.mailpoet_hp_email_label { display: none }' }
@@ -74,8 +74,8 @@ const FormPreview = () => {
             </div>
             <div dangerouslySetInnerHTML={{ __html: form.html }} />
           </div>
-        )}
-      </Preview>
+        </Preview>
+      )}
     </Modal>
   );
 };
