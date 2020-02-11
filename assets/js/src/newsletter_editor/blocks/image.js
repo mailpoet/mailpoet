@@ -94,10 +94,12 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
     MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-full-width'), {
       tooltipId: 'tooltip-editor-full-width',
       tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth'),
+      place: 'top',
     });
     MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-ideal-width'), {
       tooltipId: 'tooltip-editor-ideal-width',
       tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth'),
+      place: 'bottom',
     });
   },
   getTemplate: function () { return window.templates.imageBlockSettings; },
