@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+import classnames from 'classnames';
 
 function Preview({
   children,
 }) {
   const [checked, setChecked] = useState('desktop');
+
+
   return (
     <div className="mailpoet_browser_preview">
       <div className="mailpoet_browser_preview_toggle">
@@ -30,7 +33,17 @@ function Preview({
           {MailPoet.I18n.t('formPreviewMobile')}
         </label>
       </div>
-      {children}
+      <div
+        className={classnames(
+          'mailpoet_browser_preview_container',
+          { mailpoet_browser_preview_container_mobile: checked !== 'desktop' },
+          { mailpoet_browser_preview_container_desktop: checked === 'desktop' },
+        )}
+      >
+        <div className="mailpoet_browser_preview_border">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }
