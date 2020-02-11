@@ -17,7 +17,6 @@ export default () => {
 
   return (
     <div className="edit-post-header">
-      <div className="edit-post-header-toolbar" />
       <div className="edit-post-header__settings">
         <Button
           isPrimary
@@ -37,6 +36,7 @@ export default () => {
           isPressed={sidebarOpened}
         />
       </div>
+      <div className="edit-post-header__toolbar" />
     </div>
   );
 };
