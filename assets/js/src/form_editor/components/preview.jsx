@@ -73,6 +73,7 @@ const FormPreview = () => {
               <p className="mailpoet_validate_success">{MailPoet.I18n.t('successMessage')}</p>
               <p className="mailpoet_validate_error">{MailPoet.I18n.t('errorMessage')}</p>
             </div>
+            {/* eslint-disable-next-line react/no-danger */}
             <div dangerouslySetInnerHTML={{ __html: form.html }} />
           </div>
         </Preview>
