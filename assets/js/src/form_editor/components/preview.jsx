@@ -55,6 +55,7 @@ const FormPreview = () => {
     <Modal
       title={MailPoet.I18n.t('formPreview')}
       onRequestClose={onClose}
+      fullScreen
     >
       {form === null && (
         <div className="mailpoet_spinner_wrapper">
