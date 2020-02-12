@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
+import ParagraphEdit from '../paragraph_edit.jsx';
 import CustomFieldSettings from './custom_field_settings.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
@@ -109,7 +110,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
     checkboxLabel += ' *';
   }
   return (
-    <>
+    <ParagraphEdit>
       {inspectorControls}
       <span className="mailpoet_checkbox_label">{getLabel()}</span>
       <div>
@@ -122,7 +123,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
           {checkboxLabel}
         </label>
       </div>
-    </>
+    </ParagraphEdit>
   );
 };
 

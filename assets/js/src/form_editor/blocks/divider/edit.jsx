@@ -3,5 +3,11 @@ import {
   HorizontalRule,
 } from '@wordpress/components';
 
-const DividerEdit = () => (<HorizontalRule />);
+import ParagraphEdit from '../paragraph_edit.jsx';
+
+const DividerEdit = () => (
+  <ParagraphEdit>
+    <HorizontalRule />
+  </ParagraphEdit>
+);
 export default DividerEdit;

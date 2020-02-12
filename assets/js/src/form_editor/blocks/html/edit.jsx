@@ -11,6 +11,8 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { debounce } from 'lodash';
 
+import ParagraphEdit from '../paragraph_edit.jsx';
+
 const CustomHtmlEdit = ({ attributes, setAttributes }) => {
   const [renderedContent, setRenderedContent] = useState(attributes.content);
   const setRenderedContentDebounced = useCallback(debounce((content) => {
@@ -46,12 +48,12 @@ const CustomHtmlEdit = ({ attributes, setAttributes }) => {
   const styles = attributes.nl2br ? ['body { white-space: pre-line; }'] : [];
   const key = `${renderedContent}_${styles}`;
   return (
-    <>
+    <ParagraphEdit>
       {inspectorControls}
       <div>
         <SandBox html={renderedContent} styles={styles} key={key} />
       </div>
-    </>
+    </ParagraphEdit>
   );
 };
 

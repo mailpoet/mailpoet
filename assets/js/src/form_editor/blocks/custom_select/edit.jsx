@@ -9,8 +9,9 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
-import formatLabel from '../label_formatter.jsx';
 
+import ParagraphEdit from '../paragraph_edit.jsx';
+import formatLabel from '../label_formatter.jsx';
 import CustomFieldSettings from '../custom_radio/custom_field_settings.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
@@ -105,7 +106,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
   };
 
   return (
-    <>
+    <ParagraphEdit>
       {inspectorControls}
       <div className="mailpoet_custom_select" data-automation-id="custom_select_block">
         {!attributes.labelWithinInput ? (
@@ -115,7 +116,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
         ) : null}
         {getInput()}
       </div>
-    </>
+    </ParagraphEdit>
   );
 };
 

@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
+import ParagraphEdit from '../paragraph_edit.jsx';
 import CustomFieldSettings from './custom_field_settings.jsx';
 import FormFieldDate from '../../../form/fields/date.jsx';
 import formatLabel from '../label_formatter.jsx';
@@ -80,28 +81,30 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
   );
 
   return (
-    <div className="mailpoet_custom_date">
-      {inspectorControls}
-      <label className="mailpoet_date_label" data-automation-id="editor_custom_date_label" htmlFor={clientId}>
-        {formatLabel(attributes)}
-      </label>
-      <FormFieldDate
-        field={{
-          name: clientId,
-          day_placeholder: MailPoet.I18n.t('customFieldDay'),
-          month_placeholder: MailPoet.I18n.t('customFieldMonth'),
-          year_placeholder: MailPoet.I18n.t('customFieldYear'),
-          params: {
-            date_type: attributes.dateType,
-            date_format: attributes.dateFormat,
-          },
-        }}
-        item={{
-          [clientId]: attributes.defaultToday ? moment().format('YYYY-MM-DD') : '',
-        }}
-        onValueChange={() => {}}
-      />
-    </div>
+    <ParagraphEdit>
+      <div className="mailpoet_custom_date">
+        {inspectorControls}
+        <label className="mailpoet_date_label" data-automation-id="editor_custom_date_label" htmlFor={clientId}>
+          {formatLabel(attributes)}
+        </label>
+        <FormFieldDate
+          field={{
+            name: clientId,
+            day_placeholder: MailPoet.I18n.t('customFieldDay'),
+            month_placeholder: MailPoet.I18n.t('customFieldMonth'),
+            year_placeholder: MailPoet.I18n.t('customFieldYear'),
+            params: {
+              date_type: attributes.dateType,
+              date_format: attributes.dateFormat,
+            },
+          }}
+          item={{
+            [clientId]: attributes.defaultToday ? moment().format('YYYY-MM-DD') : '',
+          }}
+          onValueChange={() => {}}
+        />
+      </div>
+    </ParagraphEdit>
   );
 };
 

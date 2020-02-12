@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
+import ParagraphEdit from '../paragraph_edit.jsx';
 import CustomFieldSettings from './custom_field_settings.jsx';
 import formatLabel from '../label_formatter.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
@@ -80,7 +81,7 @@ const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
   };
 
   return (
-    <>
+    <ParagraphEdit>
       {inspectorControls}
       <span className="mailpoet_radio_label">{getLabel()}</span>
       {Array.isArray(attributes.values) && attributes.values.map((value) => (
@@ -95,7 +96,7 @@ const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
           </label>
         </div>
       ))}
-    </>
+    </ParagraphEdit>
   );
 };
 

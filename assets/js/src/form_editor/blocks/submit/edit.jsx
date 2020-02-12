@@ -8,6 +8,8 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
+import ParagraphEdit from '../paragraph_edit.jsx';
+
 const SubmitEdit = ({ attributes, setAttributes }) => {
   const inspectorControls = (
     <InspectorControls>
@@ -26,7 +28,7 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
   );
 
   return (
-    <>
+    <ParagraphEdit>
       { inspectorControls }
       <div className="mailpoet_submit">
         <input
@@ -36,7 +38,7 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
           data-automation-id="editor_submit_input"
         />
       </div>
-    </>
+    </ParagraphEdit>
   );
 };
 
