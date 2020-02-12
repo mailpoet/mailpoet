@@ -323,7 +323,7 @@ class Subscribers extends APIEndpoint {
         return $this->badRequest([
           APIError::BAD_REQUEST => WPFunctions::get()->__('Please regenerate the CAPTCHA.', 'mailpoet'),
         ]);
-      } elseif (!hash_equals(strtolower($data['captcha']), $captchaHash)) {
+      } elseif (!hash_equals(strtolower($data['captcha']), strtolower($captchaHash))) {
         $this->captchaSession->setCaptchaHash(null);
         $meta = [];
         $meta['refresh_captcha'] = true;
