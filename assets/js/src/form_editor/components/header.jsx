@@ -27,6 +27,7 @@ export default () => {
           isLarge
           onClick={showPreview}
           isPressed={isPreview}
+          className="editor-post-preview"
         >
           {__('Preview')}
         </Button>
