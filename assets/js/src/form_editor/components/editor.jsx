@@ -64,6 +64,7 @@ export default () => {
                 <UnsavedChangesNotice />
                 <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
                   <BlockEditorKeyboardShortcuts />
+                  <BlockEditorKeyboardShortcuts.Register />
                   <WritingFlow>
                     <ObserveTyping>
                       <FormTitle />
