@@ -43,13 +43,13 @@ class PostTransformer {
     $content = $this->extractor->getContent($post, true, $this->args['displayType']);
     $title = $this->extractor->getTitle($post);
     $featuredImage = $this->extractor->getFeaturedImage($post);
-    $featuredImagePosition = $this->args['featuredImagePosition'];
+    $featuredImagePosition = $this->getFeaturedImagePosition();
 
     if (
       $featuredImage
       && $featuredImagePosition === 'belowTitle'
       && (
-        $this->args['displayType'] === 'excerpt'
+        $this->args['displayType'] !== 'titleOnly'
         || $this->extractor->isProduct($post)
       )
     ) {
@@ -63,7 +63,7 @@ class PostTransformer {
       array_unshift($content, $title);
     }
 
-    if ($featuredImage && $this->args['displayType'] === 'excerpt') {
+    if ($featuredImage && $this->args['displayType'] !== 'titleOnly') {
       array_unshift($content, $featuredImage);
     }
 
@@ -75,14 +75,13 @@ class PostTransformer {
     $content = $this->extractor->getContent($post, $withPostClass, $this->args['displayType']);
     $title = $this->extractor->getTitle($post);
     $featuredImage = $this->extractor->getFeaturedImage($post);
-
-    $featuredImagePosition = $this->args['featuredImagePosition'];
+    $featuredImagePosition = $this->getFeaturedImagePosition();
 
     if (
       !$featuredImage
       || $featuredImagePosition === 'none'
       || (
-        $this->args['displayType'] !== 'excerpt'
+        $this->args['displayType'] === 'titleOnly'
         && !$this->extractor->isProduct($post)
       )
     ) {
@@ -152,5 +151,14 @@ class PostTransformer {
   private function nextImagePosition() {
     $this->imagePosition = ($this->imagePosition === 'left') ? 'right' : 'left';
     return $this->imagePosition;
+  }
+
+  private function getFeaturedImagePosition() {
+    // For posts with display type 'full' use 'fullPostFeaturedImagePosition'. This is for back compatibility
+    // with posts that don't have featured image but contain some value for 'featuredImagePosition' in the DB.
+    if ($this->args['displayType'] === 'full') {
+      return $this->args['fullPostFeaturedImagePosition'] ?? 'none';
+    }
+    return $this->args['featuredImagePosition'];
   }
 }
