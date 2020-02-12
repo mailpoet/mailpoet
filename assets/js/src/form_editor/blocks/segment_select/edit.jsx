@@ -4,6 +4,8 @@ import {
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+
+import ParagraphEdit from '../paragraph_edit.jsx';
 import Settings from './settings.jsx';
 
 const SegmentSelectEdit = ({ attributes, setAttributes }) => {
@@ -22,7 +24,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
   };
 
   return (
-    <>
+    <ParagraphEdit>
       <Settings
         label={attributes.label}
         onLabelChanged={(label) => (setAttributes({ label }))}
@@ -39,7 +41,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
         {attributes.label}
       </span>
       {renderValues()}
-    </>
+    </ParagraphEdit>
   );
 };
 

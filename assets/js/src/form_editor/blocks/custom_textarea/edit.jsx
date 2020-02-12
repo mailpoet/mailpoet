@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
+import ParagraphEdit from '../paragraph_edit.jsx';
 import CustomFieldSettings from '../custom_text/custom_field_settings.jsx';
 import formatLabel from '../label_formatter.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
@@ -114,7 +115,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
   );
 
   return (
-    <>
+    <ParagraphEdit>
       {inspectorControls}
       {attributes.labelWithinInput ? (getTextArea(formatLabel(attributes))
       ) : (
@@ -125,7 +126,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
           {getTextArea('')}
         </>
       )}
-    </>
+    </ParagraphEdit>
   );
 };
 
