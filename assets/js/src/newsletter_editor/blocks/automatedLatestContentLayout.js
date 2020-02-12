@@ -68,7 +68,7 @@ Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
       imageFullWidth: false, // true|false
       titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
       featuredImagePosition: 'centered', // 'centered'|'left'|'right'|'alternate'|'none'
-      fullPostFeaturedImagePosition: 'left', // 'centered'|'left'|'right'|'alternate'|'none'
+      fullPostFeaturedImagePosition: 'none', // 'centered'|'left'|'right'|'alternate'|'none'
       showAuthor: 'no', // 'no'|'aboveText'|'belowText'
       authorPrecededBy: 'Author:',
       showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -94,7 +94,12 @@ Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
       _container: App.getBlockTypeModel('container'),
     };
   },
-  initialize: function () {
+  initialize: function (block) {
+    // when added as new block, set default for full post featured image position to 'left'
+    if (_.isEmpty(block)) {
+      this.set('fullPostFeaturedImagePosition', 'left');
+    }
+
     base.BlockView.prototype.initialize.apply(this, arguments);
     this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider change:titlePosition', this._handleChanges, this);
     this.listenTo(this.get('readMoreButton'), 'change', this._handleChanges);
