@@ -24,8 +24,14 @@ class DisplayFormInWPContent {
     $this->formRenderer = $formRenderer;
   }
 
-  public function display(string $content): string {
-    if(!$this->shouldDisplay()) return $content;
+  /**
+   * This takes input from an action and any plugin or theme can pass anything.
+   * We return string for regular content otherwise we just pass thru what comes.
+   * @param mixed $content
+   * @return string|mixed
+   */
+  public function display($content = null) {
+    if (!is_string($content) || !$this->shouldDisplay()) return $content;
 
     $forms = $this->getForms();
     if (count($forms) === 0) {
