@@ -52,7 +52,7 @@ Module.PostsBlockModel = base.BlockModel.extend({
       imageFullWidth: false, // true|false
       titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
       featuredImagePosition: 'centered', // 'centered'|'right'|'left'|'alternate'|'none'
-      fullPostFeaturedImagePosition: 'left', // 'centered'|'left'|'right'|'alternate'|'none'
+      fullPostFeaturedImagePosition: 'none', // 'centered'|'left'|'right'|'alternate'|'none'
       showAuthor: 'no', // 'no'|'aboveText'|'belowText'
       authorPrecededBy: 'Author:',
       showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -81,7 +81,7 @@ Module.PostsBlockModel = base.BlockModel.extend({
       _transformedPosts: App.getBlockTypeModel('container'),
     };
   },
-  initialize: function () {
+  initialize: function (block) {
     var POST_REFRESH_DELAY_MS = 500;
     var refreshAvailablePosts = _.debounce(
       this.fetchAvailablePosts.bind(this),
@@ -91,6 +91,11 @@ Module.PostsBlockModel = base.BlockModel.extend({
       this._refreshTransformedPosts.bind(this),
       POST_REFRESH_DELAY_MS
     );
+
+    // when added as new block, set default for full post featured image position to 'left'
+    if (_.isEmpty(block)) {
+      this.set('fullPostFeaturedImagePosition', 'left');
+    }
 
     // Attach Radio.Requests API primarily for highlighting
     _.extend(this, Radio.Requests);
