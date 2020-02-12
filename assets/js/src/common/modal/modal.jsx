@@ -22,7 +22,7 @@ function Modal({
   overlayClassName,
   fullScreen,
 }) {
-  const headingId = aria.labelledby || 'components-modal-header';
+  const headingId = aria.labelledby || 'mailpoet-modal-header';
 
   return createPortal(
     <ModalFrame
