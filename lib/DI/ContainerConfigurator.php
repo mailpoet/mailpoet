@@ -170,7 +170,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Form\AssetsController::class);
     $container->autowire(\MailPoet\Form\DisplayFormInWPContent::class);
     $container->autowire(\MailPoet\Form\FormsRepository::class);
-    $container->autowire(\MailPoet\Form\Renderer::class);
+    $container->autowire(\MailPoet\Form\Renderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\BlocksRenderer::class);
     $container->autowire(\MailPoet\Form\Block\Base::class);
     $container->autowire(\MailPoet\Form\Block\Checkbox::class);
