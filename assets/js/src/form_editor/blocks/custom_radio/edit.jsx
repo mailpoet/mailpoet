@@ -91,6 +91,7 @@ const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
               type="radio"
               disabled
               checked={value.isChecked || false}
+              className="mailpoet_radio"
             />
             {value.name}
           </label>

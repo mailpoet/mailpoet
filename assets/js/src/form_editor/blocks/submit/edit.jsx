@@ -30,14 +30,12 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
   return (
     <ParagraphEdit>
       { inspectorControls }
-      <div className="mailpoet_submit">
-        <input
-          className="button"
-          type="submit"
-          value={attributes.label}
-          data-automation-id="editor_submit_input"
-        />
-      </div>
+      <input
+        className="button mailpoet_submit"
+        type="submit"
+        value={attributes.label}
+        data-automation-id="editor_submit_input"
+      />
     </ParagraphEdit>
   );
 };

@@ -105,7 +105,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
   const getTextArea = (placeholder) => (
     <textarea
       id="custom_text"
-      className="mailpoet_text"
+      className="mailpoet_textarea"
       name="custom_text"
       disabled
       data-automation-id="editor_custom_text_input"
