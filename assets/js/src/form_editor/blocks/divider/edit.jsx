@@ -7,7 +7,7 @@ import ParagraphEdit from '../paragraph_edit.jsx';
 
 const DividerEdit = () => (
   <ParagraphEdit>
-    <HorizontalRule />
+    <HorizontalRule className="mailpoet_divider" />
   </ParagraphEdit>
 );
 export default DividerEdit;

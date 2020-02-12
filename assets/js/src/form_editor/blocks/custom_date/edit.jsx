@@ -101,6 +101,7 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
           item={{
             [clientId]: attributes.defaultToday ? moment().format('YYYY-MM-DD') : '',
           }}
+          addDefaultClasses
           onValueChange={() => {}}
         />
       </div>

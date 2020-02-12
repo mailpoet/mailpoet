@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 function FormFieldDateYear(props) {
   const yearsRange = 100;
@@ -28,6 +29,7 @@ function FormFieldDateYear(props) {
       name={`${props.name}[year]`}
       value={props.year}
       onChange={props.onValueChange}
+      className={classnames({ mailpoet_date_year: props.addDefaultClasses })}
     >
       { years }
     </select>
@@ -42,6 +44,7 @@ FormFieldDateYear.propTypes = {
     PropTypes.string,
     PropTypes.number,
   ]).isRequired,
+  addDefaultClasses: PropTypes.bool.isRequired,
 };
 
 function FormFieldDateMonth(props) {
@@ -68,6 +71,7 @@ function FormFieldDateMonth(props) {
       name={`${props.name}[month]`}
       value={props.month}
       onChange={props.onValueChange}
+      className={classnames({ mailpoet_date_month: props.addDefaultClasses })}
     >
       { months }
     </select>
@@ -83,6 +87,7 @@ FormFieldDateMonth.propTypes = {
     PropTypes.number,
   ]).isRequired,
   monthNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+  addDefaultClasses: PropTypes.bool.isRequired,
 };
 
 function FormFieldDateDay(props) {
@@ -110,6 +115,7 @@ function FormFieldDateDay(props) {
       name={`${props.name}[day]`}
       value={props.day}
       onChange={props.onValueChange}
+      className={classnames({ mailpoet_date_day: props.addDefaultClasses })}
     >
       { days }
     </select>
@@ -124,6 +130,7 @@ FormFieldDateDay.propTypes = {
     PropTypes.string,
     PropTypes.number,
   ]).isRequired,
+  addDefaultClasses: PropTypes.bool.isRequired,
 };
 
 class FormFieldDate extends React.Component {
@@ -253,6 +260,7 @@ class FormFieldDate extends React.Component {
               onValueChange={this.onValueChange}
               key="year"
               name={this.props.field.name}
+              addDefaultClasses={this.props.addDefaultClasses}
               year={this.state.year}
               placeholder={this.props.field.year_placeholder}
             />
@@ -264,6 +272,7 @@ class FormFieldDate extends React.Component {
               onValueChange={this.onValueChange}
               key="month"
               name={this.props.field.name}
+              addDefaultClasses={this.props.addDefaultClasses}
               month={this.state.month}
               monthNames={monthNames}
               placeholder={this.props.field.month_placeholder}
@@ -276,6 +285,7 @@ class FormFieldDate extends React.Component {
               onValueChange={this.onValueChange}
               key="day"
               name={this.props.field.name}
+              addDefaultClasses={this.props.addDefaultClasses}
               day={this.state.day}
               placeholder={this.props.field.day_placeholder}
             />
@@ -304,6 +314,11 @@ FormFieldDate.propTypes = {
     params: PropTypes.object, //  eslint-disable-line react/forbid-prop-types
   }).isRequired,
   onValueChange: PropTypes.func.isRequired,
+  addDefaultClasses: PropTypes.bool,
+};
+
+FormFieldDate.defaultProps = {
+  addDefaultClasses: false,
 };
 
 export default FormFieldDate;

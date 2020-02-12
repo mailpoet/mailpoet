@@ -119,6 +119,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
             type="checkbox"
             disabled
             checked={isChecked()}
+            className="mailpoet_checkbox"
           />
           {checkboxLabel}
         </label>
