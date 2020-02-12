@@ -307,33 +307,14 @@ Module.AutomatedLatestContentLayoutBlockSettingsView = base.BlockSettingsView.ex
   changeDisplayType: function (event) {
     var value = jQuery(event.target).val();
 
-    if (value === 'titleOnly') {
-      this.$('.mailpoet_automated_latest_content_title_as_list').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_automated_latest_content_image_full_width_option').addClass('mailpoet_hidden');
-      this.$('.mailpoet_automated_latest_content_image_separator').addClass('mailpoet_hidden');
-    } else {
-      this.$('.mailpoet_automated_latest_content_title_as_list').addClass('mailpoet_hidden');
-      this.$('.mailpoet_automated_latest_content_image_full_width_option').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_automated_latest_content_image_separator').removeClass('mailpoet_hidden');
-
-      // Reset titleFormat if it was set to List when switching away from displayType=titleOnly
-      if (this.model.get('titleFormat') === 'ul') {
-        this.model.set('titleFormat', 'h1');
-        this.$('.mailpoet_automated_latest_content_title_format').val(['h1']);
-        this.$('.mailpoet_automated_latest_content_title_as_link').removeClass('mailpoet_hidden');
-      }
-    }
-
-    if (value === 'excerpt') {
-      this.$('.mailpoet_automated_latest_content_featured_image_position_container').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_automated_latest_content_title_position_separator').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_automated_latest_content_title_position').removeClass('mailpoet_hidden');
-    } else {
-      this.$('.mailpoet_automated_latest_content_featured_image_position_container').addClass('mailpoet_hidden');
-      this.$('.mailpoet_automated_latest_content_title_position_separator').addClass('mailpoet_hidden');
-      this.$('.mailpoet_automated_latest_content_title_position').addClass('mailpoet_hidden');
+    // Reset titleFormat if it was set to List when switching away from displayType=titleOnly
+    if (value !== 'titleOnly' && this.model.get('titleFormat') === 'ul') {
+      this.model.set('titleFormat', 'h1');
+      this.$('.mailpoet_automated_latest_content_title_format').val(['h1']);
+      this.$('.mailpoet_automated_latest_content_title_as_link').removeClass('mailpoet_hidden');
     }
     this.changeField('displayType', event);
+    this.render();
   },
   changeTitleFormat: function (event) {
     var value = jQuery(event.target).val();
