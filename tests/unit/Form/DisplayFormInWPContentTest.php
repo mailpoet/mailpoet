@@ -50,6 +50,16 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     expect($result)->regExp('/content.*input type="submit"/is');
   }
 
+  public function testItPassThruNonStringPostContent() {
+    $this->wp->expects($this->never())->method('isSingle');
+    $this->wp->expects($this->never())->method('isSingular');
+    $this->repository->expects($this->never())->method('findAll');
+    expect($this->hook->display(null))->null();
+    expect($this->hook->display([1,2,3]))->equals([1,2,3]);
+    expect($this->hook->display(1))->equals(1);
+    expect($this->hook->display(1.1))->equals(1.1);
+  }
+
   public function testDoesNotAppendFormIfDisabled() {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isPage')->willReturn(false);
