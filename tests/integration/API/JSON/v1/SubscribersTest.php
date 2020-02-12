@@ -555,7 +555,7 @@ class SubscribersTest extends \MailPoetTest {
     $subscriber->email = $email;
     $subscriber->countConfirmations = 1;
     $subscriber->save();
-    $captchaValue = 'ihg5w';
+    $captchaValue = 'ihG5W';
     $captchaSessionId = 'abcdfgh';
     $this->captchaSession->init($captchaSessionId);
     $this->captchaSession->setCaptchaHash($captchaValue);
