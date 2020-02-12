@@ -174,6 +174,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Form\Renderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\BlocksRenderer::class);
     $container->autowire(\MailPoet\Form\Block\BlockRendererHelper::class);
+    $container->autowire(\MailPoet\Form\Block\Column::class);
+    $container->autowire(\MailPoet\Form\Block\Columns::class);
     $container->autowire(\MailPoet\Form\Block\Checkbox::class);
     $container->autowire(\MailPoet\Form\Block\Date::class);
     $container->autowire(\MailPoet\Form\Block\Divider::class);
