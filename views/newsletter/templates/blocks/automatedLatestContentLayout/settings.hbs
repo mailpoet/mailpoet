@@ -132,9 +132,9 @@
         </div>
     </div>
 
-    <hr class="mailpoet_separator mailpoet_automated_latest_content_title_position_separator {{#ifCond model.displayType '!==' 'excerpt'}}mailpoet_hidden{{/ifCond}}" />
+    <hr class="mailpoet_separator mailpoet_automated_latest_content_title_position_separator {{#ifCond model.displayType '===' 'titleOnly'}}mailpoet_hidden{{/ifCond}}" />
 
-    <div class="mailpoet_form_field mailpoet_automated_latest_content_title_position {{#ifCond model.displayType '!==' 'excerpt'}}mailpoet_hidden{{/ifCond}}">
+    <div class="mailpoet_form_field mailpoet_automated_latest_content_title_position {{#ifCond model.displayType '===' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
         <div class="mailpoet_form_field_title"><%= _x('Title position', 'Setting in the email designer to position the blog post title') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
@@ -152,7 +152,7 @@
 
     <hr class="mailpoet_separator mailpoet_automated_latest_content_image_separator {{#ifCond model.displayType '===' 'titleOnly'}}mailpoet_hidden{{/ifCond}}" />
 
-    <div class="mailpoet_form_field mailpoet_automated_latest_content_featured_image_position_container {{#ifCond model.displayType '!==' 'excerpt'}}mailpoet_hidden{{/ifCond}}">
+    <div class="mailpoet_form_field mailpoet_automated_latest_content_featured_image_position_container {{#ifCond model.displayType '===' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
         <div class="mailpoet_form_field_title"><%= __('Featured image position') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
