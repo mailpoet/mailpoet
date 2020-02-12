@@ -67,12 +67,14 @@ export default () => {
                   <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
                     <BlockEditorKeyboardShortcuts />
                     <BlockEditorKeyboardShortcuts.Register />
-                    <WritingFlow>
-                      <ObserveTyping>
-                        <FormTitle />
-                        <BlockList />
-                      </ObserveTyping>
-                    </WritingFlow>
+                    <div className="mailpoet_form">
+                      <WritingFlow>
+                        <ObserveTyping>
+                          <FormTitle />
+                          <BlockList />
+                        </ObserveTyping>
+                      </WritingFlow>
+                    </div>
                   </BlockSelectionClearer>
                 </div>
                 <div className="block-editor-editor-skeleton__sidebar">
