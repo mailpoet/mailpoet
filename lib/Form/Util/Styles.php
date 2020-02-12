@@ -48,7 +48,7 @@ class Styles {
 .mailpoet_checkbox {
 }
 
-.mailpoet_submit input {
+.mailpoet_submit {
 }
 
 .mailpoet_divider {
