@@ -52,7 +52,7 @@ Module.ALCLayoutSupervisor = SuperModel.extend({
 });
 
 Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
-  stale: ['_container', '_displayOptionsHidden'],
+  stale: ['_container', '_displayOptionsHidden', '_featuredImagePosition'],
   defaults: function () {
     return this._getDefaults({
       type: 'automatedLatestContentLayout',
@@ -68,6 +68,7 @@ Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
       imageFullWidth: false, // true|false
       titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
       featuredImagePosition: 'centered', // 'centered'|'left'|'right'|'alternate'|'none'
+      fullPostFeaturedImagePosition: 'left', // 'centered'|'left'|'right'|'alternate'|'none'
       showAuthor: 'no', // 'no'|'aboveText'|'belowText'
       authorPrecededBy: 'Author:',
       showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -83,6 +84,7 @@ Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
       divider: {},
       _container: new (App.getBlockTypeModel('container'))(),
       _displayOptionsHidden: true, // true|false
+      _featuredImagePosition: 'none', // 'centered'|'left'|'right'|'alternate'|'none'
     }, App.getConfig().get('blockDefaults.automatedLatestContentLayout'));
   },
   relations: function () {
@@ -99,6 +101,9 @@ Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
     this.listenTo(this.get('divider'), 'change', this._handleChanges);
     this.on('add remove update reset', this._handleChanges);
     this.on('refreshPosts', this.updatePosts, this);
+
+    const field = this.get('displayType') === 'full' ? 'fullPostFeaturedImagePosition' : 'featuredImagePosition';
+    this.set('_featuredImagePosition', this.get(field));
   },
   updatePosts: function (posts) {
     this.get('_container.blocks').reset(posts, { parse: true });
@@ -182,7 +187,7 @@ Module.AutomatedLatestContentLayoutBlockSettingsView = base.BlockSettingsView.ex
       'change .mailpoet_automated_latest_content_include_or_exclude': _.partial(this.changeField, 'inclusionType'),
       'change .mailpoet_automated_latest_content_title_alignment': _.partial(this.changeField, 'titleAlignment'),
       'change .mailpoet_automated_latest_content_image_full_width': _.partial(this.changeBoolField, 'imageFullWidth'),
-      'change .mailpoet_automated_latest_content_featured_image_position': _.partial(this.changeField, 'featuredImagePosition'),
+      'change .mailpoet_automated_latest_content_featured_image_position': 'changeFeaturedImagePosition',
       'change .mailpoet_automated_latest_content_show_author': _.partial(this.changeField, 'showAuthor'),
       'input .mailpoet_automated_latest_content_author_preceded_by': _.partial(this.changeField, 'authorPrecededBy'),
       'change .mailpoet_automated_latest_content_show_categories': _.partial(this.changeField, 'showCategories'),
@@ -314,6 +319,9 @@ Module.AutomatedLatestContentLayoutBlockSettingsView = base.BlockSettingsView.ex
       this.$('.mailpoet_automated_latest_content_title_as_link').removeClass('mailpoet_hidden');
     }
     this.changeField('displayType', event);
+
+    const field = this.model.get('displayType') === 'full' ? 'fullPostFeaturedImagePosition' : 'featuredImagePosition';
+    this.model.set('_featuredImagePosition', this.model.get(field));
     this.render();
   },
   changeTitleFormat: function (event) {
@@ -329,6 +337,11 @@ Module.AutomatedLatestContentLayoutBlockSettingsView = base.BlockSettingsView.ex
       this.$('.mailpoet_automated_latest_content_title_as_link').removeClass('mailpoet_hidden');
     }
     this.changeField('titleFormat', event);
+  },
+  changeFeaturedImagePosition: function (event) {
+    const field = this.model.get('displayType') === 'full' ? 'fullPostFeaturedImagePosition' : 'featuredImagePosition';
+    this.changeField(field, event);
+    this.changeField('_featuredImagePosition', event);
   },
   _updateContentTypes: function (postTypes) {
     var select = this.$('.mailpoet_automated_latest_content_content_type');

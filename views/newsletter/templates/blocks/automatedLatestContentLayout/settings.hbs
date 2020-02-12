@@ -158,31 +158,31 @@
         <div class="mailpoet_form_field_title"><%= __('Featured image position') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="centered" {{#ifCond model.featuredImagePosition '==' 'centered' }}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="centered" {{#ifCond _featuredImagePosition '==' 'centered' }}CHECKED{{/ifCond}}/>
                 <%= __('Centered') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="left" {{#ifCond model.featuredImagePosition '==' 'left' }}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="left" {{#ifCond _featuredImagePosition '==' 'left' }}CHECKED{{/ifCond}}/>
                 <%= __('Left') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="right" {{#ifCond model.featuredImagePosition '==' 'right' }}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="right" {{#ifCond _featuredImagePosition '==' 'right' }}CHECKED{{/ifCond}}/>
                 <%= __('Right') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="alternate" {{#ifCond model.featuredImagePosition '==' 'alternate' }}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="alternate" {{#ifCond _featuredImagePosition '==' 'alternate' }}CHECKED{{/ifCond}}/>
                 <%= __('Alternate') %>
             </label>
         </div>
         <div class="mailpoet_form_field_radio_option">
             <label>
-                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="none" {{#ifCond model.featuredImagePosition '==' 'none' }}CHECKED{{/ifCond}}/>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="none" {{#ifCond _featuredImagePosition '==' 'none' }}CHECKED{{/ifCond}}/>
                 <%= __('None') %>
             </label>
         </div>

@@ -33,7 +33,7 @@ var PostSelectionSettingsView;
 var PostsSelectionCollectionView;
 
 Module.PostsBlockModel = base.BlockModel.extend({
-  stale: ['_selectedPosts', '_availablePosts', '_transformedPosts'],
+  stale: ['_selectedPosts', '_availablePosts', '_transformedPosts', '_featuredImagePosition'],
   defaults: function () {
     return this._getDefaults({
       type: 'posts',
@@ -52,6 +52,7 @@ Module.PostsBlockModel = base.BlockModel.extend({
       imageFullWidth: false, // true|false
       titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
       featuredImagePosition: 'centered', // 'centered'|'right'|'left'|'alternate'|'none'
+      fullPostFeaturedImagePosition: 'left', // 'centered'|'left'|'right'|'alternate'|'none'
       showAuthor: 'no', // 'no'|'aboveText'|'belowText'
       authorPrecededBy: 'Author:',
       showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -68,6 +69,7 @@ Module.PostsBlockModel = base.BlockModel.extend({
       _selectedPosts: [],
       _availablePosts: [],
       _transformedPosts: new (App.getBlockTypeModel('container'))(),
+      _featuredImagePosition: 'none', // 'centered'|'left'|'right'|'alternate'|'none'
     }, App.getConfig().get('blockDefaults.posts'));
   },
   relations: function () {
@@ -105,6 +107,9 @@ Module.PostsBlockModel = base.BlockModel.extend({
     this.listenTo(App.getChannel(), 'hideSettings', this.destroy);
 
     this.on('insertSelectedPosts', this._insertSelectedPosts, this);
+
+    const field = this.get('displayType') === 'full' ? 'fullPostFeaturedImagePosition' : 'featuredImagePosition';
+    this.set('_featuredImagePosition', this.get(field));
   },
   fetchAvailablePosts: function () {
     var that = this;
@@ -485,7 +490,7 @@ PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       'change .mailpoet_posts_content_type': _.partial(this.changeField, 'contentType'),
       'change .mailpoet_posts_title_alignment': _.partial(this.changeField, 'titleAlignment'),
       'change .mailpoet_posts_image_full_width': _.partial(this.changeBoolField, 'imageFullWidth'),
-      'change .mailpoet_posts_featured_image_position': _.partial(this.changeField, 'featuredImagePosition'),
+      'change .mailpoet_posts_featured_image_position': 'changeFeaturedImagePosition',
       'change .mailpoet_posts_show_author': _.partial(this.changeField, 'showAuthor'),
       'input .mailpoet_posts_author_preceded_by': _.partial(this.changeField, 'authorPrecededBy'),
       'change .mailpoet_posts_show_categories': _.partial(this.changeField, 'showCategories'),
@@ -541,6 +546,9 @@ PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       this.$('.mailpoet_posts_title_as_link').removeClass('mailpoet_hidden');
     }
     this.changeField('displayType', event);
+
+    const field = this.model.get('displayType') === 'full' ? 'fullPostFeaturedImagePosition' : 'featuredImagePosition';
+    this.model.set('_featuredImagePosition', this.model.get(field));
     this.render();
   },
   changeTitleFormat: function (event) {
@@ -556,6 +564,11 @@ PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       this.$('.mailpoet_posts_title_as_link').removeClass('mailpoet_hidden');
     }
     this.changeField('titleFormat', event);
+  },
+  changeFeaturedImagePosition: function (event) {
+    const field = this.model.get('displayType') === 'full' ? 'fullPostFeaturedImagePosition' : 'featuredImagePosition';
+    this.changeField(field, event);
+    this.changeField('_featuredImagePosition', event);
   },
 });
 
