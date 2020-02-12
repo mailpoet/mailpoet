@@ -23,6 +23,7 @@ export const settings = {
     html: false,
     customClassName: false,
     inserter: false,
+    multiple: false,
   },
   edit,
   save() {
