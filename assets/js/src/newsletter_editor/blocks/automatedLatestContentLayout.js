@@ -52,7 +52,7 @@ Module.ALCLayoutSupervisor = SuperModel.extend({
 });
 
 Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
-  stale: ['_container'],
+  stale: ['_container', '_displayOptionsHidden'],
   defaults: function () {
     return this._getDefaults({
       type: 'automatedLatestContentLayout',
@@ -82,6 +82,7 @@ Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
       showDivider: true, // true|false
       divider: {},
       _container: new (App.getBlockTypeModel('container'))(),
+      _displayOptionsHidden: true, // true|false
     }, App.getConfig().get('blockDefaults.automatedLatestContentLayout'));
   },
   relations: function () {
@@ -268,15 +269,8 @@ Module.AutomatedLatestContentLayoutBlockSettingsView = base.BlockSettingsView.ex
     }).trigger('change');
   },
   toggleDisplayOptions: function () {
-    var el = this.$('.mailpoet_automated_latest_content_display_options');
-    var showControl = this.$('.mailpoet_automated_latest_content_show_display_options');
-    if (el.hasClass('mailpoet_closed')) {
-      el.removeClass('mailpoet_closed');
-      showControl.addClass('mailpoet_hidden');
-    } else {
-      el.addClass('mailpoet_closed');
-      showControl.removeClass('mailpoet_hidden');
-    }
+    this.model.set('_displayOptionsHidden', !this.model.get('_displayOptionsHidden'));
+    this.render();
   },
   showButtonSettings: function () {
     var buttonModule = ButtonBlock;
