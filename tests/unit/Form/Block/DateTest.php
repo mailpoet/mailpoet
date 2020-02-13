@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Form\Block;
 
-use MailPoet\Form\Block\Base;
+use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Date;
 use MailPoet\Test\Form\HtmlParser;
 use MailPoetVendor\Carbon\Carbon;
@@ -14,7 +14,7 @@ class DateTest extends \MailPoetUnitTest {
   /** @var Date */
   private $date;
 
-  /** @var MockObject & Base */
+  /** @var MockObject & BlockRendererHelper */
   private $baseMock;
 
   /** @var HtmlParser */
@@ -38,7 +38,7 @@ class DateTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->baseMock = $this->createMock(Base::class);
+    $this->baseMock = $this->createMock(BlockRendererHelper::class);
     $this->date = new Date($this->baseMock);
     $this->htmlParser = new HtmlParser();
   }

@@ -6,28 +6,28 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Select {
 
-  /** @var Base */
-  private $baseRenderer;
+  /** @var BlockRendererHelper */
+  private $rendererHelper;
 
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(Base $baseRenderer, WPFunctions $wp) {
-    $this->baseRenderer = $baseRenderer;
+  public function __construct(BlockRendererHelper $rendererHelper, WPFunctions $wp) {
+    $this->rendererHelper = $rendererHelper;
     $this->wp = $wp;
   }
 
   public function render(array $block): string {
     $html = '';
 
-    $fieldName = 'data[' . $this->baseRenderer->getFieldName($block) . ']';
+    $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
     $automationId = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
     $html .= '<p class="mailpoet_paragraph">';
-    $html .= $this->baseRenderer->renderLabel($block);
+    $html .= $this->rendererHelper->renderLabel($block);
     $html .= '<select class="mailpoet_select" name="' . $fieldName . '" ' . $automationId . '>';
 
     if (isset($block['params']['label_within']) && $block['params']['label_within']) {
-      $label = $this->baseRenderer->getFieldLabel($block);
+      $label = $this->rendererHelper->getFieldLabel($block);
       if (!empty($block['params']['required'])) {
         $label .= ' *';
       }
@@ -51,7 +51,7 @@ class Select {
       $isSelected = (
         (isset($option['is_checked']) && $option['is_checked'])
         ||
-        ($this->baseRenderer->getFieldValue($block) === $option['value'])
+        ($this->rendererHelper->getFieldValue($block) === $option['value'])
       ) ? ' selected="selected"' : '';
 
       $isDisabled = (!empty($option['is_disabled'])) ? ' disabled="disabled"' : '';

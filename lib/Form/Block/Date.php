@@ -4,17 +4,17 @@ namespace MailPoet\Form\Block;
 
 class Date {
 
-  /** @var Base */
-  private $baseRenderer;
+  /** @var BlockRendererHelper */
+  private $rendererHelper;
 
-  public function __construct(Base $baseRenderer) {
-    $this->baseRenderer = $baseRenderer;
+  public function __construct(BlockRendererHelper $rendererHelper) {
+    $this->rendererHelper = $rendererHelper;
   }
 
   public function render(array $block): string {
     $html = '';
     $html .= '<p class="mailpoet_paragraph">';
-    $html .= $this->baseRenderer->renderLabel($block);
+    $html .= $this->rendererHelper->renderLabel($block);
     $html .= $this->renderDateSelect($block);
     $html .= '</p>';
 
@@ -24,7 +24,7 @@ class Date {
   private function renderDateSelect(array $block = []): string {
     $html = '';
 
-    $fieldName = 'data[' . $this->baseRenderer->getFieldName($block) . ']';
+    $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
 
     $dateFormats = $this->getDateFormats();
 
@@ -43,7 +43,7 @@ class Date {
     foreach ($dateSelectors as $dateSelector) {
       if ($dateSelector === 'DD') {
         $html .= '<select class="mailpoet_date_day" ';
-        $html .= $this->baseRenderer->getInputValidation($block, [
+        $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a day', 'mailpoet'),
         ]);
         $html .= 'name="' . $fieldName . '[day]" placeholder="' . __('Day', 'mailpoet') . '">';
@@ -51,7 +51,7 @@ class Date {
         $html .= '</select>';
       } else if ($dateSelector === 'MM') {
         $html .= '<select class="mailpoet_select mailpoet_date_month" ';
-        $html .= $this->baseRenderer->getInputValidation($block, [
+        $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a month', 'mailpoet'),
         ]);
         $html .= 'name="' . $fieldName . '[month]" placeholder="' . __('Month', 'mailpoet') . '">';
@@ -59,7 +59,7 @@ class Date {
         $html .= '</select>';
       } else if ($dateSelector === 'YYYY') {
         $html .= '<select class="mailpoet_date_year" ';
-        $html .= $this->baseRenderer->getInputValidation($block, [
+        $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a year', 'mailpoet'),
         ]);
         $html .= 'name="' . $fieldName . '[year]" placeholder="' . __('Year', 'mailpoet') . '">';

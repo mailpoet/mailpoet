@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Form\Block;
 
-use MailPoet\Form\Block\Base;
+use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Text;
 use MailPoet\Test\Form\HtmlParser;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -13,8 +13,8 @@ class TextTest extends \MailPoetUnitTest {
   /** @var Text */
   private $text;
 
-  /** @var MockObject & Base */
-  private $baseMock;
+  /** @var MockObject & BlockRendererHelper */
+  private $rendererHelperMock;
 
   /** @var HtmlParser */
   private $htmlParser;
@@ -35,19 +35,19 @@ class TextTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->baseMock = $this->createMock(Base::class);
-    $this->text = new Text($this->baseMock);
+    $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
+    $this->text = new Text($this->rendererHelperMock);
     $this->htmlParser = new HtmlParser();
   }
 
   public function testItShouldRenderTextInput() {
-    $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
-    $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
-    $this->baseMock->expects($this->once())->method('getFieldLabel')->willReturn('Input label');
-    $this->baseMock->expects($this->once())->method('getInputValidation')->willReturn(' validation="1" ');
-    $this->baseMock->expects($this->once())->method('getFieldValue')->willReturn('val');
-    $this->baseMock->expects($this->once())->method('renderInputPlaceholder')->willReturn('');
-    $this->baseMock->expects($this->once())->method('getInputModifiers')->willReturn(' modifiers="mod" ');
+    $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
+    $this->rendererHelperMock->expects($this->once())->method('getFieldLabel')->willReturn('Input label');
+    $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn(' validation="1" ');
+    $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('val');
+    $this->rendererHelperMock->expects($this->once())->method('renderInputPlaceholder')->willReturn('');
+    $this->rendererHelperMock->expects($this->once())->method('getInputModifiers')->willReturn(' modifiers="mod" ');
 
     $html = $this->text->render($this->block);
     $input = $this->htmlParser->getElementByXpath($html, '//input');

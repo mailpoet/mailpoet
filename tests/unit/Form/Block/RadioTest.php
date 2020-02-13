@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Form\Block;
 
-use MailPoet\Form\Block\Base;
+use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Radio;
 use MailPoet\Test\Form\HtmlParser;
 use MailPoet\WP\Functions as WPFunctions;
@@ -14,11 +14,11 @@ class RadioTest extends \MailPoetUnitTest {
   /** @var Radio */
   private $radio;
 
-  /** @var MockObject & Base */
+  /** @var MockObject & BlockRendererHelper */
   private $baseMock;
 
   /** @var MockObject & WPFunctions */
-  private $wpMock;
+  private $rendererHelperMock;
 
   /** @var HtmlParser */
   private $htmlParser;
@@ -46,10 +46,10 @@ class RadioTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->wpMock = $this->createMock(WPFunctions::class);
-    $this->wpMock->method('escAttr')->will($this->returnArgument(0));
-    $this->baseMock = $this->createMock(Base::class);
-    $this->radio = new Radio($this->baseMock, $this->wpMock);
+    $this->rendererHelperMock = $this->createMock(WPFunctions::class);
+    $this->rendererHelperMock->method('escAttr')->will($this->returnArgument(0));
+    $this->baseMock = $this->createMock(BlockRendererHelper::class);
+    $this->radio = new Radio($this->baseMock, $this->rendererHelperMock);
     $this->htmlParser = new HtmlParser();
   }
 

@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Form\Block;
 
-use MailPoet\Form\Block\Base;
+use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Textarea;
 use MailPoet\Test\Form\HtmlParser;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -13,8 +13,8 @@ class TextareaTest extends \MailPoetUnitTest {
   /** @var Textarea */
   private $textarea;
 
-  /** @var MockObject & Base */
-  private $baseMock;
+  /** @var MockObject & BlockRendererHelper */
+  private $rendererHelperMock;
 
   /** @var HtmlParser */
   private $htmlParser;
@@ -36,18 +36,18 @@ class TextareaTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->baseMock = $this->createMock(Base::class);
-    $this->textarea = new Textarea($this->baseMock);
+    $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
+    $this->textarea = new Textarea($this->rendererHelperMock);
     $this->htmlParser = new HtmlParser();
   }
 
   public function testItShouldRenderTextarea() {
-    $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
-    $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
-    $this->baseMock->expects($this->once())->method('renderInputPlaceholder')->willReturn('');
-    $this->baseMock->expects($this->once())->method('getInputValidation')->willReturn(' validation="1" ');
-    $this->baseMock->expects($this->once())->method('getInputModifiers')->willReturn(' modifiers="mod" ');
-    $this->baseMock->expects($this->once())->method('getFieldValue')->willReturn('val');
+    $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
+    $this->rendererHelperMock->expects($this->once())->method('renderInputPlaceholder')->willReturn('');
+    $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn(' validation="1" ');
+    $this->rendererHelperMock->expects($this->once())->method('getInputModifiers')->willReturn(' modifiers="mod" ');
+    $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('val');
 
     $html = $this->textarea->render($this->block);
     $textarea = $this->htmlParser->getElementByXpath($html, '//textarea');

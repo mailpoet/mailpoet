@@ -4,11 +4,11 @@ namespace MailPoet\Form\Block;
 
 class Submit {
 
-  /** @var Base */
-  private $baseRenderer;
+  /** @var BlockRendererHelper */
+  private $rendererHelper;
 
-  public function __construct(Base $baseRenderer) {
-    $this->baseRenderer = $baseRenderer;
+  public function __construct(BlockRendererHelper $rendererHelper) {
+    $this->rendererHelper = $rendererHelper;
   }
 
   public function render(array $block): string {
@@ -16,7 +16,7 @@ class Submit {
 
     $html .= '<p class="mailpoet_paragraph"><input type="submit" class="mailpoet_submit" ';
 
-    $html .= 'value="' . $this->baseRenderer->getFieldLabel($block) . '" ';
+    $html .= 'value="' . $this->rendererHelper->getFieldLabel($block) . '" ';
 
     $html .= 'data-automation-id="subscribe-submit-button" ';
 
