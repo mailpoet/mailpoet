@@ -18,6 +18,9 @@ class WidgetTest extends \MailPoetTest {
             'id' => 'email',
           ],
         ],
+        'settings' => [
+          'success_message' => 'Hello!',
+        ],
       ]
     );
     $formWidget = new Widget();

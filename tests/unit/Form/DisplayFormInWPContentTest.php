@@ -2,8 +2,8 @@
 
 namespace MailPoet\Form;
 
+use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\FormEntity;
-use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -18,33 +18,41 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   /** @var Renderer & MockObject */
   private $renderer;
 
+  /** @var AssetsController & MockObject */
+  private $assetsController;
+
+  /** @var TemplateRenderer & MockObject */
+  private $templateRenderer;
+
   /** @var DisplayFormInWPContent */
   private $hook;
 
   public function _before() {
     parent::_before();
-    // settings is needed by renderer
-    $settings = $this->createMock(SettingsController::class);
-    SettingsController::setInstance($settings);
-
     $this->repository = $this->createMock(FormsRepository::class);
     $this->wp = $this->createMock(WPFunctions::class);
+    $this->wp->expects($this->any())->method('wpCreateNonce')->willReturn('asdfgh');
+    WPFunctions::set($this->wp);
+    $this->assetsController = $this->createMock(AssetsController::class);
+    $this->templateRenderer = $this->createMock(TemplateRenderer::class);
     $this->renderer = $this->createMock(Renderer::class);
-    $this->hook = new DisplayFormInWPContent($this->wp, $this->repository, $this->renderer);
+    $this->renderer->expects($this->any())->method('renderStyles')->willReturn('<style></style>');
+    $this->renderer->expects($this->any())->method('renderHTML')->willReturn('<form></form>');
+    $this->hook = new DisplayFormInWPContent($this->wp, $this->repository, $this->renderer, $this->assetsController, $this->templateRenderer);
   }
 
   public function testAppendsRenderedFormAfterPostContent() {
-    $renderedForm = '<div class="form"></div>';
-    $renderedFormStyles = '<styles></styles>';
+    $renderedForm = '<form class="form"></form>';
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
-    $this->renderer->expects($this->once())->method('renderStyles')->willReturn($renderedFormStyles);
-    $this->renderer->expects($this->once())->method('renderHTML')->willReturn($renderedForm);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($renderedForm);
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
       'place_form_bellow_all_pages' => '',
       'place_form_bellow_all_posts' => '1',
+      'success_message' => 'Hello',
     ]);
     $form->setBody([[
       'type' => 'submit',
@@ -53,10 +61,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'name' => 'Submit',
     ]]);
     $this->repository->expects($this->once())->method('findAll')->willReturn([$form]);
-
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
-    expect($result)->endsWith($renderedFormStyles . $renderedForm);
+    expect($result)->endsWith($renderedForm);
   }
 
   public function testItPassThruNonStringPostContent() {
@@ -78,6 +85,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'segments' => ['3'],
       'place_form_bellow_all_pages' => '',
       'place_form_bellow_all_posts' => '',
+      'success_message' => 'Hello',
     ]);
     $form->setBody([[
       'type' => 'submit',
@@ -94,11 +102,13 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   public function testAppendsMultipleRenderedFormAfterPostContent() {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
     $form1 = new FormEntity('My Form');
     $form1->setSettings([
       'segments' => ['3'],
       'place_form_bellow_all_pages' => '',
       'place_form_bellow_all_posts' => '1',
+      'success_message' => 'Hello',
     ]);
     $form1->setBody([[
       'type' => 'submit',
@@ -111,6 +121,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'segments' => ['3'],
       'place_form_bellow_all_pages' => '',
       'place_form_bellow_all_posts' => '1',
+      'success_message' => 'Hello',
     ]);
     $form2->setBody([[
       'type' => 'submit',
@@ -118,20 +129,14 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'id' => 'submit',
       'name' => 'Submit',
     ]]);
-    $renderedForm1 = '<div class="form1"></div>';
-    $renderedForm2 = '<div class="form2"></div>';
-    $renderedStyles1 = '<styles id="1"></styles>';
-    $renderedStyles2 = '<styles id="2"></styles>';
     $this->repository->expects($this->once())->method('findAll')->willReturn([$form1, $form2]);
-    $this->renderer->expects($this->exactly(2))->method('renderHTML')->willReturnOnConsecutiveCalls($renderedForm1, $renderedForm2);
-    $this->renderer->expects($this->exactly(2))->method('renderStyles')->willReturnOnConsecutiveCalls($renderedStyles1, $renderedStyles2);
+    $formHtml1 = '<form id="test-form-1"></form>';
+    $formHtml2 = '<form id="test-form-2"></form>';
+    $this->templateRenderer->expects($this->exactly(2))->method('render')->willReturnOnConsecutiveCalls($formHtml1, $formHtml2);
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
-    expect($result)->contains($renderedStyles1);
-    expect($result)->contains($renderedForm1);
-    expect($result)->contains($renderedStyles2);
-    expect($result)->endsWith($renderedForm2);
+    expect($result)->endsWith($formHtml1 . $formHtml2);
   }
 
   public function testDoesNotAppendFormIfNotOnSinglePage() {
@@ -151,6 +156,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'segments' => ['3'],
       'place_form_bellow_all_pages' => '',
       'place_form_bellow_all_posts' => '1',
+      'success_message' => 'Hello',
     ]);
     $form->setBody([[
       'type' => 'submit',
@@ -165,12 +171,11 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   }
 
   public function testAppendsRenderedFormAfterPageContent() {
-    $renderedForm = '<div class="form"></div>';
-    $renderedStyles = '<styles></styles>';
-    $this->renderer->expects($this->once())->method('renderHTML')->willReturn($renderedForm);
-    $this->renderer->expects($this->once())->method('renderStyles')->willReturn($renderedStyles);
+    $formHtml = '<form id="test-form"></form>';
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
     $this->wp
       ->expects($this->never())
       ->method('setTransient');
@@ -179,6 +184,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'segments' => ['3'],
       'place_form_bellow_all_pages' => '1',
       'place_form_bellow_all_posts' => '',
+      'success_message' => 'Hello',
     ]);
     $form->setBody([[
       'type' => 'submit',
@@ -190,7 +196,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
-    expect($result)->endsWith($renderedStyles . $renderedForm);
+    expect($result)->endsWith($formHtml);
   }
 
   public function testSetsTransientToImprovePerformance() {
@@ -220,4 +226,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->hook->display('content');
   }
 
+  public function _after() {
+    parent::_after();
+    WPFunctions::set(new WPFunctions());
+  }
 }
