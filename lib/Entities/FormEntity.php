@@ -25,13 +25,13 @@ class FormEntity {
   private $name;
 
   /**
-   * @ORM\Column(type="array")
+   * @ORM\Column(type="serialized_array")
    * @var array|null
    */
   private $body;
 
   /**
-   * @ORM\Column(type="array")
+   * @ORM\Column(type="serialized_array")
    * @var array|null
    */
   private $settings;
