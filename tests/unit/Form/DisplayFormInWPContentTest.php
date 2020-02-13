@@ -35,9 +35,11 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
   public function testAppendsRenderedFormAfterPostContent() {
     $renderedForm = '<div class="form"></div>';
+    $renderedFormStyles = '<styles></styles>';
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
-    $this->renderer->expects($this->once())->method('render')->willReturn($renderedForm);
+    $this->renderer->expects($this->once())->method('renderStyles')->willReturn($renderedFormStyles);
+    $this->renderer->expects($this->once())->method('renderHTML')->willReturn($renderedForm);
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
@@ -54,7 +56,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    expect($result)->endsWith($renderedFormStyles . $renderedForm);
   }
 
   public function testDoesNotAppendFormIfDisabled() {
@@ -108,12 +110,17 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ]]);
     $renderedForm1 = '<div class="form1"></div>';
     $renderedForm2 = '<div class="form2"></div>';
+    $renderedStyles1 = '<styles id="1"></styles>';
+    $renderedStyles2 = '<styles id="2"></styles>';
     $this->repository->expects($this->once())->method('findAll')->willReturn([$form1, $form2]);
-    $this->renderer->expects($this->exactly(2))->method('render')->willReturnOnConsecutiveCalls($renderedForm1, $renderedForm2);
+    $this->renderer->expects($this->exactly(2))->method('renderHTML')->willReturnOnConsecutiveCalls($renderedForm1, $renderedForm2);
+    $this->renderer->expects($this->exactly(2))->method('renderStyles')->willReturnOnConsecutiveCalls($renderedStyles1, $renderedStyles2);
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
+    expect($result)->contains($renderedStyles1);
     expect($result)->contains($renderedForm1);
+    expect($result)->contains($renderedStyles2);
     expect($result)->endsWith($renderedForm2);
   }
 
@@ -149,7 +156,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
   public function testAppendsRenderedFormAfterPageContent() {
     $renderedForm = '<div class="form"></div>';
-    $this->renderer->expects($this->once())->method('render')->willReturn($renderedForm);
+    $renderedStyles = '<styles></styles>';
+    $this->renderer->expects($this->once())->method('renderHTML')->willReturn($renderedForm);
+    $this->renderer->expects($this->once())->method('renderStyles')->willReturn($renderedStyles);
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
     $this->wp->expects($this->any())->method('isPage')->willReturn(true);
     $this->wp
@@ -171,7 +180,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    expect($result)->endsWith($renderedStyles . $renderedForm);
   }
 
   public function testSetsTransientToImprovePerformance() {

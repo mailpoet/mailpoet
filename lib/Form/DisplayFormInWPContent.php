@@ -67,10 +67,11 @@ class DisplayFormInWPContent {
   }
 
   private function getContentBellow(FormEntity $form): string {
-    return $this->formRenderer->render([
+    $formData = [
       'body' => $form->getBody(),
       'styles' => $form->getStyles(),
-    ]);
+    ];
+    return $this->formRenderer->renderStyles($formData) . $this->formRenderer->renderHTML($formData);
   }
 
   private function shouldDisplayFormBellowContent(FormEntity $form): bool {
