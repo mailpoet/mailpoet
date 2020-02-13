@@ -39,7 +39,13 @@ class Beamer extends SimpleWorker {
   }
 
   public function getNextRunDate() {
+    // once a week on a random day of the week, random time of the day
     $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    return $date->hour(11)->minute(00)->second(00)->addDay();
+    return $date
+      ->next(Carbon::MONDAY)
+      ->startOfDay()
+      ->addDay(rand(0, 6))
+      ->addHour(rand(0, 23))
+      ->addMinute(rand(0, 59));
   }
 }
