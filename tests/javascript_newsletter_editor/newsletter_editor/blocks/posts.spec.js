@@ -392,10 +392,20 @@ describe('Posts', function () {
         expect(model.get('imageFullWidth')).to.equal(newValue);
       });
 
-      it('changes the model if featured image position changes', function () {
-        var newValue = 'aboveTitle';
+      it('changes the model if featured image position changes for excerpt display type', function () {
+        var newValue = 'right';
+        model.set('displayType', 'excerpt');
         view.$('.mailpoet_posts_featured_image_position').val(newValue).change();
         expect(model.get('featuredImagePosition')).to.equal(newValue);
+        expect(model.get('_featuredImagePosition')).to.equal(newValue);
+      });
+
+      it('changes the model if featured image position changes for full post display type', function () {
+        var newValue = 'alternate';
+        model.set('displayType', 'full');
+        view.$('.mailpoet_posts_featured_image_position').val(newValue).change();
+        expect(model.get('fullPostFeaturedImagePosition')).to.equal(newValue);
+        expect(model.get('_featuredImagePosition')).to.equal(newValue);
       });
 
       it('changes the model if show author changes', function () {
