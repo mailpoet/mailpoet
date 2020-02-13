@@ -34,7 +34,6 @@ class Settings extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
 
-
   public function __construct(
     SettingsController $settings,
     Bridge $bridge,
@@ -84,6 +83,12 @@ class Settings extends APIEndpoint {
       $this->onInactiveSubscribersIntervalChange();
     }
 
+    $oldSendingMethod = $oldSettings['mta_group'];
+    $newSendingMethod = $newSettings['mta_group'];
+    if (($oldSendingMethod !== $newSendingMethod) && ($newSendingMethod === 'mailpoet')) {
+      $this->onMSSActivate($newSettings);
+    }
+
     // Sync WooCommerce Customers list
     $oldSubscribeOldWoocommerceCustomers = isset($oldSettings['mailpoet_subscribe_old_woocommerce_customers']['enabled'])
       ? $oldSettings['mailpoet_subscribe_old_woocommerce_customers']['enabled']
@@ -126,5 +131,22 @@ class Settings extends APIEndpoint {
     $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
     $task->scheduledAt = $datetime->subMinute();
     $task->save();
+  }
+
+  private function onMSSActivate($newSettings) {
+    // see mailpoet/assets/js/src/wizard/create_sender_settings.jsx:freeAddress
+    $domain = str_replace('www.', '', $_SERVER['HTTP_HOST']);
+    if (
+      isset($newSettings['sender']['address'])
+      && !empty($newSettings['reply_to']['address'])
+      && ($newSettings['sender']['address'] === ('wordpress@' . $domain))
+    ) {
+      $sender = [
+        'name' => $newSettings['reply_to']['name'] ?? '',
+        'address' => $newSettings['reply_to']['address'],
+      ];
+      $this->settings->set('sender', $sender);
+      $this->settings->set('reply_to', null);
+    }
   }
 }

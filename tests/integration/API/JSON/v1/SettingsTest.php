@@ -99,6 +99,22 @@ class SettingsTest extends \MailPoetTest {
     expect($task->scheduledAt)->lessThan(Carbon::now());
   }
 
+  public function testItRemovesFreeAddressOverrideOnMSSActivation() {
+    $_SERVER['HTTP_HOST'] = 'www.mailpoet.com';
+
+    $this->settings->set('sender', ['address' => 'wordpress@mailpoet.com']);
+    $this->settings->set('reply_to', ['address' => 'johndoeexampletestnonexistinghopefullyfreemail@gmail.com']);
+    $this->settings->set('mta_group', 'non-mss-sending-method');
+
+
+    $newSettings = ['mta_group' => 'mailpoet'];
+    $this->endpoint->set($newSettings);
+
+    $this->settings->resetCache();
+    expect($this->settings->get('sender')['address'])->equals('johndoeexampletestnonexistinghopefullyfreemail@gmail.com');
+    expect($this->settings->get('reply_to'))->isEmpty();
+  }
+
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
