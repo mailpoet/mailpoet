@@ -41,7 +41,7 @@
             <%= __('Heading 3') %>
         </label>
     </div>
-    <div class="mailpoet_form_field_radio_option mailpoet_posts_title_as_list {{#ifCond model.titleFormat '!=' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
+    <div class="mailpoet_form_field_radio_option mailpoet_posts_title_as_list {{#ifCond model.displayType '!=' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
         <label>
             <input type="radio" name="mailpoet_posts_title_format" class="mailpoet_posts_title_format" value="ul" {{#ifCond model.titleFormat '==' 'ul'}}CHECKED{{/ifCond}}/>
             <%= __('Show as list') %>
