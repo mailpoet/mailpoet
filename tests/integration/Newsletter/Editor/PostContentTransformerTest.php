@@ -233,6 +233,50 @@ class PostContentTransformerTest extends \MailPoetTest {
     expect($result[0]['blocks'][0]['blocks'])->equals([$this->titleMock, $this->contentMock[0]]);
   }
 
+  public function testShouldAddImageForFullPost() {
+    $args = [
+      'withLayout' => true,
+      'displayType' => 'full',
+      'fullPostFeaturedImagePosition' => 'centered',
+    ];
+
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
+    $result = $transformer->transform([]);
+    expect($result[0]['blocks'][0]['blocks'][0])->equals($this->titleMock);
+    expect($result[0]['blocks'][0]['blocks'][1])->equals($this->imageMock);
+    expect($result[0]['blocks'][0]['blocks'][2])->equals($this->contentMock[0]);
+    expect($result[0]['blocks'][0]['blocks'])->count(3);
+  }
+
+  public function testShouldNotAddImageForExistingFullPost() {
+    $args = [
+      'withLayout' => true,
+      'displayType' => 'full',
+      'featuredImagePosition' => 'centered',
+    ];
+
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock);
+    $result = $transformer->transform([]);
+    expect($result[0]['blocks'][0]['blocks'][0])->equals($this->titleMock);
+    expect($result[0]['blocks'][0]['blocks'][1])->equals($this->contentMock[0]);
+    expect($result[0]['blocks'][0]['blocks'])->count(2);
+  }
+
+  public function testShouldAddImageForExistingFullPostProduct() {
+    $args = [
+      'withLayout' => true,
+      'displayType' => 'full',
+      'featuredImagePosition' => 'centered',
+    ];
+
+    $transformer = $this->getTransformer($args, $this->contentMock, $this->titleMock, $this->imageMock, true);
+    $result = $transformer->transform([]);
+    expect($result[0]['blocks'][0]['blocks'][0])->equals($this->titleMock);
+    expect($result[0]['blocks'][0]['blocks'][1])->equals($this->imageMock);
+    expect($result[0]['blocks'][0]['blocks'][2])->equals($this->contentMock[0]);
+    expect($result[0]['blocks'][0]['blocks'])->count(3);
+  }
+
   public function testShouldAddClassToParagraphsInFullPostsWithLayout() {
     $args = [
       'withLayout' => true,
@@ -302,14 +346,14 @@ class PostContentTransformerTest extends \MailPoetTest {
   /**
    * @return PostTransformer
    */
-  private function getTransformer(array $args, array $content, array $title, array $image = null) {
+  private function getTransformer(array $args, array $content, array $title, array $image = null, bool $isProduct = false) {
     $extractor = $this->make(
       PostTransformerContentsExtractor::class,
       [
         'getContent' => $content,
         'getFeaturedImage' => $image,
         'getTitle' => $title,
-        'isProduct' => false,
+        'isProduct' => $isProduct,
       ]
     );
     $transformer = new PostTransformer($args, $extractor);
