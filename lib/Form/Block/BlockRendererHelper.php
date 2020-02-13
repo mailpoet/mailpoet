@@ -6,7 +6,11 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\ModelValidator;
 use MailPoet\WP\Functions as WPFunctions;
 
-class Base {
+/**
+ * This class still covers several responsibilities and could be further refactored
+ * @package MailPoet\Form\Block
+ */
+class BlockRendererHelper {
 
   /** @var FieldNameObfuscator */
   private $fieldNameObfuscator;

@@ -6,26 +6,26 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Segment {
 
-  /** @var Base */
-  private $baseRenderer;
+  /** @var BlockRendererHelper */
+  private $rendererHelper;
 
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(Base $baseRenderer, WPFunctions $wp) {
-    $this->baseRenderer = $baseRenderer;
+  public function __construct(BlockRendererHelper $rendererHelper, WPFunctions $wp) {
+    $this->rendererHelper = $rendererHelper;
     $this->wp = $wp;
   }
 
   public function render(array $block): string {
     $html = '';
 
-    $fieldName = 'data[' . $this->baseRenderer->getFieldName($block) . ']';
-    $fieldValidation = $this->baseRenderer->getInputValidation($block);
+    $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
+    $fieldValidation = $this->rendererHelper->getInputValidation($block);
 
     $html .= '<p class="mailpoet_paragraph">';
 
-    $html .= $this->baseRenderer->renderLabel($block);
+    $html .= $this->rendererHelper->renderLabel($block);
 
     $options = (!empty($block['params']['values'])
       ? $block['params']['values']

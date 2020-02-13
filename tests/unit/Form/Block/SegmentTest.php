@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Form\Block;
 
-use MailPoet\Form\Block\Base;
+use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Segment;
 use MailPoet\Test\Form\HtmlParser;
 use MailPoet\WP\Functions as WPFunctions;
@@ -17,8 +17,8 @@ class SegmentTest extends \MailPoetUnitTest {
   /** @var MockObject & WPFunctions */
   private $wpMock;
 
-  /** @var MockObject & Base */
-  private $baseMock;
+  /** @var MockObject & BlockRendererHelper */
+  private $rendererHelperMock;
 
   /** @var HtmlParser */
   private $htmlParser;
@@ -47,15 +47,15 @@ class SegmentTest extends \MailPoetUnitTest {
     parent::_before();
     $this->wpMock = $this->createMock(WPFunctions::class);
     $this->wpMock->method('escAttr')->will($this->returnArgument(0));
-    $this->baseMock = $this->createMock(Base::class);
-    $this->segment = new Segment($this->baseMock, $this->wpMock);
+    $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
+    $this->segment = new Segment($this->rendererHelperMock, $this->wpMock);
     $this->htmlParser = new HtmlParser();
   }
 
   public function testItShouldRenderSegmets() {
-    $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
-    $this->baseMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
-    $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Segments');
+    $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
+    $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Segments');
 
     $html = $this->segment->render($this->block);
 

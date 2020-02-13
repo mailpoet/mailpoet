@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Form\Block;
 
-use MailPoet\Form\Block\Base;
+use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Submit;
 use MailPoet\Test\Form\HtmlParser;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -13,8 +13,8 @@ class SubmitTest extends \MailPoetUnitTest {
   /** @var Submit */
   private $submit;
 
-  /** @var MockObject & Base */
-  private $baseMock;
+  /** @var MockObject & BlockRendererHelper */
+  private $rendererHelperMock;
 
   /** @var HtmlParser */
   private $htmlParser;
@@ -33,13 +33,13 @@ class SubmitTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->baseMock = $this->createMock(Base::class);
-    $this->submit = new Submit($this->baseMock);
+    $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
+    $this->submit = new Submit($this->rendererHelperMock);
     $this->htmlParser = new HtmlParser();
   }
 
   public function testItShouldRenderSubmit() {
-    $this->baseMock->expects($this->once())->method('getFieldLabel')->willReturn('Submit label');
+    $this->rendererHelperMock->expects($this->once())->method('getFieldLabel')->willReturn('Submit label');
     $html = $this->submit->render($this->block);
     $input = $this->htmlParser->getElementByXpath($html, '//input');
     $type = $this->htmlParser->getAttribute($input, 'type');

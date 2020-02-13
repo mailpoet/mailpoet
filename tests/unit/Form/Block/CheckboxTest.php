@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Form\Block;
 
-use MailPoet\Form\Block\Base;
+use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Checkbox;
 use MailPoet\Test\Form\HtmlParser;
 use MailPoet\WP\Functions as WPFunctions;
@@ -17,8 +17,8 @@ class CheckboxTest extends \MailPoetUnitTest {
   /** @var MockObject & WPFunctions */
   private $wpMock;
 
-  /** @var MockObject & Base */
-  private $baseMock;
+  /** @var MockObject & BlockRendererHelper */
+  private $rendererHelperMock;
 
   /** @var HtmlParser */
   private $htmlParser;
@@ -45,16 +45,16 @@ class CheckboxTest extends \MailPoetUnitTest {
     parent::_before();
     $this->wpMock = $this->createMock(WPFunctions::class);
     $this->wpMock->method('escAttr')->will($this->returnArgument(0));
-    $this->baseMock = $this->createMock(Base::class);
-    $this->checkbox = new Checkbox($this->baseMock, $this->wpMock);
+    $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
+    $this->checkbox = new Checkbox($this->rendererHelperMock, $this->wpMock);
     $this->htmlParser = new HtmlParser();
   }
 
   public function testItShouldRenderCheckbox() {
-    $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
-    $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
-    $this->baseMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
-    $this->baseMock->expects($this->once())->method('getFieldValue')->willReturn('1');
+    $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
+    $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
+    $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('1');
     $html = $this->checkbox->render($this->block);
     $checkboxLabel = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_checkbox_label']");
     expect($checkboxLabel->nodeValue)->equals(' Checkbox label');
