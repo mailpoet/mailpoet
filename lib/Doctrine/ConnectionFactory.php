@@ -5,6 +5,7 @@ namespace MailPoet\Doctrine;
 use MailPoet\Config\Env;
 use MailPoet\Doctrine\Types\JsonOrSerializedType;
 use MailPoet\Doctrine\Types\JsonType;
+use MailPoet\Doctrine\Types\SerializedArrayType;
 use MailPoetVendor\Doctrine\DBAL\DriverManager;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySqlPlatform;
 use MailPoetVendor\Doctrine\DBAL\Types\Type;
@@ -19,6 +20,7 @@ class ConnectionFactory {
   private $types = [
     JsonType::NAME => JsonType::class,
     JsonOrSerializedType::NAME => JsonOrSerializedType::class,
+    SerializedArrayType::NAME => SerializedArrayType::class,
   ];
 
   public function createConnection() {
