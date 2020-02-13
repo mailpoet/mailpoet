@@ -13,7 +13,7 @@ class TextareaTest extends \MailPoetUnitTest {
   /** @var Textarea */
   private $textarea;
 
-  /** @var MockObject|Base */
+  /** @var MockObject & Base */
   private $baseMock;
 
   /** @var HtmlParser */

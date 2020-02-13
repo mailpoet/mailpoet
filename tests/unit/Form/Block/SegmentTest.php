@@ -14,10 +14,10 @@ class SegmentTest extends \MailPoetUnitTest {
   /** @var Segment */
   private $segment;
 
-  /** @var MockObject|WPFunctions */
+  /** @var MockObject & WPFunctions */
   private $wpMock;
 
-  /** @var MockObject|Base */
+  /** @var MockObject & Base */
   private $baseMock;
 
   /** @var HtmlParser */

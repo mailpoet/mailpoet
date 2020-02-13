@@ -13,7 +13,7 @@ class SubmitTest extends \MailPoetUnitTest {
   /** @var Submit */
   private $submit;
 
-  /** @var MockObject|Base */
+  /** @var MockObject & Base */
   private $baseMock;
 
   /** @var HtmlParser */
