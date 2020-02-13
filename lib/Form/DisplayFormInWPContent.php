@@ -2,7 +2,10 @@
 
 namespace MailPoet\Form;
 
+use MailPoet\API\JSON\API;
+use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\FormEntity;
+use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DisplayFormInWPContent {
@@ -18,10 +21,24 @@ class DisplayFormInWPContent {
   /** @var Renderer */
   private $formRenderer;
 
-  public function __construct(WPFunctions $wp, FormsRepository $formsRepository, Renderer $formRenderer) {
+  /** @var AssetsController */
+  private $assetsController;
+
+  /** @var TemplateRenderer */
+  private $templateRenderer;
+
+  public function __construct(
+    WPFunctions $wp,
+    FormsRepository $formsRepository,
+    Renderer $formRenderer,
+    AssetsController $assetsController,
+    TemplateRenderer $templateRenderer
+  ) {
     $this->wp = $wp;
     $this->formsRepository = $formsRepository;
     $this->formRenderer = $formRenderer;
+    $this->assetsController = $assetsController;
+    $this->templateRenderer = $templateRenderer;
   }
 
   /**
@@ -39,6 +56,7 @@ class DisplayFormInWPContent {
       return $content;
     }
 
+    $this->assetsController->setupFrontEndDependencies();
     $result = $content;
     foreach ($forms as $form) {
       $result .= $this->getContentBellow($form);
@@ -77,7 +95,34 @@ class DisplayFormInWPContent {
       'body' => $form->getBody(),
       'styles' => $form->getStyles(),
     ];
-    return $this->formRenderer->renderStyles($formData) . $this->formRenderer->renderHTML($formData);
+    $formSettings = $form->getSettings();
+    $templateData = [
+      'form_html_id' => 'mp_form_below_' . $form->getId(),
+      'form_id' => $form->getId(),
+      'form_success_message' => $formSettings['success_message'] ?? null,
+      'form_type' => 'below_post',
+      'styles' => $this->formRenderer->renderStyles($formData, '#' . $form->getId()),
+      'html' => $this->formRenderer->renderHTML($formData),
+    ];
+
+    // (POST) non ajax success/error variables
+    $templateData['success'] = (
+      (isset($_GET['mailpoet_success']))
+      &&
+      ((int)$_GET['mailpoet_success'] === $form->getId())
+    );
+    $templateData['error'] = (
+      (isset($_GET['mailpoet_error']))
+      &&
+      ((int)$_GET['mailpoet_error'] === $form->getId())
+    );
+
+    // generate security token
+    $templateData['token'] = Security::generateToken();
+
+    // add API version
+    $templateData['api_version'] = API::CURRENT_VERSION;
+    return $this->templateRenderer->render('form/front_end_form.html', $templateData);
   }
 
   private function shouldDisplayFormBellowContent(FormEntity $form): bool {

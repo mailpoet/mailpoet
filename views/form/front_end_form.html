@@ -1,11 +1,13 @@
 <% block content %>
-  <%= before_widget | raw %>
+  <% if(before_widget) %>
+    <%= before_widget | raw %>
+  <% endif %>
 
   <% if(title) %>
     <%= before_title | raw %><%= title | raw %><%= after_title | raw %>
   <% endif %>
 
-  <div id="<%= form_id %>" class="mailpoet_form mailpoet_form_<%= form_type %>">
+  <div id="<%= form_html_id %>" class="mailpoet_form mailpoet_form_<%= form_type %>">
     <%= styles | raw %>
     <form
       target="_self"
@@ -14,7 +16,7 @@
       class="mailpoet_form mailpoet_form_<%= form_type %>"
       novalidate
     >
-      <input type="hidden" name="data[form_id]" value="<%= form.id %>" />
+      <input type="hidden" name="data[form_id]" value="<%= form_id %>" />
       <input type="hidden" name="token" value="<%= token %>" />
       <input type="hidden" name="api_version" value="<%= api_version %>" />
       <input type="hidden" name="endpoint" value="subscribers" />
@@ -23,21 +25,24 @@
       <%= html | raw %>
       <div class="mailpoet_message">
         <p class="mailpoet_validate_success"
-          <% if not(success) %>
-          style="display:none;"
-          <% endif %>
-        ><%= form.settings.success_message %>
+        <% if not(success) %>
+        style="display:none;"
+        <% endif %>
+        ><%= form_success_message %>
         </p>
         <p class="mailpoet_validate_error"
-          <% if not(error) %>
-          style="display:none;"
-          <% endif %>
+        <% if not(error) %>
+        style="display:none;"
+        <% endif %>
         ><% if (error) %>
-           <%= __("An error occurred, make sure you have filled all the required fields.") %>
-          <% endif %>
+        <%= __("An error occurred, make sure you have filled all the required fields.") %>
+        <% endif %>
         </p>
       </div>
     </form>
   </div>
-  <%= after_widget | raw %>
+
+  <% if(after_widget) %>
+    <%= after_widget | raw %>
+  <% endif %>
 <% endblock %>

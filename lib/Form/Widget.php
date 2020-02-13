@@ -215,9 +215,10 @@ class Widget extends \WP_Widget {
     if (!empty($body)) {
       $formId = $this->id_base . '_' . $form['id']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $data = [
-        'form_id' => $formId,
+        'form_html_id' => $formId,
+        'form_id' => $form['id'],
         'form_type' => $formType,
-        'form' => $form,
+        'form_success_message' => $form['settings']['success_message'],
         'title' => $title,
         'styles' => $this->formRenderer->renderStyles($form, '#' . $formId),
         'html' => $this->formRenderer->renderHTML($form),
@@ -248,7 +249,7 @@ class Widget extends \WP_Widget {
       // render form
       $renderer = new ConfigRenderer();
       try {
-        $output = $renderer->render('form/widget.html', $data);
+        $output = $renderer->render('form/front_end_form.html', $data);
         $output = WPFunctions::get()->doShortcode($output);
         $output = $this->wp->applyFilters('mailpoet_form_widget_post_process', $output);
       } catch (\Exception $e) {
