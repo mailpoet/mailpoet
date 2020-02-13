@@ -60,7 +60,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'id' => 'submit',
       'name' => 'Submit',
     ]]);
-    $this->repository->expects($this->once())->method('findAll')->willReturn([$form]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($renderedForm);
@@ -93,8 +93,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'id' => 'submit',
       'name' => 'Submit',
     ]]);
-    $this->repository->expects($this->once())->method('findAll')->willReturn([$form]);
-
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->display('content');
     expect($result)->equals('content');
   }
@@ -129,11 +128,10 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'id' => 'submit',
       'name' => 'Submit',
     ]]);
-    $this->repository->expects($this->once())->method('findAll')->willReturn([$form1, $form2]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form1, $form2]);
     $formHtml1 = '<form id="test-form-1"></form>';
     $formHtml2 = '<form id="test-form-2"></form>';
     $this->templateRenderer->expects($this->exactly(2))->method('render')->willReturnOnConsecutiveCalls($formHtml1, $formHtml2);
-
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($formHtml1 . $formHtml2);
@@ -141,8 +139,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
   public function testDoesNotAppendFormIfNotOnSinglePage() {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
-    $this->repository->expects($this->never())->method('findAll');
-
+    $this->repository->expects($this->never())->method('findBy');
     $result = $this->hook->display('content');
     expect($result)->equals('content');
   }
@@ -164,7 +161,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'id' => 'submit',
       'name' => 'Submit',
     ]]);
-    $this->repository->expects($this->once())->method('findAll')->willReturn([$form]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
     $result = $this->hook->display('content');
     expect($result)->equals('content');
@@ -192,7 +189,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'id' => 'submit',
       'name' => 'Submit',
     ]]);
-    $this->repository->expects($this->once())->method('findAll')->willReturn([$form]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
@@ -208,7 +205,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form1 = new FormEntity('My Form');
     $form2 = new FormEntity('My Form');
 
-    $this->repository->expects($this->once())->method('findAll')->willReturn([$form1, $form2]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form1, $form2]);
 
     $this->hook->display('content');
   }
@@ -221,7 +218,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       ->expects($this->once())
       ->method('getTransient')
       ->willReturn(['post' => true]);
-    $this->repository->expects($this->never())->method('findAll');
+    $this->repository->expects($this->never())->method('findBy');
 
     $this->hook->display('content');
   }

@@ -84,7 +84,7 @@ class DisplayFormInWPContent {
    * @return FormEntity[]
    */
   private function getForms(): array {
-    $forms = $this->formsRepository->findAll();
+    $forms = $this->formsRepository->findBy(['deletedAt' => null]);
     return array_filter($forms, function($form) {
       return $this->shouldDisplayFormBellowContent($form);
     });
