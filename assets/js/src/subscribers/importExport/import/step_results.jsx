@@ -5,6 +5,8 @@ import _ from 'underscore';
 import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
+import OfferMigration from './step_results/offer_migration.jsx';
+
 function ResultMessage({ subscribersCount, segments, initialMessage }) {
   if (subscribersCount) {
     let message = ReactStringReplace(initialMessage, '%1$s', () => (
@@ -86,6 +88,13 @@ function StepResults({
   if (errors.length) {
     MailPoet.Notice.error(_.flatten(errors));
   }
+  let totalNumberOfSubscribers = 0;
+  if (createdSubscribers != null) {
+    totalNumberOfSubscribers += createdSubscribers;
+  }
+  if (updatedSubscribers != null) {
+    totalNumberOfSubscribers += updatedSubscribers;
+  }
   return (
     <>
       <div className="updated">
@@ -124,6 +133,9 @@ function StepResults({
       >
         {MailPoet.I18n.t('viewSubscribers')}
       </button>
+      <OfferMigration
+        subscribersCount={totalNumberOfSubscribers}
+      />
     </>
   );
 }
