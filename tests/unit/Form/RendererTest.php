@@ -16,13 +16,13 @@ class RendererTest extends \MailPoetUnitTest {
   /** @var Renderer */
   private $renderer;
 
-  /** @var MockObject|Styles */
+  /** @var MockObject & Styles */
   private $stylesMock;
 
-  /** @var MockObject|SettingsController */
+  /** @var MockObject & SettingsController */
   private $settingsMock;
 
-  /** @var MockObject|BlocksRenderer */
+  /** @var MockObject & BlocksRenderer */
   private $blocksRendererMock;
 
   /** @var HtmlParser */

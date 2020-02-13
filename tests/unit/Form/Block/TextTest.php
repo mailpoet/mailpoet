@@ -13,7 +13,7 @@ class TextTest extends \MailPoetUnitTest {
   /** @var Text */
   private $text;
 
-  /** @var MockObject|Base */
+  /** @var MockObject & Base */
   private $baseMock;
 
   /** @var HtmlParser */

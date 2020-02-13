@@ -14,10 +14,10 @@ class CheckboxTest extends \MailPoetUnitTest {
   /** @var Checkbox */
   private $checkbox;
 
-  /** @var MockObject|WPFunctions */
+  /** @var MockObject & WPFunctions */
   private $wpMock;
 
-  /** @var MockObject|Base */
+  /** @var MockObject & Base */
   private $baseMock;
 
   /** @var HtmlParser */

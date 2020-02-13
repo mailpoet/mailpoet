@@ -11,10 +11,10 @@ class BaseTest extends \MailPoetUnitTest {
   /** @var Base */
   private $baseRenderer;
 
-  /** @var MockObject|WPFunctions */
+  /** @var MockObject & WPFunctions */
   private $wpMock;
 
-  /** @var MockObject|FieldNameObfuscator */
+  /** @var MockObject & FieldNameObfuscator */
   private $obfuscatorMock;
 
   private $block = [

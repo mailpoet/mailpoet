@@ -15,10 +15,10 @@ class SelectTest extends \MailPoetUnitTest {
   /** @var Select */
   private $selectBlock;
 
-  /** @var MockObject | Functions */
+  /** @var MockObject & Functions */
   private $wpMock;
 
-  /** @var MockObject | Base */
+  /** @var MockObject & Base */
   private $baseMock;
 
   public function _before() {

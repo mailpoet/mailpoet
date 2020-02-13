@@ -14,10 +14,10 @@ class RadioTest extends \MailPoetUnitTest {
   /** @var Radio */
   private $radio;
 
-  /** @var MockObject|Base */
+  /** @var MockObject & Base */
   private $baseMock;
 
-  /** @var MockObject|WPFunctions */
+  /** @var MockObject & WPFunctions */
   private $wpMock;
 
   /** @var HtmlParser */

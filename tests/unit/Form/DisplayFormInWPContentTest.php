@@ -9,13 +9,13 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
-  /** @var FormsRepository|MockObject */
+  /** @var FormsRepository & MockObject */
   private $repository;
 
-  /** @var WPFunctions|MockObject */
+  /** @var WPFunctions & MockObject */
   private $wp;
 
-  /** @var Renderer|MockObject */
+  /** @var Renderer & MockObject */
   private $renderer;
 
   /** @var DisplayFormInWPContent */

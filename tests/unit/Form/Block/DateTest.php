@@ -14,7 +14,7 @@ class DateTest extends \MailPoetUnitTest {
   /** @var Date */
   private $date;
 
-  /** @var MockObject|Base */
+  /** @var MockObject & Base */
   private $baseMock;
 
   /** @var HtmlParser */
