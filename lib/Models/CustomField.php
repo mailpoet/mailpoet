@@ -2,7 +2,7 @@
 
 namespace MailPoet\Models;
 
-use MailPoet\Form\Util\DateConverter;
+use MailPoet\Util\DateConverter;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
