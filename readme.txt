@@ -30,9 +30,10 @@ Trusted by 300,000 WordPress websites since 2011.
 * Manage your subscribers and subscriber lists in WordPress
 * Build and send newsletters with WordPress
 * Create automatic emails to send new post notifications
-* Send automated signup welcome emails (**now in free**)
+* Send automated welcome emails
 * Increase your sales with our emails for WooCommerce
-* Insightful stats on your audience engagement (Premium)
+* Free WooCommerce email customizer
+* Insightful stats on your audience engagement
 
 = Why choose MailPoet =
 
