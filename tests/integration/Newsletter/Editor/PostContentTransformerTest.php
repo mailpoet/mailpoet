@@ -240,7 +240,9 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'right',
     ];
 
-    $post = [];
+    $post = (object)[
+      'post_type' => 'post',
+    ];
     $expectedWithPostClass = true;
 
     /** @var PostTransformerContentsExtractor&MockObject $extractor */
@@ -271,7 +273,9 @@ class PostContentTransformerTest extends \MailPoetTest {
       'featuredImagePosition' => 'right',
     ];
 
-    $post = [];
+    $post = (object)[
+      'post_type' => 'post',
+    ];
     $expectedWithPostClass = false;
 
     /** @var PostTransformerContentsExtractor&MockObject $extractor */
