@@ -127,8 +127,7 @@ class Newsletters extends APIEndpoint {
         (object)[
           'id' => $newsletter->getId(),
           'hash' => $newsletter->getHash(),
-        ],
-        Subscriber::getCurrentWPUser()
+        ]
       );
 
       $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
@@ -157,8 +156,7 @@ class Newsletters extends APIEndpoint {
         (object)[
           'id' => $newsletter->getId(),
           'hash' => $newsletter->getHash(),
-        ],
-        Subscriber::getCurrentWPUser()
+        ]
       );
       return $this->successResponse($response);
     } else {
@@ -281,7 +279,7 @@ class Newsletters extends APIEndpoint {
     $this->wp->doAction('mailpoet_api_newsletters_save_after', $newsletter);
     $this->authorizedEmailsController->onNewsletterUpdate($newsletter, $oldNewsletter);
 
-    $previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletter, Subscriber::getCurrentWPUser());
+    $previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletter);
     return $this->successResponse($newsletter->asArray(), ['preview_url' => $previewUrl]);
   }
 
