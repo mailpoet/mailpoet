@@ -43,7 +43,7 @@ class PostTransformer {
     $content = $this->extractor->getContent($post, true, $this->args['displayType']);
     $title = $this->extractor->getTitle($post);
     $featuredImage = $this->extractor->getFeaturedImage($post);
-    $featuredImagePosition = $this->getFeaturedImagePosition();
+    $featuredImagePosition = $this->getFeaturedImagePosition($this->extractor->isProduct($post));
 
     if (
       $featuredImage
@@ -75,7 +75,7 @@ class PostTransformer {
     $content = $this->extractor->getContent($post, $withPostClass, $this->args['displayType']);
     $title = $this->extractor->getTitle($post);
     $featuredImage = $this->extractor->getFeaturedImage($post);
-    $featuredImagePosition = $this->getFeaturedImagePosition();
+    $featuredImagePosition = $this->getFeaturedImagePosition($this->extractor->isProduct($post));
 
     if (
       !$featuredImage
@@ -153,12 +153,19 @@ class PostTransformer {
     return $this->imagePosition;
   }
 
-  private function getFeaturedImagePosition() {
+  private function getFeaturedImagePosition(bool $isProduct) {
+    if ($this->args['displayType'] !== 'full') {
+      return $this->args['featuredImagePosition'];
+    }
+
+    // For products with display type 'full' use 'featuredImagePosition' if 'fullPostFeaturedImagePosition' not set.
+    // This is because products always supported images, even for 'full' post display type.
+    if ($isProduct && empty($this->args['fullPostFeaturedImagePosition'])) {
+      return $this->args['featuredImagePosition'];
+    }
+
     // For posts with display type 'full' use 'fullPostFeaturedImagePosition'. This is for back compatibility
     // with posts that don't have featured image but contain some value for 'featuredImagePosition' in the DB.
-    if ($this->args['displayType'] === 'full') {
-      return $this->args['fullPostFeaturedImagePosition'] ?? 'none';
-    }
-    return $this->args['featuredImagePosition'];
+    return $this->args['fullPostFeaturedImagePosition'] ?? 'none';
   }
 }

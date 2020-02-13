@@ -100,6 +100,13 @@ Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
       this.set('fullPostFeaturedImagePosition', 'left');
     }
 
+    // For products with display type 'full' prefill 'fullPostFeaturedImagePosition' from existing
+    // 'featuredImagePosition'. Products always supported images, even for 'full' display type.
+    const isProductWithDisplayTypeFull = block && block.displayType === 'full' && block.contentType === 'product';
+    if (isProductWithDisplayTypeFull && !this.get('fullPostFeaturedImagePosition')) {
+      this.set('fullPostFeaturedImagePosition', this.get('featuredImagePosition'));
+    }
+
     base.BlockView.prototype.initialize.apply(this, arguments);
     this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider change:titlePosition', this._handleChanges, this);
     this.listenTo(this.get('readMoreButton'), 'change', this._handleChanges);

@@ -97,6 +97,13 @@ Module.PostsBlockModel = base.BlockModel.extend({
       this.set('fullPostFeaturedImagePosition', 'left');
     }
 
+    // For products with display type 'full' prefill 'fullPostFeaturedImagePosition' from existing
+    // 'featuredImagePosition'. Products always supported images, even for 'full' display type.
+    const isProductWithDisplayTypeFull = block && block.displayType === 'full' && block.contentType === 'product';
+    if (isProductWithDisplayTypeFull && !this.get('fullPostFeaturedImagePosition')) {
+      this.set('fullPostFeaturedImagePosition', this.get('featuredImagePosition'));
+    }
+
     // Attach Radio.Requests API primarily for highlighting
     _.extend(this, Radio.Requests);
 
