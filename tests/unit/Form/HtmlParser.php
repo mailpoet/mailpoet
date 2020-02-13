@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Form;
 
-class HtmlParser extends \MailPoetUnitTest {
+class HtmlParser {
   public function findByXpath(string $html, string $xpath): \DOMNodeList {
     $dom = new \DOMDocument();
     $dom->loadHTML($html);
