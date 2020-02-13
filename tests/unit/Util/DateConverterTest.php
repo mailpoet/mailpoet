@@ -1,8 +1,8 @@
 <?php
 
-namespace MailPoet\Test\Form\Block;
+namespace MailPoet\Test\Util;
 
-use MailPoet\Form\Util\DateConverter;
+use MailPoet\Util\DateConverter;
 
 class DateConverterTest extends \MailPoetUnitTest {
 

@@ -2,7 +2,6 @@
 
 namespace MailPoet\Subscribers\ImportExport\Import;
 
-use MailPoet\Form\Util\DateConverter;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Newsletter;
@@ -11,6 +10,7 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\Source;
+use MailPoet\Util\DateConverter;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Form\Util;
+namespace MailPoet\Util;
 
 use MailPoetVendor\Carbon\Carbon;
 
