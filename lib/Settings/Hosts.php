@@ -17,6 +17,9 @@ class Hosts {
         'US East (N. Virginia)' => 'us-east-1',
         'US West (Oregon)' => 'us-west-2',
         'EU (Ireland)' => 'eu-west-1',
+        'EU (Frankfurt)' => 'eu-central-1',
+        'Asia Pacific (Mumbai)' => 'ap-south-1',
+        'Asia Pacific (Sydney)' => 'ap-southeast-2',
       ],
     ],
     'SendGrid' => [
