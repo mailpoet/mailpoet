@@ -5,7 +5,6 @@ namespace MailPoet\Util;
 use pQuery\DomNode;
 
 class DOM {
-
   /**
    * Splits a DOM tree around the cut element, bringing it up to bound
    * ancestor and splitting left and right siblings into subtrees along
@@ -38,5 +37,4 @@ class DOM {
     }
     return $item;
   }
-
 }

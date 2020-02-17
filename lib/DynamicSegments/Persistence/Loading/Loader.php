@@ -31,5 +31,4 @@ class Loader {
 
     return $this->mapper->mapSegments($segments, $filters);
   }
-
 }

@@ -242,5 +242,4 @@ class AutomatedEmailsTest extends \MailPoetTest {
       'count_processed' => $countProcessed,
     ]);
   }
-
 }

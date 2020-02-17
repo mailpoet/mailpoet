@@ -22,6 +22,7 @@ class SettingsArchivePageCest {
     $i->waitForText($pageTitle);
     $i->waitForText('Oops! There are no newsletters to display.');
   }
+
   public function createArchivePageWithSentNewsletters(\AcceptanceTester $i) {
     $i->wantTo('Create page with MP archive shortcode, showing sent newsletters');
     $segmentFactory = new Segment();

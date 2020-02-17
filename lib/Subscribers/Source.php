@@ -37,5 +37,4 @@ class Source {
     $subscriber->set('source', $source);
     return $subscriber;
   }
-
 }

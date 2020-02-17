@@ -682,5 +682,4 @@ class Functions {
       return [$host, $port, $socket, $isIpv6];
     }
   }
-
 }

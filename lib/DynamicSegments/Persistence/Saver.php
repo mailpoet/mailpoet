@@ -10,7 +10,6 @@ use MailPoet\Models\Model;
 use MailPoetVendor\Idiorm\ORM;
 
 class Saver {
-
   /**
    * @param DynamicSegment $segment
    *

@@ -9,7 +9,6 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
 class SubscribersTest extends \MailPoetUnitTest {
-
   public function testCheckReturnsTrueIfOldUserReachedLimit() {
     $subscribersFeature = $this->constructWith([
       'mss_key_state' => 'invalid',

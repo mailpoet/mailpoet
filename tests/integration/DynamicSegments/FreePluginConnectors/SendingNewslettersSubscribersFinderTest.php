@@ -65,7 +65,6 @@ class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
     expect($result)->count(1);
   }
 
-
   public function testGetSubscriberIdsInSegmentReturnsEmptyIfNotDynamic() {
     $this->singleSegmentLoader
       ->expects($this->never())
@@ -107,5 +106,4 @@ class SendingNewslettersSubscribersFinderTest extends \MailPoetTest {
     expect($result[0]['id'])->equals(1);
     expect($result[1]['id'])->equals(2);
   }
-
 }

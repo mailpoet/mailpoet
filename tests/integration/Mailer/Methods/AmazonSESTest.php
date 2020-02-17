@@ -17,6 +17,7 @@ class AmazonSESTest extends \MailPoetTest {
   public $replyTo;
   public $sender;
   public $settings;
+
   public function _before() {
     parent::_before();
     $this->settings = [

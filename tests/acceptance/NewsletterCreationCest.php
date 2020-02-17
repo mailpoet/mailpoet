@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Acceptance;
 
 class NewsletterCreationCest {
-
   public function createPostNotification(\AcceptanceTester $i) {
     $i->wantTo('Create and configure post notification email');
 

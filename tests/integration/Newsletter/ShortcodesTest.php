@@ -397,5 +397,4 @@ class ShortcodesTest extends \MailPoetTest {
     wp_delete_post($this->wPPost, true);
     wp_delete_user($this->wPUser->ID);
   }
-
 }

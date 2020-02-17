@@ -21,7 +21,6 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SchedulerTest extends \MailPoetTest {
-
   public function testItGetsActiveNewslettersFilteredByTypeAndGroup() {
     $this->_createNewsletter($type = Newsletter::TYPE_WELCOME);
 

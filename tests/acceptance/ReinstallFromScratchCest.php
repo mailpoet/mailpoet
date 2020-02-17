@@ -10,7 +10,6 @@ use MailPoet\Test\DataFactories\Subscriber;
 use PHPUnit\Framework\Assert;
 
 class ReinstallFromScratchCest {
-
   public function reinstallFromScratch(\AcceptanceTester $i) {
     $i->wantTo('Reinstall from scratch');
     $i->login();

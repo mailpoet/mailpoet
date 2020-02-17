@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class DuplicateNewsletterCest {
-
   public function duplicateNewsletter(\AcceptanceTester $i) {
     $newsletterName = 'Duplicate Newsletter';
     $newsletter = new Newsletter();
@@ -17,5 +16,4 @@ class DuplicateNewsletterCest {
     $i->clickItemRowActionByItemName($newsletterName, 'Duplicate');
     $i->waitForText('Copy of ' . $newsletterName);
   }
-
 }

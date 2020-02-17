@@ -58,5 +58,4 @@ class FreeDomains {
     $domain = end($emailParts);
     return in_array($domain, self::FREE_DOMAINS);
   }
-
 }

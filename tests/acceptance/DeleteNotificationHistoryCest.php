@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class DeleteNotificationHistoryCest {
-
   public function delete(\AcceptanceTester $i) {
     // step 1 - Prepare data
     $i->wantTo('delete a notification history');
@@ -44,5 +43,4 @@ class DeleteNotificationHistoryCest {
     $i->waitForText('permanently deleted.');
     $i->waitForElementNotVisible($newsletterName);
   }
-
 }

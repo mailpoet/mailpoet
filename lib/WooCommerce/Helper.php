@@ -3,7 +3,6 @@
 namespace MailPoet\WooCommerce;
 
 class Helper {
-
   public function isWooCommerceActive() {
     return class_exists('WooCommerce');
   }

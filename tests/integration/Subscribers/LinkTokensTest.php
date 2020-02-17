@@ -51,5 +51,4 @@ class LinkTokensTest extends \MailPoetTest {
     $subscriber->save();
     return $subscriber;
   }
-
 }

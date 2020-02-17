@@ -676,5 +676,4 @@ class WooCommerceTest extends \MailPoetTest  {
       SET `email` = "" WHERE `id` = ' . $subscriber->id
     );
   }
-
 }

@@ -3,7 +3,6 @@
 namespace MailPoet\DynamicSegments\Filters;
 
 class WooCommerceCategoryTest extends \MailPoetTest {
-
   public function testToArray() {
     $filter = new WooCommerceCategory(5);
     $data = $filter->toArray();

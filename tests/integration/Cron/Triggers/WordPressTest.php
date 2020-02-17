@@ -90,7 +90,6 @@ class WordPressTest extends \MailPoetTest {
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
-
   public function testItFailsExecutionRequiremenetsCheckWhenQueueStatusIsCompleted() {
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
     $this->_addQueue($status = 'completed');

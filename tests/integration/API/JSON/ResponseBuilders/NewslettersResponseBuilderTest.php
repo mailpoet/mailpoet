@@ -10,7 +10,6 @@ use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class NewslettersResponseBuilderTest extends \MailPoetTest {
-
   public function testItBuildsStats() {
     $di = ContainerWrapper::getInstance();
     $em = $di->get(EntityManager::class);

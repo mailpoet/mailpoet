@@ -109,5 +109,4 @@ class ConfirmationEmailMailer {
       return false;
     }
   }
-
 }

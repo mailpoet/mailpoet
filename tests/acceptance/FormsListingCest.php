@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Form;
 
 class FormsListingCest {
-
   public function formsListing(\AcceptanceTester $i) {
     $form = new Form();
     $form->withName('Test Form');
@@ -19,5 +18,4 @@ class FormsListingCest {
     $i->waitForText('Test Form', 5, '.mailpoet_listing_table');
     $i->seeNoJSErrors();
   }
-
 }

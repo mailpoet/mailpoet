@@ -25,6 +25,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     parent::_before();
     $this->automaticEmailScheduler = new AutomaticEmailScheduler;
   }
+
   public function testItCreatesScheduledAutomaticEmailSendingTaskForUser() {
     $newsletter = $this->_createNewsletter();
     $this->_createNewsletterOptions(

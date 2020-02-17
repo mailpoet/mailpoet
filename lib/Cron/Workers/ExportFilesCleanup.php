@@ -25,5 +25,4 @@ class ExportFilesCleanup extends SimpleWorker {
     }
     return true;
   }
-
 }

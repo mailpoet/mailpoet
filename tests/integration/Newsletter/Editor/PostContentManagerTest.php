@@ -135,7 +135,6 @@ class PostContentManagerTest extends \MailPoetTest {
     }
   }
 
-
   public function testItAppliesCustomMaxExcerptLenghViaHook() {
     $postContentManager = new PostContentManager(
       $this->make(WooCommerceHelper::class, ['isWooCommerceActive' => false])

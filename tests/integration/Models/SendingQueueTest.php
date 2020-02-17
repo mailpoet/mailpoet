@@ -12,6 +12,7 @@ use MailPoetVendor\Idiorm\ORM;
 class SendingQueueTest extends \MailPoetTest {
   public $renderedBody;
   public $queue;
+
   public function _before() {
     parent::_before();
     $this->queue = SendingQueue::create();

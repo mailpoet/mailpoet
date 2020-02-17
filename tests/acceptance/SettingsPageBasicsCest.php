@@ -6,7 +6,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Test\DataFactories\Settings;
 
 class SettingsPageBasicsCest {
-
   public function checkSettingsPagesLoad(\AcceptanceTester $i) {
     $i->wantTo('Confirm all settings pages load correctly');
     $i->login();

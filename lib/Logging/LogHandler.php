@@ -57,5 +57,4 @@ class LogHandler extends AbstractProcessingHandler {
     Log::whereLt('created_at', Carbon::create()->subDays(self::DAYS_TO_KEEP_LOGS)->toDateTimeString())
        ->deleteMany();
   }
-
 }

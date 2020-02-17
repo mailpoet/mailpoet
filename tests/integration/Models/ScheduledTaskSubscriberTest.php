@@ -13,6 +13,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
   public $taskSubscriber;
   public $subscriber;
   public $task;
+
   public function _before() {
     parent::_before();
     $task = ScheduledTask::create();

@@ -5,7 +5,6 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 use MailPoet\Entities\CustomFieldEntity;
 
 class CustomFieldsResponseBuilder {
-
   /**
    * @param CustomFieldEntity[] $customFields
    * @return array

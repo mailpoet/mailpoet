@@ -64,5 +64,4 @@ class SaverTest extends \MailPoetTest {
     $loaded = DynamicSegmentFilter::select('*')->where('segment_id', $id)->findOne();
     expect($loaded)->isInstanceOf('\MailPoet\Models\DynamicSegmentFilter');
   }
-
 }

@@ -30,6 +30,7 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     ],
     'position' => '1',
   ];
+
   public function _before() {
     parent::_before();
     $this->wpMock = $this->createMock(WPFunctions::class);

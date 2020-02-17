@@ -19,6 +19,7 @@ class ExportTest extends \MailPoetTest {
   public $subscribersData;
   public $subscriberFields;
   public $jSONData;
+
   public function _before() {
     parent::_before();
     $this->jSONData = json_decode((string)file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);

@@ -40,5 +40,4 @@ class SubscribersIds {
     }
     return $orm->findMany();
   }
-
 }

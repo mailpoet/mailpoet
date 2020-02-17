@@ -5,7 +5,6 @@ namespace MailPoet\Subscribers;
 use MailPoet\Models\Subscriber;
 
 class SourceTest extends \MailPoetTest {
-
   public function testItDoesntOverrideSource() {
     $subscriber = Subscriber::createOrUpdate([
       'source' => Source::FORM,
@@ -35,5 +34,4 @@ class SourceTest extends \MailPoetTest {
     $updatedSubscriber = Source::setSource($subscriber, Source::FORM);
     expect($updatedSubscriber->source)->equals(Source::FORM);
   }
-
 }

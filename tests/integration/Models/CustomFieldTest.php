@@ -10,6 +10,7 @@ class CustomFieldTest extends \MailPoetTest {
   public $data;
   public $subscribers;
   public $customField;
+
   public function _before() {
     parent::_before();
     $this->data = [

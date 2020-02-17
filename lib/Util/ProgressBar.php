@@ -100,7 +100,6 @@ if (!class_exists('ProgressBar', false)) {
     public function deleteProgressFile() {
       unlink($this->filename);
     }
-
   }
 
 }

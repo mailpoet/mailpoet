@@ -104,7 +104,6 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     expect($tasks[0]->status)->equals(null);  // null means 'running'
   }
 
-
   public function testItContinuesFromLastId() {
     $this->woocommerceHelper->method('isWooCommerceActive')->willReturn(true);
     $this->woocommerceHelper->method('wcGetOrders')->willReturnOnConsecutiveCalls([1, 2, 3], [4, 5], []);
@@ -163,7 +162,6 @@ class WooCommerceOrdersTest extends \MailPoetTest {
   public function _after() {
     $this->cleanup();
   }
-
 
   private function createClick($createdDaysAgo = 5) {
     $click = StatisticsClicks::create();

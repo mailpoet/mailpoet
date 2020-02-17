@@ -96,5 +96,4 @@ class NewslettersExporter {
     }
     return $result;
   }
-
 }

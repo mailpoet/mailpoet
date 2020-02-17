@@ -7,7 +7,6 @@ use MailPoet\Models\NewsletterLink;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ShortcodesHelper {
-
   public static function getShortcodes() {
     $shortcodes = [
       WPFunctions::get()->__('Subscriber', 'mailpoet') => [

@@ -7,7 +7,6 @@ use MailPoet\Features\FeatureFlagsRepository;
 use MailPoet\Features\FeaturesController;
 
 class FeaturesControllerTest extends \MailPoetUnitTest {
-
   public function testItWorksWithDefaults() {
     $repository = $this->makeEmpty(
       FeatureFlagsRepository::class,
@@ -73,5 +72,4 @@ class FeaturesControllerTest extends \MailPoetUnitTest {
     }
     expect($controller->getAllFlags())->isEmpty();
   }
-
 }

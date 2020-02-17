@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class SaveNotificationAsDraftCest {
-
   public function saveNotificationAsDraft(\AcceptanceTester $i) {
     // step 1 - Prepare post notification data
     $i->wantTo('Save post notification email as draft');
@@ -27,5 +26,4 @@ class SaveNotificationAsDraftCest {
     $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForText('Draft Test Post Notification');
   }
-
 }

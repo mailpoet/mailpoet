@@ -139,5 +139,4 @@ class DisplayFormInWPContent {
     ) return true;
     return false;
   }
-
 }

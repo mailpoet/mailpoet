@@ -7,6 +7,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class SubscriberCustomFieldTest extends \MailPoetTest {
   public $data;
+
   public function __construct() {
     parent::__construct();
     $this->data = [

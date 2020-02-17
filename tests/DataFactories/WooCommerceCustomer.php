@@ -53,7 +53,6 @@ class WooCommerceCustomer {
     return $this->update('email', $email);
   }
 
-
   public function create() {
     $createOutput = $this->tester->cliToArray(['wc', 'customer', 'create', '--porcelain', '--user=admin', "--first_name={$this->data['first_name']}", "--last_name={$this->data['last_name']}", "--email={$this->data['email']}", "--password={$this->data['password']}"]);
     $customerOut = $this->tester->cliToArray(['wc', 'customer', 'get', $createOutput[0], '--format=json', '--user=admin']);

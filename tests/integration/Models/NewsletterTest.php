@@ -25,6 +25,7 @@ class NewsletterTest extends \MailPoetTest {
   public $segment2;
   public $segment1;
   public $newsletter;
+
   public function _before() {
     parent::_before();
     $this->newsletter = Newsletter::createOrUpdate([

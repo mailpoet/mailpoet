@@ -14,6 +14,7 @@ class WooCommerceSyncTest extends \MailPoetTest {
   public $worker;
   public $woocommerceHelper;
   public $woocommerceSegment;
+
   public function _before() {
     $this->woocommerceSegment = $this->createMock(WooCommerceSegment::class);
     $this->woocommerceHelper = $this->createMock(WooCommerceHelper::class);

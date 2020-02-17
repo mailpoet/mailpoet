@@ -6,7 +6,6 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 
 class FormEditorAddNamesCest {
-
   public function addNamesToAForm(\AcceptanceTester $i) {
     $segmentFactory = new Segment();
     $segmentName = 'Fancy List';
@@ -39,5 +38,4 @@ class FormEditorAddNamesCest {
     $i->seeElement('[data-automation-id="editor_first_name_input"]');
     $i->seeElement('[data-automation-id="editor_last_name_input"]');
   }
-
 }

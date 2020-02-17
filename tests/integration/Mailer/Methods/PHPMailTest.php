@@ -16,6 +16,7 @@ class PHPMailTest extends \MailPoetTest {
   public $returnPath;
   public $replyTo;
   public $sender;
+
   public function _before() {
     parent::_before();
     $this->sender = [

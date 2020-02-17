@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class SavePostNotificationEmailAsTemplateCest {
-
   public function saveAsTemplate(\AcceptanceTester $i) {
     $i->wantTo('Save post notification email as template');
 
@@ -46,5 +45,4 @@ class SavePostNotificationEmailAsTemplateCest {
     $i->click(['xpath' => '//*[text()="' . $templateTitle . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
     $i->waitForElement('[data-automation-id="newsletter_title"]');
   }
-
 }

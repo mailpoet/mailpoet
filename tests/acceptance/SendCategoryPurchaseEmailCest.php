@@ -9,7 +9,6 @@ use MailPoet\Test\DataFactories\WooCommerceProduct;
 use MailPoet\Util\Security;
 
 class SendCategoryPurchaseEmailCest {
-
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
     $settingsFactory = new Settings();

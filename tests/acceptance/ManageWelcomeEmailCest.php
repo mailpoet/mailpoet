@@ -133,5 +133,4 @@ class ManageWelcomeEmailCest {
     $i->waitForElement('[data-automation-id="newsletter_title"]');
     $i->seeNoJSErrors();
   }
-
 }

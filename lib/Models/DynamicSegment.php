@@ -110,5 +110,4 @@ class DynamicSegment extends MailPoetSegment {
 
     return ['count' => $count];
   }
-
 }

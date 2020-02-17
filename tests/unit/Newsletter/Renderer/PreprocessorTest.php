@@ -8,7 +8,6 @@ use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\WooCommerce\TransactionalEmails;
 
 class PreprocessorTest extends \MailPoetUnitTest {
-
   public function testProcessWooCommerceHeadingBlock() {
     $renderer = Stub::make(Renderer::class);
     $transactionalEmails = Stub::make(TransactionalEmails::class, [
@@ -64,5 +63,4 @@ class PreprocessorTest extends \MailPoetUnitTest {
       ],
     ]]);
   }
-
 }

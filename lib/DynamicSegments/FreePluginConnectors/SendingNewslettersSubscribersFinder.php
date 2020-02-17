@@ -52,5 +52,4 @@ class SendingNewslettersSubscribersFinder {
     }
     return $result;
   }
-
 }

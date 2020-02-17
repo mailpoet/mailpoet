@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class ScheduleNewsletterCest {
-
   public function scheduleStandardNewsletter(\AcceptanceTester $i) {
     $i->wantTo('Schedule a newsletter');
     $newsletterTitle = 'Schedule Test Newsletter';
@@ -31,5 +30,4 @@ class ScheduleNewsletterCest {
     $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
 
   }
-
 }

@@ -7,7 +7,6 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Reference;
 
 class ContainerConfigurator implements IContainerConfigurator {
-
   public function getDumpNamespace() {
     return 'MailPoetGenerated';
   }

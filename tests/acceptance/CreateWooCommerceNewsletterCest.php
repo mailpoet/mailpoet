@@ -6,7 +6,6 @@ use MailPoet\Features\FeaturesController;
 use MailPoet\Test\DataFactories\Features;
 
 class CreateWooCommerceNewsletterCest {
-
   public function createFirstPurchaseEmail(\AcceptanceTester $i) {
     $i->wantTo('Create and configure a first purchase automatic email');
 
@@ -73,5 +72,4 @@ class CreateWooCommerceNewsletterCest {
     $i->see($newsletterTitle, $newsletterListingElement);
     $i->see('Email sent when a customer abandons his cart', $newsletterListingElement);
   }
-
 }

@@ -6,7 +6,6 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 
 class FormEditorCreateCustomFieldCest {
-
   public function createCustomSelect(\AcceptanceTester $i) {
     $segmentFactory = new Segment();
     $segmentName = 'Fancy List';
@@ -61,5 +60,4 @@ class FormEditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="First option"]');
     $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="Option 2"]');
   }
-
 }

@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class NewslettersListingCest {
-
   public function newslettersListing(\AcceptanceTester $i) {
     $standardNewsletterSubject = 'Standard newsletter';
     $welcomeEmailSubject = 'Welcome email';
@@ -71,5 +70,4 @@ class NewslettersListingCest {
     $i->see('Opened, Clicked');
     $i->seeNoJSErrors();
   }
-
 }

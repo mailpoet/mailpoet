@@ -7,7 +7,6 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts;
 
 class PostsTest extends \MailPoetUnitTest {
-
   public function testGetTermsProxiesCallToWordPress() {
     $args = [
       'taxonomy' => 'post_tags',

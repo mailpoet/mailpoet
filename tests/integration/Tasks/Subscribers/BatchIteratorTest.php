@@ -11,6 +11,7 @@ class BatchIteratorTest extends \MailPoetTest {
   public $subscriberCount;
   public $batchSize;
   public $taskId;
+
   public function _before() {
     parent::_before();
     $this->taskId = 123; // random ID

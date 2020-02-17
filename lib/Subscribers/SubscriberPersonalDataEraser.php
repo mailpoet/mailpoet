@@ -6,7 +6,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 
 class SubscriberPersonalDataEraser {
-
   public function erase($email) {
     if (empty($email)) {
       return [
@@ -51,5 +50,4 @@ class SubscriberPersonalDataEraser {
     $subscriber->confirmedIp = '0.0.0.0';
     $subscriber->save();
   }
-
 }

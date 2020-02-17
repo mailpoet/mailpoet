@@ -18,6 +18,7 @@ class WoocommerceSettingsTest extends \MailPoetTest {
     $this->wp = new WPFunctions();
     $this->endpoint = new WoocommerceSettings($this->wp);
   }
+
   public function testItCanSetSettings() {
     $this->wp->updateOption('woocommerce_email_base_color', '#ffffff');
     $response = $this->endpoint->set([

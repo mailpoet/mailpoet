@@ -67,5 +67,4 @@ class MP2Migrator extends APIEndpoint {
       ]);
     }
   }
-
 }

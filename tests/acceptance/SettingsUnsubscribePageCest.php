@@ -11,5 +11,4 @@ class SettingsUnsubscribePageCest {
     $i->switchToNextTab();
     $i->waitForElement(['css' => '.entry-title']);
   }
-
 }

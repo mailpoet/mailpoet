@@ -16,7 +16,6 @@ class PremiumKeyCheck extends KeyCheckWorker {
     parent::__construct();
   }
 
-
   public function checkProcessingRequirements() {
     return Bridge::isPremiumKeySpecified();
   }

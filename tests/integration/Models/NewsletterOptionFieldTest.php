@@ -11,6 +11,7 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
   public $data;
   public $newsletterData;
   public $optionField;
+
   public function _before() {
     parent::_before();
     $this->data = [

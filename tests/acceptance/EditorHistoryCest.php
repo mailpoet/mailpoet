@@ -60,5 +60,4 @@ class EditorHistoryCest {
         $i->seeElement(self::REDO_SELECTOR . self::INACTIVE_SELECTOR);
     }
   }
-
 }

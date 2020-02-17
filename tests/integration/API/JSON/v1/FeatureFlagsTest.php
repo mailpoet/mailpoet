@@ -79,7 +79,6 @@ class FeatureFlagsTest extends \MailPoetTest {
     expect($features[0]->getValue())->equals(false);
   }
 
-
   public function testItUpdatesDatabaseValue() {
     $this->repository->createOrUpdate([
       'name' => 'feature-a',
@@ -135,5 +134,4 @@ class FeatureFlagsTest extends \MailPoetTest {
     ]);
     return new FeatureFlags($featuresController, $featureFlags);
   }
-
 }

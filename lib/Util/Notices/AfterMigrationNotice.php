@@ -47,5 +47,4 @@ class AfterMigrationNotice {
     \MailPoet\WP\Notice::displaySuccess($message, $extraClasses, $dataNoticeName);
     return $message;
   }
-
 }

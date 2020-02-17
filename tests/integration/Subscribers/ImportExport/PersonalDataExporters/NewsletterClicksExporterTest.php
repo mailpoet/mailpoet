@@ -78,5 +78,4 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
     expect($result['data'][0]['data'])->contains(['name' => 'URL', 'value' => 'Link url']);
     expect($result['data'][0]['data'])->contains(['name' => 'Timestamp of the click event', 'value' => '2018-01-02 15:16:17']);
   }
-
 }

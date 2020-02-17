@@ -165,7 +165,6 @@ class WelcomeTest extends \MailPoetTest {
     expect($result[0]->id())->equals($queue->id());
   }
 
-
   public function itDoesNotScheduleAnythingWhenNewsletterDoesNotExist() {
 
     // subscriber welcome notification is not scheduled
@@ -318,5 +317,4 @@ class WelcomeTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
-
 }

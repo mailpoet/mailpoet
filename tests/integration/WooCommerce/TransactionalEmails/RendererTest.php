@@ -94,5 +94,4 @@ class RendererTest extends \MailPoetTest {
     expect($css)->contains("#mailpoet_woocommerce_container .some-class {\nheight:50px;\nwidth:30px\n}");
     expect($css)->contains("#mailpoet_woocommerce_container h1 {\nfont-weight:700\n}");
   }
-
 }

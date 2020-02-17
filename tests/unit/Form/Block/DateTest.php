@@ -64,7 +64,6 @@ class DateTest extends \MailPoetUnitTest {
     expect($selectedYear->textContent)->equals($currentYear);
   }
 
-
   public function testItShouldRenderYearMonthDayDateFormat() {
     $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
     $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');

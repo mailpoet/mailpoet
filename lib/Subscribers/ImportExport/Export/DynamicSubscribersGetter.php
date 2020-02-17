@@ -76,5 +76,4 @@ class DynamicSubscribersGetter extends SubscribersGetter {
 
     return $subscribers;
   }
-
 }

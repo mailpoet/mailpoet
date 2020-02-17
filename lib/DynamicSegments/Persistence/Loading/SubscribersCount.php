@@ -34,5 +34,4 @@ class SubscribersCount {
     }
     return $orm->findOne()->cnt;
   }
-
 }

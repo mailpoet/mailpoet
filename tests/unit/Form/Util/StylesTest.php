@@ -5,7 +5,6 @@ namespace MailPoet\Test\Form\Util;
 use MailPoet\Form\Util\Styles;
 
 class StylesTest extends \MailPoetUnitTest {
-
   public function testItSetsDefaultCSSStyles() {
     $styles = new Styles();
     expect($styles->getDefaultStyles())->notEmpty();

@@ -9,7 +9,6 @@ use MailPoet\Subscribers\ImportExport\PersonalDataExporters\SubscriberExporter;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PersonalDataExporters {
-
   public function init() {
     WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerSubscriberExporter']);
     WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerSegmentsExporter']);
@@ -48,5 +47,4 @@ class PersonalDataExporters {
     ];
     return $exporters;
   }
-
 }

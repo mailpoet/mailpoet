@@ -6,8 +6,6 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 
 class PluginActivatedHookTest extends \MailPoetTest {
-
-
   public function testItAddsANewMessageIfNetworkActivation() {
     $deferredAdminNotices = Stub::makeEmpty(
       'MailPoet\Config\DeferredAdminNotices',
@@ -44,5 +42,4 @@ class PluginActivatedHookTest extends \MailPoetTest {
     $hook = new PluginActivatedHook($deferredAdminNotices);
     $hook->action("mailpoet/mailpoet.php", false);
   }
-
 }

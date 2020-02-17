@@ -8,7 +8,6 @@ use MailPoet\Models\DynamicSegment;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class AddToSubscribersFiltersTest extends \MailPoetTest {
-
   public function testItReturnsOriginalArray() {
     $originalSegment = [
       'label' => 'segment1',

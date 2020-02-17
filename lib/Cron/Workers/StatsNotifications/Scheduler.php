@@ -101,5 +101,4 @@ class Scheduler {
     $date->addHours(self::HOURS_TO_SEND_AFTER_NEWSLETTER);
     return $date;
   }
-
 }

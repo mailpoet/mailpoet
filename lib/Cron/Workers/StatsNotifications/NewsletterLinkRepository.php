@@ -27,5 +27,4 @@ class NewsletterLinkRepository extends Repository {
       ->getQuery()
       ->getOneOrNullResult();
   }
-
 }

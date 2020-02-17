@@ -18,6 +18,7 @@ class ImportTest extends \MailPoetTest {
   public $testData;
   public $segment2;
   public $segment1;
+
   public function _before() {
     $customField = CustomField::create();
     $customField->name = 'country';

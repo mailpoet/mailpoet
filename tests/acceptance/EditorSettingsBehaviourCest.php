@@ -61,5 +61,4 @@ class EditorSettingsBehaviourCest {
     $i->seeNumberOfElements(self::HIGHLIGHTED_ALC_SELECTOR, 1); // ALC is highlighted
     $i->seeNumberOfElements(self::HIGHLIGHTED_BUTTON_SELECTOR, 0); // Button is not highlighted
   }
-
 }

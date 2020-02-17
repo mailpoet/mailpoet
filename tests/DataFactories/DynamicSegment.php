@@ -34,5 +34,4 @@ class DynamicSegment extends Segment {
     $saver->save($dynamicSegment);
     return $dynamicSegment;
   }
-
 }

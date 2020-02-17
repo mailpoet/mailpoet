@@ -5,7 +5,6 @@ namespace MailPoet\DynamicSegments\Filters;
 use MailPoet\Models\Subscriber;
 
 class UserRoleTest extends \MailPoetTest {
-
   public function _before() {
     $this->cleanData();
     wp_insert_user([

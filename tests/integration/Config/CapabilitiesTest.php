@@ -127,5 +127,4 @@ class CapabilitiesTest extends \MailPoetTest {
       $caps->registerMembersCapabilities();
     }
   }
-
 }

@@ -12,7 +12,6 @@ use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\DynamicSegmentFilter;
 
 class DBMapper {
-
   /**
  * @param DynamicSegment $segmentData
  * @param DynamicSegmentFilter[] $filtersData
@@ -82,5 +81,4 @@ class DBMapper {
     }
     return $data['segmentType'];
   }
-
 }

@@ -5,7 +5,6 @@ namespace MailPoet\Test\API;
 use MailPoet\API\API;
 
 class APITest extends \MailPoetTest {
-
   public function testItCallsMPAPI() {
     expect(API::MP('v1'))->isInstanceOf('MailPoet\API\MP\v1\API');
   }

@@ -8,7 +8,6 @@ use MailPoet\DynamicSegments\RequirementsChecker;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
 class SubscribersInDynamicSegment extends Subscriber {
-
   public static function listingQuery(array $data = []) {
     $query = self::select(self::$_table . '.*');
     $singleSegmentLoader = new SingleSegmentLoader(new DBMapper());
@@ -32,6 +31,4 @@ class SubscribersInDynamicSegment extends Subscriber {
     $requirementsChecker = new RequirementsChecker(new WooCommerceHelper());
     return $requirementsChecker->shouldSkipSegment($dynamicSegment);
   }
-
-
 }

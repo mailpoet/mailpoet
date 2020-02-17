@@ -95,5 +95,4 @@ class Analytics {
   private function recordDataSent() {
     $this->settings->set(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::now());
   }
-
 }

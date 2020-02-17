@@ -53,5 +53,4 @@ class DynamicSegmentFilter extends Model {
     $query->deleteMany();
 
   }
-
 }

@@ -82,5 +82,4 @@ class LoggerFactory {
         return \MailPoetVendor\Monolog\Logger::ERROR;
     }
   }
-
 }

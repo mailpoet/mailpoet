@@ -5,7 +5,6 @@ namespace MailPoet\Test\Models;
 use MailPoet\Models\StatisticsForms;
 
 class StatisticsFormsTest extends \MailPoetTest {
-
   public function testItCanRecordStats() {
     $record = StatisticsForms::record($formId = 1, $subscriberId = 2);
     expect($record->formId)->equals(1);

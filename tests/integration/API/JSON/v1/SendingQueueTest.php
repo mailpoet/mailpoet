@@ -21,6 +21,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
   public $newsletter;
+
   public function _before() {
     parent::_before();
     $this->newsletter = Newsletter::createOrUpdate(

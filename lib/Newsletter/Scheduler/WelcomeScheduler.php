@@ -69,5 +69,4 @@ class WelcomeScheduler {
     );
     return $sendingTask->save();
   }
-
 }

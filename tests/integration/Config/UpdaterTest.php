@@ -11,6 +11,7 @@ class UpdaterTest extends \MailPoetTest {
   public $version;
   public $slug;
   public $pluginName;
+
   public function _before() {
     parent::_before();
     $this->pluginName = 'some-plugin/some-plugin.php';

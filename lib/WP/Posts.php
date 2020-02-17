@@ -5,7 +5,6 @@ namespace MailPoet\WP;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Posts {
-
   public static function getTerms($args) {
     // Since WordPress 4.5.0 signature of get_terms changed to require
     // one argument array, where taxonomy is key of that array
@@ -25,5 +24,4 @@ class Posts {
     $args = array_merge($defaults, $args);
     return WPFunctions::get()->getPostTypes($args, $output, $operator);
   }
-
 }

@@ -97,5 +97,4 @@ class SubscribersListingsTest extends \MailPoetTest {
     remove_all_filters('mailpoet_get_subscribers_listings_in_segment_handlers');
     $this->finder->getListingsInSegment(['filter' => ['segment' => $this->segment2->id]]);
   }
-
 }

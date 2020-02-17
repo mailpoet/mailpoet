@@ -98,5 +98,4 @@ class Helpers {
       return trim($value);
     return $value;
   }
-
 }

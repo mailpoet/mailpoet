@@ -11,7 +11,6 @@ use MailPoet\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Models\DynamicSegment;
 
 class FormDataMapper {
-
   /**
    * @param array $data
    *
@@ -116,5 +115,4 @@ class FormDataMapper {
     }
 
   }
-
 }

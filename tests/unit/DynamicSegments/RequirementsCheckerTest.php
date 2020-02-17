@@ -46,5 +46,4 @@ class RequirementsCheckerTest extends \MailPoetUnitTest {
     $segment->setFilters([new EmailAction(EmailAction::ACTION_OPENED, 2)]);
     expect($this->requirementsChecker->shouldSkipSegment($segment))->false();
   }
-
 }

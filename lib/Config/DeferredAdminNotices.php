@@ -33,5 +33,4 @@ class DeferredAdminNotices {
       WPFunctions::get()->deleteOption(DeferredAdminNotices::OPTIONS_KEY_NAME);
     }
   }
-
 }

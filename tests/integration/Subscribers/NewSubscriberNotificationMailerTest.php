@@ -45,7 +45,6 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
     $service->send($this->subscriber, $this->segments);
   }
 
-
   public function testItDoesNotSendIfSettingsDoesNotHaveAddress() {
     $this->settings->set(NewSubscriberNotificationMailer::SETTINGS_KEY, ['enabled' => false]);
     $mailer = Stub::makeEmpty(Mailer::class, ['send' => Expected::never()], $this);

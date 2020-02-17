@@ -9,7 +9,6 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class AutomaticEmailScheduler {
-
   public function scheduleAutomaticEmail($group, $event, $schedulingCondition = false, $subscriberId = false, $meta = false) {
     $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) return false;
@@ -102,5 +101,4 @@ class AutomaticEmailScheduler {
     $task->scheduledAt = Scheduler::getScheduledTimeWithDelay($newsletter->afterTimeType, $newsletter->afterTimeNumber);
     $task->save();
   }
-
 }

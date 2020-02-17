@@ -31,5 +31,4 @@ class TemplatesPagesLoadCest {
     $i->waitForElement('[data-automation-id="select_template_5"]');
     $i->waitForElement('[data-automation-id="select_template_2"]');
   }
-
 }

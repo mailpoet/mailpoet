@@ -279,6 +279,7 @@ class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes
     $i = $this;
     $i->cli(['plugin', 'activate', 'woocommerce']);
   }
+
   public function deactivateWooCommerce() {
     $i = $this;
     $i->cli(['plugin', 'deactivate', 'woocommerce']);

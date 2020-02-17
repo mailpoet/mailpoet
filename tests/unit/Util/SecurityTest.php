@@ -5,7 +5,6 @@ namespace MailPoet\Test\Util;
 use MailPoet\Util\Security;
 
 class SecurityTest extends \MailPoetUnitTest {
-
   public function testItCanGenerateARandomString() {
     // it has a default length of 5
     $hash = Security::generateRandomString();

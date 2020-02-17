@@ -63,5 +63,4 @@ class AddToSubscribersFilters {
     });
     return array_merge($specialSegmentFilters, $segments);
   }
-
 }

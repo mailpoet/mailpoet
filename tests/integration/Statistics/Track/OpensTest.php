@@ -20,6 +20,7 @@ class OpensTest extends \MailPoetTest {
   public $queue;
   public $subscriber;
   public $newsletter;
+
   public function _before() {
     parent::_before();
     // create newsletter

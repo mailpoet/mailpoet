@@ -53,5 +53,4 @@ class NewsletterTemplate extends Model {
     }
     return $template;
   }
-
 }

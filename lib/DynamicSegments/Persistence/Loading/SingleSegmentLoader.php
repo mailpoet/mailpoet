@@ -29,7 +29,4 @@ class SingleSegmentLoader {
 
     return $this->mapper->mapSegment($segment, $filters);
   }
-
-
-
 }

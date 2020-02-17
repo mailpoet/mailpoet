@@ -10,6 +10,7 @@ class FunctionsTest extends \MailPoetTest {
   public $filter;
   public $action;
   public $contentWidth;
+
   public function _before() {
     parent::_before();
     global $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps

@@ -331,7 +331,6 @@ class NewsletterEntity {
     $this->gaCampaign = $gaCampaign;
   }
 
-
   /**
    * @param string|null $unsubscribeToken
    */

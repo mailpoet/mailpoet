@@ -23,5 +23,4 @@ class EditorHeaderBlockCest {
     $i->waitForElementVisible($headerSettingsAssertion);
     $i->click($headerSettingsAssertion);
   }
-
 }

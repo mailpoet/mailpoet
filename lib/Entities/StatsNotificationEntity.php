@@ -46,5 +46,4 @@ class StatsNotificationEntity {
   public function getTask() {
     return $this->task;
   }
-
 }

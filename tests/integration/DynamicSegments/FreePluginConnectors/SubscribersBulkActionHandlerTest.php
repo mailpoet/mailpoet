@@ -6,7 +6,6 @@ use MailPoet\Models\DynamicSegment;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersBulkActionHandlerTest extends \MailPoetTest {
-
   public function testItReturnsNullWithUnknownSegment() {
     $segment = [
       'name' => 'name',

@@ -7,7 +7,6 @@ use pQuery;
 use pQuery\DomNode;
 
 class StructureTransformer {
-
   public function transform($content, $imageFullWidth) {
     $root = pQuery::parseStr($content);
 
@@ -129,5 +128,4 @@ class StructureTransformer {
 
     return $updatedStructure;
   }
-
 }

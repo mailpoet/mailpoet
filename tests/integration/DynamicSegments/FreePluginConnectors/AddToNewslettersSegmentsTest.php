@@ -8,7 +8,6 @@ use MailPoet\Models\DynamicSegment;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class AddToNewslettersSegmentsTest extends \MailPoetTest {
-
   public function testItReturnsOriginalArray() {
     $dynamicSegment = DynamicSegment::create();
     $dynamicSegment->hydrate([
