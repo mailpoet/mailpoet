@@ -2,8 +2,8 @@
   "require-dev": {
     "jakub-onderka/php-console-highlighter": "^0.4.0",
     "jakub-onderka/php-parallel-lint": "^1.0",
-    "phpcompatibility/php-compatibility": "^9.1",
-    "slevomat/coding-standard": "^5.0",
+    "phpcompatibility/php-compatibility": "^9.3",
+    "slevomat/coding-standard": "^6.1",
     "squizlabs/php_codesniffer": "^3.4"
   },
   "config": {
