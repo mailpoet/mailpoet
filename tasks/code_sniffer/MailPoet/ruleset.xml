@@ -45,6 +45,7 @@
 
   <!-- Classes & interfaces -->
   <rule ref="Squiz.Classes.LowercaseClassKeywords"/> <!-- The "class" keyword must be lowercased -->
+  <rule ref="PSR1.Classes.ClassDeclaration"/> <!-- Each class must be in a file by itself and must be under a namespace -->
 
   <!-- checks for unused methods, unused or write-only properties in a class and unused private constants -->
   <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
