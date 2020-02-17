@@ -8,6 +8,7 @@ import ImportTemplate from 'newsletters/templates/import_template.jsx';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
+import { GlobalContext } from 'context/index.jsx';
 
 const getEditorUrl = (id) => `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
 
@@ -87,8 +88,8 @@ class NewsletterTemplates extends React.Component {
       this.sortTemplates();
     }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
@@ -158,8 +159,8 @@ class NewsletterTemplates extends React.Component {
       }
     }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
@@ -276,6 +277,8 @@ class NewsletterTemplates extends React.Component {
     );
   }
 }
+
+NewsletterTemplates.contextType = GlobalContext;
 
 NewsletterTemplates.propTypes = {
   match: PropTypes.shape({

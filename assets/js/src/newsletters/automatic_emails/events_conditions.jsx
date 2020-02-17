@@ -6,6 +6,7 @@ import EventOptions from 'newsletters/automatic_emails/events/event_options.jsx'
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
+import { GlobalContext } from 'context/index.jsx';
 
 const defaultAfterTimeType = 'immediate';
 const defaultAfterTimeNumber = 1;
@@ -205,8 +206,8 @@ class EventsConditions extends React.Component {
       history.push(`/template/${response.data.id}`);
     }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
@@ -244,6 +245,8 @@ class EventsConditions extends React.Component {
     );
   }
 }
+
+EventsConditions.contextType = GlobalContext;
 
 EventsConditions.propTypes = {
   history: PropTypes.shape({

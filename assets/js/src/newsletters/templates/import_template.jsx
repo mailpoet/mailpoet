@@ -3,6 +3,7 @@ import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import HelpTooltip from 'help-tooltip.jsx';
 import PropTypes from 'prop-types';
+import { GlobalContext } from 'context/index.jsx';
 
 class ImportTemplate extends React.Component {
   constructor(props) {
@@ -51,8 +52,8 @@ class ImportTemplate extends React.Component {
       afterImport(true, response.data);
     }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
@@ -77,7 +78,7 @@ class ImportTemplate extends React.Component {
           'MailPoet Free version': window.mailpoet_version,
         });
       } catch (err) {
-        MailPoet.Notice.error(MailPoet.I18n.t('templateFileMalformedError'));
+        this.context.notices.error(<p>{MailPoet.I18n.t('templateFileMalformedError')}</p>);
       }
     };
 
@@ -114,6 +115,8 @@ class ImportTemplate extends React.Component {
     );
   }
 }
+
+ImportTemplate.contextType = GlobalContext;
 
 ImportTemplate.propTypes = {
   beforeImport: PropTypes.func.isRequired,

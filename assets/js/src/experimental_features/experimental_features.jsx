@@ -7,24 +7,28 @@ import Notices from 'notices/notices.jsx';
 const ExperimentalFeatures = () => {
   const [flags, setFlags] = useState(null);
   const contextValue = useGlobalContextValue(window);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'featureFlags',
-      action: 'getAll',
-    }).done((response) => {
-      const flagsMap = response.data.reduce((obj, item) => ({ ...obj, [item.name]: item }), {});
-      setFlags(flagsMap);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
-          { scroll: true }
-        );
-      }
-    });
-  }, []);
+    if (!mounted) {
+      MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'featureFlags',
+        action: 'getAll',
+      }).done((response) => {
+        const flagsMap = response.data.reduce((obj, item) => ({ ...obj, [item.name]: item }), {});
+        setFlags(flagsMap);
+      }).fail((response) => {
+        if (response.errors.length > 0) {
+          contextValue.notices.error(
+            <>{response.errors.map((error) => <p>{error.message}</p>)}</>,
+            { scroll: true }
+          );
+        }
+      });
+      setMounted(true);
+    }
+  }, [contextValue.notices, mounted]);
 
   function handleChange(event) {
     const name = event.target.name;
@@ -41,11 +45,12 @@ const ExperimentalFeatures = () => {
       const flag = flags[name];
       flag.value = value;
       setFlags({ ...flags, [name]: flag });
-      MailPoet.Notice.success(`Feature '${name}' was ${value ? 'enabled' : 'disabled'}.`);
+      const message = `Feature '${name}' was ${value ? 'enabled' : 'disabled'}.`;
+      contextValue.notices.success(<p>{message}</p>);
     }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        contextValue.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
