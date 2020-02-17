@@ -84,4 +84,3 @@ class SubscribeOnRegistrationPageCest {
     $i->seeNoJSErrors();
   }
 }
-
