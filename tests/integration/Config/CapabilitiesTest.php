@@ -129,4 +129,3 @@ class CapabilitiesTest extends \MailPoetTest {
   }
 
 }
-
