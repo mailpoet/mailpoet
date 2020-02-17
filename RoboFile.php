@@ -883,7 +883,7 @@ class RoboFile extends \Robo\Tasks {
     $dir = new RecursiveDirectoryIterator($folder);
     $iterator = new RecursiveIteratorIterator($dir);
 
-    $pattern = '/^.+\.(' . join($extensions, '|') . ')$/i';
+    $pattern = '/^.+\.(' . join('|', $extensions) . ')$/i';
 
     $files = new RegexIterator(
       $iterator,
