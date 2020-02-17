@@ -60,6 +60,19 @@
     </properties>
   </rule>
 
+  <!-- Indentation -->
+  <rule ref="Generic.WhiteSpace.DisallowTabIndent"/> <!-- Disallow indenting with tabs -->
+  <rule ref="Generic.WhiteSpace.ScopeIndent"> <!-- Control structures, classes, functions indent 2 spaces per level -->
+    <properties>
+      <property name="indent" value="2"/>
+    </properties>
+  </rule>
+  <rule ref="PEAR.WhiteSpace.ScopeClosingBrace"> <!-- Closing brace should be at the same level as opening brace -->
+    <properties>
+      <property name="indent" value="2"/>
+    </properties>
+  </rule>
+
   <!-- Reports empty comments -->
   <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
   <!-- This sniff enforces trailing commas in multi-line arrays -->
@@ -125,22 +138,6 @@
   <rule ref="Generic.PHP.LowerCaseKeyword"/>
   <!-- Disallow silencing errors with @ -->
   <!--<rule ref="Generic.PHP.NoSilencedErrors"/>-->
-
-  <!-- Disallow indenting with tabs -->
-  <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
-  <!-- Control structures, classes, functions indent 2 spaces per level -->
-  <rule ref="Generic.WhiteSpace.ScopeIndent">
-    <properties>
-      <property name="indent" value="2"/>
-    </properties>
-  </rule>
-
-  <!-- Closing brace should be at the same level as opening brace -->
-  <rule ref="PEAR.WhiteSpace.ScopeClosingBrace">
-    <properties>
-      <property name="indent" value="2"/>
-    </properties>
-  </rule>
 
   <!-- When referencing arrays there should be no whitespace between brackets -->
   <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
