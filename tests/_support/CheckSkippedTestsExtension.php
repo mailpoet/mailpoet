@@ -5,7 +5,7 @@ use Codeception\Events;
 use Codeception\Extension;
 
 class CheckSkippedTestsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDeclaration
-  static $events = [
+  public static $events = [
     Events::SUITE_AFTER => 'checkErrorsAfterTests',
   ];
 

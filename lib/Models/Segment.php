@@ -17,7 +17,7 @@ use MailPoet\WP\Functions as WPFunctions;
  */
 
 class Segment extends Model {
-  static $_table = MP_SEGMENTS_TABLE;
+  public static $_table = MP_SEGMENTS_TABLE;
   const TYPE_WP_USERS = SegmentEntity::TYPE_WP_USERS;
   const TYPE_WC_USERS = SegmentEntity::TYPE_WC_USERS;
   const TYPE_DEFAULT = SegmentEntity::TYPE_DEFAULT;
