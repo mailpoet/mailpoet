@@ -16,7 +16,7 @@ class CleanupExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDec
   const DB_NAME = 'wordpress';
   const MAILHOG_DATA_PATH = '/mailhog-data';
 
-  static $events = [
+  public static $events = [
     Events::SUITE_BEFORE => 'backupDatabase',
     Events::TEST_BEFORE => 'cleanupEnvironment',
   ];

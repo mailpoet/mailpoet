@@ -15,7 +15,7 @@ class ErrorsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDecl
   private $knownErrorCounts = [];
   private $errors = [];
 
-  static $events = [
+  public static $events = [
     Events::SUITE_BEFORE => 'loadErrorCountsBeforeSuite',
     Events::TEST_AFTER => 'checkErrorsAfterTest',
     Events::SUITE_AFTER => 'processErrorsAfterSuite',

@@ -3,7 +3,7 @@
 namespace MailPoet\Newsletter\Renderer\Columns;
 
 class ColumnsHelper {
-  static $columnsWidth = [
+  public static $columnsWidth = [
     1 => [660],
     2 => [330, 330],
     "1_2" => [220, 440],
@@ -11,13 +11,13 @@ class ColumnsHelper {
     3 => [220, 220, 220],
   ];
 
-  static $columnsClass = [
+  public static $columnsClass = [
     1 => 'cols-one',
     2 => 'cols-two',
     3 => 'cols-three',
   ];
 
-  static $columnsAlignment = [
+  public static $columnsAlignment = [
     1 => null,
     2 => 'left',
     3 => 'right',

@@ -7,39 +7,39 @@ use MailPoet\WP\Functions as WPFunctions;
 class Env {
   const NEWSLETTER_CONTENT_WIDTH = 1320;
 
-  static $version;
-  static $pluginName;
-  static $pluginPath;
-  static $baseUrl;
-  static $file;
-  static $path;
-  static $viewsPath;
-  static $assetsPath;
-  static $assetsUrl;
-  static $utilPath;
-  static $tempPath;
-  static $cachePath;
-  static $tempUrl;
-  static $languagesPath;
-  static $libPath;
-  static $pluginPrefix;
-  static $dbPrefix;
-  static $dbHost;
-  static $dbIsIpv6;
-  static $dbSocket;
-  static $dbPort;
-  static $dbName;
-  static $dbUsername;
-  static $dbPassword;
-  static $dbCharset;
-  static $dbCollation;
-  static $dbCharsetCollate;
-  static $dbTimezoneOffset;
+  public static $version;
+  public static $pluginName;
+  public static $pluginPath;
+  public static $baseUrl;
+  public static $file;
+  public static $path;
+  public static $viewsPath;
+  public static $assetsPath;
+  public static $assetsUrl;
+  public static $utilPath;
+  public static $tempPath;
+  public static $cachePath;
+  public static $tempUrl;
+  public static $languagesPath;
+  public static $libPath;
+  public static $pluginPrefix;
+  public static $dbPrefix;
+  public static $dbHost;
+  public static $dbIsIpv6;
+  public static $dbSocket;
+  public static $dbPort;
+  public static $dbName;
+  public static $dbUsername;
+  public static $dbPassword;
+  public static $dbCharset;
+  public static $dbCollation;
+  public static $dbCharsetCollate;
+  public static $dbTimezoneOffset;
 
   // back compatibility for older Premium plugin with underscore naming
   // (we need to allow it to activate so it can render an update notice)
-  static $plugin_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-  static $temp_path; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  public static $plugin_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  public static $temp_path; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
   public static function init($file, $version, $dbHost, $dbUser, $dbPassword, $dbName) {
     self::$version = $version;

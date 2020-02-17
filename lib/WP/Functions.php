@@ -8,7 +8,7 @@ use WP_Error;
 
 class Functions {
 
-  static private $instance;
+  private static $instance;
 
   /**
    * @return Functions
