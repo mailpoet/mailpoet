@@ -20,7 +20,7 @@ use MailPoetVendor\Idiorm\ORM;
  * @property string|array|null $meta
  */
 class ScheduledTask extends Model {
-  public static $_table = MP_SCHEDULED_TASKS_TABLE;
+  public static $_table = MP_SCHEDULED_TASKS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   const STATUS_COMPLETED = ScheduledTaskEntity::STATUS_COMPLETED;
   const STATUS_SCHEDULED = ScheduledTaskEntity::STATUS_SCHEDULED;
   const STATUS_PAUSED = ScheduledTaskEntity::STATUS_PAUSED;

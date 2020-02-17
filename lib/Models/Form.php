@@ -12,7 +12,7 @@ use MailPoet\WP\Functions as WPFunctions;
  */
 
 class Form extends Model {
-  public static $_table = MP_FORMS_TABLE;
+  public static $_table = MP_FORMS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public function getSettings() {
     return WPFunctions::get()->isSerialized($this->settings) ? unserialize($this->settings) : $this->settings;

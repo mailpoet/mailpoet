@@ -32,7 +32,7 @@ use function MailPoetVendor\array_column;
  */
 
 class Subscriber extends Model {
-  public static $_table = MP_SUBSCRIBERS_TABLE;
+  public static $_table = MP_SUBSCRIBERS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   const STATUS_SUBSCRIBED = 'subscribed';
   const STATUS_UNSUBSCRIBED = 'unsubscribed';

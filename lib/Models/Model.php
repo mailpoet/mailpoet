@@ -133,8 +133,8 @@ use MailPoet\WP\Functions as WPFunctions;
 class Model extends \MailPoetVendor\Sudzy\ValidModel {
   const DUPLICATE_RECORD = 23000;
 
-  public static $_table;
-  protected $_errors;
+  public static $_table; // phpcs:ignore PSR2.Classes.PropertyDeclaration
+  protected $_errors; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   protected $newRecord;
 
   public function __construct() {

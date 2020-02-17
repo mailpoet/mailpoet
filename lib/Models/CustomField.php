@@ -12,7 +12,7 @@ use MailPoet\WP\Functions as WPFunctions;
  */
 
 class CustomField extends Model {
-  public static $_table = MP_CUSTOM_FIELDS_TABLE;
+  public static $_table = MP_CUSTOM_FIELDS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   const TYPE_DATE = 'date';
   const TYPE_TEXT = 'text';
   const TYPE_TEXTAREA = 'textarea';

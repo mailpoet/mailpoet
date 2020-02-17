@@ -3,7 +3,7 @@
 namespace MailPoet\Settings;
 
 class Hosts {
-  private static $_smtp = [
+  private static $smtp = [
     'AmazonSES' => [
       'name' => 'Amazon SES',
       'emails' => 100,
@@ -29,7 +29,7 @@ class Hosts {
     ],
   ];
 
-  private static $_web = [
+  private static $web = [
     '1and1' => [
         'name' => '1and1',
         'emails' => 30,
@@ -213,10 +213,10 @@ class Hosts {
   ];
 
   public static function getWebHosts() {
-    return static::$_web;
+    return static::$web;
   }
 
   public static function getSMTPHosts() {
-    return static::$_smtp;
+    return static::$smtp;
   }
 }

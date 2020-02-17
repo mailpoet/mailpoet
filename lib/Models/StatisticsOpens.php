@@ -8,7 +8,7 @@ namespace MailPoet\Models;
  * @property int $queueId
  */
 class StatisticsOpens extends Model {
-  public static $_table = MP_STATISTICS_OPENS_TABLE;
+  public static $_table = MP_STATISTICS_OPENS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public static function getOrCreate($subscriberId, $newsletterId, $queueId) {
     $statistics = self::where('subscriber_id', $subscriberId)

@@ -14,7 +14,7 @@ use WC_Order;
  * @property float $orderPriceTotal
  */
 class StatisticsWooCommercePurchases extends Model {
-  public static $_table = MP_STATISTICS_WOOCOMMERCE_PURCHASES_TABLE;
+  public static $_table = MP_STATISTICS_WOOCOMMERCE_PURCHASES_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public static function createOrUpdateByClickDataAndOrder(StatisticsClicks $click, WC_Order $order) {
     // search by subscriber and newsletter IDs (instead of click itself) to avoid duplicities

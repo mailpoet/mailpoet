@@ -12,7 +12,7 @@ use function MailPoetVendor\array_column;
  * @property string $value
  */
 class SubscriberCustomField extends Model {
-  public static $_table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE;
+  public static $_table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public static function createOrUpdate($data = []) {
     $customField = CustomField::findOne($data['custom_field_id']);

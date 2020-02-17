@@ -6,7 +6,7 @@ namespace MailPoet\Models;
  * @property string|null $sentAt
  */
 class StatisticsNewsletters extends Model {
-  public static $_table = MP_STATISTICS_NEWSLETTERS_TABLE;
+  public static $_table = MP_STATISTICS_NEWSLETTERS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public static function createMultiple(array $data) {
     $values = [];
