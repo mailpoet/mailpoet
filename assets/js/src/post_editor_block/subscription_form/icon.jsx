@@ -1,5 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
-import { G, Path, SVG } from '@wordpress/components';
+const wp = window.wp;
+const { G, Path, SVG } = wp.components;
 
 export default (
   <SVG xmlns="http://www.w3.org/2000/svg" viewBox="0 0 152.02 156.4">
