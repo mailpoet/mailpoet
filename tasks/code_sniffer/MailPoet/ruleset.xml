@@ -82,6 +82,9 @@
     </properties>
   </rule>
 
+  <!-- Typehints -->
+  <rule ref="SlevomatCodingStandard.TypeHints.LongTypeHints"/> <!-- Enforces short scalar typehint variants ("int", not "integer", etc.) -->
+
   <!-- Reports empty comments -->
   <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
   <!-- This sniff enforces trailing commas in multi-line arrays -->
