@@ -43,6 +43,9 @@
     </properties>
   </rule>
 
+  <!-- Classes & interfaces -->
+  <rule ref="Squiz.Classes.LowercaseClassKeywords"/> <!-- The "class" keyword must be lowercased -->
+
   <!-- checks for unused methods, unused or write-only properties in a class and unused private constants -->
   <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
     <properties>
