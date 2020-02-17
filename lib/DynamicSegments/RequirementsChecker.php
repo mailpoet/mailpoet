@@ -41,5 +41,4 @@ class RequirementsChecker {
 
     return $constants['SEGMENT_TYPE'] === 'woocommerce';
   }
-
 }

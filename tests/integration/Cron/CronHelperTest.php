@@ -205,7 +205,6 @@ class CronHelperTest extends \MailPoetTest {
     expect($daemon['last_error_date'])->greaterOrEquals($time);
   }
 
-
   public function testItSavesRunCompletedAt() {
     $daemon = $this->getDeamonTestData();
     $this->settings->set(

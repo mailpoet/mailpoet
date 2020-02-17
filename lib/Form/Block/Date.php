@@ -90,6 +90,7 @@ class Date {
       'month' => ['MM'],
     ];
   }
+
   public function getMonthNames(): array {
     return [__('January', 'mailpoet'), __('February', 'mailpoet'), __('March', 'mailpoet'), __('April', 'mailpoet'),
       __('May', 'mailpoet'), __('June', 'mailpoet'), __('July', 'mailpoet'), __('August', 'mailpoet'), __('September', 'mailpoet'),

@@ -35,7 +35,6 @@ class NewsletterOptionTest extends \MailPoetTest {
     expect($newsletterOption->value)->equals($data['value']);
   }
 
-
   public function _after() {
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
   }

@@ -112,7 +112,6 @@ class AbandonedCartTest extends \MailPoetTest {
     expect(ScheduledTask::findMany())->count(1);
   }
 
-
   public function testItFindsUserByCookie() {
     $this->createNewsletter();
     $subscriber = $this->createSubscriber();

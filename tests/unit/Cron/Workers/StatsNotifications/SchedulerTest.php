@@ -258,5 +258,4 @@ class SchedulerTest extends \MailPoetUnitTest {
     $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
     $this->statsNotifications->schedule($newsletter);
   }
-
 }

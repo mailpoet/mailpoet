@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditExistingPostNotificationEmailCest {
-
   public function editSubjectAndSchedule(\AcceptanceTester $i) {
     $i->wantTo('Edit existing post notification email');
 
@@ -44,5 +43,4 @@ class EditExistingPostNotificationEmailCest {
     $i->waitForElement($newsletterListingElement);
     $i->see($newsletterEditedTitle, $newsletterListingElement);
   }
-
 }

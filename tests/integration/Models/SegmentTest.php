@@ -14,6 +14,7 @@ class SegmentTest extends \MailPoetTest {
   public $newslettersData;
   public $subscribersData;
   public $segmentData;
+
   public function _before() {
     parent::_before();
     $this->segmentData = [

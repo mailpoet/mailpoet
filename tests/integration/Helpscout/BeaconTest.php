@@ -11,6 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class BeaconTest extends \MailPoetTest {
   public $settings;
   public $beaconData;
+
   public function _before() {
     parent::_before();
     // create 4 users (1 confirmed, 1 subscribed, 1 unsubscribed, 1 bounced)

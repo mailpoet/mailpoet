@@ -69,5 +69,4 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
     $validator = new RequiredCustomFieldValidator();
     $validator->validate(['cf_' . $this->customField->id() => 'value'], $form);
   }
-
 }

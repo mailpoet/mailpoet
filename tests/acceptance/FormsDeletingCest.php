@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Form;
 
 class FormsDeletingCest {
-
   public function moveFormToTrash(\AcceptanceTester $i) {
     $formName = 'Move to trash form';
     $form = new Form();
@@ -65,5 +64,4 @@ class FormsDeletingCest {
     $i->waitForText('1 form was permanently deleted.');
     $i->waitForElementNotVisible($formName);
   }
-
 }

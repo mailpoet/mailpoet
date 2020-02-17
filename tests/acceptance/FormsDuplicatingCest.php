@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Form;
 
 class FormsDuplicatingCest {
-
   public function duplicateForm(\AcceptanceTester $i) {
     $formName = 'Form for duplicate test';
     $form = new Form();
@@ -22,5 +21,4 @@ class FormsDuplicatingCest {
     $i->waitForText('has been duplicated');
     $i->waitForText('Copy of ' . $formName);
   }
-
 }

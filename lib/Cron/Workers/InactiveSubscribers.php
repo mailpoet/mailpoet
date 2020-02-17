@@ -28,7 +28,6 @@ class InactiveSubscribers extends SimpleWorker {
     parent::__construct();
   }
 
-
   public function processTaskStrategy(ScheduledTask $task, $timer) {
     $trackingEnabled = (bool)$this->settings->get('tracking.enabled');
     if (!$trackingEnabled) {

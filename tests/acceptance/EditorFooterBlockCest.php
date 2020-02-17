@@ -23,5 +23,4 @@ class EditorFooterBlockCest {
     $i->waitForElementVisible($footerSettingsAssertion);
     $i->click($footerSettingsAssertion);
   }
-
 }

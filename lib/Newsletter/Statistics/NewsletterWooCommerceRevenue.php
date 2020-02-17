@@ -56,5 +56,4 @@ class NewsletterWooCommerceRevenue {
       'formatted' => $this->getFormattedValue(),
     ];
   }
-
 }

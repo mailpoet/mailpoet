@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Acceptance;
 
 class SubscriberManageImportExportCest {
-
   public function importBigUsersListCSV(\AcceptanceTester $i) {
     $i->wantTo('Import a big list');
     $i->login();
@@ -96,5 +95,4 @@ class SubscriberManageImportExportCest {
     $i->click('.mailpoet_data_manipulation_step [data-automation-id="import-next-step"]');
     $i->waitForText('Import again');
   }
-
 }

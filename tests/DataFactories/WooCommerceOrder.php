@@ -80,7 +80,6 @@ class WooCommerceOrder {
     return $this->update(['products' => $productsData]);
   }
 
-
   public function create() {
     $cmd = ['wc', 'shop_order', 'create', '--porcelain', '--user=admin'];
     $cmd[] = '--status=' . $this->data['status'];

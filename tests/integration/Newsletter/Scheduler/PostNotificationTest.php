@@ -222,7 +222,6 @@ class PostNotificationTest extends \MailPoetTest {
       ->equals('2017-01-01 13:01:00');
   }
 
-
   public function testUnsearchablePostTypeDoesNotSchedulePostNotification() {
     $hook = ContainerWrapper::getInstance()->get(Hooks::class);
 
@@ -341,7 +340,4 @@ class PostNotificationTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
-
-
-
 }

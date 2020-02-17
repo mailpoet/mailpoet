@@ -39,5 +39,4 @@ class BlackFridayNotice {
   public function disable() {
     WPFunctions::get()->setTransient(self::OPTION_NAME, true, self::DISMISS_NOTICE_TIMEOUT_SECONDS);
   }
-
 }

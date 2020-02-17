@@ -15,6 +15,7 @@ class DefaultSubscribersGetterTest extends \MailPoetTest {
   public $customFieldsData;
   public $subscribersData;
   public $subscriberFields;
+
   public function _before() {
     parent::_before();
     $this->subscriberFields = [

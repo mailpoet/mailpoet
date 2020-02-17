@@ -46,5 +46,4 @@ class FieldNameObfuscator {
   private function wasFieldObfuscated($name) {
     return strpos($name, FieldNameObfuscator::OBFUSCATED_FIELD_PREFIX) === 0;
   }
-
 }

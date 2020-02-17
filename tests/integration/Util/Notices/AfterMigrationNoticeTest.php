@@ -3,7 +3,6 @@
 namespace MailPoet\Util\Notices;
 
 class AfterMigrationNoticeTest extends \MailPoetTest {
-
   public function testItDoesntDisplayIfShouldntDisplay() {
     $notice = new AfterMigrationNotice();
     $result = $notice->init(false);
@@ -23,5 +22,4 @@ class AfterMigrationNoticeTest extends \MailPoetTest {
     $result = $notice->init(true);
     expect($result)->notEmpty();
   }
-
 }

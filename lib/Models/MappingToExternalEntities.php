@@ -10,5 +10,4 @@ class MappingToExternalEntities extends Model {
     $relation->hydrate($data);
     return $relation->save();
   }
-
 }

@@ -73,5 +73,4 @@ class NewsletterStatistics {
       'revenue' => empty($this->wooCommerceRevenue) ? null : $this->wooCommerceRevenue->asArray(),
     ];
   }
-
 }

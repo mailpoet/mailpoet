@@ -5,7 +5,6 @@ namespace MailPoet\Test\Newsletter;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class StylesHelperTest extends \MailPoetUnitTest {
-
   public function testItGetsCustomFontsLinks() {
     $stylesWithCustomFonts = [
       "text" => [

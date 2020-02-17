@@ -3,7 +3,6 @@
 namespace MailPoet\Form\Block;
 
 class Html {
-
   public function render(array $block): string {
     $html = '';
     $text = '';

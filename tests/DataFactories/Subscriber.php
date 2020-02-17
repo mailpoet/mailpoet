@@ -88,5 +88,4 @@ class Subscriber {
     }
     return $subscriber;
   }
-
 }

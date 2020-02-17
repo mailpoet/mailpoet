@@ -23,5 +23,4 @@ class EditorSpacerBlockCest {
     $i->waitForElementVisible($spacerSettingsAssertion);
     $i->click($spacerSettingsAssertion);
   }
-
 }

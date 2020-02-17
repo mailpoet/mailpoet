@@ -10,6 +10,7 @@ use MailPoetVendor\Twig_Environment;
 
 class RendererTest extends \MailPoetTest {
   public $renderer;
+
   public function _before() {
     parent::_before();
     $this->renderer = new Renderer($caching = false, $debugging = false);

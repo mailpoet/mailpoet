@@ -26,5 +26,4 @@ class EditorDividerBlockCest {
     $i->waitForElementVisible($dividerSettingsAssertion);
     $i->click('Done');
   }
-
 }

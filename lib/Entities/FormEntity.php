@@ -114,5 +114,4 @@ class FormEntity {
       'deleted_at' => $this->getDeletedAt(),
     ];
   }
-
 }

@@ -169,5 +169,4 @@ class Worker {
       '[link:newsletter_view_in_browser_url]' => __('View in browser link', 'mailpoet'),
     ];
   }
-
 }

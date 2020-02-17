@@ -100,5 +100,4 @@ class WordPressMailer extends \PHPMailer {
     }
     return $result;
   }
-
 }

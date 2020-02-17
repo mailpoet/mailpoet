@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Acceptance;
 
 class ListsListingCest {
-
   public function listsListing(\AcceptanceTester $i) {
     $i->wantTo('Open lists listings page');
 
@@ -14,5 +13,4 @@ class ListsListingCest {
     $i->see('My First List', '[data-automation-id="listing_item_3"]');
     $i->seeNoJSErrors();
   }
-
 }

@@ -5,7 +5,6 @@ namespace MailPoet\Form;
 use MailPoet\Models\Form;
 
 class FormFactory {
-
   /** @return Form */
   public function createEmptyForm() {
     $data = [
@@ -41,5 +40,4 @@ class FormFactory {
     ];
     return Form::createOrUpdate($data);
   }
-
 }

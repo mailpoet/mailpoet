@@ -29,5 +29,4 @@ class StructureTransformerTest extends \MailPoetUnitTest {
     expect($blocks[2]['type'])->equals('text');
     expect($blocks[2]['text'])->equals('<p><em>next text</em><b>bolded</b></p>');
   }
-
 }

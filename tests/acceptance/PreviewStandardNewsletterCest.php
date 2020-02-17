@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class PreviewStandardNewsletterCest {
-
   public function previewStandardNewsletter(\AcceptanceTester $i) {
     $newsletterName = 'Preview in Browser Newsletter';
     $newsletter = new Newsletter();

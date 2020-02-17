@@ -6,9 +6,11 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class AutomaticEmailsTest extends \MailPoetTest {
   public $wp;
+
   public function _before() {
     $this->wp = new WPFunctions;
   }
+
   public function testItRequiresProperlyFormattedRequestWhenGettingEventOptions() {
     $API = new AutomaticEmails();
     $expectedErrorMessage = 'Improperly formatted request.';

@@ -5,7 +5,6 @@ namespace MailPoet\Newsletter\Renderer\Columns;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Renderer {
-
   public function render($contentBlock, $columnsData) {
 
     $columnsCount = count($contentBlock['blocks']);

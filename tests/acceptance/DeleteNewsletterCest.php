@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class DeleteNewsletterCest {
-
   public function moveNewsletterToTrash(\AcceptanceTester $i) {
     $newsletterName = 'Trash Newsletter';
     $newsletter = new Newsletter();

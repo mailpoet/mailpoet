@@ -8,7 +8,6 @@ use MailPoet\Listing\Handler;
 use MailPoet\Models\DynamicSegment;
 
 class SubscribersBulkActionHandler {
-
   /**
    * @param array $segment
    * @param array $data
@@ -22,5 +21,4 @@ class SubscribersBulkActionHandler {
       return $bulkAction->apply('\MailPoet\Models\SubscribersInDynamicSegment', $data);
     }
   }
-
 }

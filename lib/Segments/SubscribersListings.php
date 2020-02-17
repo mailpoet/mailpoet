@@ -42,5 +42,4 @@ class SubscribersListings {
     }
     throw new \InvalidArgumentException('No handler found for segment');
   }
-
 }

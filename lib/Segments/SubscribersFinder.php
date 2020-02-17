@@ -151,5 +151,4 @@ class SubscribersFinder {
     }
     return $result;
   }
-
 }

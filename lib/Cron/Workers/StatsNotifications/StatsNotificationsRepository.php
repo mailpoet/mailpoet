@@ -53,5 +53,4 @@ class StatsNotificationsRepository extends Repository {
     }
     return $query->getQuery()->getResult();
   }
-
 }

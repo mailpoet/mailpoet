@@ -41,7 +41,6 @@ class API {
 
   const CURRENT_VERSION = 'v1';
 
-
   public function __construct(
     ContainerInterface $container,
     AccessControl $accessControl,

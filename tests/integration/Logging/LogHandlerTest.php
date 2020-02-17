@@ -7,7 +7,6 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class LogHandlerTest extends \MailPoetTest {
-
   public function testItCreatesLog() {
     $logHandler = new LogHandler();
     $time = new \DateTime();
@@ -79,5 +78,4 @@ class LogHandlerTest extends \MailPoetTest {
   public function _after() {
     ORM::raw_execute('TRUNCATE ' . Log::$_table);
   }
-
 }

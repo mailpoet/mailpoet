@@ -8,7 +8,6 @@ use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 
 class SubscribeToMultipleListsCest {
-
   public function subscribeToMultipleLists(\AcceptanceTester $i) {
     //Step one - create form with three lists
     $segmentFactory = new Segment();

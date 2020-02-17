@@ -94,5 +94,4 @@ class SegmentsExporterTest extends \MailPoetTest {
     expect($result['data'][1])->hasKey('data');
     expect($result['data'])->equals($expected);
   }
-
 }

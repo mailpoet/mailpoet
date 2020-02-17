@@ -6,7 +6,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SegmentsExporter {
-
   public function export($email) {
     return [
       'data' => $this->exportSubscriber(Subscriber::findOne(trim($email))),
@@ -48,6 +47,4 @@ class SegmentsExporter {
       'data' => $segmentData,
     ];
   }
-
-
 }

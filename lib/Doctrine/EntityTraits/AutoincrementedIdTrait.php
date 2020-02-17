@@ -22,5 +22,4 @@ trait AutoincrementedIdTrait {
   public function setId($id) {
     $this->id = $id;
   }
-
 }

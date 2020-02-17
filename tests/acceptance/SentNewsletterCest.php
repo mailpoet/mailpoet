@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class SentNewsletterCest {
-
   public function disableLastStep(\AcceptanceTester $i) {
     $i->wantTo('See that last step is disabled fot sent standard email');
 
@@ -21,5 +20,4 @@ class SentNewsletterCest {
     $i->see('It can be edited, but not sent again.');
     $i->see('Duplicate this email if you want to send it again.');
   }
-
 }

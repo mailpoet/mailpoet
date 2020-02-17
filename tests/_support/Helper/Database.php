@@ -24,5 +24,4 @@ class Database extends \Codeception\Module
     $sql = preg_replace('/`wp_/', '`' . $wpdb->prefix, $sql); // Use the current database prefix
     $db->exec($sql);
   }
-
 }

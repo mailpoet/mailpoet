@@ -87,5 +87,4 @@ class SubscribersInDynamicSegmentTest extends \MailPoetTest {
       }
     }
   }
-
 }

@@ -7,7 +7,6 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PrivacyPolicy {
-
   public function init() {
     if (function_exists('wp_add_privacy_policy_content')) {
       wp_add_privacy_policy_content(__('MailPoet', 'mailpoet'), $this->getPrivacyPolicyContent());
@@ -66,5 +65,4 @@ class PrivacyPolicy {
     }
     return $content;
   }
-
 }

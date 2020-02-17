@@ -6,6 +6,7 @@ use MailPoet\Config\Migrator;
 
 class MigratorTest extends \MailPoetTest {
   public $migrator;
+
   public function _before() {
     parent::_before();
     $this->migrator = new Migrator();

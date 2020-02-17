@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class SearchForStandardNewsletterCest {
-
   public function searchForStandardNewsletter(\AcceptanceTester $i) {
     $i->wantTo('Successfully search for an existing newsletter');
 
@@ -25,5 +24,4 @@ class SearchForStandardNewsletterCest {
     $i->searchFor($newsletterTitle);
     $i->waitForText($newsletterTitle);
   }
-
 }

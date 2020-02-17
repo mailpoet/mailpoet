@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditExistingNewsletterCest {
-
   public function editExistingNewsletter(\AcceptanceTester $i) {
     $i->wantTo('Edit a standard newsletter');
     $newsletterTitle = 'Unedited Standard Title';

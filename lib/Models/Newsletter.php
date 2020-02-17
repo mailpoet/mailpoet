@@ -647,7 +647,6 @@ class Newsletter extends Model {
     return ((int)$queue->count) > 0;
   }
 
-
   public static function getAnalytics() {
     $welcomeNewslettersCount = Newsletter::getPublished()
       ->filter('filterType', self::TYPE_WELCOME)

@@ -205,7 +205,6 @@ function asCallable($fn) {
   };
 }
 
-
 // this is needed since it is not possible to mock __unset on non-existing class
 // (PHPUnit creates empty __unset method without parameters which is a PHP error)
 if (!class_exists(WC_Session::class)) {
@@ -220,6 +219,7 @@ if (!function_exists('WC')) {
   class WC_Mailer { // phpcs:ignore
     public function email_header() { // phpcs:ignore
     }
+
     public function email_footer() { // phpcs:ignore
     }
   }
@@ -228,9 +228,11 @@ if (!function_exists('WC')) {
       return new WC_Mailer;
     }
   }
+
   function WC() {
     return new WooCommerce;
   }
+
   class WC_Order_Item_Product { // phpcs:ignore
     public function get_product_id() { // phpcs:ignore
     }

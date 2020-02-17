@@ -59,5 +59,4 @@ class DeactivationSurvey {
       // if the website fails to render we have other places to catch and display the error
     }
   }
-
 }

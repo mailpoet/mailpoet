@@ -6,7 +6,6 @@ use AcceptanceTester;
 use MailPoet\Test\DataFactories\Settings;
 
 class EnableAndDisableSignupConfirmationCest {
-
   public function disableSignupConfirmation(AcceptanceTester $i) {
     $settings = new Settings();
     $settings

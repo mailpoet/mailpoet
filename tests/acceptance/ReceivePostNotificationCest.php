@@ -74,5 +74,4 @@ class ReceivePostNotificationCest {
     $i->switchToIframe('preview-html');
     $i->waitForText($postTitle, 90);
   }
-
 }

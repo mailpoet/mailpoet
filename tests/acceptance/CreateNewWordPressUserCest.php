@@ -28,5 +28,4 @@ class CreateNewWordPressUserCest {
     $i->see('You have subscribed');
     $i->seeNoJSErrors();
   }
-
 }

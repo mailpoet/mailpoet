@@ -8,6 +8,7 @@ class AssetsTest extends \MailPoetTest {
   public $assetsExtension;
   public $version;
   public $assetsUrl;
+
   public function _before() {
     parent::_before();
     $this->assetsUrl = 'https://www.testing.com/wp-content/plugins/mailpoet/assets';

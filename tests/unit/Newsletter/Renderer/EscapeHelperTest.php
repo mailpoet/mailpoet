@@ -5,7 +5,6 @@ namespace MailPoet\Test\Newsletter;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class EscapeHelperTest extends \MailPoetUnitTest {
-
   public function testItEscapesHtmlText() {
     expect(EHelper::escapeHtmlText('Text<tag>\'"Hello</tag>'))
       ->equals("Text&lt;tag&gt;'\"Hello&lt;/tag&gt;");

@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Acceptance;
 
 class ConfirmNewsletterAutosaveCest {
-
   public function confirmNewsletterAutoSave(\AcceptanceTester $i) {
     $i->wantTo('Confirm autosave works as advertised');
 
@@ -28,5 +27,4 @@ class ConfirmNewsletterAutosaveCest {
     $i->waitForText('Autosaved');
     $i->seeNoJSErrors();
   }
-
 }

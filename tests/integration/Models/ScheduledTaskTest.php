@@ -13,6 +13,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class ScheduledTaskTest extends \MailPoetTest {
   public $task;
+
   public function _before() {
     parent::_before();
     $this->task = ScheduledTask::create();

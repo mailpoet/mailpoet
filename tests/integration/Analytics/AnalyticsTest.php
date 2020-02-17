@@ -142,5 +142,4 @@ class AnalyticsTest extends \MailPoetTest {
     expect($this->analytics->isPublicIdNew())->false();
     expect($this->settings->get('new_public_id'))->equals('false');
   }
-
 }

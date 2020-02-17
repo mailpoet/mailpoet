@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class ConfirmNotificationAutosaveCest {
-
   public function confirmNotificationAutosave(\AcceptanceTester $i) {
     $i->wantTo('Confirm Post Notification Autosave');
     $newsletterTitle = 'Notification Autosave Test';
@@ -23,5 +22,4 @@ class ConfirmNotificationAutosaveCest {
     $i->fillField($titleElement, $newsletterTitle);
     $i->waitForText('Autosaved');
   }
-
 }

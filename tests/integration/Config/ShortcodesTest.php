@@ -19,6 +19,7 @@ use MailPoetVendor\Idiorm\ORM;
 class ShortcodesTest extends \MailPoetTest {
   public $queue;
   public $newsletter;
+
   public function _before() {
     parent::_before();
     $newsletter = Newsletter::create();

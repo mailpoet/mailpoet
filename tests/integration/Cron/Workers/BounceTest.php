@@ -20,6 +20,7 @@ require_once('BounceTestMockAPI.php');
 class BounceTest extends \MailPoetTest {
   public $worker;
   public $emails;
+
   public function _before() {
     parent::_before();
     $this->emails = [

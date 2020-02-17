@@ -16,5 +16,4 @@ class NewsletterLinks extends APIEndpoint {
     $links = NewsletterLink::select(['id', 'url'])->where('newsletter_id', $data['newsletterId'])->findArray();
     return $this->successResponse($links);
   }
-
 }

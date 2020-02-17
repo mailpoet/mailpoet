@@ -12,7 +12,6 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
 class StubDynamicReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension {
-
   public function getClass(): string {
     return Stub::class;
   }

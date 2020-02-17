@@ -6,7 +6,6 @@ use MailPoet\Cron\Workers\ExportFilesCleanup;
 use MailPoet\Models\ScheduledTask;
 
 class ExportFilesCleanupTest extends \MailPoetTest {
-
   public function testItWorks() {
     $wpUploadDir = wp_upload_dir();
     $oldFilePath = $wpUploadDir['basedir'] . '/mailpoet/MailPoet_export_old_file.csv';
@@ -20,5 +19,4 @@ class ExportFilesCleanupTest extends \MailPoetTest {
     $this->assertFileExists($newFilePath);
     $this->assertFileNotExists($oldFilePath);
   }
-
 }

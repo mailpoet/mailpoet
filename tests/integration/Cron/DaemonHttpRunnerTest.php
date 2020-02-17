@@ -113,7 +113,6 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemonHttpRunner->run($data);
   }
 
-
   public function testItTerminatesExecutionWhenDaemonIsDeleted() {
     $daemon = $this->make(Daemon::class, [
       'run' => function () {

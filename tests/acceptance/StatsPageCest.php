@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class StatsPageCest {
-
   public function statsPage(\AcceptanceTester $i) {
     $i->wantTo('Open stats page of a sent newsletter');
 
@@ -27,5 +26,4 @@ class StatsPageCest {
     $href = $i->grabAttributeFrom('//a[text()="Learn more about Premium"]', 'href');
     expect($href)->endsWith('page=mailpoet-premium');
   }
-
 }

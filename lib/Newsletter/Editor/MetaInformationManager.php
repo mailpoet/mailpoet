@@ -5,7 +5,6 @@ namespace MailPoet\Newsletter\Editor;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MetaInformationManager {
-
   public function appendMetaInformation($content, $post, $args) {
     // Append author and categories above and below contents
     foreach (['above', 'below'] as $position) {
@@ -36,7 +35,6 @@ class MetaInformationManager {
 
     return $content;
   }
-
 
   private static function getPostCategories($postId, $postType, $precededBy) {
     $precededBy = trim($precededBy);

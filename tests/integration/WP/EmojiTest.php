@@ -12,6 +12,7 @@ class EmojiTest extends \MailPoetTest {
   public $column;
   public $dataDecoded;
   public $dataEncoded;
+
   public function _before() {
     parent::_before();
     $this->dataEncoded = "Emojis: &#x1f603;&#x1f635;&#x1f4aa;, not emojis: &#046;&#0142;";

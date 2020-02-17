@@ -56,5 +56,4 @@ class NewsletterClicksExporter {
       'data' => $newsletterData,
     ];
   }
-
 }

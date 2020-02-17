@@ -7,7 +7,6 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class Scheduler {
-
   public static function getNextRunDate($schedule, $fromTimestamp = false) {
     $wp = new WPFunctions();
     $fromTimestamp = ($fromTimestamp) ? $fromTimestamp : $wp->currentTime('timestamp');

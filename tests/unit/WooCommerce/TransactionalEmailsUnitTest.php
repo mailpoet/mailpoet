@@ -11,7 +11,6 @@ use MailPoet\WooCommerce\TransactionalEmails\Template;
 use MailPoet\WP\Functions as WPFunctions;
 
 class TransactionalEmailsUnitTest extends \MailPoetUnitTest {
-
   public function testGetEmailHeadings() {
     $wp = Stub::make(new WPFunctions, [
       'getOption' => function($name) {

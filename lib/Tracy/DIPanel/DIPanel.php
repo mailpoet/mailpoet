@@ -155,5 +155,4 @@ class DIPanel implements IBarPanel {
       echo '</div>';
     }
   }
-
 }

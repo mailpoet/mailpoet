@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Acceptance;
 
 class SaveNewsletterAsDraftCest {
-
   public function saveStandardNewsletterAsDraft(\AcceptanceTester $i) {
     $i->wantTo('Create standard newsletter and save as a draft');
 
@@ -35,5 +34,4 @@ class SaveNewsletterAsDraftCest {
     $i->click('Save as draft and close');
     $i->waitForText($newsletterTitle);
   }
-
 }

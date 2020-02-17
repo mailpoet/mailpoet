@@ -44,5 +44,4 @@ class Segment {
   public function create() {
     return \MailPoet\Models\Segment::createOrUpdate($this->data);
   }
-
 }

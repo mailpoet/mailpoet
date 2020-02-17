@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class DuplicatePostNotificationCest {
-
   public function duplicatePostNotification(\AcceptanceTester $i) {
     $i->wantTo('Duplicate post notification email');
 
@@ -31,5 +30,4 @@ class DuplicatePostNotificationCest {
     $i->clickItemRowActionByItemName('Copy of ' . $newsletterTitle, 'Edit');
     $i->waitForElement('[data-automation-id="newsletter_title"]');
   }
-
 }

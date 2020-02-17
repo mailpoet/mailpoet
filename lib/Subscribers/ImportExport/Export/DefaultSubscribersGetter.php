@@ -77,5 +77,4 @@ class DefaultSubscribersGetter extends SubscribersGetter {
 
     return $subscribers;
   }
-
 }

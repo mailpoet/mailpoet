@@ -14,7 +14,6 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 class ConfirmationEmailMailerTest extends \MailPoetTest {
-
   public function testItSendsConfirmationEmail() {
     $subcriptionUrlFacroryMock = $this->createMock(SubscriptionUrlFactory::class);
     $subcriptionUrlFacroryMock->method('getConfirmationUrl')->willReturn('http://example.com');
@@ -177,5 +176,4 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
   }
-
 }

@@ -6,7 +6,6 @@ use MailPoet\Models\DynamicSegment;
 use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersListingsHandlerFactoryTest extends \MailPoetTest {
-
   public function testItReturnsNullWithUnknownSegment() {
     $segment = DynamicSegment::create();
     $segment->id = 1;
@@ -39,5 +38,4 @@ class SubscribersListingsHandlerFactoryTest extends \MailPoetTest {
   private function cleanData() {
     ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
   }
-
 }

@@ -7,6 +7,7 @@ use MailPoet\Config\Env;
 class EnvTest extends \MailPoetTest {
   public $version;
   public $file;
+
   public function _before() {
     parent::_before();
     // Back up original environment values

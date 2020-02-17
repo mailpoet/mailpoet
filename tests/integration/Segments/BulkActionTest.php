@@ -109,5 +109,4 @@ class BulkActionTest extends \MailPoetTest {
     $result = $handler->apply();
     expect($result)->equals('result');
   }
-
 }

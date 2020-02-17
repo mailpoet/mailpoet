@@ -99,5 +99,4 @@ class SubscriberActions {
 
     return $subscriber;
   }
-
 }

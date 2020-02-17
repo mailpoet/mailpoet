@@ -346,5 +346,4 @@ class SubscriberEntity {
   public function setLinkToken($linkToken) {
     $this->linkToken = $linkToken;
   }
-
 }

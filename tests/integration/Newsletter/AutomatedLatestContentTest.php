@@ -6,6 +6,7 @@ use MailPoet\Newsletter\AutomatedLatestContent;
 
 class AutomatedLatestContentTest extends \MailPoetTest {
   public $alc;
+
   public function __construct() {
     parent::__construct();
     $this->alc = new AutomatedLatestContent();

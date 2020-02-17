@@ -110,5 +110,4 @@ class FormDataMapperTest extends \MailPoetTest {
     $this->assertSame($dynamicSegment->id(), $segment->id);
 
   }
-
 }

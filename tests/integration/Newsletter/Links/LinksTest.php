@@ -80,7 +80,6 @@ class LinksTest extends \MailPoetTest {
     expect($updatedContent)->notContains('link');
   }
 
-
   public function testItHashesAndReplacesLinksWithSpecialCharacters() {
     $template = '<a href="http://сайт.cóm/彌撒時間">some site</a>';
     $result = Links::process($template, 0, 0);

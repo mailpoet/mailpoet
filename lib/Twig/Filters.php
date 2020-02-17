@@ -6,7 +6,6 @@ use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFilter;
 
 class Filters extends AbstractExtension {
-
   public function getName() {
     return 'filters';
   }

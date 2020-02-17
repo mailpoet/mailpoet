@@ -6,7 +6,6 @@ use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Test\DataFactories\Subscriber;
 
 class SubscribersListingCest {
-
   public function subscribersListing(\AcceptanceTester $i) {
     $i->wantTo('Open subscribers listings page');
 
@@ -50,5 +49,4 @@ class SubscribersListingCest {
     $i->amOnMailboxAppPage();
     $i->waitForText('Confirm your subscription');
   }
-
 }

@@ -311,5 +311,4 @@ class WorkerTest extends \MailPoetTest {
 
     $this->statsNotifications->process();
   }
-
 }

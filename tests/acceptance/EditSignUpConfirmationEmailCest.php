@@ -7,7 +7,6 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 
 class EditSignUpConfirmationEmailCest {
-
   public function edit(\AcceptanceTester $i) {
     $i->wantTo('Edit sign up confirmation email');
 

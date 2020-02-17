@@ -189,5 +189,4 @@ class SubscribersFinderTest extends \MailPoetTest {
     $segment->type = $type;
     return $segment;
   }
-
 }

@@ -8,7 +8,6 @@ use MailPoet\Mailer\SubscriberError;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MailerErrorTest extends \MailPoetUnitTest {
-
   public function _before() {
     WPFunctions::set(Stub::make(new WPFunctions, [
       '__' => function ($value) {

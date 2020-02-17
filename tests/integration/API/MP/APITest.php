@@ -421,7 +421,6 @@ class APITest extends \MailPoetTest {
     }
   }
 
-
   public function testItOnlyAcceptsWhitelistedProperties() {
     $subscriber = [
       'email' => 'test-ignore-status@example.com',

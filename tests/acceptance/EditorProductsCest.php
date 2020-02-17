@@ -246,5 +246,4 @@ class EditorProductsCest {
     $this->filterProducts($i);
     $this->changeDisplaySettings($i);
   }
-
 }

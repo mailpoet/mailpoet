@@ -6,7 +6,6 @@ use MailPoet\Subscribers\SubscriberPersonalDataEraser;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PersonalDataErasers {
-
   public function init() {
     WPFunctions::get()->addFilter('wp_privacy_personal_data_erasers', [$this, 'registerSubscriberEraser']);
   }
@@ -19,5 +18,4 @@ class PersonalDataErasers {
 
     return $erasers;
   }
-
 }

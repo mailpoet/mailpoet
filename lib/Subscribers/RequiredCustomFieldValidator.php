@@ -8,7 +8,6 @@ use MailPoet\Models\Form;
 use MailPoet\WP\Functions as WPFunctions;
 
 class RequiredCustomFieldValidator {
-
   /**
    * @param array $data
    * @param Form|null $form
@@ -74,5 +73,4 @@ class RequiredCustomFieldValidator {
     }
     return $customFieldIds;
   }
-
 }

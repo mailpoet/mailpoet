@@ -10,6 +10,7 @@ class SettingsSubscriptionPageCest {
     $i->click('[data-automation-id="preview_manage_subscription_page_link"]');
     $i->waitForText('Manage your subscription');
   }
+
   public function createNewSubscriptionPage(\AcceptanceTester $i) {
     $i->wantTo('Make a custom subscription page');
     $pageTitle = 'CustomSubscriptionPage';

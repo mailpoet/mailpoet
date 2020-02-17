@@ -157,5 +157,4 @@ class AdvancedSettingsCest {
     $i->waitForElement($inactiveSubscribersDisabled);
     $i->dontSee($inactiveSubscribersEnabled);
   }
-
 }

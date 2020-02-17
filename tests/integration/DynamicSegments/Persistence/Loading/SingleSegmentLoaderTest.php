@@ -62,5 +62,4 @@ class SingleSegmentLoaderTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . DynamicSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
   }
-
 }

@@ -11,6 +11,7 @@ use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 class ImportExportFactoryTest extends \MailPoetTest {
   public $exportFactory;
   public $importFactory;
+
   public function _before() {
     parent::_before();
     $segment1 = Segment::createOrUpdate(['name' => 'Unconfirmed Segment']);

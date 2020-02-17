@@ -107,5 +107,4 @@ class NewSubscriberNotificationMailer {
     }
     return implode(', ', $names);
   }
-
 }

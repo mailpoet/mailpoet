@@ -6,7 +6,6 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 class API {
-
   /**
    * @param string $version
    * @return \MailPoet\API\MP\v1\API

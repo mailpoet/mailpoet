@@ -7,7 +7,6 @@ use MailPoet\WP\DateTime as WPDateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DateTimeTest extends \MailPoetUnitTest {
-
   public function testGetTimeFormat() {
     $dateTime = new WPDateTime(Stub::make(new WPFunctions(), [
       'getOption' => function($key) {

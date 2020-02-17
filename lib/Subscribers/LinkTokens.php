@@ -41,5 +41,4 @@ class LinkTokens {
     }
     return false;
   }
-
 }

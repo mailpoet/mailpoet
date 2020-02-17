@@ -31,5 +31,4 @@ class FormsRepository extends Repository {
       ->getQuery()
       ->getResult();
   }
-
 }

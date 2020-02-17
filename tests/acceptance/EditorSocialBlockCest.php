@@ -21,5 +21,4 @@ class EditorSocialBlockCest {
     $i->waitForElementVisible($socialBlockSettingsAssertion);
     $i->click('Done');
   }
-
 }

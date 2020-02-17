@@ -9,6 +9,8 @@ interface IContainerConfigurator {
   const PREMIUM_CONTAINER_SERVICE_SLUG = 'premium_container';
 
   public function configure(ContainerBuilder $container);
+
   public function getDumpNamespace();
+
   public function getDumpClassname();
 }

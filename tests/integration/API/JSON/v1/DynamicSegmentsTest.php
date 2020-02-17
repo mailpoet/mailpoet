@@ -235,5 +235,4 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect(DynamicSegment::count())->equals(0);
     expect(DynamicSegmentFilter::findOne($filter->id))->equals(false);
   }
-
 }

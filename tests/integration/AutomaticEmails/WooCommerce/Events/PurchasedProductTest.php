@@ -90,7 +90,6 @@ class PurchasedProductTest extends \MailPoetTest {
     expect($result)->isEmpty();
   }
 
-
   public function testItDoesNotScheduleEmailWhenPurchasedProductDoesNotMatchConfiguredProductIds() {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
     $newsletter = Newsletter::createOrUpdate(
@@ -171,7 +170,6 @@ class PurchasedProductTest extends \MailPoetTest {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
     $this->_runTestItSchedulesEmailForState('completed');
   }
-
 
   public function _runTestItSchedulesEmailForState($state) {
     $newsletter = Newsletter::createOrUpdate(

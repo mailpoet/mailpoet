@@ -61,5 +61,4 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     $warning = $this->phpVersionWarning->init('5.5.3', true);
     expect($warning)->null();
   }
-
 }

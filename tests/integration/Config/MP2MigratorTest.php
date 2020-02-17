@@ -801,5 +801,4 @@ class MP2MigratorTest extends \MailPoetTest {
     ];
     update_option('wysija', base64_encode(serialize($wysijaOptions)));
   }
-
 }

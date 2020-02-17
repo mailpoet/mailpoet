@@ -6,7 +6,6 @@ use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Settings;
 
 class ViewSegmentSubscribersCest {
-
   public function _before() {
     (new Settings())->withWooCommerceListImportPageDisplayed(true);
     (new Settings())->withCookieRevenueTrackingDisabled();

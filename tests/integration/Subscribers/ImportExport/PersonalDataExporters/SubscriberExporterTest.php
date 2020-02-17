@@ -85,7 +85,6 @@ class SubscriberExporterTest extends \MailPoetTest {
     expect($result['data'][0]['data'])->contains(['name' => 'Confirmed IP', 'value' => 'IP2']);
   }
 
-
   public function testExportSubscriberWithCustomField() {
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'email.that@has.custom.fields',
@@ -103,5 +102,4 @@ class SubscriberExporterTest extends \MailPoetTest {
     $result = $this->exporter->export('email.that@has.custom.fields');
     expect($result['data'][0]['data'])->contains(['name' => 'Custom field1', 'value' => 'Value']);
   }
-
 }

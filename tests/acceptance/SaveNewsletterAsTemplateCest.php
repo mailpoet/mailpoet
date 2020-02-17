@@ -5,7 +5,6 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class SaveNewsletterAsTemplateCest {
-
   public function saveStandardNewsletterAsTemplate(\AcceptanceTester $i) {
     $i->wantTo('Create standard newsletter and save as a template');
 
@@ -40,5 +39,4 @@ class SaveNewsletterAsTemplateCest {
     $i->click(['xpath' => '//*[text()="' . $templateName . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
     $i->waitForElement('[data-automation-id="newsletter_title"]');
   }
-
 }
