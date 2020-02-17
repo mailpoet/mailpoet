@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.3
-Stable tag: 3.45.1
+Stable tag: 3.46.0
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.46.0 - 2020-02-17 =
+* Added: MailPoet now has a Gutenberg block for subscription forms;
+* Improved: preview links now works publicly;
+* Fixed: MailPoet forms that automatically display under a page or post now always work;
+* Fixed: fatal error when post content is null and auto form placement is set;
+* Fixed: built-in captcha case is fixed. Thanks Richard!
+* Fixed: import works without mbstring extension again. Thanks Michele!
 
 = 3.45.1 - 2020-02-11 =
 * Added: new option to automatically include signup forms below every post and page;
