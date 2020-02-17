@@ -73,6 +73,15 @@
     </properties>
   </rule>
 
+  <!-- Spacing -->
+  <rule ref="Squiz.WhiteSpace.FunctionSpacing">
+    <properties>
+      <property name="spacing" value="1" /> <!-- 1 space between methods -->
+      <property name="spacingBeforeFirst" value="0" /> <!-- no spaces before first method -->
+      <property name="spacingAfterLast" value="0" /> <!-- no spaces after last method -->
+    </properties>
+  </rule>
+
   <!-- Reports empty comments -->
   <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
   <!-- This sniff enforces trailing commas in multi-line arrays -->
