@@ -4,7 +4,8 @@ use Codeception\Event\TestEvent;
 use Codeception\Events;
 use Codeception\Extension;
 
-class CleanupPremiumPluginExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDeclaration
+// phpcs:ignore PSR1.Classes.ClassDeclaration
+class CleanupPremiumPluginExtension extends Extension {
   public static $events = [
     Events::TEST_BEFORE => 'cleanupPremiumPlugin',
   ];

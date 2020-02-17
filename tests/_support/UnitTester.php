@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Inherited Methods
  * @method void wantToTest($text)
@@ -16,7 +15,8 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class UnitTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes.ClassDeclaration
+// phpcs:ignore PSR1.Classes.ClassDeclaration
+class UnitTester extends \Codeception\Actor {
   use _generated\UnitTesterActions;
 
   // generate random users

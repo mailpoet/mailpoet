@@ -5,8 +5,8 @@ namespace MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs;
 require_once __DIR__ . '/ItemDetails.php';
 
 // phpcs:disable PSR1.Methods.CamelCapsMethodName
-class OrderDetails
-{
+class OrderDetails {
+
   public $total;
   public $orderId;
 

@@ -9,8 +9,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoetVendor\Carbon\Carbon;
 
-class State
-{
+class State {
   /**
    * @return array
    */

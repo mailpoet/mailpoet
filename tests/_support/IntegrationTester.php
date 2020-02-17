@@ -16,7 +16,8 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class IntegrationTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes.ClassDeclaration
+// phpcs:ignore PSR1.Classes.ClassDeclaration
+class IntegrationTester extends \Codeception\Actor {
   use _generated\IntegrationTesterActions;
 
   // generate random users
