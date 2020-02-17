@@ -48,7 +48,7 @@ class RendererTest extends \MailPoetUnitTest {
       ->willReturn(Captcha::TYPE_DISABLED);
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'));
     $blocks = $this->htmlParser->findByXpath($html, "//div[@class='block']");
-    expect($blocks->count())->equals(2);
+    expect($blocks->length)->equals(2);
   }
 
   public function testItShouldRenderHoneypot() {
@@ -59,9 +59,9 @@ class RendererTest extends \MailPoetUnitTest {
       ->willReturn(Captcha::TYPE_DISABLED);
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'));
     $hpLabel = $this->htmlParser->findByXpath($html, "//label[@class='mailpoet_hp_email_label']");
-    expect($hpLabel->count())->equals(1);
+    expect($hpLabel->length)->equals(1);
     $hpInput = $this->htmlParser->findByXpath($html, "//input[@type='email']");
-    expect($hpInput->count())->equals(1);
+    expect($hpInput->length)->equals(1);
   }
 
   public function testItShouldRenderReCaptcha() {
@@ -75,9 +75,9 @@ class RendererTest extends \MailPoetUnitTest {
       ]));
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'));
     $recaptcha = $this->htmlParser->findByXpath($html, "//div[@class='mailpoet_recaptcha']");
-    expect($recaptcha->count())->equals(1);
+    expect($recaptcha->length)->equals(1);
     $recaptchaIframes = $this->htmlParser->findByXpath($html, "//iframe");
-    expect($recaptchaIframes->count())->equals(1);
+    expect($recaptchaIframes->length)->equals(1);
     $iframe = $recaptchaIframes->item(0);
     assert($iframe instanceof \DOMNode);
     $source = $iframe->attributes->getNamedItem('src');
@@ -93,8 +93,8 @@ class RendererTest extends \MailPoetUnitTest {
       ->willReturn(Captcha::TYPE_DISABLED);
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'), false);
     $hpLabel = $this->htmlParser->findByXpath($html, "//label[@class='mailpoet_hp_email_label']");
-    expect($hpLabel->count())->equals(0);
+    expect($hpLabel->length)->equals(0);
     $recaptcha = $this->htmlParser->findByXpath($html, "//div[@class='mailpoet_recaptcha']");
-    expect($recaptcha->count())->equals(0);
+    expect($recaptcha->length)->equals(0);
   }
 }
