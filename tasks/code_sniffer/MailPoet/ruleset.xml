@@ -44,6 +44,11 @@
   </rule>
 
   <!-- Classes & interfaces -->
+  <rule ref="Generic.Files.OneClassPerFile"/> <!-- Limit classes to one per file -->
+  <rule ref="Generic.Files.OneInterfacePerFile"/> <!-- Limit interfaces to one per file -->
+  <rule ref="Generic.Classes.DuplicateClassName"/> <!-- Disallow same class or interface name in multiple files -->
+  <rule ref="Squiz.Classes.ClassFileName"/> <!-- Class name and file name must match -->
+  <rule ref="Squiz.Classes.ValidClassName"/> <!-- Classes should be named camel case with first letter capitalised -->
   <rule ref="Squiz.Classes.LowercaseClassKeywords"/> <!-- The "class" keyword must be lowercased -->
   <rule ref="PSR1.Classes.ClassDeclaration"/> <!-- Each class must be in a file by itself and must be under a namespace -->
 
@@ -92,11 +97,6 @@
     </properties>
   </rule>
 
-  <!-- Limit classes to one per file -->
-  <rule ref="Generic.Files.OneClassPerFile"/>
-  <!-- Limit interfaces to one per file -->
-  <rule ref="Generic.Files.OneInterfacePerFile"/>
-
   <!-- Disallow multiple statements on a single line -->
   <rule ref="Generic.Formatting.DisallowMultipleStatements"/>
   <!-- There should be no space after cast -->
@@ -142,15 +142,8 @@
     </properties>
   </rule>
 
-  <!-- Each class must be in a file by itself and must be under a namespace -->
-  <rule ref="PSR1.Classes.ClassDeclaration"/>
-
   <!-- When referencing arrays there should be no whitespace between brackets -->
   <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
-  <!-- Class name and file name must match -->
-  <rule ref="Squiz.Classes.ClassFileName"/>
-  <!-- Classes should be named camel case with first letter capitalised -->
-  <rule ref="Squiz.Classes.ValidClassName"/>
   <!-- Checks for empty catch statements. It must at least have a comment -->
   <rule ref="Squiz.Commenting.EmptyCatchComment"/>
   <!-- There should be a space between each foreach condition -->
