@@ -15,7 +15,7 @@ use MailPoetVendor\Idiorm\ORM;
  * @property string|null $type
  * @property int $priority
  * @property string|null $scheduledAt
- * @property boolean|null $inProgress
+ * @property bool|null $inProgress
  * @property int $rescheduleCount
  * @property string|array|null $meta
  */

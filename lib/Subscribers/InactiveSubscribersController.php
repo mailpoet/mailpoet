@@ -26,7 +26,7 @@ class InactiveSubscribersController {
   /**
    * @param int $daysToInactive
    * @param int $batchSize
-   * @return int|boolean
+   * @return int|bool
    */
   public function markInactiveSubscribers($daysToInactive, $batchSize, $startId = null) {
     $thresholdDate = $this->getThresholdDate($daysToInactive);
@@ -66,7 +66,7 @@ class InactiveSubscribersController {
   /**
    * @param Carbon $thresholdDate
    * @param int $batchSize
-   * @return int|boolean
+   * @return int|bool
    */
   private function deactivateSubscribers(Carbon $thresholdDate, $batchSize, $startId = null) {
     $subscribersTable = Subscriber::$_table;

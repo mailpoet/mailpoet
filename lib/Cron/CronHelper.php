@@ -133,7 +133,7 @@ class CronHelper {
   }
 
   /**
-   * @return boolean|null
+   * @return bool|null
    */
   public function isDaemonAccessible() {
     $daemon = $this->getDaemon();

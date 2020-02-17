@@ -47,7 +47,7 @@ class Functions {
    * @param callable $functionToAdd
    * @param int $priority
    * @param int $acceptedArgs
-   * @return boolean
+   * @return bool
    */
   public function addAction($tag, $functionToAdd, $priority = 10, $acceptedArgs = 1) {
     return call_user_func_array('add_action', func_get_args());

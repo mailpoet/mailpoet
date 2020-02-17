@@ -127,7 +127,7 @@ class DaemonHttpRunner {
   /**
    * @param array|null $settingsDaemonData
    *
-   * @return boolean
+   * @return bool
    */
   private function shouldTerminateExecution(array $settingsDaemonData = null) {
     return !$settingsDaemonData ||
