@@ -13,7 +13,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
-class WPTest extends \MailPoetTest  {
+class WPTest extends \MailPoetTest {
 
   private $userIds = [];
 

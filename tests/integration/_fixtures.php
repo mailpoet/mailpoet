@@ -170,7 +170,8 @@ Fixtures::add(
 /**
  * Simple class mocking dynamic segment filter.
  */
-class DynamicSegmentFilter { // phpcs:ignore PSR1.Classes.ClassDeclaration, Squiz.Classes.ClassFileName
+// phpcs:ignore PSR1.Classes.ClassDeclaration, Squiz.Classes.ClassFileName
+class DynamicSegmentFilter {
   protected $ids;
 
   public function __construct($ids) {

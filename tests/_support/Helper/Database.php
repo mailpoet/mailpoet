@@ -8,8 +8,7 @@ use MailPoetVendor\Idiorm\ORM;
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
-class Database extends \Codeception\Module
-{
+class Database extends \Codeception\Module {
   /**
    * Load a SQL file
    *

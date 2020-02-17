@@ -6,7 +6,8 @@ use Codeception\Events;
 use Codeception\Extension;
 use PHPUnit\Framework\AssertionFailedError;
 
-class ErrorsExtension extends Extension { // phpcs:ignore PSR1.Classes.ClassDeclaration
+// phpcs:ignore PSR1.Classes.ClassDeclaration
+class ErrorsExtension extends Extension {
   const ERROR_LOG_PATHS = [
     __DIR__ . '/../_output/exceptions/error.log',
     __DIR__ . '/../_output/exceptions/exception.log',

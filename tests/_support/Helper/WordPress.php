@@ -5,8 +5,8 @@ namespace Helper;
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
-class WordPress extends \Codeception\Module
-{
+class WordPress extends \Codeception\Module {
+
   private static $functionsToIntercept = [];
 
   public static function interceptFunction($functionName, $callback) {

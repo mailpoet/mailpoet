@@ -17,7 +17,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 require_once('WPUserWithExtraProps.php');
 
-class WooCommerceTest extends \MailPoetTest  {
+class WooCommerceTest extends \MailPoetTest {
   public $customerRoleAdded;
 
   private $userEmails = [];

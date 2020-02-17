@@ -21,7 +21,8 @@ use MailPoet\Test\DataFactories\Subscriber;
  *
  * @SuppressWarnings(PHPMD)
  */
-class AcceptanceTester extends \Codeception\Actor { // phpcs:ignore PSR1.Classes.ClassDeclaration
+// phpcs:ignore PSR1.Classes.ClassDeclaration
+class AcceptanceTester extends \Codeception\Actor {
   use _generated\AcceptanceTesterActions {
     cli as _cli;
     cliToArray as _cliToArray;

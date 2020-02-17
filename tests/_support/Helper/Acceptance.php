@@ -9,8 +9,8 @@ use Codeception\TestInterface;
 // all public methods declared in helper class will be available in $I
 
 
-class Acceptance extends \Codeception\Module
-{
+class Acceptance extends \Codeception\Module {
+
   protected $jsErrors = [];
 
   /**
