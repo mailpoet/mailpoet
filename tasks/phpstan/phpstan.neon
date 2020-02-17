@@ -26,4 +26,5 @@ parameters:
   checkMissingVarTagTypehint: false
   checkMissingTypehints: false
 includes:
+  - vendor/phpstan/phpstan-doctrine/extension.neon
   - phpstan-baseline.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff

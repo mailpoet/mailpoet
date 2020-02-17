@@ -1,6 +1,7 @@
 {
     "require": {
         "phpstan/phpstan": "0.12.11",
+        "phpstan/phpstan-doctrine": "0.12.9",
         "phpstan/phpstan-phpunit": "0.12.6"
     },
     "autoload": {
