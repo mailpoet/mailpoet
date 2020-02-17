@@ -84,7 +84,11 @@
   </rule>
 
   <!-- Typehints -->
+  <rule ref="Generic.PHP.LowerCaseType"/> <!-- Force PHP 7 param and return types to be lowercased -->
   <rule ref="SlevomatCodingStandard.TypeHints.LongTypeHints"/> <!-- Enforces short scalar typehint variants ("int", not "integer", etc.) -->
+  <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing"/> <!-- Space between type and name, no space between "?" and type -->
+  <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHintSpacing"/> <!-- Space between type and name, no space between "?" and type -->
+  <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing"/> <!-- No space before colon, one space before "?", no space after -->
 
   <!-- Reports empty comments -->
   <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
