@@ -42,6 +42,11 @@ class PostEditorBlock {
   }
 
   private function initAdmin() {
+    $this->wp->addAction('enqueue_block_editor_assets', [$this, 'enqueueAssets']);
+    $this->subscriptionFormBlock->initAdmin();
+  }
+
+  public function enqueueAssets() {
     $this->wp->wpEnqueueScript(
       'mailpoet-block-form-block-js',
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('post_editor_block.js'),
@@ -56,8 +61,6 @@ class PostEditorBlock {
       ['wp-edit-blocks'],
       Env::$version
     );
-
-    $this->subscriptionFormBlock->initAdmin();
   }
 
   private function initFrontend() {
