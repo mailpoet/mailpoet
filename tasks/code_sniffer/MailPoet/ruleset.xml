@@ -51,6 +51,7 @@
   <rule ref="Squiz.Classes.ValidClassName"/> <!-- Classes should be named camel case with first letter capitalised -->
   <rule ref="Squiz.Classes.LowercaseClassKeywords"/> <!-- The "class" keyword must be lowercased -->
   <rule ref="PSR1.Classes.ClassDeclaration"/> <!-- Each class must be in a file by itself and must be under a namespace -->
+  <rule ref="PSR2.Classes.PropertyDeclaration"/> <!-- Properties must have visibility, no trailing "_", one property per statement, "static" before visibility -->
 
   <!-- checks for unused methods, unused or write-only properties in a class and unused private constants -->
   <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
