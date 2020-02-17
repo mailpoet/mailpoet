@@ -4,7 +4,6 @@ namespace MailPoet\Config;
 
 use MailPoet\DynamicSegments\DynamicSegmentHooks;
 use MailPoet\Form\DisplayFormInWPContent;
-use MailPoet\Mailer\WordPress\Replacer;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;

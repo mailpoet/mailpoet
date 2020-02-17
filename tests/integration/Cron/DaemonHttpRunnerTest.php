@@ -2,11 +2,9 @@
 
 namespace MailPoet\Test\Cron;
 
-use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Cron\CronWorkerInterface;
 use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Cron\Daemon;
 use MailPoet\Cron\DaemonHttpRunner;

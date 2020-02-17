@@ -12,7 +12,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;

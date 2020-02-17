@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue;
 
-use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;

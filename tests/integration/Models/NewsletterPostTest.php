@@ -4,7 +4,6 @@ namespace MailPoet\Test\Models;
 
 use MailPoet\Models\NewsletterPost;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterPostTest extends \MailPoetTest {
   public function testItCanGetLatestNewsletterPost() {

@@ -7,7 +7,6 @@ use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsWooCommercePurchases;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WCHelper;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class WooCommercePastOrders extends SimpleWorker {

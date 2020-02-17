@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron\Triggers;
 
-use MailPoet\API\JSON\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;

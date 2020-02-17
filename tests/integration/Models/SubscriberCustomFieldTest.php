@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Models;
 
 use MailPoet\Models\SubscriberCustomField;
-use MailPoetVendor\Idiorm\ORM;
 
 class SubscriberCustomFieldTest extends \MailPoetTest {
   public $data;

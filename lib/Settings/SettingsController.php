@@ -4,7 +4,6 @@ namespace MailPoet\Settings;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Entities\SettingEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SettingsController {

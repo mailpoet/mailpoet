@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;

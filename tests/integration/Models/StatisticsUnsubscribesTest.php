@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Models;
 
 use MailPoet\Models\StatisticsUnsubscribes;
-use MailPoetVendor\Idiorm\ORM;
 
 class StatisticsUnsubscribesTest extends \MailPoetTest {
   public function testItCanGetExistingStatisticsRecord() {

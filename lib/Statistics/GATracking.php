@@ -6,7 +6,6 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\SecondLevelDomainNames;
-use MailPoet\WP\Functions as WPFunctions;
 
 class GATracking {
 

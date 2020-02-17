@@ -2,7 +2,6 @@
 
 namespace MailPoet\Cron\Workers;
 
-use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;

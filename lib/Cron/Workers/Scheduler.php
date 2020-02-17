@@ -15,7 +15,6 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Monolog\Logger;
 
 class Scheduler {
   const TASK_BATCH_SIZE = 5;

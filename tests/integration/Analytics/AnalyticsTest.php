@@ -6,7 +6,6 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class AnalyticsTest extends \MailPoetTest {

@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\API\JSON\v1;
 
-use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Analytics\Analytics;
 use MailPoet\API\JSON\Response as APIResponse;
