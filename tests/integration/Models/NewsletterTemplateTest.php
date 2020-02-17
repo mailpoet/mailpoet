@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Models;
 
 use MailPoet\Models\NewsletterTemplate;
-use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTemplateTest extends \MailPoetTest {
   public $data;

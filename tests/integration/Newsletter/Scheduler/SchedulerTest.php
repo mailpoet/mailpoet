@@ -2,9 +2,6 @@
 
 namespace MailPoet\Test\Newsletter\Scheduler;
 
-use Codeception\Util\Fixtures;
-use MailPoet\Config\Hooks;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -14,9 +11,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoet\WP\Posts as WPPosts;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 

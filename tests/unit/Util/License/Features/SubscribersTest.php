@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Util\License\Features;
 
 use Codeception\Util\Stub;
-use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;

@@ -5,8 +5,6 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
-use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
 
 class WooCommerceSync extends SimpleWorker {
   const TASK_TYPE = 'woocommerce_sync';

@@ -9,7 +9,6 @@ use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
-use MailPoet\Models\CustomField;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CustomFields extends APIEndpoint {

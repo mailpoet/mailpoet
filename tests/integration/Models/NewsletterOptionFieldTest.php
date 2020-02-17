@@ -5,7 +5,6 @@ namespace MailPoet\Test\Models;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
-use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterOptionFieldTest extends \MailPoetTest {
   public $data;

@@ -2,7 +2,6 @@
 
 namespace MailPoet\Entities;
 
-use DateTimeInterface;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;

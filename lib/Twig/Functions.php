@@ -2,7 +2,6 @@
 
 namespace MailPoet\Twig;
 
-use MailPoet\Config\ServicesChecker;
 use MailPoet\Referrals\UrlDecorator;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\FreeDomains;

@@ -10,7 +10,6 @@ use MailPoet\Entities\FeatureFlagEntity;
 use MailPoet\Features\FeatureFlagsController;
 use MailPoet\Features\FeatureFlagsRepository;
 use MailPoet\Features\FeaturesController;
-use MailPoet\Models\FeatureFlag;
 
 class FeatureFlagsTest extends \MailPoetTest {
 

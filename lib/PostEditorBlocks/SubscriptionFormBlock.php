@@ -2,8 +2,6 @@
 
 namespace MailPoet\PostEditorBlocks;
 
-use MailPoet\Config\Env;
-use MailPoet\Config\Renderer;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Widget;

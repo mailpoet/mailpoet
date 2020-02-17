@@ -13,7 +13,6 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
-use MailPoet\WP\Functions as WPFunctions;
 
 class SendingQueue extends APIEndpoint {
   public $permissions = [

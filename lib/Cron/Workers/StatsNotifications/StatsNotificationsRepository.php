@@ -3,7 +3,6 @@
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Doctrine\Repository;
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoetVendor\Carbon\Carbon;

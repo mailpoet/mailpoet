@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Mailer;
 
-use Codeception\Stub;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;

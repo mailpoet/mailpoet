@@ -7,10 +7,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Features\FeatureFlagsRepository;
-use MailPoet\Features\FeaturesController;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class MenuTest extends \MailPoetTest {
   public function testItReturnsTrueIfCurrentPageBelongsToMailpoet() {
