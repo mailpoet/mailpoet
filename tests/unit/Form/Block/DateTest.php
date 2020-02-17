@@ -51,8 +51,8 @@ class DateTest extends \MailPoetUnitTest {
     $html = $this->date->render($this->block);
     $mothsSelect = $this->htmlParser->getElementByXpath($html, "//select", 0);
     $yearsSelect = $this->htmlParser->getElementByXpath($html, "//select", 1);
-    expect(count($mothsSelect->childNodes))->equals(13); // Months + placeholder
-    expect(count($yearsSelect->childNodes))->equals(101 + 1); // Years + placeholder
+    expect($mothsSelect->childNodes->length)->equals(13); // Months + placeholder
+    expect($yearsSelect->childNodes->length)->equals(101 + 1); // Years + placeholder
 
     $date = Carbon::now();
     $currentMonth = $date->format('F');
@@ -78,9 +78,9 @@ class DateTest extends \MailPoetUnitTest {
     $mothsSelect = $this->htmlParser->getElementByXpath($html, "//select", 0);
     $daysSelect = $this->htmlParser->getElementByXpath($html, "//select", 1);
     $yearsSelect = $this->htmlParser->getElementByXpath($html, "//select", 2);
-    expect(count($mothsSelect->childNodes))->equals(13); // Months + placeholder
-    expect(count($daysSelect->childNodes))->equals(32); // Days + placeholder
-    expect(count($yearsSelect->childNodes))->equals(101 + 1); // Years + placeholder
+    expect($mothsSelect->childNodes->length)->equals(13); // Months + placeholder
+    expect($daysSelect->childNodes->length)->equals(32); // Days + placeholder
+    expect($yearsSelect->childNodes->length)->equals(101 + 1); // Years + placeholder
 
     $date = Carbon::now();
     $currentMonth = $date->format('F');
