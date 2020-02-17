@@ -160,7 +160,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
    * given, it's used to transform `$data` before creating the new row.
    *
    * @param  array   $data
-   * @param  array|boolean $keys
+   * @param array|bool $keys
    * @param  callable|bool $onCreate
    * @return self
    */

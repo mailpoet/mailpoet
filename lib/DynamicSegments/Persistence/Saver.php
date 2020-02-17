@@ -13,7 +13,7 @@ class Saver {
   /**
    * @param DynamicSegment $segment
    *
-   * @return integer
+   * @return int
    * @throws ErrorSavingException
    */
   public function save(DynamicSegment $segment) {

@@ -37,7 +37,7 @@ class Analytics {
     return null;
   }
 
-  /** @return boolean */
+  /** @return bool */
   public function isEnabled() {
     $analyticsSettings = $this->settings->get('analytics', []);
     return !empty($analyticsSettings['enabled']) === true;
@@ -69,7 +69,7 @@ class Analytics {
 
   /**
    * Returns true if a the public_id was added and update new_public_id to false
-   * @return boolean
+   * @return bool
    */
   public function isPublicIdNew() {
     $newPublicId = $this->settings->get('new_public_id');

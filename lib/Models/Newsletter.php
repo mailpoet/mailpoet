@@ -22,7 +22,7 @@ use function MailPoetVendor\array_column;
  * @property int $id
  * @property int $parentId
  * @property string $type
- * @property object|array|boolean $queue
+ * @property object|array|bool $queue
  * @property string $hash
  * @property string $senderAddress
  * @property string $status
@@ -39,7 +39,7 @@ use function MailPoetVendor\array_column;
  * @property string $preheader
  * @property string $body
  * @property string|null $schedule
- * @property boolean|null $isScheduled
+ * @property bool|null $isScheduled
  * @property string|null $scheduledAt
  * @property string $gaCampaign
  */

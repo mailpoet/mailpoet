@@ -89,7 +89,7 @@ class MP2Migrator {
   /**
    * Test if the migration is already started but is not completed
    *
-   * @return boolean
+   * @return bool
    */
   public function isMigrationStartedAndNotCompleted() {
     return $this->settings->get(self::MIGRATION_STARTED_SETTING_KEY, false)
@@ -99,7 +99,7 @@ class MP2Migrator {
   /**
    * Test if the migration is needed
    *
-   * @return boolean
+   * @return bool
    */
   public function isMigrationNeeded() {
     if ($this->settings->get(self::MIGRATION_COMPLETE_SETTING_KEY)) {
@@ -121,7 +121,7 @@ class MP2Migrator {
    * Test if a table exists
    *
    * @param string $table Table name
-   * @return boolean
+   * @return bool
    */
   private function tableExists($table) {
     global $wpdb;
@@ -269,7 +269,7 @@ class MP2Migrator {
   /**
    * Test if the import must stop
    *
-   * @return boolean Import must stop or not
+   * @return bool Import must stop or not
    */
   private function importStopped() {
     return $this->settings->get('import_stopped', false);
