@@ -10,7 +10,7 @@ namespace MailPoet\Models;
  */
 
 class SubscriberSegment extends Model {
-  public static $_table = MP_SUBSCRIBER_SEGMENT_TABLE;
+  public static $_table = MP_SUBSCRIBER_SEGMENT_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public function subscriber() {
     return $this->has_one(__NAMESPACE__ . '\Subscriber', 'id', 'subscriber_id');

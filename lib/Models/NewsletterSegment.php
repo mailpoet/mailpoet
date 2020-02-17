@@ -8,5 +8,5 @@ namespace MailPoet\Models;
  * @property string $updatedAt
  */
 class NewsletterSegment extends Model {
-  public static $_table = MP_NEWSLETTER_SEGMENT_TABLE;
+  public static $_table = MP_NEWSLETTER_SEGMENT_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 }

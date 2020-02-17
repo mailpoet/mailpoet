@@ -8,10 +8,10 @@ use MailPoetVendor\Twig\TwigFunction;
 
 class Assets extends AbstractExtension {
   const CDN_URL = 'https://ps.w.org/mailpoet/';
-  private $_globals;
+  private $globals;
 
   public function __construct($globals) {
-    $this->_globals = $globals;
+    $this->globals = $globals;
   }
 
   public function getFunctions() {
@@ -51,8 +51,8 @@ class Assets extends AbstractExtension {
     foreach ($stylesheets as $stylesheet) {
       $output[] = sprintf(
         '<link rel="stylesheet" type="text/css" href="%s/dist/css/%s" />',
-        $this->_globals['assets_url'],
-        $this->getAssetFilename($this->_globals['assets_manifest_css'], $stylesheet)
+        $this->globals['assets_url'],
+        $this->getAssetFilename($this->globals['assets_manifest_css'], $stylesheet)
       );
     }
 
@@ -76,20 +76,20 @@ class Assets extends AbstractExtension {
   public function getJavascriptScriptUrl($script) {
     return sprintf(
       '%s/%s/%s',
-      $this->_globals['assets_url'],
+      $this->globals['assets_url'],
       strpos($script, 'lib/') === 0 ? 'js' : 'dist/js',
-      $this->getAssetFileName($this->_globals['assets_manifest_js'], $script)
+      $this->getAssetFileName($this->globals['assets_manifest_js'], $script)
     );
   }
 
   public function generateImageUrl($path) {
     return $this->appendVersionToUrl(
-      $this->_globals['assets_url'] . '/img/' . $path
+      $this->globals['assets_url'] . '/img/' . $path
     );
   }
 
   public function appendVersionToUrl($url) {
-    return WPFunctions::get()->addQueryArg('mailpoet_version', $this->_globals['version'], $url);
+    return WPFunctions::get()->addQueryArg('mailpoet_version', $this->globals['version'], $url);
   }
 
   public function getAssetFileName($manifest, $asset) {
@@ -98,6 +98,6 @@ class Assets extends AbstractExtension {
 
   public function generateCdnUrl($path) {
     $useCdn = defined('MAILPOET_USE_CDN') ? MAILPOET_USE_CDN : true;
-    return ($useCdn ? self::CDN_URL : $this->_globals['base_url'] . '/plugin_repository/') . "assets/$path";
+    return ($useCdn ? self::CDN_URL : $this->globals['base_url'] . '/plugin_repository/') . "assets/$path";
   }
 }

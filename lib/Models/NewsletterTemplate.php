@@ -14,7 +14,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property int|null $readonly
  */
 class NewsletterTemplate extends Model {
-  public static $_table = MP_NEWSLETTER_TEMPLATES_TABLE;
+  public static $_table = MP_NEWSLETTER_TEMPLATES_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   const RECENTLY_SENT_CATEGORIES = '["recent"]';
   const RECENTLY_SENT_COUNT = 12;

@@ -3,7 +3,7 @@
 namespace MailPoet\Models;
 
 class StatisticsForms extends Model {
-  public static $_table = MP_STATISTICS_FORMS_TABLE;
+  public static $_table = MP_STATISTICS_FORMS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public static function getTotalSignups($formId = false) {
     return self::where('form_id', $formId)->count();

@@ -23,7 +23,7 @@ use MailPoet\WP\Functions as WPFunctions;
  */
 
 class SendingQueue extends Model {
-  public static $_table = MP_SENDING_QUEUES_TABLE;
+  public static $_table = MP_SENDING_QUEUES_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   const STATUS_COMPLETED = SendingQueueEntity::STATUS_COMPLETED;
   const STATUS_SCHEDULED = SendingQueueEntity::STATUS_SCHEDULED;
   const STATUS_PAUSED = SendingQueueEntity::STATUS_PAUSED;

@@ -12,7 +12,7 @@ use DateTimeInterface;
  * @property int $count
  */
 class StatisticsClicks extends Model {
-  public static $_table = MP_STATISTICS_CLICKS_TABLE;
+  public static $_table = MP_STATISTICS_CLICKS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public static function createOrUpdateClickCount($linkId, $subscriberId, $newsletterId, $queueId) {
     $statistics = self::where('link_id', $linkId)

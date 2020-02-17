@@ -12,7 +12,7 @@ use MailPoet\WP\Functions as WPFunctions;
  */
 class DynamicSegmentFilter extends Model {
 
-  public static $_table = MP_DYNAMIC_SEGMENTS_FILTERS_TABLE;
+  public static $_table = MP_DYNAMIC_SEGMENTS_FILTERS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public function save() {
     if (is_null($this->filterData)) {

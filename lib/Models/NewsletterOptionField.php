@@ -10,7 +10,7 @@ use MailPoet\WP\Functions as WPFunctions;
  */
 
 class NewsletterOptionField extends Model {
-  public static $_table = MP_NEWSLETTER_OPTION_FIELDS_TABLE;
+  public static $_table = MP_NEWSLETTER_OPTION_FIELDS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public function __construct() {
     parent::__construct();
