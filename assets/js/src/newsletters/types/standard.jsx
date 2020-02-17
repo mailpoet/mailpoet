@@ -3,6 +3,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import { withRouter } from 'react-router-dom';
+import { GlobalContext } from 'context/index.jsx';
 
 class NewsletterStandard extends React.Component {
   componentDidMount() {
@@ -18,8 +19,8 @@ class NewsletterStandard extends React.Component {
       this.showTemplateSelection(response.data.id);
     }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
@@ -39,6 +40,8 @@ class NewsletterStandard extends React.Component {
     );
   }
 }
+
+NewsletterStandard.contextType = GlobalContext;
 
 NewsletterStandard.propTypes = {
   history: PropTypes.shape({

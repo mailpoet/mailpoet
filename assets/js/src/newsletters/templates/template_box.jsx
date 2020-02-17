@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
 import confirmAlert from 'common/confirm_alert.jsx';
+import { GlobalContext } from 'context/index.jsx';
 
 /**
  * props = {
@@ -35,8 +36,8 @@ class TemplateBox extends React.Component {
         afterDelete(true, id);
       }).fail((response) => {
         if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
+          this.context.notices.error(
+            response.errors.map((error) => <p key={error.message}>{error.message}</p>),
             { scroll: true }
           );
         }
@@ -81,8 +82,8 @@ class TemplateBox extends React.Component {
       afterSelect(true, response.data.id);
     }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
@@ -157,6 +158,8 @@ class TemplateBox extends React.Component {
     );
   }
 }
+
+TemplateBox.contextType = GlobalContext;
 
 TemplateBox.propTypes = {
   index: PropTypes.number.isRequired,

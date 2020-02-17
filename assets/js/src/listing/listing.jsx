@@ -13,6 +13,7 @@ import ListingFilters from 'listing/filters.jsx';
 import ListingItems from 'listing/listing_items.jsx';
 import MailerError from 'listing/notices.jsx';
 import { withRouter } from 'react-router-dom';
+import { GlobalContext } from 'context/index.jsx';
 
 class Listing extends React.Component {
   constructor(props) {
@@ -190,8 +191,8 @@ class Listing extends React.Component {
       });
     }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
@@ -266,8 +267,8 @@ class Listing extends React.Component {
       }
       this.getItems();
     }).fail((response) => {
-      MailPoet.Notice.error(
-        response.errors.map((error) => error.message),
+      this.context.notices.error(
+        response.errors.map((error) => <p key={error.message}>{error.message}</p>),
         { scroll: true }
       );
     });
@@ -295,8 +296,8 @@ class Listing extends React.Component {
       }
       this.getItems();
     }).fail((response) => {
-      MailPoet.Notice.error(
-        response.errors.map((error) => error.message),
+      this.context.notices.error(
+        response.errors.map((error) => <p key={error.message}>{error.message}</p>),
         { scroll: true }
       );
     });
@@ -324,8 +325,8 @@ class Listing extends React.Component {
       }
       this.getItems();
     }).fail((response) => {
-      MailPoet.Notice.error(
-        response.errors.map((error) => error.message),
+      this.context.notices.error(
+        response.errors.map((error) => <p key={error.message}>{error.message}</p>),
         { scroll: true }
       );
     });
@@ -344,8 +345,8 @@ class Listing extends React.Component {
     // redirect to default group
     this.handleGroup('all');
   }).fail((response) => {
-    MailPoet.Notice.error(
-      response.errors.map((error) => error.message),
+    this.context.notices.error(
+      response.errors.map((error) => <p key={error.message}>{error.message}</p>),
       { scroll: true }
     );
   });
@@ -383,8 +384,8 @@ class Listing extends React.Component {
       this.getItems();
     }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
@@ -684,6 +685,8 @@ class Listing extends React.Component {
     );
   }
 }
+
+Listing.contextType = GlobalContext;
 
 /* eslint-disable react/require-default-props */
 Listing.propTypes = {

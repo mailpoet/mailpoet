@@ -5,6 +5,7 @@ import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import _ from 'underscore';
 import Scheduling from 'newsletters/types/notification/scheduling.jsx';
 import { withRouter } from 'react-router-dom';
+import { GlobalContext } from 'context/index.jsx';
 
 const field = {
   name: 'options',
@@ -45,8 +46,8 @@ class NewsletterNotification extends React.Component {
       this.showTemplateSelection(response.data.id);
     }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
@@ -83,6 +84,8 @@ class NewsletterNotification extends React.Component {
     );
   }
 }
+
+NewsletterNotification.contextType = GlobalContext;
 
 NewsletterNotification.propTypes = {
   history: PropTypes.shape({

@@ -5,6 +5,7 @@ import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
 import { withRouter } from 'react-router-dom';
+import { GlobalContext } from 'context/index.jsx';
 
 class NewsletterTypes extends React.Component {
   constructor(props) {
@@ -108,7 +109,12 @@ class NewsletterTypes extends React.Component {
           'MailPoet Free version': window.mailpoet_version,
         });
       } catch (response) {
-        MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
+        if (response.errors.length > 0) {
+          this.context.notices.error(
+            response.errors.map((error) => <p key={error.message}>{error.message}</p>),
+            { scroll: true }
+          );
+        }
         return;
       }
     }
@@ -134,8 +140,8 @@ class NewsletterTypes extends React.Component {
     }).fail((response) => {
       this.setState({ isCreating: false });
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
           { scroll: true }
         );
       }
@@ -288,6 +294,8 @@ class NewsletterTypes extends React.Component {
     );
   }
 }
+
+NewsletterTypes.contextType = GlobalContext;
 
 NewsletterTypes.propTypes = {
   filter: PropTypes.func,

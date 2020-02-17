@@ -15,6 +15,7 @@ import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import slugify from 'slugify';
+import { GlobalContext } from 'context/index.jsx';
 
 const generateGaTrackingCampaignName = (id, subject) => {
   const name = slugify(subject, { lower: true })
@@ -242,16 +243,16 @@ class NewsletterSend extends React.Component {
       if (_.isFunction(customResponse)) {
         customResponse();
       } else if (response.data.status === 'scheduled') {
-        MailPoet.Notice.success(
-          MailPoet.I18n.t('newsletterHasBeenScheduled')
+        this.context.notices.success(
+          <p>{MailPoet.I18n.t('newsletterHasBeenScheduled')}</p>
         );
         MailPoet.trackEvent('Emails > Newsletter sent', {
           scheduled: true,
           'MailPoet Free version': window.mailpoet_version,
         });
       } else {
-        MailPoet.Notice.success(
-          MailPoet.I18n.t('newsletterBeingSent'),
+        this.context.notices.success(
+          <p>{MailPoet.I18n.t('newsletterBeingSent')}</p>,
           { id: 'mailpoet_notice_being_sent' }
         );
         MailPoet.trackEvent('Emails > Newsletter sent', {
@@ -288,8 +289,8 @@ class NewsletterSend extends React.Component {
       const opts = this.state.item.options;
       // display success message depending on newsletter type
       if (response.data.type === 'welcome') {
-        MailPoet.Notice.success(
-          MailPoet.I18n.t('welcomeEmailActivated')
+        this.context.notices.success(
+          <p>{MailPoet.I18n.t('welcomeEmailActivated')}</p>
         );
         MailPoet.trackEvent('Emails > Welcome email activated', {
           'MailPoet Free version': window.mailpoet_version,
@@ -297,8 +298,8 @@ class NewsletterSend extends React.Component {
           Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
         });
       } else if (response.data.type === 'notification') {
-        MailPoet.Notice.success(
-          MailPoet.I18n.t('postNotificationActivated')
+        this.context.notices.success(
+          <p>{MailPoet.I18n.t('postNotificationActivated')}</p>
         );
         MailPoet.trackEvent('Emails > Post notifications activated', {
           'MailPoet Free version': window.mailpoet_version,
@@ -330,16 +331,11 @@ class NewsletterSend extends React.Component {
           },
         }).done(() => {
           this.props.history.push(`/${this.state.item.type || ''}`);
-          MailPoet.Notice.success(
-            MailPoet.I18n.t('newsletterSendingHasBeenResumed')
+          this.context.notices.success(
+            <p>{MailPoet.I18n.t('newsletterSendingHasBeenResumed')}</p>
           );
         }).fail((response) => {
-          if (response.errors.length > 0) {
-            MailPoet.Notice.error(
-              response.errors.map((error) => error.message),
-              { scroll: true }
-            );
-          }
+          this.showError(response);
         });
       })
         .fail((err) => {
@@ -356,8 +352,8 @@ class NewsletterSend extends React.Component {
     e.preventDefault();
 
     this.saveNewsletter(e).done(() => {
-      MailPoet.Notice.success(
-        MailPoet.I18n.t('newsletterUpdated')
+      this.context.notices.success(
+        <p>{MailPoet.I18n.t('newsletterUpdated')}</p>
       );
     }).done(() => {
       const path = this.state.item.type === 'automatic' ? this.state.item.options.group : this.state.item.type;
@@ -372,8 +368,8 @@ class NewsletterSend extends React.Component {
     const redirectTo = e.target.href;
 
     this.saveNewsletter(e).done(() => {
-      MailPoet.Notice.success(
-        MailPoet.I18n.t('newsletterUpdated')
+      this.context.notices.success(
+        <p>{MailPoet.I18n.t('newsletterUpdated')}</p>
       );
     }).done(() => {
       window.location = redirectTo;
@@ -407,8 +403,8 @@ class NewsletterSend extends React.Component {
 
   showError = (response) => {
     if (response.errors.length > 0) {
-      MailPoet.Notice.error(
-        response.errors.map((error) => error.message),
+      this.context.notices.error(
+        response.errors.map((error) => <p key={error.message}>{error.message}</p>),
         { scroll: true }
       );
     }
@@ -527,6 +523,8 @@ class NewsletterSend extends React.Component {
     );
   }
 }
+
+NewsletterSend.contextType = GlobalContext;
 
 NewsletterSend.propTypes = {
   match: PropTypes.shape({
