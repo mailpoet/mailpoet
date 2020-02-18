@@ -338,4 +338,19 @@ describe('Blocks to Form Body', () => {
     const input = column11.body[0];
     checkBodyInputBasics(input);
   });
+
+  it('Should map colors for columns', () => {
+    const columns = { ...nestedColumns };
+    columns.attributes = {
+      textColor: 'vivid-red',
+      backgroundColor: 'white',
+      customBackgroundColor: '#ffffff',
+      customTextColor: '#dd0000',
+    };
+    const [mapped] = formBlocksToBody([columns]);
+    expect(mapped.params.text_color).to.be.equal('vivid-red');
+    expect(mapped.params.background_color).to.be.equal('white');
+    expect(mapped.params.custom_background_color).to.be.equal('#ffffff');
+    expect(mapped.params.custom_text_color).to.be.equal('#dd0000');
+  });
 });

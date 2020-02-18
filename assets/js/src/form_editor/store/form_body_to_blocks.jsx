@@ -72,6 +72,18 @@ const mapColumnBlocks = (data, customFields = []) => {
   if (has(data.params, 'vertical_alignment')) {
     mapped.attributes.verticalAlignment = data.params.vertical_alignment;
   }
+  if (has(data.params, 'text_color')) {
+    mapped.attributes.textColor = data.params.text_color;
+  }
+  if (has(data.params, 'custom_text_color')) {
+    mapped.attributes.customTextColor = data.params.custom_text_color;
+  }
+  if (has(data.params, 'background_color')) {
+    mapped.attributes.backgroundColor = data.params.background_color;
+  }
+  if (has(data.params, 'custom_background_color')) {
+    mapped.attributes.customBackgroundColor = data.params.custom_background_color;
+  }
   return mapped;
 };
 

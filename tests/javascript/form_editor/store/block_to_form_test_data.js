@@ -161,7 +161,6 @@ export const customHtmlBlock = {
   },
 };
 
-
 export const nestedColumns = {
   clientId: 'columns-1',
   name: 'core/columns',
