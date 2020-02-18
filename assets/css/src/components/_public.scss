@@ -62,6 +62,17 @@
 
 .mailpoet_form_columns {
   display: flex;
+
+  // Alignment settings
+  &.mailpoet_vertically_align_top {
+    align-items: flex-start;
+  }
+  &.mailpoet_vertically_align_center {
+    align-items: flex-start;
+  }
+  &.mailpoet_vertically_align_bottom {
+    align-items: flex-start;
+  }
 }
 
 .mailpoet_form_column {
