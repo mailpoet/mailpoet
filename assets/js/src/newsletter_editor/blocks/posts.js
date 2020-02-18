@@ -113,7 +113,7 @@ Module.PostsBlockModel = base.BlockModel.extend({
     this.on('loadMorePosts', this._loadMorePosts, this);
 
     this.listenTo(this.get('_selectedPosts'), 'add remove reset', refreshTransformedPosts);
-    this.on('change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:showDivider change:titlePosition', refreshTransformedPosts);
+    this.on('change:displayType change:titleFormat change:featuredImagePosition change:fullPostFeaturedImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:showDivider change:titlePosition', refreshTransformedPosts);
     this.listenTo(this.get('readMoreButton'), 'change', refreshTransformedPosts);
     this.listenTo(this.get('divider'), 'change', refreshTransformedPosts);
     this.listenTo(App.getChannel(), 'hideSettings', this.destroy);

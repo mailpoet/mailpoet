@@ -108,7 +108,7 @@ Module.AutomatedLatestContentLayoutBlockModel = base.BlockModel.extend({
     }
 
     base.BlockView.prototype.initialize.apply(this, arguments);
-    this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider change:titlePosition', this._handleChanges, this);
+    this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:fullPostFeaturedImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider change:titlePosition', this._handleChanges, this);
     this.listenTo(this.get('readMoreButton'), 'change', this._handleChanges);
     this.listenTo(this.get('divider'), 'change', this._handleChanges);
     this.on('add remove update reset', this._handleChanges);
