@@ -106,6 +106,12 @@ const mapBlocks = (blocks, customFields = [], parent = null) => {
           position: (index + 1).toString(),
           type: 'columns',
           body: mapBlocks(block.innerBlocks, customFields, block),
+          params: {
+            text_color: block.attributes.textColor || null,
+            background_color: block.attributes.backgroundColor || null,
+            custom_text_color: block.attributes.customTextColor || null,
+            custom_background_color: block.attributes.customBackgroundColor || null,
+          },
         };
       case 'mailpoet-form/email-input':
         return {
