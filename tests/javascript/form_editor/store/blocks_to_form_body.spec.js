@@ -353,4 +353,20 @@ describe('Blocks to Form Body', () => {
     expect(mapped.params.custom_background_color).to.be.equal('#ffffff');
     expect(mapped.params.custom_text_color).to.be.equal('#dd0000');
   });
+
+  it('Should map class name for columns and column', () => {
+    const columns = { ...nestedColumns };
+    columns.attributes = {
+      className: 'my-class',
+    };
+    const [mapped] = formBlocksToBody([columns]);
+    expect(mapped.params.class_name).to.be.equal('my-class');
+
+    const column = { ...nestedColumns.innerBlocks[0] };
+    column.attributes = {
+      className: 'my-class-2',
+    };
+    const [mappedColumn] = formBlocksToBody([column]);
+    expect(mappedColumn.params.class_name).to.be.equal('my-class-2');
+  });
 });

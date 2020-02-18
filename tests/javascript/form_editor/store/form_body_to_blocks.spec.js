@@ -355,4 +355,13 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.customTextColor).to.be.equal('#dd0000');
     expect(block.attributes.customBackgroundColor).to.be.equal('#ffffff');
   });
+
+  it('Should map class name', () => {
+    const nested = { ...nestedColumns, position: '1' };
+    nested.params = {
+      class_name: 'custom-class',
+    };
+    const [block] = formBodyToBlocks([nested]);
+    expect(block.attributes.className).to.be.equal('custom-class');
+  });
 });
