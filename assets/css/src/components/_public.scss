@@ -60,6 +60,7 @@
   40% { transform: scale(1); }
 }
 
+// Form columns
 .mailpoet_form_columns {
   display: flex;
 
@@ -73,6 +74,10 @@
   &.mailpoet_vertically_align_bottom {
     align-items: flex-start;
   }
+}
+
+.mailpoet_column_has_background {
+  padding: 20px 30px;
 }
 
 .mailpoet_form_column {

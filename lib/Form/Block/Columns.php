@@ -12,6 +12,10 @@ class Columns {
     if (!empty($params['vertical_alignment'])) {
       $classes[] = "mailpoet_vertically_align_{$params['vertical_alignment']}";
     }
+    if (!empty($params['background_color'])) {
+      $classes[] = "has-{$params['background_color']}-background-color";
+      $classes[] = "mailpoet_column_has_background";
+    }
     $classes = implode(' ', $classes);
     return "class=\"$classes\"";
   }
