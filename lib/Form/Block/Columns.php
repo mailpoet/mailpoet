@@ -16,6 +16,9 @@ class Columns {
       $classes[] = "has-{$params['background_color']}-background-color";
       $classes[] = "mailpoet_column_has_background";
     }
+    if (!empty($params['text_color'])) {
+      $classes[] = "has-{$params['text_color']}-color";
+    }
     $classes = implode(' ', $classes);
     return "class=\"$classes\"";
   }
