@@ -4,7 +4,21 @@ namespace MailPoet\Form\Block;
 
 class Columns {
   public function render(array $block, string $content): string {
-    return "<div {$this->getClass($block['params'] ?? [])}>$content</div>";
+    return "<div {$this->getClass($block['params'] ?? [])}{$this->getStyles($block['params'] ?? [])}>$content</div>";
+  }
+
+  private function getStyles(array $params): string {
+    $styles = [];
+    if (isset($params['custom_text_color'])) {
+      $styles[] = "color:{$params['custom_text_color']};";
+    }
+    if (isset($params['custom_background_color'])) {
+      $styles[] = "background-color:{$params['custom_background_color']};";
+    }
+    if (count($styles)) {
+      return ' style="' . implode('', $styles) . '"';
+    }
+    return '';
   }
 
   private function getClass(array $params): string {
