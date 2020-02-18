@@ -58,7 +58,12 @@ class Renderer {
       if ($block['type'] == 'submit' && $this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
         $html .= $this->renderReCaptcha();
       }
-      $html .= $this->blocksRenderer->renderBlock($block, $formSettings) . PHP_EOL;
+      if (in_array($block['type'], ['column', 'columns'])) {
+        $blocks = $block['body'] ?? [];
+        $html .= $this->blocksRenderer->renderContainerBlock($block, $this->renderBlocks($blocks, $formSettings, false)) . PHP_EOL;
+      } else {
+        $html .= $this->blocksRenderer->renderBlock($block, $formSettings) . PHP_EOL;
+      }
     }
     return $html;
   }
