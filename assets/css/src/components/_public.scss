@@ -59,3 +59,28 @@
   100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
+.mailpoet_form_columns {
+  display: flex;
+}
+
+.mailpoet_form_column {
+  display: flex;
+  flex-direction: column;
+
+  &:not(:first-child) {
+    margin-left: 30px;
+  }
+
+  &.mailpoet_vertically_align_top {
+    align-self: flex-start;
+  }
+
+  &.mailpoet_vertically_align_center {
+    align-self: center;
+  }
+
+  &.mailpoet_vertically_align_bottom {
+    align-self: flex-end;
+  }
+}
