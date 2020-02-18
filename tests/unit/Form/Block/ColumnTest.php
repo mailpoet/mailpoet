@@ -49,4 +49,12 @@ class ColumnTest extends \MailPoetUnitTest {
     expect($class->textContent)->contains('mailpoet_vertically_align_top');
   }
 
+  public function testItShouldRenderCustomClass() {
+    $block = $this->block;
+    $block['params']['class_name'] = 'my-class';
+    $html = $this->columns->render($block, 'content');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $class = $this->htmlParser->getAttribute($column, 'class');
+    expect($class->textContent)->contains('my-class');
+  }
 }

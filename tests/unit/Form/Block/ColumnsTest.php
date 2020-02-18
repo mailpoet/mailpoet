@@ -57,4 +57,13 @@ class ColumnsTest extends \MailPoetUnitTest {
     $class = $this->htmlParser->getAttribute($column, 'class');
     expect($class->textContent)->contains('has-vivid-cyan-color');
   }
+
+  public function testItShouldRenderCustomClass() {
+    $block = $this->block;
+    $block['params']['class_name'] = 'my-class';
+    $html = $this->columns->render($block, 'content');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $class = $this->htmlParser->getAttribute($column, 'class');
+    expect($class->textContent)->contains('my-class');
+  }
 }

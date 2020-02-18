@@ -19,6 +19,9 @@ class Column {
     if (!empty($params['vertical_alignment'])) {
       $classes[] = "mailpoet_vertically_align_{$params['vertical_alignment']}";
     }
+    if (!empty($params['class_name'])) {
+      $classes[] = $params['class_name'];
+    }
     $classes = implode(' ', $classes);
     return "class=\"$classes\"";
   }

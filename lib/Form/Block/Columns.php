@@ -19,6 +19,9 @@ class Columns {
     if (!empty($params['text_color'])) {
       $classes[] = "has-{$params['text_color']}-color";
     }
+    if (!empty($params['class_name'])) {
+      $classes[] = $params['class_name'];
+    }
     $classes = implode(' ', $classes);
     return "class=\"$classes\"";
   }
