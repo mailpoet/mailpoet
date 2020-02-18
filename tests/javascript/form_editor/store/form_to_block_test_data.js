@@ -178,6 +178,9 @@ export const customHtml = {
 export const nestedColumns = {
   position: '2',
   type: 'columns',
+  params: {
+    vertical_alignment: 'center',
+  },
   body: [
     {
       position: '1',

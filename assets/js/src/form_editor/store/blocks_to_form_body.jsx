@@ -108,6 +108,7 @@ const mapBlocks = (blocks, customFields = [], parent = null) => {
           type: 'columns',
           body: mapBlocks(block.innerBlocks, customFields, block),
           params: {
+            vertical_alignment: block.attributes.verticalAlignment || null,
             class_name: block.attributes.className || null,
             text_color: block.attributes.textColor || null,
             background_color: block.attributes.backgroundColor || null,
