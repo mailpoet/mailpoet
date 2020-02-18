@@ -88,16 +88,17 @@ const mapBlocks = (blocks, customFields = [], parent = null) => {
     if (block.attributes.labelWithinInput) {
       mapped.params.label_within = '1';
     }
-
+    const childrenCount = parent ? parent.innerBlocks.length : 1;
     switch (block.name) {
       case 'core/column':
         return {
           position: (index + 1).toString(),
           type: 'column',
           params: {
+            class_name: block.attributes.className || null,
             vertical_alignment: block.attributes.verticalAlignment || null,
             width: block.attributes.width
-              ? block.attributes.width : Math.round(100 / parent.innerBlocks.length),
+              ? block.attributes.width : Math.round(100 / childrenCount),
           },
           body: mapBlocks(block.innerBlocks, customFields, block),
         };
@@ -107,6 +108,7 @@ const mapBlocks = (blocks, customFields = [], parent = null) => {
           type: 'columns',
           body: mapBlocks(block.innerBlocks, customFields, block),
           params: {
+            class_name: block.attributes.className || null,
             text_color: block.attributes.textColor || null,
             background_color: block.attributes.backgroundColor || null,
             custom_text_color: block.attributes.customTextColor || null,

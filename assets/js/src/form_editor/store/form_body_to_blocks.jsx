@@ -84,6 +84,9 @@ const mapColumnBlocks = (data, customFields = []) => {
   if (has(data.params, 'custom_background_color')) {
     mapped.attributes.customBackgroundColor = data.params.custom_background_color;
   }
+  if (has(data.params, 'class_name') && data.params.class_name) {
+    mapped.attributes.className = data.params.class_name;
+  }
   return mapped;
 };
 
