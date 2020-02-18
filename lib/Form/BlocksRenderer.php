@@ -3,6 +3,8 @@
 namespace MailPoet\Form;
 
 use MailPoet\Form\Block\Checkbox;
+use MailPoet\Form\Block\Column;
+use MailPoet\Form\Block\Columns;
 use MailPoet\Form\Block\Date;
 use MailPoet\Form\Block\Divider;
 use MailPoet\Form\Block\Html;
@@ -44,8 +46,16 @@ class BlocksRenderer {
   /** @var Textarea */
   private $textarea;
 
+  /** @var Column */
+  private $column;
+
+  /** @var Columns */
+  private $columns;
+
   public function __construct(
     Checkbox $checkbox,
+    Column $column,
+    Columns $columns,
     Date $date,
     Divider $divider,
     Html $html,
@@ -57,6 +67,8 @@ class BlocksRenderer {
     Textarea $textarea
   ) {
     $this->checkbox = $checkbox;
+    $this->column = $column;
+    $this->columns = $columns;
     $this->date = $date;
     $this->divider = $divider;
     $this->html = $html;
@@ -109,6 +121,20 @@ class BlocksRenderer {
 
       case 'submit':
         $html .= $this->submit->render($block);
+        break;
+    }
+    return $html;
+  }
+
+  public function renderContainerBlock(array $block, string $content) {
+    $html = '';
+    switch ($block['type']) {
+      case 'columns':
+        $html .= $this->columns->render($block, $content);
+        break;
+
+      case 'column':
+        $html .= $this->column->render($block, $content);
         break;
     }
     return $html;
