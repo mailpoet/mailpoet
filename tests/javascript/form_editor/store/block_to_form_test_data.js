@@ -165,7 +165,9 @@ export const nestedColumns = {
   clientId: 'columns-1',
   name: 'core/columns',
   isValid: true,
-  attributes: {},
+  attributes: {
+    verticalAlignment: 'center',
+  },
   innerBlocks: [
     {
       clientId: 'column-1-1',

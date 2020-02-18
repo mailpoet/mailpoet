@@ -320,6 +320,7 @@ describe('Form Body To Blocks', () => {
     const blocks = formBodyToBlocks([email, nested, unknown]);
     expect(blocks.length).to.be.equal(2);
     expect(blocks[1].name).to.be.equal('core/columns');
+    expect(blocks[1].attributes.verticalAlignment).to.be.equal('center');
     // First level
     const column1 = blocks[1].innerBlocks[0];
     expect(column1.name).to.be.equal('core/column');
