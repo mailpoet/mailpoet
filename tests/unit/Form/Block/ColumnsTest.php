@@ -48,4 +48,13 @@ class ColumnsTest extends \MailPoetUnitTest {
     expect($class->textContent)->contains('has-vivid-red-background-color');
     expect($class->textContent)->contains('mailpoet_column_has_background');
   }
+
+  public function testItShouldRenderTextColorClass() {
+    $block = $this->block;
+    $block['params']['text_color'] = 'vivid-cyan';
+    $html = $this->columns->render($block, 'content');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $class = $this->htmlParser->getAttribute($column, 'class');
+    expect($class->textContent)->contains('has-vivid-cyan-color');
+  }
 }
