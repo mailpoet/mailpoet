@@ -38,4 +38,14 @@ class ColumnsTest extends \MailPoetUnitTest {
     $class = $this->htmlParser->getAttribute($column, 'class');
     expect($class->textContent)->contains('mailpoet_vertically_align_top');
   }
+
+  public function testItShouldRenderBackgroundColorClass() {
+    $block = $this->block;
+    $block['params']['background_color'] = 'vivid-red';
+    $html = $this->columns->render($block, 'content');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $class = $this->htmlParser->getAttribute($column, 'class');
+    expect($class->textContent)->contains('has-vivid-red-background-color');
+    expect($class->textContent)->contains('mailpoet_column_has_background');
+  }
 }
