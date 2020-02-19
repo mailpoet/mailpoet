@@ -71,9 +71,11 @@ class ColumnsTest extends \MailPoetUnitTest {
     $block = $this->block;
     $block['params']['custom_background_color'] = '#ffffff';
     $html = $this->columns->render($block, 'content');
-    $columns = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_columns"]');
+    $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
     expect($style->textContent)->contains('background-color:#ffffff;');
+    $class = $this->htmlParser->getAttribute($columns, 'class');
+    expect($class->textContent)->contains('mailpoet_column_has_background');
   }
 
   public function testItShouldCustomTextColor() {
