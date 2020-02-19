@@ -17,6 +17,8 @@ class CreateNewWordPressUserCest {
   public function sendConfirmationEmail(\AcceptanceTester $i) {
     $i->wantTo('Create a new wordpress user and check if the confirmation email is sent');
     $this->settings->withConfirmationEmailEnabled();
+    $this->settings->withSubscribeOnRegisterEnabled();
+
     //create a wp user with wp role subscriber
     $i->cli(['user', 'create', 'narwhal', 'standardtest@example.com', '--role=subscriber']);
     $i->amOnMailboxAppPage();

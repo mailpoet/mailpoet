@@ -44,13 +44,10 @@ class WP {
     if (!$wpSegment) return;
 
     $scheduleWelcomeNewsletter = false;
-    $sendConfirmationEmail = false;
     if (in_array($currentFilter, ['profile_update', 'user_register'])) {
       $scheduleWelcomeNewsletter = true;
     }
-    if ($currentFilter !== 'profile_update') {
-      $sendConfirmationEmail = true;
-    }
+
     // get first name & last name
     $firstName = $wpUser->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $lastName = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
@@ -82,6 +79,9 @@ class WP {
         $subscriber,
         [$wpSegment->id]
       );
+
+      $subscribeOnRegisterEnabled = SettingsController::getInstance()->get('subscribe.on_register.enabled');
+      $sendConfirmationEmail = $signupConfirmationEnabled && $subscribeOnRegisterEnabled && $currentFilter !== 'profile_update';
       if ($sendConfirmationEmail && ($subscriber->status === Subscriber::STATUS_UNCONFIRMED)) {
         $confirmationEmailMailer = ContainerWrapper::getInstance()->get(ConfirmationEmailMailer::class);
         $confirmationEmailMailer->sendConfirmationEmail($subscriber);
