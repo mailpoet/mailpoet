@@ -267,7 +267,7 @@ parameters:
 
 		-
 			message: "#^Cannot access property \\$scheduledAt on MailPoet\\\\Models\\\\ScheduledTask\\|false\\.$#"
-			count: 2
+			count: 1
 			path: ../../tests/integration/Cron/Workers/SchedulerTest.php
 
 		-

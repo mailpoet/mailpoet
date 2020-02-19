@@ -14,7 +14,6 @@ use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoetVendor\Carbon\Carbon;
 
 class Scheduler {
   const TASK_BATCH_SIZE = 5;
@@ -130,7 +129,6 @@ class Scheduler {
       'post notification set status to sending',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
     );
-    $this->reScheduleBounceTask();
     return true;
   }
 
@@ -167,7 +165,6 @@ class Scheduler {
     $task->save();
     // update newsletter status
     $newsletter->setStatus(Newsletter::STATUS_SENDING);
-    $this->reScheduleBounceTask();
     return true;
   }
 
@@ -243,18 +240,6 @@ class Scheduler {
       return $queue->taskId;
     }, $scheduledQueues);
     ScheduledTask::touchAllByIds($ids);
-  }
-
-  private function reScheduleBounceTask() {
-    $bounceTasks = ScheduledTask::findFutureScheduledByType(Bounce::TASK_TYPE);
-    if (count($bounceTasks)) {
-      $bounceTask = reset($bounceTasks);
-      if (Carbon::createFromTimestamp((int)current_time('timestamp'))->addHour(42)->lessThan($bounceTask->scheduledAt)) {
-        $randomOffset = rand(-6 * 60 * 60, 6 * 60 * 60);
-        $bounceTask->scheduledAt = Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond((36 * 60 * 60) + $randomOffset);
-        $bounceTask->save();
-      }
-    }
   }
 
   public static function getScheduledQueues() {
