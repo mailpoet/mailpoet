@@ -106,12 +106,26 @@ class FormTest extends \MailPoetTest {
           'id' => 2,
         ],
         [
+          'type' => 'columns',
+          'body' => [
+            [
+              'type' => 'column',
+              'body' => [
+                [
+                  'type' => 'text',
+                  'id' => 3,
+                ],
+              ],
+            ],
+          ],
+        ],
+        [
           'type' => 'submit',
           'id' => 'submit',
         ],
       ],
     ]);
-    expect($form->getFieldList())->equals(['email', 'cf_2']);
+    expect($form->getFieldList())->equals(['email', 'cf_2', 'cf_3']);
   }
 
   public function testItUpdatesSuccessMessagesWhenConfirmationIsDisabled() {
