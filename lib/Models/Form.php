@@ -43,22 +43,33 @@ class Form extends Model {
     return parent::save();
   }
 
-  public function getFieldList() {
-    $body = $this->getBody();
+  public function getFieldList(array $body = null) {
+    $body = $body ?? $this->getBody();
     if (empty($body)) {
       return false;
     }
 
     $skippedTypes = ['html', 'divider', 'submit'];
+    $nestedTypes = ['column', 'columns'];
     $fields = [];
 
     foreach ((array)$body as $field) {
+      if (!empty($field['type'])
+        && in_array($field['type'], $nestedTypes)
+        && !empty($field['body'])
+      ) {
+        $nestedFields = $this->getFieldList($field['body']);
+        $fields = array_merge($fields, $nestedFields);
+        continue;
+      }
+
       if (empty($field['id'])
         || empty($field['type'])
         || in_array($field['type'], $skippedTypes)
       ) {
         continue;
       }
+
       if ($field['id'] > 0) {
         $fields[] = 'cf_' . $field['id'];
       } else {
