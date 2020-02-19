@@ -596,22 +596,6 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler->process();
   }
 
-  public function testItReSchedulesBounceTask() {
-    $task = ScheduledTask::createOrUpdate([
-      'type' => 'bounce',
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMonths(1),
-    ]);
-    $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_DRAFT);
-    $queue = $this->_createQueue($newsletter->id);
-    $finder = $this->makeEmpty(SubscribersFinder::class);
-    $scheduler = new Scheduler($finder, $this->loggerFactory, $this->cronHelper);
-
-    $scheduler->processScheduledStandardNewsletter($newsletter, $queue);
-    $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
-    expect($refetchedTask->scheduledAt)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(42));
-  }
-
   public function testItDoesNotReSchedulesBounceTaskWhenSoon() {
     $task = ScheduledTask::createOrUpdate([
       'type' => 'bounce',

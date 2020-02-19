@@ -830,6 +830,55 @@ class SendingQueueTest extends \MailPoetTest {
     $wp->removeFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
   }
 
+  public function testItReschedulesBounceTaskWhenPlannedInFarFuture() {
+    $task = ScheduledTask::createOrUpdate([
+      'type' => 'bounce',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMonths(1),
+    ]);
+
+    $sendingQueueWorker = new SendingQueueWorker(
+      $this->sendingErrorHandler,
+      $this->statsNotificationsWorker,
+      $this->loggerFactory,
+      Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
+      $this->cronHelper,
+      $this->make(new MailerTask(), [
+        'send' => $this->mailerTaskDummyResponse,
+      ])
+    );
+    $sendingQueueWorker->process();
+
+    $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
+    assert($refetchedTask instanceof ScheduledTask); // PHPStan
+    expect($refetchedTask->scheduledAt)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(42));
+  }
+
+  public function testDoesNoRescheduleBounceTaskWhenPlannedInNearFuture() {
+    $inOneHour = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1);
+    $task = ScheduledTask::createOrUpdate([
+      'type' => 'bounce',
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'scheduled_at' => $inOneHour,
+    ]);
+
+    $sendingQueueWorker = new SendingQueueWorker(
+      $this->sendingErrorHandler,
+      $this->statsNotificationsWorker,
+      $this->loggerFactory,
+      Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
+      $this->cronHelper,
+      $this->make(new MailerTask(), [
+        'send' => $this->mailerTaskDummyResponse,
+      ])
+    );
+    $sendingQueueWorker->process();
+
+    $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
+    assert($refetchedTask instanceof ScheduledTask); // PHPStan
+    expect($refetchedTask->scheduledAt)->equals($inOneHour);
+  }
+
   public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);

@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers\SendingQueue;
 
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
@@ -11,6 +12,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTask as ScheduledTaskModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
@@ -19,6 +21,7 @@ use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 use function MailPoetVendor\array_column;
 
@@ -142,6 +145,10 @@ class SendingQueue {
           'before queue chunk processing',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId, 'found_subscribers_count' => count($foundSubscribers)]
         );
+
+        // reschedule bounce task to run sooner, if needed
+        $this->reScheduleBounceTask();
+
         $queue = $this->processQueue(
           $queue,
           $_newsletter,
@@ -310,5 +317,17 @@ class SendingQueue {
 
   public static function getRunningQueues() {
     return SendingTask::getRunningQueues(self::TASK_BATCH_SIZE);
+  }
+
+  private function reScheduleBounceTask() {
+    $bounceTasks = ScheduledTask::findFutureScheduledByType(Bounce::TASK_TYPE);
+    if (count($bounceTasks)) {
+      $bounceTask = reset($bounceTasks);
+      if (Carbon::createFromTimestamp((int)current_time('timestamp'))->addHour(42)->lessThan($bounceTask->scheduledAt)) {
+        $randomOffset = rand(-6 * 60 * 60, 6 * 60 * 60);
+        $bounceTask->scheduledAt = Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond((36 * 60 * 60) + $randomOffset);
+        $bounceTask->save();
+      }
+    }
   }
 }
