@@ -17,6 +17,21 @@ const formatApiErrorMessage = (response) => {
   return errorMessage;
 };
 
+const findBlock = (blocks, name) => (
+  blocks.reduce((result, block) => {
+    if (result) {
+      return result;
+    }
+    if (block.name === name) {
+      return block;
+    }
+    if (Array.isArray(block.innerBlocks) && block.innerBlocks.length) {
+      return findBlock(block.innerBlocks, name);
+    }
+    return null;
+  }, null)
+);
+
 export default {
   SAVE_FORM() {
     if (select('mailpoet-form-editor').getIsFormSaving()) {
@@ -136,8 +151,8 @@ export default {
   BLOCKS_CHANGED_IN_BLOCK_EDITOR(actionData) {
     const newBlocks = actionData.blocks;
     // Check if both required inputs are present
-    const emailInput = newBlocks.find((block) => block.name === 'mailpoet-form/email-input');
-    const submitInput = newBlocks.find((block) => block.name === 'mailpoet-form/submit-button');
+    const emailInput = findBlock(newBlocks, 'mailpoet-form/email-input');
+    const submitInput = findBlock(newBlocks, 'mailpoet-form/submit-button');
     if (emailInput && submitInput) {
       dispatch('mailpoet-form-editor').changeFormBlocks(newBlocks);
       return;
@@ -147,14 +162,14 @@ export default {
     const currentBlocks = select('mailpoet-form-editor').getFormBlocks();
     const fixedBlocks = [...newBlocks];
     if (!emailInput) {
-      let currentEmailInput = currentBlocks.find((block) => block.name === 'mailpoet-form/email-input');
+      let currentEmailInput = findBlock(currentBlocks, 'mailpoet-form/email-input');
       if (!currentEmailInput) {
         currentEmailInput = createBlock('mailpoet-form/email-input');
       }
       fixedBlocks.unshift(currentEmailInput);
     }
     if (!submitInput) {
-      let currentSubmit = currentBlocks.find((block) => block.name === 'mailpoet-form/submit-button');
+      let currentSubmit = findBlock(currentBlocks, 'mailpoet-form/submit-button');
       if (!currentSubmit) {
         currentSubmit = createBlock('mailpoet-form/submit-button');
       }
