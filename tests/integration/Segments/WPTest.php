@@ -14,7 +14,6 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class WPTest extends \MailPoetTest {
-
   private $userIds = [];
 
   /** @var SettingsController */
@@ -43,17 +42,12 @@ class WPTest extends \MailPoetTest {
   }
 
   public function testSynchronizeUserStatusIsUnconfirmedForNewUserWithSignUpConfirmationEnabled() {
-    $this->settings->set('sender', [
-      'address' => 'sender@mailpoet.com',
-      'name' => 'Sender',
-    ]);
     $this->settings->set('signup_confirmation', ['enabled' => '1']);
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
     WP::synchronizeUser($id);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
-    expect($wpSubscriber->countConfirmations)->equals(1);
   }
 
   public function testSynchronizeUsersStatusIsSubscribedForNewUsersWithSignUpConfirmationDisabled() {
@@ -76,6 +70,43 @@ class WPTest extends \MailPoetTest {
     expect(count($subscribers))->equals(2);
     expect($subscribers[0]->status)->equals(Subscriber::STATUS_UNCONFIRMED);
     expect($subscribers[1]->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+  }
+
+  public function testItSendsConfirmationEmailWhenSignupConfirmationAndSubscribeOnRegisterEnabled() {
+    $this->settings->set('sender', [
+      'address' => 'sender@mailpoet.com',
+      'name' => 'Sender',
+    ]);
+
+    // signup confirmation enabled, subscribe on-register enabled
+    $this->settings->set('signup_confirmation.enabled', '1');
+    $this->settings->set('subscribe.on_register.enabled', '1');
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    WP::synchronizeUser($id);
+    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
+    expect($wpSubscriber->countConfirmations)->equals(1);
+    expect($wpSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+
+    // signup confirmation disabled, subscribe on-register enabled
+    $this->settings->set('signup_confirmation.enabled', '0');
+    $this->settings->set('subscribe.on_register.enabled', '1');
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    WP::synchronizeUser($id);
+    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
+    expect($wpSubscriber->countConfirmations)->equals(0);
+    expect($wpSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+
+    // signup confirmation enaled, subscribe on-register disabled
+    $this->settings->set('signup_confirmation.enabled', '1');
+    $this->settings->set('subscribe.on_register.enabled', '0');
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    WP::synchronizeUser($id);
+    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
+    expect($wpSubscriber->countConfirmations)->equals(0);
+    expect($wpSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
   public function testItSynchronizeNewUsers() {
