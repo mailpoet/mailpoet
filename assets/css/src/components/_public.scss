@@ -61,23 +61,35 @@
 }
 
 // Form columns
+$form-columns-space-between: 30px;
+$form-columns-padding-vertical: 20px;
+$form-columns-padding-horizontal: 20px;
+$form-break-small-width: 500px;
+
 .mailpoet_form_columns {
   display: flex;
+  flex-wrap: nowrap;
 
   // Alignment settings
   &.mailpoet_vertically_align_top {
     align-items: flex-start;
   }
+
   &.mailpoet_vertically_align_center {
     align-items: flex-start;
   }
+
   &.mailpoet_vertically_align_bottom {
     align-items: flex-start;
+  }
+
+  @media (max-width: #{ ($form-break-small-width - 1) }) {
+    flex-wrap: wrap;
   }
 }
 
 .mailpoet_column_has_background {
-  padding: 20px 30px;
+  padding: $form-columns-padding-vertical $form-columns-padding-horizontal;
 }
 
 .mailpoet_form_column {
@@ -85,9 +97,10 @@
   flex-direction: column;
 
   &:not(:first-child) {
-    margin-left: 30px;
+    margin-left: $form-columns-space-between;
   }
 
+  // Alignment
   &.mailpoet_vertically_align_top {
     align-self: flex-start;
   }
@@ -98,5 +111,14 @@
 
   &.mailpoet_vertically_align_bottom {
     align-self: flex-end;
+  }
+
+  @media (max-width: #{ ($form-break-small-width - 1) }) {
+    // This must be important since the Column assigns its own width as an inline style.
+    flex-basis: 100% !important;
+
+    &:not(:first-child) {
+      margin-left: 0;
+    }
   }
 }
