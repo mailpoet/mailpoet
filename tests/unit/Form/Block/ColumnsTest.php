@@ -27,7 +27,7 @@ class ColumnsTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderColumns() {
     $html = $this->columns->render($this->block, 'content');
-    expect($html)->equals('<div class="mailpoet_form_columns">content</div>');
+    expect($html)->equals('<div class="mailpoet_form_columns mailpoet_paragraph">content</div>');
   }
 
   public function testItShouldRenderVerticalAlignClass() {
@@ -82,7 +82,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $block = $this->block;
     $block['params']['custom_text_color'] = '#ffffee';
     $html = $this->columns->render($block, 'content');
-    $columns = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_columns"]');
+    $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
     expect($style->textContent)->contains('color:#ffffee;');
   }

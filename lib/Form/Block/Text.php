@@ -19,7 +19,7 @@ class Text {
       $automationId = 'data-automation-id="form_email" ';
     }
 
-    $html = '<p class="mailpoet_paragraph">';
+    $html = '<div class="mailpoet_paragraph">';
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
@@ -41,7 +41,7 @@ class Text {
 
     $html .= '/>';
 
-    $html .= '</p>';
+    $html .= '</div>';
 
     return $html;
   }

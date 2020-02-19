@@ -65,6 +65,11 @@ $form-columns-space-between: 30px;
 $form-columns-padding-vertical: 20px;
 $form-columns-padding-horizontal: 20px;
 $form-break-small-width: 500px;
+$form-block-margin: 20px;
+
+.mailpoet_paragraph {
+  margin-bottom: $form-block-margin;
+}
 
 @mixin maxWidthColumns() {
   flex-wrap: wrap;

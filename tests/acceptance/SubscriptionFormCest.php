@@ -117,6 +117,7 @@ class SubscriptionFormCest {
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
     $i->amOnPage('/form-test');
+    $i->scrollTo('.mailpoet_form_iframe');
     $i->switchToIframe('mailpoet_form_iframe');
     $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
     $i->click('.mailpoet_submit');

@@ -29,20 +29,20 @@ class HtmlTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderCustomHtml() {
     $html = $this->html->render($this->block, []);
-    expect($html)->equals("<p class=\"mailpoet_paragraph\" >line1<br />\nline2</p>");
+    expect($html)->equals("<div class=\"mailpoet_paragraph\" >line1<br />\nline2</div>");
   }
 
   public function testItShouldRenderCustomHtmlWithoutAutomaticBrs() {
     $block = $this->block;
     $block['params']['nl2br'] = '';
     $html = $this->html->render($block, []);
-    expect($html)->equals("<p class=\"mailpoet_paragraph\" >line1\nline2</p>");
+    expect($html)->equals("<div class=\"mailpoet_paragraph\" >line1\nline2</div>");
   }
 
   public function testItShouldNotEscapeHtml() {
     $block = $this->block;
     $block['params']['text'] = '<p class="my-p">Hello</p>';
     $html = $this->html->render($block, []);
-    expect($html)->equals("<p class=\"mailpoet_paragraph\" ><p class=\"my-p\">Hello</p></p>");
+    expect($html)->equals("<div class=\"mailpoet_paragraph\" ><p class=\"my-p\">Hello</p></div>");
   }
 }

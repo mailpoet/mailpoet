@@ -14,6 +14,7 @@ class Styles {
 /* paragraphs (label + input) */
 .mailpoet_paragraph {
   line-height:20px;
+  margin-bottom: 20px;
 }
 
 /* labels */

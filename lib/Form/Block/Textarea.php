@@ -13,7 +13,7 @@ class Textarea {
   public function render(array $block, array $formSettings): string {
     $html = '';
 
-    $html .= '<p class="mailpoet_paragraph">';
+    $html .= '<div class="mailpoet_paragraph">';
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
@@ -31,7 +31,7 @@ class Textarea {
 
     $html .= '>' . $this->rendererHelper->getFieldValue($block) . '</textarea>';
 
-    $html .= '</p>';
+    $html .= '</div>';
 
     return $html;
   }

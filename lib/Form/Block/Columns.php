@@ -22,7 +22,7 @@ class Columns {
   }
 
   private function getClass(array $params): string {
-    $classes = ['mailpoet_form_columns'];
+    $classes = ['mailpoet_form_columns mailpoet_paragraph'];
     if (!empty($params['vertical_alignment'])) {
       $classes[] = "mailpoet_vertically_align_{$params['vertical_alignment']}";
     }

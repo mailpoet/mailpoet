@@ -22,7 +22,8 @@ class Select {
 
     $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
     $automationId = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
-    $html .= '<p class="mailpoet_paragraph">';
+
+    $html .= '<div class="mailpoet_paragraph">';
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
     $html .= '<select class="mailpoet_select" name="' . $fieldName . '" ' . $automationId . '>';
 
@@ -70,7 +71,7 @@ class Select {
     }
     $html .= '</select>';
 
-    $html .= '</p>';
+    $html .= '</div>';
 
     return $html;
   }

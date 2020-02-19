@@ -13,10 +13,10 @@ class Date {
 
   public function render(array $block, array $formSettings): string {
     $html = '';
-    $html .= '<p class="mailpoet_paragraph">';
+    $html .= '<div class="mailpoet_paragraph">';
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
     $html .= $this->renderDateSelect($block);
-    $html .= '</p>';
+    $html .= '</div>';
 
     return $html;
   }
