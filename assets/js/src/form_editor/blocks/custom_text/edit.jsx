@@ -86,7 +86,6 @@ const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
       className="mailpoet_text"
       type="text"
       name="custom_text"
-      disabled
       placeholder={placeholder}
       data-automation-id="editor_custom_text_input"
     />
