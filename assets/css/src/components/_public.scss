@@ -85,6 +85,10 @@ $form-break-small-width: 500px;
 
   @media (max-width: #{ ($form-break-small-width - 1) }) {
     flex-wrap: wrap;
+
+    .mailpoet_form_column:last-child .mailpoet_paragraph:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -111,6 +115,12 @@ $form-break-small-width: 500px;
 
   &.mailpoet_vertically_align_bottom {
     align-self: flex-end;
+  }
+
+  @media (min-width: $form-break-small-width) {
+    .mailpoet_paragraph:last-child {
+      margin-bottom: 0;
+    }
   }
 
   @media (max-width: #{ ($form-break-small-width - 1) }) {
