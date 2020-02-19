@@ -41,7 +41,10 @@ jQuery(function ($) { // eslint-disable-line func-names
     // setup form validation
     $('form.mailpoet_form').each(function () { // eslint-disable-line func-names
       var form = $(this);
-
+      // Detect form is placed in tight container
+      if (form.width() < 500) {
+        form.addClass('mailpoet_form_tight_container');
+      }
       form.parsley().on('form:validated', function () { // eslint-disable-line func-names
         // clear messages
         form.find('.mailpoet_message > p').hide();

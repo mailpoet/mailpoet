@@ -66,6 +66,23 @@ $form-columns-padding-vertical: 20px;
 $form-columns-padding-horizontal: 20px;
 $form-break-small-width: 500px;
 
+@mixin maxWidthColumns() {
+  flex-wrap: wrap;
+
+  .mailpoet_form_column:last-child .mailpoet_paragraph:last-child {
+    margin-bottom: 0;
+  }
+}
+
+@mixin maxWidthColumn() {
+  // This must be important since the Column assigns its own width as an inline style.
+  flex-basis: 100% !important;
+
+  &:not(:first-child) {
+    margin-left: 0;
+  }
+}
+
 .mailpoet_form_columns {
   display: flex;
   flex-wrap: nowrap;
@@ -84,11 +101,11 @@ $form-break-small-width: 500px;
   }
 
   @media (max-width: #{ ($form-break-small-width - 1) }) {
-    flex-wrap: wrap;
+    @include maxWidthColumns;
+  }
 
-    .mailpoet_form_column:last-child .mailpoet_paragraph:last-child {
-      margin-bottom: 0;
-    }
+  .mailpoet_form_tight_container & {
+    @include maxWidthColumns;
   }
 }
 
@@ -118,17 +135,16 @@ $form-break-small-width: 500px;
   }
 
   @media (min-width: $form-break-small-width) {
-    .mailpoet_paragraph:last-child {
+    .mailpoet_form_form:not(.mailpoet_form_tight_container) & .mailpoet_paragraph:last-child {
       margin-bottom: 0;
     }
   }
 
   @media (max-width: #{ ($form-break-small-width - 1) }) {
-    // This must be important since the Column assigns its own width as an inline style.
-    flex-basis: 100% !important;
+    @include maxWidthColumn;
+  }
 
-    &:not(:first-child) {
-      margin-left: 0;
-    }
+  .mailpoet_form_tight_container & {
+    @include maxWidthColumn;
   }
 }
