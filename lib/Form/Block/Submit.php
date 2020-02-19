@@ -14,7 +14,7 @@ class Submit {
   public function render(array $block): string {
     $html = '';
 
-    $html .= '<p class="mailpoet_paragraph"><input type="submit" class="mailpoet_submit" ';
+    $html .= '<div class="mailpoet_paragraph"><input type="submit" class="mailpoet_submit" ';
 
     $html .= 'value="' . $this->rendererHelper->getFieldLabel($block) . '" ';
 
@@ -24,7 +24,7 @@ class Submit {
 
     $html .= '<span class="mailpoet_form_loading"><span class="mailpoet_bounce1"></span><span class="mailpoet_bounce2"></span><span class="mailpoet_bounce3"></span></span>';
 
-    $html .= '</p>';
+    $html .= '</div>';
 
     return $html;
   }
