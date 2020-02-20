@@ -409,4 +409,14 @@ class AcceptanceTester extends \Codeception\Actor {
   public function cliToString(array $userCommand) {
     return $this->_cliToString($userCommand);
   }
+
+  /**
+   * Creates post and returns its URL
+   */
+  public function createPost(string $title, string $body): string {
+    $post = $this->cliToArray(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=post', '--post_title="' . $title . '"', '--post_content="' . $body . '"']);
+    $postData = $this->cliToArray(['post', 'get', $post[0], '--format=json']);
+    $postData = json_decode($postData[0], true);
+    return $postData['guid'];
+  }
 }
