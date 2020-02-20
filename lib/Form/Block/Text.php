@@ -16,7 +16,10 @@ class Text {
     $automationId = ' ';
     if ($block['id'] === 'email') {
       $type = 'email';
-      $automationId = 'data-automation-id="form_email" ';
+    }
+
+    if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
+      $automationId = 'data-automation-id="form_' . $block['id'] . '" ';
     }
 
     $html = '<div class="mailpoet_paragraph">';

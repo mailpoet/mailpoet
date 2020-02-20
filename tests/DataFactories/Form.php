@@ -54,6 +54,14 @@ class Form {
     return $this;
   }
 
+  /**
+   * @return $this
+   */
+  public function withDisplayBelowPosts() {
+    $this->data['settings']['place_form_bellow_all_posts'] = '1';
+    return $this;
+  }
+
   /** @return \MailPoet\Models\Form */
   public function create() {
     return FormModel::createOrUpdate($this->data);
