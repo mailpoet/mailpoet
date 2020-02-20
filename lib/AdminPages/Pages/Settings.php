@@ -61,7 +61,6 @@ class Settings {
 
   public function render() {
     $settings = $this->settings->getAll();
-    $flags = $this->getFlags();
 
     $premiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
     // force MSS key check even if the method isn't active
@@ -78,7 +77,6 @@ class Settings {
       'mss_key_valid' => !empty($mpApiKeyValid),
       'members_plugin_active' => $this->wp->isPluginActive('members/members.php'),
       'pages' => Pages::getAll(),
-      'flags' => $flags,
       'current_user' => $this->wp->wpGetCurrentUser(),
       'linux_cron_path' => dirname(dirname(dirname(__DIR__))),
       'is_woocommerce_active' => $this->woocommerceHelper->isWooCommerceActive(),
@@ -102,30 +100,5 @@ class Settings {
       $notice->displayWPNotice();
     }
     $this->pageRenderer->displayPage('settings.html', $data);
-  }
-
-  private function getFlags() {
-    // flags (available features on WP install)
-    $flags = [];
-    if ($this->wp->isMultisite()) {
-      // get multisite registration option
-      $registration = $this->wp->applyFilters(
-        'wpmu_registration_enabled',
-        $this->wp->getSiteOption('registration', 'all')
-      );
-
-      // check if users can register
-      $flags['registration_enabled'] =
-        !(in_array($registration, [
-          'none',
-          'blog',
-        ]));
-    } else {
-      // check if users can register
-      $flags['registration_enabled'] =
-        (bool)$this->wp->getOption('users_can_register', false);
-    }
-
-    return $flags;
   }
 }

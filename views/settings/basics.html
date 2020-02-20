@@ -122,60 +122,54 @@
         </p>
       </th>
       <td>
-        <% if(flags.registration_enabled == true) %>
+        <p>
+          <input
+            data-toggle="mailpoet_subscribe_in_form"
+            type="checkbox"
+            value="1"
+            id="settings[subscribe_on_register]"
+            name="subscribe[on_register][enabled]"
+            <% if(settings.subscribe.on_register.enabled) %>
+              checked="checked"
+            <% endif %>
+          />
+        </p>
+
+        <div id="mailpoet_subscribe_in_form">
           <p>
             <input
-              data-toggle="mailpoet_subscribe_in_form"
-              type="checkbox"
-              value="1"
-              id="settings[subscribe_on_register]"
-              name="subscribe[on_register][enabled]"
-              <% if(settings.subscribe.on_register.enabled) %>
-                checked="checked"
+              type="text"
+              id="settings[subscribe_on_register_label]"
+              name="subscribe[on_register][label]"
+              class="regular-text"
+              <% if(settings.subscribe.on_register.label) %>
+                value="<%= settings.subscribe.on_register.label %>"
+              <% else %>
+                value="<%= __('Yes, add me to your mailing list') %>"
               <% endif %>
             />
           </p>
-
-          <div id="mailpoet_subscribe_in_form">
-            <p>
-              <input
-                type="text"
-                id="settings[subscribe_on_register_label]"
-                name="subscribe[on_register][label]"
-                class="regular-text"
-                <% if(settings.subscribe.on_register.label) %>
-                  value="<%= settings.subscribe.on_register.label %>"
-                <% else %>
-                  value="<%= __('Yes, add me to your mailing list') %>"
-                <% endif %>
-              />
-            </p>
-            <p>
-              <label><%= __('Users will be subscribed to these lists:') %></label>
-            </p>
-            <p>
-              <select
-                id="mailpoet_subscribe_on_register_segments"
-                name="subscribe[on_register][segments][]"
-                data-placeholder="<%= __('Choose a list') %>"
-                multiple
-              >
-                <% for segment in segments %>
-                  <option
-                    value="<%= segment.id %>"
-                    <% if(segment.id in settings.subscribe.on_register.segments) %>
-                      selected="selected"
-                    <% endif %>
-                  ><%= segment.name %> (<%= segment.subscribers %>)</option>
-                <% endfor %>
-              </select>
-            </p>
-          </div>
-        <% else %>
           <p>
-            <em><%= __('Registration is disabled on this site.') %></em>
+            <label><%= __('Users will be subscribed to these lists:') %></label>
           </p>
-        <% endif %>
+          <p>
+            <select
+              id="mailpoet_subscribe_on_register_segments"
+              name="subscribe[on_register][segments][]"
+              data-placeholder="<%= __('Choose a list') %>"
+              multiple
+            >
+              <% for segment in segments %>
+                <option
+                  value="<%= segment.id %>"
+                  <% if(segment.id in settings.subscribe.on_register.segments) %>
+                    selected="selected"
+                  <% endif %>
+                ><%= segment.name %> (<%= segment.subscribers %>)</option>
+              <% endfor %>
+            </select>
+          </p>
+        </div>
       </td>
     </tr>
     <!-- edit subscription-->
