@@ -1,7 +1,7 @@
 import React from 'react';
-import getFeaturesContext from './getFeaturesContext.jsx';
-import getSegmentsContext from './getSegmentsContext.jsx';
-import getUsersContext from './getUsersContext.jsx';
+import useFeaturesContext from './useFeaturesContext.jsx';
+import useSegmentsContext from './useSegmentsContext.jsx';
+import useUsersContext from './useUsersContext.jsx';
 import useNotices from './useNotices.jsx';
 
 /**
@@ -10,9 +10,9 @@ import useNotices from './useNotices.jsx';
  * some React hooks to build some parts of the context.
  */
 export function useGlobalContextValue(data) {
-  const features = getFeaturesContext(data);
-  const segments = getSegmentsContext(data);
-  const users = getUsersContext(data);
+  const features = useFeaturesContext(data);
+  const segments = useSegmentsContext(data);
+  const users = useUsersContext(data);
   const notices = useNotices();
   return {
     features, segments, users, notices,
