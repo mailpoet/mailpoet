@@ -1,21 +1,24 @@
 import React from 'react';
 
 export default () => {
-  const [items, setItems] = React.useState([]);
-  const [nextId, setNextId] = React.useState(1);
-
-  const getNextId = React.useCallback(() => {
-    setNextId((x) => x + 1);
-    return nextId;
-  }, [nextId]);
+  const [state, setState] = React.useState({
+    items: [],
+    nextId: 1,
+  });
 
   const add = React.useCallback((item) => {
-    setItems((xs) => [...xs, { ...item, id: item.id || getNextId() }]);
-  }, [getNextId]);
+    setState(({ items, nextId }) => ({
+      items: [...items, { ...item, id: item.id || nextId }],
+      nextId: item.id ? nextId : nextId + 1,
+    }));
+  }, [setState]);
 
   const remove = React.useCallback((id) => {
-    setItems((xs) => xs.filter((x) => x.id !== id));
-  }, []);
+    setState(({ items, nextId }) => ({
+      items: items.filter((x) => x.id !== id),
+      nextId,
+    }));
+  }, [setState]);
 
   const success = React.useCallback(
     (content, props = {}) => add({ ...props, type: 'success', children: content }),
@@ -35,6 +38,6 @@ export default () => {
   );
 
   return {
-    items, success, info, warning, error, remove,
+    items: state.items, success, info, warning, error, remove,
   };
 };
