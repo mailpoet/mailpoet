@@ -44,6 +44,7 @@ $icon-button-size: 36px;
   width: 100%;
 
   // Centered on desktops
+
   @media screen and (min-width: 600px) {
     // Animate the modal frame/contents appearing on the page.
     animation: mailpoet-modal-appear-animation .1s ease-out;
