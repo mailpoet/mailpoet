@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   ColorIndicator,
   ColorPalette,
@@ -7,10 +7,20 @@ import {
 } from '@wordpress/components';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 const BasicSettingsPanel = ({ onToggle, isOpened }) => {
-  const [selectedColor, setSelectedColor] = useState(undefined);
+  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+  const settings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
+    []
+  );
+  const setBackgroundColor = (color) => {
+    changeFormSettings({
+      ...settings,
+      backgroundColor: color,
+    });
+  };
   const settingsColors = useSelect(
     (select) => {
       const { getSettings } = select('core/block-editor');
@@ -25,17 +35,17 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
           <span className="components-base-control__label">
             {MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
             {
-              selectedColor !== undefined
+              settings.backgroundColor !== undefined
               && (
                 <ColorIndicator
-                  colorValue={selectedColor}
+                  colorValue={settings.backgroundColor}
                 />
               )
             }
           </span>
           <ColorPalette
-            value={selectedColor}
-            onChange={setSelectedColor}
+            value={settings.backgroundColor}
+            onChange={setBackgroundColor}
             colors={settingsColors}
           />
         </div>
