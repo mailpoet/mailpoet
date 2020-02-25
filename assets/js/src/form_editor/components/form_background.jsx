@@ -3,15 +3,18 @@ import PropTypes from 'prop-types';
 import { useSelect } from '@wordpress/data';
 
 const FormBackground = ({ children }) => {
-  const backgroundColor = useSelect(
+  const { fontColor, backgroundColor } = useSelect(
     (select) => {
       const settings = select('mailpoet-form-editor').getFormSettings();
-      return settings.backgroundColor;
+      return {
+        backgroundColor: settings.backgroundColor,
+        fontColor: settings.fontColor,
+      };
     },
     []
   );
   return (
-    <div style={{ backgroundColor }}>
+    <div style={{ backgroundColor, color: fontColor }}>
       {children}
     </div>
   );

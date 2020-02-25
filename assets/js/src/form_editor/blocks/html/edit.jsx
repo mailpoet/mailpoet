@@ -10,10 +10,18 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { debounce } from 'lodash';
+import { useSelect } from '@wordpress/data';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 
 const CustomHtmlEdit = ({ attributes, setAttributes }) => {
+  const fontColor = useSelect(
+    (select) => {
+      const settings = select('mailpoet-form-editor').getFormSettings();
+      return settings.fontColor;
+    },
+    []
+  );
   const [renderedContent, setRenderedContent] = useState(attributes.content);
   const setRenderedContentDebounced = useCallback(debounce((content) => {
     setRenderedContent(content);
@@ -46,6 +54,7 @@ const CustomHtmlEdit = ({ attributes, setAttributes }) => {
     </InspectorControls>
   );
   const styles = attributes.nl2br ? ['body { white-space: pre-line; }'] : [];
+  styles.push(` body {color: ${fontColor} `);
   const key = `${renderedContent}_${styles}`;
   return (
     <ParagraphEdit>
