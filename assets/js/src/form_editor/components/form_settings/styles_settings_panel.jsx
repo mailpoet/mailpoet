@@ -4,6 +4,7 @@ import {
   ColorPalette,
   Panel,
   PanelBody,
+  ToggleControl,
 } from '@wordpress/components';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
@@ -21,6 +22,12 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
       backgroundColor: color,
     });
   };
+  const setFontColor = (color) => {
+    changeFormSettings({
+      ...settings,
+      fontColor: color,
+    });
+  };
   const settingsColors = useSelect(
     (select) => {
       const { getSettings } = select('core/block-editor');
@@ -31,7 +38,8 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   return (
     <Panel>
       <PanelBody title={MailPoet.I18n.t('formSettingsStyles')} opened={isOpened} onToggle={onToggle}>
-        <div className="block-editor-panel-color-gradient-settings">
+
+        <div className="block-editor-panel-color-gradient-settings components-base-control">
           <span className="components-base-control__label">
             {MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
             {
@@ -49,6 +57,33 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             colors={settingsColors}
           />
         </div>
+
+        <div className="block-editor-panel-color-gradient-settings components-base-control">
+          <span className="components-base-control__label">
+            {MailPoet.I18n.t('formSettingsStylesFontColor')}
+            {
+              settings.fontColor !== undefined
+              && (
+                <ColorIndicator
+                  colorValue={settings.fontColor}
+                />
+              )
+            }
+          </span>
+          <ToggleControl
+            label={MailPoet.I18n.t('formSettingsStylesFontColorInherit')}
+            checked={settings.fontColor === undefined}
+            onChange={(newValue) => {
+              if (newValue) setFontColor(undefined);
+            }}
+          />
+          <ColorPalette
+            value={settings.fontColor}
+            onChange={setFontColor}
+            colors={settingsColors}
+          />
+        </div>
+
       </PanelBody>
     </Panel>
   );
