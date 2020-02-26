@@ -3,7 +3,7 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
-import APIErrorsNotice from 'notices/api_errors_notice.jsx';
+import APIErrorsNotice from 'notices/api_errors_notice.tsx';
 
 const QueuePropType = PropTypes.shape({
   status: PropTypes.string,
