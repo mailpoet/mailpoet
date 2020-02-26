@@ -46,55 +46,60 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   );
   return (
     <Panel>
-      <PanelBody title={MailPoet.I18n.t('formSettingsStyles')} opened={isOpened} onToggle={onToggle}>
+      <PanelBody
+        title={MailPoet.I18n.t('formSettingsStyles')}
+        opened={isOpened}
+        onToggle={onToggle}
+      >
+        <div className="mailpoet-styles-settings">
+          <div>
+            <h3 className="mailpoet-styles-settings-heading">
+              {MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
+              {
+                settings.backgroundColor !== undefined
+                && (
+                  <ColorIndicator
+                    colorValue={settings.backgroundColor}
+                  />
+                )
+              }
+            </h3>
+            <ColorPalette
+              value={settings.backgroundColor}
+              onChange={setBackgroundColor}
+              colors={settingsColors}
+            />
+          </div>
 
-        <div className="block-editor-panel-color-gradient-settings components-base-control">
-          <span className="components-base-control__label">
-            {MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
-            {
-              settings.backgroundColor !== undefined
-              && (
-                <ColorIndicator
-                  colorValue={settings.backgroundColor}
-                />
-              )
-            }
-          </span>
-          <ColorPalette
-            value={settings.backgroundColor}
-            onChange={setBackgroundColor}
-            colors={settingsColors}
-          />
-        </div>
+          <div>
+            <h3 className="mailpoet-styles-settings-heading">
+              {MailPoet.I18n.t('formSettingsStylesFontColor')}
+              {
+                settings.fontColor !== undefined
+                && (
+                  <ColorIndicator
+                    colorValue={settings.fontColor}
+                  />
+                )
+              }
+            </h3>
+            <ColorPalette
+              value={settings.fontColor}
+              onChange={setFontColor}
+              colors={settingsColors}
+            />
+          </div>
 
-        <div className="block-editor-panel-color-gradient-settings components-base-control">
-          <span className="components-base-control__label">
-            {MailPoet.I18n.t('formSettingsStylesFontColor')}
-            {
-              settings.fontColor !== undefined
-              && (
-                <ColorIndicator
-                  colorValue={settings.fontColor}
-                />
-              )
-            }
-          </span>
-          <ColorPalette
-            value={settings.fontColor}
-            onChange={setFontColor}
-            colors={settingsColors}
-          />
-        </div>
-
-        <div className="components-base-control">
-          <span className="components-base-control__label">
-            {MailPoet.I18n.t('formSettingsStylesFontSize')}
-          </span>
-          <FontSizePicker
-            value={settings.fontSize}
-            onChange={setFontSize}
-            fontSizes={fontSizes}
-          />
+          <div>
+            <h3 className="mailpoet-styles-settings-heading">
+              {MailPoet.I18n.t('formSettingsStylesFontSize')}
+            </h3>
+            <FontSizePicker
+              value={settings.fontSize}
+              onChange={setFontSize}
+              fontSizes={fontSizes}
+            />
+          </div>
         </div>
       </PanelBody>
     </Panel>
