@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { FC } from 'react';
 import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
+import PropTypes, { InferProps } from 'prop-types';
 import MailPoet from 'mailpoet';
 
-const Notice = ({
+const propTypes = {
+  type: PropTypes.oneOf(['success', 'info', 'warning', 'error']).isRequired,
+  scroll: PropTypes.bool,
+  closable: PropTypes.bool,
+  renderInPlace: PropTypes.bool,
+  onDisplay: PropTypes.func,
+  onClose: PropTypes.func,
+  timeout: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf([false])]),
+  children: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element),
+  ]).isRequired,
+};
+
+const Notice: FC<InferProps<typeof propTypes>> = ({
   onClose,
   onDisplay,
   renderInPlace,
@@ -24,7 +39,7 @@ const Notice = ({
 
   React.useEffect(() => {
     if (timeout) {
-      timeoutRef.current = setTimeout(close, timeout);
+      timeoutRef.current = setTimeout(close, timeout as number);
     }
     return () => (timeoutRef.current ? clearTimeout(timeoutRef.current) : null);
   }, [close, timeout]);
@@ -61,20 +76,7 @@ const Notice = ({
     document.getElementById('mailpoet_notices')
   );
 };
-Notice.propTypes = {
-  type: PropTypes.oneOf(['success', 'info', 'warning', 'error']).isRequired,
-  scroll: PropTypes.bool,
-  closable: PropTypes.bool,
-  renderInPlace: PropTypes.bool,
-  onDisplay: PropTypes.func,
-  onClose: PropTypes.func,
-  timeout: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf([false])]),
-  children: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.element,
-    PropTypes.arrayOf(PropTypes.element),
-  ]).isRequired,
-};
+Notice.propTypes = propTypes;
 Notice.defaultProps = {
   timeout: 10000,
   scroll: false,
