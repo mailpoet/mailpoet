@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import PropTypes, { InferProps } from 'prop-types';
-import Notice from 'notices/notice.tsx';
+import Notice from 'notices/notice';
 
 const propTypes = {
   errors: PropTypes.arrayOf(PropTypes.shape({
