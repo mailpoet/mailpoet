@@ -11,7 +11,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
       return (<p className="mailpoet_error">{MailPoet.I18n.t('blockSegmentSelectNoLists')}</p>);
     }
     return attributes.values.map((value) => (
-      <label className="mailpoet_checkbox_label">
+      <label key={value.id} className="mailpoet_checkbox_label">
         <input
           type="checkbox"
           disabled

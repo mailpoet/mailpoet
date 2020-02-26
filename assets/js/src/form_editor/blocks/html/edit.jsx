@@ -15,10 +15,14 @@ import { useSelect } from '@wordpress/data';
 import ParagraphEdit from '../paragraph_edit.jsx';
 
 const CustomHtmlEdit = ({ attributes, setAttributes }) => {
-  const fontColor = useSelect(
+  const { fontColor, fontSize } = useSelect(
     (select) => {
       const settings = select('mailpoet-form-editor').getFormSettings();
-      return settings.fontColor;
+      return {
+        backgroundColor: settings.backgroundColor,
+        fontColor: settings.fontColor,
+        fontSize: settings.fontSize,
+      };
     },
     []
   );
@@ -54,7 +58,8 @@ const CustomHtmlEdit = ({ attributes, setAttributes }) => {
     </InspectorControls>
   );
   const styles = attributes.nl2br ? ['body { white-space: pre-line; }'] : [];
-  styles.push(` body {color: ${fontColor} `);
+  if (fontColor) styles.push(` body {color: ${fontColor};}`);
+  if (fontSize) styles.push(` body {font-size: ${fontSize}px }`);
   const key = `${renderedContent}_${styles}`;
   return (
     <ParagraphEdit>
