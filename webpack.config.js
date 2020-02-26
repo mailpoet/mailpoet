@@ -40,6 +40,7 @@ const baseConfig = {
       'node_modules',
       'assets/js/src',
     ],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       'handlebars': 'handlebars/dist/handlebars.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
