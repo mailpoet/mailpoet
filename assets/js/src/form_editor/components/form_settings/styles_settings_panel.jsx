@@ -4,7 +4,6 @@ import {
   ColorPalette,
   Panel,
   PanelBody,
-  ToggleControl,
 } from '@wordpress/components';
 import { FontSizePicker } from '@wordpress/block-editor';
 import MailPoet from 'mailpoet';
@@ -77,13 +76,6 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
               )
             }
           </span>
-          <ToggleControl
-            label={MailPoet.I18n.t('formSettingsStylesFontColorInherit')}
-            checked={settings.fontColor === undefined}
-            onChange={(newValue) => {
-              if (newValue) setFontColor(undefined);
-            }}
-          />
           <ColorPalette
             value={settings.fontColor}
             onChange={setFontColor}
