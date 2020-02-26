@@ -38,7 +38,7 @@ class Renderer {
   public function renderHTML(array $form = []): string {
     if (isset($form['body']) && !empty($form['body'])) {
       return $this->wrapForm(
-        $this->renderBlocks($form['body']),
+        $this->renderBlocks($form['body'], $form['settings']),
         $form['settings']
       );
     }
@@ -54,14 +54,14 @@ class Renderer {
     }
   }
 
-  public function renderBlocks(array $blocks = [], bool $honeypotEnabled = true): string {
+  public function renderBlocks(array $blocks = [], array $formSettings = [], bool $honeypotEnabled = true): string {
     // add honeypot for spambots
     $html = ($honeypotEnabled) ? $this->renderHoneypot() : '';
     foreach ($blocks as $key => $block) {
       if ($block['type'] == 'submit' && $this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
         $html .= $this->renderReCaptcha();
       }
-      $html .= $this->blocksRenderer->renderBlock($block) . PHP_EOL;
+      $html .= $this->blocksRenderer->renderBlock($block, $formSettings) . PHP_EOL;
     }
     return $html;
   }
@@ -101,10 +101,6 @@ class Renderer {
 
     if (isset($formSettings['fontColor'])) {
       $styles[] = 'color: ' . trim($formSettings['fontColor']);
-    }
-
-    if (isset($formSettings['fontSize'])) {
-      $styles[] = 'font-size: ' . trim($formSettings['fontSize']) . 'px';
     }
 
     if (empty($styles)) return $formBody;

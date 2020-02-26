@@ -49,7 +49,7 @@ class TextareaTest extends \MailPoetUnitTest {
     $this->rendererHelperMock->expects($this->once())->method('getInputModifiers')->willReturn(' modifiers="mod" ');
     $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('val');
 
-    $html = $this->textarea->render($this->block);
+    $html = $this->textarea->render($this->block, []);
     $textarea = $this->htmlParser->getElementByXpath($html, '//textarea');
     $name = $this->htmlParser->getAttribute($textarea, 'name');
     $validation = $this->htmlParser->getAttribute($textarea, 'validation');

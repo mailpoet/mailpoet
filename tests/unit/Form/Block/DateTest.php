@@ -48,7 +48,7 @@ class DateTest extends \MailPoetUnitTest {
     $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
     $this->baseMock->expects($this->any())->method('getInputValidation')->willReturn(' validation="1" ');
 
-    $html = $this->date->render($this->block);
+    $html = $this->date->render($this->block, []);
     $mothsSelect = $this->htmlParser->getElementByXpath($html, "//select", 0);
     $yearsSelect = $this->htmlParser->getElementByXpath($html, "//select", 1);
     expect($mothsSelect->childNodes->length)->equals(13); // Months + placeholder
@@ -73,7 +73,7 @@ class DateTest extends \MailPoetUnitTest {
     $block['params']['date_type'] = 'year_month_day';
     $block['params']['date_format'] = 'MM/DD/YYYY';
 
-    $html = $this->date->render($block);
+    $html = $this->date->render($block, []);
     $mothsSelect = $this->htmlParser->getElementByXpath($html, "//select", 0);
     $daysSelect = $this->htmlParser->getElementByXpath($html, "//select", 1);
     $yearsSelect = $this->htmlParser->getElementByXpath($html, "//select", 2);

@@ -3,7 +3,14 @@
 namespace MailPoet\Form\Block;
 
 class Html {
-  public function render(array $block): string {
+  /** @var BlockRendererHelper */
+  private $rendererHelper;
+
+  public function __construct(BlockRendererHelper $rendererHelper) {
+    $this->rendererHelper = $rendererHelper;
+  }
+
+  public function render(array $block, array $formSettings): string {
     $html = '';
     $text = '';
 
@@ -15,7 +22,7 @@ class Html {
       $text = nl2br($text);
     }
 
-    $html .= '<p class="mailpoet_paragraph">';
+    $html .= '<p class="mailpoet_paragraph" ' . $this->rendererHelper->renderFontStyle($formSettings) . '>';
     $html .= $text;
     $html .= '</p>';
 

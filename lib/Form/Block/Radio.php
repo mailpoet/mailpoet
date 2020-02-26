@@ -17,7 +17,7 @@ class Radio {
     $this->wp = $wp;
   }
 
-  public function render(array $block): string {
+  public function render(array $block, array $formSettings): string {
     $html = '';
 
     $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
@@ -25,7 +25,7 @@ class Radio {
 
     $html .= '<p class="mailpoet_paragraph">';
 
-    $html .= $this->rendererHelper->renderLabel($block);
+    $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
     $options = (!empty($block['params']['values'])
       ? $block['params']['values']
@@ -35,7 +35,9 @@ class Radio {
     $selectedValue = $this->rendererHelper->getFieldValue($block);
 
     foreach ($options as $option) {
-      $html .= '<label class="mailpoet_radio_label">';
+      $html .= '<label class="mailpoet_radio_label" '
+        . $this->rendererHelper->renderFontStyle($formSettings)
+        . '>';
 
       $html .= '<input type="radio" class="mailpoet_radio" ';
 

@@ -497,7 +497,7 @@ class Pages {
     $formHtml .= '</p>';
 
     // subscription form
-    $formHtml .= $this->formRenderer->renderBlocks($form, $honeypot = false);
+    $formHtml .= $this->formRenderer->renderBlocks($form, [], $honeypot = false);
     $formHtml .= '</form>';
     return $formHtml;
   }

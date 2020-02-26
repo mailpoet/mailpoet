@@ -115,7 +115,7 @@ class CaptchaRenderer {
     $formHtml .= '</p>';
 
     // subscription form
-    $formHtml .= $this->formRenderer->renderBlocks($form, $honeypot = false);
+    $formHtml .= $this->formRenderer->renderBlocks($form, [], $honeypot = false);
     $formHtml .= '</div>';
     $formHtml .= $this->renderFormMessages($formModel, $showSuccessMessage, $showErrorMessage);
     $formHtml .= '</form>';
