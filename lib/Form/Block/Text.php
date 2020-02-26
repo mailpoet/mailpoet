@@ -11,7 +11,7 @@ class Text {
     $this->rendererHelper = $rendererHelper;
   }
 
-  public function render(array $block): string {
+  public function render(array $block, array $formSettings): string {
     $type = 'text';
     $automationId = ' ';
     if ($block['id'] === 'email') {
@@ -21,7 +21,7 @@ class Text {
 
     $html = '<p class="mailpoet_paragraph">';
 
-    $html .= $this->rendererHelper->renderLabel($block);
+    $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
     $html .= '<input type="' . $type . '" class="mailpoet_text" ';
 

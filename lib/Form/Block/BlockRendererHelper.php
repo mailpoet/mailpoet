@@ -82,7 +82,7 @@ class BlockRendererHelper {
     return join(' ', $validation);
   }
 
-  public function renderLabel(array $block): string {
+  public function renderLabel(array $block, array $formSettings): string {
     $html = '';
     if (
       isset($block['params']['hide_label'])
@@ -98,7 +98,10 @@ class BlockRendererHelper {
     }
     if (isset($block['params']['label'])
       && strlen(trim($block['params']['label'])) > 0) {
-      $html .= '<label class="mailpoet_' . $block['type'] . '_label">';
+      $html .= '<label '
+        . 'class="mailpoet_' . $block['type'] . '_label" '
+        . $this->renderFontStyle($formSettings)
+        . '>';
       $html .= htmlspecialchars($block['params']['label']);
 
       if (isset($block['params']['required']) && $block['params']['required']) {
@@ -108,6 +111,13 @@ class BlockRendererHelper {
       $html .= '</label>';
     }
     return $html;
+  }
+
+  public function renderFontStyle(array $formSettings) {
+    if (isset($formSettings['fontSize'])) {
+      return 'style="font-size: ' . trim($formSettings['fontSize']) . 'px"';
+    }
+    return '';
   }
 
   public function renderInputPlaceholder(array $block): string {

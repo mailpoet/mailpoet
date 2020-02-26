@@ -59,7 +59,7 @@ class RadioTest extends \MailPoetUnitTest {
     $this->baseMock->expects($this->once())->method('getInputValidation')->willReturn(' validation="1" ');
     $this->baseMock->expects($this->once())->method('getFieldValue')->willReturn('Radio 2');
 
-    $html = $this->radio->render($this->block);
+    $html = $this->radio->render($this->block, []);
 
     $radio1 = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_radio_label']", 0);
     $radio2 = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_radio_label']", 1);

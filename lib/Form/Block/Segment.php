@@ -17,7 +17,7 @@ class Segment {
     $this->wp = $wp;
   }
 
-  public function render(array $block): string {
+  public function render(array $block, array $formSettings): string {
     $html = '';
 
     $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
@@ -25,7 +25,7 @@ class Segment {
 
     $html .= '<p class="mailpoet_paragraph">';
 
-    $html .= $this->rendererHelper->renderLabel($block);
+    $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
     $options = (!empty($block['params']['values'])
       ? $block['params']['values']
@@ -37,7 +37,9 @@ class Segment {
 
       $isChecked = (isset($option['is_checked']) && $option['is_checked']) ? 'checked="checked"' : '';
 
-      $html .= '<label class="mailpoet_checkbox_label">';
+      $html .= '<label class="mailpoet_checkbox_label" '
+        . $this->rendererHelper->renderFontStyle($formSettings)
+        . '>';
       $html .= '<input type="checkbox" class="mailpoet_checkbox" ';
       $html .= 'name="' . $fieldName . '[]" ';
       $html .= 'value="' . $option['id'] . '" ' . $isChecked . ' ';

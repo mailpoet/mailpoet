@@ -68,11 +68,11 @@ class BlocksRenderer {
     $this->textarea = $textarea;
   }
 
-  public function renderBlock(array $block = []): string {
+  public function renderBlock(array $block = [], array $formSettings): string {
     $html = '';
     switch ($block['type']) {
       case 'html':
-        $html .= $this->html->render($block);
+        $html .= $this->html->render($block, $formSettings);
         break;
 
       case 'divider':
@@ -80,31 +80,31 @@ class BlocksRenderer {
         break;
 
       case 'checkbox':
-        $html .= $this->checkbox->render($block);
+        $html .= $this->checkbox->render($block, $formSettings);
         break;
 
       case 'radio':
-        $html .= $this->radio->render($block);
+        $html .= $this->radio->render($block, $formSettings);
         break;
 
       case 'segment':
-        $html .= $this->segment->render($block);
+        $html .= $this->segment->render($block, $formSettings);
         break;
 
       case 'date':
-        $html .= $this->date->render($block);
+        $html .= $this->date->render($block, $formSettings);
         break;
 
       case 'select':
-        $html .= $this->select->render($block);
+        $html .= $this->select->render($block, $formSettings);
         break;
 
       case 'text':
-        $html .= $this->text->render($block);
+        $html .= $this->text->render($block, $formSettings);
         break;
 
       case 'textarea':
-        $html .= $this->textarea->render($block);
+        $html .= $this->textarea->render($block, $formSettings);
         break;
 
       case 'submit':

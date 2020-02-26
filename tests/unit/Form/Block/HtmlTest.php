@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Form\Block;
 
+use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Html;
 
 class HtmlTest extends \MailPoetUnitTest {
@@ -23,25 +24,25 @@ class HtmlTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->html = new Html();
+    $this->html = new Html($this->createMock(BlockRendererHelper::class));
   }
 
   public function testItShouldRenderCustomHtml() {
-    $html = $this->html->render($this->block);
-    expect($html)->equals("<p class=\"mailpoet_paragraph\">line1<br />\nline2</p>");
+    $html = $this->html->render($this->block, []);
+    expect($html)->equals("<p class=\"mailpoet_paragraph\" >line1<br />\nline2</p>");
   }
 
   public function testItShouldRenderCustomHtmlWithoutAutomaticBrs() {
     $block = $this->block;
     $block['params']['nl2br'] = '';
-    $html = $this->html->render($block);
-    expect($html)->equals("<p class=\"mailpoet_paragraph\">line1\nline2</p>");
+    $html = $this->html->render($block, []);
+    expect($html)->equals("<p class=\"mailpoet_paragraph\" >line1\nline2</p>");
   }
 
   public function testItShouldNotEscapeHtml() {
     $block = $this->block;
     $block['params']['text'] = '<p class="my-p">Hello</p>';
-    $html = $this->html->render($block);
-    expect($html)->equals("<p class=\"mailpoet_paragraph\"><p class=\"my-p\">Hello</p></p>");
+    $html = $this->html->render($block, []);
+    expect($html)->equals("<p class=\"mailpoet_paragraph\" ><p class=\"my-p\">Hello</p></p>");
   }
 }

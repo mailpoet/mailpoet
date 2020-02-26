@@ -55,7 +55,7 @@ class CheckboxTest extends \MailPoetUnitTest {
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('1');
-    $html = $this->checkbox->render($this->block);
+    $html = $this->checkbox->render($this->block, []);
     $checkboxLabel = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_checkbox_label']");
     expect($checkboxLabel->nodeValue)->equals(' Checkbox label');
     $checkbox = $this->htmlParser->getChildElement($checkboxLabel, 'input');

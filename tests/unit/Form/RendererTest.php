@@ -91,7 +91,7 @@ class RendererTest extends \MailPoetUnitTest {
       ->method('get')
       ->with('captcha.type')
       ->willReturn(Captcha::TYPE_DISABLED);
-    $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'), false);
+    $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'), [], false);
     $hpLabel = $this->htmlParser->findByXpath($html, "//label[@class='mailpoet_hp_email_label']");
     expect($hpLabel->length)->equals(0);
     $recaptcha = $this->htmlParser->findByXpath($html, "//div[@class='mailpoet_recaptcha']");
@@ -142,28 +142,5 @@ class RendererTest extends \MailPoetUnitTest {
     $source = $div->attributes->getNamedItem('style');
     assert($source instanceof \DOMAttr);
     expect($source->value)->equals("color: red");
-  }
-
-  public function testItShouldRenderFontSize() {
-    $this->blocksRendererMock
-      ->expects($this->exactly(2))
-      ->method('renderBlock')
-      ->willReturn('<span class="block">Dummy</span>');
-    $this->settingsMock
-      ->method('get')
-      ->with('captcha.type')
-      ->willReturn(Captcha::TYPE_DISABLED);
-    $formBody = Fixtures::get('simple_form_body');
-    $html = $this->renderer->renderHTML([
-      'body' => $formBody,
-      'settings' => ['fontSize' => '20'],
-    ]);
-    $found = $this->htmlParser->findByXpath($html, "//div");
-    expect($found->length)->equals(1);
-    $div = $found->item(0);
-    assert($div instanceof \DOMNode);
-    $source = $div->attributes->getNamedItem('style');
-    assert($source instanceof \DOMAttr);
-    expect($source->value)->equals("font-size: 20px");
   }
 }

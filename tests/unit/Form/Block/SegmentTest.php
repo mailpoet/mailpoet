@@ -57,7 +57,7 @@ class SegmentTest extends \MailPoetUnitTest {
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Segments');
 
-    $html = $this->segment->render($this->block);
+    $html = $this->segment->render($this->block, []);
 
     $checkbox1 = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_checkbox_label']", 0);
     $checkbox2 = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_checkbox_label']", 1);

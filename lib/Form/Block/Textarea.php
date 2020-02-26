@@ -10,12 +10,12 @@ class Textarea {
     $this->rendererHelper = $rendererHelper;
   }
 
-  public function render(array $block): string {
+  public function render(array $block, array $formSettings): string {
     $html = '';
 
     $html .= '<p class="mailpoet_paragraph">';
 
-    $html .= $this->rendererHelper->renderLabel($block);
+    $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
     $lines = (isset($block['params']['lines']) ? (int)$block['params']['lines'] : 1);
 
