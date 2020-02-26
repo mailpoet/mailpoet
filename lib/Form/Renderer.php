@@ -37,7 +37,10 @@ class Renderer {
 
   public function renderHTML(array $form = []): string {
     if (isset($form['body']) && !empty($form['body'])) {
-      return $this->renderBlocks($form['body']);
+      return $this->wrapForm(
+        $this->renderBlocks($form['body']),
+        $form['settings']
+      );
     }
     return '';
   }
@@ -87,5 +90,24 @@ class Renderer {
       </noscript>
       <input class="mailpoet_recaptcha_field" type="hidden" name="recaptcha">
     </div>';
+  }
+
+  private function wrapForm(string $formBody, array $formSettings): string {
+    $styles = [];
+
+    if (isset($formSettings['backgroundColor'])) {
+      $styles[] = 'background-color: ' . trim($formSettings['backgroundColor']);
+    }
+
+    if (isset($formSettings['fontColor'])) {
+      $styles[] = 'color: ' . trim($formSettings['fontColor']);
+    }
+
+    if (isset($formSettings['fontSize'])) {
+      $styles[] = 'font-size: ' . trim($formSettings['fontSize']) . 'px';
+    }
+
+    if (empty($styles)) return $formBody;
+    return '<div style="' . join(';', $styles) . '">' . $formBody . '</div>';
   }
 }
