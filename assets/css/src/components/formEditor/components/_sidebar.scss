@@ -86,6 +86,20 @@ $gutenberg-control-border-color-focus: #007cba;
   }
 }
 
+.mailpoet-styles-settings {
+  display: grid;
+  grid-auto-flow: row;
+  grid-row-gap: 30px;
+}
+
+.mailpoet-styles-settings-heading {
+  font-size: 15px;
+
+  .component-color-indicator {
+    vertical-align: text-bottom;
+  }
+}
+
 .CodeMirror {
   border: 1px solid #eee;
 }
