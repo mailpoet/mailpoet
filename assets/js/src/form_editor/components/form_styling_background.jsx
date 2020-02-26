@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelect } from '@wordpress/data';
 
-const FormBackground = ({ children }) => {
+const FormStylingBackground = ({ children }) => {
   const { fontColor, backgroundColor } = useSelect(
     (select) => {
       const settings = select('mailpoet-form-editor').getFormSettings();
@@ -20,8 +20,8 @@ const FormBackground = ({ children }) => {
   );
 };
 
-FormBackground.propTypes = {
+FormStylingBackground.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export default FormBackground;
+export default FormStylingBackground;

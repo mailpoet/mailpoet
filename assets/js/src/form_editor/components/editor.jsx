@@ -17,7 +17,7 @@ import Notices from './notices.jsx';
 import UnsavedChangesNotice from './unsaved_changes_notice.jsx';
 import FormStyles from './form_styles.jsx';
 import Preview from './preview.jsx';
-import FormBackground from './form_background.jsx';
+import FormStylingBackground from './form_styling_background.jsx';
 
 // Editor settings - see @wordpress/block-editor/src/store/defaults.js
 const editorSettings = {
@@ -69,14 +69,14 @@ export default () => {
                     <BlockEditorKeyboardShortcuts />
                     <BlockEditorKeyboardShortcuts.Register />
                     <div className="mailpoet_form">
-                      <FormBackground>
+                      <FormStylingBackground>
                         <WritingFlow>
                           <ObserveTyping>
                             <FormTitle />
                             <BlockList />
                           </ObserveTyping>
                         </WritingFlow>
-                      </FormBackground>
+                      </FormStylingBackground>
                     </div>
                   </BlockSelectionClearer>
                 </div>
