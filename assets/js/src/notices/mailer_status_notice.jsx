@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Notice from 'notices/notice.jsx';
+import Notice from 'notices/notice.tsx';
 
 const MailerStatusNotice = ({ error }) => {
   if (!error || error.operation !== 'authorization') return null;

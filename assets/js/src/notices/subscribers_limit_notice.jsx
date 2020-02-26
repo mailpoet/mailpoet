@@ -1,6 +1,6 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import Notice from 'notices/notice.jsx';
+import Notice from 'notices/notice.tsx';
 
 const SubscribersLimitNotice = () => {
   if (!window.mailpoet_subscribers_limit_reached) return null;
