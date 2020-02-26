@@ -2,10 +2,10 @@ import React from 'react';
 import {
   ColorIndicator,
   ColorPalette,
+  FontSizePicker,
   Panel,
   PanelBody,
 } from '@wordpress/components';
-import { FontSizePicker } from '@wordpress/block-editor';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -34,10 +34,13 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
       fontSize: size,
     });
   };
-  const settingsColors = useSelect(
+  const { settingsColors, fontSizes } = useSelect(
     (select) => {
       const { getSettings } = select('core/block-editor');
-      return getSettings().colors;
+      return {
+        settingsColors: getSettings().colors,
+        fontSizes: getSettings().fontSizes,
+      };
     },
     []
   );
