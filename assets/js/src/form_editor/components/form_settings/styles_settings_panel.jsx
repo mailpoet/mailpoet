@@ -6,6 +6,7 @@ import {
   PanelBody,
   ToggleControl,
 } from '@wordpress/components';
+import { FontSizePicker } from '@wordpress/block-editor';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -26,6 +27,12 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
     changeFormSettings({
       ...settings,
       fontColor: color,
+    });
+  };
+  const setFontSize = (size) => {
+    changeFormSettings({
+      ...settings,
+      fontSize: size,
     });
   };
   const settingsColors = useSelect(
@@ -83,7 +90,10 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             colors={settingsColors}
           />
         </div>
-
+        <FontSizePicker
+          value={settings.fontSize}
+          onChange={setFontSize}
+        />
       </PanelBody>
     </Panel>
   );
