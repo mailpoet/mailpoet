@@ -90,10 +90,17 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             colors={settingsColors}
           />
         </div>
-        <FontSizePicker
-          value={settings.fontSize}
-          onChange={setFontSize}
-        />
+
+        <div className="components-base-control">
+          <span className="components-base-control__label">
+            {MailPoet.I18n.t('formSettingsStylesFontSize')}
+          </span>
+          <FontSizePicker
+            value={settings.fontSize}
+            onChange={setFontSize}
+            fontSizes={fontSizes}
+          />
+        </div>
       </PanelBody>
     </Panel>
   );
