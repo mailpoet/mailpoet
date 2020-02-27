@@ -8,7 +8,7 @@ import NotificationNewsletterFields from 'newsletters/send/notification.jsx';
 import WelcomeNewsletterFields from 'newsletters/send/welcome.jsx';
 import HelpTooltip from 'help-tooltip.jsx';
 import jQuery from 'jquery';
-import { fromUrl } from 'common/thumbnail.jsx';
+import { fromUrl } from 'common/thumbnail.ts';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';

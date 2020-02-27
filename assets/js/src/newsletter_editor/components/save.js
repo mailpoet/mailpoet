@@ -6,7 +6,7 @@ import Marionette from 'backbone.marionette';
 import $ from 'jquery';
 import Blob from 'blob';
 import FileSaver from 'file-saver';
-import * as Thumbnail from 'common/thumbnail.jsx';
+import * as Thumbnail from 'common/thumbnail.ts';
 import _ from 'underscore';
 
 var Module = {};

@@ -25,7 +25,7 @@ export const fromUrl = (url) => new Promise((resolve, reject) => {
   const iframe = document.createElement('iframe');
   const protocol = document.location.href.startsWith('https://') ? 'https:' : 'http:';
   iframe.src = protocol + url.replace(/^https?:/, '');
-  iframe.style.opacity = 0;
+  iframe.style.opacity = '0';
   iframe.scrolling = 'no';
   iframe.onload = async () => {
     const container = iframe.contentDocument.documentElement;
@@ -44,7 +44,7 @@ export const fromUrl = (url) => new Promise((resolve, reject) => {
     reject(MailPoet.I18n.t('errorWhileTakingScreenshot'));
   };
   iframe.onerror = onError;
-  iframe.onError = onError;
+  (iframe as any).onError = onError;
   iframe.className = 'mailpoet_template_iframe';
   try {
     document.body.appendChild(iframe);
@@ -65,7 +65,7 @@ export const fromNewsletter = (data) => new Promise((resolve, reject) => {
     json.body = JSON.stringify(json.body);
   }
   MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
+    api_version: (window as any).mailpoet_api_version,
     endpoint: 'newsletters',
     action: 'showPreview',
     data: json,
