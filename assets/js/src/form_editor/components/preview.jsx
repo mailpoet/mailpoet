@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  useLayoutEffect,
+} from 'react';
 import MailPoet from 'mailpoet';
 import { Spinner } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
@@ -8,6 +14,7 @@ import Modal from '../../common/modal/modal.jsx';
 import blocksToFormBody from '../store/blocks_to_form_body.jsx';
 
 const FormPreview = () => {
+  const formEl = useRef(null);
   const [form, setForm] = useState(null);
 
   const formBlocks = useSelect(
@@ -16,6 +23,10 @@ const FormPreview = () => {
   );
   const customFields = useSelect(
     (select) => select('mailpoet-form-editor').getAllAvailableCustomFields(),
+    []
+  );
+  const settings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
 
@@ -32,17 +43,25 @@ const FormPreview = () => {
       action: 'previewEditor',
       data: {
         body: blocksToFormBody(formBlocks, customFields),
+        settings,
       },
     }).done((response) => {
       setForm(response.data);
     });
-  }, [formBlocks, customFields]);
+  }, [formBlocks, customFields, settings]);
 
   useEffect(() => {
     if (isPreview) {
       loadFormPreviewFromServer();
     }
   }, [isPreview, loadFormPreviewFromServer]);
+
+  useLayoutEffect(() => {
+    // eslint-disable-next-line camelcase
+    if (formEl.current && form?.form_element_styles) {
+      formEl.current.setAttribute('style', form.form_element_styles);
+    }
+  }, [formEl, form]);
 
   if (!isPreview) return null;
 
@@ -69,12 +88,20 @@ const FormPreview = () => {
               {'.mailpoet_hp_email_label { display: none }' }
               {form.css}
             </style>
-            {/* eslint-disable-next-line react/no-danger */}
-            <div dangerouslySetInnerHTML={{ __html: form.html }} />
-            <div className="mailpoet_message">
-              <p className="mailpoet_validate_success">{MailPoet.I18n.t('successMessage')}</p>
-              <p className="mailpoet_validate_error">{MailPoet.I18n.t('errorMessage')}</p>
-            </div>
+            <form
+              target="_self"
+              method="post"
+              className="mailpoet_form "
+              noValidate
+              ref={formEl}
+            >
+              {/* eslint-disable-next-line react/no-danger */}
+              <div dangerouslySetInnerHTML={{ __html: form.html }} />
+              <div className="mailpoet_message">
+                <p className="mailpoet_validate_success">{MailPoet.I18n.t('successMessage')}</p>
+                <p className="mailpoet_validate_error">{MailPoet.I18n.t('errorMessage')}</p>
+              </div>
+            </form>
           </div>
         </Preview>
       )}
