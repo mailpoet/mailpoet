@@ -10,7 +10,7 @@
     "not dead"
   ],
   "scripts": {
-    "lint": "npm run lint6 && npm run lint5 && npm run lint-tests",
+    "lint": "npm run lint6 && npm run lint-ts && npm run lint5 && npm run lint-tests",
     "lint6": "eslint -c .eslintrc.es6.json --max-warnings 0 'assets/js/src/**/*.jsx' 'tests/javascript/**/*.js'",
     "lint-ts": "eslint -c .eslintrc.ts.json --max-warnings 0 'assets/js/src/**/*.tsx' 'assets/js/src/**/*.ts'",
     "lint5": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0 'assets/js/src/**/*.js'",
@@ -18,7 +18,8 @@
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
     "scss": "node-sass assets/css/src/ --output assets/dist/css/ --output-style compact",
     "stylelint": "stylelint --fix",
-    "test": "mocha --require @babel/register tests/javascript/**/*.spec.js"
+    "test": "mocha --require @babel/register tests/javascript/**/*.spec.js",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@babel/runtime": "^7.8.4",

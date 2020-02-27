@@ -363,7 +363,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function qaLintJavascript() {
-    return $this->_exec('npm run lint');
+    return $this->_exec('npm run check-types && npm run lint');
   }
 
   public function qaLintCss() {

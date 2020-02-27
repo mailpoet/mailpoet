@@ -20,8 +20,10 @@
     "strictPropertyInitialization": false,  /* Enable strict checking of property initialization in classes. */
     "noImplicitThis": false,                /* Raise error on 'this' expressions with an implied 'any' type. */
     "alwaysStrict": false,                  /* Parse in strict mode and emit "use strict" for each source file. */
+    "moduleResolution": "node",            /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
     // "allowJs": true,                        /* Allow javascript files to be compiled. */
     // "checkJs": true,                        /* Report errors in .js files. */
+
     // "incremental": true,                   /* Enable incremental compilation */
     // "lib": [],                             /* Specify library files to be included in the compilation. */
     // "declaration": true,                   /* Generates corresponding '.d.ts' file. */
@@ -43,7 +45,6 @@
     // "noFallthroughCasesInSwitch": true,    /* Report errors for fallthrough cases in switch statement. */
 
     /* Module Resolution Options */
-    "moduleResolution": "node",            /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
     // "paths": {},                           /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
     // "typeRoots": [],                       /* List of folders to include type definitions from. */
