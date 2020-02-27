@@ -19,6 +19,7 @@ use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
@@ -26,8 +27,8 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
-use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -42,9 +43,6 @@ class Newsletters extends APIEndpoint {
 
   /** @var WPFunctions */
   private $wp;
-
-  /** @var WCHelper */
-  private $woocommerceHelper;
 
   /** @var SettingsController */
   private $settings;
@@ -61,6 +59,9 @@ class Newsletters extends APIEndpoint {
 
   /** @var NewslettersRepository */
   private $newslettersRepository;
+
+  /** @var NewsletterListingRepository */
+  private $newsletterListingRepository;
 
   /** @var NewslettersResponseBuilder */
   private $newslettersResponseBuilder;
@@ -84,11 +85,11 @@ class Newsletters extends APIEndpoint {
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
     WPFunctions $wp,
-    WCHelper $woocommerceHelper,
     SettingsController $settings,
     CronHelper $cronHelper,
     AuthorizedEmailsController $authorizedEmailsController,
     NewslettersRepository $newslettersRepository,
+    NewsletterListingRepository $newsletterListingRepository,
     NewslettersResponseBuilder $newslettersResponseBuilder,
     PostNotificationScheduler $postNotificationScheduler,
     MailerFactory $mailer,
@@ -99,11 +100,11 @@ class Newsletters extends APIEndpoint {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
-    $this->woocommerceHelper = $woocommerceHelper;
     $this->settings = $settings;
     $this->cronHelper = $cronHelper;
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->newslettersRepository = $newslettersRepository;
+    $this->newsletterListingRepository = $newsletterListingRepository;
     $this->newslettersResponseBuilder = $newslettersResponseBuilder;
     $this->postNotificationScheduler = $postNotificationScheduler;
     $this->mailer = $mailer;
@@ -520,51 +521,35 @@ class Newsletters extends APIEndpoint {
   }
 
   public function listing($data = []) {
-    $listingData = $this->listingHandler->get('\MailPoet\Models\Newsletter', $data);
+    $definition = $this->listingHandler->getListingDefinition($data);
+    $items = $this->newsletterListingRepository->getData($definition);
+    $count = $this->newsletterListingRepository->getCount($definition);
+    $filters = Newsletter::filters($data);
+    $groups = Newsletter::groups($data);
 
     $data = [];
-    foreach ($listingData['items'] as $newsletter) {
+    foreach ($items as $newsletter) {
       $queue = false;
-
-      if ($newsletter->type === Newsletter::TYPE_STANDARD) {
-        $newsletter
-          ->withSegments(true)
-          ->withSendingQueue()
-          ->withStatistics($this->woocommerceHelper);
-      } else if ($newsletter->type === Newsletter::TYPE_WELCOME || $newsletter->type === Newsletter::TYPE_AUTOMATIC) {
-        $newsletter
-          ->withOptions()
-          ->withTotalSent()
-          ->withScheduledToBeSent()
-          ->withStatistics($this->woocommerceHelper);
-      } else if ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
-        $newsletter
-          ->withOptions()
-          ->withSegments(true)
-          ->withChildrenCount();
-      } else if ($newsletter->type === Newsletter::TYPE_NOTIFICATION_HISTORY) {
-        $newsletter
-          ->withSegments(true)
-          ->withSendingQueue()
-          ->withStatistics($this->woocommerceHelper);
+      if (in_array($newsletter->getStatus(), [Newsletter::STATUS_SENT, Newsletter::STATUS_SENDING], true)) {
+        $queue = SendingTask::getByNewsletterId($newsletter->getId());
       }
 
-      if ($newsletter->status === Newsletter::STATUS_SENT ||
-         $newsletter->status === Newsletter::STATUS_SENDING
-      ) {
-        $queue = $newsletter->getQueue();
-      }
-
-      // get preview url
-      $newsletter->previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletter, null, $queue);
-
-      $data[] = $this->wp->applyFilters('mailpoet_api_newsletters_listing_item', $newsletter->asArray());
+      $newsletterData = $this->newslettersResponseBuilder->buildForListing($newsletter);
+      $newsletterData['preview_url'] = NewsletterUrl::getViewInBrowserUrl(
+        (object)[
+          'id' => $newsletter->getId(),
+          'hash' => $newsletter->getHash(),
+        ],
+        null,
+        $queue
+      );
+      $data[] = $this->wp->applyFilters('mailpoet_api_newsletters_listing_item', $newsletterData);
     }
 
     return $this->successResponse($data, [
-      'count' => $listingData['count'],
-      'filters' => $listingData['filters'],
-      'groups' => $listingData['groups'],
+      'count' => $count,
+      'filters' => $filters,
+      'groups' => $groups,
       'mta_log' => $this->settings->get('mta_log'),
       'mta_method' => $this->settings->get('mta.method'),
       'cron_accessible' => $this->cronHelper->isDaemonAccessible(),
