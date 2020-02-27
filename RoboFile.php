@@ -445,11 +445,22 @@ class RoboFile extends \Robo\Tasks {
         )
         ->run();
     }
+    if (substr($filePath, -4) === '.tsx' || substr($filePath, -3) === '.ts') {
+      // fix ESLint using TS rules
+      return $this->collectionBuilder()
+        ->taskExec(
+          'npx eslint -c .eslintrc.ts.json ' .
+            '--max-warnings 0 ' .
+            '--fix ' .
+            $filePath
+        )
+        ->run();
+    }
     if (substr($filePath, -8) === '.spec.js') {
       // fix ESLint using tests rules
       return $this->collectionBuilder()
         ->taskExec(
-          'npx eslint -c .eslintrc.tests.json ' .
+          'npx eslint -c .eslintrc.tests_newsletter_editor.json ' .
             '--max-warnings 0 ' .
             '--fix ' .
             $filePath

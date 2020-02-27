@@ -1,0 +1,52 @@
+{
+  "extends": [
+    "airbnb",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "env": {
+    "amd": true,
+    "browser": true,
+    "mocha": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": [
+    "react-hooks",
+    "no-only-tests"
+  ],
+  "settings": {
+    "import/resolver": "webpack"
+  },
+  "rules": {
+    // Typrescript
+    "react/jsx-filename-extension": 0,
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/camelcase": "off",
+    // Hooks
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    // Exceptions
+    "arrow-parens": ["error", "always"],
+    "comma-dangle": ["error", "always-multiline"],
+    "no-only-tests/no-only-tests": 2,
+    "no-script-url": 0,
+    "import/extensions": 0, // we wouldn't be able to import jQuery without this line
+    "react/destructuring-assignment": 0, // that would be too many changes to fix this one
+    "prefer-destructuring": 0, // that would be too many changes to fix this one
+    "jsx-a11y/label-has-for": [2, {
+      "required": {"some": ["nesting", "id"]} // some of our labels are hidden and we cannot nest those
+    }],
+    "jsx-a11y/anchor-is-valid": 0, // cannot fix this one, it would break wprdpress themes
+    "jsx-a11y/label-has-associated-control": [ 2, {
+      "either": "either" // control has to be either nested or associated via htmlFor
+    }]
+  }
+}
+
