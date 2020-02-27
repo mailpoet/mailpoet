@@ -119,6 +119,7 @@ class Forms extends APIEndpoint {
     return $this->successResponse([
       'html' => $html,
       'css' => $css,
+      'form_element_styles' => $this->formRenderer->renderFormElementStyles($data),
     ]);
   }
 

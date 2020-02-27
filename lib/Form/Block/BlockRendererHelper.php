@@ -115,7 +115,9 @@ class BlockRendererHelper {
 
   public function renderFontStyle(array $formSettings) {
     if (isset($formSettings['fontSize'])) {
-      return 'style="font-size: ' . trim($formSettings['fontSize']) . 'px"';
+      return 'style="'
+        . 'font-size: ' . trim($formSettings['fontSize']) . 'px;'
+        . 'line-height: ' . trim($formSettings['fontSize']) * 1.2 . 'px";';
     }
     return '';
   }
