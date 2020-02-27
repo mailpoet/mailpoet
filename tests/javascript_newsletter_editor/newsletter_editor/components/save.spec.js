@@ -224,7 +224,7 @@ describe('Save', function () {
             trackEvent: function () {},
           },
           'newsletter_editor/App': EditorApplication,
-          'common/thumbnail.jsx': {
+          'common/thumbnail.ts': {
             fromNewsletter: function () {
               return promiseMock;
             },
