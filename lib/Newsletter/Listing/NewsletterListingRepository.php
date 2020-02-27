@@ -3,7 +3,9 @@
 namespace MailPoet\Newsletter\Listing;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class NewsletterListingRepository extends ListingRepository {
@@ -22,6 +24,52 @@ class NewsletterListingRepository extends ListingRepository {
     NewsletterEntity::TYPE_NOTIFICATION,
     NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
   ];
+
+  public function getFilters(ListingDefinition $definition): array {
+    $group = $definition->getGroup();
+    $typeParam = $definition->getParameters()['type'] ?? null;
+    $groupParam = $definition->getParameters()['group'] ?? null;
+
+    // newsletter types without filters
+    if (in_array($typeParam, [NewsletterEntity::TYPE_NOTIFICATION_HISTORY])) {
+      return [];
+    }
+
+    $queryBuilder = clone $this->queryBuilder;
+    $this->applyFromClause($queryBuilder);
+
+    if ($group) {
+      $this->applyGroup($queryBuilder, $group);
+    }
+
+    if ($typeParam) {
+      $this->applyType($queryBuilder, $typeParam, $groupParam);
+    }
+
+    $queryBuilder
+      ->select('s.id, s.name, COUNT(n) AS newsletterCount')
+      ->join('n.newsletterSegments', 'ns')
+      ->join('ns.segment', 's')
+      ->groupBy('s.id')
+      ->orderBy('s.name')
+      ->having('COUNT(n) > 0');
+
+    // format segment list
+    $segmentList = [
+      [
+        'label' => WPFunctions::get()->__('All Lists', 'mailpoet'),
+        'value' => '',
+      ],
+    ];
+
+    foreach ($queryBuilder->getQuery()->getResult() as $item) {
+      $segmentList[] = [
+        'label' => sprintf('%s (%d)', $item['name'], $item['newsletterCount']),
+        'value' => $item['id'],
+      ];
+    }
+    return ['segments' => $segmentList];
+  }
 
   protected function applySelectClause(QueryBuilder $queryBuilder) {
     $queryBuilder->select("PARTIAL n.{id,subject,hash,type,status,sentAt,updatedAt,deletedAt}");
