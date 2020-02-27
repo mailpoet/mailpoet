@@ -97,12 +97,13 @@ class DisplayFormInWPContent {
       'settings' => $form->getSettings(),
     ];
     $formSettings = $form->getSettings();
+    $htmlId = 'mp_form_below_' . $form->getId();
     $templateData = [
-      'form_html_id' => 'mp_form_below_' . $form->getId(),
+      'form_html_id' => $htmlId,
       'form_id' => $form->getId(),
       'form_success_message' => $formSettings['success_message'] ?? null,
       'form_type' => 'below_post',
-      'styles' => $this->formRenderer->renderStyles($formData, '#' . $form->getId()),
+      'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId),
       'html' => $this->formRenderer->renderHTML($formData),
       'form_element_styles' => $this->formRenderer->renderFormElementStyles($formData),
     ];
