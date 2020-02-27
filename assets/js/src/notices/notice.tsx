@@ -1,24 +1,19 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
-import PropTypes, { InferProps } from 'prop-types';
 import MailPoet from 'mailpoet';
 
-const propTypes = {
-  type: PropTypes.oneOf(['success', 'info', 'warning', 'error']).isRequired,
-  scroll: PropTypes.bool,
-  closable: PropTypes.bool,
-  renderInPlace: PropTypes.bool,
-  onDisplay: PropTypes.func,
-  onClose: PropTypes.func,
-  timeout: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf([false])]),
-  children: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.element,
-    PropTypes.arrayOf(PropTypes.element),
-  ]).isRequired
+type Props = {
+  type: 'success' | 'info' | 'warning' | 'error';
+  scroll: boolean;
+  closable: boolean;
+  renderInPlace: boolean;
+  onDisplay?: () => void;
+  onClose?: () => void;
+  timeout: number | false;
+  children: ReactNode;
 };
 
-const Notice: FC<InferProps<typeof propTypes>> = ({
+const Notice: FC<Props> = ({
   onClose,
   onDisplay,
   renderInPlace,
@@ -76,7 +71,6 @@ const Notice: FC<InferProps<typeof propTypes>> = ({
     document.getElementById('mailpoet_notices')
   );
 };
-Notice.propTypes = propTypes;
 Notice.defaultProps = {
   timeout: 10000,
   scroll: false,
