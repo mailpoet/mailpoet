@@ -37,10 +37,7 @@ class Renderer {
 
   public function renderHTML(array $form = []): string {
     if (isset($form['body']) && !empty($form['body'])) {
-      return $this->wrapForm(
-        $this->renderBlocks($form['body'], $form['settings']),
-        $form['settings']
-      );
+      return $this->renderBlocks($form['body'], $form['settings'] ?? []);
     }
     return '';
   }
@@ -92,7 +89,9 @@ class Renderer {
     </div>';
   }
 
-  private function wrapForm(string $formBody, array $formSettings): string {
+  public function renderFormElementStyles(array $form): string {
+    if (!isset($form['settings'])) return '';
+    $formSettings = $form['settings'];
     $styles = [];
 
     if (isset($formSettings['backgroundColor'])) {
@@ -103,7 +102,6 @@ class Renderer {
       $styles[] = 'color: ' . trim($formSettings['fontColor']);
     }
 
-    if (empty($styles)) return $formBody;
-    return '<div style="' . join(';', $styles) . '">' . $formBody . '</div>';
+    return join(';', $styles);
   }
 }

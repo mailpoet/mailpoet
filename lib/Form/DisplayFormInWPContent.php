@@ -94,6 +94,7 @@ class DisplayFormInWPContent {
     $formData = [
       'body' => $form->getBody(),
       'styles' => $form->getStyles(),
+      'settings' => $form->getSettings(),
     ];
     $formSettings = $form->getSettings();
     $templateData = [
@@ -103,6 +104,7 @@ class DisplayFormInWPContent {
       'form_type' => 'below_post',
       'styles' => $this->formRenderer->renderStyles($formData, '#' . $form->getId()),
       'html' => $this->formRenderer->renderHTML($formData),
+      'form_element_styles' => $this->formRenderer->renderFormElementStyles($formData),
     ];
 
     // (POST) non ajax success/error variables

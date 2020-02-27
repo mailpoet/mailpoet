@@ -15,6 +15,7 @@
       action="<%= admin_url('admin-post.php?action=mailpoet_subscription_form') | raw %>"
       class="mailpoet_form mailpoet_form_<%= form_type %>"
       novalidate
+      style="<%= form_element_styles %>"/* paragraphs (label + input)
     >
       <input type="hidden" name="data[form_id]" value="<%= form_id %>" />
       <input type="hidden" name="token" value="<%= token %>" />
