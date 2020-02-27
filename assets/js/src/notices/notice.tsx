@@ -15,7 +15,7 @@ const propTypes = {
     PropTypes.string,
     PropTypes.element,
     PropTypes.arrayOf(PropTypes.element),
-  ]).isRequired,
+  ]).isRequired
 };
 
 const Notice: FC<InferProps<typeof propTypes>> = ({

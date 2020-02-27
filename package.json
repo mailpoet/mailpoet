@@ -12,6 +12,7 @@
   "scripts": {
     "lint": "npm run lint6 && npm run lint5 && npm run lint-tests",
     "lint6": "eslint -c .eslintrc.es6.json --max-warnings 0 'assets/js/src/**/*.jsx' 'tests/javascript/**/*.js'",
+    "lint-ts": "eslint -c .eslintrc.ts.json --max-warnings 0 'assets/js/src/**/*.tsx' 'assets/js/src/**/*.ts'",
     "lint5": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0 'assets/js/src/**/*.js'",
     "lint-tests": "eslint -c .eslintrc.tests_newsletter_editor.json --max-warnings 0 'tests/javascript_newsletter_editor'",
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
@@ -85,6 +86,8 @@
     "@babel/preset-typescript": "^7.8.3",
     "@babel/register": "^7.8.3",
     "@types/react": "^16.9.22",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@typescript-eslint/parser": "^2.21.0",
     "autoprefixer": "^9.7.4",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.4",
