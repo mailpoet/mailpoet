@@ -4,13 +4,13 @@ import MailPoet from 'mailpoet';
 
 type Props = {
   type: 'success' | 'info' | 'warning' | 'error';
-  scroll: boolean;
-  closable: boolean;
-  renderInPlace: boolean;
+  children: ReactNode;
+  scroll?: boolean;
+  closable?: boolean;
+  renderInPlace?: boolean;
   onDisplay?: () => void;
   onClose?: () => void;
-  timeout: number | false;
-  children: ReactNode;
+  timeout?: number | false;
 };
 
 const Notice: FC<Props> = ({
