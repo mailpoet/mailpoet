@@ -76,6 +76,45 @@ class NewslettersResponseBuilder {
     return $data;
   }
 
+  public function buildForListing(NewsletterEntity $newsletter): array {
+    $data = [
+      'id' => (string)$newsletter->getId(), // (string) for BC
+      'hash' => $newsletter->getHash(),
+      'subject' => $newsletter->getSubject(),
+      'type' => $newsletter->getType(),
+      'status' => $newsletter->getStatus(),
+      'sent_at' => ($sentAt = $newsletter->getSentAt()) ? $sentAt->format(self::DATE_FORMAT) : null,
+      'updated_at' => $newsletter->getUpdatedAt()->format(self::DATE_FORMAT),
+      'deleted_at' => ($deletedAt = $newsletter->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
+      'segments' => [],
+      'queue' => false,
+      'statistics' => false,
+    ];
+
+    if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
+      $data['segments'] = $this->buildSegments($newsletter);
+      $data['statistics'] = $this->newslettersStatsRepository->getStatistics($newsletter)->asArray();
+      $data['queue'] = ($queue = $newsletter->getLatestQueue()) ? $this->buildQueue($queue) : false; // false for BC
+    } elseif (in_array($newsletter->getType(), [NewsletterEntity::TYPE_WELCOME, NewsletterEntity::TYPE_AUTOMATIC], true)) {
+      $data['segments'] = [];
+      $data['statistics'] = $this->newslettersStatsRepository->getStatistics($newsletter)->asArray();
+      $data['options'] = $this->buildOptions($newsletter);
+      $data['total_sent'] = $this->newslettersStatsRepository->getTotalSentCount($newsletter);
+      $data['total_scheduled'] = (int)SendingQueue::findTaskByNewsletterId($newsletter->getId())
+        ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
+        ->count();
+    } elseif ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION) {
+      $data['segments'] = $this->buildSegments($newsletter);
+      $data['children_count'] = $this->newslettersStatsRepository->getChildrenCount($newsletter);
+      $data['options'] = $this->buildOptions($newsletter);
+    } elseif ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
+      $data['segments'] = $this->buildSegments($newsletter);
+      $data['statistics'] = $this->newslettersStatsRepository->getStatistics($newsletter)->asArray();
+      $data['queue'] = ($queue = $newsletter->getLatestQueue()) ? $this->buildQueue($queue) : false; // false for BC
+    }
+    return $data;
+  }
+
   private function buildSegments(NewsletterEntity $newsletter) {
     $output = [];
     foreach ($newsletter->getNewsletterSegments() as $newsletterSegment) {

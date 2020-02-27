@@ -24,9 +24,11 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -38,6 +40,7 @@ use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Idiorm\ORM;
 
 class NewslettersTest extends \MailPoetTest {
@@ -56,7 +59,17 @@ class NewslettersTest extends \MailPoetTest {
     parent::_before();
     $this->subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
-    $this->endpoint = ContainerWrapper::getInstance()->get(Newsletters::class);
+    $this->endpoint = Stub::copy(
+      ContainerWrapper::getInstance()->get(Newsletters::class),
+      [
+        'newslettersResponseBuilder' => new NewslettersResponseBuilder(
+          new NewsletterStatisticsRepository(
+            $this->diContainer->get(EntityManager::class),
+            $this->makeEmpty(WCHelper::class)
+          )
+        ),
+      ]
+    );
     $this->newsletter = Newsletter::createOrUpdate(
       [
         'subject' => 'My Standard Newsletter',
@@ -144,11 +157,11 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
       $wp,
-      $this->makeEmpty(WCHelper::class),
       SettingsController::getInstance(),
       $this->cronHelper,
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
+      ContainerWrapper::getInstance()->get(NewsletterListingRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
       ContainerWrapper::getInstance()->get(Mailer::class),
@@ -200,11 +213,11 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
       $wp,
-      $this->makeEmpty(WCHelper::class),
       SettingsController::getInstance(),
       $this->cronHelper,
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
+      ContainerWrapper::getInstance()->get(NewsletterListingRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
       ContainerWrapper::getInstance()->get(Mailer::class),
@@ -433,11 +446,11 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
       ContainerWrapper::getInstance()->get(WPFunctions::class),
-      $this->makeEmpty(WCHelper::class),
       SettingsController::getInstance(),
       $this->cronHelper,
       $this->make(AuthorizedEmailsController::class),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
+      ContainerWrapper::getInstance()->get(NewsletterListingRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
       ContainerWrapper::getInstance()->get(Mailer::class),
@@ -604,11 +617,11 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
       $wp,
-      $this->makeEmpty(WCHelper::class),
       SettingsController::getInstance(),
       $this->cronHelper,
       $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
+      ContainerWrapper::getInstance()->get(NewsletterListingRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
       ContainerWrapper::getInstance()->get(Mailer::class),
@@ -953,11 +966,11 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(BulkActionController::class),
       ContainerWrapper::getInstance()->get(Handler::class),
       $wp,
-      $this->makeEmpty(WCHelper::class),
       SettingsController::getInstance(),
       $this->cronHelper,
       ContainerWrapper::getInstance()->get(AuthorizedEmailsController::class),
       ContainerWrapper::getInstance()->get(NewslettersRepository::class),
+      ContainerWrapper::getInstance()->get(NewsletterListingRepository::class),
       ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
       ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
       ContainerWrapper::getInstance()->get(Mailer::class),
@@ -1066,6 +1079,7 @@ class NewslettersTest extends \MailPoetTest {
   public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
