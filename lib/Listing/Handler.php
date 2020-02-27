@@ -94,6 +94,20 @@ class Handler {
     ];
   }
 
+  public function getListingDefinition(array $data): ListingDefinition {
+    $data = $this->processData($data);
+    return new ListingDefinition(
+      $data['group'],
+      $data['filter'] ?? [],
+      $data['search'],
+      $data['params'] ?? [],
+      $data['sort_by'],
+      $data['sort_order'],
+      $data['offset'],
+      $data['limit']
+    );
+  }
+
   private function setSearch(ORMWrapper $model, array $data) {
     if (empty($data['search'])) {
       return;
