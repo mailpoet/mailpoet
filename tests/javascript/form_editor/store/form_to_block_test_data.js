@@ -82,6 +82,20 @@ export const customTextInput = {
   },
   position: null,
 };
+export const customTextareaInput = {
+  type: 'textarea',
+  name: 'Description',
+  id: '1',
+  unique: '1',
+  static: '0',
+  params: {
+    required: '',
+    label: 'Name of the street',
+    label_within: '1',
+    lines: '3',
+  },
+  position: null,
+};
 export const customRadioInput = {
   type: 'radio',
   name: 'Options',

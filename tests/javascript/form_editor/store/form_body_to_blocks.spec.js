@@ -8,6 +8,7 @@ import {
   segmentsInput,
   submitInput,
   customTextInput,
+  customTextareaInput,
   customRadioInput,
   customSelectInput,
   customCheckboxInput,
@@ -62,6 +63,51 @@ describe('Form Body To Blocks', () => {
     expect(block.name).to.be.equal('mailpoet-form/email-input');
     expect(block.attributes.label).to.be.equal('Email');
     expect(block.attributes.labelWithinInput).to.be.equal(false);
+  });
+
+  it('Should add default styles to input blocks', () => {
+    const customFieldText = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 1,
+      name: 'Custom Field name',
+      params: {
+        label: 'Street name',
+        required: '1',
+        validate: '',
+      },
+      type: 'text',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+    const customFieldTextarea = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 2,
+      name: 'Custom Field 2 name',
+      params: {
+        label: 'Description',
+        required: '1',
+        validate: '',
+        lines: '3',
+      },
+      type: 'textarea',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+
+    const [email, firstName, lastName, customText, customTextArea] = formBodyToBlocks([
+      { ...emailInput, position: '1' },
+      { ...firstNameInput, position: '2' },
+      { ...lastNameInput, position: '3' },
+      { ...customTextInput, position: '4' },
+      { ...customTextareaInput, position: '5', id: 2 },
+    ], [customFieldText, customFieldTextarea]);
+    const defaultStyles = {
+      fullWidth: false,
+      inheritFromTheme: true,
+    };
+    expect(email.attributes.styles).to.eql(defaultStyles);
+    expect(firstName.attributes.styles).to.eql(defaultStyles);
+    expect(lastName.attributes.styles).to.eql(defaultStyles);
+    expect(customText.attributes.styles).to.eql(defaultStyles);
+    expect(customTextArea.attributes.styles).to.eql(defaultStyles);
   });
 
   it('Should map email with label within correctly', () => {

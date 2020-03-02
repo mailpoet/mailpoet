@@ -1,6 +1,7 @@
 import MailPoet from 'mailpoet';
 import icon from './icon.jsx';
 import edit from './edit.jsx';
+import { defaultBlockStyles } from '../../store/form_body_to_blocks.jsx';
 
 export const name = 'mailpoet-form/first-name-input';
 
@@ -21,6 +22,10 @@ export const settings = {
     mandatory: {
       type: 'boolean',
       default: false,
+    },
+    styles: {
+      type: 'object',
+      default: defaultBlockStyles,
     },
   },
   supports: {

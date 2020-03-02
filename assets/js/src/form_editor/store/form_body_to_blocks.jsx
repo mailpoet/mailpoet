@@ -4,6 +4,16 @@ import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name
 
 const generateId = () => (`${Math.random().toString()}-${Date.now()}`);
 
+export const defaultBlockStyles = {
+  fullWidth: true,
+  inheritFromTheme: true,
+};
+
+const backwardCompatibleBlockStyles = {
+  fullWidth: false,
+  inheritFromTheme: true,
+};
+
 export const customFieldValuesToBlockValues = (values) => values.map((value) => {
   const mappedValue = {
     name: value.value,
@@ -54,6 +64,10 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
     if (has(item.params, 'values') && Array.isArray(item.params.values)) {
       mapped.attributes.values = customFieldValuesToBlockValues(item.params.values);
     }
+  }
+
+  if (customField.type === 'text' || customField.type === 'textarea') {
+    mapped.attributes.styles = backwardCompatibleBlockStyles;
   }
   return mapped;
 };
@@ -153,6 +167,7 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
           return {
             ...mapped,
             name: 'mailpoet-form/email-input',
+            styles: backwardCompatibleBlockStyles,
           };
         case 'heading':
           if (item.params && has(item.params, 'level')) {
@@ -177,11 +192,13 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
           return {
             ...mapped,
             name: 'mailpoet-form/first-name-input',
+            styles: backwardCompatibleBlockStyles,
           };
         case 'last_name':
           return {
             ...mapped,
             name: 'mailpoet-form/last-name-input',
+            styles: backwardCompatibleBlockStyles,
           };
         case 'segments':
           if (
