@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
-import InputStylesSettings from '../input_styles_settings.jsx';
+import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
 
 const EmailEdit = ({ attributes, setAttributes }) => {
   const inspectorControls = (
@@ -30,7 +30,10 @@ const EmailEdit = ({ attributes, setAttributes }) => {
           />
         </PanelBody>
       </Panel>
-      <InputStylesSettings />
+      <InputStylesSettings
+        styles={attributes.styles}
+        onChange={(styles) => (setAttributes({ styles }))}
+      />
     </InspectorControls>
   );
 
@@ -62,6 +65,7 @@ EmailEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
     labelWithinInput: PropTypes.bool.isRequired,
+    styles: inputStylesPropTypes.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
 };

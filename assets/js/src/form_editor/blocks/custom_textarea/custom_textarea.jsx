@@ -1,5 +1,6 @@
 import Icon from '../custom_text/icon.jsx';
 import Edit from './edit.jsx';
+import { defaultBlockStyles } from '../../store/form_body_to_blocks.jsx';
 
 export const name = 'mailpoet-form/custom-textarea';
 
@@ -33,6 +34,10 @@ export function getSettings(customField) {
       customFieldId: {
         type: 'string',
         default: customField.id,
+      },
+      styles: {
+        type: 'object',
+        default: defaultBlockStyles,
       },
     },
     supports: {

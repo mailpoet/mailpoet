@@ -11,7 +11,7 @@ import MailPoet from 'mailpoet';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 import formatLabel from '../label_formatter.jsx';
-import InputStylesSettings from '../input_styles_settings.jsx';
+import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
 
 const LastNameEdit = ({ attributes, setAttributes }) => {
   const inspectorControls = (
@@ -36,7 +36,10 @@ const LastNameEdit = ({ attributes, setAttributes }) => {
           />
         </PanelBody>
       </Panel>
-      <InputStylesSettings />
+      <InputStylesSettings
+        styles={attributes.styles}
+        onChange={(styles) => (setAttributes({ styles }))}
+      />
     </InspectorControls>
   );
 
@@ -69,6 +72,7 @@ LastNameEdit.propTypes = {
     label: PropTypes.string.isRequired,
     labelWithinInput: PropTypes.bool.isRequired,
     mandatory: PropTypes.bool.isRequired,
+    styles: inputStylesPropTypes.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
 };
