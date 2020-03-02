@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
-import { PremiumInstallationMessages } from 'settings/premium_tab/messages/premium_installation_messages.jsx';
+import { PremiumInstallationMessages } from 'old_settings/premium_tab/messages/premium_installation_messages.jsx';
 
 const PremiumStatus = {
   KEY_INVALID: 0,

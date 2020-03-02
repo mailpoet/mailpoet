@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
-import KeyMessages from 'settings/premium_tab/messages/key_messages.jsx';
-import { MssStatus, MssMessages } from 'settings/premium_tab/messages/mss_messages.jsx';
-import { PremiumStatus, PremiumMessages } from 'settings/premium_tab/messages/premium_messages.jsx';
-import { PremiumInstallationStatus } from 'settings/premium_tab/messages/premium_installation_messages.jsx';
+import KeyMessages from 'old_settings/premium_tab/messages/key_messages.jsx';
+import { MssStatus, MssMessages } from 'old_settings/premium_tab/messages/mss_messages.jsx';
+import { PremiumStatus, PremiumMessages } from 'old_settings/premium_tab/messages/premium_messages.jsx';
+import { PremiumInstallationStatus } from 'old_settings/premium_tab/messages/premium_installation_messages.jsx';
 
 const requestServicesApi = async (key, action) => MailPoet.Ajax.post({
   api_version: window.mailpoet_api_version,
