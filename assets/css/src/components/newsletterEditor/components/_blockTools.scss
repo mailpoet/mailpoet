@@ -174,6 +174,24 @@ $column-icon-size-with-padding: 27px;
 
     @include animation-fade-in-and-scale-horizontally();
   }
+
+  .mailpoet_delete_block_confirm {
+    color: $warning-text-color;
+
+    &:hover {
+      color: $warning-text-color;
+      text-decoration: underline;
+    }
+  }
+
+  .mailpoet_delete_block_cancel {
+    color: $warning-alternate-text-color;
+
+    &:hover {
+      color: $warning-alternate-text-color;
+      text-decoration: underline;
+    }
+  }
 }
 
 .mailpoet_delete_block_activated {
@@ -197,23 +215,5 @@ $column-icon-size-with-padding: 27px;
 
   .mailpoet_delete_block_cancel {
     margin-left: 3px;
-  }
-}
-
-.mailpoet_delete_block_confirm {
-  color: $warning-text-color;
-
-  &:hover {
-    color: $warning-text-color;
-    text-decoration: underline;
-  }
-}
-
-.mailpoet_delete_block_cancel {
-  color: $warning-alternate-text-color;
-
-  &:hover {
-    color: $warning-alternate-text-color;
-    text-decoration: underline;
   }
 }
