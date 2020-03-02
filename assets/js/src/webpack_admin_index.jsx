@@ -9,12 +9,13 @@ import 'subscribers/subscribers.jsx'; // side effect - renders ReactDOM to docum
 import 'newsletters/newsletters.jsx'; // side effect - renders ReactDOM to window
 import 'segments/segments.jsx'; // side effect - renders ReactDOM to document
 import 'dynamic_segments/dynamic_segments.jsx'; // side effect - renders ReactDOM to document
-import 'settings/settings.jsx'; // side effect - renders ReactDOM to document
+import 'old_settings/settings.jsx'; // side effect - renders ReactDOM to document
 import 'forms/forms.jsx'; // side effect - renders ReactDOM to document
-import 'settings/tabs.js'; // side effect - assigns to MailPoet.Router, executes code on doc ready
-import 'settings/premium_tab/premium_tab.jsx'; // side effect - renders ReactDOM to document
+import 'old_settings/tabs.js'; // side effect - assigns to MailPoet.Router, executes code on doc ready
+import 'old_settings/premium_tab/premium_tab.jsx'; // side effect - renders ReactDOM to document
 import 'help/help.jsx'; // side effect - renders ReactDOM to document
-import 'settings/reinstall_from_scratch.js'; // side effect - adds event handler to document
+import 'old_settings/reinstall_from_scratch.js'; // side effect - adds event handler to document
+import 'settings/index.tsx'; // side effect - renders Settings to document
 import 'subscribers/importExport/import.jsx'; // side effect - executes on doc ready, adds events
 import 'subscribers/importExport/export.js'; // side effect - executes on doc ready
 import 'wizard/wizard.jsx'; // side effect - renders ReactDOM to document

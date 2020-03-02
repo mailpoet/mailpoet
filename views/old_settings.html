@@ -1,0 +1,324 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+  <div id="mailpoet_settings">
+
+    <h1 class="title"><%= __('Settings') %></h1>
+
+    <!-- settings form  -->
+    <form
+      id="mailpoet_settings_form"
+      name="mailpoet_settings_form"
+      class="mailpoet_form"
+      autocomplete="off"
+      novalidate
+    >
+      <!-- tabs -->
+      <h2 class="nav-tab-wrapper" id="mailpoet_settings_tabs">
+        <a class="nav-tab" href="#basics" data-automation-id="basic_settings_tab"><%= __('Basics') %></a>
+        <a class="nav-tab" href="#signup" data-automation-id="signup_settings_tab"><%= __('Sign-up Confirmation') %></a>
+        <a class="nav-tab" href="#mta" data-automation-id="send_with_settings_tab"><%= __('Send With...') %></a>
+        <% if is_woocommerce_active %>
+          <a class="nav-tab" href="#woocommerce" data-automation-id="woocommerce_settings_tab"><%= __('WooCommerce') %></a>
+        <% endif %>
+        <a class="nav-tab" href="#advanced" data-automation-id="settings-advanced-tab"><%= __('Advanced') %></a>
+        <a class="nav-tab nav-tab-reload" href="#premium" data-automation-id="activation_settings_tab"><%= __('Key Activation') %></a>
+      </h2>
+
+      <!-- sending method -->
+      <div data-tab="mta" class="mailpoet_tab_panel">
+        <% include 'settings/mta.html' %>
+      </div>
+
+      <!-- basics -->
+      <div data-tab="basics" class="mailpoet_tab_panel">
+        <% include 'settings/basics.html' %>
+      </div>
+
+      <!-- sign-up confirmation -->
+      <div data-tab="signup" class="mailpoet_tab_panel">
+        <% include 'settings/signup.html' %>
+      </div>
+
+      <% if is_woocommerce_active %>
+        <!-- woocommerce -->
+        <div data-tab="woocommerce" class="mailpoet_tab_panel">
+          <% include 'settings/woocommerce.html' %>
+        </div>
+      <% endif %>
+
+     <!-- advanced -->
+      <div data-tab="advanced" class="mailpoet_tab_panel">
+        <% include 'settings/advanced.html' %>
+      </div>
+
+      <!-- premium -->
+      <div data-tab="premium" class="mailpoet_tab_panel">
+        <% include 'settings/premium.html' %>
+      </div>
+
+      <p class="submit mailpoet_settings_submit" style="display:none;">
+        <input
+          type="submit"
+          class="button button-primary"
+          name="submit"
+          data-automation-id="settings-submit-button"
+          value="<%= __('Save settings') %>"
+        />
+      </p>
+    </form>
+  </div>
+
+  <script type="text/javascript">
+    jQuery(function($) {
+      // on dom loaded
+      $(function() {
+        // on form submission
+        $('#mailpoet_settings_form').on('submit', function() {
+          var errorFound = false;
+          // Check if filled emails are valid
+          var invalidEmails = $.map($('#mailpoet_settings_form')[0].elements, function(el) {
+            return el.type === 'email' && el.value && !window.mailpoet_email_regex.test(el.value) ? el.value : null;
+          }).filter(function(val) { return !!val; });
+          if (invalidEmails.length) {
+            MailPoet.Notice.error(
+              "<%= __('Invalid email addresses: ') | escape('js') %>" + invalidEmails.join(', '),
+              { scroll: true }
+            );
+            errorFound = true;
+          }
+          // if reCAPTCHA is enabled but keys are emty, show error
+          var enabled = $('input[name="captcha[type]"]:checked').val() == 'recaptcha',
+              site_key = $('input[name="captcha[recaptcha_site_token]"]').val().trim(),
+              secret_key = $('input[name="captcha[recaptcha_secret_token]"]').val().trim();
+          if (enabled && (site_key == '' || secret_key == '')) {
+            $('#settings_recaptcha_tokens_error').show();
+            window.location.href = '#advanced';
+            errorFound = true;
+          } else {
+            $('#settings_recaptcha_tokens_error').hide();
+          }
+          // if new subscriber notification is enabled but sender is empty, show error
+          var notifications_enabled = $('input[name="subscriber_email_notification[enabled]"]:checked').val(),
+            address = $('input[name="subscriber_email_notification[address]"]').val().trim();
+          if (notifications_enabled && address == '') {
+            $('#settings_subscriber_email_notification_error').show();
+            window.location.href = '#basics';
+            errorFound = true;
+          } else {
+            $('#settings_subscriber_email_notification_error').hide();
+          }
+          var stats_notifications_enabled = $('input[name="stats_notifications[enabled]"]:checked').val(),
+            stats_notifications_address = $('input[name="stats_notifications[address]"]').val().trim();
+          if (stats_notifications_enabled && stats_notifications_address == '') {
+            $('#settings_stats_notifications_error').show();
+            window.location.href = '#basics';
+            errorFound = true;
+          } else {
+            $('#settings_stats_notifications_error').hide();
+          }
+
+          <% if is_woocommerce_active %>
+            // if WooCommerce opt-in on checkout is enabled but the checkbox message is empty, show an error
+            var woocommerce_optin_on_checkout_enabled = $('input[name="woocommerce[optin_on_checkout][enabled]"]:checked').val(),
+              woocommerce_optin_on_checkout_message = $('input[name="woocommerce[optin_on_checkout][message]"]').val().trim();
+            if (woocommerce_optin_on_checkout_enabled && woocommerce_optin_on_checkout_message == '') {
+              $('#settings_woocommerce_optin_on_checkout_error').show();
+              window.location.href = '#woocommerce';
+              errorFound = true;
+            } else {
+              $('#settings_woocommerce_optin_on_checkout_error').hide();
+            }
+          <% endif %>
+          // stop processing if an error was found
+          if (errorFound) {
+            return false;
+          }
+          // if we're setting up a sending method, try to activate it
+          if ($('.mailpoet_mta_setup_save').is(':visible')) {
+            $('.mailpoet_mta_setup_save').trigger('click');
+          }
+          var mailpoet_premium_key = $('#mailpoet_premium_key').val();
+          // sync mss key with premium key
+          $('#mailpoet_api_key').val(mailpoet_premium_key);
+          if (mailpoet_premium_key.length > 0) {
+            $('#mailpoet_premium_key_verify').trigger('click', false);
+          }
+          saveSettings();
+          return false;
+        });
+
+        function saveSettings() {
+          // serialize form data
+          var settings_data = $('#mailpoet_settings_form').mailpoetSerializeObject();
+
+          // show loading screen
+          MailPoet.Modal.loading(true);
+
+          MailPoet.Ajax.post({
+            api_version: window.mailpoet_api_version,
+            endpoint: 'settings',
+            action: 'set',
+            data: settings_data
+          }).always(function() {
+            MailPoet.Modal.loading(false);
+          }).done(function(response) {
+            MailPoet.Notice.success(
+              "<%= __('Settings saved') | escape('js') %>",
+              { scroll: true }
+            );
+            MailPoet.trackEvent(
+              'User has saved Settings',
+              {
+                'MailPoet Free version': window.mailpoet_version,
+                'Sending method type': settings_data.mta_group || null,
+                'Sending frequency (emails)': settings_data.mta_group != 'mailpoet' && settings_data.mta && settings_data.mta.frequency && settings_data.mta.frequency.emails,
+                'Sending frequency (interval)': settings_data.mta_group != 'mailpoet' && settings_data.mta && settings_data.mta.frequency && settings_data.mta.frequency.interval,
+                'Sending provider': settings_data.mta_group == 'smtp' && settings_data.smtp_provider,
+                'Sign-up confirmation enabled': (settings_data.signup_confirmation && settings_data.signup_confirmation.enabled == true),
+                'Bounce email is present': (settings_data.bounce && settings_data.bounce.address != ""),
+                <% if is_woocommerce_active %>
+                'WooCommerce email customizer enabled': (settings_data.woocommerce && settings_data.woocommerce.use_mailpoet_editor),
+                <% endif %>
+                'Newsletter task scheduler method': (settings_data.cron_trigger && settings_data.cron_trigger.method)
+              }
+            );
+          }).fail(function(response) {
+            if (response.errors.length > 0) {
+              MailPoet.Notice.error(
+                response.errors.map(function(error) { return error.message; }),
+                { scroll: true }
+              );
+            }
+          });
+        }
+
+        // setup toggle checkboxes
+        function toggleContent() {
+          $('#'+$(this).data('toggle'))[
+            ($(this).is(':checked'))
+            ? 'show'
+            : 'hide'
+          ]();
+        }
+
+        $(document).on('click', 'input[data-toggle]', toggleContent);
+        $('input[data-toggle]').each(toggleContent);
+
+        function toggleReCaptchaSettings() {
+          if ($('input[name="captcha[type]"]:checked').val() == 'recaptcha') {
+            $('#settings_recaptcha_tokens').show();
+          } else {
+            $('#settings_recaptcha_tokens').hide();
+          }
+        }
+        $('input[name="captcha[type]"]').on('click', toggleReCaptchaSettings);
+        toggleReCaptchaSettings();
+        $('#settings_recaptcha_tokens_error').hide();
+
+        $('#settings_subscriber_email_notification_error').hide();
+        $('#settings_stats_notifications_error').hide();
+
+        <% if is_woocommerce_active %>
+          $('#settings_woocommerce_optin_on_checkout_error').hide();
+
+          $('.mailpoet_woocommerce_editor_button').on('click', function() {
+            var emailId = "<%= settings.woocommerce.transactional_email_id %>";
+            if (!emailId) {
+              MailPoet.Ajax.post({
+                api_version: window.mailpoet_api_version,
+                endpoint: 'settings',
+                action: 'set',
+                data: {
+                  'woocommerce.use_mailpoet_editor': 1,
+                },
+              }).done(function (response) {
+                emailId = response.data.woocommerce.transactional_email_id;
+                window.location.href = '?page=mailpoet-newsletter-editor&id=' + emailId;
+              }).fail(function (response) {
+                MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
+              });
+            } else {
+              window.location.href = '?page=mailpoet-newsletter-editor&id=' + emailId;
+            }
+          });
+        <% endif %>
+
+        function toggleLinuxCronSettings() {
+          if ($('input[name="cron_trigger[method]"]:checked').val() === '<%= cron_trigger.linux_cron %>') {
+            $('#settings_linux_cron').show();
+          } else {
+            $('#settings_linux_cron').hide();
+          }
+        }
+        $('input[name="cron_trigger[method]"]').on('click', toggleLinuxCronSettings);
+        toggleLinuxCronSettings();
+
+        // page preview
+        $('.mailpoet_page_preview').on('click', function() {
+          var selection = $(this).siblings('.mailpoet_page_selection');
+
+          if (selection.length > 0) {
+            $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('preview-url'));
+            $(this).attr('target', '_blank');
+          } else {
+            $(this).attr('href', 'javascript:;');
+            $(this).removeAttr('target');
+          }
+        });
+      });
+    });
+    <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
+    <% autoescape 'js' %>
+      var mailpoet_is_new_user = <%= newUser %>;
+      var mailpoet_settings_sender_name = "<%= settings.sender.name %>";
+      var mailpoet_settings_sender_adddress = "<%= settings.sender.address %>";
+      var mailpoet_settings_reply_to_name = "<%= settings.reply_to.name %>";
+      var mailpoet_settings_reply_to_address = "<%= settings.reply_to.address %>";
+      var mailpoet_settings_signup_confirmation_name = "<%= settings.signup_confirmation.from.name %>";
+      var mailpoet_settings_signup_confirmation_address = "<%= settings.signup_confirmation.from.address %>";
+      var mailpoet_installed_at = '<%= settings.installed_at %>';
+      var mailpoet_mss_active = <%= json_encode(settings.mta_group == 'mailpoet') %>;
+    <% endautoescape %>
+    var mailpoet_beacon_articles = [
+      '57f71d49c697911f2d323486',
+      '57fb0e1d9033600277a681ca',
+      '57f49a929033602e61d4b9f4',
+      '57fb134cc697911f2d323e3b',
+    ];
+  </script>
+<% endblock %>
+<% block translations %>
+  <%= localize({
+    'reinstallConfirmation': __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.).'),
+    'announcementHeader': __('Get notified when someone subscribes'),
+    'announcementParagraph1': __('It’s been a popular feature request from our users, we hope you get lots of emails about all your new subscribers!'),
+    'announcementParagraph2': __('(You can turn this feature off if it’s too many emails.)'),
+    'yourName': __('Your name'),
+    'from': __('From'),
+    'replyTo': __('Reply-to'),
+
+    'premiumTabActivationKeyLabel': __('Activation Key', 'mailpoet'),
+    'premiumTabDescription': __('This key is used to validate your free or paid subscription. Paying customers will enjoy automatic upgrades of their Premium plugin and access to faster support.', 'mailpoet'),
+    'premiumTabNoKeyNotice': __('Please specify a license key before validating it.', 'mailpoet'),
+    'premiumTabVerifyButton': __('Verify', 'mailpoet'),
+    'premiumTabKeyValidMessage': __('Your key is valid', 'mailpoet'),
+    'premiumTabKeyNotValidMessage': __('Your key is not valid', 'mailpoet'),
+    'premiumTabPremiumActiveMessage': __('MailPoet Premium is active', 'mailpoet'),
+    'premiumTabPremiumInstallingMessage': __('MailPoet Premium plugin is being installed', 'mailpoet'),
+    'premiumTabPremiumActivatingMessage': __('MailPoet Premium plugin is being activated', 'mailpoet'),
+    'premiumTabPremiumNotInstalledMessage': __('MailPoet Premium is not installed.', 'mailpoet'),
+    'premiumTabPremiumInstallMessage': __('Install MailPoet Premium plugin', 'mailpoet'),
+    'premiumTabPremiumNotActiveMessage': __('MailPoet Premium is not active.', 'mailpoet'),
+    'premiumTabPremiumActivateMessage': __('Activate MailPoet Premium plugin', 'mailpoet'),
+    'premiumTabPremiumInstallationInstallingMessage': __('downloading MailPoet Premium…', 'mailpoet'),
+    'premiumTabPremiumInstallationActivatingMessage': __('activating MailPoet Premium…', 'mailpoet'),
+    'premiumTabPremiumInstallationActiveMessage': __('MailPoet Premium is active!', 'mailpoet'),
+    'premiumTabPremiumInstallationErrorMessage': __('Something went wrong. Please [link]download the Premium plugin from your account[/link] and [link]contact our support team[/link].', 'mailpoet'),
+    'premiumTabPremiumKeyNotValidMessage': __('Your key is not valid for MailPoet Premium', 'mailpoet'),
+    'premiumTabMssActiveMessage': __('MailPoet Sending Service is active', 'mailpoet'),
+    'premiumTabMssNotActiveMessage': __('MailPoet Sending Service is not active.', 'mailpoet'),
+    'premiumTabMssActivateMessage': __('Activate MailPoet Sending Service', 'mailpoet'),
+    'premiumTabMssKeyNotValidMessage': __('Your key is not valid for the MailPoet Sending Service', 'mailpoet'),
+  }) %>
+<% endblock %>

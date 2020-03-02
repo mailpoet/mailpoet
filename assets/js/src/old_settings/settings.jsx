@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DefaultSender from 'settings/default_sender.jsx';
+import DefaultSender from 'old_settings/default_sender.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 
