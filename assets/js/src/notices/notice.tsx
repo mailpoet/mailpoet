@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
 
@@ -13,7 +13,7 @@ type Props = {
   timeout?: number | false;
 };
 
-const Notice: FC<Props> = ({
+const Notice = ({
   onClose,
   onDisplay,
   renderInPlace,
@@ -22,7 +22,7 @@ const Notice: FC<Props> = ({
   children,
   closable,
   type,
-}) => {
+}: Props) => {
   const [hidden, setHidden] = React.useState(false);
   const elementRef = React.useRef(null);
   const timeoutRef = React.useRef(null);
