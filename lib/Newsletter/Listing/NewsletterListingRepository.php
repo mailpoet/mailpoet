@@ -71,6 +71,110 @@ class NewsletterListingRepository extends ListingRepository {
     return ['segments' => $segmentList];
   }
 
+  public function getGroups(ListingDefinition $definition): array {
+    $queryBuilder = clone $this->queryBuilder;
+    $this->applyFromClause($queryBuilder);
+    $this->applyParameters($queryBuilder, $definition->getParameters());
+
+    // total count
+    $countQueryBuilder = clone $queryBuilder;
+    $countQueryBuilder->select('COUNT(n) AS newsletterCount');
+    $countQueryBuilder->andWhere('n.deletedAt IS NULL');
+    $totalCount = (int)$countQueryBuilder->getQuery()->getSingleScalarResult();
+
+    // trashed count
+    $trashedCountQueryBuilder = clone $queryBuilder;
+    $trashedCountQueryBuilder->select('COUNT(n) AS newsletterCount');
+    $trashedCountQueryBuilder->andWhere('n.deletedAt IS NOT NULL');
+    $trashedCount = (int)$trashedCountQueryBuilder->getQuery()->getSingleScalarResult();
+
+    // count-by-status query
+    $queryBuilder->select('n.status, COUNT(n) AS newsletterCount');
+    $queryBuilder->andWhere('n.deletedAt IS NULL');
+    $queryBuilder->groupBy('n.status');
+
+    $map = [];
+    foreach ($queryBuilder->getQuery()->getResult() as $item) {
+      $map[$item['status']] = (int)$item['newsletterCount'];
+    }
+
+    $groups = [
+      [
+        'name' => 'all',
+        'label' => WPFunctions::get()->__('All', 'mailpoet'),
+        'count' => $totalCount,
+      ],
+    ];
+
+    $type = $definition->getParameters()['type'] ?? null;
+    switch ($type) {
+      case NewsletterEntity::TYPE_STANDARD:
+        $groups = array_merge($groups, [
+          [
+            'name' => NewsletterEntity::STATUS_DRAFT,
+            'label' => WPFunctions::get()->__('Draft', 'mailpoet'),
+            'count' => $map[NewsletterEntity::STATUS_DRAFT] ?? 0,
+          ],
+          [
+            'name' => NewsletterEntity::STATUS_SCHEDULED,
+            'label' => WPFunctions::get()->__('Scheduled', 'mailpoet'),
+            'count' => $map[NewsletterEntity::STATUS_SCHEDULED] ?? 0,
+          ],
+          [
+            'name' => NewsletterEntity::STATUS_SENDING,
+            'label' => WPFunctions::get()->__('Sending', 'mailpoet'),
+            'count' => $map[NewsletterEntity::STATUS_SENDING] ?? 0,
+          ],
+          [
+            'name' => NewsletterEntity::STATUS_SENT,
+            'label' => WPFunctions::get()->__('Sent', 'mailpoet'),
+            'count' => $map[NewsletterEntity::STATUS_SENT] ?? 0,
+          ],
+        ]);
+        break;
+
+      case NewsletterEntity::TYPE_NOTIFICATION_HISTORY:
+        $groups = array_merge($groups, [
+          [
+            'name' => NewsletterEntity::STATUS_SENDING,
+            'label' => WPFunctions::get()->__('Sending', 'mailpoet'),
+            'count' => $map[NewsletterEntity::STATUS_SENDING] ?? 0,
+          ],
+          [
+            'name' => NewsletterEntity::STATUS_SENT,
+            'label' => WPFunctions::get()->__('Sent', 'mailpoet'),
+            'count' => $map[NewsletterEntity::STATUS_SENT] ?? 0,
+          ],
+        ]);
+        break;
+
+      case NewsletterEntity::TYPE_WELCOME:
+      case NewsletterEntity::TYPE_NOTIFICATION:
+      case NewsletterEntity::TYPE_AUTOMATIC:
+        $groups = array_merge($groups, [
+          [
+            'name' => NewsletterEntity::STATUS_ACTIVE,
+            'label' => WPFunctions::get()->__('Active', 'mailpoet'),
+            'count' => $map[NewsletterEntity::STATUS_ACTIVE] ?? 0,
+          ],
+          [
+            'name' => NewsletterEntity::STATUS_DRAFT,
+            'label' => WPFunctions::get()->__('Not active', 'mailpoet'),
+            'count' => $map[NewsletterEntity::STATUS_DRAFT] ?? 0,
+          ],
+        ]);
+        break;
+    }
+
+    $groups[] = [
+      'name' => 'trash',
+      'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
+      'count' => $trashedCount,
+    ];
+
+    return $groups;
+  }
+
   protected function applySelectClause(QueryBuilder $queryBuilder) {
     $queryBuilder->select("PARTIAL n.{id,subject,hash,type,status,sentAt,updatedAt,deletedAt}");
   }
