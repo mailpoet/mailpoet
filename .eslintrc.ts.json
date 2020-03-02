@@ -111,6 +111,8 @@
     "@typescript-eslint/semi": "off",
     "@typescript-eslint/space-before-function-paren": "off",
     "@typescript-eslint/camelcase": "off",
+    // PropTypes
+    "react/prop-types": 0,
     // Hooks
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
