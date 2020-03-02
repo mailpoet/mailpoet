@@ -14,6 +14,7 @@ import ParagraphEdit from '../paragraph_edit.jsx';
 import CustomFieldSettings from './custom_field_settings.jsx';
 import formatLabel from '../label_formatter.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
+import InputStylesSettings from '../input_styles_settings.jsx';
 
 const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
@@ -77,6 +78,7 @@ const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
           />
         </PanelBody>
       </Panel>
+      <InputStylesSettings />
     </InspectorControls>
   );
 

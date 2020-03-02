@@ -11,6 +11,7 @@ import MailPoet from 'mailpoet';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 import formatLabel from '../label_formatter.jsx';
+import InputStylesSettings from '../input_styles_settings.jsx';
 
 const FirstNameEdit = ({ attributes, setAttributes }) => {
   const inspectorControls = (
@@ -35,7 +36,7 @@ const FirstNameEdit = ({ attributes, setAttributes }) => {
           />
         </PanelBody>
       </Panel>
-
+      <InputStylesSettings />
     </InspectorControls>
   );
 

@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
+import InputStylesSettings from '../input_styles_settings.jsx';
 
 const EmailEdit = ({ attributes, setAttributes }) => {
   const inspectorControls = (
@@ -29,7 +30,7 @@ const EmailEdit = ({ attributes, setAttributes }) => {
           />
         </PanelBody>
       </Panel>
-
+      <InputStylesSettings />
     </InspectorControls>
   );
 
