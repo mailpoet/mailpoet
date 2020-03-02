@@ -48,7 +48,7 @@ class ThrottlingTest extends \MailPoetTest {
 
     $ip2 = SubscriberIP::create();
     $ip2->ip = '127.0.0.1';
-    $ip2->createdAt = Carbon::now()->subMonths(1)->subSeconds(1);
+    $ip2->createdAt = Carbon::now()->subDays(30)->subSeconds(1);
     $ip2->save();
 
     expect(SubscriberIP::count())->equals(2);
