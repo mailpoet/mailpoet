@@ -4,17 +4,9 @@
   <div id="settings_container"></div>
 
   <script type="text/javascript">
-    <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
     <% autoescape 'js' %>
-      var mailpoet_is_new_user = <%= newUser %>;
-      var mailpoet_settings_sender_name = "<%= settings.sender.name %>";
-      var mailpoet_settings_sender_adddress = "<%= settings.sender.address %>";
-      var mailpoet_settings_reply_to_name = "<%= settings.reply_to.name %>";
-      var mailpoet_settings_reply_to_address = "<%= settings.reply_to.address %>";
-      var mailpoet_settings_signup_confirmation_name = "<%= settings.signup_confirmation.from.name %>";
-      var mailpoet_settings_signup_confirmation_address = "<%= settings.signup_confirmation.from.address %>";
-      var mailpoet_installed_at = '<%= settings.installed_at %>';
-      var mailpoet_mss_active = <%= json_encode(settings.mta_group == 'mailpoet') %>;
+      var mailpoet_is_new_user = <%= json_encode(is_new_user == true) %>;
+      var mailpoet_settings = <%= json_encode(settings) %>;
     <% endautoescape %>
     var mailpoet_beacon_articles = [
       '57f71d49c697911f2d323486',
