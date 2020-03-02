@@ -525,7 +525,7 @@ class Newsletters extends APIEndpoint {
     $items = $this->newsletterListingRepository->getData($definition);
     $count = $this->newsletterListingRepository->getCount($definition);
     $filters = $this->newsletterListingRepository->getFilters($definition);
-    $groups = Newsletter::groups($data);
+    $groups = $this->newsletterListingRepository->getGroups($definition);
 
     $data = [];
     foreach ($items as $newsletter) {
