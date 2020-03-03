@@ -28,9 +28,9 @@ class Columns {
     }
     if (!empty($params['background_color'])) {
       $classes[] = "has-{$params['background_color']}-background-color";
-      $classes[] = "mailpoet_column_has_background";
+      $classes[] = "mailpoet_column_with_background";
     } elseif (!empty($params['custom_background_color'])) {
-      $classes[] = "mailpoet_column_has_background";
+      $classes[] = "mailpoet_column_with_background";
     }
     if (!empty($params['text_color'])) {
       $classes[] = "has-{$params['text_color']}-color";
