@@ -11,7 +11,16 @@ class Styles {
   padding: 10px;
 }
 
-/* paragraphs (label + input) */
+/* columns */
+.mailpoet_column_has_background {
+  padding: 10px;
+}
+/* space between columns */
+.mailpoet_form_column:not(:first-child) {
+  margin-left: 20px;
+}
+
+/* input wrapper (label + input) */
 .mailpoet_paragraph {
   line-height:20px;
   margin-bottom: 20px;

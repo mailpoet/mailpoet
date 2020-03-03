@@ -61,9 +61,6 @@
 }
 
 // Form columns
-$form-columns-space-between: 30px;
-$form-columns-padding-vertical: 20px;
-$form-columns-padding-horizontal: 20px;
 $form-break-small-width: 500px;
 $form-block-margin: 20px;
 
@@ -74,8 +71,8 @@ $form-block-margin: 20px;
 @mixin maxWidthColumns() {
   flex-wrap: wrap;
 
-  .mailpoet_form_column:last-child .mailpoet_paragraph:last-child {
-    margin-bottom: 0;
+  &.mailpoet_column_has_background .mailpoet_form_column:last-child .mailpoet_paragraph:last-child {
+    margin-bottom: 0 !important;
   }
 }
 
@@ -84,7 +81,7 @@ $form-block-margin: 20px;
   flex-basis: 100% !important;
 
   &:not(:first-child) {
-    margin-left: 0;
+    margin-left: 0 !important;
   }
 }
 
@@ -114,17 +111,9 @@ $form-block-margin: 20px;
   }
 }
 
-.mailpoet_column_has_background {
-  padding: $form-columns-padding-vertical $form-columns-padding-horizontal;
-}
-
 .mailpoet_form_column {
   display: flex;
   flex-direction: column;
-
-  &:not(:first-child) {
-    margin-left: $form-columns-space-between;
-  }
 
   // Alignment
   &.mailpoet_vertically_align_top {
@@ -140,8 +129,8 @@ $form-block-margin: 20px;
   }
 
   @media (min-width: $form-break-small-width) {
-    .mailpoet_form_form:not(.mailpoet_form_tight_container) & .mailpoet_paragraph:last-child {
-      margin-bottom: 0;
+    .mailpoet_form_form:not(.mailpoet_form_tight_container) .mailpoet_column_has_background & .mailpoet_paragraph:last-child {
+      margin-bottom: 0 !important;
     }
   }
 
