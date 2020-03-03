@@ -1,5 +1,16 @@
 import { has } from 'lodash';
 
+const mapBlockStyles = (styles) => {
+  const mappedStyles = {
+    full_width: styles.fullWidth ? '1' : '0',
+  };
+  if (styles.inheritFromTheme) {
+    return mappedStyles;
+  }
+  mappedStyles.bold = styles.bold ? '1' : '0';
+  return mappedStyles;
+};
+
 const mapCustomField = (block, customFields, mappedCommonProperties) => {
   const customField = customFields.find((cf) => cf.id === block.attributes.customFieldId);
   if (!customField) return null;
@@ -13,9 +24,11 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
   }
   if (block.name.startsWith('mailpoet-form/custom-text')) {
     mapped.type = 'text';
+    mapped.styles = mapBlockStyles(block.attributes.styles);
   }
   if (block.name.startsWith('mailpoet-form/custom-textarea')) {
     mapped.type = 'textarea';
+    mapped.styles = mapBlockStyles(block.attributes.styles);
   }
   if (block.name.startsWith('mailpoet-form/custom-radio')) {
     mapped.type = 'radio';
@@ -74,6 +87,9 @@ export const mapColorSlugToValue = (colorDefinitions, colorSlug, colorValue = nu
  * @param customFields - list of all custom Fields
  */
 export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => {
+  if (!Array.isArray(customFields)) {
+    throw new Error('Mapper expects customFields to be an array.');
+  }
   /**
    * @param blocks
    * @param parent  - parent block of nested block
@@ -82,9 +98,6 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
   const mapBlocks = (blocks, parent = null) => {
     if (!Array.isArray(blocks)) {
       throw new Error('Mapper expects blocks to be an array.');
-    }
-    if (!Array.isArray(customFields)) {
-      throw new Error('Mapper expects customFields to be an array.');
     }
 
     return blocks.map((block) => {
@@ -158,18 +171,21 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
               ...mapped.params,
               required: '1',
             },
+            styles: mapBlockStyles(block.attributes.styles),
           };
         case 'mailpoet-form/first-name-input':
           return {
             ...mapped,
             id: 'first_name',
             name: 'First name',
+            styles: mapBlockStyles(block.attributes.styles),
           };
         case 'mailpoet-form/last-name-input':
           return {
             ...mapped,
             id: 'last_name',
             name: 'Last name',
+            styles: mapBlockStyles(block.attributes.styles),
           };
         case 'mailpoet-form/segment-select':
           return {

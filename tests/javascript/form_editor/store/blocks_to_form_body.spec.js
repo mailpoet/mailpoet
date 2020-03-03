@@ -63,6 +63,42 @@ describe('Blocks to Form Body', () => {
     expect(input.params.label_within).to.be.equal('1');
   });
 
+  it('Should map input block styles', () => {
+    const blockWithThemeStyles = {
+      ...emailBlock,
+      attributes: {
+        ...emailBlock.attributes,
+        styles: {
+          fullWidth: true,
+          inheritFromTheme: true,
+          bold: true,
+        },
+      },
+    };
+    const blockWithCustomStyles = {
+      ...firstNameBlock,
+      attributes: {
+        ...firstNameBlock.attributes,
+        styles: {
+          fullWidth: false,
+          inheritFromTheme: false,
+          bold: true,
+        },
+      },
+    };
+    const [
+      inputWithThemeStyles,
+      inputWithCustomStyles,
+    ] = formBlocksToBody([blockWithThemeStyles, blockWithCustomStyles]);
+    expect(inputWithThemeStyles.styles).to.eql({
+      full_width: '1',
+    });
+    expect(inputWithCustomStyles.styles).to.eql({
+      full_width: '0',
+      bold: '1',
+    });
+  });
+
   it('Should map last name block to input data', () => {
     const [input] = formBlocksToBody([lastNameBlock]);
     checkBodyInputBasics(input);

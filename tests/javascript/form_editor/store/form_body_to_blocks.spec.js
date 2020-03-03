@@ -92,13 +92,14 @@ describe('Form Body To Blocks', () => {
       updated_at: '2019-12-10T15:05:06+00:00',
     };
 
-    const [email, firstName, lastName, customText, customTextArea] = formBodyToBlocks([
+    const map = formBodyToBlocksFactory(colorDefinitions, [customFieldText, customFieldTextarea]);
+    const [email, firstName, lastName, customText, customTextArea] = map([
       { ...emailInput, position: '1' },
       { ...firstNameInput, position: '2' },
       { ...lastNameInput, position: '3' },
       { ...customTextInput, position: '4' },
       { ...customTextareaInput, position: '5', id: 2 },
-    ], [customFieldText, customFieldTextarea]);
+    ]);
     const defaultStyles = {
       fullWidth: false,
       inheritFromTheme: true,
