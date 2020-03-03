@@ -111,6 +111,45 @@ describe('Form Body To Blocks', () => {
     expect(customTextArea.attributes.styles).to.eql(defaultStyles);
   });
 
+  it('Should map input block styles', () => {
+    const customFieldText = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 1,
+      name: 'Custom Field name',
+      params: {
+        label: 'Street name',
+        required: '1',
+        validate: '',
+      },
+      type: 'text',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+
+    const emailStyles = {
+      full_width: '1',
+    };
+
+    const customTextStyles = {
+      full_width: '0',
+      bold: '1',
+    };
+
+    const map = formBodyToBlocksFactory(colorDefinitions, [customFieldText]);
+    const [email, customText] = map([
+      { ...emailInput, position: '1', styles: emailStyles },
+      { ...customTextInput, position: '2', styles: customTextStyles },
+    ]);
+    expect(email.attributes.styles).to.eql({
+      fullWidth: true,
+      inheritFromTheme: true,
+    });
+    expect(customText.attributes.styles).to.eql({
+      fullWidth: false,
+      inheritFromTheme: false,
+      bold: true,
+    });
+  });
+
   it('Should map email with label within correctly', () => {
     const email = { ...emailInput };
     email.params.label_within = '1';
