@@ -103,6 +103,37 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     expect($newsletters)->count(1);
   }
 
+  public function testItAppliesTypeParameter() {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setSubject('Newsletter subject');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // without type
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([]));
+    expect($newsletters)->count(1);
+
+    // with 'standard' type
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'params' => [
+        'type' => 'standard',
+      ],
+    ]));
+    expect($newsletters)->count(1);
+
+    // with 'welcome' type
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'params' => [
+        'type' => 'welcome',
+      ],
+    ]));
+    expect($newsletters)->count(0);
+  }
+
   public function testItAppliesAutomaticEmailsGroupParameter() {
     $newsletterOptionField = new NewsletterOptionFieldEntity();
     $newsletterOptionField->setName('group');
@@ -157,6 +188,115 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     // get all emails group
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['type' => Newsletter::TYPE_AUTOMATIC]));
     expect($newsletters)->count(2);
+  }
+
+  public function testItAppliesParentIdParameter() {
+    $parent = new NewsletterEntity();
+    $parent->setType(NewsletterEntity::TYPE_NOTIFICATION);
+    $parent->setSubject('Newsletter subject');
+    $this->entityManager->persist($parent);
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setParent($parent);
+    $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $newsletter->setSubject('Newsletter subject');
+    $this->entityManager->persist($newsletter);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // existing parent ID
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'params' => [
+        'parent_id' => (string)$parent->getId(),
+      ],
+    ]));
+    expect($newsletters)->count(1);
+
+    // non-existent parent ID
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'params' => [
+        'parent_id' => (string)$newsletter->getId(),
+      ],
+    ]));
+    expect($newsletters)->count(0);
+  }
+
+  public function testItAppliesSort() {
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Newsletter A');
+    $this->entityManager->persist($newsletter1);
+
+    $newsletter2 = new NewsletterEntity();
+    $newsletter2->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter2->setSubject('Newsletter B');
+    $this->entityManager->persist($newsletter2);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // ASC
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'sort_by' => 'subject',
+      'sort_order' => 'asc',
+    ]));
+    expect($newsletters)->count(2);
+    expect($newsletters[0]->getSubject())->same('Newsletter A');
+    expect($newsletters[1]->getSubject())->same('Newsletter B');
+
+    // DESC
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'sort_by' => 'subject',
+      'sort_order' => 'desc',
+    ]));
+    expect($newsletters)->count(2);
+    expect($newsletters[0]->getSubject())->same('Newsletter B');
+    expect($newsletters[1]->getSubject())->same('Newsletter A');
+  }
+
+  public function testItAppliesLimitAndOffset() {
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Newsletter A');
+    $this->entityManager->persist($newsletter1);
+
+    $newsletter2 = new NewsletterEntity();
+    $newsletter2->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter2->setSubject('Newsletter B');
+    $this->entityManager->persist($newsletter2);
+
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // first page
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'limit' => 1,
+      'offset' => 0,
+    ]));
+    expect($newsletters)->count(1);
+    expect($newsletters[0]->getSubject())->same('Newsletter A');
+
+    // second page
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'limit' => 1,
+      'offset' => 1,
+    ]));
+    expect($newsletters)->count(1);
+    expect($newsletters[0]->getSubject())->same('Newsletter B');
+
+    // third page
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'limit' => 1,
+      'offset' => 2,
+    ]));
+    expect($newsletters)->count(0);
   }
 
   public function _after() {
