@@ -197,6 +197,17 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
       parent::markTestSkipped($message);
     }
   }
+
+  public function truncateEntity(string $entityName) {
+    $classMetadata = $this->entityManager->getClassMetadata($entityName);
+    $tableName = $classMetadata->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->transactional(function(Connection $connection) use ($tableName) {
+      $connection->query('SET FOREIGN_KEY_CHECKS=0');
+      $connection->executeUpdate("TRUNCATE $tableName");
+      $connection->query('SET FOREIGN_KEY_CHECKS=1');
+    });
+  }
 }
 
 function asCallable($fn) {
