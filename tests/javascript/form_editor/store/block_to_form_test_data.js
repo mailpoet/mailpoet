@@ -6,6 +6,10 @@ export const emailBlock = {
   attributes: {
     label: 'Email Address',
     labelWithinInput: false,
+    styles: {
+      fullWidth: false,
+      inheritFromTheme: true,
+    },
   },
 };
 
@@ -45,6 +49,10 @@ export const firstNameBlock = {
     label: 'First Name',
     labelWithinInput: false,
     mandatory: false,
+    styles: {
+      fullWidth: false,
+      inheritFromTheme: true,
+    },
   },
 };
 
@@ -57,6 +65,10 @@ export const lastNameBlock = {
     label: 'Last Name',
     labelWithinInput: false,
     mandatory: false,
+    styles: {
+      fullWidth: false,
+      inheritFromTheme: true,
+    },
   },
 };
 
@@ -71,6 +83,10 @@ export const customTextBlock = {
     mandatory: false,
     validate: 'alphanum',
     customFieldId: 1,
+    styles: {
+      fullWidth: false,
+      inheritFromTheme: true,
+    },
   },
 };
 
