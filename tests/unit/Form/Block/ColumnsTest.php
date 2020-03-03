@@ -46,7 +46,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
     expect($class->textContent)->contains('has-vivid-red-background-color');
-    expect($class->textContent)->contains('mailpoet_column_has_background');
+    expect($class->textContent)->contains('mailpoet_column_with_background');
   }
 
   public function testItShouldRenderTextColorClass() {
@@ -75,7 +75,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $style = $this->htmlParser->getAttribute($columns, 'style');
     expect($style->textContent)->contains('background-color:#ffffff;');
     $class = $this->htmlParser->getAttribute($columns, 'class');
-    expect($class->textContent)->contains('mailpoet_column_has_background');
+    expect($class->textContent)->contains('mailpoet_column_with_background');
   }
 
   public function testItShouldCustomTextColor() {

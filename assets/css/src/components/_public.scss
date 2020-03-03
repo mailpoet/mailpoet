@@ -71,7 +71,7 @@ $form-block-margin: 20px;
 @mixin maxWidthColumns() {
   flex-wrap: wrap;
 
-  &.mailpoet_column_has_background .mailpoet_form_column:last-child .mailpoet_paragraph:last-child {
+  &.mailpoet_column_with_background .mailpoet_form_column:last-child .mailpoet_paragraph:last-child {
     margin-bottom: 0 !important;
   }
 }
@@ -129,7 +129,7 @@ $form-block-margin: 20px;
   }
 
   @media (min-width: $form-break-small-width) {
-    .mailpoet_form_form:not(.mailpoet_form_tight_container) .mailpoet_column_has_background & .mailpoet_paragraph:last-child {
+    .mailpoet_form_form:not(.mailpoet_form_tight_container) .mailpoet_column_with_background & .mailpoet_paragraph:last-child {
       margin-bottom: 0 !important;
     }
   }

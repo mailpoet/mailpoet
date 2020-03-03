@@ -12,7 +12,7 @@ class Styles {
 }
 
 /* columns */
-.mailpoet_column_has_background {
+.mailpoet_column_with_background {
   padding: 10px;
 }
 /* space between columns */
