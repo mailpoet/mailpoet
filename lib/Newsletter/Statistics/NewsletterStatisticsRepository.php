@@ -27,33 +27,7 @@ class NewsletterStatisticsRepository extends Repository {
     return NewsletterEntity::class;
   }
 
-  /**
-   * @param NewsletterEntity $newsletter
-   * @return int
-   */
-  public function getTotalSentCount(NewsletterEntity $newsletter) {
-    try {
-      return (int)$this->doctrineRepository
-        ->createQueryBuilder('n')
-        ->join('n.queues', 'q')
-        ->join('q.task', 't')
-        ->select('SUM(q.countProcessed)')
-        ->where('t.status = :status')
-        ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
-        ->andWhere('q.newsletter = :newsletter')
-        ->setParameter('newsletter', $newsletter)
-        ->getQuery()
-        ->getSingleScalarResult();
-    } catch (UnexpectedResultException $e) {
-      return 0;
-    }
-  }
-
-  /**
-   * @param NewsletterEntity $newsletter
-   * @return NewsletterStatistics
-   */
-  public function getStatistics(NewsletterEntity $newsletter) {
+  public function getStatistics(NewsletterEntity $newsletter): NewsletterStatistics {
     return new NewsletterStatistics(
       $this->getStatisticsClickCount($newsletter),
       $this->getStatisticsOpenCount($newsletter),
@@ -64,51 +38,53 @@ class NewsletterStatisticsRepository extends Repository {
   }
 
   /**
-   * @param NewsletterEntity $newsletter
-   * @return int
+   * @param NewsletterEntity[] $newsletters
+   * @return NewsletterStatistics[]
    */
-  public function getStatisticsClickCount(NewsletterEntity $newsletter) {
-    return $this->getStatisticsCount($newsletter, StatisticsClickEntity::class);
+  public function getBatchStatistics(array $newsletters): array {
+    $totalSentCounts = $this->getTotalSentCounts($newsletters);
+    $clickCounts = $this->getStatisticCounts(StatisticsClickEntity::class, $newsletters);
+    $openCounts = $this->getStatisticCounts(StatisticsOpenEntity::class, $newsletters);
+    $unsubscribeCounts = $this->getStatisticCounts(StatisticsUnsubscribeEntity::class, $newsletters);
+    $wooCommerceRevenues = $this->getWooCommerceRevenues($newsletters);
+
+    $statistics = [];
+    foreach ($newsletters as $newsletter) {
+      $id = $newsletter->getId();
+      $statistics[$id] = new NewsletterStatistics(
+        $clickCounts[$id] ?? 0,
+        $openCounts[$id] ?? 0,
+        $unsubscribeCounts[$id] ?? 0,
+        $totalSentCounts[$id] ?? 0,
+        $wooCommerceRevenues[$id] ?? null
+      );
+    }
+    return $statistics;
   }
 
-  /**
-   * @param NewsletterEntity $newsletter
-   * @return int
-   */
-  public function getStatisticsOpenCount(NewsletterEntity $newsletter) {
-    return $this->getStatisticsCount($newsletter, StatisticsOpenEntity::class);
+  public function getTotalSentCount(NewsletterEntity $newsletter): int {
+    $counts = $this->getTotalSentCounts([$newsletter]);
+    return $counts[$newsletter->getId()] ?? 0;
   }
 
-  /**
-   * @param NewsletterEntity $newsletter
-   * @return int
-   */
-  public function getStatisticsUnsubscribeCount(NewsletterEntity $newsletter) {
-    return $this->getStatisticsCount($newsletter, StatisticsUnsubscribeEntity::class);
+  public function getStatisticsClickCount(NewsletterEntity $newsletter): int {
+    $counts = $this->getStatisticCounts(StatisticsClickEntity::class, [$newsletter]);
+    return $counts[$newsletter->getId()] ?? 0;
+  }
+
+  public function getStatisticsOpenCount(NewsletterEntity $newsletter): int {
+    $counts = $this->getStatisticCounts(StatisticsOpenEntity::class, [$newsletter]);
+    return $counts[$newsletter->getId()] ?? 0;
+  }
+
+  public function getStatisticsUnsubscribeCount(NewsletterEntity $newsletter): int {
+    $counts = $this->getStatisticCounts(StatisticsUnsubscribeEntity::class, [$newsletter]);
+    return $counts[$newsletter->getId()] ?? 0;
   }
 
   public function getWooCommerceRevenue(NewsletterEntity $newsletter) {
-    if (!$this->wcHelper->isWooCommerceActive()) {
-      return null;
-    }
-    try {
-      $currency = $this->wcHelper->getWoocommerceCurrency();
-      list($data) = $this->entityManager
-        ->createQueryBuilder()
-        ->select('SUM(stats.orderPriceTotal) AS total, COUNT(stats.id) AS cnt')
-        ->from(StatisticsWooCommercePurchaseEntity::class, 'stats')
-        ->where('stats.newsletter = :newsletter')
-        ->andWhere('stats.orderCurrency = :currency')
-        ->setParameter('newsletter', $newsletter)
-        ->setParameter('currency', $currency)
-        ->getQuery()
-        ->getResult();
-      $value = (float)$data['total'];
-      $count = (int)$data['cnt'];
-      return new NewsletterWooCommerceRevenue($currency, $value, $count, $this->wcHelper);
-    } catch (UnexpectedResultException $e) {
-      return null;
-    }
+    $revenues = $this->getWooCommerceRevenues([$newsletter]);
+    return $revenues[$newsletter->getId()] ?? null;
   }
 
   /**
@@ -130,18 +106,71 @@ class NewsletterStatisticsRepository extends Repository {
     }
   }
 
-  private function getStatisticsCount(NewsletterEntity $newsletter, $statisticsEntityName) {
-    try {
-      $qb = $this->entityManager
-        ->createQueryBuilder();
-      return $qb->select('COUNT(DISTINCT stats.subscriberId) as cnt')
-        ->from($statisticsEntityName, 'stats')
-        ->where('stats.newsletter = :newsletter')
-        ->setParameter('newsletter', $newsletter)
-        ->getQuery()
-        ->getSingleScalarResult();
-    } catch (UnexpectedResultException $e) {
-      return 0;
+  private function getTotalSentCounts(array $newsletters): array {
+    $results = $this->doctrineRepository
+      ->createQueryBuilder('n')
+      ->select('n.id, SUM(q.countProcessed) AS cnt')
+      ->join('n.queues', 'q')
+      ->join('q.task', 't')
+      ->where('t.status = :status')
+      ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
+      ->andWhere('q.newsletter IN (:newsletters)')
+      ->setParameter('newsletters', $newsletters)
+      ->groupBy('n.id')
+      ->getQuery()
+      ->getResult();
+
+    $counts = [];
+    foreach ($results ?: [] as $result) {
+      $counts[(int)$result['id']] = (int)$result['cnt'];
     }
+    return $counts;
+  }
+
+  private function getStatisticCounts(string $statisticsEntityName, array $newsletters): array {
+    $results = $this->entityManager->createQueryBuilder()
+      ->select('IDENTITY(stats.newsletter) AS id, COUNT(DISTINCT stats.subscriberId) as cnt')
+      ->from($statisticsEntityName, 'stats')
+      ->where('stats.newsletter IN (:newsletters)')
+      ->groupBy('stats.newsletter')
+      ->setParameter('newsletters', $newsletters)
+      ->getQuery()
+      ->getResult();
+
+    $counts = [];
+    foreach ($results ?: [] as $result) {
+      $counts[(int)$result['id']] = (int)$result['cnt'];
+    }
+    return $counts;
+  }
+
+  private function getWooCommerceRevenues(array $newsletters) {
+    if (!$this->wcHelper->isWooCommerceActive()) {
+      return null;
+    }
+
+    $currency = $this->wcHelper->getWoocommerceCurrency();
+    $results = $this->entityManager
+      ->createQueryBuilder()
+      ->select('IDENTITY(stats.newsletter) AS id, SUM(stats.orderPriceTotal) AS total, COUNT(stats.id) AS cnt')
+      ->from(StatisticsWooCommercePurchaseEntity::class, 'stats')
+      ->where('stats.newsletter IN (:newsletters)')
+      ->andWhere('stats.orderCurrency = :currency')
+      ->setParameter('newsletters', $newsletters)
+      ->setParameter('currency', $currency)
+      ->groupBy('stats.newsletter')
+      ->getQuery()
+      ->getResult();
+
+    $revenues = [];
+    foreach ($results ?: [] as $result) {
+      $revenues[(int)$result['id']] = new NewsletterWooCommerceRevenue(
+        $currency,
+        (float)$result['total'],
+        (int)$result['cnt'],
+        $this->wcHelper
+      );
+    }
+    return $revenues;
   }
 }

@@ -528,17 +528,16 @@ class Newsletters extends APIEndpoint {
     $groups = $this->newsletterListingRepository->getGroups($definition);
 
     $data = [];
-    foreach ($items as $newsletter) {
+    foreach ($this->newslettersResponseBuilder->buildForListing($items) as $newsletterData) {
       $queue = false;
-      if (in_array($newsletter->getStatus(), [Newsletter::STATUS_SENT, Newsletter::STATUS_SENDING], true)) {
-        $queue = SendingTask::getByNewsletterId($newsletter->getId());
+      if (in_array($newsletterData['status'], [Newsletter::STATUS_SENT, Newsletter::STATUS_SENDING], true)) {
+        $queue = SendingTask::getByNewsletterId($newsletterData['id']);
       }
 
-      $newsletterData = $this->newslettersResponseBuilder->buildForListing($newsletter);
       $newsletterData['preview_url'] = NewsletterUrl::getViewInBrowserUrl(
         (object)[
-          'id' => $newsletter->getId(),
-          'hash' => $newsletter->getHash(),
+          'id' => $newsletterData['id'],
+          'hash' => $newsletterData['hash'],
         ],
         null,
         $queue

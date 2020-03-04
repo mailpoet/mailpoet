@@ -63,6 +63,7 @@ class NewslettersTest extends \MailPoetTest {
       ContainerWrapper::getInstance()->get(Newsletters::class),
       [
         'newslettersResponseBuilder' => new NewslettersResponseBuilder(
+          $this->diContainer->get(EntityManager::class),
           new NewsletterStatisticsRepository(
             $this->diContainer->get(EntityManager::class),
             $this->makeEmpty(WCHelper::class)

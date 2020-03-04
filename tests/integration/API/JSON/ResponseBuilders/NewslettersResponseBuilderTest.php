@@ -33,7 +33,7 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
       'getChildrenCount' => $stats['children_count'],
       'getStatistics' => new NewsletterStatistics(4, 6, 2, 10, null),
     ]);
-    $responseBuilder = new NewslettersResponseBuilder($repository);
+    $responseBuilder = new NewslettersResponseBuilder($em, $repository);
     $response = $responseBuilder->build($newsletter, [
       NewslettersResponseBuilder::RELATION_CHILDREN_COUNT,
       NewslettersResponseBuilder::RELATION_TOTAL_SENT,
