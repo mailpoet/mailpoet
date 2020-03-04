@@ -8,6 +8,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class NewslettersResponseBuilder {
   const DATE_FORMAT = 'Y-m-d H:i:s';
@@ -23,8 +24,15 @@ class NewslettersResponseBuilder {
   /** @var NewsletterStatisticsRepository */
   private $newslettersStatsRepository;
 
-  public function __construct(NewsletterStatisticsRepository $newslettersStatsRepository) {
+  /** @var EntityManager */
+  private $entityManager;
+
+  public function __construct(
+    EntityManager $entityManager,
+    NewsletterStatisticsRepository $newslettersStatsRepository
+  ) {
     $this->newslettersStatsRepository = $newslettersStatsRepository;
+    $this->entityManager = $entityManager;
   }
 
   public function build(NewsletterEntity $newsletter, $relations = []) {
@@ -83,15 +91,17 @@ class NewslettersResponseBuilder {
    */
   public function buildForListing(array $newsletters): array {
     $statistics = $this->newslettersStatsRepository->getBatchStatistics($newsletters);
+    $latestQueues = $this->getBatchLatestQueuesWithTasks($newsletters);
 
     $data = [];
     foreach ($newsletters as $newsletter) {
-      $data[] = $this->buildListingItem($newsletter, $statistics[$newsletter->getId()] ?? null);
+      $id = $newsletter->getId();
+      $data[] = $this->buildListingItem($newsletter, $statistics[$id] ?? null, $latestQueues[$id] ?? null);
     }
     return $data;
   }
 
-  private function buildListingItem(NewsletterEntity $newsletter, NewsletterStatistics $statistics = null): array {
+  private function buildListingItem(NewsletterEntity $newsletter, NewsletterStatistics $statistics = null, SendingQueueEntity $latestQueue = null): array {
     $data = [
       'id' => (string)$newsletter->getId(), // (string) for BC
       'hash' => $newsletter->getHash(),
@@ -110,7 +120,7 @@ class NewslettersResponseBuilder {
 
     if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
       $data['segments'] = $this->buildSegments($newsletter);
-      $data['queue'] = ($queue = $newsletter->getLatestQueue()) ? $this->buildQueue($queue) : false; // false for BC
+      $data['queue'] = $latestQueue ? $this->buildQueue($latestQueue) : false; // false for BC
     } elseif (in_array($newsletter->getType(), [NewsletterEntity::TYPE_WELCOME, NewsletterEntity::TYPE_AUTOMATIC], true)) {
       $data['segments'] = [];
       $data['options'] = $this->buildOptions($newsletter);
@@ -124,7 +134,7 @@ class NewslettersResponseBuilder {
       $data['options'] = $this->buildOptions($newsletter);
     } elseif ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
       $data['segments'] = $this->buildSegments($newsletter);
-      $data['queue'] = ($queue = $newsletter->getLatestQueue()) ? $this->buildQueue($queue) : false; // false for BC
+      $data['queue'] = $latestQueue ? $this->buildQueue($latestQueue) : false; // false for BC
     }
     return $data;
   }
@@ -190,5 +200,33 @@ class NewslettersResponseBuilder {
       'count_processed' => (string)$queue->getCountProcessed(), // (string) for BC
       'count_to_process' => (string)$queue->getCountToProcess(), // (string) for BC
     ];
+  }
+
+  private function getBatchLatestQueuesWithTasks(array $newsletters): array {
+    // this implements the same logic as NewsletterEntity::getLatestQueue() but for a batch of $newsletters
+
+    $subqueryQueryBuilder = $this->entityManager->createQueryBuilder();
+    $subquery = $subqueryQueryBuilder
+      ->select('MAX(subSq.id)')
+      ->from(SendingQueueEntity::class, 'subSq')
+      ->where('subSq.newsletter IN (:newsletters)')
+      ->groupBy('subSq.newsletter')
+      ->getQuery();
+
+    $queryBuilder = $this->entityManager->createQueryBuilder();
+    $results = $queryBuilder
+      ->select('sq, t, IDENTITY(sq.newsletter)')
+      ->from(SendingQueueEntity::class, 'sq')
+      ->join('sq.task', 't')
+      ->where('sq.id IN (' . $subquery->getDQL() . ')')
+      ->setParameter('newsletters', $newsletters)
+      ->getQuery()
+      ->getResult();
+
+    $latestQueues = [];
+    foreach ($results as $result) {
+      $latestQueues[(int)$result[1]] = $result[0];
+    }
+    return $latestQueues;
   }
 }
