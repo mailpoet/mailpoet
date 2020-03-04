@@ -9,8 +9,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
-import formatLabel from '../label_formatter.jsx';
+import TextInputEdit from '../text_input_edit.jsx';
 import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
 
 const LastNameEdit = ({ attributes, setAttributes }) => {
@@ -43,27 +42,16 @@ const LastNameEdit = ({ attributes, setAttributes }) => {
     </InspectorControls>
   );
 
-  const getTextInput = (placeholder) => (
-    <input
-      id="last_name"
-      className="mailpoet_text"
-      type="text"
-      name="last_name"
-      placeholder={placeholder}
-      data-automation-id="editor_last_name_input"
-    />
-  );
-
   return (
-    <ParagraphEdit>
+    <>
       {inspectorControls}
-      {!attributes.labelWithinInput ? (
-        <label className="mailpoet_text_label" data-automation-id="editor_last_name_label" htmlFor="last_name">
-          {formatLabel(attributes)}
-        </label>
-      ) : null}
-      {getTextInput(attributes.labelWithinInput ? formatLabel(attributes) : '')}
-    </ParagraphEdit>
+      <TextInputEdit
+        name="last_name"
+        mandatory={attributes.mandatory}
+        labelWithinInput={attributes.labelWithinInput}
+        label={attributes.label}
+      />
+    </>
   );
 };
 
