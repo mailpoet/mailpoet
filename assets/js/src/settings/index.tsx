@@ -1,26 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useSelect, useDispatch } from '@wordpress/data';
-import { initStore, STORE_NAME } from './store';
+import { initStore } from './store';
+import { useSelector, useActions } from './store/hooks';
 
 const App = () => {
-  const isSaving = useSelect(
-    (sel) => sel(STORE_NAME).isSaving(),
-    []
-  );
-  const error = useSelect(
-    (sel) => sel(STORE_NAME).getError(),
-    []
-  );
-  const settings = useSelect(
-    (sel) => sel(STORE_NAME).getSettings(),
-    []
-  );
-  const email = useSelect(
-    (sel) => sel(STORE_NAME).getSetting(['sender', 'address']),
-    []
-  );
-  const actions = useDispatch(STORE_NAME);
+  const isSaving = useSelector('isSaving')();
+  const error = useSelector('getError')();
+  const settings = useSelector('getSettings')();
+  const email = useSelector('getSetting')(['sender', 'address']);
+  const actions = useActions();
   const setEmail = (event) => {
     actions.setSetting(['sender', 'address'], event.target.value);
   };
