@@ -19,10 +19,11 @@ foreach ($files as $file) {
   }
 }
 
-// fix Swiftmailer autoloader by injecting code that strips 'MailPoetVendor\' from class names
+// fix Swiftmailer autoloader by injecting code that strips 'MailPoetVendor\' from path names
 $file = __DIR__ . '/../vendor-prefixed/swiftmailer/swiftmailer/lib/classes/Swift.php';
 $data = file_get_contents($file);
-$data = preg_replace('/(function autoload\(\$class\)\s*\{)/', "$1\n        \$class = str_replace('MailPoetVendor\\\\\\\\', '', \$class);\n", $data);
+$data = str_replace("'Swift_'", "'MailPoetVendor\\\\Swift_'", $data);
+$data = preg_replace('/(\$path.*?)\$class/', "$1str_replace('MailPoetVendor\\\\\\\\', '', \$class)", $data);
 file_put_contents($file, $data);
 
 # remove unused PHP file that starts with shebang line instead of <?php and causes PHP lint on WP repo to fail
