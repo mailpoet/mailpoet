@@ -201,9 +201,10 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search) {
+    $search = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $search); // escape for 'LIKE'
     $queryBuilder
       ->andWhere('n.subject LIKE :search')
-      ->setParameter('search', "%$search%"); // TODO: escape?
+      ->setParameter('search', "%$search%");
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
