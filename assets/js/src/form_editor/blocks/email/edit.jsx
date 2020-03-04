@@ -9,7 +9,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
+import TextInputEdit from '../text_input_edit.jsx';
 import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
 
 const EmailEdit = ({ attributes, setAttributes }) => {
@@ -37,27 +37,16 @@ const EmailEdit = ({ attributes, setAttributes }) => {
     </InspectorControls>
   );
 
-  const getTextInput = (placeholder) => (
-    <input
-      id="email"
-      className="mailpoet_text"
-      type="email"
-      name="email"
-      placeholder={placeholder}
-      data-automation-id="editor_email_input"
-    />
-  );
-
   return (
-    <ParagraphEdit>
+    <>
       {inspectorControls}
-      {!attributes.labelWithinInput ? (
-        <label className="mailpoet_text_label" data-automation-id="editor_email_label" htmlFor="email">
-          {`${attributes.label} *`}
-        </label>
-      ) : null}
-      {getTextInput(attributes.labelWithinInput ? `${attributes.label} *` : '')}
-    </ParagraphEdit>
+      <TextInputEdit
+        name="email"
+        label={attributes.label}
+        labelWithinInput={!!attributes.labelWithinInput}
+        mandatory
+      />
+    </>
   );
 };
 

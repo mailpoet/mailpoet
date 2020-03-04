@@ -126,7 +126,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
       ) : (
         <>
           <label className="mailpoet_textarea_label" data-automation-id="editor_custom_text_label" htmlFor="custom_text">
-            {formatLabel(attributes)}
+            {formatLabel(attributes.label, attributes.mandatory)}
           </label>
           {getTextArea('')}
         </>

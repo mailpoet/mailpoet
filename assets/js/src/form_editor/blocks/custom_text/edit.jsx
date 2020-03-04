@@ -10,11 +10,10 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
 import CustomFieldSettings from './custom_field_settings.jsx';
-import formatLabel from '../label_formatter.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
+import TextInputEdit from '../text_input_edit.jsx';
 
 const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
   const isSaving = useSelect(
@@ -85,27 +84,16 @@ const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
     </InspectorControls>
   );
 
-  const getTextInput = (placeholder) => (
-    <input
-      id={clientId}
-      className="mailpoet_text"
-      type="text"
-      name="custom_text"
-      placeholder={placeholder}
-      data-automation-id="editor_custom_text_input"
-    />
-  );
-
   return (
-    <ParagraphEdit>
+    <>
       {inspectorControls}
-      {!attributes.labelWithinInput ? (
-        <label className="mailpoet_text_label" data-automation-id="editor_custom_text_label" htmlFor={clientId}>
-          {formatLabel(attributes)}
-        </label>
-      ) : null}
-      {getTextInput(attributes.labelWithinInput ? formatLabel(attributes) : '')}
-    </ParagraphEdit>
+      <TextInputEdit
+        name="custom_text"
+        mandatory={attributes.mandatory}
+        labelWithinInput={attributes.labelWithinInput}
+        label={attributes.label}
+      />
+    </>
   );
 };
 
