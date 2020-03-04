@@ -50,6 +50,7 @@ const FirstNameEdit = ({ attributes, setAttributes }) => {
         mandatory={attributes.mandatory}
         labelWithinInput={attributes.labelWithinInput}
         label={attributes.label}
+        styles={attributes.styles}
       />
     </>
   );

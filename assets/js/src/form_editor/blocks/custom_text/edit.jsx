@@ -92,6 +92,7 @@ const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
         mandatory={attributes.mandatory}
         labelWithinInput={attributes.labelWithinInput}
         label={attributes.label}
+        styles={attributes.styles}
       />
     </>
   );

@@ -45,6 +45,7 @@ const EmailEdit = ({ attributes, setAttributes }) => {
         label={attributes.label}
         labelWithinInput={!!attributes.labelWithinInput}
         mandatory
+        styles={attributes.styles}
       />
     </>
   );
