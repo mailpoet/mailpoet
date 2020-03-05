@@ -39,6 +39,9 @@ const mapBlockStyles = (styles) => {
   }
   mappedStyles.inheritFromTheme = false;
   mappedStyles.bold = styles.bold === '1';
+  if (has(styles, 'background_color') && styles.background_color) {
+    mappedStyles.backgroundColor = styles.background_color;
+  }
   return mappedStyles;
 };
 

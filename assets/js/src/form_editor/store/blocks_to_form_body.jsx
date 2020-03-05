@@ -8,6 +8,9 @@ const mapBlockStyles = (styles) => {
     return mappedStyles;
   }
   mappedStyles.bold = styles.bold ? '1' : '0';
+  if (has(styles, 'backgroundColor') && styles.backgroundColor) {
+    mappedStyles.background_color = styles.backgroundColor;
+  }
   return mappedStyles;
 };
 
