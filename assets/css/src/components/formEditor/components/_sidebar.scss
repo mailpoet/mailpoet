@@ -89,7 +89,11 @@ $gutenberg-control-border-color-focus: #007cba;
 .mailpoet-styles-settings {
   display: grid;
   grid-auto-flow: row;
-  grid-row-gap: 30px;
+  grid-row-gap: 20px;
+
+  .components-base-control {
+    margin-bottom: 0;
+  }
 }
 
 .mailpoet-styles-settings-heading {
