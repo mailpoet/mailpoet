@@ -4,6 +4,7 @@ namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Textarea;
+use MailPoet\Form\TextInputStylesRenderer;
 use MailPoet\Test\Form\HtmlParser;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -15,6 +16,9 @@ class TextareaTest extends \MailPoetUnitTest {
 
   /** @var MockObject & BlockRendererHelper */
   private $rendererHelperMock;
+
+  /** @var MockObject & TextInputStylesRenderer */
+  private $stylesRendererMock;
 
   /** @var HtmlParser */
   private $htmlParser;
@@ -37,7 +41,8 @@ class TextareaTest extends \MailPoetUnitTest {
   public function _before() {
     parent::_before();
     $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
-    $this->textarea = new Textarea($this->rendererHelperMock);
+    $this->stylesRendererMock = $this->createMock(TextInputStylesRenderer::class);
+    $this->textarea = new Textarea($this->rendererHelperMock, $this->stylesRendererMock);
     $this->htmlParser = new HtmlParser();
   }
 
@@ -48,6 +53,7 @@ class TextareaTest extends \MailPoetUnitTest {
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn(' validation="1" ');
     $this->rendererHelperMock->expects($this->once())->method('getInputModifiers')->willReturn(' modifiers="mod" ');
     $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('val');
+    $this->stylesRendererMock->expects($this->once())->method('render')->willReturn('border-radius: 10px;');
 
     $html = $this->textarea->render($this->block, []);
     $textarea = $this->htmlParser->getElementByXpath($html, '//textarea');
@@ -55,10 +61,12 @@ class TextareaTest extends \MailPoetUnitTest {
     $validation = $this->htmlParser->getAttribute($textarea, 'validation');
     $modifiers = $this->htmlParser->getAttribute($textarea, 'modifiers');
     $class = $this->htmlParser->getAttribute($textarea, 'class');
+    $style = $this->htmlParser->getAttribute($textarea, 'style');
     expect($textarea->textContent)->equals('val');
     expect($name->value)->equals('data[Field name]');
     expect($validation->value)->equals('1');
     expect($class->value)->equals('mailpoet_textarea');
     expect($modifiers->value)->equals('mod');
+    expect($style->value)->equals('border-radius: 10px;');
   }
 }

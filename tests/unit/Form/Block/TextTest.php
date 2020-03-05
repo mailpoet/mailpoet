@@ -4,6 +4,7 @@ namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Text;
+use MailPoet\Form\TextInputStylesRenderer;
 use MailPoet\Test\Form\HtmlParser;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -15,6 +16,9 @@ class TextTest extends \MailPoetUnitTest {
 
   /** @var MockObject & BlockRendererHelper */
   private $rendererHelperMock;
+
+  /** @var MockObject & TextInputStylesRenderer */
+  private $stylesRendererMock;
 
   /** @var HtmlParser */
   private $htmlParser;
@@ -36,7 +40,8 @@ class TextTest extends \MailPoetUnitTest {
   public function _before() {
     parent::_before();
     $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
-    $this->text = new Text($this->rendererHelperMock);
+    $this->stylesRendererMock = $this->createMock(TextInputStylesRenderer::class);
+    $this->text = new Text($this->rendererHelperMock, $this->stylesRendererMock);
     $this->htmlParser = new HtmlParser();
   }
 
@@ -48,6 +53,7 @@ class TextTest extends \MailPoetUnitTest {
     $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('val');
     $this->rendererHelperMock->expects($this->once())->method('renderInputPlaceholder')->willReturn('');
     $this->rendererHelperMock->expects($this->once())->method('getInputModifiers')->willReturn(' modifiers="mod" ');
+    $this->stylesRendererMock->expects($this->once())->method('render')->willReturn('border-radius: 10px;');
 
     $html = $this->text->render($this->block, []);
     $input = $this->htmlParser->getElementByXpath($html, '//input');
@@ -57,11 +63,13 @@ class TextTest extends \MailPoetUnitTest {
     $value = $this->htmlParser->getAttribute($input, 'value');
     $modifiers = $this->htmlParser->getAttribute($input, 'modifiers');
     $class = $this->htmlParser->getAttribute($input, 'class');
+    $style = $this->htmlParser->getAttribute($input, 'style');
     expect($name->value)->equals('data[Field name]');
     expect($type->value)->equals('text');
     expect($validation->value)->equals('1');
     expect($value->value)->equals('val');
     expect($modifiers->value)->equals('mod');
     expect($class->value)->equals('mailpoet_text');
+    expect($style->value)->equals('border-radius: 10px;');
   }
 }
