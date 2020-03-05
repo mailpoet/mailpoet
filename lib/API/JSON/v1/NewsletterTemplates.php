@@ -56,26 +56,13 @@ class NewsletterTemplates extends APIEndpoint {
 
   public function save($data = []) {
     ignore_user_abort(true);
-    if (!empty($data['newsletter_id'])) {
-      $template = NewsletterTemplate::whereEqual('newsletter_id', $data['newsletter_id'])->findOne();
-      if ($template instanceof NewsletterTemplate) {
-        $data['id'] = $template->id;
-      }
-    }
-
-    $template = NewsletterTemplate::createOrUpdate($data);
-    $errors = $template->getErrors();
-
-    NewsletterTemplate::cleanRecentlySent($data);
-
-    if (!empty($errors)) {
-      return $this->errorResponse($errors);
-    } else {
-      $template = NewsletterTemplate::findOne($template->id);
-      if(!$template instanceof NewsletterTemplate) return $this->errorResponse();
-      return $this->successResponse(
-        $template->asArray()
-      );
+    try {
+      $template = $this->newsletterTemplatesRepository->createOrUpdate($data);
+      NewsletterTemplate::cleanRecentlySent($data);
+      $data = $this->newsletterTemplatesResponseBuilder->build($template);
+      return $this->successResponse($data);
+    } catch (\Throwable $e) {
+      return $this->errorResponse();
     }
   }
 
