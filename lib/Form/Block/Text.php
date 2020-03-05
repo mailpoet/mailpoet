@@ -23,6 +23,11 @@ class Text {
     if ($block['id'] === 'email') {
       $type = 'email';
     }
+
+    if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
+      $automationId = 'data-automation-id="form_' . $block['id'] . '" ';
+    }
+
     $styles = $this->inputStylesRenderer->render($block['styles'] ?? []);
 
     if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
