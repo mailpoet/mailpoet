@@ -130,11 +130,11 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
       id={clientId}
       className="mailpoet_textarea"
       name="custom_text"
-      disabled
       data-automation-id="editor_custom_textarea_input"
       value={placeholder}
       rows={attributes.lines}
       style={inputStyles}
+      readOnly
     />
   );
 
