@@ -27,6 +27,7 @@ const FirstNameEdit = ({ attributes, setAttributes }) => {
             label={MailPoet.I18n.t('displayLabelWithinInput')}
             checked={attributes.labelWithinInput}
             onChange={(labelWithinInput) => (setAttributes({ labelWithinInput }))}
+            className="mailpoet-automation-label-within-input-toggle"
           />
           <ToggleControl
             label={MailPoet.I18n.t('blockMandatory')}

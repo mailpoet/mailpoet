@@ -38,9 +38,9 @@ const InputStylesSettings = ({
     setStyles(updated);
   };
   return (
-    <Panel>
+    <Panel className="mailpoet-automation-input-styles-panel">
       <PanelBody title={MailPoet.I18n.t('formSettingsStyles')} initialOpen={false}>
-        <div className="mailpoet-styles-settings">
+        <div className="mailpoet-styles-settings" data-automation-id="input_styles_settings">
           <ToggleControl
             label={MailPoet.I18n.t('formSettingsDisplayFullWidth')}
             checked={localStyles.fullWidth}
@@ -50,6 +50,7 @@ const InputStylesSettings = ({
             label={MailPoet.I18n.t('formSettingsInheritStyleFromTheme')}
             checked={localStyles.inheritFromTheme}
             onChange={partial(updateStyles, 'inheritFromTheme')}
+            className="mailpoet-automation-inherit-theme-toggle"
           />
           {!localStyles.inheritFromTheme ? (
             <>
@@ -75,6 +76,7 @@ const InputStylesSettings = ({
                 label={MailPoet.I18n.t('formSettingsBold')}
                 checked={localStyles.bold || false}
                 onChange={partial(updateStyles, 'bold')}
+                className="mailpoet-automation-styles-bold-toggle"
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderSize')}
@@ -83,6 +85,7 @@ const InputStylesSettings = ({
                 max={10}
                 allowReset
                 onChange={partial(updateStyles, 'borderSize')}
+                className="mailpoet-automation-styles-border-size"
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderRadius')}
@@ -113,7 +116,7 @@ const InputStylesSettings = ({
             </>
           ) : null}
           <div>
-            <Button isPrimary onClick={() => applyStylesToAllTextInputs(localStyles)}>
+            <Button isPrimary onClick={() => applyStylesToAllTextInputs(localStyles)} data-automation-id="styles_apply_to_all">
               {MailPoet.I18n.t('formSettingsApplyToAll')}
             </Button>
           </div>
