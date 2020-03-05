@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import ParagraphEdit from './paragraph_edit.jsx';
 import formatLabel from './label_formatter.jsx';
@@ -11,6 +11,7 @@ const TextInputEdit = ({
   mandatory,
   styles,
 }) => {
+  const input = useRef(null);
   const id = `${name}_${Math.random().toString(36).substring(2, 15)}`;
 
   const labelStyles = {
@@ -34,13 +35,14 @@ const TextInputEdit = ({
   const getTextInput = (placeholder) => (
     <input
       id={id}
+      ref={input}
       className="mailpoet_text"
       type={name === 'email' ? 'email' : 'text'}
       name={name}
-      disabled
       placeholder={placeholder}
       data-automation-id={`editor_${name}_input`}
       style={inputStyles}
+      onFocus={() => input.current.blur()}
     />
   );
 
