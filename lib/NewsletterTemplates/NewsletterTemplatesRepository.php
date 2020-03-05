@@ -16,4 +16,17 @@ class NewsletterTemplatesRepository extends Repository {
   protected function getEntityClassName() {
     return NewsletterTemplateEntity::class;
   }
+
+  /**
+   * @return NewsletterTemplateEntity[]
+   */
+  public function findAllForListing(): array {
+    return $this->doctrineRepository->createQueryBuilder('nt')
+      ->select('PARTIAL nt.{id,categories,thumbnail,name,description,readonly}')
+      ->addOrderBy('nt.readonly', 'ASC')
+      ->addOrderBy('nt.createdAt', 'DESC')
+      ->addOrderBy('nt.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+  }
 }

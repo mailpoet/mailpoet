@@ -4,8 +4,10 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\ResponseBuilders\NewsletterTemplatesResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Models\NewsletterTemplate;
+use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class NewsletterTemplates extends APIEndpoint {
@@ -16,6 +18,20 @@ class NewsletterTemplates extends APIEndpoint {
   protected static $getMethods = [
     'getAll',
   ];
+
+  /** @var NewsletterTemplatesRepository */
+  private $newsletterTemplatesRepository;
+
+  /** @var NewsletterTemplatesResponseBuilder */
+  private $newsletterTemplatesResponseBuilder;
+
+  public function __construct(
+    NewsletterTemplatesRepository $newsletterTemplatesRepository,
+    NewsletterTemplatesResponseBuilder $newsletterTemplatesResponseBuilder
+  ) {
+    $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
+    $this->newsletterTemplatesResponseBuilder = $newsletterTemplatesResponseBuilder;
+  }
 
   public function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
@@ -32,17 +48,9 @@ class NewsletterTemplates extends APIEndpoint {
   }
 
   public function getAll() {
-    $collection = NewsletterTemplate
-      ::selectExpr('id, categories, thumbnail, name, description, readonly')
-      ->orderByAsc('readonly')
-      ->orderByDesc('created_at')
-      ->orderByDesc('id')
-      ->findMany();
-    $templates = array_map(function($item) {
-      return $item->asArray();
-    }, $collection);
-
-    return $this->successResponse($templates);
+    $templates = $this->newsletterTemplatesRepository->findAllForListing();
+    $data = $this->newsletterTemplatesResponseBuilder->buildForListing($templates);
+    return $this->successResponse($data);
   }
 
   public function save($data = []) {
