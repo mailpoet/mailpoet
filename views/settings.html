@@ -5,6 +5,7 @@
 
   <script type="text/javascript">
     <% autoescape 'js' %>
+      var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active == true) %>;
       var mailpoet_is_new_user = <%= json_encode(is_new_user == true) %>;
       var mailpoet_settings = <%= json_encode(settings) %>;
     <% endautoescape %>
@@ -18,6 +19,13 @@
 <% endblock %>
 <% block translations %>
   <%= localize({
+    'settings': __('Settings'),
+    'basicsTab': __('Basics'),
+    'signupConfirmationTab': __('Sign-up Confirmation'),
+    'sendWithTab': __('Send With...'),
+    'wooCommerceTab': __('WooCommerce'),
+    'advancedTab': __('Advanced'),
+    'keyActivationTab': __('Key Activation'),
     'reinstallConfirmation': __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.).'),
     'announcementHeader': __('Get notified when someone subscribes'),
     'announcementParagraph1': __('It’s been a popular feature request from our users, we hope you get lots of emails about all your new subscribers!'),

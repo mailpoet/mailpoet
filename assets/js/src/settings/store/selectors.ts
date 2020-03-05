@@ -20,3 +20,11 @@ export function hasError(state: State): boolean {
 export function getError(state: State): any {
   return state.save.error;
 }
+
+export function hasWooCommerce(state: State) {
+  return state.flags.woocommerce;
+}
+
+export function isNewUser(state: State) {
+  return state.flags.newUser;
+}

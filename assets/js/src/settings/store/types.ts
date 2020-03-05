@@ -42,6 +42,10 @@ export type Settings = {
 
 export type State = {
   data: Settings
+  flags: {
+    woocommerce: boolean
+    newUser: boolean
+  }
   save: {
     inProgress: boolean
     error: any
