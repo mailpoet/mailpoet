@@ -83,6 +83,7 @@ describe('Blocks to Form Body', () => {
           fullWidth: false,
           inheritFromTheme: false,
           bold: true,
+          backgroundColor: '#aaaaaa',
         },
       },
     };
@@ -96,6 +97,7 @@ describe('Blocks to Form Body', () => {
     expect(inputWithCustomStyles.styles).to.eql({
       full_width: '0',
       bold: '1',
+      background_color: '#aaaaaa',
     });
   });
 

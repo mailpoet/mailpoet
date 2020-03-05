@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
 import {
+  ColorIndicator,
+  ColorPalette,
   Panel,
   PanelBody,
   ToggleControl,
 } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 import { partial } from 'underscore';
 import PropTypes from 'prop-types';
 
@@ -13,6 +16,16 @@ const InputStylesSettings = ({
   onChange,
 }) => {
   const [localStyles, setStyles] = useState(styles);
+
+  const { settingsColors } = useSelect(
+    (select) => {
+      const { getSettings } = select('core/block-editor');
+      return {
+        settingsColors: getSettings().colors,
+      };
+    },
+    []
+  );
 
   const updateStyles = (property, value) => {
     const updated = { ...localStyles };
@@ -35,6 +48,24 @@ const InputStylesSettings = ({
         />
         {!localStyles.inheritFromTheme ? (
           <>
+            <div>
+              <h3 className="mailpoet-styles-settings-heading">
+                {MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
+                {
+                  styles.backgroundColor !== undefined
+                  && (
+                    <ColorIndicator
+                      colorValue={styles.backgroundColor}
+                    />
+                  )
+                }
+              </h3>
+              <ColorPalette
+                value={styles.backgroundColor}
+                onChange={partial(updateStyles, 'backgroundColor')}
+                colors={settingsColors}
+              />
+            </div>
             <ToggleControl
               label={MailPoet.I18n.t('formSettingsBold')}
               checked={localStyles.bold || false}
