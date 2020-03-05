@@ -45,12 +45,4 @@ class NewsletterTemplate extends Model {
         ->deleteMany();
     }
   }
-
-  public function asArray() {
-    $template = parent::asArray();
-    if (isset($template['body'])) {
-      $template['body'] = json_decode($template['body'], true);
-    }
-    return $template;
-  }
 }
