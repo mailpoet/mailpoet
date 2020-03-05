@@ -19,3 +19,16 @@ import 'subscribers/importExport/import.jsx'; // side effect - executes on doc r
 import 'subscribers/importExport/export.js'; // side effect - executes on doc ready
 import 'wizard/wizard.jsx'; // side effect - renders ReactDOM to document
 import 'experimental_features/experimental_features.jsx'; // side effect - renders ReactDOM to document
+
+import { registerStore } from '@wordpress/data';
+
+const container = document.getElementById('mailpoet_settings');
+if (container) {
+  registerStore('mailpoet-settings-store', {
+    reducer: (state) => state,
+    selectors: {},
+    actions: {},
+    resolvers: {},
+    controls: {},
+  });
+}
