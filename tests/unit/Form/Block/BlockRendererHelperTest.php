@@ -45,7 +45,12 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     $label = $this->rendererHelper->renderLabel($block, []);
     expect($label)->regExp('#<label.*class="mailpoet_text_label".*>Input label</label>#m');
 
+    $block['styles'] = ['bold' => '1'];
+    $label = $this->rendererHelper->renderLabel($block, []);
+    expect($label)->equals('<label class="mailpoet_text_label" style="font-weight: bold;">Input label</label>');
+
     $block['params']['required'] = '1';
+    $block['styles'] = [];
     $label = $this->rendererHelper->renderLabel($block, []);
     expect($label)->equals('<label class="mailpoet_text_label" >Input label <span class="mailpoet_required">*</span></label>');
 

@@ -100,7 +100,7 @@ class BlockRendererHelper {
       && strlen(trim($block['params']['label'])) > 0) {
       $html .= '<label '
         . 'class="mailpoet_' . $block['type'] . '_label" '
-        . $this->renderFontStyle($formSettings)
+        . $this->renderFontStyle($formSettings, $block['styles'] ?? [])
         . '>';
       $html .= htmlspecialchars($block['params']['label']);
 
@@ -113,13 +113,16 @@ class BlockRendererHelper {
     return $html;
   }
 
-  public function renderFontStyle(array $formSettings) {
+  public function renderFontStyle(array $formSettings, array $styles = []) {
+    $rules = [];
     if (isset($formSettings['fontSize'])) {
-      return 'style="'
-        . 'font-size: ' . trim($formSettings['fontSize']) . 'px;'
-        . 'line-height: ' . trim($formSettings['fontSize']) * 1.2 . 'px";';
+      $rules[] = 'font-size: ' . trim($formSettings['fontSize']) . 'px;';
+      $rules[] = 'line-height: ' . trim($formSettings['fontSize']) * 1.2 . 'px";';
     }
-    return '';
+    if (isset($styles['bold'])) {
+      $rules[] = 'font-weight: bold;';
+    }
+    return $rules ? 'style="' . implode("", $rules) . '"' : '';
   }
 
   public function renderInputPlaceholder(array $block): string {
