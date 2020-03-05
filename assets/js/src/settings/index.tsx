@@ -1,37 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {
-  HashRouter, Switch, Route, Redirect,
-} from 'react-router-dom';
-import Notices from 'notices/notices.jsx';
+import { HashRouter } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
-import MailPoet from 'mailpoet';
-import {
-  Advanced,
-  Basics,
-  KeyActivation,
-  SendWith,
-  SignupConfirmation,
-  WooCommerce,
-} from './pages';
 import { initStore } from './store';
-import Tabs from './components/tabs';
+import Settings from './settings';
 
-const App = () => (
+const Entry = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <HashRouter>
-      <Notices />
-      <h1 className="title">{MailPoet.I18n.t('settings')}</h1>
-      <Tabs />
-      <Switch>
-        <Route path="/basics" component={Basics} />
-        <Route path="/signup" component={SignupConfirmation} />
-        <Route path="/mta" component={SendWith} />
-        <Route path="/woocommerce" component={WooCommerce} />
-        <Route path="/advanced" component={Advanced} />
-        <Route path="/premium" component={KeyActivation} />
-        <Redirect to="/basics" />
-      </Switch>
+      <Settings />
     </HashRouter>
   </GlobalContext.Provider>
 );
@@ -39,5 +16,5 @@ const App = () => (
 const container = document.getElementById('settings_container');
 if (container) {
   initStore(window);
-  ReactDOM.render(<App />, container);
+  ReactDOM.render(<Entry />, container);
 }

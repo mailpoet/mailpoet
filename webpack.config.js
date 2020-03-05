@@ -379,7 +379,18 @@ const postEditorBlock = {
   },
 };
 
-module.exports = [adminConfig, publicConfig, migratorConfig, formEditorConfig, testConfig, postEditorBlock].map((config) => {
+// Settings config
+const settingsConfig = {
+  name: 'settings',
+  entry: {
+    settings: 'settings/index.tsx',
+  },
+  externals: {
+    'mailpoet': 'MailPoet',
+  },
+};
+
+module.exports = [adminConfig, publicConfig, migratorConfig, formEditorConfig, testConfig, postEditorBlock, settingsConfig].map((config) => {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(

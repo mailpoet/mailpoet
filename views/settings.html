@@ -58,3 +58,7 @@
     'premiumTabMssKeyNotValidMessage': __('Your key is not valid for the MailPoet Sending Service', 'mailpoet'),
   }) %>
 <% endblock %>
+
+<% block after_javascript %>
+<%= javascript('settings.js')%>
+<% endblock %>
