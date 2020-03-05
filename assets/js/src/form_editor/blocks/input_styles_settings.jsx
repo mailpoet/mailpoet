@@ -40,80 +40,84 @@ const InputStylesSettings = ({
   return (
     <Panel>
       <PanelBody title={MailPoet.I18n.t('formSettingsStyles')} initialOpen={false}>
-        <ToggleControl
-          label={MailPoet.I18n.t('formSettingsDisplayFullWidth')}
-          checked={localStyles.fullWidth}
-          onChange={partial(updateStyles, 'fullWidth')}
-        />
-        <ToggleControl
-          label={MailPoet.I18n.t('formSettingsInheritStyleFromTheme')}
-          checked={localStyles.inheritFromTheme}
-          onChange={partial(updateStyles, 'inheritFromTheme')}
-        />
-        {!localStyles.inheritFromTheme ? (
-          <>
-            <div>
-              <h3 className="mailpoet-styles-settings-heading">
-                {MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
-                {
-                  styles.backgroundColor !== undefined
-                  && (
-                    <ColorIndicator
-                      colorValue={styles.backgroundColor}
-                    />
-                  )
-                }
-              </h3>
-              <ColorPalette
-                value={styles.backgroundColor}
-                onChange={partial(updateStyles, 'backgroundColor')}
-                colors={settingsColors}
+        <div className="mailpoet-styles-settings">
+          <ToggleControl
+            label={MailPoet.I18n.t('formSettingsDisplayFullWidth')}
+            checked={localStyles.fullWidth}
+            onChange={partial(updateStyles, 'fullWidth')}
+          />
+          <ToggleControl
+            label={MailPoet.I18n.t('formSettingsInheritStyleFromTheme')}
+            checked={localStyles.inheritFromTheme}
+            onChange={partial(updateStyles, 'inheritFromTheme')}
+          />
+          {!localStyles.inheritFromTheme ? (
+            <>
+              <div>
+                <h3 className="mailpoet-styles-settings-heading">
+                  {MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
+                  {
+                    styles.backgroundColor !== undefined
+                    && (
+                      <ColorIndicator
+                        colorValue={styles.backgroundColor}
+                      />
+                    )
+                  }
+                </h3>
+                <ColorPalette
+                  value={styles.backgroundColor}
+                  onChange={partial(updateStyles, 'backgroundColor')}
+                  colors={settingsColors}
+                />
+              </div>
+              <ToggleControl
+                label={MailPoet.I18n.t('formSettingsBold')}
+                checked={localStyles.bold || false}
+                onChange={partial(updateStyles, 'bold')}
               />
-            </div>
-            <ToggleControl
-              label={MailPoet.I18n.t('formSettingsBold')}
-              checked={localStyles.bold || false}
-              onChange={partial(updateStyles, 'bold')}
-            />
-            <RangeControl
-              label={MailPoet.I18n.t('formSettingsBorderSize')}
-              value={localStyles.borderSize}
-              min={0}
-              max={10}
-              allowReset
-              onChange={partial(updateStyles, 'borderSize')}
-            />
-            <RangeControl
-              label={MailPoet.I18n.t('formSettingsBorderRadius')}
-              value={localStyles.borderRadius}
-              min={0}
-              max={40}
-              allowReset
-              onChange={partial(updateStyles, 'borderRadius')}
-            />
-            <div>
-              <h3 className="mailpoet-styles-settings-heading">
-                {MailPoet.I18n.t('formSettingsBorderColor')}
-                {
-                  localStyles.borderColor !== undefined
-                  && (
-                    <ColorIndicator
-                      colorValue={styles.borderColor}
-                    />
-                  )
-                }
-              </h3>
-              <ColorPalette
-                value={localStyles.borderColor}
-                onChange={partial(updateStyles, 'borderColor')}
-                colors={settingsColors}
+              <RangeControl
+                label={MailPoet.I18n.t('formSettingsBorderSize')}
+                value={localStyles.borderSize}
+                min={0}
+                max={10}
+                allowReset
+                onChange={partial(updateStyles, 'borderSize')}
               />
-            </div>
-          </>
-        ) : null}
-        <Button isPrimary onClick={() => applyStylesToAllTextInputs(localStyles)}>
-          {MailPoet.I18n.t('formSettingsApplyToAll')}
-        </Button>
+              <RangeControl
+                label={MailPoet.I18n.t('formSettingsBorderRadius')}
+                value={localStyles.borderRadius}
+                min={0}
+                max={40}
+                allowReset
+                onChange={partial(updateStyles, 'borderRadius')}
+              />
+              <div>
+                <h3 className="mailpoet-styles-settings-heading">
+                  {MailPoet.I18n.t('formSettingsBorderColor')}
+                  {
+                    localStyles.borderColor !== undefined
+                    && (
+                      <ColorIndicator
+                        colorValue={styles.borderColor}
+                      />
+                    )
+                  }
+                </h3>
+                <ColorPalette
+                  value={localStyles.borderColor}
+                  onChange={partial(updateStyles, 'borderColor')}
+                  colors={settingsColors}
+                />
+              </div>
+            </>
+          ) : null}
+          <div>
+            <Button isPrimary onClick={() => applyStylesToAllTextInputs(localStyles)}>
+              {MailPoet.I18n.t('formSettingsApplyToAll')}
+            </Button>
+          </div>
+        </div>
       </PanelBody>
     </Panel>
   );
