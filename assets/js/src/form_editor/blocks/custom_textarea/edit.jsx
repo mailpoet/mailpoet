@@ -107,15 +107,34 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
     </InspectorControls>
   );
 
+  const labelStyles = {
+    fontWeight: attributes.styles.bold ? 'bold' : 'inherit',
+  };
+
+  const inputStyles = {
+    borderRadius: attributes.styles.borderRadius ? `${attributes.styles.borderRadius}px` : 0,
+    borderWidth: attributes.styles.borderSize ? `${attributes.styles.borderSize}px` : '1px',
+    borderColor: attributes.styles.borderColor || 'initial',
+  };
+
+  if (attributes.styles.fullWidth) {
+    inputStyles.width = '100%';
+  }
+
+  if (attributes.styles.backgroundColor) {
+    inputStyles.backgroundColor = attributes.styles.backgroundColor;
+  }
+
   const getTextArea = (placeholder) => (
     <textarea
-      id="custom_text"
+      id={clientId}
       className="mailpoet_textarea"
       name="custom_text"
       disabled
-      data-automation-id="editor_custom_text_input"
+      data-automation-id="editor_custom_textarea_input"
       value={placeholder}
       rows={attributes.lines}
+      style={inputStyles}
     />
   );
 
@@ -125,7 +144,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
       {attributes.labelWithinInput ? (getTextArea(formatLabel(attributes))
       ) : (
         <>
-          <label className="mailpoet_textarea_label" data-automation-id="editor_custom_text_label" htmlFor="custom_text">
+          <label className="mailpoet_textarea_label" data-automation-id="editor_custom_text_label" htmlFor={clientId} style={labelStyles}>
             {formatLabel(attributes.label, attributes.mandatory)}
           </label>
           {getTextArea('')}
