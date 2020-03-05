@@ -52,7 +52,7 @@ class Styles {
 
 .mailpoet_text,
 .mailpoet_textarea {
-  width: 100%;
+  width: 200px;
 }
 
 .mailpoet_checkbox {
