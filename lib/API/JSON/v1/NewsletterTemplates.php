@@ -34,17 +34,18 @@ class NewsletterTemplates extends APIEndpoint {
   }
 
   public function get($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $template = NewsletterTemplate::findOne($id);
-    if ($template instanceof NewsletterTemplate) {
-      return $this->successResponse(
-        $template->asArray()
-      );
-    } else {
+    $template = isset($data['id'])
+      ? $this->newsletterTemplatesRepository->findOneById((int)$data['id'])
+      : null;
+
+    if (!$template) {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet'),
       ]);
     }
+
+    $data = $this->newsletterTemplatesResponseBuilder->build($template);
+    return $this->successResponse($data);
   }
 
   public function getAll() {
