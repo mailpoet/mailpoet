@@ -8,8 +8,8 @@ import makeDefaultState from './make_default_state';
 
 export const STORE_NAME = 'mailpoet-settings';
 
-export const initStore = (data: Settings) => registerStore(STORE_NAME, {
-  reducer: createReducer(makeDefaultState(data)),
+export const initStore = (window: any) => registerStore(STORE_NAME, {
+  reducer: createReducer(makeDefaultState(window)),
   actions,
   selectors,
   controls,
