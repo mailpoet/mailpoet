@@ -9,6 +9,7 @@ use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Listing;
 use MailPoet\Mailer\Mailer as MailerFactory;
 use MailPoet\Mailer\MetaInfo;
@@ -16,7 +17,6 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
-use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
@@ -25,6 +25,7 @@ use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -183,9 +184,9 @@ class Newsletters extends APIEndpoint {
     }
 
     if (!empty($data['template_id'])) {
-      $template = NewsletterTemplate::whereEqual('id', $data['template_id'])->findOne();
-      if ($template instanceof NewsletterTemplate) {
-        $data['body'] = $template->body;
+      $template = ContainerWrapper::getInstance()->get(NewsletterTemplatesRepository::class)->findOneById($data['template_id']);
+      if ($template) {
+        $data['body'] = json_encode($template->getBody());
       }
       unset($data['template_id']);
     }
@@ -582,9 +583,9 @@ class Newsletters extends APIEndpoint {
     } else {
       // try to load template data
       $templateId = (isset($data['template']) ? (int)$data['template'] : false);
-      $template = NewsletterTemplate::findOne($templateId);
-      if ($template instanceof NewsletterTemplate) {
-        $newsletter->body = $template->body;
+      $template = ContainerWrapper::getInstance()->get(NewsletterTemplatesRepository::class)->findOneById($templateId);
+      if ($template) {
+        $newsletter->body = json_encode($template->getBody());
       } else {
         $newsletter->body = [];
       }
