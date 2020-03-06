@@ -30,7 +30,6 @@ class SavePostNotificationEmailAsTemplateCest {
     $i->click($saveTemplateOption);
     $i->waitForElement($saveTemplateButton);
     $i->fillField('template_name', $templateTitle);
-    $i->fillField('template_description', $templateDescr);
     $i->click($saveTemplateButton);
     $i->waitForText('Template has been saved.');
 

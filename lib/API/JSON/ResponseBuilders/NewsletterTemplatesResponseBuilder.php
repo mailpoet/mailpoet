@@ -13,7 +13,6 @@ class NewsletterTemplatesResponseBuilder {
       'categories' => $template->getCategories(),
       'thumbnail' => $template->getThumbnail(),
       'name' => $template->getName(),
-      'description' => $template->getDescription(),
       'readonly' => $template->getReadonly(),
       'body' => $template->getBody(),
       'created_at' => $template->getCreatedAt()->format(self::DATE_FORMAT),
@@ -34,7 +33,6 @@ class NewsletterTemplatesResponseBuilder {
         'categories' => $template->getCategories(),
         'thumbnail' => $template->getThumbnail(),
         'name' => $template->getName(),
-        'description' => $template->getDescription(),
         'readonly' => $template->getReadonly(),
       ];
     }
