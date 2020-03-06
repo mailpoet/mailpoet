@@ -24,7 +24,6 @@ class SaveNewsletterAsTemplateCest {
     $i->click('[data-automation-id="newsletter_save_options_toggle"]');
     $i->click('[data-automation-id="newsletter_save_as_template_option"]');
     $i->fillField(['name' => 'template_name'], $templateName);
-    $i->fillField(['name' => 'template_description'], $templateDescription);
     $i->click('[data-automation-id="newsletter_save_as_template_button"]');
     $i->waitForText('Template has been saved');
 

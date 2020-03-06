@@ -37,12 +37,6 @@ class NewsletterTemplateEntity {
   private $categories = '[]';
 
   /**
-   * @ORM\Column(type="string")
-   * @var string
-   */
-  private $description = '';
-
-  /**
    * @ORM\Column(type="json")
    * @Assert\NotBlank()
    * @var array|null
@@ -89,14 +83,6 @@ class NewsletterTemplateEntity {
 
   public function setCategories(string $categories) {
     $this->categories = $categories;
-  }
-
-  public function getDescription(): string {
-    return $this->description;
-  }
-
-  public function setDescription(string $description) {
-    $this->description = $description;
   }
 
   /**

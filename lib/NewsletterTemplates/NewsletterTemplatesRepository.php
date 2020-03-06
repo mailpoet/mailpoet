@@ -14,6 +14,8 @@ use MailPoet\Entities\NewsletterTemplateEntity;
  * @method void remove(NewsletterTemplateEntity $entity)
  */
 class NewsletterTemplatesRepository extends Repository {
+  const RECENTLY_SENT_CATEGORIES = '["recent"]';
+
   protected function getEntityClassName() {
     return NewsletterTemplateEntity::class;
   }
@@ -23,7 +25,7 @@ class NewsletterTemplatesRepository extends Repository {
    */
   public function findAllForListing(): array {
     return $this->doctrineRepository->createQueryBuilder('nt')
-      ->select('PARTIAL nt.{id,categories,thumbnail,name,description,readonly}')
+      ->select('PARTIAL nt.{id,categories,thumbnail,name,readonly}')
       ->addOrderBy('nt.readonly', 'ASC')
       ->addOrderBy('nt.createdAt', 'DESC')
       ->addOrderBy('nt.id', 'DESC')
