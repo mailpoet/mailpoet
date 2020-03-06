@@ -211,3 +211,10 @@ export function* blocksChangedInBlockEditor(blocks) {
     blocks,
   };
 }
+
+export function* applyStylesToAllTextInputs(styles) {
+  yield {
+    type: 'APPLY_STYLES_TO_ALL_TEXT_INPUTS',
+    styles,
+  };
+}
