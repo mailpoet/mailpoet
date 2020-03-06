@@ -25,17 +25,17 @@ class FormWithColumnsCest {
 
     $i->click('.block-list-appender button');// CLICK the big button that adds new blocks
     $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
-    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(3) .components-panel__body-toggle'); // toggle layout
+    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(1) .components-panel__body-toggle'); // toggle layout
     $i->click('.editor-block-list-item-columns'); // columns block
     $i->waitForElement('.block-editor-block-variation-picker__variations');
     $i->click('.block-editor-block-variation-picker__variations li:first-child button');
     $i->waitForElement('.block-editor-inner-blocks');
     $i->click('.block-editor-inner-blocks .block-list-appender button'); // CLICK the big button in column that adds new blocks
-    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(2) .components-panel__body-toggle'); // toggle fields
+    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(3) .components-panel__body-toggle'); // toggle fields
     $i->click('.editor-block-list-item-mailpoet-form-first-name-input'); // add first name block to the editor
     $i->click('.block-editor-inner-blocks .block-list-appender button');// CLICK the big button in column that adds new blocks
     $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
-    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(2) .components-panel__body-toggle'); // toggle fields, get the second field, first one is now "Most Used"
+    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(3) .components-panel__body-toggle'); // toggle fields, get the second field, first one is now "Most Used"
     $i->click('.editor-block-list-item-mailpoet-form-last-name-input'); // add last name block to the editor
     $i->seeNoJSErrors();
     $i->click('[data-automation-id="form_save_button"]');
