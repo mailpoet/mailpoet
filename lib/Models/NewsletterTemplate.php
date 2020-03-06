@@ -29,20 +29,4 @@ class NewsletterTemplate extends Model {
       'required' => WPFunctions::get()->__('The template body cannot be empty.', 'mailpoet'),
     ]);
   }
-
-  public static function cleanRecentlySent($data) {
-    if (!empty($data['categories']) && $data['categories'] === self::RECENTLY_SENT_CATEGORIES) {
-      $ids = parent::where('categories', self::RECENTLY_SENT_CATEGORIES)
-        ->select('id')
-        ->orderByDesc('id')
-        ->limit(self::RECENTLY_SENT_COUNT)
-        ->findMany();
-      $ids = array_map(function ($template) {
-        return $template->id;
-      }, $ids);
-      parent::where('categories', self::RECENTLY_SENT_CATEGORIES)
-        ->whereNotIn('id', $ids)
-        ->deleteMany();
-    }
-  }
 }

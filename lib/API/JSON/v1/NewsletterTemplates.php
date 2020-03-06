@@ -6,7 +6,6 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\ResponseBuilders\NewsletterTemplatesResponseBuilder;
 use MailPoet\Config\AccessControl;
-use MailPoet\Models\NewsletterTemplate;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -58,7 +57,9 @@ class NewsletterTemplates extends APIEndpoint {
     ignore_user_abort(true);
     try {
       $template = $this->newsletterTemplatesRepository->createOrUpdate($data);
-      NewsletterTemplate::cleanRecentlySent($data);
+      if (!empty($data['categories']) && $data['categories'] === NewsletterTemplatesRepository::RECENTLY_SENT_CATEGORIES) {
+        $this->newsletterTemplatesRepository->cleanRecentlySent();
+      }
       $data = $this->newsletterTemplatesResponseBuilder->build($template);
       return $this->successResponse($data);
     } catch (\Throwable $e) {
