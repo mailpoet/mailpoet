@@ -84,6 +84,9 @@ describe('Blocks to Form Body', () => {
           inheritFromTheme: false,
           bold: true,
           backgroundColor: '#aaaaaa',
+          borderRadius: 23,
+          borderSize: 4,
+          borderColor: '#dddddd',
         },
       },
     };
@@ -98,6 +101,9 @@ describe('Blocks to Form Body', () => {
       full_width: '0',
       bold: '1',
       background_color: '#aaaaaa',
+      border_radius: 23,
+      border_size: 4,
+      border_color: '#dddddd',
     });
   });
 

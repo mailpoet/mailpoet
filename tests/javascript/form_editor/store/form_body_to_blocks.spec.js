@@ -133,6 +133,9 @@ describe('Form Body To Blocks', () => {
       full_width: '0',
       bold: '1',
       background_color: '#ffffff',
+      border_size: '4',
+      border_radius: '20',
+      border_color: '#cccccc',
     };
 
     const map = formBodyToBlocksFactory(colorDefinitions, [customFieldText]);
@@ -149,6 +152,9 @@ describe('Form Body To Blocks', () => {
       inheritFromTheme: false,
       bold: true,
       backgroundColor: '#ffffff',
+      borderSize: 4,
+      borderRadius: 20,
+      borderColor: '#cccccc',
     });
   });
 
