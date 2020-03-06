@@ -28,7 +28,7 @@ class Shortcodes {
     // match: [category:shortcode] or [category|category|...:shortcode]
     // dot not match: [category://shortcode] - avoids matching http/ftp links
     $regex = sprintf(
-      '/\[%s:(?!\/\/).*?\]/ism',
+      '/\[%s:(?!\/\/).*?\]/i',
       ($categories) ? '(?:' . $categories . ')' : '(?:\w+)'
     );
     preg_match_all($regex, $content, $shortcodes);
