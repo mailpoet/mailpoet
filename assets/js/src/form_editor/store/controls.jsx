@@ -18,6 +18,15 @@ const formatApiErrorMessage = (response) => {
   return errorMessage;
 };
 
+// Recursively apply callback on every block in blocks tree
+const mapBlocks = (blocks, callback) => blocks.map((block) => {
+  const result = callback(block);
+  if (block.innerBlocks) {
+    result.innerBlocks = mapBlocks(block.innerBlocks, callback);
+  }
+  return result;
+});
+
 export default {
   SAVE_FORM() {
     if (select('mailpoet-form-editor').getIsFormSaving()) {
@@ -130,6 +139,21 @@ export default {
       .fail((response) => {
         dispatch('mailpoet-form-editor').deleteCustomFieldFailed(formatApiErrorMessage(response));
       });
+  },
+
+  APPLY_STYLES_TO_ALL_TEXT_INPUTS(actionData) {
+    const currentBlocks = select('mailpoet-form-editor').getFormBlocks();
+    const updatedBlocks = mapBlocks(currentBlocks, (block) => {
+      const updatedBlock = { ...block };
+      if (
+        ['mailpoet-form/last-name-input', 'mailpoet-form/first-name-input', 'mailpoet-form/email-input'].includes(block.name)
+        || block.name.startsWith('mailpoet-form/custom-text')
+      ) {
+        updatedBlock.attributes.styles = actionData.styles;
+      }
+      return updatedBlock;
+    });
+    dispatch('core/block-editor').resetBlocks(updatedBlocks);
   },
 
   /**

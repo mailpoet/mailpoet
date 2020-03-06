@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
 import {
+  Button,
   ColorIndicator,
   ColorPalette,
   Panel,
@@ -8,7 +9,7 @@ import {
   RangeControl,
   ToggleControl,
 } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { partial } from 'underscore';
 import PropTypes from 'prop-types';
 
@@ -27,6 +28,8 @@ const InputStylesSettings = ({
     },
     []
   );
+
+  const { applyStylesToAllTextInputs } = useDispatch('mailpoet-form-editor');
 
   const updateStyles = (property, value) => {
     const updated = { ...localStyles };
@@ -108,6 +111,9 @@ const InputStylesSettings = ({
             </div>
           </>
         ) : null}
+        <Button isPrimary onClick={() => applyStylesToAllTextInputs(localStyles)}>
+          {MailPoet.I18n.t('formSettingsApplyToAll')}
+        </Button>
       </PanelBody>
     </Panel>
   );
