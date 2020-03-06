@@ -6,6 +6,8 @@ use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterTemplateEntity;
 
+use function MailPoetVendor\array_column;
+
 /**
  * @method NewsletterTemplateEntity[] findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null)
  * @method NewsletterTemplateEntity|null findOneBy(array $criteria, array $orderBy = null)
@@ -15,6 +17,7 @@ use MailPoet\Entities\NewsletterTemplateEntity;
  */
 class NewsletterTemplatesRepository extends Repository {
   const RECENTLY_SENT_CATEGORIES = '["recent"]';
+  const RECENTLY_SENT_COUNT = 12;
 
   protected function getEntityClassName() {
     return NewsletterTemplateEntity::class;
@@ -65,5 +68,27 @@ class NewsletterTemplatesRepository extends Repository {
 
     $this->entityManager->flush();
     return $template;
+  }
+
+  public function cleanRecentlySent() {
+    // fetch 'RECENTLY_SENT_COUNT' of most recent template IDs in 'RECENTLY_SENT_CATEGORIES'
+    $recentIds = $this->doctrineRepository->createQueryBuilder('nt')
+      ->select('nt.id')
+      ->where('nt.categories = :categories')
+      ->setParameter('categories', self::RECENTLY_SENT_CATEGORIES)
+      ->orderBy('nt.id', 'DESC')
+      ->setMaxResults(self::RECENTLY_SENT_COUNT)
+      ->getQuery()
+      ->getResult();
+
+    // delete all 'RECENTLY_SENT_CATEGORIES' templates except the latest ones selected above
+    $this->entityManager->createQueryBuilder()
+      ->delete(NewsletterTemplateEntity::class, 'nt')
+      ->where('nt.categories = :categories')
+      ->andWhere('nt.id NOT IN (:recentIds)')
+      ->setParameter('categories', self::RECENTLY_SENT_CATEGORIES)
+      ->setParameter('recentIds', array_column($recentIds, 'id'))
+      ->getQuery()
+      ->execute();
   }
 }
