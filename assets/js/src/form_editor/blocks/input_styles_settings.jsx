@@ -5,6 +5,7 @@ import {
   ColorPalette,
   Panel,
   PanelBody,
+  RangeControl,
   ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -71,6 +72,40 @@ const InputStylesSettings = ({
               checked={localStyles.bold || false}
               onChange={partial(updateStyles, 'bold')}
             />
+            <RangeControl
+              label={MailPoet.I18n.t('formSettingsBorderSize')}
+              value={localStyles.borderSize}
+              min={0}
+              max={10}
+              allowReset
+              onChange={partial(updateStyles, 'borderSize')}
+            />
+            <RangeControl
+              label={MailPoet.I18n.t('formSettingsBorderRadius')}
+              value={localStyles.borderRadius}
+              min={0}
+              max={40}
+              allowReset
+              onChange={partial(updateStyles, 'borderRadius')}
+            />
+            <div>
+              <h3 className="mailpoet-styles-settings-heading">
+                {MailPoet.I18n.t('formSettingsBorderColor')}
+                {
+                  localStyles.borderColor !== undefined
+                  && (
+                    <ColorIndicator
+                      colorValue={styles.borderColor}
+                    />
+                  )
+                }
+              </h3>
+              <ColorPalette
+                value={localStyles.borderColor}
+                onChange={partial(updateStyles, 'borderColor')}
+                colors={settingsColors}
+              />
+            </div>
           </>
         ) : null}
       </PanelBody>

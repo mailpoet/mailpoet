@@ -11,6 +11,15 @@ const mapBlockStyles = (styles) => {
   if (has(styles, 'backgroundColor') && styles.backgroundColor) {
     mappedStyles.background_color = styles.backgroundColor;
   }
+  if (has(styles, 'borderSize') && styles.borderSize !== undefined) {
+    mappedStyles.border_size = styles.borderSize;
+  }
+  if (has(styles, 'borderRadius') && styles.borderRadius !== undefined) {
+    mappedStyles.border_radius = styles.borderRadius;
+  }
+  if (has(styles, 'borderColor') && styles.borderColor) {
+    mappedStyles.border_color = styles.borderColor;
+  }
   return mappedStyles;
 };
 
