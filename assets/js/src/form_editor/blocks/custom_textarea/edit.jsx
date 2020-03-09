@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   Panel,
   PanelBody, SelectControl,
@@ -125,16 +125,19 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
     inputStyles.backgroundColor = attributes.styles.backgroundColor;
   }
 
+  const textarea = useRef(null);
   const getTextArea = (placeholder) => (
     <textarea
       id={clientId}
+      ref={textarea}
       className="mailpoet_textarea"
       name="custom_text"
       data-automation-id="editor_custom_textarea_input"
       value={placeholder}
       rows={attributes.lines}
       style={inputStyles}
-      readOnly
+      onChange={() => null}
+      onFocus={() => textarea.current.blur()}
     />
   );
 
