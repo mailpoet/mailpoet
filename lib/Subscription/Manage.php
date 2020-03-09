@@ -45,10 +45,8 @@ class Manage {
       $subscriber = Subscriber::where('email', $subscriberData['email'])->findOne();
       if ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) {
         if ($subscriberData['email'] !== Pages::DEMO_EMAIL) {
-          if (!empty($subscriberData['segments'])) {
-            $this->updateSubscriptions($subscriber, $subscriberData['segments']);
-            unset($subscriberData['segments']);
-          }
+          $this->updateSubscriptions($subscriber, $subscriberData);
+          unset($subscriberData['segments']);
           $subscriber = Subscriber::createOrUpdate($this->filterOutEmptyMandatoryFields($subscriberData));
           $subscriber->getErrors();
         }
@@ -58,7 +56,11 @@ class Manage {
     $this->urlHelper->redirectBack();
   }
 
-  private function updateSubscriptions(Subscriber $subscriber, array $segmentsIds) {
+  private function updateSubscriptions(Subscriber $subscriber, array $subscriberData) {
+    $segmentsIds = [];
+    if (isset($subscriberData['segments']) && is_array($subscriberData['segments'])) {
+      $segmentsIds = $subscriberData['segments'];
+    }
     $subscriber->withSubscriptions();
     $allowedSegments = $this->settings->get('subscription.segments', false);
     $subscriptionsSegmentsIds = [];
