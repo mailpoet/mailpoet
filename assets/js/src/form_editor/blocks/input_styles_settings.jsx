@@ -10,7 +10,7 @@ import {
   ToggleControl,
 } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { partial } from 'underscore';
+import { partial } from 'lodash';
 import PropTypes from 'prop-types';
 
 const InputStylesSettings = ({
