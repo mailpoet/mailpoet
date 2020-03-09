@@ -107,21 +107,21 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
     </InspectorControls>
   );
 
-  const labelStyles = {
+  const labelStyles = !attributes.styles.inheritFromTheme ? {
     fontWeight: attributes.styles.bold ? 'bold' : 'inherit',
-  };
+  } : {};
 
-  const inputStyles = {
+  const inputStyles = !attributes.styles.inheritFromTheme ? {
     borderRadius: attributes.styles.borderRadius ? `${attributes.styles.borderRadius}px` : 0,
     borderWidth: attributes.styles.borderSize ? `${attributes.styles.borderSize}px` : '1px',
     borderColor: attributes.styles.borderColor || 'initial',
-  };
+  } : {};
 
   if (attributes.styles.fullWidth) {
     inputStyles.width = '100%';
   }
 
-  if (attributes.styles.backgroundColor) {
+  if (attributes.styles.backgroundColor && !attributes.styles.inheritFromTheme) {
     inputStyles.backgroundColor = attributes.styles.backgroundColor;
   }
 

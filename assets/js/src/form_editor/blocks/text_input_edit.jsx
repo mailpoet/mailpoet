@@ -14,21 +14,21 @@ const TextInputEdit = ({
   const input = useRef(null);
   const id = `${name}_${Math.random().toString(36).substring(2, 15)}`;
 
-  const labelStyles = {
+  const labelStyles = !styles.inheritFromTheme ? {
     fontWeight: styles.bold ? 'bold' : 'inherit',
-  };
+  } : {};
 
-  const inputStyles = {
+  const inputStyles = !styles.inheritFromTheme ? {
     borderRadius: styles.borderRadius ? `${styles.borderRadius}px` : 0,
     borderWidth: styles.borderSize ? `${styles.borderSize}px` : '1px',
     borderColor: styles.borderColor || 'initial',
-  };
+  } : {};
 
   if (styles.fullWidth) {
     inputStyles.width = '100%';
   }
 
-  if (styles.backgroundColor) {
+  if (styles.backgroundColor && !styles.inheritFromTheme) {
     inputStyles.backgroundColor = styles.backgroundColor;
   }
 
