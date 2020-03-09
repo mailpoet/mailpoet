@@ -790,4 +790,7 @@ parameters:
 			count: 1
 			path: ../../tests/integration/_bootstrap.php
 
-
+		-
+			message: "#^Parameter \\#1 \\$newsletter of method MailPoet\\\\Entities\\\\NewsletterTemplateEntity\\:\\:setNewsletter\\(\\) expects MailPoet\\\\Entities\\\\NewsletterEntity\\|null, object given\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/NewsletterTemplatesTest.php
