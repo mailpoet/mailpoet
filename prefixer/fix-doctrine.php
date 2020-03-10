@@ -28,6 +28,13 @@ if (strpos($data, '// mp-fixed') === false) {
   file_put_contents($file, $data);
 }
 
+// apply https://github.com/doctrine/common/commit/59374594248862ccfb418bbb5fc2cf91c5ef8dd0#diff-ce03ab9b396edcbb313c54234c20e0de
+// to our version of Doctrine - when we can upgrade to Doctrine\Common >= v2.11.0, this patch can be removed
+$file = __DIR__ . '/../vendor-prefixed/doctrine/common/lib/Doctrine/Common/Proxy/ProxyGenerator.php';
+$data = file_get_contents($file);
+$data = str_replace('$code = \\file($method->getDeclaringClass()->getFileName());', '$code = \\file($method->getFileName());', $data);
+file_put_contents($file, $data);
+
 // cleanup file types by extension
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name '*.xsd' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'phpstan.neon' -delete");
