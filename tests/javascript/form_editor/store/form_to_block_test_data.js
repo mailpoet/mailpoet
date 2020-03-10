@@ -226,3 +226,8 @@ export const nestedColumns = {
     },
   ],
 };
+export const headingInput = {
+  type: 'heading',
+  id: 'heading',
+  position: null,
+};
