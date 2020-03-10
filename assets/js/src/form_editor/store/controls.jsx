@@ -7,6 +7,7 @@ import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name
 import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
 import mapFormDataBeforeSaving from './map_form_data_before_saving.jsx';
+import findBlock from './find_block.jsx';
 
 const formatApiErrorMessage = (response) => {
   let errorMessage = null;
@@ -16,21 +17,6 @@ const formatApiErrorMessage = (response) => {
   }
   return errorMessage;
 };
-
-const findBlock = (blocks, name) => (
-  blocks.reduce((result, block) => {
-    if (result) {
-      return result;
-    }
-    if (block.name === name) {
-      return block;
-    }
-    if (Array.isArray(block.innerBlocks) && block.innerBlocks.length) {
-      return findBlock(block.innerBlocks, name);
-    }
-    return null;
-  }, null)
-);
 
 export default {
   SAVE_FORM() {

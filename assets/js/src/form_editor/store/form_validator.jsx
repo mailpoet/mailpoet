@@ -1,3 +1,5 @@
+import findBlock from './find_block.jsx';
+
 export default (formData, formBlocks) => {
   if (!formData || !formData.settings || !Array.isArray(formData.settings.segments)) {
     throw new Error('formData.settings.segments are expected to be an array.');
@@ -9,8 +11,8 @@ export default (formData, formBlocks) => {
   if (!formData.settings.segments || formData.settings.segments.length === 0) {
     errors.push('missing-lists');
   }
-  const emailInput = formBlocks.find((block) => (block.name === 'mailpoet-form/email-input'));
-  const submit = formBlocks.find((block) => (block.name === 'mailpoet-form/submit-button'));
+  const emailInput = findBlock(formBlocks, 'mailpoet-form/email-input');
+  const submit = findBlock(formBlocks, 'mailpoet-form/submit-button');
   if (!emailInput) {
     errors.push('missing-email-input');
   }

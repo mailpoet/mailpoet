@@ -21,6 +21,27 @@ const submitBlock = {
   },
 };
 
+const columns = {
+  clientId: 'columns-1',
+  name: 'core/columns',
+  isValid: true,
+  attributes: {
+    verticalAlignment: 'center',
+  },
+  innerBlocks: [
+    {
+      clientId: 'column-1-1',
+      name: 'core/column',
+      isValid: true,
+      attributes: {
+        width: 66.66,
+        verticalAlignment: 'center',
+      },
+      innerBlocks: [emailBlock, submitBlock],
+    },
+  ],
+};
+
 describe('Form validator', () => {
   it('Should return no errors for valid data', () => {
     const formData = {
@@ -29,6 +50,17 @@ describe('Form validator', () => {
       },
     };
     const blocks = [emailBlock, submitBlock];
+    const result = validate(formData, blocks);
+    expect(result).to.be.empty;
+  });
+
+  it('Should validate form data with nested email and submit', () => {
+    const formData = {
+      settings: {
+        segments: [1],
+      },
+    };
+    const blocks = [columns];
     const result = validate(formData, blocks);
     expect(result).to.be.empty;
   });
