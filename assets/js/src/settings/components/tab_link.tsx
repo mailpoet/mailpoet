@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import classnames from 'classnames';
 import React, { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
@@ -15,7 +15,7 @@ export default (props: Props) => (
     to={`/${props.name}`}
     onClick={() => trackTabClicked(props.name)}
     data-automation-id={props.automationId}
-    className={cn('nav-tab', { 'nav-tab-active': props.name === props.current })}
+    className={classnames('nav-tab', { 'nav-tab-active': props.name === props.current })}
   >
     {props.children}
   </Link>
