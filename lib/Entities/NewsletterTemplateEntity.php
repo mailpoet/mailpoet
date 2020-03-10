@@ -4,6 +4,7 @@ namespace MailPoet\Entities;
 
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
+use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
@@ -16,6 +17,7 @@ class NewsletterTemplateEntity {
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
   use UpdatedAtTrait;
+  use SafeToOneAssociationLoadTrait;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
@@ -59,6 +61,7 @@ class NewsletterTemplateEntity {
    * @return NewsletterEntity|null
    */
   public function getNewsletter() {
+    $this->safelyLoadToOneAssociation('newsletter');
     return $this->newsletter;
   }
 
