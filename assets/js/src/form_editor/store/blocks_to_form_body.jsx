@@ -105,6 +105,20 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
       }
       const childrenCount = parent ? parent.innerBlocks.length : 1;
       switch (block.name) {
+        case 'core/heading':
+          return {
+            position: (index + 1).toString(),
+            type: 'heading',
+            id: 'heading',
+            params: {
+              content: block.attributes.content,
+              level: block.attributes.level,
+              align: block.attributes.align || 'left',
+              text_color: block.attributes.textColor || '#000',
+              anchor: block.attributes.anchor || null,
+              class_name: block.attributes.className || null,
+            },
+          };
         case 'core/column':
           return {
             position: (index + 1).toString(),
