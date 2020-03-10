@@ -16,3 +16,9 @@
 .is-sidebar-opened .block-editor-editor-skeleton__sidebar {
   overflow: hidden;
 }
+
+// Fix for settings toolbar placement in header
+.edit-post-header {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
