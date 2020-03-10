@@ -22,3 +22,20 @@
   flex-direction: row-reverse;
   justify-content: space-between;
 }
+
+// Html blocks contains iframe which captures clicks and in some cases prevents selecting block.
+// This adds an transparent overlay over the iframe.
+.mailpoet-html-block-editor-content-wrapper {
+  position: relative;
+
+  &:after {
+    background: transparent;
+    content: ' ';
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}

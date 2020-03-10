@@ -64,7 +64,7 @@ const CustomHtmlEdit = ({ attributes, setAttributes }) => {
   return (
     <ParagraphEdit>
       {inspectorControls}
-      <div>
+      <div className="mailpoet-html-block-editor-content-wrapper">
         <SandBox html={renderedContent} styles={styles} key={key} />
       </div>
     </ParagraphEdit>
