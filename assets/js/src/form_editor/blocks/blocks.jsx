@@ -14,6 +14,7 @@ import * as html from './html/html.jsx';
 import * as addCustomField from './add_custom_field/add_custom_field.jsx';
 import * as columns from './columns/columns.jsx';
 import * as column from './columns/column.jsx';
+import * as heading from './heading/heading.jsx';
 
 export const registerCustomFieldBlock = (customField) => {
   const namesMap = getCustomFieldBlocksSettings(customField);
@@ -47,6 +48,7 @@ export const initBlocks = () => {
   registerBlockType(addCustomField.name, addCustomField.settings);
   registerBlockType(columns.name, columns.settings);
   registerBlockType(column.name, column.settings);
+  registerBlockType(heading.name, heading.settings);
 
   if (Array.isArray(customFields)) {
     customFields.forEach(registerCustomFieldBlock);
