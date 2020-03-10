@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { has } from 'lodash';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 
@@ -142,6 +143,19 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
         mapped.attributes.label = item.params.label ? item.params.label : '';
       }
       switch (item.id) {
+        case 'heading':
+          return {
+            ...mapped,
+            attributes: {
+              content: item.params?.content || '',
+              level: item.params?.level || 2,
+              align: item.params?.align,
+              textColor: item.params?.text_color,
+              anchor: item.params?.anchor,
+              className: item.params?.class_name,
+            },
+            name: 'core/heading',
+          };
         case 'email':
           return {
             ...mapped,

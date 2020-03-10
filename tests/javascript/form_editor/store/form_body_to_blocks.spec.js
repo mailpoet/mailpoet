@@ -15,6 +15,7 @@ import {
   customHtml,
   divider,
   nestedColumns,
+  headingInput,
 } from './form_to_block_test_data.js';
 
 const colorDefinitions = [{
@@ -389,5 +390,37 @@ describe('Form Body To Blocks', () => {
     };
     const [block] = formBodyToBlocks([nested]);
     expect(block.attributes.className).to.be.equal('custom-class');
+  });
+
+  it('It should map heading', () => {
+    const heading = { ...headingInput, position: '1' };
+
+    const [block] = formBodyToBlocks([heading]);
+    expect(block.attributes.content).to.be.equal('');
+    expect(block.attributes.level).to.be.equal(2);
+    expect(block.attributes.align).to.be.undefined;
+  });
+
+  it('It should map heading with data', () => {
+    const heading = {
+      ...headingInput,
+      position: '1',
+      params: {
+        text_color: 'vivid-red',
+        content: 'Content',
+        level: 1,
+        anchor: 'anchor',
+        align: 'right',
+        class_name: 'class',
+      },
+    };
+
+    const [block] = formBodyToBlocks([heading]);
+    expect(block.attributes.content).to.be.equal('Content');
+    expect(block.attributes.level).to.be.equal(1);
+    expect(block.attributes.align).to.be.equal('right');
+    expect(block.attributes.className).to.be.equal('class');
+    expect(block.attributes.anchor).to.be.equal('anchor');
+    expect(block.attributes.textColor).to.be.equal('vivid-red');
   });
 });
