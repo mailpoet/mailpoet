@@ -29,7 +29,6 @@ const colorDefinitions = [{
 
 const checkBodyInputBasics = (input) => {
   expect(input.id).to.be.a('string');
-  expect(parseInt(input.position, 10)).to.be.a('number');
   expect(input.type).to.be.a('string');
   expect(input.type).to.be.not.empty;
 };
@@ -51,9 +50,6 @@ describe('Blocks to Form Body', () => {
     expect(input.id).to.be.equal('email');
     expect(input.name).to.be.equal('Email');
     expect(input.type).to.be.equal('text');
-    expect(input.position).to.be.equal('1');
-    expect(input.unique).to.be.equal('0');
-    expect(input.static).to.be.equal('1');
     expect(input.params.label).to.be.equal('Email Address');
     expect(input.params.required).to.be.equal('1');
     expect(input.params.label_within).to.be.undefined;
@@ -73,9 +69,6 @@ describe('Blocks to Form Body', () => {
     expect(input.id).to.be.equal('last_name');
     expect(input.name).to.be.equal('Last name');
     expect(input.type).to.be.equal('text');
-    expect(input.position).to.be.equal('1');
-    expect(input.unique).to.be.equal('1');
-    expect(input.static).to.be.equal('0');
     expect(input.params.label).to.be.equal('Last Name');
     expect(input.params.required).to.be.undefined;
     expect(input.params.label_within).to.be.undefined;
@@ -97,9 +90,6 @@ describe('Blocks to Form Body', () => {
     expect(input.id).to.be.equal('first_name');
     expect(input.name).to.be.equal('First name');
     expect(input.type).to.be.equal('text');
-    expect(input.position).to.be.equal('1');
-    expect(input.unique).to.be.equal('1');
-    expect(input.static).to.be.equal('0');
     expect(input.params.label).to.be.equal('First Name');
     expect(input.params.required).to.be.undefined;
     expect(input.params.label_within).to.be.undefined;
@@ -133,9 +123,6 @@ describe('Blocks to Form Body', () => {
     expect(input.id).to.be.equal('submit');
     expect(input.name).to.be.equal('Submit');
     expect(input.type).to.be.equal('submit');
-    expect(input.position).to.be.equal('1');
-    expect(input.unique).to.be.equal('0');
-    expect(input.static).to.be.equal('1');
     expect(input.params.label).to.be.equal('Subscribe!');
   });
 
@@ -145,9 +132,6 @@ describe('Blocks to Form Body', () => {
     expect(divider.id).to.be.equal('divider');
     expect(divider.name).to.be.equal('Divider');
     expect(divider.type).to.be.equal('divider');
-    expect(divider.position).to.be.equal('1');
-    expect(divider.unique).to.be.equal('0');
-    expect(divider.static).to.be.equal('0');
     expect(divider.params).to.be.equal('');
   });
 
@@ -157,8 +141,6 @@ describe('Blocks to Form Body', () => {
     checkBodyInputBasics(divider2);
     expect(divider1.id).to.be.equal('divider');
     expect(divider2.id).to.be.equal('divider');
-    expect(divider1.position).to.be.equal('1');
-    expect(divider2.position).to.be.equal('2');
   });
 
   it('Should custom html block to form data', () => {
@@ -167,9 +149,6 @@ describe('Blocks to Form Body', () => {
     expect(html.id).to.be.equal('html');
     expect(html.name).to.be.equal('Custom text or HTML');
     expect(html.type).to.be.equal('html');
-    expect(html.position).to.be.equal('1');
-    expect(html.unique).to.be.equal('0');
-    expect(html.static).to.be.equal('0');
     expect(html.params.text).to.be.equal('HTML content');
     expect(html.params.nl2br).to.be.equal('1');
   });
@@ -193,7 +172,6 @@ describe('Blocks to Form Body', () => {
     expect(input.id).to.be.equal('1');
     expect(input.name).to.be.equal('Custom Field name');
     expect(input.type).to.be.equal('text');
-    expect(input.position).to.be.equal('1');
     expect(input.params.label).to.be.equal('Name of the street');
     expect(input.params.required).to.be.undefined;
     expect(input.params.label_within).to.be.undefined;
@@ -221,8 +199,6 @@ describe('Blocks to Form Body', () => {
     expect(input.id).to.be.equal('6');
     expect(input.name).to.be.equal('Custom Select');
     expect(input.type).to.be.equal('select');
-    expect(input.position).to.be.equal('1');
-    expect(input.unique).to.be.equal('1');
     expect(input.params.label).to.be.equal('Select');
     expect(input.params.values).to.be.an('Array').that.has.length(2);
     expect(input.params.values[0]).to.have.property('value', 'option 1');
@@ -250,8 +226,6 @@ describe('Blocks to Form Body', () => {
     expect(input.id).to.be.equal('2');
     expect(input.name).to.be.equal('Custom Field name');
     expect(input.type).to.be.equal('radio');
-    expect(input.position).to.be.equal('1');
-    expect(input.unique).to.be.equal('1');
     expect(input.params.label).to.be.equal('Options');
     expect(input.params.required).to.be.eq('1');
     expect(input.params.hide_label).to.eq('1');
@@ -316,8 +290,6 @@ describe('Blocks to Form Body', () => {
     expect(input.id).to.be.equal('3');
     expect(input.name).to.be.equal('Custom Checkbox');
     expect(input.type).to.be.equal('checkbox');
-    expect(input.position).to.be.equal('1');
-    expect(input.unique).to.be.equal('1');
     expect(input.params.label).to.be.equal('Checkbox');
     expect(input.params.required).to.be.be.undefined;
     expect(input.params.hide_label).to.be.undefined;
@@ -346,8 +318,6 @@ describe('Blocks to Form Body', () => {
     expect(input.id).to.be.equal('6');
     expect(input.name).to.be.equal('Custom Date');
     expect(input.type).to.be.equal('date');
-    expect(input.position).to.be.equal('1');
-    expect(input.unique).to.be.equal('1');
     expect(input.params.label).to.be.equal('Date');
     expect(input.params.required).to.be.undefined;
     expect(input.params.date_type).to.be.equal('month_year');
@@ -362,7 +332,6 @@ describe('Blocks to Form Body', () => {
     // First level
     expect(columns.body.length).to.be.equal(2);
     expect(columns.type).to.be.equal('columns');
-    expect(columns.position).to.be.equal('2');
     expect(columns.params.vertical_alignment).to.be.equal('center');
     const column1 = columns.body[0];
     const column2 = columns.body[1];

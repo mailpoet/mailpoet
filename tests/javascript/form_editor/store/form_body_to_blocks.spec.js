@@ -56,7 +56,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map email input to block', () => {
-    const [block] = formBodyToBlocks([{ ...emailInput, position: '1' }]);
+    const [block] = formBodyToBlocks([emailInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.include('email_');
     expect(block.name).to.be.equal('mailpoet-form/email-input');
@@ -65,22 +65,22 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map email with label within correctly', () => {
-    const email = { ...emailInput, position: '1' };
+    const email = { ...emailInput };
     email.params.label_within = '1';
     const [block] = formBodyToBlocks([email]);
     expect(block.attributes.labelWithinInput).to.be.equal(true);
   });
 
   it('Should add a label if label is missing in data', () => {
-    const input = { ...emailInput, position: '1' };
+    const input = { ...emailInput };
     delete input.params.label;
-    const [block] = formBodyToBlocks([{ ...emailInput, position: '1' }]);
+    const [block] = formBodyToBlocks([{ ...emailInput }]);
     checkBlockBasics(block);
     expect(block.attributes.label).to.be.equal('');
   });
 
   it('Should map first name input to block', () => {
-    const [block] = formBodyToBlocks([{ ...firstNameInput, position: '1' }]);
+    const [block] = formBodyToBlocks([firstNameInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('first_name_');
     expect(block.name).to.be.equal('mailpoet-form/first-name-input');
@@ -90,7 +90,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map first name with label within correctly', () => {
-    const input = { ...firstNameInput, position: '1' };
+    const input = { ...firstNameInput };
     input.params.label_within = '1';
     input.params.required = '1';
     const [block] = formBodyToBlocks([input]);
@@ -99,7 +99,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map last name input to block', () => {
-    const [block] = formBodyToBlocks([{ ...lastNameInput, position: '1' }]);
+    const [block] = formBodyToBlocks([lastNameInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('last_name_');
     expect(block.name).to.be.equal('mailpoet-form/last-name-input');
@@ -109,7 +109,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map last name with label within correctly', () => {
-    const input = { ...lastNameInput, position: '1' };
+    const input = { ...lastNameInput };
     input.params.label_within = '1';
     input.params.required = '1';
     const [block] = formBodyToBlocks([input]);
@@ -118,7 +118,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map segments input to block', () => {
-    const [block] = formBodyToBlocks([{ ...segmentsInput, position: '1' }]);
+    const [block] = formBodyToBlocks([segmentsInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('segments_');
     expect(block.name).to.be.equal('mailpoet-form/segment-select');
@@ -130,7 +130,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map segments input without values to block', () => {
-    const input = { ...segmentsInput, position: '1' };
+    const input = { ...segmentsInput };
     input.params.values = undefined;
     const [block] = formBodyToBlocks([input]);
     checkBlockBasics(block);
@@ -140,7 +140,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map submit button to block', () => {
-    const [block] = formBodyToBlocks([{ ...submitInput, position: '1' }]);
+    const [block] = formBodyToBlocks([submitInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('submit_');
     expect(block.name).to.be.equal('mailpoet-form/submit-button');
@@ -149,7 +149,7 @@ describe('Form Body To Blocks', () => {
 
   it('Should map dividers to blocks', () => {
     const [block1, block2] = formBodyToBlocks([
-      { ...divider, position: '1' },
+      { ...divider },
       { ...divider, position: '2' },
     ]);
     checkBlockBasics(block1);
@@ -162,7 +162,7 @@ describe('Form Body To Blocks', () => {
 
   it('Should map custom html to blocks', () => {
     const [block1, block2] = formBodyToBlocks([
-      { ...customHtml, position: '1', params: { text: '123', nl2br: '1' } },
+      { ...customHtml, params: { text: '123', nl2br: '1' } },
       { ...customHtml, position: '2', params: { text: 'nice one' } },
     ]);
     checkBlockBasics(block1);
@@ -191,7 +191,8 @@ describe('Form Body To Blocks', () => {
       updated_at: '2019-12-10T15:05:06+00:00',
     };
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
-    const [block] = map([{ ...customTextInput, position: '1' }]);
+    const [block] = map([{ ...customTextInput }]);
+
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('1_');
     expect(block.name).to.be.equal('mailpoet-form/custom-text-customfieldname');
@@ -219,7 +220,7 @@ describe('Form Body To Blocks', () => {
       updated_at: '2019-12-10T15:05:06+00:00',
     };
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
-    const [block] = map([{ ...customRadioInput, position: '1' }]);
+    const [block] = map([{ ...customRadioInput}]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('3_');
     expect(block.name).to.be.equal('mailpoet-form/custom-radio-name');
@@ -249,7 +250,7 @@ describe('Form Body To Blocks', () => {
       position: null,
     };
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
-    const [block] = map([{ ...customCheckboxInput, position: '1' }]);
+    const [block] = map([{ ...customCheckboxInput }]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('4_');
     expect(block.name).to.be.equal('mailpoet-form/custom-checkbox-customcheck');
@@ -278,7 +279,7 @@ describe('Form Body To Blocks', () => {
       position: null,
     };
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
-    const [block] = map([{ ...customSelectInput, position: '1' }]);
+    const [block] = map([{ ...customSelectInput }]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('5_');
     expect(block.name).to.be.equal('mailpoet-form/custom-select-customselect');
@@ -304,7 +305,7 @@ describe('Form Body To Blocks', () => {
       updated_at: '2019-12-13T15:22:07+00:00',
     };
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
-    const [block] = map([{ ...customDateInput, position: '1' }]);
+    const [block] = map([{ ...customDateInput }]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('6_');
     expect(block.name).to.be.equal('mailpoet-form/custom-date-customdate');
@@ -332,7 +333,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map nested columns', () => {
-    const email = { ...emailInput, position: '1' };
+    const email = { ...emailInput };
     const nested = { ...nestedColumns, position: '2' };
     const unknown = { id: 'unknown', position: '3' };
     const blocks = formBodyToBlocks([email, nested, unknown]);
@@ -361,7 +362,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map columns colors', () => {
-    const nested = { ...nestedColumns, position: '1' };
+    const nested = { ...nestedColumns };
     nested.params = {
       text_color: '#ffffff',
       background_color: '#000000',
@@ -384,7 +385,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('Should map class name', () => {
-    const nested = { ...nestedColumns, position: '1' };
+    const nested = { ...nestedColumns };
     nested.params = {
       class_name: 'custom-class',
     };
@@ -393,7 +394,7 @@ describe('Form Body To Blocks', () => {
   });
 
   it('It should map heading', () => {
-    const heading = { ...headingInput, position: '1' };
+    const heading = { ...headingInput };
 
     const [block] = formBodyToBlocks([heading]);
     expect(block.attributes.content).to.be.equal('');

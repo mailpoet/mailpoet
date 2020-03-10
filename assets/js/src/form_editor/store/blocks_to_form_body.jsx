@@ -7,7 +7,6 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
     ...mappedCommonProperties,
     id: block.attributes.customFieldId.toString(),
     name: customField.name,
-    unique: '1',
   };
   if (block.name.startsWith('mailpoet-form/custom-date')) {
     mapped.type = 'date';
@@ -87,12 +86,9 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
     if (!Array.isArray(customFields)) {
       throw new Error('Mapper expects customFields to be an array.');
     }
-    return blocks.map((block, index) => {
+    return blocks.map((block) => {
       const mapped = {
         type: 'text',
-        unique: '0',
-        static: '1',
-        position: (index + 1).toString(),
         params: {
           label: block.attributes.label,
         },
@@ -107,7 +103,6 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
       switch (block.name) {
         case 'core/heading':
           return {
-            position: (index + 1).toString(),
             type: 'heading',
             id: 'heading',
             params: {
@@ -121,7 +116,6 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
           };
         case 'core/column':
           return {
-            position: (index + 1).toString(),
             type: 'column',
             params: {
               class_name: block.attributes.className || null,
@@ -133,7 +127,6 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
           };
         case 'core/columns':
           return {
-            position: (index + 1).toString(),
             type: 'columns',
             body: mapBlocks(block.innerBlocks, block),
             params: {
@@ -165,16 +158,12 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
           return {
             ...mapped,
             id: 'first_name',
-            unique: '1',
-            static: '0',
             name: 'First name',
           };
         case 'mailpoet-form/last-name-input':
           return {
             ...mapped,
             id: 'last_name',
-            unique: '1',
-            static: '0',
             name: 'Last name',
           };
         case 'mailpoet-form/segment-select':
@@ -182,8 +171,6 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
             ...mapped,
             id: 'segments',
             type: 'segment',
-            unique: '1',
-            static: '0',
             name: 'List selection',
             params: {
               ...mapped.params,
@@ -207,7 +194,6 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
             id: 'divider',
             type: 'divider',
             name: 'Divider',
-            static: '0',
             params: '',
           };
         case 'mailpoet-form/html':
@@ -216,7 +202,6 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
             id: 'html',
             type: 'html',
             name: 'Custom text or HTML',
-            static: '0',
             params: {
               text: block.attributes && block.attributes.content ? block.attributes.content : '',
               nl2br: block.attributes && block.attributes.nl2br ? '1' : '0',
