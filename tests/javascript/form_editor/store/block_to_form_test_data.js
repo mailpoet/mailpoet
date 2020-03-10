@@ -161,6 +161,16 @@ export const customHtmlBlock = {
   },
 };
 
+export const headingBlock = {
+  clientId: 'd9dd2b88-d01f-4a5e-80a4-afaa74de1b00',
+  name: 'core/heading',
+  isValid: true,
+  attributes: {
+    content: '',
+    level: 2,
+  },
+};
+
 export const nestedColumns = {
   clientId: 'columns-1',
   name: 'core/columns',

@@ -14,6 +14,7 @@ import {
   customSelectBlock,
   dividerBlock,
   nestedColumns,
+  headingBlock,
 } from './block_to_form_test_data.js';
 
 const colorDefinitions = [{
@@ -257,6 +258,41 @@ describe('Blocks to Form Body', () => {
     expect(input.params.values).to.be.an('Array').that.has.length(2);
     expect(input.params.values[0]).to.have.property('value', 'option 1');
     expect(input.params.values[1]).to.have.property('value', 'option 2');
+  });
+
+  it('Should map minimal heading block', () => {
+    const [input] = formBlocksToBody([headingBlock]);
+    expect(input.type).to.be.equal('heading');
+    expect(input.id).to.be.a('string');
+    expect(input.params.content).to.be.equal('');
+    expect(input.params.level).to.be.equal(2);
+    expect(input.params.align).to.be.equal('left');
+    expect(input.params.text_color).to.be.equal('#000');
+    expect(input.params.anchor).to.be.be.null;
+    expect(input.params.class_name).to.be.null;
+  });
+
+  it('Should map full heading block', () => {
+    const [input] = formBlocksToBody([{
+      clientId: 'd9dd2b88-d01f-4a5e-80a4-afaa74de1b00',
+      name: 'core/heading',
+      isValid: true,
+      attributes: {
+        content: 'Heading content',
+        level: 3,
+        align: 'center',
+        textColor: 'red',
+        anchor: 'anchor',
+        className: 'class',
+      },
+    }]);
+    expect(input.type).to.be.equal('heading');
+    expect(input.params.content).to.be.equal('Heading content');
+    expect(input.params.level).to.be.equal(3);
+    expect(input.params.align).to.be.equal('center');
+    expect(input.params.text_color).to.be.equal('red');
+    expect(input.params.anchor).to.be.equal('anchor');
+    expect(input.params.class_name).to.be.equal('class');
   });
 
   it('Should map custom checkbox field', () => {
