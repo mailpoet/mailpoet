@@ -1,13 +1,21 @@
-import { Action, Settings } from './types';
+import { select } from '@wordpress/data';
+import { STORE_NAME } from '.';
+import { Action } from './types';
 
 export function setSetting(path: string[], value: any): Action {
   return { type: 'SET_SETTING', path, value };
 }
 
-export function* saveSettings(data: Settings) {
+export function* saveSettings() {
   yield { type: 'SAVE_STARTED' };
-  const error = yield { type: 'SEND_DATA_TO_API', data };
-  if (error) {
+  const data = select(STORE_NAME).getSettings();
+  const { success, error } = yield {
+    type: 'CALL_API',
+    endpoint: 'settings',
+    method: 'save',
+    data,
+  };
+  if (!success) {
     return { type: 'SAVE_FAILED', error };
   }
   yield { type: 'TRACK_SETTINGS_SAVED', data };
