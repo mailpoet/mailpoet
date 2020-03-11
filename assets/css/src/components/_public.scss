@@ -117,7 +117,7 @@ $form-columns-space-between: 20px;
     align-items: flex-start;
   }
 
-  @media (max-width: #{ ($form-break-small-width - 1) }) {
+  @include breakpoint-max-width(#{ ($form-break-small-width - 1) }) {
     @include maxWidthColumns;
   }
 
@@ -143,13 +143,13 @@ $form-columns-space-between: 20px;
     align-self: flex-end;
   }
 
-  @media (min-width: $form-break-small-width) {
+  @include breakpoint-min-width($form-break-small-width) {
     .mailpoet_form_form:not(.mailpoet_form_tight_container) .mailpoet_column_with_background & .mailpoet_paragraph:last-child {
       margin-bottom: 0 !important;
     }
   }
 
-  @media (max-width: #{ ($form-break-small-width - 1) }) {
+  @include breakpoint-max-width(#{ ($form-break-small-width - 1) }) {
     @include maxWidthColumn;
   }
 

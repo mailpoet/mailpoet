@@ -12,6 +12,7 @@
 // 2. Tools
 // Default mixins and functions. Still not producing any CSS.
 @import 'mixins/animations';
+@import 'mixins/breakpoints';
 @import 'mixins/clearfix';
 
 @import '../../../node_modules/select2/dist/css/select2';

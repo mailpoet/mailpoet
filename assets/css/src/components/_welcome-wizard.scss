@@ -29,7 +29,7 @@
     max-width: 100%;
   }
 
-  @media screen and (max-width: 782px) {
+  @include breakpoint-max-width(782px) {
     display: none;
   }
 }
@@ -46,7 +46,7 @@
   text-align: left;
   width: 50%;
 
-  @media screen and (max-width: 782px) {
+  @include breakpoint-max-width(782px) {
     padding: 30px;
     width: 100%;
   }
