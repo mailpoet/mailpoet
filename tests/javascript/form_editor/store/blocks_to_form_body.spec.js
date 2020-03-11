@@ -193,6 +193,7 @@ describe('Blocks to Form Body', () => {
       type: 'select',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
+
     const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
     const [input] = map([customSelectBlock]);
     checkBodyInputBasics(input);
@@ -284,6 +285,7 @@ describe('Blocks to Form Body', () => {
       type: 'checkbox',
       updated_at: '2019-12-13T15:22:07+00:00',
     };
+
     const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
     const [input] = map([customCheckBox]);
     checkBodyInputBasics(input);
@@ -312,6 +314,7 @@ describe('Blocks to Form Body', () => {
       type: 'date',
       updated_at: '2019-12-13T15:22:07+00:00',
     };
+
     const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
     const [input] = map([customDateBlock]);
     checkBodyInputBasics(input);
