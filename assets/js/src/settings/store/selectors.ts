@@ -28,3 +28,7 @@ export function hasWooCommerce(state: State) {
 export function isNewUser(state: State) {
   return state.flags.newUser;
 }
+
+export function isMssActive(state: State) {
+  return _.get(state, 'mta.method') === 'MailPoet';
+}
