@@ -17,6 +17,7 @@ const CustomFieldSettings = ({
   isDeleting,
   onCustomFieldDelete,
   onChange,
+  fieldType,
 }) => {
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValidate, setLocalValidate] = useState(validate);
@@ -33,7 +34,7 @@ const CustomFieldSettings = ({
     if (onChange) {
       onChange(localData, hasUnsavedChanges);
     }
-  }, [localData, onChange, hasUnsavedChanges]);
+  }, [localData, onChange, hasUnsavedChanges, fieldType]);
 
   return (
     <>
@@ -94,10 +95,12 @@ CustomFieldSettings.propTypes = {
   isDeleting: PropTypes.bool,
   onCustomFieldDelete: PropTypes.func,
   onChange: PropTypes.func,
+  fieldType: PropTypes.string,
 };
 
 CustomFieldSettings.defaultProps = {
   mandatory: false,
+  fieldType: '',
   isSaving: false,
   validate: '',
   isDeleting: false,

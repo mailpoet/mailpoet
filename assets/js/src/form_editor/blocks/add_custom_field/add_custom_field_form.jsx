@@ -87,6 +87,7 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
           <TextFieldSettings
             mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
             validate={fieldSettings.validate ? fieldSettings.validate : ''}
+            fieldType={fieldType}
             onChange={setFieldSettings}
           />
         );
