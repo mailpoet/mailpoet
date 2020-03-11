@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { formBodyToBlocks } from '../../../../assets/js/src/form_editor/store/form_body_to_blocks.jsx';
+import { formBodyToBlocksFactory } from '../../../../assets/js/src/form_editor/store/form_body_to_blocks.jsx';
 
 import {
   emailInput,
@@ -16,6 +16,18 @@ import {
   divider,
   nestedColumns,
 } from './form_to_block_test_data.js';
+
+const colorDefinitions = [{
+  name: 'Black',
+  slug: 'black',
+  color: '#000000',
+}, {
+  name: 'White',
+  slug: 'white',
+  color: '#ffffff',
+}];
+
+const formBodyToBlocks = formBodyToBlocksFactory(colorDefinitions, []);
 
 const checkBlockBasics = (block) => {
   expect(block.clientId).to.be.a('string');
@@ -36,10 +48,10 @@ describe('Form Body To Blocks', () => {
 
   it('Should throw an error for wrong custom fields input', () => {
     const error = 'Mapper expects customFields to be an array.';
-    expect(() => formBodyToBlocks([], null)).to.throw(error);
-    expect(() => formBodyToBlocks([], 'hello')).to.throw(error);
-    expect(() => formBodyToBlocks([], () => {})).to.throw(error);
-    expect(() => formBodyToBlocks([], 1)).to.throw(error);
+    expect(() => formBodyToBlocksFactory([], null)).to.throw(error);
+    expect(() => formBodyToBlocksFactory([], 'hello')).to.throw(error);
+    expect(() => formBodyToBlocksFactory([], () => {})).to.throw(error);
+    expect(() => formBodyToBlocksFactory([], 1)).to.throw(error);
   });
 
   it('Should map email input to block', () => {
@@ -177,7 +189,8 @@ describe('Form Body To Blocks', () => {
       type: 'text',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const [block] = formBodyToBlocks([{ ...customTextInput, position: '1' }], [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const [block] = map([{ ...customTextInput, position: '1' }]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.equal('1_0');
     expect(block.name).to.be.equal('mailpoet-form/custom-text-customfieldname');
@@ -204,7 +217,8 @@ describe('Form Body To Blocks', () => {
       type: 'radio',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const [block] = formBodyToBlocks([{ ...customRadioInput, position: '1' }], [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const [block] = map([{ ...customRadioInput, position: '1' }]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.equal('3_0');
     expect(block.name).to.be.equal('mailpoet-form/custom-radio-name');
@@ -233,7 +247,8 @@ describe('Form Body To Blocks', () => {
       },
       position: null,
     };
-    const [block] = formBodyToBlocks([{ ...customCheckboxInput, position: '1' }], [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const [block] = map([{ ...customCheckboxInput, position: '1' }]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.equal('4_0');
     expect(block.name).to.be.equal('mailpoet-form/custom-checkbox-customcheck');
@@ -261,7 +276,8 @@ describe('Form Body To Blocks', () => {
       },
       position: null,
     };
-    const [block] = formBodyToBlocks([{ ...customSelectInput, position: '1' }], [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const [block] = map([{ ...customSelectInput, position: '1' }]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.equal('5_0');
     expect(block.name).to.be.equal('mailpoet-form/custom-select-customselect');
@@ -286,7 +302,8 @@ describe('Form Body To Blocks', () => {
       type: 'date',
       updated_at: '2019-12-13T15:22:07+00:00',
     };
-    const [block] = formBodyToBlocks([{ ...customDateInput, position: '1' }], [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const [block] = map([{ ...customDateInput, position: '1' }]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.equal('6_0');
     expect(block.name).to.be.equal('mailpoet-form/custom-date-customdate');
@@ -345,16 +362,24 @@ describe('Form Body To Blocks', () => {
   it('Should map columns colors', () => {
     const nested = { ...nestedColumns, position: '1' };
     nested.params = {
-      text_color: 'vivid-red',
-      background_color: 'white',
-      custom_text_color: '#dd0000',
-      custom_background_color: '#ffffff',
+      text_color: '#ffffff',
+      background_color: '#000000',
     };
     const [block] = formBodyToBlocks([nested]);
-    expect(block.attributes.textColor).to.be.equal('vivid-red');
-    expect(block.attributes.backgroundColor).to.be.equal('white');
-    expect(block.attributes.customTextColor).to.be.equal('#dd0000');
-    expect(block.attributes.customBackgroundColor).to.be.equal('#ffffff');
+    expect(block.attributes.textColor).to.be.equal('white');
+    expect(block.attributes.backgroundColor).to.be.equal('black');
+    expect(block.attributes.customTextColor).to.be.undefined;
+    expect(block.attributes.customBackgroundColor).to.be.undefined;
+
+    nested.params = {
+      text_color: '#aaaaaa',
+      background_color: '#bbbbbb',
+    };
+    const [block2] = formBodyToBlocks([nested]);
+    expect(block2.attributes.textColor).to.be.undefined;
+    expect(block2.attributes.backgroundColor).to.be.undefined;
+    expect(block2.attributes.customTextColor).to.be.equal('#aaaaaa');
+    expect(block2.attributes.customBackgroundColor).to.be.equal('#bbbbbb');
   });
 
   it('Should map class name', () => {

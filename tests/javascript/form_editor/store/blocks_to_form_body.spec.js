@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import formBlocksToBody from '../../../../assets/js/src/form_editor/store/blocks_to_form_body.jsx';
+import formBlocksToBodyFactory from '../../../../assets/js/src/form_editor/store/blocks_to_form_body.jsx';
 import {
   emailBlock,
   lastNameBlock,
@@ -16,12 +16,24 @@ import {
   nestedColumns,
 } from './block_to_form_test_data.js';
 
+const colorDefinitions = [{
+  name: 'Black',
+  slug: 'black',
+  color: '#000000',
+}, {
+  name: 'White',
+  slug: 'white',
+  color: '#ffffff',
+}];
+
 const checkBodyInputBasics = (input) => {
   expect(input.id).to.be.a('string');
   expect(parseInt(input.position, 10)).to.be.a('number');
   expect(input.type).to.be.a('string');
   expect(input.type).to.be.not.empty;
 };
+
+const formBlocksToBody = formBlocksToBodyFactory(colorDefinitions, []);
 
 describe('Blocks to Form Body', () => {
   it('Should throw an error for wrong input', () => {
@@ -174,7 +186,8 @@ describe('Blocks to Form Body', () => {
       type: 'text',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const [input] = formBlocksToBody([customTextBlock], [customField]);
+    const map = formBlocksToBodyFactory(colorDefinitions, [customField]);
+    const [input] = map([customTextBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('1');
     expect(input.name).to.be.equal('Custom Field name');
@@ -201,7 +214,8 @@ describe('Blocks to Form Body', () => {
       type: 'select',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const [input] = formBlocksToBody([customSelectBlock], [customField]);
+    const map = formBlocksToBodyFactory(colorDefinitions, [customField]);
+    const [input] = map([customSelectBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('6');
     expect(input.name).to.be.equal('Custom Select');
@@ -229,7 +243,8 @@ describe('Blocks to Form Body', () => {
       type: 'radio',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const [input] = formBlocksToBody([customRadioBlock], [customField]);
+    const map = formBlocksToBodyFactory(colorDefinitions, [customField]);
+    const [input] = map([customRadioBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('2');
     expect(input.name).to.be.equal('Custom Field name');
@@ -259,7 +274,8 @@ describe('Blocks to Form Body', () => {
       type: 'checkbox',
       updated_at: '2019-12-13T15:22:07+00:00',
     };
-    const [input] = formBlocksToBody([customCheckBox], [customField]);
+    const map = formBlocksToBodyFactory(colorDefinitions, [customField]);
+    const [input] = map([customCheckBox]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('3');
     expect(input.name).to.be.equal('Custom Checkbox');
@@ -288,7 +304,8 @@ describe('Blocks to Form Body', () => {
       type: 'date',
       updated_at: '2019-12-13T15:22:07+00:00',
     };
-    const [input] = formBlocksToBody([customDateBlock], [customField]);
+    const map = formBlocksToBodyFactory(colorDefinitions, [customField]);
+    const [input] = map([customDateBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('6');
     expect(input.name).to.be.equal('Custom Date');
@@ -343,16 +360,20 @@ describe('Blocks to Form Body', () => {
   it('Should map colors for columns', () => {
     const columns = { ...nestedColumns };
     columns.attributes = {
-      textColor: 'vivid-red',
+      textColor: 'black',
       backgroundColor: 'white',
-      customBackgroundColor: '#ffffff',
-      customTextColor: '#dd0000',
     };
     const [mapped] = formBlocksToBody([columns]);
-    expect(mapped.params.text_color).to.be.equal('vivid-red');
-    expect(mapped.params.background_color).to.be.equal('white');
-    expect(mapped.params.custom_background_color).to.be.equal('#ffffff');
-    expect(mapped.params.custom_text_color).to.be.equal('#dd0000');
+    expect(mapped.params.text_color).to.be.equal('#000000');
+    expect(mapped.params.background_color).to.be.equal('#ffffff');
+
+    columns.attributes = {
+      customTextColor: '#aaaaaa',
+      customBackgroundColor: '#bbbbbb',
+    };
+    const [mapped2] = formBlocksToBody([columns]);
+    expect(mapped2.params.text_color).to.be.equal('#aaaaaa');
+    expect(mapped2.params.background_color).to.be.equal('#bbbbbb');
   });
 
   it('Should map class name for columns and column', () => {
