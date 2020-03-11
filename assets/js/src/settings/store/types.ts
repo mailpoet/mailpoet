@@ -40,8 +40,15 @@ export type Settings = {
   // ...
 }
 
+type Segment = {
+  id: string
+  name: string
+  subscribers: string
+}
+
 export type State = {
   data: Settings
+  segments: Segment[]
   flags: {
     woocommerce: boolean
     newUser: boolean
