@@ -54,7 +54,7 @@ class PostEditorBlock {
 
     $this->wp->wpEnqueueStyle(
       'mailpoetblock-form-block-css',
-      Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('post-editor-block.css'),
+      Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-post-editor-block.css'),
       ['wp-edit-blocks'],
       Env::$version
     );
