@@ -1,3 +1,20 @@
+const findBlockPath = (blocks, id, path = []) => (
+  blocks.reduce((result, block) => {
+    if (result.length) {
+      return result;
+    }
+    if (Array.isArray(block.innerBlocks) && block.innerBlocks.length) {
+      path.push(block);
+      const child = block.innerBlocks.find((item) => item.clientId === id);
+      if (child) {
+        return path;
+      }
+      return findBlockPath(block.innerBlocks, id, path);
+    }
+    return [];
+  }, [])
+);
+
 export default {
   getSidebarOpened(state) {
     return state.sidebarOpened;
@@ -73,5 +90,19 @@ export default {
   },
   hasUnsavedChanges(state) {
     return state.hasUnsavedChanges;
+  },
+
+  /**
+   * Goes thru all parents of the block and return
+   * the attribute value from the closest parent which has the attribute defined
+   */
+  getClosestParentAttribute(state, blockId, attributeName) {
+    const blockPath = findBlockPath(state.formBlocks, blockId);
+    return blockPath.reduce((result, block) => {
+      if (block.attributes && block.attributes[attributeName] !== undefined) {
+        return block.attributes[attributeName];
+      }
+      return result;
+    }, null);
   },
 };

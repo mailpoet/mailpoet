@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import formBlocksToBodyFactory from '../../../../assets/js/src/form_editor/store/blocks_to_form_body.jsx';
+import { blocksToFormBodyFactory } from '../../../../assets/js/src/form_editor/store/blocks_to_form_body.jsx';
 import {
   emailBlock,
   lastNameBlock,
@@ -33,7 +33,7 @@ const checkBodyInputBasics = (input) => {
   expect(input.type).to.be.not.empty;
 };
 
-const formBlocksToBody = formBlocksToBodyFactory(colorDefinitions, []);
+const formBlocksToBody = blocksToFormBodyFactory(colorDefinitions, []);
 
 describe('Blocks to Form Body', () => {
   it('Should throw an error for wrong input', () => {
@@ -186,7 +186,7 @@ describe('Blocks to Form Body', () => {
       type: 'text',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = formBlocksToBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
     const [input] = map([customTextBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('1');
@@ -214,7 +214,7 @@ describe('Blocks to Form Body', () => {
       type: 'select',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = formBlocksToBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
     const [input] = map([customSelectBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('6');
@@ -243,7 +243,7 @@ describe('Blocks to Form Body', () => {
       type: 'radio',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = formBlocksToBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
     const [input] = map([customRadioBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('2');
@@ -274,7 +274,7 @@ describe('Blocks to Form Body', () => {
       type: 'checkbox',
       updated_at: '2019-12-13T15:22:07+00:00',
     };
-    const map = formBlocksToBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
     const [input] = map([customCheckBox]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('3');
@@ -304,7 +304,7 @@ describe('Blocks to Form Body', () => {
       type: 'date',
       updated_at: '2019-12-13T15:22:07+00:00',
     };
-    const map = formBlocksToBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
     const [input] = map([customDateBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('6');
