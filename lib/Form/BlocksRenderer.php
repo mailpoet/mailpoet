@@ -7,6 +7,7 @@ use MailPoet\Form\Block\Column;
 use MailPoet\Form\Block\Columns;
 use MailPoet\Form\Block\Date;
 use MailPoet\Form\Block\Divider;
+use MailPoet\Form\Block\Heading;
 use MailPoet\Form\Block\Html;
 use MailPoet\Form\Block\Radio;
 use MailPoet\Form\Block\Segment;
@@ -52,6 +53,9 @@ class BlocksRenderer {
   /** @var Columns */
   private $columns;
 
+  /** @var Heading */
+  private $heading;
+
   public function __construct(
     Checkbox $checkbox,
     Column $column,
@@ -59,6 +63,7 @@ class BlocksRenderer {
     Date $date,
     Divider $divider,
     Html $html,
+    Heading $heading,
     Radio $radio,
     Segment $segment,
     Select $select,
@@ -78,6 +83,7 @@ class BlocksRenderer {
     $this->submit = $submit;
     $this->text = $text;
     $this->textarea = $textarea;
+    $this->heading = $heading;
   }
 
   public function renderBlock(array $block = [], array $formSettings): string {
@@ -85,6 +91,10 @@ class BlocksRenderer {
     switch ($block['type']) {
       case 'html':
         $html .= $this->html->render($block, $formSettings);
+        break;
+
+      case 'heading':
+        $html .= $this->heading->render($block, $formSettings);
         break;
 
       case 'divider':
