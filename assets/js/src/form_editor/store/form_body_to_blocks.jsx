@@ -143,6 +143,11 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
         mapped.attributes.label = item.params.label ? item.params.label : '';
       }
       switch (item.id) {
+        case 'email':
+          return {
+            ...mapped,
+            name: 'mailpoet-form/email-input',
+          };
         case 'heading':
           return {
             ...mapped,
@@ -155,11 +160,6 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
               className: item.params?.class_name,
             },
             name: 'core/heading',
-          };
-        case 'email':
-          return {
-            ...mapped,
-            name: 'mailpoet-form/email-input',
           };
         case 'first_name':
           return {

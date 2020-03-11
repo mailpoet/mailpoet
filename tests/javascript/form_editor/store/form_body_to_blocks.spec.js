@@ -191,8 +191,7 @@ describe('Form Body To Blocks', () => {
       updated_at: '2019-12-10T15:05:06+00:00',
     };
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
-    const [block] = map([{ ...customTextInput }]);
-
+    const [block] = map([customTextInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('1_');
     expect(block.name).to.be.equal('mailpoet-form/custom-text-customfieldname');
@@ -220,7 +219,7 @@ describe('Form Body To Blocks', () => {
       updated_at: '2019-12-10T15:05:06+00:00',
     };
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
-    const [block] = map([{ ...customRadioInput}]);
+    const [block] = map([customRadioInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('3_');
     expect(block.name).to.be.equal('mailpoet-form/custom-radio-name');
@@ -250,7 +249,7 @@ describe('Form Body To Blocks', () => {
       position: null,
     };
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
-    const [block] = map([{ ...customCheckboxInput }]);
+    const [block] = map([customCheckboxInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('4_');
     expect(block.name).to.be.equal('mailpoet-form/custom-checkbox-customcheck');
@@ -279,7 +278,7 @@ describe('Form Body To Blocks', () => {
       position: null,
     };
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
-    const [block] = map([{ ...customSelectInput }]);
+    const [block] = map([customSelectInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('5_');
     expect(block.name).to.be.equal('mailpoet-form/custom-select-customselect');
@@ -304,8 +303,9 @@ describe('Form Body To Blocks', () => {
       type: 'date',
       updated_at: '2019-12-13T15:22:07+00:00',
     };
+
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
-    const [block] = map([{ ...customDateInput }]);
+    const [block] = map([customDateInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('6_');
     expect(block.name).to.be.equal('mailpoet-form/custom-date-customdate');

@@ -86,6 +86,7 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
     if (!Array.isArray(customFields)) {
       throw new Error('Mapper expects customFields to be an array.');
     }
+
     return blocks.map((block) => {
       const mapped = {
         type: 'text',
@@ -109,7 +110,11 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
               content: block.attributes.content,
               level: block.attributes.level,
               align: block.attributes.align || 'left',
-              text_color: block.attributes.textColor || '#000',
+              text_color: mapColorSlugToValue(
+                colorDefinitions,
+                block.attributes.textColor,
+                block.attributes.customTextColor
+              ),
               anchor: block.attributes.anchor || null,
               class_name: block.attributes.className || null,
             },
