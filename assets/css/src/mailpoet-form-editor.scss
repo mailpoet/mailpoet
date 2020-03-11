@@ -1,7 +1,9 @@
-// 1. Settings
+// Settings
 // Global variables, config switches. Not producing any CSS.
 @import 'settings/form-editor';
 
+// Generic
+// 3rd-party styles, can be overwritten.
 @import '../../../node_modules/@wordpress/edit-post/build-style/style';
 @import '../../../node_modules/@wordpress/editor/build-style/style';
 @import '../../../node_modules/@wordpress/components/build-style/style';
@@ -11,9 +13,12 @@
 @import '../../../node_modules/@wordpress/block-library/build-style/editor';
 @import '../../../node_modules/codemirror/lib/codemirror';
 @import '../../../node_modules/codemirror/theme/neo';
-@import './components/form-editor/components/form-title';
-@import './components/form-editor/components/header';
-@import './components/form-editor/components/sidebar';
-@import './components/form-editor/components/preview';
-@import './components/form-editor/components/block-editor';
-@import './components/form-editor/components/custom-field';
+
+// Components
+// Actual UI components.
+@import './components-form-editor/form-title';
+@import './components-form-editor/header';
+@import './components-form-editor/sidebar';
+@import './components-form-editor/preview';
+@import './components-form-editor/block-editor';
+@import './components-form-editor/custom-field';
