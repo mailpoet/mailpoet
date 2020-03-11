@@ -11,5 +11,6 @@ export default function makeDefaultState(window: any): State {
       newUser: !!window.mailpoet_is_new_user,
     },
     data: window.mailpoet_settings,
+    segments: window.mailpoet_segments,
   };
 }

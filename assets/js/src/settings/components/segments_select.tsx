@@ -1,6 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 import 'select2';
+import { useSelector } from 'settings/store/hooks';
 
 type Props = {
   id?: string
@@ -9,9 +10,9 @@ type Props = {
   setValue: (x: string[]) => any
 }
 
-export default ({
-  id, value, placeholder, setValue,
-}: Props) => {
+export default (props: Props) => {
+  const { id, setValue } = props;
+  const segments = useSelector('getSegments')();
   React.useLayoutEffect(() => {
     const idSelector = `#${id}`;
     $(idSelector).select2();
@@ -20,9 +21,9 @@ export default ({
     });
     return () => $(idSelector).select2('destroy');
   }, [id, setValue]);
-  const segments: any[] = (window as any).mailpoet_segments;
+
   return (
-    <select id={id} data-placeholder={placeholder} defaultValue={value} multiple>
+    <select id={id} data-placeholder={props.placeholder} defaultValue={props.value} multiple>
       {segments.map((seg) => (
         <option key={seg.id} value={seg.id}>
           {`${seg.name} (${seg.subscribers})`}
