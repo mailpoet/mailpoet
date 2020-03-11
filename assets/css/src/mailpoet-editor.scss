@@ -1,0 +1,49 @@
+// Settings
+// Global variables, config switches. Not producing any CSS.
+@import 'settings/grid';
+@import 'settings/colors';
+@import 'settings/editor';
+@import 'settings/range';
+
+// Tools
+// Default mixins and functions. Still not producing any CSS.
+@import 'mixins/animations';
+@import 'mixins/breakpoints';
+
+// Generic
+// 3rd-party styles, can be overwritten.
+@import '../../../node_modules/spectrum-colorpicker/spectrum';
+
+// Components
+// Actual UI components.
+@import 'components-editor/common';
+@import 'components-editor/layout';
+@import 'components-editor/components/forms';
+@import 'components-editor/components/heading';
+@import 'components-editor/components/history';
+@import 'components-editor/components/sidebar';
+@import 'components-editor/components/sidepanel';
+@import 'components-editor/components/save';
+@import 'components-editor/components/block-tools';
+@import 'components-editor/components/layers';
+@import 'components-editor/components/drag-and-drop';
+@import 'components-editor/components/resize';
+@import 'components-editor/content-blocks/base';
+@import 'components-editor/content-blocks/container';
+@import 'components-editor/content-blocks/automated-latest-content';
+@import 'components-editor/content-blocks/posts';
+@import 'components-editor/content-blocks/products';
+@import 'components-editor/content-blocks/button';
+@import 'components-editor/content-blocks/divider';
+@import 'components-editor/content-blocks/image';
+@import 'components-editor/content-blocks/social';
+@import 'components-editor/content-blocks/spacer';
+@import 'components-editor/content-blocks/text';
+@import 'components-editor/content-blocks/header';
+@import 'components-editor/content-blocks/footer';
+@import 'components-editor/content-blocks/woocommerce-heading';
+@import 'components-editor/content-blocks/woocommerce-content';
+
+// Utilities
+// Helpers and overrides.
+@import 'components-editor/library-overrides';
