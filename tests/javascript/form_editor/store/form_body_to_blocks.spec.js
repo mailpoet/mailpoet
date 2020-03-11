@@ -57,7 +57,7 @@ describe('Form Body To Blocks', () => {
   it('Should map email input to block', () => {
     const [block] = formBodyToBlocks([{ ...emailInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('email_0');
+    expect(block.clientId).to.include('email_');
     expect(block.name).to.be.equal('mailpoet-form/email-input');
     expect(block.attributes.label).to.be.equal('Email');
     expect(block.attributes.labelWithinInput).to.be.equal(false);
@@ -81,7 +81,7 @@ describe('Form Body To Blocks', () => {
   it('Should map first name input to block', () => {
     const [block] = formBodyToBlocks([{ ...firstNameInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('first_name_0');
+    expect(block.clientId).to.be.include('first_name_');
     expect(block.name).to.be.equal('mailpoet-form/first-name-input');
     expect(block.attributes.label).to.be.equal('First Name');
     expect(block.attributes.labelWithinInput).to.be.equal(false);
@@ -100,7 +100,7 @@ describe('Form Body To Blocks', () => {
   it('Should map last name input to block', () => {
     const [block] = formBodyToBlocks([{ ...lastNameInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('last_name_0');
+    expect(block.clientId).to.be.include('last_name_');
     expect(block.name).to.be.equal('mailpoet-form/last-name-input');
     expect(block.attributes.label).to.be.equal('Last Name');
     expect(block.attributes.labelWithinInput).to.be.equal(false);
@@ -119,7 +119,7 @@ describe('Form Body To Blocks', () => {
   it('Should map segments input to block', () => {
     const [block] = formBodyToBlocks([{ ...segmentsInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('segments_0');
+    expect(block.clientId).to.be.include('segments_');
     expect(block.name).to.be.equal('mailpoet-form/segment-select');
     expect(block.attributes.label).to.be.equal('Select list(s):');
     expect(block.attributes.values).to.be.an('Array');
@@ -133,7 +133,7 @@ describe('Form Body To Blocks', () => {
     input.params.values = undefined;
     const [block] = formBodyToBlocks([input]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('segments_0');
+    expect(block.clientId).to.be.include('segments_');
     expect(block.attributes.values).to.be.an('Array');
     expect(block.attributes.values).to.have.length(0);
   });
@@ -141,7 +141,7 @@ describe('Form Body To Blocks', () => {
   it('Should map submit button to block', () => {
     const [block] = formBodyToBlocks([{ ...submitInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('submit_0');
+    expect(block.clientId).to.be.include('submit_');
     expect(block.name).to.be.equal('mailpoet-form/submit-button');
     expect(block.attributes.label).to.be.equal('Subscribe!');
   });
@@ -152,10 +152,10 @@ describe('Form Body To Blocks', () => {
       { ...divider, position: '2' },
     ]);
     checkBlockBasics(block1);
-    expect(block1.clientId).to.be.equal('divider_0');
+    expect(block1.clientId).to.be.include('divider_');
     expect(block1.name).to.be.equal('mailpoet-form/divider');
     checkBlockBasics(block2);
-    expect(block2.clientId).to.be.equal('divider_1');
+    expect(block2.clientId).to.be.include('divider_');
     expect(block2.name).to.be.equal('mailpoet-form/divider');
   });
 
@@ -165,12 +165,12 @@ describe('Form Body To Blocks', () => {
       { ...customHtml, position: '2', params: { text: 'nice one' } },
     ]);
     checkBlockBasics(block1);
-    expect(block1.clientId).to.be.equal('html_0');
+    expect(block1.clientId).to.be.include('html_');
     expect(block1.name).to.be.equal('mailpoet-form/html');
     expect(block1.attributes.content).to.be.equal('123');
     expect(block1.attributes.nl2br).to.be.true;
     checkBlockBasics(block2);
-    expect(block2.clientId).to.be.equal('html_1');
+    expect(block2.clientId).to.be.include('html_');
     expect(block2.name).to.be.equal('mailpoet-form/html');
     expect(block2.attributes.content).to.be.equal('nice one');
     expect(block2.attributes.nl2br).to.be.false;
@@ -192,7 +192,7 @@ describe('Form Body To Blocks', () => {
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
     const [block] = map([{ ...customTextInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('1_0');
+    expect(block.clientId).to.be.include('1_');
     expect(block.name).to.be.equal('mailpoet-form/custom-text-customfieldname');
     expect(block.attributes.label).to.be.equal('Name of the street');
     expect(block.attributes.mandatory).to.be.equal(false);
@@ -220,7 +220,7 @@ describe('Form Body To Blocks', () => {
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
     const [block] = map([{ ...customRadioInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('3_0');
+    expect(block.clientId).to.be.include('3_');
     expect(block.name).to.be.equal('mailpoet-form/custom-radio-name');
     expect(block.attributes.label).to.be.equal('Options');
     expect(block.attributes.mandatory).to.be.equal(false);
@@ -250,7 +250,7 @@ describe('Form Body To Blocks', () => {
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
     const [block] = map([{ ...customCheckboxInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('4_0');
+    expect(block.clientId).to.be.include('4_');
     expect(block.name).to.be.equal('mailpoet-form/custom-checkbox-customcheck');
     expect(block.attributes.label).to.be.equal('Check this');
     expect(block.attributes.mandatory).to.be.equal(false);
@@ -279,7 +279,7 @@ describe('Form Body To Blocks', () => {
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
     const [block] = map([{ ...customSelectInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('5_0');
+    expect(block.clientId).to.be.include('5_');
     expect(block.name).to.be.equal('mailpoet-form/custom-select-customselect');
     expect(block.attributes.label).to.be.equal('Select');
     expect(block.attributes.mandatory).to.be.equal(false);
@@ -305,7 +305,7 @@ describe('Form Body To Blocks', () => {
     const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
     const [block] = map([{ ...customDateInput, position: '1' }]);
     checkBlockBasics(block);
-    expect(block.clientId).to.be.equal('6_0');
+    expect(block.clientId).to.be.include('6_');
     expect(block.name).to.be.equal('mailpoet-form/custom-date-customdate');
     expect(block.attributes.label).to.be.equal('Date');
     expect(block.attributes.mandatory).to.be.true;

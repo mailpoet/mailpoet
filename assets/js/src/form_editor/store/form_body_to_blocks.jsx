@@ -118,13 +118,13 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
       throw new Error('Mapper expects form body to be an array.');
     }
 
-    return data.map((item, index) => {
+    return data.map((item) => {
       if (['column', 'columns'].includes(item.type)) {
         return mapColumnBlocks(item, colorDefinitions, customFields);
       }
 
       const mapped = {
-        clientId: `${item.id}_${index}`,
+        clientId: `${item.id}_${generateId()}`,
         isValid: true,
         innerBlocks: [],
         attributes: {
