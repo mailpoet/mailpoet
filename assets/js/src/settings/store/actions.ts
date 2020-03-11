@@ -12,12 +12,12 @@ export function* saveSettings() {
   const { success, error } = yield {
     type: 'CALL_API',
     endpoint: 'settings',
-    method: 'save',
+    action: 'set',
     data,
   };
   if (!success) {
     return { type: 'SAVE_FAILED', error };
   }
-  yield { type: 'TRACK_SETTINGS_SAVED', data };
+  yield { type: 'TRACK_SETTINGS_SAVED' };
   return { type: 'SAVE_DONE' };
 }
