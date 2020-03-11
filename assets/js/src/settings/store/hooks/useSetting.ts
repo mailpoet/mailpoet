@@ -1,7 +1,10 @@
 import { Settings } from '../types';
 import useSelector from './useSelector';
+import { ValueAndSetter } from './types';
+import { useAction } from './useActions';
 /**
- * Takes the path of a setting (ie. key1, key2, key3,...) and returns its value.
+ * Takes the path of a setting (ie. key1, key2, key3,...) and returns an array with two items:
+ * the first is the setting value and the second is a setter for that setting.
  * Here we are declaring the signatures in case it takes 1, 2, and 3 keys.
  * Additional overloaded signatures can be added to go as deep as we want.
  * See:
@@ -9,16 +12,20 @@ import useSelector from './useSelector';
  *  overloading functions: http://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html#function-overloads
  */
 export function useSetting<Key1 extends keyof Settings>
-  (key1: Key1): Settings[Key1];
+  (key1: Key1): ValueAndSetter<Settings[Key1]>;
 export function useSetting<Key1 extends keyof Settings, Key2 extends keyof Settings[Key1]>
-  (key1: Key1, key2: Key2): Settings[Key1][Key2];
+  (key1: Key1, key2: Key2): ValueAndSetter<Settings[Key1][Key2]>;
 export function useSetting<
   Key1 extends keyof Settings,
   Key2 extends keyof Settings[Key1],
   Key3 extends keyof Settings[Key1][Key2]>
-  (key1: Key1, key2: Key2, key3: Key3): Settings[Key1][Key2][Key3];
+  (key1: Key1, key2: Key2, key3: Key3): ValueAndSetter<Settings[Key1][Key2][Key3]>;
 
-export function useSetting(...path: string[]): any {
+export function useSetting(...path: string[]): [any, (value: any) => any] {
   const getValue = useSelector('getSetting');
-  return getValue(path);
+  const setValue = useAction('setSetting');
+  return [
+    getValue(path),
+    (value) => setValue(path, value),
+  ];
 }

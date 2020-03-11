@@ -13,3 +13,6 @@ export type Tail<T extends any[]> =
  */
 export type ExcludeFirstParam<F extends ((...args: any[]) => any)> =
   (...args: Tail<Parameters<F>>) => ReturnType<F>
+
+
+export type ValueAndSetter<T> = [T, (value: T) => any]
