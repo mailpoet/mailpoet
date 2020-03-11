@@ -1,5 +1,9 @@
 <% extends 'layout.html' %>
 
+<% block after_css %>
+<%= stylesheet('settings.css') %>
+<% endblock %>
+
 <% block content %>
   <div id="settings_container"></div>
 
@@ -8,6 +12,7 @@
       var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active == true) %>;
       var mailpoet_is_new_user = <%= json_encode(is_new_user == true) %>;
       var mailpoet_settings = <%= json_encode(settings) %>;
+      var mailpoet_segments = <%= json_encode(segments) %>;
     <% endautoescape %>
     var mailpoet_beacon_articles = [
       '57f71d49c697911f2d323486',
@@ -26,6 +31,10 @@
     'wooCommerceTab': __('WooCommerce'),
     'advancedTab': __('Advanced'),
     'keyActivationTab': __('Key Activation'),
+
+    'saveSettings': __('Save settings'),
+    'settingsSaved': __('Settings saved'),
+
     'reinstallConfirmation': __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.).'),
     'announcementHeader': __('Get notified when someone subscribes'),
     'announcementParagraph1': __('It’s been a popular feature request from our users, we hope you get lots of emails about all your new subscribers!'),
