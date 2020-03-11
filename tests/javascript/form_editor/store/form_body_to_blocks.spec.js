@@ -407,7 +407,7 @@ describe('Form Body To Blocks', () => {
       ...headingInput,
       position: '1',
       params: {
-        text_color: 'vivid-red',
+        text_color: '#f78da7',
         content: 'Content',
         level: 1,
         anchor: 'anchor',
@@ -422,6 +422,6 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.align).to.be.equal('right');
     expect(block.attributes.className).to.be.equal('class');
     expect(block.attributes.anchor).to.be.equal('anchor');
-    expect(block.attributes.textColor).to.be.equal('vivid-red');
+    expect(block.attributes.customTextColor).to.be.equal('#f78da7');
   });
 });
