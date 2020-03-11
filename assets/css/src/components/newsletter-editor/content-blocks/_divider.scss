@@ -12,18 +12,18 @@
   border: 1px solid transparent;
   display: block;
   margin: auto;
-  max-width: $newsletter-width;
+  max-width: $editor-width;
   padding: 10px 0;
   width: 100%;
 
   &:hover {
-    border: 1px solid $divider-hover-border-color;
+    border: 1px solid $editor-divider-border-color-hover;
   }
 }
 
 .mailpoet_active_divider_style {
-  background: $active-divider-background-color;
-  border: 1px solid $active-divider-border-color;
+  background: $editor-divider-background-color;
+  border: 1px solid $editor-divider-border-color;
 }
 
 .mailpoet_divider_selector img {

@@ -27,19 +27,19 @@
 
 #mailpoet_editor_content_container {
   box-sizing: border-box;
-  padding-right: $newsletter-editor-sidebar-width;
+  padding-right: $editor-sidebar-width;
   width: 100%;
 }
 
 #mailpoet_editor_sidebar {
   box-sizing: border-box;
   float: right;
-  width: $newsletter-editor-sidebar-width;
+  width: $editor-sidebar-width;
 }
 
 .mailpoet_newsletter_wrapper {
   margin: auto;
-  max-width: $newsletter-width;
+  max-width: $editor-width;
   position: relative;
-  width: $newsletter-width;
+  width: $editor-width;
 }
