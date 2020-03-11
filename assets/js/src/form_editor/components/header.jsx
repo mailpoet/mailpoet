@@ -49,7 +49,11 @@ export default () => {
           isPressed={sidebarOpened}
         />
       </div>
-      <div className="edit-post-header__toolbar" />
+      <div className="edit-post-header__toolbar">
+        <div className="toolbar">
+          <a className="page-title-action" href="?page=mailpoet-forms#/">{MailPoet.I18n.t('back')}</a>
+        </div>
+      </div>
     </div>
   );
 };
