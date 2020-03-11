@@ -14,8 +14,8 @@
 }
 
 .mailpoet_save_options {
-  background: $white-color;
-  border: 1px solid $content-border-color;
+  background: $color-white;
+  border: 1px solid $color-editor-border-content;
   border-radius: 3px;
   clear: both;
   margin: 5px 0;
@@ -39,11 +39,11 @@
 }
 
 .mailpoet_save_option:hover {
-  background-color: $primary-active-background-color;
-  color: $white-color;
+  background-color: $color-primary-button;
+  color: $color-white;
 
   > a {
-    color: $white-color;
+    color: $color-white;
   }
 }
 
@@ -59,8 +59,8 @@
 
 .mailpoet_save_as_template_container,
 .mailpoet_export_template_container {
-  background-color: $white-color;
-  border: 1px solid $structure-border-color;
+  background-color: $color-white;
+  border: 1px solid $color-editor-border-structure;
   border-radius: 3px;
   clear: both;
   display: inline-block;
@@ -82,7 +82,7 @@
 }
 
 .mailpoet_editor_last_saved {
-  color: $primary-inactive-color;
+  color: $color-primary-inactive;
   font-size: .9em;
   margin-top: 10px;
   text-align: right;
@@ -93,16 +93,16 @@
 }
 
 .mailpoet_save_woocommerce_error {
-  color: $error-text-color;
+  color: $color-editor-warning;
   margin-top: 10px;
   text-align: right;
 }
 
 .mailpoet_save_error {
-  color: $error-text-color;
+  color: $color-editor-warning;
   margin-top: 10px;
   text-align: right;
-  width: $sidebar-width;
+  width: $newsletter-editor-sidebar-width;
 }
 
 .mailpoet_save_dropdown_down {

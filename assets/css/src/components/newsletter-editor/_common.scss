@@ -1,27 +1,3 @@
-$link-color: $primary-active-background-color;
-
-$select-border-color: $content-border-color;
-$select-text-color: $primary-text-color;
-
-$button-default-border-color: $structure-border-color;
-$button-default-background-color: $primary-background-color;
-$button-default-text-color: $primary-inactive-color;
-
-$button-primary-border-color: $primary-active-color;
-$button-primary-background-color: $primary-active-background-color;
-$button-primary-hover-background-color: $primary-active-color-highlight;
-$button-primary-text-color: $white-color;
-
-$range-track-background-color: $white-color;
-$range-track-border-color: $structure-border-color;
-$range-track-height: 12px;
-$range-thumb-background-color: $primary-inactive-color;
-$range-thumb-border-color: #333;
-$range-thumb-width: 13px;
-$range-thumb-height: 26px;
-$range-border-radius: 3px;
-$range-thumb-hover-background-color: $primary-active-color;
-
 .admin_page_mailpoet-newsletter-editor {
   a {
     color: $link-color;

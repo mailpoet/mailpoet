@@ -10,7 +10,7 @@
   svg {
     display: inline-block;
     height: 26px;
-    stroke: $primary-active-color;
+    stroke: $color-primary;
     vertical-align: top;
     width: 26px;
   }
@@ -19,5 +19,5 @@
 .mailpoet_history_arrow_inactive {
   cursor: not-allowed;
 
-  svg { stroke: $primary-inactive-color; }
+  svg { stroke: $color-primary-inactive; }
 }
