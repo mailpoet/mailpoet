@@ -3,6 +3,7 @@ import { SaveButton } from 'settings/components';
 import { t } from 'settings/utils';
 import DefaultSender from './default_sender';
 import SubscribeOn from './subscribe_on';
+import ManageSubscription from './manage_subscription';
 
 export default function Basics() {
   return (
@@ -18,6 +19,7 @@ export default function Basics() {
         title={t`subscribeInRegistrationTitle`}
         description={t`subscribeInRegistrationDescription`}
       />
+      <ManageSubscription />
       <SaveButton />
     </div>
   );

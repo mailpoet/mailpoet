@@ -45,10 +45,19 @@ type Segment = {
   name: string
   subscribers: string
 }
-
+type Page = {
+  id: number
+  title: string
+  url: {
+    unsubscribe: string
+    manage: string
+    confirm: string
+  }
+}
 export type State = {
   data: Settings
   segments: Segment[]
+  pages: Page[]
   flags: {
     woocommerce: boolean
     newUser: boolean

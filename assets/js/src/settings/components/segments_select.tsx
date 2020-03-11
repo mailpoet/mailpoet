@@ -4,7 +4,7 @@ import 'select2';
 import { useSelector } from 'settings/store/hooks';
 
 type Props = {
-  id?: string
+  id: string
   value: string[]
   placeholder?: string
   setValue: (x: string[]) => any
