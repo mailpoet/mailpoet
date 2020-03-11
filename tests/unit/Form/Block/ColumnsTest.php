@@ -39,25 +39,6 @@ class ColumnsTest extends \MailPoetUnitTest {
     expect($class->textContent)->contains('mailpoet_vertically_align_top');
   }
 
-  public function testItShouldRenderBackgroundColorClass() {
-    $block = $this->block;
-    $block['params']['background_color'] = 'vivid-red';
-    $html = $this->columns->render($block, 'content');
-    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
-    $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->contains('has-vivid-red-background-color');
-    expect($class->textContent)->contains('mailpoet_column_with_background');
-  }
-
-  public function testItShouldRenderTextColorClass() {
-    $block = $this->block;
-    $block['params']['text_color'] = 'vivid-cyan';
-    $html = $this->columns->render($block, 'content');
-    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
-    $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->contains('has-vivid-cyan-color');
-  }
-
   public function testItShouldRenderCustomClass() {
     $block = $this->block;
     $block['params']['class_name'] = 'my-class';
@@ -69,7 +50,7 @@ class ColumnsTest extends \MailPoetUnitTest {
 
   public function testItShouldCustomBackground() {
     $block = $this->block;
-    $block['params']['custom_background_color'] = '#ffffff';
+    $block['params']['background_color'] = '#ffffff';
     $html = $this->columns->render($block, 'content');
     $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
@@ -80,7 +61,7 @@ class ColumnsTest extends \MailPoetUnitTest {
 
   public function testItShouldCustomTextColor() {
     $block = $this->block;
-    $block['params']['custom_text_color'] = '#ffffee';
+    $block['params']['text_color'] = '#ffffee';
     $html = $this->columns->render($block, 'content');
     $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');

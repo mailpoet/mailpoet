@@ -9,11 +9,11 @@ class Columns {
 
   private function getStyles(array $params): string {
     $styles = [];
-    if (isset($params['custom_text_color'])) {
-      $styles[] = "color:{$params['custom_text_color']};";
+    if (isset($params['text_color'])) {
+      $styles[] = "color:{$params['text_color']};";
     }
-    if (isset($params['custom_background_color'])) {
-      $styles[] = "background-color:{$params['custom_background_color']};";
+    if (isset($params['background_color'])) {
+      $styles[] = "background-color:{$params['background_color']};";
     }
     if (count($styles)) {
       return ' style="' . implode('', $styles) . '"';
@@ -27,9 +27,6 @@ class Columns {
       $classes[] = "mailpoet_vertically_align_{$params['vertical_alignment']}";
     }
     if (!empty($params['background_color'])) {
-      $classes[] = "has-{$params['background_color']}-background-color";
-      $classes[] = "mailpoet_column_with_background";
-    } elseif (!empty($params['custom_background_color'])) {
       $classes[] = "mailpoet_column_with_background";
     }
     if (!empty($params['text_color'])) {
