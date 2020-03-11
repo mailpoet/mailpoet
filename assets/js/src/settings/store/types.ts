@@ -29,12 +29,12 @@ export type Settings = {
     segments: string[]
   }
   stats_notifications: {
-    enabled: boolean
-    automated: boolean
+    enabled: '0' | '1'
+    automated: '0' | '1'
     address: string
   }
   subscriber_email_notification: {
-    enabled: boolean
+    enabled: '0' | '1'
     address: string
   }
   // ...
@@ -61,6 +61,7 @@ export type State = {
   flags: {
     woocommerce: boolean
     newUser: boolean
+    error: boolean
   }
   save: {
     inProgress: boolean
@@ -70,6 +71,7 @@ export type State = {
 
 export type Action =
   | { type: 'SET_SETTING'; value: any; path: string[] }
+  | { type: 'SET_ERROR_FLAG'; value: boolean }
   | { type: 'SAVE_STARTED' }
   | { type: 'SAVE_DONE' }
   | { type: 'SAVE_FAILED'; error: any }

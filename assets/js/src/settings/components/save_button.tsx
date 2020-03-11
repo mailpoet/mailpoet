@@ -6,7 +6,8 @@ import { GlobalContext } from 'context';
 export default () => {
   const [clicked, setClicked] = React.useState(false);
   const isSaving = useSelector('isSaving')();
-  const error = useSelector('getError')();
+  const hasError = useSelector('hasErrorFlag')();
+  const error = useSelector('getSavingError')();
   const save = useAction('saveSettings');
   const { notices } = React.useContext<any>(GlobalContext);
   const showError = notices.error;
@@ -23,7 +24,7 @@ export default () => {
   };
   return (
     <div>
-      <button type="button" className="button button-primary" disabled={isSaving} onClick={onClick}>{MailPoet.I18n.t('saveSettings')}</button>
+      <button type="button" className="button button-primary" disabled={isSaving || hasError} onClick={onClick}>{MailPoet.I18n.t('saveSettings')}</button>
     </div>
   );
 };

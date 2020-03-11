@@ -6,6 +6,8 @@ export default function createReducer(defaultValue: State) {
     switch (action.type) {
       case 'SET_SETTING':
         return _.setWith(_.clone(state), ['data', ...action.path], action.value, _.clone);
+      case 'SET_ERROR_FLAG':
+        return { ...state, flags: { ...state.flags, error: action.value } };
       case 'SAVE_STARTED':
         return { ...state, save: { inProgress: true, error: null } };
       case 'SAVE_DONE':
