@@ -9,12 +9,12 @@ export type Settings = {
   }
   subscribe: {
     on_comment: {
-      enabled: boolean
+      enabled: '1' | '0'
       label: string
       segments: string[]
     }
     on_register: {
-      enabled: boolean
+      enabled: '1' | '0'
       label: string
       segments: string[]
     }
