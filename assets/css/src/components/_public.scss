@@ -63,9 +63,20 @@
 // Form columns
 $form-break-small-width: 500px;
 $form-block-margin: 20px;
+$form-columns-with-background-padding: 10px;
+$form-columns-space-between: 20px;
 
 .mailpoet_form .mailpoet_paragraph {
   margin-bottom: $form-block-margin;
+}
+
+// Default value for users who don't have the value in Custom CSS
+.mailpoet_column_with_background {
+  padding: $form-columns-with-background-padding;
+}
+// Default value for users who don't have the value in Custom CSS
+.mailpoet_form_column:not(:first-child) {
+  margin-left: $form-columns-space-between;
 }
 
 @mixin maxWidthColumns() {
