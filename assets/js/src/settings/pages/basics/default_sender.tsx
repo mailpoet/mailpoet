@@ -1,5 +1,5 @@
 import React from 'react';
-import MailPoet from 'mailpoet';
+import { t, onChange } from 'settings/utils';
 import { Label, Inputs } from 'settings/components';
 import { useSetting, useSelector } from 'settings/store/hooks';
 import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx';
@@ -13,26 +13,26 @@ export default function DefaultSender() {
   return (
     <>
       <Label
-        title={MailPoet.I18n.t('defaultSenderTitle')}
-        description={MailPoet.I18n.t('defaultSenderDescription')}
+        title={t`defaultSenderTitle`}
+        description={t`defaultSenderDescription`}
         htmlFor="sender-name"
       />
       <Inputs>
-        <label htmlFor="sender-name">{MailPoet.I18n.t('from')}</label>
+        <label htmlFor="sender-name">{t`from`}</label>
         <input
           type="text"
           id="sender-name"
-          placeholder={MailPoet.I18n.t('yourName')}
+          placeholder={t`yourName`}
           data-automation-id="settings-page-from-name-field"
           value={senderName}
-          onChange={(event) => setSenderName(event.target.value)}
+          onChange={onChange(setSenderName)}
         />
         <input
           type="text"
           placeholder="from@mydomain.com"
           data-automation-id="settings-page-from-email-field"
           value={senderEmail}
-          onChange={(event) => setSenderEmail(event.target.value)}
+          onChange={onChange(setSenderEmail)}
         />
         <div className="regular-text">
           <SenderEmailAddressWarning
@@ -44,17 +44,17 @@ export default function DefaultSender() {
         <input
           type="text"
           id="reply_to-name"
-          placeholder={MailPoet.I18n.t('yourName')}
+          placeholder={t`yourName`}
           data-automation-id="settings-page-from-name-field"
           value={replyToName}
-          onChange={(event) => setReplyToName(event.target.value)}
+          onChange={onChange(setReplyToName)}
         />
         <input
           type="text"
           placeholder="reply_to@mydomain.com"
           data-automation-id="settings-page-from-email-field"
           value={replyToEmail}
-          onChange={(event) => setReplyToEmail(event.target.value)}
+          onChange={onChange(setReplyToEmail)}
         />
       </Inputs>
     </>
