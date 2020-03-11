@@ -7,9 +7,9 @@
 @import '../../../node_modules/@wordpress/block-library/build-style/editor';
 @import '../../../node_modules/codemirror/lib/codemirror';
 @import '../../../node_modules/codemirror/theme/neo';
-@import './components/formEditor/components/form_title';
-@import './components/formEditor/components/header';
-@import './components/formEditor/components/sidebar';
-@import './components/formEditor/components/preview';
-@import './components/formEditor/components/block_editor';
-@import './components/formEditor/components/custom_field';
+@import './components/form-editor/components/form-title';
+@import './components/form-editor/components/header';
+@import './components/form-editor/components/sidebar';
+@import './components/form-editor/components/preview';
+@import './components/form-editor/components/block-editor';
+@import './components/form-editor/components/custom-field';
