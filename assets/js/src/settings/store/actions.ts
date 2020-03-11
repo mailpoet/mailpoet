@@ -6,6 +6,10 @@ export function setSetting(path: string[], value: any): Action {
   return { type: 'SET_SETTING', path, value };
 }
 
+export function setErrorFlag(value: boolean): Action {
+  return { type: 'SET_ERROR_FLAG', value };
+}
+
 export function* saveSettings() {
   yield { type: 'SAVE_STARTED' };
   const data = select(STORE_NAME).getSettings();

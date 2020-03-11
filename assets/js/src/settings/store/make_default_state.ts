@@ -7,6 +7,7 @@ export default function makeDefaultState(window: any): State {
       error: null,
     },
     flags: {
+      error: false,
       woocommerce: !!window.mailpoet_woocommerce_active,
       newUser: !!window.mailpoet_is_new_user,
     },

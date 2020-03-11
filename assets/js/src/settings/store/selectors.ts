@@ -13,11 +13,15 @@ export function isSaving(state: State): boolean {
   return state.save.inProgress;
 }
 
-export function hasError(state: State): boolean {
+export function hasErrorFlag(state: State): boolean {
+  return state.flags.error;
+}
+
+export function hasSavingError(state: State): boolean {
   return state.save.error !== null;
 }
 
-export function getError(state: State): any {
+export function getSavingError(state: State): any {
   return state.save.error;
 }
 
