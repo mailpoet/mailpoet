@@ -59,7 +59,9 @@ class Form extends Model {
         && !empty($field['body'])
       ) {
         $nestedFields = $this->getFieldList($field['body']);
-        $fields = array_merge($fields, $nestedFields);
+        if ($nestedFields) {
+          $fields = array_merge($fields, $nestedFields);
+        }
         continue;
       }
 
