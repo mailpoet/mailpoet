@@ -117,6 +117,15 @@ class FormTest extends \MailPoetTest {
                 ],
               ],
             ],
+            [
+              'type' => 'column',
+              'body' => [
+                [
+                  'type' => 'divider',
+                  'id' => 'divider',
+                ],
+              ],
+            ],
           ],
         ],
         [
