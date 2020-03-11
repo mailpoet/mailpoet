@@ -238,7 +238,7 @@ Please add custom styles to pages_custom.styl
     }
   }
 
-  @media screen and (max-width: 782px) {
+  @include breakpoint-max-width(782px) {
     .two-col-text {
       column-count: 1;
     }
@@ -249,7 +249,7 @@ Please add custom styles to pages_custom.styl
     }
   }
 
-  @media screen and (max-width: 500px) {
+  @include breakpoint-max-width(500px) {
     margin-left: 10px;
     margin-right: 20px;
 

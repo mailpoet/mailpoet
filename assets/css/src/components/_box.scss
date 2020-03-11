@@ -50,7 +50,7 @@ ul.mailpoet_boxes {
     padding: 8px 16px;
     right: 0;
 
-    @media screen and (max-width: 782px) {
+    @include breakpoint-max-width(782px) {
       padding: 6px 16px 2px;
     }
   }
@@ -71,34 +71,34 @@ ul.mailpoet_boxes {
     }
   }
 
-  @media screen and (max-width: 1178px) {
+  @include breakpoint-max-width(1178px) {
     width: 47%;
   }
 
-  @media screen and (max-width: 520px) {
+  @include breakpoint-max-width(520px) {
     width: 90%;
   }
 }
 
-@media screen and (min-width: 1179px) {
+@include breakpoint-min-width(1179px) {
   .mailpoet_boxes .mailpoet_template_boxes:nth-child(3n-1) {
     margin: 0 $newsletter-box-margin-big $newsletter-box-margin-big $newsletter-box-margin-big;
   }
 }
 
-@media screen and (max-width: 1178px) {
+@include breakpoint-max-width(1178px) {
   .mailpoet_boxes .mailpoet_template_boxes:nth-child(2n-1) {
     margin: 0 $newsletter-box-margin-big $newsletter-box-margin-big 0;
   }
 }
 
-@media screen and (max-width: 782px) {
+@include breakpoint-max-width(782px) {
   .mailpoet_boxes .mailpoet_template_boxes:nth-child(2n-1) {
     margin: 0 $newsletter-box-margin-small $newsletter-box-margin-small 0;
   }
 }
 
-@media screen and (max-width: 520px) {
+@include breakpoint-max-width(520px) {
   .mailpoet_boxes .mailpoet_template_boxes:nth-child(1n) {
     margin: 0 0 $newsletter-box-margin-small $newsletter-box-margin-small;
   }

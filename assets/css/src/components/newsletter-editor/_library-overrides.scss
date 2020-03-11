@@ -87,9 +87,9 @@
   }
 
   &.auto-fold #wpcontent {
-    @media only screen and (max-width: 960px) { margin-left: 36px; }
+    @include breakpoint-max-width(960px) { margin-left: 36px; }
 
-    @media only screen and (max-width: 782px) { margin-left: 0; }
+    @include breakpoint-max-width(782px) { margin-left: 0; }
   }
 
   .wrap {
