@@ -64,7 +64,7 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
  * @param {string} colorSlug
  * @param {string} colorValue
  */
-const mapColor = (colorDefinitions, colorSlug, colorValue = null) => {
+export const mapColorSlugToValue = (colorDefinitions, colorSlug, colorValue = null) => {
   const result = colorDefinitions.find((color) => color.slug === colorSlug);
   return result ? result.color : colorValue;
 };
@@ -74,7 +74,7 @@ const mapColor = (colorDefinitions, colorSlug, colorValue = null) => {
  * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
  * @param customFields - list of all custom Fields
  */
-export default (colorDefinitions, customFields = []) => {
+export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => {
   /**
    * @param blocks
    * @param parent  - parent block of nested block
@@ -125,12 +125,12 @@ export default (colorDefinitions, customFields = []) => {
             params: {
               vertical_alignment: block.attributes.verticalAlignment || null,
               class_name: block.attributes.className || null,
-              text_color: mapColor(
+              text_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.textColor,
                 block.attributes.customTextColor
               ),
-              background_color: mapColor(
+              background_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.backgroundColor,
                 block.attributes.customBackgroundColor

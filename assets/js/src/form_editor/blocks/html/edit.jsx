@@ -11,16 +11,29 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { debounce } from 'lodash';
 import { useSelect } from '@wordpress/data';
+import { mapColorSlugToValue } from '../../store/blocks_to_form_body.jsx';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 
-const CustomHtmlEdit = ({ attributes, setAttributes }) => {
+const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
   const { fontColor, fontSize } = useSelect(
     (select) => {
       const settings = select('mailpoet-form-editor').getFormSettings();
+      const { getSettings } = select('core/block-editor');
+      const colorDefinitions = getSettings().colors;
+      const parentBackgroundColor = mapColorSlugToValue(
+        colorDefinitions,
+        select('mailpoet-form-editor').getClosestParentAttribute(clientId, 'backgroundColor'),
+        select('mailpoet-form-editor').getClosestParentAttribute(clientId, 'customBackgroundColor')
+      );
+      const parentTextColor = mapColorSlugToValue(
+        colorDefinitions,
+        select('mailpoet-form-editor').getClosestParentAttribute(clientId, 'textColor'),
+        select('mailpoet-form-editor').getClosestParentAttribute(clientId, 'customTextColor')
+      );
       return {
-        backgroundColor: settings.backgroundColor,
-        fontColor: settings.fontColor,
+        backgroundColor: parentBackgroundColor || settings.backgroundColor,
+        fontColor: parentTextColor || settings.fontColor,
         fontSize: settings.fontSize,
       };
     },
@@ -77,6 +90,7 @@ CustomHtmlEdit.propTypes = {
     nl2br: PropTypes.bool.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
+  clientId: PropTypes.string.isRequired,
 };
 
 export default CustomHtmlEdit;

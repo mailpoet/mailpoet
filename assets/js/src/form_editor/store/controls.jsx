@@ -2,7 +2,7 @@ import { select, dispatch } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import { merge } from 'lodash';
 import { createBlock, unregisterBlockType } from '@wordpress/blocks';
-import blocksToFormBodyFactory from './blocks_to_form_body.jsx';
+import { blocksToFormBodyFactory } from './blocks_to_form_body.jsx';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
