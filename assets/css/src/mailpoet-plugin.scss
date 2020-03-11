@@ -9,7 +9,11 @@
 @import 'settings/progress';
 @import 'settings/range';
 
-@import 'components/mixins';
+// 2. Tools
+// Default mixins and functions. Still not producing any CSS.
+@import 'mixins/animations';
+@import 'mixins/clearfix';
+
 @import '../../../node_modules/select2/dist/css/select2';
 @import '../../../node_modules/spectrum-colorpicker/spectrum';
 @import 'components/automatic-emails';
@@ -42,7 +46,6 @@
 @import 'components/stats';
 @import 'components/import-export';
 @import 'components/toggle';
-@import 'components/newsletter-editor/mixins/transitions';
 @import 'components/newsletter-editor/common';
 @import 'components/newsletter-editor/layout';
 @import 'components/newsletter-editor/components/forms';

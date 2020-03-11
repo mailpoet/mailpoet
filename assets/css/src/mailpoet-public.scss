@@ -1,4 +1,7 @@
-@import 'components/mixins';
+// 1. Tools
+// Default mixins and functions. Not producing any CSS.
+@import 'mixins/clearfix';
+
 @import 'components/parsley';
 @import 'components/form-validation';
 @import 'components/public';
