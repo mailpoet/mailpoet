@@ -12,5 +12,6 @@ export default function makeDefaultState(window: any): State {
     },
     data: window.mailpoet_settings,
     segments: window.mailpoet_segments,
+    pages: window.mailpoet_pages,
   };
 }

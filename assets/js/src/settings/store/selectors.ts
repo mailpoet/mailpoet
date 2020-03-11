@@ -36,3 +36,7 @@ export function isMssActive(state: State) {
 export function getSegments(state: State) {
   return state.segments;
 }
+
+export function getPages(state: State) {
+  return state.pages;
+}
