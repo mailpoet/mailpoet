@@ -193,6 +193,7 @@ export const nestedColumns = {
         {
           position: '1',
           type: 'columns',
+          params: {},
           body: [
             {
               position: '1',

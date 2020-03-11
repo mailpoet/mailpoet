@@ -2,7 +2,7 @@ import { select, dispatch } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import { merge } from 'lodash';
 import { createBlock, unregisterBlockType } from '@wordpress/blocks';
-import blocksToFormBody from './blocks_to_form_body.jsx';
+import blocksToFormBodyFactory from './blocks_to_form_body.jsx';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
@@ -31,9 +31,11 @@ export default {
     const formData = select('mailpoet-form-editor').getFormData();
     const formBlocks = select('mailpoet-form-editor').getFormBlocks();
     const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
+    const { getSettings } = select('core/block-editor');
+    const blocksToFormBody = blocksToFormBodyFactory(getSettings().colors, customFields);
     const requestData = {
       ...mapFormDataBeforeSaving(formData),
-      body: blocksToFormBody(formBlocks, customFields),
+      body: blocksToFormBody(formBlocks),
       editor_version: 2,
     };
     MailPoet.Ajax.post({

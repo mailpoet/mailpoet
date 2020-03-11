@@ -3,17 +3,23 @@
  * @see https://developer.wordpress.org/block-editor/packages/packages-data/
  */
 import { registerStore } from '@wordpress/data';
+import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
 import * as actions from './actions.jsx';
 import createReducer from './reducer.jsx';
 import selectors from './selectors.jsx';
 import controls from './controls.jsx';
 import validateForm from './form_validator.jsx';
-import { formBodyToBlocks } from './form_body_to_blocks.jsx';
+import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
 import mapFormDataAfterLoading from './map_form_data_after_loading.jsx';
+
+const formBodyToBlocks = formBodyToBlocksFactory(
+  SETTINGS_DEFAULTS.colors,
+  window.mailpoet_custom_fields
+);
 
 export default () => {
   const formData = { ...window.mailpoet_form_data };
-  const formBlocks = formBodyToBlocks(formData.body, window.mailpoet_custom_fields);
+  const formBlocks = formBodyToBlocks(formData.body);
   delete formData.body;
   const dateSettingData = {
     dateTypes: window.mailpoet_date_types,

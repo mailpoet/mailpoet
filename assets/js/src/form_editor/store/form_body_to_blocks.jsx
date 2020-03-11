@@ -57,15 +57,27 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
   return mapped;
 };
 
-const mapColumnBlocks = (data, customFields = []) => {
+/**
+ * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
+ * @param {string} colorValue
+ */
+const mapColorSlug = (colorDefinitions, colorValue) => {
+  const result = colorDefinitions.find((color) => color.color === colorValue);
+  return result ? result.slug : undefined;
+};
+
+const mapColumnBlocks = (data, colorDefinitions, customFields = []) => {
+  // eslint-disable-next-line no-use-before-define
+  const mapFormBodyToBlocks = formBodyToBlocksFactory(colorDefinitions, customFields);
   const mapped = {
     clientId: generateId(),
     name: `core/${data.type}`,
     isValid: true,
     attributes: {},
-    // eslint-disable-next-line no-use-before-define
-    innerBlocks: formBodyToBlocks(data.body ? data.body : [], customFields),
+    innerBlocks: mapFormBodyToBlocks(data.body ? data.body : []),
   };
+  const textColorSlug = mapColorSlug(colorDefinitions, data.params.text_color);
+  const backgroundColorSlug = mapColorSlug(colorDefinitions, data.params.background_color);
   if (has(data.params, 'width')) {
     mapped.attributes.width = parseFloat(data.params.width);
   }
@@ -73,16 +85,13 @@ const mapColumnBlocks = (data, customFields = []) => {
     mapped.attributes.verticalAlignment = data.params.vertical_alignment;
   }
   if (has(data.params, 'text_color')) {
-    mapped.attributes.textColor = data.params.text_color;
-  }
-  if (has(data.params, 'custom_text_color')) {
-    mapped.attributes.customTextColor = data.params.custom_text_color;
+    mapped.attributes.textColor = textColorSlug;
+    mapped.attributes.customTextColor = !textColorSlug ? data.params.text_color : undefined;
   }
   if (has(data.params, 'background_color')) {
-    mapped.attributes.backgroundColor = data.params.background_color;
-  }
-  if (has(data.params, 'custom_background_color')) {
-    mapped.attributes.customBackgroundColor = data.params.custom_background_color;
+    mapped.attributes.backgroundColor = backgroundColorSlug;
+    mapped.attributes.customBackgroundColor = !backgroundColorSlug
+      ? data.params.background_color : undefined;
   }
   if (has(data.params, 'class_name') && data.params.class_name) {
     mapped.attributes.className = data.params.class_name;
@@ -91,101 +100,110 @@ const mapColumnBlocks = (data, customFields = []) => {
 };
 
 /**
- * Transforms form body items to array of blocks which can be passed to block editor.
- * @param {array} data - from form.body property
- * @param {array} customFields - list of all custom fields
+ * Factory for form data to blocks mapper
+ * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
+ * @param customFields - list of all custom Fields
  */
-export const formBodyToBlocks = (data, customFields = []) => {
-  if (!Array.isArray(data)) {
-    throw new Error('Mapper expects form body to be an array.');
-  }
+export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => {
   if (!Array.isArray(customFields)) {
     throw new Error('Mapper expects customFields to be an array.');
   }
 
-  return data.map((item, index) => {
-    if (['column', 'columns'].includes(item.type)) {
-      return mapColumnBlocks(item, customFields);
+  /**
+   * Transforms form body items to array of blocks which can be passed to block editor.
+   * @param {array} data - from form.body property
+   */
+  const formBodyToBlocks = (data) => {
+    if (!Array.isArray(data)) {
+      throw new Error('Mapper expects form body to be an array.');
     }
 
-    const mapped = {
-      clientId: `${item.id}_${index}`,
-      isValid: true,
-      innerBlocks: [],
-      attributes: {
-        labelWithinInput: false,
-        mandatory: false,
-      },
-    };
-    if (item.params && has(item.params, 'required')) {
-      mapped.attributes.mandatory = !!item.params.required;
-    }
-    if (item.params && has(item.params, 'label_within')) {
-      mapped.attributes.labelWithinInput = !!item.params.label_within;
-    }
-    if (item.params) {
-      mapped.attributes.label = item.params.label ? item.params.label : '';
-    }
-    switch (item.id) {
-      case 'email':
-        return {
-          ...mapped,
-          name: 'mailpoet-form/email-input',
-        };
-      case 'first_name':
-        return {
-          ...mapped,
-          name: 'mailpoet-form/first-name-input',
-        };
-      case 'last_name':
-        return {
-          ...mapped,
-          name: 'mailpoet-form/last-name-input',
-        };
-      case 'segments':
-        if (
-          item.params
-          && has(item.params, 'values')
-          && Array.isArray(item.params.values)
-        ) {
-          mapped.attributes.values = item.params.values.map((value) => ({
-            id: value.id,
-            name: value.name,
-            isChecked: value.is_checked === '1' ? true : undefined,
-          }));
-        } else {
-          mapped.attributes.values = [];
-        }
-        return {
-          ...mapped,
-          name: 'mailpoet-form/segment-select',
-        };
-      case 'submit':
-        return {
-          ...mapped,
-          name: 'mailpoet-form/submit-button',
-        };
-      case 'divider':
-        delete mapped.attributes.label;
-        return {
-          ...mapped,
-          name: 'mailpoet-form/divider',
-        };
-      case 'html':
-        delete mapped.attributes.label;
-        return {
-          ...mapped,
-          name: 'mailpoet-form/html',
-          attributes: {
-            content: item.params && item.params.text ? item.params.text : '',
-            nl2br: item.params && item.params.nl2br ? !!item.params.nl2br : false,
-          },
-        };
-      default:
-        if (Number.isInteger(parseInt(item.id, 10))) {
-          return mapCustomField(item, customFields, mapped);
-        }
-        return null;
-    }
-  }).filter(Boolean);
+    return data.map((item, index) => {
+      if (['column', 'columns'].includes(item.type)) {
+        return mapColumnBlocks(item, colorDefinitions, customFields);
+      }
+
+      const mapped = {
+        clientId: `${item.id}_${index}`,
+        isValid: true,
+        innerBlocks: [],
+        attributes: {
+          labelWithinInput: false,
+          mandatory: false,
+        },
+      };
+      if (item.params && has(item.params, 'required')) {
+        mapped.attributes.mandatory = !!item.params.required;
+      }
+      if (item.params && has(item.params, 'label_within')) {
+        mapped.attributes.labelWithinInput = !!item.params.label_within;
+      }
+      if (item.params) {
+        mapped.attributes.label = item.params.label ? item.params.label : '';
+      }
+      switch (item.id) {
+        case 'email':
+          return {
+            ...mapped,
+            name: 'mailpoet-form/email-input',
+          };
+        case 'first_name':
+          return {
+            ...mapped,
+            name: 'mailpoet-form/first-name-input',
+          };
+        case 'last_name':
+          return {
+            ...mapped,
+            name: 'mailpoet-form/last-name-input',
+          };
+        case 'segments':
+          if (
+            item.params
+            && has(item.params, 'values')
+            && Array.isArray(item.params.values)
+          ) {
+            mapped.attributes.values = item.params.values.map((value) => ({
+              id: value.id,
+              name: value.name,
+              isChecked: value.is_checked === '1' ? true : undefined,
+            }));
+          } else {
+            mapped.attributes.values = [];
+          }
+          return {
+            ...mapped,
+            name: 'mailpoet-form/segment-select',
+          };
+        case 'submit':
+          return {
+            ...mapped,
+            name: 'mailpoet-form/submit-button',
+          };
+        case 'divider':
+          delete mapped.attributes.label;
+          return {
+            ...mapped,
+            name: 'mailpoet-form/divider',
+          };
+        case 'html':
+          delete mapped.attributes.label;
+          return {
+            ...mapped,
+            name: 'mailpoet-form/html',
+            attributes: {
+              content: item.params && item.params.text ? item.params.text : '',
+              nl2br: item.params && item.params.nl2br ? !!item.params.nl2br : false,
+            },
+          };
+        default:
+          if (Number.isInteger(parseInt(item.id, 10))) {
+            return mapCustomField(item, customFields, mapped);
+          }
+          return null;
+      }
+    }).filter(Boolean);
+  };
+
+  return formBodyToBlocks;
 };
