@@ -57,13 +57,13 @@
 
     .mailpoet_tool {
       display: block;
-      height: $column-icon-size-with-padding;
-      width: $column-icon-size-with-padding;
+      height: $editor-tool-column-size-with-padding;
+      width: $editor-tool-column-size-with-padding;
 
       svg {
-        height: $column-icon-size;
+        height: $editor-tool-column-size;
         padding: 6px;
-        width: $column-icon-size;
+        width: $editor-tool-column-size;
       }
     }
 
@@ -73,7 +73,7 @@
 
     .mailpoet_delete_block_activate {
       display: block;
-      max-height: $column-icon-size-with-padding;
+      max-height: $editor-tool-column-size-with-padding;
       max-width: none;
       opacity: 1;
     }
@@ -106,15 +106,15 @@
 
 .mailpoet_tool {
   display: inline-block;
-  height: $content-icon-size-with-padding;
-  width: $content-icon-size-with-padding;
+  height: $editor-tool-size-with-padding;
+  width: $editor-tool-size-with-padding;
 
   svg {
     fill: #fff;
-    height: $content-icon-size;
+    height: $editor-tool-size;
     padding: 5px;
     vertical-align: top;
-    width: $content-icon-size;
+    width: $editor-tool-size;
   }
 
   &:hover svg,
@@ -146,7 +146,7 @@
 
   .mailpoet_delete_block_activate {
     display: inline-block;
-    max-width: $content-icon-size-with-padding;
+    max-width: $editor-tool-size-with-padding;
     opacity: 1;
 
     @include animation-fade-in-and-scale-horizontally();

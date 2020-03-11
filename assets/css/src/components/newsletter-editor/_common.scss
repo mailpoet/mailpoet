@@ -1,6 +1,6 @@
 .admin_page_mailpoet-newsletter-editor {
   a {
-    color: $link-color;
+    color: $color-primary-button;
     text-decoration: none;
   }
 
@@ -64,7 +64,7 @@ select.mailpoet_font-size {
 }
 
 .mailpoet_input {
-  border: 1px solid $select-border-color;
+  border: 1px solid $color-editor-border-content;
   width: 283px;
 }
 
@@ -191,8 +191,8 @@ select.mailpoet_font-size {
 }
 
 .mailpoet_select {
-  border-color: $select-border-color;
-  color: $select-text-color;
+  border-color: $color-editor-border-content;
+  color: $color-primary-text;
   margin: 0;
 }
 
@@ -228,10 +228,10 @@ select.mailpoet_font-size {
 }
 
 .mailpoet_button {
-  background-color: $button-default-background-color;
-  border: 1px solid $button-default-border-color;
+  background-color: $color-primary-background;
+  border: 1px solid $color-editor-border-structure;
   border-radius: 3px;
-  color: $button-default-text-color;
+  color: $color-primary-inactive;
   line-height: normal;
   margin: 0;
   padding: 6px 20px;
@@ -272,12 +272,12 @@ select.mailpoet_font-size {
 }
 
 .mailpoet_button_primary {
-  background-color: $button-primary-background-color;
-  border-color: $button-primary-border-color;
-  color: $button-primary-text-color;
+  background-color: $color-primary-button;
+  border-color: $color-primary;
+  color: $color-white;
 
   &:hover {
-    background-color: $button-primary-hover-background-color;
+    background-color: $color-primary-highlight;
   }
 }
 

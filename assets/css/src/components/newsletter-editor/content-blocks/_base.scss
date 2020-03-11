@@ -34,7 +34,7 @@
 }
 
 .mailpoet_content {
-  line-height: $block-text-line-height;
+  line-height: $editor-line-height;
   position: relative;
 
   h1,
@@ -45,7 +45,7 @@
   h6 {
     font-style: normal;
     font-weight: normal;
-    line-height: $block-text-line-height;
+    line-height: $editor-line-height;
     margin: 0 0 .3em;
     padding: 0;
   }
@@ -60,7 +60,7 @@
   p {
     font-style: normal;
     font-weight: normal;
-    line-height: $block-text-line-height;
+    line-height: $editor-line-height;
   }
 
   ul {
@@ -77,7 +77,7 @@
 
   blockquote {
     border-left: 2px #565656 solid;
-    margin: 0 0 $block-text-line-height;
+    margin: 0 0 $editor-line-height;
     padding-left: 10px;
   }
 }

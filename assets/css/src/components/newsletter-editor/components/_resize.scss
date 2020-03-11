@@ -4,7 +4,7 @@
   position: absolute;
   top: 100%;
   transform: translateX(-50%);
-  z-index: $resize-handle-z-index;
+  z-index: $editor-resize-handle-zindex;
 }
 
 .mailpoet_resize_handle {
@@ -16,7 +16,7 @@
   justify-content: space-between;
   min-width: 60px;
   padding: 7px 10px;
-  z-index: $resize-handle-z-index;
+  z-index: $editor-resize-handle-zindex;
 
   .mailpoet_resize_handle_text,
   .mailpoet_resize_handle_icon {
@@ -29,7 +29,7 @@
 }
 
 .mailpoet_resize_handle_text {
-  color: $resize-handle-font-color;
+  color: $editor-resize-handle-color;
   font-size: 11px;
   font-weight: bold;
   line-height: 1.5em;
@@ -41,7 +41,7 @@
   margin-left: 5px;
 
   > svg {
-    fill: $resize-handle-font-color;
+    fill: $editor-resize-handle-color;
     height: 15px;
     vertical-align: top;
     width: 15px;
@@ -70,7 +70,7 @@
   height: 24px;
   position: relative;
   width: 24px;
-  z-index: $resize-handle-z-index;
+  z-index: $editor-resize-handle-zindex;
 
   .mailpoet_resizable_block.mailpoet_highlight & {
     display: inline-block;
@@ -92,7 +92,7 @@
   padding: 1px;
 
   > svg {
-    fill: $resize-handle-font-color;
+    fill: $editor-resize-handle-color;
     height: 22px;
     vertical-align: top;
     width: 22px;
@@ -100,7 +100,7 @@
 }
 
 .mailpoet_block.mailpoet_image_resize_active > .mailpoet_block_highlight {
-  border: 2px solid $resize-active-color;
+  border: 2px solid $editor-resize-color;
 
   .mailpoet_image_resize_handle {
     display: inline-block;

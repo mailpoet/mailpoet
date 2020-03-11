@@ -1,8 +1,8 @@
 #mailpoet_editor_sidebar {
   border-bottom: $color-editor-border-content;
   border-left: $color-editor-border-content;
-  color: $sidebar-text-color;
-  font-size: $sidebar-text-size;
+  color: $editor-sidebar-color;
+  font-size: $editor-sidebar-font-size;
 
   .mailpoet_sidebar_region {
     border-bottom: 1px solid $color-editor-border-content;
@@ -23,7 +23,7 @@
 
   &,
   .postbox {
-    background-color: $sidebar-background-color;
+    background-color: $editor-sidebar-background;
   }
 
   .postbox {
@@ -34,13 +34,13 @@
     }
 
     &.closed h3 {
-      color: $sidebar-inactive-heading-color;
+      color: $color-primary-inactive;
       cursor: pointer;
     }
 
     h3,
     &:hover h3 {
-      color: $sidebar-active-heading-color;
+      color: $color-primary;
       margin: 0;
       padding: 17px 20px;
       text-transform: uppercase;
@@ -53,7 +53,7 @@
     }
 
     .handlediv:before {
-      color: $sidebar-active-heading-color;
+      color: $color-primary;
       content: '\f142';
       display: inline-block;
       font: 400 20px / 1 dashicons;
@@ -67,12 +67,12 @@
     }
 
     &.closed .handlediv:before {
-      color: $sidebar-inactive-heading-color;
+      color: $color-primary-inactive;
       content: '\f140';
     }
 
     &.closed:hover .handlediv:before {
-      color: $sidebar-active-heading-color;
+      color: $color-primary;
     }
   }
 }
@@ -82,49 +82,49 @@
   float: left;
   padding: 0 13px 15px;
   text-align: center;
-  width: $widget-width;
+  width: $editor-widget-size;
 
   &:nth-child(3n+1) {
     clear: left;
   }
 
   .mailpoet_widget_icon {
-    background-color: $widget-background-color;
+    background-color: $color-white;
     border-radius: 3px;
-    box-shadow: 1px 2px $widget-shadow-color;
+    box-shadow: 1px 2px $editor-widget-shadow-color;
     box-sizing: border-box;
-    color: $widget-icon-color;
-    fill: $widget-icon-color;
-    height: $widget-width;
-    line-height: $widget-width;
+    color: $editor-widget-icon-color;
+    fill: $editor-widget-icon-color;
+    height: $editor-widget-size;
+    line-height: $editor-widget-size;
     margin-bottom: 9px;
     text-align: center;
-    width: $widget-width;
+    width: $editor-widget-size;
 
     /* Vertically align widget icon glyphs */
     > * {
-      font-size: $widget-icon-width;
-      height: $widget-icon-width;
+      font-size: $editor-widget-icon-size;
+      height: $editor-widget-icon-size;
       vertical-align: middle;
-      width: $widget-icon-width;
+      width: $editor-widget-icon-size;
     }
 
     &:hover {
-      border: 1px solid $widget-icon-hover-color;
-      color: $widget-icon-hover-color;
-      fill: $widget-icon-hover-color;
+      border: 1px solid $editor-widget-icon-color-hover;
+      color: $editor-widget-icon-color-hover;
+      fill: $editor-widget-icon-color-hover;
     }
   }
 
   &.mailpoet_droppable_active {
-    color: $widget-icon-hover-color;
-    fill: $widget-icon-hover-color;
+    color: $editor-widget-icon-color-hover;
+    fill: $editor-widget-icon-color-hover;
 
     .mailpoet_widget_icon {
-      border: 1px solid $widget-icon-hover-color;
+      border: 1px solid $editor-widget-icon-color-hover;
       box-shadow: none;
-      color: $widget-icon-hover-color;
-      fill: $widget-icon-hover-color;
+      color: $editor-widget-icon-color-hover;
+      fill: $editor-widget-icon-color-hover;
     }
 
     .mailpoet_widget_title {

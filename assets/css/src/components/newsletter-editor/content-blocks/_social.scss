@@ -27,20 +27,20 @@
   padding: 5px;
 
   &:hover {
-    border: 1px solid $social-icon-set-hover-border-color;
+    border: 1px solid $editor-social-icon-border-color-hover;
   }
 
   img {
-    height: $social-icon-width;
+    height: $editor-social-icon-width;
     padding: 2px 3px;
     vertical-align: middle;
-    width: $social-icon-width;
+    width: $editor-social-icon-width;
   }
 }
 
 .mailpoet_active_icon_set {
-  background-color: $active-social-icon-set-background-color;
-  border: 1px dashed $active-social-icon-set-border-color;
+  background-color: $editor-social-icon-background-color;
+  border: 1px dashed $editor-social-icon-border-color;
 }
 
 .mailpoet_social_icon_settings {
@@ -92,12 +92,12 @@
   top: 10px;
 
   .mailpoet_tool_icon {
-    fill: $tool-inactive-color;
-    height: $tool-width;
-    width: $tool-width;
+    fill: $editor-tool-social-color;
+    height: $editor-tool-social-width;
+    width: $editor-tool-social-width;
 
     &:hover {
-      fill: $tool-hover-color;
+      fill: $editor-tool-social-hover;
     }
 
     &:active {
@@ -111,5 +111,5 @@
 }
 
 .mailpoet_social_icon_settings_delete_icon {
-  right: 5px + 5px + $tool-width;
+  right: 5px + 5px + $editor-tool-social-width;
 }

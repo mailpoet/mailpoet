@@ -1,10 +1,10 @@
 .mailpoet_drop_marker {
   background-color: $color-primary;
   box-shadow: 0 0 1px 0 $color-primary;
-  min-height: $marker-width;
-  min-width: $marker-width;
+  min-height: $editor-dnd-drop-size;
+  min-width: $editor-dnd-drop-size;
   position: absolute;
-  z-index: $marker-z-index;
+  z-index: $editor-dnd-drop-zindex;
 
   &:before,
   &:after {
@@ -28,11 +28,11 @@
 .mailpoet_drop_marker.mailpoet_drop_marker_middle,
 .mailpoet_drop_marker.mailpoet_drop_marker_first.mailpoet_drop_marker_after,
 .mailpoet_drop_marker.mailpoet_drop_marker_last.mailpoet_drop_marker_before {
-  margin-top: -1 * ($marker-width / 2);
+  margin-top: -1 * ($editor-dnd-drop-size / 2);
 }
 
 .mailpoet_drop_marker.mailpoet_drop_marker_last.mailpoet_drop_marker_after {
-  margin-top: -1 * $marker-width;
+  margin-top: -1 * $editor-dnd-drop-size;
 }
 
 #mailpoet_editor .mailpoet_droppable_active {
@@ -40,8 +40,8 @@
 }
 
 .mailpoet_block.mailpoet_droppable_active {
-  border: 1px dashed $drop-active-color !important;
-  width: $newsletter-width;
+  border: 1px dashed $color-primary !important;
+  width: $editor-width;
 
   .mailpoet_tools {
     display: none !important;
@@ -51,7 +51,7 @@
 .mailpoet_widget.mailpoet_droppable_active {
   margin: 0;
   padding: 0;
-  z-index: $draggable-widget-z-index;
+  z-index: $editor-dnd-drag-zindex;
 
   @include animation-fade-in();
 

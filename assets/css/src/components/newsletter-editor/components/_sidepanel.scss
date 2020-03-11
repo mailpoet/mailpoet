@@ -1,14 +1,14 @@
 /* Sidepanel */
 .mailpoet_editor_settings {
-  color: $sidebar-text-color;
-  font-size: $sidebar-text-size;
+  color: $editor-sidebar-color;
+  font-size: $editor-sidebar-font-size;
 
   p {
     font-size: 1em;
   }
 
   h3 {
-    color: $sidepanel-active-heading-color;
+    color: $color-primary;
     font-size: 1.4em;
     text-transform: uppercase;
   }
