@@ -94,7 +94,7 @@ class BlocksRenderer {
         break;
 
       case 'heading':
-        $html .= $this->heading->render($block, $formSettings);
+        $html .= $this->heading->render($block);
         break;
 
       case 'divider':
