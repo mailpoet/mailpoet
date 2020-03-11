@@ -30,7 +30,7 @@
   .tox {
     /* Small style changes to better fit TinyMCE to our editor */
     &.tox-tinymce-inline {
-      border: 1px solid $content-border-color;
+      border: 1px solid $color-editor-border-content;
       border-radius: 3px;
       box-shadow: 0 0 3px 1px rgba(0, 0, 0, .05);
 
@@ -44,7 +44,7 @@
     }
 
     .tox-toolbar {
-      background-color: $primary-background-color;
+      background-color: $color-primary-background;
 
       /* Fix double border on top of TineMCE popup */
       &:first-child {
@@ -129,7 +129,7 @@
   .sp-replacer {
     border: 0;
     border-radius: 3px;
-    box-shadow: 1px 2px darken($primary-background-color, 13%);
+    box-shadow: 1px 2px darken($color-primary-background, 13%);
     padding: 0;
   }
 
@@ -155,8 +155,8 @@
   }
 
   .mailpoet_panel_wrapper {
-    background-color: $primary-background-color;
-    border: 1px solid $content-border-color;
+    background-color: $color-primary-background;
+    border: 1px solid $color-editor-border-content;
   }
 
   .wrap > .mailpoet_notice,

@@ -1,18 +1,3 @@
-$modal-min-width: 360px;
-$modal-screen-overlay-z-index: 100000;
-$modal-header-z-index: 10;
-$border-width: 1px;
-$light-gray-500: #e2e4e7;
-$dark-gray-900: #191e23;
-$shadow-modal: 0 3px 30px rgba($dark-gray-900, .2);
-
-$grid-size: 8px;
-$grid-size-large: 16px;
-$grid-size-xlarge: 24px;
-
-$header-height: 56px;
-$icon-button-size: 36px;
-
 #mailpoet_modal {
   display: block !important;
 }
@@ -36,8 +21,8 @@ $icon-button-size: 36px;
 // Full-screen on mobiles
 .mailpoet-modal-frame {
   background: white;
-  border: $border-width solid $light-gray-500;
-  box-shadow: $shadow-modal;
+  border: $modal-border-width solid $modal-light-gray-500;
+  box-shadow: $modal-shadow-modal;
   box-sizing: border-box;
   height: 100%;
   overflow: auto;
@@ -51,8 +36,8 @@ $icon-button-size: 36px;
     animation-duration: 100ms;
     animation-fill-mode: forwards;
     height: auto;
-    max-height: calc(100% - #{ $header-height } - #{ $header-height });
-    max-width: calc(100% - #{ $grid-size-large } - #{ $grid-size-large });
+    max-height: calc(100% - #{ $modal-header-height } - #{ $modal-header-height });
+    max-width: calc(100% - #{ $modal-grid-size-large } - #{ $modal-grid-size-large });
     min-width: $modal-min-width;
     width: auto;
   }
@@ -60,7 +45,7 @@ $icon-button-size: 36px;
 
 @keyframes mailpoet-modal-appear-animation {
   from {
-    margin-top: $grid-size * 4;
+    margin-top: $modal-grid-size * 4;
   }
 
   to {
@@ -77,10 +62,10 @@ $icon-button-size: 36px;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
-  height: $header-height;
+  height: $modal-header-height;
   justify-content: space-between;
-  margin: 0 -#{$grid-size-xlarge} $grid-size-xlarge;
-  padding: 0 $grid-size-xlarge;
+  margin: 0 -#{$modal-grid-size-xlarge} $modal-grid-size-xlarge;
+  padding: 0 $modal-grid-size-xlarge;
   // For z-index to take effect, the element must be positioned. A "sticky"
   // element is positioned, but since this is not supported in IE11,
   // "relative" is used as a fallback.
@@ -109,13 +94,13 @@ $icon-button-size: 36px;
   }
 
   .components-button {
-    left: $grid-size;
+    left: $modal-grid-size;
     position: relative;
   }
 
   .mailpoet-modal-close svg {
     opacity: .5;
-    stroke: $dark-gray-900;
+    stroke: $modal-dark-gray-900;
   }
 }
 
@@ -131,9 +116,9 @@ $icon-button-size: 36px;
   display: inline-block;
 
   svg {
-    max-height: $icon-button-size;
-    max-width: $icon-button-size;
-    padding: $grid-size;
+    max-height: $modal-icon-button-size;
+    max-width: $modal-icon-button-size;
+    padding: $modal-grid-size;
   }
 }
 
@@ -141,13 +126,13 @@ $icon-button-size: 36px;
 .mailpoet-modal-content {
   box-sizing: border-box;
   height: 100%;
-  padding: 0 $grid-size-xlarge $grid-size-xlarge;
+  padding: 0 $modal-grid-size-xlarge $modal-grid-size-xlarge;
 
   // Rules inside this query are only run by Microsoft Edge.
   // This is a companion top padding to the fixed rule in line 77.
 
   @supports (-ms-ime-align:auto) {
-    padding-top: $header-height;
+    padding-top: $modal-header-height;
   }
 }
 

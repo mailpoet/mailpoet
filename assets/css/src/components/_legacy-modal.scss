@@ -1,20 +1,10 @@
-$modal_title_color: #cfcfcf;
-$modal_highlight_background_color: #f1f1f1;
-$modal_background_color: #fff;
-$modal_popup_margin: 30px;
-$modal_popup_margin_mobile: 10px;
-$modal_popup_padding: 30px;
-$modal_popup_padding_mobile: 12px;
-$modal_close_button_size: 23px;
-$overlay_background_color: rgba(0, 0, 0, .6);
-
 body.mailpoet_modal_opened {
   overflow: hidden;
 }
 
 .mailpoet_modal_overlay {
   align-items: center;
-  background-color: $overlay_background_color;
+  background-color: $legacy-modal-overlay-background-color;
   box-sizing: border-box;
   display: flex;
   height: 100%;
@@ -22,7 +12,7 @@ body.mailpoet_modal_opened {
   left: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: $modal_popup_margin;
+  padding: $legacy-modal-popup-margin;
   position: fixed;
   top: 0;
   width: 100%;
@@ -30,7 +20,7 @@ body.mailpoet_modal_opened {
 }
 
 .mailpoet_modal_highlight {
-  background-color: $modal_highlight_background_color;
+  background-color: $legacy-modal-highlight-background-color;
   box-shadow: 0 0 20px 2px rgba(#fff, 75%);
   pointer-events: none;
   position: relative;
@@ -42,7 +32,7 @@ body.mailpoet_modal_opened {
 }
 
 .mailpoet_modal_overlay.mailpoet_overlay_loading {
-  background-color: $overlay_background_color !important;
+  background-color: $legacy-modal-overlay-background-color !important;
   display: flex !important;
 }
 
@@ -59,7 +49,7 @@ body.mailpoet_modal_opened {
 }
 
 .mailpoet_popup_wrapper {
-  background-color: $modal_background_color;
+  background-color: $legacy-modal-background-color;
   border-radius: 4px;
   box-shadow: 1px 2px 4px #343434;
   box-sizing: border-box;
@@ -67,7 +57,7 @@ body.mailpoet_modal_opened {
   flex-flow: column;
   height: 100%;
   overflow: hidden;
-  padding: $modal_popup_padding;
+  padding: $legacy-modal-popup-padding;
   position: relative;
   width: 100%;
   z-index: 0;
@@ -81,7 +71,7 @@ body.mailpoet_modal_opened {
   font-size: 23px;
   font-weight: 600;
   line-height: 29px;
-  margin: 0 ($modal_close_button_size + 20) 0 0;
+  margin: 0 ($legacy-modal-close-button-size + 20) 0 0;
 }
 
 .mailpoet_popup_body {
@@ -137,7 +127,7 @@ body.mailpoet_modal_opened {
 .mailpoet_panel_title h2 {
   border-left: 1px solid #444;
   border-right: 1px solid #444;
-  color: $modal_title_color;
+  color: $legacy-modal-title-color;
   font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
   font-size: 1em;
   font-weight: normal;
@@ -169,11 +159,11 @@ body.mailpoet_modal_opened {
 }
 
 .mailpoet_popup .mailpoet_modal_close {
-  height: $modal_close_button_size;
+  height: $legacy-modal-close-button-size;
   padding: 3px 0;
-  right: $modal_popup_padding;
-  top: $modal_popup_padding;
-  width: $modal_close_button_size;
+  right: $legacy-modal-popup-padding;
+  top: $legacy-modal-popup-padding;
+  width: $legacy-modal-close-button-size;
 }
 
 .mailpoet_panel .mailpoet_modal_close {
@@ -205,7 +195,7 @@ body.mailpoet_modal_opened {
 
 @media screen and (max-width: 782px) {
   .mailpoet_modal_overlay {
-    padding: $modal_popup_margin_mobile;
+    padding: $legacy-modal-popup-margin-mobile;
   }
 
   .mailpoet_popup {
@@ -214,16 +204,16 @@ body.mailpoet_modal_opened {
   }
 
   .mailpoet_popup_wrapper {
-    padding: $modal_popup_padding_mobile;
+    padding: $legacy-modal-popup-padding-mobile;
   }
 
   .mailpoet_popup_title h2 {
-    margin-right: $modal_close_button_size + 10;
+    margin-right: $legacy-modal-close-button-size + 10;
   }
 
   .mailpoet_popup .mailpoet_modal_close {
-    right: $modal_popup_padding_mobile;
-    top: $modal_popup_padding_mobile;
+    right: $legacy-modal-popup-padding-mobile;
+    top: $legacy-modal-popup-padding-mobile;
   }
 
   .mailpoet_modal_overlay.mailpoet_panel_overlay {

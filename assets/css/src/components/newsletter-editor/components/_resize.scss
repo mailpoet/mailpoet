@@ -1,7 +1,3 @@
-$resize-active-color: $editor-content-color;
-$resize-handle-font-color: $white-color;
-$resize-handle-z-index: 2;
-
 .mailpoet_resize_handle_container {
   left: 50%;
   margin-top: -16px;
@@ -13,7 +9,7 @@ $resize-handle-z-index: 2;
 
 .mailpoet_resize_handle {
   align-items: center;
-  background: $editor-content-color;
+  background: $color-editor-background-content;
   border-radius: 10px;
   cursor: ns-resize;
   display: none;
@@ -67,7 +63,7 @@ $resize-handle-z-index: 2;
 }
 
 .mailpoet_image_resize_handle {
-  background: $editor-content-color;
+  background: $color-editor-background-content;
   border-radius: 6px 0 0;
   cursor: nwse-resize;
   display: none;

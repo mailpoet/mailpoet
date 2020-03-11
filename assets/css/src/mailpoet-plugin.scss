@@ -1,3 +1,13 @@
+// 1. Settings
+// Global variables, config switches. Not producing any CSS.
+@import 'settings/badge';
+@import 'settings/colors';
+@import 'settings/editor';
+@import 'settings/legacy-modal';
+@import 'settings/modal';
+@import 'settings/newsletter';
+@import 'settings/progress';
+
 @import 'components/mixins';
 @import '../../../node_modules/select2/dist/css/select2';
 @import '../../../node_modules/spectrum-colorpicker/spectrum';
@@ -32,7 +42,6 @@
 @import 'components/import-export';
 @import 'components/toggle';
 @import 'components/newsletter-editor/mixins/transitions';
-@import 'components/newsletter-editor/variables';
 @import 'components/newsletter-editor/common';
 @import 'components/newsletter-editor/layout';
 @import 'components/newsletter-editor/components/forms';

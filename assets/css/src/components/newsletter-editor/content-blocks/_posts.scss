@@ -44,8 +44,8 @@
 }
 
 .mailpoet_settings_posts_single_post {
-  background-color: $white-color;
-  border: 1px solid $content-border-color;
+  background-color: $color-white;
+  border: 1px solid $color-editor-border-content;
   border-radius: 1px;
   box-sizing: border-box;
   height: 38px;
@@ -56,7 +56,7 @@
   width: 100%;
 
   &:hover {
-    border-color: $primary-active-color;
+    border-color: $color-primary;
   }
 
   .mailpoet_select_post_checkbox {

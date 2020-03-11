@@ -1,0 +1,103 @@
+$newsletter-width: 660px;
+
+$text-line-height: 1.6em;
+$sidebar-text-size: 13px;
+
+$info-message-background-color: #fed2bf;
+
+$link-color: $color-primary-button;
+
+$select-border-color: $color-editor-border-content;
+$select-text-color: $color-primary-text;
+
+$button-default-border-color: $color-editor-border-structure;
+$button-default-background-color: $color-primary-background;
+$button-default-text-color: $color-primary-inactive;
+
+$button-primary-border-color: $color-primary;
+$button-primary-background-color: $color-primary-button;
+$button-primary-hover-background-color: $color-primary-highlight;
+$button-primary-text-color: $color-white;
+
+$range-track-background-color: $color-white;
+$range-track-border-color: $color-editor-border-structure;
+$range-track-height: 12px;
+$range-thumb-background-color: $color-primary-inactive;
+$range-thumb-border-color: #333;
+$range-thumb-width: 13px;
+$range-thumb-height: 26px;
+$range-border-radius: 3px;
+$range-thumb-hover-background-color: $color-primary;
+
+$newsletter-editor-sidebar-width: 330px;
+
+
+//////// COMPONENTS
+
+// Block tools
+$tool-inactive-color: #333;
+$tool-inactive-secondary-color: #fff;
+$tool-hover-color: #bbb;
+$tool-hover-secondary-color: #fff;
+$tool-active-color: #d2d2d4;
+$tool-active-secondary-color: #fff;
+
+$content-icon-size: 14px;
+$content-icon-size-with-padding: 24px;
+$column-icon-size: 15px;
+$column-icon-size-with-padding: 27px;
+
+// Drag N Drop
+$drop-active-color: $color-primary;
+
+$marker-width: 2px;
+$marker-z-index: 1;
+
+$draggable-widget-z-index: 2;
+
+// Resize
+$resize-active-color: $color-editor-background-content;
+$resize-handle-font-color: $color-white;
+$resize-handle-z-index: 2;
+
+// Sidebar
+$sidebar-background-color: $color-primary-background;
+$sidebar-active-heading-color: $color-primary;
+$sidebar-inactive-heading-color: $color-primary-inactive;
+$sidebar-text-color: $color-primary-text;
+
+$widget-width: 70px;
+$widget-background-color: $color-white;
+$widget-shadow-color: darken($color-primary-background, 13%);
+$widget-icon-color: darken($color-primary-background, 31.5%);
+$widget-icon-hover-color: $color-primary;
+$widget-icon-width: 30px;
+
+// Sidepanel
+$sidepanel-active-heading-color: $color-primary;
+
+
+////// CONTENT BLOCKS
+
+// Base
+$block-text-line-height: $text-line-height;
+
+// Container
+$column-margin: 20px;
+$one-column-width: $newsletter-width - (2 * $column-margin);
+$two-column-width: $newsletter-width / 2 - (2 * $column-margin);
+$three-column-width: $newsletter-width / 3 - (2 * $column-margin);
+$two-column-wider-column-width: (($newsletter-width / 3) - $column-margin) * 2;
+
+// Divider
+$active-divider-border-color: #adadad;
+$active-divider-background-color: #daebf2;
+$divider-hover-border-color: $color-primary;
+
+// Social
+$social-icon-width: 32px;
+$active-social-icon-set-border-color: #adadad;
+$active-social-icon-set-background-color: #daebf2;
+$social-icon-set-hover-border-color: $color-primary;
+
+$tool-width: 16px;

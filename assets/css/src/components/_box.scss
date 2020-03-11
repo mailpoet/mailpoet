@@ -1,16 +1,3 @@
-$box-width: 425px;
-$box-height: 150px;
-$thumbnail-height: $box-height * 2;
-$box-margin-big: 40px;
-$box-margin-small: 20px;
-$box-description-space-between-heading-and-paragraph: 5px;
-$box-description-height: 110px;
-$box-description-text-height: $box-description-height - $box-description-space-between-heading-and-paragraph;
-$box-heading-line-height: $box-description-text-height / 4;
-$box-heading-font-size: $box-heading-line-height * 5 / 7;
-$box-description-line-height: $box-heading-line-height / 2;
-$box-description-font-size: $box-description-line-height;
-
 .mailpoet_boxes.mailpoet_boxes_loading {
   opacity: .2;
 }
@@ -27,7 +14,7 @@ ul.mailpoet_boxes {
   display: flex;
   margin: 15px 25px 0 0;
   padding: 15px;
-  width: $box-width;
+  width: $newsletter-box-width;
 }
 
 .mailpoet_boxes .mailpoet_boxes_content {
@@ -40,7 +27,7 @@ ul.mailpoet_boxes {
   box-sizing: border-box;
   flex-direction: column;
   height: auto;
-  margin: 0 0 $box-margin-big;
+  margin: 0 0 $newsletter-box-margin-big;
   padding: 0;
   width: 30.5%;
 
@@ -95,25 +82,25 @@ ul.mailpoet_boxes {
 
 @media screen and (min-width: 1179px) {
   .mailpoet_boxes .mailpoet_template_boxes:nth-child(3n-1) {
-    margin: 0 $box-margin-big $box-margin-big $box-margin-big;
+    margin: 0 $newsletter-box-margin-big $newsletter-box-margin-big $newsletter-box-margin-big;
   }
 }
 
 @media screen and (max-width: 1178px) {
   .mailpoet_boxes .mailpoet_template_boxes:nth-child(2n-1) {
-    margin: 0 $box-margin-big $box-margin-big 0;
+    margin: 0 $newsletter-box-margin-big $newsletter-box-margin-big 0;
   }
 }
 
 @media screen and (max-width: 782px) {
   .mailpoet_boxes .mailpoet_template_boxes:nth-child(2n-1) {
-    margin: 0 $box-margin-small $box-margin-small 0;
+    margin: 0 $newsletter-box-margin-small $newsletter-box-margin-small 0;
   }
 }
 
 @media screen and (max-width: 520px) {
   .mailpoet_boxes .mailpoet_template_boxes:nth-child(1n) {
-    margin: 0 0 $box-margin-small $box-margin-small;
+    margin: 0 0 $newsletter-box-margin-small $newsletter-box-margin-small;
   }
 }
 
@@ -122,27 +109,27 @@ ul.mailpoet_boxes {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   border: 0;
-  height: $thumbnail-height;
+  height: $newsletter-thumbnail-height;
   overflow: hidden;
   position: relative;
   width: 100%;
 
   img {
     height: auto;
-    min-width: $thumbnail-height;
+    min-width: $newsletter-thumbnail-height;
     width: 100%;
   }
 }
 
 .woocommerce .mailpoet_thumbnail,
 .mailpoet_boxes .mailpoet_newsletter_types .mailpoet_thumbnail {
-  height: $box-height;
+  height: $newsletter-box-height;
   margin-right: 15px;
   overflow: hidden;
-  width: $box-height;
+  width: $newsletter-box-height;
 
   img {
-    min-width: $box-height;
+    min-width: $newsletter-box-height;
     transform: translate(-50%, -50%);
     width: 110%;
   }
@@ -199,15 +186,15 @@ ul.mailpoet_boxes {
   word-wrap: break-word;
 
   h3 {
-    font-size: $box-heading-font-size;
+    font-size: $newsletter-box-heading-font-size;
     font-weight: 700;
-    line-height: $box-heading-line-height;
-    margin: 0 0 $box-description-space-between-heading-and-paragraph 0;
+    line-height: $newsletter-box-heading-line-height;
+    margin: 0 0 $newsletter-box-description-space-between-heading-and-paragraph 0;
     max-width: 223px;
   }
 
   p {
-    font-size: $box-description-font-size;
+    font-size: $newsletter-box-description-font-size;
     margin: 0;
   }
 }

@@ -1,0 +1,25 @@
+// General colors
+$color-transparent: rgba(#fff, 0);
+$color-white: rgb(255, 255, 255);
+
+
+// Primary (blueish) color
+$color-primary: #0074a2;
+$color-primary-background: #f8f8f8;
+$color-primary-button: #2ea1cd;
+$color-primary-highlight: #1e8cbe;
+$color-primary-inactive: #a4a4a4;
+$color-primary-shadow-inset: #025c80;
+$color-primary-text: #656565;
+
+
+// Newsletter editor colors
+$color-editor-background-column: #7fbbd0;
+$color-editor-background-content: #0078a2;
+
+$color-editor-border-content: #e5e5e5;
+$color-editor-border-structure: #ddd;
+
+$color-editor-warning: #d54e21;
+$color-editor-warning-alternate: #f4c6c8;
+$color-editor-warning-text: $color-white;

@@ -1,13 +1,6 @@
-$drop-active-color: $primary-active-color;
-
-$marker-width: 2px;
-$marker-z-index: 1;
-
-$draggable-widget-z-index: 2;
-
 .mailpoet_drop_marker {
-  background-color: $primary-active-color;
-  box-shadow: 0 0 1px 0 $primary-active-color;
+  background-color: $color-primary;
+  box-shadow: 0 0 1px 0 $color-primary;
   min-height: $marker-width;
   min-width: $marker-width;
   position: absolute;
@@ -15,7 +8,7 @@ $draggable-widget-z-index: 2;
 
   &:before,
   &:after {
-    color: $primary-active-color;
+    color: $color-primary;
     font: 400 40px / 1 dashicons;
     margin-top: -18px;
     position: absolute;
@@ -69,9 +62,9 @@ $draggable-widget-z-index: 2;
 }
 
 .mailpoet_drop_active > .mailpoet_container > div > .mailpoet_container_empty {
-  background-color: $primary-active-color;
-  box-shadow: inset 1px 2px 1px $primary-inset-shadow-color;
-  color: $white-color;
+  background-color: $color-primary;
+  box-shadow: inset 1px 2px 1px $color-primary-shadow-inset;
+  color: $color-white;
 }
 
 .mailpoet_droppable_block {

@@ -1,27 +1,12 @@
-$select-border-color: $content-border-color;
-$select-text-color: $primary-text-color;
-
-$sidebar-background-color: $primary-background-color;
-$sidebar-active-heading-color: $primary-active-color;
-$sidebar-inactive-heading-color: $primary-inactive-color;
-$sidebar-text-color: $primary-text-color;
-
-$widget-width: 70px;
-$widget-background-color: $white-color;
-$widget-shadow-color: darken($primary-background-color, 13%);
-$widget-icon-color: darken($primary-background-color, 31.5%);
-$widget-icon-hover-color: $primary-active-color;
-$widget-icon-width: 30px;
-
 #mailpoet_editor_sidebar {
-  border-bottom: $content-border-color;
-  border-left: $content-border-color;
+  border-bottom: $color-editor-border-content;
+  border-left: $color-editor-border-content;
   color: $sidebar-text-color;
   font-size: $sidebar-text-size;
 
   .mailpoet_sidebar_region {
-    border-bottom: 1px solid $content-border-color;
-    border-left: 1px solid $content-border-color;
+    border-bottom: 1px solid $color-editor-border-content;
+    border-left: 1px solid $color-editor-border-content;
     border-right: 0;
     border-top: 0;
     margin-bottom: 0;

@@ -1,14 +1,3 @@
-$social-icon-width: 32px;
-$active-social-icon-set-border-color: #adadad;
-$active-social-icon-set-background-color: #daebf2;
-$social-icon-set-hover-border-color: $primary-active-color;
-
-$tool-inactive-color: #333;
-$tool-hover-color: #bbb;
-$tool-active-color: #d2d2d4;
-
-$tool-width: 16px;
-
 .mailpoet_social_block {
   .mailpoet_social {
     text-align: center;
@@ -55,8 +44,8 @@ $tool-width: 16px;
 }
 
 .mailpoet_social_icon_settings {
-  background: $white-color;
-  border: 1px solid $content-border-color;
+  background: $color-white;
+  border: 1px solid $color-editor-border-content;
   margin-bottom: 9px;
   padding: 28px 9px (18px - 10px) 9px;
   position: relative;
@@ -112,7 +101,7 @@ $tool-width: 16px;
     }
 
     &:active {
-      fill: $primary-active-color;
+      fill: $color-primary;
     }
   }
 }
