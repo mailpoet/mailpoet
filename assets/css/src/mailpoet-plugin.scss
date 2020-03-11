@@ -1,22 +1,24 @@
-// 1. Settings
+// Settings
 // Global variables, config switches. Not producing any CSS.
+@import 'settings/grid';
 @import 'settings/badge';
 @import 'settings/colors';
-@import 'settings/editor';
 @import 'settings/legacy-modal';
 @import 'settings/modal';
 @import 'settings/newsletter';
 @import 'settings/progress';
-@import 'settings/range';
 
-// 2. Tools
+// Tools
 // Default mixins and functions. Still not producing any CSS.
-@import 'mixins/animations';
 @import 'mixins/breakpoints';
 @import 'mixins/clearfix';
 
+// Generic
+// 3rd-party styles, can be overwritten.
 @import '../../../node_modules/select2/dist/css/select2';
-@import '../../../node_modules/spectrum-colorpicker/spectrum';
+
+// Components
+// Actual UI components.
 @import 'components/automatic-emails';
 @import 'components/datepicker/datepicker';
 @import 'components/dynamic-segments';
@@ -47,31 +49,3 @@
 @import 'components/stats';
 @import 'components/import-export';
 @import 'components/toggle';
-@import 'components/newsletter-editor/common';
-@import 'components/newsletter-editor/layout';
-@import 'components/newsletter-editor/components/forms';
-@import 'components/newsletter-editor/components/heading';
-@import 'components/newsletter-editor/components/history';
-@import 'components/newsletter-editor/components/sidebar';
-@import 'components/newsletter-editor/components/sidepanel';
-@import 'components/newsletter-editor/components/save';
-@import 'components/newsletter-editor/components/block-tools';
-@import 'components/newsletter-editor/components/layers';
-@import 'components/newsletter-editor/components/drag-and-drop';
-@import 'components/newsletter-editor/components/resize';
-@import 'components/newsletter-editor/content-blocks/base';
-@import 'components/newsletter-editor/content-blocks/container';
-@import 'components/newsletter-editor/content-blocks/automated-latest-content';
-@import 'components/newsletter-editor/content-blocks/posts';
-@import 'components/newsletter-editor/content-blocks/products';
-@import 'components/newsletter-editor/content-blocks/button';
-@import 'components/newsletter-editor/content-blocks/divider';
-@import 'components/newsletter-editor/content-blocks/image';
-@import 'components/newsletter-editor/content-blocks/social';
-@import 'components/newsletter-editor/content-blocks/spacer';
-@import 'components/newsletter-editor/content-blocks/text';
-@import 'components/newsletter-editor/content-blocks/header';
-@import 'components/newsletter-editor/content-blocks/footer';
-@import 'components/newsletter-editor/content-blocks/woocommerce-heading';
-@import 'components/newsletter-editor/content-blocks/woocommerce-content';
-@import 'components/newsletter-editor/library-overrides';

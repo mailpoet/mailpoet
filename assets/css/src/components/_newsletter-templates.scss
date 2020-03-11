@@ -1,8 +1,8 @@
 .mailpoet_template_iframe {
   left: 0;
-  max-width: $editor-width;
+  max-width: $grid-editor-width;
   position: absolute;
   top: 0;
-  width: $editor-width;
+  width: $grid-editor-width;
   z-index: -9999;
 }

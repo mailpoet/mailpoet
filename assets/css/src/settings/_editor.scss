@@ -1,11 +1,10 @@
 $editor-line-height: 1.6em;
-$editor-width: 660px;
 
 $editor-column-margin: 20px;
-$editor-column-width-one: $editor-width - (2 * $editor-column-margin);
-$editor-column-width-two: $editor-width / 2 - (2 * $editor-column-margin);
-$editor-column-width-two-wider: (($editor-width / 3) - $editor-column-margin) * 2;
-$editor-column-width-three: $editor-width / 3 - (2 * $editor-column-margin);
+$editor-column-width-one: $grid-editor-width - (2 * $editor-column-margin);
+$editor-column-width-two: $grid-editor-width / 2 - (2 * $editor-column-margin);
+$editor-column-width-two-wider: (($grid-editor-width / 3) - $editor-column-margin) * 2;
+$editor-column-width-three: $grid-editor-width / 3 - (2 * $editor-column-margin);
 
 $editor-divider-background-color: #daebf2;
 $editor-divider-border-color: #adadad;
