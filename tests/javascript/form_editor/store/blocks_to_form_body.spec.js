@@ -242,7 +242,6 @@ describe('Blocks to Form Body', () => {
     expect(input.params.content).to.be.equal('');
     expect(input.params.level).to.be.equal(2);
     expect(input.params.align).to.be.equal('left');
-    expect(input.params.text_color).to.be.equal('#000');
     expect(input.params.anchor).to.be.be.null;
     expect(input.params.class_name).to.be.null;
   });
@@ -256,7 +255,7 @@ describe('Blocks to Form Body', () => {
         content: 'Heading content',
         level: 3,
         align: 'center',
-        textColor: 'red',
+        customTextColor: '#123',
         anchor: 'anchor',
         className: 'class',
       },
@@ -265,7 +264,7 @@ describe('Blocks to Form Body', () => {
     expect(input.params.content).to.be.equal('Heading content');
     expect(input.params.level).to.be.equal(3);
     expect(input.params.align).to.be.equal('center');
-    expect(input.params.text_color).to.be.equal('red');
+    expect(input.params.text_color).to.be.equal('#123');
     expect(input.params.anchor).to.be.equal('anchor');
     expect(input.params.class_name).to.be.equal('class');
   });

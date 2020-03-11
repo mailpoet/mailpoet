@@ -142,6 +142,11 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
       if (item.params) {
         mapped.attributes.label = item.params.label ? item.params.label : '';
       }
+      if (item.params && has(item.params, 'text_color')) {
+        const textColorSlug = mapColorSlug(colorDefinitions, item.params.text_color);
+        mapped.attributes.textColor = textColorSlug;
+        mapped.attributes.customTextColor = !textColorSlug ? item.params.text_color : undefined;
+      }
       switch (item.id) {
         case 'email':
           return {
@@ -152,10 +157,10 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
           return {
             ...mapped,
             attributes: {
+              ...mapped.attributes,
               content: item.params?.content || '',
               level: item.params?.level || 2,
               align: item.params?.align,
-              textColor: item.params?.text_color,
               anchor: item.params?.anchor,
               className: item.params?.class_name,
             },
