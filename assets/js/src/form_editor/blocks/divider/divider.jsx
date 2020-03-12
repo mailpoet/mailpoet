@@ -12,7 +12,6 @@ export const settings = {
   attributes: {},
   supports: {
     html: false,
-    customClassName: false,
     multiple: true,
   },
   edit,

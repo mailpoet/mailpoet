@@ -21,7 +21,6 @@ export const settings = {
   },
   supports: {
     html: false,
-    customClassName: false,
     multiple: false,
   },
   edit,
