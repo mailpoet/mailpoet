@@ -8,6 +8,7 @@ import UnsubscribePage from './unsubscribe_page';
 import StatsNotifications from './stats_notifications';
 import NewSubscriberNotifications from './new_subscriber_notifications';
 import Shortcode from './shortcode';
+import GdprCompliant from './gdpr_compliant';
 
 export default function Basics() {
   return (
@@ -37,6 +38,7 @@ export default function Basics() {
         title={t`subscribersCountShortcodeTitle`}
         description={t`subscribersCountShortcodeDescription`}
       />
+      <GdprCompliant />
       <SaveButton />
     </div>
   );
