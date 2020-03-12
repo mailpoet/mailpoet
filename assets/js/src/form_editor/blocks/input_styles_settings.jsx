@@ -80,7 +80,7 @@ const InputStylesSettings = ({
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderSize')}
-                value={localStyles.borderSize}
+                value={localStyles.borderSize === undefined ? 1 : localStyles.borderSize}
                 min={0}
                 max={10}
                 allowReset
@@ -89,7 +89,7 @@ const InputStylesSettings = ({
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderRadius')}
-                value={localStyles.borderRadius}
+                value={localStyles.borderRadius === undefined ? 1 : localStyles.borderRadius}
                 min={0}
                 max={40}
                 allowReset
