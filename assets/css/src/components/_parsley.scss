@@ -19,7 +19,7 @@ textarea.parsley-error {
   font-size: .9em;
   line-height: .9em;
   list-style-type: none;
-  margin: 2px 0 3px;
+  margin: 8px 0 3px;
   opacity: 0;
   padding: 0;
   transition: all .3s ease-in;
@@ -27,4 +27,9 @@ textarea.parsley-error {
   &.filled {
     opacity: 1;
   }
+}
+
+.parsley-required,
+.parsley-custom-error-message {
+  color: #b94a48;
 }
