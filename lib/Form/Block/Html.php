@@ -22,7 +22,8 @@ class Html {
       $text = nl2br($text);
     }
 
-    $html .= '<div class="mailpoet_paragraph" ' . $this->rendererHelper->renderFontStyle($formSettings) . '>';
+    $classes = isset($block['params']['class_name']) ? " " . $block['params']['class_name'] : '';
+    $html .= '<div class="mailpoet_paragraph' . $classes . '" ' . $this->rendererHelper->renderFontStyle($formSettings) . '>';
     $html .= $text;
     $html .= '</div>';
 

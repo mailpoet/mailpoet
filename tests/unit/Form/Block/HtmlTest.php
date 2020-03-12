@@ -10,9 +10,9 @@ class HtmlTest extends \MailPoetUnitTest {
   private $html;
 
   private $block = [
-    'type' => 'divider',
-    'name' => 'Divider',
-    'id' => 'divider',
+    'type' => 'html',
+    'name' => 'Html',
+    'id' => 'html',
     'unique' => '1',
     'static' => '0',
     'params' => [
@@ -30,6 +30,13 @@ class HtmlTest extends \MailPoetUnitTest {
   public function testItShouldRenderCustomHtml() {
     $html = $this->html->render($this->block, []);
     expect($html)->equals("<div class=\"mailpoet_paragraph\" >line1<br />\nline2</div>");
+  }
+
+  public function testItShouldRenderCustomClass() {
+    $block = $this->block;
+    $block['params']['class_name'] = 'my_class';
+    $html = $this->html->render($block, []);
+    expect($html)->equals("<div class=\"mailpoet_paragraph my_class\" >line1<br />\nline2</div>");
   }
 
   public function testItShouldRenderCustomHtmlWithoutAutomaticBrs() {

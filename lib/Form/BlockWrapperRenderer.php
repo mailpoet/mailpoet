@@ -2,10 +2,9 @@
 
 namespace MailPoet\Form;
 
-use MailPoet\Models\Form;
-
 class BlockWrapperRenderer {
   public function render(array $block, string $blockContent): string {
-    return '<div class="mailpoet_paragraph">' . $blockContent . '</div>';
+    $classes = isset($block['params']['class_name']) ? " " . $block['params']['class_name'] : '';
+    return '<div class="mailpoet_paragraph' . $classes . '">' . $blockContent . '</div>';
   }
 }
