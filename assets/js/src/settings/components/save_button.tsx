@@ -14,8 +14,8 @@ export default () => {
   const showSuccess = notices.success;
   React.useEffect(() => {
     if (clicked && !isSaving) {
-      if (error) showError(error.map((err) => <p>{err}</p>));
-      else showSuccess(<p>{MailPoet.I18n.t('settingsSaved')}</p>);
+      if (error) showError(error.map((err) => <p>{err}</p>), { scroll: true });
+      else showSuccess(<p>{MailPoet.I18n.t('settingsSaved')}</p>, { scroll: true });
     }
   }, [clicked, error, isSaving, showError, showSuccess]);
   const onClick = () => {
