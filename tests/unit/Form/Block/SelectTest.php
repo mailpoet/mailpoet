@@ -4,6 +4,7 @@ namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Select;
+use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,16 +22,21 @@ class SelectTest extends \MailPoetUnitTest {
   /** @var MockObject & BlockRendererHelper */
   private $rendererHelperMock;
 
+  /** @var MockObject & BlockWrapperRenderer */
+  private $wrapperMock;
+
   public function _before() {
     parent::_before();
     $this->wpMock = $this->createMock(Functions::class);
     $this->wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->wrapperMock = $this->createMock(BlockWrapperRenderer::class);
+    $this->wrapperMock->method('render')->will($this->returnArgument(1));
     $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
     $this->rendererHelperMock->method('getFieldName')->will($this->returnValue('select'));
     $this->rendererHelperMock->method('renderLabel')->will($this->returnValue('<label></label>'));
     $this->rendererHelperMock->method('getFieldLabel')->will($this->returnValue('Field label'));
     $this->rendererHelperMock->method('getFieldValue')->will($this->returnValue('1'));
-    $this->selectBlock = new Select($this->rendererHelperMock, $this->wpMock);
+    $this->selectBlock = new Select($this->rendererHelperMock, $this->wrapperMock, $this->wpMock);
     $this->block = [
       'id' => 'status',
       'type' => 'select',

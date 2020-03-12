@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\Form\TextInputStylesRenderer;
 
 class Textarea {
@@ -11,16 +12,22 @@ class Textarea {
   /** @var TextInputStylesRenderer */
   private $inputStylesRenderer;
 
-  public function __construct(BlockRendererHelper $rendererHelper, TextInputStylesRenderer $inputStylesRenderer) {
+   /** @var BlockWrapperRenderer */
+  private $wrapper;
+
+  public function __construct(
+    BlockRendererHelper $rendererHelper,
+    TextInputStylesRenderer $inputStylesRenderer,
+    BlockWrapperRenderer $wrapper
+  ) {
     $this->rendererHelper = $rendererHelper;
     $this->inputStylesRenderer = $inputStylesRenderer;
+    $this->wrapper = $wrapper;
   }
 
   public function render(array $block, array $formSettings): string {
     $html = '';
     $styles = $this->inputStylesRenderer->render($block['styles'] ?? []);
-
-    $html .= '<div class="mailpoet_paragraph">';
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
@@ -42,8 +49,6 @@ class Textarea {
 
     $html .= '>' . $this->rendererHelper->getFieldValue($block) . '</textarea>';
 
-    $html .= '</div>';
-
-    return $html;
+    return $this->wrapper->render($block, $html);
   }
 }

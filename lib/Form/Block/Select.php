@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Select {
@@ -12,8 +13,12 @@ class Select {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(BlockRendererHelper $rendererHelper, WPFunctions $wp) {
+  /** @var BlockWrapperRenderer */
+  private $wrapper;
+
+  public function __construct(BlockRendererHelper $rendererHelper, BlockWrapperRenderer $wrapper, WPFunctions $wp) {
     $this->rendererHelper = $rendererHelper;
+    $this->wrapper = $wrapper;
     $this->wp = $wp;
   }
 
@@ -23,7 +28,6 @@ class Select {
     $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
     $automationId = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
 
-    $html .= '<div class="mailpoet_paragraph">';
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
     $html .= '<select class="mailpoet_select" name="' . $fieldName . '" ' . $automationId . '>';
 
@@ -71,8 +75,6 @@ class Select {
     }
     $html .= '</select>';
 
-    $html .= '</div>';
-
-    return $html;
+    return $this->wrapper->render($block, $html);
   }
 }
