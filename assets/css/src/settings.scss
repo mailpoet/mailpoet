@@ -37,3 +37,7 @@
 .mailpoet-settings-inputs .regular-text p {
   font-size: 14px;
 }
+
+.mailpoet-settings-grid .mailpoet_error_item:before {
+  content: '✗ ';
+}
