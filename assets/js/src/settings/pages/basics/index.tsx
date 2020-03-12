@@ -5,6 +5,7 @@ import DefaultSender from './default_sender';
 import SubscribeOn from './subscribe_on';
 import ManageSubscription from './manage_subscription';
 import UnsubscribePage from './unsubscribe_page';
+import StatsNotifications from './stats_notifications';
 
 export default function Basics() {
   return (
@@ -22,6 +23,7 @@ export default function Basics() {
       />
       <ManageSubscription />
       <UnsubscribePage />
+      <StatsNotifications />
       <SaveButton />
     </div>
   );
