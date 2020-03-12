@@ -51,7 +51,13 @@ export default () => {
       </div>
       <div className="edit-post-header__toolbar">
         <div className="toolbar">
-          <a className="page-title-action" href="?page=mailpoet-forms#/">{MailPoet.I18n.t('back')}</a>
+          <Button
+            isSecondary
+            isLarge
+            href="?page=mailpoet-forms#/"
+          >
+            {MailPoet.I18n.t('back')}
+          </Button>
         </div>
       </div>
     </div>
