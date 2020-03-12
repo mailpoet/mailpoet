@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import MailPoet from 'mailpoet';
 import { useSelector } from 'settings/store/hooks';
+import { t } from 'settings/utils';
 import TabLink from './tab_link';
 
 export default () => {
@@ -16,45 +16,45 @@ export default () => {
         current={current}
         automationId="basic_settings_tab"
       >
-        {MailPoet.I18n.t('basicsTab')}
+        {t`basicsTab`}
       </TabLink>
-      <TabLink
-        name="signup"
-        current={current}
-        automationId="signup_settings_tab"
+      <a
+        className="nav-tab"
+        href="?page=mailpoet-settings#signup"
+        data-automation-id="signup_settings_tab"
       >
-        {MailPoet.I18n.t('signupConfirmationTab')}
-      </TabLink>
-      <TabLink
-        name="mta"
-        current={current}
-        automationId="send_with_settings_tab"
+        {t`signupConfirmationTab`}
+      </a>
+      <a
+        className="nav-tab"
+        href="?page=mailpoet-settings#mta"
+        data-automation-id="send_with_settings_tab"
       >
-        {MailPoet.I18n.t('sendWithTab')}
-      </TabLink>
+        {t`sendWithTab`}
+      </a>
       {hasWooCommerce && (
-      <TabLink
-        name="woocommerce"
-        current={current}
-        automationId="woocommerce_settings_tab"
-      >
-        {MailPoet.I18n.t('wooCommerceTab')}
-      </TabLink>
+        <a
+          className="nav-tab"
+          href="?page=mailpoet-settings#woocommerce"
+          data-automation-id="woocommerce_settings_tab"
+        >
+          {t`wooCommerceTab`}
+        </a>
       )}
-      <TabLink
-        name="advanced"
-        current={current}
-        automationId="settings-advanced-tab"
+      <a
+        className="nav-tab"
+        href="?page=mailpoet-settings#advanced"
+        data-automation-id="settings-advanced-tab"
       >
-        {MailPoet.I18n.t('advancedTab')}
-      </TabLink>
-      <TabLink
-        name="premium"
-        current={current}
-        automationId="activation_settings_tab"
+        {t`advancedTab`}
+      </a>
+      <a
+        className="nav-tab"
+        href="?page=mailpoet-settings#premium"
+        data-automation-id="activation_settings_tab"
       >
-        {MailPoet.I18n.t('keyActivationTab')}
-      </TabLink>
+        {t`keyActivationTab`}
+      </a>
     </h2>
   );
 };
