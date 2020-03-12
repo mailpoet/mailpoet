@@ -11,6 +11,9 @@ class TextInputStylesRenderer {
     if (isset($styles['background_color'])) {
       $rules[] = "background-color:{$styles['background_color']};";
     }
+    if (isset($styles['border_size']) || isset($styles['border_radius']) || isset($styles['border_color'])) {
+      $rules[] = "border-style:solid;";
+    }
     if (isset($styles['border_radius'])) {
       $rules[] = "border-radius:" . intval($styles['border_radius']) . "px;";
     }
