@@ -125,6 +125,8 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
     inputStyles.backgroundColor = attributes.styles.backgroundColor;
   }
 
+  inputStyles.resize = 'none';
+
   const textarea = useRef(null);
   const getTextArea = (placeholder) => (
     <textarea
