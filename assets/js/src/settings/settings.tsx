@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Notices from 'notices/notices.jsx';
 import MailPoet from 'mailpoet';
+import Loading from 'common/loading';
 import {
   Advanced,
   Basics,
@@ -11,12 +12,16 @@ import {
   WooCommerce,
 } from './pages';
 import Tabs from './components/tabs';
+import { t } from './utils';
+import { useSelector } from './store/hooks';
 
 export default function Settings() {
+  const isSaving = useSelector('isSaving')();
   return (
     <>
+      {isSaving && <Loading />}
       <Notices />
-      <h1 className="title">{MailPoet.I18n.t('settings')}</h1>
+      <h1 className="title">{t`settings`}</h1>
       <Tabs />
       <Switch>
         <Route path="/basics" component={Basics} />
