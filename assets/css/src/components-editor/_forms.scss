@@ -1,0 +1,170 @@
+input.mailpoet_color {
+  width: 5em;
+}
+
+select.mailpoet_font-family {
+  width: 8em;
+}
+
+select.mailpoet_font-size {
+  width: 5em;
+}
+
+.mailpoet_input,
+.mailpoet_select {
+  $form-control-padding: 3px;
+  appearance: none;
+  border-radius: 1px;
+  box-shadow: none !important;
+  line-height: 28px - $form-control-padding * 2;
+  padding: $form-control-padding;
+}
+
+.mailpoet_input {
+  border: 1px solid $color-editor-border-content;
+  width: 283px;
+}
+
+.mailpoet_input_small {
+  width: 58px;
+}
+
+.mailpoet_input_medium {
+  width: 150px;
+}
+
+.mailpoet_input_full {
+  box-sizing: border-box;
+  margin: 0;
+  width: 100%;
+}
+
+.mailpoet_range {
+  -webkit-appearance: none;
+  padding: 0;
+  vertical-align: middle;
+  width: 283px;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-slider-runnable-track {
+    background: $range-track-background-color;
+    border: 1px solid $range-track-border-color;
+    border-radius: $range-border-radius;
+    cursor: pointer;
+    height: $range-track-height;
+    width: 100%;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background: $range-thumb-background-color;
+    border: 1px solid $range-thumb-border-color;
+    border-radius: $range-border-radius;
+    cursor: pointer;
+    height: $range-thumb-height;
+    margin-top: -1 * $range-thumb-height / 3;
+    width: $range-thumb-width;
+  }
+
+  &:hover::-webkit-slider-thumb {
+    background: $range-thumb-hover-background-color;
+  }
+
+  &::-moz-range-track {
+    background: $range-track-background-color;
+    border: 1px solid $range-track-border-color;
+    border-radius: $range-border-radius;
+    cursor: pointer;
+    height: $range-track-height;
+    width: 100%;
+  }
+
+  &::-moz-range-thumb {
+    background: $range-thumb-background-color;
+    border: 1px solid $range-thumb-border-color;
+    border-radius: $range-border-radius;
+    cursor: pointer;
+    height: $range-thumb-height;
+    width: $range-thumb-width;
+  }
+
+  &:hover::-moz-range-thumb {
+    background: $range-thumb-hover-background-color;
+  }
+
+  &::-ms-fill-lower {
+    background: $range-track-background-color;
+    border: 1px solid $range-track-border-color;
+  }
+
+  &::-ms-fill-upper {
+    background: $range-track-background-color;
+    border: 1px solid $range-track-border-color;
+  }
+
+  &::-ms-track {
+    background: transparent;
+    border-color: transparent;
+    border-width: $range-track-height * 2 0;
+    color: transparent;
+    cursor: pointer;
+    height: $range-track-height;
+    width: 100%;
+  }
+
+  &::-ms-thumb {
+    background: $range-thumb-background-color;
+    border: 1px solid $range-thumb-border-color;
+    border-radius: $range-border-radius;
+    cursor: pointer;
+    height: $range-thumb-height;
+    width: $range-thumb-width;
+  }
+
+  &:hover::-ms-thumb {
+    background: $range-thumb-hover-background-color;
+  }
+
+  &:focus::-ms-fill-lower {
+    background: $range-track-background-color;
+    border: 1px solid $range-track-border-color;
+  }
+
+  &:focus::-ms-fill-upper {
+    background: $range-track-background-color;
+    border: 1px solid $range-track-border-color;
+  }
+}
+
+.mailpoet_range_small {
+  width: 100px;
+}
+
+.mailpoet_range_medium {
+  width: 180px;
+}
+
+.mailpoet_select {
+  border-color: $color-editor-border-content;
+  color: $color-primary-text;
+  margin: 0;
+}
+
+.mailpoet_select_large {
+  width: 139px;
+}
+
+.mailpoet_select_medium {
+  width: 103px;
+}
+
+.mailpoet_select_small {
+  width: 68px;
+}
+
+.mailpoet_select_half_width {
+  width: 50%;
+}

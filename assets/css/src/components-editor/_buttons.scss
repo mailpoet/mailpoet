@@ -1,0 +1,45 @@
+.mailpoet_button {
+  background-color: $color-primary-background;
+  border: 1px solid $color-editor-border-structure;
+  border-radius: 3px;
+  color: $color-primary-inactive;
+  line-height: normal;
+  margin: 0;
+  padding: 6px 20px;
+  vertical-align: top;
+}
+
+.mailpoet_button_full {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.mailpoet_button_primary {
+  background-color: $color-primary-button;
+  border-color: $color-primary;
+  color: $color-white;
+
+  &:hover {
+    background-color: $color-primary-highlight;
+  }
+}
+
+.mailpoet_button_group {
+  display: inline;
+
+  .mailpoet_button:first-child {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    margin-right: 0;
+    padding: 6px 12px;
+  }
+
+  .mailpoet_button:last-child {
+    border-bottom-left-radius: 0;
+    border-left: 0;
+    border-top-left-radius: 0;
+    margin-left: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
