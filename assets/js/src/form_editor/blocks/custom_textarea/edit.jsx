@@ -133,11 +133,11 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
       className="mailpoet_textarea"
       name="custom_text"
       data-automation-id="editor_custom_textarea_input"
-      value={placeholder}
       rows={attributes.lines}
       style={inputStyles}
       onChange={() => null}
       onFocus={() => textarea.current.blur()}
+      placeholder={placeholder}
     />
   );
 
@@ -148,7 +148,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
       ) : (
         <>
           <label className="mailpoet_textarea_label" data-automation-id="editor_custom_text_label" htmlFor={clientId} style={labelStyles}>
-            {formatLabel(attributes.label, attributes.mandatory)}
+            {formatLabel(attributes)}
           </label>
           {getTextArea('')}
         </>
