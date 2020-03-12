@@ -25,7 +25,6 @@ $models = [
   'NewsletterLink',
   'NewsletterPost',
   'NewsletterSegment',
-  'NewsletterTemplate',
   'NewsletterOption',
   'NewsletterOptionField',
   'Segment',
@@ -44,6 +43,7 @@ $models = [
 ];
 
 $entities = [
+  MailPoet\Entities\NewsletterTemplateEntity::class,
   MailPoet\Entities\SettingEntity::class,
 ];
 
