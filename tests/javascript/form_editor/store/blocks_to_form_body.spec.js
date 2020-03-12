@@ -427,7 +427,7 @@ describe('Blocks to Form Body', () => {
     expect(mapped2.params.background_color).to.be.equal('#bbbbbb');
   });
 
-  it('Should map class name for columns and column', () => {
+  it('Should map class names', () => {
     const columns = { ...nestedColumns };
     columns.attributes = {
       className: 'my-class',
@@ -441,5 +441,28 @@ describe('Blocks to Form Body', () => {
     };
     const [mappedColumn] = formBlocksToBody([column]);
     expect(mappedColumn.params.class_name).to.be.equal('my-class-2');
+
+    const email = { ...emailBlock };
+    email.attributes.className = 'my-class-3';
+    const [mappedEmail] = formBlocksToBody([email]);
+    expect(mappedEmail.params.class_name).to.be.equal('my-class-3');
+
+    const customField = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 1,
+      name: 'Custom Field name',
+      params: {
+        label: 'Street name',
+        required: '1',
+        validate: '',
+      },
+      type: 'text',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+    const customText = { ...customTextBlock };
+    customText.attributes.className = 'my-class-4';
+    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
+    const [mappedCustomText] = map([customText]);
+    expect(mappedCustomText.params.class_name).to.be.equal('my-class-4');
   });
 });

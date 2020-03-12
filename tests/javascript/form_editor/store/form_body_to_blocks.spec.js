@@ -485,6 +485,29 @@ describe('Form Body To Blocks', () => {
     };
     const [block] = formBodyToBlocks([nested]);
     expect(block.attributes.className).to.be.equal('custom-class');
+
+    const email = { ...emailInput, position: '1' };
+    email.params.class_name = 'custom-class-2';
+    const [mappedEmail] = formBodyToBlocks([email]);
+    expect(mappedEmail.attributes.className).to.be.equal('custom-class-2');
+
+    const customField = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 1,
+      name: 'Custom Field ^name',
+      params: {
+        label: 'Street name',
+        required: '1',
+        validate: '',
+      },
+      type: 'text',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+    const customText = { ...customTextInput, position: '1' };
+    customText.params.class_name = 'custom-class-3 custom-class-4';
+    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const [mappedCustomText] = map([customText]);
+    expect(mappedCustomText.attributes.className).to.be.equal('custom-class-3 custom-class-4');
   });
 
   it('It should map heading', () => {

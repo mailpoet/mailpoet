@@ -117,6 +117,7 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
         type: 'text',
         params: {
           label: block.attributes.label,
+          class_name: block.attributes.className || null,
         },
       };
       if (block.attributes.mandatory) {
