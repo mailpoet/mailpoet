@@ -7,6 +7,7 @@ import ManageSubscription from './manage_subscription';
 import UnsubscribePage from './unsubscribe_page';
 import StatsNotifications from './stats_notifications';
 import NewSubscriberNotifications from './new_subscriber_notifications';
+import Shortcode from './shortcode';
 
 export default function Basics() {
   return (
@@ -26,6 +27,16 @@ export default function Basics() {
       <UnsubscribePage />
       <StatsNotifications />
       <NewSubscriberNotifications />
+      <Shortcode
+        name="mailpoet_archive"
+        title={t`archiveShortcodeTitle`}
+        description={t`archiveShortcodeDescription`}
+      />
+      <Shortcode
+        name="mailpoet_subscribers_count"
+        title={t`subscribersCountShortcodeTitle`}
+        description={t`subscribersCountShortcodeDescription`}
+      />
       <SaveButton />
     </div>
   );
