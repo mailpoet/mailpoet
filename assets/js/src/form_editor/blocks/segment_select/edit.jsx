@@ -25,7 +25,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
   };
 
   return (
-    <ParagraphEdit>
+    <ParagraphEdit className={attributes.className}>
       <Settings
         label={attributes.label}
         onLabelChanged={(label) => (setAttributes({ label }))}
@@ -49,6 +49,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
 SegmentSelectEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
+    className: PropTypes.string,
     values: PropTypes.arrayOf(PropTypes.shape({
       isChecked: PropTypes.boolean,
       name: PropTypes.string.isRequired,

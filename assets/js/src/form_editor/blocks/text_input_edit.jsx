@@ -10,6 +10,7 @@ const TextInputEdit = ({
   name,
   mandatory,
   styles,
+  className,
 }) => {
   const input = useRef(null);
   const id = `${name}_${Math.random().toString(36).substring(2, 15)}`;
@@ -47,7 +48,7 @@ const TextInputEdit = ({
   );
 
   return (
-    <ParagraphEdit>
+    <ParagraphEdit className={className}>
       {!labelWithinInput ? (
         <label className="mailpoet_text_label" data-automation-id={`editor_${name}_label`} htmlFor={id} style={labelStyles}>
           {formatLabel({ label, mandatory })}
@@ -63,7 +64,12 @@ TextInputEdit.propTypes = {
   labelWithinInput: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired,
   mandatory: PropTypes.bool.isRequired,
+  className: PropTypes.string,
   styles: inputStylesPropTypes.isRequired,
+};
+
+TextInputEdit.defaultProps = {
+  className: '',
 };
 
 export default TextInputEdit;

@@ -106,7 +106,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
   };
 
   return (
-    <ParagraphEdit>
+    <ParagraphEdit className={attributes.className}>
       {inspectorControls}
       <div className="mailpoet_custom_select" data-automation-id="custom_select_block">
         {!attributes.labelWithinInput ? (
@@ -131,6 +131,7 @@ CustomSelectEdit.propTypes = {
       id: PropTypes.string.isRequired,
     })),
     mandatory: PropTypes.bool.isRequired,
+    className: PropTypes.string,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
   clientId: PropTypes.string.isRequired,

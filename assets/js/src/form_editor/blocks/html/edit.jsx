@@ -75,7 +75,7 @@ const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
   if (fontSize) styles.push(` body {font-size: ${fontSize}px }`);
   const key = `${renderedContent}_${styles}`;
   return (
-    <ParagraphEdit>
+    <ParagraphEdit className={attributes.className}>
       {inspectorControls}
       <div className="mailpoet-html-block-editor-content-wrapper">
         <SandBox html={renderedContent} styles={styles} key={key} />
@@ -88,6 +88,7 @@ CustomHtmlEdit.propTypes = {
   attributes: PropTypes.shape({
     content: PropTypes.string.isRequired,
     nl2br: PropTypes.bool.isRequired,
+    className: PropTypes.string,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
   clientId: PropTypes.string.isRequired,

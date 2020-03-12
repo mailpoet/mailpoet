@@ -28,7 +28,7 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
   );
 
   return (
-    <ParagraphEdit>
+    <ParagraphEdit className={attributes.className}>
       { inspectorControls }
       <input
         className="button mailpoet_submit"
@@ -43,6 +43,7 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
 SubmitEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
+    className: PropTypes.string,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
 };

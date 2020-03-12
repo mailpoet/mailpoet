@@ -41,6 +41,7 @@ const EmailEdit = ({ attributes, setAttributes }) => {
     <>
       {inspectorControls}
       <TextInputEdit
+        className={attributes.className}
         name="email"
         label={attributes.label}
         labelWithinInput={!!attributes.labelWithinInput}
@@ -55,6 +56,7 @@ EmailEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
     labelWithinInput: PropTypes.bool.isRequired,
+    className: PropTypes.string,
     styles: inputStylesPropTypes.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
