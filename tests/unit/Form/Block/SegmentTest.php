@@ -4,6 +4,7 @@ namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Segment;
+use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\Test\Form\HtmlParser;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -19,6 +20,9 @@ class SegmentTest extends \MailPoetUnitTest {
 
   /** @var MockObject & BlockRendererHelper */
   private $rendererHelperMock;
+
+  /** @var MockObject & BlockWrapperRenderer */
+  private $wrapperMock;
 
   /** @var HtmlParser */
   private $htmlParser;
@@ -47,8 +51,10 @@ class SegmentTest extends \MailPoetUnitTest {
     parent::_before();
     $this->wpMock = $this->createMock(WPFunctions::class);
     $this->wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->wrapperMock = $this->createMock(BlockWrapperRenderer::class);
+    $this->wrapperMock->method('render')->will($this->returnArgument(1));
     $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
-    $this->segment = new Segment($this->rendererHelperMock, $this->wpMock);
+    $this->segment = new Segment($this->rendererHelperMock, $this->wrapperMock, $this->wpMock);
     $this->htmlParser = new HtmlParser();
   }
 

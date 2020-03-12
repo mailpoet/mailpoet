@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Radio {
@@ -12,8 +13,12 @@ class Radio {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(BlockRendererHelper $rendererHelper, WPFunctions $wp) {
+  /** @var BlockWrapperRenderer */
+  private $wrapper;
+
+  public function __construct(BlockRendererHelper $rendererHelper, BlockWrapperRenderer $wrapper, WPFunctions $wp) {
     $this->rendererHelper = $rendererHelper;
+    $this->wrapper = $wrapper;
     $this->wp = $wp;
   }
 
@@ -22,8 +27,6 @@ class Radio {
 
     $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
     $fieldValidation = $this->rendererHelper->getInputValidation($block);
-
-    $html .= '<div class="mailpoet_paragraph">';
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
@@ -68,8 +71,6 @@ class Radio {
 
     $html .= '<span class="mailpoet_error_' . $block['id'] . '"></span>';
 
-    $html .= '</div>';
-
-    return $html;
+    return $this->wrapper->render($block, $html);
   }
 }
