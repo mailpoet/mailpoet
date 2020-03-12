@@ -332,6 +332,9 @@ class Pages {
           $dateFormats[$customField['params']['date_type']]
         );
       }
+      if (!isset($customField['params']['label'])) {
+         $customField['params']['label'] = $customField['name'];
+      }
 
       return $customField;
     }, CustomField::findMany());
