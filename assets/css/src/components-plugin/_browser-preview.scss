@@ -1,0 +1,47 @@
+.mailpoet_browser_preview_toggle {
+  flex: 0 1 auto;
+  height: 30px;
+  padding-bottom: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.mailpoet_browser_preview_toggle > label {
+  display: inline-block;
+  margin: 0 5px;
+}
+
+.mailpoet_browser_preview_container {
+  border: 1px solid #979797;
+  border-radius: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  height: 100%;
+  margin: auto;
+  padding: 20px;
+  transition: width .5s;
+}
+
+.mailpoet_browser_preview_container_desktop {
+  width: 100%;
+}
+
+.mailpoet_browser_preview_container_mobile {
+  width: 350px;
+}
+
+.mailpoet_browser_preview_border {
+  border: 1px solid #c3c3c3;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 30px;
+  width: 100%;
+}
+
+.mailpoet_browser_preview_iframe {
+  display: block;
+  margin: auto;
+  width: calc(100% - 1px);
+}

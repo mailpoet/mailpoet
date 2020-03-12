@@ -30,63 +30,6 @@ a:focus {
   text-align: center;
 }
 
-.select2-container {
-  width: 25em !important;
-}
-
-$placeholder-color: #999; /* default Select2 placeholder color for single dropdown */
-
-input.select2-search__field::-webkit-input-placeholder {
-  color: $placeholder-color;
-}
-
-input.select2-search__field:-moz-placeholder {
-  color: $placeholder-color;
-}
-
-input.select2-search__field::-moz-placeholder {
-  color: $placeholder-color;
-}
-
-input.select2-search__field:-ms-input-placeholder {
-  color: $placeholder-color;
-}
-
-.select2-container--default.select2-container--focus .select2-selection--multiple {
-  border: 1px solid #aaa; /* default Select2 border for single dropdown */
-}
-
-textarea.regular-text {
-  width: 25em !important;
-}
-
-@include breakpoint-max-width(782px) {
-  .select2-container {
-    width: 100% !important;
-  }
-}
-
-progress {
-  background-color: $progress-background;
-  border: 0;
-  height: 2em;
-  width: 100%;
-}
-
-progress::-webkit-progress-bar {
-  background-color: $progress-background;
-}
-
-progress::-webkit-progress-value {
-  background-color: $progress-foreground;
-  border-radius: $progress-border-radius;
-}
-
-progress::-moz-progress-bar {
-  background-color: $progress-foreground;
-  border-radius: $progress-border-radius;
-}
-
 /* double class is intentional here, we need to be very specific here to
    something wrapping our warning message could override its style */
 p.sender_email_address_warning.sender_email_address_warning,
@@ -104,52 +47,4 @@ p.sender_email_address_warning:first-child {
   font-size: 1.5em;
   height: 46px;
   padding: 10px 18px;
-}
-
-.mailpoet_browser_preview_toggle {
-  flex: 0 1 auto;
-  height: 30px;
-  padding-bottom: 10px;
-  text-align: center;
-  width: 100%;
-}
-
-.mailpoet_browser_preview_toggle > label {
-  display: inline-block;
-  margin: 0 5px;
-}
-
-.mailpoet_browser_preview_container {
-  border: 1px solid #979797;
-  border-radius: 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  height: 100%;
-  margin: auto;
-  padding: 20px;
-  transition: width .5s;
-}
-
-.mailpoet_browser_preview_container_desktop {
-  width: 100%;
-}
-
-.mailpoet_browser_preview_container_mobile {
-  width: 350px;
-}
-
-.mailpoet_browser_preview_border {
-  border: 1px solid #c3c3c3;
-  box-sizing: border-box;
-  height: 100%;
-  padding: 30px;
-  width: 100%;
-}
-
-.mailpoet_browser_preview_iframe {
-  display: block;
-  margin: auto;
-  width: calc(100% - 1px);
 }
