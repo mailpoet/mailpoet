@@ -33,7 +33,6 @@ export function getSettings(customField) {
     },
     supports: {
       html: false,
-      customClassName: false,
       multiple: false,
     },
     edit: Edit,

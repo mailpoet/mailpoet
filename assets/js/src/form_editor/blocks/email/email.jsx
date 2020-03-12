@@ -26,7 +26,6 @@ export const settings = {
   },
   supports: {
     html: false,
-    customClassName: false,
     inserter: false,
     multiple: false,
   },
