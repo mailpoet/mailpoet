@@ -174,8 +174,12 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
         attributes: {
           labelWithinInput: false,
           mandatory: false,
+          className: null,
         },
       };
+      if (item.params && has(item.params, 'class_name')) {
+        mapped.attributes.className = item.params.class_name;
+      }
       if (item.params && has(item.params, 'required')) {
         mapped.attributes.mandatory = !!item.params.required;
       }
@@ -273,6 +277,7 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
             ...mapped,
             name: 'mailpoet-form/html',
             attributes: {
+              className: mapped.attributes.className,
               content: item.params && item.params.text ? item.params.text : '',
               nl2br: item.params && item.params.nl2br ? !!item.params.nl2br : false,
             },
