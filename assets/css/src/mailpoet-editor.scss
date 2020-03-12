@@ -16,7 +16,9 @@
 
 // Components
 // Actual UI components.
+@import 'components-editor/buttons';
 @import 'components-editor/common';
+@import 'components-editor/forms';
 @import 'components-editor/layout';
 @import 'components-editor/components/forms';
 @import 'components-editor/components/heading';
@@ -46,4 +48,4 @@
 
 // Utilities
 // Helpers and overrides.
-@import 'components-editor/library-overrides';
+@import 'components-editor/3rd-party-overrides/overrides';
