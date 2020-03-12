@@ -1,7 +1,7 @@
 import React from 'react';
-import { t, onChange } from 'settings/utils';
+import { t, onChange, isEmail } from 'settings/utils';
 import { Label, Inputs } from 'settings/components';
-import { useSetting, useSelector } from 'settings/store/hooks';
+import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx';
 
 export default function DefaultSender() {
@@ -10,6 +10,12 @@ export default function DefaultSender() {
   const [senderEmail, setSenderEmail] = useSetting('sender', 'address');
   const [replyToName, setReplyToName] = useSetting('reply_to', 'name');
   const [replyToEmail, setReplyToEmail] = useSetting('reply_to', 'address');
+  const setErrorFlag = useAction('setErrorFlag');
+  const invalidSenderEmail = (senderEmail && !isEmail(senderEmail));
+  const invalidReplyToEmail = replyToEmail && !isEmail(replyToEmail);
+  React.useEffect(() => {
+    setErrorFlag(invalidSenderEmail || invalidReplyToEmail);
+  }, [invalidReplyToEmail, invalidSenderEmail, setErrorFlag]);
   return (
     <>
       <Label
@@ -34,6 +40,11 @@ export default function DefaultSender() {
           value={senderEmail}
           onChange={onChange(setSenderEmail)}
         />
+        {invalidSenderEmail && (
+          <span className="mailpoet_error_item mailpoet_error">
+            {t`invalidEmail`}
+          </span>
+        )}
         <div className="regular-text">
           <SenderEmailAddressWarning
             emailAddress={senderEmail}
@@ -56,6 +67,11 @@ export default function DefaultSender() {
           value={replyToEmail}
           onChange={onChange(setReplyToEmail)}
         />
+        {invalidReplyToEmail && (
+          <span className="mailpoet_error_item mailpoet_error">
+            {t`invalidEmail`}
+          </span>
+        )}
       </Inputs>
     </>
   );

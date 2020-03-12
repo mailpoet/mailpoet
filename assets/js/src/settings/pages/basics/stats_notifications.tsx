@@ -1,5 +1,7 @@
 import React from 'react';
-import { t, onToggle, onChange } from 'settings/utils';
+import {
+  t, onToggle, onChange, isEmail,
+} from 'settings/utils';
 import { useSetting, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -9,9 +11,10 @@ export default function StatsNotifications() {
   const [email, setEmail] = useSetting('stats_notifications', 'address');
   const setErrorFlag = useAction('setErrorFlag');
   const hasError = (enabled === '1' || automated === '1') && email.trim() === '';
+  const invalidEmail = email && !isEmail(email);
   React.useEffect(() => {
-    setErrorFlag(hasError);
-  }, [hasError, setErrorFlag]);
+    setErrorFlag(hasError || invalidEmail);
+  }, [hasError, invalidEmail, setErrorFlag]);
 
   return (
     <>
@@ -41,6 +44,11 @@ export default function StatsNotifications() {
         {hasError && (
           <div className="mailpoet_error_item mailpoet_error">
             {t`pleaseFillEmail`}
+          </div>
+        )}
+        {invalidEmail && (
+          <div className="mailpoet_error_item mailpoet_error">
+            {t`invalidEmail`}
           </div>
         )}
       </Inputs>
