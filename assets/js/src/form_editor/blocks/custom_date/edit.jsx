@@ -81,7 +81,7 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
   );
 
   return (
-    <ParagraphEdit>
+    <ParagraphEdit className={attributes.className}>
       <div className="mailpoet_custom_date">
         {inspectorControls}
         <label className="mailpoet_date_label" data-automation-id="editor_custom_date_label" htmlFor={clientId}>
@@ -117,6 +117,7 @@ CustomDateEdit.propTypes = {
     defaultToday: PropTypes.bool,
     mandatory: PropTypes.bool.isRequired,
     customFieldId: PropTypes.number.isRequired,
+    className: PropTypes.string,
   }).isRequired,
   clientId: PropTypes.string.isRequired,
   setAttributes: PropTypes.func.isRequired,

@@ -110,7 +110,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
     checkboxLabel += ' *';
   }
   return (
-    <ParagraphEdit>
+    <ParagraphEdit className={attributes.className}>
       {inspectorControls}
       <span className="mailpoet_checkbox_label">{getLabel()}</span>
       <div>
@@ -134,6 +134,7 @@ CustomCheckboxEdit.propTypes = {
     customFieldId: PropTypes.number.isRequired,
     mandatory: PropTypes.bool.isRequired,
     hideLabel: PropTypes.bool,
+    className: PropTypes.string,
     values: PropTypes.arrayOf(PropTypes.shape({
       name: PropTypes.string.isRequired,
       isChecked: PropTypes.bool,

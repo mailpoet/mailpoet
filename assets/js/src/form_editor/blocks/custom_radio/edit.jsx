@@ -81,7 +81,7 @@ const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
   };
 
   return (
-    <ParagraphEdit>
+    <ParagraphEdit className={attributes.className}>
       {inspectorControls}
       <span className="mailpoet_radio_label">{getLabel()}</span>
       {Array.isArray(attributes.values) && attributes.values.map((value) => (
@@ -112,6 +112,7 @@ CustomRadioEdit.propTypes = {
     })),
     mandatory: PropTypes.bool.isRequired,
     hideLabel: PropTypes.bool,
+    className: PropTypes.string,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
   clientId: PropTypes.string.isRequired,

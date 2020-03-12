@@ -1,13 +1,10 @@
 import React from 'react';
+import classnames from 'classnames';
 import {
   HorizontalRule,
 } from '@wordpress/components';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
-
-const DividerEdit = () => (
-  <ParagraphEdit>
-    <HorizontalRule className="mailpoet_divider" />
-  </ParagraphEdit>
+const DividerEdit = (attributes) => (
+  <HorizontalRule className={classnames('mailpoet_divider', attributes.className)} />
 );
 export default DividerEdit;

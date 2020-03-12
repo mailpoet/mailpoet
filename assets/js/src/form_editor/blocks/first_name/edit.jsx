@@ -47,6 +47,7 @@ const FirstNameEdit = ({ attributes, setAttributes }) => {
     <>
       {inspectorControls}
       <TextInputEdit
+        className={attributes.className}
         name="first_name"
         mandatory={attributes.mandatory}
         labelWithinInput={attributes.labelWithinInput}
@@ -62,6 +63,7 @@ FirstNameEdit.propTypes = {
     label: PropTypes.string.isRequired,
     labelWithinInput: PropTypes.bool.isRequired,
     mandatory: PropTypes.bool.isRequired,
+    className: PropTypes.string,
     styles: inputStylesPropTypes.isRequired,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,

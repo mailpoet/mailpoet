@@ -88,6 +88,7 @@ const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
     <>
       {inspectorControls}
       <TextInputEdit
+        className={attributes.className}
         name="custom_text"
         mandatory={attributes.mandatory}
         labelWithinInput={attributes.labelWithinInput}
@@ -106,6 +107,7 @@ CustomTextEdit.propTypes = {
     mandatory: PropTypes.bool.isRequired,
     customFieldId: PropTypes.number.isRequired,
     styles: inputStylesPropTypes.isRequired,
+    className: PropTypes.string,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
   clientId: PropTypes.string.isRequired,
