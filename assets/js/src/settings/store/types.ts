@@ -34,7 +34,7 @@ export type Settings = {
     address: string
   }
   subscriber_email_notification: {
-    enabled: '0' | '1'
+    enabled: '' | '1'
     address: string
   }
   // ...

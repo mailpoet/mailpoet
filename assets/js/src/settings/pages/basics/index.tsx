@@ -6,6 +6,7 @@ import SubscribeOn from './subscribe_on';
 import ManageSubscription from './manage_subscription';
 import UnsubscribePage from './unsubscribe_page';
 import StatsNotifications from './stats_notifications';
+import NewSubscriberNotifications from './new_subscriber_notifications';
 
 export default function Basics() {
   return (
@@ -24,6 +25,7 @@ export default function Basics() {
       <ManageSubscription />
       <UnsubscribePage />
       <StatsNotifications />
+      <NewSubscriberNotifications />
       <SaveButton />
     </div>
   );
