@@ -22,6 +22,7 @@
 // Actual UI components.
 @import 'components/parsley';
 @import 'components-plugin/automatic-emails';
+@import 'components-plugin/browser-preview';
 @import 'components-plugin/dynamic-segments';
 @import 'components-plugin/common';
 @import 'components-plugin/legacy-modal';
@@ -30,7 +31,7 @@
 @import 'components-plugin/listing';
 @import 'components-plugin/box';
 @import 'components-plugin/breadcrumb';
-@import 'components-plugin/form';
+@import 'components-plugin/forms';
 @import 'components-plugin/settings';
 @import 'components-plugin/progress-bar';
 @import 'components-plugin/subscribers';
