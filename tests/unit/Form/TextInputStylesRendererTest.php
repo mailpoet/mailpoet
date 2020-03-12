@@ -21,9 +21,9 @@ class TextInputStylesRendererTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderSingleStyles() {
-    expect($this->renderer->render(['border_radius' => 10]))->equals('border-radius:10px;');
-    expect($this->renderer->render(['border_color' => '#fff']))->equals('border-color:#fff;');
-    expect($this->renderer->render(['border_size' => 10]))->equals('border-width:10px;');
+    expect($this->renderer->render(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px;');
+    expect($this->renderer->render(['border_color' => '#fff']))->equals('border-style:solid;border-color:#fff;');
+    expect($this->renderer->render(['border_size' => 10]))->equals('border-style:solid;border-width:10px;');
     expect($this->renderer->render(['background_color' => '#dddddd']))->equals('background-color:#dddddd;');
   }
 
