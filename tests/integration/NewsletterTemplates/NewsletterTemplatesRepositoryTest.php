@@ -34,8 +34,7 @@ class NewsletterTemplatesRepositoryTest extends \MailPoetTest {
   public function testItCleansRecentlySent() {
     $total = NewsletterTemplatesRepository::RECENTLY_SENT_COUNT + 5;
     for ($i = 0; $i < $total; $i++) {
-      $template = new NewsletterTemplateEntity();
-      $template->setName('Testing template ' . $i);
+      $template = new NewsletterTemplateEntity('Testing template ' . $i);
       $template->setBody(['key' => 'value']);
       $template->setCategories(NewsletterTemplatesRepository::RECENTLY_SENT_CATEGORIES);
       $this->entityManager->persist($template);

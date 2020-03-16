@@ -42,7 +42,7 @@ class NewsletterTemplatesRepository extends Repository {
       : null;
 
     if (!$template) {
-      $template = new NewsletterTemplateEntity();
+      $template = new NewsletterTemplateEntity($data['name'] ?? '');
       $this->entityManager->persist($template);
     }
 
