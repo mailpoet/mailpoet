@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   ColorIndicator,
   ColorPalette,
@@ -9,6 +9,7 @@ import {
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import { useSelect, useDispatch } from '@wordpress/data';
+import { partial } from 'lodash';
 
 const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
@@ -16,24 +17,14 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
-  const setBackgroundColor = (color) => {
-    changeFormSettings({
-      ...settings,
-      backgroundColor: color,
-    });
+  const settingsRef = useRef(settings);
+  const updateStyles = (property, value) => {
+    const updated = { ...settingsRef.current };
+    updated[property] = value;
+    changeFormSettings(updated);
+    settingsRef.current = updated;
   };
-  const setFontColor = (color) => {
-    changeFormSettings({
-      ...settings,
-      fontColor: color,
-    });
-  };
-  const setFontSize = (size) => {
-    changeFormSettings({
-      ...settings,
-      fontSize: size,
-    });
-  };
+
   const { settingsColors, fontSizes } = useSelect(
     (select) => {
       const { getSettings } = select('core/block-editor');
@@ -66,7 +57,7 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             </h3>
             <ColorPalette
               value={settings.backgroundColor}
-              onChange={setBackgroundColor}
+              onChange={partial(updateStyles, 'backgroundColor')}
               colors={settingsColors}
             />
           </div>
@@ -85,7 +76,7 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             </h3>
             <ColorPalette
               value={settings.fontColor}
-              onChange={setFontColor}
+              onChange={partial(updateStyles, 'fontColor')}
               colors={settingsColors}
             />
           </div>
@@ -96,7 +87,7 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             </h3>
             <FontSizePicker
               value={settings.fontSize}
-              onChange={setFontSize}
+              onChange={partial(updateStyles, 'fontSize')}
               fontSizes={fontSizes}
             />
           </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import MailPoet from 'mailpoet';
 import {
   Button,
@@ -17,7 +17,8 @@ const InputStylesSettings = ({
   styles,
   onChange,
 }) => {
-  const [localStyles, setStyles] = useState(styles);
+  const localStylesRef = useRef(styles);
+  const localStyles = localStylesRef.current;
 
   const { settingsColors } = useSelect(
     (select) => {
@@ -32,10 +33,10 @@ const InputStylesSettings = ({
   const { applyStylesToAllTextInputs } = useDispatch('mailpoet-form-editor');
 
   const updateStyles = (property, value) => {
-    const updated = { ...localStyles };
+    const updated = { ...localStylesRef.current };
     updated[property] = value;
     onChange(updated);
-    setStyles(updated);
+    localStylesRef.current = updated;
   };
   return (
     <Panel className="mailpoet-automation-input-styles-panel">
