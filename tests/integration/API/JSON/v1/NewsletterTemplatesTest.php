@@ -18,13 +18,11 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $this->truncateEntity(NewsletterTemplateEntity::class);
     $this->newsletterTemplatesRepository = $this->diContainer->get(NewsletterTemplatesRepository::class);
 
-    $template1 = new NewsletterTemplateEntity();
-    $template1->setName('Template #1');
+    $template1 = new NewsletterTemplateEntity('Template #1');
     $template1->setBody(['key1' => 'value1']);
     $this->entityManager->persist($template1);
 
-    $template2 = new NewsletterTemplateEntity();
-    $template2->setName('Template #2');
+    $template2 = new NewsletterTemplateEntity('Template #2');
     $template2->setBody(['key2' => 'value2']);
     $template2->setNewsletter($this->entityManager->getReference(NewsletterEntity::class, 1));
     $this->entityManager->persist($template2);
