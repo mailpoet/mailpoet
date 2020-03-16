@@ -119,8 +119,19 @@ $form-placement-option-oval-border: #969ca1;
   justify-content: space-between;
   margin: 0 16px 16px 0;
   padding: 6px;
+  position: relative;
   text-align: center;
   width: 116px;
+}
+
+.form-placement-settings-overlay {
+  background-color: rgba(0, 0, 0, .3);
+  height: 142px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 116px;
+  z-index: 3;
 }
 
 .form-placement-option-label {
@@ -131,6 +142,7 @@ $form-placement-option-oval-border: #969ca1;
   height: 40px;
   justify-content: center;
   width: 100%;
+  z-index: 2;
 
   p {
     margin-bottom: 0;
@@ -143,6 +155,7 @@ $form-placement-option-oval-border: #969ca1;
   height: 25px;
   justify-content: space-between;
   width: 100%;
+  z-index: 4;
 }
 
 .form-placement-settings-oval {
@@ -159,6 +172,13 @@ $form-placement-option-oval-border: #969ca1;
   }
   height: 14px;
   width: 14px;
+  z-index: 4;
+}
+
+.form-placement-settings-icon-hover {
+  svg {
+    fill: white;
+  }
 }
 
 .form-placement-option-icon {
@@ -172,4 +192,5 @@ $form-placement-option-oval-border: #969ca1;
   margin: 0 auto;
   object-fit: contain;
   width: 76px;
+  z-index: 2;
 }
