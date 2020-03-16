@@ -7,9 +7,15 @@ type Props = {
   label: string,
   icon: JSX.Element,
   active: boolean,
+  onClick: () => void,
 }
 
-const FormPlacementOption = ({ label, icon, active }: Props) => {
+const FormPlacementOption = ({
+  label,
+  icon,
+  active,
+  onClick,
+}: Props) => {
   const [hover, setHover] = useState(false);
   return (
     <div
@@ -21,6 +27,16 @@ const FormPlacementOption = ({ label, icon, active }: Props) => {
       }
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+        ) {
+          event.preventDefault();
+          onClick();
+        }
+      }}
+      role="button"
+      tabIndex={0}
     >
       <div>
         <div className="form-placement-option-settings">

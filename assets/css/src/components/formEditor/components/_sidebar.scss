@@ -114,12 +114,14 @@ $form-placement-option-oval-border: #969ca1;
   border: solid 1px $form-placement-option-base-color;
   border-radius: 4px;
   box-shadow: 0 1px 2px 0 $form-placement-option-base-color;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   height: 142px;
   justify-content: space-between;
   margin: 0 16px 16px 0;
   padding: 6px;
+  pointer-events: auto;
   position: relative;
   text-align: center;
   width: 116px;
@@ -130,6 +132,7 @@ $form-placement-option-oval-border: #969ca1;
   border-radius: 2px;
   height: 140px; // width of the parent element minus border on both sides
   left: 0;
+  pointer-events: none;
   position: absolute;
   top: 0;
   width: 114px;
@@ -152,6 +155,7 @@ $form-placement-option-oval-border: #969ca1;
   font-size: 14px;
   height: 40px;
   justify-content: center;
+  pointer-events: none;
   width: 100%;
   z-index: 2;
 
@@ -165,6 +169,7 @@ $form-placement-option-oval-border: #969ca1;
   flex-direction: row;
   height: 25px;
   justify-content: space-between;
+  pointer-events: none;
   width: 100%;
   z-index: 4;
 }
@@ -174,16 +179,19 @@ $form-placement-option-oval-border: #969ca1;
   border: solid 1px $form-placement-option-oval-border;
   border-radius: 7px;
   height: 13px;
+  pointer-events: none;
   width: 13px;
 }
 
 .form-placement-settings-icon {
+  height: 14px;
+  pointer-events: none;
+  width: 14px;
+  z-index: 4;
+
   svg {
     fill: $form-placement-option-base-color;
   }
-  height: 14px;
-  width: 14px;
-  z-index: 4;
 }
 
 .form-placement-settings-icon-hover {
@@ -193,15 +201,17 @@ $form-placement-option-oval-border: #969ca1;
 }
 
 .form-placement-option-icon {
-  svg {
-    height: 63px;
-    width: 76px;
-  }
   background-color: #fff;
   box-shadow: 0 4px 18px 0 rgba(68, 75, 102, .15);
   height: 63px;
   margin: 0 auto;
   object-fit: contain;
+  pointer-events: none;
   width: 76px;
   z-index: 2;
+
+  svg {
+    height: 63px;
+    width: 76px;
+  }
 }
