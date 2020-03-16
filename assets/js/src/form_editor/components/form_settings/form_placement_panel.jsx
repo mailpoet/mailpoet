@@ -10,6 +10,8 @@ import ReactStringReplace from 'react-string-replace';
 import { curry } from 'lodash';
 import PropTypes from 'prop-types';
 
+import FormPlacementOptionBelowPages from './form_placement_options/below_pages';
+
 const FormPlacementPanel = ({ onToggle, isOpened }) => {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
 
@@ -90,10 +92,12 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
     <Panel>
       <PanelBody
         title={MailPoet.I18n.t('formPlacement')}
-        opened={isOpened}
+        // opened={isOpened} TODO for debug only
+        opened
         onToggle={onToggle}
         className="form-sidebar-form-placement-panel"
       >
+        <FormPlacementOptionBelowPages />
         <p>{addFormShortcodeHint}</p>
         <p>{addFormWidgetHint}</p>
         <p>{addFormPhpIframeHint}</p>

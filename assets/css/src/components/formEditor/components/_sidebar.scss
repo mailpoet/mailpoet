@@ -1,5 +1,7 @@
 $gutenberg-control-border-color: #7e8993;
 $gutenberg-control-border-color-focus: #007cba;
+$form-placement-option-base-color: #e5e9f8;
+$form-placement-option-text-color: #23282d;
 
 .components-panel {
   .select2-container {
@@ -102,4 +104,50 @@ $gutenberg-control-border-color-focus: #007cba;
 
 .CodeMirror {
   border: 1px solid #eee;
+}
+
+.form-placement-option {
+  background-color: #fff;
+  border: solid 1px $form-placement-option-base-color;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px 0 $form-placement-option-base-color;
+  display: flex;
+  flex-direction: column;
+  height: 142px;
+  justify-content: space-between;
+  margin: 0 16px 16px 0;
+  text-align: center;
+  width: 116px;
+}
+
+.form-placement-option-label {
+  align-items: center;
+  color: $form-placement-option-text-color;
+  display: flex;
+  font-size: 14px;
+  height: 40px;
+  justify-content: center;
+  width: 100%;
+
+  p {
+    margin-bottom: 0;
+  }
+}
+
+.form-placement-option-settings {
+  height: 25px;
+  width: 100%;
+}
+
+.form-placement-option-icon {
+  svg {
+    height: 63px;
+    width: 76px;
+  }
+  background-color: #fff;
+  box-shadow: 0 4px 18px 0 rgba(68, 75, 102, .15);
+  height: 63px;
+  margin: 0 auto;
+  object-fit: contain;
+  width: 76px;
 }
