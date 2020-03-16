@@ -58,16 +58,16 @@ const InputStylesSettings = ({
                 <h3 className="mailpoet-styles-settings-heading">
                   {MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
                   {
-                    styles.backgroundColor !== undefined
+                    localStyles.backgroundColor !== undefined
                     && (
                       <ColorIndicator
-                        colorValue={styles.backgroundColor}
+                        colorValue={localStyles.backgroundColor}
                       />
                     )
                   }
                 </h3>
                 <ColorPalette
-                  value={styles.backgroundColor}
+                  value={localStyles.backgroundColor}
                   onChange={partial(updateStyles, 'backgroundColor')}
                   colors={settingsColors}
                 />
@@ -102,7 +102,7 @@ const InputStylesSettings = ({
                     localStyles.borderColor !== undefined
                     && (
                       <ColorIndicator
-                        colorValue={styles.borderColor}
+                        colorValue={localStyles.borderColor}
                       />
                     )
                   }
