@@ -1,4 +1,5 @@
 $gutenberg-control-border-color: #7e8993;
+$gutenberg-control-active-color: #ff5301;
 $gutenberg-control-border-color-focus: #007cba;
 $form-placement-option-base-color: #e5e9f8;
 $form-placement-option-text-color: #23282d;
@@ -126,12 +127,22 @@ $form-placement-option-oval-border: #969ca1;
 
 .form-placement-settings-overlay {
   background-color: rgba(0, 0, 0, .3);
-  height: 142px;
+  border-radius: 2px;
+  height: 140px; // width of the parent element minus border on both sides
   left: 0;
   position: absolute;
   top: 0;
-  width: 116px;
+  width: 114px;
   z-index: 3;
+}
+
+.form-placement-option-active {
+  border: solid 2px $gutenberg-control-active-color;
+
+  .form-placement-settings-overlay {
+    height: 138px;
+    width: 112px; // width of the parent element minus border on both sides
+  }
 }
 
 .form-placement-option-label {

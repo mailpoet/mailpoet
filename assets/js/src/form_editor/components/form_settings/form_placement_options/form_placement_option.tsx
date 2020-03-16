@@ -6,13 +6,19 @@ import SettingsIcon from './settings_icon';
 type Props = {
   label: string,
   icon: JSX.Element,
+  active: boolean,
 }
 
-const FormPlacementOption = ({ label, icon }: Props) => {
+const FormPlacementOption = ({ label, icon, active }: Props) => {
   const [hover, setHover] = useState(false);
   return (
     <div
-      className="form-placement-option"
+      className={
+        classnames(
+          'form-placement-option',
+          { 'form-placement-option-active': active }
+        )
+      }
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
