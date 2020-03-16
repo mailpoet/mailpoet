@@ -46,21 +46,6 @@ parameters:
 			path: ../../tests/integration/API/JSON/v1/ImportExportTest.php
 
 		-
-			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterTemplate\\|false\\.$#"
-			count: 4
-			path: ../../tests/integration/API/JSON/v1/NewsletterTemplatesTest.php
-
-		-
-			message: "#^Cannot call method asArray\\(\\) on MailPoet\\\\Models\\\\NewsletterTemplate\\|false\\.$#"
-			count: 4
-			path: ../../tests/integration/API/JSON/v1/NewsletterTemplatesTest.php
-
-		-
-			message: "#^Cannot access property \\$deletedAt on MailPoet\\\\Models\\\\NewsletterTemplate\\|false\\.$#"
-			count: 1
-			path: ../../tests/integration/API/JSON/v1/NewsletterTemplatesTest.php
-
-		-
 			message: "#^Cannot call method withSegments\\(\\) on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
 			count: 2
 			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
@@ -554,21 +539,6 @@ parameters:
 			message: "#^Cannot access property \\$value on MailPoet\\\\Models\\\\NewsletterOption\\|false\\.$#"
 			count: 2
 			path: ../../tests/integration/Models/NewsletterOptionTest.php
-
-		-
-			message: "#^Cannot access property \\$name on MailPoet\\\\Models\\\\NewsletterTemplate\\|false\\.$#"
-			count: 4
-			path: ../../tests/integration/Models/NewsletterTemplateTest.php
-
-		-
-			message: "#^Cannot access property \\$body on MailPoet\\\\Models\\\\NewsletterTemplate\\|false\\.$#"
-			count: 1
-			path: ../../tests/integration/Models/NewsletterTemplateTest.php
-
-		-
-			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\NewsletterTemplate\\|false\\.$#"
-			count: 2
-			path: ../../tests/integration/Models/NewsletterTemplateTest.php
 
 		-
 			message: "#^Cannot access property \\$subject on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
