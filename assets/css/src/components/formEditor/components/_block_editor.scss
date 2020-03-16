@@ -40,3 +40,8 @@
     width: 100%;
   }
 }
+
+// Wordpress displays h3 and h2 the same size by default. To make it less confusing we need to make h2 different size.
+h2 {
+  font-size: 1.7em;
+}
