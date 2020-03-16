@@ -47,6 +47,7 @@ export default () => {
           tooltipPosition="down"
           onClick={() => toggleSidebar(!sidebarOpened)}
           isPressed={sidebarOpened}
+          className="mailpoet-editor-header-button"
         />
       </div>
       <div className="edit-post-header__toolbar">
@@ -55,6 +56,7 @@ export default () => {
             isSecondary
             isLarge
             href="?page=mailpoet-forms#/"
+            className="mailpoet-editor-header-button"
           >
             {MailPoet.I18n.t('back')}
           </Button>
