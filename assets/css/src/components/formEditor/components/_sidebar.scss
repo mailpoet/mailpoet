@@ -2,6 +2,8 @@ $gutenberg-control-border-color: #7e8993;
 $gutenberg-control-border-color-focus: #007cba;
 $form-placement-option-base-color: #e5e9f8;
 $form-placement-option-text-color: #23282d;
+$form-placement-option-oval: #dcdcdc;
+$form-placement-option-oval-border: #969ca1;
 
 .components-panel {
   .select2-container {
@@ -116,6 +118,7 @@ $form-placement-option-text-color: #23282d;
   height: 142px;
   justify-content: space-between;
   margin: 0 16px 16px 0;
+  padding: 6px;
   text-align: center;
   width: 116px;
 }
@@ -135,8 +138,27 @@ $form-placement-option-text-color: #23282d;
 }
 
 .form-placement-option-settings {
+  display: flex;
+  flex-direction: row;
   height: 25px;
+  justify-content: space-between;
   width: 100%;
+}
+
+.form-placement-settings-oval {
+  background-color: $form-placement-option-oval;
+  border: solid 1px $form-placement-option-oval-border;
+  border-radius: 7px;
+  height: 13px;
+  width: 13px;
+}
+
+.form-placement-settings-icon {
+  svg {
+    fill: $form-placement-option-base-color;
+  }
+  height: 14px;
+  width: 14px;
 }
 
 .form-placement-option-icon {
