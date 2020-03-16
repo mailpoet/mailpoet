@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.3
-Stable tag: 3.46.2
+Stable tag: 3.46.3
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.46.3 - 2020-03-16 =
+* Fixed: "Manage subscription" page to not unsubscribe subscribers from hidden lists;
+* Fix custom fields without labels on Manage your Subscription page;
+* New AmazonSES regions added, thanks Martijn (@martijnalexion).
 
 = 3.46.2 - 2020-03-03 =
 * Editor: delete block confirmation links are white again.
