@@ -249,6 +249,11 @@ Module.SidebarStylesView = Marionette.View.extend({
 
 Module.SidebarPreviewView = Marionette.View.extend({
   getTemplate: function () { return window.templates.sidebarPreview; },
+  templateContext: function () {
+    return {
+      mssKeyPendingApproval: window.mailpoet_mss_key_pending_approval,
+    };
+  },
   events: {
     'click .mailpoet_show_preview': 'showPreview',
     'click #mailpoet_send_preview': 'sendPreview',
