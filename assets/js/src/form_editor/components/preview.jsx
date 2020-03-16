@@ -11,7 +11,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import Preview from '../../common/preview.jsx';
 import Modal from '../../common/modal/modal.jsx';
-import blocksToFormBody from '../store/blocks_to_form_body.jsx';
+import { blocksToFormBodyFactory } from '../store/blocks_to_form_body.jsx';
 
 const FormPreview = () => {
   const formEl = useRef(null);
@@ -36,19 +36,25 @@ const FormPreview = () => {
     []
   );
 
+  const editorSettings = useSelect(
+    (select) => select('core/block-editor').getSettings(),
+    []
+  );
+
   const loadFormPreviewFromServer = useCallback(() => {
+    const blocksToFormBody = blocksToFormBodyFactory(editorSettings.colors, customFields);
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'forms',
       action: 'previewEditor',
       data: {
-        body: blocksToFormBody(formBlocks, customFields),
+        body: blocksToFormBody(formBlocks),
         settings,
       },
     }).done((response) => {
       setForm(response.data);
     });
-  }, [formBlocks, customFields, settings]);
+  }, [formBlocks, customFields, settings, editorSettings.colors]);
 
   useEffect(() => {
     if (isPreview) {
