@@ -63,6 +63,16 @@ function Modal({
 }
 
 Modal.propTypes = {
+  closeButtonLabel: PropTypes.string,
+  children: PropTypes.node,
+  aria: PropTypes.shape({
+    labelledby: PropTypes.string,
+    describedby: PropTypes.string,
+  }),
+  isDismissible: PropTypes.bool,
+  contentClassName: PropTypes.string,
+  contentLabel: PropTypes.string,
+  overlayClassName: PropTypes.string,
   title: PropTypes.string,
   onRequestClose: PropTypes.func,
   displayTitle: PropTypes.bool,
