@@ -187,6 +187,13 @@ $form-placement-option-oval-border: #969ca1;
   width: 13px;
 }
 
+.form-placement-settings-check {
+  height: 13px;
+  pointer-events: none;
+  width: 13px;
+  z-index: 4;
+}
+
 .form-placement-settings-icon {
   height: 14px;
   pointer-events: none;
