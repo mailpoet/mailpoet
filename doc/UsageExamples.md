@@ -38,11 +38,11 @@ if (class_exists(\MailPoet\API\API::class)) {
 
   // Check if subscriber exists. If subscriber doesn't exist an exception is thrown
   try {
-    $subscriber = $mailpoet_api->getSubscriber($subscriber['email']);
+    $getsubscriber = $mailpoet_api->getSubscriber($subscriber['email']);
   } catch (\Exception $e) {}
 
   try {
-    if (!$subscriber) {
+    if (!$getsubscriber) {
       // Subscriber doesn't exist let's create one
       $mailpoet_api->addSubscriber($subscriber, $list_ids);
     } else {
