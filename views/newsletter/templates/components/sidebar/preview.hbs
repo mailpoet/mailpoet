@@ -18,7 +18,7 @@
 
     {{#if mssKeyPendingApproval }}
     <div class="mailpoet_error">
-      <%= __('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to [link]your authorized emails[/link].')|replaceLinkTags('https://account.mailpoet.com/authorization', {'target': '_blank'})|raw %>
+      <%= __('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to [link]your authorized emails[/link].')|replaceLinkTags('https://account.mailpoet.com/authorization', {'target': '_blank', 'rel': 'noopener noreferrer'})|raw %>
     </div>
     {{/if}}
 
