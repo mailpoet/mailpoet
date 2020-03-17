@@ -92,8 +92,7 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
     <Panel>
       <PanelBody
         title={MailPoet.I18n.t('formPlacement')}
-        // opened={isOpened} TODO for debug only
-        opened
+        opened={isOpened}
         onToggle={onToggle}
         className="form-sidebar-form-placement-panel"
       >
