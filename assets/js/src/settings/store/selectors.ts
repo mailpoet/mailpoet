@@ -34,7 +34,7 @@ export function isNewUser(state: State) {
 }
 
 export function isMssActive(state: State) {
-  return _.get(state, 'mta.method') === 'MailPoet';
+  return _.get(state, 'data.mta.method') === 'MailPoet';
 }
 
 export function getSegments(state: State) {
