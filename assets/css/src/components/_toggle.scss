@@ -1,0 +1,82 @@
+input[type=checkbox].mailpoet-toggle {
+  display: none;
+
+  // add default box-sizing for this scope
+  &,
+  &:after,
+  &:before,
+  *,
+  *:after,
+  *:before,
+  + .mailpoet-toggle-button {
+    box-sizing: border-box;
+
+    &::selection {
+      background: none;
+    }
+  }
+
+  + .mailpoet-toggle-button {
+    cursor: pointer;
+    display: block;
+    height: 24px;
+    outline: 0;
+    position: relative;
+    user-select: none;
+    width: 40px;
+
+    &:after,
+    &:before {
+      content: '';
+      display: block;
+      height: 22px;
+      position: relative;
+      width: 22px;
+    }
+
+    &:after {
+      left: -3px;
+      top: -3px;
+    }
+
+    &:before {
+      display: none;
+    }
+  }
+
+  &:checked + .mailpoet-toggle-button:after {
+    left: 14px;
+  }
+}
+
+$very-light-blue: #e5e9f8;
+$apricot: #f5a278;
+$pale-grey: #fdfdff;
+
+// themes
+.mailpoet-toggle-light {
+  + .mailpoet-toggle-button {
+    background: $pale-grey;
+    border: solid 1px $very-light-blue;
+    border-radius: 2em;
+    padding: 2px;
+    transition: all .4s ease;
+
+    &:after {
+      background-color: #fff;
+      border: solid 1px $very-light-blue;
+      border-radius: 50%;
+      box-shadow: 0 4px 8px 0 rgba(220, 220, 220, .5);
+      transition: all .2s ease;
+    }
+  }
+
+  &:checked + .mailpoet-toggle-button {
+    background: $apricot;
+    border: solid 1px $apricot;
+
+    &:after {
+      border: solid 1px $apricot;
+    }
+  }
+}
