@@ -115,6 +115,11 @@ class Settings {
     return $this;
   }
 
+  public function withMssKeyPendingApproval() {
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME . '.data.is_approved', false);
+    return $this;
+  }
+
   public function withSendingMethodSmtpMailhog() {
     $this->settings->set('mta_group', 'smtp');
     $this->settings->set('mta.method', Mailer::METHOD_SMTP);

@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Test\DataFactories\Settings;
+
 class NewsletterCreationCest {
   public function createPostNotification(\AcceptanceTester $i) {
     $i->wantTo('Create and configure post notification email');
@@ -73,5 +75,42 @@ class NewsletterCreationCest {
     $i->waitForElement($sendFormElement);
     $i->selectOptionInSelect2($segmentName);
     $i->click('Send');
+  }
+
+  public function createNewsletterWhenKeyPendingApproval(\AcceptanceTester $i) {
+    $settings = new Settings();
+    $settings->withSendingMethodMailPoet();
+    $settings->withMssKeyPendingApproval();
+
+    $segmentName = $i->createListWithSubscriber();
+
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+
+    // step 1 - select type
+    $i->click('[data-automation-id="create_standard"]');
+
+    // step 2 - select template
+    $standardTemplate = '[data-automation-id="select_template_0"]';
+    $i->waitForElement($standardTemplate);
+    $i->see('Newsletters', ['css' => 'a.current']);
+    $i->click($standardTemplate);
+
+    // step 3 - see notice in 'Send preview' with link to authorized emails
+    $i->waitForElement('[data-automation-id="sidebar_preview_region_heading"]');
+    $i->click('[data-automation-id="sidebar_preview_region_heading"]', '#mailpoet_editor_sidebar');
+    $i->waitForText('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.');
+    $href = $i->grabAttributeFrom('//a[text()="your authorized emails"]', 'href');
+    expect($href)->same('https://account.mailpoet.com/authorization');
+    $i->scrollToTop();
+    $i->click('Next');
+
+    // step 4 - see notice in 'Send preview' with link to authorized emails, 'Send' button must be disabled
+    $i->waitForText('Final Step');
+    $i->waitForText('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.');
+    $href = $i->grabAttributeFrom('//a[text()="your authorized emails"]', 'href');
+    $disabled = $i->grabAttributeFrom('input[value="Send"]', 'disabled');
+    expect($href)->same('https://account.mailpoet.com/authorization');
+    expect($disabled)->same('true');
   }
 }
