@@ -409,7 +409,7 @@ describe('Form Body To Blocks', () => {
       params: {
         text_color: '#f78da7',
         content: 'Content',
-        level: 1,
+        level: '1',
         anchor: 'anchor',
         align: 'right',
         class_name: 'class',

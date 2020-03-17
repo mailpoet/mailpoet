@@ -147,6 +147,7 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
         mapped.attributes.textColor = textColorSlug;
         mapped.attributes.customTextColor = !textColorSlug ? item.params.text_color : undefined;
       }
+      let level = 2;
       switch (item.id) {
         case 'email':
           return {
@@ -154,12 +155,18 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
             name: 'mailpoet-form/email-input',
           };
         case 'heading':
+          if (item.params && has(item.params, 'level')) {
+            level = parseInt(item.params.level, 10);
+            if (Number.isNaN(level)) {
+              level = 2;
+            }
+          }
           return {
             ...mapped,
             attributes: {
               ...mapped.attributes,
               content: item.params?.content || '',
-              level: item.params?.level || 2,
+              level,
               align: item.params?.align,
               anchor: item.params?.anchor,
               className: item.params?.class_name,
