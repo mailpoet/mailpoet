@@ -27,22 +27,23 @@ class DisplayFormBellowPostCest {
     $this->forms->withName($formName)->withSegments([$segment])->create();
 
     $postTitle = 'Lorem';
-    $postText = 'Ipsum';
-    $post = $i->cliToArray(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=post', '--post_title=' . $postTitle, '--post_content=' . $postText]);
+
     $i->login();
     $i->amOnMailPoetPage('Forms');
     $i->waitForText($formName);
     $i->clickItemRowActionByItemName($formName, 'Edit');
     $i->waitForElement('[data-automation-id="form_title_input"]');
     $i->click('.form-sidebar-form-placement-panel');
-    $i->checkOption('[data-automation-id="place-form-bellow-all-posts-toggle"] input');
+    $i->click('[data-automation-id="form-placement-option-Below pages"]');
+    $i->waitForElement('[data-automation-id="place-form-bellow-all-posts-toggle"]');
+    $i->checkOption('[data-automation-id="place-form-bellow-all-posts-toggle"]');
+    $i->click('.automation-id-save-form-below-pages');
     $i->click('[data-automation-id="form_save_button"]');
     $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
 
     // see the post
-    $i->amOnPage('/wp-admin/post.php?action=edit&post=' . $post[0]);
-    $i->waitForText($postTitle, 30);
-    $i->click('View Post');
+    $postUrl = $i->createPost($postTitle, 'Content');
+    $i->amOnUrl($postUrl);
     $i->waitForText($postTitle);
     $i->seeElement('[data-automation-id="subscribe-submit-button"]');
   }
