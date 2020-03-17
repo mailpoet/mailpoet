@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
-import { useSelect } from '@wordpress/data';
+import { Button } from '@wordpress/components';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import FormPlacementOption from './form_placement_option';
 import Icon from './below_pages_icon';
@@ -19,6 +20,7 @@ const BelowPages = () => {
     (select) => select('mailpoet-form-editor').placeFormBellowAllPosts(),
     []
   );
+  const { setPlaceFormBellowAllPages, setPlaceFormBellowAllPosts } = useDispatch('mailpoet-form-editor');
 
   const [
     localPlaceFormBellowAllPages,
@@ -28,6 +30,12 @@ const BelowPages = () => {
     localPlaceFormBellowAllPosts,
     setLocalPlaceFormBellowAllPosts,
   ] = useState(placeFormBellowAllPosts);
+
+  const save = () => {
+    setDisplaySettings(false);
+    setPlaceFormBellowAllPages(localPlaceFormBellowAllPages);
+    setPlaceFormBellowAllPosts(localPlaceFormBellowAllPosts);
+  };
 
   return (
     <>
@@ -69,6 +77,14 @@ const BelowPages = () => {
                   onCheck={setLocalPlaceFormBellowAllPosts}
                 />
               </div>
+            </div>
+            <div className="mailpoet-form-placement-save">
+              <Button
+                onClick={save}
+                className="mailpoet-save-button"
+              >
+                {MailPoet.I18n.t('formPlacementSave')}
+              </Button>
             </div>
           </Modal>
         )
