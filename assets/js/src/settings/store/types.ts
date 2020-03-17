@@ -129,7 +129,6 @@ export type Settings = {
   | 'westhost'
   | 'wpwebhost'
   mailpoet_sending_frequency: 'auto' | 'manual'
-
   signup_confirmation: {
     enabled: '1' | ''
     subject: string
