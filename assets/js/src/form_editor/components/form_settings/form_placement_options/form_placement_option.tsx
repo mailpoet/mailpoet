@@ -20,6 +20,8 @@ const FormPlacementOption = ({
   const [hover, setHover] = useState(false);
   return (
     <div
+      key={label}
+      data-automation-id={`form-placement-option-${label}`}
       className={
         classnames(
           'form-placement-option',

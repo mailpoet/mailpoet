@@ -70,7 +70,7 @@ const BelowPages = () => {
               <div className="mailpoet-toggle-list-description">
                 {MailPoet.I18n.t('placeFormBellowAllPosts')}
               </div>
-              <div className="mailpoet-toggle-list-toggle">
+              <div className="mailpoet-toggle-list-toggle" data-automation-id="place-form-bellow-all-posts-toggle">
                 <Toggle
                   name="localPlaceFormBellowAllPosts"
                   checked={localPlaceFormBellowAllPosts}
@@ -81,7 +81,7 @@ const BelowPages = () => {
             <div className="mailpoet-form-placement-save">
               <Button
                 onClick={save}
-                className="mailpoet-save-button"
+                className="mailpoet-save-button automation-id-save-form-below-pages"
               >
                 {MailPoet.I18n.t('formPlacementSave')}
               </Button>

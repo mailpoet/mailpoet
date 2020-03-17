@@ -141,6 +141,7 @@ $form-placement-option-oval-border: #969ca1;
 
 .form-placement-option-active {
   border: solid 2px $gutenberg-control-active-color;
+  box-shadow: 0 4px 8px 0 rgba(156, 166, 204, .5);
 
   .form-placement-settings-overlay {
     height: 138px;
