@@ -11,8 +11,8 @@ if (jQuery('#mailpoet_settings').length > 0) {
       '(:tab)': 'tabs',
     },
     defaultRoute: function defaultRoute() {
-      // display basics tab as default
-      this.tabs('basics');
+      // redirect to new settings by default
+      window.location.href = '?page=mailpoet-new-settings#/basics';
     },
     sendingMethodGroup: function sendingMethodGroup(group) {
       // display mta tab
