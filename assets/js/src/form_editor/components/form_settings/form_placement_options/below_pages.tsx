@@ -9,7 +9,6 @@ import Toggle from '../../../../common/toggle';
 
 const BelowPages = () => {
   const [displaySettings, setDisplaySettings] = useState(false);
-  const [test, setTest] = useState(true); // TODO debug only, remove
 
   const placeFormBellowAllPages = useSelect(
     (select) => select('mailpoet-form-editor').placeFormBellowAllPages(),
@@ -20,6 +19,15 @@ const BelowPages = () => {
     (select) => select('mailpoet-form-editor').placeFormBellowAllPosts(),
     []
   );
+
+  const [
+    localPlaceFormBellowAllPages,
+    setLocalPlaceFormBellowAllPages,
+  ] = useState(placeFormBellowAllPages);
+  const [
+    localPlaceFormBellowAllPosts,
+    setLocalPlaceFormBellowAllPosts,
+  ] = useState(placeFormBellowAllPosts);
 
   return (
     <>
@@ -35,15 +43,33 @@ const BelowPages = () => {
           <Modal
             title={MailPoet.I18n.t('placeFormBellowPages')}
             onRequestClose={() => setDisplaySettings(false)}
+            contentClassName="form-placement-settings"
           >
             <p>
               {MailPoet.I18n.t('placeFormBellowPagesDescription')}
             </p>
-            <Toggle
-              name="xz"
-              checked={test}
-              onCheck={setTest}
-            />
+            <div className="mailpoet-toggle-list">
+              <div className="mailpoet-toggle-list-description">
+                {MailPoet.I18n.t('placeFormBellowAllPages')}
+              </div>
+              <div className="mailpoet-toggle-list-toggle">
+                <Toggle
+                  name="localPlaceFormBellowAllPages"
+                  checked={localPlaceFormBellowAllPages}
+                  onCheck={setLocalPlaceFormBellowAllPages}
+                />
+              </div>
+              <div className="mailpoet-toggle-list-description">
+                {MailPoet.I18n.t('placeFormBellowAllPosts')}
+              </div>
+              <div className="mailpoet-toggle-list-toggle">
+                <Toggle
+                  name="localPlaceFormBellowAllPosts"
+                  checked={localPlaceFormBellowAllPosts}
+                  onCheck={setLocalPlaceFormBellowAllPosts}
+                />
+              </div>
+            </div>
           </Modal>
         )
       }

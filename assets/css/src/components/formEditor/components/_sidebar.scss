@@ -148,6 +148,10 @@ $form-placement-option-oval-border: #969ca1;
   }
 }
 
+.form-placement-settings {
+  width: 400px;
+}
+
 .form-placement-option-label {
   align-items: center;
   color: $form-placement-option-text-color;
@@ -214,4 +218,10 @@ $form-placement-option-oval-border: #969ca1;
     height: 63px;
     width: 76px;
   }
+}
+
+.mailpoet-toggle-list {
+  display: grid;
+  grid-row-gap: 20px;
+  grid-template-columns: 1fr 45px;
 }
