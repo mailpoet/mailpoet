@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 
 import SettingsIcon from './settings_icon';
+import CheckIcon from './checkbox_icon';
 
 type Props = {
   label: string,
@@ -51,8 +52,16 @@ const FormPlacementOption = ({
             {SettingsIcon}
           </div>
           {
-            hover
+            hover && !active
             && <div className="form-placement-settings-oval" />
+          }
+          {
+            active
+            && (
+              <div className="form-placement-settings-check">
+                {CheckIcon}
+              </div>
+            )
           }
         </div>
         <div className="form-placement-option-icon">
