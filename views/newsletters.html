@@ -58,6 +58,7 @@
       <% endif %>
     <% endautoescape %>
     var mailpoet_beacon_articles = ['57fdc312c697911f2d324fd7', '5a0257ac2c7d3a272c0d7ad6', '58f671152c7d3a057f8858e8'];
+    var mailpoet_mss_key_pending_approval = '<%= mss_key_pending_approval %>';
   </script>
 <% endblock %>
 
@@ -241,6 +242,7 @@
     'finalNewsletterStep': __('Final Step: Last Details'),
     'saveDraftAndClose': __('Save as draft and close'),
     'helpTooltipSendEmail': __('You cannot send the same email twice, as that would be considered spam. <br /> If you must send the same email more than one time, simply duplicate this email first.'),
+    'pendingKeyApprovalNotice': __('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to [link]your authorized emails[/link].'),
     'orSimply': __('or simply'),
     'goBackToDesign': __('go back to the Design page'),
     'websiteTimeIs': __("Your website’s time is"),

@@ -454,6 +454,9 @@ class NewsletterSend extends React.Component {
       'send'
     );
 
+    const sendingDisabled = window.mailpoet_subscribers_limit_reached
+      || window.mailpoet_mss_key_pending_approval;
+
     return (
       <div>
         <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
@@ -479,7 +482,7 @@ class NewsletterSend extends React.Component {
                     type="button"
                     onClick={this.handleResume}
                     value={MailPoet.I18n.t('resume')}
-                    disabled={window.mailpoet_subscribers_limit_reached}
+                    disabled={sendingDisabled}
                   />
                 )
                 : (
@@ -489,7 +492,7 @@ class NewsletterSend extends React.Component {
                     onClick={this.handleSend}
                     value={MailPoet.I18n.t('send')}
                     {...sendButtonOptions} // eslint-disable-line react/jsx-props-no-spreading
-                    disabled={window.mailpoet_subscribers_limit_reached}
+                    disabled={sendingDisabled}
                   />
                 )
             }
@@ -517,6 +520,26 @@ class NewsletterSend extends React.Component {
               tooltip={MailPoet.I18n.t('helpTooltipSendEmail')}
               tooltipId="helpTooltipSendEmail"
             />
+          ) }
+          { window.mailpoet_mss_key_pending_approval && (
+            <div className="mailpoet_error">
+              {
+                ReactStringReplace(
+                  MailPoet.I18n.t('pendingKeyApprovalNotice'),
+                  /\[link\](.*?)\[\/link\]/g,
+                  (match) => (
+                    <a
+                      key="pendingKeyApprovalNoticeLink"
+                      href="https://account.mailpoet.com/authorization"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {match}
+                    </a>
+                  )
+                )
+              }
+            </div>
           ) }
         </Form>
       </div>

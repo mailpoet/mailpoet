@@ -6,6 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\Menu;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
@@ -50,6 +51,9 @@ class Newsletters {
   /** @var SubscribersFeature */
   private $subscribersFeature;
 
+  /** @var ServicesChecker */
+  private $servicesChecker;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -59,7 +63,8 @@ class Newsletters {
     WooCommerceHelper $woocommerceHelper,
     Installation $installation,
     FeaturesController $featuresController,
-    SubscribersFeature $subscribersFeature
+    SubscribersFeature $subscribersFeature,
+    ServicesChecker $servicesChecker
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -70,6 +75,7 @@ class Newsletters {
     $this->installation = $installation;
     $this->featuresController = $featuresController;
     $this->subscribersFeature = $subscribersFeature;
+    $this->servicesChecker = $servicesChecker;
   }
 
   public function render() {
@@ -101,6 +107,11 @@ class Newsletters {
     $data['site_url'] = $this->wp->siteUrl();
     $data['roles'] = $wp_roles->get_names(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $data['roles']['mailpoet_all'] = $this->wp->__('In any WordPress role', 'mailpoet');
+
+    $mssActive = Bridge::isMPSendingServiceEnabled();
+    $mssKeyValid = $this->servicesChecker->isMailPoetAPIKeyValid();
+    $mssKeyPendingApproval = $this->settings->get('mta.mailpoet_api_key_state.data.is_approved') === false;
+    $data['mss_key_pending_approval'] = $mssActive && $mssKeyValid && $mssKeyPendingApproval;
 
     $installedAtDateTime = new \DateTime($data['settings']['installed_at']);
     $data['installed_days_ago'] = (int)$installedAtDateTime->diff(new \DateTime())->format('%a');
