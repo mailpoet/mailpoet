@@ -18,13 +18,13 @@ export default () => {
       >
         {t('basicsTab')}
       </TabLink>
-      <a
-        className="nav-tab"
-        href="?page=mailpoet-settings#signup"
-        data-automation-id="signup_settings_tab"
+      <TabLink
+        name="signup"
+        current={current}
+        automationId="signup_settings_tab"
       >
         {t('signupConfirmationTab')}
-      </a>
+      </TabLink>
       <a
         className="nav-tab"
         href="?page=mailpoet-settings#mta"

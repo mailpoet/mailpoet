@@ -59,6 +59,9 @@ if (jQuery('#mailpoet_settings').length > 0) {
       if (tab === 'premium') {
         window.location.href = '?page=mailpoet-new-settings#/premium';
       }
+      if (tab === 'signup') {
+        window.location.href = '?page=mailpoet-new-settings#/signup';
+      }
       // reset all active tabs
       jQuery('.nav-tab-wrapper a').removeClass('nav-tab-active');
 
