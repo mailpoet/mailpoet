@@ -224,4 +224,34 @@ $form-placement-option-oval-border: #969ca1;
   display: grid;
   grid-row-gap: 20px;
   grid-template-columns: 1fr 45px;
+  margin-bottom: 40px;
+}
+
+.components-button.mailpoet-save-button {
+  background-color: #ff5301;
+  border-radius: 4px;
+  color: #fff;
+  display: block;
+  font-size: 16px;
+  font-stretch: normal;
+  font-style: normal;
+  font-weight: bold;
+  height: 48px;
+  letter-spacing: normal;
+  line-height: 1.25;
+  margin-left: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  text-align: center;
+
+  &:hover {
+    background-color: #fff !important;
+    color: #ff5301 !important;
+  }
+}
+
+.mailpoet-form-placement-save {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }
