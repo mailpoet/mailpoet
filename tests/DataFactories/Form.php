@@ -70,4 +70,13 @@ class Form {
   public function withDefaultSuccessMessage() {
     FormModel::updateSuccessMessages();
   }
+
+  /**
+   * @return $this
+   */
+  public function withSuccessMessage(string $message) {
+    $this->data['settings']['on_success'] = 'message';
+    $this->data['settings']['success_message'] = $message;
+    return $this;
+  }
 }

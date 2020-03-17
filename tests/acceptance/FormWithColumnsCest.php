@@ -11,9 +11,11 @@ class FormWithColumnsCest {
     $segmentName = 'Fancy List';
     $segment = $segmentFactory->withName($segmentName)->create();
     $formName = 'My fancy form with columns';
+    $formMessage = 'Form submitted';
     $form = new Form();
     $form->withName($formName)
       ->withSegments([$segment])
+      ->withSuccessMessage($formMessage)
       ->withDisplayBelowPosts()
       ->create();
     $i->wantTo('Add columns with firs and last name');
@@ -58,7 +60,7 @@ class FormWithColumnsCest {
     $i->fillField('[data-automation-id="form_first_name"]', $subscriberFirstName);
     $i->fillField('[data-automation-id="form_last_name"]', $subscriberLastName);
     $i->click('[data-automation-id="subscribe-submit-button"]');
-    $i->waitForText('Check your inbox or spam folder to confirm your subscription');
+    $i->waitForText($formMessage);
 
     // Check subscriber data were saved
     $i->amOnMailpoetPage('Subscribers');
