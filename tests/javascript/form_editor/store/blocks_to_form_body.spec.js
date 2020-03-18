@@ -174,6 +174,9 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('Submit');
     expect(input.type).to.be.equal('submit');
     expect(input.params.label).to.be.equal('Subscribe!');
+    expect(input.styles).to.deep.equal({
+      full_width: '0',
+    });
   });
 
   it('Should map divider block to input data', () => {

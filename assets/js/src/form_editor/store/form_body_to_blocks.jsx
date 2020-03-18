@@ -308,6 +308,10 @@ export const formBodyToBlocksFactory = (
           return {
             ...mapped,
             name: 'mailpoet-form/submit-button',
+            attributes: {
+              ...mapped.attributes,
+              styles: mapBlockStyles(item.styles),
+            },
           };
         case 'divider':
           delete mapped.attributes.label;
@@ -316,7 +320,6 @@ export const formBodyToBlocksFactory = (
             name: 'mailpoet-form/divider',
           };
         case 'html':
-          delete mapped.attributes.label;
           return {
             ...mapped,
             name: 'mailpoet-form/html',

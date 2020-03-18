@@ -260,6 +260,7 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
             id: 'submit',
             type: 'submit',
             name: 'Submit',
+            styles: mapBlockStyles(block.attributes.styles),
           };
         case 'mailpoet-form/divider':
           return {

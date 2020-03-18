@@ -20,6 +20,10 @@ export const submitBlock = {
   name: 'mailpoet-form/submit-button',
   attributes: {
     label: 'Subscribe!',
+    styles: {
+      fullWidth: false,
+      inheritFromTheme: true,
+    },
   },
 };
 
