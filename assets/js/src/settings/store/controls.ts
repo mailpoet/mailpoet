@@ -6,9 +6,8 @@ export { default as CALL_API } from 'common/controls/call_api';
 
 export function TRACK_SETTINGS_SAVED() {
   const settings = select(STORE_NAME).getSettings();
-  const { mailpoet_version, mailpoet_woocommerce_active } = window as any;
   const data = {
-    'MailPoet Free version': mailpoet_version,
+    'MailPoet Free version': MailPoet.version,
     'Sending method type': settings.mta_group || null,
     'Sending frequency (emails)': (
       settings.mta_group !== 'mailpoet'
@@ -27,7 +26,7 @@ export function TRACK_SETTINGS_SAVED() {
     'Bounce email is present': settings.bounce && settings.bounce.address !== '',
     'Newsletter task scheduler method': (settings.cron_trigger && settings.cron_trigger.method),
   };
-  if (mailpoet_woocommerce_active) {
+  if (MailPoet.isWoocommerceActive) {
     data['WooCommerce email customizer enabled'] = settings.woocommerce && settings.woocommerce.use_mailpoet_editor;
   }
   MailPoet.trackEvent('User has saved Settings', data);
