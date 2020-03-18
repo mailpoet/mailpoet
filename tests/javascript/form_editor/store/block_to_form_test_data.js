@@ -187,6 +187,17 @@ export const headingBlock = {
   },
 };
 
+export const paragraphBlock = {
+  clientId: '895d5bfd-9fef-4b58-83be-7259a7375785',
+  name: 'core/paragraph',
+  isValid: true,
+  attributes: {
+    content: 'content',
+    dropCap: true,
+    align: 'center',
+  },
+};
+
 export const nestedColumns = {
   clientId: 'columns-1',
   name: 'core/columns',

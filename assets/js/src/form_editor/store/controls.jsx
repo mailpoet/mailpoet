@@ -41,7 +41,12 @@ export default {
     const formBlocks = select('mailpoet-form-editor').getFormBlocks();
     const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
     const { getSettings } = select('core/block-editor');
-    const blocksToFormBody = blocksToFormBodyFactory(getSettings().colors, customFields);
+    const settings = getSettings();
+    const blocksToFormBody = blocksToFormBodyFactory(
+      settings.colors,
+      settings.fontSizes,
+      customFields
+    );
     const requestData = {
       ...mapFormDataBeforeSaving(formData),
       body: blocksToFormBody(formBlocks),

@@ -42,7 +42,11 @@ const FormPreview = () => {
   );
 
   const loadFormPreviewFromServer = useCallback(() => {
-    const blocksToFormBody = blocksToFormBodyFactory(editorSettings.colors, customFields);
+    const blocksToFormBody = blocksToFormBodyFactory(
+      editorSettings.colors,
+      editorSettings.fontSizes,
+      customFields
+    );
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'forms',
@@ -54,7 +58,7 @@ const FormPreview = () => {
     }).done((response) => {
       setForm(response.data);
     });
-  }, [formBlocks, customFields, settings, editorSettings.colors]);
+  }, [formBlocks, customFields, settings, editorSettings.colors, editorSettings.fontSizes]);
 
   useEffect(() => {
     if (isPreview) {
