@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import {
-  FontSizePicker,
   Panel,
   PanelBody,
 } from '@wordpress/components';
@@ -10,6 +9,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { partial } from 'lodash';
 
 import ColorSettings from 'form_editor/components/color_settings';
+import FontSizeSettings from 'form_editor/components/font_size_settings';
 
 const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
@@ -24,14 +24,6 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
     changeFormSettings(updated);
     settingsRef.current = updated;
   };
-
-  const fontSizes = useSelect(
-    (select) => {
-      const { getSettings } = select('core/block-editor');
-      return getSettings().fontSizes;
-    },
-    []
-  );
 
   return (
     <Panel>
@@ -51,16 +43,11 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             value={settings.fontColor}
             onChange={partial(updateStyles, 'fontColor')}
           />
-          <div>
-            <h3 className="mailpoet-styles-settings-heading">
-              {MailPoet.I18n.t('formSettingsStylesFontSize')}
-            </h3>
-            <FontSizePicker
-              value={settings.fontSize}
-              onChange={partial(updateStyles, 'fontSize')}
-              fontSizes={fontSizes}
-            />
-          </div>
+          <FontSizeSettings
+            name={MailPoet.I18n.t('formSettingsStylesFontSize')}
+            value={settings.fontSize}
+            onChange={partial(updateStyles, 'fontSize')}
+          />
         </div>
       </PanelBody>
     </Panel>
