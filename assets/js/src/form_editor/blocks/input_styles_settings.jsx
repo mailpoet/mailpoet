@@ -131,6 +131,10 @@ export const inputStylesPropTypes = PropTypes.shape({
   fullWidth: PropTypes.bool.isRequired,
   inheritFromTheme: PropTypes.bool.isRequired,
   bold: PropTypes.bool,
+  backgroundColor: PropTypes.string,
+  borderSize: PropTypes.number,
+  borderRadius: PropTypes.number,
+  borderColor: PropTypes.string,
 });
 
 InputStylesSettings.propTypes = {
