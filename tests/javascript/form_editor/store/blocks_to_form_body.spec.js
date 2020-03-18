@@ -176,7 +176,7 @@ describe('Blocks to Form Body', () => {
     expect(divider.id).to.be.equal('divider');
     expect(divider.name).to.be.equal('Divider');
     expect(divider.type).to.be.equal('divider');
-    expect(divider.params).to.be.equal('');
+    expect(divider.params).to.deep.equal({ class_name: null });
   });
 
   it('Should map multiple dividers', () => {
@@ -446,6 +446,16 @@ describe('Blocks to Form Body', () => {
     email.attributes.className = 'my-class-3';
     const [mappedEmail] = formBlocksToBody([email]);
     expect(mappedEmail.params.class_name).to.be.equal('my-class-3');
+
+    const divider = { ...dividerBlock };
+    divider.attributes.className = 'my-class-4';
+    const [mappedDivider] = formBlocksToBody([divider]);
+    expect(mappedDivider.params.class_name).to.be.equal('my-class-4');
+
+    const html = { ...customHtmlBlock };
+    html.attributes.className = 'my-class-5';
+    const [mappedHtml] = formBlocksToBody([html]);
+    expect(mappedHtml.params.class_name).to.be.equal('my-class-5');
 
     const customField = {
       created_at: '2019-12-10T15:05:06+00:00',

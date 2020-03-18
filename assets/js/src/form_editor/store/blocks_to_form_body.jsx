@@ -228,7 +228,9 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
             id: 'divider',
             type: 'divider',
             name: 'Divider',
-            params: '',
+            params: {
+              class_name: block.attributes.className || null,
+            },
           };
         case 'mailpoet-form/html':
           return {
@@ -239,6 +241,7 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
             params: {
               text: block.attributes && block.attributes.content ? block.attributes.content : '',
               nl2br: block.attributes && block.attributes.nl2br ? '1' : '0',
+              class_name: block.attributes.className || null,
             },
           };
         default:
