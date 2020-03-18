@@ -7,6 +7,7 @@ import {
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+import classnames from 'classnames';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 import StylesSettings from './styles_settings';
@@ -28,14 +29,38 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
     </InspectorControls>
   );
 
+  const styles = !attributes.styles.inheritFromTheme ? {
+    fontWeight: attributes.styles.bold ? 'bold' : 'inherit',
+    borderRadius: attributes.styles.borderRadius ? `${attributes.styles.borderRadius}px` : 0,
+    borderWidth: attributes.styles.borderSize ? `${attributes.styles.borderSize}px` : '1px',
+    borderColor: attributes.styles.borderColor || 'initial',
+    fontSize: attributes.styles.fontSize ? `${attributes.styles.fontSize}px` : 'inherit',
+    color: attributes.styles.fontColor || 'inherit',
+  } : {};
+
+  if (attributes.styles.fullWidth) {
+    styles.width = '100%';
+  }
+
+  if (attributes.styles.backgroundColor && !attributes.styles.inheritFromTheme) {
+    styles.backgroundColor = attributes.styles.backgroundColor;
+  }
+
+  if (attributes.styles.backgroundColor && !attributes.styles.inheritFromTheme) {
+    styles.backgroundColor = attributes.styles.backgroundColor;
+  }
+
+  const className = classnames('mailpoet_submit', { button: attributes.styles.inheritFromTheme });
+
   return (
     <ParagraphEdit className={attributes.className}>
       { inspectorControls }
       <input
-        className="button mailpoet_submit"
+        className={className}
         type="submit"
         value={attributes.label}
         data-automation-id="editor_submit_input"
+        style={styles}
       />
     </ParagraphEdit>
   );
