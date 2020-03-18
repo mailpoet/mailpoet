@@ -145,7 +145,7 @@ class NewslettersResponseBuilder {
     $output = [];
     foreach ($newsletter->getNewsletterSegments() as $newsletterSegment) {
       $segment = $newsletterSegment->getSegment();
-      if ($segment->getDeletedAt()) {
+      if (!$segment || $segment->getDeletedAt()) {
         continue;
       }
       $output[] = $this->buildSegment($segment);
