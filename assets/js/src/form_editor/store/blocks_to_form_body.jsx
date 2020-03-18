@@ -94,14 +94,27 @@ export const mapColorSlugToValue = (colorDefinitions, colorSlug, colorValue = nu
 };
 
 /**
+ * @param {Array.<{name: string, slug: string, size: number}>} fontSizeDefinitions
+ * @param {string} sizeSlug
+ * @param {string|null} sizeValue
+ */
+export const mapFontSizeSlugToValue = (fontSizeDefinitions, sizeSlug, sizeValue = null) => {
+  const result = fontSizeDefinitions.find((size) => size.slug === sizeSlug);
+  return result ? result.size : sizeValue;
+};
+
+/**
  * Factory for block to form data mapper
  * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
+ * @param {Array.<{name: string, slug: string, size: number}>} fontSizeDefinitions
  * @param customFields - list of all custom Fields
  */
-export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => {
+
+export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, customFields) => {
   if (!Array.isArray(customFields)) {
     throw new Error('Mapper expects customFields to be an array.');
   }
+
   /**
    * @param blocks
    * @param parent  - parent block of nested block
@@ -142,6 +155,32 @@ export const blocksToFormBodyFactory = (colorDefinitions, customFields = []) => 
                 block.attributes.customTextColor
               ),
               anchor: block.attributes.anchor || null,
+              class_name: block.attributes.className || null,
+            },
+          };
+        case 'core/paragraph':
+          return {
+            type: 'paragraph',
+            id: 'paragraph',
+            params: {
+              content: block.attributes.content,
+              drop_cap: block.attributes.dropCap ? '1' : '0',
+              align: block.attributes.align || 'left',
+              font_size: mapFontSizeSlugToValue(
+                fontSizeDefinitions,
+                block.attributes.fontSize,
+                block.attributes.customFontSize
+              ),
+              text_color: mapColorSlugToValue(
+                colorDefinitions,
+                block.attributes.textColor,
+                block.attributes.customTextColor
+              ),
+              background_color: mapColorSlugToValue(
+                colorDefinitions,
+                block.attributes.backgroundColor,
+                block.attributes.customBackgroundColor
+              ),
               class_name: block.attributes.className || null,
             },
           };

@@ -15,6 +15,7 @@ import {
   dividerBlock,
   nestedColumns,
   headingBlock,
+  paragraphBlock,
 } from './block_to_form_test_data.js';
 
 const colorDefinitions = [{
@@ -27,13 +28,18 @@ const colorDefinitions = [{
   color: '#ffffff',
 }];
 
+const fontSizeDefinitions = [
+  { name: 'Small', size: 13, slug: 'small' },
+  { name: 'Normal', size: 16, slug: 'normal' },
+];
+
 const checkBodyInputBasics = (input) => {
   expect(input.id).to.be.a('string');
   expect(input.type).to.be.a('string');
   expect(input.type).to.be.not.empty;
 };
 
-const formBlocksToBody = blocksToFormBodyFactory(colorDefinitions, []);
+const formBlocksToBody = blocksToFormBodyFactory(colorDefinitions, fontSizeDefinitions, []);
 
 describe('Blocks to Form Body', () => {
   it('Should throw an error for wrong input', () => {
@@ -210,7 +216,7 @@ describe('Blocks to Form Body', () => {
       type: 'text',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, fontSizeDefinitions, [customField]);
     const [input] = map([customTextBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('1');
@@ -238,7 +244,7 @@ describe('Blocks to Form Body', () => {
       updated_at: '2019-12-10T15:05:06+00:00',
     };
 
-    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, fontSizeDefinitions, [customField]);
     const [input] = map([customSelectBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('6');
@@ -265,7 +271,7 @@ describe('Blocks to Form Body', () => {
       type: 'radio',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, blocksToFormBodyFactory, [customField]);
     const [input] = map([customRadioBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('2');
@@ -277,6 +283,40 @@ describe('Blocks to Form Body', () => {
     expect(input.params.values).to.be.an('Array').that.has.length(2);
     expect(input.params.values[0]).to.have.property('value', 'option 1');
     expect(input.params.values[1]).to.have.property('value', 'option 2');
+  });
+
+  it('Should map paragraph block', () => {
+    const [input] = formBlocksToBody([paragraphBlock]);
+    expect(input.type).to.be.equal('paragraph');
+    expect(input.id).to.be.a('string');
+    expect(input.params.content).to.be.equal('content');
+    expect(input.params.drop_cap).to.be.equal('1');
+    expect(input.params.align).to.be.equal('center');
+  });
+
+  it('Should map font size in paragraph block', () => {
+    const [input] = formBlocksToBody([
+      {
+        ...paragraphBlock,
+        attributes: {
+          fontSize: 'small',
+        },
+      },
+    ]);
+    expect(input.params.font_size).to.be.equal(13);
+  });
+
+  it('Should map custom font size in paragraph block', () => {
+    const [input] = formBlocksToBody([
+      {
+        ...paragraphBlock,
+        attributes: {
+          fontSize: undefined,
+          customFontSize: 37,
+        },
+      },
+    ]);
+    expect(input.params.font_size).to.be.equal(37);
   });
 
   it('Should map minimal heading block', () => {
@@ -329,7 +369,7 @@ describe('Blocks to Form Body', () => {
       updated_at: '2019-12-13T15:22:07+00:00',
     };
 
-    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, blocksToFormBodyFactory, [customField]);
     const [input] = map([customCheckBox]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('3');
@@ -358,7 +398,7 @@ describe('Blocks to Form Body', () => {
       updated_at: '2019-12-13T15:22:07+00:00',
     };
 
-    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, blocksToFormBodyFactory, [customField]);
     const [input] = map([customDateBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('6');

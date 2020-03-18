@@ -35,6 +35,7 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
     },
     []
   );
+
   return (
     <Panel>
       <PanelBody
