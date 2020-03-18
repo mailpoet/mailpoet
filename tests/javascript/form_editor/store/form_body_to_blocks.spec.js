@@ -17,6 +17,7 @@ import {
   divider,
   nestedColumns,
   headingInput,
+  paragraphInput,
 } from './form_to_block_test_data.js';
 
 const colorDefinitions = [{
@@ -29,7 +30,12 @@ const colorDefinitions = [{
   color: '#ffffff',
 }];
 
-const formBodyToBlocks = formBodyToBlocksFactory(colorDefinitions, []);
+const fontSizeDefinitions = [
+  { name: 'Small', size: 13, slug: 'small' },
+  { name: 'Normal', size: 16, slug: 'normal' },
+];
+
+const formBodyToBlocks = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, []);
 
 const checkBlockBasics = (block) => {
   expect(block.clientId).to.be.a('string');
@@ -50,10 +56,10 @@ describe('Form Body To Blocks', () => {
 
   it('Should throw an error for wrong custom fields input', () => {
     const error = 'Mapper expects customFields to be an array.';
-    expect(() => formBodyToBlocksFactory([], null)).to.throw(error);
-    expect(() => formBodyToBlocksFactory([], 'hello')).to.throw(error);
-    expect(() => formBodyToBlocksFactory([], () => {})).to.throw(error);
-    expect(() => formBodyToBlocksFactory([], 1)).to.throw(error);
+    expect(() => formBodyToBlocksFactory([], [], null)).to.throw(error);
+    expect(() => formBodyToBlocksFactory([], [], 'hello')).to.throw(error);
+    expect(() => formBodyToBlocksFactory([], [], () => {})).to.throw(error);
+    expect(() => formBodyToBlocksFactory([], [], 1)).to.throw(error);
   });
 
   it('Should map email input to block', () => {
@@ -284,7 +290,7 @@ describe('Form Body To Blocks', () => {
       type: 'text',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, [customField]);
     const [block] = map([customTextInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('1_');
@@ -312,7 +318,7 @@ describe('Form Body To Blocks', () => {
       type: 'radio',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, [customField]);
     const [block] = map([customRadioInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('3_');
@@ -342,7 +348,7 @@ describe('Form Body To Blocks', () => {
       },
       position: null,
     };
-    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, [customField]);
     const [block] = map([customCheckboxInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('4_');
@@ -371,7 +377,7 @@ describe('Form Body To Blocks', () => {
       },
       position: null,
     };
-    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, [customField]);
     const [block] = map([customSelectInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('5_');
@@ -398,7 +404,7 @@ describe('Form Body To Blocks', () => {
       updated_at: '2019-12-13T15:22:07+00:00',
     };
 
-    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, [customField]);
     const [block] = map([customDateInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('6_');
@@ -517,6 +523,32 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.content).to.be.equal('');
     expect(block.attributes.level).to.be.equal(2);
     expect(block.attributes.align).to.be.undefined;
+  });
+
+  it('It should map paragraph', () => {
+    const paragraph = { ...paragraphInput };
+
+    const [block] = formBodyToBlocks([paragraph]);
+    expect(block.name).to.equal('core/paragraph');
+    expect(block.attributes.content).to.equal('content');
+    expect(block.attributes.dropCap).to.equal(true);
+    expect(block.attributes.align).to.equal('center');
+    expect(block.attributes.className).to.equal('class name');
+  });
+
+  it('It should map paragraph font size', () => {
+    const heading = { ...headingInput, params: { font_size: 13 } };
+
+    const [block] = formBodyToBlocks([heading]);
+    expect(block.attributes.fontSize).to.equal('small');
+  });
+
+  it('It should map paragraph custom font size', () => {
+    const heading = { ...headingInput, params: { font_size: 34 } };
+
+    const [block] = formBodyToBlocks([heading]);
+    expect(block.attributes.fontSize).to.be.undefined;
+    expect(block.attributes.customFontSize).to.eq(34);
   });
 
   it('It should map heading with data', () => {

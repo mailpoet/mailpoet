@@ -14,6 +14,7 @@ import mapFormDataAfterLoading from './map_form_data_after_loading.jsx';
 
 const formBodyToBlocks = formBodyToBlocksFactory(
   SETTINGS_DEFAULTS.colors,
+  SETTINGS_DEFAULTS.fontSizes,
   window.mailpoet_custom_fields
 );
 

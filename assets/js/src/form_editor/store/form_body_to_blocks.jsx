@@ -110,6 +110,22 @@ const mapColorSlug = (colorDefinitions, colorValue) => {
   return result ? result.slug : undefined;
 };
 
+/**
+ * @param {Array.<{name: string, slug: string, size: number}>} fontSizeDefinitions
+ * @param {string} fontSizeValue
+ */
+const mapFontSizeSlug = (fontSizeDefinitions, fontSizeValue) => {
+  let value = 0;
+  if (fontSizeValue) {
+    value = parseInt(fontSizeValue, 10);
+    if (Number.isNaN(value)) {
+      value = 2;
+    }
+  }
+  const result = fontSizeDefinitions.find((fontSize) => fontSize.size === value);
+  return result ? result.slug : undefined;
+};
+
 const mapColumnBlocks = (data, colorDefinitions, customFields = []) => {
   // eslint-disable-next-line no-use-before-define
   const mapFormBodyToBlocks = formBodyToBlocksFactory(colorDefinitions, customFields);
@@ -146,9 +162,14 @@ const mapColumnBlocks = (data, colorDefinitions, customFields = []) => {
 /**
  * Factory for form data to blocks mapper
  * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
+ * @param {Array.<{name: string, slug: string, size: number}>} fontSizeDefinitions
  * @param customFields - list of all custom Fields
  */
-export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => {
+export const formBodyToBlocksFactory = (
+  colorDefinitions,
+  fontSizeDefinitions,
+  customFields = []
+) => {
   if (!Array.isArray(customFields)) {
     throw new Error('Mapper expects customFields to be an array.');
   }
@@ -194,6 +215,17 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
         mapped.attributes.textColor = textColorSlug;
         mapped.attributes.customTextColor = !textColorSlug ? item.params.text_color : undefined;
       }
+      if (item.params && has(item.params, 'background_color')) {
+        const slug = mapColorSlug(colorDefinitions, item.params.background_color);
+        mapped.attributes.backgroundColor = slug;
+        mapped.attributes.customBackgroundColor = !slug
+          ? item.params.background_color : undefined;
+      }
+      if (item.params && has(item.params, 'font_size')) {
+        const slug = mapFontSizeSlug(fontSizeDefinitions, item.params.font_size);
+        mapped.attributes.fontSize = slug;
+        mapped.attributes.customFontSize = !slug ? item.params.font_size : undefined;
+      }
       let level = 2;
       switch (item.id) {
         case 'email':
@@ -223,6 +255,18 @@ export const formBodyToBlocksFactory = (colorDefinitions, customFields = []) => 
               className: item.params?.class_name,
             },
             name: 'core/heading',
+          };
+        case 'paragraph':
+          return {
+            ...mapped,
+            attributes: {
+              ...mapped.attributes,
+              content: item.params?.content || '',
+              align: item.params?.align,
+              className: item.params?.class_name,
+              dropCap: item.params?.drop_cap === '1',
+            },
+            name: 'core/paragraph',
           };
         case 'first_name':
           return {
