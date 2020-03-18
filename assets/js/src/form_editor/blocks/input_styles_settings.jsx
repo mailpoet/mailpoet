@@ -2,16 +2,16 @@ import React, { useRef } from 'react';
 import MailPoet from 'mailpoet';
 import {
   Button,
-  ColorIndicator,
-  ColorPalette,
   Panel,
   PanelBody,
   RangeControl,
   ToggleControl,
 } from '@wordpress/components';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch } from '@wordpress/data';
 import { partial } from 'lodash';
 import PropTypes from 'prop-types';
+
+import ColorSettings from 'form_editor/components/color_settings';
 
 const InputStylesSettings = ({
   styles,
@@ -19,16 +19,6 @@ const InputStylesSettings = ({
 }) => {
   const localStylesRef = useRef(styles);
   const localStyles = localStylesRef.current;
-
-  const { settingsColors } = useSelect(
-    (select) => {
-      const { getSettings } = select('core/block-editor');
-      return {
-        settingsColors: getSettings().colors,
-      };
-    },
-    []
-  );
 
   const { applyStylesToAllTextInputs } = useDispatch('mailpoet-form-editor');
 
@@ -55,24 +45,11 @@ const InputStylesSettings = ({
           />
           {!localStyles.inheritFromTheme ? (
             <>
-              <div>
-                <h3 className="mailpoet-styles-settings-heading">
-                  {MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
-                  {
-                    localStyles.backgroundColor !== undefined
-                    && (
-                      <ColorIndicator
-                        colorValue={localStyles.backgroundColor}
-                      />
-                    )
-                  }
-                </h3>
-                <ColorPalette
-                  value={localStyles.backgroundColor}
-                  onChange={partial(updateStyles, 'backgroundColor')}
-                  colors={settingsColors}
-                />
-              </div>
+              <ColorSettings
+                name={MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
+                value={localStyles.backgroundColor}
+                onChange={partial(updateStyles, 'backgroundColor')}
+              />
               <ToggleControl
                 label={MailPoet.I18n.t('formSettingsBold')}
                 checked={localStyles.bold || false}
@@ -96,24 +73,11 @@ const InputStylesSettings = ({
                 allowReset
                 onChange={partial(updateStyles, 'borderRadius')}
               />
-              <div>
-                <h3 className="mailpoet-styles-settings-heading">
-                  {MailPoet.I18n.t('formSettingsBorderColor')}
-                  {
-                    localStyles.borderColor !== undefined
-                    && (
-                      <ColorIndicator
-                        colorValue={localStyles.borderColor}
-                      />
-                    )
-                  }
-                </h3>
-                <ColorPalette
-                  value={localStyles.borderColor}
-                  onChange={partial(updateStyles, 'borderColor')}
-                  colors={settingsColors}
-                />
-              </div>
+              <ColorSettings
+                name={MailPoet.I18n.t('formSettingsBorderColor')}
+                value={localStyles.borderColor}
+                onChange={partial(updateStyles, 'borderColor')}
+              />
             </>
           ) : null}
           <div>
