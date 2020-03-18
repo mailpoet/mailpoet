@@ -102,16 +102,12 @@ class Newsletters {
     $data['settings'] = $this->settings->getAll();
     $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
     $data['has_mss_key_specified'] = Bridge::isMSSKeySpecified();
+    $data['mss_key_pending_approval'] = $this->servicesChecker->isMailPoetAPIKeyPendingApproval();
     $data['current_wp_user'] = $this->wp->wpGetCurrentUser()->to_array();
     $data['current_wp_user_firstname'] = $this->wp->wpGetCurrentUser()->user_firstname;
     $data['site_url'] = $this->wp->siteUrl();
     $data['roles'] = $wp_roles->get_names(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $data['roles']['mailpoet_all'] = $this->wp->__('In any WordPress role', 'mailpoet');
-
-    $mssActive = Bridge::isMPSendingServiceEnabled();
-    $mssKeyValid = $this->servicesChecker->isMailPoetAPIKeyValid();
-    $mssKeyPendingApproval = $this->settings->get('mta.mailpoet_api_key_state.data.is_approved') === false;
-    $data['mss_key_pending_approval'] = $mssActive && $mssKeyValid && $mssKeyPendingApproval;
 
     $installedAtDateTime = new \DateTime($data['settings']['installed_at']);
     $data['installed_days_ago'] = (int)$installedAtDateTime->diff(new \DateTime())->format('%a');

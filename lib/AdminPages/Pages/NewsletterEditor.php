@@ -83,9 +83,6 @@ class NewsletterEditor {
       $woocommerceData = array_merge($wcEmailSettings, $woocommerceData);
     }
 
-    $mssActive = Bridge::isMPSendingServiceEnabled();
-    $mssKeyValid = $this->servicesChecker->isMailPoetAPIKeyValid();
-    $mssKeyPendingApproval = $this->settings->get('mta.mailpoet_api_key_state.data.is_approved') === false;
     $data = [
       'shortcodes' => ShortcodesHelper::getShortcodes(),
       'settings' => $this->settings->getAll(),
@@ -97,7 +94,7 @@ class NewsletterEditor {
       'is_wc_transactional_email' => $newsletterId === $woocommerceTemplateId,
       'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
       'site_address' => $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST),
-      'mss_key_pending_approval' => $mssActive && $mssKeyValid && $mssKeyPendingApproval,
+      'mss_key_pending_approval' => $this->servicesChecker->isMailPoetAPIKeyPendingApproval(),
     ];
     $this->wp->wpEnqueueMedia();
     $this->wp->wpEnqueueStyle('editor', $this->wp->includesUrl('css/editor.css'));
