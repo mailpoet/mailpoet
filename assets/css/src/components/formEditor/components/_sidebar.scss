@@ -5,6 +5,10 @@ $form-placement-option-base-color: #e5e9f8;
 $form-placement-option-text-color: #23282d;
 $form-placement-option-oval: #dcdcdc;
 $form-placement-option-oval-border: #969ca1;
+$form-placement-option-height: 142px;
+$form-placement-option-width: 116px;
+$form-placement-option-border: 1px;
+$form-placement-option-active-border: 2px;
 
 .components-panel {
   .select2-container {
@@ -115,41 +119,41 @@ $form-placement-option-oval-border: #969ca1;
 
 .form-placement-option {
   background-color: #fff;
-  border: solid 1px $form-placement-option-base-color;
+  border: solid $form-placement-option-border $form-placement-option-base-color;
   border-radius: 4px;
   box-shadow: 0 1px 2px 0 $form-placement-option-base-color;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  height: 142px;
+  height: $form-placement-option-height;
   justify-content: space-between;
   margin: 0 16px 16px 0;
   padding: 6px;
   pointer-events: auto;
   position: relative;
   text-align: center;
-  width: 116px;
+  width: $form-placement-option-width;
 }
 
 .form-placement-settings-overlay {
   background-color: rgba(0, 0, 0, .3);
   border-radius: 2px;
-  height: 140px; // width of the parent element minus border on both sides
+  height: $form-placement-option-height - (2 * $form-placement-option-border);
   left: 0;
   pointer-events: none;
   position: absolute;
   top: 0;
-  width: 114px;
+  width: $form-placement-option-width - (2 * $form-placement-option-border);
   z-index: 3;
 }
 
 .form-placement-option-active {
-  border: solid 2px $gutenberg-control-active-color;
+  border: solid $form-placement-option-active-border $gutenberg-control-active-color;
   box-shadow: 0 4px 8px 0 rgba(156, 166, 204, .5);
 
   .form-placement-settings-overlay {
-    height: 138px;
-    width: 112px; // width of the parent element minus border on both sides
+    height: $form-placement-option-height - (2 * $form-placement-option-active-border);
+    width: $form-placement-option-width - (2 * $form-placement-option-active-border);
   }
 }
 
