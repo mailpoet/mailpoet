@@ -151,8 +151,8 @@ describe('Form Body To Blocks', () => {
 
     const map = formBodyToBlocksFactory(colorDefinitions, [], [customFieldText]);
     const [email, customText] = map([
-      { ...emailInput, position: '1', styles: emailStyles },
-      { ...customTextInput, position: '2', styles: customTextStyles },
+      { ...emailInput, styles: emailStyles },
+      { ...customTextInput, styles: customTextStyles },
     ]);
     expect(email.attributes.styles).to.eql({
       fullWidth: true,
@@ -166,6 +166,45 @@ describe('Form Body To Blocks', () => {
       borderSize: 4,
       borderRadius: 20,
       borderColor: '#cccccc',
+    });
+  });
+
+  it('Should map submit block styles', () => {
+    const defaultSubmitStyles = {
+      full_width: '1',
+    };
+
+    const styledSubmitStyles = {
+      full_width: '0',
+      bold: '1',
+      background_color: '#ffffff',
+      border_size: '4',
+      border_radius: '20',
+      border_color: '#cccccc',
+      font_size: '16',
+      font_color: '#aaaaaa',
+    };
+
+    const map = formBodyToBlocksFactory(colorDefinitions);
+
+    const [defaultSubmit, styledSubmit] = map([
+      { ...submitInput, styles: defaultSubmitStyles },
+      { ...submitInput, styles: styledSubmitStyles },
+    ]);
+    expect(defaultSubmit.attributes.styles).to.deep.equal({
+      fullWidth: true,
+      inheritFromTheme: true,
+    });
+    expect(styledSubmit.attributes.styles).to.deep.equal({
+      fullWidth: false,
+      inheritFromTheme: false,
+      bold: true,
+      backgroundColor: '#ffffff',
+      borderSize: 4,
+      borderRadius: 20,
+      borderColor: '#cccccc',
+      fontSize: 16,
+      fontColor: '#aaaaaa',
     });
   });
 

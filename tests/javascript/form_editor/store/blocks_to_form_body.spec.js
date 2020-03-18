@@ -113,6 +113,54 @@ describe('Blocks to Form Body', () => {
     });
   });
 
+  it('Should map submit block styles', () => {
+    const blockWithThemeStyles = {
+      ...submitBlock,
+      attributes: {
+        ...submitBlock.attributes,
+        styles: {
+          fullWidth: true,
+          inheritFromTheme: true,
+          bold: true,
+        },
+      },
+    };
+    const blockWithCustomStyles = {
+      ...submitBlock,
+      attributes: {
+        ...submitBlock.attributes,
+        styles: {
+          fullWidth: false,
+          inheritFromTheme: false,
+          bold: true,
+          backgroundColor: '#aaaaaa',
+          fontSize: 16,
+          fontColor: '#cccccc',
+          borderRadius: 23,
+          borderSize: 4,
+          borderColor: '#dddddd',
+        },
+      },
+    };
+    const [
+      inputWithThemeStyles,
+      inputWithCustomStyles,
+    ] = formBlocksToBody([blockWithThemeStyles, blockWithCustomStyles]);
+    expect(inputWithThemeStyles.styles).to.deep.equal({
+      full_width: '1',
+    });
+    expect(inputWithCustomStyles.styles).to.deep.equal({
+      full_width: '0',
+      bold: '1',
+      font_color: '#cccccc',
+      font_size: 16,
+      background_color: '#aaaaaa',
+      border_radius: 23,
+      border_size: 4,
+      border_color: '#dddddd',
+    });
+  });
+
   it('Should map last name block to input data', () => {
     const [input] = formBlocksToBody([lastNameBlock]);
     checkBodyInputBasics(input);
