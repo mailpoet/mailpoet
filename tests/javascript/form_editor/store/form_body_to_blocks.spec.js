@@ -97,18 +97,18 @@ describe('Form Body To Blocks', () => {
       type: 'textarea',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-
     const map = formBodyToBlocksFactory(
       colorDefinitions,
       [],
       [customFieldText, customFieldTextarea]
     );
-    const [email, firstName, lastName, customText, customTextArea] = map([
+    const [email, firstName, lastName, customText, customTextArea, submit] = map([
       { ...emailInput, position: '1' },
       { ...firstNameInput, position: '2' },
       { ...lastNameInput, position: '3' },
       { ...customTextInput, position: '4' },
       { ...customTextareaInput, position: '5', id: 2 },
+      { ...submitInput, position: '6' },
     ]);
     const defaultStyles = {
       fullWidth: false,
@@ -119,6 +119,7 @@ describe('Form Body To Blocks', () => {
     expect(lastName.attributes.styles).to.eql(defaultStyles);
     expect(customText.attributes.styles).to.eql(defaultStyles);
     expect(customTextArea.attributes.styles).to.eql(defaultStyles);
+    expect(submit.attributes.styles).to.eql(defaultStyles);
   });
 
   it('Should map input block styles', () => {

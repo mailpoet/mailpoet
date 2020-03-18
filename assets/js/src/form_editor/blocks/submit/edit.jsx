@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
+import StylesSettings from './styles_settings';
 
 const SubmitEdit = ({ attributes, setAttributes }) => {
   const inspectorControls = (
@@ -23,7 +24,7 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
           />
         </PanelBody>
       </Panel>
-
+      <StylesSettings onChange={(styles) => setAttributes({ styles })} styles={attributes.styles} />
     </InspectorControls>
   );
 
@@ -44,6 +45,11 @@ SubmitEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
     className: PropTypes.string,
+    styles: PropTypes.shape({
+      fullWidth: PropTypes.bool.isRequired,
+      inheritFromTheme: PropTypes.bool.isRequired,
+      bold: PropTypes.bool,
+    }),
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
 };
