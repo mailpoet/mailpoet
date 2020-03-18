@@ -1,5 +1,5 @@
 import React from 'react';
-import { t, onChange, isEmail } from 'settings/utils';
+import { t, onChange, isEmail } from 'common/functions';
 import { useSetting, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 

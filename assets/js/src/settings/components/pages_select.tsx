@@ -1,6 +1,6 @@
 import React from 'react';
-import { onChange, t } from 'settings/utils';
 import { useSelector } from 'settings/store/hooks';
+import { onChange, t } from 'common/functions';
 
 type Props = {
   id?: string

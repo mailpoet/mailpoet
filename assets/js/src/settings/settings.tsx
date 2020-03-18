@@ -1,8 +1,8 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Notices from 'notices/notices.jsx';
-import MailPoet from 'mailpoet';
 import Loading from 'common/loading';
+import { t } from 'common/functions';
 import {
   Advanced,
   Basics,
@@ -12,7 +12,6 @@ import {
   WooCommerce,
 } from './pages';
 import Tabs from './components/tabs';
-import { t } from './utils';
 import { useSelector } from './store/hooks';
 
 export default function Settings() {

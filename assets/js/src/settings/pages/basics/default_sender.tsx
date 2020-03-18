@@ -1,6 +1,6 @@
 import React from 'react';
-import { t, onChange, isEmail } from 'settings/utils';
 import { Label, Inputs } from 'settings/components';
+import { isEmail, t, onChange } from 'common/functions';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx';
 
