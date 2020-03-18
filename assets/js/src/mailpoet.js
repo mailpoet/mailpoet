@@ -5,6 +5,8 @@ import MailPoetComUrlFactory from 'mailpoet_com_url_factory';
 var MailPoet = {
   FeaturesController: FeaturesController(window.mailpoet_feature_flags),
   MailPoetComUrlFactory: MailPoetComUrlFactory(window.mailpoet_referral_id),
+  version: window.mailpoet_version,
+  isWoocommerceActive: window.mailpoet_woocommerce_active,
 };
 
 // Expose MailPoet globally
