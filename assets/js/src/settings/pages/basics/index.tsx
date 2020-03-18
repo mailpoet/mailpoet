@@ -1,6 +1,6 @@
 import React from 'react';
 import { SaveButton } from 'settings/components';
-import { t } from 'settings/utils';
+import { t } from 'common/functions';
 import DefaultSender from './default_sender';
 import SubscribeOn from './subscribe_on';
 import ManageSubscription from './manage_subscription';

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   t, onToggle, onChange, isEmail,
-} from 'settings/utils';
+} from 'common/functions';
 import { useSetting, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 

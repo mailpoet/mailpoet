@@ -1,5 +1,5 @@
 import React from 'react';
-import { t } from 'settings/utils';
+import { t } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs, PagesSelect } from 'settings/components';
 

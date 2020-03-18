@@ -1,5 +1,5 @@
 import React from 'react';
-import { t } from 'settings/utils';
+import { t } from 'common/functions';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 
 type Props = {

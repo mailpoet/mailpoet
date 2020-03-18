@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+import { t } from 'common/functions';
 import { useSelector } from 'settings/store/hooks';
-import { t } from 'settings/utils';
 import TabLink from './tab_link';
 
 export default () => {
