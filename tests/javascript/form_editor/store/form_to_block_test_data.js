@@ -245,3 +245,14 @@ export const headingInput = {
   id: 'heading',
   position: null,
 };
+
+export const paragraphInput = {
+  type: 'paragraph',
+  id: 'paragraph',
+  params: {
+    content: 'content',
+    drop_cap: '1',
+    align: 'center',
+    class_name: 'class name',
+  },
+};
