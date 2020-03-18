@@ -1,6 +1,6 @@
-import * as heading from '@wordpress/block-library/build-module/heading/index.js';
+import * as paragraph from '@wordpress/block-library/build-module/paragraph/index.js';
 
-export const name = 'core/heading';
+export const name = 'core/paragraph';
 
 const settingsReset = {
   name,
@@ -8,10 +8,9 @@ const settingsReset = {
   deprecated: null,
   save: () => null,
 };
-
 const settings = {
-  ...heading.metadata,
-  ...heading.settings,
+  ...paragraph.metadata,
+  ...paragraph.settings,
   ...settingsReset,
   category: 'layout',
 };
