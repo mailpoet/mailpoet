@@ -2,14 +2,14 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
-use MailPoet\Form\TextInputStylesRenderer;
 
 class Textarea {
   /** @var BlockRendererHelper */
   private $rendererHelper;
 
-  /** @var TextInputStylesRenderer */
+  /** @var BlockStylesRenderer */
   private $inputStylesRenderer;
 
    /** @var BlockWrapperRenderer */
@@ -17,7 +17,7 @@ class Textarea {
 
   public function __construct(
     BlockRendererHelper $rendererHelper,
-    TextInputStylesRenderer $inputStylesRenderer,
+    BlockStylesRenderer $inputStylesRenderer,
     BlockWrapperRenderer $wrapper
   ) {
     $this->rendererHelper = $rendererHelper;

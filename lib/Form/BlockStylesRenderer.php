@@ -2,7 +2,7 @@
 
 namespace MailPoet\Form;
 
-class TextInputStylesRenderer {
+class BlockStylesRenderer {
   public function render(array $styles): string {
     $rules = [];
     if (isset($styles['full_width']) && intval($styles['full_width'])) {
