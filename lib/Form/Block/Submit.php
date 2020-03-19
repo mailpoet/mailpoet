@@ -31,7 +31,7 @@ class Submit {
 
     $html .= 'data-automation-id="subscribe-submit-button" ';
 
-    $styles = $this->stylesRenderer->render($block['styles'] ?? []);
+    $styles = $this->stylesRenderer->renderForButton($block['styles'] ?? []);
 
     if ($styles) {
       $html .= 'style="' . $styles . '" ';
