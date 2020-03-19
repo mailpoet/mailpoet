@@ -8,12 +8,12 @@ export default function UnsubscribePage() {
   return (
     <>
       <Label
-        title={t`unsubscribeTitle`}
+        title={t('unsubscribeTitle')}
         description={(
           <>
-            {t`unsubscribeDescription1`}
+            {t('unsubscribeDescription1')}
             <br />
-            {t`unsubscribeDescription2`}
+            {t('unsubscribeDescription2')}
           </>
         )}
         htmlFor="subscription-pages-unsubscribe"

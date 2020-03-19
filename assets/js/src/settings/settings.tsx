@@ -20,7 +20,7 @@ export default function Settings() {
     <>
       {isSaving && <Loading />}
       <Notices />
-      <h1 className="title">{t`settings`}</h1>
+      <h1 className="title">{t('settings')}</h1>
       <Tabs />
       <Switch>
         <Route path="/basics" component={Basics} />

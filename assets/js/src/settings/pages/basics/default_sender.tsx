@@ -19,16 +19,16 @@ export default function DefaultSender() {
   return (
     <>
       <Label
-        title={t`defaultSenderTitle`}
-        description={t`defaultSenderDescription`}
+        title={t('defaultSenderTitle')}
+        description={t('defaultSenderDescription')}
         htmlFor="sender-name"
       />
       <Inputs>
-        <label htmlFor="sender-name">{t`from`}</label>
+        <label htmlFor="sender-name">{t('from')}</label>
         <input
           type="text"
           id="sender-name"
-          placeholder={t`yourName`}
+          placeholder={t('yourName')}
           data-automation-id="from-name-field"
           value={senderName}
           onChange={onChange(setSenderName)}
@@ -42,7 +42,7 @@ export default function DefaultSender() {
         />
         {invalidSenderEmail && (
           <span className="mailpoet_error_item mailpoet_error">
-            {t`invalidEmail`}
+            {t('invalidEmail')}
           </span>
         )}
         <div className="regular-text">
@@ -55,7 +55,7 @@ export default function DefaultSender() {
         <input
           type="text"
           id="reply_to-name"
-          placeholder={t`yourName`}
+          placeholder={t('yourName')}
           data-automation-id="reply_to-name-field"
           value={replyToName}
           onChange={onChange(setReplyToName)}
@@ -69,7 +69,7 @@ export default function DefaultSender() {
         />
         {invalidReplyToEmail && (
           <span className="mailpoet_error_item mailpoet_error">
-            {t`invalidEmail`}
+            {t('invalidEmail')}
           </span>
         )}
       </Inputs>
