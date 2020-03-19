@@ -4,6 +4,7 @@ import normalizeSettings from './normalize_settings';
 
 export default function makeDefaultState(window: any): State {
   const pages = window.mailpoet_pages;
+  const paths = window.mailpoet_paths;
   const segments = window.mailpoet_segments;
   const save = { inProgress: false, error: null };
   const data = normalizeSettings(window.mailpoet_settings);
@@ -32,7 +33,7 @@ export default function makeDefaultState(window: any): State {
     key: data.premium.premium_key || data.mta.mailpoet_api_key,
   };
   return {
-    data, flags, save, keyActivation, segments, pages,
+    data, flags, save, keyActivation, segments, pages, paths,
   };
 }
 
