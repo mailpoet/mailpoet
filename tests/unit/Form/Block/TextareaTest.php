@@ -4,8 +4,8 @@ namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Textarea;
+use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
-use MailPoet\Form\TextInputStylesRenderer;
 use MailPoet\Test\Form\HtmlParser;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -18,7 +18,7 @@ class TextareaTest extends \MailPoetUnitTest {
   /** @var MockObject & BlockRendererHelper */
   private $rendererHelperMock;
 
-  /** @var MockObject & TextInputStylesRenderer */
+  /** @var MockObject & BlockStylesRenderer */
   private $stylesRendererMock;
 
   /** @var MockObject & BlockWrapperRenderer */
@@ -45,7 +45,7 @@ class TextareaTest extends \MailPoetUnitTest {
   public function _before() {
     parent::_before();
     $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
-    $this->stylesRendererMock = $this->createMock(TextInputStylesRenderer::class);
+    $this->stylesRendererMock = $this->createMock(BlockStylesRenderer::class);
     $this->wrapperMock = $this->createMock(BlockWrapperRenderer::class);
     $this->wrapperMock->method('render')->will($this->returnArgument(1));
     $this->textarea = new Textarea($this->rendererHelperMock, $this->stylesRendererMock, $this->wrapperMock);

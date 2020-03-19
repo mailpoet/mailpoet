@@ -2,17 +2,17 @@
 
 namespace MailPoet\Test\Form;
 
-use MailPoet\Form\TextInputStylesRenderer;
+use MailPoet\Form\BlockStylesRenderer;
 
 require_once __DIR__ . '/HtmlParser.php';
 
 class TextInputStylesRendererTest extends \MailPoetUnitTest {
-  /** @var TextInputStylesRenderer */
+  /** @var BlockStylesRenderer */
   private $renderer;
 
   public function _before() {
     parent::_before();
-    $this->renderer = new TextInputStylesRenderer();
+    $this->renderer = new BlockStylesRenderer();
   }
 
   public function testItShouldReturnEmptyStringForNoStylesOrUnsupportedStyles() {
