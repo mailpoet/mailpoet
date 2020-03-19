@@ -10,6 +10,7 @@
   <script type="text/javascript">
     <% autoescape 'js' %>
       var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active == true) %>;
+      var mailpoet_members_plugin_active = <%= json_encode(is_members_plugin_active == true) %>;
       var mailpoet_is_new_user = <%= json_encode(is_new_user == true) %>;
       var mailpoet_settings = <%= json_encode(settings) %>;
       var mailpoet_segments = <%= json_encode(segments) %>;
