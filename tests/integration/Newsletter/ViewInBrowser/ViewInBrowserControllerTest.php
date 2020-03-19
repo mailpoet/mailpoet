@@ -3,7 +3,6 @@
 namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
-use MailPoet\Config\AccessControl;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
@@ -106,28 +105,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, 'Subscriber did not receive the newsletter yet');
   }
 
-  public function testItDoesNotRequireWpAdministratorToBeOnProcessedListWhenPreviewIsEnabled() {
-    $data = $this->browserPreviewData;
-    $data['preview'] = true;
-
-    $sendingTask = $this->sendingTask;
-    $sendingTask->setSubscribers([]);
-    $sendingTask->updateProcessedSubscribers([]);
-    $sendingTask->save();
-
-    // when WP user is not logged, it should throw
-    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Subscriber did not receive the newsletter yet");
-
-    // when WP user does not have 'manage options' permission, it should throw
-    $wpUser = wp_set_current_user(0);
-    $wpUser->remove_role('administrator');
-    $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, "Subscriber did not receive the newsletter yet");
-
-    // when WP has 'manage options' permission, it should not throw
-    $wpUser->add_role('administrator');
-    $this->viewInBrowserController->view($data);
-  }
-
   public function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
       'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
@@ -138,7 +115,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     ]);
 
     $viewInBrowserController = new ViewInBrowserController(
-      $this->diContainer->get(AccessControl::class),
       $this->diContainer->get(LinkTokens::class),
       $viewInBrowserRenderer
     );
@@ -163,7 +139,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     ]);
 
     $viewInBrowserController = new ViewInBrowserController(
-      $this->diContainer->get(AccessControl::class),
       $this->diContainer->get(LinkTokens::class),
       $viewInBrowserRenderer
     );
@@ -183,7 +158,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     ]);
 
     $viewInBrowserController = new ViewInBrowserController(
-      $this->diContainer->get(AccessControl::class),
       $this->diContainer->get(LinkTokens::class),
       $viewInBrowserRenderer
     );
@@ -201,7 +175,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     ]);
 
     $viewInBrowserController = new ViewInBrowserController(
-      $this->diContainer->get(AccessControl::class),
       $this->diContainer->get(LinkTokens::class),
       $viewInBrowserRenderer
     );
@@ -221,7 +194,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     ]);
 
     $viewInBrowserController = new ViewInBrowserController(
-      $this->diContainer->get(AccessControl::class),
       $this->diContainer->get(LinkTokens::class),
       $viewInBrowserRenderer
     );
