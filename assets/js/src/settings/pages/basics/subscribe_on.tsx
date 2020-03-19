@@ -24,6 +24,7 @@ export default function SubscribeOn({ title, description, event }: Props) {
         <input
           type="checkbox"
           id={`subscribe-${event}-enabled`}
+          data-automation-id={`subscribe-${event}-checkbox`}
           checked={enabled === '1'}
           onChange={onToggle(setEnabled)}
         />
@@ -39,7 +40,9 @@ export default function SubscribeOn({ title, description, event }: Props) {
             <br />
             <label htmlFor={`subscribe-${event}-segments`}>{t`usersWillBeSubscribedTo`}</label>
             <br />
-            <SegmentsSelect id={`subscribe-${event}-segments`} placeholder={t`chooseList`} value={segments} setValue={setSegments} />
+            <div data-automation-id={`subscribe-${event}-segments-selection`}>
+              <SegmentsSelect id={`subscribe-${event}-segments`} placeholder={t`chooseList`} value={segments} setValue={setSegments} />
+            </div>
           </>
         )}
       </Inputs>

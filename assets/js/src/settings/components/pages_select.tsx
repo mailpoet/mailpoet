@@ -5,6 +5,7 @@ import { onChange, t } from 'common/functions';
 type Props = {
   id?: string
   value: string
+  automationId?: string
   linkAutomationId?: string
   setValue: (x: string) => any
   preview: 'manage' | 'unsubscribe' | 'confirm'
@@ -17,7 +18,12 @@ export default (props: Props) => {
     : pages[0];
   return (
     <>
-      <select id={props.id} value={props.value} onChange={onChange(props.setValue)}>
+      <select
+        id={props.id}
+        data-automation-id={props.automationId}
+        value={props.value}
+        onChange={onChange(props.setValue)}
+      >
         {pages.map((page) => (
           <option key={page.id} value={page.id}>
             {`${page.title}`}
