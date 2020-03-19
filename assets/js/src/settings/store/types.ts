@@ -226,6 +226,10 @@ export type State = {
   data: Settings
   segments: Segment[]
   pages: Page[]
+  paths: {
+    root: string
+    plugin: string
+  }
   flags: {
     woocommerce: boolean
     newUser: boolean

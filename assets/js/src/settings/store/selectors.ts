@@ -48,3 +48,7 @@ export function getPages(state: State) {
 export function getKeyActivationState(state: State) {
   return state.keyActivation;
 }
+
+export function getPaths(state: State) {
+  return state.paths;
+}

@@ -17,6 +17,7 @@
       var mailpoet_mss_key_valid = <%= json_encode(mss_key_valid) %>;
       var mailpoet_premium_key_valid = <%= json_encode(premium_key_valid) %>;
       var mailpoet_premium_plugin_installed = <%= json_encode(premium_plugin_installed) %>;
+      var mailpoet_paths = <%= json_encode(paths) %>;
     <% endautoescape %>
     var mailpoet_beacon_articles = [
       '57f71d49c697911f2d323486',
@@ -109,7 +110,7 @@
     'taskCron': __('Newsletter task scheduler (cron)'),
     'taskCronDescription': __('Select what will activate your newsletter queue.'),
     'websiteVisitors': __('Visitors to your website (recommended)'),
-    'mailPoetScript': __("MailPoet's own script. Doesn't work with [link]these hosts[/link]."),
+    'mailpoetScript': __("MailPoet's own script. Doesn't work with [link]these hosts[/link]."),
     'serverCron': __("Server side cron (Linux cron)"),
     'addCommandToCrontab': __("To use this option please add this command to your crontab:"),
     'withFrequency': __("With the frequency of running it every minute:"),
