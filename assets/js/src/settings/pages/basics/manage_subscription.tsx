@@ -19,14 +19,15 @@ export default function ManageSubscription() {
             {t`manageSubDescription2`}
           </>
         )}
-        htmlFor="subscription-pages-manage"
+        htmlFor="subscription-manage-page"
       />
       <Inputs>
         <PagesSelect
           value={page}
           preview="manage"
           setValue={setPage}
-          id="subscription-pages-manage"
+          id="subscription-manage-page"
+          automationId="subscription-manage-page-selection"
           linkAutomationId="preview_manage_subscription_page_link"
         />
         <br />

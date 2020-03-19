@@ -23,7 +23,8 @@ class MailpoetMenuCest {
     $i->seeInCurrentUrl('?page=mailpoet-segments');
 
     $i->click('Settings');
-    $i->seeInCurrentUrl('?page=mailpoet-settings');
+    // this is temporary while implementing the new settings
+    $i->seeInCurrentUrl('?page=mailpoet-new-settings');
 
     $i->click('Help');
     $i->seeInCurrentUrl('?page=mailpoet-help');

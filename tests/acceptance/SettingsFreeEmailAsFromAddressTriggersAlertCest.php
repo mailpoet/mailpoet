@@ -12,8 +12,8 @@ class SettingsFreeEmailAsFromAddressTriggersAlertCest {
     $settings->withSendingMethodMailPoet();
     $i->login();
     $i->amOnMailPoetPage('Settings');
-    $fromEmailField = '[data-automation-id="settings-page-from-email-field"]';
-    $fromNameField = '[data-automation-id="settings-page-from-name-field"]';
+    $fromEmailField = '[data-automation-id="from-email-field"]';
+    $fromNameField = '[data-automation-id="from-name-field"]';
     $i->fillField($fromNameField, 'AlertUser');
     $i->fillField($fromEmailField, 'alertuser@yahoo.com');
     $i->dontSeeElement('.sender_email_address_warning');
@@ -29,8 +29,8 @@ class SettingsFreeEmailAsFromAddressTriggersAlertCest {
     $settings->withSendingMethod(Mailer::METHOD_PHPMAIL);
     $i->login();
     $i->amOnMailPoetPage('Settings');
-    $fromEmailField = '[data-automation-id="settings-page-from-email-field"]';
-    $fromNameField = '[data-automation-id="settings-page-from-name-field"]';
+    $fromEmailField = '[data-automation-id="from-email-field"]';
+    $fromNameField = '[data-automation-id="from-name-field"]';
     $i->fillField($fromNameField, 'AlertUser');
     $i->fillField($fromEmailField, 'alertuser@yahoo.com');
     $i->waitForElement('.sender_email_address_warning');

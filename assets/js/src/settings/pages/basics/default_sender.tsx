@@ -29,14 +29,14 @@ export default function DefaultSender() {
           type="text"
           id="sender-name"
           placeholder={t`yourName`}
-          data-automation-id="settings-page-from-name-field"
+          data-automation-id="from-name-field"
           value={senderName}
           onChange={onChange(setSenderName)}
         />
         <input
           type="text"
           placeholder="from@mydomain.com"
-          data-automation-id="settings-page-from-email-field"
+          data-automation-id="from-email-field"
           value={senderEmail}
           onChange={onChange(setSenderEmail)}
         />
@@ -56,14 +56,14 @@ export default function DefaultSender() {
           type="text"
           id="reply_to-name"
           placeholder={t`yourName`}
-          data-automation-id="settings-page-from-name-field"
+          data-automation-id="reply_to-name-field"
           value={replyToName}
           onChange={onChange(setReplyToName)}
         />
         <input
           type="text"
           placeholder="reply_to@mydomain.com"
-          data-automation-id="settings-page-from-email-field"
+          data-automation-id="reply_to-email-field"
           value={replyToEmail}
           onChange={onChange(setReplyToEmail)}
         />

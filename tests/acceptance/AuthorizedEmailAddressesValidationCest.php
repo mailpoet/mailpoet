@@ -27,7 +27,7 @@ class AuthorizedEmailAddressesValidationCest {
     $i->cantSee($errorMessagePrefix);
 
     // default sender is invalid
-    $i->fillField('[data-automation-id="settings-page-from-email-field"]', $unauthorizedSendingEmail);
+    $i->fillField('[data-automation-id="from-email-field"]', $unauthorizedSendingEmail);
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
     $i->reloadPage();
@@ -35,7 +35,7 @@ class AuthorizedEmailAddressesValidationCest {
     $i->canSee($unauthorizedSendingEmail, $errorNoticeElement);
 
     // Error message disappears after email is replaced with authorized email
-    $i->fillField('[data-automation-id="settings-page-from-email-field"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
+    $i->fillField('[data-automation-id="from-email-field"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
     $i->reloadPage();

@@ -407,8 +407,8 @@ class Menu {
 
     // New Settings page
     $this->wp->addSubmenuPage(
-      true,
-      $this->setPageTitle('New Settings'),
+      self::MAIN_PAGE_SLUG,
+      $this->setPageTitle(__('Settings', 'mailpoet')),
       '',
       AccessControl::PERMISSION_MANAGE_SETTINGS,
       'mailpoet-new-settings',

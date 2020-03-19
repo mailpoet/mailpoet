@@ -24,7 +24,15 @@ export default () => {
   };
   return (
     <div>
-      <button type="button" className="button button-primary" disabled={isSaving || hasError} onClick={onClick}>{MailPoet.I18n.t('saveSettings')}</button>
+      <button
+        type="button"
+        data-automation-id="settings-submit-button"
+        className="button button-primary"
+        disabled={isSaving || hasError}
+        onClick={onClick}
+      >
+        {MailPoet.I18n.t('saveSettings')}
+      </button>
     </div>
   );
 };
