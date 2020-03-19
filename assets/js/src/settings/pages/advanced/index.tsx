@@ -2,6 +2,7 @@ import React from 'react';
 import BounceAddress from './bounce_address';
 import TaskScheduler from './task_scheduler';
 import Roles from './roles';
+import Tracking from './tracking';
 
 export default function Advanced() {
   return (
@@ -9,6 +10,7 @@ export default function Advanced() {
       <BounceAddress />
       <TaskScheduler />
       <Roles />
+      <Tracking />
     </div>
   );
 }
