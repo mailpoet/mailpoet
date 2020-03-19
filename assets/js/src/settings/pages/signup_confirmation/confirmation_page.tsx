@@ -21,6 +21,7 @@ export default function ConfirmationPage() {
           preview="confirm"
           setValue={setPage}
           id="subscription-pages-confirmation"
+          automationId="page_selection"
           linkAutomationId="preview_page_link"
         />
       </Inputs>
