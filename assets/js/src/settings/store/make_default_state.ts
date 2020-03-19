@@ -10,8 +10,9 @@ export default function makeDefaultState(window: any): State {
   const data = normalizeSettings(window.mailpoet_settings);
   const flags = {
     error: false,
-    woocommerce: !!window.mailpoet_woocommerce_active,
     newUser: !!window.mailpoet_is_new_user,
+    woocommerce: !!window.mailpoet_woocommerce_active,
+    membersPlugin: !!window.mailpoet_members_plugin_active,
   };
   const premiumStatus = getPremiumStatus(
     window.mailpoet_premium_key_valid,

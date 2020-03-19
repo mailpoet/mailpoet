@@ -29,6 +29,10 @@ export function hasWooCommerce(state: State) {
   return state.flags.woocommerce;
 }
 
+export function hasMembersPlugin(state: State) {
+  return state.flags.membersPlugin;
+}
+
 export function isNewUser(state: State) {
   return state.flags.newUser;
 }
