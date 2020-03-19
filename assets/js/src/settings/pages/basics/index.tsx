@@ -16,13 +16,13 @@ export default function Basics() {
       <DefaultSender />
       <SubscribeOn
         event="on_comment"
-        title={t`subscribeInCommentsTitle`}
-        description={t`subscribeInCommentsDescription`}
+        title={t('subscribeInCommentsTitle')}
+        description={t('subscribeInCommentsDescription')}
       />
       <SubscribeOn
         event="on_register"
-        title={t`subscribeInRegistrationTitle`}
-        description={t`subscribeInRegistrationDescription`}
+        title={t('subscribeInRegistrationTitle')}
+        description={t('subscribeInRegistrationDescription')}
       />
       <ManageSubscription />
       <UnsubscribePage />
@@ -30,13 +30,13 @@ export default function Basics() {
       <NewSubscriberNotifications />
       <Shortcode
         name="mailpoet_archive"
-        title={t`archiveShortcodeTitle`}
-        description={t`archiveShortcodeDescription`}
+        title={t('archiveShortcodeTitle')}
+        description={t('archiveShortcodeDescription')}
       />
       <Shortcode
         name="mailpoet_subscribers_count"
-        title={t`subscribersCountShortcodeTitle`}
-        description={t`subscribersCountShortcodeDescription`}
+        title={t('subscribersCountShortcodeTitle')}
+        description={t('subscribersCountShortcodeDescription')}
       />
       <GdprCompliant />
       <SaveButton />

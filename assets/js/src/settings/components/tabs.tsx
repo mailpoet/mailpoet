@@ -16,21 +16,21 @@ export default () => {
         current={current}
         automationId="basic_settings_tab"
       >
-        {t`basicsTab`}
+        {t('basicsTab')}
       </TabLink>
       <a
         className="nav-tab"
         href="?page=mailpoet-settings#signup"
         data-automation-id="signup_settings_tab"
       >
-        {t`signupConfirmationTab`}
+        {t('signupConfirmationTab')}
       </a>
       <a
         className="nav-tab"
         href="?page=mailpoet-settings#mta"
         data-automation-id="send_with_settings_tab"
       >
-        {t`sendWithTab`}
+        {t('sendWithTab')}
       </a>
       {hasWooCommerce && (
         <a
@@ -38,7 +38,7 @@ export default () => {
           href="?page=mailpoet-settings#woocommerce"
           data-automation-id="woocommerce_settings_tab"
         >
-          {t`wooCommerceTab`}
+          {t('wooCommerceTab')}
         </a>
       )}
       <a
@@ -46,14 +46,14 @@ export default () => {
         href="?page=mailpoet-settings#advanced"
         data-automation-id="settings-advanced-tab"
       >
-        {t`advancedTab`}
+        {t('advancedTab')}
       </a>
       <a
         className="nav-tab"
         href="?page=mailpoet-settings#premium"
         data-automation-id="activation_settings_tab"
       >
-        {t`keyActivationTab`}
+        {t('keyActivationTab')}
       </a>
     </h2>
   );

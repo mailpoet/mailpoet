@@ -11,12 +11,12 @@ export default function ManageSubscription() {
   return (
     <>
       <Label
-        title={t`manageSubTitle`}
+        title={t('manageSubTitle')}
         description={(
           <>
-            {t`manageSubDescription1`}
+            {t('manageSubDescription1')}
             <br />
-            {t`manageSubDescription2`}
+            {t('manageSubDescription2')}
           </>
         )}
         htmlFor="subscription-manage-page"
@@ -31,13 +31,13 @@ export default function ManageSubscription() {
           linkAutomationId="preview_manage_subscription_page_link"
         />
         <br />
-        <label htmlFor="subscription-segments">{t`subscribersCanChooseFrom`}</label>
+        <label htmlFor="subscription-segments">{t('subscribersCanChooseFrom')}</label>
         <br />
         <SegmentsSelect
           id="subscription-segments"
           value={segments}
           setValue={setSegments}
-          placeholder={t`leaveEmptyToDisplayAll`}
+          placeholder={t('leaveEmptyToDisplayAll')}
         />
       </Inputs>
     </>

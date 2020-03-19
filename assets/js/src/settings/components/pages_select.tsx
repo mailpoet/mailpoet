@@ -33,12 +33,12 @@ export default (props: Props) => {
       {' '}
       <a
         target="_blank"
-        title={t`previewPage`}
+        title={t('previewPage')}
         rel="noopener noreferrer"
         href={selectedPage.url[props.preview]}
         data-automation-id={props.linkAutomationId}
       >
-        {t`preview`}
+        {t('preview')}
       </a>
     </>
   );

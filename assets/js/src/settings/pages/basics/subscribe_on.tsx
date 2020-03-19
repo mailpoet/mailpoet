@@ -34,14 +34,14 @@ export default function SubscribeOn({ title, description, event }: Props) {
             <input
               type="text"
               className="regular-text"
-              value={label || t`yesAddMe`}
+              value={label || t('yesAddMe')}
               onChange={onChange(setLabel)}
             />
             <br />
-            <label htmlFor={`subscribe-${event}-segments`}>{t`usersWillBeSubscribedTo`}</label>
+            <label htmlFor={`subscribe-${event}-segments`}>{t('usersWillBeSubscribedTo')}</label>
             <br />
             <div data-automation-id={`subscribe-${event}-segments-selection`}>
-              <SegmentsSelect id={`subscribe-${event}-segments`} placeholder={t`chooseList`} value={segments} setValue={setSegments} />
+              <SegmentsSelect id={`subscribe-${event}-segments`} placeholder={t('chooseList')} value={segments} setValue={setSegments} />
             </div>
           </>
         )}

@@ -19,8 +19,8 @@ export default function StatsNotifications() {
   return (
     <>
       <Label
-        title={t`statsNotifsTitle`}
-        description={t`statsNotifsDescription`}
+        title={t('statsNotifsTitle')}
+        description={t('statsNotifsDescription')}
         htmlFor="stats-enabled"
       />
       <Inputs>
@@ -30,7 +30,7 @@ export default function StatsNotifications() {
           checked={enabled === '1'}
           onChange={onToggle(setEnabled)}
         />
-        <label htmlFor="stats-enabled">{t`newslettersAndPostNotifs`}</label>
+        <label htmlFor="stats-enabled">{t('newslettersAndPostNotifs')}</label>
         <br />
         <input
           type="checkbox"
@@ -38,17 +38,17 @@ export default function StatsNotifications() {
           checked={automated === '1'}
           onChange={onToggle(setAutomated)}
         />
-        <label htmlFor="stats-automated">{t`welcomeAndWcEmails`}</label>
+        <label htmlFor="stats-automated">{t('welcomeAndWcEmails')}</label>
         <br />
         <input type="email" value={email} onChange={onChange(setEmail)} placeholder="me@mydomain.com" />
         {hasError && (
           <div className="mailpoet_error_item mailpoet_error">
-            {t`pleaseFillEmail`}
+            {t('pleaseFillEmail')}
           </div>
         )}
         {invalidEmail && (
           <div className="mailpoet_error_item mailpoet_error">
-            {t`invalidEmail`}
+            {t('invalidEmail')}
           </div>
         )}
       </Inputs>

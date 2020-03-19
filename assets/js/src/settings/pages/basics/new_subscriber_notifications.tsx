@@ -16,8 +16,8 @@ export default function NewSubscriberNotifications() {
   return (
     <>
       <Label
-        title={t`newSubscriberNotifsTitle`}
-        description={t`newSubscriberNotifsDescription`}
+        title={t('newSubscriberNotifsTitle')}
+        description={t('newSubscriberNotifsDescription')}
         htmlFor="subscriber_email_notification-enabled"
       />
       <Inputs>
@@ -27,7 +27,7 @@ export default function NewSubscriberNotifications() {
           value="1"
           onClick={() => setEnabled('1')}
         />
-        {t`yes`}
+        {t('yes')}
         {' '}
         <input
           type="radio"
@@ -35,17 +35,17 @@ export default function NewSubscriberNotifications() {
           value=""
           onClick={() => setEnabled('')}
         />
-        {t`no`}
+        {t('no')}
         <br />
         <input type="email" value={email} onChange={onChange(setEmail)} placeholder="me@mydomain.com" />
         {hasError && (
           <div className="mailpoet_error_item mailpoet_error">
-            {t`pleaseFillEmail`}
+            {t('pleaseFillEmail')}
           </div>
         )}
         {invalidEmail && (
           <div className="mailpoet_error_item mailpoet_error">
-            {t`invalidEmail`}
+            {t('invalidEmail')}
           </div>
         )}
       </Inputs>
