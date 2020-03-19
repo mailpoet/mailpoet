@@ -3,7 +3,7 @@
 namespace MailPoet\Form;
 
 class BlockStylesRenderer {
-  public function render(array $styles): string {
+  public function renderForTextInput(array $styles): string {
     $rules = [];
     if (isset($styles['full_width']) && intval($styles['full_width'])) {
       $rules[] = 'width:100%;';
@@ -24,5 +24,19 @@ class BlockStylesRenderer {
       $rules[] = "border-color:{$styles['border_color']};";
     }
     return implode('', $rules);
+  }
+
+  public function renderForButton(array $styles): string {
+    $rules = [];
+    if (isset($styles['font_color'])) {
+      $rules[] = "color:{$styles['font_color']};";
+    }
+    if (isset($styles['font_size'])) {
+      $rules[] = "font-size:" . intval($styles['font_size']) . "px;";
+    }
+    if (isset($styles['bold']) && $styles['bold'] === '1') {
+      $rules[] = "font-weight:bold;";
+    }
+    return $this->renderForTextInput($styles) . implode('', $rules);
   }
 }

@@ -59,7 +59,7 @@ class TextTest extends \MailPoetUnitTest {
     $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('val');
     $this->rendererHelperMock->expects($this->once())->method('renderInputPlaceholder')->willReturn('');
     $this->rendererHelperMock->expects($this->once())->method('getInputModifiers')->willReturn(' modifiers="mod" ');
-    $this->stylesRendererMock->expects($this->once())->method('render')->willReturn('border-radius: 10px;');
+    $this->stylesRendererMock->expects($this->once())->method('renderForTextInput')->willReturn('border-radius: 10px;');
 
     $html = $this->text->render($this->block, []);
     $input = $this->htmlParser->getElementByXpath($html, '//input');

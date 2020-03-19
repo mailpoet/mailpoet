@@ -51,7 +51,7 @@ class SubmitTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderSubmit() {
     $this->rendererHelperMock->expects($this->once())->method('getFieldLabel')->willReturn('Submit label');
-    $this->stylesRendererMock->expects($this->once())->method('render')->willReturn('border-radius: 10px;');
+    $this->stylesRendererMock->expects($this->once())->method('renderForButton')->willReturn('border-radius: 10px;');
     $html = $this->submit->render($this->block);
     $input = $this->htmlParser->getElementByXpath($html, '//input');
     $type = $this->htmlParser->getAttribute($input, 'type');
