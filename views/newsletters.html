@@ -52,6 +52,8 @@
       var mailpoet_editor_javascript_url = '<%= getJavascriptScriptUrl("newsletter_editor.js") %>';
       var mailpoet_subscribers_count = <%= subscriber_count %>;
       var mailpoet_newsletters_count = <%= newsletters_count %>;
+      var mailpoet_send_transactional_emails = <%= json_encode(settings.send_transactional_emails == '1') %>;
+      var settings = <%= json_encode(settings) %>;
 
       <% if not(premium_plugin_active) %>
         var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;
@@ -316,6 +318,10 @@
     'backToPostNotifications': __('Back to Post notifications'),
     'noSubscribers': __('No subscribers!'),
 
+    'transactionalEmailNoticeTitle': __('Good news! MailPoet can now send your website’s emails too'),
+    'transactionalEmailNoticeBody': __('All of your WordPress and WooCommerce emails are sent with your hosting company, unless you have an SMTP plugin. Would you like such emails to be delivered with MailPoet’s active sending method for better deliverability?'),
+    'transactionalEmailNoticeBodyReadMore': _x('Read more.', 'This is a link that leads to more information about transactional emails'),
+    'transactionalEmailNoticeCTA': _x('Enable', 'Button, after clicking it we will enable transactional emails'),
     'mailerSendErrorNotice': __('Sending has been paused due to a technical issue with %$1s'),
     'mailerSendErrorCheckConfiguration': __('Please check your sending method configuration, you may need to consult with your hosting company.'),
     'mailerSendErrorUseSendingService': __('The easy alternative is to <b>send emails with MailPoet Sending Service</b> instead, like thousands of other users do.'),

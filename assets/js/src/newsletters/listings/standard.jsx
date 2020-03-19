@@ -17,6 +17,7 @@ import {
 } from 'newsletters/listings/utils.jsx';
 import NewsletterTypes from 'newsletters/types.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
+import TransactionalEmailsProposeOptInNotice from 'notices/transactional_emails_propose_opt_in_notice';
 import { GlobalContext } from 'context/index.jsx';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
@@ -231,6 +232,11 @@ class NewsletterListStandard extends React.Component {
 
         <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
         <SubscribersLimitNotice />
+        <TransactionalEmailsProposeOptInNotice
+          mailpoetInstalledDaysAgo={window.mailpoet_installed_days_ago}
+          sendTransactionalEmails={window.mailpoet_send_transactional_emails}
+          mtaMethod={window.mailpoet_mta_method}
+        />
 
         <ListingTabs tab="standard" />
 
