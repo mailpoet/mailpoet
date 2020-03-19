@@ -184,8 +184,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 3.46.4 - 2020-03-18 =
-* Improved: minor changes and fixes.
+= 3.46.4 - 2020-03-19 =
+* Added: Columns block in the form editor;
+* Added: Heading block in the form editor.
 
 = 3.46.3 - 2020-03-16 =
 * Fixed: "Manage subscription" page to not unsubscribe subscribers from hidden lists;
