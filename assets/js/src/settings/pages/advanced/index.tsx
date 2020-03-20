@@ -1,6 +1,5 @@
 import React from 'react';
 import { SaveButton } from 'settings/components';
-import BounceAddress from './bounce_address';
 import TaskScheduler from './task_scheduler';
 import Roles from './roles';
 import Tracking from './tracking';
@@ -14,7 +13,6 @@ import Logging from './logging';
 export default function Advanced() {
   return (
     <div className="mailpoet-settings-grid">
-      <BounceAddress />
       <TaskScheduler />
       <Roles />
       <Tracking />
