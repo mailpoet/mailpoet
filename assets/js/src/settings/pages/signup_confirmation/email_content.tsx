@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { Fragment } from 'react';
+import ReactStringReplace from 'react-string-replace';
+
 import { t, onChange } from 'common/functions';
 import { Label, Inputs } from 'settings/components';
 import { useSetting } from 'settings/store/hooks';
@@ -8,15 +10,17 @@ export default function EmailContent() {
   const [body, setBody] = useSetting('signup_confirmation', 'body');
 
   if (!enabled) return null;
+  const descriptionLines = t('emailContentDescription').split('<br />').filter((x) => x);
   return (
     <>
       <Label
         title={t('emailContent')}
-        description={t('emailContentDescription').split('<br />').map((line) => (
-          <>
+        description={descriptionLines.map((line) => (
+          <span key={line}>
             {line}
             <br />
-          </>
+            <br />
+          </span>
         ))}
         htmlFor="signup_confirmation-body"
       />
