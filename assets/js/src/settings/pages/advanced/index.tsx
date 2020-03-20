@@ -1,4 +1,5 @@
 import React from 'react';
+import { SaveButton } from 'settings/components';
 import BounceAddress from './bounce_address';
 import TaskScheduler from './task_scheduler';
 import Roles from './roles';
@@ -8,6 +9,7 @@ import InactiveSubscribers from './inactive_subscribers';
 import ShareData from './share_data';
 import Captcha from './captcha';
 import Reinstall from './reinstall';
+import Logging from './logging';
 
 export default function Advanced() {
   return (
@@ -21,6 +23,8 @@ export default function Advanced() {
       <ShareData />
       <Captcha />
       <Reinstall />
+      <Logging />
+      <SaveButton />
     </div>
   );
 }
