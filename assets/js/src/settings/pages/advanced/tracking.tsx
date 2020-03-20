@@ -21,6 +21,7 @@ export default function Tracking() {
           value="1"
           checked={enabled === '1'}
           onChange={onChange(setEnabled)}
+          data-automation-id="tracking-enabled-radio"
         />
         <label htmlFor="tracking-enabled">
           {t('yes')}
@@ -32,6 +33,7 @@ export default function Tracking() {
           value=""
           checked={enabled === ''}
           onChange={onChange(setEnabled)}
+          data-automation-id="tracking-disabled-radio"
         />
         <label htmlFor="tracking-disabled">
           {t('no')}

@@ -24,7 +24,7 @@ export default function ShareData() {
               {t('readMore')}
             </a>
           </>
-)}
+        )}
         htmlFor=""
       />
       <Inputs>
@@ -34,6 +34,7 @@ export default function ShareData() {
           value="1"
           checked={enabled === '1'}
           onChange={onChange(setEnabled)}
+          data-automation-id="analytics-yes"
         />
         <label htmlFor="share-data-enabled">
           {t('yes')}
@@ -45,6 +46,7 @@ export default function ShareData() {
           value=""
           checked={enabled === ''}
           onChange={onChange(setEnabled)}
+          data-automation-id="analytics-no"
         />
         <label htmlFor="share-data-disabled">
           {t('no')}

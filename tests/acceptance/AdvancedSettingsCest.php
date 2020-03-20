@@ -12,39 +12,17 @@ class AdvancedSettingsCest {
     $i->login();
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForText('Bounce email address');
-    $i->selectOption($noAnonymousData, 'No');
+    $i->waitForElement($noAnonymousData);
+    $i->click($noAnonymousData);
     //save + refresh
     $i->click($submitButton);
     $i->waitForText($successMessage);
-    $i->seeOptionIsSelected($noAnonymousData, 'No');
+    $i->seeCheckboxIsChecked($noAnonymousData);
     //repeat for Yes
-    $i->selectOption($yesAnonymousData, 'Yes');
+    $i->click($yesAnonymousData);
     $i->click($submitButton);
     $i->waitForText($successMessage);
-    $i->seeOptionIsSelected($yesAnonymousData, 'Yes');
-  }
-
-  public function addBounceEmailAddress(\AcceptanceTester $i) {
-    $i->wantTo('Add a bounce email address on Advanced Settings page');
-    $bounceAddressField = '[data-automation-id="bounce-address-field"]';
-    $bounceAddressText = 'bounce@bounce.bounce';
-    $submitButton = '[data-automation-id="settings-submit-button"]';
-    $successMessage = "Settings saved";
-    $i->login();
-    $i->amOnMailPoetPage('Settings');
-    $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForElement($bounceAddressField);
-    $i->fillField($bounceAddressField, $bounceAddressText);
-    $i->click($submitButton);
-    $i->waitForText($successMessage);
-    $i->waitForElement($bounceAddressField);
-    //check System Info to make sure the value changed in db
-    $i->amOnMailPoetPage('Help');
-    $i->waitForText('Knowledge Base');
-    $i->click('System Info');
-    $i->waitForText('The information below is useful');
-    $i->waitForText($bounceAddressText);
+    $i->seeCheckboxIsChecked($yesAnonymousData);
   }
 
   public function toggleTaskScheduler(\AcceptanceTester $i) {
@@ -55,18 +33,17 @@ class AdvancedSettingsCest {
     $systemInfoWordPressCron = "Task Scheduler method: WordPress";
     $systemInfoMailPoetCron = "Task Scheduler method: MailPoet";
     $systemInfoLinuxCron = "Task Scheduler method: Linux Cron";
-    $bounceAddressField = '[data-automation-id="bounce-address-field"]';
     $submitButton = '[data-automation-id="settings-submit-button"]';
     $successMessage = "Settings saved";
     //switch to MailPoet cron
     $i->login();
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForElement($bounceAddressField);
+    $i->waitForElement($chooseMailPoetCron);
     $i->click($chooseMailPoetCron);
     $i->click($submitButton);
     $i->waitForText($successMessage);
-    $i->waitForElement($bounceAddressField);
+    $i->waitForElement($chooseMailPoetCron);
     //check System Info to make sure the value changed
     $i->amOnMailPoetPage('Help');
     $i->waitForText('Knowledge Base');
@@ -76,11 +53,11 @@ class AdvancedSettingsCest {
     //switch to linux cron
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForElement($bounceAddressField);
+    $i->waitForElement($chooseLinuxCron);
     $i->click($chooseLinuxCron);
     $i->click($submitButton);
     $i->waitForText($successMessage);
-    $i->waitForElement($bounceAddressField);
+    $i->waitForElement($chooseLinuxCron);
     //check System Info to make sure the value changed
     $i->amOnMailPoetPage('Help');
     $i->waitForText('Knowledge Base');
@@ -90,11 +67,11 @@ class AdvancedSettingsCest {
     //switch to default cron
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForElement($bounceAddressField);
+    $i->waitForElement($chooseWordPressCron);
     $i->click($chooseWordPressCron);
     $i->click($submitButton);
     $i->waitForText($successMessage);
-    $i->waitForElement($bounceAddressField);
+    $i->waitForElement($chooseWordPressCron);
     //check System Info to make sure the value changed
     $i->amOnMailPoetPage('Help');
     $i->waitForText('Knowledge Base');
@@ -143,9 +120,12 @@ class AdvancedSettingsCest {
   public function checkInactiveSubscribers(\AcceptanceTester $i) {
     $i->wantTo('Check that inactive subsribers has default value');
     $inactiveSubscribersDefault = '[data-automation-id="inactive-subscribers-default"]';
+    $trackingEnabled = '[data-automation-id="tracking-enabled-radio"]';
     $i->login();
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
+    $i->waitForElement($trackingEnabled);
+    $i->click($trackingEnabled);
     $i->waitForElement($inactiveSubscribersDefault);
     $i->seeCheckboxIsChecked($inactiveSubscribersDefault);
 
