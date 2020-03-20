@@ -25,7 +25,7 @@ export default function NewSubscriberNotifications() {
           type="radio"
           checked={enabled === '1'}
           value="1"
-          onClick={() => setEnabled('1')}
+          onChange={onChange(setEnabled)}
         />
         {t('yes')}
         {' '}
@@ -33,7 +33,7 @@ export default function NewSubscriberNotifications() {
           type="radio"
           checked={enabled === ''}
           value=""
-          onClick={() => setEnabled('')}
+          onChange={onChange(setEnabled)}
         />
         {t('no')}
         <br />
