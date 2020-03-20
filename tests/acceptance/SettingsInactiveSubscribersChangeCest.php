@@ -36,7 +36,7 @@ class SettingsInactiveSubscribersChangeCest {
     $i->login();
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForElement('[data-automation-id="inactive-subscribers-enabled"]');
+    $i->waitForElement('[data-automation-id="inactive-subscribers-option-never"]');
     $i->click('[data-automation-id="inactive-subscribers-option-never"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');

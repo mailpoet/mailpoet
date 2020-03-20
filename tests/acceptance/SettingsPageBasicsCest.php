@@ -23,7 +23,7 @@ class SettingsPageBasicsCest {
     $i->seeNoJSErrors();
     //Advanced Tab
     $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForText('Bounce email address');
+    $i->waitForText('Newsletter task scheduler');
     $i->seeNoJSErrors();
     //Activation Key Tab
     $i->click('[data-automation-id="activation_settings_tab"]');

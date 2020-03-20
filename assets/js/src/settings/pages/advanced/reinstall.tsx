@@ -27,7 +27,14 @@ export default function Reinstall() {
         htmlFor=""
       />
       <Inputs>
-        <button type="button" className="button" onClick={onClick}>{t('reinstallNow')}</button>
+        <button
+          type="button"
+          className="button"
+          onClick={onClick}
+          data-automation-id="reinstall-button"
+        >
+          {t('reinstallNow')}
+        </button>
       </Inputs>
     </>
   );

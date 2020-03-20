@@ -30,7 +30,7 @@ class ReinstallFromScratchCest {
 
     // Step 2 - reinstall from scratch
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-settings#advanced');
-    $i->waitForElement('#mailpoet_reinstall');
+    $i->waitForElement('[data-automation-id="reinstall-button"]');
     $i->click('Reinstall now...');
     $i->acceptPopup();
     $i->waitForText('Welcome! Let’s get you started on the right foot.');
