@@ -31,3 +31,10 @@ export function TRACK_SETTINGS_SAVED() {
   }
   MailPoet.trackEvent('User has saved Settings', data);
 }
+
+export function TRACK_REINSTALLED() {
+  MailPoet.trackEvent(
+    'User has reinstalled MailPoet via Settings',
+    { 'MailPoet Free version': MailPoet.version }
+  );
+}
