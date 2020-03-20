@@ -41,13 +41,13 @@ export default () => {
           {t('wooCommerceTab')}
         </TabLink>
       )}
-      <a
-        className="nav-tab"
-        href="?page=mailpoet-settings#advanced"
-        data-automation-id="settings-advanced-tab"
+      <TabLink
+        name="advanced"
+        current={current}
+        automationId="settings-advanced-tab"
       >
         {t('advancedTab')}
-      </a>
+      </TabLink>
       <TabLink
         name="premium"
         current={current}
