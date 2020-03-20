@@ -13,6 +13,7 @@ export default function makeDefaultState(window: any): State {
     newUser: !!window.mailpoet_is_new_user,
     woocommerce: !!window.mailpoet_woocommerce_active,
     membersPlugin: !!window.mailpoet_members_plugin_active,
+    builtInCaptcha: window.mailpoet_built_in_captcha_supported,
   };
   const premiumStatus = getPremiumStatus(
     window.mailpoet_premium_key_valid,

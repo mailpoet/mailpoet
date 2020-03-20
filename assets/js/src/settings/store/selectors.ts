@@ -33,6 +33,10 @@ export function hasMembersPlugin(state: State) {
   return state.flags.membersPlugin;
 }
 
+export function isBuiltInCaptchaSupported(state: State) {
+  return state.flags.builtInCaptcha;
+}
+
 export function isNewUser(state: State) {
   return state.flags.newUser;
 }
