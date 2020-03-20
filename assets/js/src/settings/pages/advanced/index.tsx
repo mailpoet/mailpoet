@@ -6,6 +6,7 @@ import Tracking from './tracking';
 import Transactional from './transactional';
 import InactiveSubscribers from './inactive_subscribers';
 import ShareData from './share_data';
+import Captcha from './captcha';
 
 export default function Advanced() {
   return (
@@ -17,6 +18,7 @@ export default function Advanced() {
       <Transactional />
       <InactiveSubscribers />
       <ShareData />
+      <Captcha />
     </div>
   );
 }

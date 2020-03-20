@@ -233,6 +233,7 @@ export type State = {
   flags: {
     woocommerce: boolean
     membersPlugin: boolean
+    builtInCaptcha: boolean
     newUser: boolean
     error: boolean
   }

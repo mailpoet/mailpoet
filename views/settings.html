@@ -19,6 +19,7 @@
       var mailpoet_premium_key_valid = <%= json_encode(premium_key_valid) %>;
       var mailpoet_premium_plugin_installed = <%= json_encode(premium_plugin_installed) %>;
       var mailpoet_paths = <%= json_encode(paths) %>;
+      var mailpoet_built_in_captcha_supported = <%= json_encode(built_in_captcha_supported == true) %>;
     <% endautoescape %>
     var mailpoet_beacon_articles = [
       '57f71d49c697911f2d323486',
