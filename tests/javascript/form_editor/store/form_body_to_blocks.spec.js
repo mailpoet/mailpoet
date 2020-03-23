@@ -98,7 +98,11 @@ describe('Form Body To Blocks', () => {
       updated_at: '2019-12-10T15:05:06+00:00',
     };
 
-    const map = formBodyToBlocksFactory(colorDefinitions, [customFieldText, customFieldTextarea]);
+    const map = formBodyToBlocksFactory(
+      colorDefinitions,
+      [],
+      [customFieldText, customFieldTextarea]
+    );
     const [email, firstName, lastName, customText, customTextArea] = map([
       { ...emailInput, position: '1' },
       { ...firstNameInput, position: '2' },
@@ -144,7 +148,7 @@ describe('Form Body To Blocks', () => {
       border_color: '#cccccc',
     };
 
-    const map = formBodyToBlocksFactory(colorDefinitions, [customFieldText]);
+    const map = formBodyToBlocksFactory(colorDefinitions, [], [customFieldText]);
     const [email, customText] = map([
       { ...emailInput, position: '1', styles: emailStyles },
       { ...customTextInput, position: '2', styles: customTextStyles },
@@ -511,7 +515,7 @@ describe('Form Body To Blocks', () => {
     };
     const customText = { ...customTextInput, position: '1' };
     customText.params.class_name = 'custom-class-3 custom-class-4';
-    const map = formBodyToBlocksFactory(colorDefinitions, [customField]);
+    const map = formBodyToBlocksFactory(colorDefinitions, [], [customField]);
     const [mappedCustomText] = map([customText]);
     expect(mappedCustomText.attributes.className).to.be.equal('custom-class-3 custom-class-4');
   });

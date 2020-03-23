@@ -511,7 +511,7 @@ describe('Blocks to Form Body', () => {
     };
     const customText = { ...customTextBlock };
     customText.attributes.className = 'my-class-4';
-    const map = blocksToFormBodyFactory(colorDefinitions, [customField]);
+    const map = blocksToFormBodyFactory(colorDefinitions, [], [customField]);
     const [mappedCustomText] = map([customText]);
     expect(mappedCustomText.params.class_name).to.be.equal('my-class-4');
   });
