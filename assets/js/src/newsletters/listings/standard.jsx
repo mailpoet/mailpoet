@@ -236,6 +236,8 @@ class NewsletterListStandard extends React.Component {
           mailpoetInstalledDaysAgo={window.mailpoet_installed_days_ago}
           sendTransactionalEmails={window.mailpoet_send_transactional_emails}
           mtaMethod={window.mailpoet_mta_method}
+          apiVersion={window.mailpoet_api_version}
+          noticeDismissed={window.mailpoet_transactional_emails_opt_in_notice_dismissed}
         />
 
         <ListingTabs tab="standard" />

@@ -126,6 +126,7 @@ class Newsletters {
     $data['subscriber_count'] = Subscriber::getTotalSubscribers();
     $data['newsletters_count'] = Newsletter::count();
     $data['mailpoet_feature_flags'] = $this->featuresController->getAllFlags();
+    $data['transactional_emails_opt_in_notice_dismissed'] = $this->userFlags->get('transactional_emails_opt_in_notice_dismissed');
 
     if (!$data['premium_plugin_active']) {
       $data['free_premium_subscribers_limit'] = License::FREE_PREMIUM_SUBSCRIBERS_LIMIT;

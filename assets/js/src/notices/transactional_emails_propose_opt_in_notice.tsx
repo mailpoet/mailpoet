@@ -5,21 +5,35 @@ import MailPoet from 'mailpoet';
 type Props = {
   mailpoetInstalledDaysAgo: number,
   sendTransactionalEmails: boolean,
+  noticeDismissed: string,
   mtaMethod: string,
+  apiVersion: string,
 }
 
 const TransactionalEmailsProposeOptInNotice = ({
   mailpoetInstalledDaysAgo,
   sendTransactionalEmails,
   mtaMethod,
+  noticeDismissed,
+  apiVersion,
 }: Props) => {
   const enable = () => {};
 
-  const onClose = () => {};
+  const onClose = () => {
+    MailPoet.Ajax.post({
+      api_version: apiVersion,
+      endpoint: 'UserFlags',
+      action: 'set',
+      data: {
+        transactional_emails_opt_in_notice_dismissed: '1',
+      },
+    });
+  };
 
   if (mailpoetInstalledDaysAgo < 30) return null;
   if (sendTransactionalEmails) return null;
   if (mtaMethod === 'PHPMail') return null;
+  if (noticeDismissed === '1') return null;
 
   return (
     <Notice type="success" timeout={false} onClose={onClose}>
