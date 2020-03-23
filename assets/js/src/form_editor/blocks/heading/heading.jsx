@@ -14,6 +14,10 @@ const settings = {
   ...heading.settings,
   ...settingsReset,
   category: 'layout',
+  supports: {
+    ...heading.supports,
+    html: false,
+  },
 };
 
 export { settings };
