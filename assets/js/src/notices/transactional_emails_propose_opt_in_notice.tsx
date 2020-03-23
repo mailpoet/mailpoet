@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Notice from 'notices/notice';
 import MailPoet from 'mailpoet';
 
@@ -17,7 +17,18 @@ const TransactionalEmailsProposeOptInNotice = ({
   noticeDismissed,
   apiVersion,
 }: Props) => {
-  const enable = () => {};
+  const [hidden, setHidden] = useState(false);
+  const enable = () => {
+    setHidden(true);
+    MailPoet.Ajax.post({
+      api_version: apiVersion,
+      endpoint: 'settings',
+      action: 'set',
+      data: {
+        send_transactional_emails: '1',
+      },
+    });
+  };
 
   const onClose = () => {
     MailPoet.Ajax.post({
@@ -34,6 +45,7 @@ const TransactionalEmailsProposeOptInNotice = ({
   if (sendTransactionalEmails) return null;
   if (mtaMethod === 'PHPMail') return null;
   if (noticeDismissed === '1') return null;
+  if (hidden) return null;
 
   return (
     <Notice type="success" timeout={false} onClose={onClose}>
