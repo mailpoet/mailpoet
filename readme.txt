@@ -184,6 +184,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
+= 3.46.5 - 2020-03-23 =
+* Fixed: Emptying trash won't delete all newsletters anymore. Sorry about that
+
 = 3.46.4 - 2020-03-19 =
 * Added: Columns block in the form editor;
 * Added: Heading block in the form editor.
