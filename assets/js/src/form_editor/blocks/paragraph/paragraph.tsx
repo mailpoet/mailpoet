@@ -13,6 +13,10 @@ const settings = {
   ...paragraph.settings,
   ...settingsReset,
   category: 'layout',
+  supports: {
+    ...paragraph.supports,
+    html: false,
+  },
 };
 
 export { settings };
