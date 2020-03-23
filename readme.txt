@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.3
-Stable tag: 3.46.4
+Stable tag: 3.46.6
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.46.6 - 2020-03-24 =
+* Added: support for custom css classes in the form editor;
+* Added: paragraph block in the form editor;
+* Added: input styles settings in the form editor;
+* Improved: form placement section in the form editor has a new look;
+* Fixed: WooCommerce dynamic segments settings are saved correctly.
 
 = 3.46.5 - 2020-03-23 =
 * Fixed: Emptying trash won't delete all newsletters anymore. Sorry about that
