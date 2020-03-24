@@ -11,6 +11,7 @@ import { curry } from 'lodash';
 import PropTypes from 'prop-types';
 
 import FormPlacementOptionBelowPages from './form_placement_options/below_pages';
+import FormPlacementOptionPopup from './form_placement_options/popup';
 
 const FormPlacementPanel = ({ onToggle, isOpened }) => {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
@@ -97,6 +98,7 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
         className="form-sidebar-form-placement-panel"
       >
         <FormPlacementOptionBelowPages />
+        <FormPlacementOptionPopup />
         <p>{addFormShortcodeHint}</p>
         <p>{addFormWidgetHint}</p>
         <p>{addFormPhpIframeHint}</p>

@@ -40,6 +40,12 @@ export default {
   placeFormBellowAllPosts(state) {
     return state.formData.settings.placeFormBellowAllPosts || false;
   },
+  placePopupFormOnAllPages(state) {
+    return state.formData.settings.placePopupFormOnAllPages || false;
+  },
+  placePopupFormOnAllPosts(state) {
+    return state.formData.settings.placePopupFormOnAllPosts || false;
+  },
   getAllAvailableSegments(state) {
     return state.segments;
   },
