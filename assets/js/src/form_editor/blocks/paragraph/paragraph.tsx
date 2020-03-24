@@ -14,7 +14,7 @@ const settings = {
   ...settingsReset,
   category: 'layout',
   supports: {
-    ...paragraph.supports,
+    ...paragraph.settings.supports,
     html: false,
   },
 };

@@ -15,7 +15,7 @@ const settings = {
   ...settingsReset,
   category: 'layout',
   supports: {
-    ...heading.supports,
+    ...heading.settings.supports,
     html: false,
   },
 };
