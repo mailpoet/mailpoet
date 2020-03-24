@@ -4,6 +4,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 
 import FormPlacementSettings from './form_placement_settings';
 import Toggle from '../../../../common/toggle';
+import Icon from './below_pages_icon';
 
 const BelowPages = () => {
   const placeFormBellowAllPages = useSelect(
@@ -37,6 +38,7 @@ const BelowPages = () => {
       onSave={save}
       description={MailPoet.I18n.t('placeFormBellowPagesDescription')}
       label={MailPoet.I18n.t('placeFormBellowPages')}
+      icon={Icon}
     >
       <div className="mailpoet-toggle-list">
         <div className="mailpoet-toggle-list-description">
