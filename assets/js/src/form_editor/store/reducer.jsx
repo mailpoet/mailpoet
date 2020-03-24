@@ -7,6 +7,8 @@ import changeFormName from './reducers/change_form_name.jsx';
 import {
   placeFormBellowAllPages,
   placeFormBellowAllPosts,
+  placePopupFormOnAllPages,
+  placePopupFormOnAllPosts,
 } from './reducers/form_placement.jsx';
 import changeFormSettings from './reducers/change_form_settings.jsx';
 import changeFormStyles from './reducers/change_form_styles.jsx';
@@ -58,6 +60,8 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'DELETE_CUSTOM_FIELD_FAILED': return customFieldDeleteFailed(state, action);
     case 'PLACE_FORM_BELLOW_ALL_PAGES': return placeFormBellowAllPages(state, action);
     case 'PLACE_FORM_BELLOW_ALL_POSTS': return placeFormBellowAllPosts(state, action);
+    case 'PLACE_POPUP_FORM_ON_ALL_PAGES': return placePopupFormOnAllPages(state, action);
+    case 'PLACE_POPUP_FORM_ON_ALL_POSTS': return placePopupFormOnAllPosts(state, action);
     default:
       return state;
   }

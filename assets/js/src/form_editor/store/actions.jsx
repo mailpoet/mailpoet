@@ -34,6 +34,20 @@ export function setPlaceFormBellowAllPosts(place) {
   };
 }
 
+export function setPlacePopupFormOnAllPages(place) {
+  return {
+    type: 'PLACE_POPUP_FORM_ON_ALL_PAGES',
+    place,
+  };
+}
+
+export function setPlacePopupFormOnAllPosts(place) {
+  return {
+    type: 'PLACE_POPUP_FORM_ON_ALL_POSTS',
+    place,
+  };
+}
+
 export function deleteCustomFieldStarted() {
   return {
     type: 'DELETE_CUSTOM_FIELD_STARTED',
