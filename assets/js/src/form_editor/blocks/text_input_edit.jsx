@@ -21,7 +21,7 @@ const TextInputEdit = ({
 
   const inputStyles = !styles.inheritFromTheme ? {
     borderRadius: styles.borderRadius ? `${styles.borderRadius}px` : 0,
-    borderWidth: styles.borderSize ? `${styles.borderSize}px` : '1px',
+    borderWidth: styles.borderSize !== undefined ? `${styles.borderSize}px` : '1px',
     borderColor: styles.borderColor || 'initial',
   } : {};
 
