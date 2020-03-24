@@ -3,7 +3,6 @@ import MailPoet from 'mailpoet';
 import { Button } from '@wordpress/components';
 
 import FormPlacementOption from './form_placement_option';
-import Icon from './below_pages_icon';
 import Modal from '../../../../common/modal/modal.jsx';
 
 type Props = {
@@ -12,6 +11,7 @@ type Props = {
   active: boolean,
   label: string,
   description: string,
+  icon: JSX.Element,
 }
 
 const BelowPages = ({
@@ -20,6 +20,7 @@ const BelowPages = ({
   active,
   onSave,
   children,
+  icon,
 }: Props) => {
   const [displaySettings, setDisplaySettings] = useState(false);
 
@@ -32,7 +33,7 @@ const BelowPages = ({
     <>
       <FormPlacementOption
         label={label}
-        icon={Icon}
+        icon={icon}
         active={active}
         onClick={() => setDisplaySettings(true)}
       />
