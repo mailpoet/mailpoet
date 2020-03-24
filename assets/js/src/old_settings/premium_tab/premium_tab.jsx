@@ -2,10 +2,17 @@ import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
+import showSetFromAddressModal from 'common/set_from_address_modal.tsx';
 import KeyMessages from 'old_settings/premium_tab/messages/key_messages.jsx';
 import { MssStatus, MssMessages } from 'old_settings/premium_tab/messages/mss_messages.jsx';
 import { PremiumStatus, PremiumMessages } from 'old_settings/premium_tab/messages/premium_messages.jsx';
 import { PremiumInstallationStatus } from 'old_settings/premium_tab/messages/premium_installation_messages.jsx';
+
+const getSettings = async () => MailPoet.Ajax.post({
+  api_version: window.mailpoet_api_version,
+  endpoint: 'settings',
+  action: 'get',
+});
 
 const requestServicesApi = async (key, action) => MailPoet.Ajax.post({
   api_version: window.mailpoet_api_version,
@@ -183,6 +190,17 @@ const PremiumTab = (props) => {
                   await verifyMailPoetSendingServiceKey(isUserTriggered);
                   await verifyMailPoetPremiumKey();
                   MailPoet.Modal.loading(false);
+
+                  // show modal to set authorized FROM address, if needed
+                  if (isUserTriggered) {
+                    const settings = await getSettings();
+                    const authorizedAddressNeeded = !settings.data.sender.address
+                      || settings.data.authorized_emails_addresses_check;
+
+                    if (mssStatus === MssStatus.KEY_VALID_MSS_ACTIVE && authorizedAddressNeeded) {
+                      showSetFromAddressModal();
+                    }
+                  }
                 }}
               >
                 {MailPoet.I18n.t('premiumTabVerifyButton')}
