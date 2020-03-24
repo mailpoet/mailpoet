@@ -97,8 +97,10 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
         onToggle={onToggle}
         className="form-sidebar-form-placement-panel"
       >
-        <FormPlacementOptionBelowPages />
-        <FormPlacementOptionPopup />
+        <div className="form-placement-option-list">
+          <FormPlacementOptionBelowPages />
+          <FormPlacementOptionPopup />
+        </div>
         <p>{addFormShortcodeHint}</p>
         <p>{addFormWidgetHint}</p>
         <p>{addFormPhpIframeHint}</p>
