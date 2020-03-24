@@ -11,7 +11,8 @@ type Props = {
 }
 
 export default (props: Props) => {
-  const { id, setValue } = props;
+  const id = props.id;
+  const setValue = React.useCallback(props.setValue, []);
   const segments = useSelector('getSegments')();
   React.useLayoutEffect(() => {
     const idSelector = `#${id}`;
