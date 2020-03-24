@@ -115,6 +115,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
     borderRadius: attributes.styles.borderRadius ? `${attributes.styles.borderRadius}px` : 0,
     borderWidth: attributes.styles.borderSize !== undefined ? `${attributes.styles.borderSize}px` : '1px',
     borderColor: attributes.styles.borderColor || 'initial',
+    borderStyle: 'solid',
   } : {};
 
   if (attributes.styles.fullWidth) {

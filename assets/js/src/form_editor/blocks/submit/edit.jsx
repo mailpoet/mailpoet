@@ -34,6 +34,7 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
     borderRadius: attributes.styles.borderRadius ? `${attributes.styles.borderRadius}px` : 0,
     borderWidth: attributes.styles.borderSize !== undefined ? `${attributes.styles.borderSize}px` : '1px',
     borderColor: attributes.styles.borderColor || 'initial',
+    borderStyle: 'solid',
     fontSize: attributes.styles.fontSize ? `${attributes.styles.fontSize}px` : 'inherit',
     color: attributes.styles.fontColor || 'inherit',
   } : {};

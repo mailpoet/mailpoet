@@ -23,6 +23,7 @@ const TextInputEdit = ({
     borderRadius: styles.borderRadius ? `${styles.borderRadius}px` : 0,
     borderWidth: styles.borderSize !== undefined ? `${styles.borderSize}px` : '1px',
     borderColor: styles.borderColor || 'initial',
+    borderStyle: 'solid',
   } : {};
 
   if (styles.fullWidth) {
