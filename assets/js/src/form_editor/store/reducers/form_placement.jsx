@@ -1,23 +1,21 @@
-export const placeFormBellowAllPosts = (state, action) => ({
-  ...state,
-  formData: {
-    ...state.formData,
-    hasUnsavedChanges: true,
-    settings: {
-      ...state.formData.settings,
-      placeFormBellowAllPosts: action.place,
-    },
-  },
-});
+import { curry } from 'lodash';
 
-export const placeFormBellowAllPages = (state, action) => ({
+const formPlacement = curry((placement, state, action) => ({
   ...state,
+  hasUnsavedChanges: true,
   formData: {
     ...state.formData,
-    hasUnsavedChanges: true,
     settings: {
       ...state.formData.settings,
-      placeFormBellowAllPages: action.place,
+      [placement]: action.place,
     },
   },
-});
+}));
+
+export const placeFormBellowAllPosts = formPlacement('placeFormBellowAllPosts');
+
+export const placeFormBellowAllPages = formPlacement('placeFormBellowAllPages');
+
+export const placePopupFormOnAllPages = formPlacement('placePopupFormOnAllPages');
+
+export const placePopupFormOnAllPosts = formPlacement('placePopupFormOnAllPosts');
