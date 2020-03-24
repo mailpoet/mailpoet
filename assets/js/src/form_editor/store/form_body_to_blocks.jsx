@@ -30,7 +30,7 @@ const mapBlockStyles = (styles) => {
     return backwardCompatibleBlockStyles;
   }
   const mappedStyles = {
-    fullWidth: styles.full_width === '1',
+    fullWidth: styles.full_width === '1' || styles.full_width === true,
   };
   // Detect if styles inherit from theme by checking if bold param is present
   if (!has(styles, 'bold')) {
@@ -38,7 +38,7 @@ const mapBlockStyles = (styles) => {
     return mappedStyles;
   }
   mappedStyles.inheritFromTheme = false;
-  mappedStyles.bold = styles.bold === '1';
+  mappedStyles.bold = styles.bold === '1' || styles.bold === true;
   if (has(styles, 'background_color') && styles.background_color) {
     mappedStyles.backgroundColor = styles.background_color;
   }

@@ -19,6 +19,9 @@ class FormFactory {
             'required' => true,
             'label_within' => true,
           ],
+          'styles' => [
+            'full_width' => true,
+          ],
         ],
         [
           'id' => 'submit',
@@ -26,6 +29,9 @@ class FormFactory {
           'type' => 'submit',
           'params' => [
             'label' => __('Subscribe!', 'mailpoet'),
+          ],
+          'styles' => [
+            'full_width' => true,
           ],
         ],
       ],
