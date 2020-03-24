@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
+import { SelectControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import FormPlacementSettings from './form_placement_settings';
 import Toggle from '../../../../common/toggle';
 import Icon from './popup_icon';
 
+const delayValues = [0, 15, 30, 60, 120, 180, 240];
+
 const Popup = () => {
+  const popupFormDelay = useSelect(
+    (select) => select('mailpoet-form-editor').getPopupFormDelay(),
+    []
+  );
+
   const placePopupFormOnAllPages = useSelect(
     (select) => select('mailpoet-form-editor').placePopupFormOnAllPages(),
     []
@@ -16,7 +24,11 @@ const Popup = () => {
     (select) => select('mailpoet-form-editor').placePopupFormOnAllPosts(),
     []
   );
-  const { setPlacePopupFormOnAllPages, setPlacePopupFormOnAllPosts } = useDispatch('mailpoet-form-editor');
+  const {
+    setPlacePopupFormOnAllPages,
+    setPlacePopupFormOnAllPosts,
+    setPopupFormDelay,
+  } = useDispatch('mailpoet-form-editor');
 
   const [
     localPlacePopupFormOnAllPages,
@@ -26,10 +38,15 @@ const Popup = () => {
     localPlacePopupFormOnAllPosts,
     setLocalPlacePopupFormOnAllPosts,
   ] = useState(placePopupFormOnAllPosts);
+  const [
+    localDelay,
+    setLocalDelay,
+  ] = useState(popupFormDelay === undefined ? 15 : popupFormDelay);
 
   const save = () => {
     setPlacePopupFormOnAllPages(localPlacePopupFormOnAllPages);
     setPlacePopupFormOnAllPosts(localPlacePopupFormOnAllPosts);
+    setPopupFormDelay(localDelay);
   };
 
   return (
@@ -62,6 +79,15 @@ const Popup = () => {
           />
         </div>
       </div>
+      <SelectControl
+        label={MailPoet.I18n.t('formPlacementDelay')}
+        value={localDelay}
+        onChange={setLocalDelay}
+        options={delayValues.map((delayValue) => ({
+          value: delayValue,
+          label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
+        }))}
+      />
     </FormPlacementSettings>
   );
 };

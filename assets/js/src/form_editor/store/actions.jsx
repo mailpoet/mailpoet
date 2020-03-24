@@ -48,6 +48,13 @@ export function setPlacePopupFormOnAllPosts(place) {
   };
 }
 
+export function setPopupFormDelay(delay) {
+  return {
+    type: 'SET_POPUP_FORM_DELAY',
+    delay,
+  };
+}
+
 export function deleteCustomFieldStarted() {
   return {
     type: 'DELETE_CUSTOM_FIELD_STARTED',

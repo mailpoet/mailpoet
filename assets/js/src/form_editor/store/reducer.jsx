@@ -9,6 +9,7 @@ import {
   placeFormBellowAllPosts,
   placePopupFormOnAllPages,
   placePopupFormOnAllPosts,
+  setPopupFormDelay,
 } from './reducers/form_placement.jsx';
 import changeFormSettings from './reducers/change_form_settings.jsx';
 import changeFormStyles from './reducers/change_form_styles.jsx';
@@ -62,6 +63,7 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'PLACE_FORM_BELLOW_ALL_POSTS': return placeFormBellowAllPosts(state, action);
     case 'PLACE_POPUP_FORM_ON_ALL_PAGES': return placePopupFormOnAllPages(state, action);
     case 'PLACE_POPUP_FORM_ON_ALL_POSTS': return placePopupFormOnAllPosts(state, action);
+    case 'SET_POPUP_FORM_DELAY': return setPopupFormDelay(state, action);
     default:
       return state;
   }

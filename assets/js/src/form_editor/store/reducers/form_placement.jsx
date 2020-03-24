@@ -19,3 +19,15 @@ export const placeFormBellowAllPages = formPlacement('placeFormBellowAllPages');
 export const placePopupFormOnAllPages = formPlacement('placePopupFormOnAllPages');
 
 export const placePopupFormOnAllPosts = formPlacement('placePopupFormOnAllPosts');
+
+export const setPopupFormDelay = (state, action) => ({
+  ...state,
+  hasUnsavedChanges: true,
+  formData: {
+    ...state.formData,
+    settings: {
+      ...state.formData.settings,
+      popupFormDelay: action.delay,
+    },
+  },
+});

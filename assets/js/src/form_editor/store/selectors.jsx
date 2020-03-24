@@ -46,6 +46,9 @@ export default {
   placePopupFormOnAllPosts(state) {
     return state.formData.settings.placePopupFormOnAllPosts || false;
   },
+  getPopupFormDelay(state) {
+    return state.formData.settings.popupFormDelay;
+  },
   getAllAvailableSegments(state) {
     return state.segments;
   },
