@@ -28,9 +28,10 @@ const TransactionalEmailsProposeOptInNotice = ({
         send_transactional_emails: '1',
       },
     });
+    saveNoticeDismissed();
   };
 
-  const onClose = () => {
+  const saveNoticeDismissed = () => {
     MailPoet.Ajax.post({
       api_version: apiVersion,
       endpoint: 'UserFlags',
@@ -48,7 +49,7 @@ const TransactionalEmailsProposeOptInNotice = ({
   if (hidden) return null;
 
   return (
-    <Notice type="success" timeout={false} onClose={onClose}>
+    <Notice type="success" timeout={false} onClose={saveNoticeDismissed}>
       <h3>{MailPoet.I18n.t('transactionalEmailNoticeTitle')}</h3>
       <p>
         {MailPoet.I18n.t('transactionalEmailNoticeBody')}
