@@ -18,7 +18,8 @@ export default (props: Props) => {
     const idSelector = `#${id}`;
     $(idSelector).select2();
     $(idSelector).on('change', (e) => {
-      setValue(Array.from(e.target.selectedOptions).map((x: any) => x.value));
+      const value = Array.from(e.target.selectedOptions).map((x: any) => x.value);
+      setValue(value);
     });
     return () => $(idSelector).select2('destroy');
   }, [id, setValue]);
