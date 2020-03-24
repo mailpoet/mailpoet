@@ -14,7 +14,6 @@ class FormFactory {
           'id' => 'email',
           'name' => __('Email', 'mailpoet'),
           'type' => 'text',
-          'static' => true,
           'params' => [
             'label' => __('Email', 'mailpoet'),
             'required' => true,
@@ -25,7 +24,6 @@ class FormFactory {
           'id' => 'submit',
           'name' => __('Submit', 'mailpoet'),
           'type' => 'submit',
-          'static' => true,
           'params' => [
             'label' => __('Subscribe!', 'mailpoet'),
           ],
