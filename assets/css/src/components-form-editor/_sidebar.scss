@@ -114,6 +114,11 @@
   border: 1px solid #eee;
 }
 
+.form-placement-option-list {
+  display: flex;
+  flex-direction: row;
+}
+
 .form-placement-option {
   background-color: #fff;
   border: solid $form-placement-option-border $form-placement-option-base-color;
