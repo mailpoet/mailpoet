@@ -86,7 +86,10 @@ class DisplayFormInWPContent {
   private function getForms(): array {
     $forms = $this->formsRepository->findBy(['deletedAt' => null]);
     return array_filter($forms, function($form) {
-      return $this->shouldDisplayFormBellowContent($form);
+      return (
+        $this->shouldDisplayFormBellowContent($form)
+        || $this->shouldDisplayPopupForm($form)
+      );
     });
   }
 
@@ -102,7 +105,7 @@ class DisplayFormInWPContent {
       'form_html_id' => $htmlId,
       'form_id' => $form->getId(),
       'form_success_message' => $formSettings['success_message'] ?? null,
-      'form_type' => 'below_post',
+      'form_type' => $this->getFormType($form),
       'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId),
       'html' => $this->formRenderer->renderHTML($formData),
       'form_element_styles' => $this->formRenderer->renderFormElementStyles($formData),
@@ -128,6 +131,19 @@ class DisplayFormInWPContent {
     return $this->templateRenderer->render('form/front_end_form.html', $templateData);
   }
 
+  private function getFormType(FormEntity $form): string {
+    $settings = $form->getSettings();
+    if (
+      isset($settings['place_popup_form_on_all_pages'])
+      && (
+        ($settings['place_popup_form_on_all_posts'] === '1')
+        ||
+        ($settings['place_popup_form_on_all_pages'] === '1')
+      )
+    ) return 'popup';
+    return 'below_post';
+  }
+
   private function shouldDisplayFormBellowContent(FormEntity $form): bool {
     $settings = $form->getSettings();
     if (!is_array($settings)) return false;
@@ -138,6 +154,21 @@ class DisplayFormInWPContent {
     ) return true;
     if (
       ($settings['place_form_bellow_all_pages'] === '1')
+      && $this->wp->isPage()
+    ) return true;
+    return false;
+  }
+
+  private function shouldDisplayPopupForm(FormEntity $form): bool {
+    $settings = $form->getSettings();
+    if (!is_array($settings)) return false;
+    if (!isset($settings['place_popup_form_on_all_pages'])) return false;
+    if (
+      ($settings['place_popup_form_on_all_posts'] === '1')
+      && $this->wp->isSingular('post')
+    ) return true;
+    if (
+      ($settings['place_popup_form_on_all_pages'] === '1')
       && $this->wp->isPage()
     ) return true;
     return false;
