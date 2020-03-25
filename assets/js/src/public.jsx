@@ -37,7 +37,10 @@ jQuery(($) => {
   $(() => {
     $('div.mailpoet_form_popup').each((index, element) => {
       const formDiv = $(element);
-      let delay = formDiv.find('form').data('delay');
+      const form = formDiv.find('form');
+      const background = form.data('background-color');
+      formDiv.css('background-color', background || 'white');
+      let delay = form.data('delay');
       delay = parseInt(delay, 10);
       if (Number.isNaN(delay)) {
         delay = 0;
@@ -46,6 +49,7 @@ jQuery(($) => {
         formDiv.addClass('active');
       }, delay * 1000);
     });
+
     // setup form validation
     $('form.mailpoet_form').each((index, element) => {
       const form = $(element);
