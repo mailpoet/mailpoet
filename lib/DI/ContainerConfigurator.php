@@ -259,7 +259,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscription\SubscriptionUrlFactory::class);
     // Newsletter
     $container->autowire(\MailPoet\Newsletter\AutomatedLatestContent::class)->setPublic(true);
-    $container->autowire(\MailPoet\Newsletter\NewslettersRepository::class);
+    $container->autowire(\MailPoet\Newsletter\NewslettersRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Listing\NewsletterListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class);
     $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class);
@@ -278,8 +278,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\WooCommerce\Settings::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\Subscription::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\TransactionalEmails::class)->setPublic(true);
-    $container->autowire(\MailPoet\WooCommerce\TransactionalEmails\Template::class);
-    $container->autowire(\MailPoet\WooCommerce\TransactionalEmails\Renderer::class);
+    $container->autowire(\MailPoet\WooCommerce\TransactionalEmails\Template::class)->setPublic(true);
+    $container->autowire(\MailPoet\WooCommerce\TransactionalEmails\Renderer::class)->setPublic(true);
     // WordPress
     $container->autowire(\MailPoet\WP\Emoji::class)->setPublic(true);
     $container->autowire(\MailPoet\WP\Functions::class)->setPublic(true);
