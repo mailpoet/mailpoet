@@ -239,6 +239,19 @@ class TransactionalEmailsTest extends \MailPoetTest {
     expect($addedActions['woocommerce_email_styles']('some css'))->equals('prefixed some css');
   }
 
+  public function testInitStripsUnwantedTagsFromWCFooterText() {
+    $optionOriginalValue = $this->wp->getOption('woocommerce_email_footer_text');
+    $this->wp->updateOption('woocommerce_email_footer_text', '<div><p>Text <a href="http://example.com">Link</a></p></div>');
+    $this->transactionalEmails->init();
+    $email = $this->newslettersRepository->findOneBy(['type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL]);
+    assert($email instanceof NewsletterEntity);
+    $body = $email->getBody();
+    assert(is_array($body));
+    $footerTextBlock = $body['content']['blocks'][5]['blocks'][0]['blocks'][1];
+    expect($footerTextBlock['text'])->equals('<p style="text-align: center;">Text <a href="http://example.com">Link</a></p>');
+    $this->wp->updateOption('woocommerce_email_footer_text', $optionOriginalValue);
+  }
+
   public function _after() {
     $this->entityManager
       ->createQueryBuilder()

@@ -172,6 +172,8 @@ class TransactionalEmails {
       $result['link_color'] = $this->woocommerceHelper->wcHexIsLight($result['base_color']) ? $result['base_color'] : $result['base_text_color'];
     }
     $result['footer_text'] = $this->replacePlaceholders($result['footer_text']);
+    // The footer text is placed inside a paragraph in a text block so we keep only tags we allow in the text block in the newsletter editor
+    $result['footer_text'] = strip_tags($result['footer_text'], '<em><strong><br><a><span><s><del>');
     return $result;
   }
 }
