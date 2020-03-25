@@ -80,6 +80,28 @@ class TextTest extends \MailPoetUnitTest {
     expect($blockquoteTable)->equals($expectedResult);
   }
 
+  public function testItShouldRemoveEmptyParagraphs() {
+    $this->block['text'] = '<p></p><p>Text</p><p></p><p>Text2</p><p></p><p></p>';
+    $output = Text::render($this->block);
+    $expectedResult = '
+      <tr>
+        <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;">
+          <br /><table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
+        <tr>
+          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
+            Text<br /><br />
+          </td>
+        </tr></table><table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
+        <tr>
+          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
+            Text2<br /><br />
+          </td>
+        </tr></table>
+        </td>
+      </tr>';
+    expect($output)->equals($expectedResult);
+  }
+
   public function testItStylesHeadings() {
     $this->block['text'] = '<h1>Heading</h1><h2>Heading 2</h2>';
     $output = Text::render($this->block);
