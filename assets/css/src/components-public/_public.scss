@@ -157,3 +157,7 @@ $form-columns-space-between: 20px;
     @include maxWidthColumn;
   }
 }
+
+.mailpoet_form_popup {
+  display: none;
+}
