@@ -2,9 +2,11 @@
 
 namespace MailPoet\Services;
 
+use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
 
 class AuthorizedEmailsController {
@@ -16,15 +18,43 @@ class AuthorizedEmailsController {
   /** @var SettingsController */
   private $settings;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
   private $automaticEmailTypes = [
     Newsletter::TYPE_WELCOME,
     Newsletter::TYPE_NOTIFICATION,
     Newsletter::TYPE_AUTOMATIC,
   ];
 
-  public function __construct(SettingsController $settingsController, Bridge $bridge) {
+  public function __construct(
+    SettingsController $settingsController,
+    Bridge $bridge,
+    NewslettersRepository $newslettersRepository
+  ) {
     $this->settings = $settingsController;
     $this->bridge = $bridge;
+    $this->newslettersRepository = $newslettersRepository;
+  }
+
+  public function setFromEmailAddress(string $address) {
+    $authorizedEmails = array_map('strtolower', $this->bridge->getAuthorizedEmailAddresses() ?: []);
+    $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $address);
+    if (!$isAuthorized) {
+      throw new \InvalidArgumentException("Email address '$address' is not authorized");
+    }
+
+    // update FROM address in settings & all scheduled and active emails
+    $this->settings->set('sender.address', $address);
+    $result = $this->validateAddressesInScheduledAndAutomaticEmails($authorizedEmails);
+    foreach ($result['invalid_senders_in_newsletters'] ?? [] as $item) {
+      $newsletter = $this->newslettersRepository->findOneById((int)$item['newsletter_id']);
+      if ($newsletter) {
+        $newsletter->setSenderAddress($address);
+      }
+    }
+    $this->newslettersRepository->flush();
+    $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
   }
 
   public function checkAuthorizedEmailAddresses() {

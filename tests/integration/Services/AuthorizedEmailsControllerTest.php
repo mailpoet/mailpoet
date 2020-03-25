@@ -3,10 +3,13 @@
 namespace MailPoet\Test\Services;
 
 use Codeception\Stub\Expected;
+use InvalidArgumentException;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -155,6 +158,77 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     expect($error['invalid_senders_in_newsletters'][0]['subject'])->equals('Subject');
   }
 
+  public function testItSetsFromAddressInSettings() {
+    $this->settings->set('sender.address', '');
+    $controller = $this->getController(['authorized@email.com']);
+    $controller->setFromEmailAddress('authorized@email.com');
+    expect($this->settings->get('sender.address'))->same('authorized@email.com');
+  }
+
+  public function testItSetsFromAddressInScheduledEmails() {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
+    $newsletter->setSenderAddress('invalid@email.com');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+
+    $this->settings->set('sender.address', '');
+    $controller = $this->getController(['authorized@email.com']);
+    $controller->setFromEmailAddress('authorized@email.com');
+    expect($newsletter->getSenderAddress())->same('authorized@email.com');
+
+    // refresh from DB and check again
+    $this->entityManager->refresh($newsletter);
+    expect($newsletter->getSenderAddress())->same('authorized@email.com');
+  }
+
+  public function testItSetsFromAddressInAutomaticEmails() {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATIC);
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+    $newsletter->setSenderAddress('invalid@email.com');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+
+    $this->settings->set('sender.address', '');
+    $controller = $this->getController(['authorized@email.com']);
+    $controller->setFromEmailAddress('authorized@email.com');
+    expect($newsletter->getSenderAddress())->same('authorized@email.com');
+
+    // refresh from DB and check again
+    $this->entityManager->refresh($newsletter);
+    expect($newsletter->getSenderAddress())->same('authorized@email.com');
+  }
+
+  public function testItDoesntSetFromAddressForSentEmails() {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
+    $newsletter->setSenderAddress('invalid@email.com');
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+
+    $this->settings->set('sender.address', '');
+    $controller = $this->getController(['authorized@email.com']);
+    $controller->setFromEmailAddress('authorized@email.com');
+    expect($newsletter->getSenderAddress())->same('invalid@email.com');
+
+    // refresh from DB and check again
+    $this->entityManager->refresh($newsletter);
+    expect($newsletter->getSenderAddress())->same('invalid@email.com');
+  }
+
+  public function testSetsFromAddressThrowsForUnauthorizedEmail() {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage("Email address 'invalid@email.com' is not authorized");
+    $controller = $this->getController(['authorized@email.com']);
+    $controller->setFromEmailAddress('invalid@email.com');
+  }
+
   private function setMailPoetSendingMethod() {
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
@@ -172,7 +246,8 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       $getEmailsExpectaton = Expected::once($authorizedEmails);
     }
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => $getEmailsExpectaton]);
-    return new AuthorizedEmailsController($this->settings, $bridgeMock);
+    $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    return new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository);
   }
 
   public function _after() {
