@@ -29,19 +29,16 @@
 }
 
 .mailpoet_browser_preview_container_mobile {
-  width: 350px;
+  // 360px width + 2x20px padding + 2x1px border
+  width: 402px;
 }
 
 .mailpoet_browser_preview_border {
   border: 1px solid #c3c3c3;
-  box-sizing: border-box;
   height: 100%;
-  padding: 30px;
   width: 100%;
 }
 
 .mailpoet_browser_preview_iframe {
   display: block;
-  margin: auto;
-  width: calc(100% - 1px);
 }
