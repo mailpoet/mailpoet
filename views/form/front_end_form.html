@@ -9,6 +9,15 @@
 
 
   <div id="<%= form_html_id %>" class="mailpoet_form mailpoet_form_<%= form_type %>">
+    <% if form_type == 'popup' %>
+      <img
+        class="mailpoet_popup_close_icon"
+        alt="close"
+        width=15
+        height=15
+        src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4NDcgMTA1OC44Ij48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMTc2LjIgMjAzLjVoNDc3Ljd2NDM2LjZIMTc2LjJ6Ii8+PHBhdGggZD0iTTE0MCAxNDBjMTU2LTE1NyA0MTAtMTU3IDU2NyAwIDE1NyAxNTYgMTU3IDQxMCAwIDU2N3MtNDExIDE1Ny01NjcgMGMtMTU3LTE1Ny0xNTctNDExIDAtNTY3em0xOTEgMTM0bDkyIDkyIDkzLTkyYzM3LTM4IDk0IDE5IDU3IDU3bC05MyA5MiA5MyA5M2MzNyAzNy0yMCA5NC01NyA1N2wtOTMtOTMtOTIgOTNjLTM4IDM3LTk1LTIwLTU3LTU3bDkyLTkzLTkyLTkyYy0zOC0zOCAxOS05NSA1Ny01N3oiIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIi8+PC9zdmc+'
+      >
+    <% endif %>
     <%= styles | raw %>
     <form
       target="_self"
