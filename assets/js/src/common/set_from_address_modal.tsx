@@ -4,6 +4,37 @@ import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 
+const mailPoetApiVersion = (window as any).mailpoet_api_version as string;
+
+const handleSave = async (address: string|null) => MailPoet.Ajax.post({
+  api_version: mailPoetApiVersion,
+  endpoint: 'settings',
+  action: 'setAuthorizedFromAddress',
+  data: {
+    address,
+  },
+});
+
+const getErrorMessage = (error: any|null): string => {
+  if (!error) {
+    return MailPoet.I18n.t('setFromAddressEmailUnknownError');
+  }
+
+  if (error.error === 'unauthorized') {
+    return MailPoet.I18n.t('setFromAddressEmailNotAuthorized').replace(
+      /\[link\](.*?)\[\/link\]/g,
+      '<a href="https://account.mailpoet.com/authorization" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+  }
+
+  return error.message || MailPoet.I18n.t('setFromAddressEmailUnknownError');
+};
+
+const getSuccessMessage = (): string => MailPoet.I18n.t('setFromAddressEmailSuccess').replace(
+  /\[link\](.*?)\[\/link\]/g,
+  '<a href="?page=mailpoet-settings#basics" rel="noopener noreferrer">$1</a>'
+);
+
 const showSetFromAddressModal = async () => {
   MailPoet.Modal.popup({
     title: MailPoet.I18n.t('setFromAddressModalTitle'),
@@ -59,6 +90,20 @@ const showSetFromAddressModal = async () => {
         if (!address) {
           return;
         }
+        try {
+          await handleSave(address);
+          MailPoet.Modal.close();
+          MailPoet.Notice.success(getSuccessMessage());
+        } catch (e) {
+          const error = e.errors && e.errors[0] ? e.errors[0] : null;
+          const message = getErrorMessage(error);
+          addressValidator.addError('saveError', { message });
+        }
+      });
+
+      addressInput.addEventListener('input', () => {
+        addressValidator.removeError('saveError');
+      });
     },
   });
 };
