@@ -2,50 +2,47 @@ import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 import 'parsleyjs';
 
-jQuery(function ($) { // eslint-disable-line func-names
+jQuery(($) => {
   window.reCaptchaCallback = function reCaptchaCallback() {
-    $('.mailpoet_recaptcha').each(function () { // eslint-disable-line func-names
-      var sitekey = $(this).attr('data-sitekey');
-      var container = $(this).find('> .mailpoet_recaptcha_container').get(0);
-      var field = $(this).find('> .mailpoet_recaptcha_field');
-      var widgetId;
+    $('.mailpoet_recaptcha').each((index, element) => {
+      const recaptcha = $(element);
+      const sitekey = recaptcha.attr('data-sitekey');
+      const container = recaptcha.find('> .mailpoet_recaptcha_container').get(0);
+      const field = recaptcha.find('> .mailpoet_recaptcha_field');
+      let widgetId;
       if (sitekey) {
-        widgetId = window.grecaptcha.render(container, { sitekey: sitekey, size: 'compact' });
+        widgetId = window.grecaptcha.render(container, { sitekey, size: 'compact' });
         field.val(widgetId);
       }
     });
   };
 
   function isSameDomain(url) {
-    var link = document.createElement('a');
+    const link = document.createElement('a');
     link.href = url;
     return (window.location.hostname === link.hostname);
   }
 
   function updateCaptcha(e) {
-    var captcha;
-    var captchaSrc;
-    var hashPos;
-    var newSrc;
-    captcha = $('img.mailpoet_captcha');
+    const captcha = $('img.mailpoet_captcha');
     if (!captcha.length) return false;
-    captchaSrc = captcha.attr('src');
-    hashPos = captchaSrc.indexOf('#');
-    newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
-    captcha.attr('src', newSrc + '#' + new Date().getTime());
+    const captchaSrc = captcha.attr('src');
+    const hashPos = captchaSrc.indexOf('#');
+    const newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
+    captcha.attr('src', `${newSrc}#${new Date().getTime()}`);
     if (e) e.preventDefault();
     return true;
   }
 
-  $(function () { // eslint-disable-line func-names
+  $(() => {
     // setup form validation
-    $('form.mailpoet_form').each(function () { // eslint-disable-line func-names
-      var form = $(this);
+    $('form.mailpoet_form').each((index, element) => {
+      const form = $(element);
       // Detect form is placed in tight container
       if (form.width() < 500) {
         form.addClass('mailpoet_form_tight_container');
       }
-      form.parsley().on('form:validated', function () { // eslint-disable-line func-names
+      form.parsley().on('form:validated', () => {
         // clear messages
         form.find('.mailpoet_message > p').hide();
 
@@ -55,8 +52,8 @@ jQuery(function ($) { // eslint-disable-line func-names
         }
       });
 
-      form.parsley().on('form:submit', function (parsley) { // eslint-disable-line func-names
-        var formData = form.mailpoetSerializeObject() || {};
+      form.parsley().on('form:submit', (parsley) => {
+        const formData = form.mailpoetSerializeObject() || {};
         // check if we're on the same domain
         if (isSameDomain(window.MailPoetForm.ajax_url) === false) {
           // non ajax post request
@@ -77,10 +74,10 @@ jQuery(function ($) { // eslint-disable-line func-names
           action: 'subscribe',
           data: formData.data,
         })
-          .fail(function handleFailedPost(response) {
+          .fail((response) => {
             if (
               response.meta !== undefined
-                && response.meta.redirect_url !== undefined
+              && response.meta.redirect_url !== undefined
             ) {
               // go to page
               window.top.location.href = response.meta.redirect_url;
@@ -89,23 +86,21 @@ jQuery(function ($) { // eslint-disable-line func-names
                 updateCaptcha();
               }
               form.find('.mailpoet_validate_error').html(
-                response.errors.map(function buildErrorMessage(error) {
-                  return error.message;
-                }).join('<br />')
+                response.errors.map((error) => error.message).join('<br />')
               ).show();
             }
           })
-          .done(function handleRecaptcha(response) {
+          .done((response) => {
             if (window.grecaptcha && formData.recaptcha) {
               window.grecaptcha.reset(formData.recaptcha);
             }
             return response;
           })
-          .done(function handleSuccess(response) {
+          .done((response) => {
             // successfully subscribed
             if (
               response.meta !== undefined
-                && response.meta.redirect_url !== undefined
+              && response.meta.redirect_url !== undefined
             ) {
               // go to page
               window.location.href = response.meta.redirect_url;
@@ -130,13 +125,13 @@ jQuery(function ($) { // eslint-disable-line func-names
             // resize iframe
             if (
               window.frameElement !== null
-                && MailPoet !== undefined
-                && MailPoet.Iframe
+              && MailPoet !== undefined
+              && MailPoet.Iframe
             ) {
               MailPoet.Iframe.autoSize(window.frameElement);
             }
           })
-          .always(function subscribeFormAlways() {
+          .always(() => {
             form.removeClass('mailpoet_form_sending');
           });
         return false;
