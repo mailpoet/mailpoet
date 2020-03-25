@@ -13,6 +13,10 @@ export default function SubscribeOn({ title, description, event }: Props) {
   const [enabled, setEnabled] = useSetting('subscribe', event, 'enabled');
   const [label, setLabel] = useSetting('subscribe', event, 'label');
   const [segments, setSegments] = useSetting('subscribe', event, 'segments');
+  React.useEffect(() => {
+    if (label === '') setLabel(t('yesAddMe'));
+  }, [label, setLabel]);
+
   return (
     <>
       <Label
@@ -34,7 +38,7 @@ export default function SubscribeOn({ title, description, event }: Props) {
             <input
               type="text"
               className="regular-text"
-              value={label || t('yesAddMe')}
+              value={label}
               onChange={onChange(setLabel)}
             />
             <br />
