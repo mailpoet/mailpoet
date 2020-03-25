@@ -50,7 +50,8 @@ class AuthorizedEmailsController {
 
   public function onSettingsSave($settings) {
     $senderAddressSet = !empty($settings['sender']['address']);
-    if ($senderAddressSet) {
+    $mailpoetSendingMethodSet = ($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['method'] ?? null) === Mailer::METHOD_MAILPOET;
+    if ($senderAddressSet || $mailpoetSendingMethodSet) {
       $this->checkAuthorizedEmailAddresses();
     }
   }
