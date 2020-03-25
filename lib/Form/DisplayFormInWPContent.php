@@ -124,6 +124,7 @@ class DisplayFormInWPContent {
     );
 
     $templateData['delay'] = $formSettings['popup_form_delay'] ?? 0;
+    $templateData['backgroundColor'] = $formSettings['backgroundColor'] ?? '';
 
     // generate security token
     $templateData['token'] = Security::generateToken();
