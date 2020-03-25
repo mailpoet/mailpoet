@@ -158,6 +158,29 @@ $form-columns-space-between: 20px;
   }
 }
 
-.mailpoet_form_popup {
+div.mailpoet_form_popup {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
   display: none;
+  height: 240px;
+  left: 50%;
+  max-width: 500px !important;
+  padding: 20px;
+  position: fixed;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px !important;
+  z-index: 1000;
+}
+
+@include breakpoint-max-width($form-break-small-width) {
+  div.mailpoet_form_popup {
+    width: 100% !important;
+  }
+}
+
+.mailpoet_form_modal_background.active,
+div.mailpoet_form_popup.active {
+  display: block;
 }
