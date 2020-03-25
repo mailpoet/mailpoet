@@ -75,6 +75,25 @@ class Settings extends APIEndpoint {
     }
   }
 
+  public function setAuthorizedFromAddress($data = []) {
+    $address = $data['address'] ?? null;
+    if (!$address) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => WPFunctions::get()->__('No email address specified.', 'mailpoet'),
+      ]);
+    }
+    $address = trim($address);
+
+    try {
+      $this->authorizedEmailsController->setFromEmailAddress($address);
+    } catch (\InvalidArgumentException $e) {
+      return $this->badRequest([
+        APIError::UNAUTHORIZED => WPFunctions::get()->__('Can’t use this email yet! Please authorize it first.', 'mailpoet'),
+      ]);
+    }
+    return $this->successResponse();
+  }
+
   private function onSettingsChange($oldSettings, $newSettings) {
     // Recalculate inactive subscribers
     $oldInactivationInterval = $oldSettings['deactivate_subscriber_after_inactive_days'];
