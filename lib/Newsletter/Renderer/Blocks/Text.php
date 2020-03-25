@@ -80,12 +80,12 @@ class Text {
     foreach ($paragraphs as $paragraph) {
       // process empty paragraphs
       if (!trim($paragraph->html())) {
-          $nextElement = ($paragraph->getNextSibling()) ?
-            trim($paragraph->getNextSibling()->text()) :
-            false;
-          $previousElement = ($paragraph->getPreviousSibling()) ?
-            trim($paragraph->getPreviousSibling()->text()) :
-            false;
+        $nextElement = ($paragraph->getNextSibling()) ?
+          trim($paragraph->getNextSibling()->text()) :
+          false;
+        $previousElement = ($paragraph->getPreviousSibling()) ?
+          trim($paragraph->getPreviousSibling()->text()) :
+          false;
         $previousElementTag = ($previousElement) ?
           $paragraph->getPreviousSibling()->tag :
           false;
