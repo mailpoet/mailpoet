@@ -35,6 +35,11 @@ jQuery(($) => {
   }
 
   $(() => {
+    $('.mailpoet_popup_close_icon').click((event) => {
+      const closeIcon = $(event.target);
+      closeIcon.parent().removeClass('active');
+    });
+
     $('div.mailpoet_form_popup').each((index, element) => {
       const formDiv = $(element);
       const form = formDiv.find('form');
