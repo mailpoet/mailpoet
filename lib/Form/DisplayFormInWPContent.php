@@ -123,6 +123,8 @@ class DisplayFormInWPContent {
       ((int)$_GET['mailpoet_error'] === $form->getId())
     );
 
+    $templateData['delay'] = $formSettings['popup_form_delay'] ?? 0;
+
     // generate security token
     $templateData['token'] = Security::generateToken();
 
