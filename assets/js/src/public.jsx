@@ -35,6 +35,17 @@ jQuery(($) => {
   }
 
   $(() => {
+    $('div.mailpoet_form_popup').each((index, element) => {
+      const formDiv = $(element);
+      let delay = formDiv.find('form').data('delay');
+      delay = parseInt(delay, 10);
+      if (Number.isNaN(delay)) {
+        delay = 0;
+      }
+      setTimeout(() => {
+        formDiv.addClass('active');
+      }, delay * 1000);
+    });
     // setup form validation
     $('form.mailpoet_form').each((index, element) => {
       const form = $(element);
