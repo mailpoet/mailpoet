@@ -11,13 +11,16 @@ function setCookie(name, value, days) {
   }
   document.cookie = `${name}=${value}${expires}; path=/`;
 }
+
 function getCookie(name) {
   const nameEQ = `${name}=`;
-  const ca = document.cookie.split(';');
-  for (let i = 0; i < ca.length; i += 1) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+  const cookieParts = document.cookie.split(';');
+  for (let i = 0; i < cookieParts.length; i += 1) {
+    let cookiePart = cookieParts[i];
+    while (cookiePart.charAt(0) === ' ') cookiePart = cookiePart.substring(1, cookiePart.length);
+    if (cookiePart.indexOf(nameEQ) === 0) {
+      return cookiePart.substring(nameEQ.length, cookiePart.length);
+    }
   }
   return null;
 }
@@ -55,10 +58,20 @@ jQuery(($) => {
   }
 
   $(() => {
+    const closePopupForm = (formDiv) => {
+      formDiv.removeClass('active');
+      formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
+      setCookie('popup_form_dismissed', '1', 365);
+    };
     $('.mailpoet_popup_close_icon').click((event) => {
       const closeIcon = $(event.target);
-      closeIcon.parent().removeClass('active');
-      setCookie('popup_form_dismissed', '1', 365);
+      const formDiv = closeIcon.parent();
+      closePopupForm(formDiv);
+    });
+    $('.mailpoet_form_popup_overlay').click((event) => {
+      const overlay = $(event.target);
+      const formDiv = overlay.next('div.mailpoet_form_popup');
+      closePopupForm(formDiv);
     });
 
     $('div.mailpoet_form_popup').each((index, element) => {
@@ -76,6 +89,7 @@ jQuery(($) => {
       }
       setTimeout(() => {
         formDiv.addClass('active');
+        formDiv.prev('.mailpoet_form_popup_overlay').addClass('active');
       }, delay * 1000);
     });
 
