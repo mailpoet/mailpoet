@@ -117,6 +117,8 @@
 .form-placement-option-list {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .form-placement-option {
@@ -129,7 +131,7 @@
   flex-direction: column;
   height: $form-placement-option-height;
   justify-content: space-between;
-  margin: 0 16px 16px 0;
+  margin-bottom: 16px;
   padding: 6px;
   pointer-events: auto;
   position: relative;
