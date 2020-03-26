@@ -2,6 +2,10 @@
 // Global variables, config switches. Not producing any CSS.
 @import 'settings/form-editor';
 
+// Tools
+// Default mixins and functions. Still not producing any CSS.
+@import 'mixins/breakpoints';
+
 // Generic
 // 3rd-party styles, can be overwritten.
 @import '../../../node_modules/@wordpress/edit-post/build-style/style';

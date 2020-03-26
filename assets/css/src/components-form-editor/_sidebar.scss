@@ -93,6 +93,15 @@
   }
 }
 
+// In CSS coming from Gutenberg the color picker width is dependent on the width on his siblings.
+// This rules unify width across all style setting sidebars
+.components-circular-option-picker {
+  width: 245px;
+  @include breakpoint-max-width(782px) {
+    width: 100%;
+  }
+}
+
 .mailpoet-styles-settings-heading {
   font-size: 15px;
 
