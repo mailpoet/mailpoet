@@ -93,6 +93,16 @@ const showSetFromAddressModal = async () => {
         try {
           await handleSave(address);
           MailPoet.Modal.close();
+
+          // remove unauthorized email notices
+          const unauthorizedEmailNotice = document.querySelector('[data-notice="unauthorized-email-addresses-notice"]');
+          if (unauthorizedEmailNotice) {
+            unauthorizedEmailNotice.remove();
+          }
+          const unauthorizedEmailInNewsletterNotice = document.querySelector('[data-notice="unauthorized-email-in-newsletters-addresses-notice"]');
+          if (unauthorizedEmailInNewsletterNotice) {
+            unauthorizedEmailInNewsletterNotice.remove();
+          }
           MailPoet.Notice.success(getSuccessMessage());
         } catch (e) {
           const error = e.errors && e.errors[0] ? e.errors[0] : null;
