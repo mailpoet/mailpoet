@@ -1,4 +1,5 @@
-import { State, Settings } from './types';
+import { State } from './types';
+import normalizeSettings from './normalize_settings';
 
 export default function makeDefaultState(window: any): State {
   return {
@@ -11,7 +12,7 @@ export default function makeDefaultState(window: any): State {
       woocommerce: !!window.mailpoet_woocommerce_active,
       newUser: !!window.mailpoet_is_new_user,
     },
-    data: window.mailpoet_settings,
+    data: normalizeSettings(window.mailpoet_settings),
     segments: window.mailpoet_segments,
     pages: window.mailpoet_pages,
   };
