@@ -39,7 +39,7 @@ class ManageTest extends \MailPoetTest {
     ]);
   }
 
-  public function testItDoesntRemoveHiddenSegments() {
+  public function testItDoesntRemoveHiddenSegmentsAndCanResubscribe() {
     $manage = new Manage(
       Stub::make(UrlHelper::class, [
         'redirectBack' => null,
@@ -80,6 +80,24 @@ class ManageTest extends \MailPoetTest {
     expect($subscriptions)->equals([
       ['segment_id' => $this->segmentA->id, 'status' => Subscriber::STATUS_UNSUBSCRIBED],
       ['segment_id' => $this->segmentB->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->hiddenSegment->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
+    ]);
+
+    // Test it can resubscribe
+    $_POST['data']['segments'] = [$this->segmentA->id];
+    $manage->onSave();
+
+    $subscriber = Subscriber::findOne($this->subscriber->id);
+    $subscriber->withSubscriptions();
+    $subscriptions = array_map(function($s) {
+      return ['status' => $s['status'], 'segment_id' => $s['segment_id']];
+    }, $subscriber->subscriptions);
+    usort($subscriptions, function($a, $b) {
+      return $a['segment_id'] - $b['segment_id'];
+    });
+    expect($subscriptions)->equals([
+      ['segment_id' => $this->segmentA->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
+      ['segment_id' => $this->segmentB->id, 'status' => Subscriber::STATUS_UNSUBSCRIBED],
       ['segment_id' => $this->hiddenSegment->id, 'status' => Subscriber::STATUS_SUBSCRIBED],
     ]);
   }
