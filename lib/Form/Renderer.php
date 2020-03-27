@@ -28,7 +28,7 @@ class Renderer {
 
   public function renderStyles(array $form = [], string $prefix = null): string {
     $html = '<style type="text/css">';
-    $html .= '.mailpoet_hp_email_label{display:none;}'; // move honeypot field out of sight
+    $html .= '.mailpoet_hp_email_label{display:none!important;}'; // move honeypot field out of sight
     $html .= $this->styleUtils->render($this->getStyles($form), $prefix);
     $html .= '</style>';
 
