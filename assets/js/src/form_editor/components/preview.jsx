@@ -95,7 +95,7 @@ const FormPreview = () => {
         <Preview>
           <div>
             <style type="text/css">
-              {'.mailpoet_hp_email_label { display: none }' }
+              {'.mailpoet_hp_email_label { display: none !important }'}
               {form.css}
             </style>
             <form
