@@ -63,11 +63,11 @@ class Manage {
     }
     $subscriber->withSubscriptions();
     $allowedSegments = $this->settings->get('subscription.segments', false);
-    $subscriptionsSegmentsIds = [];
-    // Unsubscribe from missing segments
+
+    // Unsubscribe from all other segments already subscribed to
+    // but don't change disallowed segments
     foreach ($subscriber->subscriptions as $subscription) {
       $segmentId = $subscription['segment_id'];
-      $subscriptionsSegmentsIds[] = $segmentId;
       if ($allowedSegments && !in_array($segmentId, $allowedSegments)) {
         continue;
       }
@@ -79,15 +79,17 @@ class Manage {
         ]);
       }
     }
-    // subscribe to new segments
+
+    // Allow subscribing only to allowed segments
+    if ($allowedSegments) {
+      $segmentsIds = array_intersect($segmentsIds, $allowedSegments);
+    }
     foreach ($segmentsIds as $segmentId) {
-      if (!in_array($segmentId, $subscriptionsSegmentsIds)) {
-        SubscriberSegment::createOrUpdate([
-          'subscriber_id' => $subscriber->id,
-          'segment_id' => $segmentId,
-          'status' => Subscriber::STATUS_SUBSCRIBED,
-        ]);
-      }
+      SubscriberSegment::createOrUpdate([
+        'subscriber_id' => $subscriber->id,
+        'segment_id' => $segmentId,
+        'status' => Subscriber::STATUS_SUBSCRIBED,
+      ]);
     }
   }
 
