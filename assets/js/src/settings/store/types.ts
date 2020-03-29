@@ -185,6 +185,9 @@ export type State = {
     woocommerce: boolean
     newUser: boolean
     error: boolean
+    mssKeyValid: boolean
+    premiumKeyValid: boolean
+    premiumPluginInstalled: boolean
   }
   save: {
     inProgress: boolean
@@ -198,3 +201,16 @@ export type Action =
   | { type: 'SAVE_STARTED' }
   | { type: 'SAVE_DONE' }
   | { type: 'SAVE_FAILED'; error: any }
+
+export type PremiumStatus =
+  | 'invalid'
+  | 'valid_premium_plugin_not_installed'
+  | 'valid_premium_plugin_not_active'
+  | 'valid_premium_plugin_active'
+  | 'valid_premium_plugin_being_installed'
+  | 'valid_premium_plugin_being_activated'
+
+export type MssStatus =
+  | 'invalid'
+  | 'valid_mss_not_active'
+  | 'valid_mss_active'
