@@ -5,6 +5,7 @@ import KeyMessages from 'settings/pages/key_activation/messages/key_messages.jsx
 import { MssStatus, MssMessages } from 'settings/pages/key_activation/messages/mss_messages.jsx';
 import { PremiumStatus, PremiumMessages } from 'settings/pages/key_activation/messages/premium_messages.jsx';
 import { PremiumInstallationStatus } from 'settings/pages/key_activation/messages/premium_installation_messages.jsx';
+import { useSetting } from 'settings/store/hooks';
 
 const getSettings = async () => MailPoet.Ajax.post({
   api_version: window.mailpoet_api_version,
@@ -41,12 +42,14 @@ const activateMss = async (key) => MailPoet.Ajax.post({
   },
 });
 
-const PremiumTab = (props) => {
-  const [key, setKey] = useState(props.activationKey);
-  const [premiumStatus, setPremiumStatus] = useState(key ? props.premiumStatus : null);
+const PremiumTab = () => {
+  const [premiumKey] = useSetting('premium', 'premium_key');
+  const [mssKey] = useSetting('mta', 'mailpoet_api_key');
+  const [key, setKey] = useState(premiumKey || mssKey);
+  const [premiumStatus, setPremiumStatus] = useState(key ? getPremiumStatus() : null);
   const [premiumMessage, setPremiumMessage] = useState(null);
   const [premiumInstallationStatus, setPremiumInstallationStatus] = useState(null);
-  const [mssStatus, setMssStatus] = useState(key ? props.mssStatus : null);
+  const [mssStatus, setMssStatus] = useState(key ? getMssStatus() : null);
   const [mssKeyMessage, setMssKeyMessage] = useState(null);
   const [showSetFromAddressModal, setShowSetFromAddressModal] = useState(false);
 
@@ -106,7 +109,7 @@ const PremiumTab = (props) => {
       MailPoet.trackEvent(
         'User has validated a Premium key',
         {
-          'MailPoet Free version': window.mailpoet_version,
+          'MailPoet Free version': MailPoet.version,
           'Premium plugin is active': pluginActive,
         }
       );
@@ -116,8 +119,8 @@ const PremiumTab = (props) => {
       MailPoet.trackEvent(
         'User has failed to validate a Premium key',
         {
-          'MailPoet Free version': window.mailpoet_version,
-          'Premium plugin is active': props.premiumPluginActive,
+          'MailPoet Free version': MailPoet.version,
+          'Premium plugin is active': !!MailPoet.premiumVersion,
         }
       );
     }
@@ -241,21 +244,10 @@ const PremiumTab = (props) => {
   );
 };
 
-PremiumTab.propTypes = {
-  activationKey: PropTypes.string,
-  premiumStatus: PropTypes.number.isRequired,
-  mssStatus: PropTypes.number.isRequired,
-  premiumPluginActive: PropTypes.bool.isRequired,
-};
-
-PremiumTab.defaultProps = {
-  activationKey: null,
-};
-
 const getPremiumStatus = () => {
   const keyValid = window.mailpoet_premium_key_valid;
   const pluginInstalled = window.mailpoet_premium_plugin_installed;
-  const pluginActive = !!window.mailpoet_premium_version;
+  const pluginActive = !!MailPoet.premiumVersion;
   if (!keyValid) {
     return PremiumStatus.KEY_INVALID;
   }
