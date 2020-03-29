@@ -2,13 +2,10 @@ import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
-import SetFromAddressModal from 'common/set_from_address_modal.tsx';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
-import Notices from 'notices/notices.jsx';
-import KeyMessages from 'old_settings/premium_tab/messages/key_messages.jsx';
-import { MssStatus, MssMessages } from 'old_settings/premium_tab/messages/mss_messages.jsx';
-import { PremiumStatus, PremiumMessages } from 'old_settings/premium_tab/messages/premium_messages.jsx';
-import { PremiumInstallationStatus } from 'old_settings/premium_tab/messages/premium_installation_messages.jsx';
+import KeyMessages from 'settings/pages/key_activation/messages/key_messages.jsx';
+import { MssStatus, MssMessages } from 'settings/pages/key_activation/messages/mss_messages.jsx';
+import { PremiumStatus, PremiumMessages } from 'settings/pages/key_activation/messages/premium_messages.jsx';
+import { PremiumInstallationStatus } from 'settings/pages/key_activation/messages/premium_installation_messages.jsx';
 
 const getSettings = async () => MailPoet.Ajax.post({
   api_version: window.mailpoet_api_version,
@@ -236,7 +233,7 @@ const PremiumTab = (props) => {
           </tr>
         </tbody>
       </table>
-      { showSetFromAddressModal && (
+      {showSetFromAddressModal && (
         <SetFromAddressModal
           onRequestClose={() => setShowSetFromAddressModal(false)}
         />
