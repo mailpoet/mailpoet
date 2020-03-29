@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
-import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
 import KeyMessages from 'settings/pages/key_activation/messages/key_messages.jsx';
 import { MssStatus, MssMessages } from 'settings/pages/key_activation/messages/mss_messages.jsx';
@@ -253,43 +252,26 @@ PremiumTab.defaultProps = {
   activationKey: null,
 };
 
-const container = document.getElementById('settings-premium-tab');
-if (container) {
-  const getPremiumStatus = () => {
-    const keyValid = window.mailpoet_premium_key_valid;
-    const pluginInstalled = window.mailpoet_premium_plugin_installed;
-    const pluginActive = !!window.mailpoet_premium_version;
-    if (!keyValid) {
-      return PremiumStatus.KEY_INVALID;
-    }
-    if (pluginActive) {
-      return PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_ACTIVE;
-    }
-    return pluginInstalled
-      ? PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_NOT_ACTIVE
-      : PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_NOT_INSTALLED;
-  };
+const getPremiumStatus = () => {
+  const keyValid = window.mailpoet_premium_key_valid;
+  const pluginInstalled = window.mailpoet_premium_plugin_installed;
+  const pluginActive = !!window.mailpoet_premium_version;
+  if (!keyValid) {
+    return PremiumStatus.KEY_INVALID;
+  }
+  if (pluginActive) {
+    return PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_ACTIVE;
+  }
+  return pluginInstalled
+    ? PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_NOT_ACTIVE
+    : PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_NOT_INSTALLED;
+};
 
-  const getMssStatus = () => {
-    const keyValid = window.mailpoet_mss_key_valid;
-    const mssActive = window.mailpoet_mss_active;
-    if (!keyValid) {
-      return MssStatus.KEY_INVALID;
-    }
-    return mssActive ? MssStatus.KEY_VALID_MSS_ACTIVE : MssStatus.KEY_VALID_MSS_NOT_ACTIVE;
-  };
-
-  const App = () => (
-    <GlobalContext.Provider value={useGlobalContextValue(window)}>
-      <Notices />
-      <PremiumTab
-        activationKey={window.mailpoet_activation_key}
-        premiumStatus={getPremiumStatus()}
-        mssStatus={getMssStatus()}
-        premiumPluginActive={!!window.mailpoet_premium_version}
-      />
-    </GlobalContext.Provider>
-  );
-
-  ReactDOM.render(<App />, container);
-}
+const getMssStatus = () => {
+  const keyValid = window.mailpoet_mss_key_valid;
+  const mssActive = window.mailpoet_mss_active;
+  if (!keyValid) {
+    return MssStatus.KEY_INVALID;
+  }
+  return mssActive ? MssStatus.KEY_VALID_MSS_ACTIVE : MssStatus.KEY_VALID_MSS_NOT_ACTIVE;
+};
