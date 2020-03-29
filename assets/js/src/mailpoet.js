@@ -6,6 +6,7 @@ var MailPoet = {
   FeaturesController: FeaturesController(window.mailpoet_feature_flags),
   MailPoetComUrlFactory: MailPoetComUrlFactory(window.mailpoet_referral_id),
   version: window.mailpoet_version,
+  premiumVersion: window.mailpoet_premium_version,
   isWoocommerceActive: window.mailpoet_woocommerce_active,
 };
 
