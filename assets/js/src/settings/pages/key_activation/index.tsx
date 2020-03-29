@@ -1,11 +1,10 @@
-import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import MailPoet from 'mailpoet';
 import KeyMessages from 'settings/pages/key_activation/messages/key_messages.jsx';
-import { MssStatus, MssMessages } from 'settings/pages/key_activation/messages/mss_messages.jsx';
-import { PremiumStatus, PremiumMessages } from 'settings/pages/key_activation/messages/premium_messages.jsx';
+import { MssMessages } from 'settings/pages/key_activation/messages/mss_messages.jsx';
+import { PremiumMessages } from 'settings/pages/key_activation/messages/premium_messages.jsx';
 import { PremiumInstallationStatus } from 'settings/pages/key_activation/messages/premium_installation_messages.jsx';
-import { useSetting } from 'settings/store/hooks';
+import { useSetting, useSelector } from 'settings/store/hooks';
 
 const getSettings = async () => MailPoet.Ajax.post({
   api_version: window.mailpoet_api_version,
@@ -46,6 +45,8 @@ const PremiumTab = () => {
   const [premiumKey] = useSetting('premium', 'premium_key');
   const [mssKey] = useSetting('mta', 'mailpoet_api_key');
   const [key, setKey] = useState(premiumKey || mssKey);
+  const getMssStatus = useSelector('getMssStatus');
+  const getPremiumStatus = useSelector('getPremiumStatus');
   const [premiumStatus, setPremiumStatus] = useState(key ? getPremiumStatus() : null);
   const [premiumMessage, setPremiumMessage] = useState(null);
   const [premiumInstallationStatus, setPremiumInstallationStatus] = useState(null);
@@ -55,7 +56,7 @@ const PremiumTab = () => {
 
   // key is considered valid if either Premium or MSS check passes
   const keyValid = useMemo(() => {
-    if (premiumStatus > PremiumStatus.KEY_INVALID || mssStatus > MssStatus.KEY_INVALID) {
+    if (premiumStatus !== 'invalid' || mssStatus !== 'invalid') {
       return true;
     }
     return (premiumStatus === null || mssStatus === null) ? null : false;
@@ -97,13 +98,13 @@ const PremiumTab = () => {
       // install/activate Premium plugin
       let pluginActive = response.meta.premium_plugin_active;
       if (!response.meta.premium_plugin_installed) {
-        setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_INSTALLED);
+        setPremiumStatus('valid_premium_plugin_being_installed');
         pluginActive = await installPremiumPlugin();
       } else if (!response.meta.premium_plugin_active) {
-        setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_BEING_ACTIVATED);
+        setPremiumStatus('valid_premium_plugin_being_activated');
         pluginActive = await activatePremiumPlugin();
       } else {
-        setPremiumStatus(PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_ACTIVE);
+        setPremiumStatus('valid_premium_plugin_active');
       }
 
       MailPoet.trackEvent(
@@ -114,7 +115,7 @@ const PremiumTab = () => {
         }
       );
     } catch (error) {
-      setPremiumStatus(PremiumStatus.KEY_INVALID);
+      setPremiumStatus('invalid');
       setPremiumMessage(error.errors.map((e) => e.message).join(' ') || null);
       MailPoet.trackEvent(
         'User has failed to validate a Premium key',
@@ -132,12 +133,12 @@ const PremiumTab = () => {
       setMssKeyMessage(response.data.message || null);
       if (activateMssIfKeyValid) {
         await activateMss(key);
-        setMssStatus(MssStatus.KEY_VALID_MSS_ACTIVE);
+        setMssStatus('valid_mss_active');
       } else {
-        setMssStatus(MssStatus.KEY_VALID_MSS_NOT_ACTIVE);
+        setMssStatus('valid_mss_not_active');
       }
     } catch (error) {
-      setMssStatus(MssStatus.KEY_INVALID);
+      setMssStatus('invalid');
       setMssKeyMessage(error.errors.map((e) => e.message).join(' ') || null);
     }
     window.updateMSSActivationUI();
@@ -242,28 +243,4 @@ const PremiumTab = () => {
       )}
     </>
   );
-};
-
-const getPremiumStatus = () => {
-  const keyValid = window.mailpoet_premium_key_valid;
-  const pluginInstalled = window.mailpoet_premium_plugin_installed;
-  const pluginActive = !!MailPoet.premiumVersion;
-  if (!keyValid) {
-    return PremiumStatus.KEY_INVALID;
-  }
-  if (pluginActive) {
-    return PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_ACTIVE;
-  }
-  return pluginInstalled
-    ? PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_NOT_ACTIVE
-    : PremiumStatus.KEY_VALID_PREMIUM_PLUGIN_NOT_INSTALLED;
-};
-
-const getMssStatus = () => {
-  const keyValid = window.mailpoet_mss_key_valid;
-  const mssActive = window.mailpoet_mss_active;
-  if (!keyValid) {
-    return MssStatus.KEY_INVALID;
-  }
-  return mssActive ? MssStatus.KEY_VALID_MSS_ACTIVE : MssStatus.KEY_VALID_MSS_NOT_ACTIVE;
 };
