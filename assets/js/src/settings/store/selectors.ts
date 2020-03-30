@@ -71,3 +71,9 @@ export function getMssStatus(state: State): MssStatus {
   }
   return mssActive ? 'valid_mss_active' : 'valid_mss_not_active';
 }
+
+export function hasValidKey(state: State) {
+  const hasValidMssKey = getMssStatus(state) !== 'invalid';
+  const hasValidPremiumKey = getPremiumStatus(state) !== 'invalid';
+  return hasValidMssKey || hasValidPremiumKey;
+}

@@ -214,3 +214,13 @@ export type MssStatus =
   | 'invalid'
   | 'valid_mss_not_active'
   | 'valid_mss_active'
+
+export type PremiumInstallationStatus =
+  | 'install_installing'
+  | 'install_activating'
+  | 'install_done'
+  | 'install_installing_error'
+  | 'install_activating_error'
+  | 'activate_activating'
+  | 'activate_done'
+  | 'activate_error'
