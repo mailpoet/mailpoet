@@ -127,6 +127,7 @@ jobs:
             - .
   static_analysis:
     executor: wpcli_php_mysql_latest
+    resource_class: medium
     steps:
     - attach_workspace:
         at: /home/circleci/mailpoet
