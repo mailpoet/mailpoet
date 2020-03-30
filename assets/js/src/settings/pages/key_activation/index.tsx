@@ -1,10 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
-import KeyMessages from 'settings/pages/key_activation/messages/key_messages.jsx';
-import { MssMessages } from 'settings/pages/key_activation/messages/mss_messages.jsx';
-import { PremiumMessages } from 'settings/pages/key_activation/messages/premium_messages.jsx';
-import { PremiumInstallationStatus } from 'settings/pages/key_activation/messages/premium_installation_messages.jsx';
 import { useSetting, useSelector } from 'settings/store/hooks';
+import { KeyMessages, MssMessages, PremiumMessages } from './messages';
 
 const getSettings = async () => MailPoet.Ajax.post({
   api_version: window.mailpoet_api_version,
@@ -52,21 +49,12 @@ const PremiumTab = () => {
   const [premiumInstallationStatus, setPremiumInstallationStatus] = useState(null);
   const [mssStatus, setMssStatus] = useState(key ? getMssStatus() : null);
   const [mssKeyMessage, setMssKeyMessage] = useState(null);
-  const [showSetFromAddressModal, setShowSetFromAddressModal] = useState(false);
-
-  // key is considered valid if either Premium or MSS check passes
-  const keyValid = useMemo(() => {
-    if (premiumStatus !== 'invalid' || mssStatus !== 'invalid') {
-      return true;
-    }
-    return (premiumStatus === null || mssStatus === null) ? null : false;
-  }, [premiumStatus, mssStatus]);
+  const keyValid = useSelector('hasValidKey')();
 
   const activatePremiumPlugin = async (isAfterInstall = false) => {
-    const status = PremiumInstallationStatus;
-    const activateStatus = isAfterInstall ? status.INSTALL_ACTIVATING : status.ACTIVATE_ACTIVATING;
-    const doneStatus = isAfterInstall ? status.INSTALL_DONE : status.ACTIVATE_DONE;
-    const errorStatus = isAfterInstall ? status.INSTALL_ACTIVATING_ERROR : status.ACTIVATE_ERROR;
+    const activateStatus = isAfterInstall ? 'install_activating' : 'activate_activating';
+    const doneStatus = isAfterInstall ? 'install_done' : 'activate_done';
+    const errorStatus = isAfterInstall ? 'install_activating_error' : 'activate_error';
 
     setPremiumInstallationStatus(activateStatus);
     try {
@@ -80,11 +68,11 @@ const PremiumTab = () => {
   };
 
   const installPremiumPlugin = async () => {
-    setPremiumInstallationStatus(PremiumInstallationStatus.INSTALL_INSTALLING);
+    setPremiumInstallationStatus('install_installing');
     try {
       await requestPremiumApi('installPlugin');
     } catch (error) {
-      setPremiumInstallationStatus(PremiumInstallationStatus.INSTALL_INSTALLING_ERROR);
+      setPremiumInstallationStatus('install_installing_error');
       return false;
     }
     return activatePremiumPlugin(true);
@@ -145,102 +133,109 @@ const PremiumTab = () => {
   }
 
   return (
-    <>
-      <table className="form-table">
-        <tbody>
-          <tr>
-            <th scope="row">
-              <label htmlFor="mailpoet_premium_key">
-                {MailPoet.I18n.t('premiumTabActivationKeyLabel')}
-              </label>
-              <p className="description">
-                {MailPoet.I18n.t('premiumTabDescription')}
-              </p>
-            </th>
-            <td>
-              <div>
-                <input
-                  type="text"
-                  id="mailpoet_premium_key"
-                  className="regular-text"
-                  name="premium[premium_key]"
-                  value={key || ''}
-                  onChange={(event) => {
-                    setKey(event.target.value.trim() || null);
-                    setPremiumStatus(null);
-                    setPremiumInstallationStatus(null);
-                    setMssStatus(null);
-                  }}
-                />
-                <button
-                  type="button"
-                  id="mailpoet_premium_key_verify"
-                  className="button-secondary"
-                  onClick={async (event) => {
-                    if (!key) {
-                      MailPoet.Notice.error(
-                        MailPoet.I18n.t('premiumTabNoKeyNotice'),
-                        { scroll: true },
-                      );
-                      return;
-                    }
+    <table className="form-table">
+      <tbody>
+        <tr>
+          <th scope="row">
+            <label htmlFor="mailpoet_premium_key">
+              {MailPoet.I18n.t('premiumTabActivationKeyLabel')}
+            </label>
+            <p className="description">
+              {MailPoet.I18n.t('premiumTabDescription')}
+            </p>
+          </th>
+          <td>
+            <div>
+              <input
+                type="text"
+                id="mailpoet_premium_key"
+                className="regular-text"
+                name="premium[premium_key]"
+                value={key || ''}
+                onChange={(event) => {
+                  setKey(event.target.value.trim() || null);
+                  setPremiumStatus(null);
+                  setPremiumInstallationStatus(null);
+                  setMssStatus(null);
+                }}
+              />
+              <button
+                type="button"
+                id="mailpoet_premium_key_verify"
+                className="button-secondary"
+                onClick={async (event) => {
+                  if (!key) {
+                    MailPoet.Notice.error(
+                      MailPoet.I18n.t('premiumTabNoKeyNotice'),
+                      { scroll: true },
+                    );
+                    return;
+                  }
 
-                    setPremiumStatus(null);
-                    setPremiumInstallationStatus(null);
-                    setMssStatus(null);
+                  setPremiumStatus(null);
+                  setPremiumInstallationStatus(null);
+                  setMssStatus(null);
 
-                    MailPoet.Modal.loading(true);
-                    const isUserTriggered = event.isTrusted;
-                    await verifyMailPoetSendingServiceKey(isUserTriggered);
-                    await verifyMailPoetPremiumKey();
-                    MailPoet.Modal.loading(false);
-
-                    // show modal to set authorized FROM address, if needed
-                    if (isUserTriggered) {
-                      const settings = await getSettings();
-                      const mssActive = settings.data.mta && settings.data.mta.method === 'MailPoet';
-                      const authorizedAddressNeeded = !settings.data.sender.address
-                        || settings.data.authorized_emails_addresses_check;
-
-                      if (mssActive && authorizedAddressNeeded) {
-                        setShowSetFromAddressModal(true);
-                      }
-                    }
-                  }}
-                >
-                  {MailPoet.I18n.t('premiumTabVerifyButton')}
-                </button>
+                  MailPoet.Modal.loading(true);
+                  const isUserTriggered = event.isTrusted;
+                  await verifyMailPoetSendingServiceKey(isUserTriggered);
+                  await verifyMailPoetPremiumKey();
+                  MailPoet.Modal.loading(false);
+                }}
+              >
+                {MailPoet.I18n.t('premiumTabVerifyButton')}
+              </button>
+            </div>
+            {keyValid !== null && (
+              <div className="key-activation-messages">
+                <KeyMessages />
+                {mssStatus !== null && (
+                  <MssMessages
+                    keyMessage={mssKeyMessage}
+                    activationCallback={() => verifyMailPoetSendingServiceKey(true)}
+                  />
+                )}
+                {premiumStatus !== null && (
+                  <PremiumMessages
+                    keyMessage={premiumMessage}
+                    installationStatus={premiumInstallationStatus}
+                    installationCallback={installPremiumPlugin}
+                    activationCallback={() => activatePremiumPlugin()}
+                  />
+                )}
               </div>
               {keyValid !== null && (
-                <div className="key-activation-messages">
-                  <KeyMessages keyValid={keyValid} />
-                  {mssStatus !== null && (
-                    <MssMessages
-                      keyStatus={mssStatus}
-                      keyMessage={mssKeyMessage}
-                      activationCallback={() => verifyMailPoetSendingServiceKey(true)}
-                    />
-                  )}
-                  {premiumStatus !== null && (
-                    <PremiumMessages
-                      keyStatus={premiumStatus}
-                      keyMessage={premiumMessage}
-                      installationStatus={premiumInstallationStatus}
-                      installationCallback={installPremiumPlugin}
-                      activationCallback={() => activatePremiumPlugin()}
-                    />
-                  )}
-                </div>
-              )}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      {showSetFromAddressModal && (
-        <SetFromAddressModal
-          onRequestClose={() => setShowSetFromAddressModal(false)}
-        />
-      )}
+              <div className="key-activation-messages">
+                <KeyMessages keyValid={keyValid} />
+                {mssStatus !== null && (
+                  <MssMessages
+                    keyStatus={mssStatus}
+                    keyMessage={mssKeyMessage}
+                    activationCallback={() => verifyMailPoetSendingServiceKey(true)}
+                  />
+                )}
+                {premiumStatus !== null && (
+                  <PremiumMessages
+                    keyStatus={premiumStatus}
+                    keyMessage={premiumMessage}
+                    installationStatus={premiumInstallationStatus}
+                    installationCallback={installPremiumPlugin}
+                    activationCallback={() => activatePremiumPlugin()}
+                  />
+                )}
+              </div>
+            )}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+      {
+    showSetFromAddressModal && (
+      <SetFromAddressModal
+        onRequestClose={() => setShowSetFromAddressModal(false)}
+      />
+    )
+  }
     </>
   );
 };
