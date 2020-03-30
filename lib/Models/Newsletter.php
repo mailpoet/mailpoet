@@ -296,10 +296,6 @@ class Newsletter extends Model {
       );
     }
 
-    if ($this->status == self::STATUS_SENDING) {
-      $this->set('status', self::STATUS_DRAFT);
-      $this->save();
-    }
     return parent::restore();
   }
 
@@ -337,14 +333,6 @@ class Newsletter extends Model {
           ->set('deleted_at', null)
           ->save();
       }
-    });
-
-    parent::bulkAction($orm, function($ids) {
-      Newsletter::whereIn('id', $ids)
-        ->where('status', Newsletter::STATUS_SENDING)
-        ->findResultSet()
-        ->set('status', Newsletter::STATUS_DRAFT)
-        ->save();
     });
 
     return parent::bulkRestore($orm);
