@@ -18,7 +18,7 @@ export default function createReducer(defaultValue: State) {
       case 'UPDATE_KEY_ACTIVATION_STATE':
         keyActivation = { ...state.keyActivation, ...action.fields };
         keyActivation.isKeyValid = null;
-        if (keyActivation.mssStatus !== null || keyActivation.premiumStatus !== null) {
+        if (keyActivation.mssStatus !== null && keyActivation.premiumStatus !== null) {
           keyActivation.isKeyValid = (
             keyActivation.mssStatus !== 'invalid'
             || keyActivation.premiumStatus !== 'invalid'
