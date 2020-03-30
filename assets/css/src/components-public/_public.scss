@@ -177,7 +177,9 @@ div.mailpoet_form_popup {
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
   display: none;
   left: 50%;
+  max-height: calc(100vh - 60px);
   max-width: 500px !important;
+  overflow-y: auto;
   padding: 20px;
   position: fixed;
   top: 50%;
@@ -194,6 +196,8 @@ div.mailpoet_form_popup {
 
 @include breakpoint-max-width($form-break-small-width) {
   div.mailpoet_form_popup {
+    border-radius: 0;
+    max-height: 100vh;
     width: 100% !important;
   }
 }
