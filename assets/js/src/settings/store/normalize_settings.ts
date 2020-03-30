@@ -184,6 +184,7 @@ function asStringArray(defaultValue: string[]) {
 function asBoolean<T, F>(trueValue: T, falseValue: F, defaultValue: T | F) {
   return (value: any): T | F => {
     if (value === undefined) return defaultValue;
+    if (value === trueValue || value === falseValue) return value;
     if (value) return trueValue;
     return falseValue;
   };
