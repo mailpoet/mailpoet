@@ -108,6 +108,7 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItSynchronizesNewGuestCustomer() {
+    $this->settings->set('signup_confirmation', ['enabled' => true]);
     $guest = $this->insertGuestCustomer();
     $hook = 'woocommerce_checkout_update_order_meta';
     $this->woocommerceSegment->synchronizeGuestCustomer($guest['order_id'], $hook);
@@ -117,15 +118,33 @@ class WooCommerceTest extends \MailPoetTest {
     expect($subscriber)->notEmpty();
     expect($subscriber->isWoocommerceUser)->equals(1);
     expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
+    expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+  }
+
+  public function testItSynchronizesNewGuestCustomerWithDoubleOptinDisabled() {
+    $this->settings->set('signup_confirmation', ['enabled' => false]);
+    $this->settings->resetCache();
+    $guest = $this->insertGuestCustomer();
+    $hook = 'woocommerce_checkout_update_order_meta';
+    $this->woocommerceSegment->synchronizeGuestCustomer($guest['order_id'], $hook);
+    $subscriber = Segment::getWooCommerceSegment()->subscribers()
+      ->where('email', $guest['email'])
+      ->findOne();
+    expect($subscriber)->notEmpty();
+    expect($subscriber->isWoocommerceUser)->equals(1);
+    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
+    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
   public function testItSynchronizesCustomers() {
+    $this->settings->set('signup_confirmation', ['enabled' => true]);
     $this->settings->set('mailpoet_subscribe_old_woocommerce_customers', ['dummy' => '1', 'enabled' => '1']);
     $user = $this->insertRegisteredCustomer();
     $guest = $this->insertGuestCustomer();
     $this->woocommerceSegment->synchronizeCustomers();
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(2);
+
     $subscriber = Subscriber::where('email', $user->user_email)->findOne(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
     expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);

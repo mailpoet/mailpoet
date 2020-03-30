@@ -80,8 +80,14 @@ class WooCommerce {
     $wcSegment = Segment::getWooCommerceSegment();
 
     if ($wcOrder === false or $wcSegment === false) return;
+    $signupConfirmation = $this->settings->get('signup_confirmation');
+    $status = Subscriber::STATUS_UNCONFIRMED;
+    if ((bool)$signupConfirmation['enabled'] === false) {
+      $status = Subscriber::STATUS_SUBSCRIBED;
+    }
 
-    $insertedEmails = $this->insertSubscribersFromOrders($orderId);
+    $insertedEmails = $this->insertSubscribersFromOrders($orderId, $status);
+
     if (empty($insertedEmails[0]['email'])) {
       return false;
     }
@@ -151,7 +157,7 @@ class WooCommerce {
     ', $subscribersTable, $wpdb->users, $wpdb->usermeta, Source::WOOCOMMERCE_USER));
   }
 
-  private function insertSubscribersFromOrders($orderId = null) {
+  private function insertSubscribersFromOrders($orderId = null, $status = Subscriber::STATUS_SUBSCRIBED) {
     global $wpdb;
     $subscribersTable = Subscriber::$_table;
     $orderId = !is_null($orderId) ? (int)$orderId : null;
@@ -170,7 +176,7 @@ class WooCommerce {
         WHERE wppm.meta_key = "_billing_email" AND wppm.meta_value != ""
         ' . ($orderId ? ' AND p.ID = "' . $orderId . '"' : '') . '
       ON DUPLICATE KEY UPDATE is_woocommerce_user = 1
-    ', $subscribersTable, Subscriber::STATUS_SUBSCRIBED, Source::WOOCOMMERCE_USER));
+    ', $subscribersTable, $status, Source::WOOCOMMERCE_USER));
 
     return $insertedUsersEmails;
   }
