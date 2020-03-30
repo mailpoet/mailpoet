@@ -58,19 +58,19 @@ type Props = {
   installationStatus: PremiumInstallationStatus
 }
 export default function PremiumMessages(props: Props) {
-  const keyStatus = useSelector('getPremiumStatus')();
+  const { premiumStatus: status } = useSelector('getKeyActivationState')();
   return (
     <>
-      {keyStatus === 'valid_premium_plugin_active' && <ActiveMessage />}
-      {keyStatus === 'valid_premium_plugin_not_active' && (
+      {status === 'valid_premium_plugin_active' && <ActiveMessage />}
+      {status === 'valid_premium_plugin_not_active' && (
         <PremiumNotActiveMessage callback={props.activationCallback} />
       )}
-      {keyStatus === 'valid_premium_plugin_not_installed' && (
+      {status === 'valid_premium_plugin_not_installed' && (
         <PremiumNotInstalledMessage callback={props.installationCallback} />
       )}
-      {keyStatus === 'valid_premium_plugin_being_installed' && <InstallingMessage />}
-      {keyStatus === 'valid_premium_plugin_being_activated' && <ActivatingMessage />}
-      {keyStatus === 'invalid' && <NotValidMessage message={props.keyMessage} />}
+      {status === 'valid_premium_plugin_being_installed' && <InstallingMessage />}
+      {status === 'valid_premium_plugin_being_activated' && <ActivatingMessage />}
+      {status === 'invalid' && <NotValidMessage message={props.keyMessage} />}
       <PremiumInstallationMessages installationStatus={props.installationStatus} />
     </>
   );

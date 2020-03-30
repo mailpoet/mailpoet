@@ -177,30 +177,6 @@ type Page = {
     confirm: string
   }
 }
-export type State = {
-  data: Settings
-  segments: Segment[]
-  pages: Page[]
-  flags: {
-    woocommerce: boolean
-    newUser: boolean
-    error: boolean
-    mssKeyValid: boolean
-    premiumKeyValid: boolean
-    premiumPluginInstalled: boolean
-  }
-  save: {
-    inProgress: boolean
-    error: any
-  }
-}
-
-export type Action =
-  | { type: 'SET_SETTING'; value: any; path: string[] }
-  | { type: 'SET_ERROR_FLAG'; value: boolean }
-  | { type: 'SAVE_STARTED' }
-  | { type: 'SAVE_DONE' }
-  | { type: 'SAVE_FAILED'; error: any }
 
 export type PremiumStatus =
   | 'invalid'
@@ -224,3 +200,40 @@ export type PremiumInstallationStatus =
   | 'activate_activating'
   | 'activate_done'
   | 'activate_error'
+
+export type KeyActivationState = {
+  key: string
+  isKeyValid: boolean
+  premiumStatus: PremiumStatus
+  premiumMessage: string
+  mssStatus: MssStatus
+  mssMessage: string
+  premiumInstallationStatus: PremiumInstallationStatus
+}
+
+export type State = {
+  data: Settings
+  segments: Segment[]
+  pages: Page[]
+  flags: {
+    woocommerce: boolean
+    newUser: boolean
+    error: boolean
+    mssKeyValid: boolean
+    premiumKeyValid: boolean
+    premiumPluginInstalled: boolean
+  }
+  save: {
+    inProgress: boolean
+    error: any
+  }
+  keyActivation: KeyActivationState
+}
+
+export type Action =
+  | { type: 'SET_SETTING'; value: any; path: string[] }
+  | { type: 'SET_ERROR_FLAG'; value: boolean }
+  | { type: 'SAVE_STARTED' }
+  | { type: 'SAVE_DONE' }
+  | { type: 'SAVE_FAILED'; error: any }
+  | { type: 'UPDATE_KEY_ACTIVATION_STATE', fields: Partial<KeyActivationState> }
