@@ -59,7 +59,8 @@ class DisplayFormInWPContent {
     $this->assetsController->setupFrontEndDependencies();
     $result = $content;
     foreach ($forms as $form) {
-      $result .= $this->getContentBellow($form);
+      $result .= $this->getContentBellow($form, 'popup');
+      $result .= $this->getContentBellow($form, 'below_post');
     }
 
     return $result;
@@ -93,7 +94,9 @@ class DisplayFormInWPContent {
     });
   }
 
-  private function getContentBellow(FormEntity $form): string {
+  private function getContentBellow(FormEntity $form, string $displayType): string {
+    if ($displayType === 'below_post' && !$this->shouldDisplayFormBellowContent($form)) return '';
+    if ($displayType === 'popup' && !$this->shouldDisplayPopupForm($form)) return '';
     $formData = [
       'body' => $form->getBody(),
       'styles' => $form->getStyles(),
@@ -105,7 +108,7 @@ class DisplayFormInWPContent {
       'form_html_id' => $htmlId,
       'form_id' => $form->getId(),
       'form_success_message' => $formSettings['success_message'] ?? null,
-      'form_type' => $this->getFormType($form),
+      'form_type' => $displayType,
       'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId),
       'html' => $this->formRenderer->renderHTML($formData),
       'form_element_styles' => $this->formRenderer->renderFormElementStyles($formData),
@@ -132,19 +135,6 @@ class DisplayFormInWPContent {
     // add API version
     $templateData['api_version'] = API::CURRENT_VERSION;
     return $this->templateRenderer->render('form/front_end_form.html', $templateData);
-  }
-
-  private function getFormType(FormEntity $form): string {
-    $settings = $form->getSettings();
-    if (
-      isset($settings['place_popup_form_on_all_pages'])
-      && (
-        ($settings['place_popup_form_on_all_posts'] === '1')
-        ||
-        ($settings['place_popup_form_on_all_pages'] === '1')
-      )
-    ) return 'popup';
-    return 'below_post';
   }
 
   private function shouldDisplayFormBellowContent(FormEntity $form): bool {
