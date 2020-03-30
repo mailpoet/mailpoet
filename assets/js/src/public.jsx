@@ -68,11 +68,6 @@ jQuery(($) => {
       const formDiv = closeIcon.parent();
       closePopupForm(formDiv);
     });
-    $('.mailpoet_form_popup_overlay').click((event) => {
-      const overlay = $(event.target);
-      const formDiv = overlay.next('div.mailpoet_form_popup');
-      closePopupForm(formDiv);
-    });
 
     $('div.mailpoet_form_popup').each((index, element) => {
       const cookieValue = getCookie('popup_form_dismissed');
