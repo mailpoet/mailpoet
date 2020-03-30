@@ -48,13 +48,13 @@ export default () => {
       >
         {t('advancedTab')}
       </a>
-      <a
-        className="nav-tab"
-        href="?page=mailpoet-settings#premium"
-        data-automation-id="activation_settings_tab"
+      <TabLink
+        name="premium"
+        current={current}
+        automationId="activation_settings_tab"
       >
         {t('keyActivationTab')}
-      </a>
+      </TabLink>
     </h2>
   );
 };
