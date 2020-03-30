@@ -341,13 +341,6 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletter->restore();
     expect($this->newsletter->deleted_at)->equals('NULL');
     expect($this->newsletter->status)->equals(Newsletter::STATUS_SENT);
-
-    // if the restored newsletter was trashed while in sending,
-    // its status should be set to 'draft' to be able to send it again
-    $this->newsletter->status = Newsletter::STATUS_SENDING;
-    $this->newsletter->trash();
-    $this->newsletter->restore();
-    expect($this->newsletter->status)->equals(Newsletter::STATUS_DRAFT);
   }
 
   public function testItCanBulkRestoreNewsletters() {
@@ -371,11 +364,9 @@ class NewsletterTest extends \MailPoetTest {
 
     Newsletter::filter('bulkTrash');
     expect(Newsletter::whereNull('deleted_at')->findArray())->isEmpty();
-    expect(Newsletter::where('status', Newsletter::STATUS_SENDING)->findArray())->count(1);
 
     Newsletter::filter('bulkRestore');
     expect(Newsletter::whereNotNull('deleted_at')->findArray())->isEmpty();
-    expect(Newsletter::where('status', Newsletter::STATUS_SENDING)->findArray())->count(0);
   }
 
   public function testItDeletesSegmentAndQueueAssociationsWhenNewsletterIsDeleted() {
