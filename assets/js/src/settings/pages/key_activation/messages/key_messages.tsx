@@ -15,6 +15,6 @@ const KeyNotValidMessage = () => (
 );
 
 export default function KeyMessages() {
-  const hasValidKey = useSelector('hasValidKey')();
-  return hasValidKey ? <KeyValidMessage /> : <KeyNotValidMessage />;
+  const { isKeyValid } = useSelector('getKeyActivationState')();
+  return isKeyValid ? <KeyValidMessage /> : <KeyNotValidMessage />;
 }

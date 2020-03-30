@@ -32,8 +32,8 @@ type Props = {
   activationCallback: () => any,
 }
 export default function MssMessages(props: Props) {
-  const mssKeyStatus = useSelector('getMssStatus')();
-  switch (mssKeyStatus) {
+  const { mssStatus } = useSelector('getKeyActivationState')();
+  switch (mssStatus) {
     case 'valid_mss_active':
       return <ActiveMessage />;
     case 'valid_mss_not_active':
