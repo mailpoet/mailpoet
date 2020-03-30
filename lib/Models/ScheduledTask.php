@@ -79,7 +79,7 @@ class ScheduledTask extends Model {
       'WHERE ' .
       'q.`newsletter_id` = ' . $newsletter->id() .
       ' AND t.`status` = "' . self::STATUS_PAUSED . '" ' .
-      ' AND t.`scheduled_at` > NOW()'
+      ' AND t.`scheduled_at` > CURDATE() - INTERVAL 30 DAY'
     );
   }
 

@@ -48,6 +48,10 @@ class ScheduledTaskTest extends \MailPoetTest {
       'status' => ScheduledTask::STATUS_PAUSED,
       'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subDays(10)->format('Y-m-d H:i:s'),
     ]);
+    $outdatedTask = ScheduledTask::createOrUpdate([
+      'status' => ScheduledTask::STATUS_PAUSED,
+      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subDays(31)->format('Y-m-d H:i:s'),
+    ]);
     SendingQueue::createOrUpdate([
       'newsletter_id' => $newsletter->id(),
       'task_id' => $task1->id(),
@@ -60,13 +64,19 @@ class ScheduledTaskTest extends \MailPoetTest {
       'newsletter_id' => $newsletter->id(),
       'task_id' => $task3->id(),
     ]);
+    SendingQueue::createOrUpdate([
+      'newsletter_id' => $newsletter->id(),
+      'task_id' => $outdatedTask->id(),
+    ]);
     ScheduledTask::setScheduledAllByNewsletter($newsletter);
     $task1Found = ScheduledTask::findOne($task1->id());
     expect($task1Found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     $task2Found = ScheduledTask::findOne($task2->id());
     expect($task2Found->status)->equals(ScheduledTask::STATUS_COMPLETED);
     $task3Found = ScheduledTask::findOne($task3->id());
-    expect($task3Found->status)->equals(ScheduledTask::STATUS_PAUSED);
+    expect($task3Found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+    $outdatedTaskFound = ScheduledTask::findOne($outdatedTask->id());
+    expect($outdatedTaskFound->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
   public function testItPauseAllByNewsletters() {
