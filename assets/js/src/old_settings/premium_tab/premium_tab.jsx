@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
-import showSetFromAddressModal from 'common/set_from_address_modal.tsx';
+import SetFromAddressModal from 'common/set_from_address_modal.tsx';
 import KeyMessages from 'old_settings/premium_tab/messages/key_messages.jsx';
 import { MssStatus, MssMessages } from 'old_settings/premium_tab/messages/mss_messages.jsx';
 import { PremiumStatus, PremiumMessages } from 'old_settings/premium_tab/messages/premium_messages.jsx';
@@ -50,6 +50,7 @@ const PremiumTab = (props) => {
   const [premiumInstallationStatus, setPremiumInstallationStatus] = useState(null);
   const [mssStatus, setMssStatus] = useState(key ? props.mssStatus : null);
   const [mssKeyMessage, setMssKeyMessage] = useState(null);
+  const [showSetFromAddressModal, setShowSetFromAddressModal] = useState(false);
 
   // key is considered valid if either Premium or MSS check passes
   const keyValid = useMemo(() => {
@@ -142,95 +143,102 @@ const PremiumTab = (props) => {
   }
 
   return (
-    <table className="form-table">
-      <tbody>
-        <tr>
-          <th scope="row">
-            <label htmlFor="mailpoet_premium_key">
-              {MailPoet.I18n.t('premiumTabActivationKeyLabel')}
-            </label>
-            <p className="description">
-              {MailPoet.I18n.t('premiumTabDescription')}
-            </p>
-          </th>
-          <td>
-            <div>
-              <input
-                type="text"
-                id="mailpoet_premium_key"
-                className="regular-text"
-                name="premium[premium_key]"
-                value={key || ''}
-                onChange={(event) => {
-                  setKey(event.target.value.trim() || null);
-                  setPremiumStatus(null);
-                  setPremiumInstallationStatus(null);
-                  setMssStatus(null);
-                }}
-              />
-              <button
-                type="button"
-                id="mailpoet_premium_key_verify"
-                className="button-secondary"
-                onClick={async (event) => {
-                  if (!key) {
-                    MailPoet.Notice.error(
-                      MailPoet.I18n.t('premiumTabNoKeyNotice'),
-                      { scroll: true },
-                    );
-                    return;
-                  }
-
-                  setPremiumStatus(null);
-                  setPremiumInstallationStatus(null);
-                  setMssStatus(null);
-
-                  MailPoet.Modal.loading(true);
-                  const isUserTriggered = event.isTrusted;
-                  await verifyMailPoetSendingServiceKey(isUserTriggered);
-                  await verifyMailPoetPremiumKey();
-                  MailPoet.Modal.loading(false);
-
-                  // show modal to set authorized FROM address, if needed
-                  if (isUserTriggered) {
-                    const settings = await getSettings();
-                    const authorizedAddressNeeded = !settings.data.sender.address
-                      || settings.data.authorized_emails_addresses_check;
-
-                    if (mssStatus === MssStatus.KEY_VALID_MSS_ACTIVE && authorizedAddressNeeded) {
-                      showSetFromAddressModal();
+    <>
+      <table className="form-table">
+        <tbody>
+          <tr>
+            <th scope="row">
+              <label htmlFor="mailpoet_premium_key">
+                {MailPoet.I18n.t('premiumTabActivationKeyLabel')}
+              </label>
+              <p className="description">
+                {MailPoet.I18n.t('premiumTabDescription')}
+              </p>
+            </th>
+            <td>
+              <div>
+                <input
+                  type="text"
+                  id="mailpoet_premium_key"
+                  className="regular-text"
+                  name="premium[premium_key]"
+                  value={key || ''}
+                  onChange={(event) => {
+                    setKey(event.target.value.trim() || null);
+                    setPremiumStatus(null);
+                    setPremiumInstallationStatus(null);
+                    setMssStatus(null);
+                  }}
+                />
+                <button
+                  type="button"
+                  id="mailpoet_premium_key_verify"
+                  className="button-secondary"
+                  onClick={async (event) => {
+                    if (!key) {
+                      MailPoet.Notice.error(
+                        MailPoet.I18n.t('premiumTabNoKeyNotice'),
+                        { scroll: true },
+                      );
+                      return;
                     }
-                  }
-                }}
-              >
-                {MailPoet.I18n.t('premiumTabVerifyButton')}
-              </button>
-            </div>
-            {keyValid !== null && (
-              <div className="key-activation-messages">
-                <KeyMessages keyValid={keyValid} />
-                {mssStatus !== null && (
-                  <MssMessages
-                    keyStatus={mssStatus}
-                    keyMessage={mssKeyMessage}
-                    activationCallback={() => verifyMailPoetSendingServiceKey(true)}
-                  />
-                )}
-                {premiumStatus !== null && (
-                  <PremiumMessages
-                    keyStatus={premiumStatus}
-                    keyMessage={premiumMessage}
-                    installationStatus={premiumInstallationStatus}
-                    installationCallback={installPremiumPlugin}
-                    activationCallback={() => activatePremiumPlugin()}
-                  />
-                )}
+
+                    setPremiumStatus(null);
+                    setPremiumInstallationStatus(null);
+                    setMssStatus(null);
+
+                    MailPoet.Modal.loading(true);
+                    const isUserTriggered = event.isTrusted;
+                    await verifyMailPoetSendingServiceKey(isUserTriggered);
+                    await verifyMailPoetPremiumKey();
+                    MailPoet.Modal.loading(false);
+
+                    // show modal to set authorized FROM address, if needed
+                    if (isUserTriggered) {
+                      const settings = await getSettings();
+                      const authorizedAddressNeeded = !settings.data.sender.address
+                        || settings.data.authorized_emails_addresses_check;
+
+                      if (mssStatus === MssStatus.KEY_VALID_MSS_ACTIVE && authorizedAddressNeeded) {
+                        setShowSetFromAddressModal(true);
+                      }
+                    }
+                  }}
+                >
+                  {MailPoet.I18n.t('premiumTabVerifyButton')}
+                </button>
               </div>
-            )}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              {keyValid !== null && (
+                <div className="key-activation-messages">
+                  <KeyMessages keyValid={keyValid} />
+                  {mssStatus !== null && (
+                    <MssMessages
+                      keyStatus={mssStatus}
+                      keyMessage={mssKeyMessage}
+                      activationCallback={() => verifyMailPoetSendingServiceKey(true)}
+                    />
+                  )}
+                  {premiumStatus !== null && (
+                    <PremiumMessages
+                      keyStatus={premiumStatus}
+                      keyMessage={premiumMessage}
+                      installationStatus={premiumInstallationStatus}
+                      installationCallback={installPremiumPlugin}
+                      activationCallback={() => activatePremiumPlugin()}
+                    />
+                  )}
+                </div>
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      { showSetFromAddressModal && (
+        <SetFromAddressModal
+          onRequestClose={() => setShowSetFromAddressModal(false)}
+        />
+      )}
+    </>
   );
 };
 
