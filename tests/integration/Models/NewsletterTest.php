@@ -52,6 +52,7 @@ class NewsletterTest extends \MailPoetTest {
 
     $this->sendingQueue = SendingTask::create();
     $this->sendingQueue->newsletter_id = $this->newsletter->id;
+    $this->sendingQueue->status = ScheduledTask::STATUS_SCHEDULED;
     $this->sendingQueue->save();
   }
 
@@ -468,19 +469,26 @@ class NewsletterTest extends \MailPoetTest {
 
   public function testItRestoresTrashedQueueAssociationsWhenNewsletterIsRestored() {
     // create multiple sending queues
+    $sendingTasks = [];
     $newsletter = $this->newsletter;
     for ($i = 1; $i <= 5; $i++) {
-      $sendingQueue = SendingTask::create();
-      $sendingQueue->newsletterId = $newsletter->id;
-      $sendingQueue->deletedAt = date('Y-m-d H:i:s');
-      $sendingQueue->save();
+      $sendingTask = SendingTask::create();
+      $sendingTask->newsletterId = $newsletter->id;
+      $sendingTask->deletedAt = date('Y-m-d H:i:s');
+      $sendingTask->status = ScheduledTask::STATUS_SCHEDULED;
+      $sendingTask->save();
+      $sendingTasks[] = $sendingTask;
     }
+    $inProgressTask = $sendingTasks[1];
+    $inProgressTask->status = null;
+    $inProgressTask->save();
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(5);
-
     // restore newsletter and check that relations are restored
     $newsletter->restore();
     // 5 queues + 1 created in _before() method
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
+    // In progress task was switched to paused state
+    expect(ScheduledTask::whereNull('deleted_at')->where('status', ScheduledTask::STATUS_PAUSED)->findArray())->count(1);
   }
 
   public function testItRestoresTrashedChildrenQueueAssociationsWhenParentNewsletterIsRestored() {
@@ -567,6 +575,7 @@ class NewsletterTest extends \MailPoetTest {
 
   public function testItBulkRestoresTrashedQueueAssociationsWhenNewslettersAreBulkRestored() {
     // create multiple newsletters and sending queues
+    $sendingTasks = [];
     for ($i = 1; $i <= 5; $i++) {
       $newsletter = Newsletter::createOrUpdate(
         [
@@ -575,19 +584,30 @@ class NewsletterTest extends \MailPoetTest {
           'deleted_at' => date('Y-m-d H:i:s'),
         ]
       );
-      $sendingQueue = SendingTask::create();
-      $sendingQueue->newsletterId = $newsletter->id;
-      $sendingQueue->deletedAt = date('Y-m-d H:i:s');
-      $sendingQueue->save();
+      $sendingTask = SendingTask::create();
+      $sendingTask->newsletterId = $newsletter->id;
+      $sendingTask->deletedAt = date('Y-m-d H:i:s');
+      $sendingTask->status = ScheduledTask::STATUS_SCHEDULED;
+      $sendingTask->save();
+      $sendingTasks[] = $sendingTask;
     }
+
+    $inProgressSendingTask = $sendingTasks[0];
+    $inProgressSendingTask->status = null;
+    $inProgressSendingTask->save();
+
     expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(5);
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(5);
+    // Expect one deleted task to be running
+    expect(ScheduledTask::whereNotNull('deleted_at')->whereNull('status')->findArray())->count(1);
 
     // bulk restore newsletters and check that relations are restored
     Newsletter::bulkRestore(ORM::forTable(Newsletter::$_table));
     // 5 queues/newsletters + 1 of each created in _before() method
     expect(Newsletter::whereNull('deleted_at')->findArray())->count(6);
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
+    // Expect the previously running task to be paused
+    expect(ScheduledTask::where('status', ScheduledTask::STATUS_PAUSED)->findArray())->count(1);
   }
 
   public function testItBulkRestoresTrashedChildrenQueueAssociationsWhenParentNewslettersAreBulkRestored() {
