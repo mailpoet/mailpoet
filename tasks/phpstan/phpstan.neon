@@ -5,6 +5,8 @@ parameters:
   inferPrivatePropertyTypeFromConstructor: true
   autoload_files:
     - ../../vendor/autoload.php
+  parallel:
+    processTimeout: 300.0
   ignoreErrors:
     - '#Function members_register_.+ not found#'
     - '#Cannot assign offset .path. to array<string, int\|string>\|false.#' # bug https://github.com/phpstan/phpstan/issues/1791

@@ -484,7 +484,7 @@ class RoboFile extends \Robo\Tasks {
     $dir = __DIR__;
     $task = implode(' ', [
       'WP_ROOT="' . getenv('WP_ROOT') . '"',
-      'php -d memory_limit=2G',
+      'php -d memory_limit=-1',
       "$dir/tasks/phpstan/vendor/bin/phpstan analyse ",
     ]);
 
