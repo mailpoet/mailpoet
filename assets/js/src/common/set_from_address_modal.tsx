@@ -3,6 +3,7 @@ import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import Modal from 'common/modal/modal.jsx';
+import { GlobalContext } from 'context';
 
 const mailPoetApiVersion = (window as any).mailpoet_api_version as string;
 
@@ -30,9 +31,22 @@ const getErrorMessage = (error: any|null): string => {
   return error.message || MailPoet.I18n.t('setFromAddressEmailUnknownError');
 };
 
-const getSuccessMessage = (): string => MailPoet.I18n.t('setFromAddressEmailSuccess').replace(
-  /\[link\](.*?)\[\/link\]/g,
-  '<a href="?page=mailpoet-settings#basics" rel="noopener noreferrer">$1</a>'
+const getSuccessMessage = (): JSX.Element => (
+  <p>
+    { ReactStringReplace(
+      MailPoet.I18n.t('setFromAddressEmailSuccess'),
+      /\[link\](.*?)\[\/link\]/g,
+      (match) => (
+        <a
+          key="setFromAddressModalBasicsTabLink"
+          href="?page=mailpoet-settings#basics"
+          rel="noopener noreferrer"
+        >
+          {match}
+        </a>
+      )
+    )}
+  </p>
 );
 
 const removeUnauthorizedEmailNotices = () => {
@@ -52,6 +66,7 @@ type Props = {
 
 const SetFromAddressModal = ({ onRequestClose }: Props) => {
   const [address, setAddress] = useState(null);
+  const { notices } = React.useContext<any>(GlobalContext);
 
   return (
     <Modal
@@ -109,7 +124,7 @@ const SetFromAddressModal = ({ onRequestClose }: Props) => {
               await handleSave(address);
               onRequestClose();
               removeUnauthorizedEmailNotices();
-              MailPoet.Notice.success(getSuccessMessage());
+              notices.success(getSuccessMessage(), { timeout: false });
             } catch (e) {
               const error = e.errors && e.errors[0] ? e.errors[0] : null;
               const message = getErrorMessage(error);

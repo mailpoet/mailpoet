@@ -3,6 +3,8 @@ import React, { useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
 import SetFromAddressModal from 'common/set_from_address_modal.tsx';
+import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import Notices from 'notices/notices.jsx';
 import KeyMessages from 'old_settings/premium_tab/messages/key_messages.jsx';
 import { MssStatus, MssMessages } from 'old_settings/premium_tab/messages/mss_messages.jsx';
 import { PremiumStatus, PremiumMessages } from 'old_settings/premium_tab/messages/premium_messages.jsx';
@@ -279,13 +281,17 @@ if (container) {
     return mssActive ? MssStatus.KEY_VALID_MSS_ACTIVE : MssStatus.KEY_VALID_MSS_NOT_ACTIVE;
   };
 
-  ReactDOM.render(
-    <PremiumTab
-      activationKey={window.mailpoet_activation_key}
-      premiumStatus={getPremiumStatus()}
-      mssStatus={getMssStatus()}
-      premiumPluginActive={!!window.mailpoet_premium_version}
-    />,
-    container
+  const App = () => (
+    <GlobalContext.Provider value={useGlobalContextValue(window)}>
+      <Notices />
+      <PremiumTab
+        activationKey={window.mailpoet_activation_key}
+        premiumStatus={getPremiumStatus()}
+        mssStatus={getMssStatus()}
+        premiumPluginActive={!!window.mailpoet_premium_version}
+      />
+    </GlobalContext.Provider>
   );
+
+  ReactDOM.render(<App />, container);
 }
