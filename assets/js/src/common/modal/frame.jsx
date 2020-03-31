@@ -14,7 +14,6 @@ function ModalFrame({
   children,
   className,
   role,
-  style,
   fullScreen,
 }) {
   const wrapperRef = useRef(null);
@@ -64,7 +63,6 @@ function ModalFrame({
           { 'mailpoet-modal-full-screen': fullScreen },
           className
         )}
-        style={style}
         role={role}
         aria-label={contentLabel}
         aria-labelledby={contentLabel ? null : labelledby}
@@ -84,7 +82,6 @@ ModalFrame.propTypes = {
   shouldCloseOnClickOutside: PropTypes.bool,
   role: PropTypes.string,
   className: PropTypes.string,
-  style: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   contentLabel: PropTypes.string,
   overlayClassName: PropTypes.string,
   children: PropTypes.node.isRequired,
@@ -101,7 +98,6 @@ ModalFrame.defaultProps = {
   fullScreen: false,
   shouldCloseOnClickOutside: true,
   className: '',
-  style: {},
   aria: {
     describedby: '',
     labelledby: '',
