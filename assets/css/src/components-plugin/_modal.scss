@@ -112,16 +112,6 @@
   justify-content: left;
 }
 
-.mailpoet-modal-header-icon-container {
-  display: inline-block;
-
-  svg {
-    max-height: $modal-icon-button-size;
-    max-width: $modal-icon-button-size;
-    padding: $modal-grid-size;
-  }
-}
-
 // Modal contents.
 .mailpoet-modal-content {
   box-sizing: border-box;
