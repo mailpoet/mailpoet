@@ -45,12 +45,12 @@ class AddSendingKeyCest {
     $i->waitForText('It’s time to set your default FROM address!');
     $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
 
-    $i->fillField(['id' => 'mailpoet_set_from_address_modal_address'], 'invalid@email.com');
-    $i->click('Save', '#set-from-address-modal');
+    $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'invalid@email.com');
+    $i->click('Save', '.set-from-address-modal');
     $i->waitForText('Can’t use this email yet! Please authorize it first.');
 
-    $i->fillField(['id' => 'mailpoet_set_from_address_modal_address'], 'staff@mailpoet.com');
-    $i->click('Save', '#set-from-address-modal');
+    $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'staff@mailpoet.com');
+    $i->click('Save', '.set-from-address-modal');
     $i->waitForText('Excellent. Your authorized email was saved. You can change it in the Basics tab of the MailPoet settings.');
     $i->dontSee('Sending all of your emails has been paused because your email address %s hasn’t been authorized yet.');
 

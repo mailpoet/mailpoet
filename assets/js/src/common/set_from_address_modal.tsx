@@ -72,67 +72,65 @@ const SetFromAddressModal = ({ onRequestClose }: Props) => {
     <Modal
       title={MailPoet.I18n.t('setFromAddressModalTitle')}
       onRequestClose={onRequestClose}
+      contentClassName="set-from-address-modal"
     >
-      <div id="set-from-address-modal">
-        <p>
-          {
-            ReactStringReplace(
-              MailPoet.I18n.t('setFromAddressModalDescription'),
-              /\[link\](.*?)\[\/link\]/g,
-              (match) => (
-                <a
-                  key="setFromAddressModalDescriptionLink"
-                  href="https://account.mailpoet.com/authorization"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {match}
-                </a>
-              )
+      <p>
+        {
+          ReactStringReplace(
+            MailPoet.I18n.t('setFromAddressModalDescription'),
+            /\[link\](.*?)\[\/link\]/g,
+            (match) => (
+              <a
+                key="setFromAddressModalDescriptionLink"
+                href="https://account.mailpoet.com/authorization"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {match}
+              </a>
             )
+          )
+        }
+      </p>
+
+      <input
+        id="mailpoet-set-from-address-modal-input"
+        type="text"
+        placeholder="from@mydomain.com"
+        data-parsley-required
+        data-parsley-type="email"
+        onChange={(event) => {
+          setAddress(event.target.value.trim() || null);
+          const addressValidator = jQuery('#mailpoet-set-from-address-modal-input').parsley();
+          addressValidator.removeError('saveError');
+        }}
+      />
+
+      <input
+        className="button button-primary"
+        type="submit"
+        value={MailPoet.I18n.t('setFromAddressModalSave')}
+        onClick={async () => {
+          const addressValidator = jQuery('#mailpoet-set-from-address-modal-input').parsley();
+          addressValidator.validate();
+          if (!addressValidator.isValid()) {
+            return;
           }
-        </p>
-
-        <input
-          id="mailpoet_set_from_address_modal_address"
-          type="text"
-          placeholder="from@mydomain.com"
-          data-parsley-required
-          data-parsley-type="email"
-          onChange={(event) => {
-            setAddress(event.target.value.trim() || null);
-            const addressValidator = jQuery('#mailpoet_set_from_address_modal_address').parsley();
-            addressValidator.removeError('saveError');
-          }}
-        />
-
-        <input
-          id="mailpoet_set_from_address_modal_save"
-          className="button button-primary"
-          type="submit"
-          value={MailPoet.I18n.t('setFromAddressModalSave')}
-          onClick={async () => {
-            const addressValidator = jQuery('#mailpoet_set_from_address_modal_address').parsley();
-            addressValidator.validate();
-            if (!addressValidator.isValid()) {
-              return;
-            }
-            if (!address) {
-              return;
-            }
-            try {
-              await handleSave(address);
-              onRequestClose();
-              removeUnauthorizedEmailNotices();
-              notices.success(getSuccessMessage(), { timeout: false });
-            } catch (e) {
-              const error = e.errors && e.errors[0] ? e.errors[0] : null;
-              const message = getErrorMessage(error);
-              addressValidator.addError('saveError', { message });
-            }
-          }}
-        />
-      </div>
+          if (!address) {
+            return;
+          }
+          try {
+            await handleSave(address);
+            onRequestClose();
+            removeUnauthorizedEmailNotices();
+            notices.success(getSuccessMessage(), { timeout: false });
+          } catch (e) {
+            const error = e.errors && e.errors[0] ? e.errors[0] : null;
+            const message = getErrorMessage(error);
+            addressValidator.addError('saveError', { message });
+          }
+        }}
+      />
     </Modal>
   );
 };
