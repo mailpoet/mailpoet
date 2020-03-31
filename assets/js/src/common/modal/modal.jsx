@@ -9,7 +9,6 @@ function Modal({
   onRequestClose,
   title,
   icon,
-  closeButtonLabel,
   displayTitle,
   children,
   aria,
@@ -46,7 +45,6 @@ function Modal({
         {
           displayTitle && (
             <ModalHeader
-              closeLabel={closeButtonLabel}
               headingId={headingId}
               icon={icon}
               isDismissible={isDismissible}
@@ -63,7 +61,6 @@ function Modal({
 }
 
 Modal.propTypes = {
-  closeButtonLabel: PropTypes.string,
   children: PropTypes.node,
   aria: PropTypes.shape({
     labelledby: PropTypes.string,

@@ -8,7 +8,6 @@ const ModalHeader = ({
   icon,
   title,
   onClose,
-  closeLabel,
   headingId,
   isDismissible,
 }) => (
@@ -32,7 +31,7 @@ const ModalHeader = ({
       ) }
     </div>
     { isDismissible && (
-      <Button onClick={onClose} icon={closeIcon} label={closeLabel} className="mailpoet-modal-close" />
+      <Button onClick={onClose} icon={closeIcon} className="mailpoet-modal-close" />
     ) }
   </div>
 );
@@ -41,7 +40,6 @@ ModalHeader.propTypes = {
   title: PropTypes.string,
   headingId: PropTypes.string,
   onClose: PropTypes.func,
-  closeLabel: PropTypes.string,
   icon: PropTypes.node,
   isDismissible: PropTypes.bool,
 };
@@ -50,7 +48,6 @@ ModalHeader.defaultProps = {
   title: null,
   headingId: 'heading-id',
   onClose: () => {},
-  closeLabel: '',
   icon: null,
   isDismissible: true,
 };
