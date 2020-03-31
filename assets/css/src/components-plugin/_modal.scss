@@ -93,14 +93,24 @@
     margin: 0;
   }
 
-  .components-button {
-    left: $modal-grid-size;
+  .mailpoet-modal-close {
+    border: 0;
+    cursor: pointer;
+    height: $modal-close-button-size;
+    padding: $modal-close-button-padding;
     position: relative;
-  }
+    right: -$modal-close-button-padding;
+    top: -$modal-close-button-padding;
+    width: $modal-close-button-size;
 
-  .mailpoet-modal-close svg {
-    opacity: .5;
-    stroke: $modal-dark-gray-900;
+    svg {
+      opacity: .5;
+      stroke: #979797;
+
+      &:hover {
+        stroke: #636363;
+      }
+    }
   }
 }
 
