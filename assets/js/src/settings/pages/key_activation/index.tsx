@@ -20,13 +20,13 @@ export default function KeyActivation() {
       notices.error(<p>{t('premiumTabNoKeyNotice')}</p>, { scroll: true });
       return;
     }
+    const isTrusted = event.isTrusted;
     await setState({
       mssStatus: null,
       premiumStatus: null,
       premiumInstallationStatus: null,
     });
     MailPoet.Modal.loading(true);
-    const isTrusted = event.isTrusted;
     await verifyMssKey(state.key, isTrusted);
     await verifyPremiumKey(state.key);
     MailPoet.Modal.loading(false);
