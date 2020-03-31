@@ -16,7 +16,6 @@ use MailPoet\AdminPages\Pages\RevenueTrackingPermission;
 use MailPoet\AdminPages\Pages\Segments;
 use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\Subscribers;
-use MailPoet\AdminPages\Pages\SubscribersAPIKeyInvalid;
 use MailPoet\AdminPages\Pages\SubscribersExport;
 use MailPoet\AdminPages\Pages\SubscribersImport;
 use MailPoet\AdminPages\Pages\Update;
@@ -478,9 +477,6 @@ class Menu {
   }
 
   public function newsletters() {
-    if (isset($this->mpApiKeyValid) && $this->mpApiKeyValid === false) {
-      return $this->displayMailPoetAPIKeyInvalid();
-    }
     $this->container->get(Newsletters::class)->render();
   }
 
@@ -498,11 +494,6 @@ class Menu {
 
   public function formEditor() {
     $this->container->get(FormEditor::class)->render();
-  }
-
-  private function displayMailPoetAPIKeyInvalid() {
-    $this->container->get(SubscribersAPIKeyInvalid::class)->render();
-    exit;
   }
 
   public function setPageTitle($title) {
