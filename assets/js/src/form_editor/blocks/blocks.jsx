@@ -16,6 +16,7 @@ import * as columns from './columns/columns.jsx';
 import * as column from './columns/column.jsx';
 import * as heading from './heading/heading.jsx';
 import * as paragraph from './paragraph/paragraph';
+import * as image from './image/image';
 
 export const registerCustomFieldBlock = (customField) => {
   const namesMap = getCustomFieldBlocksSettings(customField);
@@ -51,6 +52,7 @@ export const initBlocks = () => {
   registerBlockType(column.name, column.settings);
   registerBlockType(paragraph.name, paragraph.settings);
   registerBlockType(heading.name, heading.settings);
+  registerBlockType(image.name, image.settings);
 
   if (Array.isArray(customFields)) {
     customFields.forEach(registerCustomFieldBlock);
