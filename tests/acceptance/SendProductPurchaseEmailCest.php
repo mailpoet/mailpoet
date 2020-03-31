@@ -16,6 +16,7 @@ class SendProductPurchaseEmailCest {
     $this->settingsFactory = new Settings();
     $this->settingsFactory->withWooCommerceListImportPageDisplayed(true);
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
+    $this->settingsFactory->withConfirmationEmailDisabled();
     $this->settingsFactory->withCronTriggerMethod('WordPress');
   }
 

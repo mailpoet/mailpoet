@@ -3,14 +3,16 @@
 namespace MailPoet\WooCommerce;
 
 use Codeception\Util\Fixtures;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscriptionTest extends \MailPoetTest {
   public $originalSettings;
@@ -29,10 +31,15 @@ class SubscriptionTest extends \MailPoetTest {
   /** @var Subscriber */
   private $subscriber;
 
+  /** @var ConfirmationEmailMailer & MockObject */
+  private $confirmationEmailMailer;
+
   public function _before() {
     $this->orderId = 123; // dummy
-    $this->subscription = ContainerWrapper::getInstance()->get(Subscription::class);
     $this->settings = SettingsController::getInstance();
+    $wp = WPFunctions::get();
+    $this->confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
+    $this->subscription = new Subscription($this->settings, $this->confirmationEmailMailer, $wp);
     $this->wcSegment = Segment::getWooCommerceSegment();
 
     $subscriber = Subscriber::create();
@@ -152,6 +159,12 @@ class SubscriptionTest extends \MailPoetTest {
   }
 
   public function testItSubscribesIfCheckboxIsChecked() {
+    // double opt-in disabled, no email
+    $this->settings->set('signup_confirmation', ['enabled' => false]);
+    $this->confirmationEmailMailer
+      ->expects($this->never())
+      ->method('sendConfirmationEmail');
+
     $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
     $this->subscriber->save();
 
@@ -162,7 +175,9 @@ class SubscriptionTest extends \MailPoetTest {
     $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $data['billing_email'] = $this->subscriber->email;
+
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
+
     expect($subscribed)->equals(true);
     unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
 
@@ -174,6 +189,37 @@ class SubscriptionTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
     expect($subscriber->confirmedIp)->notEmpty();
     expect($subscriber->confirmedAt)->notEmpty();
+  }
+
+  public function testItSendsConfirmationEmail() {
+    // double opt-in enabled
+    $this->settings->set('signup_confirmation', ['enabled' => true]);
+    $this->confirmationEmailMailer
+      ->expects($this->once())
+      ->method('sendConfirmationEmail');
+
+    $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+    $this->subscriber->save();
+
+    $subscribedSegments = $this->subscriber->segments()->findArray();
+    expect($subscribedSegments)->count(0);
+
+    $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
+    $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    $data['billing_email'] = $this->subscriber->email;
+
+    $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
+
+    expect($subscribed)->equals(true);
+    unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
+
+    $subscribedSegments = $this->subscriber->segments()->findArray();
+    expect($subscribedSegments)->count(1);
+
+    $subscriber = Subscriber::findOne($this->subscriber->id);
+    expect($subscriber->source)->equals(Source::WOOCOMMERCE_CHECKOUT);
+    expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
   private function getRenderedOptinField() {

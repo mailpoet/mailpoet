@@ -14,6 +14,7 @@ class SendCategoryPurchaseEmailCest {
     $settingsFactory = new Settings();
     $settingsFactory->withWooCommerceListImportPageDisplayed(true);
     $settingsFactory->withWooCommerceCheckoutOptinEnabled();
+    $settingsFactory->withConfirmationEmailDisabled();
     $settingsFactory->withCronTriggerMethod('WordPress');
   }
 
