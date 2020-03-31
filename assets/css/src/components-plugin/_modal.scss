@@ -22,6 +22,7 @@
 .mailpoet-modal-frame {
   background: white;
   border: $modal-border-width solid $modal-light-gray-500;
+  border-radius: 4px;
   box-shadow: $modal-shadow-modal;
   box-sizing: border-box;
   height: 100%;
