@@ -30,11 +30,6 @@
         <% include 'settings/mta.html' %>
       </div>
 
-      <!-- basics -->
-      <div data-tab="basics" class="mailpoet_tab_panel">
-        <% include 'settings/basics.html' %>
-      </div>
-
       <!-- sign-up confirmation -->
       <div data-tab="signup" class="mailpoet_tab_panel">
         <% include 'settings/signup.html' %>
@@ -97,25 +92,6 @@
             errorFound = true;
           } else {
             $('#settings_recaptcha_tokens_error').hide();
-          }
-          // if new subscriber notification is enabled but sender is empty, show error
-          var notifications_enabled = $('input[name="subscriber_email_notification[enabled]"]:checked').val(),
-            address = $('input[name="subscriber_email_notification[address]"]').val().trim();
-          if (notifications_enabled && address == '') {
-            $('#settings_subscriber_email_notification_error').show();
-            window.location.href = '#basics';
-            errorFound = true;
-          } else {
-            $('#settings_subscriber_email_notification_error').hide();
-          }
-          var stats_notifications_enabled = $('input[name="stats_notifications[enabled]"]:checked').val(),
-            stats_notifications_address = $('input[name="stats_notifications[address]"]').val().trim();
-          if (stats_notifications_enabled && stats_notifications_address == '') {
-            $('#settings_stats_notifications_error').show();
-            window.location.href = '#basics';
-            errorFound = true;
-          } else {
-            $('#settings_stats_notifications_error').hide();
           }
 
           <% if is_woocommerce_active %>
