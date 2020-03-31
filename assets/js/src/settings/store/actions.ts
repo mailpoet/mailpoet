@@ -118,24 +118,43 @@ export function* verifyPremiumKey(key: string) {
   let pluginActive = res.meta.premium_plugin_active;
 
   if (!pluginInstalled) {
-    const actions = installPremiumPlugin();
-    let action = actions.next();
-    while (!action.done) {
-      yield action.value;
-      action = actions.next();
+    yield updateKeyActivationState({
+      premiumStatus: 'valid_premium_plugin_being_installed',
+      premiumInstallationStatus: 'install_installing',
+    });
+    const call = yield {
+      type: 'CALL_API',
+      endpoint: 'premium',
+      action: 'installPlugin',
+    };
+    if (call && !call.success) {
+      yield updateKeyActivationState({ premiumInstallationStatus: 'install_installing_error' });
+      pluginInstalled = false;
+    } else {
+      pluginInstalled = true;
     }
-    pluginInstalled = action.value;
   }
 
   if (pluginInstalled && !pluginActive) {
     const isAfterInstall = !res.meta.premium_plugin_installed;
-    const actions = activatePremiumPlugin(isAfterInstall);
-    let action = actions.next();
-    while (!action.done) {
-      yield action.value;
-      action = actions.next();
+    const doneStatus = isAfterInstall ? 'install_done' : 'activate_done';
+    const errorStatus = isAfterInstall ? 'install_activating_error' : 'activate_error';
+    yield updateKeyActivationState({
+      premiumStatus: 'valid_premium_plugin_being_activated',
+      premiumInstallationStatus: isAfterInstall ? 'install_activating' : 'activate_activating',
+    });
+    const call = yield {
+      type: 'CALL_API',
+      endpoint: 'premium',
+      action: 'activatePlugin',
+    };
+    if (call && !call.success) {
+      yield updateKeyActivationState({ premiumInstallationStatus: errorStatus });
+      pluginActive = false;
+    } else {
+      yield updateKeyActivationState({ premiumInstallationStatus: doneStatus });
+      pluginActive = true;
     }
-    pluginActive = action.value;
   }
 
   if (pluginInstalled && pluginActive) {
