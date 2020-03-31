@@ -8,7 +8,6 @@ import ModalHeader from './header.jsx';
 function Modal({
   onRequestClose,
   title,
-  icon,
   displayTitle,
   children,
   aria,
@@ -46,7 +45,6 @@ function Modal({
           displayTitle && (
             <ModalHeader
               headingId={headingId}
-              icon={icon}
               isDismissible={isDismissible}
               onClose={onRequestClose}
               title={title}
@@ -78,7 +76,6 @@ Modal.propTypes = {
   shouldCloseOnEsc: PropTypes.bool,
   shouldCloseOnClickOutside: PropTypes.bool,
   role: PropTypes.string,
-  icon: PropTypes.node,
 };
 
 Modal.defaultProps = {
@@ -86,7 +83,6 @@ Modal.defaultProps = {
   onRequestClose: () => {},
   role: 'dialog',
   title: null,
-  icon: null,
   aria: {},
   focusOnMount: true,
   shouldCloseOnEsc: true,

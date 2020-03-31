@@ -5,7 +5,6 @@ import { Button } from '@wordpress/components';
 import closeIcon from './close_icon.jsx';
 
 const ModalHeader = ({
-  icon,
   title,
   onClose,
   headingId,
@@ -13,14 +12,6 @@ const ModalHeader = ({
 }) => (
   <div className="mailpoet-modal-header">
     <div className="mailpoet-modal-header-heading-container">
-      { icon && (
-        <span
-          className="mailpoet-modal-icon-container"
-          aria-hidden
-        >
-          { icon }
-        </span>
-      ) }
       { title && (
         <h1
           id={headingId}
@@ -40,7 +31,6 @@ ModalHeader.propTypes = {
   title: PropTypes.string,
   headingId: PropTypes.string,
   onClose: PropTypes.func,
-  icon: PropTypes.node,
   isDismissible: PropTypes.bool,
 };
 
@@ -48,7 +38,6 @@ ModalHeader.defaultProps = {
   title: null,
   headingId: 'heading-id',
   onClose: () => {},
-  icon: null,
   isDismissible: true,
 };
 
