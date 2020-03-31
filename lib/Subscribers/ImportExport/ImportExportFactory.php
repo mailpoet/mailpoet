@@ -37,6 +37,7 @@ class ImportExportFactory {
       return [
         'id' => $segment['id'],
         'name' => $segment['name'],
+        'text' => $segment['name'], // Required select2 property
         'subscriberCount' => $segment['subscribers'],
       ];
     }, $segments);

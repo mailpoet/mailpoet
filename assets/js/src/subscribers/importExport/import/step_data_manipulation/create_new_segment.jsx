@@ -28,6 +28,7 @@ export default (onCreateSegment) => {
       onCreateSegment({
         id: response.data.id,
         name: response.data.name,
+        text: response.data.name, // Required select2 property
         subscriberCount: 0,
       });
 
