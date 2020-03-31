@@ -1,14 +1,14 @@
-#set-from-address-modal {
+.set-from-address-modal {
   p:first-child {
     margin-top: 0;
   }
 
-  #mailpoet_set_from_address_modal_address {
+  input[type=text] {
     display: block;
     width: 230px;
   }
 
-  #mailpoet_set_from_address_modal_save {
+  input[type=submit] {
     display: block;
     margin-top: 30px;
   }
