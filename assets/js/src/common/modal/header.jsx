@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button } from '@wordpress/components';
 
 import closeIcon from './close_icon.jsx';
 
@@ -22,7 +21,7 @@ const ModalHeader = ({
       ) }
     </div>
     { isDismissible && (
-      <Button onClick={onClose} icon={closeIcon} className="mailpoet-modal-close" />
+      <button type="button" onClick={onClose} className="mailpoet-modal-close">{closeIcon}</button>
     ) }
   </div>
 );
