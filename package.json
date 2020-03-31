@@ -28,6 +28,7 @@
     "@wordpress/block-library": "^2.14.4",
     "@wordpress/blocks": "^6.12.1",
     "@wordpress/components": "^9.2.3",
+    "@wordpress/core-data": "^2.12.1",
     "@wordpress/data": "^4.14.1",
     "@wordpress/edit-post": "^3.13.5",
     "@wordpress/editor": "^9.12.4",
