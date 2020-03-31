@@ -40,11 +40,6 @@
         <% include 'settings/advanced.html' %>
       </div>
 
-      <!-- premium -->
-      <div data-tab="premium" class="mailpoet_tab_panel">
-        <% include 'settings/premium.html' %>
-      </div>
-
       <p class="submit mailpoet_settings_submit" style="display:none;">
         <input
           type="submit"
@@ -94,12 +89,6 @@
           // if we're setting up a sending method, try to activate it
           if ($('.mailpoet_mta_setup_save').is(':visible')) {
             $('.mailpoet_mta_setup_save').trigger('click');
-          }
-          var mailpoet_premium_key = $('#mailpoet_premium_key').val();
-          // sync mss key with premium key
-          $('#mailpoet_api_key').val(mailpoet_premium_key);
-          if (mailpoet_premium_key.length > 0) {
-            $('#mailpoet_premium_key_verify').trigger('click', false);
           }
           saveSettings();
           return false;
