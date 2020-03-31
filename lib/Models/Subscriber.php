@@ -377,7 +377,7 @@ class Subscriber extends Model {
       )
       ->where('relation.segment_id', $wcSegment->id)
       ->where('relation.status', Subscriber::STATUS_SUBSCRIBED)
-      ->where('subscribers.status', Subscriber::STATUS_SUBSCRIBED)
+      ->whereIn('subscribers.status', [Subscriber::STATUS_SUBSCRIBED, Subscriber::STATUS_UNCONFIRMED])
       ->where('subscribers.is_woocommerce_user', 1)
       ->findOne();
   }
