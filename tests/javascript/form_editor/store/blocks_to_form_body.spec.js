@@ -16,6 +16,7 @@ import {
   nestedColumns,
   headingBlock,
   paragraphBlock,
+  imageBlock,
 } from './block_to_form_test_data.js';
 
 const colorDefinitions = [{
@@ -402,6 +403,48 @@ describe('Blocks to Form Body', () => {
     expect(input.params.text_color).to.be.equal('#123');
     expect(input.params.anchor).to.be.equal('anchor');
     expect(input.params.class_name).to.be.equal('class');
+  });
+
+  it('Should map empty image block', () => {
+    const [input] = formBlocksToBody([{
+      clientId: '895d5bfd-9fef-4b58-83be-7259a7375786',
+      name: 'core/image',
+      isValid: true,
+      attributes: {
+        alt: '',
+        linkDestination: 'none',
+      },
+    }]);
+    expect(input.type).to.be.equal('image');
+    expect(input.params.align).to.be.equal(null);
+    expect(input.params.url).to.be.equal(null);
+    expect(input.params.class_name).to.be.equal(null);
+    expect(input.params.alt).to.be.equal(null);
+    expect(input.params.title).to.be.equal(null);
+    expect(input.params.caption).to.be.equal(null);
+    expect(input.params.link_destination).to.be.equal('none');
+    expect(input.params.link).to.be.equal(null);
+    expect(input.params.id).to.be.equal(null);
+    expect(input.params.size_slug).to.be.equal(null);
+    expect(input.params.width).to.be.equal(null);
+    expect(input.params.height).to.be.equal(null);
+  });
+
+  it('Should map image block', () => {
+    const [input] = formBlocksToBody([imageBlock]);
+    expect(input.type).to.be.equal('image');
+    expect(input.params.align).to.be.equal('center');
+    expect(input.params.url).to.be.equal('http://example.com/image.jpg');
+    expect(input.params.class_name).to.be.equal('my-class');
+    expect(input.params.alt).to.be.equal('Alt text');
+    expect(input.params.title).to.be.equal('Title');
+    expect(input.params.caption).to.be.equal('Caption');
+    expect(input.params.link_destination).to.be.equal('none');
+    expect(input.params.link).to.be.equal('http://example.com');
+    expect(input.params.id).to.be.equal(123);
+    expect(input.params.size_slug).to.be.equal('medium');
+    expect(input.params.width).to.be.equal(100);
+    expect(input.params.height).to.be.equal(200);
   });
 
   it('Should map custom checkbox field', () => {
