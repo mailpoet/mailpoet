@@ -55,6 +55,27 @@ export function setPopupFormDelay(delay) {
   };
 }
 
+export function setPlaceFixedBarFormOnAllPages(place) {
+  return {
+    type: 'PLACE_FIXED_BAR_FORM_ON_ALL_PAGES',
+    place,
+  };
+}
+
+export function setPlaceFixedBarFormOnAllPosts(place) {
+  return {
+    type: 'PLACE_FIXED_BAR_FORM_ON_ALL_POSTS',
+    place,
+  };
+}
+
+export function setFixedBarFormDelay(delay) {
+  return {
+    type: 'SET_FIXED_BAR_FORM_DELAY',
+    delay,
+  };
+}
+
 export function deleteCustomFieldStarted() {
   return {
     type: 'DELETE_CUSTOM_FIELD_STARTED',

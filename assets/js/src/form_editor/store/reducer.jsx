@@ -10,6 +10,9 @@ import {
   placePopupFormOnAllPages,
   placePopupFormOnAllPosts,
   setPopupFormDelay,
+  placeFixedBarFormOnAllPosts,
+  placeFixedBarFormOnAllPages,
+  setFixedBarFormDelay,
 } from './reducers/form_placement.jsx';
 import changeFormSettings from './reducers/change_form_settings.jsx';
 import changeFormStyles from './reducers/change_form_styles.jsx';
@@ -64,6 +67,9 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'PLACE_POPUP_FORM_ON_ALL_PAGES': return placePopupFormOnAllPages(state, action);
     case 'PLACE_POPUP_FORM_ON_ALL_POSTS': return placePopupFormOnAllPosts(state, action);
     case 'SET_POPUP_FORM_DELAY': return setPopupFormDelay(state, action);
+    case 'PLACE_FIXED_BAR_FORM_ON_ALL_PAGES': return placeFixedBarFormOnAllPages(state, action);
+    case 'PLACE_FIXED_BAR_FORM_ON_ALL_POSTS': return placeFixedBarFormOnAllPosts(state, action);
+    case 'SET_FIXED_BAR_FORM_DELAY': return setFixedBarFormDelay(state, action);
     default:
       return state;
   }

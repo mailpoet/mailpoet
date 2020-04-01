@@ -49,6 +49,15 @@ export default {
   getPopupFormDelay(state) {
     return state.formData.settings.popupFormDelay;
   },
+  placeFixedBarFormOnAllPages(state) {
+    return state.formData.settings.placeFixedBarFormOnAllPages || false;
+  },
+  placeFixedBarFormOnAllPosts(state) {
+    return state.formData.settings.placeFixedBarFormOnAllPosts || false;
+  },
+  getFixedBarFormDelay(state) {
+    return state.formData.settings.fixedBarFormDelay;
+  },
   getAllAvailableSegments(state) {
     return state.segments;
   },

@@ -20,14 +20,22 @@ export const placePopupFormOnAllPages = formPlacement('placePopupFormOnAllPages'
 
 export const placePopupFormOnAllPosts = formPlacement('placePopupFormOnAllPosts');
 
-export const setPopupFormDelay = (state, action) => ({
+export const placeFixedBarFormOnAllPages = formPlacement('placeFixedBarFormOnAllPages');
+
+export const placeFixedBarFormOnAllPosts = formPlacement('placeFixedBarFormOnAllPosts');
+
+export const formPlacementDelay = curry((delayFormName, state, action) => ({
   ...state,
   hasUnsavedChanges: true,
   formData: {
     ...state.formData,
     settings: {
       ...state.formData.settings,
-      popupFormDelay: action.delay,
+      [delayFormName]: action.delay,
     },
   },
-});
+}));
+
+export const setPopupFormDelay = formPlacementDelay('popupFormDelay');
+
+export const setFixedBarFormDelay = formPlacementDelay('fixedBarFormDelay');
