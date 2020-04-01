@@ -198,10 +198,11 @@ const PremiumTab = (props) => {
                     // show modal to set authorized FROM address, if needed
                     if (isUserTriggered) {
                       const settings = await getSettings();
+                      const mssActive = settings.data.mta && settings.data.mta.method === 'MailPoet';
                       const authorizedAddressNeeded = !settings.data.sender.address
                         || settings.data.authorized_emails_addresses_check;
 
-                      if (mssStatus === MssStatus.KEY_VALID_MSS_ACTIVE && authorizedAddressNeeded) {
+                      if (mssActive && authorizedAddressNeeded) {
                         setShowSetFromAddressModal(true);
                       }
                     }
