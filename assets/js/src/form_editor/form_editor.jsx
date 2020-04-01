@@ -6,6 +6,7 @@ import Notices from 'notices/notices.jsx';
 import Editor from './components/editor.jsx';
 import initStore from './store/store.jsx';
 import { initBlocks } from './blocks/blocks.jsx';
+import initHooks from './hooks';
 
 const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
@@ -22,6 +23,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Initialize WP API
     apiFetch.use(apiFetch.createRootURLMiddleware(window.wpApiSettings.root));
     apiFetch.use(apiFetch.createNonceMiddleware(window.wpApiSettings.nonce));
+    initHooks();
     initStore();
     initBlocks();
     ReactDOM.render(
