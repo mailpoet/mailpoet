@@ -36,7 +36,7 @@ class UnauthorizedEmailInNewslettersNotice {
   public function display($validationError) {
     $message = $this->getMessageText();
     $message .= $this->getNewslettersLinks($validationError);
-    $message .= $this->getResumeSendingButton();
+    $message .= $this->getFixThisButton();
     // Use Mailer log errors display system to display this notice
     $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_AUTHORIZATION, $message);
     MailerLog::updateMailerLog($mailerLog);
@@ -59,8 +59,8 @@ class UnauthorizedEmailInNewslettersNotice {
     return $links;
   }
 
-  private function getResumeSendingButton() {
-    $button = '<button class="button button-primary mailpoet-js-button-resume-sending">' . $this->wp->__('Resume sending', 'mailpoet') . '</button>';
+  private function getFixThisButton() {
+    $button = '<button class="button button-primary mailpoet-js-button-fix-this">' . $this->wp->__('Fix this!', 'mailpoet') . '</button>';
     return "<p>$button</p>";
   }
 }
