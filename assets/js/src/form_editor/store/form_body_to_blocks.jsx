@@ -274,6 +274,25 @@ export const formBodyToBlocksFactory = (
             },
             name: 'core/paragraph',
           };
+        case 'image':
+          return {
+            ...mapped,
+            name: 'core/image',
+            attributes: {
+              className: item.params?.class_name || '',
+              align: item.params?.align,
+              url: item.params?.url,
+              alt: item.params?.alt,
+              title: item.params?.title,
+              caption: item.params?.caption,
+              linkDestination: item.params?.link_destination,
+              link: item.params?.link,
+              id: item.params?.id,
+              sizeSlug: item.params?.size_slug,
+              width: item.params?.width,
+              height: item.params?.height,
+            },
+          };
         case 'first_name':
           return {
             ...mapped,

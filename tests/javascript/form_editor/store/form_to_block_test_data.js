@@ -256,3 +256,22 @@ export const paragraphInput = {
     class_name: 'class name',
   },
 };
+
+export const image = {
+  type: 'image',
+  id: 'image',
+  params: {
+    class_name: 'my-class',
+    align: 'center',
+    url: 'http://example.com/image.jpg',
+    alt: 'Alt text',
+    title: 'Title',
+    caption: 'Caption',
+    link_destination: 'none',
+    link: 'http://example.com',
+    id: 123,
+    size_slug: 'medium',
+    width: 100,
+    height: 200,
+  },
+};

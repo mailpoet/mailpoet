@@ -18,6 +18,7 @@ import {
   nestedColumns,
   headingInput,
   paragraphInput,
+  image,
 } from './form_to_block_test_data.js';
 
 const colorDefinitions = [{
@@ -616,5 +617,21 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.className).to.be.equal('class');
     expect(block.attributes.anchor).to.be.equal('anchor');
     expect(block.attributes.customTextColor).to.be.equal('#f78da7');
+  });
+
+  it('It should map image', () => {
+    const [block] = formBodyToBlocks([image]);
+    expect(block.name).to.equal('core/image');
+    expect(block.attributes.className).to.equal('my-class');
+    expect(block.attributes.align).to.equal('center');
+    expect(block.attributes.url).to.equal('http://example.com/image.jpg');
+    expect(block.attributes.alt).to.equal('Alt text');
+    expect(block.attributes.title).to.equal('Title');
+    expect(block.attributes.caption).to.equal('Caption');
+    expect(block.attributes.linkDestination).to.equal('none');
+    expect(block.attributes.id).to.equal(123);
+    expect(block.attributes.sizeSlug).to.equal('medium');
+    expect(block.attributes.width).to.equal(100);
+    expect(block.attributes.height).to.equal(200);
   });
 });
