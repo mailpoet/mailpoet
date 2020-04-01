@@ -34,7 +34,7 @@ class UnauthorizedEmailNotice {
   public function display($validationError) {
     $message = $this->getMessageText($validationError);
     $message .= $this->getSettingsButtons($validationError);
-    $message .= $this->getResumeSendingButton();
+    $message .= $this->getFixThisButton();
     $extraClasses = 'mailpoet-js-error-unauthorized-emails-notice';
     Notice::displayError($message, $extraClasses, self::OPTION_NAME, false, false);
   }
@@ -57,8 +57,8 @@ class UnauthorizedEmailNotice {
     return $buttons;
   }
 
-  private function getResumeSendingButton() {
-    $button = '<button class="button button-primary mailpoet-js-button-resume-sending">' . $this->wp->__('Resume sending', 'mailpoet') . '</button>';
+  private function getFixThisButton() {
+    $button = '<button class="button button-primary mailpoet-js-button-fix-this">' . $this->wp->__('Fix this!', 'mailpoet') . '</button>';
     return "<p>$button</p>";
   }
 }
