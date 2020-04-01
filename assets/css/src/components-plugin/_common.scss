@@ -48,3 +48,9 @@ p.sender_email_address_warning:first-child {
   height: 46px;
   padding: 10px 18px;
 }
+
+// Fix for select 2 placeholder padding rendering issue in Chrome
+.select2-container .select2-search--inline,
+.select2-container .select2-search--inline .select2-search__field {
+  max-width: 100%;
+}
