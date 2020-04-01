@@ -136,6 +136,7 @@ export default function normalizeSettings(data: any): Settings {
       body: text,
     }),
     woocommerce: asObject({
+      use_mailpoet_editor: disabledRadio,
       transactional_email_id: text,
       optin_on_checkout: asObject({
         enabled: enabledRadio,

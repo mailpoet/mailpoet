@@ -141,10 +141,6 @@
     margin-left: 2em;
   }
 
-  .mailpoet_woocommerce_editor_button {
-    margin-top: 10px;
-  }
-
   @include breakpoint-max-width(782px) {
     .form-table th {
       width: auto;
