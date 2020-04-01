@@ -1,6 +1,8 @@
 import React from 'react';
+import '@wordpress/core-data';
 import { select, useSelect, useDispatch } from '@wordpress/data';
 import { DropZoneProvider, Popover, SlotFillProvider } from '@wordpress/components';
+import { uploadMedia } from '@wordpress/media-utils';
 import {
   BlockEditorKeyboardShortcuts,
   BlockEditorProvider,
@@ -19,11 +21,6 @@ import FormStyles from './form_styles.jsx';
 import Preview from './preview.jsx';
 import FormStylingBackground from './form_styling_background.jsx';
 
-// Editor settings - see @wordpress/block-editor/src/store/defaults.js
-const editorSettings = {
-  showInserterHelpPanel: false, // Disable TIPs section in add block pop up
-};
-
 /**
  * This component renders the form editor app.
  * Class names and organization of elements are done based on Gutenberg's edit-post package.
@@ -38,12 +35,22 @@ export default () => {
     (sel) => sel('mailpoet-form-editor').getSidebarOpened(),
     []
   );
+  const canUserUpload = useSelect(
+    (sel) => sel('core').canUser('create', 'media'),
+    []
+  );
 
   const layoutClass = classnames('edit-post-layout block-editor-editor-skeleton', {
     'is-sidebar-opened': sidebarOpened,
   });
 
   const { blocksChangedInBlockEditor } = useDispatch('mailpoet-form-editor');
+
+  // Editor settings - see @wordpress/block-editor/src/store/defaults.js
+  const editorSettings = {
+    showInserterHelpPanel: false, // Disable TIPs section in add block pop up
+    mediaUpload: canUserUpload ? uploadMedia : null,
+  };
 
   return (
     <>
