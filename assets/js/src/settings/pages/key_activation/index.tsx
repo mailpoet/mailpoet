@@ -1,9 +1,11 @@
 import React, { useContext } from 'react';
 import MailPoet from 'mailpoet';
-import { useSelector, useAction } from 'settings/store/hooks';
+import { useSelector, useAction, useSetting } from 'settings/store/hooks';
 import { GlobalContext } from 'context';
 import { t } from 'common/functions';
+import { MssStatus } from 'settings/store/types';
 import { Label, Inputs } from 'settings/components';
+import SetFromAddressModal from 'common/set_from_address_modal';
 import { KeyMessages, MssMessages, PremiumMessages } from './messages';
 
 export default function KeyActivation() {
@@ -14,6 +16,8 @@ export default function KeyActivation() {
   const verifyPremiumKey = useAction('verifyPremiumKey');
   const installPremiumPlugin = useAction('installPremiumPlugin');
   const activatePremiumPlugin = useAction('activatePremiumPlugin');
+  const [senderAddress] = useSetting('sender', 'address');
+  const [unauthorizedAddresses] = useSetting('authorized_emails_addresses_check');
 
   const verifyKey = async (event) => {
     if (!state.key) {
@@ -27,9 +31,15 @@ export default function KeyActivation() {
       premiumInstallationStatus: null,
     });
     MailPoet.Modal.loading(true);
-    await verifyMssKey(state.key, isTrusted);
+    const mssStatus: MssStatus = (await verifyMssKey(state.key, isTrusted)) as any;
     await verifyPremiumKey(state.key);
     MailPoet.Modal.loading(false);
+    if (isTrusted) {
+      const authorizedAddressNeeded = !senderAddress || unauthorizedAddresses;
+      if (mssStatus === 'valid_mss_active' && authorizedAddressNeeded) {
+        setState({ showFromAddressModal: true });
+      }
+    }
   };
 
   return (
@@ -81,6 +91,11 @@ export default function KeyActivation() {
           </div>
         )}
       </Inputs>
+      {state.showFromAddressModal && (
+        <SetFromAddressModal
+          onRequestClose={() => setState({ showFromAddressModal: false })}
+        />
+      )}
     </div>
   );
 }

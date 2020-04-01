@@ -163,6 +163,7 @@ export default function normalizeSettings(data: any): Settings {
         data: asIs,
       }),
     }),
+    authorized_emails_addresses_check: asIs,
   });
   return settingsSchema(data) as Settings;
 }
