@@ -58,6 +58,10 @@ const removeUnauthorizedEmailNotices = () => {
   if (unauthorizedEmailInNewsletterNotice) {
     unauthorizedEmailInNewsletterNotice.remove();
   }
+  const unauthorizedEmailInNewsletterDynamicNotice = document.querySelector('[data-id="mailpoet_authorization_error"]');
+  if (unauthorizedEmailInNewsletterDynamicNotice) {
+    unauthorizedEmailInNewsletterDynamicNotice.remove();
+  }
 };
 
 type Props = {
