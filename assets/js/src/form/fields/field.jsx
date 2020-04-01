@@ -94,6 +94,7 @@ class FormField extends React.Component {
       case 'selection':
         field = (
           <FormFieldSelection
+            key={`selection-field-${dataField.name}`}
             onValueChange={data.onValueChange}
             field={data.field}
             automationId={data.automationId}
