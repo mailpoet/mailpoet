@@ -19,7 +19,7 @@
         <a class="nav-tab" href="#signup" data-automation-id="signup_settings_tab"><%= __('Sign-up Confirmation') %></a>
         <a class="nav-tab" href="#mta" data-automation-id="send_with_settings_tab"><%= __('Send With...') %></a>
         <% if is_woocommerce_active %>
-          <a class="nav-tab" href="#woocommerce" data-automation-id="woocommerce_settings_tab"><%= __('WooCommerce') %></a>
+          <a class="nav-tab" href="?page=mailpoet-new-settings#/woocommerce" data-automation-id="woocommerce_settings_tab"><%= __('WooCommerce') %></a>
         <% endif %>
         <a class="nav-tab" href="#advanced" data-automation-id="settings-advanced-tab"><%= __('Advanced') %></a>
         <a class="nav-tab nav-tab-reload" href="#premium" data-automation-id="activation_settings_tab"><%= __('Key Activation') %></a>
@@ -35,14 +35,7 @@
         <% include 'settings/signup.html' %>
       </div>
 
-      <% if is_woocommerce_active %>
-        <!-- woocommerce -->
-        <div data-tab="woocommerce" class="mailpoet_tab_panel">
-          <% include 'settings/woocommerce.html' %>
-        </div>
-      <% endif %>
-
-     <!-- advanced -->
+      <!-- advanced -->
       <div data-tab="advanced" class="mailpoet_tab_panel">
         <% include 'settings/advanced.html' %>
       </div>
@@ -94,18 +87,6 @@
             $('#settings_recaptcha_tokens_error').hide();
           }
 
-          <% if is_woocommerce_active %>
-            // if WooCommerce opt-in on checkout is enabled but the checkbox message is empty, show an error
-            var woocommerce_optin_on_checkout_enabled = $('input[name="woocommerce[optin_on_checkout][enabled]"]:checked').val(),
-              woocommerce_optin_on_checkout_message = $('input[name="woocommerce[optin_on_checkout][message]"]').val().trim();
-            if (woocommerce_optin_on_checkout_enabled && woocommerce_optin_on_checkout_message == '') {
-              $('#settings_woocommerce_optin_on_checkout_error').show();
-              window.location.href = '#woocommerce';
-              errorFound = true;
-            } else {
-              $('#settings_woocommerce_optin_on_checkout_error').hide();
-            }
-          <% endif %>
           // stop processing if an error was found
           if (errorFound) {
             return false;
