@@ -99,7 +99,7 @@ class Settings extends APIEndpoint {
       ]);
     }
 
-    if (MailerLog::isSendingPaused() && !$this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
+    if (!$this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
       MailerLog::resumeSending();
     }
     return $this->successResponse();
