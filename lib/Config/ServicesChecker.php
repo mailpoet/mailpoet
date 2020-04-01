@@ -33,12 +33,15 @@ class ServicesChecker {
       || $mssKey['state'] == Bridge::KEY_INVALID
     ) {
       if ($displayErrorNotice) {
-        $error = Helpers::replaceLinkTags(
-          WPFunctions::get()->__('All sending is currently paused! Your key to send with MailPoet is invalid. [link]Visit MailPoet.com to purchase a key[/link]', 'mailpoet'),
-          'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers(),
-          ['target' => '_blank']
-        );
-        WPNotice::displayError($error);
+        $error = '<h3>' . __('All sending is currently paused!', 'mailpoet') . '</h3>';
+        $error .= '<p>' . __('Your key to send with MailPoet is invalid.', 'mailpoet') . '</p>';
+        $error .= '<p><a '
+          . ' href="https://account.mailpoet.com?s=' . (Subscriber::getTotalSubscribers() + 1) . '"'
+          . ' class="button button-secondary" '
+          . ' target="_blank"'
+          . '>' . __('Visit MailPoet.com to purchase a key', 'mailpoet') . '</a></p>';
+
+        WPNotice::displayError($error, '', '', false, false);
       }
       return false;
     } elseif ($mssKey['state'] == Bridge::KEY_EXPIRING

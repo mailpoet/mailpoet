@@ -97,6 +97,7 @@
 // This rules unify width across all style setting sidebars
 .components-circular-option-picker {
   width: 245px;
+
   @include breakpoint-max-width(782px) {
     width: 100%;
   }
