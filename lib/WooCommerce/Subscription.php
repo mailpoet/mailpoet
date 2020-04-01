@@ -101,11 +101,15 @@ class Subscription {
     }
     $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
 
+    $signupConfirmation = $this->settings->get('signup_confirmation');
     // checkbox is checked
-    if ($subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
-      $this->updateAlreadySubscribedSubscriber($subscriber);
+    if (
+      ($subscriber->status === Subscriber::STATUS_SUBSCRIBED)
+      || ((bool)$signupConfirmation['enabled'] === false)
+    ) {
+      $this->subscribe($subscriber);
     } else {
-      $this->updateNotSubscribedSubscriber($subscriber);
+      $this->requireSubscriptionConfirmation($subscriber);
     }
 
     SubscriberSegment::subscribeToSegments(
@@ -116,7 +120,7 @@ class Subscription {
     return true;
   }
 
-  private function updateAlreadySubscribedSubscriber(Subscriber $subscriber) {
+  private function subscribe(Subscriber $subscriber) {
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     if (empty($subscriber->confirmedIp) && empty($subscriber->confirmedAt)) {
       $subscriber->confirmedIp = Helpers::getIP();
@@ -125,14 +129,7 @@ class Subscription {
     $subscriber->save();
   }
 
-  private function updateNotSubscribedSubscriber(Subscriber $subscriber) {
-    $signupConfirmation = $this->settings->get('signup_confirmation');
-    if ((bool)$signupConfirmation['enabled'] === false) {
-      // if double opt-in is disabled we act as if the subscriber was already subscribed
-      $this->updateAlreadySubscribedSubscriber($subscriber);
-      return;
-    }
-
+  private function requireSubscriptionConfirmation(Subscriber $subscriber) {
     $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
     $subscriber->save();
 
