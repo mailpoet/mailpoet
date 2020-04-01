@@ -162,6 +162,14 @@ export type Settings = {
       data: any
     }
   }
+  authorized_emails_addresses_check: null | {
+    invalid_sender_address?: string
+    invalid_senders_in_newsletters?: Array<{
+      'subject': string
+      'sender_address': string
+      'newsletter_id': number | string
+    }>
+  }
 }
 type Segment = {
   id: string
@@ -209,6 +217,7 @@ export type KeyActivationState = {
   mssStatus: MssStatus
   mssMessage: string
   premiumInstallationStatus: PremiumInstallationStatus
+  showFromAddressModal: boolean
 }
 
 export type State = {

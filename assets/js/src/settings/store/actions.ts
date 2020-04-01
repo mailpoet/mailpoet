@@ -1,7 +1,7 @@
 import { select } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import { STORE_NAME } from '.';
-import { Action, KeyActivationState } from './types';
+import { Action, KeyActivationState, MssStatus } from './types';
 
 export function setSetting(path: string[], value: any): Action {
   return { type: 'SET_SETTING', path, value };
@@ -88,7 +88,8 @@ export function* verifyMssKey(key: string, activateMssIfKeyValid: boolean) {
   } else {
     fields.mssStatus = 'valid_mss_not_active';
   }
-  return updateKeyActivationState(fields);
+  yield updateKeyActivationState(fields);
+  return fields.mssStatus;
 }
 
 export function* verifyPremiumKey(key: string) {

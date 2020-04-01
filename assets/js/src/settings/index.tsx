@@ -1,5 +1,6 @@
 import React from 'react';
 import jQuery from 'jquery';
+import 'parsleyjs';
 import ReactDOM from 'react-dom';
 import { HashRouter } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
