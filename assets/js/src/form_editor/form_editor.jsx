@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import apiFetch from '@wordpress/api-fetch';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 import Editor from './components/editor.jsx';
@@ -18,6 +19,9 @@ const App = () => (
 window.addEventListener('DOMContentLoaded', () => {
   const appElement = document.querySelector('#mailpoet_form_edit');
   if (appElement) {
+    // Initialize WP API
+    apiFetch.use(apiFetch.createRootURLMiddleware(window.wpApiSettings.root));
+    apiFetch.use(apiFetch.createNonceMiddleware(window.wpApiSettings.nonce));
     initStore();
     initBlocks();
     ReactDOM.render(
