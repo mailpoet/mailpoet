@@ -49,9 +49,12 @@ if (jQuery('#mailpoet_settings').length > 0) {
       if (tab === 'basics') {
         window.location.href = '?page=mailpoet-new-settings#/basics';
       }
-      if (tab === 'woocommerce' && !window.mailpoet_woocommerce_active) {
-        window.location.hash = '#basics';
-        return;
+      if (tab === 'woocommerce') {
+        if (!window.mailpoet_woocommerce_active) {
+          window.location.href = '?page=mailpoet-new-settings#/basics';
+        } else {
+          window.location.href = '?page=mailpoet-new-settings#/woocommerce';
+        }
       }
       // reset all active tabs
       jQuery('.nav-tab-wrapper a').removeClass('nav-tab-active');

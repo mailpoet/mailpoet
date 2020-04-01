@@ -33,13 +33,13 @@ export default () => {
         {t('sendWithTab')}
       </a>
       {hasWooCommerce && (
-        <a
-          className="nav-tab"
-          href="?page=mailpoet-settings#woocommerce"
-          data-automation-id="woocommerce_settings_tab"
+        <TabLink
+          name="woocommerce"
+          current={current}
+          automationId="woocommerce_settings_tab"
         >
           {t('wooCommerceTab')}
-        </a>
+        </TabLink>
       )}
       <a
         className="nav-tab"
