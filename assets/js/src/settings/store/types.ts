@@ -136,6 +136,7 @@ export type Settings = {
     body: string
   }
   woocommerce: {
+    use_mailpoet_editor: '1' | ''
     transactional_email_id: string,
     optin_on_checkout: {
       enabled: '1' | ''
