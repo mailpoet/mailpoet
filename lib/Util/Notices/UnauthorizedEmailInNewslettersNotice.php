@@ -11,8 +11,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
-use function MailPoetVendor\array_column;
-
 class UnauthorizedEmailInNewslettersNotice {
 
   const OPTION_NAME = 'unauthorized-email-in-newsletters-addresses-notice';
@@ -38,7 +36,6 @@ class UnauthorizedEmailInNewslettersNotice {
   public function display($validationError) {
     $message = $this->getMessageText();
     $message .= $this->getNewslettersLinks($validationError);
-    $message .= $this->getAuthorizationLink($validationError);
     $message .= $this->getResumeSendingButton();
     // Use Mailer log errors display system to display this notice
     $mailerLog = MailerLog::setError(MailerLog::getMailerLog(), MailerError::OPERATION_AUTHORIZATION, $message);
@@ -46,7 +43,7 @@ class UnauthorizedEmailInNewslettersNotice {
   }
 
   private function getMessageText() {
-    $message = $this->wp->__('<b>Your automatic emails have been paused,</b> because some email addresses haven’t been authorized yet.', 'mailpoet');
+    $message = $this->wp->__('<b>Your automatic emails have been paused</b> because some email addresses haven’t been authorized yet.', 'mailpoet');
     return "<p>$message</p>";
   }
 
@@ -60,23 +57,6 @@ class UnauthorizedEmailInNewslettersNotice {
       $links .= "<p>$link</p>";
     }
     return $links;
-  }
-
-  private function getAuthorizationLink($validationError) {
-    $emails = array_unique(array_column($validationError['invalid_senders_in_newsletters'], 'sender_address'));
-    if (count($emails) > 1) {
-      $authorizeLink = $this->wp->_x('Authorize %1$s and %2$s', 'Link for user to authorize their email address', 'mailpoet');
-      $authorizeLink = str_replace('%2$s', EscapeHelper::escapeHtmlText(array_pop($emails)), $authorizeLink);
-      $authorizeLink = str_replace('%1$s', EscapeHelper::escapeHtmlText(implode(', ', $emails)), $authorizeLink);
-    } else {
-      $authorizeLink = $this->wp->_x('Authorize %s', 'Link for user to authorize their email address', 'mailpoet');
-      $authorizeLink = str_replace('%s', EscapeHelper::escapeHtmlText($emails[0]), $authorizeLink);
-    }
-
-    $authorizeLink = Helpers::replaceLinkTags("[link]{$authorizeLink}[/link]", 'https://account.mailpoet.com/authorization', ['target' => '_blank']);
-    $html = '<p><b>' . $this->wp->_x('OR', 'User has to choose between two options', 'mailpoet') . '</b></p>';
-    $html .= "<p>$authorizeLink</p>";
-    return $html;
   }
 
   private function getResumeSendingButton() {
