@@ -190,6 +190,25 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
               class_name: block.attributes.className || null,
             },
           };
+        case 'core/image':
+          return {
+            type: 'image',
+            id: 'image',
+            params: {
+              class_name: block.attributes.className || null,
+              align: block.attributes.align || null,
+              url: block.attributes.url || null,
+              alt: block.attributes.alt || null,
+              title: block.attributes.title || null,
+              caption: block.attributes.caption || null,
+              link_destination: block.attributes.linkDestination || null,
+              link: block.attributes.link || null,
+              id: block.attributes.id || null, // Image id
+              size_slug: block.attributes.sizeSlug || null,
+              width: block.attributes.width || null,
+              height: block.attributes.height || null,
+            },
+          };
         case 'core/column':
           return {
             type: 'column',

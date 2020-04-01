@@ -202,6 +202,26 @@ export const paragraphBlock = {
   },
 };
 
+export const imageBlock = {
+  clientId: '895d5bfd-9fef-4b58-83be-7259a7375786',
+  name: 'core/image',
+  isValid: true,
+  attributes: {
+    className: 'my-class',
+    align: 'center',
+    url: 'http://example.com/image.jpg',
+    alt: 'Alt text',
+    title: 'Title',
+    caption: 'Caption',
+    linkDestination: 'none',
+    link: 'http://example.com',
+    id: 123,
+    sizeSlug: 'medium',
+    width: 100,
+    height: 200,
+  },
+};
+
 export const nestedColumns = {
   clientId: 'columns-1',
   name: 'core/columns',
