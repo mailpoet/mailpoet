@@ -12,6 +12,21 @@ class DisplayFormInWPContent {
 
   const NO_FORM_TRANSIENT_KEY = 'no_forms_displayed_bellow_content';
 
+  const SETUP = [
+    'below_post' => [
+      'post' => 'place_form_bellow_all_posts',
+      'page' => 'place_form_bellow_all_pages',
+    ],
+    'popup' => [
+      'post' => 'place_popup_form_on_all_posts',
+      'page' => 'place_popup_form_on_all_pages',
+    ],
+    'fixed_bar' => [
+      'post' => 'place_fixed_bar_form_on_all_posts',
+      'page' => 'place_fixed_bar_form_on_all_pages',
+    ],
+  ];
+
   /** @var WPFunctions */
   private $wp;
 
@@ -61,6 +76,7 @@ class DisplayFormInWPContent {
     foreach ($forms as $form) {
       $result .= $this->getContentBellow($form, 'popup');
       $result .= $this->getContentBellow($form, 'below_post');
+      $result .= $this->getContentBellow($form, 'fixed_bar');
     }
 
     return $result;
@@ -88,15 +104,13 @@ class DisplayFormInWPContent {
     $forms = $this->formsRepository->findBy(['deletedAt' => null]);
     return array_filter($forms, function($form) {
       return (
-        $this->shouldDisplayFormBellowContent($form)
-        || $this->shouldDisplayPopupForm($form)
+        $this->shouldDisplayForm($form)
       );
     });
   }
 
   private function getContentBellow(FormEntity $form, string $displayType): string {
-    if ($displayType === 'below_post' && !$this->shouldDisplayFormBellowContent($form)) return '';
-    if ($displayType === 'popup' && !$this->shouldDisplayPopupForm($form)) return '';
+    if (!$this->shouldDisplayFormType($form, $displayType)) return '';
     $formData = [
       'body' => $form->getBody(),
       'styles' => $form->getStyles(),
@@ -137,33 +151,29 @@ class DisplayFormInWPContent {
     return $this->templateRenderer->render('form/front_end_form.html', $templateData);
   }
 
-  private function shouldDisplayFormBellowContent(FormEntity $form): bool {
-    $settings = $form->getSettings();
-    if (!is_array($settings)) return false;
-    if (!isset($settings['place_form_bellow_all_posts'])) return false;
-    if (
-      ($settings['place_form_bellow_all_posts'] === '1')
-      && $this->wp->isSingular('post')
-    ) return true;
-    if (
-      ($settings['place_form_bellow_all_pages'] === '1')
-      && $this->wp->isPage()
-    ) return true;
+  private function shouldDisplayForm(FormEntity $form): bool {
+    foreach (self::SETUP as $formType => $formSetup) {
+      if ($this->shouldDisplayFormType($form, $formType)) {
+        return true;
+      }
+    }
     return false;
   }
 
-  private function shouldDisplayPopupForm(FormEntity $form): bool {
+  private function shouldDisplayFormType(FormEntity $form, string $formType): bool {
     $settings = $form->getSettings();
     if (!is_array($settings)) return false;
-    if (!isset($settings['place_popup_form_on_all_pages'])) return false;
-    if (
-      ($settings['place_popup_form_on_all_posts'] === '1')
-      && $this->wp->isSingular('post')
-    ) return true;
-    if (
-      ($settings['place_popup_form_on_all_pages'] === '1')
-      && $this->wp->isPage()
-    ) return true;
-    return false;
+
+    $keys = self::SETUP[$formType];
+    $key = '';
+    if ($this->wp->isSingular('post')) {
+      $key = $keys['post'];
+    }
+    if ($this->wp->isPage()) {
+      $key = $keys['page'];
+    }
+
+    return (isset($settings[$key]) && ($settings[$key] === '1'));
   }
+
 }
