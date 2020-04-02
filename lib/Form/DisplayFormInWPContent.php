@@ -141,6 +141,8 @@ class DisplayFormInWPContent {
     );
 
     $templateData['delay'] = $formSettings['popup_form_delay'] ?? 0;
+    $templateData['delay'] = $formSettings['fixed_bar_form_delay'] ?? 0;
+    $templateData['position'] = $formSettings['fixed_bar_form_position'] ?? 'top';
     $templateData['backgroundColor'] = $formSettings['backgroundColor'] ?? '';
 
     // generate security token
@@ -175,5 +177,4 @@ class DisplayFormInWPContent {
 
     return (isset($settings[$key]) && ($settings[$key] === '1'));
   }
-
 }
