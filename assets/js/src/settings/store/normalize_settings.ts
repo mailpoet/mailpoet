@@ -14,6 +14,7 @@ export default function normalizeSettings(data: any): Settings {
   const settingsSchema = asObject({
     sender: asObject({ name: text, address: text }),
     reply_to: asObject({ name: text, address: text }),
+    bounce: asObject({ address: text }),
     subscribe: asObject({
       on_comment: asObject({ enabled: disabledCheckbox, label: asString(t('yesAddMe')), segments: emptyArray }),
       on_register: asObject({ enabled: disabledCheckbox, label: asString(t('yesAddMe')), segments: emptyArray }),

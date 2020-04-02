@@ -9,10 +9,12 @@ import ShareData from './share_data';
 import Captcha from './captcha';
 import Reinstall from './reinstall';
 import Logging from './logging';
+import BounceAddress from './bounce_address';
 
 export default function Advanced() {
   return (
     <div className="mailpoet-settings-grid">
+      <BounceAddress />
       <TaskScheduler />
       <Roles />
       <Tracking />
