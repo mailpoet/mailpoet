@@ -38,6 +38,7 @@ export default function CheckoutOptin() {
           <Inputs>
             <input
               type="text"
+              className="regular-text"
               id="mailpoet_wc_checkout_optin_message"
               data-automation-id="mailpoet_wc_checkout_optin_message"
               value={message}
