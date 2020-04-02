@@ -35,11 +35,6 @@
         <% include 'settings/signup.html' %>
       </div>
 
-      <!-- advanced -->
-      <div data-tab="advanced" class="mailpoet_tab_panel">
-        <% include 'settings/advanced.html' %>
-      </div>
-
       <p class="submit mailpoet_settings_submit" style="display:none;">
         <input
           type="submit"
@@ -69,17 +64,6 @@
               { scroll: true }
             );
             errorFound = true;
-          }
-          // if reCAPTCHA is enabled but keys are emty, show error
-          var enabled = $('input[name="captcha[type]"]:checked').val() == 'recaptcha',
-              site_key = $('input[name="captcha[recaptcha_site_token]"]').val().trim(),
-              secret_key = $('input[name="captcha[recaptcha_secret_token]"]').val().trim();
-          if (enabled && (site_key == '' || secret_key == '')) {
-            $('#settings_recaptcha_tokens_error').show();
-            window.location.href = '#advanced';
-            errorFound = true;
-          } else {
-            $('#settings_recaptcha_tokens_error').hide();
           }
 
           // stop processing if an error was found
