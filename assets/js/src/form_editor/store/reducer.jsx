@@ -13,6 +13,7 @@ import {
   placeFixedBarFormOnAllPosts,
   placeFixedBarFormOnAllPages,
   setFixedBarFormDelay,
+  setFixedBarFormPosition,
 } from './reducers/form_placement.jsx';
 import changeFormSettings from './reducers/change_form_settings.jsx';
 import changeFormStyles from './reducers/change_form_styles.jsx';
@@ -70,6 +71,7 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'PLACE_FIXED_BAR_FORM_ON_ALL_PAGES': return placeFixedBarFormOnAllPages(state, action);
     case 'PLACE_FIXED_BAR_FORM_ON_ALL_POSTS': return placeFixedBarFormOnAllPosts(state, action);
     case 'SET_FIXED_BAR_FORM_DELAY': return setFixedBarFormDelay(state, action);
+    case 'SET_FIXED_BAR_FORM_POSITION': return setFixedBarFormPosition(state, action);
     default:
       return state;
   }

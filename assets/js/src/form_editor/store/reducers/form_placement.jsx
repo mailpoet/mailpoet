@@ -39,3 +39,15 @@ export const formPlacementDelay = curry((delayFormName, state, action) => ({
 export const setPopupFormDelay = formPlacementDelay('popupFormDelay');
 
 export const setFixedBarFormDelay = formPlacementDelay('fixedBarFormDelay');
+
+export const setFixedBarFormPosition = (state, action) => ({
+  ...state,
+  hasUnsavedChanges: true,
+  formData: {
+    ...state.formData,
+    settings: {
+      ...state.formData.settings,
+      fixedBarFormPosition: action.position,
+    },
+  },
+});
