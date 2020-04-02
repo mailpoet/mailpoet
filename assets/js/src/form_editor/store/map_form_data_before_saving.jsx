@@ -11,6 +11,7 @@ export default function mapFormDataBeforeSaving(data) {
       place_fixed_bar_form_on_all_pages: data.settings.placeFixedBarFormOnAllPages === true ? '1' : '',
       place_fixed_bar_form_on_all_posts: data.settings.placeFixedBarFormOnAllPosts === true ? '1' : '',
       fixed_bar_form_delay: data.settings.fixedBarFormDelay,
+      fixed_bar_form_position: data.settings.fixedBarFormPosition,
     },
   };
 }

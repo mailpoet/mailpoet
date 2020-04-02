@@ -58,6 +58,9 @@ export default {
   getFixedBarFormDelay(state) {
     return state.formData.settings.fixedBarFormDelay;
   },
+  getFixedBarFormPosition(state) {
+    return state.formData.settings.fixedBarFormPosition;
+  },
   getAllAvailableSegments(state) {
     return state.segments;
   },

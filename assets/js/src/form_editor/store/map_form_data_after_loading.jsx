@@ -20,6 +20,7 @@ export default function mapFormDataAfterLoading(data) {
       placeFixedBarFormOnAllPages: data.settings.place_fixed_bar_form_on_all_pages === '1',
       placeFixedBarFormOnAllPosts: data.settings.place_fixed_bar_form_on_all_posts === '1',
       fixedBarFormDelay,
+      fixedBarFormPosition: data.settings.fixed_bar_form_position,
     },
   };
 }

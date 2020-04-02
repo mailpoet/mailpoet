@@ -76,6 +76,13 @@ export function setFixedBarFormDelay(delay) {
   };
 }
 
+export function setFixedBarFormPosition(position) {
+  return {
+    type: 'SET_FIXED_BAR_FORM_POSITION',
+    position,
+  };
+}
+
 export function deleteCustomFieldStarted() {
   return {
     type: 'DELETE_CUSTOM_FIELD_STARTED',
