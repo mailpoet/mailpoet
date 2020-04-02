@@ -12,6 +12,7 @@ import {
   ObserveTyping,
 } from '@wordpress/block-editor';
 import classnames from 'classnames';
+import fetchLinkSuggestions from '../utils/link_suggestions';
 import Header from './header.jsx';
 import Sidebar from './sidebar.jsx';
 import FormTitle from './form_title.jsx';
@@ -50,6 +51,7 @@ export default () => {
   const editorSettings = {
     showInserterHelpPanel: false, // Disable TIPs section in add block pop up
     mediaUpload: canUserUpload ? uploadMedia : null,
+    __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
   };
 
   return (
