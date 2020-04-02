@@ -185,6 +185,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Form\Block\Divider::class);
     $container->autowire(\MailPoet\Form\Block\Html::class);
     $container->autowire(\MailPoet\Form\Block\Heading::class);
+    $container->autowire(\MailPoet\Form\Block\Image::class);
     $container->autowire(\MailPoet\Form\Block\Paragraph::class);
     $container->autowire(\MailPoet\Form\Block\Radio::class);
     $container->autowire(\MailPoet\Form\Block\Segment::class);
