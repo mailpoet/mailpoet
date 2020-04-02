@@ -7,6 +7,9 @@ export type Settings = {
     name: string
     address: string
   }
+  bounce: {
+    address: string
+  }
   subscribe: {
     on_comment: {
       enabled: '1' | '0'
