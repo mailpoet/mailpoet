@@ -635,6 +635,10 @@ class Functions {
     return activate_plugin($plugin, $redirect, $networkWide, $silent);
   }
 
+  public function wpGetAttachmentImageSrcset(int $attachmentId, $size = 'medium', $imageMeta = null) {
+    return wp_get_attachment_image_srcset($attachmentId, $size, $imageMeta);
+  }
+
   /**
    * @param string $host
    * @return array|bool
