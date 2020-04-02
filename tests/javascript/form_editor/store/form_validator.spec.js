@@ -21,6 +21,16 @@ const submitBlock = {
   },
 };
 
+const segmentsBlock = {
+  clientId: 'segments',
+  isValid: true,
+  innerBlocks: [],
+  name: 'mailpoet-form/segment-select',
+  attributes: {
+    values: [],
+  },
+};
+
 const columns = {
   clientId: 'columns-1',
   name: 'core/columns',
@@ -71,9 +81,22 @@ describe('Form validator', () => {
         segments: [],
       },
     };
-    const blocks = [emailBlock, submitBlock];
+    const blocks = [emailBlock, submitBlock, segmentsBlock];
     const result = validate(formData, blocks);
     expect(result).to.contain('missing-lists');
+  });
+
+  it('Should not return error for when segments block with lists is present', () => {
+    const filledSegmentsBlock = { ...segmentsBlock };
+    filledSegmentsBlock.attributes.values = [{ id: 1, name: 'cool people' }];
+    const formData = {
+      settings: {
+        segments: [],
+      },
+    };
+    const blocks = [emailBlock, submitBlock, filledSegmentsBlock];
+    const result = validate(formData, blocks);
+    expect(result).to.be.empty;
   });
 
   it('Should return error for missing email', () => {
