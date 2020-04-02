@@ -206,3 +206,30 @@ div.mailpoet_form_popup {
 div.mailpoet_form_popup.active {
   display: block;
 }
+
+// MailPoet Form - Image block
+// Inspired by wp-image-block behaviour
+.mailpoet_form_image {
+  &.is-style-rounded {
+    border-radius: 9999px;
+  }
+
+  .aligncenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .alignleft {
+    float: left;
+    margin-right: 1em;
+  }
+  .alignright {
+    float: right;
+    margin-left: 1em;
+  }
+
+  figcaption {
+    text-align: center;
+  }
+}
