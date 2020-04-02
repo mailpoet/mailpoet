@@ -203,6 +203,10 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
               caption: block.attributes.caption || null,
               link_destination: block.attributes.linkDestination || null,
               link: block.attributes.link || null,
+              href: block.attributes.href || null,
+              link_class: block.attributes.linkClass || null,
+              rel: block.attributes.rel || null,
+              link_target: block.attributes.linkTarget || null,
               id: block.attributes.id || null, // Image id
               size_slug: block.attributes.sizeSlug || null,
               width: block.attributes.width || null,
