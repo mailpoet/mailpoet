@@ -2,7 +2,16 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Image {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(WPFunctions $wp) {
+    $this->wp = $wp;
+  }
+
   public function render(array $block): string {
     if (empty($block['params']['url'])) {
       return '';
@@ -18,8 +27,8 @@ class Image {
       $attributes[] = 'title="' . $params['title'] . '"';
     }
     if ($params['id']) {
-      // WordPress automatically renders srcset based on this class
       $attributes[] = 'class="wp-image-' . $params['id'] . '"';
+      $attributes[] = 'srcset="' . $this->wp->wpGetAttachmentImageSrcset(intval($params['id']), $params['size_slug']) . '"';
     }
     if ($params['width']) {
       $attributes[] = 'width="' . intval($params['width']) . '"';

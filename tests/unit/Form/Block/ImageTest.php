@@ -4,12 +4,17 @@ namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\Image;
 use MailPoet\Test\Form\HtmlParser;
+use MailPoet\WP\Functions as WPFunctions;
+use PHPUnit\Framework\MockObject\MockObject;
 
 require_once __DIR__ . '/../HtmlParser.php';
 
 class ImageTest extends \MailPoetUnitTest {
   /** @var Image */
   private $image;
+
+  /** @var MockObject & WPFunctions */
+  private $wpMock;
 
   /** @var array  */
   private $block = [
@@ -40,11 +45,17 @@ class ImageTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->image = new Image();
+    $this->wpMock = $this->createMock(WPFunctions::class);
+    $this->image = new Image($this->wpMock);
     $this->htmlParser = new HtmlParser();
+
   }
 
   public function testItShouldRenderImageBlock() {
+    $this->wpMock
+      ->expects($this->once())
+      ->method('wpGetAttachmentImageSrcset')
+      ->willReturn('srcsetvalue');
     $html = $this->image->render($this->block);
     $block = $this->htmlParser->getElementByXpath($html, '//div');
     $blockClass = $this->htmlParser->getAttribute($block, 'class');
@@ -57,6 +68,8 @@ class ImageTest extends \MailPoetUnitTest {
     $img = $this->htmlParser->getChildElement($figure, 'img');
     $imgSrc = $this->htmlParser->getAttribute($img, 'src');
     expect($imgSrc->value)->equals('http://example.com/image.jpg');
+    $imgSrcset = $this->htmlParser->getAttribute($img, 'srcset');
+    expect($imgSrcset->value)->equals('srcsetvalue');
     $imgWidth = $this->htmlParser->getAttribute($img, 'width');
     expect($imgWidth->value)->equals(100);
     $imgHeight = $this->htmlParser->getAttribute($img, 'height');
@@ -71,7 +84,9 @@ class ImageTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderImageBlockWithLink() {
+    $this->wpMock->expects($this->never())->method('wpGetAttachmentImageSrcset');
     $block = $this->block;
+    $block['params']['id'] = null;
     $block['params']['link_class'] = 'link-class';
     $block['params']['link_target'] = '_blank';
     $block['params']['rel'] = 'relrel';
