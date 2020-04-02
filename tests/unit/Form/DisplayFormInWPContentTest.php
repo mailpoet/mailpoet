@@ -255,6 +255,39 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     expect($result)->endsWith($formHtml);
   }
 
+  public function testAppendsRenderedFixedBarForm() {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $this->wp
+      ->expects($this->never())
+      ->method('setTransient');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'place_form_bellow_all_pages' => '',
+      'place_form_bellow_all_posts' => '',
+      'place_popup_form_on_all_pages' => '',
+      'place_popup_form_on_all_posts' => '',
+      'place_fixed_bar_form_on_all_pages' => '1',
+      'place_fixed_bar_form_on_all_posts' => '1',
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([[
+      'type' => 'submit',
+      'params' => ['label' => 'Subscribe!'],
+      'id' => 'submit',
+      'name' => 'Submit',
+    ]]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    $result = $this->hook->display('content');
+    expect($result)->notEquals('content');
+    expect($result)->endsWith($formHtml);
+  }
+
   public function _after() {
     parent::_after();
     WPFunctions::set(new WPFunctions());
