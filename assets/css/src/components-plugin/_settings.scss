@@ -137,8 +137,8 @@
     content: '✗ ';
   }
 
-  .mailpoet_subitem {
-    margin-left: 2em;
+  .mailpoet_woocommerce_editor_button {
+    margin-top: 10px;
   }
 
   @include breakpoint-max-width(782px) {
@@ -157,14 +157,4 @@
     }
   }
 
-  .key-activation-messages > div {
-    font-size: 1.2em;
-    margin-top: 10px;
-  }
-
-  #mailpoet_premium_key_verify {
-    font-size: inherit;
-    margin-left: 3px;
-    vertical-align: inherit;
-  }
 }

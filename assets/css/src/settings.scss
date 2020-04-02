@@ -4,6 +4,33 @@
   grid-row-gap: 20px;
   grid-template-columns: 20em 1fr;
   margin: 25px 20px 10px 0;
+
+  .key-activation-messages > div {
+    font-size: 1.2em;
+    margin-top: 10px;
+  }
+
+  #mailpoet_premium_key_verify {
+    font-size: inherit;
+    margin-left: 3px;
+    vertical-align: inherit;
+  }
+
+  .mailpoet_error_item:before {
+    content: '✗ ';
+  }
+
+  .mailpoet_subitem {
+    margin-left: 2em;
+  }
+
+  .mailpoet_success_item:before {
+    content: '✔ ';
+  }
+
+  .mailpoet_error_item:before {
+    content: '✗ ';
+  }
 }
 
 .mailpoet-settings-label {
@@ -36,12 +63,4 @@
 
 .mailpoet-settings-inputs .regular-text p {
   font-size: 14px;
-}
-
-.mailpoet-settings-grid .mailpoet_error_item:before {
-  content: '✗ ';
-}
-
-.mailpoet-settings-grid .mailpoet_woocommerce_editor_button {
-  margin-top: 10px;
 }
