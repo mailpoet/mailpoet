@@ -1,5 +1,4 @@
-import React, { Fragment } from 'react';
-import ReactStringReplace from 'react-string-replace';
+import React from 'react';
 
 import { t, onChange } from 'common/functions';
 import { Label, Inputs } from 'settings/components';
