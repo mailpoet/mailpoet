@@ -629,6 +629,11 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.title).to.equal('Title');
     expect(block.attributes.caption).to.equal('Caption');
     expect(block.attributes.linkDestination).to.equal('none');
+    expect(block.attributes.link).to.equal('http://example.com');
+    expect(block.attributes.href).to.be.equal('http://example.com/link');
+    expect(block.attributes.linkClass).to.be.equal('link-class');
+    expect(block.attributes.rel).to.be.equal('linkRel');
+    expect(block.attributes.linkTarget).to.be.equal('_blank');
     expect(block.attributes.id).to.equal(123);
     expect(block.attributes.sizeSlug).to.equal('medium');
     expect(block.attributes.width).to.equal(100);

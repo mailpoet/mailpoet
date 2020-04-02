@@ -24,6 +24,10 @@ class ImageTest extends \MailPoetUnitTest {
       'caption' => 'Caption',
       'link_destination' => 'none',
       'link' => null,
+      'href' => null,
+      'link_class' => null,
+      'link_target' => null,
+      'rel' => null,
       'id' => 123,
       'size_slug' => 'medium',
       'width' => 100,
@@ -64,6 +68,25 @@ class ImageTest extends \MailPoetUnitTest {
 
     $caption = $this->htmlParser->getChildElement($figure, 'figcaption');
     expect($caption->textContent)->equals('Caption');
+  }
+
+  public function testItShouldRenderImageBlockWithLink() {
+    $block = $this->block;
+    $block['params']['link_class'] = 'link-class';
+    $block['params']['link_target'] = '_blank';
+    $block['params']['rel'] = 'relrel';
+    $block['params']['href'] = 'http://example.com/';
+    $html = $this->image->render($block);
+    $figure = $this->htmlParser->getElementByXpath($html, '//figure');
+    $link = $this->htmlParser->getChildElement($figure, 'a');
+    $linkHref = $this->htmlParser->getAttribute($link, 'href');
+    expect($linkHref->value)->equals('http://example.com/');
+    $linkTarget = $this->htmlParser->getAttribute($link, 'target');
+    expect($linkTarget->value)->equals('_blank');
+    $linkRel = $this->htmlParser->getAttribute($link, 'rel');
+    expect($linkRel->value)->equals('relrel');
+    $linkClass = $this->htmlParser->getAttribute($link, 'class');
+    expect($linkClass->value)->equals('link-class');
   }
 
   public function testItRendersNothingWhenUrlIsEmpty() {

@@ -10,7 +10,7 @@ class Image {
     return $this->wrapImage($block['params'], $this->renderImage($block['params']));
   }
 
-  private function renderImage(array $params) {
+  private function renderImage(array $params): string {
     $attributes = [];
     $attributes[] = 'src="' . $params['url'] . '"';
     $attributes[] = $params['alt'] ? 'alt="' . $params['alt'] . '"' : 'alt';
@@ -30,11 +30,15 @@ class Image {
     return '<img ' . implode(' ', $attributes) . '" />';
   }
 
-  private function wrapImage(array $params, string $img) {
+  private function wrapImage(array $params, string $img): string {
     // Figure
     $figureClasses = ['size-' . $params['size_slug']];
     if ($params['align']) {
       $figureClasses[] = 'align' . $params['align'];
+    }
+    // Link
+    if ($params['href']) {
+      $img = $this->wrapToLink($params, $img);
     }
     $caption = $params['caption'] ? "<figcaption>{$params['caption']}</figcaption>" : '';
     $figure = '<figure class="' . implode(' ', $figureClasses) . '">' . $img . $caption . '</figure>';
@@ -44,5 +48,19 @@ class Image {
       $divClasses[] = trim($params['class_name']);
     }
     return '<div class="' . implode(' ', $divClasses) . '">' . $figure . '</div>';
+  }
+
+  private function wrapToLink(array $params, string $img): string {
+    $attributes = ['href="' . $params['href'] . '"'];
+    if ($params['link_class']) {
+      $attributes[] = 'class="' . $params['link_class'] . '"';
+    }
+    if ($params['link_target']) {
+      $attributes[] = 'target="' . $params['link_target'] . '"';
+    }
+    if ($params['rel']) {
+      $attributes[] = 'rel="' . $params['rel'] . '"';
+    }
+    return '<a ' . implode(' ', $attributes) . ' >' . $img . '</a>';
   }
 }
