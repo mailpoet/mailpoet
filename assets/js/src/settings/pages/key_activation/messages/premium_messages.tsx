@@ -62,23 +62,46 @@ type Props = {
 }
 export default function PremiumMessages(props: Props) {
   const { premiumStatus: status } = useSelector('getKeyActivationState')();
-  return (
-    <>
-      {status === PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE && <ActiveMessage />}
-      {status === PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE && (
-        <PremiumNotActiveMessage callback={props.activationCallback} />
-      )}
-      {status === PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED && (
-        <PremiumNotInstalledMessage callback={props.installationCallback} />
-      )}
-      {status === PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_INSTALLED && <InstallingMessage />}
-      {status === PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_ACTIVATED && <ActivatingMessage />}
-      {status === PremiumStatus.INVALID && <NotValidMessage message={props.keyMessage} />}
-      <PremiumInstallationMessages installationStatus={props.installationStatus} />
-    </>
-  );
+  switch (status) {
+    case PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE:
+      return (
+        <>
+          <ActiveMessage />
+          <PremiumInstallationMessages installationStatus={props.installationStatus} />
+        </>
+      );
+    case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE:
+      return (
+        <>
+          <PremiumNotActiveMessage callback={props.activationCallback} />
+          <PremiumInstallationMessages installationStatus={props.installationStatus} />
+        </>
+      );
+    case PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_INSTALLED:
+      return (
+        <>
+          <InstallingMessage />
+          <PremiumInstallationMessages installationStatus={props.installationStatus} />
+        </>
+      );
+    case PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_ACTIVATED:
+      return (
+        <>
+          <ActivatingMessage />
+          <PremiumInstallationMessages installationStatus={props.installationStatus} />
+        </>
+      );
+    case PremiumStatus.INVALID:
+      return (
+        <>
+          <NotValidMessage message={props.keyMessage} />
+          <PremiumInstallationMessages installationStatus={props.installationStatus} />
+        </>
+      );
+    default:
+      return null;
+  }
 }
-
 PremiumMessages.defaultProps = {
   keyMessage: '',
 };
