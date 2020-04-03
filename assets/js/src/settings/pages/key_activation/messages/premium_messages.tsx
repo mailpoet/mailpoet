@@ -50,6 +50,9 @@ const NotValidMessage = ({ message }: NotValidMessageProps) => (
     {message || MailPoet.I18n.t('premiumTabPremiumKeyNotValidMessage')}
   </div>
 );
+NotValidMessage.defaultProps = {
+  keyMessage: '',
+};
 
 type Props = {
   keyMessage?: string
@@ -75,3 +78,7 @@ export default function PremiumMessages(props: Props) {
     </>
   );
 }
+
+PremiumMessages.defaultProps = {
+  keyMessage: '',
+};
