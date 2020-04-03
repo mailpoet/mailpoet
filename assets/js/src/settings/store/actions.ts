@@ -122,13 +122,7 @@ export function* verifyPremiumKey(key: string) {
   let pluginActive = res.meta.premium_plugin_active;
 
   if (!pluginInstalled) {
-    const actions = installPremiumPlugin();
-    let action = actions.next();
-    while (!action.done) {
-      yield action.value;
-      action = actions.next();
-    }
-    pluginInstalled = action.value;
+    pluginInstalled = yield* installPremiumPlugin();
   }
 
   if (pluginInstalled && !pluginActive) {
