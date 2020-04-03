@@ -231,9 +231,6 @@ export type State = {
     woocommerce: boolean
     newUser: boolean
     error: boolean
-    mssKeyValid: boolean
-    premiumKeyValid: boolean
-    premiumPluginInstalled: boolean
   }
   save: {
     inProgress: boolean
