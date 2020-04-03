@@ -63,6 +63,13 @@ type Props = {
 export default function PremiumMessages(props: Props) {
   const { premiumStatus: status } = useSelector('getKeyActivationState')();
   switch (status) {
+    case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED:
+      return (
+        <>
+          <PremiumNotInstalledMessage callback={props.installationCallback} />
+          <PremiumInstallationMessages installationStatus={props.installationStatus} />
+        </>
+      );
     case PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE:
       return (
         <>
