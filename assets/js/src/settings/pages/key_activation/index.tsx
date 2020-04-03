@@ -24,17 +24,17 @@ export default function KeyActivation() {
       notices.error(<p>{t('premiumTabNoKeyNotice')}</p>, { scroll: true });
       return;
     }
-    const isTrusted = event.isTrusted;
+    const isUserTriggered = event.isTrusted;
     await setState({
       mssStatus: null,
       premiumStatus: null,
       premiumInstallationStatus: null,
     });
     MailPoet.Modal.loading(true);
-    const mssStatus: MssStatus = (await verifyMssKey(state.key, isTrusted)) as any;
+    const mssStatus: MssStatus = (await verifyMssKey(state.key, isUserTriggered)) as any;
     await verifyPremiumKey(state.key);
     MailPoet.Modal.loading(false);
-    if (isTrusted) {
+    if (isUserTriggered) {
       const authorizedAddressNeeded = !senderAddress || unauthorizedAddresses;
       if (mssStatus === MssStatus.VALID_MSS_ACTIVE && authorizedAddressNeeded) {
         setState({ showFromAddressModal: true });
