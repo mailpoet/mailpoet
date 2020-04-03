@@ -59,10 +59,11 @@ export function* verifyMssKey(key: string, activateMssIfKeyValid: boolean) {
     data: { key },
   };
   if (!success) {
-    return updateKeyActivationState({
+    yield updateKeyActivationState({
       mssStatus: MssStatus.INVALID,
       mssMessage: error.join(' ') || null,
     });
+    return MssStatus.INVALID;
   }
   const fields: Partial<KeyActivationState> = {
     mssMessage: res.data.message || null,
