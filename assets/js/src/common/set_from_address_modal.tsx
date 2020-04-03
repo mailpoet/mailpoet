@@ -7,7 +7,7 @@ import { GlobalContext } from 'context';
 
 const mailPoetApiVersion = (window as any).mailpoet_api_version as string;
 
-const handleSave = async (address: string|null) => MailPoet.Ajax.post({
+const handleSave = async (address: string | null) => MailPoet.Ajax.post({
   api_version: mailPoetApiVersion,
   endpoint: 'settings',
   action: 'setAuthorizedFromAddress',
@@ -16,7 +16,7 @@ const handleSave = async (address: string|null) => MailPoet.Ajax.post({
   },
 });
 
-const getErrorMessage = (error: any|null): string => {
+const getErrorMessage = (error: any | null): string => {
   if (!error) {
     return MailPoet.I18n.t('setFromAddressEmailUnknownError');
   }
@@ -33,7 +33,7 @@ const getErrorMessage = (error: any|null): string => {
 
 const getSuccessMessage = (): JSX.Element => (
   <p>
-    { ReactStringReplace(
+    {ReactStringReplace(
       MailPoet.I18n.t('setFromAddressEmailSuccess'),
       /\[link\](.*?)\[\/link\]/g,
       (match) => (
@@ -66,9 +66,10 @@ const removeUnauthorizedEmailNotices = () => {
 
 type Props = {
   onRequestClose: () => void,
+  setAuthorizedAddress: (address: string) => any,
 };
 
-const SetFromAddressModal = ({ onRequestClose }: Props) => {
+const SetFromAddressModal = ({ onRequestClose, setAuthorizedAddress }: Props) => {
   const [address, setAddress] = useState(null);
   const { notices } = React.useContext<any>(GlobalContext);
 
@@ -125,6 +126,7 @@ const SetFromAddressModal = ({ onRequestClose }: Props) => {
           }
           try {
             await handleSave(address);
+            setAuthorizedAddress(address);
             onRequestClose();
             removeUnauthorizedEmailNotices();
             notices.success(getSuccessMessage(), { timeout: false });

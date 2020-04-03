@@ -16,8 +16,13 @@ export default function KeyActivation() {
   const verifyPremiumKey = useAction('verifyPremiumKey');
   const installPremiumPlugin = useAction('installPremiumPlugin');
   const activatePremiumPlugin = useAction('activatePremiumPlugin');
-  const [senderAddress] = useSetting('sender', 'address');
-  const [unauthorizedAddresses] = useSetting('authorized_emails_addresses_check');
+  const [senderAddress, setSenderAddress] = useSetting('sender', 'address');
+  const [unauthorizedAddresses, setUnauthorizedAddresses] = useSetting('authorized_emails_addresses_check');
+
+  const setAuthorizedAddress = async (address: string) => {
+    await setSenderAddress(address);
+    await setUnauthorizedAddresses(null);
+  };
 
   const verifyKey = async (event) => {
     if (!state.key) {
@@ -94,6 +99,7 @@ export default function KeyActivation() {
       {state.showFromAddressModal && (
         <SetFromAddressModal
           onRequestClose={() => setState({ showFromAddressModal: false })}
+          setAuthorizedAddress={setAuthorizedAddress}
         />
       )}
     </div>
