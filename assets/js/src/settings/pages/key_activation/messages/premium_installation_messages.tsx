@@ -52,16 +52,16 @@ type Props = {
 }
 export default function PremiumInstallationMessages(props: Props) {
   switch (props.installationStatus) {
-    case 'install_installing':
+    case PremiumInstallationStatus.INSTALL_INSTALLING:
       return <InstallingMessage />;
-    case 'install_activating':
+    case PremiumInstallationStatus.INSTALL_ACTIVATING:
       return (
         <>
           <InstallingMessage />
           <ActivatingMessage />
         </>
       );
-    case 'install_done':
+    case PremiumInstallationStatus.INSTALL_DONE:
       return (
         <>
           <InstallingMessage />
@@ -69,14 +69,14 @@ export default function PremiumInstallationMessages(props: Props) {
           <DoneMessage />
         </>
       );
-    case 'install_installing_error':
+    case PremiumInstallationStatus.INSTALL_INSTALLING_ERROR:
       return (
         <>
           <InstallingMessage />
           <ErrorMessage />
         </>
       );
-    case 'install_activating_error':
+    case PremiumInstallationStatus.INSTALL_ACTIVATING_ERROR:
       return (
         <>
           <InstallingMessage />
@@ -84,16 +84,16 @@ export default function PremiumInstallationMessages(props: Props) {
           <ErrorMessage />
         </>
       );
-    case 'activate_activating':
+    case PremiumInstallationStatus.ACTIVATE_ACTIVATING:
       return <ActivatingMessage />;
-    case 'activate_done':
+    case PremiumInstallationStatus.ACTIVATE_DONE:
       return (
         <>
           <ActivatingMessage />
           <DoneMessage />
         </>
       );
-    case 'activate_error':
+    case PremiumInstallationStatus.ACTIVATE_ERROR:
       return (
         <>
           <ActivatingMessage />

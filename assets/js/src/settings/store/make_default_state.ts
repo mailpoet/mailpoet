@@ -19,7 +19,7 @@ export default function makeDefaultState(window: any): State {
   const mssStatus = getMssStatus(flags, data);
   let isKeyValid = null;
   if (mssStatus !== null || premiumStatus !== null) {
-    isKeyValid = mssStatus !== 'invalid' || premiumStatus !== 'invalid';
+    isKeyValid = mssStatus !== MssStatus.INVALID || premiumStatus !== PremiumStatus.INVALID;
   }
   const keyActivation = {
     mssStatus,
@@ -41,19 +41,19 @@ function getPremiumStatus(flags): PremiumStatus {
   const pluginInstalled = flags.premiumPluginInstalled;
   const pluginActive = !!MailPoet.premiumVersion;
   if (!keyValid) {
-    return 'invalid';
+    return PremiumStatus.INVALID;
   }
   if (pluginActive) {
-    return 'valid_premium_plugin_active';
+    return PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE;
   }
   return pluginInstalled
-    ? 'valid_premium_plugin_not_active'
-    : 'valid_premium_plugin_not_installed';
+    ? PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE
+    : PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED;
 }
 
 function getMssStatus(flags, data): MssStatus {
   const keyValid = flags.mssKeyValid;
-  if (!keyValid) return 'invalid';
+  if (!keyValid) return MssStatus.INVALID;
   const mssActive = data.mta.method === 'MailPoet';
-  return mssActive ? 'valid_mss_active' : 'valid_mss_not_active';
+  return mssActive ? MssStatus.VALID_MSS_ACTIVE : MssStatus.VALID_MSS_NOT_ACTIVE;
 }

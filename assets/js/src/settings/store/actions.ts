@@ -1,7 +1,9 @@
 import { select } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 import { STORE_NAME } from '.';
-import { Action, KeyActivationState, MssStatus } from './types';
+import {
+  Action, KeyActivationState, MssStatus, PremiumStatus, PremiumInstallationStatus,
+} from './types';
 
 export function setSetting(path: string[], value: any): Action {
   return { type: 'SET_SETTING', path, value };
@@ -58,7 +60,7 @@ export function* verifyMssKey(key: string, activateMssIfKeyValid: boolean) {
   };
   if (!success) {
     return updateKeyActivationState({
-      mssStatus: 'invalid',
+      mssStatus: MssStatus.INVALID,
       mssMessage: error.join(' ') || null,
     });
   }
@@ -77,16 +79,16 @@ export function* verifyMssKey(key: string, activateMssIfKeyValid: boolean) {
       },
     };
     if (!call.success) {
-      fields.mssStatus = 'valid_mss_not_active';
+      fields.mssStatus = MssStatus.VALID_MSS_NOT_ACTIVE;
     } else {
       yield setSetting(['mta_group'], 'mailpoet');
       yield setSetting(['mta', 'method'], 'MailPoet');
       yield setSetting(['mta', 'mailpoet_api_key'], key);
       yield setSetting(['signup_confirmation', 'enabled'], '1');
-      fields.mssStatus = 'valid_mss_active';
+      fields.mssStatus = MssStatus.VALID_MSS_ACTIVE;
     }
   } else {
-    fields.mssStatus = 'valid_mss_not_active';
+    fields.mssStatus = MssStatus.VALID_MSS_NOT_ACTIVE;
   }
   yield updateKeyActivationState(fields);
   return fields.mssStatus;
@@ -108,7 +110,7 @@ export function* verifyPremiumKey(key: string) {
       }
     );
     return updateKeyActivationState({
-      premiumStatus: 'invalid',
+      premiumStatus: PremiumStatus.INVALID,
       premiumMessage: error.join(' ') || null,
     });
   }
@@ -133,7 +135,7 @@ export function* verifyPremiumKey(key: string) {
   }
 
   if (pluginInstalled && pluginActive) {
-    yield updateKeyActivationState({ premiumStatus: 'valid_premium_plugin_active' });
+    yield updateKeyActivationState({ premiumStatus: PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE });
   }
 
   MailPoet.trackEvent(
@@ -148,11 +150,17 @@ export function* verifyPremiumKey(key: string) {
 }
 
 export function* activatePremiumPlugin(isAfterInstall) {
-  const doneStatus = isAfterInstall ? 'install_done' : 'activate_done';
-  const errorStatus = isAfterInstall ? 'install_activating_error' : 'activate_error';
+  const doneStatus = isAfterInstall
+    ? PremiumInstallationStatus.INSTALL_DONE
+    : PremiumInstallationStatus.ACTIVATE_DONE;
+  const errorStatus = isAfterInstall
+    ? PremiumInstallationStatus.INSTALL_ACTIVATING_ERROR
+    : PremiumInstallationStatus.ACTIVATE_ERROR;
   yield updateKeyActivationState({
-    premiumStatus: 'valid_premium_plugin_being_activated',
-    premiumInstallationStatus: isAfterInstall ? 'install_activating' : 'activate_activating',
+    premiumStatus: PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_ACTIVATED,
+    premiumInstallationStatus: isAfterInstall
+      ? PremiumInstallationStatus.INSTALL_ACTIVATING
+      : PremiumInstallationStatus.ACTIVATE_ACTIVATING,
   });
   const call = yield {
     type: 'CALL_API',
@@ -169,8 +177,8 @@ export function* activatePremiumPlugin(isAfterInstall) {
 
 export function* installPremiumPlugin() {
   yield updateKeyActivationState({
-    premiumStatus: 'valid_premium_plugin_being_installed',
-    premiumInstallationStatus: 'install_installing',
+    premiumStatus: PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_INSTALLED,
+    premiumInstallationStatus: PremiumInstallationStatus.INSTALL_INSTALLING,
   });
   const call = yield {
     type: 'CALL_API',
@@ -178,7 +186,9 @@ export function* installPremiumPlugin() {
     action: 'installPlugin',
   };
   if (call && !call.success) {
-    yield updateKeyActivationState({ premiumInstallationStatus: 'install_installing_error' });
+    yield updateKeyActivationState({
+      premiumInstallationStatus: PremiumInstallationStatus.INSTALL_INSTALLING_ERROR,
+    });
     return false;
   }
   return yield* activatePremiumPlugin(true);

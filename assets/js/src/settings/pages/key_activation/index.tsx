@@ -36,7 +36,7 @@ export default function KeyActivation() {
     MailPoet.Modal.loading(false);
     if (isTrusted) {
       const authorizedAddressNeeded = !senderAddress || unauthorizedAddresses;
-      if (mssStatus === 'valid_mss_active' && authorizedAddressNeeded) {
+      if (mssStatus === MssStatus.VALID_MSS_ACTIVE && authorizedAddressNeeded) {
         setState({ showFromAddressModal: true });
       }
     }
