@@ -1,8 +1,5 @@
 import _ from 'lodash';
-import MailPoet from 'mailpoet';
-import {
-  State, Settings, PremiumStatus, MssStatus,
-} from './types';
+import { State, Settings } from './types';
 
 export function getSetting(state: State, path: string[]): any {
   return _.get(state.data, path);
