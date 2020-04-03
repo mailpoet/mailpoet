@@ -15,6 +15,9 @@ const NotValidMessage = ({ message }: NotValidMessageProps) => (
     {message || MailPoet.I18n.t('premiumTabMssKeyNotValidMessage')}
   </div>
 );
+NotValidMessage.defaultProps = {
+  message: '',
+};
 
 type MssNotActiveMessageProps = { activationCallback: () => any }
 const MssNotActiveMessage = ({ activationCallback }: MssNotActiveMessageProps) => (
@@ -45,3 +48,6 @@ export default function MssMessages(props: Props) {
       return null;
   }
 }
+MssMessages.defaultProps = {
+  keyMessage: '',
+};
