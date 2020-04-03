@@ -1,5 +1,7 @@
 import _ from 'lodash';
-import { State, Action, KeyActivationState } from './types';
+import {
+  State, Action, KeyActivationState, MssStatus, PremiumStatus,
+} from './types';
 
 export default function createReducer(defaultValue: State) {
   let keyActivation: KeyActivationState;
@@ -20,8 +22,8 @@ export default function createReducer(defaultValue: State) {
         keyActivation.isKeyValid = null;
         if (keyActivation.mssStatus !== null && keyActivation.premiumStatus !== null) {
           keyActivation.isKeyValid = (
-            keyActivation.mssStatus !== 'invalid'
-            || keyActivation.premiumStatus !== 'invalid'
+            keyActivation.mssStatus !== MssStatus.INVALID
+            || keyActivation.premiumStatus !== PremiumStatus.INVALID
           );
         }
         return { ...state, keyActivation };

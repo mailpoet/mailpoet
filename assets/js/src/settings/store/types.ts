@@ -186,28 +186,31 @@ type Page = {
   }
 }
 
-export type PremiumStatus =
-  | 'invalid'
-  | 'valid_premium_plugin_not_installed'
-  | 'valid_premium_plugin_not_active'
-  | 'valid_premium_plugin_active'
-  | 'valid_premium_plugin_being_installed'
-  | 'valid_premium_plugin_being_activated'
+export enum PremiumStatus {
+  INVALID,
+  VALID_PREMIUM_PLUGIN_NOT_INSTALLED,
+  VALID_PREMIUM_PLUGIN_NOT_ACTIVE,
+  VALID_PREMIUM_PLUGIN_ACTIVE,
+  VALID_PREMIUM_PLUGIN_BEING_INSTALLED,
+  VALID_PREMIUM_PLUGIN_BEING_ACTIVATED,
+}
 
-export type MssStatus =
-  | 'invalid'
-  | 'valid_mss_not_active'
-  | 'valid_mss_active'
+export enum MssStatus {
+  INVALID,
+  VALID_MSS_NOT_ACTIVE,
+  VALID_MSS_ACTIVE,
+}
 
-export type PremiumInstallationStatus =
-  | 'install_installing'
-  | 'install_activating'
-  | 'install_done'
-  | 'install_installing_error'
-  | 'install_activating_error'
-  | 'activate_activating'
-  | 'activate_done'
-  | 'activate_error'
+export enum PremiumInstallationStatus {
+  INSTALL_INSTALLING,
+  INSTALL_ACTIVATING,
+  INSTALL_DONE,
+  INSTALL_INSTALLING_ERROR,
+  INSTALL_ACTIVATING_ERROR,
+  ACTIVATE_ACTIVATING,
+  ACTIVATE_DONE,
+  ACTIVATE_ERROR,
+}
 
 export type KeyActivationState = {
   key: string

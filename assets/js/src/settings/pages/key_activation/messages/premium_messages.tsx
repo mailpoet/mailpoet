@@ -1,7 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import { useSelector } from 'settings/store/hooks/index';
-import { PremiumInstallationStatus } from 'settings/store/types';
+import { PremiumInstallationStatus, PremiumStatus } from 'settings/store/types';
 import PremiumInstallationMessages from './premium_installation_messages';
 
 const ActiveMessage = () => (
@@ -61,16 +61,16 @@ export default function PremiumMessages(props: Props) {
   const { premiumStatus: status } = useSelector('getKeyActivationState')();
   return (
     <>
-      {status === 'valid_premium_plugin_active' && <ActiveMessage />}
-      {status === 'valid_premium_plugin_not_active' && (
+      {status === PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE && <ActiveMessage />}
+      {status === PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE && (
         <PremiumNotActiveMessage callback={props.activationCallback} />
       )}
-      {status === 'valid_premium_plugin_not_installed' && (
+      {status === PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED && (
         <PremiumNotInstalledMessage callback={props.installationCallback} />
       )}
-      {status === 'valid_premium_plugin_being_installed' && <InstallingMessage />}
-      {status === 'valid_premium_plugin_being_activated' && <ActivatingMessage />}
-      {status === 'invalid' && <NotValidMessage message={props.keyMessage} />}
+      {status === PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_INSTALLED && <InstallingMessage />}
+      {status === PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_ACTIVATED && <ActivatingMessage />}
+      {status === PremiumStatus.INVALID && <NotValidMessage message={props.keyMessage} />}
       <PremiumInstallationMessages installationStatus={props.installationStatus} />
     </>
   );

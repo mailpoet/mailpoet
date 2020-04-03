@@ -1,6 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import { useSelector } from 'settings/store/hooks';
+import { MssStatus } from 'settings/store/types';
 
 const ActiveMessage = () => (
   <div className="mailpoet_success mailpoet_mss_key_valid">
@@ -34,11 +35,11 @@ type Props = {
 export default function MssMessages(props: Props) {
   const { mssStatus } = useSelector('getKeyActivationState')();
   switch (mssStatus) {
-    case 'valid_mss_active':
+    case MssStatus.VALID_MSS_ACTIVE:
       return <ActiveMessage />;
-    case 'valid_mss_not_active':
+    case MssStatus.VALID_MSS_NOT_ACTIVE:
       return <MssNotActiveMessage activationCallback={props.activationCallback} />;
-    case 'invalid':
+    case MssStatus.INVALID:
       return <NotValidMessage message={props.keyMessage} />;
     default:
       return null;
