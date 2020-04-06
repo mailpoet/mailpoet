@@ -4,6 +4,7 @@ namespace MailPoet\Entities;
 
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
+use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
@@ -15,6 +16,8 @@ class NewsletterOptionEntity {
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
   use UpdatedAtTrait;
+  use SafeToOneAssociationLoadTrait;
+
 
   /**
    * @ORM\Column(type="text")
@@ -52,6 +55,7 @@ class NewsletterOptionEntity {
    * @return NewsletterEntity
    */
   public function getNewsletter() {
+    $this->safelyLoadToOneAssociation('newsletter');
     return $this->newsletter;
   }
 
@@ -66,6 +70,7 @@ class NewsletterOptionEntity {
    * @return NewsletterOptionFieldEntity
    */
   public function getOptionField() {
+    $this->safelyLoadToOneAssociation('optionField');
     return $this->optionField;
   }
 

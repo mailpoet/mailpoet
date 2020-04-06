@@ -5,6 +5,7 @@ namespace MailPoet\Entities;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
+use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
@@ -25,6 +26,7 @@ class SendingQueueEntity {
   use CreatedAtTrait;
   use UpdatedAtTrait;
   use DeletedAtTrait;
+  use SafeToOneAssociationLoadTrait;
 
   /**
    * @ORM\Column(type="json_or_serialized")
@@ -183,6 +185,7 @@ class SendingQueueEntity {
    * @return ScheduledTaskEntity
    */
   public function getTask() {
+    $this->safelyLoadToOneAssociation('task');
     return $this->task;
   }
 
@@ -194,6 +197,7 @@ class SendingQueueEntity {
    * @return NewsletterEntity
    */
   public function getNewsletter() {
+    $this->safelyLoadToOneAssociation('newsletter');
     return $this->newsletter;
   }
 
