@@ -27,7 +27,7 @@ class NewsletterOptionEntity {
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="options")
-   * @var NewsletterEntity
+   * @var NewsletterEntity|null
    */
   private $newsletter;
 
@@ -52,7 +52,7 @@ class NewsletterOptionEntity {
   }
 
   /**
-   * @return NewsletterEntity
+   * @return NewsletterEntity|null
    */
   public function getNewsletter() {
     $this->safelyLoadToOneAssociation('newsletter');
