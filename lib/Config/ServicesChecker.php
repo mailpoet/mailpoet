@@ -37,9 +37,9 @@ class ServicesChecker {
         $error .= '<p>' . __('Your key to send with MailPoet is invalid.', 'mailpoet') . '</p>';
         $error .= '<p><a '
           . ' href="https://account.mailpoet.com?s=' . (Subscriber::getTotalSubscribers() + 1) . '"'
-          . ' class="button button-secondary" '
+          . ' class="button button-primary" '
           . ' target="_blank"'
-          . '>' . __('Visit MailPoet.com to purchase a key', 'mailpoet') . '</a></p>';
+          . '>' . __('Purchase a key', 'mailpoet') . '</a></p>';
 
         WPNotice::displayError($error, '', '', false, false);
       }
