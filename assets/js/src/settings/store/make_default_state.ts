@@ -15,18 +15,23 @@ export default function makeDefaultState(window: any): State {
     membersPlugin: !!window.mailpoet_members_plugin_active,
     builtInCaptcha: window.mailpoet_built_in_captcha_supported,
   };
-  const premiumStatus = getPremiumStatus(
-    window.mailpoet_premium_key_valid,
-    window.mailpoet_premium_plugin_installed
-  );
-  const mssStatus = getMssStatus(window.mailpoet_mss_key_valid, data);
+
   let isKeyValid = null;
-  if (mssStatus !== null || premiumStatus !== null) {
+  let mssStatus = null;
+  let premiumStatus = null;
+
+  if (data.premium.premium_key || data.mta.mailpoet_api_key) {
+    mssStatus = getMssStatus(window.mailpoet_mss_key_valid, data);
+    premiumStatus = getPremiumStatus(
+      window.mailpoet_premium_key_valid,
+      window.mailpoet_premium_plugin_installed
+    );
     isKeyValid = mssStatus !== MssStatus.INVALID || premiumStatus !== PremiumStatus.INVALID;
   }
+
   const keyActivation = {
-    mssStatus,
     isKeyValid,
+    mssStatus,
     premiumStatus,
     mssMessage: null,
     premiumMessage: null,
