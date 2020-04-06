@@ -554,8 +554,15 @@ class Menu {
 
   public function checkMailPoetAPIKey(ServicesChecker $checker = null) {
     if (self::isOnMailPoetAdminPage()) {
+      $showNotices = isset($_REQUEST['page'])
+        && (
+          stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) !== false
+          || stripos($_REQUEST['page'], 'mailpoet-segments') !== false
+          || stripos($_REQUEST['page'], 'mailpoet-subscribers') !== false
+      );
       $checker = $checker ?: $this->servicesChecker;
-      $this->mpApiKeyValid = $checker->isMailPoetAPIKeyValid();
+      $checker = $checker ?: $this->servicesChecker;
+      $this->mpApiKeyValid = $checker->isMailPoetAPIKeyValid($showNotices);
     }
   }
 
