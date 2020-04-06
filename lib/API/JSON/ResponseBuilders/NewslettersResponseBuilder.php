@@ -181,7 +181,9 @@ class NewslettersResponseBuilder {
 
   private function buildQueue(SendingQueueEntity $queue) {
     $task = $queue->getTask();
-
+    if ($task === null) {
+      return null;
+    }
     // the following crazy mix of '$queue' and '$task' comes from 'array_merge($task, $queue)'
     // (MailPoet\Tasks\Sending) which means all equal-named fields will be taken from '$queue'
     return [
@@ -195,7 +197,7 @@ class NewslettersResponseBuilder {
       'updated_at' => $queue->getUpdatedAt()->format(self::DATE_FORMAT),
       'deleted_at' => ($deletedAt = $queue->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'meta' => $queue->getMeta(),
-      'task_id' => (string)$queue->getTask()->getId(), // (string) for BC
+      'task_id' => (string)$task->getId(), // (string) for BC
       'newsletter_id' => (string)$queue->getNewsletter()->getId(), // (string) for BC
       'newsletter_rendered_subject' => $queue->getNewsletterRenderedSubject(),
       'count_total' => (string)$queue->getCountTotal(), // (string) for BC

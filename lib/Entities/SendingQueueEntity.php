@@ -73,7 +73,7 @@ class SendingQueueEntity {
 
   /**
    * @ORM\OneToOne(targetEntity="MailPoet\Entities\ScheduledTaskEntity")
-   * @var ScheduledTaskEntity
+   * @var ScheduledTaskEntity|null
    */
   private $task;
 
@@ -182,7 +182,7 @@ class SendingQueueEntity {
   }
 
   /**
-   * @return ScheduledTaskEntity
+   * @return ScheduledTaskEntity|null
    */
   public function getTask() {
     $this->safelyLoadToOneAssociation('task');
