@@ -62,7 +62,17 @@ type Props = {
 }
 export default function PremiumMessages(props: Props) {
   const { premiumStatus: status } = useSelector('getKeyActivationState')();
-  switch (status) {
+
+  // when activity sub-messages shown, keep the top-level installing/activating messages
+  let displayStatus = status;
+  const premiumInstallationStatusName = PremiumInstallationStatus[props.installationStatus] ?? '';
+  if (premiumInstallationStatusName.startsWith('INSTALL_')) {
+    displayStatus = PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_INSTALLED;
+  } else if (premiumInstallationStatusName.startsWith('ACTIVATE_')) {
+    displayStatus = PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_ACTIVATED;
+  }
+
+  switch (displayStatus) {
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED:
       return (
         <>
