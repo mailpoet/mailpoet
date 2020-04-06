@@ -66,7 +66,7 @@ const removeUnauthorizedEmailNotices = () => {
 
 type Props = {
   onRequestClose: () => void,
-  setAuthorizedAddress: (address: string) => any,
+  setAuthorizedAddress?: (address: string) => any,
 };
 
 const SetFromAddressModal = ({ onRequestClose, setAuthorizedAddress }: Props) => {
@@ -139,6 +139,10 @@ const SetFromAddressModal = ({ onRequestClose, setAuthorizedAddress }: Props) =>
       />
     </Modal>
   );
+};
+
+SetFromAddressModal.defaultProps = {
+  setAuthorizedAddress: () => {},
 };
 
 export default SetFromAddressModal;
