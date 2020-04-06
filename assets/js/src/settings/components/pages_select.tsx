@@ -13,15 +13,14 @@ type Props = {
 
 export default (props: Props) => {
   const pages = useSelector('getPages')();
-  const selectedPage = props.value
-    ? pages.find((x) => x.id === parseInt(props.value, 10))
-    : pages[0];
+  let selectedPage = pages.find((x) => x.id === parseInt(props.value, 10));
+  if (!selectedPage) selectedPage = pages[0];
   return (
     <>
       <select
         id={props.id}
         data-automation-id={props.automationId}
-        value={props.value}
+        value={selectedPage.id}
         onChange={onChange(props.setValue)}
       >
         {pages.map((page) => (
