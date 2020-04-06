@@ -2,9 +2,11 @@
 
 # Write ~/.transifexrc file if not exists
 if [ ! -f ~/.transifexrc ]; then
-  echo "[https://www.transifex.com]" > ~/.transifexrc
-  echo "hostname = https://www.transifex.com" >> ~/.transifexrc
-  echo "username = api" >> ~/.transifexrc
-  echo "password = $WP_TRANSIFEX_API_TOKEN" >> ~/.transifexrc
-  echo "token =" >> ~/.transifexrc
+  {
+    echo "[https://www.transifex.com]"
+    echo "hostname = https://www.transifex.com"
+    echo "username = api"
+    echo "password = ${WP_TRANSIFEX_API_TOKEN}"
+    echo "token ="
+  } > ~/.transifexrc
 fi
