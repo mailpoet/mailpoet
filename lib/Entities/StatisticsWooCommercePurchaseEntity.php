@@ -21,14 +21,14 @@ class StatisticsWooCommercePurchaseEntity {
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")
-   * @var NewsletterEntity
+   * @var NewsletterEntity|null
    */
   private $newsletter;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SendingQueueEntity")
    * @ORM\JoinColumn(name="queue_id", referencedColumnName="id")
-   * @var SendingQueueEntity
+   * @var SendingQueueEntity|null
    */
   private $queue;
 
@@ -42,7 +42,7 @@ class StatisticsWooCommercePurchaseEntity {
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\StatisticsClickEntity")
    * @ORM\JoinColumn(name="click_id", referencedColumnName="id")
-   * @var StatisticsClickEntity
+   * @var StatisticsClickEntity|null
    */
   private $click;
 
@@ -74,7 +74,7 @@ class StatisticsWooCommercePurchaseEntity {
   }
 
   /**
-   * @return NewsletterEntity
+   * @return NewsletterEntity|null
    */
   public function getNewsletter() {
     $this->safelyLoadToOneAssociation('newsletter');
@@ -82,7 +82,7 @@ class StatisticsWooCommercePurchaseEntity {
   }
 
   /**
-   * @return SendingQueueEntity
+   * @return SendingQueueEntity|null
    */
   public function getQueue() {
     $this->safelyLoadToOneAssociation('queue');
@@ -98,7 +98,7 @@ class StatisticsWooCommercePurchaseEntity {
   }
 
   /**
-   * @return StatisticsClickEntity
+   * @return StatisticsClickEntity|null
    */
   public function getClick() {
     $this->safelyLoadToOneAssociation('click');
