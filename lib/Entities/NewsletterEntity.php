@@ -6,10 +6,10 @@ use DateTimeInterface;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
+use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
-use MailPoetVendor\Doctrine\ORM\EntityNotFoundException;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
 
@@ -39,6 +39,7 @@ class NewsletterEntity {
   use CreatedAtTrait;
   use UpdatedAtTrait;
   use DeletedAtTrait;
+  use SafeToOneAssociationLoadTrait;
 
   /**
    * @ORM\Column(type="string")
@@ -342,14 +343,8 @@ class NewsletterEntity {
    * @return NewsletterEntity|null
    */
   public function getParent() {
-    try {
-      if ($this->parent && $this->parent->getId()) {
-        return $this->parent;
-      }
-    } catch (EntityNotFoundException $enf) {
-      $this->setParent(null);
-    }
-    return null;
+    $this->safelyLoadToOneAssociation('parent');
+    return $this->parent;
   }
 
   /**
