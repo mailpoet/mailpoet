@@ -79,7 +79,7 @@ class SendingQueueEntity {
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="queues")
-   * @var NewsletterEntity
+   * @var NewsletterEntity|null
    */
   private $newsletter;
 
@@ -194,7 +194,7 @@ class SendingQueueEntity {
   }
 
   /**
-   * @return NewsletterEntity
+   * @return NewsletterEntity|null
    */
   public function getNewsletter() {
     $this->safelyLoadToOneAssociation('newsletter');
