@@ -198,7 +198,7 @@ class NewslettersResponseBuilder {
       'deleted_at' => ($deletedAt = $queue->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'meta' => $queue->getMeta(),
       'task_id' => (string)$task->getId(), // (string) for BC
-      'newsletter_id' => (string)$queue->getNewsletter()->getId(), // (string) for BC
+      'newsletter_id' => ($queue->getNewsletter() instanceof NewsletterEntity) ? (string)$queue->getNewsletter()->getId() : null, // (string) for BC
       'newsletter_rendered_subject' => $queue->getNewsletterRenderedSubject(),
       'count_total' => (string)$queue->getCountTotal(), // (string) for BC
       'count_processed' => (string)$queue->getCountProcessed(), // (string) for BC
