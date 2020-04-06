@@ -40,7 +40,7 @@ class StatisticsClickEntity {
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterLinkEntity", inversedBy="clicks")
-   * @var NewsletterLinkEntity
+   * @var NewsletterLinkEntity|null
    */
   private $link;
 
@@ -67,7 +67,7 @@ class StatisticsClickEntity {
   }
 
   /**
-   * @return NewsletterLinkEntity
+   * @return NewsletterLinkEntity|null
    */
   public function getLink() {
     $this->safelyLoadToOneAssociation('link');
