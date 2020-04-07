@@ -28,6 +28,8 @@ class AddSendingKeyCest {
     $i->waitForText('downloading MailPoet Premium…');
     $i->waitForText('activating MailPoet Premium…');
     $i->waitForText('MailPoet Premium is active!');
+    $i->waitForText('It’s time to set your default FROM address!');
+    $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
 
     // check the state after reload
     $i->reloadPage();
@@ -35,10 +37,7 @@ class AddSendingKeyCest {
     $i->waitForText('MailPoet Sending Service is active');
     $i->waitForText('MailPoet Premium is active');
 
-    // change MSS key state to pending approval, test modal for authorized FROM address
-    $settings = new Settings();
-    $settings->withMssKeyPendingApproval();
-    $i->reloadPage();
+    // test modal for authorized FROM address
     $i->waitForText('Sending all of your emails has been paused because your email address wp@example.com hasn’t been authorized yet.');
 
     $i->click('Verify');
