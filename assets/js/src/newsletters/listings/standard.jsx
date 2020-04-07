@@ -17,6 +17,7 @@ import {
 } from 'newsletters/listings/utils.jsx';
 import NewsletterTypes from 'newsletters/types.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
+import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import TransactionalEmailsProposeOptInNotice from 'notices/transactional_emails_propose_opt_in_notice';
 import { GlobalContext } from 'context/index.jsx';
 
@@ -238,6 +239,10 @@ class NewsletterListStandard extends React.Component {
           mtaMethod={window.mailpoet_mta_method}
           apiVersion={window.mailpoet_api_version}
           noticeDismissed={window.mailpoet_transactional_emails_opt_in_notice_dismissed}
+        />
+        <InvalidMssKeyNotice
+          mssKeyInvalid={window.mailpoet_mss_key_invalid}
+          subscribersCount={window.mailpoet_subscribers_count}
         />
 
         <ListingTabs tab="standard" />

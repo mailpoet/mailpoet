@@ -7,6 +7,7 @@ import { checkMailerStatus, addStatsCTAAction } from 'newsletters/listings/utils
 import Statistics from 'newsletters/listings/statistics.jsx';
 import NewsletterTypes from 'newsletters/types.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
+import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
@@ -370,6 +371,10 @@ class Listings extends React.Component {
 
         <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
         <SubscribersLimitNotice />
+        <InvalidMssKeyNotice
+          mssKeyInvalid={window.mailpoet_mss_key_invalid}
+          subscribersCount={window.mailpoet_subscribers_count}
+        />
 
         <ListingTabs tab="woocommerce" />
 

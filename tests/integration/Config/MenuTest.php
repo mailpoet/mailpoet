@@ -39,27 +39,6 @@ class MenuTest extends \MailPoetTest {
     expect($result)->false();
   }
 
-  public function testItChecksMailpoetAPIKey() {
-    $menu = $this->getMenu();
-
-    $_REQUEST['page'] = 'mailpoet-newsletters';
-    $checker = Stub::make(
-      new ServicesChecker(),
-      ['isMailPoetAPIKeyValid' => true],
-      $this
-    );
-    $menu->checkMailPoetAPIKey($checker);
-    expect($menu->mpApiKeyValid)->true();
-
-    $checker = Stub::make(
-      new ServicesChecker(),
-      ['isMailPoetAPIKeyValid' => false],
-      $this
-    );
-    $menu->checkMailPoetAPIKey($checker);
-    expect($menu->mpApiKeyValid)->false();
-  }
-
   public function testItChecksPremiumKey() {
     $menu = $this->getMenu();
 

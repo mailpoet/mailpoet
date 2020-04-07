@@ -56,7 +56,6 @@ class Menu {
   }
 
   public function init() {
-    $this->checkMailPoetAPIKey();
     $this->checkPremiumKey();
 
     $this->wp->addAction(
@@ -550,20 +549,6 @@ class Menu {
 
   public static function errorPageCallback() {
     // Used for displaying admin notices only
-  }
-
-  public function checkMailPoetAPIKey(ServicesChecker $checker = null) {
-    if (self::isOnMailPoetAdminPage()) {
-      $showNotices = isset($_REQUEST['page'])
-        && (
-          stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) !== false
-          || stripos($_REQUEST['page'], 'mailpoet-segments') !== false
-          || stripos($_REQUEST['page'], 'mailpoet-subscribers') !== false
-      );
-      $checker = $checker ?: $this->servicesChecker;
-      $checker = $checker ?: $this->servicesChecker;
-      $this->mpApiKeyValid = $checker->isMailPoetAPIKeyValid($showNotices);
-    }
   }
 
   public function checkPremiumKey(ServicesChecker $checker = null) {
