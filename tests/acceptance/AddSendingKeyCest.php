@@ -53,11 +53,20 @@ class AddSendingKeyCest {
     $i->waitForText('Excellent. Your authorized email was saved. You can change it in the Basics tab of the MailPoet settings.');
     $i->dontSee('Sending all of your emails has been paused because your email address %s hasn’t been authorized yet.');
 
+    // change MSS key state to pending approval, ensure pending approval notice is displayed
+    $settings = new Settings();
+    $settings->withMssKeyPendingApproval();
+    $i->reloadPage();
+    $i->waitForText('Note: your account is pending approval by MailPoet.');
+    $i->waitForText('Rest assured, this only takes just a couple of hours. Until then, you can still send email previews to yourself. Any active automatic emails, like Welcome Emails, will be paused.');
+
     // try invalid key
     $i->fillField(['name' => 'premium[premium_key]'], 'invalid-key');
     $i->click('Verify');
     $i->waitForText('Your key is not valid for the MailPoet Sending Service');
     $i->waitForText('Your key is not valid for MailPoet Premium');
+    $i->dontSee('Note: your account is pending approval by MailPoet.');
+    $i->dontSee('Rest assured, this only takes just a couple of hours. Until then, you can still send email previews to yourself. Any active automatic emails, like Welcome Emails, will be paused.');
   }
 
   public function installAndActivatePremiumPlugin(\AcceptanceTester $i, Scenario $scenario) {
