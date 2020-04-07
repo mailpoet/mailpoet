@@ -6,8 +6,13 @@
   margin: 25px 20px 10px 0;
 
   .key-activation-messages > div {
-    font-size: 1.2em;
     margin-top: 10px;
+    max-width: 500px;
+
+    .pending_approval_heading {
+      font-weight: bold;
+      margin: 20px 0 5px;
+    }
   }
 
   #mailpoet_premium_key_verify {

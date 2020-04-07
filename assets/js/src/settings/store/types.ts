@@ -223,6 +223,7 @@ export type KeyActivationState = {
   mssMessage: string
   premiumInstallationStatus: PremiumInstallationStatus
   fromAddressModalCanBeShown: boolean
+  inProgress: boolean
 }
 
 export type State = {

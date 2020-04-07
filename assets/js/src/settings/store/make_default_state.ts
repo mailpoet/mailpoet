@@ -38,6 +38,7 @@ export default function makeDefaultState(window: any): State {
     fromAddressModalCanBeShown: false,
     premiumInstallationStatus: null,
     key: data.premium.premium_key || data.mta.mailpoet_api_key,
+    inProgress: false,
   };
   return {
     data, flags, save, keyActivation, segments, pages, paths,
