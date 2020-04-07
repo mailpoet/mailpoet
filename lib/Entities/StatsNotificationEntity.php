@@ -20,13 +20,13 @@ class StatsNotificationEntity {
 
   /**
    * @ORM\OneToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
-   * @var NewsletterEntity
+   * @var NewsletterEntity|null
    */
   private $newsletter;
 
   /**
    * @ORM\OneToOne(targetEntity="MailPoet\Entities\ScheduledTaskEntity")
-   * @var ScheduledTaskEntity
+   * @var ScheduledTaskEntity|null
    */
   private $task;
 
@@ -36,7 +36,7 @@ class StatsNotificationEntity {
   }
 
   /**
-   * @return NewsletterEntity
+   * @return NewsletterEntity|null
    */
   public function getNewsletter() {
     $this->safelyLoadToOneAssociation('newsletter');
@@ -44,7 +44,7 @@ class StatsNotificationEntity {
   }
 
   /**
-   * @return ScheduledTaskEntity
+   * @return ScheduledTaskEntity|null
    */
   public function getTask() {
     $this->safelyLoadToOneAssociation('task');

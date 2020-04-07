@@ -100,7 +100,11 @@ class Worker {
           throw $e;
         }
       } finally {
-        $this->markTaskAsFinished($statsNotificationEntity->getTask());
+        $task = $statsNotificationEntity->getTask();
+        if ($task instanceof ScheduledTask) {
+          $this->markTaskAsFinished($task);
+        }
+
       }
       $this->cronHelper->enforceExecutionLimit($timer);
     }
@@ -108,6 +112,9 @@ class Worker {
 
   private function constructNewsletter(StatsNotificationEntity $statsNotificationEntity) {
     $newsletter = $statsNotificationEntity->getNewsletter();
+    if (!$newsletter instanceof NewsletterEntity) {
+      throw new \RuntimeException('Missing newsletter entity for statistic notification.');
+    }
     $link = $this->newsletterLinkRepository->findTopLinkForNewsletter((int)$newsletter->getId());
     $context = $this->prepareContext($newsletter, $link);
     $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
