@@ -25,13 +25,13 @@ export default () => {
       >
         {t('signupConfirmationTab')}
       </TabLink>
-      <a
-        className="nav-tab"
-        href="?page=mailpoet-settings#mta"
-        data-automation-id="send_with_settings_tab"
+      <TabLink
+        name="mta"
+        current={current}
+        automationId="send_with_settings_tab"
       >
         {t('sendWithTab')}
-      </a>
+      </TabLink>
       {hasWooCommerce && (
         <TabLink
           name="woocommerce"

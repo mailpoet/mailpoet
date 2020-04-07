@@ -27,8 +27,7 @@ if (jQuery('#mailpoet_settings').length > 0) {
       jQuery('.mailpoet_settings_submit').hide();
 
       if (group === null) {
-        // show sending methods
-        jQuery('.mailpoet_sending_methods, .mailpoet_sending_methods_help').fadeIn();
+        window.location.href = '?page=mailpoet-new-settings#/mta';
       } else {
         // toggle SPF (hidden if the sending method is MailPoet)
         jQuery('#mailpoet_mta_spf')[
