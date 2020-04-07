@@ -1,7 +1,7 @@
 .mailpoet-settings-grid {
   display: grid;
-  grid-column-gap: 25px;
-  grid-row-gap: 20px;
+  grid-column-gap: 35px;
+  grid-row-gap: 25px;
   grid-template-columns: 20em 1fr;
   margin: 25px 20px 10px 0;
 
@@ -31,6 +31,10 @@
   .mailpoet_error_item:before {
     content: '✗ ';
   }
+
+  .mailpoet_woocommerce_editor_button {
+    margin-top: 10px;
+  }
 }
 
 .mailpoet-settings-label {
@@ -55,6 +59,11 @@
 .mailpoet-settings-inputs textarea {
   display: inline-block;
   margin: 2px;
+}
+
+.mailpoet-settings-inputs input[type="checkbox"] {
+  margin-left: 4px;
+  margin-bottom: 4px;
 }
 
 .mailpoet-settings-inputs input.regular-text {
