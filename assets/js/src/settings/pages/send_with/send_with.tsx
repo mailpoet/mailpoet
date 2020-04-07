@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import ReactStringReplace from 'react-string-replace';
 
-import { useSelector } from 'settings/store/hooks';
+import { useSelector, useAction, useSetting } from 'settings/store/hooks';
 import { MssStatus } from 'settings/store/types';
 import { t } from 'common/functions';
 import { Link } from 'react-router-dom';
@@ -10,9 +10,20 @@ import { Link } from 'react-router-dom';
 export default function SendWith() {
   const isNewUser = useSelector('isNewUser')();
   const isMssActive = useSelector('isMssActive')();
+  const [key] = useSetting('mta', 'mailpoet_api_key');
   const { mssStatus } = useSelector('getKeyActivationState')();
   const isMssKeyValid = mssStatus !== null && mssStatus !== MssStatus.INVALID;
   const freePlanUrl = (window as any).mailpoet_free_plan_url;
+
+  const setSetting = useAction('setSetting');
+  const saveSettings = useAction('saveSettings');
+  const activateMss = async () => {
+    await setSetting(['mta_group'], 'mailpoet');
+    await setSetting(['mta', 'method'], 'MailPoet');
+    await setSetting(['mta', 'mailpoet_api_key'], key);
+    await setSetting(['signup_confirmation', 'enabled'], '1');
+    return saveSettings();
+  };
 
   return (
     <ul className="mailpoet_sending_methods">
@@ -85,7 +96,13 @@ export default function SendWith() {
             )}
             {!isMssActive && isMssKeyValid && (
               <div className="mailpoet_valid_key">
-                <button type="button" className="mailpoet_sending_service_activate button-primary">{t('activate')}</button>
+                <button
+                  type="button"
+                  onClick={activateMss}
+                  className="mailpoet_sending_service_activate button-primary"
+                >
+                  {t('activate')}
+                </button>
               </div>
             )}
           </div>
