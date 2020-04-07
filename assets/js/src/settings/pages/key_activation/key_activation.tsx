@@ -83,7 +83,10 @@ export default function KeyActivation() {
             {state.mssStatus !== null && (
               <MssMessages
                 keyMessage={state.mssMessage}
-                activationCallback={() => verifyMssKey(state.key, true)}
+                activationCallback={() => {
+                  verifyMssKey(state.key, true);
+                  setState({ fromAddressModalCanBeShown: true });
+                }}
               />
             )}
             {state.premiumStatus !== null && (
