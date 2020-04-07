@@ -42,7 +42,7 @@ export function updateKeyActivationState(fields: Partial<KeyActivationState>): A
 export function* saveSettings() {
   yield { type: 'SAVE_STARTED' };
   const data = select(STORE_NAME).getSettings();
-  const { success, error } = yield {
+  const { success, error, res } = yield {
     type: 'CALL_API',
     endpoint: 'settings',
     action: 'set',
@@ -52,6 +52,7 @@ export function* saveSettings() {
     return { type: 'SAVE_FAILED', error };
   }
   yield { type: 'TRACK_SETTINGS_SAVED' };
+  yield setSettings(res.data);
   return { type: 'SAVE_DONE' };
 }
 
