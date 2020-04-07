@@ -222,7 +222,7 @@ export type KeyActivationState = {
   mssStatus: MssStatus
   mssMessage: string
   premiumInstallationStatus: PremiumInstallationStatus
-  showFromAddressModal: boolean
+  fromAddressModalCanBeShown: boolean
 }
 
 export type State = {

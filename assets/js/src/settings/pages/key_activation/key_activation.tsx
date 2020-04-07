@@ -24,6 +24,10 @@ export default function KeyActivation() {
     await setUnauthorizedAddresses(null);
   };
 
+  const showFromAddressModal = state.fromAddressModalCanBeShown
+    && state.mssStatus === MssStatus.VALID_MSS_ACTIVE
+    && (!senderAddress || unauthorizedAddresses);
+
   const verifyKey = async (event) => {
     if (!state.key) {
       notices.error(<p>{t('premiumTabNoKeyNotice')}</p>, { scroll: true });
@@ -36,14 +40,11 @@ export default function KeyActivation() {
       premiumInstallationStatus: null,
     });
     MailPoet.Modal.loading(true);
-    const mssStatus: MssStatus = (await verifyMssKey(state.key, isUserTriggered)) as any;
+    await verifyMssKey(state.key, isUserTriggered);
     await verifyPremiumKey(state.key);
     MailPoet.Modal.loading(false);
     if (isUserTriggered) {
-      const authorizedAddressNeeded = !senderAddress || unauthorizedAddresses;
-      if (mssStatus === MssStatus.VALID_MSS_ACTIVE && authorizedAddressNeeded) {
-        setState({ showFromAddressModal: true });
-      }
+      setState({ fromAddressModalCanBeShown: true });
     }
   };
 
@@ -96,9 +97,9 @@ export default function KeyActivation() {
           </div>
         )}
       </Inputs>
-      {state.showFromAddressModal && (
+      {showFromAddressModal && (
         <SetFromAddressModal
-          onRequestClose={() => setState({ showFromAddressModal: false })}
+          onRequestClose={() => setState({ fromAddressModalCanBeShown: false })}
           setAuthorizedAddress={setAuthorizedAddress}
         />
       )}

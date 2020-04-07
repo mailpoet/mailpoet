@@ -35,7 +35,7 @@ export default function makeDefaultState(window: any): State {
     premiumStatus,
     mssMessage: null,
     premiumMessage: null,
-    showFromAddressModal: false,
+    fromAddressModalCanBeShown: false,
     premiumInstallationStatus: null,
     key: data.premium.premium_key || data.mta.mailpoet_api_key,
   };
