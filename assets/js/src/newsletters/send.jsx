@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
+import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import slugify from 'slugify';
 import { GlobalContext } from 'context/index.jsx';
 
@@ -473,6 +474,10 @@ class NewsletterSend extends React.Component {
           onSubmit={this.handleSave}
         >
           <SubscribersLimitNotice />
+          <InvalidMssKeyNotice
+            mssKeyInvalid={window.mailpoet_mss_key_invalid}
+            subscribersCount={window.mailpoet_subscribers_count}
+          />
           <p className="submit">
             {
               isPaused

@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import Listing from 'listing/listing.jsx';
 import Selection from 'form/fields/selection.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
+import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 
 const columns = [
   {
@@ -384,6 +385,10 @@ class SubscriberList extends React.Component {
         </h1>
 
         <SubscribersLimitNotice />
+        <InvalidMssKeyNotice
+          mssKeyInvalid={window.mailpoet_mss_key_invalid}
+          subscribersCount={window.mailpoet_subscribers_count}
+        />
 
         <Listing
           limit={window.mailpoet_listing_per_page}

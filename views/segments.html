@@ -14,6 +14,7 @@
     var mailpoet_subscribers_limit_reached = <%= subscribers_limit_reached ? 'true' : 'false' %>;
     var mailpoet_has_valid_api_key = <%= has_valid_api_key ? 'true' : 'false' %>;
     var mailpoet_subscribers_count = <%= subscriber_count %>;
+    var mailpoet_mss_key_invalid = <%= mss_key_invalid ? 'true' : 'false' %>;
   </script>
 <% endblock %>
 
@@ -74,6 +75,9 @@
     'pageOutOf': __('of'),
     'numberOfItemsSingular': __('1 item'),
     'numberOfItemsMultiple': __('%$1d items'),
+    'allSendingPausedHeader': __('All sending is currently paused!'),
+    'allSendingPausedBody': __('Your key to send with MailPoet is invalid.'),
+    'allSendingPausedLink': __('Purchase a key'),
 
     'segmentDescriptionTip': __('This text box is for your own use and is never shown to your subscribers.'),
     'backToList': __('Back')

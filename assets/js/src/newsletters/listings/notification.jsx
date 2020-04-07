@@ -23,6 +23,7 @@ import {
   nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
+import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 
 const messages = {
   onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
@@ -339,6 +340,10 @@ class NewsletterListNotification extends React.Component {
 
         <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
         <SubscribersLimitNotice />
+        <InvalidMssKeyNotice
+          mssKeyInvalid={window.mailpoet_mss_key_invalid}
+          subscribersCount={window.mailpoet_subscribers_count}
+        />
 
         <ListingTabs tab="notification" />
 

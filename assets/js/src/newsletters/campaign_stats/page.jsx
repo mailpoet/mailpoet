@@ -3,6 +3,8 @@ import MailPoet from 'mailpoet';
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
+
 import NewsletterGeneralStats from './newsletter_stats.jsx';
 import NewsletterStatsInfo from './newsletter_info.jsx';
 import PremiumBanner from './premium_banner.jsx';
@@ -95,6 +97,11 @@ class CampaignStatsPage extends React.Component {
             {MailPoet.I18n.t('backToList')}
           </Link>
         </h1>
+
+        <InvalidMssKeyNotice
+          mssKeyInvalid={window.mailpoet_mss_key_invalid}
+          subscribersCount={window.mailpoet_subscribers_count}
+        />
 
         <div className="mailpoet_stat_triple-spaced">
           <div className="mailpoet_stat_info">

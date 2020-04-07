@@ -3,6 +3,7 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Form\Block;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\CustomField;
@@ -30,11 +31,15 @@ class Subscribers {
   /** @var Block\Date */
   private $dateBlock;
 
+  /** @var ServicesChecker */
+  private $servicesChecker;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
     SubscribersFeature $subscribersFeature,
     WPFunctions $wp,
+    ServicesChecker $servicesChecker,
     Block\Date $dateBlock
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -42,6 +47,7 @@ class Subscribers {
     $this->subscribersFeature = $subscribersFeature;
     $this->wp = $wp;
     $this->dateBlock = $dateBlock;
+    $this->servicesChecker = $servicesChecker;
   }
 
   public function render() {
@@ -74,6 +80,8 @@ class Subscribers {
 
     $data['premium_plugin_active'] = License::getLicense();
     $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
+
+    $data['mss_key_invalid'] = ($this->servicesChecker->isMailPoetAPIKeyValid() === false);
 
     $data['max_confirmation_emails'] = ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS;
 

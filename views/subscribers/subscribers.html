@@ -22,6 +22,7 @@
     var mailpoet_subscribers_limit = <%= subscribers_limit ? subscribers_limit : 'false'  %>;
     var mailpoet_subscribers_limit_reached = <%= subscribers_limit_reached ? 'true' : 'false' %>;
     var mailpoet_has_valid_api_key = <%= has_valid_api_key ? 'true' : 'false' %>;
+    var mailpoet_mss_key_invalid = <%= mss_key_invalid ? 'true' : 'false' %>;
     var mailpoet_subscribers_count = <%= subscriber_count %>;
   </script>
 <% endblock %>
@@ -100,6 +101,9 @@
     'listsToWhichSubscriberWasSubscribed': __('Lists to which the subscriber was subscribed.'),
     'WPUsersSegment': __('WordPress Users'),
     'WPUserEditNotice': __('This subscriber is a registered WordPress user. [link]Edit his/her profile[/link] to change his/her email.'),
+    'allSendingPausedHeader': __('All sending is currently paused!'),
+    'allSendingPausedBody': __('Your key to send with MailPoet is invalid.'),
+    'allSendingPausedLink': __('Purchase a key'),
     'tip': __('Tip:'),
     'customFieldsTip': __('Need to add new fields, like a telephone number or street address? You can add custom fields by editing the subscription form on the Forms page.'),
     'year': __('Year'),

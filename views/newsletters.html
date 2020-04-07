@@ -28,6 +28,7 @@
       var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
       var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
       var mailpoet_transactional_emails_opt_in_notice_dismissed = '<%= transactional_emails_opt_in_notice_dismissed %>';
+      var mailpoet_mss_key_invalid = <%= mss_key_invalid ? 'true' : 'false' %>;
 
       var has_mss_key_specified = <%= json_encode(has_mss_key_specified) %>;
       var MSS_pitch_illustration_url = '<%= cdn_url('welcome-wizard/illu-pitch-mss.20190912.png') %>';
@@ -251,6 +252,10 @@
     'websiteTimeIs': __("Your website’s time is"),
     'noScheduledDateError': __('Please enter the scheduled date.'),
     'schedule': __('Schedule'),
+
+    'allSendingPausedHeader': __('All sending is currently paused!'),
+    'allSendingPausedBody': __('Your key to send with MailPoet is invalid.'),
+    'allSendingPausedLink': __('Purchase a key'),
 
     'close': __('Close'),
     'today': __('Today'),

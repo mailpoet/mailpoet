@@ -146,6 +146,7 @@ class Newsletters {
       $lastAnnouncementSeen < $lastAnnouncementDate
     );
     $data['last_announcement_seen'] = $lastAnnouncementSeen;
+    $data['mss_key_invalid'] = ($this->servicesChecker->isMailPoetAPIKeyValid() === false);
 
     $data['automatic_emails'] = [
       [
