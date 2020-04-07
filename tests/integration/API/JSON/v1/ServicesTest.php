@@ -7,11 +7,15 @@ use MailPoet\Analytics\Analytics;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Services;
 use MailPoet\Config\Installer;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
+use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\SPFCheck;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 
 class ServicesTest extends \MailPoetTest {
   public $data;
@@ -173,6 +177,75 @@ class ServicesTest extends \MailPoetTest {
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('test');
+  }
+
+  public function testItDoesNotPauseSendingWhenMSSKeyValidAndApproved() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    expect(MailerLog::isSendingPaused())->false();
+
+    $bridge = $this->make(
+      Bridge::class,
+      [
+        'settings' => SettingsController::getInstance(),
+        'checkMSSKey' => [
+          'state' => Bridge::KEY_VALID,
+          'data' => ['is_approved' => true],
+        ],
+      ]
+    );
+
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItPausesSendingWhenMSSKeyValidButNotApproved() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    expect(MailerLog::isSendingPaused())->false();
+
+    $bridge = $this->make(
+      Bridge::class,
+      [
+        'settings' => SettingsController::getInstance(),
+        'checkMSSKey' => [
+          'state' => Bridge::KEY_VALID,
+          'data' => ['is_approved' => false],
+        ],
+      ]
+    );
+
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect(MailerLog::isSendingPaused())->true();
+  }
+
+  public function testItResumesSendingWhenMSSKeyBecomesApproved() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'key');
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, [
+      'state' => Bridge::KEY_VALID,
+      'data' => ['is_approved' => false],
+    ]);
+    MailerLog::pauseSending(MailerLog::getMailerLog());
+    expect(MailerLog::isSendingPaused())->true();
+
+    $bridge = $this->make(
+      Bridge::class,
+      [
+        'settings' => SettingsController::getInstance(),
+        'checkMSSKey' => [
+          'state' => Bridge::KEY_VALID,
+          'data' => ['is_approved' => true],
+        ],
+      ]
+    );
+
+    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $response = $servicesEndpoint->checkMSSKey($this->data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect(MailerLog::isSendingPaused())->false();
   }
 
   public function testItRespondsWithErrorIfNoPremiumKeyIsGiven() {
@@ -400,6 +473,10 @@ class ServicesTest extends \MailPoetTest {
     expect($this->settings->get('new_public_id', null))->null();
   }
 
+  public function _after() {
+    $this->diContainer->get(SettingsRepository::class)->truncate();
+  }
+
   private function createServicesEndpointWithMockedSPFCheck($spfCheck) {
     return new Services(
       $this->diContainer->get(Bridge::class),
@@ -407,7 +484,8 @@ class ServicesTest extends \MailPoetTest {
       $this->diContainer->get(Analytics::class),
       $spfCheck,
       $this->diContainer->get(SendingServiceKeyCheck::class),
-      $this->diContainer->get(PremiumKeyCheck::class)
+      $this->diContainer->get(PremiumKeyCheck::class),
+      $this->diContainer->get(ServicesChecker::class)
     );
   }
 
@@ -418,7 +496,8 @@ class ServicesTest extends \MailPoetTest {
       $this->diContainer->get(Analytics::class),
       $this->diContainer->get(SPFCheck::class),
       $this->diContainer->get(SendingServiceKeyCheck::class),
-      $this->diContainer->get(PremiumKeyCheck::class)
+      $this->diContainer->get(PremiumKeyCheck::class),
+      $this->diContainer->get(ServicesChecker::class)
     );
   }
 }
