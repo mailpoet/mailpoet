@@ -2,9 +2,11 @@
 
 namespace MailPoet\Cron\Workers\KeyCheck;
 
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Carbon\Carbon;
 
 class SendingServiceKeyCheck extends KeyCheckWorker {
   const TASK_TYPE = 'sending_service_key_check';
@@ -12,13 +14,26 @@ class SendingServiceKeyCheck extends KeyCheckWorker {
   /** @var SettingsController */
   private $settings;
 
-  public function __construct(SettingsController $settings) {
+  /** @var ServicesChecker */
+  private $servicesChecker;
+
+  public function __construct(SettingsController $settings, ServicesChecker $servicesChecker) {
     $this->settings = $settings;
+    $this->servicesChecker = $servicesChecker;
     parent::__construct();
   }
 
   public function checkProcessingRequirements() {
     return Bridge::isMPSendingServiceEnabled();
+  }
+
+  public function getNextRunDate() {
+    // when key pending approval, check key sate every hour
+    if ($this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
+      $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+      return $date->addHour();
+    }
+    return parent::getNextRunDate();
   }
 
   public function checkKey() {
