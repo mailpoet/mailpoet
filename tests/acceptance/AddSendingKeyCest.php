@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Scenario;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Test\DataFactories\Settings;
 
 class AddSendingKeyCest {
@@ -134,5 +135,38 @@ class AddSendingKeyCest {
     // activate MSS
     $i->click('Activate MailPoet Sending Service');
     $i->waitForText('MailPoet Sending Service is active');
+  }
+
+  public function resumeSendingWhenKeyApproved(\AcceptanceTester $i, Scenario $scenario) {
+    $i->wantTo('Resume sending when key approved on MSS activation');
+
+    $mailPoetSendingKey = getenv('WP_TEST_MAILER_MAILPOET_API');
+    if (!$mailPoetSendingKey) {
+      $scenario->skip("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
+    }
+
+    $settings = new Settings();
+    $settings->withSendingMethodMailPoet();
+
+    // MSS key pending approval, paused sending
+    $settings = new Settings();
+    $settings->withMssKeyPendingApproval();
+    MailerLog::pauseSending(MailerLog::getMailerLog());
+
+    // ensure status is paused
+    $i->login();
+    $i->amOnMailpoetPage('Help#/systemStatus');
+    $i->waitForText('Status paused');
+
+    // force key verification
+    $i->amOnMailPoetPage('Settings');
+    $i->click('[data-automation-id="activation_settings_tab"]');
+    $i->waitForText('Your key is valid');
+    $i->click('Verify');
+    $i->waitForText('MailPoet Sending Service is active');
+
+    // ensure status is running
+    $i->amOnMailpoetPage('Help#/systemStatus');
+    $i->waitForText('Status running');
   }
 }
