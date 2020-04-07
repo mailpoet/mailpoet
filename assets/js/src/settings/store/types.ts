@@ -249,6 +249,7 @@ export type State = {
 
 export type Action =
   | { type: 'SET_SETTING'; value: any; path: string[] }
+  | { type: 'SET_SETTINGS'; value: any; }
   | { type: 'SET_ERROR_FLAG'; value: boolean }
   | { type: 'SAVE_STARTED' }
   | { type: 'SAVE_DONE' }
