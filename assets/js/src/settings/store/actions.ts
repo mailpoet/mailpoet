@@ -9,6 +9,10 @@ export function setSetting(path: string[], value: any): Action {
   return { type: 'SET_SETTING', path, value };
 }
 
+export function setSettings(value: any): Action {
+  return { type: 'SET_SETTINGS', value };
+}
+
 export function setErrorFlag(value: boolean): Action {
   return { type: 'SET_ERROR_FLAG', value };
 }
@@ -82,10 +86,7 @@ export function* verifyMssKey(key: string, activateMssIfKeyValid: boolean) {
     if (!call.success) {
       fields.mssStatus = MssStatus.VALID_MSS_NOT_ACTIVE;
     } else {
-      yield setSetting(['mta_group'], 'mailpoet');
-      yield setSetting(['mta', 'method'], 'MailPoet');
-      yield setSetting(['mta', 'mailpoet_api_key'], key);
-      yield setSetting(['signup_confirmation', 'enabled'], '1');
+      yield setSettings(call.res.data);
       fields.mssStatus = MssStatus.VALID_MSS_ACTIVE;
     }
   } else {

@@ -2,6 +2,7 @@ import _ from 'lodash';
 import {
   State, Action, KeyActivationState, MssStatus, PremiumStatus,
 } from './types';
+import normalizeSettings from './normalize_settings';
 
 export default function createReducer(defaultValue: State) {
   let keyActivation: KeyActivationState;
@@ -9,6 +10,8 @@ export default function createReducer(defaultValue: State) {
     switch (action.type) {
       case 'SET_SETTING':
         return _.setWith(_.clone(state), ['data', ...action.path], action.value, _.clone);
+      case 'SET_SETTINGS':
+        return { ...state, data: normalizeSettings(action.value) };
       case 'SET_ERROR_FLAG':
         return { ...state, flags: { ...state.flags, error: action.value } };
       case 'SAVE_STARTED':
