@@ -63,11 +63,10 @@ export function* verifyMssKey(key: string, activateMssIfKeyValid: boolean) {
     data: { key },
   };
   if (!success) {
-    yield updateKeyActivationState({
+    return updateKeyActivationState({
       mssStatus: MssStatus.INVALID,
       mssMessage: error.join(' ') || null,
     });
-    return MssStatus.INVALID;
   }
   const fields: Partial<KeyActivationState> = {
     mssMessage: res.data.message || null,
@@ -92,8 +91,7 @@ export function* verifyMssKey(key: string, activateMssIfKeyValid: boolean) {
   } else {
     fields.mssStatus = MssStatus.VALID_MSS_NOT_ACTIVE;
   }
-  yield updateKeyActivationState(fields);
-  return fields.mssStatus;
+  return updateKeyActivationState(fields);
 }
 
 export function* verifyPremiumKey(key: string) {
