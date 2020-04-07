@@ -695,16 +695,12 @@
           // enforce signup confirmation depending on selected group
           setSignupConfirmation(group);
 
-          // back to selection of sending methods
-          if (navigateToTab === undefined || navigateToTab === true) {
-            MailPoet.Router.navigate('mta', { trigger: true });
-          }
-
           // save settings
           $('.mailpoet_settings_submit > input').trigger('click');
 
-          if (group === 'mailpoet') {
-            updateMSSActivationUI()
+          // back to selection of sending methods
+          if (navigateToTab === undefined || navigateToTab === true) {
+            MailPoet.Router.navigate('mta', { trigger: true });
           }
         }
       }

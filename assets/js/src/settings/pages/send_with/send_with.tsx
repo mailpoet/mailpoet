@@ -6,6 +6,7 @@ import { useSelector, useAction, useSetting } from 'settings/store/hooks';
 import { MssStatus } from 'settings/store/types';
 import { t } from 'common/functions';
 import { Link } from 'react-router-dom';
+import checkSPFRecord from 'common/check_spf_record';
 
 export default function SendWith() {
   const isNewUser = useSelector('isNewUser')();
@@ -22,7 +23,8 @@ export default function SendWith() {
     await setSetting(['mta', 'method'], 'MailPoet');
     await setSetting(['mta', 'mailpoet_api_key'], key);
     await setSetting(['signup_confirmation', 'enabled'], '1');
-    return saveSettings();
+    await saveSettings();
+    return checkSPFRecord();
   };
 
   return (
