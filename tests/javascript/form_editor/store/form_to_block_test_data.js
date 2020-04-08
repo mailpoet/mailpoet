@@ -42,16 +42,13 @@ export const segmentsInput = {
     values: [
       {
         id: '6',
-        name: 'Unicorn Truthers',
       },
       {
         id: '24',
         is_checked: '1',
-        name: 'Carrots are lit',
       },
       {
         id: '29',
-        name: 'Daily',
       },
     ],
   },

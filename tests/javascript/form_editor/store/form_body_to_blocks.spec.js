@@ -269,7 +269,6 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.label).to.be.equal('Select list(s):');
     expect(block.attributes.values).to.be.an('Array');
     expect(block.attributes.values[0]).to.haveOwnProperty('id', '6');
-    expect(block.attributes.values[0]).to.haveOwnProperty('name', 'Unicorn Truthers');
     expect(block.attributes.values[1]).to.haveOwnProperty('isChecked', true);
   });
 

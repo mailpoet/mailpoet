@@ -14,6 +14,11 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
     valueWithName.name = segment ? segment.name : '';
     return valueWithName;
   }), [attributes.values, segments]);
+  const stripNamesFromValues = (values) => values.map((value) => {
+    const valueWithoutName = { ...value };
+    delete valueWithoutName.name;
+    return valueWithoutName;
+  });
   const renderValues = () => {
     if (attributes.values.length === 0) {
       return (<p className="mailpoet_error">{MailPoet.I18n.t('blockSegmentSelectNoLists')}</p>);
@@ -38,12 +43,12 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
         label={attributes.label}
         onLabelChanged={(label) => (setAttributes({ label }))}
         segmentsAddedIntoSelection={valuesWithNames}
-        setNewSelection={(selection) => setAttributes({ values: selection })}
+        setNewSelection={(selection) => setAttributes({ values: stripNamesFromValues(selection) })}
         addSegmentIntoSelection={(newSegment) => setAttributes({
-          values: [
+          values: stripNamesFromValues([
             ...attributes.values,
             newSegment,
-          ],
+          ]),
         })}
       />
       <span className="mailpoet_segment_label">
@@ -60,7 +65,6 @@ SegmentSelectEdit.propTypes = {
     className: PropTypes.string,
     values: PropTypes.arrayOf(PropTypes.shape({
       isChecked: PropTypes.boolean,
-      name: PropTypes.string.isRequired,
       id: PropTypes.string.isRequired,
     })).isRequired,
   }).isRequired,

@@ -256,7 +256,6 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
               values: block.attributes.values.map((segment) => ({
                 id: segment.id,
                 is_checked: segment.isChecked ? '1' : undefined,
-                name: segment.name,
               })),
             },
           };
