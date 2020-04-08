@@ -3,7 +3,10 @@
 namespace MailPoet\Form\Block;
 
 use MailPoet\Form\BlockWrapperRenderer;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
+
+use function MailPoetVendor\array_column;
 
 class Segment {
 
@@ -16,10 +19,19 @@ class Segment {
   /** @var BlockWrapperRenderer */
   private $wrapper;
 
-  public function __construct(BlockRendererHelper $rendererHelper, BlockWrapperRenderer $wrapper, WPFunctions $wp) {
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  public function __construct(
+    BlockRendererHelper $rendererHelper,
+    BlockWrapperRenderer $wrapper,
+    WPFunctions $wp,
+    SegmentsRepository $segmentsRepository
+  ) {
     $this->rendererHelper = $rendererHelper;
     $this->wrapper = $wrapper;
     $this->wp = $wp;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   public function render(array $block, array $formSettings): string {
@@ -35,8 +47,14 @@ class Segment {
       : []
     );
 
+    $options = array_map(function ($option) {
+      $option['id'] = intval($option['id']);
+      return $option;
+    }, $options);
+    $segmentsNamesMap = $this->getSegmentsNames($options);
+
     foreach ($options as $option) {
-      if (!isset($option['id']) || !isset($option['name'])) continue;
+      if (!isset($option['id']) || !isset($segmentsNamesMap[$option['id']])) continue;
 
       $isChecked = (isset($option['is_checked']) && $option['is_checked']) ? 'checked="checked"' : '';
 
@@ -47,12 +65,22 @@ class Segment {
       $html .= 'name="' . $fieldName . '[]" ';
       $html .= 'value="' . $option['id'] . '" ' . $isChecked . ' ';
       $html .= $fieldValidation;
-      $html .= ' /> ' . $this->wp->escAttr($option['name']);
+      $html .= ' /> ' . $this->wp->escAttr($segmentsNamesMap[$option['id']]);
       $html .= '</label>';
     }
 
     $html .= '<span class="mailpoet_error_' . $block['id'] . '"></span>';
 
     return $this->wrapper->render($block, $html);
+  }
+
+  private function getSegmentsNames($values): array {
+    $ids = array_column($values, 'id');
+    $segments = $this->segmentsRepository->findBy(['id' => $ids]);
+    $namesMap = [];
+    foreach ($segments as $segment) {
+      $namesMap[$segment->getId()] = $segment->getName();
+    }
+    return $namesMap;
   }
 }
