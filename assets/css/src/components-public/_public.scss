@@ -210,7 +210,6 @@ div.mailpoet_form_fixed_bar {
   max-width: 100% !important;
   padding: 10px;
   position: fixed;
-  top: 0;
   width: 100% !important;
   z-index: 1000;
 
@@ -218,6 +217,14 @@ div.mailpoet_form_fixed_bar {
     margin: 0 auto;
     max-width: 960px;
   }
+}
+
+.mailpoet_form_position_top {
+  top: 0;
+}
+
+.mailpoet_form_position_bottom {
+  bottom: 0;
 }
 
 .mailpoet_form_popup_overlay.active,
