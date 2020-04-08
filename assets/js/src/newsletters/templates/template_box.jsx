@@ -132,7 +132,7 @@ class TemplateBox extends React.Component {
           </div>
 
           <div className="mailpoet_actions">
-            { readonly === '1' ? false : deleteLink }
+            { readonly === true ? false : deleteLink }
             <a
               className="button button-primary"
               data-automation-id={`select_template_${index}`}
@@ -167,7 +167,7 @@ TemplateBox.propTypes = {
   newsletterId: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   thumbnail: PropTypes.string.isRequired,
-  readonly: PropTypes.string.isRequired,
+  readonly: PropTypes.bool.isRequired,
   beforeDelete: PropTypes.func.isRequired,
   afterDelete: PropTypes.func.isRequired,
   beforeSelect: PropTypes.func.isRequired,
