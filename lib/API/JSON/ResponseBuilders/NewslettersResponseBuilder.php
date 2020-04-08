@@ -10,6 +10,8 @@ use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
+use function MailPoetVendor\array_column;
+
 class NewslettersResponseBuilder {
   const DATE_FORMAT = 'Y-m-d H:i:s';
 
@@ -211,19 +213,24 @@ class NewslettersResponseBuilder {
 
     $subqueryQueryBuilder = $this->entityManager->createQueryBuilder();
     $subquery = $subqueryQueryBuilder
-      ->select('MAX(subSq.id)')
+      ->select('MAX(subSq.id) AS maxId')
       ->from(SendingQueueEntity::class, 'subSq')
       ->where('subSq.newsletter IN (:newsletters)')
+      ->setParameter('newsletters', $newsletters)
       ->groupBy('subSq.newsletter')
       ->getQuery();
+    $latestQueueIds = array_column($subquery->getResult(), 'maxId');
+    if (empty($latestQueueIds)) {
+      return [];
+    }
 
     $queryBuilder = $this->entityManager->createQueryBuilder();
     $results = $queryBuilder
       ->select('sq, t, IDENTITY(sq.newsletter)')
       ->from(SendingQueueEntity::class, 'sq')
       ->join('sq.task', 't')
-      ->where('sq.id IN (' . $subquery->getDQL() . ')')
-      ->setParameter('newsletters', $newsletters)
+      ->where('sq.id IN (:sub)')
+      ->setParameter('sub', $latestQueueIds)
       ->getQuery()
       ->getResult();
 
