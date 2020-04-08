@@ -59,6 +59,8 @@ jQuery(($) => {
 
   function showForm(formDiv, showOverlay = false) {
     const form = formDiv.find('form');
+    const position = form.data('position');
+    formDiv.addClass(`mailpoet_form_position_${position}`);
     const background = form.data('background-color');
     formDiv.css('background-color', background || 'white');
     let delay = form.data('delay');
