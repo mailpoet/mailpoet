@@ -70,6 +70,13 @@ jQuery(($) => {
     }
     setTimeout(() => {
       formDiv.addClass('active');
+
+      if (form.width() < 500) {
+        form.addClass('mailpoet_form_tight_container');
+      } else {
+        form.removeClass('mailpoet_form_tight_container');
+      }
+
       if (showOverlay) {
         formDiv.prev('.mailpoet_form_popup_overlay').addClass('active');
       }
@@ -77,18 +84,20 @@ jQuery(($) => {
   }
 
   $(() => {
-    const closePopupForm = (formDiv) => {
+    const closeForm = (formDiv) => {
       formDiv.removeClass('active');
       formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
       setCookie('popup_form_dismissed', '1', 365);
     };
-    $('.mailpoet_popup_close_icon').click((event) => {
+    $('.mailpoet_form_close_icon').click((event) => {
       const closeIcon = $(event.target);
       const formDiv = closeIcon.parent();
-      closePopupForm(formDiv);
+      closeForm(formDiv);
     });
 
     $('div.mailpoet_form_fixed_bar').each((index, element) => {
+      const cookieValue = getCookie('popup_form_dismissed');
+      if (cookieValue === '1') return;
       const formDiv = $(element);
       showForm(formDiv);
     });
