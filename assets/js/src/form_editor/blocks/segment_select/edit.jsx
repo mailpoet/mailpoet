@@ -1,16 +1,24 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+import { useSelect } from '@wordpress/data';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 import Settings from './settings.jsx';
 
 const SegmentSelectEdit = ({ attributes, setAttributes }) => {
+  const segments = useSelect((sel) => sel('mailpoet-form-editor').getAllAvailableSegments(), []);
+  const valuesWithNames = useMemo(() => attributes.values.map((value) => {
+    const valueWithName = { ...value };
+    const segment = segments.find((seg) => parseInt(seg.id, 10) === parseInt(value.id, 10));
+    valueWithName.name = segment ? segment.name : '';
+    return valueWithName;
+  }), [attributes.values, segments]);
   const renderValues = () => {
     if (attributes.values.length === 0) {
       return (<p className="mailpoet_error">{MailPoet.I18n.t('blockSegmentSelectNoLists')}</p>);
     }
-    return attributes.values.map((value) => (
+    return valuesWithNames.map((value) => (
       <label key={value.id} className="mailpoet_checkbox_label">
         <input
           type="checkbox"
@@ -29,7 +37,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
       <Settings
         label={attributes.label}
         onLabelChanged={(label) => (setAttributes({ label }))}
-        segmentsAddedIntoSelection={attributes.values}
+        segmentsAddedIntoSelection={valuesWithNames}
         setNewSelection={(selection) => setAttributes({ values: selection })}
         addSegmentIntoSelection={(newSegment) => setAttributes({
           values: [
