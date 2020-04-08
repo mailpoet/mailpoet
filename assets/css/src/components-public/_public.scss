@@ -188,7 +188,7 @@ div.mailpoet_form_popup {
   z-index: 1001;
 }
 
-.mailpoet_popup_close_icon {
+.mailpoet_form_close_icon {
   cursor: pointer;
   display: block;
   margin: 0 0 0 auto;
@@ -229,7 +229,7 @@ div.mailpoet_form_fixed_bar {
 
 .mailpoet_form_popup_overlay.active,
 div.mailpoet_form_popup.active,
-div.mailpoet_form_fixed_bar {
+div.mailpoet_form_fixed_bar.active {
   display: block;
 }
 
