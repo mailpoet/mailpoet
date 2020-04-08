@@ -2,9 +2,11 @@
 
 namespace MailPoet\Test\Form\Block;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Segment;
 use MailPoet\Form\BlockWrapperRenderer;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Test\Form\HtmlParser;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,6 +26,9 @@ class SegmentTest extends \MailPoetUnitTest {
   /** @var MockObject & BlockWrapperRenderer */
   private $wrapperMock;
 
+  /** @var MockObject & SegmentsRepository */
+  private $segmentsRepositoryMock;
+
   /** @var HtmlParser */
   private $htmlParser;
 
@@ -36,11 +41,10 @@ class SegmentTest extends \MailPoetUnitTest {
     'params' => [
       'label' => 'Select lists',
       'values' => [[
-        'name' => 'List 1',
+        'name' => 'Old ignored value',
         'id' => '1',
         'is_checked' => '1',
       ], [
-        'name' => 'List 2',
         'id' => '2',
       ]],
     ],
@@ -54,7 +58,8 @@ class SegmentTest extends \MailPoetUnitTest {
     $this->wrapperMock = $this->createMock(BlockWrapperRenderer::class);
     $this->wrapperMock->method('render')->will($this->returnArgument(1));
     $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
-    $this->segment = new Segment($this->rendererHelperMock, $this->wrapperMock, $this->wpMock);
+    $this->segmentsRepositoryMock = $this->createMock(SegmentsRepository::class);
+    $this->segment = new Segment($this->rendererHelperMock, $this->wrapperMock, $this->wpMock, $this->segmentsRepositoryMock);
     $this->htmlParser = new HtmlParser();
   }
 
@@ -62,6 +67,10 @@ class SegmentTest extends \MailPoetUnitTest {
     $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Segments');
+    $this->segmentsRepositoryMock->expects($this->once())->method('findBy')->willReturn([
+      $this->createSegmentMock(1, 'List 1'),
+      $this->createSegmentMock(2, 'List 2'),
+    ]);
 
     $html = $this->segment->render($this->block, []);
 
@@ -77,5 +86,15 @@ class SegmentTest extends \MailPoetUnitTest {
     expect($this->htmlParser->getAttribute($checkbox1Input, 'name')->value)->equals('data[Segments][]');
     expect($this->htmlParser->getAttribute($checkbox2Input, 'name')->value)->equals('data[Segments][]');
     expect($this->htmlParser->getAttribute($checkbox1Input, 'checked')->value)->equals('checked');
+  }
+
+  /**
+   * @return MockObject & SegmentEntity
+   */
+  private function createSegmentMock(int $id, string $name) {
+    $mock = $this->createMock(SegmentEntity::class);
+    $mock->method('getId')->willReturn($id);
+    $mock->method('getName')->willReturn($name);
+    return $mock;
   }
 }
