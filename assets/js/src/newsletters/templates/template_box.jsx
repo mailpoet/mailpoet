@@ -163,7 +163,7 @@ TemplateBox.contextType = GlobalContext;
 
 TemplateBox.propTypes = {
   index: PropTypes.number.isRequired,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
   newsletterId: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   thumbnail: PropTypes.string.isRequired,
