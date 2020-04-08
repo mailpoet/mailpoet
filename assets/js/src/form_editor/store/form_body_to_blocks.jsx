@@ -323,7 +323,6 @@ export const formBodyToBlocksFactory = (
           ) {
             mapped.attributes.values = item.params.values.map((value) => ({
               id: value.id,
-              name: value.name,
               isChecked: value.is_checked === '1' ? true : undefined,
             }));
           } else {

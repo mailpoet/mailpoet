@@ -211,7 +211,6 @@ describe('Blocks to Form Body', () => {
     expect(input.name).to.be.equal('List selection');
     expect(input.type).to.be.equal('segment');
     expect(input.params.values).to.be.an('Array');
-    expect(input.params.values[0]).to.have.property('name', 'Unicorn Truthers');
     expect(input.params.values[0]).to.have.property('id', '6');
     expect(input.params.values[1]).to.have.property('is_checked', '1');
   });

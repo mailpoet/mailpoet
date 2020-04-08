@@ -37,9 +37,9 @@ export const segmentsBlock = {
     mandatory: false,
     label: 'Select list(s):',
     values: [
-      { id: '6', name: 'Unicorn Truthers' },
-      { id: '24', name: 'Carrots are lit', isChecked: true },
-      { id: '29', name: 'Daily' },
+      { id: '6' },
+      { id: '24', isChecked: true },
+      { id: '29' },
     ],
   },
 };
