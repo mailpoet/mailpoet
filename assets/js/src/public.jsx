@@ -57,6 +57,23 @@ jQuery(($) => {
     return true;
   }
 
+  function showForm(formDiv, showOverlay = false) {
+    const form = formDiv.find('form');
+    const background = form.data('background-color');
+    formDiv.css('background-color', background || 'white');
+    let delay = form.data('delay');
+    delay = parseInt(delay, 10);
+    if (Number.isNaN(delay)) {
+      delay = 0;
+    }
+    setTimeout(() => {
+      formDiv.addClass('active');
+      if (showOverlay) {
+        formDiv.prev('.mailpoet_form_popup_overlay').addClass('active');
+      }
+    }, delay * 1000);
+  }
+
   $(() => {
     const closePopupForm = (formDiv) => {
       formDiv.removeClass('active');
@@ -69,23 +86,18 @@ jQuery(($) => {
       closePopupForm(formDiv);
     });
 
+    $('div.mailpoet_form_fixed_bar').each((index, element) => {
+      const formDiv = $(element);
+      showForm(formDiv);
+    });
+
     $('div.mailpoet_form_popup').each((index, element) => {
       const cookieValue = getCookie('popup_form_dismissed');
       if (cookieValue === '1') return;
 
       const formDiv = $(element);
-      const form = formDiv.find('form');
-      const background = form.data('background-color');
-      formDiv.css('background-color', background || 'white');
-      let delay = form.data('delay');
-      delay = parseInt(delay, 10);
-      if (Number.isNaN(delay)) {
-        delay = 0;
-      }
-      setTimeout(() => {
-        formDiv.addClass('active');
-        formDiv.prev('.mailpoet_form_popup_overlay').addClass('active');
-      }, delay * 1000);
+      const showOverlay = true;
+      showForm(formDiv, showOverlay);
     });
 
     // setup form validation
