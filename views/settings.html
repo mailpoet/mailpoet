@@ -21,6 +21,7 @@
       var mailpoet_paths = <%= json_encode(paths) %>;
       var mailpoet_built_in_captcha_supported = <%= json_encode(built_in_captcha_supported == true) %>;
       var mailpoet_free_plan_url = "<%= add_referral_id('https://www.mailpoet.com/free-plan') %>";
+      var mailpoet_current_user_email = "<%= current_user.user_email %>";
     <% endautoescape %>
     var mailpoet_beacon_articles = [
       '57f71d49c697911f2d323486',
@@ -250,7 +251,12 @@
     'spfSetup': __("SPF is set up in your DNS. Read your host's support documentation for more information."),
     'testSending': __('Test the sending method'),
     'sendTestEmail': __('Send a test email'),
-    'orCancel': __('or Cancel')
+    'testEmailTooltip': __("Didn't receive the test email? Read our [link]quick guide[/link] to sending issues."),
+    'cantSendEmail': __('The email could not be sent. Make sure the option "Email notifications" has a FROM email address in the Basics tab.'),
+    'testEmailSubject': __('This is a Sending Method Test'),
+    'testEmailBody': __('Yup, it works! You can start blasting away emails to the moon.'),
+    'emailSent': __('The email has been sent! Check your inbox.'),
+    'orCancel': __('or Cancel'),
   }) %>
 <% endblock %>
 
