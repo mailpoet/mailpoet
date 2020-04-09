@@ -1,29 +1,7 @@
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
+import Cookies from 'js-cookie';
 import 'parsleyjs';
-
-function setCookie(name, value, days) {
-  let expires = '';
-  if (days) {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    expires = `; expires=${date.toUTCString()}`;
-  }
-  document.cookie = `${name}=${value}${expires}; path=/`;
-}
-
-function getCookie(name) {
-  const nameEQ = `${name}=`;
-  const cookieParts = document.cookie.split(';');
-  for (let i = 0; i < cookieParts.length; i += 1) {
-    let cookiePart = cookieParts[i];
-    while (cookiePart.charAt(0) === ' ') cookiePart = cookiePart.substring(1, cookiePart.length);
-    if (cookiePart.indexOf(nameEQ) === 0) {
-      return cookiePart.substring(nameEQ.length, cookiePart.length);
-    }
-  }
-  return null;
-}
 
 jQuery(($) => {
   window.reCaptchaCallback = function reCaptchaCallback() {
@@ -90,7 +68,7 @@ jQuery(($) => {
     const closeForm = (formDiv) => {
       formDiv.removeClass('active');
       formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
-      setCookie('popup_form_dismissed', '1', 365);
+      Cookies.set('popup_form_dismissed', '1', { expires: 365, path: '/' });
     };
     $('.mailpoet_form_close_icon').click((event) => {
       const closeIcon = $(event.target);
@@ -99,14 +77,14 @@ jQuery(($) => {
     });
 
     $('div.mailpoet_form_fixed_bar').each((index, element) => {
-      const cookieValue = getCookie('popup_form_dismissed');
+      const cookieValue = Cookies.get('popup_form_dismissed');
       if (cookieValue === '1') return;
       const formDiv = $(element);
       showForm(formDiv);
     });
 
     $('div.mailpoet_form_popup').each((index, element) => {
-      const cookieValue = getCookie('popup_form_dismissed');
+      const cookieValue = Cookies.get('popup_form_dismissed');
       if (cookieValue === '1') return;
 
       const formDiv = $(element);
