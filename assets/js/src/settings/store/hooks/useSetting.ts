@@ -1,3 +1,4 @@
+import React from 'react';
 import { Settings } from '../types';
 import useSelector from './useSelector';
 import { ValueAndSetter } from './types';
@@ -26,6 +27,6 @@ export function useSetting(...path: string[]): [any, (value: any) => any] {
   const setValue = useAction('setSetting');
   return [
     getValue(path),
-    (value) => setValue(path, value),
+    React.useCallback((value) => setValue(path, value), path), // eslint-disable-line
   ];
 }
