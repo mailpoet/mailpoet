@@ -84,6 +84,9 @@ jQuery(($) => {
   }
 
   $(() => {
+    $('.mailpoet_form').each((index, element) => {
+      $(element).children('.mailpoet_paragraph').last().addClass('last');
+    });
     const closeForm = (formDiv) => {
       formDiv.removeClass('active');
       formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
