@@ -38,3 +38,15 @@ export function TRACK_REINSTALLED() {
     { 'MailPoet Free version': MailPoet.version }
   );
 }
+
+export function TRACK_TEST_EMAIL_SENT({ success, method }) {
+  console.log({ success, method });
+  MailPoet.trackEvent(
+    'User has sent a test email from Settings',
+    {
+      'Sending was successful': !!success,
+      'Sending method type': method,
+      'MailPoet Free version': MailPoet.version,
+    }
+  );
+}

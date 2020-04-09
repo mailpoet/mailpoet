@@ -1,8 +1,9 @@
 import { select } from '@wordpress/data';
 import MailPoet from 'mailpoet';
+import { t } from 'common/functions';
 import { STORE_NAME } from '.';
 import {
-  Action, KeyActivationState, MssStatus, PremiumStatus, PremiumInstallationStatus,
+  Action, KeyActivationState, MssStatus, PremiumStatus, PremiumInstallationStatus, Settings,
 } from './types';
 
 export function setSetting(path: string[], value: any): Action {
@@ -202,4 +203,27 @@ export function* reinstall() {
   }
   yield { type: 'TRACK_REINSTALLED' };
   return { type: 'SAVE_DONE' };
+}
+
+export function* sendTestEmail(recipient: string, mailer: Settings['mta']) {
+  MailPoet.Modal.loading(true);
+  const res = yield {
+    type: 'CALL_API',
+    endpoint: 'mailer',
+    action: 'send',
+    data: {
+      mailer,
+      newsletter: {
+        subject: t('testEmailSubject'),
+        body: {
+          html: `<p>${t('testEmailBody')}</p>`,
+          text: t('testEmailBody'),
+        },
+      },
+      subscriber: recipient,
+    },
+  };
+  yield { type: 'TRACK_TEST_EMAIL_SENT', success: res.success, method: mailer.method };
+  MailPoet.Modal.loading(false);
+  return res;
 }
