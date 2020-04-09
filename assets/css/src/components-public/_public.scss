@@ -89,6 +89,12 @@ $form-columns-space-between: 20px;
   .mailpoet_form_columns .mailpoet_form_column .mailpoet_paragraph:last-child {
     margin-bottom: 0;
   }
+
+  @include breakpoint-max-width($form-break-small-width) {
+    .mailpoet_form_columns .mailpoet_form_column .mailpoet_paragraph:last-child {
+      margin-bottom: 20px;
+    }
+  }
 }
 
 @mixin maxWidthColumns() {
