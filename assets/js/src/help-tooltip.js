@@ -14,3 +14,5 @@ MailPoet.helpTooltip = {
     ), domContainerNode);
   },
 };
+
+export default TooltipComponent;
