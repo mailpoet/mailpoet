@@ -102,9 +102,10 @@ class Services extends APIEndpoint {
     }
 
     // pause sending when key is pending approval, resume when not pending anymore
-    if ($this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
+    $isPendingApproval = $this->servicesChecker->isMailPoetAPIKeyPendingApproval();
+    if (!$wasPendingApproval && $isPendingApproval) {
       MailerLog::pauseSending(MailerLog::getMailerLog());
-    } elseif ($wasPendingApproval) {
+    } elseif ($wasPendingApproval && !$isPendingApproval) {
       MailerLog::resumeSending();
     }
 
