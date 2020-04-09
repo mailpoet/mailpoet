@@ -10,6 +10,7 @@ import {
   SendWith,
   SignupConfirmation,
   WooCommerce,
+  OtherSendingMethods,
 } from './pages';
 import Tabs from './components/tabs';
 import { useSelector } from './store/hooks';
@@ -25,7 +26,8 @@ export default function Settings() {
       <Switch>
         <Route path="/basics" component={Basics} />
         <Route path="/signup" component={SignupConfirmation} />
-        <Route path="/mta" component={SendWith} />
+        <Route exact path="/mta" component={SendWith} />
+        <Route path="/mta/other" component={OtherSendingMethods} />
         <Route path="/woocommerce" component={WooCommerce} />
         <Route path="/advanced" component={Advanced} />
         <Route path="/premium" component={KeyActivation} />
