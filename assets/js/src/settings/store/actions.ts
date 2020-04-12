@@ -227,3 +227,15 @@ export function* sendTestEmail(recipient: string, mailer: Settings['mta']) {
   MailPoet.Modal.loading(false);
   return res;
 }
+
+export function* loadSettings() {
+  const { success, error, res } = yield {
+    type: 'CALL_API',
+    endpoint: 'settings',
+    action: 'get',
+  };
+  if (!success) {
+    return { type: 'SAVE_FAILED', error };
+  }
+  return setSettings(res.data);
+}
