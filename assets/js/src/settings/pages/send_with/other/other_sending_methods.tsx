@@ -6,6 +6,7 @@ import TestSending from './test_sending';
 import ActivateOrCancel from './activate_or_cancel';
 import PHPMailFields from './php_mail_fields';
 import SmtpFields from './smtp_fields';
+import AmazonSesFields from './amazon_ses_fields';
 
 export default function OtherSendingMethods() {
   const [method] = useSetting('mta', 'method');
@@ -14,6 +15,7 @@ export default function OtherSendingMethods() {
       <SendingMethod />
       {method === 'PHPMail' && <PHPMailFields />}
       {method === 'SMTP' && <SmtpFields />}
+      {method === 'AmazonSES' && <AmazonSesFields />}
       <SPF />
       <TestSending />
       <ActivateOrCancel />
