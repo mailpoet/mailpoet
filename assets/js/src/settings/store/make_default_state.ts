@@ -39,6 +39,7 @@ export default function makeDefaultState(window: any): State {
     premiumInstallationStatus: null,
     key: data.premium.premium_key || data.mta.mailpoet_api_key,
     inProgress: false,
+    congratulatoryMssEmailSentTo: null,
   };
   return {
     data, flags, save, keyActivation, segments, pages, paths,

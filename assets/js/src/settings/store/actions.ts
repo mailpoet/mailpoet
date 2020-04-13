@@ -189,6 +189,20 @@ export function* installPremiumPlugin() {
   return yield* activatePremiumPlugin(true);
 }
 
+export function* sendCongratulatoryMssEmail() {
+  const call = yield {
+    type: 'CALL_API',
+    endpoint: 'services',
+    action: 'sendCongratulatoryMssEmail',
+  };
+  if (call && call.success) {
+    return updateKeyActivationState({
+      congratulatoryMssEmailSentTo: call.res.data.email_address,
+    });
+  }
+  return null;
+}
+
 export function* reinstall() {
   MailPoet.Modal.loading(true);
   const { success, error } = yield {

@@ -224,6 +224,7 @@ export type KeyActivationState = {
   premiumInstallationStatus: PremiumInstallationStatus
   fromAddressModalCanBeShown: boolean
   inProgress: boolean
+  congratulatoryMssEmailSentTo: string|null
 }
 
 export type State = {
