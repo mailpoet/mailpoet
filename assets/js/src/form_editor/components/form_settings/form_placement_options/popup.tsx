@@ -16,15 +16,11 @@ const Popup = () => {
   );
   const popupFormDelay = formSettings.popupFormDelay === undefined
     ? 15
-    : formSettings.fixedBarFormDelay;
+    : formSettings.popupFormDelay;
   const placePopupFormOnAllPages = formSettings.placePopupFormOnAllPages || false;
   const placePopupFormOnAllPosts = formSettings.placePopupFormOnAllPosts || false;
 
-  const {
-    setPlacePopupFormOnAllPages,
-    setPlacePopupFormOnAllPosts,
-    setPopupFormDelay,
-  } = useDispatch('mailpoet-form-editor');
+  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
   const [
     localPlacePopupFormOnAllPages,
@@ -40,9 +36,12 @@ const Popup = () => {
   ] = useState(popupFormDelay);
 
   const save = () => {
-    setPlacePopupFormOnAllPages(localPlacePopupFormOnAllPages);
-    setPlacePopupFormOnAllPosts(localPlacePopupFormOnAllPosts);
-    setPopupFormDelay(localDelay);
+    changeFormSettings({
+      ...formSettings,
+      placePopupFormOnAllPages: localPlacePopupFormOnAllPages,
+      placePopupFormOnAllPosts: localPlacePopupFormOnAllPosts,
+      popupFormDelay: localDelay,
+    });
   };
 
   return (

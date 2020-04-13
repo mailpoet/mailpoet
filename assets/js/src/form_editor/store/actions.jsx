@@ -20,69 +20,6 @@ export function changeFormName(name) {
   };
 }
 
-export function setPlaceFormBellowAllPages(place) {
-  return {
-    type: 'PLACE_FORM_BELLOW_ALL_PAGES',
-    place,
-  };
-}
-
-export function setPlaceFormBellowAllPosts(place) {
-  return {
-    type: 'PLACE_FORM_BELLOW_ALL_POSTS',
-    place,
-  };
-}
-
-export function setPlacePopupFormOnAllPages(place) {
-  return {
-    type: 'PLACE_POPUP_FORM_ON_ALL_PAGES',
-    place,
-  };
-}
-
-export function setPlacePopupFormOnAllPosts(place) {
-  return {
-    type: 'PLACE_POPUP_FORM_ON_ALL_POSTS',
-    place,
-  };
-}
-
-export function setPopupFormDelay(delay) {
-  return {
-    type: 'SET_POPUP_FORM_DELAY',
-    delay,
-  };
-}
-
-export function setPlaceFixedBarFormOnAllPages(place) {
-  return {
-    type: 'PLACE_FIXED_BAR_FORM_ON_ALL_PAGES',
-    place,
-  };
-}
-
-export function setPlaceFixedBarFormOnAllPosts(place) {
-  return {
-    type: 'PLACE_FIXED_BAR_FORM_ON_ALL_POSTS',
-    place,
-  };
-}
-
-export function setFixedBarFormDelay(delay) {
-  return {
-    type: 'SET_FIXED_BAR_FORM_DELAY',
-    delay,
-  };
-}
-
-export function setFixedBarFormPosition(position) {
-  return {
-    type: 'SET_FIXED_BAR_FORM_POSITION',
-    position,
-  };
-}
-
 export function deleteCustomFieldStarted() {
   return {
     type: 'DELETE_CUSTOM_FIELD_STARTED',
