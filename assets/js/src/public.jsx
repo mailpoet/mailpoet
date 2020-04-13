@@ -92,6 +92,19 @@ jQuery(($) => {
       showForm(formDiv, showOverlay);
     });
 
+    $(window).resize(() => {
+      $('.mailpoet_form').each((index, element) => {
+        // Detect form is placed in tight container
+        const formDiv = $(element);
+        const form = formDiv.find('form');
+        if (form.width() < 500) {
+          form.addClass('mailpoet_form_tight_container');
+        } else {
+          form.removeClass('mailpoet_form_tight_container');
+        }
+      });
+    });
+
     // setup form validation
     $('form.mailpoet_form').each((index, element) => {
       const form = $(element);
