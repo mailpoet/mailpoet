@@ -142,20 +142,20 @@ export default function SendWith() {
           <span>{t('activated')}</span>
           <div className="mailpoet_actions">
             {isMssActive && (
-              <a
+              <Link
                 className="button-primary mailpoet_other_sending_method_action"
-                href="?page=mailpoet-settings#mta/other"
+                to="/mta/other"
               >
                 {t('activate')}
-              </a>
+              </Link>
             )}
             {!isMssActive && (
-              <a
+              <Link
                 className="button-secondary mailpoet_other_sending_method_action"
-                href="?page=mailpoet-settings#mta/other"
+                to="/mta/other"
               >
                 {t('configure')}
-              </a>
+              </Link>
             )}
           </div>
         </div>

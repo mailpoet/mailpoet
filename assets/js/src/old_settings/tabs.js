@@ -15,34 +15,7 @@ if (jQuery('#mailpoet_settings').length > 0) {
       window.location.href = '?page=mailpoet-new-settings#/basics';
     },
     sendingMethodGroup: function sendingMethodGroup(group) {
-      // display mta tab
-      this.tabs('mta');
-
-      // hide all sending methods' settings
-      jQuery(
-        '#mailpoet_sending_method_setup, .mailpoet_sending_method'
-      ).hide();
-
-      // hide "save settings" button
-      jQuery('.mailpoet_settings_submit').hide();
-
-      if (group === null) {
-        window.location.href = '?page=mailpoet-new-settings#/mta';
-      } else {
-        // toggle SPF (hidden if the sending method is MailPoet)
-        jQuery('#mailpoet_mta_spf')[
-          (group === 'mailpoet')
-            ? 'hide'
-            : 'show'
-        ]();
-
-        // hide sending methods
-        jQuery('.mailpoet_sending_methods, .mailpoet_sending_methods_help').hide();
-
-        // display selected sending method's settings
-        jQuery('.mailpoet_sending_method[data-group="' + group + '"]').show();
-        jQuery('#mailpoet_sending_method_setup').fadeIn();
-      }
+      window.location.href = '?page=mailpoet-new-settings#/mta/' + (group || '');
     },
     tabs: function tabs(tab) {
       if (tab === 'basics') {
