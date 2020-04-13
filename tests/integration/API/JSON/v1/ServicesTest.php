@@ -16,6 +16,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Services\SPFCheck;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\WP\Functions as WPFunctions;
 
 class ServicesTest extends \MailPoetTest {
   public $data;
@@ -485,7 +486,8 @@ class ServicesTest extends \MailPoetTest {
       $spfCheck,
       $this->diContainer->get(SendingServiceKeyCheck::class),
       $this->diContainer->get(PremiumKeyCheck::class),
-      $this->diContainer->get(ServicesChecker::class)
+      $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(WPFunctions::class)
     );
   }
 
@@ -497,7 +499,8 @@ class ServicesTest extends \MailPoetTest {
       $this->diContainer->get(SPFCheck::class),
       $this->diContainer->get(SendingServiceKeyCheck::class),
       $this->diContainer->get(PremiumKeyCheck::class),
-      $this->diContainer->get(ServicesChecker::class)
+      $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(WPFunctions::class)
     );
   }
 }
