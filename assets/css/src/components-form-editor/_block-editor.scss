@@ -45,3 +45,8 @@
 h2 {
   font-size: 1.7em;
 }
+
+.block-list-appender .block-editor-inserter {
+  margin: 0 auto;
+  max-width: 580px; // the same as .wp-block
+}
