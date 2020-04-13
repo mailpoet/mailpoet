@@ -16,6 +16,7 @@ export default function KeyActivation() {
   const verifyPremiumKey = useAction('verifyPremiumKey');
   const installPremiumPlugin = useAction('installPremiumPlugin');
   const activatePremiumPlugin = useAction('activatePremiumPlugin');
+  const sendCongratulatoryMssEmail = useAction('sendCongratulatoryMssEmail');
   const [senderAddress, setSenderAddress] = useSetting('sender', 'address');
   const [unauthorizedAddresses, setUnauthorizedAddresses] = useSetting('authorized_emails_addresses_check');
   const [apiKeyState] = useSetting('mta', 'mailpoet_api_key_state', 'data');
@@ -48,6 +49,7 @@ export default function KeyActivation() {
     MailPoet.Modal.loading(true);
     setState({ inProgress: true });
     await verifyMssKey(state.key, isUserTriggered);
+    await sendCongratulatoryMssEmail();
     await verifyPremiumKey(state.key);
     setState({ inProgress: false });
     MailPoet.Modal.loading(false);
@@ -91,11 +93,17 @@ export default function KeyActivation() {
             {state.mssStatus !== null && (
               <MssMessages
                 keyMessage={state.mssMessage}
-                activationCallback={() => {
-                  verifyMssKey(state.key, true);
+                activationCallback={async () => {
+                  await verifyMssKey(state.key, true);
+                  sendCongratulatoryMssEmail();
                   setState({ fromAddressModalCanBeShown: true });
                 }}
               />
+            )}
+            {state.congratulatoryMssEmailSentTo && (
+              <div className="mailpoet_success">
+                {t('premiumTabCongratulatoryMssEmailSent').replace('[email_address]', state.congratulatoryMssEmailSentTo)}
+              </div>
             )}
             {state.premiumStatus !== null && (
               <PremiumMessages
@@ -121,7 +129,10 @@ export default function KeyActivation() {
       </Inputs>
       {showFromAddressModal && (
         <SetFromAddressModal
-          onRequestClose={() => setState({ fromAddressModalCanBeShown: false })}
+          onRequestClose={() => {
+            setState({ fromAddressModalCanBeShown: false });
+            sendCongratulatoryMssEmail();
+          }}
           setAuthorizedAddress={setAuthorizedAddress}
         />
       )}
