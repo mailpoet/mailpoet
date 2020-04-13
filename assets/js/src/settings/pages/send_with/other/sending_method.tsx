@@ -5,16 +5,29 @@ import { useSetting } from 'settings/store/hooks';
 
 export default function SendingMethod() {
   const [provider, setProvider] = useSetting('smtp_provider');
+  const [, setGroup] = useSetting('mta_group');
   const [, setMethod] = useSetting('mta', 'method');
   React.useEffect(() => {
     switch (provider) {
-      case 'server': setMethod('PHPMail'); break;
-      case 'manual': setMethod('SMTP'); break;
-      case 'AmazonSES': setMethod('AmazonSES'); break;
-      case 'SendGrid': setMethod('AmazonSES'); break;
+      case 'server':
+        setGroup('website');
+        setMethod('PHPMail');
+        break;
+      case 'manual':
+        setGroup('smtp');
+        setMethod('SMTP');
+        break;
+      case 'AmazonSES':
+        setGroup('smtp');
+        setMethod('AmazonSES');
+        break;
+      case 'SendGrid':
+        setGroup('smtp');
+        setMethod('SendGrid');
+        break;
       default: setMethod('PHPMail');
     }
-  }, [provider, setMethod]);
+  }, [provider, setGroup, setMethod]);
 
   return (
     <>
