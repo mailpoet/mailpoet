@@ -40,7 +40,6 @@ export function TRACK_REINSTALLED() {
 }
 
 export function TRACK_TEST_EMAIL_SENT({ success, method }) {
-  console.log({ success, method });
   MailPoet.trackEvent(
     'User has sent a test email from Settings',
     {
