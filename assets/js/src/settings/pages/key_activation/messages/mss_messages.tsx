@@ -4,7 +4,7 @@ import { useSelector } from 'settings/store/hooks';
 import { MssStatus } from 'settings/store/types';
 
 const ActiveMessage = () => (
-  <div className="mailpoet_success mailpoet_mss_key_valid">
+  <div className="mailpoet_success_item mailpoet_success mailpoet_mss_key_valid">
     {MailPoet.I18n.t('premiumTabMssActiveMessage')}
   </div>
 );
