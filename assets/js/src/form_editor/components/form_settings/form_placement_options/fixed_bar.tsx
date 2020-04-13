@@ -10,24 +10,17 @@ import Icon from './fixed_bar_icon';
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
 const FixedBar = () => {
-  const fixedBarFormDelay = useSelect(
-    (select) => select('mailpoet-form-editor').getFixedBarFormDelay(),
+  const formSettings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
-  const fixedBarFormPosition = useSelect(
-    (select) => select('mailpoet-form-editor').getFixedBarFormPosition(),
-    []
-  );
+  const fixedBarFormDelay = formSettings.fixedBarFormDelay === undefined
+    ? 15
+    : formSettings.fixedBarFormDelay;
+  const fixedBarFormPosition = formSettings.fixedBarFormPosition === undefined ? 'top' : formSettings.fixedBarFormPosition;
+  const placeFixedBarFormOnAllPages = formSettings.placeFixedBarFormOnAllPages || false;
+  const placeFixedBarFormOnAllPosts = formSettings.placeFixedBarFormOnAllPosts || false;
 
-  const placeFixedBarFormOnAllPages = useSelect(
-    (select) => select('mailpoet-form-editor').placeFixedBarFormOnAllPages(),
-    []
-  );
-
-  const placeFixedBarFormOnAllPosts = useSelect(
-    (select) => select('mailpoet-form-editor').placeFixedBarFormOnAllPosts(),
-    []
-  );
   const {
     setPlaceFixedBarFormOnAllPages,
     setPlaceFixedBarFormOnAllPosts,
@@ -46,11 +39,11 @@ const FixedBar = () => {
   const [
     localDelay,
     setLocalDelay,
-  ] = useState(fixedBarFormDelay === undefined ? 15 : fixedBarFormDelay);
+  ] = useState(fixedBarFormDelay);
   const [
     localPosition,
     setLocalPosition,
-  ] = useState(fixedBarFormPosition === undefined ? 'top' : fixedBarFormPosition);
+  ] = useState(fixedBarFormPosition);
 
   const save = () => {
     setPlaceFixedBarFormOnAllPages(localPlaceFixedBarFormOnAllPages);
@@ -69,7 +62,7 @@ const FixedBar = () => {
     >
       <div className="mailpoet-toggle-list">
         <div className="mailpoet-toggle-list-description">
-          {MailPoet.I18n.t('placeFixedBarFormOnPages')}
+          {MailPoet.I18n.t('placeFormBellowAllPages')}
         </div>
         <div className="mailpoet-toggle-list-toggle">
           <Toggle

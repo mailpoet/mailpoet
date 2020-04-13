@@ -7,15 +7,13 @@ import Toggle from '../../../../common/toggle';
 import Icon from './below_pages_icon';
 
 const BelowPages = () => {
-  const placeFormBellowAllPages = useSelect(
-    (select) => select('mailpoet-form-editor').placeFormBellowAllPages(),
+  const formSettings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
+  const placeFormBellowAllPages = formSettings.placeFormBellowAllPages || false;
+  const placeFormBellowAllPosts = formSettings.placeFormBellowAllPosts || false;
 
-  const placeFormBellowAllPosts = useSelect(
-    (select) => select('mailpoet-form-editor').placeFormBellowAllPosts(),
-    []
-  );
   const { setPlaceFormBellowAllPages, setPlaceFormBellowAllPosts } = useDispatch('mailpoet-form-editor');
 
   const [
