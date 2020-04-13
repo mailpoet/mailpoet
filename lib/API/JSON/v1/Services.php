@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\Analytics\Analytics as AnalyticsHelper;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
@@ -12,6 +13,7 @@ use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
+use MailPoet\Services\CongratulatoryMssEmailController;
 use MailPoet\Services\SPFCheck;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\DateTime;
@@ -42,6 +44,9 @@ class Services extends APIEndpoint {
   /** @var ServicesChecker */
   private $servicesChecker;
 
+  /** @var CongratulatoryMssEmailController */
+  private $congratulatoryMssEmailController;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -57,6 +62,7 @@ class Services extends APIEndpoint {
     SendingServiceKeyCheck $mssWorker,
     PremiumKeyCheck $premiumWorker,
     ServicesChecker $servicesChecker,
+    CongratulatoryMssEmailController $congratulatoryMssEmailController,
     WPFunctions $wp
   ) {
     $this->bridge = $bridge;
@@ -67,6 +73,7 @@ class Services extends APIEndpoint {
     $this->premiumWorker = $premiumWorker;
     $this->dateTime = new DateTime();
     $this->servicesChecker = $servicesChecker;
+    $this->congratulatoryMssEmailController = $congratulatoryMssEmailController;
     $this->wp = $wp;
   }
 
@@ -226,6 +233,37 @@ class Services extends APIEndpoint {
     return $this->successResponse();
   }
 
+  public function sendCongratulatoryMssEmail() {
+    if (!Bridge::isMPSendingServiceEnabled()) {
+      return $this->createBadRequest(__('MailPoet Sending Service is not active.', 'mailpoet'));
+    }
+
+    $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
+    if (!$authorizedEmails) {
+      return $this->createBadRequest(__('No FROM email addresses are authorized.', 'mailpoet'));
+    }
+
+    $fromEmail = $this->settings->get('sender.address');
+    if (!$fromEmail) {
+      return $this->createBadRequest(__('Sender email address is not set.', 'mailpoet'));
+    }
+    if (!in_array($fromEmail, $authorizedEmails, true)) {
+      return $this->createBadRequest(sprintf(__("Sender email address '%s' is not authorized.", 'mailpoet'), $fromEmail));
+    }
+
+    try {
+      // congratulatory email is sent to the current FROM address (authorized at this point)
+      $this->congratulatoryMssEmailController->sendCongratulatoryEmail($fromEmail);
+    } catch (\Throwable $e) {
+      return $this->errorResponse([
+        APIError::UNKNOWN => __('Sending of congratulatory email failed.', 'mailpoet'),
+      ], [], Response::STATUS_UNKNOWN);
+    }
+    return $this->successResponse([
+      'email_address' => $fromEmail,
+    ]);
+  }
+
   private function getErrorDescriptionByCode($code) {
     switch ($code) {
       case Bridge::CHECK_ERROR_UNAVAILABLE:
@@ -240,5 +278,11 @@ class Services extends APIEndpoint {
     }
 
     return $text;
+  }
+
+  private function createBadRequest(string $message) {
+    return $this->badRequest([
+      APIError::BAD_REQUEST => $message,
+    ]);
   }
 }
