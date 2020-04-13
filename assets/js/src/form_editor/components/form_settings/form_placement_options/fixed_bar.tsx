@@ -21,12 +21,7 @@ const FixedBar = () => {
   const placeFixedBarFormOnAllPages = formSettings.placeFixedBarFormOnAllPages || false;
   const placeFixedBarFormOnAllPosts = formSettings.placeFixedBarFormOnAllPosts || false;
 
-  const {
-    setPlaceFixedBarFormOnAllPages,
-    setPlaceFixedBarFormOnAllPosts,
-    setFixedBarFormDelay,
-    setFixedBarFormPosition,
-  } = useDispatch('mailpoet-form-editor');
+  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
   const [
     localPlaceFixedBarFormOnAllPages,
@@ -46,10 +41,13 @@ const FixedBar = () => {
   ] = useState(fixedBarFormPosition);
 
   const save = () => {
-    setPlaceFixedBarFormOnAllPages(localPlaceFixedBarFormOnAllPages);
-    setPlaceFixedBarFormOnAllPosts(localPlaceFixedBarFormOnAllPosts);
-    setFixedBarFormDelay(localDelay);
-    setFixedBarFormPosition(localPosition);
+    changeFormSettings({
+      ...formSettings,
+      placeFixedBarFormOnAllPages: localPlaceFixedBarFormOnAllPages,
+      placeFixedBarFormOnAllPosts: localPlaceFixedBarFormOnAllPosts,
+      fixedBarFormDelay: localDelay,
+      fixedBarFormPosition: localPosition,
+    });
   };
 
   return (

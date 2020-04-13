@@ -14,7 +14,7 @@ const BelowPages = () => {
   const placeFormBellowAllPages = formSettings.placeFormBellowAllPages || false;
   const placeFormBellowAllPosts = formSettings.placeFormBellowAllPosts || false;
 
-  const { setPlaceFormBellowAllPages, setPlaceFormBellowAllPosts } = useDispatch('mailpoet-form-editor');
+  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
   const [
     localPlaceFormBellowAllPages,
@@ -26,8 +26,11 @@ const BelowPages = () => {
   ] = useState(placeFormBellowAllPosts);
 
   const save = () => {
-    setPlaceFormBellowAllPages(localPlaceFormBellowAllPages);
-    setPlaceFormBellowAllPosts(localPlaceFormBellowAllPosts);
+    changeFormSettings({
+      ...formSettings,
+      placeFormBellowAllPages: localPlaceFormBellowAllPages,
+      placeFormBellowAllPosts: localPlaceFormBellowAllPosts,
+    });
   };
 
   return (
