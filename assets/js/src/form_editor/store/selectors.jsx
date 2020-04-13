@@ -34,33 +34,6 @@ export default {
   getFormSettings(state) {
     return state.formData.settings;
   },
-  placeFormBellowAllPages(state) {
-    return state.formData.settings.placeFormBellowAllPages || false;
-  },
-  placeFormBellowAllPosts(state) {
-    return state.formData.settings.placeFormBellowAllPosts || false;
-  },
-  placePopupFormOnAllPages(state) {
-    return state.formData.settings.placePopupFormOnAllPages || false;
-  },
-  placePopupFormOnAllPosts(state) {
-    return state.formData.settings.placePopupFormOnAllPosts || false;
-  },
-  getPopupFormDelay(state) {
-    return state.formData.settings.popupFormDelay;
-  },
-  placeFixedBarFormOnAllPages(state) {
-    return state.formData.settings.placeFixedBarFormOnAllPages || false;
-  },
-  placeFixedBarFormOnAllPosts(state) {
-    return state.formData.settings.placeFixedBarFormOnAllPosts || false;
-  },
-  getFixedBarFormDelay(state) {
-    return state.formData.settings.fixedBarFormDelay;
-  },
-  getFixedBarFormPosition(state) {
-    return state.formData.settings.fixedBarFormPosition;
-  },
   getAllAvailableSegments(state) {
     return state.segments;
   },

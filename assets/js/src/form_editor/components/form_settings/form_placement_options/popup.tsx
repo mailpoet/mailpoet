@@ -10,20 +10,16 @@ import Icon from './popup_icon';
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
 const Popup = () => {
-  const popupFormDelay = useSelect(
-    (select) => select('mailpoet-form-editor').getPopupFormDelay(),
+  const formSettings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
+  const popupFormDelay = formSettings.popupFormDelay === undefined
+    ? 15
+    : formSettings.fixedBarFormDelay;
+  const placePopupFormOnAllPages = formSettings.placePopupFormOnAllPages || false;
+  const placePopupFormOnAllPosts = formSettings.placePopupFormOnAllPosts || false;
 
-  const placePopupFormOnAllPages = useSelect(
-    (select) => select('mailpoet-form-editor').placePopupFormOnAllPages(),
-    []
-  );
-
-  const placePopupFormOnAllPosts = useSelect(
-    (select) => select('mailpoet-form-editor').placePopupFormOnAllPosts(),
-    []
-  );
   const {
     setPlacePopupFormOnAllPages,
     setPlacePopupFormOnAllPosts,
@@ -41,7 +37,7 @@ const Popup = () => {
   const [
     localDelay,
     setLocalDelay,
-  ] = useState(popupFormDelay === undefined ? 15 : popupFormDelay);
+  ] = useState(popupFormDelay);
 
   const save = () => {
     setPlacePopupFormOnAllPages(localPlacePopupFormOnAllPages);
