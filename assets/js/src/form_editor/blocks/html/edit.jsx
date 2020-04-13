@@ -71,8 +71,18 @@ const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
     </InspectorControls>
   );
   const styles = attributes.nl2br ? ['body { white-space: pre-line; }'] : [];
-  if (fontColor) styles.push(` body {color: ${fontColor};}`);
-  if (fontSize) styles.push(` body {font-size: ${fontSize}px }`);
+  styles.push(` body {font-family: ${getComputedStyle(document.body).fontFamily};}`);
+  if (fontColor) {
+    styles.push(` body {color: ${fontColor};}`);
+  } else {
+    styles.push(` body {color: ${getComputedStyle(document.body).color};}`);
+  }
+  if (fontSize) {
+    styles.push(` body {font-size: ${fontSize}px }`);
+  } else {
+    styles.push(` body {font-size: ${getComputedStyle(document.body).fontSize};}`);
+  }
+
   const key = `${renderedContent}_${styles}`;
   return (
     <ParagraphEdit className={attributes.className}>
