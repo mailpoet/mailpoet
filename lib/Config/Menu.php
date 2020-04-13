@@ -9,7 +9,6 @@ use MailPoet\AdminPages\Pages\Help;
 use MailPoet\AdminPages\Pages\MP2Migration;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
-use MailPoet\AdminPages\Pages\OldSettings;
 use MailPoet\AdminPages\Pages\Premium;
 use MailPoet\AdminPages\Pages\RevenueTrackingPermission;
 use MailPoet\AdminPages\Pages\Segments;
@@ -275,7 +274,7 @@ class Menu {
       'mailpoet-settings',
       [
         $this,
-        'oldSettings',
+        'settings',
       ]
     );
 
@@ -371,7 +370,7 @@ class Menu {
       ]
     );
 
-    // Settings page
+    // Experimental page
     $this->wp->addSubmenuPage(
       true,
       $this->setPageTitle('Experimental Features'),
@@ -379,16 +378,6 @@ class Menu {
       AccessControl::PERMISSION_MANAGE_FEATURES,
       'mailpoet-experimental',
       [$this, 'experimentalFeatures']
-    );
-
-    // New Settings page
-    $this->wp->addSubmenuPage(
-      self::MAIN_PAGE_SLUG,
-      $this->setPageTitle(__('Settings', 'mailpoet')),
-      '',
-      AccessControl::PERMISSION_MANAGE_SETTINGS,
-      'mailpoet-new-settings',
-      [$this, 'settings']
     );
   }
 
@@ -419,10 +408,6 @@ class Menu {
 
   public function premium() {
     $this->container->get(Premium::class)->render();
-  }
-
-  public function oldSettings() {
-    $this->container->get(OldSettings::class)->render();
   }
 
   public function settings() {
