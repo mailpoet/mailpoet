@@ -101,8 +101,11 @@ export default function KeyActivation() {
               />
             )}
             {state.congratulatoryMssEmailSentTo && (
-              <div className="mailpoet_success">
-                {t('premiumTabCongratulatoryMssEmailSent').replace('[email_address]', state.congratulatoryMssEmailSentTo)}
+              <div className="mailpoet_success_item mailpoet_success">
+                {
+                  t('premiumTabCongratulatoryMssEmailSent')
+                    .replace('[email_address]', state.congratulatoryMssEmailSentTo)
+                }
               </div>
             )}
             {state.premiumStatus !== null && (

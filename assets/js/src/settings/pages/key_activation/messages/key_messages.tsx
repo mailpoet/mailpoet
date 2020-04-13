@@ -3,7 +3,7 @@ import MailPoet from 'mailpoet';
 import { useSelector } from 'settings/store/hooks';
 
 const KeyValidMessage = () => (
-  <div className="mailpoet_success_item mailpoet_success">
+  <div className="mailpoet_success_item mailpoet_success_item mailpoet_success">
     {MailPoet.I18n.t('premiumTabKeyValidMessage')}
   </div>
 );

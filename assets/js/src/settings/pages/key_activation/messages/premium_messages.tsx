@@ -5,19 +5,19 @@ import { PremiumInstallationStatus, PremiumStatus } from 'settings/store/types';
 import PremiumInstallationMessages from './premium_installation_messages';
 
 const ActiveMessage = () => (
-  <div className="mailpoet_success">
+  <div className="mailpoet_success_item mailpoet_success">
     {MailPoet.I18n.t('premiumTabPremiumActiveMessage')}
   </div>
 );
 
 const InstallingMessage = () => (
-  <div className="mailpoet_success">
+  <div className="mailpoet_success_item mailpoet_success">
     {MailPoet.I18n.t('premiumTabPremiumInstallingMessage')}
   </div>
 );
 
 const ActivatingMessage = () => (
-  <div className="mailpoet_success">
+  <div className="mailpoet_success_item mailpoet_success">
     {MailPoet.I18n.t('premiumTabPremiumActivatingMessage')}
   </div>
 );
