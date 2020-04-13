@@ -80,7 +80,7 @@ class NewsletterTemplates extends React.Component {
             name:
               MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
             categories: '["welcome", "notification", "standard", "woocommerce"]',
-            readonly: '1',
+            readonly: true,
           },
         ];
       }
@@ -129,7 +129,7 @@ class NewsletterTemplates extends React.Component {
   sortTemplates() {
     Object.keys(this.templates).forEach((category) => {
       this.templates[category].sort((a, b) => {
-        if (parseInt(a.id, 10) < parseInt(b.id, 10)) {
+        if (a.id < b.id) {
           return 1;
         }
         return -1;
