@@ -42,6 +42,9 @@ class Widget extends \WP_Widget {
   }
 
   public function setupIframe() {
+    if (!headers_sent()) {
+      header('X-Frame-Options: allow-all', true);
+    }
     $formId = (isset($_GET['mailpoet_form_iframe']) ? (int)$_GET['mailpoet_form_iframe'] : 0);
     if (!$formId || !Form::findOne($formId)) return;
 
