@@ -1,5 +1,5 @@
 export default function mapFormDataBeforeSaving(data) {
-  return {
+  const mappedData = {
     ...data,
     settings: {
       ...data.settings,
@@ -12,6 +12,26 @@ export default function mapFormDataBeforeSaving(data) {
       place_fixed_bar_form_on_all_posts: data.settings.placeFixedBarFormOnAllPosts === true ? '1' : '',
       fixed_bar_form_delay: data.settings.fixedBarFormDelay,
       fixed_bar_form_position: data.settings.fixedBarFormPosition,
+      place_slide_in_form_on_all_pages: data.settings.placeSlideInFormOnAllPages === true ? '1' : '',
+      place_slide_in_form_on_all_posts: data.settings.placeSlideInFormOnAllPosts === true ? '1' : '',
+      slide_in_form_delay: data.settings.slideInFormDelay,
+      slide_in_form_position: data.settings.slideInFormPosition,
     },
   };
+
+  delete mappedData.settings.placeFormBellowAllPages;
+  delete mappedData.settings.placeFormBellowAllPosts;
+  delete mappedData.settings.placePopupFormOnAllPages;
+  delete mappedData.settings.placePopupFormOnAllPosts;
+  delete mappedData.settings.popupFormDelay;
+  delete mappedData.settings.placeFixedBarFormOnAllPages;
+  delete mappedData.settings.placeFixedBarFormOnAllPosts;
+  delete mappedData.settings.fixedBarFormDelay;
+  delete mappedData.settings.fixedBarFormPosition;
+  delete mappedData.settings.placeSlideInFormOnAllPages;
+  delete mappedData.settings.placeSlideInFormOnAllPosts;
+  delete mappedData.settings.slideInFormDelay;
+  delete mappedData.settings.slideInFormPosition;
+
+  return mappedData;
 }
