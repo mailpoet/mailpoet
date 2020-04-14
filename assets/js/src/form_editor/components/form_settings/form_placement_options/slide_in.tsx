@@ -5,7 +5,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 
 import FormPlacementSettings from './form_placement_settings';
 import Toggle from '../../../../common/toggle';
-import Icon from './icons/popup_icon';
+import Icon from './icons/slide_in_icon';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
