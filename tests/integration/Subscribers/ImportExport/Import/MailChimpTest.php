@@ -6,7 +6,7 @@ use Codeception\Stub;
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 use MailPoet\WP\Functions as WPFunctions;
 
-class MailChimpTest extends \MailPoetUnitTest {
+class MailChimpTest extends \MailPoetTest {
   /** @var string */
   private $apiKey;
 
@@ -18,9 +18,9 @@ class MailChimpTest extends \MailPoetUnitTest {
 
   public function __construct() {
     parent::__construct();
-    $this->apiKey = getenv('WP_TEST_IMPORT_MAILCHIMP_API');
+    $this->apiKey = (string)getenv('WP_TEST_IMPORT_MAILCHIMP_API');
     $this->mailchimp = new MailChimp($this->apiKey);
-    $this->lists = explode(",", getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS'));
+    $this->lists = explode(",", (string)getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS'));
   }
 
   public function _before() {

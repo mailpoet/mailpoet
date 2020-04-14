@@ -46,16 +46,6 @@ parameters:
 			path: ../../tests/acceptance/ViewSegmentSubscribersCest.php
 
 		-
-			message: "#^Property MailPoet\\\\Test\\\\Subscribers\\\\ImportExport\\\\Import\\\\MailChimpTest\\:\\:\\$apiKey \\(string\\) does not accept string\\|false\\.$#"
-			count: 1
-			path: ../../tests/unit/Subscribers/ImportExport/Import/MailChimpTest.php
-
-		-
-			message: "#^Parameter \\#2 \\$str of function explode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../tests/unit/Subscribers/ImportExport/Import/MailChimpTest.php
-
-		-
 			message: "#^Property MailPoet\\\\Test\\\\WP\\\\ReadmeTest\\:\\:\\$data \\(string\\) does not accept string\\|false\\.$#"
 			count: 1
 			path: ../../tests/unit/WP/ReadmeTest.php
