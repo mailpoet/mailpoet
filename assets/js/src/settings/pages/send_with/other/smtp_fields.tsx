@@ -13,7 +13,7 @@ export default function SmtpFields() {
   const [authentication, setAuthentication] = useSetting('mta', 'authentication');
   return (
     <>
-      <SendingFrequency recommendedEmails="100" recommendedInterval="5" />
+      <SendingFrequency recommendedEmails={100} recommendedInterval={5} />
       <Label title={t('smtpHost')} description={t('smtpHostExample')} htmlFor="mailpoet_smtp_host" />
       <Inputs>
         <input type="text" className="regular-text" id="mailpoet_smtp_host" value={host} onChange={onChange(setHost)} />

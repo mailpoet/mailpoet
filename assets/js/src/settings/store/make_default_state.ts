@@ -6,6 +6,7 @@ export default function makeDefaultState(window: any): State {
   const pages = window.mailpoet_pages;
   const paths = window.mailpoet_paths;
   const segments = window.mailpoet_segments;
+  const hosts = window.mailpoet_hosts;
   const save = { inProgress: false, error: null };
   const data = normalizeSettings(window.mailpoet_settings);
   const flags = {
@@ -41,7 +42,7 @@ export default function makeDefaultState(window: any): State {
     inProgress: false,
   };
   return {
-    data, flags, save, keyActivation, segments, pages, paths,
+    data, flags, save, keyActivation, segments, pages, paths, hosts,
   };
 }
 

@@ -1,3 +1,50 @@
+type WebHostName =
+  | 'manual'
+  | '1and1'
+  | 'bluehost'
+  | 'df'
+  | 'dreamhost'
+  | 'free'
+  | 'froghost'
+  | 'godaddy'
+  | 'goneo'
+  | 'googleapps'
+  | 'greengeeks'
+  | 'hawkhost'
+  | 'hivetec'
+  | 'hostgator'
+  | 'hosting2go'
+  | 'hostmonster'
+  | 'infomaniak'
+  | 'justhost'
+  | 'laughingsquid'
+  | 'lunarpages'
+  | 'mediatemple'
+  | 'netfirms'
+  | 'netissime'
+  | 'one'
+  | 'ovh'
+  | 'phpnet'
+  | 'planethoster'
+  | 'rochen'
+  | 'site5'
+  | 'siteground'
+  | 'synthesis'
+  | 'techark'
+  | 'vexxhost'
+  | 'vps'
+  | 'webcity'
+  | 'westhost'
+  | 'wpwebhost'
+
+type AmazonSesRegion =
+  | 'us-east-1'
+  | 'us-west-2'
+  | 'eu-west-1'
+  | 'eu-central-1'
+  | 'ap-south-1'
+  | 'ap-southeast-2'
+
 export type Settings = {
   sender: {
     name: string
@@ -67,13 +114,7 @@ export type Settings = {
     mailpoet_api_key: string
     host: string
     port: string
-    region:
-    | 'us-east-1'
-    | 'us-west-2'
-    | 'eu-west-1'
-    | 'eu-central-1'
-    | 'ap-south-1'
-    | 'ap-southeast-2'
+    region: AmazonSesRegion
     access_key: string
     secret_key: string
     api_key: string
@@ -93,44 +134,7 @@ export type Settings = {
   }
   mailpoet_smtp_provider: 'server' | 'manual' | 'AmazonSES' | 'SendGrid'
   smtp_provider: 'server' | 'manual' | 'AmazonSES' | 'SendGrid',
-  web_host:
-  | 'manual'
-  | '1and1'
-  | 'bluehost'
-  | 'df'
-  | 'dreamhost'
-  | 'free'
-  | 'froghost'
-  | 'godaddy'
-  | 'goneo'
-  | 'googleapps'
-  | 'greengeeks'
-  | 'hawkhost'
-  | 'hivetec'
-  | 'hostgator'
-  | 'hosting2go'
-  | 'hostmonster'
-  | 'infomaniak'
-  | 'justhost'
-  | 'laughingsquid'
-  | 'lunarpages'
-  | 'mediatemple'
-  | 'netfirms'
-  | 'netissime'
-  | 'one'
-  | 'ovh'
-  | 'phpnet'
-  | 'planethoster'
-  | 'rochen'
-  | 'site5'
-  | 'siteground'
-  | 'synthesis'
-  | 'techark'
-  | 'vexxhost'
-  | 'vps'
-  | 'webcity'
-  | 'westhost'
-  | 'wpwebhost'
+  web_host: WebHostName
   mailpoet_sending_frequency: 'auto' | 'manual'
   signup_confirmation: {
     enabled: '1' | ''
@@ -187,6 +191,28 @@ type Page = {
     confirm: string
   }
 }
+type Hosts = {
+  web: {
+    [key in WebHostName]: {
+      name: string
+      emails: number
+      interval: number
+    }
+  },
+  smtp: {
+    AmazonSES: {
+      emails: number
+      interval: number
+      regions: {
+        [key: string]: AmazonSesRegion
+      }
+    }
+    SendGrid: {
+      emails: number
+      interval: number
+    }
+  }
+}
 
 export enum PremiumStatus {
   INVALID,
@@ -226,6 +252,7 @@ export type KeyActivationState = {
   inProgress: boolean
 }
 
+
 export type State = {
   data: Settings
   segments: Segment[]
@@ -245,7 +272,8 @@ export type State = {
     inProgress: boolean
     error: any
   }
-  keyActivation: KeyActivationState
+  keyActivation: KeyActivationState,
+  hosts: Hosts
 }
 
 export type Action =
