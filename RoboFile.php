@@ -639,8 +639,8 @@ class RoboFile extends \Robo\Tasks {
       $svnLogin = getenv('WP_SVN_USERNAME');
       $svnPassword = getenv('WP_SVN_PASSWORD');
       if ($svnLogin && $svnPassword) {
-        $releaseCmd .= " --username $svnLogin --password $svnPassword";
-        $tagCmd .= " --username $svnLogin --password $svnPassword";
+        $releaseCmd .= " --username $svnLogin --password \"$svnPassword\"";
+        $tagCmd .= " --username $svnLogin --password \"$svnPassword\"";
       } else {
         $releaseCmd .= ' --force-interactive';
         $tagCmd .= ' --force-interactive';
