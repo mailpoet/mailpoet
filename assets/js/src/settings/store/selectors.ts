@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { t } from 'common/functions';
 import { State, Settings } from './types';
 
 export function getSetting(state: State, path: string[]): any {
@@ -59,4 +60,23 @@ export function getKeyActivationState(state: State) {
 
 export function getPaths(state: State) {
   return state.paths;
+}
+
+export function getWebHosts(state: State) {
+  return {
+    ...state.hosts.web,
+    manual: {
+      name: t('notListed'),
+      emails: 25,
+      interval: 5,
+    },
+  };
+}
+
+export function getAmazonSesOptions(state: State) {
+  return state.hosts.smtp.AmazonSES;
+}
+
+export function getSendGridOptions(state: State) {
+  return state.hosts.smtp.SendGrid;
 }

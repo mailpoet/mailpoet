@@ -22,6 +22,7 @@
       var mailpoet_built_in_captcha_supported = <%= json_encode(built_in_captcha_supported == true) %>;
       var mailpoet_free_plan_url = "<%= add_referral_id('https://www.mailpoet.com/free-plan') %>";
       var mailpoet_current_user_email = "<%= current_user.user_email %>";
+      var mailpoet_hosts = <%= json_encode(hosts) %>;
     <% endautoescape %>
     var mailpoet_beacon_articles = [
       '57f71d49c697911f2d323486',

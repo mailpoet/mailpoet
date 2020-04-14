@@ -9,8 +9,8 @@ const MINUTES_PER_DAY = 1440;
 const SECONDS_PER_DAY = 86400;
 
 type Props = {
-  recommendedEmails: string
-  recommendedInterval: string
+  recommendedEmails: number
+  recommendedInterval: number
 }
 export default function SendingFrequency({ recommendedEmails, recommendedInterval }: Props) {
   const [frequency, setFrequency] = useSetting('mailpoet_sending_frequency');
@@ -18,8 +18,8 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
   const [frequencyInterval, setFrequencyInterval] = useSetting('mta', 'frequency', 'interval');
   React.useEffect(() => {
     if (frequency === 'auto') {
-      setFrequencyEmails(recommendedEmails);
-      setFrequencyInterval(recommendedInterval);
+      setFrequencyEmails(`${recommendedEmails}`);
+      setFrequencyInterval(`${recommendedInterval}`);
     }
   }, [frequency, recommendedEmails, recommendedInterval, setFrequencyEmails, setFrequencyInterval]);
 
