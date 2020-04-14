@@ -475,6 +475,94 @@ class ServicesTest extends \MailPoetTest {
     expect($this->settings->get('new_public_id', null))->null();
   }
 
+  public function testCongratulatoryEmailIsSent() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $this->settings->set('sender.address', 'authorized@email.com');
+    $bridge = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+    ]);
+
+    $congratulatoryEmailController = $this->make(CongratulatoryMssEmailController::class, [
+      'sendCongratulatoryEmail' => Expected::once('authorized@email.com'),
+    ]);
+
+    $servicesEndpoint = $this->createServicesEndpointWithMocks([
+      'bridge' => $bridge,
+      'congratulatoryEmailController' => $congratulatoryEmailController,
+    ]);
+    $response = $servicesEndpoint->sendCongratulatoryMssEmail();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(['email_address' => 'authorized@email.com']);
+  }
+
+  public function testCongratulatoryEmailRespondsWithErrorWhenMssNotActive() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_PHPMAIL]);
+    $servicesEndpoint = $this->diContainer->get(Services::class);
+    $response = $servicesEndpoint->sendCongratulatoryMssEmail();
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('MailPoet Sending Service is not active.');
+  }
+
+  public function testCongratulatoryEmailRespondsWithErrorWhenNoEmailAuthorized() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $bridge = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => [],
+    ]);
+
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $response = $servicesEndpoint->sendCongratulatoryMssEmail();
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('No FROM email addresses are authorized.');
+  }
+
+  public function testCongratulatoryEmailRespondsWithErrorWhenNoSenderSet() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $this->settings->set('sender.address', null);
+    $bridge = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+    ]);
+
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $response = $servicesEndpoint->sendCongratulatoryMssEmail();
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Sender email address is not set.');
+  }
+
+  public function testCongratulatoryEmailRespondsWithErrorWhenSenderNotAuthorized() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $this->settings->set('sender.address', 'unauthorized@email.com');
+    $bridge = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+    ]);
+
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $response = $servicesEndpoint->sendCongratulatoryMssEmail();
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals("Sender email address 'unauthorized@email.com' is not authorized.");
+  }
+
+  public function testCongratulatoryEmailRespondsWithErrorWhenSendingFails() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $this->settings->set('sender.address', 'authorized@email.com');
+    $bridge = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => ['authorized@email.com'],
+    ]);
+
+    $congratulatoryEmailController = $this->make(CongratulatoryMssEmailController::class, [
+      'sendCongratulatoryEmail' => function () {
+        throw new \Exception('test');
+      },
+    ]);
+
+    $servicesEndpoint = $this->createServicesEndpointWithMocks([
+      'bridge' => $bridge,
+      'congratulatoryEmailController' => $congratulatoryEmailController,
+    ]);
+    $response = $servicesEndpoint->sendCongratulatoryMssEmail();
+    expect($response->status)->equals(APIResponse::STATUS_UNKNOWN);
+    expect($response->errors[0]['message'])->equals('Sending of congratulatory email failed.');
+  }
+
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
@@ -488,7 +576,7 @@ class ServicesTest extends \MailPoetTest {
       $this->diContainer->get(SendingServiceKeyCheck::class),
       $this->diContainer->get(PremiumKeyCheck::class),
       $this->diContainer->get(ServicesChecker::class),
-      $this->diContainer->get(CongratulatoryMssEmailController::class),
+      $mocks['congratulatoryEmailController'] ?? $this->diContainer->get(CongratulatoryMssEmailController::class),
       $this->diContainer->get(WPFunctions::class)
     );
   }
