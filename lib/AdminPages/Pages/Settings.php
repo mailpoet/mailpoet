@@ -5,16 +5,12 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
-use MailPoet\Cron\CronTrigger;
 use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
-use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Installation;
-use MailPoet\Util\License\License;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
@@ -69,11 +65,7 @@ class Settings {
     $data = [
       'settings' => $settings,
       'segments' => Segment::getSegmentsWithSubscriberCount(),
-      'cron_trigger' => CronTrigger::METHODS,
-      'total_subscribers' => Subscriber::getTotalSubscribers(),
-      'premium_plugin_active' => License::getLicense(),
       'premium_key_valid' => !empty($premiumKeyValid),
-      'mss_active' => Bridge::isMPSendingServiceEnabled(),
       'mss_key_valid' => !empty($mpApiKeyValid),
       'pages' => Pages::getAll(),
       'current_user' => $this->wp->wpGetCurrentUser(),
