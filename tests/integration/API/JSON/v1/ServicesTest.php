@@ -41,7 +41,7 @@ class ServicesTest extends \MailPoetTest {
       ['checkSPFRecord' => false]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedSPFCheck($spfCheck);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['spfCheck' => $spfCheck]);
     $response = $servicesEndpoint->checkSPFRecord([]);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->meta['sender_address'])->equals($email);
@@ -53,7 +53,7 @@ class ServicesTest extends \MailPoetTest {
       ['checkSPFRecord' => true]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedSPFCheck($spfCheck);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['spfCheck' => $spfCheck]);
     $response = $servicesEndpoint->checkSPFRecord([]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
@@ -73,7 +73,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
@@ -86,7 +86,7 @@ class ServicesTest extends \MailPoetTest {
         'storeMSSKeyAndState' => Expected::once(),
       ]
     );
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
@@ -104,7 +104,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])
@@ -120,7 +120,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains(
@@ -139,7 +139,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains(
@@ -158,7 +158,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains('404');
@@ -175,7 +175,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('test');
@@ -196,7 +196,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect(MailerLog::isSendingPaused())->false();
@@ -217,7 +217,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect(MailerLog::isSendingPaused())->true();
@@ -244,7 +244,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect(MailerLog::isSendingPaused())->false();
@@ -265,7 +265,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     foreach (array_keys(Installer::getPremiumStatus()) as $key) {
@@ -282,7 +282,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
@@ -296,7 +296,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
@@ -314,7 +314,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])
@@ -330,7 +330,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains(
@@ -349,7 +349,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains(
@@ -368,7 +368,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains('404');
@@ -385,7 +385,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('test');
@@ -407,7 +407,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $servicesEndpoint->checkMSSKey($this->data);
 
     expect($this->settings->get('public_id'))->equals($fakePublicId);
@@ -426,7 +426,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
 
     expect($this->settings->get('public_id', null))->null();
@@ -449,7 +449,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
 
     expect($this->settings->get('public_id'))->equals($fakePublicId);
@@ -468,7 +468,7 @@ class ServicesTest extends \MailPoetTest {
       ]
     );
 
-    $servicesEndpoint = $this->createServicesEndpointWithMockedBridge($bridge);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
 
     expect($this->settings->get('public_id', null))->null();
@@ -479,26 +479,12 @@ class ServicesTest extends \MailPoetTest {
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 
-  private function createServicesEndpointWithMockedSPFCheck($spfCheck) {
+  private function createServicesEndpointWithMocks(array $mocks) {
     return new Services(
-      $this->diContainer->get(Bridge::class),
+      $mocks['bridge'] ?? $this->diContainer->get(Bridge::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(Analytics::class),
-      $spfCheck,
-      $this->diContainer->get(SendingServiceKeyCheck::class),
-      $this->diContainer->get(PremiumKeyCheck::class),
-      $this->diContainer->get(ServicesChecker::class),
-      $this->diContainer->get(CongratulatoryMssEmailController::class),
-      $this->diContainer->get(WPFunctions::class)
-    );
-  }
-
-  private function createServicesEndpointWithMockedBridge($bridge) {
-    return new Services(
-      $bridge,
-      $this->diContainer->get(SettingsController::class),
-      $this->diContainer->get(Analytics::class),
-      $this->diContainer->get(SPFCheck::class),
+      $mocks['spfCheck'] ?? $this->diContainer->get(SPFCheck::class),
       $this->diContainer->get(SendingServiceKeyCheck::class),
       $this->diContainer->get(PremiumKeyCheck::class),
       $this->diContainer->get(ServicesChecker::class),
