@@ -244,9 +244,33 @@ div.mailpoet_form_fixed_bar {
   bottom: 0;
 }
 
+div.mailpoet_form_slide_in {
+  background-color: white;
+  bottom: 0;
+  box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
+  display: none;
+  min-width: 350px;
+  padding: 10px;
+  position: fixed;
+  z-index: 1000;
+
+  @include breakpoint-max-width($form-break-small-width) {
+    min-width: 100%;
+  }
+}
+
+.mailpoet_form_position_left {
+  left: 0;
+}
+
+.mailpoet_form_position_right {
+  right: 0;
+}
+
 .mailpoet_form_popup_overlay.active,
 div.mailpoet_form_popup.active,
-div.mailpoet_form_fixed_bar.active {
+div.mailpoet_form_fixed_bar.active,
+div.mailpoet_form_slide_in.active {
   display: block;
 }
 
