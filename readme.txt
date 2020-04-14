@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.3
-Stable tag: 3.46.8
+Stable tag: 3.46.9
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.46.9 - 2020-04-14 =
+* Added: new image block in Form Editor;
+* Fixed: newsletter listings is a bit faster now;
+* Fixed: default list is no longer required when List selection added to form;
+* Fixed: last_name block is no longer required by default in Form Editor;
+* Fixed: renamed List is also renamed in Form Editor;
+* Fixed: missing name for custom checkbox in Form Editor.
 
 = 3.46.8 - 2020-04-07 =
 * Improved: email authorization proposed on key activation plugin;
