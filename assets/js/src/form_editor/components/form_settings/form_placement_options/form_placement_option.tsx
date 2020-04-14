@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import classnames from 'classnames';
 
-import SettingsIcon from './settings_icon';
-import CheckIcon from './checkbox_icon';
+import SettingsIcon from './icons/settings_icon';
+import CheckIcon from './icons/checkbox_icon';
 
 type Props = {
   label: string,

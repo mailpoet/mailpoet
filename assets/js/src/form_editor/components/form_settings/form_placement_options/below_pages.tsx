@@ -4,7 +4,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 
 import FormPlacementSettings from './form_placement_settings';
 import Toggle from '../../../../common/toggle';
-import Icon from './below_pages_icon';
+import Icon from './icons/below_pages_icon';
 
 const BelowPages = () => {
   const formSettings = useSelect(
