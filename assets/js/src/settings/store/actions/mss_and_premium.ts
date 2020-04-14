@@ -1,64 +1,12 @@
-import { select } from '@wordpress/data';
 import MailPoet from 'mailpoet';
-import { t } from 'common/functions';
-import { STORE_NAME } from '.';
+
 import {
-  Action, KeyActivationState, MssStatus, PremiumStatus, PremiumInstallationStatus, Settings,
-} from './types';
-
-export function setSetting(path: string[], value: any): Action {
-  return { type: 'SET_SETTING', path, value };
-}
-
-export function setSettings(value: any): Action {
-  return { type: 'SET_SETTINGS', value };
-}
-
-export function setErrorFlag(value: boolean): Action {
-  return { type: 'SET_ERROR_FLAG', value };
-}
-
-export function* openWoocommerceCustomizer(newsletterId?: string) {
-  let id = newsletterId;
-  if (!id) {
-    const { res, success, error } = yield {
-      type: 'CALL_API',
-      endpoint: 'settings',
-      action: 'set',
-      data: { 'woocommerce.use_mailpoet_editor': 1 },
-    };
-    if (!success) {
-      return { type: 'SAVE_FAILED', error };
-    }
-    id = res.data.woocommerce.transactional_email_id;
-  }
-  window.location.href = `?page=mailpoet-newsletter-editor&id=${id}`;
-  return null;
-}
+  Action, KeyActivationState, MssStatus, PremiumStatus, PremiumInstallationStatus,
+} from 'settings/store/types';
+import { setSettings } from './settings';
 
 export function updateKeyActivationState(fields: Partial<KeyActivationState>): Action {
   return { type: 'UPDATE_KEY_ACTIVATION_STATE', fields };
-}
-
-export function* saveSettings() {
-  yield { type: 'SAVE_STARTED' };
-  const data = select(STORE_NAME).getSettings();
-  const { success, error, res } = yield {
-    type: 'CALL_API',
-    endpoint: 'settings',
-    action: 'set',
-    data,
-  };
-  if (!success) {
-    return { type: 'SAVE_FAILED', error };
-  }
-  yield { type: 'TRACK_SETTINGS_SAVED' };
-  yield updateKeyActivationState({
-    congratulatoryMssEmailSentTo: null,
-    fromAddressModalCanBeShown: false,
-  });
-  yield setSettings(res.data);
-  return { type: 'SAVE_DONE' };
 }
 
 export function* verifyMssKey(key: string, activateMssIfKeyValid: boolean) {
@@ -206,57 +154,4 @@ export function* sendCongratulatoryMssEmail() {
     });
   }
   return null;
-}
-
-export function* reinstall() {
-  MailPoet.Modal.loading(true);
-  const { success, error } = yield {
-    type: 'CALL_API',
-    endpoint: 'setup',
-    action: 'reset',
-  };
-  MailPoet.Modal.loading(false);
-  if (!success) {
-    return { type: 'SAVE_FAILED', error };
-  }
-  yield { type: 'TRACK_REINSTALLED' };
-  return { type: 'SAVE_DONE' };
-}
-
-export function* sendTestEmail(recipient: string, mailer: Settings['mta']) {
-  if (!recipient) {
-    return { type: 'TEST_EMAIL_FAILED', error: [t('cantSendEmail')] };
-  }
-  yield { type: 'START_TEST_EMAIL_SENDING' };
-  const res = yield {
-    type: 'CALL_API',
-    endpoint: 'mailer',
-    action: 'send',
-    data: {
-      mailer,
-      newsletter: {
-        subject: t('testEmailSubject'),
-        body: {
-          html: `<p>${t('testEmailBody')}</p>`,
-          text: t('testEmailBody'),
-        },
-      },
-      subscriber: recipient,
-    },
-  };
-  yield { type: 'TRACK_TEST_EMAIL_SENT', success: res.success, method: mailer.method };
-  if (!res.success) return { type: 'TEST_EMAIL_FAILED', error: res.error };
-  return { type: 'TEST_EMAIL_SUCCESS' };
-}
-
-export function* loadSettings() {
-  const { success, error, res } = yield {
-    type: 'CALL_API',
-    endpoint: 'settings',
-    action: 'get',
-  };
-  if (!success) {
-    return { type: 'SAVE_FAILED', error };
-  }
-  return setSettings(res.data);
 }
