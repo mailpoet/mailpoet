@@ -245,8 +245,9 @@ div.mailpoet_form_fixed_bar {
 }
 
 div.mailpoet_form_slide_in {
+  animation: slide-top 1.5s cubic-bezier(.25, .46, .45, .94) both;
   background-color: white;
-  bottom: 0;
+  bottom: -100px; // animation starts at -100px and finishes at 0, see slide-top keyframes bellow
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
   display: none;
   min-width: 350px;
@@ -256,6 +257,16 @@ div.mailpoet_form_slide_in {
 
   @include breakpoint-max-width($form-break-small-width) {
     min-width: 100%;
+  }
+}
+
+@keyframes slide-top {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-100px);
   }
 }
 
