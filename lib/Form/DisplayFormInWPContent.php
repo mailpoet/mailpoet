@@ -25,6 +25,10 @@ class DisplayFormInWPContent {
       'post' => 'place_fixed_bar_form_on_all_posts',
       'page' => 'place_fixed_bar_form_on_all_pages',
     ],
+    'slide_in' => [
+      'post' => 'place_slide_in_form_on_all_pages',
+      'page' => 'place_slide_in_form_on_all_posts',
+    ],
   ];
 
   /** @var WPFunctions */
@@ -77,6 +81,7 @@ class DisplayFormInWPContent {
       $result .= $this->getContentBellow($form, 'popup');
       $result .= $this->getContentBellow($form, 'below_post');
       $result .= $this->getContentBellow($form, 'fixed_bar');
+      $result .= $this->getContentBellow($form, 'slide_in');
     }
 
     return $result;
@@ -140,9 +145,8 @@ class DisplayFormInWPContent {
       ((int)$_GET['mailpoet_error'] === $form->getId())
     );
 
-    $templateData['delay'] = $formSettings['popup_form_delay'] ?? 0;
-    $templateData['delay'] = $formSettings['fixed_bar_form_delay'] ?? 0;
-    $templateData['position'] = $formSettings['fixed_bar_form_position'] ?? 'top';
+    $templateData['delay'] = $formSettings[$displayType . '_form_delay'] ?? 0;
+    $templateData['position'] = $formSettings[$displayType . '_form_position'] ?? '';
     $templateData['backgroundColor'] = $formSettings['backgroundColor'] ?? '';
 
     // generate security token
