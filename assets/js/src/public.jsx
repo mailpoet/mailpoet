@@ -76,7 +76,7 @@ jQuery(($) => {
       closeForm(formDiv);
     });
 
-    $('div.mailpoet_form_fixed_bar').each((index, element) => {
+    $('div.mailpoet_form_fixed_bar, div.mailpoet_form_slide_in').each((index, element) => {
       const cookieValue = Cookies.get('popup_form_dismissed');
       if (cookieValue === '1') return;
       const formDiv = $(element);
