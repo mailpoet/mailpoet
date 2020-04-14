@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import FormPlacementOptionBelowPages from './form_placement_options/below_pages';
 import FormPlacementOptionPopup from './form_placement_options/popup';
 import FormPlacementOptionFixedBar from './form_placement_options/fixed_bar';
+import FormPlacementOptionSlideIn from './form_placement_options/slide_in';
 
 const FormPlacementPanel = ({ onToggle, isOpened }) => {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
@@ -102,6 +103,7 @@ const FormPlacementPanel = ({ onToggle, isOpened }) => {
           <FormPlacementOptionBelowPages />
           <FormPlacementOptionFixedBar />
           <FormPlacementOptionPopup />
+          <FormPlacementOptionSlideIn />
         </div>
         <p>{addFormShortcodeHint}</p>
         <p>{addFormWidgetHint}</p>
