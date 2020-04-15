@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 
 import SegmentList from 'segments/list.jsx';
+import DynamicSegmentList from 'segments/dynamic_segments_list.jsx';
 import SegmentForm from 'segments/form.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
@@ -19,6 +20,7 @@ const App = () => (
         <Route path="/edit/:id" component={SegmentForm} />
         <Route path="/new-segment" component={DynamicSegmentForm} />
         <Route path="/edit-segment/:id" component={DynamicSegmentForm} />
+        <Route path="/segments/(.*)?" component={DynamicSegmentList} />
         <Route path="*" component={SegmentList} />
       </Switch>
     </HashRouter>

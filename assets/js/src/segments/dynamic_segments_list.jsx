@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import Listing from 'listing/listing.jsx';
 import PropTypes from 'prop-types';
+import Tabs from './tabs';
 
 const columns = [
   {
@@ -31,11 +32,11 @@ const messages = {
 
     if (count === 1) {
       message = (
-        MailPoet.I18n.t('oneSegmentTrashed')
+        MailPoet.I18n.t('oneDynamicSegmentTrashed')
       );
     } else {
       message = (
-        MailPoet.I18n.t('multipleSegmentsTrashed')
+        MailPoet.I18n.t('multipleDynamicSegmentsTrashed')
       ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
@@ -46,11 +47,11 @@ const messages = {
 
     if (count === 1) {
       message = (
-        MailPoet.I18n.t('oneSegmentDeleted')
+        MailPoet.I18n.t('oneDynamicSegmentDeleted')
       );
     } else {
       message = (
-        MailPoet.I18n.t('multipleSegmentsDeleted')
+        MailPoet.I18n.t('multipleDynamicSegmentsDeleted')
       ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
@@ -61,11 +62,11 @@ const messages = {
 
     if (count === 1) {
       message = (
-        MailPoet.I18n.t('oneSegmentRestored')
+        MailPoet.I18n.t('oneDynamicSegmentRestored')
       );
     } else {
       message = (
-        MailPoet.I18n.t('multipleSegmentsRestored')
+        MailPoet.I18n.t('multipleDynamicSegmentsRestored')
       ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
@@ -76,7 +77,7 @@ const itemActions = [
   {
     name: 'edit',
     link: (item) => (
-      <Link to={`/edit/${item.id}`}>
+      <Link to={`/edit-segment/${item.id}`}>
         {MailPoet.I18n.t('edit')}
       </Link>
     ),
@@ -116,17 +117,14 @@ function renderItem(item, actions) {
 function DynamicSegmentList(props) {
   return (
     <>
-      <h1 className="title">
-        {MailPoet.I18n.t('pageTitle')}
+      <h1 className="pageTitle">
+        {MailPoet.I18n.t('pageTitleSegments')}
         {' '}
-        <Link
-          className="page-title-action"
-          to="/new"
-          data-automation-id="new-segment"
-        >
-          {MailPoet.I18n.t('new')}
-        </Link>
+        <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
+        <Link className="page-title-action" to="/new-segment" data-automation-id="new-segment">{MailPoet.I18n.t('newSegment')}</Link>
       </h1>
+
+      <Tabs />
 
       <Listing
         limit={window.mailpoet_listing_per_page}
@@ -135,6 +133,7 @@ function DynamicSegmentList(props) {
         search
         onRenderItem={renderItem}
         endpoint="dynamic_segments"
+        base_url="segments"
         columns={columns}
         messages={messages}
         sort_by="created_at"
@@ -144,7 +143,7 @@ function DynamicSegmentList(props) {
       <p className="mailpoet_sending_methods_help help">
         <b>
           {MailPoet.I18n.t('segmentsTip')}
-:
+          :
         </b>
         {' '}
         {MailPoet.I18n.t('segmentsTipText')}
