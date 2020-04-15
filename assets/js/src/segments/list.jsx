@@ -298,6 +298,7 @@ class SegmentList extends React.Component {
           {MailPoet.I18n.t('pageTitle')}
           {' '}
           <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
+          <Link className="page-title-action" to="/new-segment">{MailPoet.I18n.t('newSegment')}</Link>
         </h1>
 
         <SubscribersLimitNotice />

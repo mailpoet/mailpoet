@@ -5,9 +5,9 @@ import MailPoet from 'mailpoet';
 import Form from 'form/form.jsx';
 import PropTypes from 'prop-types';
 
-import wordpressRoleFields from './filters/wordpress_role.jsx';
-import emailFields from './filters/email.jsx';
-import woocommerceFields from './filters/woocommerce.jsx';
+import wordpressRoleFields from './dynamic_segments_filters/wordpress_role.jsx';
+import emailFields from './dynamic_segments_filters/email.jsx';
+import woocommerceFields from './dynamic_segments_filters/woocommerce.jsx';
 
 const messages = {
   onUpdate: () => MailPoet.Notice.success(MailPoet.I18n.t('segmentUpdated')),
