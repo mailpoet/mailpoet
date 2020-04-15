@@ -10,9 +10,13 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import Preview from '../../common/preview/preview.jsx';
 import Modal from '../../common/modal/modal.jsx';
 import { blocksToFormBodyFactory } from '../store/blocks_to_form_body.jsx';
+import { onChange } from '../../common/functions';
 
 const FormPreview = () => {
   const [form, setForm] = useState(null);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [formType, setFormType] = useState(false);
+  const [previewType, setPreviewType] = useState('desktop');
 
   const formBlocks = useSelect(
     (select) => select('mailpoet-form-editor').getFormBlocks(),
@@ -60,6 +64,7 @@ const FormPreview = () => {
     if (isPreview) {
       loadFormPreviewFromServer();
     }
+    setIframeLoaded(false);
   }, [isPreview, loadFormPreviewFromServer]);
 
 
@@ -72,11 +77,15 @@ const FormPreview = () => {
 
   const urlData = {
     id: formData.id,
+    form_type: formType,
   };
-  const iframeSrc = `${window.mailpoet_form_preview_page}&data=${btoa(JSON.stringify(urlData))}`;
+  let iframeSrc = `${window.mailpoet_form_preview_page}&data=${btoa(JSON.stringify(urlData))}`;
+  // Add anchor to scroll to certain types of form
+  if (['below_post'].includes(formType)) {
+    iframeSrc += `#mailpoet_form_preview_${formData.id}`;
+  }
   return (
     <Modal
-      title={MailPoet.I18n.t('formPreview')}
       onRequestClose={onClose}
       fullScreen
       contentClassName="mailpoet_form_preview_modal"
@@ -87,13 +96,40 @@ const FormPreview = () => {
         </div>
       )}
       {form !== null && (
-        <Preview>
-          <iframe
-            className="mailpoet_form_preview_iframe"
-            src={iframeSrc}
-            title={MailPoet.I18n.t('formPreview')}
-          />
-        </Preview>
+        <>
+          <div className="mailpoet_form_preview_type_select">
+            <label>
+              {MailPoet.I18n.t('formPlacement')}
+              {' '}
+              <select
+                onChange={onChange(setFormType)}
+                value={formType}
+              >
+                <option value="sidebar">{MailPoet.I18n.t('placeFormSidebar')}</option>
+                <option value="below_post">{MailPoet.I18n.t('placeFormBellowPages')}</option>
+                <option value="fixed_bar">{MailPoet.I18n.t('placeFixedBarFormOnPages')}</option>
+                <option value="popup">{MailPoet.I18n.t('placePopupFormOnPages')}</option>
+                <option value="slide_in">{MailPoet.I18n.t('placeSlideInFormOnPages')}</option>
+              </select>
+            </label>
+          </div>
+          <Preview
+            onChange={setPreviewType}
+            selectedType={previewType}
+          >
+            {!iframeLoaded && (
+              <div className="mailpoet_spinner_wrapper">
+                <Spinner />
+              </div>
+            )}
+            <iframe
+              className="mailpoet_form_preview_iframe"
+              src={iframeSrc}
+              title={MailPoet.I18n.t('formPreview')}
+              onLoad={() => setIframeLoaded(true)}
+            />
+          </Preview>
+        </>
       )}
     </Modal>
   );
