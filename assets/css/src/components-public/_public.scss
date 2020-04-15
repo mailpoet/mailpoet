@@ -181,7 +181,7 @@ $form-columns-space-between: 20px;
   position: fixed;
   top: 0;
   width: 100% !important;
-  z-index: 1000;
+  z-index: 100000;
 }
 
 div.mailpoet_form_popup {
@@ -198,7 +198,7 @@ div.mailpoet_form_popup {
   top: 50%;
   transform: translate(-50%, -50%);
   width: 500px !important;
-  z-index: 1001;
+  z-index: 100001;
 }
 
 .mailpoet_form_close_icon {
@@ -224,7 +224,7 @@ div.mailpoet_form_fixed_bar {
   padding: 10px;
   position: fixed;
   width: 100% !important;
-  z-index: 1000;
+  z-index: 100000;
 
   form {
     margin: 0 auto;
@@ -253,7 +253,7 @@ div.mailpoet_form_slide_in {
   min-width: 350px;
   padding: 10px;
   position: fixed;
-  z-index: 1000;
+  z-index: 100000;
 
   @include breakpoint-max-width($form-break-small-width) {
     min-width: 100%;
