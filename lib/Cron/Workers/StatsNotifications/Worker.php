@@ -101,10 +101,9 @@ class Worker {
         }
       } finally {
         $task = $statsNotificationEntity->getTask();
-        if ($task instanceof ScheduledTask) {
+        if ($task instanceof ScheduledTaskEntity) {
           $this->markTaskAsFinished($task);
         }
-
       }
       $this->cronHelper->enforceExecutionLimit($timer);
     }
