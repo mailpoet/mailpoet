@@ -17,6 +17,7 @@ export default () => {
       </Link>
       <Link
         to="/segments"
+        data-automation-id="dynamic-segments-tab"
         className={classnames('nav-tab', { 'nav-tab-active': current === 'segments' })}
       >
         {MailPoet.I18n.t('pageTitleSegments')}
