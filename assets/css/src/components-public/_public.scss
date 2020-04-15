@@ -220,7 +220,9 @@ div.mailpoet_form_fixed_bar {
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
   display: none;
   left: 0;
+  max-height: calc(100vh - 60px);
   max-width: 100% !important;
+  overflow-y: auto;
   padding: 10px;
   position: fixed;
   width: 100% !important;
@@ -250,7 +252,9 @@ div.mailpoet_form_slide_in {
   bottom: -100px; // animation starts at -100px and finishes at 0, see slide-top keyframes bellow
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
   display: none;
+  max-height: calc(100vh - 60px);
   min-width: 350px;
+  overflow-y: auto;
   padding: 10px;
   position: fixed;
   z-index: 100000;
