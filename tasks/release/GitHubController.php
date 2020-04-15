@@ -14,7 +14,7 @@ class GitHubController {
 
   const RELEASE_SOURCE_BRANCH = 'release';
 
-  const QA_GITHUB_LOGIN = 'codemonkey-jack';
+  const QA_GITHUB_LOGIN = 'veljkho';
 
   /** @var string */
   private $zipFilename;
