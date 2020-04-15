@@ -6,6 +6,9 @@ use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PreviewPage {
+  const PREVIEW_DATA_TRANSIENT_PREFIX = 'mailpoet_form_preview_';
+  const PREVIEW_DATA_EXPIRATION = 84600; // 1 DAY
+
   /** @var WPFunctions  */
   private $wp;
 
@@ -52,6 +55,10 @@ class PreviewPage {
    * @return array|null
    */
   private function fetchFormData(int $id) {
+    $formData = $this->wp->getTransient(self::PREVIEW_DATA_TRANSIENT_PREFIX . $id);
+    if (is_array($formData)) {
+      return $formData;
+    }
     $form = $this->formRepository->findOneById($id);
     if ($form) {
       return [
