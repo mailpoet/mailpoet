@@ -513,6 +513,14 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  public function storybookBuild() {
+    return $this->_exec('npm run build-storybook');
+  }
+
+  public function storybookWatch() {
+    return $this->_exec('npm run storybook');
+  }
+
   public function svnCheckout() {
     $svnDir = ".mp_svn";
 
