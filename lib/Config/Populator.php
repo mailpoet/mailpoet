@@ -172,21 +172,7 @@ class Populator {
   }
 
   private function createMailPoetPage() {
-    $pages = $this->wp->getPosts([
-      'posts_per_page' => 1,
-      'orderby' => 'date',
-      'order' => 'DESC',
-      'post_type' => 'mailpoet_page',
-    ]);
-
-    $page = null;
-    if (!empty($pages)) {
-      $page = array_shift($pages);
-      if (strpos($page->post_content, '[mailpoet_page]') === false) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $page = null;
-      }
-    }
-
+    $page = Pages::getDefaultMailPoetPage();
     if ($page === null) {
       $mailpoetPageId = Pages::createMailPoetPage();
     } else {
