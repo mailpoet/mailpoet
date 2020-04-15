@@ -11,6 +11,26 @@
   margin: 0 5px;
 }
 
+.mailpoet_browser_preview_icon {
+  display: inline-block;
+  height: 24px;
+  margin: 0 12px;
+
+  &:focus {
+    box-shadow: none;
+  }
+
+  .mailpoet_preview_icon_fill {
+    fill: #e5e9f8;
+  }
+
+  &.mailpoet_active {
+    .mailpoet_preview_icon_fill {
+      fill: #071c6d;
+    }
+  }
+}
+
 .mailpoet_browser_preview_container {
   border: 1px solid #979797;
   border-radius: 20px;
