@@ -12,11 +12,27 @@ import Modal from '../../common/modal/modal.jsx';
 import { blocksToFormBodyFactory } from '../store/blocks_to_form_body.jsx';
 import { onChange } from '../../common/functions';
 
+function getFormType(settings) {
+  const storedValue = window.localStorage.getItem('mailpoet_form_preview_last_form_type');
+  if (storedValue) {
+    return storedValue;
+  }
+  if (settings.placeFormBellowAllPages || settings.placeFormBellowAllPosts) {
+    return 'below_post';
+  }
+  if (settings.placePopupFormOnAllPages || settings.placePopupFormOnAllPosts) {
+    return 'popup';
+  }
+  if (settings.placeFixedBarFormOnAllPages || settings.placeFixedBarFormOnAllPosts) {
+    return 'fixed_bar';
+  }
+  return 'sidebar';
+}
+
+const getPreviewType = () => (window.localStorage.getItem('mailpoet_form_preview_last_preview_type') || 'desktop');
 const FormPreview = () => {
   const [form, setForm] = useState(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
-  const [formType, setFormType] = useState(false);
-  const [previewType, setPreviewType] = useState('desktop');
 
   const formBlocks = useSelect(
     (select) => select('mailpoet-form-editor').getFormBlocks(),
@@ -75,6 +91,17 @@ const FormPreview = () => {
     hidePreview();
   }
 
+  function setFormType(type) {
+    setIframeLoaded(false);
+    window.localStorage.setItem('mailpoet_form_preview_last_form_type', type);
+  }
+
+  function setPreviewType(type) {
+    window.localStorage.setItem('mailpoet_form_preview_last_preview_type', type);
+  }
+
+  const formType = getFormType(formData.settings);
+  const previewType = getPreviewType();
   const urlData = {
     id: formData.id,
     form_type: formType,
