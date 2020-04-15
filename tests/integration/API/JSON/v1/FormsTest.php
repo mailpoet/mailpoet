@@ -5,8 +5,10 @@ namespace MailPoet\Test\API\JSON\v1;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Forms;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Form\PreviewPage;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
+use MailPoet\WP\Functions as WPFunctions;
 
 class FormsTest extends \MailPoetTest {
   public $form3;
@@ -16,9 +18,13 @@ class FormsTest extends \MailPoetTest {
   /** @var Forms */
   private $endpoint;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Forms::class);
+    $this->wp = WPFunctions::get();
     $this->form1 = Form::createOrUpdate(['name' => 'Form 1']);
     $this->form2 = Form::createOrUpdate(['name' => 'Form 2']);
     $this->form3 = Form::createOrUpdate(['name' => 'Form 3']);
@@ -78,17 +84,21 @@ class FormsTest extends \MailPoetTest {
     );
   }
 
-  public function testItCanPreviewAForm() {
+  public function testItCanStoreDataForPreview() {
     $response = $this->endpoint->create();
+    $formId = $response->data['id'];
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::where('id', $response->data['id'])->findOne()->asArray()
+      Form::where('id', $formId)->findOne()->asArray()
     );
+    $response->data['styles'] = '/* Custom Styles */';
 
     $response = $this->endpoint->previewEditor($response->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['html'])->notEmpty();
-    expect($response->data['css'])->notEmpty();
+    $storedData = $this->wp->getTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $formId);
+    expect($storedData['body'])->notEmpty();
+    expect($storedData['styles'])->notEmpty();
+    expect($storedData['settings'])->notEmpty();
   }
 
   public function testItCanExportAForm() {

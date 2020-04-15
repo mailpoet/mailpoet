@@ -7,7 +7,7 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Form\FormFactory;
-use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Form\PreviewPage;
 use MailPoet\Form\Util;
 use MailPoet\Listing;
 use MailPoet\Models\Form;
@@ -23,17 +23,14 @@ class Forms extends APIEndpoint {
   /** @var Listing\Handler */
   private $listingHandler;
 
-  /** @var Util\Styles */
-  private $formStylesUtils;
-
   /** @var UserFlagsController */
   private $userFlags;
 
-  /** @var FormRenderer */
-  private $formRenderer;
-
   /** @var FormFactory */
   private $formFactory;
+
+  /** @var WPFunctions */
+  private $wp;
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,
@@ -42,17 +39,15 @@ class Forms extends APIEndpoint {
   public function __construct(
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
-    Util\Styles $formStylesUtils,
     UserFlagsController $userFlags,
-    FormRenderer $formRenderer,
-    FormFactory $formFactory
+    FormFactory $formFactory,
+    WPFunctions $wp
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
-    $this->formStylesUtils = $formStylesUtils;
     $this->userFlags = $userFlags;
-    $this->formRenderer = $formRenderer;
     $this->formFactory = $formFactory;
+    $this->wp = $wp;
   }
 
   public function get($data = []) {
@@ -107,20 +102,12 @@ class Forms extends APIEndpoint {
   }
 
   public function previewEditor($data = []) {
-    // html
-    $html = $this->formRenderer->renderHTML($data);
-
-    // convert shortcodes
-    $html = WPFunctions::get()->doShortcode($html);
-
-    // styles
-    $css = $this->formStylesUtils->render($this->formRenderer->getStyles($data));
-
-    return $this->successResponse([
-      'html' => $html,
-      'css' => $css,
-      'form_element_styles' => $this->formRenderer->renderFormElementStyles($data),
-    ]);
+    $formId = $data['id'] ?? null;
+    if (!$formId) {
+      $this->badRequest();
+    }
+    $this->wp->setTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $formId, $data, PreviewPage::PREVIEW_DATA_EXPIRATION);
+    return $this->successResponse();
   }
 
   public function exportsEditor($data = []) {
