@@ -44,6 +44,25 @@ class Pages {
     return ((int)$id > 0) ? (int)$id : false;
   }
 
+  public static function getDefaultMailPoetPage() {
+    $wp = WPFunctions::get();
+    $pages = $wp->getPosts([
+      'posts_per_page' => 1,
+      'orderby' => 'date',
+      'order' => 'DESC',
+      'post_type' => 'mailpoet_page',
+    ]);
+
+    $page = null;
+    if (!empty($pages)) {
+      $page = array_shift($pages);
+      if (strpos($page->post_content, '[mailpoet_page]') === false) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        $page = null;
+      }
+    }
+    return $page;
+  }
+
   public static function getMailPoetPages() {
     return WPFunctions::get()->getPosts([
       'post_type' => 'mailpoet_page',
