@@ -123,6 +123,11 @@ jQuery(($) => {
       });
 
       form.parsley().on('form:submit', (parsley) => {
+        // Disable form submit in preview mode
+        const formDiv = form.parent('.mailpoet_form');
+        if (formDiv && formDiv.data('is-preview')) {
+          return false;
+        }
         const formData = form.mailpoetSerializeObject() || {};
         // check if we're on the same domain
         if (isSameDomain(window.MailPoetForm.ajax_url) === false) {
