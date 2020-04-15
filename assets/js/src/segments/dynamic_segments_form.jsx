@@ -130,7 +130,7 @@ class DynamicSegmentForm extends React.Component {
       action: 'save',
       data: item,
     }).done(() => {
-      history.push('/');
+      history.push('/segments');
 
       if (match.params.id !== undefined) {
         messages.onUpdate();
@@ -153,7 +153,7 @@ class DynamicSegmentForm extends React.Component {
         <h1 className="title">
           {MailPoet.I18n.t('formPageTitle')}
           {' '}
-          <Link className="page-title-action" to="/">{MailPoet.I18n.t('backToList')}</Link>
+          <Link className="page-title-action" to="/segments">{MailPoet.I18n.t('backToList')}</Link>
         </h1>
 
         <Form
