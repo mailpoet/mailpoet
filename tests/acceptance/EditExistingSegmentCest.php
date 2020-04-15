@@ -18,18 +18,22 @@ class EditExistingSegmentCest {
       ->create();
 
     $i->login();
-    $i->amOnMailpoetPage('Segments');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
     $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->id . '"]';
     $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
 
-    $i->seeInCurrentUrl('mailpoet-dynamic-segments#/edit/' . $segment->id);
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->fillField(['name' => 'name'], $segmentEditedTitle);
     $i->fillField(['name' => 'description'], 'Lorem ipsum dolor amed edited');
     $i->selectOption('form select[name=segmentType]', 'WordPress user roles');
     $i->selectOption('form select[name=wordpressRole]', 'Editor');
     $i->click('Save');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
 
     $i->waitForText($segmentEditedTitle, 20, $listingAutomationSelector);
     $i->seeNoJSErrors();

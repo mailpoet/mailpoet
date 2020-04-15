@@ -19,7 +19,10 @@ class RestoreTrashedSegmentCest {
     $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->id . '"]';
 
     $i->login();
-    $i->amOnMailpoetPage('Segments');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+
     $i->waitForElement('[data-automation-id="filters_trash"]', 10);
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForText($segmentTitle, 10, $listingAutomationSelector);

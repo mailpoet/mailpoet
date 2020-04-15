@@ -23,7 +23,9 @@ class TrashExistingSegmentCest {
       ->create();
 
     $i->login();
-    $i->amOnMailpoetPage('Segments');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
     $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->id . '"]';
     $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
     $i->clickItemRowActionByItemName($segmentTitle, 'Move to trash');
