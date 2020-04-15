@@ -8,7 +8,13 @@
   <% endif %>
 
   <div class="mailpoet_form_popup_overlay"></div>
-  <div id="<%= form_html_id %>" class="mailpoet_form mailpoet_form_<%= form_type %>">
+  <div
+    id="<%= form_html_id %>"
+    class="mailpoet_form mailpoet_form_<%= form_type %>"
+    <% if(is_preview) %>
+      data-is-preview="1"
+    <% endif %>
+  >
     <% if form_type == 'popup' or form_type == 'fixed_bar' or form_type == 'slide_in' %>
       <img
         class="mailpoet_form_close_icon"

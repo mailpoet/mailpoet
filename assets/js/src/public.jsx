@@ -73,21 +73,21 @@ jQuery(($) => {
     $('.mailpoet_form_close_icon').click((event) => {
       const closeIcon = $(event.target);
       const formDiv = closeIcon.parent();
+      if (formDiv.data('is-preview')) return; // Do not close popup in preview
       closeForm(formDiv);
     });
 
     $('div.mailpoet_form_fixed_bar, div.mailpoet_form_slide_in').each((index, element) => {
       const cookieValue = Cookies.get('popup_form_dismissed');
-      if (cookieValue === '1') return;
       const formDiv = $(element);
+      if (cookieValue === '1' && !formDiv.data('is-preview')) return;
       showForm(formDiv);
     });
 
     $('div.mailpoet_form_popup').each((index, element) => {
       const cookieValue = Cookies.get('popup_form_dismissed');
-      if (cookieValue === '1') return;
-
       const formDiv = $(element);
+      if (cookieValue === '1' && !formDiv.data('is-preview')) return;
       const showOverlay = true;
       showForm(formDiv, showOverlay);
     });
