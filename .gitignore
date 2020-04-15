@@ -29,3 +29,4 @@ docker-compose.override.yml
 tasks/code_sniffer/vendor
 tasks/phpstan/vendor
 /tools/vendor
+/storybook-static
