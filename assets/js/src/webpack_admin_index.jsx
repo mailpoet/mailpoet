@@ -8,7 +8,6 @@ import 'newsletters/automatic_emails.jsx'; // side effect - sets up automatic em
 import 'subscribers/subscribers.jsx'; // side effect - renders ReactDOM to document
 import 'newsletters/newsletters.jsx'; // side effect - renders ReactDOM to window
 import 'segments/segments.jsx'; // side effect - renders ReactDOM to document
-import 'dynamic_segments/dynamic_segments.jsx'; // side effect - renders ReactDOM to document
 import 'old_settings/settings.jsx'; // side effect - renders ReactDOM to document
 import 'forms/forms.jsx'; // side effect - renders ReactDOM to document
 import 'old_settings/tabs.js'; // side effect - assigns to MailPoet.Router, executes code on doc ready
