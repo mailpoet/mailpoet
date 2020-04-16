@@ -26,6 +26,7 @@ function Preview({
           }}
           title={MailPoet.I18n.t('formPreviewDesktop')}
           href="#"
+          data-automation-id="preview_type_desktop"
         >
           <DesktopIcon />
         </a>
@@ -37,6 +38,7 @@ function Preview({
           }}
           title={MailPoet.I18n.t('formPreviewMobile')}
           href="#"
+          data-automation-id="preview_type_mobile"
         >
           <MobileIcon />
         </a>

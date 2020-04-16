@@ -28,6 +28,7 @@ export default () => {
           onClick={showPreview}
           isPressed={isPreview}
           className="editor-post-preview"
+          data-automation-id="form_preview_button"
         >
           {__('Preview')}
         </Button>
