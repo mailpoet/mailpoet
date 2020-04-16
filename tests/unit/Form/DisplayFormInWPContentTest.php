@@ -99,45 +99,6 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     expect($result)->equals('content');
   }
 
-  public function testAppendsMultipleRenderedFormAfterPostContent() {
-    $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
-    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
-    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
-    $form1 = new FormEntity('My Form');
-    $form1->setSettings([
-      'segments' => ['3'],
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '1',
-      'success_message' => 'Hello',
-    ]);
-    $form1->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe1'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
-    $form2 = new FormEntity('My Form');
-    $form2->setSettings([
-      'segments' => ['3'],
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '1',
-      'success_message' => 'Hello',
-    ]);
-    $form2->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe2'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
-    $this->repository->expects($this->once())->method('findBy')->willReturn([$form1, $form2]);
-    $formHtml1 = '<form id="test-form-1"></form>';
-    $formHtml2 = '<form id="test-form-2"></form>';
-    $this->templateRenderer->expects($this->exactly(2))->method('render')->willReturnOnConsecutiveCalls($formHtml1, $formHtml2);
-    $result = $this->hook->display('content');
-    expect($result)->notEquals('content');
-    expect($result)->endsWith($formHtml1 . $formHtml2);
-  }
-
   public function testDoesNotAppendFormIfNotOnSinglePage() {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
     $this->repository->expects($this->never())->method('findBy');
@@ -282,6 +243,42 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'name' => 'Submit',
     ]]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    $result = $this->hook->display('content');
+    expect($result)->notEquals('content');
+    expect($result)->endsWith($formHtml);
+  }
+
+  public function testOnlyOneFormInEachCategory() {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $form1 = new FormEntity('My Form');
+    $form1->setSettings([
+      'segments' => ['3'],
+      'place_fixed_bar_form_on_all_pages' => '1',
+      'success_message' => 'Hello',
+    ]);
+    $form1->setBody([[
+      'type' => 'submit',
+      'params' => ['label' => 'Subscribe!'],
+      'id' => 'submit',
+      'name' => 'Submit',
+    ]]);
+    $form2 = new FormEntity('My Form');
+    $form2->setSettings([
+      'segments' => ['3'],
+      'place_fixed_bar_form_on_all_pages' => '1',
+      'success_message' => 'Hello',
+    ]);
+    $form2->setBody([[
+      'type' => 'submit',
+      'params' => ['label' => 'Subscribe!'],
+      'id' => 'submit',
+      'name' => 'Submit',
+    ]]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form1, $form2]);
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
