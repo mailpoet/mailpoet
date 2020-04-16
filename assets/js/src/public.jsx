@@ -214,5 +214,13 @@ jQuery(($) => {
     });
 
     $('.mailpoet_captcha_update').on('click', updateCaptcha);
+
+    // Display only form on widget preview page
+    // This should keep element visible and still placed within the content but hide everything else
+    const widgetPreview = $('#mailpoet_widget_preview');
+    if (widgetPreview.length) {
+      $('#mailpoet_widget_preview').siblings().hide();
+      $('#mailpoet_widget_preview').parents().siblings().hide();
+    }
   });
 });

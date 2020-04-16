@@ -44,7 +44,14 @@ class PreviewPage {
     if (!is_array($formData)) {
       return '';
     }
-    return $this->getPostContent() . $this->getFormContent($formData, $formId, $formType);
+    return $this->templateRenderer->render(
+      'form/form_preview.html',
+      [
+        'post' => $this->getPostContent(),
+        'form' => $this->getFormContent($formData, $formId, $formType),
+        'formType' => $formType,
+      ]
+    );
   }
 
   public function renderTitle() {

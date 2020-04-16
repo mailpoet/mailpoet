@@ -171,6 +171,26 @@ $form-columns-space-between: 20px;
   }
 }
 
+.mailpoet_widget_preview {
+  background-color: #ffffff;
+  height: 100%;
+  left: 0;
+  max-width: 100% !important;
+  position: fixed;
+  top: 0;
+  width: 100% !important;
+  z-index: 100000;
+
+  .widget-area {
+    display: block !important;
+    float: none !important;
+    margin: 10px auto;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto !important;
+    width: 340px;
+  }
+}
+
 .mailpoet_form_popup_overlay {
   background-color: black;
   display: none;
