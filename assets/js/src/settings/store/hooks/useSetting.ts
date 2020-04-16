@@ -27,6 +27,7 @@ export function useSetting(...path: string[]): [any, (value: any) => any] {
   const setValue = useAction('setSetting');
   return [
     getValue(path),
-    React.useCallback((value) => setValue(path, value), path), // eslint-disable-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    React.useCallback((value) => setValue(path, value), path),
   ];
 }
