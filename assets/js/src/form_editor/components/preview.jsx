@@ -132,6 +132,7 @@ const FormPreview = () => {
               <select
                 onChange={onChange(setFormType)}
                 value={formType}
+                data-automation-id="form_type_selection"
               >
                 <option value="sidebar">{MailPoet.I18n.t('placeFormSidebar')}</option>
                 <option value="below_post">{MailPoet.I18n.t('placeFormBellowPages')}</option>
@@ -155,6 +156,7 @@ const FormPreview = () => {
               src={iframeSrc}
               title={MailPoet.I18n.t('formPreview')}
               onLoad={() => setIframeLoaded(true)}
+              data-automation-id="form_preview_iframe"
             />
           </Preview>
         </>
