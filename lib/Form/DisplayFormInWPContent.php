@@ -77,11 +77,8 @@ class DisplayFormInWPContent {
 
     $this->assetsController->setupFrontEndDependencies();
     $result = $content;
-    foreach ($forms as $form) {
-      $result .= $this->getContentBellow($form, 'popup');
-      $result .= $this->getContentBellow($form, 'below_post');
-      $result .= $this->getContentBellow($form, 'fixed_bar');
-      $result .= $this->getContentBellow($form, 'slide_in');
+    foreach ($forms as $displayType => $form) {
+      $result .= $this->getContentBellow($form, $displayType);
     }
 
     return $result;
@@ -103,15 +100,28 @@ class DisplayFormInWPContent {
   }
 
   /**
-   * @return FormEntity[]
+   * @return array<string, FormEntity>
    */
   private function getForms(): array {
     $forms = $this->formsRepository->findBy(['deletedAt' => null]);
-    return array_filter($forms, function($form) {
-      return (
-        $this->shouldDisplayForm($form)
-      );
-    });
+    $forms = $this->filterOneFormInEachDisplayType($forms);
+    return $forms;
+  }
+
+  /**
+   * @param FormEntity[] $forms
+   * @return array<string, FormEntity>
+   */
+  private function filterOneFormInEachDisplayType($forms): array {
+    $formsFiltered = [];
+    foreach ($forms as $form) {
+      foreach (array_keys(self::SETUP) as $displayType) {
+        if ($this->shouldDisplayFormType($form, $displayType)) {
+          $formsFiltered[$displayType] = $form;
+        }
+      }
+    }
+    return $formsFiltered;
   }
 
   private function getContentBellow(FormEntity $form, string $displayType): string {
@@ -155,15 +165,6 @@ class DisplayFormInWPContent {
     // add API version
     $templateData['api_version'] = API::CURRENT_VERSION;
     return $this->templateRenderer->render('form/front_end_form.html', $templateData);
-  }
-
-  private function shouldDisplayForm(FormEntity $form): bool {
-    foreach (self::SETUP as $formType => $formSetup) {
-      if ($this->shouldDisplayFormType($form, $formType)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private function shouldDisplayFormType(FormEntity $form, string $formType): bool {
