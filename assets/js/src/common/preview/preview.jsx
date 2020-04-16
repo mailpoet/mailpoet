@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import classnames from 'classnames';
-import MobileIcon from './preview/mobile_icon';
-import DesktopIcon from './preview/desktop_icon';
+import MobileIcon from './mobile_icon';
+import DesktopIcon from './desktop_icon';
 
 function Preview({
   children,
