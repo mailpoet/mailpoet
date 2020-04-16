@@ -7,7 +7,7 @@ import MailPoet from 'mailpoet';
 import { Spinner } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import Preview from '../../common/preview.jsx';
+import Preview from '../../common/preview/preview.jsx';
 import Modal from '../../common/modal/modal.jsx';
 import { blocksToFormBodyFactory } from '../store/blocks_to_form_body.jsx';
 
