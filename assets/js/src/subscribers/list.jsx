@@ -32,11 +32,6 @@ const columns = [
     label: MailPoet.I18n.t('subscribedOn'),
     sortable: true,
   },
-  {
-    name: 'updated_at',
-    label: MailPoet.I18n.t('lastModifiedOn'),
-    sortable: true,
-  },
 ];
 
 const messages = {
@@ -348,9 +343,6 @@ class SubscriberList extends React.Component {
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('subscribedOn')}>
           <abbr>{ MailPoet.Date.format(subscriber.created_at) }</abbr>
-        </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
-          <abbr>{ MailPoet.Date.format(subscriber.updated_at) }</abbr>
         </td>
       </div>
     );
