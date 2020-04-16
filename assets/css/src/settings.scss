@@ -1,3 +1,5 @@
+@import 'settings/colors';
+
 .mailpoet-settings-grid {
   display: grid;
   grid-column-gap: 35px;
@@ -45,7 +47,7 @@
   }
 
   .mailpoet_emails_per_second_warning {
-    color: #d54e21;
+    color: $color-editor-warning;
   }
 }
 
