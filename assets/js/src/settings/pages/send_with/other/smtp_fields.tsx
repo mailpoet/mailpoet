@@ -33,7 +33,7 @@ export default function SmtpFields() {
       <Label title={t('secureConnectioon')} htmlFor="mailpoet_smtp_encryption" />
       <Inputs>
         <select id="mailpoet_smtp_encryption" value={encryption} onChange={onChange(setEncryption)}>
-          <option value="">No</option>
+          <option value="">{t('no')}</option>
           <option value="ssl">SSL</option>
           <option value="tls">TLS</option>
         </select>
@@ -41,10 +41,10 @@ export default function SmtpFields() {
       <Label title={t('authentication')} description={t('authenticationDescription')} htmlFor="mailpoet_smtp_authentication" />
       <Inputs>
         <input type="radio" value="1" checked={authentication === '1'} onChange={onChange(setAuthentication)} />
-        Yes
+        {t('yes')}
         {' '}
         <input type="radio" value="-1" checked={authentication === '-1'} onChange={onChange(setAuthentication)} />
-        No
+        {t('no')}
       </Inputs>
     </>
   );
