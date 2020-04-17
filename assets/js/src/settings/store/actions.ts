@@ -206,7 +206,7 @@ export function* reinstall() {
 }
 
 export function* sendTestEmail(recipient: string, mailer: Settings['mta']) {
-  MailPoet.Modal.loading(true);
+  yield { type: 'START_TEST_EMAIL_SENDING' };
   const res = yield {
     type: 'CALL_API',
     endpoint: 'mailer',
@@ -224,8 +224,8 @@ export function* sendTestEmail(recipient: string, mailer: Settings['mta']) {
     },
   };
   yield { type: 'TRACK_TEST_EMAIL_SENT', success: res.success, method: mailer.method };
-  MailPoet.Modal.loading(false);
-  return res;
+  if (!res.success) return { type: 'TEST_EMAIL_FAILED', error: res.error };
+  return { type: 'TEST_EMAIL_SUCCESS' };
 }
 
 export function* loadSettings() {

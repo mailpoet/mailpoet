@@ -252,6 +252,11 @@ export type KeyActivationState = {
   inProgress: boolean
 }
 
+export type TestEmailState =
+  | 'none'
+  | 'sending'
+  | 'success'
+  | 'failure'
 
 export type State = {
   data: Settings
@@ -272,7 +277,11 @@ export type State = {
     inProgress: boolean
     error: any
   }
-  keyActivation: KeyActivationState,
+  testEmail: {
+    state: TestEmailState
+    error: any
+  }
+  keyActivation: KeyActivationState
   hosts: Hosts
 }
 
@@ -284,3 +293,6 @@ export type Action =
   | { type: 'SAVE_DONE' }
   | { type: 'SAVE_FAILED'; error: any }
   | { type: 'UPDATE_KEY_ACTIVATION_STATE', fields: Partial<KeyActivationState> }
+  | { type: 'START_TEST_EMAIL_SENDING' }
+  | { type: 'TEST_EMAIL_SUCCESS' }
+  | { type: 'TEST_EMAIL_FAILED', error: any }

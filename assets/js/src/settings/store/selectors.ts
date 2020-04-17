@@ -80,3 +80,7 @@ export function getAmazonSesOptions(state: State) {
 export function getSendGridOptions(state: State) {
   return state.hosts.smtp.SendGrid;
 }
+
+export function getTestEmailState(state: State) {
+  return state.testEmail;
+}

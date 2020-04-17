@@ -5,30 +5,22 @@ import HelpTooltip from 'help-tooltip';
 import { GlobalContext } from 'context';
 import { t, onChange } from 'common/functions';
 import { Label, Inputs } from 'settings/components';
-import { useSetting, useAction } from 'settings/store/hooks';
+import { useSetting, useAction, useSelector } from 'settings/store/hooks';
+import Loading from 'common/loading';
+import Notice from 'notices/notice';
 
 export default function TestSending() {
   const [email, setEmail] = React.useState<string>((window as any).mailpoet_current_user_email);
   const [mailer] = useSetting('mta');
   const [fromAddress] = useSetting('sender', 'address');
-  const { notices } = React.useContext<any>(GlobalContext);
+  const { state, error } = useSelector('getTestEmailState')();
   const sendTestEmail = useAction('sendTestEmail');
-
-  const sendEmail = async () => {
-    if (!fromAddress) {
-      notices.error(<p>{t('cantSendEmail')}</p>, { scroll: true, static: true });
-    } else {
-      const res: any = await sendTestEmail(email, mailer);
-      if (res.success) {
-        notices.success(<p>{t('emailSent')}</p>, { scroll: true });
-      } else {
-        notices.error(res.error.map((message) => <p key={message}>{message}</p>), { scroll: true });
-      }
-    }
-  };
 
   return (
     <>
+      {state === 'sending' && <Loading />}
+      {state === 'success' && <Notice type="success" scroll><p>{t('emailSent')}</p></Notice>}
+      {state === 'failure' && <Notice type="error" scroll><p>{error.map((message) => <p key={message}>{message}</p>)}</p></Notice>}
       <Label title={t('testSending')} htmlFor="mailpoet_mta_test_email" />
       <Inputs>
         <input
@@ -42,7 +34,7 @@ export default function TestSending() {
           type="button"
           id="mailpoet_mta_test"
           className="button-secondary"
-          onClick={sendEmail}
+          onClick={() => sendTestEmail(fromAddress, mailer)}
         >
           {t('sendTestEmail')}
         </button>
