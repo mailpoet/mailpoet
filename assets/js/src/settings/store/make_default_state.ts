@@ -1,5 +1,7 @@
 import MailPoet from 'mailpoet';
-import { State, PremiumStatus, MssStatus } from './types';
+import {
+  State, PremiumStatus, MssStatus, TestEmailState,
+} from './types';
 import normalizeSettings from './normalize_settings';
 
 export default function makeDefaultState(window: any): State {
@@ -42,7 +44,8 @@ export default function makeDefaultState(window: any): State {
     inProgress: false,
   };
   const testEmail = {
-    state: 'none', error: null,
+    state: TestEmailState.NONE,
+    error: null,
   };
   return {
     data, flags, save, keyActivation, segments, pages, paths, hosts, testEmail,

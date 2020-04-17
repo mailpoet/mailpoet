@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import {
-  State, Action, KeyActivationState, MssStatus, PremiumStatus,
+  State, Action, KeyActivationState, MssStatus, PremiumStatus, TestEmailState,
 } from './types';
 import normalizeSettings from './normalize_settings';
 
@@ -31,11 +31,11 @@ export default function createReducer(defaultValue: State) {
         }
         return { ...state, keyActivation };
       case 'START_TEST_EMAIL_SENDING':
-        return { ...state, testEmail: { state: 'sending', error: null } };
+        return { ...state, testEmail: { state: TestEmailState.SENDING, error: null } };
       case 'TEST_EMAIL_SUCCESS':
-        return { ...state, testEmail: { state: 'success', error: null } };
+        return { ...state, testEmail: { state: TestEmailState.SUCCESS, error: null } };
       case 'TEST_EMAIL_FAILED':
-        return { ...state, testEmail: { state: 'failure', error: action.error } };
+        return { ...state, testEmail: { state: TestEmailState.FAILURE, error: action.error } };
       default:
         return state;
     }
