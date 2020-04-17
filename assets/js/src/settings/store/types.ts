@@ -205,11 +205,12 @@ export type KeyActivationState = {
   inProgress: boolean
 }
 
-export type TestEmailState =
-  | 'none'
-  | 'sending'
-  | 'success'
-  | 'failure'
+export enum TestEmailState {
+  SENDING,
+  NONE,
+  SUCCESS,
+  FAILURE,
+}
 
 export type State = {
   data: Settings

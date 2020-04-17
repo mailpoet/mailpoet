@@ -8,6 +8,7 @@ import { Label, Inputs } from 'settings/components';
 import { useSetting, useAction, useSelector } from 'settings/store/hooks';
 import Loading from 'common/loading';
 import Notice from 'notices/notice';
+import { TestEmailState } from 'settings/store/types';
 
 export default function TestSending() {
   const [email, setEmail] = React.useState<string>((window as any).mailpoet_current_user_email);
@@ -18,9 +19,9 @@ export default function TestSending() {
 
   return (
     <>
-      {state === 'sending' && <Loading />}
-      {state === 'success' && <Notice type="success" scroll><p>{t('emailSent')}</p></Notice>}
-      {state === 'failure' && <Notice type="error" scroll><p>{error.map((message) => <p key={message}>{message}</p>)}</p></Notice>}
+      {state === TestEmailState.SENDING && <Loading />}
+      {state === TestEmailState.SUCCESS && <Notice type="success" scroll><p>{t('emailSent')}</p></Notice>}
+      {state === TestEmailState.FAILURE && <Notice type="error" scroll><p>{error.map((message) => <p key={message}>{message}</p>)}</p></Notice>}
       <Label title={t('testSending')} htmlFor="mailpoet_mta_test_email" />
       <Inputs>
         <input
