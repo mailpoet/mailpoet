@@ -206,6 +206,9 @@ export function* reinstall() {
 }
 
 export function* sendTestEmail(recipient: string, mailer: Settings['mta']) {
+  if (!recipient) {
+    return { type: 'TEST_EMAIL_FAILED', error: [t('cantSendEmail')] };
+  }
   yield { type: 'START_TEST_EMAIL_SENDING' };
   const res = yield {
     type: 'CALL_API',

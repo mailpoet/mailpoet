@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
+import MailPoet from 'mailpoet';
 import { t } from 'common/functions';
 import { useAction } from 'settings/store/hooks';
 
@@ -14,8 +15,10 @@ export default function ActivateOrCancel() {
   };
   const cancel = async (e) => {
     e.preventDefault();
+    MailPoet.Modal.loading(true);
     await loadSettings();
     history.push('/mta');
+    MailPoet.Modal.loading(false);
   };
   return (
     <p>
