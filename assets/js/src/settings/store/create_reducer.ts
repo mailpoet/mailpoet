@@ -30,6 +30,12 @@ export default function createReducer(defaultValue: State) {
           );
         }
         return { ...state, keyActivation };
+      case 'START_TEST_EMAIL_SENDING':
+        return { ...state, testEmail: { state: 'sending', error: null } };
+      case 'TEST_EMAIL_SUCCESS':
+        return { ...state, testEmail: { state: 'success', error: null } };
+      case 'TEST_EMAIL_FAILED':
+        return { ...state, testEmail: { state: 'failure', error: action.error } };
       default:
         return state;
     }

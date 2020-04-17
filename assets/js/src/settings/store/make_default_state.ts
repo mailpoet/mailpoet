@@ -41,8 +41,11 @@ export default function makeDefaultState(window: any): State {
     key: data.premium.premium_key || data.mta.mailpoet_api_key,
     inProgress: false,
   };
+  const testEmail = {
+    state: 'none', error: null,
+  };
   return {
-    data, flags, save, keyActivation, segments, pages, paths, hosts,
+    data, flags, save, keyActivation, segments, pages, paths, hosts, testEmail,
   };
 }
 
