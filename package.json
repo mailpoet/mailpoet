@@ -97,6 +97,7 @@
     "@storybook/addon-actions": "^5.3.18",
     "@storybook/addon-links": "^5.3.18",
     "@storybook/addons": "^5.3.18",
+    "@storybook/preset-typescript": "^3.0.0",
     "@storybook/react": "^5.3.18",
     "@types/lodash": "^4.14.149",
     "@types/react": "^16.9.22",
