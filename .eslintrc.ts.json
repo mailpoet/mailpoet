@@ -132,6 +132,14 @@
     "jsx-a11y/label-has-associated-control": [ 2, {
       "either": "either" // control has to be either nested or associated via htmlFor
     }]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/_stories/*.tsx"],
+      "rules": {
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+      }
+    }
+  ]
 }
 
