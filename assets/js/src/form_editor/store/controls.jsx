@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import { merge } from 'lodash';
 import Cookies from 'js-cookie';
 import { createBlock, unregisterBlockType } from '@wordpress/blocks';
+import CALL_API from 'common/controls/call_api';
 import { blocksToFormBodyFactory } from './blocks_to_form_body.jsx';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
@@ -196,4 +197,6 @@ export default {
     }
     dispatch('core/block-editor').resetBlocks(fixedBlocks);
   },
+
+  CALL_API,
 };

@@ -49,6 +49,9 @@ export default {
   getIsPreviewShown(state) {
     return state.isPreviewShown;
   },
+  getPreviewDataSaved(state) {
+    return state.previewDataSaved;
+  },
   getIsCustomFieldSaving(state) {
     return state.isCustomFieldSaving;
   },

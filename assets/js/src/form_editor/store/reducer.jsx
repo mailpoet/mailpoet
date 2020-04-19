@@ -7,7 +7,12 @@ import changeFormName from './reducers/change_form_name.jsx';
 import changeFormSettings from './reducers/change_form_settings.jsx';
 import changeFormStyles from './reducers/change_form_styles.jsx';
 import removeNotice from './reducers/remove_notice.jsx';
-import { showPreview, hidePreview } from './reducers/preview.jsx';
+import {
+  showPreview,
+  hidePreview,
+  previewDataSaved,
+  previewDataNotSaved,
+} from './reducers/preview.jsx';
 import saveFormDone from './reducers/save_form_done.jsx';
 import saveFormFailed from './reducers/save_form_failed.jsx';
 import saveFormStartedFactory from './reducers/save_form_started.jsx';
@@ -40,6 +45,8 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'REMOVE_NOTICE': return removeNotice(state, action);
     case 'SHOW_PREVIEW': return showPreview(state, action);
     case 'HIDE_PREVIEW': return hidePreview(state, action);
+    case 'PREVIEW_DATA_NOT_SAVED': return previewDataNotSaved(state, action);
+    case 'PREVIEW_DATA_SAVED': return previewDataSaved(state, action);
     case 'SAVE_FORM_DONE': return saveFormDone(state);
     case 'SAVE_FORM_FAILED': return saveFormFailed(state, action);
     case 'SAVE_FORM_STARTED': return saveFormStarted(state);
