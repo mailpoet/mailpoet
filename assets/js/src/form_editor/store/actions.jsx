@@ -204,3 +204,16 @@ export function* applyStylesToAllTextInputs(styles) {
     styles,
   };
 }
+
+export function* savePreviewData(data) {
+  const { success, error } = yield {
+    type: 'CALL_API',
+    endpoint: 'forms',
+    action: 'previewEditor',
+    data,
+  };
+  if (!success) {
+    return { type: 'PREVIEW_DATA_NOT_SAVED', error };
+  }
+  return { type: 'PREVIEW_DATA_SAVED' };
+}

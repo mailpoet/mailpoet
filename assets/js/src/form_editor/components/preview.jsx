@@ -33,7 +33,6 @@ function getFormType(settings) {
 const getPreviewType = () => (window.localStorage.getItem('mailpoet_form_preview_last_preview_type') || 'desktop');
 
 const FormPreview = () => {
-  const [formPersisted, setFormPersisted] = useState(false);
   const [iframeLoaded, setIframeLoaded] = useState(false);
 
   const formBlocks = useSelect(
@@ -48,9 +47,13 @@ const FormPreview = () => {
     (select) => select('mailpoet-form-editor').getFormData(),
     []
   );
-  const { hidePreview } = useDispatch('mailpoet-form-editor');
+  const { hidePreview, savePreviewData } = useDispatch('mailpoet-form-editor');
   const isPreview = useSelect(
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
+    []
+  );
+  const previewDataSaved = useSelect(
+    (select) => select('mailpoet-form-editor').getPreviewDataSaved(),
     []
   );
 
@@ -65,18 +68,11 @@ const FormPreview = () => {
       editorSettings.fontSizes,
       customFields
     );
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'forms',
-      action: 'previewEditor',
-      data: {
-        ...mapFormDataBeforeSaving(formData),
-        body: blocksToFormBody(formBlocks),
-      },
-    }).done(() => {
-      setFormPersisted(true);
+    savePreviewData({
+      ...mapFormDataBeforeSaving(formData),
+      body: blocksToFormBody(formBlocks),
     });
-  }, [formBlocks, customFields, formData, editorSettings.colors, editorSettings.fontSizes]);
+  }, [formBlocks, customFields, formData, editorSettings, savePreviewData]);
 
   useEffect(() => {
     if (isPreview) {
@@ -86,11 +82,6 @@ const FormPreview = () => {
   }, [isPreview, saveFormDataForPreview]);
 
   if (!isPreview) return null;
-
-  function onClose() {
-    setFormPersisted(false);
-    hidePreview();
-  }
 
   function setFormType(type) {
     setIframeLoaded(false);
@@ -114,16 +105,16 @@ const FormPreview = () => {
   }
   return (
     <Modal
-      onRequestClose={onClose}
+      onRequestClose={hidePreview}
       fullScreen
       contentClassName="mailpoet_form_preview_modal"
     >
-      {!formPersisted && (
+      {!previewDataSaved && (
         <div className="mailpoet_spinner_wrapper">
           <Spinner />
         </div>
       )}
-      {formPersisted && (
+      {previewDataSaved && (
         <>
           <div className="mailpoet_form_preview_type_select">
             <label>
