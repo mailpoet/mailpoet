@@ -313,7 +313,7 @@ div.mailpoet_form_slide_in.active {
 // MailPoet Form - Image block
 // Inspired by wp-image-block behaviour
 .mailpoet_form_image {
-  &.is-style-rounded {
+  &.is-style-rounded img {
     border-radius: 9999px;
   }
 
