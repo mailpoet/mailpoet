@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useSelect } from '@wordpress/data';
 import ParagraphEdit from './paragraph_edit.jsx';
 import formatLabel from './label_formatter.jsx';
 import { inputStylesPropTypes } from './input_styles_settings.jsx';
@@ -12,6 +13,10 @@ const TextInputEdit = ({
   styles,
   className,
 }) => {
+  const settings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
+    []
+  );
   const input = useRef(null);
   const id = `${name}_${Math.random().toString(36).substring(2, 15)}`;
 
@@ -25,6 +30,10 @@ const TextInputEdit = ({
     borderColor: styles.borderColor || 'initial',
     borderStyle: 'solid',
   } : {};
+
+  if (settings.inputPadding !== undefined) {
+    inputStyles.padding = settings.inputPadding;
+  }
 
   if (styles.fullWidth) {
     inputStyles.width = '100%';
