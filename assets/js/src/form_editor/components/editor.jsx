@@ -79,14 +79,14 @@ export default () => {
                     <BlockEditorKeyboardShortcuts />
                     <BlockEditorKeyboardShortcuts.Register />
                     <div className="mailpoet_form">
-                      <FormStylingBackground>
-                        <WritingFlow>
-                          <ObserveTyping>
-                            <FormTitle />
+                      <WritingFlow>
+                        <ObserveTyping>
+                          <FormTitle />
+                          <FormStylingBackground>
                             <BlockList />
-                          </ObserveTyping>
-                        </WritingFlow>
-                      </FormStylingBackground>
+                          </FormStylingBackground>
+                        </ObserveTyping>
+                      </WritingFlow>
                     </div>
                   </BlockSelectionClearer>
                 </div>
