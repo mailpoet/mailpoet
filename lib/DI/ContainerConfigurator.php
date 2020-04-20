@@ -169,7 +169,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Features\FeatureFlagsRepository::class)->setPublic(true);
     // Form
     $container->autowire(\MailPoet\Form\Util\FieldNameObfuscator::class)->setPublic(true);
-    $container->autowire(\MailPoet\Form\AssetsController::class);
+    $container->autowire(\MailPoet\Form\AssetsController::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\DisplayFormInWPContent::class);
     $container->autowire(\MailPoet\Form\FormsRepository::class);
     $container->autowire(\MailPoet\Form\Renderer::class)->setPublic(true);
@@ -180,7 +180,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Form\Block\Column::class);
     $container->autowire(\MailPoet\Form\Block\Columns::class);
     $container->autowire(\MailPoet\Form\Block\Checkbox::class);
-    $container->autowire(\MailPoet\Form\Block\Date::class);
+    $container->autowire(\MailPoet\Form\Block\Date::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\Block\Divider::class);
     $container->autowire(\MailPoet\Form\Block\Html::class);
     $container->autowire(\MailPoet\Form\Block\Heading::class);
@@ -257,13 +257,13 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscription\Pages::class)->setPublic(true)
       ->setShared(false); // Get a new instance each time $container->get() is called, needed for tests
     $container->autowire(\MailPoet\Subscription\Registration::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscription\SubscriptionUrlFactory::class);
+    $container->autowire(\MailPoet\Subscription\SubscriptionUrlFactory::class)->setPublic(true);
     // Newsletter
     $container->autowire(\MailPoet\Newsletter\AutomatedLatestContent::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\NewslettersRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Listing\NewsletterListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class);
-    $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class);
+    $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\PostNotificationScheduler::class);
     $container->autowire(\MailPoet\Newsletter\ViewInBrowser\ViewInBrowserController::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\ViewInBrowser\ViewInBrowserRenderer::class)->setPublic(true);

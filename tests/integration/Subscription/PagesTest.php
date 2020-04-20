@@ -5,6 +5,9 @@ namespace MailPoet\Test\Subscription;
 use Codeception\Stub;
 use Codeception\Util\Fixtures;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Form\AssetsController;
+use MailPoet\Form\Block\Date as FormBlockDate;
+use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -13,15 +16,19 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscription\CaptchaRenderer;
 use MailPoet\Subscription\Pages;
+use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Util\Url as UrlHelper;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class PagesTest extends \MailPoetTest {
-  public $pages;
-
   private $testData = [];
 
   /** @var Subscriber */
@@ -37,12 +44,12 @@ class PagesTest extends \MailPoetTest {
     expect($this->subscriber->getErrors())->false();
     $this->testData['email'] = $this->subscriber->email;
     $this->testData['token'] = $linkTokens->getToken($this->subscriber);
-    $this->pages = ContainerWrapper::getInstance()->get(Pages::class);
   }
 
   public function testItConfirmsSubscription() {
-    $newSubscriberNotificationSender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
-    $subscription = $this->pages->init($action = false, $this->testData, false, false, $newSubscriberNotificationSender);
+    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
+    $pages = $this->getPages($newSubscriberNotificationSender);
+    $subscription = $pages->init($action = false, $this->testData, false, false);
     $subscription->confirm();
     $confirmedSubscriber = Subscriber::findOne($this->subscriber->id);
     expect($confirmedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
@@ -51,17 +58,19 @@ class PagesTest extends \MailPoetTest {
   }
 
   public function testItDoesNotConfirmSubscriptionOnDuplicateAttempt() {
-    $newSubscriberNotificationSender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
+    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::never()]);
+    $pages = $this->getPages($newSubscriberNotificationSender);
     $subscriber = $this->subscriber;
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
-    $subscription = $this->pages->init($action = false, $this->testData, false, false, $newSubscriberNotificationSender);
+    $subscription = $pages->init($action = false, $this->testData, false, false);
     expect($subscription->confirm())->false();
   }
 
   public function testItSendsWelcomeNotificationUponConfirmingSubscription() {
-    $newSubscriberNotificationSender = Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
-    $subscription = $this->pages->init($action = false, $this->testData, false, false, $newSubscriberNotificationSender);
+    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
+    $pages = $this->getPages($newSubscriberNotificationSender);
+    $subscription = $pages->init($action = false, $this->testData, false, false);
     // create segment
     $segment = Segment::create();
     $segment->hydrate(['name' => 'List #1']);
@@ -114,7 +123,7 @@ class PagesTest extends \MailPoetTest {
   }
 
   public function testItUnsubscribes() {
-    $pages = $this->pages->init($action = 'unsubscribe', $this->testData);
+    $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
     $updatedSubscriber = Subscriber::findOne($this->subscriber->id);
     expect($updatedSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
@@ -122,7 +131,7 @@ class PagesTest extends \MailPoetTest {
 
   public function testItDoesntUnsubscribeWhenPreviewing() {
     $this->testData['preview'] = 1;
-    $pages = $this->pages->init($action = 'unsubscribe', $this->testData);
+    $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
     $updatedSubscriber = Subscriber::findOne($this->subscriber->id);
     expect($updatedSubscriber->status)->notEquals(Subscriber::STATUS_UNSUBSCRIBED);
@@ -137,5 +146,22 @@ class PagesTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+  }
+
+  private function getPages(NewSubscriberNotificationMailer $newSubscriberNotificationsMock = null): Pages {
+    $container = ContainerWrapper::getInstance();
+    return new Pages(
+      $newSubscriberNotificationsMock ?? $container->get(NewSubscriberNotificationMailer::class),
+      $container->get(WPFunctions::class),
+      $container->get(SettingsController::class),
+      $container->get(UrlHelper::class),
+      $container->get(CaptchaRenderer::class),
+      $container->get(WelcomeScheduler::class),
+      $container->get(LinkTokens::class),
+      $container->get(SubscriptionUrlFactory::class),
+      $container->get(AssetsController::class),
+      $container->get(FormRenderer::class),
+      $container->get(FormBlockDate::class)
+    );
   }
 }
