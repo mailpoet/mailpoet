@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import {
   Panel,
   PanelBody,
+  RangeControl,
 } from '@wordpress/components';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
@@ -47,6 +48,14 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             name={MailPoet.I18n.t('formSettingsStylesFontSize')}
             value={settings.fontSize}
             onChange={partial(updateStyles, 'fontSize')}
+          />
+          <RangeControl
+            label={MailPoet.I18n.t('formSettingsInputPadding')}
+            value={settings.inputPadding !== undefined ? settings.inputPadding : 5}
+            min={0}
+            max={30}
+            allowReset
+            onChange={partial(updateStyles, 'inputPadding')}
           />
         </div>
       </PanelBody>
