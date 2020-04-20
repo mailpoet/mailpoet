@@ -3,6 +3,7 @@ import {
   Panel,
   PanelBody,
   RangeControl,
+  SelectControl,
 } from '@wordpress/components';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
@@ -78,6 +79,16 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             name={MailPoet.I18n.t('formSettingsBorderColor')}
             value={settings.borderColor}
             onChange={partial(updateStyles, 'borderColor')}
+          />
+          <SelectControl
+            label={MailPoet.I18n.t('formSettingsAlignment')}
+            onChange={partial(updateStyles, 'alignment')}
+            options={[
+              { value: 'left', label: MailPoet.I18n.t('formSettingsAlignmentLeft') },
+              { value: 'center', label: MailPoet.I18n.t('formSettingsAlignmentCenter') },
+              { value: 'right', label: MailPoet.I18n.t('formSettingsAlignmentRight') },
+            ]}
+            value={settings.alignment !== undefined ? settings.alignment : 'left'}
           />
         </div>
       </PanelBody>
