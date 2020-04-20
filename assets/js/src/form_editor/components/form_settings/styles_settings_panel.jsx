@@ -90,6 +90,14 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             ]}
             value={settings.alignment !== undefined ? settings.alignment : 'left'}
           />
+          <RangeControl
+            label={MailPoet.I18n.t('formSettingsFormPadding')}
+            value={settings.formPadding !== undefined ? settings.formPadding : 10}
+            min={0}
+            max={40}
+            allowReset
+            onChange={partial(updateStyles, 'formPadding')}
+          />
         </div>
       </PanelBody>
     </Panel>
