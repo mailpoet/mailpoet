@@ -103,7 +103,7 @@ class DisplayFormInWPContent {
    * @return array<string, FormEntity>
    */
   private function getForms(): array {
-    $forms = $this->formsRepository->findBy(['deletedAt' => null]);
+    $forms = $this->formsRepository->findBy(['deletedAt' => null], ['updatedAt' => 'ASC']);
     $forms = $this->filterOneFormInEachDisplayType($forms);
     return $forms;
   }
