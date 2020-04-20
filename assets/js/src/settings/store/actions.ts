@@ -53,6 +53,10 @@ export function* saveSettings() {
     return { type: 'SAVE_FAILED', error };
   }
   yield { type: 'TRACK_SETTINGS_SAVED' };
+  yield updateKeyActivationState({
+    congratulatoryMssEmailSentTo: null,
+    fromAddressModalCanBeShown: false,
+  });
   yield setSettings(res.data);
   return { type: 'SAVE_DONE' };
 }
