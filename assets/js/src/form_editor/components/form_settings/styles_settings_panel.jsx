@@ -57,6 +57,28 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             allowReset
             onChange={partial(updateStyles, 'inputPadding')}
           />
+          <RangeControl
+            label={MailPoet.I18n.t('formSettingsBorderSize')}
+            value={settings.borderSize !== undefined ? settings.borderSize : 0}
+            min={0}
+            max={10}
+            allowReset
+            onChange={partial(updateStyles, 'borderSize')}
+            className="mailpoet-automation-styles-border-size"
+          />
+          <RangeControl
+            label={MailPoet.I18n.t('formSettingsBorderRadius')}
+            value={settings.borderRadius !== undefined ? settings.borderRadius : 0}
+            min={0}
+            max={40}
+            allowReset
+            onChange={partial(updateStyles, 'borderRadius')}
+          />
+          <ColorSettings
+            name={MailPoet.I18n.t('formSettingsBorderColor')}
+            value={settings.borderColor}
+            onChange={partial(updateStyles, 'borderColor')}
+          />
         </div>
       </PanelBody>
     </Panel>
