@@ -102,6 +102,16 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
       inputStyles.padding = settings.inputPadding;
     }
 
+    if (settings.alignment !== undefined) {
+      inputStyles.textAlign = settings.alignment;
+      if (inputStyles.textAlign === 'right') {
+        inputStyles.margin = '0 0 0 auto';
+      }
+      if (inputStyles.textAlign === 'center') {
+        inputStyles.margin = '0 auto';
+      }
+    }
+
     return (
       <select style={inputStyles} className="mailpoet_select" id={clientId} value={defaultValue} readOnly>
         {

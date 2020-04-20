@@ -10,6 +10,7 @@ const FormStylingBackground = ({ children }) => {
     borderRadius,
     borderSize,
     borderColor,
+    alignment,
   } = useSelect(
     (select) => {
       const settings = select('mailpoet-form-editor').getFormSettings();
@@ -21,6 +22,7 @@ const FormStylingBackground = ({ children }) => {
         borderRadius: settings.borderRadius,
         borderSize: settings.borderSize,
         borderColor: settings.borderColor,
+        alignment: settings.alignment,
       };
     },
     []
@@ -35,6 +37,10 @@ const FormStylingBackground = ({ children }) => {
   if (fontSize) font = Number(fontSize);
   let radius;
   if (borderRadius) radius = Number(borderRadius);
+  let textAlign;
+  if (alignment) {
+    textAlign = alignment;
+  }
   return (
     <div
       style={{
@@ -46,6 +52,7 @@ const FormStylingBackground = ({ children }) => {
         borderWidth: borderSize,
         borderColor,
         borderStyle,
+        textAlign,
       }}
     >
       {children}
