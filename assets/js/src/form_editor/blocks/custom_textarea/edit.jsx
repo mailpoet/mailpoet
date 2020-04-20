@@ -17,6 +17,10 @@ import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
 
 const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
+  const settings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
+    []
+  );
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
@@ -124,6 +128,10 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
 
   if (attributes.styles.backgroundColor && !attributes.styles.inheritFromTheme) {
     inputStyles.backgroundColor = attributes.styles.backgroundColor;
+  }
+
+  if (settings.inputPadding !== undefined) {
+    inputStyles.padding = settings.inputPadding;
   }
 
   inputStyles.resize = 'none';

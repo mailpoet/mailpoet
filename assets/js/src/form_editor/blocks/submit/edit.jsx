@@ -8,11 +8,17 @@ import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import classnames from 'classnames';
+import { useSelect } from '@wordpress/data';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 import StylesSettings from './styles_settings';
 
 const SubmitEdit = ({ attributes, setAttributes }) => {
+  const settings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
+    []
+  );
+
   const inspectorControls = (
     <InspectorControls>
       <Panel>
@@ -41,6 +47,10 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
 
   if (attributes.styles.fullWidth) {
     styles.width = '100%';
+  }
+
+  if (settings.inputPadding !== undefined) {
+    styles.padding = settings.inputPadding;
   }
 
   if (attributes.styles.backgroundColor && !attributes.styles.inheritFromTheme) {

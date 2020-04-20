@@ -16,6 +16,10 @@ import CustomFieldSettings from '../custom_radio/custom_field_settings.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
 const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
+  const settings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
+    []
+  );
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
@@ -92,8 +96,14 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
       });
     }
 
+    const inputStyles = {};
+
+    if (settings.inputPadding !== undefined) {
+      inputStyles.padding = settings.inputPadding;
+    }
+
     return (
-      <select className="mailpoet_select" id={clientId} value={defaultValue} readOnly>
+      <select style={inputStyles} className="mailpoet_select" id={clientId} value={defaultValue} readOnly>
         {
           options.map((option, index) => (
             <option key={option.label} value={option.label} disabled={index === 0}>
