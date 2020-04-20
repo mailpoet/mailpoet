@@ -57,14 +57,25 @@ class PagesTest extends \MailPoetTest {
     expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond(1));
   }
 
-  public function testItDoesNotConfirmSubscriptionOnDuplicateAttempt() {
+  public function testItUpdatesSubscriptionOnDuplicateAttemptButDoesntSendNotification() {
     $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::never()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscriber = $this->subscriber;
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->firstName = 'First name';
+    $subscriber->unconfirmedData = '{"first_name" : "Updated first name", "email" : "' . $this->subscriber->email . '"}';
+    $subscriber->lastSubscribedAt = Carbon::now()->subDays(10);
+    $subscriber->confirmedAt = Carbon::now()->subDays(10);
     $subscriber->save();
     $subscription = $pages->init($action = false, $this->testData, false, false);
-    expect($subscription->confirm())->false();
+    $subscription->confirm();
+    $confirmedSubscriber = Subscriber::findOne($this->subscriber->id);
+    expect($confirmedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($confirmedSubscriber->confirmedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond(1));
+    expect($confirmedSubscriber->confirmedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond(1));
+    expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond(1));
+    expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond(1));
+    expect($confirmedSubscriber->firstName)->equals('Updated first name');
   }
 
   public function testItSendsWelcomeNotificationUponConfirmingSubscription() {
