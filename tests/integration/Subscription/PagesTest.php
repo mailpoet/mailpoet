@@ -116,10 +116,16 @@ class PagesTest extends \MailPoetTest {
 
     // confirm subscription and ensure that welcome email is scheduled
     $subscription->confirm();
-    $scheduledNotification = SendingQueue::findTaskByNewsletterId($newsletter->id)
+    $scheduledNotifications = SendingQueue::findTaskByNewsletterId($newsletter->id)
       ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
-      ->findOne();
-    expect($scheduledNotification)->notEmpty();
+      ->findMany();
+    expect(count($scheduledNotifications))->equals(1);
+    // Does not schedule another on repeated confirmation
+    $subscription->confirm();
+    $scheduledNotifications = SendingQueue::findTaskByNewsletterId($newsletter->id)
+      ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
+      ->findMany();
+    expect(count($scheduledNotifications))->equals(1);
   }
 
   public function testItUnsubscribes() {
