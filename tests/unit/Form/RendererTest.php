@@ -97,4 +97,38 @@ class RendererTest extends \MailPoetUnitTest {
     $recaptcha = $this->htmlParser->findByXpath($html, "//div[@class='mailpoet_recaptcha']");
     expect($recaptcha->length)->equals(0);
   }
+
+  public function testItShouldNotRenderStylesForFormWithoutSettings() {
+    $form = Fixtures::get('simple_form_body');
+    $styles = $this->renderer->renderFormElementStyles($form);
+    expect($styles)->equals('');
+  }
+
+  public function testItShouldRenderBackgroundColour() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['backgroundColor' => 'red'];
+    $styles = $this->renderer->renderFormElementStyles($form);
+    expect($styles)->equals('background-color: red');
+  }
+
+  public function testItShouldRenderFontColour() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['fontColor' => 'red'];
+    $styles = $this->renderer->renderFormElementStyles($form);
+    expect($styles)->equals('color: red');
+  }
+
+  public function testItShouldRenderBorder() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['borderSize' => '22', 'borderColor' => 'red'];
+    $styles = $this->renderer->renderFormElementStyles($form);
+    expect($styles)->equals('border: 22px solid red');
+  }
+
+  public function testItShouldRenderBorderWithRadius() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['borderSize' => '22', 'borderColor' => 'red', 'borderRadius' => '11'];
+    $styles = $this->renderer->renderFormElementStyles($form);
+    expect($styles)->equals('border: 22px solid red;border-radius: 11px');
+  }
 }

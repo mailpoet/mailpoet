@@ -107,6 +107,14 @@ class Renderer {
       $styles[] = 'color: ' . trim($formSettings['fontColor']);
     }
 
+    if (isset($formSettings['borderSize']) && isset($formSettings['borderColor'])) {
+      $styles[] = 'border: ' . $formSettings['borderSize'] . 'px solid ' . $formSettings['borderColor'];
+    }
+
+    if (isset($formSettings['borderRadius'])) {
+      $styles[] = 'border-radius: ' . $formSettings['borderRadius'] . 'px';
+    }
+
     return join(';', $styles);
   }
 }
