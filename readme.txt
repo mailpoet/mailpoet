@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.3
-Stable tag: 3.46.10
+Stable tag: 3.46.11
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.46.11 - 2020-04-21 =
+* Added: fixed bar form type is now available;
+* Fixed: no more false alarms reported by some anti-viruses;
+* Fixed: the "Send a test email" button is now working again;
+* Fixed: iframes in 3rd party plugins (including Divi, Elementor, and others) are no longer broken.
 
 = 3.46.10 - 2020-04-15 =
 * Fixed: sending multiple stats emails.
