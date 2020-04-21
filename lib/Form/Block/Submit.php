@@ -22,7 +22,7 @@ class Submit {
     $this->stylesRenderer = $stylesRenderer;
   }
 
-  public function render(array $block): string {
+  public function render(array $block, array $formSettings): string {
     $html = '';
 
     $html .= '<input type="submit" class="mailpoet_submit" ';
@@ -31,7 +31,7 @@ class Submit {
 
     $html .= 'data-automation-id="subscribe-submit-button" ';
 
-    $styles = $this->stylesRenderer->renderForButton($block['styles'] ?? []);
+    $styles = $this->stylesRenderer->renderForButton($block['styles'] ?? [], $formSettings);
 
     if ($styles) {
       $html .= 'style="' . $styles . '" ';

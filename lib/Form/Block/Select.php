@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -16,10 +17,19 @@ class Select {
   /** @var BlockWrapperRenderer */
   private $wrapper;
 
-  public function __construct(BlockRendererHelper $rendererHelper, BlockWrapperRenderer $wrapper, WPFunctions $wp) {
+  /** @var BlockStylesRenderer */
+  private $blockStylesRenderer;
+
+  public function __construct(
+    BlockRendererHelper $rendererHelper,
+    BlockWrapperRenderer $wrapper,
+    BlockStylesRenderer $blockStylesRenderer,
+    WPFunctions $wp
+  ) {
     $this->rendererHelper = $rendererHelper;
     $this->wrapper = $wrapper;
     $this->wp = $wp;
+    $this->blockStylesRenderer = $blockStylesRenderer;
   }
 
   public function render(array $block, array $formSettings): string {
@@ -33,7 +43,7 @@ class Select {
       class="mailpoet_select"
       name="' . $fieldName . '" '
       . $automationId
-      . $this->rendererHelper->renderBlockAlignment($formSettings)
+      . 'style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"'
       . '>';
 
     if (isset($block['params']['label_within']) && $block['params']['label_within']) {

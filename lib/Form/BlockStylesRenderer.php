@@ -3,7 +3,7 @@
 namespace MailPoet\Form;
 
 class BlockStylesRenderer {
-  public function renderForTextInput(array $styles): string {
+  public function renderForTextInput(array $styles, array $formSettings = []): string {
     $rules = [];
     if (isset($styles['full_width']) && intval($styles['full_width'])) {
       $rules[] = 'width:100%;';
@@ -23,10 +23,13 @@ class BlockStylesRenderer {
     if (isset($styles['border_color'])) {
       $rules[] = "border-color:{$styles['border_color']};";
     }
+    if (isset($formSettings['inputPadding'])) {
+      $rules[] = "padding:{$formSettings['inputPadding']}px;";
+    }
     return implode('', $rules);
   }
 
-  public function renderForButton(array $styles): string {
+  public function renderForButton(array $styles, array $formSettings = []): string {
     $rules = [];
     if (isset($styles['font_color'])) {
       $rules[] = "color:{$styles['font_color']};";
@@ -37,6 +40,25 @@ class BlockStylesRenderer {
     if (isset($styles['bold']) && $styles['bold'] === '1') {
       $rules[] = "font-weight:bold;";
     }
+    if (isset($formSettings['inputPadding'])) {
+      $rules[] = "padding:{$formSettings['inputPadding']}px;";
+    }
     return $this->renderForTextInput($styles) . implode('', $rules);
+  }
+
+  public function renderForSelect(array $styles, array $formSettings = []): string {
+    $rules = [];
+    if (isset($formSettings['inputPadding'])) {
+      $rules[] = "padding:{$formSettings['inputPadding']}px;";
+    }
+    if (isset($formSettings['alignment'])) {
+      if ($formSettings['alignment'] === 'right') {
+        $rules[] = 'margin: 0 0 0 auto;';
+      }
+      if ($formSettings['alignment'] === 'center') {
+        $rules[] = 'margin: 0 auto;';
+      }
+    }
+    return implode('', $rules);
   }
 }

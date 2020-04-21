@@ -35,11 +35,15 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'background_color' => '#dddddd',
       'bold' => '1',
     ];
-    $result = $this->renderer->renderForTextInput($styles);
+    $settings = [
+      'inputPadding' => '40',
+    ];
+    $result = $this->renderer->renderForTextInput($styles, $settings);
     expect($result)->contains('border-radius:10px;');
     expect($result)->contains('border-color:#fff;');
     expect($result)->contains('border-width:10px;');
     expect($result)->contains('background-color:#dddddd;');
+    expect($result)->contains('padding:40px;');
     expect($result)->notContains('font-weight:bold;');
   }
 
@@ -62,7 +66,10 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'font_size' => 8,
       'bold' => '1',
     ];
-    $result = $this->renderer->renderForButton($styles);
+    $settings = [
+      'inputPadding' => '40',
+    ];
+    $result = $this->renderer->renderForButton($styles, $settings);
     expect($result)->contains('border-radius:10px;');
     expect($result)->contains('border-color:#fff;');
     expect($result)->contains('border-width:10px;');
@@ -70,5 +77,12 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     expect($result)->contains('color:#eeeeee;');
     expect($result)->contains('font-size:8px;');
     expect($result)->contains('font-weight:bold;');
+    expect($result)->contains('padding:40px;');
+  }
+
+  public function testItShouldRenderSegmentInputStyles() {
+    expect($this->renderer->renderForSelect([], ['inputPadding' => 10]))->equals('padding:10px;');
+    expect($this->renderer->renderForSelect([], ['alignment' => 'right']))->equals('margin: 0 0 0 auto;');
+    expect($this->renderer->renderForSelect([], ['alignment' => 'center']))->equals('margin: 0 auto;');
   }
 }

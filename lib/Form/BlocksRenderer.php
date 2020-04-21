@@ -150,7 +150,7 @@ class BlocksRenderer {
         break;
 
       case 'submit':
-        $html .= $this->submit->render($block);
+        $html .= $this->submit->render($block, $formSettings);
         break;
     }
     return $html;
