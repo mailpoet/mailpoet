@@ -34,6 +34,7 @@ const getPreviewType = () => (window.localStorage.getItem('mailpoet_form_preview
 
 const FormPreview = () => {
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [previewType, setPreviewType] = useState(getPreviewType());
 
   const formBlocks = useSelect(
     (select) => select('mailpoet-form-editor').getFormBlocks(),
@@ -88,12 +89,12 @@ const FormPreview = () => {
     window.localStorage.setItem('mailpoet_form_preview_last_form_type', type);
   }
 
-  function setPreviewType(type) {
+  function onPreviewTypeChange(type) {
+    setPreviewType(type);
     window.localStorage.setItem('mailpoet_form_preview_last_preview_type', type);
   }
 
   const formType = getFormType(formData.settings);
-  const previewType = getPreviewType();
   const urlData = {
     id: formData.id,
     form_type: formType,
@@ -135,7 +136,7 @@ const FormPreview = () => {
             </label>
           </div>
           <Preview
-            onChange={setPreviewType}
+            onChange={onPreviewTypeChange}
             selectedType={previewType}
           >
             {!iframeLoaded && (
@@ -150,6 +151,11 @@ const FormPreview = () => {
               onLoad={() => setIframeLoaded(true)}
               data-automation-id="form_preview_iframe"
             />
+            {formType === 'sidebar' && previewType === 'desktop' && (
+              <div className="mailpoet_form_preview_disclaimer">
+                {MailPoet.I18n.t('formPreviewSidebarDisclaimer')}
+              </div>
+            )}
           </Preview>
         </>
       )}
