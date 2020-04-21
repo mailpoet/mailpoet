@@ -63,3 +63,7 @@
     width: 100%;
   }
 }
+
+.mailpoet_form_preview_modal_overlay {
+  z-index: 100010; // Boosted z-index to cover Helpscout beacon
+}

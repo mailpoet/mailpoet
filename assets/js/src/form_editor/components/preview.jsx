@@ -108,6 +108,7 @@ const FormPreview = () => {
       onRequestClose={hidePreview}
       fullScreen
       contentClassName="mailpoet_form_preview_modal"
+      overlayClassName="mailpoet_form_preview_modal_overlay"
     >
       {!previewDataSaved && (
         <div className="mailpoet_spinner_wrapper">
