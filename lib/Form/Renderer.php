@@ -115,6 +115,10 @@ class Renderer {
       $styles[] = 'border-radius: ' . $formSettings['borderRadius'] . 'px';
     }
 
+    if (isset($formSettings['formPadding'])) {
+      $styles[] = 'padding: ' . $formSettings['formPadding'] . 'px';
+    }
+
     return join(';', $styles);
   }
 }
