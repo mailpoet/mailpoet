@@ -172,10 +172,15 @@ $form-columns-space-between: 20px;
 }
 
 .mailpoet_widget_preview {
+  align-items: center;
+  display: flex;
   background-color: #ffffff;
+  flex-direction: row;
   height: 100%;
+  justify-content: center;
   left: 0;
   max-width: 100% !important;
+  overflow-y: auto !important;
   position: fixed;
   top: 0;
   width: 100% !important;
@@ -184,9 +189,7 @@ $form-columns-space-between: 20px;
   .widget-area {
     display: block !important;
     float: none !important;
-    margin: 10px auto;
-    max-height: calc(100vh - 60px);
-    overflow-y: auto !important;
+    position: static !important;
     width: 340px;
   }
 }
