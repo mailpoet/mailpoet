@@ -193,9 +193,13 @@ class Scheduler {
       $queue->delete();
       return false;
     }
-    $wpUser = (array)get_userdata($subscriber->wpUserId);
+    $wpUser = get_userdata($subscriber->wpUserId);
+    if ($wpUser === false) {
+      $queue->delete();
+      return false;
+    }
     if ($newsletter->role !== WelcomeScheduler::WORDPRESS_ALL_ROLES
-      && !in_array($newsletter->role, $wpUser['roles'])
+      && !in_array($newsletter->role, ((array)$wpUser)['roles'])
     ) {
       $queue->delete();
       return false;
