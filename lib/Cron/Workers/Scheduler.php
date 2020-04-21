@@ -232,6 +232,9 @@ class Scheduler {
 
   public function createNotificationHistory($newsletterId) {
     $newsletter = Newsletter::findOne($newsletterId);
+    if (!$newsletter instanceof Newsletter) {
+      return false;
+    }
     $notificationHistory = $newsletter->createNotificationHistory();
     return ($notificationHistory->getErrors() === false) ?
       $notificationHistory :
