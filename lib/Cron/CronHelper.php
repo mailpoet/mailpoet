@@ -182,12 +182,16 @@ class CronHelper {
     // proxy where there could be different ports (e.g., host:8080 => guest:80)
     $siteUrl = ($siteUrl) ? $siteUrl : WPFunctions::get()->homeUrl();
     $parsedUrl = parse_url($siteUrl);
+    if (!is_array($parsedUrl)) {
+      throw new \Exception(__('Site URL is unreachable.', 'mailpoet'));
+    }
+
     $scheme = '';
-    if ($parsedUrl['scheme'] === 'https') {
+    if (isset($parsedUrl['scheme']) && ($parsedUrl['scheme'] === 'https')) {
       $scheme = 'ssl://';
     }
     // 1. if site URL does not contain a port, return the URL
-    if (empty($parsedUrl['port'])) return $siteUrl;
+    if (!isset($parsedUrl['port']) || empty($parsedUrl['port'])) return $siteUrl;
     // 2. if site URL contains valid port, try connecting to it
     $fp = @fsockopen($scheme . $parsedUrl['host'], $parsedUrl['port'], $errno, $errstr, 1);
     if ($fp) return $siteUrl;
