@@ -137,7 +137,7 @@ class CronHelper {
    */
   public function isDaemonAccessible() {
     $daemon = $this->getDaemon();
-    if (!$daemon || !isset($daemon['run_accessed_at']) || $daemon['run_accessed_at'] === null) {
+    if (!$daemon || !isset($daemon['run_accessed_at'])) {
       return null;
     }
     if ($daemon['run_accessed_at'] <= (int)$daemon['run_started_at']) {
