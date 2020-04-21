@@ -170,7 +170,7 @@ class MP2Migrator {
    * @return string Result
    */
   public function import() {
-    if (strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
+    if (strpos((string)@ini_get('disable_functions'), 'set_time_limit') === false) {
       @set_time_limit(3600);
     }
     ob_start();
@@ -202,7 +202,7 @@ class MP2Migrator {
     $this->log(sprintf('=== ' . mb_strtoupper(__('End import', 'mailpoet'), 'UTF-8') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     $result = ob_get_contents();
     ob_clean();
-    return $result;
+    return (string)$result;
   }
 
   /**
