@@ -132,6 +132,13 @@ class RendererTest extends \MailPoetUnitTest {
     expect($styles)->equals('padding: 22px');
   }
 
+  public function testItShouldRenderAlignment() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['alignment' => 'right'];
+    $styles = $this->renderer->renderFormElementStyles($form);
+    expect($styles)->equals('text-align: right');
+  }
+
   public function testItShouldRenderBorderWithRadius() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['borderSize' => '22', 'borderColor' => 'red', 'borderRadius' => '11'];

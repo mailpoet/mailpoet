@@ -119,6 +119,10 @@ class Renderer {
       $styles[] = 'padding: ' . $formSettings['formPadding'] . 'px';
     }
 
+    if (isset($formSettings['alignment'])) {
+      $styles[] = 'text-align: ' . $formSettings['alignment'];
+    }
+
     return join(';', $styles);
   }
 }

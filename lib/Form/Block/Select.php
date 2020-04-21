@@ -29,7 +29,12 @@ class Select {
     $automationId = ($block['id'] == 'status') ? 'data-automation-id="form_status"' : '';
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
-    $html .= '<select class="mailpoet_select" name="' . $fieldName . '" ' . $automationId . '>';
+    $html .= '<select
+      class="mailpoet_select"
+      name="' . $fieldName . '" '
+      . $automationId
+      . $this->rendererHelper->renderBlockAlignment($formSettings)
+      . '>';
 
     if (isset($block['params']['label_within']) && $block['params']['label_within']) {
       $label = $this->rendererHelper->getFieldLabel($block);
