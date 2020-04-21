@@ -122,7 +122,13 @@ class CronWorkerRunner {
 
   private function rescheduleOutdated(ScheduledTask $task) {
     $currentTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    $updatedAt = Carbon::createFromTimestamp(strtotime((string)$task->updatedAt));
+    $updated = strtotime((string)$task->updatedAt);
+    if ($updated === false) {
+      // missing updatedAt, consider this task outdated (set year to 2000) and reschedule
+      $updatedAt = Carbon::createFromDate(2000);
+    } else {
+      $updatedAt = Carbon::createFromTimestamp($updated);
+    }
 
     // If the task is running for too long consider it stuck and reschedule
     if (!empty($task->updatedAt) && $updatedAt->diffInMinutes($currentTime, false) > self::TASK_RUN_TIMEOUT) {
