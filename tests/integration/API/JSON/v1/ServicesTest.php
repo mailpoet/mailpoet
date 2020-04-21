@@ -14,7 +14,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\CongratulatoryMssEmailController;
-use MailPoet\Services\SPFCheck;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\WP\Functions as WPFunctions;
@@ -30,32 +29,6 @@ class ServicesTest extends \MailPoetTest {
     $this->servicesEndpoint = $this->diContainer->get(Services::class);
     $this->data = ['key' => '1234567890abcdef'];
     $this->settings = SettingsController::getInstance();
-  }
-
-  public function testItRespondsWithErrorIfSPFCheckFails() {
-    $email = 'spf_test@example.com';
-    $this->settings->set('sender.address', $email);
-
-    $spfCheck = $this->make(
-      SPFCheck::class,
-      ['checkSPFRecord' => false]
-    );
-
-    $servicesEndpoint = $this->createServicesEndpointWithMocks(['spfCheck' => $spfCheck]);
-    $response = $servicesEndpoint->checkSPFRecord([]);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->meta['sender_address'])->equals($email);
-  }
-
-  public function testItRespondsWithSuccessIfSPFCheckPasses() {
-    $spfCheck = $this->make(
-      SPFCheck::class,
-      ['checkSPFRecord' => true]
-    );
-
-    $servicesEndpoint = $this->createServicesEndpointWithMocks(['spfCheck' => $spfCheck]);
-    $response = $servicesEndpoint->checkSPFRecord([]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
   public function testItRespondsWithErrorIfNoMSSKeyIsGiven() {
@@ -572,7 +545,6 @@ class ServicesTest extends \MailPoetTest {
       $mocks['bridge'] ?? $this->diContainer->get(Bridge::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(Analytics::class),
-      $mocks['spfCheck'] ?? $this->diContainer->get(SPFCheck::class),
       $this->diContainer->get(SendingServiceKeyCheck::class),
       $this->diContainer->get(PremiumKeyCheck::class),
       $this->diContainer->get(ServicesChecker::class),

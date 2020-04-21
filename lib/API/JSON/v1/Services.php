@@ -14,7 +14,6 @@ use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\CongratulatoryMssEmailController;
-use MailPoet\Services\SPFCheck;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
@@ -28,9 +27,6 @@ class Services extends APIEndpoint {
 
   /** @var AnalyticsHelper */
   private $analytics;
-
-  /** @var SPFCheck */
-  private $spfCheck;
 
   /** @var DateTime */
   public $dateTime;
@@ -58,7 +54,6 @@ class Services extends APIEndpoint {
     Bridge $bridge,
     SettingsController $settings,
     AnalyticsHelper $analytics,
-    SPFCheck $spfCheck,
     SendingServiceKeyCheck $mssWorker,
     PremiumKeyCheck $premiumWorker,
     ServicesChecker $servicesChecker,
@@ -68,29 +63,12 @@ class Services extends APIEndpoint {
     $this->bridge = $bridge;
     $this->settings = $settings;
     $this->analytics = $analytics;
-    $this->spfCheck = $spfCheck;
     $this->mssWorker = $mssWorker;
     $this->premiumWorker = $premiumWorker;
     $this->dateTime = new DateTime();
     $this->servicesChecker = $servicesChecker;
     $this->congratulatoryMssEmailController = $congratulatoryMssEmailController;
     $this->wp = $wp;
-  }
-
-  public function checkSPFRecord($data = []) {
-    $senderAddress = $this->settings->get('sender.address');
-    $domainName = mb_substr($senderAddress, mb_strpos($senderAddress, '@') + 1);
-
-    $result = $this->spfCheck->checkSPFRecord($domainName);
-
-    if (!$result) {
-      return $this->errorResponse(
-        [APIError::BAD_REQUEST => $this->wp->__('SPF check has failed.', 'mailpoet')],
-        ['sender_address' => $senderAddress]
-      );
-    }
-
-    return $this->successResponse();
   }
 
   public function checkMSSKey($data = []) {
