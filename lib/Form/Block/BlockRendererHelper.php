@@ -130,19 +130,6 @@ class BlockRendererHelper {
     return $rules ? 'style="' . implode("", $rules) . '"' : '';
   }
 
-  public function renderBlockAlignment(array $formSettings) {
-    $rules = [];
-    if (isset($formSettings['alignment'])) {
-      if ($formSettings['alignment'] === 'right') {
-        $rules[] = 'margin: 0 0 0 auto';
-      }
-      if ($formSettings['alignment'] === 'center') {
-        $rules[] = 'margin: 0 auto';
-      }
-    }
-    return $rules ? 'style="' . implode("", $rules) . '"' : '';
-  }
-
   public function renderInputPlaceholder(array $block): string {
     $html = '';
     // if the label is displayed as a placeholder,

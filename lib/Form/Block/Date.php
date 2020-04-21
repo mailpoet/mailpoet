@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
 
 class Date {
@@ -12,9 +13,17 @@ class Date {
   /** @var BlockWrapperRenderer */
   private $wrapper;
 
-  public function __construct(BlockRendererHelper $rendererHelper, BlockWrapperRenderer $wrapper) {
+  /** @var BlockStylesRenderer */
+  private $blockStylesRenderer;
+
+  public function __construct(
+    BlockRendererHelper $rendererHelper,
+    BlockStylesRenderer $blockStylesRenderer,
+    BlockWrapperRenderer $wrapper
+  ) {
     $this->rendererHelper = $rendererHelper;
     $this->wrapper = $wrapper;
+    $this->blockStylesRenderer = $blockStylesRenderer;
   }
 
   public function render(array $block, array $formSettings): string {
@@ -46,7 +55,7 @@ class Date {
     foreach ($dateSelectors as $dateSelector) {
       if ($dateSelector === 'DD') {
         $html .= '<select class="mailpoet_date_day" ';
-        $html .= $this->rendererHelper->renderBlockAlignment($formSettings);
+        $html .= ' style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a day', 'mailpoet'),
         ]);
@@ -55,7 +64,7 @@ class Date {
         $html .= '</select>';
       } else if ($dateSelector === 'MM') {
         $html .= '<select class="mailpoet_select mailpoet_date_month" ';
-        $html .= $this->rendererHelper->renderBlockAlignment($formSettings);
+        $html .= ' style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a month', 'mailpoet'),
         ]);
@@ -64,7 +73,7 @@ class Date {
         $html .= '</select>';
       } else if ($dateSelector === 'YYYY') {
         $html .= '<select class="mailpoet_date_year" ';
-        $html .= $this->rendererHelper->renderBlockAlignment($formSettings);
+        $html .= ' style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a year', 'mailpoet'),
         ]);
