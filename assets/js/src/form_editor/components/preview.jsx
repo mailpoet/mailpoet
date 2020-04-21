@@ -119,7 +119,7 @@ const FormPreview = () => {
         <>
           <div className="mailpoet_form_preview_type_select">
             <label>
-              {MailPoet.I18n.t('formPlacement')}
+              {MailPoet.I18n.t('formPlacementLabel')}
               {' '}
               <select
                 onChange={onChange(setFormType)}
