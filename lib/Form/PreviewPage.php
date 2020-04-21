@@ -99,7 +99,7 @@ class PreviewPage {
       $formPosition = 'top';
     }
     if (!$formPosition && $formType === 'slide_in') {
-      $formPosition = 'left';
+      $formPosition = 'right';
     }
     $templateData['position'] = $formPosition;
     return $this->templateRenderer->render('form/front_end_form.html', $templateData);
