@@ -26,8 +26,8 @@ class DisplayFormInWPContent {
       'page' => 'place_fixed_bar_form_on_all_pages',
     ],
     'slide_in' => [
-      'post' => 'place_slide_in_form_on_all_pages',
-      'page' => 'place_slide_in_form_on_all_posts',
+      'post' => 'place_slide_in_form_on_all_posts',
+      'page' => 'place_slide_in_form_on_all_pages',
     ],
   ];
 
