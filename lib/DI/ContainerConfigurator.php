@@ -239,7 +239,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Services\Bridge::class)->setPublic(true);
     $container->autowire(\MailPoet\Services\AuthorizedEmailsController::class);
     $container->autowire(\MailPoet\Services\CongratulatoryMssEmailController::class);
-    $container->autowire(\MailPoet\Services\SPFCheck::class)->setPublic(true);
     // Tasks
     $container->autowire(\MailPoet\Tasks\State::class);
     // Settings
