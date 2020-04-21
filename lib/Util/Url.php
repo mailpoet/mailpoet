@@ -17,7 +17,10 @@ class Url {
     $queryArgs = $this->wp->addQueryArg(null, null);
 
     // Remove $this->wp->homeUrl() path from add_query_arg
-    if (isset($homeUrl['path'])) {
+    if (
+      is_array($homeUrl)
+      && isset($homeUrl['path'])
+    ) {
       $queryArgs = str_replace($homeUrl['path'], '', $queryArgs);
     }
 
