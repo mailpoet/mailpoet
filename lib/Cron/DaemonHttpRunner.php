@@ -49,7 +49,7 @@ class DaemonHttpRunner {
 
   public function run($requestData) {
     ignore_user_abort(true);
-    if (strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
+    if (strpos((string)@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
     $this->addCacheHeaders();
