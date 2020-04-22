@@ -638,4 +638,32 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.width).to.equal(100);
     expect(block.attributes.height).to.equal(200);
   });
+
+  it('Should map custom field in column', () => {
+    const columnsWithCustomField = { ...nestedColumns };
+    // Add custom field to first column
+    columnsWithCustomField.body[0].body = [customTextInput];
+    // Prepare custom fields definitions
+    const customField = {
+      created_at: '2019-12-10T15:05:06+00:00',
+      id: 1,
+      name: 'Custom Field name',
+      params: {
+        label: 'Street name',
+        required: '1',
+        validate: '',
+      },
+      type: 'text',
+      updated_at: '2019-12-10T15:05:06+00:00',
+    };
+    const customFields = [customField];
+    // Map columns with custom field
+    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, customFields);
+    const [columns] = map([columnsWithCustomField]);
+    const firstColumn = columns.innerBlocks[0];
+    expect(firstColumn.innerBlocks.length).to.be.equal(1);
+    const customFieldBlock = firstColumn.innerBlocks[0];
+    checkBlockBasics(customFieldBlock);
+    expect(customFieldBlock.name).includes('mailpoet-form/custom-text-');
+  });
 });

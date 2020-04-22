@@ -132,9 +132,19 @@ const mapFontSizeSlug = (fontSizeDefinitions, fontSizeValue) => {
   return result ? result.slug : undefined;
 };
 
-const mapColumnBlocks = (data, colorDefinitions, customFields = []) => {
+/**
+ * @param {Object} data - column or columns block data
+ * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
+ * @param {Array.<{name: string, slug: string, size: number}>} fontSizeDefinitions
+ * @param customFields - list of all custom Fields
+ */
+const mapColumnBlocks = (data, fontSizeDefinitions, colorDefinitions, customFields = []) => {
   // eslint-disable-next-line no-use-before-define
-  const mapFormBodyToBlocks = formBodyToBlocksFactory(colorDefinitions, customFields);
+  const mapFormBodyToBlocks = formBodyToBlocksFactory(
+    colorDefinitions,
+    fontSizeDefinitions,
+    customFields
+  );
   const mapped = {
     clientId: generateId(),
     name: `core/${data.type}`,
@@ -191,7 +201,7 @@ export const formBodyToBlocksFactory = (
 
     return data.map((item) => {
       if (['column', 'columns'].includes(item.type)) {
-        return mapColumnBlocks(item, colorDefinitions, customFields);
+        return mapColumnBlocks(item, fontSizeDefinitions, colorDefinitions, customFields);
       }
 
       const mapped = {
