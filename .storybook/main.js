@@ -5,8 +5,15 @@ module.exports = {
   addons: [
     '@storybook/addon-actions',
     '@storybook/addon-links',
-    '@storybook/preset-typescript',
     'storybook-addon-performance/register',
+    {
+      name: '@storybook/preset-typescript',
+      options: {
+        tsLoaderOptions: {
+          configFile: 'tsconfig.storybook.json',
+        },
+      },
+    },
     {
       name: '@storybook/addon-storysource',
       options: {
