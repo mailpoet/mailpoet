@@ -247,6 +247,9 @@ class Pages {
 
   public function setWindowTitle($title, $separator, $separatorLocation = 'right') {
     $titleParts = explode(" $separator ", $title);
+    if (!is_array($titleParts)) {
+      return $title;
+    }
     if ($separatorLocation === 'right') {
       // first part
       $titleParts[0] = $this->setPageTitle($titleParts[0]);
