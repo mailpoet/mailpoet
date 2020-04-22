@@ -72,6 +72,9 @@ class Renderer {
       EHelper::escapeHtmlText($newsletter['preheader']),
       $renderedBody,
     ]);
+    if ($template === null) {
+      $template = '';
+    }
     $templateDom = $this->inlineCSSStyles($template);
     $template = $this->postProcessTemplate($templateDom);
 
@@ -136,7 +139,7 @@ class Renderer {
   /**
    * @param string $template
    * @param string[] $content
-   * @return string|string[]|null
+   * @return string|null
    */
   private function injectContentIntoTemplate($template, $content) {
     return preg_replace_callback('/{{\w+}}/', function($matches) use (&$content) {
