@@ -98,7 +98,7 @@ class ScheduledTask extends Model {
     if (!is_null($this->meta) && !Helpers::isJson($this->meta)) {
       $this->set(
         'meta',
-        json_encode($this->meta)
+        (string)json_encode($this->meta)
       );
     }
     parent::save();

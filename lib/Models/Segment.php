@@ -84,7 +84,7 @@ class Segment extends Model {
   }
 
   public function withSubscribersCount() {
-    $this->subscribersCount = SubscriberSegment::tableAlias('relation')
+    $query = SubscriberSegment::tableAlias('relation')
       ->where('relation.segment_id', $this->id)
       ->join(
         MP_SUBSCRIBERS_TABLE,
@@ -117,8 +117,11 @@ class Segment extends Model {
         Subscriber::STATUS_BOUNCED
       )
       ->whereNull('subscribers.deleted_at')
-      ->findOne()
-      ->asArray();
+      ->findOne();
+
+    if ($query instanceof SubscriberSegment) {
+      $this->subscribersCount = $query->asArray();
+    }
 
     return $this;
   }
