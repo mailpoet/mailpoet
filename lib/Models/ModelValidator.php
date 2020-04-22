@@ -75,7 +75,7 @@ class ModelValidator extends \MailPoetVendor\Sudzy\Engine {
 
   public function validateNonRoleEmail($email) {
     if (!$this->validateEmail($email)) return false;
-    $firstPart = strtolower(substr($email, 0, strpos($email, '@')));
+    $firstPart = strtolower(substr($email, 0, (int)strpos($email, '@')));
     return array_search($firstPart, self::ROLE_EMAILS) === false;
   }
 
