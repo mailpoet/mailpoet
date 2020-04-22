@@ -150,6 +150,7 @@ const FormPreview = () => {
               title={MailPoet.I18n.t('formPreview')}
               onLoad={() => setIframeLoaded(true)}
               data-automation-id="form_preview_iframe"
+              scrolling={formType === 'sidebar' ? 'no' : 'yes'}
             />
             {formType === 'sidebar' && previewType === 'desktop' && (
               <div className="mailpoet_form_preview_disclaimer">
