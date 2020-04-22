@@ -25,7 +25,7 @@ class Export {
   public $dynamicSubscribersGetter;
 
   public function __construct($data) {
-    if (strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
+    if (strpos((string)@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
 
@@ -89,6 +89,9 @@ class Export {
     $processedSubscribers = 0;
     $formattedSubscriberFields = $this->formattedSubscriberFields;
     $cSVFile = fopen($this->exportFile, 'w');
+    if ($cSVFile === false) {
+      throw new \Exception(__('Failed opening file for export.', 'mailpoet'));
+    }
     $formatCSV = function($row) {
       return '"' . str_replace('"', '\"', $row) . '"';
     };
