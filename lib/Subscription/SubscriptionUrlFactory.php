@@ -91,7 +91,7 @@ class SubscriptionUrlFactory {
     $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
 
     $urlParams = parse_url($url);
-    if (empty($urlParams['scheme'])) {
+    if (!is_array($urlParams) || empty($urlParams['scheme'])) {
       $url = $this->wp->getBloginfo('url') . $url;
     }
 
