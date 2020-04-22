@@ -20,7 +20,7 @@
     "stylelint": "stylelint --fix",
     "test": "mocha --require @babel/register tests/javascript/**/*.spec.js",
     "check-types": "tsc --noEmit",
-    "storybook": "start-storybook -p 8083",
+    "storybook": "start-storybook -s ./ -p 8083",
     "build-storybook": "build-storybook"
   },
   "dependencies": {
