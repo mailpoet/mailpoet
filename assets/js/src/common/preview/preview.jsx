@@ -7,19 +7,19 @@ import DesktopIcon from './desktop_icon';
 
 function Preview({
   children,
-  onChange,
-  selectedType,
+  onDisplayTypeChange,
+  selectedDisplayType,
 }) {
-  const [checked, setChecked] = useState(selectedType);
+  const [displayType, setDisplayType] = useState(selectedDisplayType);
   const changeType = (type) => {
-    setChecked(type);
-    onChange(type);
+    setDisplayType(type);
+    onDisplayTypeChange(type);
   };
   return (
     <div className="mailpoet_browser_preview">
       <div className="mailpoet_browser_preview_toggle">
         <a
-          className={classnames('mailpoet_browser_preview_icon', { mailpoet_active: checked === 'desktop' })}
+          className={classnames('mailpoet_browser_preview_icon', { mailpoet_active: displayType === 'desktop' })}
           onClick={(e) => {
             e.preventDefault();
             changeType('desktop');
@@ -31,7 +31,7 @@ function Preview({
           <DesktopIcon />
         </a>
         <a
-          className={classnames('mailpoet_browser_preview_icon', { mailpoet_active: checked === 'mobile' })}
+          className={classnames('mailpoet_browser_preview_icon', { mailpoet_active: displayType === 'mobile' })}
           onClick={(e) => {
             e.preventDefault();
             changeType('mobile');
@@ -46,8 +46,8 @@ function Preview({
       <div
         className={classnames(
           'mailpoet_browser_preview_container',
-          { mailpoet_browser_preview_container_mobile: checked !== 'desktop' },
-          { mailpoet_browser_preview_container_desktop: checked === 'desktop' },
+          { mailpoet_browser_preview_container_mobile: displayType !== 'desktop' },
+          { mailpoet_browser_preview_container_desktop: displayType === 'desktop' },
         )}
       >
         <div className="mailpoet_browser_preview_border">
@@ -60,13 +60,13 @@ function Preview({
 
 Preview.propTypes = {
   children: PropTypes.node.isRequired,
-  onChange: PropTypes.func,
-  selectedType: PropTypes.string,
+  onDisplayTypeChange: PropTypes.func,
+  selectedDisplayType: PropTypes.string,
 };
 
 Preview.defaultProps = {
-  onChange: () => {},
-  selectedType: 'desktop',
+  onDisplayTypeChange: () => {},
+  selectedDisplayType: 'desktop',
 };
 
 export default Preview;
