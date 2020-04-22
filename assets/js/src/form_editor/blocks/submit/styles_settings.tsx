@@ -91,7 +91,7 @@ const StylesSettings = ({
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderRadius')}
-                value={localStyles.borderRadius !== undefined ? localStyles.borderRadius : 1}
+                value={localStyles.borderRadius !== undefined ? localStyles.borderRadius : 0}
                 min={0}
                 max={40}
                 allowReset
