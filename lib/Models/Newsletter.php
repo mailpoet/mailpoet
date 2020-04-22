@@ -119,9 +119,9 @@ class Newsletter extends Model {
       $this->set_expr('deleted_at', 'NULL');
     }
 
-    if (isset($this->body)) {
+    if (isset($this->body) && ($this->body !== false)) {
       if (is_array($this->body)) {
-        $this->body = json_encode($this->body);
+        $this->body = (string)json_encode($this->body);
       }
       $this->set(
         'body',
