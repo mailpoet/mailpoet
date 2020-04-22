@@ -90,7 +90,7 @@ class Captcha {
     $fontNumber = $fontNumbers[mt_rand(0, count($fontNumbers) - 1)];
 
     $reflector = new \ReflectionClass(CaptchaBuilder::class);
-    $captchaDirectory = dirname($reflector->getFileName());
+    $captchaDirectory = dirname((string)$reflector->getFileName());
     $font = $captchaDirectory . '/Font/captcha' . $fontNumber . '.ttf';
 
     $builder = CaptchaBuilder::create()
