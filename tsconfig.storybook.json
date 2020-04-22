@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "./assets/js/src/**/_stories/*.tsx"
+  ]
+}
