@@ -7,7 +7,12 @@ export default {
   component: Button,
 };
 
-export const Text = () => <Button onClick={action('clicked')}>Hello Button</Button>;
+export const Text = () => (
+  <Button onClick={action('clicked')}>
+    Hello Button
+    <img src="/assets/img/handle.png" alt="" />
+  </Button>
+);
 
 export const Emoji = () => (
   <Button onClick={action('clicked')}>
