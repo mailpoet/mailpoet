@@ -17,7 +17,7 @@ class Cookies {
     $options = $options + self::DEFAULT_OPTIONS;
     $value = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     $error = json_last_error();
-    if ($error) {
+    if ($error || ($value === false)) {
       throw new InvalidArgumentException();
     }
 
