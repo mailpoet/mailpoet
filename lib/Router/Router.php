@@ -71,7 +71,11 @@ class Router {
   }
 
   public static function encodeRequestData($data) {
-    return rtrim(base64_encode(json_encode($data)), '=');
+    $jsonEncoded = json_encode($data);
+    if ($jsonEncoded === false) {
+      return '';
+    }
+    return rtrim(base64_encode($jsonEncoded), '=');
   }
 
   public static function buildRequest($endpoint, $action, $data = false) {
