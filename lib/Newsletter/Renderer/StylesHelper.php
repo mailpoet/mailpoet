@@ -101,7 +101,7 @@ class StylesHelper {
     if (is_array($block)) {
       $textAlignment = isset($block['styles']['block']['textAlign']) ?
         strtolower($block['styles']['block']['textAlign']) :
-        false;
+        '';
       if (preg_match('/center|right|justify/i', $textAlignment)) {
         return $block;
       }
