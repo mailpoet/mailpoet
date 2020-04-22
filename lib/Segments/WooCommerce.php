@@ -139,8 +139,11 @@ class WooCommerce {
     if ($collation1 === $collation2) {
       return false;
     }
-    $charset1 = substr($collation1, 0, strpos($collation1, '_'));
-    $charset2 = substr($collation2, 0, strpos($collation2, '_'));
+    $collation1UnderscorePos = strpos($collation1, '_');
+    $collation2UnderscorePos = strpos($collation2, '_');
+
+    $charset1 = substr($collation1, 0, $collation1UnderscorePos === false ? strlen($collation1) : $collation1UnderscorePos);
+    $charset2 = substr($collation2, 0, $collation2UnderscorePos === false ? strlen($collation2) : $collation2UnderscorePos);
     return $charset1 === $charset2;
   }
 
