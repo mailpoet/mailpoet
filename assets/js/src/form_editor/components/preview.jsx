@@ -136,8 +136,8 @@ const FormPreview = () => {
             </label>
           </div>
           <Preview
-            onChange={onPreviewTypeChange}
-            selectedType={previewType}
+            onDisplayTypeChange={onPreviewTypeChange}
+            selectedDisplayType={previewType}
           >
             {!iframeLoaded && (
               <div className="mailpoet_spinner_wrapper">
