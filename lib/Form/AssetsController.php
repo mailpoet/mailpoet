@@ -38,6 +38,9 @@ class AssetsController {
     echo '<script src="' . self::RECAPTCHA_API_URL . '" async defer></script>';
     $scripts = ob_get_contents();
     ob_end_clean();
+    if ($scripts === false) {
+      return '';
+    }
     return $scripts;
   }
 
