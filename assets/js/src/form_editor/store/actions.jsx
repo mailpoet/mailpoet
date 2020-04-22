@@ -1,3 +1,6 @@
+import { select } from '@wordpress/data';
+import { blocksToFormBodyFactory } from './blocks_to_form_body';
+import mapFormDataBeforeSaving from './map_form_data_before_saving';
 
 export function toggleSidebar(toggleTo) {
   return {
@@ -122,10 +125,32 @@ export function saveFormFailed(message = undefined) {
   };
 }
 
-export function showPreview() {
-  return {
+export function* showPreview() {
+  yield {
     type: 'SHOW_PREVIEW',
   };
+  const editorSettings = select('core/block-editor').getSettings();
+  const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
+  const formData = select('mailpoet-form-editor').getFormData();
+  const formBlocks = select('mailpoet-form-editor').getFormBlocks();
+  const blocksToFormBody = blocksToFormBodyFactory(
+    editorSettings.colors,
+    editorSettings.fontSizes,
+    customFields
+  );
+  const { success, error } = yield {
+    type: 'CALL_API',
+    endpoint: 'forms',
+    action: 'previewEditor',
+    data: {
+      ...mapFormDataBeforeSaving(formData),
+      body: blocksToFormBody(formBlocks),
+    },
+  };
+  if (!success) {
+    return { type: 'PREVIEW_DATA_NOT_SAVED', error };
+  }
+  return { type: 'PREVIEW_DATA_SAVED' };
 }
 
 export function hidePreview() {
@@ -203,17 +228,4 @@ export function* applyStylesToAllTextInputs(styles) {
     type: 'APPLY_STYLES_TO_ALL_TEXT_INPUTS',
     styles,
   };
-}
-
-export function* savePreviewData(data) {
-  const { success, error } = yield {
-    type: 'CALL_API',
-    endpoint: 'forms',
-    action: 'previewEditor',
-    data,
-  };
-  if (!success) {
-    return { type: 'PREVIEW_DATA_NOT_SAVED', error };
-  }
-  return { type: 'PREVIEW_DATA_SAVED' };
 }
