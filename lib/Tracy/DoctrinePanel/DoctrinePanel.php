@@ -78,6 +78,9 @@ class DoctrinePanel implements IBarPanel {
     // highlight keywords
     $keywords = new MySQLKeywords();
     $tokens = preg_split('/(\s+)/', $sql, -1, PREG_SPLIT_DELIM_CAPTURE);
+    if ($tokens === false) {
+      return $sql;
+    }
     $output = '';
     foreach ($tokens as $token) {
       $output .= $keywords->isKeyword($token) ? ('<strong style="color:blue">' . $token . '</strong>') : $token;
@@ -89,7 +92,7 @@ class DoctrinePanel implements IBarPanel {
     return preg_replace(
       '#^\s{4}#m', '', // remove 1rst "tab" of the JSON result
       substr(
-        json_encode($data, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK),
+        (string)json_encode($data, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK),
         2, // remove "[\n"
         -2 // remove "\n]"
       )
