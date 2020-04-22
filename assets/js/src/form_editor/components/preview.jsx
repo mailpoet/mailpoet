@@ -1,7 +1,6 @@
 import React, {
   useEffect,
   useState,
-  useCallback,
 } from 'react';
 import MailPoet from 'mailpoet';
 import { Spinner } from '@wordpress/components';
@@ -9,8 +8,6 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import Preview from '../../common/preview/preview.jsx';
 import Modal from '../../common/modal/modal.jsx';
-import { blocksToFormBodyFactory } from '../store/blocks_to_form_body.jsx';
-import mapFormDataBeforeSaving from '../store/map_form_data_before_saving.jsx';
 import { onChange } from '../../common/functions';
 
 function getFormType(settings) {
@@ -36,51 +33,24 @@ const FormPreview = () => {
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [previewType, setPreviewType] = useState(getPreviewType());
 
-  const formBlocks = useSelect(
-    (select) => select('mailpoet-form-editor').getFormBlocks(),
-    []
-  );
-  const customFields = useSelect(
-    (select) => select('mailpoet-form-editor').getAllAvailableCustomFields(),
-    []
-  );
-  const formData = useSelect(
-    (select) => select('mailpoet-form-editor').getFormData(),
-    []
-  );
-  const { hidePreview, savePreviewData } = useDispatch('mailpoet-form-editor');
+  const { hidePreview } = useDispatch('mailpoet-form-editor');
   const isPreview = useSelect(
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
     []
   );
-  const previewDataSaved = useSelect(
-    (select) => select('mailpoet-form-editor').getPreviewDataSaved(),
+  const isPreviewReady = useSelect(
+    (select) => select('mailpoet-form-editor').getIsPreviewReady(),
     []
   );
 
-  const editorSettings = useSelect(
-    (select) => select('core/block-editor').getSettings(),
+  const formData = useSelect(
+    (select) => select('mailpoet-form-editor').getFormData(),
     []
   );
-
-  const saveFormDataForPreview = useCallback(() => {
-    const blocksToFormBody = blocksToFormBodyFactory(
-      editorSettings.colors,
-      editorSettings.fontSizes,
-      customFields
-    );
-    savePreviewData({
-      ...mapFormDataBeforeSaving(formData),
-      body: blocksToFormBody(formBlocks),
-    });
-  }, [formBlocks, customFields, formData, editorSettings, savePreviewData]);
 
   useEffect(() => {
-    if (isPreview) {
-      saveFormDataForPreview();
-    }
     setIframeLoaded(false);
-  }, [isPreview, saveFormDataForPreview]);
+  }, [isPreview]);
 
   if (!isPreview) return null;
 
@@ -111,12 +81,12 @@ const FormPreview = () => {
       contentClassName="mailpoet_form_preview_modal"
       overlayClassName="mailpoet_form_preview_modal_overlay"
     >
-      {!previewDataSaved && (
+      {!isPreviewReady && (
         <div className="mailpoet_spinner_wrapper">
           <Spinner />
         </div>
       )}
-      {previewDataSaved && (
+      {isPreviewReady && (
         <>
           <div className="mailpoet_form_preview_type_select">
             <label>

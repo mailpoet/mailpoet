@@ -6,15 +6,15 @@ export const showPreview = (state) => ({
 export const hidePreview = (state) => ({
   ...state,
   isPreviewShown: false,
-  previewDataSaved: false,
+  isPreviewReady: false,
 });
 
 export const previewDataSaved = (state) => ({
   ...state,
-  previewDataSaved: true,
+  isPreviewReady: true,
 });
 
 export const previewDataNotSaved = (state) => ({
   ...state,
-  previewDataSaved: false,
+  isPreviewReady: false,
 });
