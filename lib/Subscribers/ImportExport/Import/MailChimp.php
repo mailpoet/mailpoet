@@ -35,6 +35,9 @@ class MailChimp {
       $response = '';
       while (!feof($connection)) {
         $buffer = fgets($connection, 4096);
+        if (!is_string($buffer)) {
+          return $this->throwException('connection');
+        }
         if (trim($buffer) !== '') {
           $response .= $buffer;
         }
@@ -81,8 +84,8 @@ class MailChimp {
       $i = 0;
       while (!feof($connection)) {
         $buffer = fgets($connection, 4096);
-        if (trim($buffer) !== '') {
-          $obj = json_decode($buffer);
+        if (trim((string)$buffer) !== '') {
+          $obj = json_decode((string)$buffer);
           if ($i === 0) {
             $header = $obj;
             if (is_object($header) && isset($header->error)) {
@@ -100,7 +103,7 @@ class MailChimp {
           }
           $i++;
         }
-        $bytesFetched += strlen($buffer);
+        $bytesFetched += strlen((string)$buffer);
         if ($bytesFetched > $this->maxPostSize) {
           return $this->throwException('size');
         }
