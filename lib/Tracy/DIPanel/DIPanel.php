@@ -10,10 +10,10 @@ use Tracy\IBarPanel;
 
 class DIPanel implements IBarPanel {
 
-  /** @var string[] */
+  /** @var array<int, int|string> */
   private $freeServices = [];
 
-  /** @var string[] */
+  /** @var array<int, int|string> */
   private $premiumServices = [];
 
   /** @var \MailPoetVendor\Symfony\Component\DependencyInjection\Definition[] */
@@ -68,7 +68,7 @@ class DIPanel implements IBarPanel {
 
   /**
    * For each service finds all of its arguments recursively and makes them an array
-   * @param string[] $services
+   * @param array<int, int|string> $services
    * @return array
    */
   private function flattenArguments($services) {
@@ -82,7 +82,7 @@ class DIPanel implements IBarPanel {
 
   /**
    * Find all argument of each service and adds them to $results array, repeats recursively
-   * @param string $service
+   * @param int|string $service
    * @param string[] $results
    */
   private function getAllArguments($service, &$results) {
