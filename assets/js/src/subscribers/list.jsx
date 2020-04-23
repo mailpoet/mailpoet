@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import HelpTooltip from 'help-tooltip.jsx';
 
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
@@ -375,6 +376,17 @@ class SubscriberList extends React.Component {
             {MailPoet.I18n.t('export')}
           </a>
         </h1>
+        {window.mailpoet_subscribers_limit && (
+          <h3>
+            {MailPoet.I18n.t('subscribersInPlan')
+              .replace('%$1d', window.mailpoet_subscribers_limit.toLocaleString())}
+            {' '}
+            <HelpTooltip
+              tooltip={MailPoet.I18n.t('subscribersInPlanTooltip')}
+              place="right"
+            />
+          </h3>
+        )}
 
         <SubscribersLimitNotice />
         <InvalidMssKeyNotice
