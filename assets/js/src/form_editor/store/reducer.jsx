@@ -12,6 +12,7 @@ import {
   hidePreview,
   previewDataSaved,
   previewDataNotSaved,
+  changePreviewSettings,
 } from './reducers/preview.jsx';
 import saveFormDone from './reducers/save_form_done.jsx';
 import saveFormFailed from './reducers/save_form_failed.jsx';
@@ -41,6 +42,7 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'CHANGE_FORM_NAME': return changeFormName(state, action);
     case 'CHANGE_FORM_SETTINGS': return changeFormSettings(state, action);
     case 'CHANGE_FORM_STYLES': return changeFormStyles(state, action);
+    case 'CHANGE_PREVIEW_SETTINGS': return changePreviewSettings(state, action);
     case 'CUSTOM_FIELD_EDITED': return customFieldEdited(state);
     case 'REMOVE_NOTICE': return removeNotice(state, action);
     case 'SHOW_PREVIEW': return showPreview(state, action);

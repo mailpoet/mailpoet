@@ -52,6 +52,28 @@ export default {
   getIsPreviewReady(state) {
     return state.isPreviewReady;
   },
+  getPreviewSettings(state) {
+    // Use previously used value
+    if (state.previewSettings) {
+      return state.previewSettings;
+    }
+    // Otherwise create one based on settings
+    const previewSettings = {
+      displayType: 'desktop',
+      formType: 'sidebar',
+    };
+    const settings = state.formData.settings;
+    if (settings.placeFormBellowAllPages || settings.placeFormBellowAllPosts) {
+      previewSettings.formType = 'below_post';
+    }
+    if (settings.placePopupFormOnAllPages || settings.placePopupFormOnAllPosts) {
+      previewSettings.formType = 'popup';
+    }
+    if (settings.placeFixedBarFormOnAllPages || settings.placeFixedBarFormOnAllPosts) {
+      previewSettings.formType = 'fixed_bar';
+    }
+    return previewSettings;
+  },
   getIsCustomFieldSaving(state) {
     return state.isCustomFieldSaving;
   },
