@@ -60,7 +60,7 @@ export default {
     // Otherwise create one based on settings
     const previewSettings = {
       displayType: 'desktop',
-      formType: 'sidebar',
+      formType: 'others',
     };
     const settings = state.formData.settings;
     if (settings.placeFormBellowAllPages || settings.placeFormBellowAllPosts) {

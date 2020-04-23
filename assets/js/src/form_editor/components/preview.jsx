@@ -79,7 +79,7 @@ const FormPreview = () => {
                 value={previewSettings.formType}
                 data-automation-id="form_type_selection"
               >
-                <option value="sidebar">{MailPoet.I18n.t('placeFormSidebar')}</option>
+                <option value="others">{MailPoet.I18n.t('placeFormOthers')}</option>
                 <option value="below_post">{MailPoet.I18n.t('placeFormBellowPages')}</option>
                 <option value="fixed_bar">{MailPoet.I18n.t('placeFixedBarFormOnPages')}</option>
                 <option value="popup">{MailPoet.I18n.t('placePopupFormOnPages')}</option>
@@ -102,11 +102,11 @@ const FormPreview = () => {
               title={MailPoet.I18n.t('formPreview')}
               onLoad={() => setIframeLoaded(true)}
               data-automation-id="form_preview_iframe"
-              scrolling={previewSettings.formType === 'sidebar' ? 'no' : 'yes'}
+              scrolling={previewSettings.formType === 'others' ? 'no' : 'yes'}
             />
-            {previewSettings.formType === 'sidebar' && previewSettings.displayType === 'desktop' && (
+            {previewSettings.formType === 'others' && previewSettings.displayType === 'desktop' && (
               <div className="mailpoet_form_preview_disclaimer">
-                {MailPoet.I18n.t('formPreviewSidebarDisclaimer')}
+                {MailPoet.I18n.t('formPreviewOthersDisclaimer')}
               </div>
             )}
           </Preview>
