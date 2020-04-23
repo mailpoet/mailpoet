@@ -21,12 +21,12 @@
   }
 
   .mailpoet_preview_icon_fill {
-    fill: #e5e9f8;
+    fill: rgba($color-primary-icon, .3);
   }
 
   &.mailpoet_active {
     .mailpoet_preview_icon_fill {
-      fill: #071c6d;
+      fill: $color-primary-icon;
     }
   }
 }
