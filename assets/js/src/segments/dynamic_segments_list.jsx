@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import Listing from 'listing/listing.jsx';
 import PropTypes from 'prop-types';
+import HelpTooltip from 'help-tooltip.jsx';
 import Tabs from './tabs';
 
 const columns = [
@@ -123,6 +124,18 @@ function DynamicSegmentList(props) {
         <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
         <Link className="page-title-action" to="/new-segment" data-automation-id="new-segment">{MailPoet.I18n.t('newSegment')}</Link>
       </h1>
+
+      {window.mailpoet_subscribers_limit && (
+        <h3>
+          {MailPoet.I18n.t('subscribersInPlan')
+            .replace('%$1d', window.mailpoet_subscribers_limit.toLocaleString())}
+          {' '}
+          <HelpTooltip
+            tooltip={MailPoet.I18n.t('subscribersInPlanTooltip')}
+            place="right"
+          />
+        </h3>
+      )}
 
       <Tabs />
 
