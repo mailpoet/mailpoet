@@ -4,6 +4,7 @@ import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
+import HelpTooltip from 'help-tooltip.jsx';
 import Listing from 'listing/listing.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from '../notices/invalid_mss_key_notice';
@@ -307,6 +308,18 @@ class SegmentList extends React.Component {
           mssKeyInvalid={window.mailpoet_mss_key_invalid}
           subscribersCount={window.mailpoet_subscribers_count}
         />
+
+        {window.mailpoet_subscribers_limit && (
+          <h3>
+            {MailPoet.I18n.t('subscribersInPlan')
+              .replace('%$1d', window.mailpoet_subscribers_limit.toLocaleString())}
+            {' '}
+            <HelpTooltip
+              tooltip={MailPoet.I18n.t('subscribersInPlanTooltip')}
+              place="right"
+            />
+          </h3>
+        )}
 
         <Tabs />
 
