@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import HelpTooltip from 'help-tooltip.jsx';
 
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
@@ -11,6 +10,7 @@ import Listing from 'listing/listing.jsx';
 import Selection from 'form/fields/selection.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
+import SubscribersLimit from '../common/subscribers_limit';
 
 const columns = [
   {
@@ -376,17 +376,8 @@ class SubscriberList extends React.Component {
             {MailPoet.I18n.t('export')}
           </a>
         </h1>
-        {window.mailpoet_subscribers_limit && (
-          <h3>
-            {MailPoet.I18n.t('subscribersInPlan')
-              .replace('%$1d', window.mailpoet_subscribers_limit.toLocaleString())}
-            {' '}
-            <HelpTooltip
-              tooltip={MailPoet.I18n.t('subscribersInPlanTooltip')}
-              place="right"
-            />
-          </h3>
-        )}
+
+        <SubscribersLimit subscribersLimit={window.mailpoet_subscribers_limit} />
 
         <SubscribersLimitNotice />
         <InvalidMssKeyNotice
