@@ -40,7 +40,6 @@ export default function KeyActivation() {
       notices.error(<p>{t('premiumTabNoKeyNotice')}</p>, { scroll: true });
       return;
     }
-    const isUserTriggered = event.isTrusted;
     await setState({
       mssStatus: null,
       premiumStatus: null,
@@ -48,14 +47,12 @@ export default function KeyActivation() {
     });
     MailPoet.Modal.loading(true);
     setState({ inProgress: true });
-    await verifyMssKey(state.key, isUserTriggered);
+    await verifyMssKey(state.key);
     await sendCongratulatoryMssEmail();
     await verifyPremiumKey(state.key);
     setState({ inProgress: false });
     MailPoet.Modal.loading(false);
-    if (isUserTriggered) {
-      setState({ fromAddressModalCanBeShown: true });
-    }
+    setState({ fromAddressModalCanBeShown: true });
   };
 
   return (
@@ -94,7 +91,7 @@ export default function KeyActivation() {
               <MssMessages
                 keyMessage={state.mssMessage}
                 activationCallback={async () => {
-                  await verifyMssKey(state.key, true);
+                  await verifyMssKey(state.key);
                   sendCongratulatoryMssEmail();
                   setState({ fromAddressModalCanBeShown: true });
                 }}

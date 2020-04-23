@@ -9,7 +9,7 @@ export function updateKeyActivationState(fields: Partial<KeyActivationState>): A
   return { type: 'UPDATE_KEY_ACTIVATION_STATE', fields };
 }
 
-export function* verifyMssKey(key: string, activateMssIfKeyValid: boolean) {
+export function* verifyMssKey(key: string) {
   const { success, error, res } = yield {
     type: 'CALL_API',
     endpoint: 'services',
@@ -25,25 +25,22 @@ export function* verifyMssKey(key: string, activateMssIfKeyValid: boolean) {
   const fields: Partial<KeyActivationState> = {
     mssMessage: res.data.message || null,
   };
-  if (activateMssIfKeyValid) {
-    const call = yield {
-      type: 'CALL_API',
-      endpoint: 'settings',
-      action: 'set',
-      data: {
-        mta_group: 'mailpoet',
-        mta: { method: 'MailPoet', mailpoet_api_key: key },
-        signup_confirmation: { enabled: '1' },
-      },
-    };
-    if (!call.success) {
-      fields.mssStatus = MssStatus.VALID_MSS_NOT_ACTIVE;
-    } else {
-      yield setSettings(call.res.data);
-      fields.mssStatus = MssStatus.VALID_MSS_ACTIVE;
-    }
-  } else {
+
+  const call = yield {
+    type: 'CALL_API',
+    endpoint: 'settings',
+    action: 'set',
+    data: {
+      mta_group: 'mailpoet',
+      mta: { method: 'MailPoet', mailpoet_api_key: key },
+      signup_confirmation: { enabled: '1' },
+    },
+  };
+  if (!call.success) {
     fields.mssStatus = MssStatus.VALID_MSS_NOT_ACTIVE;
+  } else {
+    yield setSettings(call.res.data);
+    fields.mssStatus = MssStatus.VALID_MSS_ACTIVE;
   }
   return updateKeyActivationState(fields);
 }
