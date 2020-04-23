@@ -10,30 +10,9 @@ import Preview from '../../common/preview/preview.jsx';
 import Modal from '../../common/modal/modal.jsx';
 import { onChange } from '../../common/functions';
 
-function getFormType(settings) {
-  const storedValue = window.localStorage.getItem('mailpoet_form_preview_last_form_type');
-  if (storedValue) {
-    return storedValue;
-  }
-  if (settings.placeFormBellowAllPages || settings.placeFormBellowAllPosts) {
-    return 'below_post';
-  }
-  if (settings.placePopupFormOnAllPages || settings.placePopupFormOnAllPosts) {
-    return 'popup';
-  }
-  if (settings.placeFixedBarFormOnAllPages || settings.placeFixedBarFormOnAllPosts) {
-    return 'fixed_bar';
-  }
-  return 'sidebar';
-}
-
-const getPreviewType = () => (window.localStorage.getItem('mailpoet_form_preview_last_preview_type') || 'desktop');
-
 const FormPreview = () => {
   const [iframeLoaded, setIframeLoaded] = useState(false);
-  const [previewType, setPreviewType] = useState(getPreviewType());
-
-  const { hidePreview } = useDispatch('mailpoet-form-editor');
+  const { hidePreview, changePreviewSettings } = useDispatch('mailpoet-form-editor');
   const isPreview = useSelect(
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
     []
@@ -43,8 +22,13 @@ const FormPreview = () => {
     []
   );
 
-  const formData = useSelect(
-    (select) => select('mailpoet-form-editor').getFormData(),
+  const previewSettings = useSelect(
+    (select) => select('mailpoet-form-editor').getPreviewSettings(),
+    []
+  );
+
+  const formId = useSelect(
+    (select) => select('mailpoet-form-editor').getFormData().id,
     []
   );
 
@@ -56,23 +40,21 @@ const FormPreview = () => {
 
   function setFormType(type) {
     setIframeLoaded(false);
-    window.localStorage.setItem('mailpoet_form_preview_last_form_type', type);
+    changePreviewSettings({ ...previewSettings, formType: type });
   }
 
   function onPreviewTypeChange(type) {
-    setPreviewType(type);
-    window.localStorage.setItem('mailpoet_form_preview_last_preview_type', type);
+    changePreviewSettings({ ...previewSettings, displayType: type });
   }
 
-  const formType = getFormType(formData.settings);
   const urlData = {
-    id: formData.id,
-    form_type: formType,
+    id: formId,
+    form_type: previewSettings.formType,
   };
   let iframeSrc = `${window.mailpoet_form_preview_page}&data=${btoa(JSON.stringify(urlData))}`;
   // Add anchor to scroll to certain types of form
-  if (['below_post'].includes(formType)) {
-    iframeSrc += `#mailpoet_form_preview_${formData.id}`;
+  if (['below_post'].includes(previewSettings.formType)) {
+    iframeSrc += `#mailpoet_form_preview_${formId}`;
   }
   return (
     <Modal
@@ -94,7 +76,7 @@ const FormPreview = () => {
               {' '}
               <select
                 onChange={onChange(setFormType)}
-                value={formType}
+                value={previewSettings.formType}
                 data-automation-id="form_type_selection"
               >
                 <option value="sidebar">{MailPoet.I18n.t('placeFormSidebar')}</option>
@@ -107,7 +89,7 @@ const FormPreview = () => {
           </div>
           <Preview
             onDisplayTypeChange={onPreviewTypeChange}
-            selectedDisplayType={previewType}
+            selectedDisplayType={previewSettings.displayType}
           >
             {!iframeLoaded && (
               <div className="mailpoet_spinner_wrapper">
@@ -120,9 +102,9 @@ const FormPreview = () => {
               title={MailPoet.I18n.t('formPreview')}
               onLoad={() => setIframeLoaded(true)}
               data-automation-id="form_preview_iframe"
-              scrolling={formType === 'sidebar' ? 'no' : 'yes'}
+              scrolling={previewSettings.formType === 'sidebar' ? 'no' : 'yes'}
             />
-            {formType === 'sidebar' && previewType === 'desktop' && (
+            {previewSettings.formType === 'sidebar' && previewSettings.displayType === 'desktop' && (
               <div className="mailpoet_form_preview_disclaimer">
                 {MailPoet.I18n.t('formPreviewSidebarDisclaimer')}
               </div>

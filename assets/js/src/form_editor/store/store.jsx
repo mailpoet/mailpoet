@@ -18,6 +18,13 @@ const formBodyToBlocks = formBodyToBlocksFactory(
   window.mailpoet_custom_fields
 );
 
+let previewSettings = null;
+try {
+  previewSettings = JSON.parse(window.localStorage.getItem('mailpoet_form_preview_settings'));
+} catch (e) {
+  // We just keep it null
+}
+
 export default () => {
   const formData = { ...window.mailpoet_form_data };
   const formBlocks = formBodyToBlocks(formData.body);
@@ -47,6 +54,7 @@ export default () => {
       activeTab: 'form',
       openedPanels: ['basic-settings'],
     },
+    previewSettings,
   };
 
   const config = {

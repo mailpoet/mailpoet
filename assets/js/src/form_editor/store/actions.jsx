@@ -153,6 +153,18 @@ export function* showPreview() {
   return { type: 'PREVIEW_DATA_SAVED' };
 }
 
+export function* changePreviewSettings(settings) {
+  yield {
+    type: 'STORE_LOCALLY',
+    key: 'mailpoet_form_preview_settings',
+    value: settings,
+  };
+  return {
+    type: 'CHANGE_PREVIEW_SETTINGS',
+    settings,
+  };
+}
+
 export function hidePreview() {
   return {
     type: 'HIDE_PREVIEW',

@@ -198,5 +198,9 @@ export default {
     dispatch('core/block-editor').resetBlocks(fixedBlocks);
   },
 
+  STORE_LOCALLY({ key, value }) {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  },
+
   CALL_API,
 };

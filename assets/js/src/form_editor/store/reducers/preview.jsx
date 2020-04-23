@@ -18,3 +18,8 @@ export const previewDataNotSaved = (state) => ({
   ...state,
   isPreviewReady: false,
 });
+
+export const changePreviewSettings = (state, { settings }) => ({
+  ...state,
+  previewSettings: settings,
+});
