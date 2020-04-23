@@ -25,11 +25,13 @@ class PHPVersionWarnings {
     $errorString = __('Your website is running on PHP %s which MailPoet does not officially support. Read our [link]simple PHP upgrade guide[/link] or let MailPoet’s support team upgrade it for you.', 'mailpoet');
     $errorString = sprintf($errorString, $phpVersion);
     $getInTouchString = __('[link]Yes, I want MailPoet to help me upgrade for free[/link]', 'mailpoet');
-    $error = Helpers::replaceLinkTags($errorString, 'https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version', ['target' => '_blank']);
+    $error = Helpers::replaceLinkTags($errorString, 'https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version', [
+      'target' => '_blank',
+      'data-beacon-article' => '5ad5f8982c7d3a0e93676666',
+    ]);
     $error .= '<br><br>' . Helpers::replaceLinkTags($getInTouchString, 'https://www.mailpoet.com/let-us-handle-your-php-upgrade/', [
       'target' => '_blank',
       'class' => 'button',
-      'data-beacon-article' => '5ad5f8982c7d3a0e93676666',
     ]);
 
     $extraClasses = 'mailpoet-dismissible-notice is-dismissible';
