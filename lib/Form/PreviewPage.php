@@ -54,7 +54,10 @@ class PreviewPage {
     );
   }
 
-  public function renderTitle() {
+  public function renderTitle($title = null, $id = null) {
+    if ($id !== $this->wp->getTheId()) {
+      return $title;
+    }
     return __('Sample page to preview your form', 'mailpoet');
   }
 

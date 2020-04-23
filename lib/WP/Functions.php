@@ -273,6 +273,13 @@ class Functions {
   }
 
   /**
+   * @return false|int
+   */
+  public function getTheId() {
+    return get_the_ID();
+  }
+
+  /**
    * @param  int|\WP_User $userId
    */
   public function getUserLocale($userId = 0) {
