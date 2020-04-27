@@ -12,12 +12,14 @@ class Subscription {
   const ACTION_CONFIRM = 'confirm';
   const ACTION_MANAGE = 'manage';
   const ACTION_UNSUBSCRIBE = 'unsubscribe';
+  const ACTION_CONFIRM_UNSUBSCRIBE = 'confirmUnsubscribe';
   public $allowedActions = [
     self::ACTION_CAPTCHA,
     self::ACTION_CAPTCHA_IMAGE,
     self::ACTION_CONFIRM,
     self::ACTION_MANAGE,
     self::ACTION_UNSUBSCRIBE,
+    self::ACTION_CONFIRM_UNSUBSCRIBE,
   ];
   public $permissions = [
     'global' => AccessControl::NO_ACCESS_RESTRICTION,
@@ -45,6 +47,10 @@ class Subscription {
   public function confirm($data) {
     $subscription = $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM, $data);
     $subscription->confirm();
+  }
+
+  public function confirmUnsubscribe($data) {
+    $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM_UNSUBSCRIBE, $data);
   }
 
   public function manage($data) {
