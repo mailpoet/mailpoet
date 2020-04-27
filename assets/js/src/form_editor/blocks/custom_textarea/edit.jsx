@@ -15,6 +15,7 @@ import CustomFieldSettings from '../custom_text/custom_field_settings.jsx';
 import formatLabel from '../label_formatter.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
+import convertAlignmentToMargin from '../convert_alignment_to_margin';
 
 const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
   const settings = useSelect(
@@ -132,6 +133,11 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
 
   if (settings.inputPadding !== undefined) {
     inputStyles.padding = settings.inputPadding;
+  }
+
+  if (settings.alignment !== undefined) {
+    inputStyles.textAlign = settings.alignment;
+    inputStyles.margin = convertAlignmentToMargin(inputStyles.textAlign);
   }
 
   inputStyles.resize = 'none';
