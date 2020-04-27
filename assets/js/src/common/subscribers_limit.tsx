@@ -4,10 +4,12 @@ import HelpTooltip from 'help-tooltip.jsx';
 
 type Props = {
   subscribersLimit: number | false,
+  hasValidApiKey: boolean,
 };
 
-const SubscribersLimit = ({ subscribersLimit }: Props) => {
+const SubscribersLimit = ({ subscribersLimit, hasValidApiKey }: Props) => {
   if (!subscribersLimit) return null;
+  if (!hasValidApiKey) return null;
   return (
     <h3>
       {MailPoet.I18n.t('subscribersInPlan')
