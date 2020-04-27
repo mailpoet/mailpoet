@@ -187,7 +187,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 = 3.46.12 - 2020-04-27 =
 * Added: congrats email received when you successfully applied an API key;
 * Added: slide-in form type is now available;
-* Improved: form previews are now shown in the theme;
+* Improved: form previews now use your site's theme;
 * Improved: segments are moved to lists page;
 * Fixed: form custom fields now render correctly in multiple columns. Thanks Ryan!
 
