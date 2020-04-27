@@ -27,7 +27,7 @@ class Textarea {
 
   public function render(array $block, array $formSettings): string {
     $html = '';
-    $styles = $this->inputStylesRenderer->renderForTextInput($block['styles'] ?? []);
+    $styles = $this->inputStylesRenderer->renderForTextInput($block['styles'] ?? [], $formSettings);
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
