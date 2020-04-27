@@ -377,7 +377,10 @@ class SubscriberList extends React.Component {
           </a>
         </h1>
 
-        <SubscribersLimit subscribersLimit={window.mailpoet_subscribers_limit} />
+        <SubscribersLimit
+          subscribersLimit={window.mailpoet_subscribers_limit}
+          hasValidApiKey={window.mailpoet_has_valid_api_key}
+        />
 
         <SubscribersLimitNotice />
         <InvalidMssKeyNotice

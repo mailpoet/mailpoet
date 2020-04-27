@@ -309,7 +309,10 @@ class SegmentList extends React.Component {
           subscribersCount={window.mailpoet_subscribers_count}
         />
 
-        <SubscribersLimit subscribersLimit={window.mailpoet_subscribers_limit} />
+        <SubscribersLimit
+          subscribersLimit={window.mailpoet_subscribers_limit}
+          hasValidApiKey={window.mailpoet_has_valid_api_key}
+        />
 
         <Tabs />
 
