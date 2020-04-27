@@ -14,6 +14,7 @@ import ParagraphEdit from '../paragraph_edit.jsx';
 import formatLabel from '../label_formatter.jsx';
 import CustomFieldSettings from '../custom_radio/custom_field_settings.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
+import convertAlignmentToMargin from '../convert_alignment_to_margin';
 
 const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
   const settings = useSelect(
@@ -104,12 +105,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
 
     if (settings.alignment !== undefined) {
       inputStyles.textAlign = settings.alignment;
-      if (inputStyles.textAlign === 'right') {
-        inputStyles.margin = '0 0 0 auto';
-      }
-      if (inputStyles.textAlign === 'center') {
-        inputStyles.margin = '0 auto';
-      }
+      inputStyles.margin = convertAlignmentToMargin(inputStyles.textAlign);
     }
 
     return (

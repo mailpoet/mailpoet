@@ -4,6 +4,7 @@ import { useSelect } from '@wordpress/data';
 import ParagraphEdit from './paragraph_edit.jsx';
 import formatLabel from './label_formatter.jsx';
 import { inputStylesPropTypes } from './input_styles_settings.jsx';
+import convertAlignmentToMargin from './convert_alignment_to_margin';
 
 const TextInputEdit = ({
   label,
@@ -33,6 +34,15 @@ const TextInputEdit = ({
 
   if (settings.inputPadding !== undefined) {
     inputStyles.padding = settings.inputPadding;
+  }
+
+  if (settings.inputPadding !== undefined) {
+    inputStyles.padding = settings.inputPadding;
+  }
+
+  if (settings.alignment !== undefined) {
+    inputStyles.textAlign = settings.alignment;
+    inputStyles.margin = convertAlignmentToMargin(inputStyles.textAlign);
   }
 
   if (styles.fullWidth) {
