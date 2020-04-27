@@ -303,15 +303,15 @@ class SegmentList extends React.Component {
           <Link className="page-title-action" to="/new-segment" data-automation-id="new-segment">{MailPoet.I18n.t('newSegment')}</Link>
         </h1>
 
+        <SubscribersLimit
+          subscribersLimit={window.mailpoet_subscribers_limit}
+          hasValidApiKey={window.mailpoet_has_valid_api_key}
+        />
+
         <SubscribersLimitNotice />
         <InvalidMssKeyNotice
           mssKeyInvalid={window.mailpoet_mss_key_invalid}
           subscribersCount={window.mailpoet_subscribers_count}
-        />
-
-        <SubscribersLimit
-          subscribersLimit={window.mailpoet_subscribers_limit}
-          hasValidApiKey={window.mailpoet_has_valid_api_key}
         />
 
         <Tabs />

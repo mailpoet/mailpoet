@@ -126,7 +126,10 @@ function DynamicSegmentList(props) {
         <Link className="page-title-action" to="/new-segment" data-automation-id="new-segment">{MailPoet.I18n.t('newSegment')}</Link>
       </h1>
 
-      <SubscribersLimit subscribersLimit={window.mailpoet_subscribers_limit} />
+      <SubscribersLimit
+        subscribersLimit={window.mailpoet_subscribers_limit}
+        hasValidApiKey={window.mailpoet_has_valid_api_key}
+      />
 
       <Tabs />
 
