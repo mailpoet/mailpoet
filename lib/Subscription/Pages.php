@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Form\AssetsController;
 use MailPoet\Form\Block\Date as FormBlockDate;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -21,6 +22,7 @@ class Pages {
   const DEMO_EMAIL = 'demo@mailpoet.com';
   const ACTION_CAPTCHA = 'captcha';
   const ACTION_CONFIRM = 'confirm';
+  const ACTION_CONFIRM_UNSUBSCRIBE = 'confirm_unsubscribe';
   const ACTION_MANAGE = 'manage';
   const ACTION_UNSUBSCRIBE = 'unsubscribe';
 
@@ -61,6 +63,9 @@ class Pages {
   /** @var FormBlockDate */
   private $dateBlock;
 
+  /** @var TemplateRenderer */
+  private $templateRenderer;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -72,7 +77,8 @@ class Pages {
     SubscriptionUrlFactory $subscriptionUrlFactory,
     AssetsController $assetsController,
     FormRenderer $formRenderer,
-    FormBlockDate $dateBlock
+    FormBlockDate $dateBlock,
+    TemplateRenderer $templateRenderer
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -85,6 +91,7 @@ class Pages {
     $this->assetsController = $assetsController;
     $this->formRenderer = $formRenderer;
     $this->dateBlock = $dateBlock;
+    $this->templateRenderer = $templateRenderer;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -209,6 +216,9 @@ class Pages {
         case self::ACTION_CONFIRM:
           return $this->getConfirmTitle();
 
+        case self::ACTION_CONFIRM_UNSUBSCRIBE:
+          return $this->getConfirmUnsubscribeTitle();
+
         case self::ACTION_MANAGE:
           return $this->getManageTitle();
 
@@ -237,6 +247,9 @@ class Pages {
           break;
         case self::ACTION_CONFIRM:
           $content = $this->getConfirmContent();
+          break;
+        case self::ACTION_CONFIRM_UNSUBSCRIBE:
+          $content = $this->getConfirmUnsubscribeContent();
           break;
         case self::ACTION_MANAGE:
           $content = $this->getManageContent();
@@ -304,6 +317,12 @@ class Pages {
   private function getUnsubscribeTitle() {
     if ($this->isPreview() || $this->subscriber !== false) {
       return $this->wp->__("You are now unsubscribed.", 'mailpoet');
+    }
+  }
+
+  private function getConfirmUnsubscribeTitle() {
+    if ($this->isPreview() || $this->subscriber !== false) {
+      return $this->wp->__("Confirm you want to unsubscribe.", 'mailpoet');
     }
   }
 
@@ -522,6 +541,13 @@ class Pages {
       $content .= '</strong></p>';
     }
     return $content;
+  }
+
+  private function getConfirmUnsubscribeContent() {
+    $templateData = [
+      'unsubscribeUrl' => $this->subscriptionUrlFactory->getUnsubscribeUrl($this->subscriber),
+    ];
+    return $this->templateRenderer->render('subscription/confirm_unsubscribe.html', $templateData);
   }
 
   public function getManageLink($params) {

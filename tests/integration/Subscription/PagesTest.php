@@ -4,6 +4,7 @@ namespace MailPoet\Test\Subscription;
 
 use Codeception\Stub;
 use Codeception\Util\Fixtures;
+use MailPoet\Config\Renderer;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\AssetsController;
 use MailPoet\Form\Block\Date as FormBlockDate;
@@ -178,7 +179,8 @@ class PagesTest extends \MailPoetTest {
       $container->get(SubscriptionUrlFactory::class),
       $container->get(AssetsController::class),
       $container->get(FormRenderer::class),
-      $container->get(FormBlockDate::class)
+      $container->get(FormBlockDate::class),
+      $container->get(Renderer::class)
     );
   }
 }
