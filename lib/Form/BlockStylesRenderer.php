@@ -26,6 +26,9 @@ class BlockStylesRenderer {
     if (isset($formSettings['inputPadding'])) {
       $rules[] = "padding:{$formSettings['inputPadding']}px;";
     }
+    if (isset($formSettings['alignment'])) {
+      $rules[] = $this->convertAlignmentToMargin($formSettings['alignment']);
+    }
     return implode('', $rules);
   }
 
@@ -43,6 +46,9 @@ class BlockStylesRenderer {
     if (isset($formSettings['inputPadding'])) {
       $rules[] = "padding:{$formSettings['inputPadding']}px;";
     }
+    if (isset($formSettings['alignment'])) {
+      $rules[] = $this->convertAlignmentToMargin($formSettings['alignment']);
+    }
     return $this->renderForTextInput($styles) . implode('', $rules);
   }
 
@@ -52,13 +58,18 @@ class BlockStylesRenderer {
       $rules[] = "padding:{$formSettings['inputPadding']}px;";
     }
     if (isset($formSettings['alignment'])) {
-      if ($formSettings['alignment'] === 'right') {
-        $rules[] = 'margin: 0 0 0 auto;';
-      }
-      if ($formSettings['alignment'] === 'center') {
-        $rules[] = 'margin: 0 auto;';
-      }
+      $rules[] = $this->convertAlignmentToMargin($formSettings['alignment']);
     }
     return implode('', $rules);
+  }
+
+  private function convertAlignmentToMargin(string $alignment): string {
+    if ($alignment === 'right') {
+      return 'margin: 0 0 0 auto;';
+    }
+    if ($alignment === 'center') {
+      return 'margin: 0 auto;';
+    }
+    return 'margin: 0 auto;';
   }
 }
