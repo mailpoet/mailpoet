@@ -42,7 +42,9 @@
       "vendor-prefixed/swiftmailer"
     ],
     "files": [
-      "lib-3rd-party/ArrayColumn.php"
+      "lib-3rd-party/ArrayColumn.php",
+      "vendor-prefixed/symfony/polyfill-php72/bootstrap.php",
+      "vendor-prefixed/symfony/polyfill-mbstring/bootstrap.php",
     ],
     "psr-4": {
       "MailPoet\\": "lib/",

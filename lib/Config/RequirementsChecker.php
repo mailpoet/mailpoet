@@ -9,7 +9,6 @@ use MailPoet\WP\Notice as WPNotice;
 class RequirementsChecker {
   const TEST_FOLDER_PERMISSIONS = 'TempAndCacheFolderCreation';
   const TEST_PDO_EXTENSION = 'PDOExtension';
-  const TEST_MBSTRING_EXTENSION = 'MbstringExtension';
   const TEST_XML_EXTENSION = 'XmlExtension';
   const TEST_VENDOR_SOURCE = 'VendorSource';
 
@@ -28,7 +27,6 @@ class RequirementsChecker {
     $availableTests = [
       self::TEST_PDO_EXTENSION,
       self::TEST_FOLDER_PERMISSIONS,
-      self::TEST_MBSTRING_EXTENSION,
       self::TEST_XML_EXTENSION,
       self::TEST_VENDOR_SOURCE,
     ];
@@ -75,13 +73,6 @@ class RequirementsChecker {
       ['target' => '_blank']
     );
     return $this->processError($error);
-  }
-
-  public function checkMbstringExtension() {
-    if (!extension_loaded('mbstring')) {
-      require_once Env::$utilPath . '/Polyfills.php';
-    }
-    return true;
   }
 
   public function checkXmlExtension() {
