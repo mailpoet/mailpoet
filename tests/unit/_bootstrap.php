@@ -1,8 +1,5 @@
 <?php
 
-// register Swiftmailer's autoloader (not done via composer in the prefixed version)
-require_once __DIR__ . '/../../vendor-prefixed/swiftmailer/swiftmailer/lib/swift_required.php';
-
 if (!function_exists('__')) {
   function __($text) {
     return $text;
