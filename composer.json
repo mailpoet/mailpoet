@@ -60,15 +60,14 @@
   "scripts": {
     "pre-install-cmd": [
       "@php tools/install.php",
-      "mkdir -p vendor-prefixed"
+      "./prefixer/process.sh"
     ],
     "pre-update-cmd": [
       "@php tools/install.php",
-      "mkdir -p vendor-prefixed"
+      "./prefixer/process.sh"
     ],
     "post-update-cmd": [
       "@fixPHPUnit65MocksForPHP74",
-      "./prefixer/process.sh",
       "@fixDoctrineForPHP74",
       "./tools/vendor/composer.phar dump-autoload",
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
@@ -76,7 +75,6 @@
     ],
     "post-install-cmd": [
       "@fixPHPUnit65MocksForPHP74",
-      "./prefixer/process.sh",
       "@fixDoctrineForPHP74",
       "./tools/vendor/composer.phar dump-autoload",
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
