@@ -4,7 +4,7 @@ import MailPoet from 'mailpoet';
 import formatCustomFieldBlockName from './format_custom_field_block_name.jsx';
 import getCustomFieldBlocksSettings from './custom_fields_blocks.jsx';
 
-import * as divider from './divider/divider.jsx';
+import * as divider from './divider/divider';
 import * as email from './email/email.jsx';
 import * as submit from './submit/submit.jsx';
 import * as firstName from './first_name/first_name.jsx';
