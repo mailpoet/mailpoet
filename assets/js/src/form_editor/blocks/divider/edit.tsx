@@ -9,9 +9,14 @@ import {
   SelectControl,
   ToggleControl,
 } from '@wordpress/components';
-import { Style, Types } from './divider';
+import { Attributes, Style, Types } from './divider';
 
-const DividerEdit = ({ attributes, setAttributes }) => {
+type Props = {
+  attributes: Attributes,
+  setAttributes: (attribute) => void,
+};
+
+const DividerEdit = ({ attributes, setAttributes }: Props) => {
   const dividerSettings = (
     <>
       <SelectControl

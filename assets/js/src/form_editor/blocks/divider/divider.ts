@@ -13,6 +13,16 @@ export enum Style {
   Dotted = 'dotted',
 }
 
+export interface Attributes {
+  className: string,
+  height: number;
+  type: Types;
+  style: Style;
+  dividerHeight: number;
+  dividerWidth: number;
+  color: string;
+}
+
 export const name = 'mailpoet-form/divider';
 
 export const settings = {
