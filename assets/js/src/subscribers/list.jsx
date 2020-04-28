@@ -10,7 +10,7 @@ import Listing from 'listing/listing.jsx';
 import Selection from 'form/fields/selection.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
-import SubscribersLimit from '../common/subscribers_limit';
+import SubscribersInPlan from '../common/subscribers_in_plan';
 
 const columns = [
   {
@@ -377,7 +377,7 @@ class SubscriberList extends React.Component {
           </a>
         </h1>
 
-        <SubscribersLimit
+        <SubscribersInPlan
           subscribersInPlan={window.mailpoet_subscribers_in_plan_count}
           hasValidApiKey={window.mailpoet_has_valid_api_key}
         />

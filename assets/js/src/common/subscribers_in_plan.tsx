@@ -7,7 +7,7 @@ type Props = {
   hasValidApiKey: boolean,
 };
 
-const SubscribersLimit = ({ subscribersInPlan, hasValidApiKey }: Props) => {
+const SubscribersInPlan = ({ subscribersInPlan, hasValidApiKey }: Props) => {
   if (!subscribersInPlan) return null;
   if (!hasValidApiKey) return null;
   return (
@@ -23,4 +23,4 @@ const SubscribersLimit = ({ subscribersInPlan, hasValidApiKey }: Props) => {
   );
 };
 
-export default SubscribersLimit;
+export default SubscribersInPlan;

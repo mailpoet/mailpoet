@@ -5,7 +5,7 @@ import Listing from 'listing/listing.jsx';
 import PropTypes from 'prop-types';
 import Tabs from './tabs';
 
-import SubscribersLimit from '../common/subscribers_limit';
+import SubscribersInPlan from '../common/subscribers_in_plan';
 
 const columns = [
   {
@@ -126,7 +126,7 @@ function DynamicSegmentList(props) {
         <Link className="page-title-action" to="/new-segment" data-automation-id="new-segment">{MailPoet.I18n.t('newSegment')}</Link>
       </h1>
 
-      <SubscribersLimit
+      <SubscribersInPlan
         subscribersInPlan={window.mailpoet_subscribers_in_plan_count}
         hasValidApiKey={window.mailpoet_has_valid_api_key}
       />
