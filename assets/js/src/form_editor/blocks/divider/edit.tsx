@@ -32,9 +32,11 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
     </>
   );
 
-  const dividerStyles = {};
+  const dividerStyles = {} as React.CSSProperties;
   if (attributes.type === Types.Divider) {
     dividerStyles.borderTopStyle = attributes.style;
+    dividerStyles.height = 1;
+    dividerStyles.width = '100%';
   }
 
   return (
@@ -68,6 +70,11 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
         className={classnames('mailpoet_spacer', attributes.className)}
         style={{
           height: attributes.height,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+          justifyContent: 'center',
         }}
       >
         <div className="mailpoet_divider" style={dividerStyles} />
