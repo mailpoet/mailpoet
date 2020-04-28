@@ -2,6 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import MailPoet from 'mailpoet';
 import { InspectorControls } from '@wordpress/block-editor';
+import ColorSettings from 'form_editor/components/color_settings';
 import {
   Panel,
   PanelBody,
@@ -50,6 +51,11 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
         allowReset
         onChange={(dividerWidth) => (setAttributes({ dividerWidth }))}
       />
+      <ColorSettings
+        name={MailPoet.I18n.t('blockDividerColor')}
+        value={attributes.color}
+        onChange={(color) => (setAttributes({ color }))}
+      />
     </>
   );
 
@@ -57,6 +63,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
   if (attributes.type === Types.Divider) {
     dividerStyles.borderTopStyle = attributes.style;
     dividerStyles.borderTopWidth = attributes.dividerHeight;
+    dividerStyles.borderTopColor = attributes.color;
     dividerStyles.height = attributes.dividerHeight;
     dividerStyles.width = `${attributes.dividerWidth}%`;
   }
