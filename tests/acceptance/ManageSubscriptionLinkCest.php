@@ -78,6 +78,9 @@ class ManageSubscriptionLinkCest {
     );
     $i->click('Unsubscribe');
     $i->switchToNextTab();
+    $confirmUnsubscribeLink = '[data-automation-id="confirm-unsubscribe"]';
+    $i->waitForElement($confirmUnsubscribeLink);
+    $i->click($confirmUnsubscribeLink);
     $i->waitForText('You are now unsubscribed');
     $i->click('Manage your subscription');
     $i->seeOptionIsSelected($formStatusElement, 'Unsubscribed');

@@ -11,6 +11,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
+use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
@@ -24,12 +25,13 @@ require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 class ShortcodesTest extends \MailPoetTest {
   public $newsletterId;
-  public $shortcodesObject;
   public $wPPost;
   public $wPUser;
   public $renderedNewsletter;
   public $newsletter;
   public $subscriber;
+  /** @var Shortcodes */
+  private $shortcodesObject;
   /** @var SettingsController */
   private $settings;
   /** @var SubscriptionUrlFactory */
@@ -46,7 +48,7 @@ class ShortcodesTest extends \MailPoetTest {
     $this->wPPost = $this->_createWPPost();
     $this->subscriber = $this->_createSubscriber();
     $this->newsletter = $this->_createNewsletter();
-    $this->shortcodesObject = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
+    $this->shortcodesObject = new Shortcodes(
       $this->newsletter,
       $this->subscriber
     );
@@ -257,6 +259,9 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodesObject = $this->shortcodesObject;
     $result =
       $shortcodesObject->process(['[link:subscription_unsubscribe_url]']);
+    expect($result['0'])->regExp('/^http.*?action=confirm_unsubscribe/');
+    $result =
+      $shortcodesObject->process(['[link:subscription_instant_unsubscribe_url]']);
     expect($result['0'])->regExp('/^http.*?action=unsubscribe/');
     $result =
       $shortcodesObject->process(['[link:subscription_manage_url]']);
@@ -269,18 +274,22 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItReturnsShortcodeWhenTrackingEnabled() {
     $shortcodesObject = $this->shortcodesObject;
+    // Returns URL when tracking is not enabled
     $shortcode = '[link:subscription_unsubscribe_url]';
     $result =
       $shortcodesObject->process([$shortcode]);
-    expect($result['0'])->regExp('/^http.*?action=unsubscribe/');
+    expect($result['0'])->regExp('/^http.*?action=confirm_unsubscribe/');
+    // Returns shortcodes when tracking enabled
     $this->settings->set('tracking.enabled', true);
     $initialShortcodes = [
       '[link:subscription_unsubscribe_url]',
+      '[link:subscription_instant_unsubscribe_url]',
       '[link:subscription_manage_url]',
       '[link:newsletter_view_in_browser_url]',
     ];
     $expectedTransformedShortcodes = [
       '[link:subscription_unsubscribe_url]',
+      '[link:subscription_instant_unsubscribe_url]',
       '[link:subscription_manage_url]',
       '[link:newsletter_view_in_browser_url]',
     ];
@@ -303,10 +312,12 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodesObject->wpUserPreview = true;
     $shortcodes = [
       '[link:subscription_unsubscribe_url]',
+      '[link:subscription_instant_unsubscribe_url]',
       '[link:subscription_manage_url]',
       '[link:newsletter_view_in_browser_url]',
     ];
     $links = [
+      $this->subscriptionUrlFactory->getConfirmUnsubscribeUrl(null),
       $this->subscriptionUrlFactory->getUnsubscribeUrl(null),
       $this->subscriptionUrlFactory->getManageUrl(null),
       NewsletterUrl::getViewInBrowserUrl($this->newsletter),

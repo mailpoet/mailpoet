@@ -885,7 +885,7 @@ class NewslettersTest extends \MailPoetTest {
         Mailer::class,
         [
           'send' => function ($newsletter, $subscriber, $extraParams) {
-            $unsubscribeLink = $this->subscriptionUrlFactory->getUnsubscribeUrl(null);
+            $unsubscribeLink = $this->subscriptionUrlFactory->getConfirmUnsubscribeUrl(null);
             $manageLink = $this->subscriptionUrlFactory->getManageUrl(null);
             $viewInBrowserLink = Url::getViewInBrowserUrl($this->newsletter);
             $mailerMetaInfo = new MetaInfo;
