@@ -8,7 +8,7 @@ import Listing from 'listing/listing.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from '../notices/invalid_mss_key_notice';
 import Tabs from './tabs';
-import SubscribersLimit from '../common/subscribers_limit';
+import SubscribersInPlan from '../common/subscribers_in_plan';
 
 const isWPUsersSegment = (segment) => segment.type === 'wp_users';
 const isWooCommerceCustomersSegment = (segment) => segment.type === 'woocommerce_users';
@@ -303,7 +303,7 @@ class SegmentList extends React.Component {
           <Link className="page-title-action" to="/new-segment" data-automation-id="new-segment">{MailPoet.I18n.t('newSegment')}</Link>
         </h1>
 
-        <SubscribersLimit
+        <SubscribersInPlan
           subscribersInPlan={window.mailpoet_subscribers_in_plan_count}
           hasValidApiKey={window.mailpoet_has_valid_api_key}
         />
