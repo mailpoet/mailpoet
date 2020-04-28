@@ -16,6 +16,7 @@ use MailPoet\Form\Util\Styles;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Form;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
@@ -163,6 +164,7 @@ class Populator {
     $this->scheduleBeamer();
     $this->updateLastSubscribedAt();
     $this->enableStatsNotificationsForAutomatedEmails();
+    $this->updateSentUnsubscribeLinksToInstantUnsubscribeLinks();
 
     $this->scheduleUnsubscribeTokens();
     $this->scheduleSubscriberLinkTokens();
@@ -676,6 +678,20 @@ class Populator {
     $settings = $this->settings->get(Worker::SETTINGS_KEY);
     $settings['automated'] = true;
     $this->settings->set(Worker::SETTINGS_KEY, $settings);
+  }
+
+  private function updateSentUnsubscribeLinksToInstantUnsubscribeLinks() {
+    if (version_compare($this->settings->get('db_version', '3.46.13'), '3.46.12', '>')) {
+      return;
+    }
+    $query = "UPDATE `%s` SET `url` = '%s' WHERE `url` = '%s';";
+    global $wpdb;
+    $wpdb->query(sprintf(
+      $query,
+      NewsletterLink::$_table,
+      NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
+      NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE
+    ));
   }
 
   private function moveGoogleAnalyticsFromPremium() {
