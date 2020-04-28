@@ -35,7 +35,7 @@ export default function TestSending() {
           type="button"
           id="mailpoet_mta_test"
           className="button-secondary"
-          onClick={() => sendTestEmail(fromAddress, mailer)}
+          onClick={() => sendTestEmail(email, mailer)}
         >
           {t('sendTestEmail')}
         </button>
