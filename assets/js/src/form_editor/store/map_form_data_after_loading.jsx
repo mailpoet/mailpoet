@@ -1,11 +1,4 @@
-function asNum(num) {
-  const numI = parseInt(num, 10);
-  if (Number.isNaN(numI)) {
-    return undefined;
-  }
-  return numI;
-}
-
+import asNum from './server_value_as_num';
 
 export default function mapFormDataAfterLoading(data) {
   return {
