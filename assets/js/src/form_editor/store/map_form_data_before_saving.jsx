@@ -16,6 +16,11 @@ export default function mapFormDataBeforeSaving(data) {
       place_slide_in_form_on_all_posts: data.settings.placeSlideInFormOnAllPosts === true ? '1' : '',
       slide_in_form_delay: data.settings.slideInFormDelay,
       slide_in_form_position: data.settings.slideInFormPosition,
+      border_radius: data.settings.borderRadius,
+      border_size: data.settings.borderSize,
+      form_padding: data.settings.formPadding,
+      input_padding: data.settings.inputPadding,
+      border_color: data.settings.borderColor,
     },
   };
 
@@ -32,6 +37,11 @@ export default function mapFormDataBeforeSaving(data) {
   delete mappedData.settings.placeSlideInFormOnAllPosts;
   delete mappedData.settings.slideInFormDelay;
   delete mappedData.settings.slideInFormPosition;
+  delete mappedData.settings.borderRadius;
+  delete mappedData.settings.borderSize;
+  delete mappedData.settings.formPadding;
+  delete mappedData.settings.inputPadding;
+  delete mappedData.settings.borderColor;
 
   return mappedData;
 }

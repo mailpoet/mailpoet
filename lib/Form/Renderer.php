@@ -107,16 +107,16 @@ class Renderer {
       $styles[] = 'color: ' . trim($formSettings['fontColor']);
     }
 
-    if (isset($formSettings['borderSize']) && isset($formSettings['borderColor'])) {
-      $styles[] = 'border: ' . $formSettings['borderSize'] . 'px solid ' . $formSettings['borderColor'];
+    if (isset($formSettings['border_size']) && isset($formSettings['border_color'])) {
+      $styles[] = 'border: ' . $formSettings['border_size'] . 'px solid ' . $formSettings['border_color'];
     }
 
-    if (isset($formSettings['borderRadius'])) {
-      $styles[] = 'border-radius: ' . $formSettings['borderRadius'] . 'px';
+    if (isset($formSettings['border_radius'])) {
+      $styles[] = 'border-radius: ' . $formSettings['border_radius'] . 'px';
     }
 
-    if (isset($formSettings['formPadding'])) {
-      $styles[] = 'padding: ' . $formSettings['formPadding'] . 'px';
+    if (isset($formSettings['form_padding'])) {
+      $styles[] = 'padding: ' . $formSettings['form_padding'] . 'px';
     }
 
     if (isset($formSettings['alignment'])) {

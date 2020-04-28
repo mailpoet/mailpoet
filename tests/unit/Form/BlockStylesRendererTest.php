@@ -36,7 +36,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'bold' => '1',
     ];
     $settings = [
-      'inputPadding' => '40',
+      'input_padding' => '40',
     ];
     $result = $this->renderer->renderForTextInput($styles, $settings);
     expect($result)->contains('border-radius:10px;');
@@ -67,7 +67,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'bold' => '1',
     ];
     $settings = [
-      'inputPadding' => '40',
+      'input_padding' => '40',
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
     expect($result)->contains('border-radius:10px;');
@@ -81,7 +81,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderSegmentInputStyles() {
-    expect($this->renderer->renderForSelect([], ['inputPadding' => 10]))->equals('padding:10px;');
+    expect($this->renderer->renderForSelect([], ['input_padding' => 10]))->equals('padding:10px;');
     expect($this->renderer->renderForSelect([], ['alignment' => 'right']))->equals('margin: 0 0 0 auto;');
     expect($this->renderer->renderForSelect([], ['alignment' => 'center']))->equals('margin: 0 auto;');
   }

@@ -25,10 +25,11 @@ export default function mapFormDataAfterLoading(data) {
       placeSlideInFormOnAllPosts: data.settings.place_slide_in_form_on_all_posts === '1',
       slideInFormDelay: asNum(data.settings.slide_in_form_delay),
       slideInFormPosition: data.settings.slide_in_form_position,
-      borderRadius: asNum(data.settings.borderRadius),
-      borderSize: asNum(data.settings.borderSize),
-      formPadding: asNum(data.settings.formPadding),
-      inputPadding: asNum(data.settings.inputPadding),
+      borderRadius: asNum(data.settings.border_radius),
+      borderSize: asNum(data.settings.border_size),
+      formPadding: asNum(data.settings.form_padding),
+      inputPadding: asNum(data.settings.input_padding),
+      borderColor: data.settings.border_color,
     },
   };
 }
