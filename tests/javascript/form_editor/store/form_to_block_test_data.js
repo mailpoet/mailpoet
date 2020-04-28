@@ -169,7 +169,15 @@ export const divider = {
   id: 'divider',
   unique: '0',
   static: '0',
-  params: '',
+  params: {
+    class_name: null,
+    height: '12',
+    type: 'spacer',
+    style: 'dotted',
+    divider_height: '23',
+    divider_width: '34',
+    color: 'red',
+  },
   position: null,
 };
 

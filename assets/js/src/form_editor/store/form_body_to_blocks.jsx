@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { has } from 'lodash';
+import asNum from './server_value_as_num';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 
 const generateId = () => (`${Math.random().toString()}-${Date.now()}`);
@@ -123,8 +124,8 @@ const mapColorSlug = (colorDefinitions, colorValue) => {
 const mapFontSizeSlug = (fontSizeDefinitions, fontSizeValue) => {
   let value = 0;
   if (fontSizeValue) {
-    value = parseInt(fontSizeValue, 10);
-    if (Number.isNaN(value)) {
+    value = asNum(fontSizeValue);
+    if (value === undefined) {
       value = 2;
     }
   }
@@ -255,8 +256,8 @@ export const formBodyToBlocksFactory = (
           };
         case 'heading':
           if (item.params && has(item.params, 'level')) {
-            level = parseInt(item.params.level, 10);
-            if (Number.isNaN(level)) {
+            level = asNum(item.params.level);
+            if (level === undefined) {
               level = 2;
             }
           }
@@ -356,6 +357,15 @@ export const formBodyToBlocksFactory = (
           return {
             ...mapped,
             name: 'mailpoet-form/divider',
+            attributes: {
+              className: mapped.attributes.className,
+              height: asNum(item.params?.height),
+              type: item.params?.type,
+              style: item.params?.style,
+              dividerHeight: asNum(item.params?.divider_height),
+              dividerWidth: asNum(item.params?.divider_width),
+              color: item.params?.color,
+            },
           };
         case 'html':
           return {

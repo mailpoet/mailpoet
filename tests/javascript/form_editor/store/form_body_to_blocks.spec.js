@@ -291,6 +291,17 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.label).to.be.equal('Subscribe!');
   });
 
+  it('Should map divider button to block', () => {
+    const [block] = formBodyToBlocks([divider]);
+    checkBlockBasics(block);
+    expect(block.attributes.height).to.be.equal(12);
+    expect(block.attributes.type).to.be.equal('spacer');
+    expect(block.attributes.style).to.be.equal('dotted');
+    expect(block.attributes.dividerHeight).to.be.equal(23);
+    expect(block.attributes.dividerWidth).to.be.equal(34);
+    expect(block.attributes.color).to.be.equal('red');
+  });
+
   it('Should map dividers to blocks', () => {
     const [block1, block2] = formBodyToBlocks([
       { ...divider },

@@ -233,7 +233,15 @@ describe('Blocks to Form Body', () => {
     expect(divider.id).to.be.equal('divider');
     expect(divider.name).to.be.equal('Divider');
     expect(divider.type).to.be.equal('divider');
-    expect(divider.params).to.deep.equal({ class_name: null });
+    expect(divider.params).to.deep.equal({
+      class_name: null,
+      color: 'red',
+      divider_height: 34,
+      divider_width: 65,
+      height: 23,
+      style: 'solid',
+      type: 'divider',
+    });
   });
 
   it('Should map multiple dividers', () => {
