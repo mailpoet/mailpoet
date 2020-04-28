@@ -4,6 +4,7 @@ namespace MailPoet\Router\Endpoints;
 
 use MailPoet\Config\AccessControl;
 use MailPoet\Subscription as UserSubscription;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Subscription {
   const ENDPOINT = 'subscription';
@@ -28,8 +29,12 @@ class Subscription {
   /** @var UserSubscription\Pages */
   private $subscriptionPages;
 
-  public function __construct(UserSubscription\Pages $subscriptionPages) {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(UserSubscription\Pages $subscriptionPages, WPFunctions $wp) {
     $this->subscriptionPages = $subscriptionPages;
+    $this->wp = $wp;
   }
 
   public function captcha($data) {
@@ -50,7 +55,12 @@ class Subscription {
   }
 
   public function confirmUnsubscribe($data) {
-    $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM_UNSUBSCRIBE, $data);
+    $enableUnsubscribeConfirmation = $this->wp->applyFilters('mailpoet_unsubscribe_confirmation_enabled', true);
+    if ($enableUnsubscribeConfirmation) {
+      $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CONFIRM_UNSUBSCRIBE, $data);
+    } else {
+      $this->unsubscribe($data);
+    }
   }
 
   public function manage($data) {
