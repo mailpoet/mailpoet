@@ -9,6 +9,7 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { partial } from 'lodash';
+import HorizontalAlignment from 'common/styles';
 
 import ColorSettings from 'form_editor/components/color_settings';
 import FontSizeSettings from 'form_editor/components/font_size_settings';
@@ -84,9 +85,9 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             label={MailPoet.I18n.t('formSettingsAlignment')}
             onChange={partial(updateStyles, 'alignment')}
             options={[
-              { value: 'left', label: MailPoet.I18n.t('formSettingsAlignmentLeft') },
-              { value: 'center', label: MailPoet.I18n.t('formSettingsAlignmentCenter') },
-              { value: 'right', label: MailPoet.I18n.t('formSettingsAlignmentRight') },
+              { value: HorizontalAlignment.Left, label: MailPoet.I18n.t('formSettingsAlignmentLeft') },
+              { value: HorizontalAlignment.Center, label: MailPoet.I18n.t('formSettingsAlignmentCenter') },
+              { value: HorizontalAlignment.Right, label: MailPoet.I18n.t('formSettingsAlignmentRight') },
             ]}
             value={settings.alignment !== undefined ? settings.alignment : 'left'}
           />

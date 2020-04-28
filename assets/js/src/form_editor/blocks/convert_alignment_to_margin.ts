@@ -1,9 +1,10 @@
+import HorizontalAlignment from 'common/styles';
 
-function convert(alignment: 'left' | 'center' | 'right'): string {
-  if (alignment === 'right') {
+function convert(alignment: HorizontalAlignment): string {
+  if (alignment === HorizontalAlignment.Right) {
     return '0 0 0 auto';
   }
-  if (alignment === 'center') {
+  if (alignment === HorizontalAlignment.Center) {
     return '0 auto';
   }
   return 'auto 0';
