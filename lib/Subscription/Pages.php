@@ -547,7 +547,10 @@ class Pages {
     $templateData = [
       'unsubscribeUrl' => $this->subscriptionUrlFactory->getUnsubscribeUrl($this->subscriber),
     ];
-    return $this->templateRenderer->render('subscription/confirm_unsubscribe.html', $templateData);
+    return $this->wp->applyFilters(
+      'mailpoet_unsubscribe_confirmation_page',
+      $this->templateRenderer->render('subscription/confirm_unsubscribe.html', $templateData)
+    );
   }
 
   public function getManageLink($params) {
