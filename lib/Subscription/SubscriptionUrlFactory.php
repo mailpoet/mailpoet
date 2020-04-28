@@ -50,6 +50,11 @@ class SubscriptionUrlFactory {
     return $this->getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
+  public function getConfirmUnsubscribeUrl(Subscriber $subscriber = null) {
+    $post = $this->getPost($this->settings->get('subscription.pages.confirm_unsubscribe'));
+    return $this->getSubscriptionUrl($post, 'confirm_unsubscribe', $subscriber);
+  }
+
   public function getManageUrl(Subscriber $subscriber = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.manage'));
     return $this->getSubscriptionUrl($post, 'manage', $subscriber);
