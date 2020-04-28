@@ -1,3 +1,6 @@
+// Fonts
+@import 'https://use.typekit.net/aps3nxt.css';
+
 // Settings
 // Global variables, config switches. Not producing any CSS.
 @import 'settings/grid';
@@ -7,6 +10,7 @@
 @import 'settings/modal';
 @import 'settings/newsletter';
 @import 'settings/progress';
+@import 'settings/typography';
 
 // Tools
 // Default mixins and functions. Still not producing any CSS.
@@ -14,7 +18,9 @@
 @import 'mixins/clearfix';
 
 // Generic
-// 3rd-party styles, can be overwritten.
+@import 'generic/typography';
+
+// 3rd party styles
 @import '../../../node_modules/select2/dist/css/select2';
 @import 'components-plugin/3rd-party-plugins/datepicker';
 
