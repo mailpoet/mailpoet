@@ -1,0 +1,205 @@
+.mailpoet-settings-grid {
+  display: grid;
+  grid-column-gap: 35px;
+  grid-row-gap: 25px;
+  grid-template-columns: 20em 1fr;
+  margin: 25px 20px 10px 0;
+
+  .key-activation-messages > div {
+    margin-top: 10px;
+    max-width: 500px;
+
+    .pending_approval_heading {
+      font-weight: bold;
+      margin: 20px 0 5px;
+    }
+  }
+
+  #mailpoet_premium_key_verify {
+    font-size: inherit;
+    margin-left: 3px;
+    vertical-align: inherit;
+  }
+
+  .mailpoet_subitem {
+    margin-left: 2em;
+  }
+
+  .mailpoet_tooltip_icon {
+    display: inline-block;
+    line-height: 1.5;
+  }
+
+  .button-secondary {
+    line-height: 2;
+    min-height: 30px;
+    vertical-align: unset;
+    margin: 0px 3px;
+    font-size: 14px;
+  }
+
+  .mailpoet_mta_setup_save, .mailpoet_mta_setup_cancel {
+    display: inline-block;
+    margin: 0px 3px;
+    font-weight: bold;
+  }
+
+  .mailpoet_emails_per_second_warning {
+    color: $color-editor-warning;
+  }
+}
+
+.mailpoet_woocommerce_editor_button {
+  margin-top: 10px;
+}
+
+.mailpoet_success_item:before {
+  content: '✔ ';
+}
+
+.mailpoet_error_item:before {
+  content: '✗ ';
+}
+
+ul.sending-method-benefits {
+  list-style-type: none;
+  margin-bottom: 2em;
+  margin-top: 2em;
+}
+
+.mailpoet-settings-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.mailpoet-settings-label-title {
+  color: #23282d;
+  cursor: pointer;
+}
+
+.mailpoet-settings-inputs label {
+  display: inline-block;
+  margin: 2px 5px;
+  min-width: 50px;
+}
+
+.mailpoet-settings-inputs input,
+.mailpoet-settings-inputs select,
+.mailpoet-settings-inputs textarea {
+  display: inline-block;
+  margin: 2px;
+}
+
+.mailpoet-settings-inputs input[type="checkbox"] {
+  margin-left: 4px;
+  margin-bottom: 4px;
+}
+
+.mailpoet-settings-inputs input.regular-text {
+  width: 25.5em;
+}
+
+.mailpoet-settings-inputs p {
+  font-size: 14px;
+}
+
+.mailpoet_sending_methods {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin: 25px 0 0;
+
+  > li {
+    background-color: #fff;
+    border: 2px solid #dcdcdc;
+    display: flex;
+    flex-basis: 0;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0 25px 25px 0;
+    max-width: 500px;
+
+    .mailpoet_sending_method_description {
+      flex-grow: 1;
+      flex-shrink: 0;
+      padding: 25px;
+    }
+
+    &:hover:not(.mailpoet_active) {
+      border-color: #c5c5c5;
+    }
+  }
+
+  > li:last-child {
+    margin-right: 0;
+  }
+
+  h3 {
+    font-size: 1.5em;
+    height: 54px;
+    text-align: center;
+  }
+
+  .mailpoet_description {
+    font-size: 14px;
+  }
+
+  .mailpoet_status {
+    align-items: center;
+    background-color: #dcdcdc;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    min-height: 2em;
+    padding: 1em;
+    text-overflow: ellipsis;
+
+    span {
+      font-weight: bold;
+      visibility: hidden;
+    }
+
+    div {
+      margin-left: 1em;
+    }
+  }
+
+  .mailpoet_active {
+    border: 2px solid #088b00;
+
+    &.mailpoet_invalid_key {
+      border: 2px solid #dc3232;
+    }
+
+    .mailpoet_status {
+      background-color: #088b00;
+
+      &.mailpoet_invalid_key {
+        background-color: #dc3232;
+
+        .mailpoet_actions {
+          color: white;
+
+          a:not(.button-primary) {
+            color: white;
+          }
+        }
+      }
+
+      span {
+        visibility: visible;
+      }
+    }
+
+    #mailpoet_mta_activate {
+      visibility: hidden;
+    }
+  }
+
+  .mailpoet_actions {
+    color: initial;
+  }
+}
