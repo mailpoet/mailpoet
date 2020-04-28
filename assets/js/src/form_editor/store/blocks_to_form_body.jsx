@@ -298,6 +298,12 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
             name: 'Divider',
             params: {
               class_name: block.attributes.className || null,
+              height: block.attributes.height,
+              type: block.attributes.type,
+              style: block.attributes.style,
+              divider_height: block.attributes.dividerHeight,
+              divider_width: block.attributes.dividerWidth,
+              color: block.attributes.color,
             },
           };
         case 'mailpoet-form/html':

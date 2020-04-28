@@ -167,7 +167,15 @@ export const dividerBlock = {
   isValid: true,
   innerBlocks: [],
   name: 'mailpoet-form/divider',
-  attributes: {},
+  attributes: {
+    className: null,
+    height: 23,
+    type: 'divider',
+    style: 'solid',
+    dividerHeight: 34,
+    dividerWidth: 65,
+    color: 'red',
+  },
 };
 
 export const customHtmlBlock = {
