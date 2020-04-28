@@ -23,8 +23,8 @@ class BlockStylesRenderer {
     if (isset($styles['border_color'])) {
       $rules[] = "border-color:{$styles['border_color']};";
     }
-    if (isset($formSettings['inputPadding'])) {
-      $rules[] = "padding:{$formSettings['inputPadding']}px;";
+    if (isset($formSettings['input_padding'])) {
+      $rules[] = "padding:{$formSettings['input_padding']}px;";
     }
     if (isset($formSettings['alignment'])) {
       $rules[] = $this->convertAlignmentToMargin($formSettings['alignment']);
@@ -43,8 +43,8 @@ class BlockStylesRenderer {
     if (isset($styles['bold']) && $styles['bold'] === '1') {
       $rules[] = "font-weight:bold;";
     }
-    if (isset($formSettings['inputPadding'])) {
-      $rules[] = "padding:{$formSettings['inputPadding']}px;";
+    if (isset($formSettings['input_padding'])) {
+      $rules[] = "padding:{$formSettings['input_padding']}px;";
     }
     if (isset($formSettings['alignment'])) {
       $rules[] = $this->convertAlignmentToMargin($formSettings['alignment']);
@@ -54,8 +54,8 @@ class BlockStylesRenderer {
 
   public function renderForSelect(array $styles, array $formSettings = []): string {
     $rules = [];
-    if (isset($formSettings['inputPadding'])) {
-      $rules[] = "padding:{$formSettings['inputPadding']}px;";
+    if (isset($formSettings['input_padding'])) {
+      $rules[] = "padding:{$formSettings['input_padding']}px;";
     }
     if (isset($formSettings['alignment'])) {
       $rules[] = $this->convertAlignmentToMargin($formSettings['alignment']);

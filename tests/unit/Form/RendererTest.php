@@ -120,14 +120,14 @@ class RendererTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderBorder() {
     $form = Fixtures::get('simple_form_body');
-    $form['settings'] = ['borderSize' => '22', 'borderColor' => 'red'];
+    $form['settings'] = ['border_size' => '22', 'border_color' => 'red'];
     $styles = $this->renderer->renderFormElementStyles($form);
     expect($styles)->equals('border: 22px solid red');
   }
 
   public function testItShouldRenderPadding() {
     $form = Fixtures::get('simple_form_body');
-    $form['settings'] = ['formPadding' => '22'];
+    $form['settings'] = ['form_padding' => '22'];
     $styles = $this->renderer->renderFormElementStyles($form);
     expect($styles)->equals('padding: 22px');
   }
@@ -141,7 +141,7 @@ class RendererTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderBorderWithRadius() {
     $form = Fixtures::get('simple_form_body');
-    $form['settings'] = ['borderSize' => '22', 'borderColor' => 'red', 'borderRadius' => '11'];
+    $form['settings'] = ['border_size' => '22', 'border_color' => 'red', 'border_radius' => '11'];
     $styles = $this->renderer->renderFormElementStyles($form);
     expect($styles)->equals('border: 22px solid red;border-radius: 11px');
   }
