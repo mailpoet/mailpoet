@@ -5,16 +5,33 @@ import { InspectorControls } from '@wordpress/block-editor';
 import {
   Panel,
   PanelBody,
-  RangeControl, ToggleControl,
+  RangeControl,
+  SelectControl,
+  ToggleControl,
 } from '@wordpress/components';
-import { Types } from './divider';
+import { Style, Types } from './divider';
 
 const DividerEdit = ({ attributes, setAttributes }) => {
   const dividerSettings = (
     <>
-      Divider settings
+      <SelectControl
+        label={MailPoet.I18n.t('blockDividerStyle')}
+        value={attributes.style}
+        onChange={(style) => (setAttributes({ style }))}
+        options={[
+          { value: Style.Solid, label: MailPoet.I18n.t('blockDividerStyleSolid') },
+          { value: Style.Dashed, label: MailPoet.I18n.t('blockDividerStyleDashed') },
+          { value: Style.Dotted, label: MailPoet.I18n.t('blockDividerStyleDotted') },
+        ]}
+      />
     </>
   );
+
+  const dividerStyles = {};
+  if (attributes.type === Types.Divider) {
+    dividerStyles.borderTopStyle = attributes.style;
+  }
+
   return (
     <>
       <InspectorControls>
@@ -26,7 +43,7 @@ const DividerEdit = ({ attributes, setAttributes }) => {
               min={1}
               max={400}
               allowReset
-              onChange={(height) => (setAttributes({height}))}
+              onChange={(height) => (setAttributes({ height }))}
             />
             <ToggleControl
               label={MailPoet.I18n.t('blockSpacerEnableDivider')}
@@ -48,7 +65,7 @@ const DividerEdit = ({ attributes, setAttributes }) => {
           height: attributes.height,
         }}
       >
-        <div className="mailpoet_divider" />
+        <div className="mailpoet_divider" style={dividerStyles} />
       </div>
     </>
   );
