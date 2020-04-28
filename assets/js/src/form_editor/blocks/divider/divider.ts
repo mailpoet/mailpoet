@@ -1,6 +1,6 @@
 import MailPoet from 'mailpoet';
 import icon from './icon.jsx';
-import edit from './edit.jsx';
+import edit from './edit';
 
 export enum Types {
   Divider = 'divider',
