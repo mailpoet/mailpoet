@@ -24,7 +24,7 @@ class Links {
     // join HTML and TEXT rendered body into a text string
     $content = Helpers::joinObject($renderedNewsletter);
     list($content, $links) = NewsletterLinks::process($content, $newsletterId, $queueId);
-    $links = NewsletterLinks::ensureUnsubscribeLink($links);
+    $links = NewsletterLinks::ensureInstantUnsubscribeLink($links);
     // split the processed body with hashed links back to HTML and TEXT
     list($renderedNewsletter['html'], $renderedNewsletter['text'])
       = Helpers::splitObject($content);
@@ -43,7 +43,7 @@ class Links {
     $settings = SettingsController::getInstance();
     if ((boolean)$settings->get('tracking.enabled')) {
       $linkHash = NewsletterLinkModel::where('queue_id', $queue->id)
-        ->where('url', NewsletterLinkModel::UNSUBSCRIBE_LINK_SHORT_CODE)
+        ->where('url', NewsletterLinkModel::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE)
         ->findOne();
       if (!$linkHash instanceof NewsletterLinkModel) {
         return '';

@@ -136,15 +136,15 @@ class Links {
     }
   }
 
-  public static function ensureUnsubscribeLink(array $processedLinks) {
+  public static function ensureInstantUnsubscribeLink(array $processedLinks) {
     if (in_array(
-      NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
+      NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       array_column($processedLinks, 'link'))
     ) {
       return $processedLinks;
     }
     $processedLinks[] = self::hashLink(
-      NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
+      NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       Links::LINK_TYPE_SHORTCODE
     );
     return $processedLinks;

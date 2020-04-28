@@ -246,13 +246,13 @@ class LinksTest extends \MailPoetTest {
         'hash' => 'abcdfgh',
       ],
     ];
-    $links = Links::ensureUnsubscribeLink($links);
+    $links = Links::ensureInstantUnsubscribeLink($links);
     expect(count($links))->equals(2);
-    expect($links[1]['link'])->equals(NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE);
+    expect($links[1]['link'])->equals(NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE);
     expect($links[1]['type'])->equals(Links::LINK_TYPE_SHORTCODE);
     expect($links[1])->hasKey('processed_link');
     expect($links[1])->hasKey('hash');
-    $links = Links::ensureUnsubscribeLink($links);
+    $links = Links::ensureInstantUnsubscribeLink($links);
     expect(count($links))->equals(2);
   }
 

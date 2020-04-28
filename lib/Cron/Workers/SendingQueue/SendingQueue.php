@@ -194,7 +194,7 @@ class SendingQueue {
         $subscriber
       );
       $preparedSubscribersIds[] = $subscriber->id;
-      // save personalized unsubsribe link
+      // create personalized instant unsubsribe link
       $unsubscribeUrls[] = Links::getUnsubscribeUrl($queue, $subscriber->id);
       $metas[] = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletter, $subscriber);
       // keep track of values for statistics purposes
