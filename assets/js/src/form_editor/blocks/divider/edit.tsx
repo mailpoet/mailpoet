@@ -29,14 +29,36 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
           { value: Style.Dotted, label: MailPoet.I18n.t('blockDividerStyleDotted') },
         ]}
       />
+      <RangeControl
+        label={MailPoet.I18n.t('blockDividerDividerHeight')}
+        value={attributes.dividerHeight}
+        min={1}
+        max={40}
+        allowReset
+        onChange={(dividerHeight) => {
+          setAttributes({
+            dividerHeight,
+            height: Math.max(dividerHeight, attributes.height),
+          });
+        }}
+      />
+      <RangeControl
+        label={MailPoet.I18n.t('blockDividerDividerWidth')}
+        value={attributes.dividerWidth}
+        min={1}
+        max={100}
+        allowReset
+        onChange={(dividerWidth) => (setAttributes({ dividerWidth }))}
+      />
     </>
   );
 
   const dividerStyles = {} as React.CSSProperties;
   if (attributes.type === Types.Divider) {
     dividerStyles.borderTopStyle = attributes.style;
-    dividerStyles.height = 1;
-    dividerStyles.width = '100%';
+    dividerStyles.borderTopWidth = attributes.dividerHeight;
+    dividerStyles.height = attributes.dividerHeight;
+    dividerStyles.width = `${attributes.dividerWidth}%`;
   }
 
   return (
