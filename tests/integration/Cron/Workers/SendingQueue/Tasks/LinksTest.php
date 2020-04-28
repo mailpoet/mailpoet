@@ -55,7 +55,7 @@ class LinksTest extends \MailPoetTest {
     expect($result['html'])->contains($newsletterLink->hash);
   }
 
-  public function testItCanEnsureThatUnsubscribeLinkIsAlwaysPresent() {
+  public function testItCanEnsureThatInstantUnsubscribeLinkIsAlwaysPresent() {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->save();
@@ -66,7 +66,7 @@ class LinksTest extends \MailPoetTest {
     $queue = (object)['id' => 2];
     Links::process($renderedNewsletter, $newsletter, $queue);
     $unsubscribeCount = NewsletterLink::where('newsletter_id', $newsletter->id)
-      ->where('url', NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE)->count();
+      ->where('url', NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE)->count();
     expect($unsubscribeCount)->equals(1);
   }
 

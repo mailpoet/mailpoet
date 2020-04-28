@@ -104,7 +104,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletterLink = NewsletterLink::create();
     $this->newsletterLink->newsletterId = $this->newsletter->id;
     $this->newsletterLink->queueId = $this->queue->id;
-    $this->newsletterLink->url = '[link:subscription_unsubscribe_url]';
+    $this->newsletterLink->url = '[link:subscription_instant_unsubscribe_url]';
     $this->newsletterLink->hash = 'abcde';
     $this->newsletterLink->save();
     $this->sendingErrorHandler = new SendingErrorHandler();
