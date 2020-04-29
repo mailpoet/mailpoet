@@ -426,28 +426,32 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
-    $id = (isset($data['id'])) ? (int)$data['id'] : false;
-    $newsletter = Newsletter::findOne($id);
+    $newsletter = isset($data['id'])
+      ? $this->newslettersRepository->findOneById((int)$data['id'])
+      : null;
 
-    if ($newsletter instanceof Newsletter) {
-      $newsletter->body = $data['body'];
-      $newsletter->body = $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $newsletter->body);
-      $newsletter->save();
-      $previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletter);
-      // strip protocol to avoid mix content error
-      $previewUrl = preg_replace('{^https?:}i', '', $previewUrl);
-
-      $newsletter = Newsletter::findOne($newsletter->id);
-      if(!$newsletter instanceof Newsletter) return $this->errorResponse();
-      return $this->successResponse(
-        $newsletter->asArray(),
-        ['preview_url' => $previewUrl]
-      );
-    } else {
+    if (!$newsletter) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
+
+    $newsletter->setBody(
+      $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', json_decode($data['body']))
+    );
+    $this->newslettersRepository->flush();
+
+    $response = $this->newslettersResponseBuilder->build($newsletter);
+    $previewUrl = NewsletterUrl::getViewInBrowserUrl(
+      (object)[
+        'id' => $newsletter->getId(),
+        'hash' => $newsletter->getHash(),
+      ]
+    );
+
+    // strip protocol to avoid mix content error
+    $previewUrl = preg_replace('{^https?:}i', '', $previewUrl);
+    return $this->successResponse($response, ['preview_url' => $previewUrl]);
   }
 
   public function sendPreview($data = []) {
