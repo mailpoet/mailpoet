@@ -1,5 +1,5 @@
 .mailpoet_breadcrumb {
-  color: #444;
+  color: $color-text;
   font-size: .9em;
   text-transform: uppercase;
 }
@@ -9,10 +9,10 @@
 }
 
 .mailpoet_breadcrumb a {
-  color: #444;
+  color: $color-text;
   text-decoration: none;
 }
 
 .mailpoet_breadcrumb a:hover {
-  color: darken(#444, 50%);
+  color: darken($color-text, 50%);
 }
