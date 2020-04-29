@@ -12,24 +12,21 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Listing;
-use MailPoet\Mailer\Mailer as MailerFactory;
-use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Preview\SendPreviewController;
+use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -71,17 +68,14 @@ class Newsletters extends APIEndpoint {
   /** @var PostNotificationScheduler */
   private $postNotificationScheduler;
 
-  /** @var MetaInfo */
-  private $mailerMetaInfo;
-
   /** @var Emoji */
   private $emoji;
 
-  /** @var MailerFactory */
-  private $mailer;
-
   /** @var SubscribersFeature */
   private $subscribersFeature;
+
+  /** @var SendPreviewController */
+  private $sendPreviewController;
 
   public function __construct(
     Listing\BulkActionController $bulkAction,
@@ -94,10 +88,9 @@ class Newsletters extends APIEndpoint {
     NewsletterListingRepository $newsletterListingRepository,
     NewslettersResponseBuilder $newslettersResponseBuilder,
     PostNotificationScheduler $postNotificationScheduler,
-    MailerFactory $mailer,
-    MetaInfo $mailerMetaInfo,
     Emoji $emoji,
-    SubscribersFeature $subscribersFeature
+    SubscribersFeature $subscribersFeature,
+    SendPreviewController $sendPreviewController
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
@@ -109,10 +102,9 @@ class Newsletters extends APIEndpoint {
     $this->newsletterListingRepository = $newsletterListingRepository;
     $this->newslettersResponseBuilder = $newslettersResponseBuilder;
     $this->postNotificationScheduler = $postNotificationScheduler;
-    $this->mailer = $mailer;
-    $this->mailerMetaInfo = $mailerMetaInfo;
     $this->emoji = $emoji;
     $this->subscribersFeature = $subscribersFeature;
+    $this->sendPreviewController = $sendPreviewController;
   }
 
   public function get($data = []) {
@@ -444,66 +436,20 @@ class Newsletters extends APIEndpoint {
 
     $id = (isset($data['id'])) ? (int)$data['id'] : false;
     $newsletter = Newsletter::findOne($id);
-
-    if ($newsletter instanceof Newsletter) {
-      $renderer = new Renderer($newsletter, $preview = true);
-      $renderedNewsletter = $renderer->render();
-      $divider = '***MailPoet***';
-      $dataForShortcodes = array_merge(
-        [$newsletter->subject],
-        $renderedNewsletter
-      );
-
-      $body = implode($divider, $dataForShortcodes);
-
-      $subscriber = Subscriber::getCurrentWPUser();
-      $subscriber = ($subscriber) ? $subscriber : false;
-
-      $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-        $newsletter,
-        $subscriber,
-        $queue = false,
-        $wpUserPreview = true
-      );
-
-      list(
-        $renderedNewsletter['subject'],
-        $renderedNewsletter['body']['html'],
-        $renderedNewsletter['body']['text']
-        ) = explode($divider, $shortcodes->replace($body));
-      $renderedNewsletter['id'] = $newsletter->id;
-
-      try {
-        $extraParams = [
-          'unsubscribe_url' => WPFunctions::get()->homeUrl(),
-          'meta' => $this->mailerMetaInfo->getPreviewMetaInfo(),
-        ];
-        $result = $this->mailer->send($renderedNewsletter, $data['subscriber'], $extraParams);
-
-        if ($result['response'] === false) {
-          $error = sprintf(
-            __('The email could not be sent: %s', 'mailpoet'),
-            $result['error']->getMessage()
-          );
-          return $this->errorResponse([APIError::BAD_REQUEST => $error]);
-        } else {
-          $newsletter = Newsletter::findOne($newsletter->id);
-          if(!$newsletter instanceof Newsletter) return $this->errorResponse();
-
-          return $this->successResponse(
-            $newsletter->asArray()
-          );
-        }
-      } catch (\Exception $e) {
-        return $this->errorResponse([
-          $e->getCode() => $e->getMessage(),
-        ]);
-      }
-    } else {
+    if (!$newsletter) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
+
+    try {
+      $this->sendPreviewController->sendPreview($newsletter, $data['subscriber']);
+    } catch (SendPreviewException $e) {
+      return $this->errorResponse([APIError::BAD_REQUEST => $e->getMessage()]);
+    } catch (\Throwable $e) {
+      return $this->errorResponse([$e->getCode() => $e->getMessage()]);
+    }
+    return $this->successResponse($newsletter->asArray());
   }
 
   public function listing($data = []) {
