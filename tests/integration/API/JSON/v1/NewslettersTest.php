@@ -154,22 +154,12 @@ class NewslettersTest extends \MailPoetTest {
     $wp = Stub::make(new WPFunctions, [
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
     ]);
-    $this->endpoint = new Newsletters(
-      ContainerWrapper::getInstance()->get(BulkActionController::class),
-      ContainerWrapper::getInstance()->get(Handler::class),
-      $wp,
-      SettingsController::getInstance(),
-      $this->cronHelper,
-      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
-      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
-      ContainerWrapper::getInstance()->get(NewsletterListingRepository::class),
-      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
-      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
-      ContainerWrapper::getInstance()->get(Mailer::class),
-      ContainerWrapper::getInstance()->get(MetaInfo::class),
-      ContainerWrapper::getInstance()->get(Emoji::class),
-      Stub::make(SubscribersFeature::class)
-    );
+    $this->endpoint = $this->createNewslettersEndpointWithMocks([
+      'wp' => $wp,
+      'cronHelper' => $this->cronHelper,
+      'authorizedEmailsController' => $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
+      'subscribersFeature' => Stub::make(SubscribersFeature::class),
+    ]);
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -210,22 +200,13 @@ class NewslettersTest extends \MailPoetTest {
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
-    $this->endpoint = new Newsletters(
-      ContainerWrapper::getInstance()->get(BulkActionController::class),
-      ContainerWrapper::getInstance()->get(Handler::class),
-      $wp,
-      SettingsController::getInstance(),
-      $this->cronHelper,
-      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()]),
-      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
-      ContainerWrapper::getInstance()->get(NewsletterListingRepository::class),
-      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
-      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
-      ContainerWrapper::getInstance()->get(Mailer::class),
-      ContainerWrapper::getInstance()->get(MetaInfo::class),
-      $emoji,
-      Stub::make(SubscribersFeature::class)
-    );
+    $this->endpoint = $this->createNewslettersEndpointWithMocks([
+      'wp' => $wp,
+      'cronHelper' => $this->cronHelper,
+      'authorizedEmailsController' => $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()]),
+      'emoji' => $emoji,
+      'subscribersFeature' => Stub::make(SubscribersFeature::class),
+    ]);
 
     $response = $this->endpoint->save($validData);
     $savedNewsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_STANDARD)
@@ -443,22 +424,11 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItReturnsErrorIfSubscribersLimitReached() {
-    $endpoint = new Newsletters(
-      ContainerWrapper::getInstance()->get(BulkActionController::class),
-      ContainerWrapper::getInstance()->get(Handler::class),
-      ContainerWrapper::getInstance()->get(WPFunctions::class),
-      SettingsController::getInstance(),
-      $this->cronHelper,
-      $this->make(AuthorizedEmailsController::class),
-      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
-      ContainerWrapper::getInstance()->get(NewsletterListingRepository::class),
-      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
-      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
-      ContainerWrapper::getInstance()->get(Mailer::class),
-      ContainerWrapper::getInstance()->get(MetaInfo::class),
-      ContainerWrapper::getInstance()->get(Emoji::class),
-      Stub::make(SubscribersFeature::class, ['check' => true])
-    );
+    $endpoint = $this->createNewslettersEndpointWithMocks([
+      'cronHelper' => $this->cronHelper,
+      'authorizedEmailsController' => $this->make(AuthorizedEmailsController::class),
+      'subscribersFeature' => Stub::make(SubscribersFeature::class, ['check' => true]),
+    ]);
     $res = $endpoint->setStatus([
       'id' => $this->newsletter->id,
       'status' => Newsletter::STATUS_ACTIVE,
@@ -614,22 +584,12 @@ class NewslettersTest extends \MailPoetTest {
     $wp = Stub::make(new WPFunctions, [
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
-    $this->endpoint = new Newsletters(
-      ContainerWrapper::getInstance()->get(BulkActionController::class),
-      ContainerWrapper::getInstance()->get(Handler::class),
-      $wp,
-      SettingsController::getInstance(),
-      $this->cronHelper,
-      $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
-      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
-      ContainerWrapper::getInstance()->get(NewsletterListingRepository::class),
-      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
-      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
-      ContainerWrapper::getInstance()->get(Mailer::class),
-      ContainerWrapper::getInstance()->get(MetaInfo::class),
-      ContainerWrapper::getInstance()->get(Emoji::class),
-      Stub::make(SubscribersFeature::class)
-    );
+    $this->endpoint = $this->createNewslettersEndpointWithMocks([
+      'wp' => $wp,
+      'cronHelper' => $this->cronHelper,
+      'authorizedEmailsController' => $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
+      'subscribersFeature' => Stub::make(SubscribersFeature::class),
+    ]);
 
     $response = $this->endpoint->duplicate(['id' => $this->newsletter->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -963,22 +923,12 @@ class NewslettersTest extends \MailPoetTest {
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
-    $this->endpoint = new Newsletters(
-      ContainerWrapper::getInstance()->get(BulkActionController::class),
-      ContainerWrapper::getInstance()->get(Handler::class),
-      $wp,
-      SettingsController::getInstance(),
-      $this->cronHelper,
-      ContainerWrapper::getInstance()->get(AuthorizedEmailsController::class),
-      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
-      ContainerWrapper::getInstance()->get(NewsletterListingRepository::class),
-      ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class),
-      ContainerWrapper::getInstance()->get(PostNotificationScheduler::class),
-      ContainerWrapper::getInstance()->get(Mailer::class),
-      ContainerWrapper::getInstance()->get(MetaInfo::class),
-      $emoji,
-      Stub::make(SubscribersFeature::class)
-    );
+    $this->endpoint = $this->createNewslettersEndpointWithMocks([
+      'wp' => $wp,
+      'cronHelper' => $this->cronHelper,
+      'emoji' => $emoji,
+      'subscribersFeature' => Stub::make(SubscribersFeature::class),
+    ]);
 
     $response = $this->endpoint->showPreview($data);
     expect($response->meta['preview_url'])->notContains('http');
@@ -1086,5 +1036,24 @@ class NewslettersTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+  }
+
+  private function createNewslettersEndpointWithMocks(array $mocks): Newsletters {
+    return new Newsletters(
+      $this->diContainer->get(BulkActionController::class),
+      $this->diContainer->get(Handler::class),
+      $mocks['wp'] ?? $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $mocks['cronHelper'] ?? $this->diContainer->get(CronHelper::class),
+      $mocks['authorizedEmailsController'] ?? $this->diContainer->get(AuthorizedEmailsController::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(NewsletterListingRepository::class),
+      $this->diContainer->get(NewslettersResponseBuilder::class),
+      $this->diContainer->get(PostNotificationScheduler::class),
+      $this->diContainer->get(Mailer::class),
+      $this->diContainer->get(MetaInfo::class),
+      $mocks['emoji'] ?? $this->diContainer->get(Emoji::class),
+      $mocks['subscribersFeature'] ?? $this->diContainer->get(SubscribersFeature::class)
+    );
   }
 }
