@@ -62,12 +62,42 @@ class ManageSubscriptionLinkCest {
     $i->seeNoJSErrors();
   }
 
-  public function unsubscribeLink(\AcceptanceTester $i) {
-    $i->wantTo('Verify that "unsubscribe" link works and subscriber status is set to unsubscribed');
+  public function unsubscribeLinksWithLinkTracking(\AcceptanceTester $i) {
+    $i->wantTo('Verify that "unsubscribe" links works with tracking enabled');
+    $this->settings->withTrackingEnabled();
+    $this->verifyUnsubscribeLinks($i);
+  }
+
+  public function unsubscribeLinksWithoutLinkTracking(\AcceptanceTester $i) {
+    $i->wantTo('Verify that "unsubscribe" links works with tracking disabled');
+    $this->settings->withTrackingDisabled();
+    $this->verifyUnsubscribeLinks($i);
+  }
+
+  private function verifyUnsubscribeLinks(\AcceptanceTester $i) {
     $this->sendEmail($i);
-
     $formStatusElement = '[data-automation-id="form_status"]';
+    $i->wantTo('Verify that "Unsubscribe List" header link works and subscriber status is set to unsubscribed instantly');
+    $i->amOnMailboxAppPage();
+    $i->click(Locator::contains('span.subject', $this->newsletterTitle));
+    $i->click('#show-headers');
+    $i->waitForText('List-Unsubscribe');
+    $link = $i->grabTextFrom('.headers tbody tr:nth-child(4) td');
+    $link = trim($link, '<>');
+    $i->amOnUrl($link);
+    $i->waitForText('You are now unsubscribed');
+    $i->click('Manage your subscription');
+    $i->seeOptionIsSelected($formStatusElement, 'Unsubscribed');
 
+    // Re-subscribe to test the link in newsletter body
+    $i->selectOption($formStatusElement, 'Subscribed');
+    $approximateSaveButtonHeight = 50; // Used for scroll offset to ensure that button is not hidden above the top fold
+    $i->scrollTo('[data-automation-id="subscribe-submit-button"]', 0, -$approximateSaveButtonHeight);
+    $i->click('Save');
+    $i->waitForElement($formStatusElement);
+    $i->seeOptionIsSelected($formStatusElement, 'Subscribed');
+
+    $i->wantTo('Verify that "unsubscribe" link works and subscriber can confirm switching status to unsubscribed');
     $i->amOnMailboxAppPage();
     $i->click(Locator::contains('span.subject', $this->newsletterTitle));
     $i->switchToIframe('preview-html');
