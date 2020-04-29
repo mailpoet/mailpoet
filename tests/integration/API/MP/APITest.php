@@ -523,20 +523,27 @@ class APITest extends \MailPoetTest {
   }
 
   public function testItSchedulesWelcomeNotificationByDefaultAfterAddingSubscriber() {
+    $segment = Segment::createOrUpdate(
+      [
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT,
+      ]
+    );
     $settings = SettingsController::getInstance();
     $settings->set('signup_confirmation.enabled', false);
-    $API = Stub::makeEmptyExcept(
+    $API = Stub::make(
       \MailPoet\API\MP\v1\API::class,
-      'addSubscriber',
       [
         'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
         'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
         '_scheduleWelcomeNotification' => Expected::once(),
-      ], $this);
+      ],
+      $this
+    );
     $subscriber = [
       'email' => 'test@example.com',
     ];
-    $segments = [1];
+    $segments = [$segment->id];
     $API->addSubscriber($subscriber, $segments);
   }
 
