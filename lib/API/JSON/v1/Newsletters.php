@@ -515,19 +515,6 @@ class Newsletters extends APIEndpoint {
 
     $data = [];
     foreach ($this->newslettersResponseBuilder->buildForListing($items) as $newsletterData) {
-      $queue = false;
-      if (in_array($newsletterData['status'], [Newsletter::STATUS_SENT, Newsletter::STATUS_SENDING], true)) {
-        $queue = SendingTask::getByNewsletterId($newsletterData['id']);
-      }
-
-      $newsletterData['preview_url'] = NewsletterUrl::getViewInBrowserUrl(
-        (object)[
-          'id' => $newsletterData['id'],
-          'hash' => $newsletterData['hash'],
-        ],
-        null,
-        $queue
-      );
       $data[] = $this->wp->applyFilters('mailpoet_api_newsletters_listing_item', $newsletterData);
     }
 

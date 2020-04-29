@@ -8,6 +8,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 use function MailPoetVendor\array_column;
@@ -120,6 +121,16 @@ class NewslettersResponseBuilder {
       'statistics' => ($statistics && $newsletter->getType() !== NewsletterEntity::TYPE_NOTIFICATION)
         ? $statistics->asArray()
         : false,
+      'preview_url' => NewsletterUrl::getViewInBrowserUrl(
+        (object)[
+          'id' => $newsletter->getId(),
+          'hash' => $newsletter->getHash(),
+        ],
+        null,
+        in_array($newsletter->getStatus(), [NewsletterEntity::STATUS_SENT, NewsletterEntity::STATUS_SENDING], true)
+          ? $latestQueue
+          : false
+      ),
     ];
 
     if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
