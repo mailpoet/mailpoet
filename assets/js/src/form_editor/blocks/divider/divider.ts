@@ -23,6 +23,16 @@ export interface Attributes {
   color: string;
 }
 
+export const defaultAttributes = {
+  className: undefined,
+  height: 1,
+  type: Types.Divider,
+  style: Style.Solid,
+  dividerHeight: 1,
+  dividerWidth: 100,
+  color: 'black',
+};
+
 export const name = 'mailpoet-form/divider';
 
 export const settings = {
@@ -33,26 +43,27 @@ export const settings = {
   attributes: {
     height: {
       type: 'number',
-      default: 1,
+      default: defaultAttributes.height,
     },
     type: {
       type: 'string',
-      default: Types.Divider,
+      default: defaultAttributes.type,
     },
     style: {
       type: 'string',
-      default: Style.Solid,
+      default: defaultAttributes.style,
     },
     dividerHeight: {
       type: 'number',
-      default: 1,
+      default: defaultAttributes.dividerHeight,
     },
     dividerWidth: {
       type: 'number',
-      default: 100,
+      default: defaultAttributes.dividerWidth,
     },
     color: {
       type: 'string',
+      default: defaultAttributes.color,
     },
   },
   supports: {
