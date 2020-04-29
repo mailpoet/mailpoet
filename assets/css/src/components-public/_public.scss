@@ -342,3 +342,12 @@ div.mailpoet_form_slide_in.active {
     text-align: center;
   }
 }
+
+.mailpoet_spacer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: $form-block-margin;
+}
