@@ -31,17 +31,18 @@
   }
 
   .button-secondary {
+    font-size: 14px;
     line-height: 2;
+    margin: 0 3px;
     min-height: 30px;
     vertical-align: unset;
-    margin: 0px 3px;
-    font-size: 14px;
   }
 
-  .mailpoet_mta_setup_save, .mailpoet_mta_setup_cancel {
+  .mailpoet_mta_setup_save,
+  .mailpoet_mta_setup_cancel {
     display: inline-block;
-    margin: 0px 3px;
     font-weight: bold;
+    margin: 0 3px;
   }
 
   .mailpoet_emails_per_second_warning {
@@ -91,9 +92,9 @@ ul.sending-method-benefits {
   margin: 2px;
 }
 
-.mailpoet-settings-inputs input[type="checkbox"] {
-  margin-left: 4px;
+.mailpoet-settings-inputs input[type='checkbox'] {
   margin-bottom: 4px;
+  margin-left: 4px;
 }
 
 .mailpoet-settings-inputs input.regular-text {

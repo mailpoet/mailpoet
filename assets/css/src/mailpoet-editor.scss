@@ -1,5 +1,6 @@
 // Settings
 // Global variables, config switches. Not producing any CSS.
+
 @import 'settings/grid';
 @import 'settings/colors';
 @import 'settings/editor';
@@ -7,15 +8,18 @@
 
 // Tools
 // Default mixins and functions. Still not producing any CSS.
+
 @import 'mixins/animations';
 @import 'mixins/breakpoints';
 
 // Generic
 // 3rd-party styles, can be overwritten.
+
 @import '../../../node_modules/spectrum-colorpicker/spectrum';
 
 // Components
 // Actual UI components.
+
 @import 'components-editor/buttons';
 @import 'components-editor/common';
 @import 'components-editor/forms';
@@ -48,4 +52,5 @@
 
 // Utilities
 // Helpers and overrides.
+
 @import 'components-editor/3rd-party-overrides/overrides';
