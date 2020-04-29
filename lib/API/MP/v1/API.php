@@ -303,15 +303,6 @@ class API {
         'schedule_welcome_email' => $scheduleWelcomeEmail,
         'skip_subscriber_notification' => $skipSubscriberNotification,
       ]);
-
-      // schedule welcome email(s)
-      if ($scheduleWelcomeEmail && $newSubscriber->status === Subscriber::STATUS_SUBSCRIBED) {
-        $this->_scheduleWelcomeNotification($newSubscriber, $listIds);
-      }
-
-      if (!$skipSubscriberNotification && ($newSubscriber->status === Subscriber::STATUS_SUBSCRIBED)) {
-        $this->sendSubscriberNotification($newSubscriber, $listIds);
-      }
     }
     return $newSubscriber->withCustomFields()->withSubscriptions()->asArray();
   }
