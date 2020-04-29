@@ -10,6 +10,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Listing;
 use MailPoet\Mailer\Mailer as MailerFactory;
 use MailPoet\Mailer\MetaInfo;
@@ -125,15 +126,9 @@ class Newsletters extends APIEndpoint {
         NewslettersResponseBuilder::RELATION_OPTIONS,
         NewslettersResponseBuilder::RELATION_QUEUE,
       ]);
-      $previewUrl = NewsletterUrl::getViewInBrowserUrl(
-        (object)[
-          'id' => $newsletter->getId(),
-          'hash' => $newsletter->getHash(),
-        ]
-      );
 
       $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
-      return $this->successResponse($response, ['preview_url' => $previewUrl]);
+      return $this->successResponse($response, ['preview_url' => $this->getViewInBrowserUrl($newsletter)]);
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
@@ -154,12 +149,7 @@ class Newsletters extends APIEndpoint {
           NewslettersResponseBuilder::RELATION_STATISTICS,
       ]);
       $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
-      $response['preview_url'] = NewsletterUrl::getViewInBrowserUrl(
-        (object)[
-          'id' => $newsletter->getId(),
-          'hash' => $newsletter->getHash(),
-        ]
-      );
+      $response['preview_url'] = $this->getViewInBrowserUrl($newsletter);
       return $this->successResponse($response);
     } else {
       return $this->errorResponse([
@@ -442,16 +432,7 @@ class Newsletters extends APIEndpoint {
     $this->newslettersRepository->flush();
 
     $response = $this->newslettersResponseBuilder->build($newsletter);
-    $previewUrl = NewsletterUrl::getViewInBrowserUrl(
-      (object)[
-        'id' => $newsletter->getId(),
-        'hash' => $newsletter->getHash(),
-      ]
-    );
-
-    // strip protocol to avoid mix content error
-    $previewUrl = preg_replace('{^https?:}i', '', $previewUrl);
-    return $this->successResponse($response, ['preview_url' => $previewUrl]);
+    return $this->successResponse($response, ['preview_url' => $this->getViewInBrowserUrl($newsletter)]);
   }
 
   public function sendPreview($data = []) {
@@ -633,5 +614,17 @@ class Newsletters extends APIEndpoint {
         $newsletter->asArray()
       );
     }
+  }
+
+  private function getViewInBrowserUrl(NewsletterEntity $newsletter): string {
+    $url = NewsletterUrl::getViewInBrowserUrl(
+      (object)[
+        'id' => $newsletter->getId(),
+        'hash' => $newsletter->getHash(),
+      ]
+    );
+
+    // strip protocol to avoid mix content error
+    return preg_replace('/^https?:/i', '', $url);
   }
 }
