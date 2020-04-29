@@ -3,6 +3,9 @@ $color-placeholder-select2: #999; /* default Select2 placeholder color for singl
 $color-transparent: rgba(#fff, 0);
 $color-white: rgb(255, 255, 255);
 
+// Typography colors
+$color-text: #071c6d;
+$color-text-inactive: #9ca6cc;
 
 // Primary (blueish) color
 $color-primary: #0074a2;
@@ -12,8 +15,6 @@ $color-primary-highlight: #1e8cbe;
 $color-primary-inactive: #a4a4a4;
 $color-primary-shadow-inset: #025c80;
 $color-primary-text: #656565;
-$color-primary-icon: #071c6d;
-
 
 // Newsletter editor colors
 $color-editor-background-column: #7fbbd0;
