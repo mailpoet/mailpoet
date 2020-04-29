@@ -13,9 +13,6 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
-use MailPoet\Mailer\Mailer;
-use MailPoet\Mailer\MailerError;
-use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -26,6 +23,8 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Preview\SendPreviewController;
+use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
@@ -33,7 +32,6 @@ use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WCHelper;
@@ -49,15 +47,11 @@ class NewslettersTest extends \MailPoetTest {
   /** @var Newsletters */
   private $endpoint;
 
-  /** @var SubscriptionUrlFactory */
-  private $subscriptionUrlFactory;
-
   /** @var CronHelper */
   private $cronHelper;
 
   public function _before() {
     parent::_before();
-    $this->subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->endpoint = Stub::copy(
       ContainerWrapper::getInstance()->get(Newsletters::class),
@@ -836,33 +830,11 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItCanSendAPreview() {
-
     $subscriber = 'test@subscriber.com';
-
-
-    $endpoint = Stub::copy($this->endpoint, [
-      'mailer' => $this->makeEmpty(
-        Mailer::class,
-        [
-          'send' => function ($newsletter, $subscriber, $extraParams) {
-            $unsubscribeLink = $this->subscriptionUrlFactory->getConfirmUnsubscribeUrl(null);
-            $manageLink = $this->subscriptionUrlFactory->getManageUrl(null);
-            $viewInBrowserLink = Url::getViewInBrowserUrl($this->newsletter);
-            $mailerMetaInfo = new MetaInfo;
-
-            expect(is_array($newsletter))->true();
-            expect($newsletter['body']['text'])->contains('Hello test');
-            expect($subscriber)->equals($subscriber);
-            expect($extraParams['unsubscribe_url'])->equals(home_url());
-            expect($extraParams['meta'])->equals($mailerMetaInfo->getPreviewMetaInfo());
-            // system links are replaced with hashes
-            expect($newsletter['body']['html'])->contains('href="' . $viewInBrowserLink . '">View in browser');
-            expect($newsletter['body']['html'])->contains('href="' . $unsubscribeLink . '">Unsubscribe');
-            expect($newsletter['body']['html'])->contains('href="' . $manageLink . '">Manage subscription');
-            return ['response' => true];
-          },
-        ]
-      ),
+    $endpoint = $this->createNewslettersEndpointWithMocks([
+      'sendPreviewController' => $this->make(SendPreviewController::class, [
+        'sendPreview' => null,
+      ]),
     ]);
 
     $data = [
@@ -875,27 +847,12 @@ class NewslettersTest extends \MailPoetTest {
 
   public function testItReturnsMailerErrorWhenSendingFailed() {
     $subscriber = 'test@subscriber.com';
-
-    $endpoint = Stub::copy($this->endpoint, [
-      'mailer' => $this->makeEmpty(
-        Mailer::class,
-        [
-          'send' => function ($newsletter, $subscriber) {
-            expect(is_array($newsletter))->true();
-            expect($newsletter['body']['text'])->contains('Hello test');
-            expect($subscriber)->equals($subscriber);
-            return [
-              'response' => false,
-              'error' => $this->make(
-                MailerError::class,
-                [
-                  'getMessage' => 'failed',
-                ]
-              ),
-            ];
-          },
-        ]
-      ),
+    $endpoint = $this->createNewslettersEndpointWithMocks([
+      'sendPreviewController' => $this->make(SendPreviewController::class, [
+        'sendPreview' => Expected::once(function () {
+          throw new SendPreviewException('The email could not be sent: failed');
+        }),
+      ]),
     ]);
 
     $data = [
@@ -1050,10 +1007,9 @@ class NewslettersTest extends \MailPoetTest {
       $this->diContainer->get(NewsletterListingRepository::class),
       $this->diContainer->get(NewslettersResponseBuilder::class),
       $this->diContainer->get(PostNotificationScheduler::class),
-      $this->diContainer->get(Mailer::class),
-      $this->diContainer->get(MetaInfo::class),
       $mocks['emoji'] ?? $this->diContainer->get(Emoji::class),
-      $mocks['subscribersFeature'] ?? $this->diContainer->get(SubscribersFeature::class)
+      $mocks['subscribersFeature'] ?? $this->diContainer->get(SubscribersFeature::class),
+      $mocks['sendPreviewController'] ?? $this->diContainer->get(SendPreviewController::class)
     );
   }
 }
