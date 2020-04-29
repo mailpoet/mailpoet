@@ -1,0 +1,28 @@
+// Override CSS for HelpScout beacon on form editor page
+.admin_page_mailpoet-form-editor {
+  .BeaconFabButtonFrame,
+  .BeaconContainer {
+    left: 175px;
+  }
+
+  &.folded {
+    .BeaconFabButtonFrame,
+    .BeaconContainer {
+      left: 50px;
+    }
+  }
+  
+  @include breakpoint-max-width(960px) {
+    .BeaconFabButtonFrame,
+    .BeaconContainer {
+      left: 50px;
+    }
+  }
+
+  @include breakpoint-max-width(782px) {
+    .BeaconFabButtonFrame,
+    .BeaconContainer {
+      left: 15px;
+    }
+  }
+}
