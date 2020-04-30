@@ -3,7 +3,6 @@
 namespace MailPoet\Form\Block;
 
 use MailPoet\Form\BlockWrapperRenderer;
-use MailPoet\WP\Functions as WPFunctions;
 
 class Checkbox {
 
@@ -13,13 +12,9 @@ class Checkbox {
   /** @var BlockWrapperRenderer */
   private $wrapper;
 
-  /** @var WPFunctions */
-  private $wp;
-
-  public function __construct(BlockRendererHelper $rendererHelper, BlockWrapperRenderer $wrapper, WPFunctions $wp) {
+  public function __construct(BlockRendererHelper $rendererHelper, BlockWrapperRenderer $wrapper) {
     $this->rendererHelper = $rendererHelper;
     $this->wrapper = $wrapper;
-    $this->wp = $wp;
   }
 
   public function render(array $block, array $formSettings): string {
@@ -56,7 +51,7 @@ class Checkbox {
 
       $html .= $fieldValidation;
 
-      $html .= ' /> ' . $this->wp->escAttr($option['value']);
+      $html .= ' /> ' . $option['value'];
 
       $html .= '</label>';
     }

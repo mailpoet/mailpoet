@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import React from 'react';
 import {
   Panel,
@@ -109,6 +110,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
   if (attributes.mandatory) {
     checkboxLabel += ' *';
   }
+
   return (
     <ParagraphEdit className={attributes.className}>
       {inspectorControls}
@@ -121,7 +123,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
             checked={isChecked()}
             className="mailpoet_checkbox"
           />
-          {checkboxLabel}
+          <span dangerouslySetInnerHTML={{ __html: checkboxLabel }} />
         </label>
       </div>
     </ParagraphEdit>
