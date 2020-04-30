@@ -28,13 +28,12 @@ class Divider {
     $style = $block['params']['style'] ?? self::DEFAULT_ATTRIBUTES['style'];
     $dividerHeight = $block['params']['divider_height'] ?? self::DEFAULT_ATTRIBUTES['dividerHeight'];
     $color = $block['params']['color'] ?? self::DEFAULT_ATTRIBUTES['color'];
-    $height = $block['params']['height'] ?? self::DEFAULT_ATTRIBUTES['height'];
 
     $dividerStyles = [
       "border-top-style: $style",
       "border-top-width: {$dividerHeight}px",
       "border-top-color: $color",
-      "height: {$height}px",
+      "height: {$dividerHeight}px",
       "width: $width%",
     ];
     $style = implode(";", $dividerStyles);
