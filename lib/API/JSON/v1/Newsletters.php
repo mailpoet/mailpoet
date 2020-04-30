@@ -108,10 +108,7 @@ class Newsletters extends APIEndpoint {
   }
 
   public function get($data = []) {
-    $newsletter = isset($data['id'])
-      ? $this->newslettersRepository->findOneById((int)$data['id'])
-      : null;
-
+    $newsletter = $this->getNewsletter($data);
     if ($newsletter) {
       $response = $this->newslettersResponseBuilder->build($newsletter, [
         NewslettersResponseBuilder::RELATION_SEGMENTS,
@@ -129,9 +126,7 @@ class Newsletters extends APIEndpoint {
   }
 
   public function getWithStats($data = []) {
-    $newsletter = isset($data['id'])
-      ? $this->newslettersRepository->findOneById((int)$data['id'])
-      : null;
+    $newsletter = $this->getNewsletter($data);
     if ($newsletter) {
       $response = $this->newslettersResponseBuilder->build($newsletter, [
           NewslettersResponseBuilder::RELATION_SEGMENTS,
@@ -408,10 +403,7 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
-    $newsletter = isset($data['id'])
-      ? $this->newslettersRepository->findOneById((int)$data['id'])
-      : null;
-
+    $newsletter = $this->getNewsletter($data);
     if (!$newsletter) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
@@ -547,6 +539,13 @@ class Newsletters extends APIEndpoint {
         $newsletter->asArray()
       );
     }
+  }
+
+  /** @return NewsletterEntity|null */
+  private function getNewsletter(array $data) {
+    return isset($data['id'])
+      ? $this->newslettersRepository->findOneById((int)$data['id'])
+      : null;
   }
 
   private function getViewInBrowserUrl(NewsletterEntity $newsletter): string {
