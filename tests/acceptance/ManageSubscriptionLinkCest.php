@@ -108,9 +108,9 @@ class ManageSubscriptionLinkCest {
     );
     $i->click('Unsubscribe');
     $i->switchToNextTab();
-    $confirmUnsubscribeLink = '[data-automation-id="confirm-unsubscribe"]';
-    $i->waitForElement($confirmUnsubscribeLink);
-    $i->click($confirmUnsubscribeLink);
+    $confirmUnsubscribe = 'Yes, unsubscribe me';
+    $i->waitForText($confirmUnsubscribe);
+    $i->click($confirmUnsubscribe, '.mailpoet_confirm_unsubscribe');
     $i->waitForText('You are now unsubscribed');
     $i->click('Manage your subscription');
     $i->seeOptionIsSelected($formStatusElement, 'Unsubscribed');
