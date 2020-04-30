@@ -291,7 +291,7 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.label).to.be.equal('Subscribe!');
   });
 
-  it('Should map divider button to block', () => {
+  it('Should map divider to block', () => {
     const [block] = formBodyToBlocks([divider]);
     checkBlockBasics(block);
     expect(block.attributes.height).to.be.equal(12);
