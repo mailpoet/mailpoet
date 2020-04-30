@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Preview;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
@@ -30,12 +31,18 @@ class SendPreviewController {
     $this->wp = $wp;
   }
 
-  public function sendPreview(Newsletter $newsletter, string $emailAddress) {
-    $renderer = new Renderer($newsletter, $preview = true);
+  public function sendPreview(NewsletterEntity $newsletter, string $emailAddress) {
+    // Renderer and Shortcodes need old Newsletter model, until they're rewritten to use Doctrine
+    $newsletterModel = Newsletter::findOne();
+    if (!$newsletterModel) {
+      throw new SendPreviewException("Newsletter with ID '{$newsletter->getId()}' not found");
+    }
+
+    $renderer = new Renderer($newsletterModel, $preview = true);
     $renderedNewsletter = $renderer->render();
     $divider = '***MailPoet***';
     $dataForShortcodes = array_merge(
-      [$newsletter->subject],
+      [$newsletter->getSubject()],
       $renderedNewsletter
     );
 
@@ -43,7 +50,7 @@ class SendPreviewController {
 
     $subscriber = Subscriber::getCurrentWPUser() ?: false;
     $shortcodes = new Shortcodes(
-      $newsletter,
+      $newsletterModel,
       $subscriber,
       $queue = false,
       $wpUserPreview = true
@@ -54,7 +61,7 @@ class SendPreviewController {
       $renderedNewsletter['body']['html'],
       $renderedNewsletter['body']['text']
     ) = explode($divider, $shortcodes->replace($body));
-    $renderedNewsletter['id'] = $newsletter->id;
+    $renderedNewsletter['id'] = $newsletter->getId();
 
     $extraParams = [
       'unsubscribe_url' => $this->wp->homeUrl(),

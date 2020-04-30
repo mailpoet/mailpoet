@@ -425,8 +425,7 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
-    $id = (isset($data['id'])) ? (int)$data['id'] : false;
-    $newsletter = Newsletter::findOne($id);
+    $newsletter = $this->getNewsletter($data);
     if (!$newsletter) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
@@ -440,7 +439,7 @@ class Newsletters extends APIEndpoint {
     } catch (\Throwable $e) {
       return $this->errorResponse([$e->getCode() => $e->getMessage()]);
     }
-    return $this->successResponse($newsletter->asArray());
+    return $this->successResponse($this->newslettersResponseBuilder->build($newsletter));
   }
 
   public function listing($data = []) {

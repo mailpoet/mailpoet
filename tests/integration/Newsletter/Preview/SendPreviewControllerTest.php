@@ -4,31 +4,34 @@ namespace MailPoet\Newsletter\Preview;
 
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Url;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
-class SendPrevewControllerTest extends \MailPoetTest {
+class SendPreviewControllerTest extends \MailPoetTest {
   /** @var SubscriptionUrlFactory */
   private $subscriptionUrlFactory;
 
-  /** @var Newsletter */
+  /** @var NewsletterEntity */
   private $newsletter;
 
   public function _before() {
     parent::_before();
     $this->subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
-    $this->newsletter = Newsletter::createOrUpdate([
-      'subject' => 'My Standard Newsletter',
-      'preheader' => 'preheader',
-      'body' => Fixtures::get('newsletter_body_template'),
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setSubject('My Standard Newsletter');
+    $newsletter->setPreheader('preheader');
+    $newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
+    $newsletter->setHash(Security::generateHash());
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    $this->newsletter = $newsletter;
   }
 
   public function testItCanSendAPreview() {
@@ -37,7 +40,12 @@ class SendPrevewControllerTest extends \MailPoetTest {
         function ($newsletter, $subscriber, $extraParams) {
           $unsubscribeLink = $this->subscriptionUrlFactory->getConfirmUnsubscribeUrl(null);
           $manageLink = $this->subscriptionUrlFactory->getManageUrl(null);
-          $viewInBrowserLink = Url::getViewInBrowserUrl($this->newsletter);
+          $viewInBrowserLink = Url::getViewInBrowserUrl(
+            (object)[
+              'id' => $this->newsletter->getId(),
+              'hash' => $this->newsletter->getHash(),
+            ]
+          );
           $mailerMetaInfo = new MetaInfo;
 
           expect(is_array($newsletter))->true();
