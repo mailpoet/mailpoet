@@ -4,8 +4,8 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Tasks\Sending;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Link {
@@ -20,11 +20,12 @@ class Link {
     $wpUserPreview
   ) {
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
+
     switch ($shortcodeDetails['action']) {
       case 'subscription_unsubscribe_url':
         return self::processUrl(
           $shortcodeDetails['action'],
-          $subscriptionUrlFactory->getConfirmUnsubscribeUrl($wpUserPreview ? null : $subscriber),
+          $subscriptionUrlFactory->getConfirmUnsubscribeUrl($wpUserPreview ? null : $subscriber, self::getSendingQueueId($queue)),
           $queue,
           $wpUserPreview
         );
@@ -32,7 +33,7 @@ class Link {
       case 'subscription_instant_unsubscribe_url':
         return self::processUrl(
           $shortcodeDetails['action'],
-          $subscriptionUrlFactory->getUnsubscribeUrl($wpUserPreview ? null : $subscriber),
+          $subscriptionUrlFactory->getUnsubscribeUrl($wpUserPreview ? null : $subscriber, self::getSendingQueueId($queue)),
           $queue,
           $wpUserPreview
         );
@@ -84,10 +85,10 @@ class Link {
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     switch ($shortcodeAction) {
       case 'subscription_unsubscribe_url':
-        $url = $subscriptionUrlFactory->getConfirmUnsubscribeUrl($subscriber);
+        $url = $subscriptionUrlFactory->getConfirmUnsubscribeUrl($subscriber, self::getSendingQueueId($queue));
         break;
       case 'subscription_instant_unsubscribe_url':
-        $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber);
+        $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber, self::getSendingQueueId($queue));
         break;
       case 'subscription_manage_url':
         $url = $subscriptionUrlFactory->getManageUrl($subscriber);
@@ -120,6 +121,13 @@ class Link {
     return sprintf('[link:%s]', $action);
   }
 
+  /**
+   * @return int|null
+   */
+  private static function getSendingQueueId($queue) {
+    if ($queue instanceof Sending) {
+      return (int)$queue->id;
     }
+    return null;
   }
 }

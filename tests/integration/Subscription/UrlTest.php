@@ -76,7 +76,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->contains('action=confirm');
     expect($url)->contains('endpoint=subscription');
 
-    $this->checkData($url);
+    $this->checkSubscriberData($url);
   }
 
   public function testItReturnsTheManageSubscriptionUrl() {
@@ -94,7 +94,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->contains('action=manage');
     expect($url)->contains('endpoint=subscription');
 
-    $this->checkData($url);
+    $this->checkSubscriberData($url);
   }
 
   public function testItReturnsTheUnsubscribeUrl() {
@@ -103,6 +103,8 @@ class UrlTest extends \MailPoetTest {
     expect($url)->notNull();
     expect($url)->contains('action=unsubscribe');
     expect($url)->contains('endpoint=subscription');
+    $data = $this->getUrlData($url);
+    expect($data['preview'])->equals(1);
 
     // actual subscriber
     $subscriber = Subscriber::createOrUpdate([
@@ -112,17 +114,75 @@ class UrlTest extends \MailPoetTest {
     expect($url)->contains('action=unsubscribe');
     expect($url)->contains('endpoint=subscription');
 
-    $this->checkData($url);
+    $this->checkSubscriberData($url);
+
+    // subscriber and query id
+    $url = $this->url->getUnsubscribeUrl($subscriber, 10);
+    expect($url)->contains('action=unsubscribe');
+    expect($url)->contains('endpoint=subscription');
+
+    $data = $this->checkSubscriberData($url);
+    expect($data['queueId'])->equals(10);
+
+    // no subscriber but query id
+    $url = $this->url->getUnsubscribeUrl(null, 10);
+    expect($url)->contains('action=unsubscribe');
+    expect($url)->contains('endpoint=subscription');
+
+    $data = $this->getUrlData($url);
+    expect(isset($data['data']['queueId']))->false();
+    expect($data['preview'])->equals(1);
   }
 
-  private function checkData($url) {
+  public function testItReturnsConfirmUnsubscribeUrl() {
+    // preview
+    $url = $this->url->getConfirmUnsubscribeUrl(null);
+    expect($url)->notNull();
+    expect($url)->contains('action=confirm_unsubscribe');
+    expect($url)->contains('endpoint=subscription');
+    $data = $this->getUrlData($url);
+    expect($data['preview'])->equals(1);
+
+    // actual subscriber
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'john@mailpoet.com',
+    ]);
+    $url = $this->url->getConfirmUnsubscribeUrl($subscriber);
+    expect($url)->contains('action=confirm_unsubscribe');
+    expect($url)->contains('endpoint=subscription');
+
+    $this->checkSubscriberData($url);
+
+    // subscriber and query id
+    $url = $this->url->getConfirmUnsubscribeUrl($subscriber, 10);
+    expect($url)->contains('action=confirm_unsubscribe');
+    expect($url)->contains('endpoint=subscription');
+
+    $data = $this->checkSubscriberData($url);
+    expect($data['queueId'])->equals(10);
+
+    // no subscriber but query id
+    $url = $this->url->getConfirmUnsubscribeUrl(null, 10);
+    expect($url)->contains('action=confirm_unsubscribe');
+    expect($url)->contains('endpoint=subscription');
+
+    $data = $this->getUrlData($url);
+    expect(isset($data['data']['queueId']))->false();
+    expect($data['preview'])->equals(1);
+  }
+
+  private function checkSubscriberData(string $url) {
+    $data = $this->getUrlData($url);
+    expect($data['email'])->contains('john@mailpoet.com');
+    expect($data['token'])->notEmpty();
+    return $data;
+  }
+
+  private function getUrlData(string $url) {
     // extract & decode data from url
     $urlParamsQuery = parse_url($url, PHP_URL_QUERY);
     parse_str((string)$urlParamsQuery, $params);
-    $data = Router::decodeRequestData($params['data']);
-
-    expect($data['email'])->contains('john@mailpoet.com');
-    expect($data['token'])->notEmpty();
+    return Router::decodeRequestData($params['data']);
   }
 
   public function _after() {

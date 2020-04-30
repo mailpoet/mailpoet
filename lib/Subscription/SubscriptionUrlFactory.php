@@ -50,9 +50,10 @@ class SubscriptionUrlFactory {
     return $this->getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
-  public function getConfirmUnsubscribeUrl(Subscriber $subscriber = null) {
+  public function getConfirmUnsubscribeUrl(Subscriber $subscriber = null, int $queueId = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.confirm_unsubscribe'));
-    return $this->getSubscriptionUrl($post, 'confirm_unsubscribe', $subscriber);
+    $data = $queueId && $subscriber ? ['queueId' => $queueId] : null;
+    return $this->getSubscriptionUrl($post, 'confirm_unsubscribe', $subscriber, $data);
   }
 
   public function getManageUrl(Subscriber $subscriber = null) {
@@ -60,9 +61,10 @@ class SubscriptionUrlFactory {
     return $this->getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
-  public function getUnsubscribeUrl(Subscriber $subscriber = null) {
+  public function getUnsubscribeUrl(Subscriber $subscriber = null, int $queueId = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.unsubscribe'));
-    return $this->getSubscriptionUrl($post, 'unsubscribe', $subscriber);
+    $data = $queueId && $subscriber ? ['queueId' => $queueId] : null;
+    return $this->getSubscriptionUrl($post, 'unsubscribe', $subscriber, $data);
   }
 
   public function getSubscriptionUrl(
@@ -75,10 +77,11 @@ class SubscriptionUrlFactory {
 
     $url = $this->wp->getPermalink($post);
     if ($subscriber !== null) {
-      $data = [
+      $subscriberData = [
         'token' => $this->linkTokens->getToken($subscriber),
         'email' => $subscriber->email,
       ];
+      $data = array_merge($data ?? [], $subscriberData);
     } elseif (is_null($data)) {
       $data = [
         'preview' => 1,
