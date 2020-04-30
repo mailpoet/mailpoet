@@ -48,12 +48,12 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderSingleButtonStyles() {
-    expect($this->renderer->renderForButton(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px;');
+    expect($this->renderer->renderForButton(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px;border-color:transparent;');
     expect($this->renderer->renderForButton(['border_color' => '#fff']))->equals('border-style:solid;border-color:#fff;');
-    expect($this->renderer->renderForButton(['border_size' => 10]))->equals('border-style:solid;border-width:10px;');
-    expect($this->renderer->renderForButton(['background_color' => '#dddddd']))->equals('background-color:#dddddd;');
-    expect($this->renderer->renderForButton(['font_color' => '#aaa']))->equals('color:#aaa;');
-    expect($this->renderer->renderForButton(['font_size' => 10]))->equals('font-size:10px;');
+    expect($this->renderer->renderForButton(['border_size' => 10]))->equals('border-style:solid;border-width:10px;border-color:transparent;');
+    expect($this->renderer->renderForButton(['background_color' => '#dddddd']))->equals('background-color:#dddddd;border-color:transparent;');
+    expect($this->renderer->renderForButton(['font_color' => '#aaa']))->equals('color:#aaa;border-color:transparent;');
+    expect($this->renderer->renderForButton(['font_size' => 10]))->equals('font-size:10px;border-color:transparent;');
   }
 
   public function testItShouldCompleteButtonStyles() {

@@ -40,6 +40,9 @@ class BlockStylesRenderer {
     if (isset($styles['font_size'])) {
       $rules[] = "font-size:" . intval($styles['font_size']) . "px;";
     }
+    if (!isset($styles['border_color'])) {
+      $rules[] = "border-color:transparent;";
+    }
     if (isset($styles['bold']) && $styles['bold'] === '1') {
       $rules[] = "font-weight:bold;";
     }
