@@ -3,11 +3,6 @@ $color-placeholder-select2: #999; /* default Select2 placeholder color for singl
 $color-transparent: rgba(#fff, 0);
 $color-white: rgb(255, 255, 255);
 
-// Typography colors
-$color-text: #071c6d;
-$color-text-inactive: #9ca6cc;
-$color-text-hover: darken($color-text, 15%);
-
 // Primary (blueish) color
 $color-primary: #0074a2;
 $color-primary-background: #f8f8f8;
@@ -16,6 +11,17 @@ $color-primary-highlight: #1e8cbe;
 $color-primary-inactive: #a4a4a4;
 $color-primary-shadow-inset: #025c80;
 $color-primary-text: #656565;
+$color-secondary: #ff5301;
+$color-secondary-hover: darken($color-secondary, 10%);
+$color-secondary-light: #ffe0d0;
+$color-secondary-light-hover: darken($color-secondary-light, 10%);
+$color-tertiary: #071c6d;
+$color-tertiary-hover: darken($color-tertiary, 10%);
+
+// Typography colors
+$color-text: $color-tertiary;
+$color-text-inactive: #9ca6cc;
+$color-text-hover: darken($color-text, 15%);
 
 // Newsletter editor colors
 $color-editor-background-column: #7fbbd0;
