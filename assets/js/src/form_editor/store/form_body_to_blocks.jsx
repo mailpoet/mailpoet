@@ -2,6 +2,7 @@
 import { has } from 'lodash';
 import asNum from './server_value_as_num';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
+import { defaultAttributes as dividerDefaultAttributes } from '../blocks/divider/divider';
 
 const generateId = () => (`${Math.random().toString()}-${Date.now()}`);
 
@@ -359,12 +360,16 @@ export const formBodyToBlocksFactory = (
             name: 'mailpoet-form/divider',
             attributes: {
               className: mapped.attributes.className,
-              height: asNum(item.params?.height),
-              type: item.params?.type,
-              style: item.params?.style,
-              dividerHeight: asNum(item.params?.divider_height),
-              dividerWidth: asNum(item.params?.divider_width),
-              color: item.params?.color,
+              height: asNum(item.params?.height ?? dividerDefaultAttributes.height),
+              type: item.params?.type ?? dividerDefaultAttributes.type,
+              style: item.params?.style ?? dividerDefaultAttributes.style,
+              dividerHeight: asNum(
+                item.params?.divider_height ?? dividerDefaultAttributes.dividerHeight
+              ),
+              dividerWidth: asNum(
+                item.params?.divider_width ?? dividerDefaultAttributes.dividerWidth
+              ),
+              color: item.params?.color ?? dividerDefaultAttributes.color,
             },
           };
         case 'html':
