@@ -322,7 +322,7 @@ class Pages {
 
   private function getConfirmUnsubscribeTitle() {
     if ($this->isPreview() || $this->subscriber !== false) {
-      return $this->wp->__("Confirm you want to unsubscribe.", 'mailpoet');
+      return $this->wp->__('Confirm you want to unsubscribe', 'mailpoet');
     }
   }
 
