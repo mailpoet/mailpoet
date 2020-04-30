@@ -10,11 +10,7 @@ import {
   SelectControl,
   ToggleControl,
 } from '@wordpress/components';
-import {
-  Attributes,
-  Style,
-  Types,
-} from './divider';
+import { Attributes, Style, Types } from './divider_types';
 
 type Props = {
   attributes: Attributes,

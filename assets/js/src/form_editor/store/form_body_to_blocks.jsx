@@ -2,7 +2,7 @@
 import { has } from 'lodash';
 import asNum from './server_value_as_num';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
-import { defaultAttributes as dividerDefaultAttributes } from '../blocks/divider/divider';
+import { defaultAttributes as dividerDefaultAttributes } from '../blocks/divider/divider_types';
 
 const generateId = () => (`${Math.random().toString()}-${Date.now()}`);
 
