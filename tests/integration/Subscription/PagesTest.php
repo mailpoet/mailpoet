@@ -15,10 +15,12 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscription\CaptchaRenderer;
@@ -147,6 +149,22 @@ class PagesTest extends \MailPoetTest {
     expect($updatedSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
+  public function testItTrackUnsubscribeWhenTrackingIsEnabled() {
+    $unsubscribesMock = $this->make(Unsubscribes::class, ['track' => Stub\Expected::once()]);
+    $this->testData['queueId'] = 1;
+    SettingsController::getInstance()->set('tracking.enabled', 1);
+    $pages = $this->getPages(null, $unsubscribesMock)->init($action = 'unsubscribe', $this->testData);
+    $pages->unsubscribe();
+  }
+
+  public function testItDontTrackUnsubscribeWhenTrackingIsDisabled() {
+    $unsubscribesMock = $this->make(Unsubscribes::class, ['track' => Stub\Expected::never()]);
+    $this->testData['queueId'] = 1;
+    SettingsController::getInstance()->set('tracking.enabled', 0);
+    $pages = $this->getPages(null, $unsubscribesMock)->init($action = 'unsubscribe', $this->testData);
+    $pages->unsubscribe();
+  }
+
   public function testItDoesntUnsubscribeWhenPreviewing() {
     $this->testData['preview'] = 1;
     $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
@@ -164,9 +182,13 @@ class PagesTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
   }
 
-  private function getPages(NewSubscriberNotificationMailer $newSubscriberNotificationsMock = null): Pages {
+  private function getPages(
+    NewSubscriberNotificationMailer $newSubscriberNotificationsMock = null,
+    Unsubscribes $unsubscribesMock = null
+  ): Pages {
     $container = ContainerWrapper::getInstance();
     return new Pages(
       $newSubscriberNotificationsMock ?? $container->get(NewSubscriberNotificationMailer::class),
@@ -180,7 +202,8 @@ class PagesTest extends \MailPoetTest {
       $container->get(AssetsController::class),
       $container->get(FormRenderer::class),
       $container->get(FormBlockDate::class),
-      $container->get(Renderer::class)
+      $container->get(Renderer::class),
+      $unsubscribesMock ?? $container->get(Unsubscribes::class)
     );
   }
 }

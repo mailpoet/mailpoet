@@ -12,6 +12,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Util\Helpers;
@@ -66,6 +67,9 @@ class Pages {
   /** @var TemplateRenderer */
   private $templateRenderer;
 
+  /** @var Unsubscribes */
+  private $unsubscribesTracker;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -78,7 +82,8 @@ class Pages {
     AssetsController $assetsController,
     FormRenderer $formRenderer,
     FormBlockDate $dateBlock,
-    TemplateRenderer $templateRenderer
+    TemplateRenderer $templateRenderer,
+    Unsubscribes $unsubscribesTracker
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -92,6 +97,7 @@ class Pages {
     $this->formRenderer = $formRenderer;
     $this->dateBlock = $dateBlock;
     $this->templateRenderer = $templateRenderer;
+    $this->unsubscribesTracker = $unsubscribesTracker;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -187,6 +193,9 @@ class Pages {
       && ($this->subscriber !== false)
       && ($this->subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED)
     ) {
+      if ((bool)$this->settings->get('tracking.enabled') && isset($this->data['queueId'])) {
+        $this->unsubscribesTracker->track((int)$this->subscriber->id, (int)$this->data['queueId']);
+      }
       $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
       $this->subscriber->save();
       SubscriberSegment::unsubscribeFromSegments($this->subscriber);
@@ -544,8 +553,9 @@ class Pages {
   }
 
   private function getConfirmUnsubscribeContent() {
+    $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
     $templateData = [
-      'unsubscribeUrl' => $this->subscriptionUrlFactory->getUnsubscribeUrl($this->subscriber),
+      'unsubscribeUrl' => $this->subscriptionUrlFactory->getUnsubscribeUrl($this->subscriber, $queueId),
     ];
     return $this->wp->applyFilters(
       'mailpoet_unsubscribe_confirmation_page',
