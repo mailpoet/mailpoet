@@ -84,11 +84,9 @@ class Link {
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     switch ($shortcodeAction) {
       case 'subscription_unsubscribe_url':
-        self::trackUnsubscribe($newsletter, $subscriber, $queue, $wpUserPreview);
         $url = $subscriptionUrlFactory->getConfirmUnsubscribeUrl($subscriber);
         break;
       case 'subscription_instant_unsubscribe_url':
-        self::trackUnsubscribe($newsletter, $subscriber, $queue, $wpUserPreview);
         $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber);
         break;
       case 'subscription_manage_url':
@@ -122,12 +120,6 @@ class Link {
     return sprintf('[link:%s]', $action);
   }
 
-  private static function trackUnsubscribe($newsletter, $subscriber, $queue, $wpUserPreview) {
-    $settings = SettingsController::getInstance();
-    // track unsubscribe event
-    if ((boolean)$settings->get('tracking.enabled') && !$wpUserPreview) {
-      $unsubscribeEvent = new Unsubscribes();
-      $unsubscribeEvent->track($newsletter->id, $subscriber->id, $queue->id);
     }
   }
 }
