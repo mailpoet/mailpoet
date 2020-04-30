@@ -215,6 +215,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Statistics\Track\Clicks::class);
     $container->autowire(\MailPoet\Statistics\Track\Opens::class);
     $container->autowire(\MailPoet\Statistics\Track\WooCommercePurchases::class);
+    $container->autowire(\MailPoet\Statistics\Track\Unsubscribes::class)->setPublic(true);
+    $container->autowire(\MailPoet\Statistics\StatisticsUnsubscribesRepository::class);
     $container->autowire(\MailPoet\Router\Router::class)
       ->setArgument('$container', new Reference(ContainerWrapper::class));
     // Mailer
@@ -265,6 +267,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class);
     $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\PostNotificationScheduler::class);
+    $container->autowire(\MailPoet\Newsletter\Sending\SendingQueuesRepository::class);
     $container->autowire(\MailPoet\Newsletter\ViewInBrowser\ViewInBrowserController::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\ViewInBrowser\ViewInBrowserRenderer::class)->setPublic(true);
     // Newsletter templates

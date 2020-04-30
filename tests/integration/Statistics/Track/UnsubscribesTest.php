@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Statistics\Track;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsUnsubscribes;
@@ -11,7 +12,9 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoetVendor\Idiorm\ORM;
 
 class UnsubscribesTest extends \MailPoetTest {
-  public $unsubscribes;
+  /** @var Unsubscribes */
+  private $unsubscribes;
+
   public $queue;
   public $subscriber;
   public $newsletter;
@@ -35,12 +38,11 @@ class UnsubscribesTest extends \MailPoetTest {
     $queue->updateProcessedSubscribers([$subscriber->id]);
     $this->queue = $queue->save();
     // instantiate class
-    $this->unsubscribes = new Unsubscribes();
+    $this->unsubscribes = ContainerWrapper::getInstance()->get(Unsubscribes::class);
   }
 
   public function testItTracksUnsubscribeEvent() {
     $this->unsubscribes->track(
-      $this->newsletter->id,
       $this->subscriber->id,
       $this->queue->id
     );
@@ -50,7 +52,6 @@ class UnsubscribesTest extends \MailPoetTest {
   public function testItDoesNotTrackRepeatedUnsubscribeEvents() {
     for ($count = 0; $count <= 2; $count++) {
       $this->unsubscribes->track(
-        $this->newsletter->id,
         $this->subscriber->id,
         $this->queue->id
       );
