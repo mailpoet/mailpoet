@@ -63,7 +63,7 @@ class Links {
       );
     } else {
       $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
-      $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber);
+      $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber, $queue->id);
     }
     return $url;
   }
