@@ -82,7 +82,7 @@ class ManageSubscriptionLinkCest {
     $i->click(Locator::contains('span.subject', $this->newsletterTitle));
     $i->click('#show-headers');
     $i->waitForText('List-Unsubscribe');
-    $link = $i->grabTextFrom('.headers tbody tr:nth-child(4) td');
+    $link = $i->grabTextFrom('//div[@class="row headers"]//th[text()="List-Unsubscribe"]/following-sibling::td');
     $link = trim($link, '<>');
     $i->amOnUrl($link);
     $i->waitForText('You are now unsubscribed');
