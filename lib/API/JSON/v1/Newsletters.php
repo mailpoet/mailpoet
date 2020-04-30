@@ -109,40 +109,39 @@ class Newsletters extends APIEndpoint {
 
   public function get($data = []) {
     $newsletter = $this->getNewsletter($data);
-    if ($newsletter) {
-      $response = $this->newslettersResponseBuilder->build($newsletter, [
-        NewslettersResponseBuilder::RELATION_SEGMENTS,
-        NewslettersResponseBuilder::RELATION_OPTIONS,
-        NewslettersResponseBuilder::RELATION_QUEUE,
-      ]);
-
-      $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
-      return $this->successResponse($response, ['preview_url' => $this->getViewInBrowserUrl($newsletter)]);
-    } else {
+    if (!$newsletter) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
+
+    $response = $this->newslettersResponseBuilder->build($newsletter, [
+      NewslettersResponseBuilder::RELATION_SEGMENTS,
+      NewslettersResponseBuilder::RELATION_OPTIONS,
+      NewslettersResponseBuilder::RELATION_QUEUE,
+    ]);
+    $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
+    return $this->successResponse($response, ['preview_url' => $this->getViewInBrowserUrl($newsletter)]);
   }
 
   public function getWithStats($data = []) {
     $newsletter = $this->getNewsletter($data);
-    if ($newsletter) {
-      $response = $this->newslettersResponseBuilder->build($newsletter, [
-          NewslettersResponseBuilder::RELATION_SEGMENTS,
-          NewslettersResponseBuilder::RELATION_OPTIONS,
-          NewslettersResponseBuilder::RELATION_QUEUE,
-          NewslettersResponseBuilder::RELATION_TOTAL_SENT,
-          NewslettersResponseBuilder::RELATION_STATISTICS,
-      ]);
-      $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
-      $response['preview_url'] = $this->getViewInBrowserUrl($newsletter);
-      return $this->successResponse($response);
-    } else {
+    if (!$newsletter) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
+
+    $response = $this->newslettersResponseBuilder->build($newsletter, [
+        NewslettersResponseBuilder::RELATION_SEGMENTS,
+        NewslettersResponseBuilder::RELATION_OPTIONS,
+        NewslettersResponseBuilder::RELATION_QUEUE,
+        NewslettersResponseBuilder::RELATION_TOTAL_SENT,
+        NewslettersResponseBuilder::RELATION_STATISTICS,
+    ]);
+    $response = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $response);
+    $response['preview_url'] = $this->getViewInBrowserUrl($newsletter);
+    return $this->successResponse($response);
   }
 
   public function save($data = []) {
