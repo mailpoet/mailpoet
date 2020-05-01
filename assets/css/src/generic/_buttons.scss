@@ -1,0 +1,122 @@
+.mailpoet-button {
+  align-items: center;
+  background: $color-secondary;
+  border: 0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: $font-size;
+  font-weight: bold;
+  justify-content: center;
+  line-height: 24px;
+  max-width: 100%;
+  padding: 8px 20px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    background: $color-secondary-hover;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  svg {
+    height: 16px;
+    width: 16px;
+  }
+
+  &.mailpoet-full-width + .mailpoet-button.mailpoet-full-width { margin-top: $grid-gap; }
+  &:not(.mailpoet-full-width) + .mailpoet-button:not(.mailpoet-full-width) { margin-left: $grid-gap; }
+}
+
+.mailpoet-button-small {
+  font-size: $font-size - 2px;
+  line-height: 20px;
+  padding: 6px 12px;
+}
+
+.mailpoet-button-large {
+  padding: 12px 24px;
+}
+
+.mailpoet-button-light {
+  background: $color-secondary-light;
+  color: $color-secondary;
+
+  &:hover,
+  &:focus {
+    background: $color-secondary-light-hover;
+    color: $color-secondary;
+  }
+
+  &.mailpoet-button-loading:after {
+    background-color: rgba($color-secondary-light, .8);
+  }
+}
+
+.mailpoet-button-dark {
+  background: $color-tertiary;
+
+  &:hover,
+  &:focus {
+    background: $color-tertiary-hover;
+  }
+
+  &.mailpoet-button-loading:after {
+    background-color: rgba($color-tertiary, .8);
+  }
+}
+
+.mailpoet-button-link {
+  background: transparent;
+  color: $color-secondary;
+  text-decoration: underline;
+
+  &:hover,
+  &:focus {
+    background: transparent;
+    color: $color-secondary-hover;
+    text-decoration: none;
+  }
+
+  &.mailpoet-button-loading:after {
+    background-color: rgba(#fff, .8);
+  }
+}
+
+.mailpoet-button-link-dark {
+  background: transparent;
+  color: $color-tertiary;
+  text-decoration: underline;
+
+  &:hover,
+  &:focus {
+    background: transparent;
+    color: $color-tertiary-hover;
+    text-decoration: none;
+  }
+
+  &.mailpoet-button-loading:after {
+    background-color: rgba(#fff, .8);
+  }
+}
+
+.mailpoet-button-loading{
+  pointer-events: none;
+
+  &:after {
+    background: rgba($color-secondary, .8) no-repeat center;
+    background-size: 24px 24px;
+    border-radius: 4px;
+    content: '';
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}
