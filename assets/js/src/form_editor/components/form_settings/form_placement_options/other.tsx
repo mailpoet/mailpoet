@@ -73,6 +73,7 @@ const Popup = () => {
       header={MailPoet.I18n.t('formPlacementOther')}
       label={MailPoet.I18n.t('formPlacementOtherLabel')}
       icon={Icon}
+      canBeActive={false}
     >
       <p>{addFormWidgetHint}</p>
       <p>{addFormShortcodeHint}</p>

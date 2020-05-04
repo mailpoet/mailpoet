@@ -9,6 +9,7 @@ type Props = {
   children: React.ReactNode,
   onSave: () => void,
   active: boolean,
+  canBeActive?: boolean,
   label: string,
   header?: string,
   description?: string,
@@ -20,6 +21,7 @@ const BelowPages = ({
   label,
   header,
   active,
+  canBeActive,
   onSave,
   children,
   icon,
@@ -37,6 +39,7 @@ const BelowPages = ({
         label={label}
         icon={icon}
         active={active}
+        canBeActive={canBeActive}
         onClick={() => setDisplaySettings(true)}
       />
       {
@@ -68,6 +71,10 @@ const BelowPages = ({
       }
     </>
   );
+};
+
+BelowPages.defaultProps = {
+  canBeActive: true,
 };
 
 export default BelowPages;
