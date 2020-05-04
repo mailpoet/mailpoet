@@ -2,11 +2,13 @@ import React from 'react';
 import classnames from 'classnames';
 
 type Props = {
-  children: React.ReactNode,
+  children?: React.ReactNode,
   size?: 'small' | 'large',
   variant?: 'light' | 'dark' | 'link' | 'link-dark',
   isLoading?: boolean,
   isFullWidth?: boolean,
+  iconStart?: JSX.Element,
+  iconEnd?: JSX.Element,
   onClick?: () => void,
   href?: string,
 };
@@ -17,6 +19,8 @@ const Button = ({
   variant,
   isLoading,
   isFullWidth,
+  iconStart,
+  iconEnd,
   onClick,
   href,
 }: Props) => (
@@ -35,7 +39,9 @@ const Button = ({
       )
     }
   >
-    <span>{children}</span>
+    {iconStart}
+    {children && <span>{children}</span>}
+    {iconEnd}
   </a>
 );
 
