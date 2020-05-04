@@ -31,12 +31,12 @@ class Image {
       $attributes[] = 'srcset="' . $this->wp->wpGetAttachmentImageSrcset(intval($params['id']), $params['size_slug']) . '"';
     }
     if ($params['width']) {
-      $attributes[] = 'width="' . intval($params['width']) . '"';
+      $attributes[] = 'width=' . intval($params['width']);
     }
     if ($params['height']) {
-      $attributes[] = 'height="' . intval($params['height']) . '"';
+      $attributes[] = 'height=' . intval($params['height']);
     }
-    return '<img ' . implode(' ', $attributes) . '" />';
+    return '<img ' . implode(' ', $attributes) . '>';
   }
 
   private function wrapImage(array $params, string $img): string {
