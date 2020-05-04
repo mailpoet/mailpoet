@@ -10,7 +10,7 @@ type Props = {
   onSave: () => void,
   active: boolean,
   label: string,
-  description: string,
+  description?: string,
   icon: JSX.Element,
 }
 
@@ -45,9 +45,13 @@ const BelowPages = ({
             onRequestClose={() => setDisplaySettings(false)}
             contentClassName="form-placement-settings"
           >
-            <p>
-              {description}
-            </p>
+            {
+              description !== undefined && (
+                <p>
+                  {description}
+                </p>
+              )
+            }
             {children}
             <div className="mailpoet-form-placement-save">
               <Button
