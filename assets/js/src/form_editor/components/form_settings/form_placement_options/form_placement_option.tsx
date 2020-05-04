@@ -8,6 +8,7 @@ type Props = {
   label: string,
   icon: JSX.Element,
   active: boolean,
+  canBeActive?: boolean,
   onClick: () => void,
 }
 
@@ -15,6 +16,7 @@ const FormPlacementOption = ({
   label,
   icon,
   active,
+  canBeActive,
   onClick,
 }: Props) => {
   const [hover, setHover] = useState(false);
@@ -25,7 +27,7 @@ const FormPlacementOption = ({
       className={
         classnames(
           'form-placement-option',
-          { 'form-placement-option-active': active }
+          { 'form-placement-option-active': active && canBeActive }
         )
       }
       onMouseEnter={() => setHover(true)}
@@ -54,11 +56,11 @@ const FormPlacementOption = ({
             {SettingsIcon}
           </div>
           {
-            hover && !active
+            hover && !active && canBeActive
             && <div className="form-placement-settings-oval" />
           }
           {
-            active
+            active && canBeActive
             && (
               <div className="form-placement-settings-check">
                 {CheckIcon}
@@ -79,6 +81,10 @@ const FormPlacementOption = ({
       }
     </div>
   );
+};
+
+FormPlacementOption.defaultProps = {
+  canBeActive: true,
 };
 
 export default FormPlacementOption;
