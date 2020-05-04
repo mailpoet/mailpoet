@@ -5,7 +5,7 @@ type Props = {
   children?: React.ReactNode,
   size?: 'small' | 'large',
   variant?: 'light' | 'dark' | 'link' | 'link-dark',
-  isLoading?: boolean,
+  withSpinner?: boolean,
   isFullWidth?: boolean,
   iconStart?: JSX.Element,
   iconEnd?: JSX.Element,
@@ -17,7 +17,7 @@ const Button = ({
   children,
   size,
   variant,
-  isLoading,
+  withSpinner,
   isFullWidth,
   iconStart,
   iconEnd,
@@ -33,7 +33,7 @@ const Button = ({
         {
           [`mailpoet-button-${size}`]: size,
           [`mailpoet-button-${variant}`]: variant,
-          'mailpoet-button-loading': isLoading,
+          'mailpoet-button-with-spinner': withSpinner,
           'mailpoet-full-width': isFullWidth,
         }
       )

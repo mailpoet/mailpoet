@@ -75,7 +75,7 @@
     color: $color-secondary;
   }
 
-  &.mailpoet-button-loading:after {
+  &.mailpoet-button-with-spinner:after {
     background-color: rgba($color-secondary-light, .8);
   }
 }
@@ -88,7 +88,7 @@
     background: $color-tertiary-hover;
   }
 
-  &.mailpoet-button-loading:after {
+  &.mailpoet-button-with-spinner:after {
     background-color: rgba($color-tertiary, .8);
   }
 }
@@ -105,7 +105,7 @@
     text-decoration: none;
   }
 
-  &.mailpoet-button-loading:after {
+  &.mailpoet-button-with-spinner:after {
     background-color: rgba(#fff, .8);
   }
 }
@@ -122,12 +122,12 @@
     text-decoration: none;
   }
 
-  &.mailpoet-button-loading:after {
+  &.mailpoet-button-with-spinner:after {
     background-color: rgba(#fff, .8);
   }
 }
 
-.mailpoet-button-loading{
+.mailpoet-button-with-spinner {
   pointer-events: none;
 
   &:after {

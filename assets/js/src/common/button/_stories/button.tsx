@@ -122,38 +122,38 @@ export const WithoutIcons = () => (
     </p>
     <br />
 
-    <Heading level={3}>Loading buttons</Heading>
+    <Heading level={3}>Buttons with spinner</Heading>
     <p>
       <Button
-        onClick={action('light loading')}
-        isLoading
+        onClick={action('light spinner')}
+        withSpinner
         variant="light"
       >
         Light button
       </Button>
       <Button
-        onClick={action('regular loading')}
-        isLoading
+        onClick={action('regular spinner')}
+        withSpinner
       >
         Regular button
       </Button>
       <Button
-        onClick={action('dark loading')}
-        isLoading
+        onClick={action('dark spinner')}
+        withSpinner
         variant="dark"
       >
         Dark button
       </Button>
       <Button
-        onClick={action('link loading')}
-        isLoading
+        onClick={action('link spinner')}
+        withSpinner
         variant="link"
       >
         Link button
       </Button>
       <Button
-        onClick={action('link-dark loading')}
-        isLoading
+        onClick={action('link-dark spinner')}
+        withSpinner
         variant="link-dark"
       >
         Link dark button

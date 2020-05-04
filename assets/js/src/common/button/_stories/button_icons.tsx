@@ -153,32 +153,32 @@ export const WithIcons = () => (
     </p>
     <br />
 
-    <Heading level={3}>Loading buttons</Heading>
+    <Heading level={3}>Buttons with spinner</Heading>
     <p>
       <Button
-        onClick={action('only icon loading')}
-        isLoading
+        onClick={action('only icon spinner')}
+        withSpinner
         variant="light"
         iconStart={icon}
       />
       <Button
-        onClick={action('icon start loading')}
-        isLoading
+        onClick={action('icon start spinner')}
+        withSpinner
         iconStart={icon}
       >
         Icon start
       </Button>
       <Button
-        onClick={action('icon end loading')}
-        isLoading
+        onClick={action('icon end spinner')}
+        withSpinner
         variant="dark"
         iconEnd={icon}
       >
         Icon end
       </Button>
       <Button
-        onClick={action('both icons loading')}
-        isLoading
+        onClick={action('both icons spinner')}
+        withSpinner
         variant="light"
         iconStart={icon}
         iconEnd={icon}
@@ -186,14 +186,14 @@ export const WithIcons = () => (
         Both icons
       </Button>
       <Button
-        onClick={action('only icon link loading')}
-        isLoading
+        onClick={action('only icon link spinner')}
+        withSpinner
         variant="link"
         iconStart={icon}
       />
       <Button
-        onClick={action('icon start link loading')}
-        isLoading
+        onClick={action('icon start link spinner')}
+        withSpinner
         variant="link-dark"
         iconStart={icon}
       >
