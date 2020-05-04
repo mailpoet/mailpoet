@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.4
-Stable tag: 3.46.12
+Stable tag: 3.46.13
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.46.13 - 2020-05-04 =
+* Added: total number of subscribers counted towards MailPoet plan;
+* Added: form border, alignment, & padding;
+* Improved: help button moved to bottom left corner so it doesn't interfere with sidebar;
+* Improved: allow inserting HTML code to checkbox label in Form editor;
+* Improved: we are now using different font in MailPoet plugin interface;
+* Fixed: sending a test email works for any email address again;
+* Fixed: in Form editor, changing button's font color won't change border color;
+* Fixed: sending new subscriber notification twice in some cases.
 
 = 3.46.12 - 2020-04-27 =
 * Added: congrats email received when you successfully applied an API key;
