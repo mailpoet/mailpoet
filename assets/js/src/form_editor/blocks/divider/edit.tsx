@@ -10,7 +10,12 @@ import {
   SelectControl,
   ToggleControl,
 } from '@wordpress/components';
-import { Attributes, Style, Types } from './divider_types';
+import {
+  Attributes,
+  Style,
+  Types,
+  defaultAttributes,
+} from './divider_types';
 
 type Props = {
   attributes: Attributes,
@@ -18,6 +23,10 @@ type Props = {
 };
 
 const DividerEdit = ({ attributes, setAttributes }: Props) => {
+  const attributeDividerHeight = attributes.dividerHeight ?? defaultAttributes.dividerHeight;
+  const attributeDividerWidth = attributes.dividerWidth ?? defaultAttributes.dividerWidth;
+  const attributeHeight = attributes.height ?? defaultAttributes.height;
+
   const dividerSettings = (
     <>
       <SelectControl
@@ -32,7 +41,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
       />
       <RangeControl
         label={MailPoet.I18n.t('blockDividerDividerHeight')}
-        value={attributes.dividerHeight}
+        value={attributeDividerHeight}
         min={1}
         max={40}
         allowReset
@@ -62,10 +71,10 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
   const dividerStyles = {} as React.CSSProperties;
   if (attributes.type === Types.Divider) {
     dividerStyles.borderTopStyle = attributes.style;
-    dividerStyles.borderTopWidth = attributes.dividerHeight;
+    dividerStyles.borderTopWidth = attributeDividerHeight;
     dividerStyles.borderTopColor = attributes.color;
-    dividerStyles.height = attributes.dividerHeight;
-    dividerStyles.width = `${attributes.dividerWidth}%`;
+    dividerStyles.height = attributeDividerHeight;
+    dividerStyles.width = `${attributeDividerWidth}%`;
   }
 
   return (
@@ -75,7 +84,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
           <PanelBody title={MailPoet.I18n.t('formSettingsStyles')} initialOpen>
             <RangeControl
               label={MailPoet.I18n.t('blockSpacerHeight')}
-              value={attributes.height}
+              value={attributeHeight}
               min={1}
               max={400}
               allowReset
@@ -98,7 +107,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
       <div
         className={classnames('mailpoet_spacer', attributes.className)}
         style={{
-          height: attributes.height,
+          height: attributeHeight,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
