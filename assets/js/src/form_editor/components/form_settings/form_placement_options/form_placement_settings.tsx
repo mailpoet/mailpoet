@@ -10,6 +10,7 @@ type Props = {
   onSave: () => void,
   active: boolean,
   label: string,
+  header?: string,
   description?: string,
   icon: JSX.Element,
 }
@@ -17,6 +18,7 @@ type Props = {
 const BelowPages = ({
   description,
   label,
+  header,
   active,
   onSave,
   children,
@@ -41,7 +43,7 @@ const BelowPages = ({
         displaySettings
         && (
           <Modal
-            title={label}
+            title={header ?? label}
             onRequestClose={() => setDisplaySettings(false)}
             contentClassName="form-placement-settings"
           >
