@@ -153,6 +153,55 @@ export const WithIcons = () => (
     </p>
     <br />
 
+    <Heading level={3}>Disabled buttons</Heading>
+    <p>
+      <Button
+        onClick={action('only icon disabled')}
+        isDisabled
+        variant="light"
+        iconStart={icon}
+      />
+      <Button
+        onClick={action('icon start disabled')}
+        isDisabled
+        iconStart={icon}
+      >
+        Icon start
+      </Button>
+      <Button
+        onClick={action('icon end disabled')}
+        isDisabled
+        variant="dark"
+        iconEnd={icon}
+      >
+        Icon end
+      </Button>
+      <Button
+        onClick={action('both icons disabled')}
+        isDisabled
+        variant="light"
+        iconStart={icon}
+        iconEnd={icon}
+      >
+        Both icons
+      </Button>
+      <Button
+        onClick={action('only icon link disabled')}
+        isDisabled
+        variant="link"
+        iconStart={icon}
+      />
+      <Button
+        onClick={action('icon start link disabled')}
+        isDisabled
+        variant="link-dark"
+        iconStart={icon}
+      >
+        Link icon
+      </Button>
+    </p>
+    <br />
+
     <Heading level={3}>Buttons with spinner</Heading>
     <p>
       <Button
