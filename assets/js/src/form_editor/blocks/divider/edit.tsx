@@ -46,15 +46,19 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
         max={40}
         allowReset
         onChange={(dividerHeight) => {
+          let newHeight = attributeHeight;
+          if (dividerHeight !== undefined) {
+            newHeight = Math.max(dividerHeight, attributeHeight);
+          }
           setAttributes({
             dividerHeight,
-            height: Math.max(dividerHeight, attributes.height),
+            height: newHeight,
           });
         }}
       />
       <RangeControl
         label={MailPoet.I18n.t('blockDividerDividerWidth')}
-        value={attributes.dividerWidth}
+        value={attributeDividerWidth}
         min={1}
         max={100}
         allowReset
