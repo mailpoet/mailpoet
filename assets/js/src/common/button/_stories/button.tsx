@@ -122,6 +122,45 @@ export const WithoutIcons = () => (
     </p>
     <br />
 
+    <Heading level={3}>Disabled buttons</Heading>
+    <p>
+      <Button
+        onClick={action('light disabled')}
+        isDisabled
+        variant="light"
+      >
+        Light button
+      </Button>
+      <Button
+        onClick={action('regular disabled')}
+        isDisabled
+      >
+        Regular button
+      </Button>
+      <Button
+        onClick={action('dark disabled')}
+        isDisabled
+        variant="dark"
+      >
+        Dark button
+      </Button>
+      <Button
+        onClick={action('link disabled')}
+        isDisabled
+        variant="link"
+      >
+        Link button
+      </Button>
+      <Button
+        onClick={action('link-dark disabled')}
+        isDisabled
+        variant="link-dark"
+      >
+        Link dark button
+      </Button>
+    </p>
+    <br />
+
     <Heading level={3}>Buttons with spinner</Heading>
     <p>
       <Button

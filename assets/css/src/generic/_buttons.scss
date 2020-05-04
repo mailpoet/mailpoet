@@ -127,8 +127,15 @@
   }
 }
 
+.mailpoet-button-disabled {
+  opacity: .4;
+  pointer-events: none;
+  touch-action: none;
+}
+
 .mailpoet-button-with-spinner {
   pointer-events: none;
+  touch-action: none;
 
   &:after {
     background: rgba($color-secondary, .8) no-repeat center;
