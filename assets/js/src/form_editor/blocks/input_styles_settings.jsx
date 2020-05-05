@@ -28,6 +28,22 @@ const InputStylesSettings = ({
     onChange(updated);
     localStylesRef.current = updated;
   };
+
+  const updateInheritFromTheme = (newValue) => {
+    if (newValue) {
+      updateStyles('inheritFromTheme', newValue);
+      return;
+    }
+    const updated = { ...localStylesRef.current };
+    updated.bold = false;
+    updated.borderRadius = 1;
+    updated.borderSize = 1;
+    updated.borderColor = 'black';
+    updated.inheritFromTheme = newValue;
+    onChange(updated);
+    localStylesRef.current = updated;
+  };
+
   return (
     <Panel className="mailpoet-automation-input-styles-panel">
       <PanelBody title={MailPoet.I18n.t('formSettingsStyles')} initialOpen={false}>
@@ -40,7 +56,7 @@ const InputStylesSettings = ({
           <ToggleControl
             label={MailPoet.I18n.t('formSettingsInheritStyleFromTheme')}
             checked={localStyles.inheritFromTheme}
-            onChange={partial(updateStyles, 'inheritFromTheme')}
+            onChange={updateInheritFromTheme}
             className="mailpoet-automation-inherit-theme-toggle"
           />
           {!localStyles.inheritFromTheme ? (
