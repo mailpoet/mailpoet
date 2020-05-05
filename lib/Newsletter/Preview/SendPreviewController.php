@@ -33,7 +33,7 @@ class SendPreviewController {
 
   public function sendPreview(NewsletterEntity $newsletter, string $emailAddress) {
     // Renderer and Shortcodes need old Newsletter model, until they're rewritten to use Doctrine
-    $newsletterModel = Newsletter::findOne();
+    $newsletterModel = Newsletter::findOne($newsletter->getId());
     if (!$newsletterModel) {
       throw new SendPreviewException("Newsletter with ID '{$newsletter->getId()}' not found");
     }
