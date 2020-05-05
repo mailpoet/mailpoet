@@ -21,6 +21,7 @@ class Image {
 
   private function renderImage(array $params): string {
     $attributes = [];
+    $styles = [];
     $attributes[] = 'src="' . $params['url'] . '"';
     $attributes[] = $params['alt'] ? 'alt="' . $params['alt'] . '"' : 'alt';
     if ($params['title']) {
@@ -32,9 +33,14 @@ class Image {
     }
     if ($params['width']) {
       $attributes[] = 'width=' . intval($params['width']);
+      $styles[] = 'width: ' . intval($params['width']) . 'px';
     }
     if ($params['height']) {
       $attributes[] = 'height=' . intval($params['height']);
+      $styles[] = 'height: ' . intval($params['height']) . 'px';
+    }
+    if ($styles) {
+      $attributes[] = 'style="' . implode(';', $styles) . '"';
     }
     return '<img ' . implode(' ', $attributes) . '>';
   }

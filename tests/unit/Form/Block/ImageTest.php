@@ -78,6 +78,9 @@ class ImageTest extends \MailPoetUnitTest {
     expect($imgTitle->value)->equals('Title');
     $imgAlt = $this->htmlParser->getAttribute($img, 'alt');
     expect($imgAlt->value)->equals('Alt text');
+    $style = $this->htmlParser->getAttribute($img, 'style');
+    expect($style->value)->contains('width: 100px');
+    expect($style->value)->contains('height: 200px');
 
     $caption = $this->htmlParser->getChildElement($figure, 'figcaption');
     expect($caption->textContent)->equals('Caption');
