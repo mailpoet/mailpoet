@@ -65,19 +65,18 @@ class CustomField extends Model {
       $dateParts = explode('_', $dateType);
       switch ($dateType) {
         case 'year_month_day':
-          $value = sprintf(
-            '%s/%s/%s',
-            $value['month'],
-            $value['day'],
-            $value['year']
+          $value = str_replace(
+            ['DD', 'MM', 'YYYY'],
+            [$value['day'], $value['month'], $value['year']],
+            $dateFormat
           );
           break;
 
         case 'year_month':
-          $value = sprintf(
-            '%s/%s',
-            $value['month'],
-            $value['year']
+          $value = str_replace(
+            ['MM', 'YYYY'],
+            [$value['month'], $value['year']],
+            $dateFormat
           );
           break;
 
