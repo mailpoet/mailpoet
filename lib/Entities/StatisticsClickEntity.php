@@ -73,4 +73,39 @@ class StatisticsClickEntity {
     $this->safelyLoadToOneAssociation('link');
     return $this->link;
   }
+
+  /**
+   * @param NewsletterEntity|null $newsletter
+   */
+  public function setNewsletter($newsletter) {
+    $this->newsletter = $newsletter;
+  }
+
+  /**
+   * @param SendingQueueEntity|null $queue
+   */
+  public function setQueue($queue) {
+    $this->queue = $queue;
+  }
+
+  /**
+   * @param int|null $subscriberId
+   */
+  public function setSubscriberId($subscriberId) {
+    $this->subscriberId = $subscriberId;
+  }
+
+  /**
+   * @param NewsletterLinkEntity|null $link
+   */
+  public function setLink($link) {
+    $this->link = $link;
+  }
+
+  /**
+   * @param int $count
+   */
+  public function setCount(int $count) {
+    $this->count = $count;
+  }
 }

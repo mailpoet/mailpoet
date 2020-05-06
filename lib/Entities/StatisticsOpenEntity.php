@@ -51,4 +51,25 @@ class StatisticsOpenEntity {
     $this->safelyLoadToOneAssociation('queue');
     return $this->queue;
   }
+
+  /**
+   * @param NewsletterEntity|null $newsletter
+   */
+  public function setNewsletter($newsletter) {
+    $this->newsletter = $newsletter;
+  }
+
+  /**
+   * @param SendingQueueEntity|null $queue
+   */
+  public function setQueue($queue) {
+    $this->queue = $queue;
+  }
+
+  /**
+   * @param int|null $subscriberId
+   */
+  public function setSubscriberId($subscriberId) {
+    $this->subscriberId = $subscriberId;
+  }
 }
