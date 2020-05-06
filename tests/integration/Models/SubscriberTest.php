@@ -337,12 +337,30 @@ class SubscriberTest extends \MailPoetTest {
       ],
     ]);
 
+    $customField4 = CustomField::createOrUpdate([
+      'name' => 'Date in different format',
+      'type' => 'date',
+      'params' => [
+        'date_type' => 'year_month_day',
+        'date_format' => 'DD/MM/YYYY',
+      ],
+    ]);
+
     $customField3 = CustomField::createOrUpdate([
       'name' => 'Registered on',
       'type' => 'date',
       'params' => [
         'date_type' => 'year_month',
         'date_format' => 'MM/YYYY',
+      ],
+    ]);
+
+    $customField5 = CustomField::createOrUpdate([
+      'name' => 'Year-month in different format',
+      'type' => 'date',
+      'params' => [
+        'date_type' => 'year_month',
+        'date_format' => 'YYYY/MM',
       ],
     ]);
 
@@ -354,7 +372,16 @@ class SubscriberTest extends \MailPoetTest {
         'month' => 3,
         'year' => 1984,
       ], // date as array value
+      'cf_' . $customField4->id => [
+        'day' => 25,
+        'month' => 4,
+        'year' => 2020,
+      ], // date as array value
       'cf_' . $customField3->id => '2013-07', // date as string value
+      'cf_' . $customField5->id => [
+        'month' => 5,
+        'year' => 2020,
+      ], // date as array value
     ]);
 
     $subscriber = Subscriber::findOne($subscriberWithCustomField->id)
@@ -365,8 +392,12 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->{'cf_' . $customField->id})->equals('Paris');
     // date specified as array gets converted to string
     expect($subscriber->{'cf_' . $customField2->id})->equals('1984-03-09 00:00:00');
+    // date in different format specified as array is stored correctly
+    expect($subscriber->{'cf_' . $customField4->id})->equals('2020-04-25 00:00:00');
     // date specified as string is stored as is
     expect($subscriber->{'cf_' . $customField3->id})->equals('2013-07');
+    // year-month date in different format specified as array is stored correctly
+    expect($subscriber->{'cf_' . $customField5->id})->equals('2020-05-01 00:00:00');
   }
 
   public function testItShouldUnsubscribeFromAllSegments() {
