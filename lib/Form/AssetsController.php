@@ -51,14 +51,6 @@ class AssetsController {
     );
 
     $this->wp->wpEnqueueScript(
-      'mailpoet_vendor',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
-      [],
-      Env::$version,
-      true
-    );
-
-    $this->wp->wpEnqueueScript(
       'mailpoet_public',
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('public.js'),
       ['jquery'],
