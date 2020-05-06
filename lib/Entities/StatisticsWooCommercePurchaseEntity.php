@@ -111,4 +111,11 @@ class StatisticsWooCommercePurchaseEntity {
   public function getOrderId() {
     return $this->orderId;
   }
+
+  /**
+   * @param SubscriberEntity|null $subscriber
+   */
+  public function setSubscriber($subscriber) {
+    $this->subscriber = $subscriber;
+  }
 }

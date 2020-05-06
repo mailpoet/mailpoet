@@ -22,20 +22,20 @@ class NewsletterLinkEntity {
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")
-   * @var NewsletterEntity|null
+   * @var NewsletterEntity
    */
   private $newsletter;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SendingQueueEntity")
    * @ORM\JoinColumn(name="queue_id", referencedColumnName="id")
-   * @var SendingQueueEntity|null
+   * @var SendingQueueEntity
    */
   private $queue;
 
   /**
    * @ORM\Column(type="string")
-   * @var string|null
+   * @var string
    */
   private $url;
 
@@ -54,6 +54,13 @@ class NewsletterLinkEntity {
    */
   private $clicks;
 
+  public function __construct(NewsletterEntity $newsletter, SendingQueueEntity $queue, string $url, string $hash) {
+    $this->newsletter = $newsletter;
+    $this->queue = $queue;
+    $this->url = $url;
+    $this->hash = $hash;
+  }
+
   /**
    * @return NewsletterEntity|null
    */
@@ -70,17 +77,11 @@ class NewsletterLinkEntity {
     return $this->queue;
   }
 
-  /**
-   * @return string|null
-   */
-  public function getUrl() {
+  public function getUrl(): string {
     return $this->url;
   }
 
-  /**
-   * @return string|null
-   */
-  public function getHash() {
+  public function getHash(): string {
     return $this->hash;
   }
 
