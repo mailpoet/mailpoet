@@ -113,6 +113,9 @@
     "@typescript-eslint/camelcase": "off",
     // PropTypes
     "react/prop-types": 0,
+    "react/jsx-props-no-spreading": [2, {
+      "exceptions": ["input", "select"]
+    }],
     // Hooks
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
