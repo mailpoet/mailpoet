@@ -104,4 +104,11 @@ class StatisticsWooCommercePurchaseEntity {
     $this->safelyLoadToOneAssociation('click');
     return $this->click;
   }
+
+  /**
+   * @return int
+   */
+  public function getOrderId() {
+    return $this->orderId;
+  }
 }
