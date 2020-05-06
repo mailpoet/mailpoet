@@ -49,22 +49,20 @@ input[type=checkbox].mailpoet-toggle {
   }
 }
 
-$very-light-blue: #e5e9f8;
 $apricot: #f5a278;
-$pale-grey: #fdfdff;
 
 // themes
 .mailpoet-toggle-light {
   + .mailpoet-toggle-button {
-    background: $pale-grey;
-    border: solid 1px $very-light-blue;
+    background: $color-input-background;
+    border: solid 1px $color-tertiary-light;
     border-radius: 2em;
     padding: 2px;
     transition: all .4s ease;
 
     &:after {
       background-color: #fff;
-      border: solid 1px $very-light-blue;
+      border: solid 1px $color-tertiary-light;
       border-radius: 50%;
       box-shadow: 0 4px 8px 0 rgba(220, 220, 220, .5);
       transition: all .2s ease;
