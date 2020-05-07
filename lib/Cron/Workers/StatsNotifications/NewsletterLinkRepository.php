@@ -5,6 +5,13 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterLinkEntity;
 
+/**
+ * @method NewsletterLinkEntity[] findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null)
+ * @method NewsletterLinkEntity|null findOneBy(array $criteria, array $orderBy = null)
+ * @method NewsletterLinkEntity|null findOneById(mixed $id)
+ * @method void persist(NewsletterLinkEntity $entity)
+ * @method void remove(NewsletterLinkEntity $entity)
+ */
 class NewsletterLinkRepository extends Repository {
   protected function getEntityClassName() {
     return NewsletterLinkEntity::class;
