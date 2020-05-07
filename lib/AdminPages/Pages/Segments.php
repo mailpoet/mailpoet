@@ -83,8 +83,10 @@ class Segments {
   }
 
   private function getProducts() {
-    $args = ['post_type' => 'product', 'orderby' => 'title', 'order' => 'ASC', 'numberposts' => -1];
-    $products = $this->wp->getPosts($args);
+    $products = $this->wp->getResultsFromWpDb(
+      "SELECT `ID`, `post_title` FROM {$this->wp->getWPTableName('posts')} WHERE `post_type` = %s ORDER BY `post_title` ASC;",
+      'product'
+    );
     return array_map(function ($product) {
       return [
         'title' => $product->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
