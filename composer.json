@@ -42,6 +42,7 @@
       "vendor-prefixed/swiftmailer"
     ],
     "files": [
+      "lib/exceptions.php",
       "lib-3rd-party/ArrayColumn.php",
       "vendor-prefixed/symfony/polyfill-ctype/bootstrap.php",
       "vendor-prefixed/symfony/polyfill-iconv/bootstrap.php",
