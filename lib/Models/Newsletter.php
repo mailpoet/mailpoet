@@ -13,7 +13,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
-use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -567,73 +566,9 @@ class Newsletter extends Model {
     return $this;
   }
 
-  public function withTotalSent() {
-    // total of subscribers who received the email
-    $this->totalSent = (int)SendingQueue::findTaskByNewsletterId($this->id)
-      ->where('tasks.status', SendingQueue::STATUS_COMPLETED)
-      ->sum('queues.count_processed');
-    return $this;
-  }
-
-  public function withScheduledToBeSent() {
-    $this->totalScheduled = (int)SendingQueue::findTaskByNewsletterId($this->id)
-      ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
-      ->count();
-    return $this;
-  }
-
-  public function withStatistics(WCHelper $woocommerceHelper) {
-    $statistics = $this->getStatistics($woocommerceHelper);
-    $this->statistics = $statistics;
-    return $this;
-  }
-
   public function render() {
     $renderer = new Renderer($this);
     return $renderer->render();
-  }
-
-  public function getStatistics(WCHelper $woocommerceHelper) {
-    if (($this->type !== self::TYPE_WELCOME) && ($this->queue === false)) {
-      return false;
-    }
-
-    $statisticsExprs = [
-      'clicked' => StatisticsClicks::selectExpr('COUNT(DISTINCT subscriber_id) as cnt')->tableAlias("stat"),
-      'opened' => StatisticsOpens::selectExpr('COUNT(DISTINCT subscriber_id) as cnt')->tableAlias("stat"),
-      'unsubscribed' => StatisticsUnsubscribes::selectExpr('COUNT(DISTINCT subscriber_id) as cnt')->tableAlias("stat"),
-    ];
-    $result = [];
-
-    foreach ($statisticsExprs as $name => $statisticsExpr) {
-      $row = $statisticsExpr->where('newsletter_id', $this->id)->findOne();
-      $result[$name] = !empty($row->cnt) ? (int)$row->cnt : 0;
-    }
-
-    // WooCommerce revenues
-    if ($woocommerceHelper->isWooCommerceActive()) {
-      $currency = $woocommerceHelper->getWoocommerceCurrency();
-      $row = StatisticsWooCommercePurchases::selectExpr('SUM(order_price_total) AS total')
-        ->selectExpr('count(*)', 'count')
-        ->where([
-          'newsletter_id' => $this->id,
-          'order_currency' => $currency,
-        ])
-        ->findOne();
-
-      $revenue = !empty($row->total) ? (float)$row->total : 0.0;
-      $count = !empty($row->count) ? (int)$row->count : 0;
-      $result['revenue'] = [
-        'currency' => $currency,
-        'value' => $revenue,
-        'count' => $count,
-        'formatted' => $woocommerceHelper->getRawPrice($revenue, ['currency' => $currency]),
-      ];
-    } else {
-      $result['revenue'] = null;
-    }
-
-    return $result;
   }
 
   public function wasScheduledForSubscriber($subscriberId) {
