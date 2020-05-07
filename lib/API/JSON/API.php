@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON;
 
 use MailPoet\API\JSON\Endpoint;
 use MailPoet\Config\AccessControl;
+use MailPoet\Exception;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Tracy\ApiPanel\ApiPanel;
@@ -12,6 +13,7 @@ use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Psr\Container\ContainerInterface;
+use Throwable;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
@@ -33,6 +35,9 @@ class API {
   /** @var AccessControl */
   private $accessControl;
 
+  /** @var ErrorHandler */
+  private $errorHandler;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -44,11 +49,13 @@ class API {
   public function __construct(
     ContainerInterface $container,
     AccessControl $accessControl,
+    ErrorHandler $errorHandler,
     SettingsController $settings,
     WPFunctions $wp
   ) {
     $this->container = $container;
     $this->accessControl = $accessControl;
+    $this->errorHandler = $errorHandler;
     $this->settings = $settings;
     $this->wp = $wp;
     foreach ($this->availableApiVersions as $availableApiVersion) {
@@ -192,7 +199,9 @@ class API {
       }
       $response = $endpoint->{$this->requestMethod}($this->requestData);
       return $response;
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
+      return $this->errorHandler->convertToResponse($e);
+    } catch (Throwable $e) {
       if (class_exists(Debugger::class) && Debugger::$logDirectory) {
         Debugger::log($e, ILogger::EXCEPTION);
       }

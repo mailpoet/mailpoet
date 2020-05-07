@@ -6,6 +6,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\API\JSON\API as JSONAPI;
 use MailPoet\API\JSON\Endpoint;
+use MailPoet\API\JSON\ErrorHandler;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\SuccessResponse;
@@ -29,6 +30,9 @@ class APITest extends \MailPoetTest {
   /** @var Container */
   private $container;
 
+  /** @var ErrorHandler */
+  private $errorHandler;
+
   /** @var SettingsController */
   private $settings;
 
@@ -48,10 +52,12 @@ class APITest extends \MailPoetTest {
     $this->container->autowire(APITestNamespacedEndpointStubV1::class)->setPublic(true);
     $this->container->autowire(APITestNamespacedEndpointStubV2::class)->setPublic(true);
     $this->container->compile();
+    $this->errorHandler = $this->container->get(ErrorHandler::class);
     $this->settings = $this->container->get(SettingsController::class);
     $this->api = new \MailPoet\API\JSON\API(
       $this->container,
       $this->container->get(AccessControl::class),
+      $this->errorHandler,
       $this->settings,
       new WPFunctions
     );
@@ -142,6 +148,25 @@ class APITest extends \MailPoetTest {
     expect($response->getData()['data'])->equals($data['data']);
   }
 
+  public function testItConvertsExceptionToErrorResponse() {
+    $namespace = [
+      'name' => 'MailPoet\API\JSON\v1',
+      'version' => 'v1',
+    ];
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
+
+    $data = [
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+      'method' => 'testBadRequest',
+      'api_version' => 'v1',
+      'data' => ['test' => 'data'],
+    ];
+    $this->api->setRequestData($data, Endpoint::TYPE_POST);
+    $response = $this->api->processRoute();
+
+    expect($response->errors)->equals([['error' => 'key', 'message' => 'value']]);
+  }
+
   public function testItCallsAddedEndpointsForSpecificAPIVersion() {
     $namespace = [
       'name' => 'MailPoet\API\JSON\v2',
@@ -211,7 +236,7 @@ class APITest extends \MailPoetTest {
       ['validatePermission' => false]
     );
 
-    $api = new JSONAPI($this->container, $accessControl, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, new WPFunctions);
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $api->processRoute();
@@ -233,7 +258,7 @@ class APITest extends \MailPoetTest {
       ]
     );
 
-    $api = new JSONAPI($this->container, $accessControl, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->false();
 
     $accessControl = Stub::make(
@@ -245,7 +270,7 @@ class APITest extends \MailPoetTest {
         }),
       ]
     );
-    $api = new JSONAPI($this->container, $accessControl, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->true();
   }
 
@@ -267,7 +292,7 @@ class APITest extends \MailPoetTest {
       ]
     );
 
-    $api = new JSONAPI($this->container, $accessControl, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, new WPFunctions);
     expect($api->validatePermissions('test', $permissions))->false();
 
     $accessControl = Stub::make(
@@ -280,7 +305,7 @@ class APITest extends \MailPoetTest {
       ]
     );
 
-    $api = new JSONAPI($this->container, $accessControl, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, new WPFunctions);
     expect($api->validatePermissions('test', $permissions))->true();
   }
 

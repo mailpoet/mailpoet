@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
+use MailPoet\UnexpectedValueException;
 
 class APITestNamespacedEndpointStubV1 extends APIEndpoint {
   public $permissions = [
@@ -16,6 +17,10 @@ class APITestNamespacedEndpointStubV1 extends APIEndpoint {
 
   public function test($data) {
     return $this->successResponse($data);
+  }
+
+  public function testBadRequest($data) {
+    throw UnexpectedValueException::create()->withErrors(['key' => 'value']);
   }
 
   public function restricted($data) {
