@@ -10,6 +10,9 @@ class Styles {
 .mailpoet_form {
   padding: 20px;
 }
+.mailpoet_form.mailpoet_form_slide_in {
+  max-width: 350px;
+}
 
 /* columns */
 .mailpoet_column_with_background {
