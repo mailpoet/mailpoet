@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 
-type Props = {
+type Props = InputHTMLAttributes<HTMLInputElement> & {
   dimension?: 'small',
   isFullWidth?: boolean,
   iconStart?: JSX.Element,
   iconEnd?: JSX.Element,
-  [attribute: string]: any, // any HTML attributes, e.g. type, name, id, placeholder
 };
 
 const Input = ({
