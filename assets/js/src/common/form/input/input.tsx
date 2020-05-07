@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 
 type Props = {
-  size?: 'small',
+  dimension?: 'small',
   isFullWidth?: boolean,
   iconStart?: JSX.Element,
   iconEnd?: JSX.Element,
@@ -10,7 +10,7 @@ type Props = {
 };
 
 const Input = ({
-  size,
+  dimension,
   isFullWidth,
   iconStart,
   iconEnd,
@@ -21,7 +21,7 @@ const Input = ({
       classnames(
         'mailpoet-form-input',
         {
-          [`mailpoet-form-input-${size}`]: size,
+          [`mailpoet-form-input-${dimension}`]: dimension,
           'mailpoet-full-width': isFullWidth,
         }
       )

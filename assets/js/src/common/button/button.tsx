@@ -3,7 +3,7 @@ import classnames from 'classnames';
 
 type Props = {
   children?: React.ReactNode,
-  size?: 'small' | 'large',
+  dimension?: 'small' | 'large',
   variant?: 'light' | 'dark' | 'link' | 'link-dark',
   withSpinner?: boolean, // also disables href and onClick (via pointer-events in CSS)
   isDisabled?: boolean, // also disables href and onClick (via pointer-events in CSS)
@@ -16,7 +16,7 @@ type Props = {
 
 const Button = ({
   children,
-  size,
+  dimension,
   variant,
   withSpinner,
   isDisabled,
@@ -33,7 +33,7 @@ const Button = ({
       classnames(
         'mailpoet-button',
         {
-          [`mailpoet-button-${size}`]: size,
+          [`mailpoet-button-${dimension}`]: dimension,
           [`mailpoet-button-${variant}`]: variant,
           'mailpoet-button-disabled': isDisabled,
           'mailpoet-button-with-spinner': withSpinner,

@@ -12,25 +12,25 @@ export default {
 export const SelectBoxes = () => (
   <>
     <Heading level={3}>Small select boxes</Heading>
-    <p>
-      <Select size="small">
+    <div>
+      <Select dimension="small">
         <option value="1">Option 1</option>
         <option value="2">Option 2</option>
         <option value="3">Option 3</option>
       </Select>
       <div className="mailpoet-gap" />
       <Select
-        size="small"
+        dimension="small"
         iconStart={icon}
       >
         <option value="1">Option 1</option>
         <option value="2">Option 2</option>
         <option value="3">Option 3</option>
       </Select>
-    </p>
+    </div>
     <br />
     <Heading level={3}>Regular select boxes</Heading>
-    <p>
+    <div>
       <Select>
         <option value="1">Option 1</option>
         <option value="2">Option 2</option>
@@ -42,10 +42,10 @@ export const SelectBoxes = () => (
         <option value="2">Option 2</option>
         <option value="3">Option 3</option>
       </Select>
-    </p>
+    </div>
     <br />
     <Heading level={3}>Full-width select boxes</Heading>
-    <p>
+    <div>
       <Select isFullWidth>
         <option value="1">Option 1</option>
         <option value="2">Option 2</option>
@@ -60,7 +60,7 @@ export const SelectBoxes = () => (
         <option value="2">Option 2</option>
         <option value="3">Option 3</option>
       </Select>
-    </p>
+    </div>
     <br />
   </>
 );

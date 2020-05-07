@@ -12,38 +12,38 @@ export default {
 export const Inputs = () => (
   <>
     <Heading level={3}>Small inputs</Heading>
-    <p>
+    <div>
       <Input
         type="text"
-        size="small"
+        dimension="small"
         placeholder="Small input value"
       />
       <div className="mailpoet-gap" />
       <Input
         type="text"
         placeholder="Small input with iconStart"
-        size="small"
+        dimension="small"
         iconStart={icon}
       />
       <div className="mailpoet-gap" />
       <Input
         type="text"
         placeholder="Small input with iconEnd"
-        size="small"
+        dimension="small"
         iconEnd={icon}
       />
       <div className="mailpoet-gap" />
       <Input
         type="text"
         placeholder="Small input with both icons"
-        size="small"
+        dimension="small"
         iconStart={icon}
         iconEnd={icon}
       />
-    </p>
+    </div>
     <br />
     <Heading level={3}>Regular inputs</Heading>
-    <p>
+    <div>
       <Input
         type="text"
         placeholder="Regular input"
@@ -67,10 +67,10 @@ export const Inputs = () => (
         iconStart={icon}
         iconEnd={icon}
       />
-    </p>
+    </div>
     <br />
     <Heading level={3}>Full-width inputs</Heading>
-    <p>
+    <div>
       <Input
         type="text"
         placeholder="Full-width input"
@@ -95,7 +95,7 @@ export const Inputs = () => (
         iconStart={icon}
         iconEnd={icon}
       />
-    </p>
+    </div>
     <br />
   </>
 );

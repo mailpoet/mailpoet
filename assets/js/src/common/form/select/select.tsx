@@ -3,7 +3,7 @@ import classnames from 'classnames';
 
 type Props = {
   children?: React.ReactNode,
-  size?: 'small',
+  dimension?: 'small',
   isFullWidth?: boolean,
   iconStart?: JSX.Element,
   [attribute: string]: any, // any HTML attributes, e.g. name, id
@@ -11,7 +11,7 @@ type Props = {
 
 const Select = ({
   children,
-  size,
+  dimension,
   isFullWidth,
   iconStart,
   ...attributes
@@ -22,7 +22,7 @@ const Select = ({
         'mailpoet-form-input',
         'mailpoet-form-select',
         {
-          [`mailpoet-form-input-${size}`]: size,
+          [`mailpoet-form-input-${dimension}`]: dimension,
           'mailpoet-full-width': isFullWidth,
         }
       )
