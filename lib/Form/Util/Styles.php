@@ -74,6 +74,10 @@ class Styles {
 .mailpoet_message {
 }
 
+.mailpoet_form_image {
+  margin-bottom: 15px;
+}
+
 .mailpoet_validate_success {
   font-weight: 600;
   color:#468847;
