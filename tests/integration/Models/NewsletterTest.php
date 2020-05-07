@@ -12,10 +12,8 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsUnsubscribes;
-use MailPoet\Models\Subscriber;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Security;
-use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -146,43 +144,6 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletterSegments[0]['name'])->equals('Segment 1');
     expect($newsletterSegments[1]['id'])->equals($this->segment2->id);
     expect($newsletterSegments[1]['name'])->contains('Deleted');
-  }
-
-  public function testItCanHaveStatistics() {
-    $newsletter = $this->newsletter;
-    $sendingQueue = $this->sendingQueue;
-
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'john.doe@mailpoet.com',
-      'first_name' => 'John',
-      'last_name' => 'Doe',
-    ]);
-
-    $opens = StatisticsOpens::create();
-    $opens->subscriberId = $subscriber->id;
-    $opens->newsletterId = $this->newsletter->id;
-    $opens->queueId = $sendingQueue->id;
-    $opens->save();
-
-    $clicks = StatisticsClicks::create();
-    $clicks->subscriberId = $subscriber->id;
-    $clicks->newsletterId = $this->newsletter->id;
-    $clicks->queueId = $sendingQueue->id;
-    $clicks->linkId = 0;
-    $clicks->count = 0;
-    $clicks->save();
-
-    $unsubscribes = StatisticsUnsubscribes::create();
-    $unsubscribes->subscriberId = $subscriber->id;
-    $unsubscribes->newsletterId = $this->newsletter->id;
-    $unsubscribes->queueId = $sendingQueue->id;
-    $unsubscribes->save();
-
-    $newsletter->queue = $newsletter->getQueue()->asArray();
-    $statistics = $newsletter->getStatistics($this->makeEmpty(WCHelper::class));
-    expect($statistics['opened'])->equals(1);
-    expect($statistics['clicked'])->equals(1);
-    expect($statistics['unsubscribed'])->equals(1);
   }
 
   public function testItCanCreateOrUpdate() {
