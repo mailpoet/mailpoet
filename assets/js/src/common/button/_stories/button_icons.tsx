@@ -15,20 +15,20 @@ export const WithIcons = () => (
     <p>
       <Button
         onClick={action('only icon small')}
-        size="small"
+        dimension="small"
         variant="light"
         iconStart={icon}
       />
       <Button
         onClick={action('icon start small')}
-        size="small"
+        dimension="small"
         iconStart={icon}
       >
         Icon start
       </Button>
       <Button
         onClick={action('icon end small')}
-        size="small"
+        dimension="small"
         variant="dark"
         iconEnd={icon}
       >
@@ -36,7 +36,7 @@ export const WithIcons = () => (
       </Button>
       <Button
         onClick={action('both icons small')}
-        size="small"
+        dimension="small"
         variant="light"
         iconStart={icon}
         iconEnd={icon}
@@ -45,13 +45,13 @@ export const WithIcons = () => (
       </Button>
       <Button
         onClick={action('only icon link small')}
-        size="small"
+        dimension="small"
         variant="link"
         iconStart={icon}
       />
       <Button
         onClick={action('icon start link small')}
-        size="small"
+        dimension="small"
         variant="link-dark"
         iconStart={icon}
       >
@@ -108,20 +108,20 @@ export const WithIcons = () => (
     <p>
       <Button
         onClick={action('only icon large')}
-        size="large"
+        dimension="large"
         variant="light"
         iconStart={icon}
       />
       <Button
         onClick={action('icon start large')}
-        size="large"
+        dimension="large"
         iconStart={icon}
       >
         Icon start
       </Button>
       <Button
         onClick={action('icon end large')}
-        size="large"
+        dimension="large"
         variant="dark"
         iconEnd={icon}
       >
@@ -129,7 +129,7 @@ export const WithIcons = () => (
       </Button>
       <Button
         onClick={action('both icons large')}
-        size="large"
+        dimension="large"
         variant="light"
         iconStart={icon}
         iconEnd={icon}
@@ -138,13 +138,13 @@ export const WithIcons = () => (
       </Button>
       <Button
         onClick={action('only icon link large')}
-        size="large"
+        dimension="large"
         variant="link"
         iconStart={icon}
       />
       <Button
         onClick={action('icon start link large')}
-        size="large"
+        dimension="large"
         variant="link-dark"
         iconStart={icon}
       >

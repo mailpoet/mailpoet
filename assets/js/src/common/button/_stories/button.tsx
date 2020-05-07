@@ -14,34 +14,34 @@ export const WithoutIcons = () => (
     <p>
       <Button
         onClick={action('light small')}
-        size="small"
+        dimension="small"
         variant="light"
       >
         Light button
       </Button>
       <Button
         onClick={action('regular small')}
-        size="small"
+        dimension="small"
       >
         Regular button
       </Button>
       <Button
         onClick={action('dark small')}
-        size="small"
+        dimension="small"
         variant="dark"
       >
         Dark button
       </Button>
       <Button
         onClick={action('link small')}
-        size="small"
+        dimension="small"
         variant="link"
       >
         Link button
       </Button>
       <Button
         onClick={action('link-dark small')}
-        size="small"
+        dimension="small"
         variant="link-dark"
       >
         Link dark button
@@ -87,34 +87,34 @@ export const WithoutIcons = () => (
     <p>
       <Button
         onClick={action('light large')}
-        size="large"
+        dimension="large"
         variant="light"
       >
         Light button
       </Button>
       <Button
         onClick={action('regular large')}
-        size="large"
+        dimension="large"
       >
         Regular button
       </Button>
       <Button
         onClick={action('dark large')}
-        size="large"
+        dimension="large"
         variant="dark"
       >
         Dark button
       </Button>
       <Button
         onClick={action('link large')}
-        size="large"
+        dimension="large"
         variant="link"
       >
         Link button
       </Button>
       <Button
         onClick={action('link-dark large')}
-        size="large"
+        dimension="large"
         variant="link-dark"
       >
         Link dark button
