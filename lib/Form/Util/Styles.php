@@ -8,11 +8,15 @@ class Styles {
   private $defaultStyles = <<<EOL
 /* form */
 .mailpoet_form {
+  padding: 20px;
 }
 
 /* columns */
 .mailpoet_column_with_background {
   padding: 10px;
+}
+.mailpoet_form_columns.mailpoet_paragraph {
+  margin-bottom: 0;
 }
 /* space between columns */
 .mailpoet_form_column:not(:first-child) {
@@ -23,6 +27,10 @@ class Styles {
 .mailpoet_paragraph {
   line-height:20px;
   margin-bottom: 20px;
+}
+.mailpoet_paragraph:last-child,
+.mailpoet_paragraph p:last-child {
+  margin-bottom: 0;
 }
 
 /* labels */
