@@ -22,6 +22,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
+use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
@@ -151,7 +152,6 @@ class NewslettersTest extends \MailPoetTest {
     $this->endpoint = $this->createNewslettersEndpointWithMocks([
       'wp' => $wp,
       'cronHelper' => $this->cronHelper,
-      'authorizedEmailsController' => $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
       'subscribersFeature' => Stub::make(SubscribersFeature::class),
     ]);
     $response = $this->endpoint->get(['id' => $this->newsletter->id]);
@@ -420,7 +420,6 @@ class NewslettersTest extends \MailPoetTest {
   public function testItReturnsErrorIfSubscribersLimitReached() {
     $endpoint = $this->createNewslettersEndpointWithMocks([
       'cronHelper' => $this->cronHelper,
-      'authorizedEmailsController' => $this->make(AuthorizedEmailsController::class),
       'subscribersFeature' => Stub::make(SubscribersFeature::class, ['check' => true]),
     ]);
     $res = $endpoint->setStatus([
@@ -581,7 +580,6 @@ class NewslettersTest extends \MailPoetTest {
     $this->endpoint = $this->createNewslettersEndpointWithMocks([
       'wp' => $wp,
       'cronHelper' => $this->cronHelper,
-      'authorizedEmailsController' => $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::never()]),
       'subscribersFeature' => Stub::make(SubscribersFeature::class),
     ]);
 
@@ -1002,14 +1000,14 @@ class NewslettersTest extends \MailPoetTest {
       $mocks['wp'] ?? $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $mocks['cronHelper'] ?? $this->diContainer->get(CronHelper::class),
-      $mocks['authorizedEmailsController'] ?? $this->diContainer->get(AuthorizedEmailsController::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(NewsletterListingRepository::class),
       $this->diContainer->get(NewslettersResponseBuilder::class),
       $this->diContainer->get(PostNotificationScheduler::class),
       $mocks['emoji'] ?? $this->diContainer->get(Emoji::class),
       $mocks['subscribersFeature'] ?? $this->diContainer->get(SubscribersFeature::class),
-      $mocks['sendPreviewController'] ?? $this->diContainer->get(SendPreviewController::class)
+      $mocks['sendPreviewController'] ?? $this->diContainer->get(SendPreviewController::class),
+      $this->diContainer->get(NewsletterSaveController::class)
     );
   }
 }

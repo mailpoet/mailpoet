@@ -8,16 +8,15 @@ use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Listing;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
+use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
@@ -25,7 +24,6 @@ use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
-use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Emoji;
@@ -48,9 +46,6 @@ class Newsletters extends APIEndpoint {
 
   /** @var CronHelper */
   private $cronHelper;
-
-  /** @var AuthorizedEmailsController */
-  private $authorizedEmailsController;
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
@@ -77,27 +72,29 @@ class Newsletters extends APIEndpoint {
   /** @var SendPreviewController */
   private $sendPreviewController;
 
+  /** @var NewsletterSaveController */
+  private $newsletterSaveController;
+
   public function __construct(
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
     WPFunctions $wp,
     SettingsController $settings,
     CronHelper $cronHelper,
-    AuthorizedEmailsController $authorizedEmailsController,
     NewslettersRepository $newslettersRepository,
     NewsletterListingRepository $newsletterListingRepository,
     NewslettersResponseBuilder $newslettersResponseBuilder,
     PostNotificationScheduler $postNotificationScheduler,
     Emoji $emoji,
     SubscribersFeature $subscribersFeature,
-    SendPreviewController $sendPreviewController
+    SendPreviewController $sendPreviewController,
+    NewsletterSaveController $newsletterSaveController
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
     $this->settings = $settings;
     $this->cronHelper = $cronHelper;
-    $this->authorizedEmailsController = $authorizedEmailsController;
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterListingRepository = $newsletterListingRepository;
     $this->newslettersResponseBuilder = $newslettersResponseBuilder;
@@ -105,6 +102,7 @@ class Newsletters extends APIEndpoint {
     $this->emoji = $emoji;
     $this->subscribersFeature = $subscribersFeature;
     $this->sendPreviewController = $sendPreviewController;
+    $this->newsletterSaveController = $newsletterSaveController;
   }
 
   public function get($data = []) {
@@ -145,120 +143,8 @@ class Newsletters extends APIEndpoint {
   }
 
   public function save($data = []) {
-    $data = $this->wp->applyFilters('mailpoet_api_newsletters_save_before', $data);
-
-    $segments = [];
-    if (isset($data['segments'])) {
-      $segments = $data['segments'];
-      unset($data['segments']);
-    }
-
-    $options = [];
-    if (isset($data['options'])) {
-      $options = $data['options'];
-      unset($data['options']);
-    }
-
-    if (!empty($data['template_id'])) {
-      $template = ContainerWrapper::getInstance()->get(NewsletterTemplatesRepository::class)->findOneById($data['template_id']);
-      if ($template) {
-        $data['body'] = json_encode($template->getBody());
-      }
-      unset($data['template_id']);
-    }
-
-    $oldNewsletter = null;
-    if (isset($data['id'])) {
-      $fetched = Newsletter::findOne(intval($data['id']));
-      $oldNewsletter = $fetched instanceof Newsletter ? $fetched : null;
-    }
-
-    if (!empty($data['body'])) {
-      $data['body'] = $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $data['body']);
-    }
-    $newsletter = Newsletter::createOrUpdate($data);
-    $errors = $newsletter->getErrors();
-
-    if (!empty($errors)) return $this->badRequest($errors);
-    // Re-fetch newsletter to sync changes made by DB
-    // updated_at column use CURRENT_TIMESTAMP for update and this change is not updated automatically by ORM
-    $newsletter = Newsletter::findOne($newsletter->id);
-    if(!$newsletter instanceof Newsletter) return $this->errorResponse();
-
-    if (!empty($segments)) {
-      NewsletterSegment::where('newsletter_id', $newsletter->id)
-        ->deleteMany();
-      foreach ($segments as $segment) {
-        if (!is_array($segment)) continue;
-        $relation = NewsletterSegment::create();
-        $relation->segmentId = (int)$segment['id'];
-        $relation->newsletterId = $newsletter->id;
-        $relation->save();
-      }
-    }
-
-    // save default sender if needed
-    if (!$this->settings->get('sender') && !empty($data['sender_address']) && !empty($data['sender_name'])) {
-      $this->settings->set('sender', [
-        'address' => $data['sender_address'],
-        'name' => $data['sender_name'],
-      ]);
-    }
-
-    if (!empty($options)) {
-      $optionFields = NewsletterOptionField::where(
-        'newsletter_type',
-        $newsletter->type
-      )->findMany();
-      // update newsletter options
-      foreach ($optionFields as $optionField) {
-        if (isset($options[$optionField->name])) {
-          $newsletterOption = NewsletterOption::createOrUpdate(
-            [
-              'newsletter_id' => $newsletter->id,
-              'option_field_id' => $optionField->id,
-              'value' => $options[$optionField->name],
-            ]
-          );
-        }
-      }
-      // reload newsletter with updated options
-      $newsletter = Newsletter::filter('filterWithOptions', $newsletter->type)->findOne($newsletter->id);
-      if(!$newsletter instanceof Newsletter) return $this->errorResponse();
-      // if this is a post notification, process newsletter options and update its schedule
-      if ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
-        // generate the new schedule from options and get the new "next run" date
-        $newsletter->schedule = $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
-        $nextRunDate = Scheduler::getNextRunDate($newsletter->schedule);
-        // find previously scheduled jobs and reschedule them using the new "next run" date
-        SendingQueue::findTaskByNewsletterId($newsletter->id)
-          ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
-          ->findResultSet()
-          ->set('scheduled_at', $nextRunDate)
-          ->save();
-      }
-    }
-
-    $queue = $newsletter->getQueue();
-    if ($queue && !in_array($newsletter->type, [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_NOTIFICATION_HISTORY])) {
-      // if newsletter was previously scheduled and is now unscheduled, set its status to DRAFT and delete associated queue record
-      if ($newsletter->status === Newsletter::STATUS_SCHEDULED && isset($options['isScheduled']) && empty($options['isScheduled'])) {
-        $queue->delete();
-        $newsletter->status = Newsletter::STATUS_DRAFT;
-        $newsletter->save();
-      } else {
-        $queue->newsletterRenderedBody = null;
-        $queue->newsletterRenderedSubject = null;
-        $newsletterQueueTask = new NewsletterQueueTask();
-        $newsletterQueueTask->preProcessNewsletter($newsletter, $queue);
-      }
-    }
-
-    $this->wp->doAction('mailpoet_api_newsletters_save_after', $newsletter);
-    $this->authorizedEmailsController->onNewsletterUpdate($newsletter, $oldNewsletter);
-
-    $previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletter);
-    return $this->successResponse($newsletter->asArray(), ['preview_url' => $previewUrl]);
+    list($data, $meta) = $this->newsletterSaveController->save($data);
+    return $this->successResponse($data, $meta);
   }
 
   public function setStatus($data = []) {
