@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\InvalidStateException;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -15,6 +16,7 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -82,12 +84,16 @@ class NewsletterSaveController {
     }
     $newsletter = Newsletter::createOrUpdate($data);
     $errors = $newsletter->getErrors();
+    if (!empty($errors)) {
+      throw UnexpectedValueException::create()->withErrors($errors);
+    }
 
-    if (!empty($errors)) return $this->badRequest($errors);
     // Re-fetch newsletter to sync changes made by DB
     // updated_at column use CURRENT_TIMESTAMP for update and this change is not updated automatically by ORM
     $newsletter = Newsletter::findOne($newsletter->id);
-    if(!$newsletter instanceof Newsletter) return $this->errorResponse();
+    if (!$newsletter) {
+      throw new InvalidStateException();
+    }
 
     if (!empty($segments)) {
       NewsletterSegment::where('newsletter_id', $newsletter->id)
@@ -128,7 +134,9 @@ class NewsletterSaveController {
       }
       // reload newsletter with updated options
       $newsletter = Newsletter::filter('filterWithOptions', $newsletter->type)->findOne($newsletter->id);
-      if(!$newsletter instanceof Newsletter) return $this->errorResponse();
+      if (!$newsletter) {
+        throw new InvalidStateException();
+      }
       // if this is a post notification, process newsletter options and update its schedule
       if ($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         // generate the new schedule from options and get the new "next run" date
