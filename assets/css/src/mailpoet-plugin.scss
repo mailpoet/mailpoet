@@ -16,6 +16,11 @@
 @import 'mixins/breakpoints';
 @import 'mixins/clearfix';
 
+// 3rd party styles
+
+@import '../../../node_modules/select2/dist/css/select2';
+@import 'components-plugin/3rd-party-plugins/datepicker';
+
 // Generic
 
 @import 'generic/typography';
@@ -24,11 +29,6 @@
 @import 'generic/forms';
 
 @import 'generic/helpers';
-
-// 3rd party styles
-
-@import '../../../node_modules/select2/dist/css/select2';
-@import 'components-plugin/3rd-party-plugins/datepicker';
 
 // Components
 // Actual UI components.
