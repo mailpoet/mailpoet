@@ -1,0 +1,34 @@
+.mailpoet-grid-column {
+  width: $grid-column;
+}
+
+.mailpoet-grid-column-small {
+  width: $grid-column-small;
+}
+
+.mailpoet-grid-two-columns {
+  display: grid;
+  grid-column-gap: $grid-gap;
+  grid-template-columns: 1fr 1fr;
+}
+
+.mailpoet-grid-three-columns {
+  display: grid;
+  grid-column-gap: $grid-gap;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.mailpoet-grid-space-between {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mailpoet-grid-space-between-vertical-center {
+  align-items: center;
+}
+
+.mailpoet-grid-two-columns-list {
+  column-gap: $grid-gap;
+  columns: 2 auto;
+}
