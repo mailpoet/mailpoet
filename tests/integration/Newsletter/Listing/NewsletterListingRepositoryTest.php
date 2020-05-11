@@ -80,9 +80,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     $newsletter->setSubject('Newsletter with segment');
     $this->entityManager->persist($newsletter);
 
-    $newsletterSegment = new NewsletterSegmentEntity();
-    $newsletterSegment->setSegment($segment);
-    $newsletterSegment->setNewsletter($newsletter);
+    $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
     $this->entityManager->persist($newsletterSegment);
 
     $this->entityManager->flush();
