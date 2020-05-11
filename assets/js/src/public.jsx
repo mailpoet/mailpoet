@@ -18,6 +18,17 @@ jQuery(($) => {
     });
   };
 
+  /**
+   * @param form jQuery object of form form.mailpoet_form
+   */
+  function checkFormContainer(form) {
+    if (form.width() < 500) {
+      form.addClass('mailpoet_form_tight_container');
+    } else {
+      form.removeClass('mailpoet_form_tight_container');
+    }
+  }
+
   function isSameDomain(url) {
     const link = document.createElement('a');
     link.href = url;
@@ -48,12 +59,7 @@ jQuery(($) => {
     }
     setTimeout(() => {
       formDiv.addClass('active');
-
-      if (form.width() < 500) {
-        form.addClass('mailpoet_form_tight_container');
-      } else {
-        form.removeClass('mailpoet_form_tight_container');
-      }
+      checkFormContainer(form);
 
       if (showOverlay) {
         formDiv.prev('.mailpoet_form_popup_overlay').addClass('active');
@@ -96,12 +102,7 @@ jQuery(($) => {
       $('.mailpoet_form').each((index, element) => {
         // Detect form is placed in tight container
         const formDiv = $(element);
-        const form = formDiv.find('form');
-        if (form.width() < 500) {
-          form.addClass('mailpoet_form_tight_container');
-        } else {
-          form.removeClass('mailpoet_form_tight_container');
-        }
+        checkFormContainer(formDiv.find('form'));
       });
     });
 
@@ -109,9 +110,7 @@ jQuery(($) => {
     $('form.mailpoet_form').each((index, element) => {
       const form = $(element);
       // Detect form is placed in tight container
-      if (form.width() < 500) {
-        form.addClass('mailpoet_form_tight_container');
-      }
+      checkFormContainer(form);
       form.parsley().on('form:validated', () => {
         // clear messages
         form.find('.mailpoet_message > p').hide();
