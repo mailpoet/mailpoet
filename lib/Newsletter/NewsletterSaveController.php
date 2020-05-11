@@ -3,7 +3,6 @@
 namespace MailPoet\Newsletter;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -27,6 +26,9 @@ class NewsletterSaveController {
   /** @var Emoji */
   private $emoji;
 
+  /** @var NewsletterTemplatesRepository */
+  private $newsletterTemplatesRepository;
+
   /** @var PostNotificationScheduler */
   private $postNotificationScheduler;
 
@@ -39,12 +41,14 @@ class NewsletterSaveController {
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
+    NewsletterTemplatesRepository $newsletterTemplatesRepository,
     PostNotificationScheduler $postNotificationScheduler,
     SettingsController $settings,
     WPFunctions $wp
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
+    $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->postNotificationScheduler = $postNotificationScheduler;
     $this->settings = $settings;
     $this->wp = $wp;
@@ -66,7 +70,7 @@ class NewsletterSaveController {
     }
 
     if (!empty($data['template_id'])) {
-      $template = ContainerWrapper::getInstance()->get(NewsletterTemplatesRepository::class)->findOneById($data['template_id']);
+      $template = $this->newsletterTemplatesRepository->findOneById($data['template_id']);
       if ($template) {
         $data['body'] = json_encode($template->getBody());
       }
