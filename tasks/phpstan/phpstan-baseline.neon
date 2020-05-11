@@ -243,3 +243,8 @@ parameters:
 			message: "#^Parameter \\#1 \\$newsletter of method MailPoet\\\\Entities\\\\NewsletterTemplateEntity\\:\\:setNewsletter\\(\\) expects MailPoet\\\\Entities\\\\NewsletterEntity\\|null, object given\\.$#"
 			count: 1
 			path: ../../lib/NewsletterTemplates/NewsletterTemplatesRepository.php
+
+		-
+			message: "#^Parameter \\#2 \\$segment of class MailPoet\\\\Entities\\\\NewsletterSegmentEntity constructor expects MailPoet\\\\Entities\\\\SegmentEntity, object given\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewsletterSaveController.php

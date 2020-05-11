@@ -30,6 +30,11 @@ class NewsletterSegmentEntity {
    */
   private $segment;
 
+  public function __construct(NewsletterEntity $newsletter, SegmentEntity $segment) {
+    $this->newsletter = $newsletter;
+    $this->segment = $segment;
+  }
+
   /**
    * @return NewsletterEntity|null
    */
@@ -38,19 +43,11 @@ class NewsletterSegmentEntity {
     return $this->newsletter;
   }
 
-  public function setNewsletter(NewsletterEntity $newsletter) {
-    $this->newsletter = $newsletter;
-  }
-
   /**
    * @return SegmentEntity|null
    */
   public function getSegment() {
     $this->safelyLoadToOneAssociation('segment');
     return $this->segment;
-  }
-
-  public function setSegment(SegmentEntity $segment) {
-    $this->segment = $segment;
   }
 }

@@ -4,14 +4,16 @@ namespace MailPoet\Newsletter;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\NotFoundException;
@@ -20,6 +22,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class NewsletterSaveController {
   /** @var AuthorizedEmailsController */
@@ -28,8 +31,14 @@ class NewsletterSaveController {
   /** @var Emoji */
   private $emoji;
 
+  /** @var EntityManager */
+  private $entityManager;
+
   /** @var NewslettersRepository */
   private $newslettersRepository;
+
+  /** @var NewsletterSegmentRepository */
+  private $newsletterSegmentRepository;
 
   /** @var NewsletterTemplatesRepository */
   private $newsletterTemplatesRepository;
@@ -46,7 +55,9 @@ class NewsletterSaveController {
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
+    EntityManager $entityManager,
     NewslettersRepository $newslettersRepository,
+    NewsletterSegmentRepository $newsletterSegmentRepository,
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
     PostNotificationScheduler $postNotificationScheduler,
     SettingsController $settings,
@@ -54,7 +65,9 @@ class NewsletterSaveController {
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
+    $this->entityManager = $entityManager;
     $this->newslettersRepository = $newslettersRepository;
+    $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->postNotificationScheduler = $postNotificationScheduler;
     $this->settings = $settings;
@@ -83,24 +96,12 @@ class NewsletterSaveController {
 
     $newsletter = $this->getNewsletter($data);
     $this->updateNewsletter($newsletter, $data);
+    $this->updateSegments($newsletter, $data['segments'] ?? []);
 
     // fetch old model for back compatibility
     $newsletterModel = Newsletter::findOne((int)$data['id']);
     if (!$newsletterModel) {
       throw new InvalidStateException();
-    }
-
-    $segments = $data['segments'] ?? [];
-    if ($segments) {
-      NewsletterSegment::where('newsletter_id', $newsletterModel->id)
-        ->deleteMany();
-      foreach ($segments as $segment) {
-        if (!is_array($segment)) continue;
-        $relation = NewsletterSegment::create();
-        $relation->segmentId = (int)$segment['id'];
-        $relation->newsletterId = $newsletterModel->id;
-        $relation->save();
-      }
     }
 
     // save default sender if needed
@@ -220,5 +221,36 @@ class NewsletterSaveController {
     }
 
     $this->newslettersRepository->flush();
+  }
+
+  private function updateSegments(NewsletterEntity $newsletter, array $segments) {
+    $oldNewsletterSegments = $newsletter->getNewsletterSegments()->toArray();
+
+    // clear old & add new newsletter segments
+    $newsletter->getNewsletterSegments()->clear();
+    foreach ($segments as $segment) {
+      if (!is_array($segment) || !isset($segment['id'])) {
+        continue;
+      }
+
+      $segment = $this->entityManager->getReference(SegmentEntity::class, (int)$segment['id']);
+      $newsletterSegment = $this->newsletterSegmentRepository->findBy([
+        'newsletter' => $newsletter,
+        'segment' => $segment,
+      ]);
+
+      if (!$newsletterSegment) {
+        $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
+        $this->entityManager->persist($newsletterSegment);
+      }
+      $newsletter->getNewsletterSegments()->add($newsletterSegment);
+    }
+
+    // remove orphaned newsletter segments
+    foreach (array_diff($oldNewsletterSegments, $newsletter->getNewsletterSegments()->toArray()) as $newsletterSegment) {
+      $this->newsletterSegmentRepository->remove($newsletterSegment);
+    }
+
+    $this->entityManager->flush();
   }
 }
