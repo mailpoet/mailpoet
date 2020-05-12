@@ -681,7 +681,7 @@ class Populator {
   }
 
   private function updateSentUnsubscribeLinksToInstantUnsubscribeLinks() {
-    if (version_compare($this->settings->get('db_version', '3.46.13'), '3.46.12', '>')) {
+    if (version_compare($this->settings->get('db_version', '3.46.14'), '3.46.13', '>')) {
       return;
     }
     $query = "UPDATE `%s` SET `url` = '%s' WHERE `url` = '%s';";
