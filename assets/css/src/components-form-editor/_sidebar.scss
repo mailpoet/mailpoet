@@ -83,16 +83,6 @@
   }
 }
 
-.mailpoet-styles-settings {
-  display: grid;
-  grid-auto-flow: row;
-  grid-row-gap: 20px;
-
-  .components-base-control {
-    margin-bottom: 0;
-  }
-}
-
 // In CSS coming from Gutenberg the color picker width is dependent on the width on his siblings.
 // This rules unify width across all style setting sidebars
 .components-circular-option-picker {
@@ -100,14 +90,6 @@
 
   @include breakpoint-max-width(782px) {
     width: 100%;
-  }
-}
-
-.mailpoet-styles-settings-heading {
-  font-size: 15px;
-
-  .component-color-indicator {
-    vertical-align: text-bottom;
   }
 }
 
@@ -119,127 +101,6 @@
   }
 }
 
-.form-placement-option-list {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  margin: 0 -8px;
-}
-
-.form-placement-option {
-  background-color: #fff;
-  border: solid $form-placement-option-border $form-placement-option-base-color;
-  border-radius: 4px;
-  box-shadow: 0 1px 2px 0 $form-placement-option-base-color;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  height: $form-placement-option-height;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  padding: 6px;
-  pointer-events: auto;
-  position: relative;
-  text-align: center;
-  width: $form-placement-option-width;
-}
-
-.form-placement-settings-overlay {
-  background-color: rgba(0, 0, 0, .3);
-  border-radius: 2px;
-  height: 100%;
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 3;
-}
-
-.form-placement-option-active {
-  border: solid $form-placement-option-active-border $gutenberg-control-active-color;
-  box-shadow: 0 4px 8px 0 rgba(156, 166, 204, .5);
-}
-
-.form-placement-settings {
-  width: 400px;
-}
-
-.form-placement-option-label {
-  align-items: center;
-  color: $form-placement-option-text-color;
-  display: flex;
-  font-size: 14px;
-  height: 40px;
-  justify-content: center;
-  pointer-events: none;
-  width: 100%;
-  z-index: 2;
-
-  p {
-    margin-bottom: 0;
-  }
-}
-
-.form-placement-option-settings {
-  display: flex;
-  flex-direction: row;
-  height: 25px;
-  justify-content: space-between;
-  pointer-events: none;
-  width: 100%;
-  z-index: 4;
-}
-
-.form-placement-settings-oval {
-  background-color: $form-placement-option-oval;
-  border: solid 1px $form-placement-option-oval-border;
-  border-radius: 7px;
-  height: 13px;
-  pointer-events: none;
-  width: 13px;
-}
-
-.form-placement-settings-check {
-  height: 13px;
-  pointer-events: none;
-  width: 13px;
-  z-index: 4;
-}
-
-.form-placement-settings-icon {
-  height: 14px;
-  pointer-events: none;
-  width: 14px;
-  z-index: 4;
-
-  svg {
-    fill: $form-placement-option-base-color;
-  }
-}
-
-.form-placement-settings-icon-hover {
-  svg {
-    fill: white;
-  }
-}
-
-.form-placement-option-icon {
-  background-color: #fff;
-  box-shadow: 0 4px 18px 0 rgba(68, 75, 102, .15);
-  height: 63px;
-  margin: 0 auto;
-  object-fit: contain;
-  pointer-events: none;
-  width: 76px;
-  z-index: 2;
-
-  svg {
-    height: 63px;
-    width: 76px;
-  }
-}
 
 .mailpoet-toggle-list {
   display: grid;
@@ -269,10 +130,4 @@
     background-color: #fff !important;
     color: #ff5301 !important;
   }
-}
-
-.mailpoet-form-placement-save {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
 }

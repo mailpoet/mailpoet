@@ -1,0 +1,17 @@
+.mailpoet-styles-settings {
+  display: grid;
+  grid-auto-flow: row;
+  grid-row-gap: 20px;
+
+  .components-base-control {
+    margin-bottom: 0;
+  }
+}
+
+.mailpoet-styles-settings-heading {
+  font-size: 15px;
+
+  .component-color-indicator {
+    vertical-align: text-bottom;
+  }
+}
