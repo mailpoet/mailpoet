@@ -95,9 +95,11 @@
   }
 
   .mailpoet-modal-close {
+    background: none;
     border: 0;
     cursor: pointer;
     height: $modal-close-button-size;
+    outline: none;
     padding: $modal-close-button-padding;
     position: relative;
     right: -$modal-close-button-padding;
