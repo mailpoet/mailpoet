@@ -4,7 +4,7 @@ import Option from '../form_placement_option';
 import Icon from '../icons/sidebar_icon';
 
 export default {
-  title: 'Form Placement Options',
+  title: 'FormEditor/Form Placement Options',
 };
 
 export const Options = () => (
