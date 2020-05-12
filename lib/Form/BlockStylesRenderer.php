@@ -49,13 +49,7 @@ class BlockStylesRenderer {
     if (isset($styles['bold']) && $styles['bold'] === '1') {
       $rules[] = "font-weight:bold;";
     }
-    if (isset($formSettings['input_padding'])) {
-      $rules[] = "padding:{$formSettings['input_padding']}px;";
-    }
-    if (isset($formSettings['alignment'])) {
-      $rules[] = $this->convertAlignmentToMargin($formSettings['alignment']);
-    }
-    return $this->renderForTextInput($styles) . implode('', $rules);
+    return $this->renderForTextInput($styles, $formSettings) . implode('', $rules);
   }
 
   public function renderForSelect(array $styles, array $formSettings = []): string {
