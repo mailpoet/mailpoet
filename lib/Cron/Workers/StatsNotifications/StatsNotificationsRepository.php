@@ -7,6 +7,9 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoetVendor\Carbon\Carbon;
 
+/**
+ * @extends Repository<StatsNotificationEntity>
+ */
 class StatsNotificationsRepository extends Repository {
   protected function getEntityClassName() {
     return StatsNotificationEntity::class;

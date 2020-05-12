@@ -8,12 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 /**
- * @method SettingEntity[] findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null)
- * @method SettingEntity|null findOneBy(array $criteria, array $orderBy = null)
- * @method SettingEntity|null findOneById(mixed $id)
- * @method SettingEntity[] findAll()
- * @method void persist(SettingEntity $entity)
- * @method void remove(SettingEntity $entity)
+ * @extends Repository<SettingEntity>
  */
 class SettingsRepository extends Repository {
   public function findOneByName($name) {

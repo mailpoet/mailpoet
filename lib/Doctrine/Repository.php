@@ -7,6 +7,9 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\EntityRepository as DoctrineEntityRepository;
 use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadata;
 
+/**
+ * @template T of object
+ */
 abstract class Repository {
   /** @var EntityManager */
   protected $entityManager;
@@ -28,7 +31,7 @@ abstract class Repository {
    * @param array|null $orderBy
    * @param int|null $limit
    * @param int|null $offset
-   * @return array
+   * @return T[]
    */
   public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) {
     return $this->doctrineRepository->findBy($criteria, $orderBy, $limit, $offset);
@@ -37,7 +40,7 @@ abstract class Repository {
   /**
    * @param array $criteria
    * @param array|null $orderBy
-   * @return object|null
+   * @return T|null
    */
   public function findOneBy(array $criteria, array $orderBy = null) {
     return $this->doctrineRepository->findOneBy($criteria, $orderBy);
@@ -45,21 +48,21 @@ abstract class Repository {
 
   /**
    * @param mixed $id
-   * @return object|null
+   * @return T|null
    */
   public function findOneById($id) {
     return $this->doctrineRepository->find($id);
   }
 
   /**
-   * @return array
+   * @return T[]
    */
   public function findAll() {
     return $this->doctrineRepository->findAll();
   }
 
   /**
-   * @param object $entity
+   * @param T $entity
    */
   public function persist($entity) {
     $this->entityManager->persist($entity);
@@ -78,7 +81,7 @@ abstract class Repository {
   }
 
   /**
-   * @param object $entity
+   * @param T $entity
    */
   public function remove($entity) {
     $this->entityManager->remove($entity);
@@ -89,7 +92,7 @@ abstract class Repository {
   }
 
   /**
-   * @return string
+   * @return class-string<T>
    */
   abstract protected function getEntityClassName();
 }

@@ -6,12 +6,7 @@ use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\FormEntity;
 
 /**
- * @method FormEntity[] findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null)
- * @method FormEntity[] findAll()
- * @method FormEntity|null findOneBy(array $criteria, array $orderBy = null)
- * @method FormEntity|null findOneById(mixed $id)
- * @method void persist(FormEntity $entity)
- * @method void remove(FormEntity $entity)
+ * @extends Repository<FormEntity>
  */
 class FormsRepository extends Repository {
   protected function getEntityClassName() {

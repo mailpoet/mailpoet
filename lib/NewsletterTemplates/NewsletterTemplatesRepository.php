@@ -9,11 +9,7 @@ use MailPoet\Entities\NewsletterTemplateEntity;
 use function MailPoetVendor\array_column;
 
 /**
- * @method NewsletterTemplateEntity[] findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null)
- * @method NewsletterTemplateEntity|null findOneBy(array $criteria, array $orderBy = null)
- * @method NewsletterTemplateEntity|null findOneById(mixed $id)
- * @method void persist(NewsletterTemplateEntity $entity)
- * @method void remove(NewsletterTemplateEntity $entity)
+ * @extends Repository<NewsletterTemplateEntity>
  */
 class NewsletterTemplatesRepository extends Repository {
   const RECENTLY_SENT_CATEGORIES = '["recent"]';

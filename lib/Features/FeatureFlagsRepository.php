@@ -6,10 +6,7 @@ use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\FeatureFlagEntity;
 
 /**
- * @method FeatureFlagEntity[] findAll()
- * @method FeatureFlagEntity|null findOneBy(array $criteria, array $orderBy = null)
- * @method void persist(FeatureFlagEntity $entity)
- * @method void remove(FeatureFlagEntity $entity)
+ * @extends Repository<FeatureFlagEntity>
  */
 class FeatureFlagsRepository extends Repository {
   protected function getEntityClassName() {
