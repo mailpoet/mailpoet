@@ -50,3 +50,8 @@ h2 {
   margin: 0 auto;
   max-width: 580px; // the same as .wp-block
 }
+
+// Fix for form padding rendering
+.block-editor-block-list__layout .block-editor-block-list__block:first-child {
+  margin-top: 0;
+}
