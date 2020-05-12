@@ -50,6 +50,20 @@ class StatisticsClickEntity {
    */
   private $count;
 
+  public function __construct(
+    NewsletterEntity $newsletter,
+    SendingQueueEntity $queue,
+    int $subscriberId,
+    NewsletterLinkEntity $link,
+    int $count
+  ) {
+    $this->newsletter = $newsletter;
+    $this->queue = $queue;
+    $this->subscriberId = $subscriberId;
+    $this->link = $link;
+    $this->count = $count;
+  }
+
   /**
    * @return NewsletterEntity|null
    */
