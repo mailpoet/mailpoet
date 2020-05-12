@@ -54,9 +54,13 @@ describe('Form Data Load Mapper', () => {
       expect(map(data).settings).to.have.property('success_page', '5');
     });
 
-    it('maps placement', () => {
+    it('Maps placement', () => {
       expect(map(data).settings).to.have.property('placeFormBellowAllPages', true);
       expect(map(data).settings).to.have.property('placeFormBellowAllPosts', false);
+    });
+
+    it('Sets default padding', () => {
+      expect(map(data).settings).to.have.property('formPadding', 10);
     });
   });
 });
