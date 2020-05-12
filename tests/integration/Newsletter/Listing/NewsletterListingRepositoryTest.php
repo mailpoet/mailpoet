@@ -143,9 +143,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     $newsletter1->setSubject('Automatic email 1');
     $this->entityManager->persist($newsletter1);
 
-    $newsletter1Option = new NewsletterOptionEntity();
-    $newsletter1Option->setNewsletter($newsletter1);
-    $newsletter1Option->setOptionField($newsletterOptionField);
+    $newsletter1Option = new NewsletterOptionEntity($newsletter1, $newsletterOptionField);
     $newsletter1Option->setValue('woocommerce');
     $this->entityManager->persist($newsletter1Option);
 
@@ -154,9 +152,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     $newsletter2->setSubject('Automatic email 2');
     $this->entityManager->persist($newsletter2);
 
-    $newsletter2Option = new NewsletterOptionEntity();
-    $newsletter2Option->setNewsletter($newsletter2);
-    $newsletter2Option->setOptionField($newsletterOptionField);
+    $newsletter2Option = new NewsletterOptionEntity($newsletter2, $newsletterOptionField);
     $newsletter2Option->setValue('unicorns');
     $this->entityManager->persist($newsletter2Option);
 

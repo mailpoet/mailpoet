@@ -33,9 +33,14 @@ class NewsletterOptionEntity {
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterOptionFieldEntity")
-   * @var NewsletterOptionFieldEntity
+   * @var NewsletterOptionFieldEntity|null
    */
   private $optionField;
+
+  public function __construct(NewsletterEntity $newsletter, NewsletterOptionFieldEntity $optionField) {
+    $this->newsletter = $newsletter;
+    $this->optionField = $optionField;
+  }
 
   /**
    * @return string|null
@@ -60,24 +65,10 @@ class NewsletterOptionEntity {
   }
 
   /**
-   * @param NewsletterEntity $newsletter
-   */
-  public function setNewsletter($newsletter) {
-    $this->newsletter = $newsletter;
-  }
-
-  /**
-   * @return NewsletterOptionFieldEntity
+   * @return NewsletterOptionFieldEntity|null
    */
   public function getOptionField() {
     $this->safelyLoadToOneAssociation('optionField');
     return $this->optionField;
-  }
-
-  /**
-   * @param NewsletterOptionFieldEntity $optionField
-   */
-  public function setOptionField($optionField) {
-    $this->optionField = $optionField;
   }
 }
