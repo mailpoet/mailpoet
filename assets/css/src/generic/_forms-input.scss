@@ -1,5 +1,4 @@
-input,
-select {
+input {
   outline: none;
 }
 
@@ -54,6 +53,7 @@ select {
 }
 
 .mailpoet-form-input-small {
+  font-size: $font-size-small;
   height: 32px;
   width: $grid-column-small;
 
@@ -65,25 +65,6 @@ select {
 
   svg {
     height: 12px;
-    width: 12px;
-  }
-}
-
-.mailpoet-form-select {
-  select {
-    padding-right: 28px;
-  }
-
-  &:after {
-    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAQCAYAAAAMJL+VAAAAqklEQVR4AWOAAS75Ak922byr7DK5/ynBHDJ5j0FmMaADkARCIeWWYLEg9xG1LACFBKYFcvlxVPOBXF4sAzbAIZs7n1LDQWYw4AJSxg1clEQ0SC/IDAZ8gEcuVwuo+CsZFnwF6WUgBgDDMJ6McI8naDBmfFAe7oTjg/JwJxwflIY74figPNwJxwfF4U44PnKvwAwHsWHhTjlAlLaSQIN7gJHax62YL84wWAAANkMq0+UYHGkAAAAASUVORK5CYII=') no-repeat center;
-    background-size: contain;
-    content: '';
-    height: 8px;
-    margin-top: -4px;
-    pointer-events: none;
-    position: absolute;
-    right: 8px;
-    top: 50%;
     width: 12px;
   }
 }
