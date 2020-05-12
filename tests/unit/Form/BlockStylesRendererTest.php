@@ -37,6 +37,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     ];
     $settings = [
       'input_padding' => '40',
+      'fontSize' => 13,
     ];
     $result = $this->renderer->renderForTextInput($styles, $settings);
     expect($result)->contains('border-radius:10px;');
@@ -44,6 +45,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     expect($result)->contains('border-width:10px;');
     expect($result)->contains('background-color:#dddddd;');
     expect($result)->contains('padding:40px;');
+    expect($result)->contains('font-size:13px;');
     expect($result)->notContains('font-weight:bold;');
   }
 
@@ -68,6 +70,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     ];
     $settings = [
       'input_padding' => '40',
+      'fontSize' => 13,
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
     expect($result)->contains('border-radius:10px;');
