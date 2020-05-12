@@ -22,14 +22,14 @@ class NewsletterLinkEntity {
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")
-   * @var NewsletterEntity
+   * @var NewsletterEntity|null
    */
   private $newsletter;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SendingQueueEntity")
    * @ORM\JoinColumn(name="queue_id", referencedColumnName="id")
-   * @var SendingQueueEntity
+   * @var SendingQueueEntity|null
    */
   private $queue;
 
