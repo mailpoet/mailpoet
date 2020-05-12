@@ -8,7 +8,6 @@ class Styles {
   private $defaultStyles = <<<EOL
 /* form */
 .mailpoet_form {
-  padding: 10px;
 }
 
 /* columns */
