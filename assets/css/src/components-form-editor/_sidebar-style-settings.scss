@@ -15,3 +15,24 @@
     vertical-align: text-bottom;
   }
 }
+
+.mailpoet-styles-settings-image-url {
+  overflow: auto;
+
+  .mailpoet-styles-settings-image-url-body {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+
+    input {
+      flex-grow: 1;
+      flex-shrink: 1;
+      margin-right: 4px;
+      min-width: 100px;
+    }
+
+    button {
+      flex-shrink: 0;
+    }
+  }
+}
