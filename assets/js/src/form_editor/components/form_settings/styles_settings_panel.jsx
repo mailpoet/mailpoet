@@ -97,7 +97,9 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             min={0}
             max={40}
             allowReset
-            onChange={partial(updateStyles, 'formPadding')}
+            onChange={(value) => {
+              updateStyles('formPadding', value !== undefined ? value : 10);
+            }}
           />
         </div>
       </PanelBody>
