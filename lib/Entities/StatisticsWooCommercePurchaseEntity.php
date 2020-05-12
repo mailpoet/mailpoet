@@ -108,7 +108,7 @@ class StatisticsWooCommercePurchaseEntity {
   /**
    * @return int
    */
-  public function getOrderId() {
+  public function getOrderId(): int {
     return $this->orderId;
   }
 
