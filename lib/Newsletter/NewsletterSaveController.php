@@ -4,13 +4,14 @@ namespace MailPoet\Newsletter;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
@@ -37,6 +38,12 @@ class NewsletterSaveController {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
+  /** @var NewsletterOptionFieldsRepository */
+  private $newsletterOptionFieldsRepository;
+
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
@@ -57,6 +64,8 @@ class NewsletterSaveController {
     Emoji $emoji,
     EntityManager $entityManager,
     NewslettersRepository $newslettersRepository,
+    NewsletterOptionsRepository $newsletterOptionsRepository,
+    NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository,
     NewsletterSegmentRepository $newsletterSegmentRepository,
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
     PostNotificationScheduler $postNotificationScheduler,
@@ -67,6 +76,8 @@ class NewsletterSaveController {
     $this->emoji = $emoji;
     $this->entityManager = $entityManager;
     $this->newslettersRepository = $newslettersRepository;
+    $this->newsletterOptionsRepository = $newsletterOptionsRepository;
+    $this->newsletterOptionFieldsRepository = $newsletterOptionFieldsRepository;
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->postNotificationScheduler = $postNotificationScheduler;
@@ -97,9 +108,10 @@ class NewsletterSaveController {
     $newsletter = $this->getNewsletter($data);
     $this->updateNewsletter($newsletter, $data);
     $this->updateSegments($newsletter, $data['segments'] ?? []);
+    $this->updateOptions($newsletter, $data['options'] ?? []);
 
-    // fetch old model for back compatibility
-    $newsletterModel = Newsletter::findOne((int)$data['id']);
+    // fetch model with updated options (for back compatibility)
+    $newsletterModel = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
     if (!$newsletterModel) {
       throw new InvalidStateException();
     }
@@ -114,27 +126,6 @@ class NewsletterSaveController {
 
     $options = $data['options'] ?? [];
     if ($options) {
-      $optionFields = NewsletterOptionField::where(
-        'newsletter_type',
-        $newsletterModel->type
-      )->findMany();
-      // update newsletter options
-      foreach ($optionFields as $optionField) {
-        if (isset($options[$optionField->name])) {
-          $newsletterOption = NewsletterOption::createOrUpdate(
-            [
-              'newsletter_id' => $newsletterModel->id,
-              'option_field_id' => $optionField->id,
-              'value' => $options[$optionField->name],
-            ]
-          );
-        }
-      }
-      // reload newsletter with updated options
-      $newsletterModel = Newsletter::filter('filterWithOptions', $newsletterModel->type)->findOne($newsletterModel->id);
-      if (!$newsletterModel) {
-        throw new InvalidStateException();
-      }
       // if this is a post notification, process newsletter options and update its schedule
       if ($newsletterModel->type === Newsletter::TYPE_NOTIFICATION) {
         // generate the new schedule from options and get the new "next run" date
@@ -249,6 +240,36 @@ class NewsletterSaveController {
     // remove orphaned newsletter segments
     foreach (array_diff($oldNewsletterSegments, $newsletter->getNewsletterSegments()->toArray()) as $newsletterSegment) {
       $this->newsletterSegmentRepository->remove($newsletterSegment);
+    }
+
+    $this->entityManager->flush();
+  }
+
+  private function updateOptions(NewsletterEntity $newsletter, array $options) {
+    if (!$options) {
+      return;
+    }
+
+    $optionFields = $this->newsletterOptionFieldsRepository->findBy(['newsletterType' => $newsletter->getType()]);
+    foreach ($optionFields as $optionField) {
+      if (!isset($options[$optionField->getName()])) {
+        continue;
+      }
+
+      $option = $this->newsletterOptionsRepository->findOneBy([
+        'newsletter' => $newsletter,
+        'optionField' => $optionField,
+      ]);
+
+      if (!$option) {
+        $option = new NewsletterOptionEntity($newsletter, $optionField);
+        $this->newsletterOptionsRepository->persist($option);
+      }
+      $option->setValue($options[$optionField->getName()]);
+
+      if (!$newsletter->getOptions()->contains($option)) {
+        $newsletter->getOptions()->add($option);
+      }
     }
 
     $this->entityManager->flush();

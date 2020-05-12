@@ -169,7 +169,11 @@ class NewslettersResponseBuilder {
   private function buildOptions(NewsletterEntity $newsletter) {
     $output = [];
     foreach ($newsletter->getOptions() as $option) {
-      $output[$option->getOptionField()->getName()] = $option->getValue();
+      $optionField = $option->getOptionField();
+      if (!$optionField) {
+        continue;
+      }
+      $output[$optionField->getName()] = $option->getValue();
     }
 
     // convert 'afterTimeNumber' string to integer
