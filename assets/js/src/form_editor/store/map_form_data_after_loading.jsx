@@ -20,7 +20,7 @@ export default function mapFormDataAfterLoading(data) {
       slideInFormPosition: data.settings.slide_in_form_position,
       borderRadius: asNum(data.settings.border_radius),
       borderSize: asNum(data.settings.border_size),
-      formPadding: asNum(data.settings.form_padding),
+      formPadding: data.settings.form_padding ? asNum(data.settings.form_padding) : 10,
       inputPadding: asNum(data.settings.input_padding),
       borderColor: data.settings.border_color,
     },
