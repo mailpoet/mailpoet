@@ -59,8 +59,9 @@ describe('Form Data Load Mapper', () => {
       expect(map(data).settings).to.have.property('placeFormBellowAllPosts', false);
     });
 
-    it('Sets default padding', () => {
+    it('Sets default paddings', () => {
       expect(map(data).settings).to.have.property('formPadding', 10);
+      expect(map(data).settings).to.have.property('inputPadding', 5);
     });
   });
 });

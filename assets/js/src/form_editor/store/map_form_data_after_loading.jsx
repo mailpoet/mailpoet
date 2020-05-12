@@ -21,7 +21,7 @@ export default function mapFormDataAfterLoading(data) {
       borderRadius: asNum(data.settings.border_radius),
       borderSize: asNum(data.settings.border_size),
       formPadding: data.settings.form_padding ? asNum(data.settings.form_padding) : 10,
-      inputPadding: asNum(data.settings.input_padding),
+      inputPadding: data.settings.input_padding ? asNum(data.settings.form_padding) : 5,
       borderColor: data.settings.border_color,
     },
   };
