@@ -35,6 +35,9 @@ class BlockStylesRenderer {
     if (isset($formSettings['fontSize']) && !isset($styles['font_size'])) {
       $rules[] = "font-size:" . intval($formSettings['fontSize']) . "px;";
     }
+    if (isset($formSettings['fontSize']) || isset($styles['font_size'])) {
+      $rules[] = "line-height:1.5;";
+    }
     return implode('', $rules);
   }
 
