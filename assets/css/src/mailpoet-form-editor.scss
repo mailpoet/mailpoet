@@ -25,10 +25,12 @@
 // Components
 // Actual UI components.
 
+@import './components-form-editor/custom-field';
 @import './components-form-editor/form-title';
 @import './components-form-editor/header';
 @import './components-form-editor/helpscout';
-@import './components-form-editor/sidebar';
+@import './components-form-editor/form-placement';
 @import './components-form-editor/preview';
 @import './components-form-editor/block-editor';
-@import './components-form-editor/custom-field';
+@import './components-form-editor/sidebar';
+@import './components-form-editor/sidebar-style-settings';
