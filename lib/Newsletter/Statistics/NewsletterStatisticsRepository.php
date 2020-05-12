@@ -13,6 +13,9 @@ use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\UnexpectedResultException;
 
+/**
+ * @extends Repository<NewsletterEntity>
+ */
 class NewsletterStatisticsRepository extends Repository {
 
   /** @var WCHelper */

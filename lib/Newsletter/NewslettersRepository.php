@@ -6,11 +6,7 @@ use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 
 /**
- * @method NewsletterEntity[] findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null)
- * @method NewsletterEntity|null findOneBy(array $criteria, array $orderBy = null)
- * @method NewsletterEntity|null findOneById(mixed $id)
- * @method void persist(NewsletterEntity $entity)
- * @method void remove(NewsletterEntity $entity)
+ * @extends Repository<NewsletterEntity>
  */
 class NewslettersRepository extends Repository {
   protected function getEntityClassName() {

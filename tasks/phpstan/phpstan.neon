@@ -15,6 +15,9 @@ parameters:
     - '#Parameter \#1 \$function of function call_user_func_array expects callable(): mixed, .wc_.*. given.#'
     - '#Parameter \#1 \$reader of class MailPoetVendor\\Doctrine\\ORM\\Mapping\\Driver\\AnnotationDriver constructor expects MailPoetVendor\\Doctrine\\Common\\Annotations\\AnnotationReader, MailPoetVendor\\Doctrine\\Common\\Annotations\\CachedReader given#'
     - '/(with|has) no (return )?typehint specified/' # exclude level 6 errors
+
+   # Doctrine repository annotates return values as object|null, we override them to specific generics (T|null)
+    - '#Method MailPoet\\Doctrine\\Repository::findOneBy(Id)?\(\) should return T of object\|null but returns object\|null\.#'
   reportUnmatchedIgnoredErrors: false
   dynamicConstantNames:
     - WP_DEBUG
