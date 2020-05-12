@@ -13,6 +13,7 @@ import HorizontalAlignment from 'common/styles';
 
 import ColorSettings from 'form_editor/components/color_settings';
 import FontSizeSettings from 'form_editor/components/font_size_settings';
+import ImageSettings from 'form_editor/components/image_settings';
 
 const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
@@ -40,6 +41,11 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             name={MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
             value={settings.backgroundColor}
             onChange={partial(updateStyles, 'backgroundColor')}
+          />
+          <ImageSettings
+            name={MailPoet.I18n.t('formSettingsStylesBackgroundImage')}
+            value={settings.backgroundImageUrl}
+            onChange={partial(updateStyles, 'backgroundImageUrl')}
           />
           <ColorSettings
             name={MailPoet.I18n.t('formSettingsStylesFontColor')}
