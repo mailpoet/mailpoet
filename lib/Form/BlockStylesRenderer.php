@@ -29,6 +29,12 @@ class BlockStylesRenderer {
     if (isset($formSettings['alignment'])) {
       $rules[] = $this->convertAlignmentToMargin($formSettings['alignment']);
     }
+    if (isset($styles['font_size'])) {
+      $rules[] = "font-size:" . intval($styles['font_size']) . "px;";
+    }
+    if (isset($formSettings['fontSize']) && !isset($styles['font_size'])) {
+      $rules[] = "font-size:" . intval($formSettings['fontSize']) . "px;";
+    }
     return implode('', $rules);
   }
 
@@ -36,9 +42,6 @@ class BlockStylesRenderer {
     $rules = [];
     if (isset($styles['font_color'])) {
       $rules[] = "color:{$styles['font_color']};";
-    }
-    if (isset($styles['font_size'])) {
-      $rules[] = "font-size:" . intval($styles['font_size']) . "px;";
     }
     if (!isset($styles['border_color'])) {
       $rules[] = "border-color:transparent;";
