@@ -51,7 +51,7 @@ const FormPreview = () => {
     id: formId,
     form_type: previewSettings.formType,
   };
-  let iframeSrc = `${window.mailpoet_form_preview_page}&data=${btoa(JSON.stringify(urlData))}`;
+  let iframeSrc = `${(window as any).mailpoet_form_preview_page}&data=${btoa(JSON.stringify(urlData))}`;
   // Add anchor to scroll to certain types of form
   if (['below_post'].includes(previewSettings.formType)) {
     iframeSrc += `#mailpoet_form_preview_${formId}`;
