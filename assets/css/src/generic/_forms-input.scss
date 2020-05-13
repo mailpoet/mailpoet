@@ -9,7 +9,7 @@ input {
   border-radius: 4px;
   box-sizing: border-box;
   display: inline-flex;
-  height: 40px;
+  height: $form-control-height;
   justify-content: center;
   max-width: 100%;
   padding: 0;
@@ -26,8 +26,11 @@ input {
     color: $color-text;
     flex-grow: 1;
     font-size: $font-size;
-    line-height: 22px;
-    padding: 7px 16px 9px;
+    line-height: $form-control-line-height;
+    padding:
+      $form-control-spacing - 1px
+      $form-control-spacing * 2
+      $form-control-spacing + 1px;
 
     &::placeholder {
       color: $color-text-light;
@@ -36,15 +39,15 @@ input {
 
   svg {
     fill: $color-text-light;
-    height: 16px;
-    width: 16px;
+    height: $form-control-icon;
+    width: $form-control-icon;
 
     &:first-child {
-      margin: 0 -8px 0 8px;
+      margin: 0 (-$form-control-spacing) 0 $form-control-spacing;
     }
 
     &:last-child {
-      margin: 0 8px 0 -8px;
+      margin: 0 $form-control-spacing 0 (-$form-control-spacing);
     }
   }
 
@@ -54,17 +57,17 @@ input {
 
 .mailpoet-form-input-small {
   font-size: $font-size-small;
-  height: 32px;
+  height: $form-control-height-small;
   width: $grid-column-small;
 
   input,
   select {
     font-size: $font-size-small;
-    line-height: 14px;
+    line-height: $form-control-line-height-small;
   }
 
   svg {
-    height: 12px;
-    width: 12px;
+    height: $form-control-icon-small;
+    width: $form-control-icon-small;
   }
 }
