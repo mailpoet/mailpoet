@@ -23,6 +23,7 @@
     align-items: center;
     display: flex;
     flex-direction: row;
+    margin-bottom: 4px;
 
     input {
       flex-grow: 1;
@@ -34,5 +35,9 @@
     button {
       flex-shrink: 0;
     }
+  }
+
+  .mailpoet-styles-settings-image-url-display {
+    margin-right: 1px;
   }
 }
