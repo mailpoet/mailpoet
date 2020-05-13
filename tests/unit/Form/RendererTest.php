@@ -145,4 +145,34 @@ class RendererTest extends \MailPoetUnitTest {
     $styles = $this->renderer->renderFormElementStyles($form);
     expect($styles)->equals('border: 22px solid red;border-radius: 11px');
   }
+
+  public function testItShouldRenderImageBackground() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['background_image_url' => 'xxx'];
+    $styles = $this->renderer->renderFormElementStyles($form);
+    expect($styles)->contains('background-image: url(xxx)');
+    expect($styles)->contains('background-position: center');
+    expect($styles)->contains('background-repeat: no-repeat');
+    expect($styles)->contains('background-size: cover');
+  }
+
+  public function testItShouldRenderImageBackgroundTile() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['background_image_url' => 'xxx', 'background_image_display' => 'tile'];
+    $styles = $this->renderer->renderFormElementStyles($form);
+    expect($styles)->contains('background-image: url(xxx)');
+    expect($styles)->contains('background-position: center');
+    expect($styles)->contains('background-repeat: repeat');
+    expect($styles)->contains('background-size: contain');
+  }
+
+  public function testItShouldRenderImageBackgroundFit() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['background_image_url' => 'xxx', 'background_image_display' => 'fit'];
+    $styles = $this->renderer->renderFormElementStyles($form);
+    expect($styles)->contains('background-image: url(xxx)');
+    expect($styles)->contains('background-position: center');
+    expect($styles)->contains('background-repeat: no-repeat');
+    expect($styles)->contains('background-size: contain');
+  }
 }
