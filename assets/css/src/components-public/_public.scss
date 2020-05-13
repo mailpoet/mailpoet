@@ -173,8 +173,8 @@ $form-columns-space-between: 20px;
 
 .mailpoet_widget_preview {
   align-items: center;
+  background-color: #fff;
   display: flex;
-  background-color: #ffffff;
   flex-direction: row;
   height: 100%;
   justify-content: center;
@@ -344,10 +344,10 @@ div.mailpoet_form_slide_in.active {
 }
 
 .mailpoet_spacer {
+  align-items: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
   justify-content: center;
   margin-bottom: $form-block-margin;
+  width: 100%;
 }
