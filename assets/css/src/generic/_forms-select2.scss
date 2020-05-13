@@ -34,11 +34,11 @@
  */
 .mailpoet-form-select {
   svg {
-    ~ .select2 .select2-selection__rendered { padding-left: 32px !important; }
+    ~ .select2 .select2-selection__rendered { padding-left: $form-control-icon + 2 * $form-control-spacing !important; }
   }
 
   &.mailpoet-form-input-small svg {
-    ~ .select2 .select2-selection__rendered { padding-left: 28px !important; }
+    ~ .select2 .select2-selection__rendered { padding-left: $form-control-icon-small + 2 * $form-control-spacing !important; }
   }
 
   .select2-container {
@@ -138,7 +138,7 @@
   .select2-results__option {
     align-items: center;
     display: flex;
-    padding: 12px 16px;
+    padding: 12px (2 * $form-control-spacing);
 
     &[aria-selected=true] {
       background-color: $color-secondary-light;

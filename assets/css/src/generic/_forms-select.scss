@@ -4,20 +4,20 @@ select {
 
 .mailpoet-form-select {
   height: auto;
-  min-height: 40px;
+  min-height: $form-control-height;
 
   select {
-    padding-right: 28px;
+    padding-right: $form-control-icon-small + 2 * $form-control-spacing;
   }
 
-  svg {
-    &:first-child { margin-right: -24px; }
-    + select { padding-left: 32px; }
+  > svg {
+    &:first-child { margin-right: -($form-control-icon + $form-control-spacing); }
+    + select { padding-left: $form-control-icon + 2 * $form-control-spacing; }
   }
 
-  &.mailpoet-form-input-small svg {
-    &:first-child { margin-right: -20px; }
-    + select { padding-left: 28px; }
+  &.mailpoet-form-input-small > svg {
+    &:first-child { margin-right: -($form-control-icon-small + $form-control-spacing); }
+    + select { padding-left: $form-control-icon-small + 2 * $form-control-spacing; }
   }
 
   &:after {
@@ -28,8 +28,8 @@ select {
     margin-top: -4px;
     pointer-events: none;
     position: absolute;
-    right: 8px;
+    right: $form-control-spacing;
     top: 50%;
-    width: 12px;
+    width: $form-control-icon-small;
   }
 }
