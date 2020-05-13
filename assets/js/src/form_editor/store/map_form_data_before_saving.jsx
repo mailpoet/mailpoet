@@ -21,6 +21,8 @@ export default function mapFormDataBeforeSaving(data) {
       form_padding: data.settings.formPadding,
       input_padding: data.settings.inputPadding,
       border_color: data.settings.borderColor,
+      background_image_url: data.settings.backgroundImageUrl,
+      background_image_display: data.settings.backgroundImageDisplay,
     },
   };
 
@@ -42,6 +44,8 @@ export default function mapFormDataBeforeSaving(data) {
   delete mappedData.settings.formPadding;
   delete mappedData.settings.inputPadding;
   delete mappedData.settings.borderColor;
+  delete mappedData.settings.backgroundImageUrl;
+  delete mappedData.settings.backgroundImageDisplay;
 
   return mappedData;
 }
