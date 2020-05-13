@@ -3,6 +3,7 @@
 namespace MailPoet\WooCommerce;
 
 use Codeception\Stub;
+use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Models\Newsletter;
@@ -160,8 +161,8 @@ class TransactionalEmailsTest extends \MailPoetTest {
     );
     $transactionalEmails->enableEmailSettingsSyncToWooCommerce();
 
-    $newsletter = Newsletter::findOne($newsletter->getId());
-    $wp->doAction('mailpoet_api_newsletters_save_after', $newsletter);
+    $newsletterData = $this->diContainer->get(NewslettersResponseBuilder::class)->build($newsletter);
+    $wp->applyFilters('mailpoet_api_newsletters_save_after', $newsletterData);
 
     expect($wp->getOption('woocommerce_email_background_color'))->equals('#777777');
     expect($wp->getOption('woocommerce_email_base_color'))->equals('#888888');

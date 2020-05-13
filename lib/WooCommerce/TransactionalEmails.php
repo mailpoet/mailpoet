@@ -130,15 +130,15 @@ class TransactionalEmails {
   }
 
   public function enableEmailSettingsSyncToWooCommerce() {
-    $this->wp->addAction('mailpoet_api_newsletters_save_after', [$this, 'syncEmailSettingsToWooCommerce']);
+    $this->wp->addFilter('mailpoet_api_newsletters_save_after', [$this, 'syncEmailSettingsToWooCommerce']);
   }
 
-  public function syncEmailSettingsToWooCommerce(Newsletter $newsletter) {
-    if ($newsletter->type !== NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL) {
-      return false;
+  public function syncEmailSettingsToWooCommerce(array $newsletterData) {
+    if ($newsletterData['type'] !== NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL) {
+      return $newsletterData;
     }
-    $newsletterArray = $newsletter->asArray();
-    $styles = $newsletterArray['body']['globalStyles'];
+
+    $styles = $newsletterData['body']['globalStyles'];
     $optionsToSync = [
       'woocommerce_email_background_color' => $styles['body']['backgroundColor'],
       'woocommerce_email_base_color' => $styles['woocommerce']['brandingColor'],
@@ -148,6 +148,7 @@ class TransactionalEmails {
     foreach ($optionsToSync as $wcName => $value) {
       $this->wp->updateOption($wcName, $value);
     }
+    return $newsletterData;
   }
 
   public function getWCEmailSettings() {
