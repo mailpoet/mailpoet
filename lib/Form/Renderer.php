@@ -123,6 +123,23 @@ class Renderer {
       $styles[] = 'text-align: ' . $formSettings['alignment'];
     }
 
+    if (isset($formSettings['background_image_url'])) {
+      $styles[] = 'background-image: url(' . trim($formSettings['background_image_url']) . ')';
+      $backgroundPosition = 'center';
+      $backgroundRepeat = 'no-repeat';
+      $backgroundSize = 'cover';
+      if (isset($formSettings['background_image_display']) && $formSettings['background_image_display'] === 'fit') {
+        $backgroundSize = 'contain';
+      }
+      if (isset($formSettings['background_image_display']) && $formSettings['background_image_display'] === 'tile') {
+        $backgroundRepeat = 'repeat';
+        $backgroundSize = 'contain';
+      }
+      $styles[] = 'background-position: ' . $backgroundPosition;
+      $styles[] = 'background-repeat: ' . $backgroundRepeat;
+      $styles[] = 'background-size: ' . $backgroundSize;
+    }
+
     return join(';', $styles);
   }
 }
