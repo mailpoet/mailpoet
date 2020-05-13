@@ -13,6 +13,7 @@ const FormStylingBackground = ({ children }) => {
     alignment,
     formPadding,
     backgroundImageUrl,
+    backgroundImageDisplay,
   } = useSelect((select) => select('mailpoet-form-editor').getFormSettings(), []);
 
   let borderStyle;
@@ -29,6 +30,22 @@ const FormStylingBackground = ({ children }) => {
   let textAlign;
   if (alignment) {
     textAlign = alignment;
+  }
+
+  let backgroundSize;
+  let backgroundPosition;
+  let backgroundRepeat;
+  if (backgroundImageUrl !== undefined) {
+    backgroundPosition = 'center';
+    backgroundRepeat = 'no-repeat';
+    backgroundSize = 'cover';
+  }
+  if (backgroundImageDisplay === 'fit') {
+    backgroundSize = 'contain';
+  }
+  if (backgroundImageDisplay === 'tile') {
+    backgroundRepeat = 'repeat';
+    backgroundSize = 'contain';
   }
   return (
     <div
@@ -47,6 +64,9 @@ const FormStylingBackground = ({ children }) => {
         width: 700,
         margin: '0 auto',
         backgroundImage: `url(${backgroundImageUrl})`,
+        backgroundRepeat,
+        backgroundPosition,
+        backgroundSize,
       }}
     >
       {children}
