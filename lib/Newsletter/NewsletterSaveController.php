@@ -132,22 +132,7 @@ class NewsletterSaveController {
     }
 
     $this->rescheduleIfNeeded($newsletter, $newsletterModel);
-
-    $options = $data['options'] ?? [];
-    $queue = $newsletterModel->getQueue();
-    if ($queue && !in_array($newsletterModel->type, [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_NOTIFICATION_HISTORY])) {
-      // if newsletter was previously scheduled and is now unscheduled, set its status to DRAFT and delete associated queue record
-      if ($newsletterModel->status === Newsletter::STATUS_SCHEDULED && isset($options['isScheduled']) && empty($options['isScheduled'])) {
-        $queue->delete();
-        $newsletterModel->status = Newsletter::STATUS_DRAFT;
-        $newsletterModel->save();
-      } else {
-        $queue->newsletterRenderedBody = null;
-        $queue->newsletterRenderedSubject = null;
-        $newsletterQueueTask = new NewsletterQueueTask();
-        $newsletterQueueTask->preProcessNewsletter($newsletterModel, $queue);
-      }
-    }
+    $this->updateQueue($newsletter, $newsletterModel, $data['options'] ?? []);
 
     $this->wp->doAction('mailpoet_api_newsletters_save_after', $newsletterModel);
     $this->authorizedEmailsController->onNewsletterUpdate($newsletterModel, $oldNewsletterModel);
@@ -290,5 +275,32 @@ class NewsletterSaveController {
     foreach ($newsletter->getOptions() as $newsletterOption) {
       $this->entityManager->refresh($newsletterOption);
     }
+  }
+
+  private function updateQueue(NewsletterEntity $newsletter, Newsletter $newsletterModel, array $options) {
+    $queue = $newsletter->getLatestQueue();
+    if (!$queue) {
+      return;
+    }
+
+    if (in_array($newsletter->getType(), [NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::TYPE_NOTIFICATION_HISTORY], true)) {
+      return;
+    }
+
+    // if newsletter was previously scheduled and is now unscheduled, set its status to DRAFT and delete associated queue record
+    if ($newsletter->getStatus() === NewsletterEntity::STATUS_SCHEDULED && isset($options['isScheduled']) && empty($options['isScheduled'])) {
+      $this->entityManager->remove($queue);
+      $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    } else {
+      $queue->setNewsletterRenderedBody(null);
+      $queue->setNewsletterRenderedSubject(null);
+
+      $newsletterQueueTask = new NewsletterQueueTask();
+      $newsletterQueueTask->preProcessNewsletter($newsletterModel, $newsletterModel->getQueue());
+
+      // 'preProcessNewsletter' modifies queue by old model - let's reload it
+      $this->entityManager->refresh($queue);
+    }
+    $this->entityManager->flush();
   }
 }
