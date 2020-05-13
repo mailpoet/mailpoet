@@ -48,6 +48,7 @@ jQuery(($) => {
 
   function moveStyle(formDiv) {
     const form = formDiv.find('form');
+    formDiv.data('background-image', form.css('background-image'));
     formDiv.css('background-image', form.css('background-image'));
     formDiv.css('background-position', form.css('background-position'));
     formDiv.css('background-repeat', form.css('background-repeat'));
@@ -56,6 +57,14 @@ jQuery(($) => {
     form.css('background-position', '');
     form.css('background-repeat', '');
     form.css('background-size', '');
+  }
+
+  function checkFormBackground(formDiv) {
+    if ($(window).width() >= 500) {
+      formDiv.css('background-image', formDiv.data('background-image'));
+    } else {
+      formDiv.css('background-image', '');
+    }
   }
 
   function showForm(formDiv, showOverlay = false) {
@@ -129,6 +138,7 @@ jQuery(($) => {
         // Detect form is placed in tight container
         const formDiv = $(element);
         checkFormContainer(formDiv.find('form'));
+        checkFormBackground(formDiv);
       });
     });
 
