@@ -2,19 +2,21 @@
 
 namespace MailPoet\Newsletter;
 
+use Carbon\Carbon;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\NotFoundException;
@@ -53,6 +55,9 @@ class NewsletterSaveController {
   /** @var PostNotificationScheduler */
   private $postNotificationScheduler;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   /** @var SettingsController */
   private $settings;
 
@@ -69,6 +74,7 @@ class NewsletterSaveController {
     NewsletterSegmentRepository $newsletterSegmentRepository,
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
     PostNotificationScheduler $postNotificationScheduler,
+    ScheduledTasksRepository $scheduledTasksRepository,
     SettingsController $settings,
     WPFunctions $wp
   ) {
@@ -81,6 +87,7 @@ class NewsletterSaveController {
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->postNotificationScheduler = $postNotificationScheduler;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->settings = $settings;
     $this->wp = $wp;
   }
@@ -124,22 +131,9 @@ class NewsletterSaveController {
       ]);
     }
 
-    $options = $data['options'] ?? [];
-    if ($options) {
-      // if this is a post notification, process newsletter options and update its schedule
-      if ($newsletterModel->type === Newsletter::TYPE_NOTIFICATION) {
-        // generate the new schedule from options and get the new "next run" date
-        $newsletterModel->schedule = $this->postNotificationScheduler->processPostNotificationSchedule($newsletterModel);
-        $nextRunDate = Scheduler::getNextRunDate($newsletterModel->schedule);
-        // find previously scheduled jobs and reschedule them using the new "next run" date
-        SendingQueue::findTaskByNewsletterId($newsletterModel->id)
-          ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
-          ->findResultSet()
-          ->set('scheduled_at', $nextRunDate)
-          ->save();
-      }
-    }
+    $this->rescheduleIfNeeded($newsletter, $newsletterModel);
 
+    $options = $data['options'] ?? [];
     $queue = $newsletterModel->getQueue();
     if ($queue && !in_array($newsletterModel->type, [Newsletter::TYPE_NOTIFICATION, Newsletter::TYPE_NOTIFICATION_HISTORY])) {
       // if newsletter was previously scheduled and is now unscheduled, set its status to DRAFT and delete associated queue record
@@ -273,5 +267,28 @@ class NewsletterSaveController {
     }
 
     $this->entityManager->flush();
+  }
+
+  private function rescheduleIfNeeded(NewsletterEntity $newsletter, Newsletter $newsletterModel) {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_NOTIFICATION) {
+      return;
+    }
+
+    // generate the new schedule from options and get the new "next run" date
+    $schedule = $this->postNotificationScheduler->processPostNotificationSchedule($newsletterModel);
+    $nextRunDateString = Scheduler::getNextRunDate($schedule);
+    $nextRunDate = $nextRunDateString ? Carbon::createFromFormat('Y-m-d H:i:s', $nextRunDateString) : null;
+
+    // find previously scheduled jobs and reschedule them
+    $scheduledTasks = $this->scheduledTasksRepository->findByNewsletterAndStatus($newsletter, ScheduledTaskEntity::STATUS_SCHEDULED);
+    foreach ($scheduledTasks as $scheduledTask) {
+      $scheduledTask->setScheduledAt($nextRunDate);
+    }
+    $this->entityManager->flush();
+
+    // 'processPostNotificationSchedule' modifies newsletter options by old model - let's reload them
+    foreach ($newsletter->getOptions() as $newsletterOption) {
+      $this->entityManager->refresh($newsletterOption);
+    }
   }
 }
