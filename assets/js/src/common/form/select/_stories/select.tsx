@@ -9,7 +9,7 @@ export default {
   component: Select,
 };
 
-export const SelectBoxes = () => (
+export const NativeSelect = () => (
   <>
     <Heading level={3}>Small select boxes</Heading>
     <div>
