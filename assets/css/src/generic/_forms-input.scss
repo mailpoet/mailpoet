@@ -37,8 +37,9 @@ input {
     }
   }
 
-  svg {
+  > svg {
     fill: $color-text-light;
+    flex-shrink: 0;
     height: $form-control-icon;
     width: $form-control-icon;
 
