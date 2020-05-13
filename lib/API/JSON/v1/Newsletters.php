@@ -143,8 +143,10 @@ class Newsletters extends APIEndpoint {
   }
 
   public function save($data = []) {
-    list($data, $meta) = $this->newsletterSaveController->save($data);
-    return $this->successResponse($data, $meta);
+    $newsletter = $this->newsletterSaveController->save($data);
+    $response = $this->newslettersResponseBuilder->build($newsletter);
+    $previewUrl = $this->getViewInBrowserUrl($newsletter);
+    return $this->successResponse($response, ['preview_url' => $previewUrl]);
   }
 
   public function setStatus($data = []) {

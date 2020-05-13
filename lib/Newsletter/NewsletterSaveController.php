@@ -17,7 +17,6 @@ use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\NotFoundException;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -92,7 +91,7 @@ class NewsletterSaveController {
     $this->wp = $wp;
   }
 
-  public function save(array $data = []): array {
+  public function save(array $data = []): NewsletterEntity {
     $data = $this->wp->applyFilters('mailpoet_api_newsletters_save_before', $data);
 
     if (!empty($data['template_id'])) {
@@ -132,9 +131,7 @@ class NewsletterSaveController {
 
     $this->wp->doAction('mailpoet_api_newsletters_save_after', $newsletterModel);
     $this->authorizedEmailsController->onNewsletterSenderAddressUpdate($newsletter, $oldSenderAddress);
-
-    $previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletterModel);
-    return [$newsletterModel->asArray(), ['preview_url' => $previewUrl]];
+    return $newsletter;
   }
 
   private function getNewsletter(array $data): NewsletterEntity {
