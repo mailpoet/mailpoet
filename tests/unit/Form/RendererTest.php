@@ -171,7 +171,7 @@ class RendererTest extends \MailPoetUnitTest {
     $form['settings'] = ['background_image_url' => 'xxx', 'background_image_display' => 'fit'];
     $styles = $this->renderer->renderFormElementStyles($form);
     expect($styles)->contains('background-image: url(xxx)');
-    expect($styles)->contains('background-position: center');
+    expect($styles)->contains('background-position: center top');
     expect($styles)->contains('background-repeat: no-repeat');
     expect($styles)->contains('background-size: contain');
   }
