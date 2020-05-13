@@ -46,6 +46,18 @@ jQuery(($) => {
     return true;
   }
 
+  function moveStyle(formDiv) {
+    const form = formDiv.find('form');
+    formDiv.css('background-image', form.css('background-image'));
+    formDiv.css('background-position', form.css('background-position'));
+    formDiv.css('background-repeat', form.css('background-repeat'));
+    formDiv.css('background-size', form.css('background-size'));
+    form.css('background-image', '');
+    form.css('background-position', '');
+    form.css('background-repeat', '');
+    form.css('background-size', '');
+  }
+
   function showForm(formDiv, showOverlay = false) {
     const form = formDiv.find('form');
     const position = form.data('position');
@@ -86,6 +98,9 @@ jQuery(($) => {
   $(() => {
     $('.mailpoet_form').each((index, element) => {
       $(element).children('.mailpoet_paragraph').last().addClass('last');
+    });
+    $('div.mailpoet_form').each((index, element) => {
+      moveStyle($(element));
     });
     $('.mailpoet_form_close_icon').click((event) => {
       const closeIcon = $(event.target);
