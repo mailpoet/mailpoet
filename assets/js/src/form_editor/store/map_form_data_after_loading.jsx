@@ -23,6 +23,8 @@ export default function mapFormDataAfterLoading(data) {
       formPadding: data.settings.form_padding ? asNum(data.settings.form_padding) : 10,
       inputPadding: data.settings.input_padding ? asNum(data.settings.form_padding) : 5,
       borderColor: data.settings.border_color,
+      backgroundImageUrl: data.settings.background_image_url,
+      backgroundImageDisplay: data.settings.background_image_display,
     },
   };
 }
