@@ -129,6 +129,7 @@ class Renderer {
       $backgroundRepeat = 'no-repeat';
       $backgroundSize = 'cover';
       if (isset($formSettings['background_image_display']) && $formSettings['background_image_display'] === 'fit') {
+        $backgroundPosition = 'center top';
         $backgroundSize = 'contain';
       }
       if (isset($formSettings['background_image_display']) && $formSettings['background_image_display'] === 'tile') {
