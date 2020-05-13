@@ -44,8 +44,10 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
           />
           <ImageSettings
             name={MailPoet.I18n.t('formSettingsStylesBackgroundImage')}
-            value={settings.backgroundImageUrl}
-            onChange={partial(updateStyles, 'backgroundImageUrl')}
+            imageUrl={settings.backgroundImageUrl}
+            onImageUrlChange={partial(updateStyles, 'backgroundImageUrl')}
+            imageDisplay={settings.backgroundImageDisplay}
+            onImageDisplayChange={partial(updateStyles, 'backgroundImageDisplay')}
           />
           <ColorSettings
             name={MailPoet.I18n.t('formSettingsStylesFontColor')}
