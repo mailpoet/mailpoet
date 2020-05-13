@@ -107,8 +107,9 @@ class RendererTest extends \MailPoetUnitTest {
   public function testItShouldRenderBackgroundColour() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['backgroundColor' => 'red'];
-    $styles = $this->renderer->renderFormElementStyles($form);
-    expect($styles)->equals('background-color: red');
+    $form['styles'] = '.mailpoet_paragraph {}';
+    $styles = $this->renderer->renderStyles($form, 'prefix');
+    expect($styles)->contains('background-color: red');
   }
 
   public function testItShouldRenderFontColour() {
@@ -121,8 +122,9 @@ class RendererTest extends \MailPoetUnitTest {
   public function testItShouldRenderBorder() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['border_size' => '22', 'border_color' => 'red'];
-    $styles = $this->renderer->renderFormElementStyles($form);
-    expect($styles)->equals('border: 22px solid red');
+    $form['styles'] = '.mailpoet_paragraph {}';
+    $styles = $this->renderer->renderStyles($form, 'prefix');
+    expect($styles)->contains('border: 22px solid red');
   }
 
   public function testItShouldRenderPadding() {
@@ -142,14 +144,16 @@ class RendererTest extends \MailPoetUnitTest {
   public function testItShouldRenderBorderWithRadius() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['border_size' => '22', 'border_color' => 'red', 'border_radius' => '11'];
-    $styles = $this->renderer->renderFormElementStyles($form);
-    expect($styles)->equals('border: 22px solid red;border-radius: 11px');
+    $form['styles'] = '.mailpoet_paragraph {}';
+    $styles = $this->renderer->renderStyles($form, 'prefix');
+    expect($styles)->contains('border: 22px solid red;border-radius: 11px');
   }
 
   public function testItShouldRenderImageBackground() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['background_image_url' => 'xxx'];
-    $styles = $this->renderer->renderFormElementStyles($form);
+    $form['styles'] = '.mailpoet_paragraph {}';
+    $styles = $this->renderer->renderStyles($form, 'prefix');
     expect($styles)->contains('background-image: url(xxx)');
     expect($styles)->contains('background-position: center');
     expect($styles)->contains('background-repeat: no-repeat');
@@ -159,7 +163,8 @@ class RendererTest extends \MailPoetUnitTest {
   public function testItShouldRenderImageBackgroundTile() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['background_image_url' => 'xxx', 'background_image_display' => 'tile'];
-    $styles = $this->renderer->renderFormElementStyles($form);
+    $form['styles'] = '.mailpoet_paragraph {}';
+    $styles = $this->renderer->renderStyles($form, 'prefix');
     expect($styles)->contains('background-image: url(xxx)');
     expect($styles)->contains('background-position: center');
     expect($styles)->contains('background-repeat: repeat');
@@ -169,7 +174,8 @@ class RendererTest extends \MailPoetUnitTest {
   public function testItShouldRenderImageBackgroundFit() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['background_image_url' => 'xxx', 'background_image_display' => 'fit'];
-    $styles = $this->renderer->renderFormElementStyles($form);
+    $form['styles'] = '.mailpoet_paragraph {}';
+    $styles = $this->renderer->renderStyles($form, 'prefix');
     expect($styles)->contains('background-image: url(xxx)');
     expect($styles)->contains('background-position: center top');
     expect($styles)->contains('background-repeat: no-repeat');
