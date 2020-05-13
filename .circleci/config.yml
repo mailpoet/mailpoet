@@ -47,6 +47,7 @@ executors:
 jobs:
   build_and_code_qa:
     executor: wpcli_php_latest
+    resource_class: medium
     steps:
       - checkout
       - run:
