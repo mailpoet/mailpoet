@@ -17,7 +17,6 @@
 }
 
 .mailpoet-styles-settings-image-url {
-  overflow: auto;
 
   .mailpoet-styles-settings-image-url-body {
     align-items: center;
@@ -34,6 +33,7 @@
 
     button {
       flex-shrink: 0;
+      white-space: normal;
     }
   }
 
