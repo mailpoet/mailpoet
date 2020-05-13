@@ -13,11 +13,19 @@ select {
   > svg {
     &:first-child { margin-right: -($form-control-icon + $form-control-spacing); }
     + select { padding-left: $form-control-icon + 2 * $form-control-spacing; }
+
+    ~ .mailpoet-form-react-select .mailpoet-form-react-select__value-container {
+      padding-left: $form-control-icon + 2 * $form-control-spacing !important;
+    }
   }
 
   &.mailpoet-form-input-small > svg {
     &:first-child { margin-right: -($form-control-icon-small + $form-control-spacing); }
     + select { padding-left: $form-control-icon-small + 2 * $form-control-spacing; }
+
+    ~ .mailpoet-form-react-select .mailpoet-form-react-select__value-container {
+      padding-left: $form-control-icon-small + 2 * $form-control-spacing !important;
+    }
   }
 
   &:after {
@@ -32,4 +40,95 @@ select {
     top: 50%;
     width: $form-control-icon-small;
   }
+}
+
+.mailpoet-form-react-select {
+  flex-grow: 1;
+}
+
+.mailpoet-form-react-select__control {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.mailpoet-form-react-select__value-container {
+  padding:
+    $form-control-spacing / 2
+    $form-control-icon-small + 2 * $form-control-spacing
+    $form-control-spacing / 2
+    $form-control-spacing * 2 !important;
+}
+
+.mailpoet-form-react-select__single-value {
+  color: $color-text !important;
+}
+
+.mailpoet-form-react-select__multi-value {
+  background: $color-tertiary-light !important;
+  margin:
+    2px
+    $form-control-spacing
+    2px
+    0 !important;
+}
+
+.mailpoet-form-react-select__multi-value__label {
+  color: $color-text !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+
+.mailpoet-form-react-select__multi-value__remove {
+  cursor: pointer;
+
+  svg {
+    fill: rgba($color-text, .4) !important;
+    height: 18px;
+    width: 18px;
+  }
+
+  &:hover,
+  &:focus {
+    background: rgba($color-tertiary, .1) !important;
+    outline: none;
+  }
+}
+
+.mailpoet-form-react-select__placeholder {
+  color: $color-text-light !important;
+}
+
+.mailpoet-form-react-select__input {
+  color: $color-text !important;
+}
+
+.mailpoet-form-react-select__indicators {
+  display: none !important;
+}
+
+.mailpoet-form-react-select__menu {
+  border: 1px solid $color-input-border !important;
+  border-radius: 0 0 4px 4px !important;
+  box-shadow: none !important;
+  left: -1px !important;
+  margin-bottom: -4px !important;
+  margin-top: -4px !important;
+  width: calc(100% + 2px) !important;
+}
+
+.mailpoet-form-react-select__menu-notice {
+  color: $color-text-light !important;
+}
+
+.mailpoet-form-react-select__option {
+  color: $color-text !important;
+  cursor: pointer;
+  font-size: 14px !important;
+  line-height: 18px !important;
+  padding: $form-control-spacing 2 * $form-control-spacing !important;
+}
+
+.mailpoet-form-react-select__option--is-focused {
+  background: $color-tertiary-light !important;
 }
