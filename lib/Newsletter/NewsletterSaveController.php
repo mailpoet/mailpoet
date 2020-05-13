@@ -102,17 +102,13 @@ class NewsletterSaveController {
       }
     }
 
-    $oldNewsletterModel = null;
-    if (isset($data['id'])) {
-      $fetched = Newsletter::findOne(intval($data['id']));
-      $oldNewsletterModel = $fetched instanceof Newsletter ? $fetched : null;
-    }
-
     if (!empty($data['body'])) {
       $data['body'] = $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $data['body']);
     }
 
     $newsletter = $this->getNewsletter($data);
+    $oldSenderAddress = $newsletter->getSenderAddress();
+
     $this->updateNewsletter($newsletter, $data);
     $this->updateSegments($newsletter, $data['segments'] ?? []);
     $this->updateOptions($newsletter, $data['options'] ?? []);
@@ -135,7 +131,7 @@ class NewsletterSaveController {
     $this->updateQueue($newsletter, $newsletterModel, $data['options'] ?? []);
 
     $this->wp->doAction('mailpoet_api_newsletters_save_after', $newsletterModel);
-    $this->authorizedEmailsController->onNewsletterUpdate($newsletterModel, $oldNewsletterModel);
+    $this->authorizedEmailsController->onNewsletterSenderAddressUpdate($newsletter, $oldSenderAddress);
 
     $previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletterModel);
     return [$newsletterModel->asArray(), ['preview_url' => $previewUrl]];

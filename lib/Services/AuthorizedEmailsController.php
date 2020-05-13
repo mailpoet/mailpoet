@@ -2,6 +2,7 @@
 
 namespace MailPoet\Services;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
@@ -86,14 +87,14 @@ class AuthorizedEmailsController {
     }
   }
 
-  public function onNewsletterUpdate(Newsletter $newsletter, Newsletter $oldNewsletter = null) {
-    if ($oldNewsletter === null || $newsletter->senderAddress === $oldNewsletter->senderAddress) {
+  public function onNewsletterSenderAddressUpdate(NewsletterEntity $newsletter, string $oldSenderAddress = null) {
+    if ($newsletter->getSenderAddress() === $oldSenderAddress) {
       return;
     }
-    if ($newsletter->type === Newsletter::TYPE_STANDARD && $newsletter->status === Newsletter::STATUS_SCHEDULED) {
+    if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD && $newsletter->getStatus() === NewsletterEntity::STATUS_SCHEDULED) {
       $this->checkAuthorizedEmailAddresses();
     }
-    if (in_array($newsletter->type, $this->automaticEmailTypes, true) && $newsletter->status === Newsletter::STATUS_ACTIVE) {
+    if (in_array($newsletter->getType(), $this->automaticEmailTypes, true) && $newsletter->getStatus() === Newsletter::STATUS_ACTIVE) {
       $this->checkAuthorizedEmailAddresses();
     }
   }

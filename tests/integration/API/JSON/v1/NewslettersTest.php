@@ -197,7 +197,7 @@ class NewslettersTest extends \MailPoetTest {
     $this->endpoint = $this->createNewslettersEndpointWithMocks([
       'wp' => $wp,
       'cronHelper' => $this->cronHelper,
-      'authorizedEmailsController' => $this->make(AuthorizedEmailsController::class, ['onNewsletterUpdate' => Expected::once()]),
+      'authorizedEmailsController' => $this->make(AuthorizedEmailsController::class, ['onNewsletterSenderAddressUpdate' => Expected::once()]),
       'emoji' => $emoji,
       'subscribersFeature' => Stub::make(SubscribersFeature::class),
     ]);
