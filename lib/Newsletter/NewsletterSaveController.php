@@ -23,7 +23,6 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Emoji;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class NewsletterSaveController {
@@ -60,9 +59,6 @@ class NewsletterSaveController {
   /** @var SettingsController */
   private $settings;
 
-  /** @var WPFunctions */
-  private $wp;
-
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
@@ -74,8 +70,7 @@ class NewsletterSaveController {
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
     PostNotificationScheduler $postNotificationScheduler,
     ScheduledTasksRepository $scheduledTasksRepository,
-    SettingsController $settings,
-    WPFunctions $wp
+    SettingsController $settings
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
@@ -88,12 +83,9 @@ class NewsletterSaveController {
     $this->postNotificationScheduler = $postNotificationScheduler;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->settings = $settings;
-    $this->wp = $wp;
   }
 
   public function save(array $data = []): NewsletterEntity {
-    $data = $this->wp->applyFilters('mailpoet_api_newsletters_save_before', $data);
-
     if (!empty($data['template_id'])) {
       $template = $this->newsletterTemplatesRepository->findOneById($data['template_id']);
       if ($template) {
@@ -128,8 +120,6 @@ class NewsletterSaveController {
 
     $this->rescheduleIfNeeded($newsletter, $newsletterModel);
     $this->updateQueue($newsletter, $newsletterModel, $data['options'] ?? []);
-
-    $this->wp->doAction('mailpoet_api_newsletters_save_after', $newsletterModel);
     $this->authorizedEmailsController->onNewsletterSenderAddressUpdate($newsletter, $oldSenderAddress);
     return $newsletter;
   }
