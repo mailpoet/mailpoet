@@ -11,9 +11,26 @@ export default {
 
 export const ReactSelect = () => {
   const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' },
+    {
+      value: 'chocolate',
+      label: 'Chocolate',
+    },
+    {
+      value: 'strawberry',
+      label: 'Strawberry',
+      tag: 'Category',
+    },
+    {
+      value: 'vanilla',
+      label: 'Vanilla',
+      count: 13,
+    },
+    {
+      value: 'long',
+      label: 'Very very very very very very very very very very very very long option',
+      tag: 'long',
+      count: 1234,
+    },
   ];
 
   return (
