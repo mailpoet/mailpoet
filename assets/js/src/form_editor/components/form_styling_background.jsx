@@ -12,23 +12,8 @@ const FormStylingBackground = ({ children }) => {
     borderColor,
     alignment,
     formPadding,
-  } = useSelect(
-    (select) => {
-      const settings = select('mailpoet-form-editor').getFormSettings();
-
-      return {
-        backgroundColor: settings.backgroundColor,
-        fontColor: settings.fontColor,
-        fontSize: settings.fontSize,
-        borderRadius: settings.borderRadius,
-        borderSize: settings.borderSize,
-        borderColor: settings.borderColor,
-        alignment: settings.alignment,
-        formPadding: settings.formPadding,
-      };
-    },
-    []
-  );
+    backgroundImageUrl,
+  } = useSelect((select) => select('mailpoet-form-editor').getFormSettings(), []);
 
   let borderStyle;
   if (borderSize && borderColor) {
@@ -61,6 +46,7 @@ const FormStylingBackground = ({ children }) => {
         padding,
         width: 700,
         margin: '0 auto',
+        backgroundImage: `url(${backgroundImageUrl})`,
       }}
     >
       {children}
