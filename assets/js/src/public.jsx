@@ -67,15 +67,26 @@ jQuery(($) => {
     }, delay * 1000);
   }
 
+  const closeForm = (formDiv) => {
+    formDiv.removeClass('active');
+    formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
+    Cookies.set('popup_form_dismissed', '1', { expires: 365, path: '/' });
+  };
+
+  $(document).keyup((e) => {
+    if (e.key === 'Escape') {
+      $('div.mailpoet_form').each((index, element) => {
+        if ($(element).children('.mailpoet_form_close_icon').length !== 0) {
+          closeForm($(element));
+        }
+      });
+    }
+  });
+
   $(() => {
     $('.mailpoet_form').each((index, element) => {
       $(element).children('.mailpoet_paragraph').last().addClass('last');
     });
-    const closeForm = (formDiv) => {
-      formDiv.removeClass('active');
-      formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
-      Cookies.set('popup_form_dismissed', '1', { expires: 365, path: '/' });
-    };
     $('.mailpoet_form_close_icon').click((event) => {
       const closeIcon = $(event.target);
       const formDiv = closeIcon.parent();
