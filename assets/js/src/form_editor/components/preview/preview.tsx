@@ -12,6 +12,7 @@ import { onChange } from 'common/functions';
 import BelowPostsSettings from './below_posts_settings';
 import PopUpSettings from './popup_settings';
 import OtherSettings from './other_settings';
+import FixedBarSettings from './fixed_bar_settings';
 
 const FormPreview = () => {
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -91,6 +92,7 @@ const FormPreview = () => {
             </label>
             {previewSettings.formType === 'others' && <OtherSettings />}
             {previewSettings.formType === 'below_post' && <BelowPostsSettings />}
+            {previewSettings.formType === 'fixed_bar' && <FixedBarSettings />}
             {previewSettings.formType === 'popup' && <PopUpSettings />}
           </div>
           <Preview
