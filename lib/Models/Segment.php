@@ -218,6 +218,7 @@ class Segment extends Model {
 
   public static function groups() {
     $allQuery = Segment::getPublished();
+    $allQuery->whereNotEqual('type', DynamicSegment::TYPE_DYNAMIC);
     if (!Segment::shouldShowWooCommerceSegment()) {
       $allQuery->whereNotEqual('type', self::TYPE_WC_USERS);
     }
@@ -230,7 +231,9 @@ class Segment extends Model {
       [
         'name' => 'trash',
         'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
-        'count' => Segment::getTrashed()->count(),
+        'count' => Segment::getTrashed()
+          ->whereNotEqual('type', DynamicSegment::TYPE_DYNAMIC)
+          ->count(),
       ],
     ];
   }
