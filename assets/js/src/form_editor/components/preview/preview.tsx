@@ -10,6 +10,7 @@ import Preview from 'common/preview/preview.jsx';
 import Modal from 'common/modal/modal.jsx';
 import { onChange } from 'common/functions';
 import BelowPostsSettings from './below_posts_settings';
+import OtherSettings from './other_settings';
 
 const FormPreview = () => {
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -88,6 +89,7 @@ const FormPreview = () => {
               </select>
             </label>
             {previewSettings.formType === 'below_post' && <BelowPostsSettings />}
+            {previewSettings.formType === 'others' && <OtherSettings />}
           </div>
           <Preview
             onDisplayTypeChange={onPreviewTypeChange}
