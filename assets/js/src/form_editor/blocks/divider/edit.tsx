@@ -92,7 +92,16 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
               min={1}
               max={400}
               allowReset
-              onChange={(height) => (setAttributes({ height }))}
+              onChange={(height) => {
+                let newDividerHeightHeight = attributeDividerHeight;
+                if (height !== undefined) {
+                  newDividerHeightHeight = Math.min(height, attributeDividerHeight);
+                }
+                setAttributes({
+                  height,
+                  dividerHeight: newDividerHeightHeight,
+                });
+              }}
             />
             <ToggleControl
               label={MailPoet.I18n.t('blockSpacerEnableDivider')}
