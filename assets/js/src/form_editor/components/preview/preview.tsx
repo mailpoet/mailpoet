@@ -13,6 +13,7 @@ import BelowPostsSettings from './below_posts_settings';
 import PopUpSettings from './popup_settings';
 import OtherSettings from './other_settings';
 import FixedBarSettings from './fixed_bar_settings';
+import SlideInSettings from './slide_in_settings';
 
 const FormPreview = () => {
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -94,6 +95,7 @@ const FormPreview = () => {
             {previewSettings.formType === 'below_post' && <BelowPostsSettings />}
             {previewSettings.formType === 'fixed_bar' && <FixedBarSettings />}
             {previewSettings.formType === 'popup' && <PopUpSettings />}
+            {previewSettings.formType === 'slide_in' && <SlideInSettings />}
           </div>
           <Preview
             onDisplayTypeChange={onPreviewTypeChange}
