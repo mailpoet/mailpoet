@@ -125,7 +125,27 @@ export function saveFormFailed(message = undefined) {
   };
 }
 
-export function* showPreview() {
+export function* changePreviewSettings(settings) {
+  yield {
+    type: 'STORE_LOCALLY',
+    key: 'mailpoet_form_preview_settings',
+    value: settings,
+  };
+  yield {
+    type: 'CHANGE_PREVIEW_SETTINGS',
+    settings,
+  };
+}
+
+export function* showPreview(formType = null) {
+  if (formType !== null && typeof formType === 'string') {
+    const previewSettings = select('mailpoet-form-editor').getPreviewSettings();
+    const updatedPreviewSettings = {
+      ...previewSettings,
+      formType,
+    };
+    yield* changePreviewSettings(updatedPreviewSettings);
+  }
   yield {
     type: 'SHOW_PREVIEW',
   };
@@ -151,18 +171,6 @@ export function* showPreview() {
     return { type: 'PREVIEW_DATA_NOT_SAVED', error };
   }
   return { type: 'PREVIEW_DATA_SAVED' };
-}
-
-export function* changePreviewSettings(settings) {
-  yield {
-    type: 'STORE_LOCALLY',
-    key: 'mailpoet_form_preview_settings',
-    value: settings,
-  };
-  return {
-    type: 'CHANGE_PREVIEW_SETTINGS',
-    settings,
-  };
 }
 
 export function hidePreview() {
