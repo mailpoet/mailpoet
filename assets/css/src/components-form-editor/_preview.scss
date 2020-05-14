@@ -80,3 +80,11 @@
     width: 300px;
   }
 }
+
+.mailpoet-size-settings-control {
+  .components-radio-control__option {
+    display: inline-block;
+    margin-right: 1em;
+    width: auto;
+  }
+}
