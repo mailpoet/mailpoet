@@ -37,7 +37,7 @@ class DisplayFormBellowPostCest {
     $i->click('[data-automation-id="form-placement-option-Below pages"]');
     $i->waitForElement('[data-automation-id="place-form-bellow-all-posts-toggle"]');
     $i->checkOption('[data-automation-id="place-form-bellow-all-posts-toggle"]');
-    $i->click('.automation-id-save-form-placement');
+    $i->click('.mailpoet-modal-close');
     $i->click('[data-automation-id="form_save_button"]');
     $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
 

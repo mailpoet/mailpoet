@@ -9,6 +9,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import Preview from 'common/preview/preview.jsx';
 import Modal from 'common/modal/modal.jsx';
 import { onChange } from 'common/functions';
+import BelowPostsSettings from './below_posts_settings';
 
 const FormPreview = () => {
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -86,7 +87,7 @@ const FormPreview = () => {
                 <option value="slide_in">{MailPoet.I18n.t('placeSlideInFormOnPages')}</option>
               </select>
             </label>
-            <p>Todo width and placement settings.</p>
+            {previewSettings.formType === 'below_post' && <BelowPostsSettings />}
           </div>
           <Preview
             onDisplayTypeChange={onPreviewTypeChange}
