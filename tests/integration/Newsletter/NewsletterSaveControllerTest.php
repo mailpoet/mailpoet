@@ -3,55 +3,34 @@
 namespace MailPoet\Newsletter;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\Segment;
-use MailPoet\Models\SendingQueue;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoetVendor\Carbon\Carbon;
 
 class NewsletterSaveControllerTest extends \MailPoetTest {
-  /** @var Newsletter */
-  private $newsletter;
-
-  /** @var Newsletter */
-  private $postNotification;
-
   /** @var NewsletterSaveController */
   private $saveController;
 
   public function _before() {
     parent::_before();
+    $this->cleanup();
     $this->saveController = $this->diContainer->get(NewsletterSaveController::class);
-    $this->newsletter = Newsletter::createOrUpdate([
-      'subject' => 'My Standard Newsletter',
-      'body' => Fixtures::get('newsletter_body_template'),
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-
-    $this->postNotification = Newsletter::createOrUpdate([
-      'subject' => 'My Post Notification',
-      'body' => Fixtures::get('newsletter_body_template'),
-      'type' => Newsletter::TYPE_NOTIFICATION,
-    ]);
-
-    NewsletterOptionField::createOrUpdate([
-      'name' => 'isScheduled',
-      'newsletter_type' => 'standard',
-    ]);
-    NewsletterOptionField::createOrUpdate([
-      'name' => 'scheduledAt',
-      'newsletter_type' => 'standard',
-    ]);
   }
 
   public function testItCanSaveANewsletter() {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $newsletterData = [
-      'id' => $this->newsletter->id,
+      'id' => $newsletter->getId(),
       'subject' => 'Updated subject',
     ];
 
@@ -60,89 +39,47 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotRerenderPostNotificationsUponUpdate() {
-    // create newsletter options
-    $newsletterOptions = [
-      'intervalType',
-      'timeOfDay',
-      'weekDay',
-      'monthDay',
-      'nthWeekDay',
-      'schedule',
-    ];
-    foreach ($newsletterOptions as $option) {
-      $newsletterOptionField = NewsletterOptionField::create();
-      $newsletterOptionField->name = $option;
-      $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-      $newsletterOptionField->save();
-    }
-
-    $sendingQueue = SendingTask::create();
-    $sendingQueue->newsletterId = $this->postNotification->id;
-    $sendingQueue->status = SendingQueue::STATUS_SCHEDULED;
-    $sendingQueue->newsletterRenderedBody = null;
-    $sendingQueue->newsletterRenderedSubject = null;
-    $sendingQueue->save();
-    expect($sendingQueue->getErrors())->false();
+    $this->createPostNotificationOptions();
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION);
+    $this->createQueueWithTask($newsletter);
 
     $newsletterData = [
-      'id' => $this->postNotification->id,
+      'id' => $newsletter->getId(),
       'subject' => 'My Updated Newsletter',
       'body' => Fixtures::get('newsletter_body_template'),
     ];
 
     $newsletter = $this->saveController->save($newsletterData);
-    $updatedQueue = SendingQueue::where('newsletter_id', $this->postNotification->id)
-      ->findOne()
-      ->asArray();
-
-    expect($updatedQueue['newsletter_rendered_body'])->null();
-    expect($updatedQueue['newsletter_rendered_subject'])->null();
+    $updatedQueue = $newsletter->getLatestQueue();
+    assert($updatedQueue instanceof SendingQueueEntity); // PHPStan
+    expect($updatedQueue->getNewsletterRenderedSubject())->null();
+    expect($updatedQueue->getNewsletterRenderedBody())->null();
   }
 
   public function testItCanRerenderQueueUponSave() {
-    $sendingQueue = SendingTask::create();
-    $sendingQueue->newsletterId = $this->newsletter->id;
-    $sendingQueue->status = SendingQueue::STATUS_SCHEDULED;
-    $sendingQueue->newsletterRenderedBody = null;
-    $sendingQueue->newsletterRenderedSubject = null;
-    $sendingQueue->save();
-    expect($sendingQueue->getErrors())->false();
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
+    $this->createQueueWithTask($newsletter);
 
     $newsletterData = [
-      'id' => $this->newsletter->id,
+      'id' => $newsletter->getId(),
       'subject' => 'My Updated Newsletter',
       'body' => Fixtures::get('newsletter_body_template'),
     ];
 
-    $newsletter = $this->saveController->save($newsletterData);
-    $updatedQueue = SendingQueue::where('newsletter_id', $this->newsletter->id)
-      ->findOne()
-      ->asArray();
-
-    expect($updatedQueue['newsletter_rendered_body'])->hasKey('html');
-    expect($updatedQueue['newsletter_rendered_body'])->hasKey('text');
-    expect($updatedQueue['newsletter_rendered_subject'])->equals('My Updated Newsletter');
+    $this->saveController->save($newsletterData);
+    $updatedQueue = $newsletter->getLatestQueue();
+    assert($updatedQueue instanceof SendingQueueEntity); // PHPStan
+    expect($updatedQueue->getNewsletterRenderedSubject())->same('My Updated Newsletter');
+    expect($updatedQueue->getNewsletterRenderedBody())->hasKey('html');
+    expect($updatedQueue->getNewsletterRenderedBody())->hasKey('text');
   }
 
   public function testItCanUpdatePostNotificationScheduleUponSave() {
-    $newsletterOptions = [
-      'intervalType',
-      'timeOfDay',
-      'weekDay',
-      'monthDay',
-      'nthWeekDay',
-      'schedule',
-    ];
-    foreach ($newsletterOptions as $option) {
-      $newsletterOptionField = NewsletterOptionField::create();
-      $newsletterOptionField->name = $option;
-      $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-      $newsletterOptionField->save();
-    }
-
+    $this->createPostNotificationOptions();
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $newsletterData = [
-      'id' => $this->newsletter->id,
-      'type' => Newsletter::TYPE_NOTIFICATION,
+      'id' => $newsletter->getId(),
+      'type' => NewsletterEntity::TYPE_NOTIFICATION,
       'subject' => 'Newsletter',
       'options' => [
         'intervalType' => PostNotificationScheduler::INTERVAL_WEEKLY,
@@ -155,7 +92,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
     $newsletter = $this->saveController->save($newsletterData);
     $scheduleOption = $newsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption) {
-      return $newsletterOption->getOptionField()->getName() === 'schedule';
+      $optionField = $newsletterOption->getOptionField();
+      return $optionField && $optionField->getName() === 'schedule';
     })->first();
 
     expect($scheduleOption->getValue())->equals('0 14 * * 1');
@@ -165,45 +103,34 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $savedNewsletter = $this->saveController->save($newsletterData);
 
     $scheduleOption = $savedNewsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption) {
-      return $newsletterOption->getOptionField()->getName() === 'schedule';
+      $optionField = $newsletterOption->getOptionField();
+      return $optionField && $optionField->getName() === 'schedule';
     })->first();
 
     expect($scheduleOption->getValue())->equals('* * * * *');
   }
 
   public function testItCanReschedulePreviouslyScheduledSendingQueueJobs() {
-    // create newsletter options
-    $newsletterOptions = [
-      'intervalType',
-      'timeOfDay',
-      'weekDay',
-      'monthDay',
-      'nthWeekDay',
-      'schedule',
-    ];
-    foreach ($newsletterOptions as $option) {
-      $newsletterOptionField = NewsletterOptionField::create();
-      $newsletterOptionField->name = $option;
-      $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-      $newsletterOptionField->save();
-    }
+    $this->createPostNotificationOptions();
 
-    // create sending queues
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION);
+
     $currentTime = Carbon::now();
-    $sendingQueue1 = SendingTask::create();
-    $sendingQueue1->newsletterId = 1;
-    $sendingQueue1->status = SendingQueue::STATUS_SCHEDULED;
-    $sendingQueue1->scheduledAt = $currentTime;
-    $sendingQueue1->save();
+    $queue1 = $this->createQueueWithTask($newsletter);
+    $task1 = $queue1->getTask();
+    assert($task1 instanceof ScheduledTaskEntity); // PHPStan
+    $task1->setScheduledAt($currentTime);
 
-    $sendingQueue2 = SendingTask::create();
-    $sendingQueue2->newsletterId = 1;
-    $sendingQueue2->save();
+    $queue2 = $this->createQueueWithTask($newsletter);
+    $task2 = $queue2->getTask();
+    assert($task2 instanceof ScheduledTaskEntity); // PHPStan
+    $task2->setStatus(null);
 
-    // save newsletter via router
+    $this->entityManager->flush();
+
     $newsletterData = [
-      'id' => 1,
-      'type' => Newsletter::TYPE_NOTIFICATION,
+      'id' => $newsletter->getId(),
+      'type' => NewsletterEntity::TYPE_NOTIFICATION,
       'subject' => 'Newsletter',
       'options' => [
         // weekly on Monday @ 7am
@@ -215,34 +142,32 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
         'schedule' => '0 7 * * 1',
       ],
     ];
+
     $newsletter = $this->saveController->save($newsletterData);
-    /** @var SendingQueue $sendingQueue1 */
-    $sendingQueue1 = SendingQueue::findOne($sendingQueue1->id);
-    $sendingQueue1 = SendingTask::createFromQueue($sendingQueue1);
-    /** @var SendingQueue $sendingQueue2 */
-    $sendingQueue2 = SendingQueue::findOne($sendingQueue2->id);
-    $sendingQueue2 = SendingTask::createFromQueue($sendingQueue2);
-    expect($sendingQueue1->scheduledAt)->notEquals($currentTime);
-
     $scheduleOption = $newsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption) {
-      return $newsletterOption->getOptionField()->getName() === 'schedule';
+      $optionField = $newsletterOption->getOptionField();
+      return $optionField && $optionField->getName() === 'schedule';
     })->first();
-
-    expect($sendingQueue1->scheduledAt)->equals(
-      Scheduler::getNextRunDate($scheduleOption->getValue())
-    );
-    expect($sendingQueue2->scheduledAt)->null();
+    expect($task1->getScheduledAt())->notEquals($currentTime);
+    expect($task1->getScheduledAt())->equals(Scheduler::getNextRunDate($scheduleOption->getValue()));
+    expect($task2->getScheduledAt())->null();
   }
 
   public function testItCanModifySegmentsOfExistingNewsletter() {
-    $segment1 = Segment::createOrUpdate(['name' => 'Segment 1']);
+    $segment = new SegmentEntity();
+    $segment->setType(SegmentEntity::TYPE_DEFAULT);
+    $segment->setName('Segment 1');
+    $segment->setDescription('Segment 1 description');
+    $this->entityManager->persist($segment);
+    $this->entityManager->flush();
     $fakeSegmentId = 1;
 
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $newsletterData = [
-      'id' => $this->newsletter->id,
+      'id' => $newsletter->getId(),
       'subject' => 'My Updated Newsletter',
       'segments' => [
-        $segment1->asArray(),
+        ['id' => $segment->getId()],
         $fakeSegmentId,
       ],
     ];
@@ -253,43 +178,41 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
   }
 
   public function testItDeletesSendingQueueAndSetsNewsletterStatusToDraftWhenItIsUnscheduled() {
-    $newsletter = $this->newsletter;
-    $newsletter->status = Newsletter::STATUS_SCHEDULED;
-    $newsletter->save();
-    expect($newsletter->getErrors())->false();
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SCHEDULED);
 
-    $sendingQueue = SendingTask::create();
-    $sendingQueue->newsletterId = $newsletter->id;
-    $sendingQueue->newsletterRenderedBody = [
+    $queue = $this->createQueueWithTask($newsletter);
+    $queue->setNewsletterRenderedBody([
       'html' => 'html',
       'text' => 'text',
-    ];
-    $sendingQueue->status = SendingQueue::STATUS_SCHEDULED;
-    $sendingQueue->scheduledAt = Carbon::now()->format('Y-m-d H:i');
-    $sendingQueue->save();
-    expect($sendingQueue->getErrors())->false();
+    ]);
+    $task = $queue->getTask();
+    assert($task instanceof ScheduledTaskEntity); // PHPStan
+    $task->setScheduledAt(Carbon::now());
+    $this->entityManager->flush();
+    $queueId = $queue->getId();
 
     $newsletterData = [
-      'id' => $newsletter->id,
+      'id' => $newsletter->getId(),
       'options' => [
         'isScheduled' => false,
       ],
     ];
 
     $newsletter = $this->saveController->save($newsletterData);
-    $sendingQueue = SendingQueue::findOne($sendingQueue->id);
-    expect($newsletter->getStatus())->equals(Newsletter::STATUS_DRAFT);
-    expect($sendingQueue)->false();
+    expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
+    expect($newsletter->getLatestQueue())->null();
+    expect($this->diContainer->get(SendingQueuesRepository::class)->findOneById($queueId))->null();
   }
 
   public function testItSavesDefaultSenderIfNeeded() {
     $settings = $this->diContainer->get(SettingsController::class);
     $settings->set('sender', null);
 
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $data = [
-      'id' => $this->newsletter->id,
+      'id' => $newsletter->getId(),
       'subject' => 'My New Newsletter',
-      'type' => Newsletter::TYPE_STANDARD,
+      'type' => NewsletterEntity::TYPE_STANDARD,
       'sender_name' => 'Test sender',
       'sender_address' => 'test@example.com',
     ];
@@ -303,10 +226,11 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $settings = $this->diContainer->get(SettingsController::class);
     $settings->set('sender', null);
 
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $data = [
-      'id' => $this->newsletter->id,
+      'id' => $newsletter->getId(),
       'subject' => 'My New Newsletter',
-      'type' => Newsletter::TYPE_STANDARD,
+      'type' => NewsletterEntity::TYPE_STANDARD,
       'sender_name' => '',
       'sender_address' => null,
     ];
@@ -322,10 +246,11 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       'address' => 'test@example.com',
     ]);
 
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $data = [
-      'id' => $this->newsletter->id,
+      'id' => $newsletter->getId(),
       'subject' => 'My New Newsletter',
-      'type' => Newsletter::TYPE_STANDARD,
+      'type' => NewsletterEntity::TYPE_STANDARD,
       'sender_name' => 'Another test sender',
       'sender_address' => 'another.test@example.com',
     ];
@@ -333,5 +258,65 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $this->saveController->save($data);
     expect($settings->get('sender.name'))->same('Test sender');
     expect($settings->get('sender.address'))->same('test@example.com');
+  }
+
+  public function _after() {
+    $this->cleanup();
+  }
+
+  private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType($type);
+    $newsletter->setSubject('My Standard Newsletter');
+    $newsletter->setBody(Fixtures::get('newsletter_body_template'));
+    $newsletter->setStatus($status);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    return $newsletter;
+  }
+
+  private function createQueueWithTask(NewsletterEntity $newsletter): SendingQueueEntity {
+    $task = new ScheduledTaskEntity();
+    $task->setType(SendingTask::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($task);
+
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setTask($task);
+    $this->entityManager->persist($queue);
+
+    $newsletter->getQueues()->add($queue);
+    $this->entityManager->flush();
+    return $queue;
+  }
+
+  private function createPostNotificationOptions() {
+    $newsletterOptions = [
+      'intervalType',
+      'timeOfDay',
+      'weekDay',
+      'monthDay',
+      'nthWeekDay',
+      'schedule',
+    ];
+
+    foreach ($newsletterOptions as $optionName) {
+      $newsletterOptionField = new NewsletterOptionFieldEntity();
+      $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_NOTIFICATION);
+      $newsletterOptionField->setName($optionName);
+      $this->entityManager->persist($newsletterOptionField);
+    }
+    $this->entityManager->flush();
+  }
+
+  private function cleanup() {
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterSegmentEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
   }
 }
