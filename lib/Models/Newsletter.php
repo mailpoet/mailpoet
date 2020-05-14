@@ -24,7 +24,10 @@ use function MailPoetVendor\array_column;
  * @property string $type
  * @property object|array|bool $queue
  * @property string $hash
+ * @property string $senderName
  * @property string $senderAddress
+ * @property string $replyToName
+ * @property string $replyToAddress
  * @property string $status
  * @property string|object $meta
  * @property array $options

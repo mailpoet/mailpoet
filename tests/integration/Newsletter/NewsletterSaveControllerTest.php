@@ -31,11 +31,27 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $newsletterData = [
       'id' => $newsletter->getId(),
+      'type' => 'Updated type',
       'subject' => 'Updated subject',
+      'preheader' => 'Updated preheader',
+      'body' => '{"value": "Updated body"}',
+      'sender_name' => 'Updated sender name',
+      'sender_address' => 'Updated sender address',
+      'reply_to_name' => 'Updated reply-to name',
+      'reply_to_address' => 'Updated reply-to address',
+      'ga_campaign' => 'Updated GA campaign',
     ];
 
     $newsletter = $this->saveController->save($newsletterData);
+    expect($newsletter->getType())->equals('Updated type');
     expect($newsletter->getSubject())->equals('Updated subject');
+    expect($newsletter->getPreheader())->equals('Updated preheader');
+    expect($newsletter->getBody())->equals(['value' => 'Updated body']);
+    expect($newsletter->getSenderName())->equals('Updated sender name');
+    expect($newsletter->getSenderAddress())->equals('Updated sender address');
+    expect($newsletter->getReplyToName())->equals('Updated reply-to name');
+    expect($newsletter->getReplyToAddress())->equals('Updated reply-to address');
+    expect($newsletter->getGaCampaign())->equals('Updated GA campaign');
   }
 
   public function testItDoesNotRerenderPostNotificationsUponUpdate() {
