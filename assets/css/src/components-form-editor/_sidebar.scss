@@ -113,6 +113,10 @@
 
 .CodeMirror {
   border: 1px solid #eee;
+
+  textarea {
+    font-size: 12px;
+  }
 }
 
 .form-placement-option-list {
