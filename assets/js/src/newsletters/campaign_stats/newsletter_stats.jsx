@@ -90,7 +90,12 @@ const NewsletterGeneralStats = ({ newsletter }) => {
         </p>
       ) }
       <p>
-        <a href={statsKBLink} target="_blank" rel="noopener noreferrer">
+        <a
+          href={statsKBLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-beacon-article="58f671152c7d3a057f8858e8"
+        >
           {MailPoet.I18n.t('readMoreOnStats')}
         </a>
       </p>
