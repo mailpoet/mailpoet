@@ -69,8 +69,8 @@ const FormPreview = () => {
         </div>
       )}
       {isPreviewReady && (
-        <>
-          <div className="mailpoet_form_preview_type_select">
+        <div className="mailpoet_preview_content_wrapper">
+          <div className="mailpoet_preview_sidebar">
             <label>
               {MailPoet.I18n.t('formPlacementLabel')}
               {' '}
@@ -86,6 +86,7 @@ const FormPreview = () => {
                 <option value="slide_in">{MailPoet.I18n.t('placeSlideInFormOnPages')}</option>
               </select>
             </label>
+            <p>Todo width and placement settings.</p>
           </div>
           <Preview
             onDisplayTypeChange={onPreviewTypeChange}
@@ -110,7 +111,7 @@ const FormPreview = () => {
               </div>
             )}
           </Preview>
-        </>
+        </div>
       )}
     </Modal>
   );
