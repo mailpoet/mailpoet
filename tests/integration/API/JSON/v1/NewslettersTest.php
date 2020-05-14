@@ -170,15 +170,31 @@ class NewslettersTest extends \MailPoetTest {
   public function testItCanSaveANewsletter() {
     $newsletterData = [
       'id' => $this->newsletter->id,
-      'subject' => 'My Updated Newsletter',
+      'type' => 'Updated type',
+      'subject' => 'Updated subject',
+      'preheader' => 'Updated preheader',
+      'body' => '{"value": "Updated body"}',
+      'sender_name' => 'Updated sender name',
+      'sender_address' => 'Updated sender address',
+      'reply_to_name' => 'Updated reply-to name',
+      'reply_to_address' => 'Updated reply-to address',
+      'ga_campaign' => 'Updated GA campaign',
     ];
 
     $response = $this->endpoint->save($newsletterData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter); // PHPStan
     expect($response->data)->equals($updatedNewsletter->asArray());
-    expect($updatedNewsletter->subject)->equals('My Updated Newsletter');
-
+    expect($updatedNewsletter->type)->equals('Updated type');
+    expect($updatedNewsletter->subject)->equals('Updated subject');
+    expect($updatedNewsletter->preheader)->equals('Updated preheader');
+    expect($updatedNewsletter->body)->equals('{"value":"Updated body"}');
+    expect($updatedNewsletter->senderName)->equals('Updated sender name');
+    expect($updatedNewsletter->senderAddress)->equals('Updated sender address');
+    expect($updatedNewsletter->replyToName)->equals('Updated reply-to name');
+    expect($updatedNewsletter->replyToAddress)->equals('Updated reply-to address');
+    expect($updatedNewsletter->gaCampaign)->equals('Updated GA campaign');
   }
 
   public function testItReturnsErrorIfSubscribersLimitReached() {
