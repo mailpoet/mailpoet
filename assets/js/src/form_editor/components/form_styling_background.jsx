@@ -58,6 +58,8 @@ const FormStylingBackground = ({ children }) => {
         borderStyle,
         textAlign,
         padding,
+        width: 700,
+        margin: '0 auto',
       }}
     >
       {children}
