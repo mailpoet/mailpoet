@@ -30,7 +30,13 @@ class SendingQueueEntity {
 
   /**
    * @ORM\Column(type="json_or_serialized")
-   * @Assert\NotBlank()
+   * @Assert\Type("array")
+   * @Assert\Collection(
+   *   fields = {
+   *     "html" = @Assert\NotBlank(),
+   *     "text" = @Assert\NotBlank(),
+   *   }
+   * )
    * @var array|null
    */
   private $newsletterRenderedBody;
