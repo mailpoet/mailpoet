@@ -47,22 +47,12 @@ parameters:
 
 		-
 			message: "#^Cannot call method withSegments\\(\\) on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 2
+			count: 1
 			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
 
 		-
 			message: "#^Cannot call method asArray\\(\\) on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 8
-			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
-
-		-
-			message: "#^Cannot access property \\$someOption on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 1
-			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
-
-		-
-			message: "#^Cannot access property \\$unsubscribeToken on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 1
+			count: 6
 			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
 
 		-
@@ -71,22 +61,7 @@ parameters:
 			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
 
 		-
-			message: "#^Cannot call method asArray\\(\\) on MailPoet\\\\Models\\\\SendingQueue\\|false\\.$#"
-			count: 2
-			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
-
-		-
-			message: "#^Cannot access property \\$schedule on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 1
-			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
-
-		-
 			message: "#^Cannot access property \\$deletedAt on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 1
-			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
-
-		-
-			message: "#^Cannot access property \\$status on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
 			count: 1
 			path: ../../tests/integration/API/JSON/v1/NewslettersTest.php
 
