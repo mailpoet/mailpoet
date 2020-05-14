@@ -19,7 +19,7 @@ import FormTitle from './form_title.jsx';
 import Notices from './notices.jsx';
 import UnsavedChangesNotice from './unsaved_changes_notice.jsx';
 import FormStyles from './form_styles.jsx';
-import Preview from './preview';
+import Preview from './preview/preview';
 import FormStylingBackground from './form_styling_background.jsx';
 
 /**

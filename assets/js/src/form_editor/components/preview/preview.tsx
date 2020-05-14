@@ -6,9 +6,9 @@ import MailPoet from 'mailpoet';
 import { Spinner } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import Preview from '../../common/preview/preview.jsx';
-import Modal from '../../common/modal/modal.jsx';
-import { onChange } from '../../common/functions';
+import Preview from 'common/preview/preview.jsx';
+import Modal from 'common/modal/modal.jsx';
+import { onChange } from 'common/functions';
 
 const FormPreview = () => {
   const [iframeLoaded, setIframeLoaded] = useState(false);
