@@ -15,7 +15,7 @@ h5 {
   color: $color-text;
   font-weight: bold;
   line-height: 1.25;
-  margin: 0 0 $grid-gap 0;
+  margin: $grid-gap 0;
 }
 
 h1 { font-size: 32px; }
