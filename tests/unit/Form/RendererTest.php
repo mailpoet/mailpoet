@@ -168,7 +168,7 @@ class RendererTest extends \MailPoetUnitTest {
     expect($styles)->contains('background-image: url(xxx)');
     expect($styles)->contains('background-position: center');
     expect($styles)->contains('background-repeat: repeat');
-    expect($styles)->contains('background-size: contain');
+    expect($styles)->contains('background-size: auto');
   }
 
   public function testItShouldRenderImageBackgroundFit() {

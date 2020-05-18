@@ -124,7 +124,7 @@ class Renderer {
       }
       if (isset($formSettings['background_image_display']) && $formSettings['background_image_display'] === 'tile') {
         $backgroundRepeat = 'repeat';
-        $backgroundSize = 'contain';
+        $backgroundSize = 'auto';
       }
       $styles[] = 'background-position: ' . $backgroundPosition;
       $styles[] = 'background-repeat: ' . $backgroundRepeat;

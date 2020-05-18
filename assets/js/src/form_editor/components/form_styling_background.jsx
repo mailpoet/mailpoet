@@ -46,7 +46,7 @@ const FormStylingBackground = ({ children }) => {
   }
   if (backgroundImageDisplay === 'tile') {
     backgroundRepeat = 'repeat';
-    backgroundSize = 'contain';
+    backgroundSize = 'auto';
   }
   return (
     <div
