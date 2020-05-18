@@ -230,13 +230,13 @@ div.mailpoet_form_popup {
   display: none;
   left: 50%;
   max-height: calc(100vh - 60px);
-  max-width: 560px !important;
+  max-width: 560px;
   overflow-y: auto;
   padding: 20px;
   position: fixed;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 560px !important;
+  width: 560px;
   z-index: 100001;
 }
 
@@ -264,7 +264,7 @@ div.mailpoet_form_fixed_bar {
   overflow-y: auto;
   padding: 10px;
   position: fixed;
-  width: 100% !important;
+  width: 100%;
   z-index: 100000;
 
   form {
