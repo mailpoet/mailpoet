@@ -1,0 +1,38 @@
+.mailpoet-form-checkbox {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  position: relative;
+  vertical-align: middle;
+
+  input {
+    height: 1px;
+    position: absolute;
+    visibility: hidden;
+    width: 1px;
+  }
+
+  &.mailpoet-full-width + .mailpoet-form-checkbox.mailpoet-full-width { margin-top: $grid-gap; }
+  &:not(.mailpoet-full-width) + .mailpoet-form-checkbox:not(.mailpoet-full-width) { margin-left: $grid-gap; }
+}
+
+.mailpoet-form-checkbox-control {
+  align-items: center;
+  border: 1px solid $color-input-border;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: $color-secondary;
+  display: flex;
+  font-size: 16px;
+  height: 24px;
+  justify-content: center;
+  margin-right: 8px;
+  width: 24px;
+
+  &:before {
+    content: '✔';
+    display: none;
+  }
+
+  input:checked + &:before { display: block; }
+}
