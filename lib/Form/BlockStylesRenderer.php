@@ -38,14 +38,14 @@ class BlockStylesRenderer {
     if (isset($formSettings['fontSize']) || isset($styles['font_size'])) {
       $rules[] = "line-height:1.5;";
     }
+    if (isset($styles['font_color'])) {
+      $rules[] = "color:{$styles['font_color']};";
+    }
     return implode('', $rules);
   }
 
   public function renderForButton(array $styles, array $formSettings = []): string {
     $rules = [];
-    if (isset($styles['font_color'])) {
-      $rules[] = "color:{$styles['font_color']};";
-    }
     if (!isset($styles['border_color'])) {
       $rules[] = "border-color:transparent;";
     }
