@@ -63,6 +63,11 @@ const InputStylesSettings = ({
           {!localStyles.inheritFromTheme ? (
             <>
               <ColorSettings
+                name={MailPoet.I18n.t('formSettingsStylesFontColor')}
+                value={localStyles.fontColor}
+                onChange={partial(updateStyles, 'fontColor')}
+              />
+              <ColorSettings
                 name={MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
                 value={localStyles.backgroundColor}
                 onChange={partial(updateStyles, 'backgroundColor')}
