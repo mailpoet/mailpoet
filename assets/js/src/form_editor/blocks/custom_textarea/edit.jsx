@@ -17,7 +17,13 @@ import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
 import convertAlignmentToMargin from '../convert_alignment_to_margin';
 
-const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
+const CustomTextAreaEdit = ({
+  name,
+  attributes,
+  setAttributes,
+  clientId,
+}) => {
+  const id = `${name.replace(/[^a-zA-Z]/g, '')}_${Math.random().toString(36).substring(2, 15)}`;
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -142,21 +148,41 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
 
   inputStyles.resize = 'none';
 
+  const placeholderStyle = {};
+
+  if (attributes.styles.fontColor && !attributes.styles.inheritFromTheme) {
+    inputStyles.color = attributes.styles.fontColor;
+    if (attributes.labelWithinInput) {
+      placeholderStyle.color = attributes.styles.fontColor;
+    }
+  }
+
   const textarea = useRef(null);
-  const getTextArea = (placeholder) => (
-    <textarea
-      id={clientId}
-      ref={textarea}
-      className="mailpoet_textarea"
-      name="custom_text"
-      data-automation-id="editor_custom_textarea_input"
-      rows={attributes.lines}
-      style={inputStyles}
-      onChange={() => null}
-      onFocus={() => textarea.current.blur()}
-      placeholder={placeholder}
-    />
-  );
+  const getTextArea = (placeholder) => {
+    let style = '';
+    if (placeholderStyle.color !== undefined) {
+      style = `#${id}::placeholder {color: ${placeholderStyle.color};}`;
+    }
+    return (
+      <>
+        <style>
+          {style}
+        </style>
+        <textarea
+          id={id}
+          ref={textarea}
+          className="mailpoet_textarea"
+          name="custom_text"
+          data-automation-id="editor_custom_textarea_input"
+          rows={attributes.lines}
+          style={inputStyles}
+          onChange={() => null}
+          onFocus={() => textarea.current.blur()}
+          placeholder={placeholder}
+        />
+      </>
+    );
+  };
 
   return (
     <ParagraphEdit className={attributes.className}>
@@ -164,7 +190,7 @@ const CustomTextAreaEdit = ({ attributes, setAttributes, clientId }) => {
       {attributes.labelWithinInput ? (getTextArea(formatLabel(attributes))
       ) : (
         <>
-          <label className="mailpoet_textarea_label" data-automation-id="editor_custom_text_label" htmlFor={clientId} style={labelStyles}>
+          <label className="mailpoet_textarea_label" data-automation-id="editor_custom_text_label" htmlFor={id} style={labelStyles}>
             {formatLabel(attributes)}
           </label>
           {getTextArea('')}
@@ -187,6 +213,7 @@ CustomTextAreaEdit.propTypes = {
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
   clientId: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
 };
 
 export default CustomTextAreaEdit;
