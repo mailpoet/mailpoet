@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { curry } from 'lodash';
 import { TextareaControl } from '@wordpress/components';
+import { SizeSettings } from 'form_editor/components/size_settings';
 
 const OtherSettings = () => {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
@@ -12,6 +13,18 @@ const OtherSettings = () => {
     (select) => select('mailpoet-form-editor').getFormExports(),
     []
   );
+
+  const formSettings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
+    []
+  );
+  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+
+  const updateSettings = (key, value) => {
+    const settings = { ...formSettings };
+    settings[key] = value;
+    changeFormSettings(settings);
+  };
 
   const addFormWidgetHint = ReactStringReplace(
     MailPoet.I18n.t('addFormWidgetHint'),
@@ -69,6 +82,19 @@ const OtherSettings = () => {
       <p>{addFormShortcodeHint}</p>
       <p>{addFormPhpIframeHint}</p>
       {getCopyTextArea()}
+      <SizeSettings
+        label={MailPoet.I18n.t('formSettingsWidth')}
+        value={formSettings.otherStyles.width}
+        minPixels={200}
+        maxPixels={1200}
+        minPercents={10}
+        maxPercents={100}
+        defaultPixelValue={200}
+        defaultPercentValue={100}
+        onChange={(width) => (
+          updateSettings('otherStyles', { ...formSettings.otherStyles, width })
+        )}
+      />
     </>
   );
 };

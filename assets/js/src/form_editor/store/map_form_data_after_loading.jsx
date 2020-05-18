@@ -1,4 +1,5 @@
 import asNum from './server_value_as_num';
+import * as defaults from './defaults';
 
 export default function mapFormDataAfterLoading(data) {
   return {
@@ -25,6 +26,11 @@ export default function mapFormDataAfterLoading(data) {
       borderColor: data.settings.border_color,
       backgroundImageUrl: data.settings.background_image_url,
       backgroundImageDisplay: data.settings.background_image_display,
+      belowPostStyles: { ...defaults.belowPostStyles, ...data.settings.below_post_styles },
+      slideInStyles: { ...defaults.slideInStyles, ...data.settings.slide_in_styles },
+      fixedBarStyles: { ...defaults.fixedBarStyles, ...data.settings.fixed_bar_styles },
+      popupStyles: { ...defaults.popupStyles, ...data.settings.popup_styles },
+      otherStyles: { ...defaults.otherStyles, ...data.settings.other_styles },
     },
   };
 }
