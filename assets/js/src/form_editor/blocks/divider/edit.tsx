@@ -96,6 +96,8 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
                 let newDividerHeightHeight = attributeDividerHeight;
                 if (height !== undefined) {
                   newDividerHeightHeight = Math.min(height, attributeDividerHeight);
+                } else {
+                  newDividerHeightHeight = 1;
                 }
                 setAttributes({
                   height,
