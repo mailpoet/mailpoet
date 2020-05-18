@@ -23,6 +23,11 @@ export default function mapFormDataBeforeSaving(data) {
       border_color: data.settings.borderColor,
       background_image_url: data.settings.backgroundImageUrl,
       background_image_display: data.settings.backgroundImageDisplay,
+      below_post_styles: data.settings.belowPostStyles,
+      slide_in_styles: data.settings.slideInStyles,
+      fixed_bar_styles: data.settings.fixedBarStyles,
+      popup_styles: data.settings.popupStyles,
+      other_styles: data.settings.otherStyles,
     },
   };
 
@@ -46,6 +51,11 @@ export default function mapFormDataBeforeSaving(data) {
   delete mappedData.settings.borderColor;
   delete mappedData.settings.backgroundImageUrl;
   delete mappedData.settings.backgroundImageDisplay;
+  delete mappedData.settings.belowPostStyles;
+  delete mappedData.settings.slideInStyles;
+  delete mappedData.settings.fixedBarStyles;
+  delete mappedData.settings.popupStyles;
+  delete mappedData.settings.otherStyles;
 
   return mappedData;
 }

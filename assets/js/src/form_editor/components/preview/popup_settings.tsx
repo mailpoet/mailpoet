@@ -4,6 +4,7 @@ import Toggle from 'common/toggle';
 import { SelectControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { partial } from 'lodash';
+import { SizeSettings } from 'form_editor/components/size_settings';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
@@ -57,6 +58,19 @@ const PopUpSettings = () => {
           value: delayValue,
           label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
         }))}
+      />
+      <SizeSettings
+        label={MailPoet.I18n.t('formSettingsWidth')}
+        value={formSettings.popupStyles.width}
+        minPixels={200}
+        maxPixels={1200}
+        minPercents={10}
+        maxPercents={100}
+        defaultPixelValue={560}
+        defaultPercentValue={100}
+        onChange={(width) => (
+          updateSettings('popupStyles', { ...formSettings.popupStyles, width })
+        )}
       />
     </>
   );

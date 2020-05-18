@@ -76,5 +76,32 @@ describe('Form Data Load Mapper', () => {
       expect(map(mapData).settings).to.have.property('formPadding', 50);
       expect(map(mapData).settings).to.have.property('inputPadding', 20);
     });
+
+    it('Sets default placements styles', () => {
+      expect(map(data).settings).to.have.property('belowPostStyles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
+      expect(map(data).settings).to.have.property('popupStyles').that.deep.eq({ width: { unit: 'pixel', value: 560 } });
+      expect(map(data).settings).to.have.property('fixedBarStyles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
+      expect(map(data).settings).to.have.property('slideInStyles').that.deep.eq({ width: { unit: 'pixel', value: 560 } });
+      expect(map(data).settings).to.have.property('otherStyles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
+    });
+
+    it('Keeps set placement styles', () => {
+      const mapData = {
+        ...data,
+        settings: {
+          ...data.settings,
+          below_post_styles: { width: { unit: 'percent', value: 101 } },
+          popup_styles: { width: { unit: 'percent', value: 102 } },
+          fixed_bar_styles: { width: { unit: 'percent', value: 103 } },
+          slide_in_styles: { width: { unit: 'percent', value: 104 } },
+          other_styles: { width: { unit: 'percent', value: 105 } },
+        },
+      };
+      expect(map(mapData).settings).to.have.property('belowPostStyles').that.deep.eq({ width: { unit: 'percent', value: 101 } });
+      expect(map(mapData).settings).to.have.property('popupStyles').that.deep.eq({ width: { unit: 'percent', value: 102 } });
+      expect(map(mapData).settings).to.have.property('fixedBarStyles').that.deep.eq({ width: { unit: 'percent', value: 103 } });
+      expect(map(mapData).settings).to.have.property('slideInStyles').that.deep.eq({ width: { unit: 'percent', value: 104 } });
+      expect(map(mapData).settings).to.have.property('otherStyles').that.deep.eq({ width: { unit: 'percent', value: 105 } });
+    });
   });
 });

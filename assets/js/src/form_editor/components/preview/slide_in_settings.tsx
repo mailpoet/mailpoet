@@ -4,6 +4,7 @@ import Toggle from 'common/toggle';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { SelectControl, RadioControl } from '@wordpress/components';
 import { partial } from 'lodash';
+import { SizeSettings } from 'form_editor/components/size_settings';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
@@ -67,6 +68,19 @@ const SlideInSettings = () => {
           { label: MailPoet.I18n.t('formPlacementPlacementPositionRight'), value: 'right' },
         ]}
         onChange={partial(updateSettings, 'slideInFormPosition')}
+      />
+      <SizeSettings
+        label={MailPoet.I18n.t('formSettingsWidth')}
+        value={formSettings.slideInStyles.width}
+        minPixels={200}
+        maxPixels={1200}
+        minPercents={10}
+        maxPercents={100}
+        defaultPixelValue={560}
+        defaultPercentValue={100}
+        onChange={(width) => (
+          updateSettings('slideInStyles', { ...formSettings.slideInStyles, width })
+        )}
       />
     </>
   );
