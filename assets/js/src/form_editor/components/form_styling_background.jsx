@@ -47,6 +47,7 @@ const FormStylingBackground = ({ children }) => {
   }
   return (
     <div
+      className="mailpoet-form-background"
       style={{
         backgroundColor,
         color: fontColor,
