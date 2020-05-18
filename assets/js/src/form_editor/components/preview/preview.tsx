@@ -1,6 +1,7 @@
 import React, {
   useEffect,
   useState,
+  useRef,
 } from 'react';
 import MailPoet from 'mailpoet';
 import { Spinner } from '@wordpress/components';
@@ -16,6 +17,7 @@ import FixedBarSettings from './fixed_bar_settings';
 import SlideInSettings from './slide_in_settings';
 
 const FormPreview = () => {
+  const iframeElement = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const { hidePreview, changePreviewSettings } = useDispatch('mailpoet-form-editor');
   const isPreview = useSelect(
@@ -32,6 +34,11 @@ const FormPreview = () => {
     []
   );
 
+  const formSettings = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
+    []
+  );
+
   const formId = useSelect(
     (select) => select('mailpoet-form-editor').getFormData().id,
     []
@@ -40,6 +47,17 @@ const FormPreview = () => {
   useEffect(() => {
     setIframeLoaded(false);
   }, [isPreview]);
+
+  useEffect(() => {
+    if (!iframeElement.current) {
+      return;
+    }
+    const data = { formType: previewSettings.formType, formSettings };
+    iframeElement.current.contentWindow.postMessage(
+      data,
+      (window as any).mailpoet_form_preview_page
+    );
+  }, [formSettings, iframeElement, previewSettings]);
 
   if (!isPreview) return null;
 
@@ -107,6 +125,7 @@ const FormPreview = () => {
               </div>
             )}
             <iframe
+              ref={iframeElement}
               className="mailpoet_form_preview_iframe"
               src={iframeSrc}
               title={MailPoet.I18n.t('formPreview')}
