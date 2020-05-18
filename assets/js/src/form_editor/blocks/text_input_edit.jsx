@@ -53,19 +53,39 @@ const TextInputEdit = ({
     inputStyles.backgroundColor = styles.backgroundColor;
   }
 
-  const getTextInput = (placeholder) => (
-    <input
-      id={id}
-      ref={input}
-      className="mailpoet_text"
-      type={name === 'email' ? 'email' : 'text'}
-      name={name}
-      placeholder={placeholder}
-      data-automation-id={`editor_${name}_input`}
-      style={inputStyles}
-      onFocus={() => input.current.blur()}
-    />
-  );
+  const placeholderStyle = {};
+
+  if (styles.fontColor && !styles.inheritFromTheme) {
+    inputStyles.color = styles.fontColor;
+    if (labelWithinInput) {
+      placeholderStyle.color = styles.fontColor;
+    }
+  }
+
+  const getTextInput = (placeholder) => {
+    let style = '';
+    if (placeholderStyle.color !== undefined) {
+      style = `#${id}::placeholder {color: ${placeholderStyle.color};}`;
+    }
+    return (
+      <>
+        <style>
+          {style}
+        </style>
+        <input
+          id={id}
+          ref={input}
+          className="mailpoet_text"
+          type={name === 'email' ? 'email' : 'text'}
+          name={name}
+          placeholder={placeholder}
+          data-automation-id={`editor_${name}_input`}
+          style={inputStyles}
+          onFocus={() => input.current.blur()}
+        />
+      </>
+    );
+  };
 
   return (
     <ParagraphEdit className={className}>
