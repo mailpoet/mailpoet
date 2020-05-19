@@ -24,10 +24,10 @@
   color: $color-secondary;
   display: flex;
   font-size: 16px;
-  height: 24px;
+  height: $form-control-choice-height;
   justify-content: center;
-  margin-right: 8px;
-  width: 24px;
+  margin-right: $grid-gap / 2;
+  width: $form-control-choice-height;
 
   &:before {
     content: '✔';
