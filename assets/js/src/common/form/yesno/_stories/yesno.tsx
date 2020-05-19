@@ -1,0 +1,38 @@
+import React from 'react';
+import { action } from '@storybook/addon-actions';
+import YesNo from '../yesno';
+import Heading from '../../../typography/heading/heading';
+import Grid from '../../../grid';
+
+export default {
+  title: 'Form',
+  component: YesNo,
+};
+
+export const YesNos = () => (
+  <>
+    <Heading level={3}>YesNos</Heading>
+    <Grid.Column dimension="small">
+      <Grid.SpaceBetween verticalAlign="center">
+        <div>
+          YesNo
+        </div>
+        <YesNo
+          onCheck={action('yesno-1')}
+          name="yesno-1"
+        />
+      </Grid.SpaceBetween>
+      <div className="mailpoet-gap" />
+      <Grid.SpaceBetween verticalAlign="center">
+        <div>
+          YesNo with error
+        </div>
+        <YesNo
+          showError
+          onCheck={action('yesno-2')}
+          name="yesno-2"
+        />
+      </Grid.SpaceBetween>
+    </Grid.Column>
+  </>
+);
