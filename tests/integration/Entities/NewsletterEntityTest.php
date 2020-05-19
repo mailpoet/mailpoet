@@ -2,6 +2,7 @@
 
 namespace MailPoet\Entities;
 
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 
 class NewsletterEntityTest extends \MailPoetTest {
@@ -27,6 +28,24 @@ class NewsletterEntityTest extends \MailPoetTest {
     expect($newsletterSegments)->count(0);
   }
 
+  public function testItRemovesOrphanedOptionRelations() {
+    $newsletter = $this->createNewsletter();
+    $optionField = $this->createOptionField();
+    $newsletterOption = new NewsletterOptionEntity($newsletter, $optionField);
+    $this->entityManager->persist($newsletterOption);
+    $this->entityManager->flush();
+
+    $this->entityManager->refresh($newsletter);
+    expect($newsletter->getOptions()->count())->same(1);
+
+    $newsletter->getOptions()->removeElement($newsletterOption);
+    $this->entityManager->flush();
+    expect($newsletter->getOptions()->count())->same(0);
+
+    $newsletterSegments = $this->diContainer->get(NewsletterOptionsRepository::class)->findBy(['newsletter' => $newsletter]);
+    expect($newsletterSegments)->count(0);
+  }
+
   public function _after() {
     $this->cleanup();
   }
@@ -48,8 +67,18 @@ class NewsletterEntityTest extends \MailPoetTest {
     return $segment;
   }
 
+  private function createOptionField(): NewsletterOptionFieldEntity {
+    $newsletterOptionField = new NewsletterOptionFieldEntity();
+    $newsletterOptionField->setName('Option');
+    $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_STANDARD);
+    $this->entityManager->persist($newsletterOptionField);
+    return $newsletterOptionField;
+  }
+
   private function cleanup() {
     $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterSegmentEntity::class);
     $this->truncateEntity(SegmentEntity::class);
   }
