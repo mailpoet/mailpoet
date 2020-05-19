@@ -2,15 +2,15 @@ import React, { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
+  onCheck: (isChecked: boolean) => void,
   children?: React.ReactNode,
   isFullWidth?: boolean,
-  onChange?: (boolean) => void,
 };
 
 const Checkbox = ({
   children,
   isFullWidth,
-  onChange,
+  onCheck,
   ...attributes
 }: Props) => (
   <label
@@ -23,7 +23,7 @@ const Checkbox = ({
   >
     <input
       type="checkbox"
-      onChange={(e) => onChange(e.target.checked)}
+      onChange={(e) => onCheck(e.target.checked)}
       {...attributes}
     />
     <span className="mailpoet-form-checkbox-control" />

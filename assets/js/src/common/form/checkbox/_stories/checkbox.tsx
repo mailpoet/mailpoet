@@ -19,14 +19,14 @@ export const Checkboxes = () => (
     <Heading level={3}>Inline individual checkboxes</Heading>
     <div>
       <Checkbox
-        onChange={action('checkbox-individual-1')}
+        onCheck={action('checkbox-individual-1')}
         name="story"
         value="1"
       >
         Option 1
       </Checkbox>
       <Checkbox
-        onChange={action('checkbox-individual-2')}
+        onCheck={action('checkbox-individual-2')}
         name="story"
         value="2"
       >
@@ -39,7 +39,7 @@ export const Checkboxes = () => (
     <div>
       <Checkbox
         isFullWidth
-        onChange={action('checkbox-full-individual-1')}
+        onCheck={action('checkbox-full-individual-1')}
         name="story-full"
         value="1"
       >
@@ -47,7 +47,7 @@ export const Checkboxes = () => (
       </Checkbox>
       <Checkbox
         isFullWidth
-        onChange={action('checkbox-full-individual-2')}
+        onCheck={action('checkbox-full-individual-2')}
         name="story-full"
         value="2"
       >

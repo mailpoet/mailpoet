@@ -19,14 +19,14 @@ export const Radios = () => (
     <Heading level={3}>Inline individual radios</Heading>
     <div>
       <Radio
-        onChange={action('radio-individual-1')}
+        onCheck={action('radio-individual-1')}
         name="story"
         value="1"
       >
         Option 1
       </Radio>
       <Radio
-        onChange={action('radio-individual-2')}
+        onCheck={action('radio-individual-2')}
         name="story"
         value="2"
       >
@@ -39,7 +39,7 @@ export const Radios = () => (
     <div>
       <Radio
         isFullWidth
-        onChange={action('radio-full-individual-1')}
+        onCheck={action('radio-full-individual-1')}
         name="story-full"
         value="1"
       >
@@ -47,7 +47,7 @@ export const Radios = () => (
       </Radio>
       <Radio
         isFullWidth
-        onChange={action('radio-full-individual-2')}
+        onCheck={action('radio-full-individual-2')}
         name="story-full"
         value="2"
       >

@@ -45,7 +45,7 @@ const CheckboxGroup = ({
           key={label}
           name={name}
           value={value}
-          onChange={(isChecked) => handleChange(value, isChecked)}
+          onCheck={(isChecked) => handleChange(value, isChecked)}
           isFullWidth={isFullWidth}
           {...attributes} // eslint-disable-line react/jsx-props-no-spreading
         >
