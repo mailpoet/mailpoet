@@ -27,6 +27,7 @@ const PopUpSettings = () => {
   return (
     <>
       <p>{MailPoet.I18n.t('placePopupFormOnPagesDescription')}</p>
+      <hr />
       <ToggleControl
         label={MailPoet.I18n.t('placeFormOnAllPages')}
         checked={formSettings.placePopupFormOnAllPages || false}

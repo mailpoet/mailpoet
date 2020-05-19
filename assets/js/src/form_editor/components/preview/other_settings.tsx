@@ -82,6 +82,7 @@ const OtherSettings = () => {
       <p>{addFormShortcodeHint}</p>
       <p>{addFormPhpIframeHint}</p>
       {getCopyTextArea()}
+      <hr />
       <SizeSettings
         label={MailPoet.I18n.t('formSettingsWidth')}
         value={formSettings.otherStyles.width}

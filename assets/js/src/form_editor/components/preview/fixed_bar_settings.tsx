@@ -28,6 +28,7 @@ const FixedBarSettings = () => {
   return (
     <>
       <p>{MailPoet.I18n.t('placeFixedBarFormOnPagesDescription')}</p>
+      <hr />
       <ToggleControl
         label={MailPoet.I18n.t('placeFormOnAllPages')}
         checked={formSettings.placeFixedBarFormOnAllPages || false}

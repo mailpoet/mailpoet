@@ -56,6 +56,12 @@
     max-height: 100%;
     width: 100%;
   }
+
+  .mailpoet_preview_form_type_selection {
+    label {
+      font-weight: bold;
+    }
+  }
 }
 
 .mailpoet_form_preview_modal_overlay {
@@ -76,8 +82,12 @@
   flex-direction: row;
 
   .mailpoet_preview_sidebar {
-    padding: 35px 15px 10px 0;
+    padding: 35px 20px 10px 0;
     width: 300px;
+
+    & > .components-base-control, & > p, & > hr {
+      margin-bottom: 18px;
+    }
 
     .components-base-control__label {
       display: block;
@@ -94,6 +104,10 @@
       font-size: 13px;
       font-weight: normal;
       margin-bottom: 4px;
+    }
+
+    .mailpoet-size-settings-control .components-range-control__number {
+      min-width: 5em;
     }
   }
 }
