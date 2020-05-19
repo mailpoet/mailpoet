@@ -3,6 +3,13 @@
   height: $form-control-choice-height;
   position: relative;
   width: 40px;
+
+  input {
+    height: 1px;
+    position: absolute;
+    visibility: hidden;
+    width: 1px;
+  }
 }
 
 .mailpoet-form-toggle-control {

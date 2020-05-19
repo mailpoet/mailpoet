@@ -31,6 +31,8 @@ $color-text-light-hover: darken($color-text-light, 10%);
 // Form colors
 $color-input-background: #fdfdff;
 $color-input-border: $color-tertiary-light;
+$color-input-error: #f00;
+$color-input-success: #7ed321;
 
 // Newsletter editor colors
 $color-editor-background-column: #7fbbd0;
