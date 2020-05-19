@@ -139,7 +139,7 @@ class NewsletterEntity {
   private $newsletterSegments;
 
   /**
-   * @ORM\OneToMany(targetEntity="MailPoet\Entities\NewsletterOptionEntity", mappedBy="newsletter")
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\NewsletterOptionEntity", mappedBy="newsletter", orphanRemoval=true)
    * @var NewsletterOptionEntity[]|ArrayCollection
    */
   private $options;
