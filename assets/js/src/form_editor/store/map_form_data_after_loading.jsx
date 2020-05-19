@@ -2,7 +2,7 @@ import asNum from './server_value_as_num';
 import * as defaults from './defaults';
 
 export default function mapFormDataAfterLoading(data) {
-  return {
+  const mapped = {
     ...data,
     settings: {
       ...data.settings,
@@ -33,4 +33,12 @@ export default function mapFormDataAfterLoading(data) {
       otherStyles: { ...defaults.otherStyles, ...data.settings.other_styles },
     },
   };
+
+  mapped.settings.belowPostStyles.width.value = asNum(mapped.settings.belowPostStyles.width.value);
+  mapped.settings.slideInStyles.width.value = asNum(mapped.settings.slideInStyles.width.value);
+  mapped.settings.fixedBarStyles.width.value = asNum(mapped.settings.fixedBarStyles.width.value);
+  mapped.settings.popupStyles.width.value = asNum(mapped.settings.popupStyles.width.value);
+  mapped.settings.otherStyles.width.value = asNum(mapped.settings.otherStyles.width.value);
+
+  return mapped;
 }
