@@ -27,15 +27,28 @@ class Textarea {
 
   public function render(array $block, array $formSettings): string {
     $html = '';
+    $name = $this->rendererHelper->getFieldName($block);
     $styles = $this->inputStylesRenderer->renderForTextInput($block['styles'] ?? [], $formSettings);
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
     $lines = (isset($block['params']['lines']) ? (int)$block['params']['lines'] : 1);
+    if (
+      isset($block['params']['label_within'])
+      && $block['params']['label_within']
+      && isset($block['styles']['font_color'])
+    ) {
+      $html .= '<style>'
+        . 'textarea[name="data[' . $name . ']"]::placeholder{'
+        . 'color:' . $block['styles']['font_color'] . ';'
+        . 'opacity: 1;'
+        . '}'
+        . '</style>';
+    }
 
     $html .= '<textarea class="mailpoet_textarea" rows="' . $lines . '" ';
 
-    $html .= 'name="data[' . $this->rendererHelper->getFieldName($block) . ']"';
+    $html .= 'name="data[' . $name . ']"';
 
     $html .= $this->rendererHelper->renderInputPlaceholder($block);
 
