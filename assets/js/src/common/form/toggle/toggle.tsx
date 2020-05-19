@@ -11,7 +11,7 @@ const Toggle = ({
   onCheck,
   ...attributes
 }: Props) => (
-  <label
+  <div
     className={
       classnames({
         'mailpoet-form-toggle': true,
@@ -25,7 +25,7 @@ const Toggle = ({
       {...attributes}
     />
     <span className="mailpoet-form-toggle-control" />
-  </label>
+  </div>
 );
 
 export default Toggle;
