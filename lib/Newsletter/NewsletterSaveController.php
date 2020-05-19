@@ -252,12 +252,12 @@ class NewsletterSaveController {
   }
 
   private function updateQueue(NewsletterEntity $newsletter, Newsletter $newsletterModel, array $options) {
-    $queue = $newsletter->getLatestQueue();
-    if (!$queue) {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_STANDARD) {
       return;
     }
 
-    if (in_array($newsletter->getType(), [NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::TYPE_NOTIFICATION_HISTORY], true)) {
+    $queue = $newsletter->getLatestQueue();
+    if (!$queue) {
       return;
     }
 
