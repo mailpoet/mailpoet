@@ -177,9 +177,6 @@ class NewsletterSaveController {
   }
 
   private function updateSegments(NewsletterEntity $newsletter, array $segments) {
-    $oldNewsletterSegments = $newsletter->getNewsletterSegments()->toArray();
-
-    // clear old & add new newsletter segments
     $newsletter->getNewsletterSegments()->clear();
     foreach ($segments as $segment) {
       if (!is_array($segment) || !isset($segment['id'])) {
@@ -198,12 +195,6 @@ class NewsletterSaveController {
       }
       $newsletter->getNewsletterSegments()->add($newsletterSegment);
     }
-
-    // remove orphaned newsletter segments
-    foreach (array_diff($oldNewsletterSegments, $newsletter->getNewsletterSegments()->toArray()) as $newsletterSegment) {
-      $this->newsletterSegmentRepository->remove($newsletterSegment);
-    }
-
     $this->entityManager->flush();
   }
 
