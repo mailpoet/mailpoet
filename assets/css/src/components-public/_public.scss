@@ -96,6 +96,21 @@ $form-columns-space-between: 20px;
   }
 }
 
+div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
+  // we want to remove the bottom margins of all last paragraphs to keep the height of the bar small
+  .mailpoet_paragraph.last {
+    margin-bottom: 0;
+  }
+
+  @include breakpoint-min-width($form-break-small-width) {
+    .mailpoet_paragraph:last-child,
+    .mailpoet_paragraph p:last-child
+    {
+      margin-bottom: 0;
+    }
+  }
+}
+
 @mixin maxWidthColumns() {
   flex-wrap: wrap;
 

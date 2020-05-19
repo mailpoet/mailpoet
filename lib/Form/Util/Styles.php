@@ -15,9 +15,6 @@ class Styles {
 .mailpoet_column_with_background {
   padding: 10px;
 }
-.mailpoet_form_columns.mailpoet_paragraph {
-  margin-bottom: 0;
-}
 /* space between columns */
 .mailpoet_form_column:not(:first-child) {
   margin-left: 20px;
@@ -27,10 +24,6 @@ class Styles {
 .mailpoet_paragraph {
   line-height:20px;
   margin-bottom: 20px;
-}
-.mailpoet_paragraph:last-child,
-.mailpoet_paragraph p:last-child {
-  margin-bottom: 0;
 }
 
 /* labels */
