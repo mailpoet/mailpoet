@@ -63,5 +63,18 @@ describe('Form Data Load Mapper', () => {
       expect(map(data).settings).to.have.property('formPadding', 10);
       expect(map(data).settings).to.have.property('inputPadding', 5);
     });
+
+    it('Maps form and input padding', () => {
+      const mapData = {
+        ...data,
+        settings: {
+          ...data.settings,
+          form_padding: 50,
+          input_padding: 20,
+        },
+      };
+      expect(map(mapData).settings).to.have.property('formPadding', 50);
+      expect(map(mapData).settings).to.have.property('inputPadding', 20);
+    });
   });
 });
