@@ -365,6 +365,17 @@ const formEditorConfig = {
   },
 };
 
+// Form preview config
+const formPreviewConfig = {
+  name: 'form_preview',
+  entry: {
+    form_preview: 'form_editor/form_preview.ts',
+  },
+  externals: {
+    'jquery': 'jQuery',
+  },
+};
+
 // Block config
 const postEditorBlock = {
   name: 'post_editor_block',
@@ -384,7 +395,7 @@ const settingsConfig = {
   },
 };
 
-module.exports = [adminConfig, publicConfig, migratorConfig, formEditorConfig, testConfig, postEditorBlock, settingsConfig].map((config) => {
+module.exports = [adminConfig, publicConfig, migratorConfig, formEditorConfig, formPreviewConfig, testConfig, postEditorBlock, settingsConfig].map((config) => {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(

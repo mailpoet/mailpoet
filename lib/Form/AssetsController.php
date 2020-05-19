@@ -44,6 +44,17 @@ class AssetsController {
     return $scripts;
   }
 
+  public function setupFormPreviewDependencies() {
+    $this->setupFrontEndDependencies();
+    $this->wp->wpEnqueueScript(
+      'mailpoet_form_preview',
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('form_preview.js'),
+      ['jquery'],
+      Env::$version,
+      true
+    );
+  }
+
   public function setupFrontEndDependencies() {
     $this->wp->wpEnqueueStyle(
       'mailpoet_public',
