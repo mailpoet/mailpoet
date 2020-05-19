@@ -32,44 +32,45 @@ const FormStylingBackground = ({ children }) => {
     textAlign = alignment;
   }
 
-  let backgroundSize;
-  let backgroundPosition;
-  let backgroundRepeat;
+  let style = {
+    backgroundColor,
+    color: fontColor,
+    fontSize: font,
+    lineHeight: 1.2,
+    borderRadius: radius,
+    borderWidth: borderSize,
+    borderColor,
+    borderStyle,
+    textAlign,
+    padding,
+    width: 700,
+    margin: '0 auto',
+  };
+
   if (backgroundImageUrl !== undefined) {
-    backgroundPosition = 'center';
-    backgroundRepeat = 'no-repeat';
-    backgroundSize = 'cover';
+    let backgroundPosition = 'center';
+    let backgroundRepeat = 'no-repeat';
+    let backgroundSize = 'cover';
+
+    if (backgroundImageDisplay === 'fit') {
+      backgroundSize = 'auto';
+      backgroundPosition = 'center top';
+    }
+    if (backgroundImageDisplay === 'tile') {
+      backgroundRepeat = 'repeat';
+      backgroundSize = 'auto';
+    }
+    style = {
+      ...style,
+      backgroundRepeat,
+      backgroundPosition,
+      backgroundSize,
+      backgroundImage: `url(${backgroundImageUrl})`,
+    };
   }
-  if (backgroundImageDisplay === 'fit') {
-    backgroundSize = 'auto';
-    backgroundPosition = 'center top';
-  }
-  if (backgroundImageDisplay === 'tile') {
-    backgroundRepeat = 'repeat';
-    backgroundSize = 'auto';
-  }
+
   return (
-    <div
-      className="mailpoet-form-background"
-      style={{
-        backgroundColor,
-        color: fontColor,
-        fontSize: font,
-        lineHeight: 1.2,
-        borderRadius: radius,
-        borderWidth: borderSize,
-        borderColor,
-        borderStyle,
-        textAlign,
-        padding,
-        width: 700,
-        margin: '0 auto',
-        backgroundImage: `url(${backgroundImageUrl})`,
-        backgroundRepeat,
-        backgroundPosition,
-        backgroundSize,
-      }}
-    >
+    <div className="mailpoet-form-background" style={style}>
       {children}
     </div>
   );
