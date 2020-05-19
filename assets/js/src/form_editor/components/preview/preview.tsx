@@ -97,6 +97,7 @@ const FormPreview = () => {
               label={MailPoet.I18n.t('formPlacementLabel')}
               value={previewSettings.formType}
               onChange={setFormType}
+              className="mailpoet_preview_form_type_selection"
               data-automation-id="form_type_selection"
               options={[
                 { value: 'others', label: MailPoet.I18n.t('placeFormOthers') },

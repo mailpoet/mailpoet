@@ -28,6 +28,7 @@ const SlideInSettings = () => {
   return (
     <>
       <p>{MailPoet.I18n.t('placeSlideInFormOnPagesDescription')}</p>
+      <hr />
       <ToggleControl
         label={MailPoet.I18n.t('placeFormOnAllPages')}
         checked={formSettings.placeSlideInFormOnAllPages || false}
