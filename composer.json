@@ -43,11 +43,11 @@
     ],
     "files": [
       "lib-3rd-party/ArrayColumn.php",
-      "lib-3rd-party/Polyfills/polyfill-ctype-bootsrap.php",
-      "lib-3rd-party/Polyfills/polyfill-mbstring-bootsrap.php",
+      "vendor-prefixed/symfony/polyfill-ctype/bootstrap.php",
       "vendor-prefixed/symfony/polyfill-iconv/bootstrap.php",
-      "vendor-prefixed/symfony/polyfill-intl-idn/bootstrap.php",
+      "vendor-prefixed/symfony/polyfill-mbstring/bootstrap.php",
       "vendor-prefixed/symfony/polyfill-php72/bootstrap.php",
+      "vendor-prefixed/symfony/polyfill-intl-idn/bootstrap.php",
       "vendor-prefixed/swiftmailer/swiftmailer/lib/swift_required.php"
     ],
     "psr-4": {
