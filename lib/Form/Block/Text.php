@@ -41,14 +41,27 @@ class Text {
     if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
       $automationId = 'data-automation-id="form_' . $block['id'] . '" ';
     }
+    $name = $this->rendererHelper->getFieldName($block);
 
     $html = '';
+    if (
+      isset($block['params']['label_within'])
+      && $block['params']['label_within']
+      && isset($block['styles']['font_color'])
+    ) {
+      $html .= '<style>'
+        . 'input[name="data[' . $name . ']"]::placeholder{'
+        . 'color:' . $block['styles']['font_color'] . ';'
+        . 'opacity: 1;'
+        . '}'
+        . '</style>';
+    }
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
     $html .= '<input type="' . $type . '" class="mailpoet_text" ';
 
-    $html .= 'name="data[' . $this->rendererHelper->getFieldName($block) . ']" ';
+    $html .= 'name="data[' . $name . ']" ';
 
     $html .= 'title="' . $this->rendererHelper->getFieldLabel($block) . '" ';
 
