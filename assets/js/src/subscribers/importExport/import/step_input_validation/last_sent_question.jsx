@@ -19,7 +19,7 @@ function LastSentQuestion({ onSubmit }) {
 
   return (
     <>
-      <h2>{MailPoet.I18n.t('validationStepLastSentHeading')}</h2>
+      <h4>{MailPoet.I18n.t('validationStepLastSentHeading')}</h4>
       <select
         value={value}
         onChange={handleChange}

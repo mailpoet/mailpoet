@@ -37,7 +37,7 @@ function renderCronSection(data) {
 
   return (
     <div>
-      <h2>{MailPoet.I18n.t('systemStatusCronTitle')}</h2>
+      <h4>{MailPoet.I18n.t('systemStatusCronTitle')}</h4>
       <p>
         <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
       </p>
@@ -53,7 +53,7 @@ function renderMSSSection(data) {
 
   return (
     <div>
-      <h2>{MailPoet.I18n.t('systemStatusMSSTitle')}</h2>
+      <h4>{MailPoet.I18n.t('systemStatusMSSTitle')}</h4>
       {renderStatusMessage(status, MailPoet.I18n.t('systemStatusMSSConnectionUnsuccessfulInfo'), false)}
     </div>
   );

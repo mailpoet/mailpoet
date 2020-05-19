@@ -28,7 +28,7 @@ const CronStatus = (props) => {
     : status.last_error;
   return (
     <div>
-      <h2>{MailPoet.I18n.t('systemStatusCronStatusTitle')}</h2>
+      <h4>{MailPoet.I18n.t('systemStatusCronStatusTitle')}</h4>
       <KeyValueTable
         max_width="400px"
         rows={[

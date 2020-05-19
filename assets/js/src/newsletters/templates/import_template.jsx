@@ -89,14 +89,14 @@ class ImportTemplate extends React.Component {
   render() {
     return (
       <div>
-        <h2>
+        <h4>
           {MailPoet.I18n.t('importTemplateTitle')}
           <HelpTooltip
             tooltip={MailPoet.I18n.t('helpTooltipTemplateUpload')}
             place="right"
             className="tooltip-help-import-template"
           />
-        </h2>
+        </h4>
         <form onSubmit={this.handleSubmit}>
           <input
             type="file"

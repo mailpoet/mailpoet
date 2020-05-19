@@ -15,7 +15,7 @@ function InitialQuestion({
 
   return (
     <>
-      <h2>{MailPoet.I18n.t('validationStepHeading')}</h2>
+      <h4>{MailPoet.I18n.t('validationStepHeading')}</h4>
       <label htmlFor="existing-list">
         <input
           data-automation-id="mailpoet_import_validation_step_option1"
