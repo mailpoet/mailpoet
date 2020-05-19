@@ -1,8 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import Toggle from 'common/toggle';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { SelectControl, RadioControl } from '@wordpress/components';
+import { SelectControl, RadioControl, ToggleControl } from '@wordpress/components';
 import { partial } from 'lodash';
 import { SizeSettings } from 'form_editor/components/size_settings';
 
@@ -29,28 +28,16 @@ const SlideInSettings = () => {
   return (
     <>
       <p>{MailPoet.I18n.t('placeSlideInFormOnPagesDescription')}</p>
-      <div className="mailpoet-toggle-list">
-        <div className="mailpoet-toggle-list-description">
-          {MailPoet.I18n.t('placeFormBellowAllPages')}
-        </div>
-        <div className="mailpoet-toggle-list-toggle">
-          <Toggle
-            name="placeSlideInFormOnAllPages"
-            checked={formSettings.placeSlideInFormOnAllPages || false}
-            onCheck={partial(updateSettings, 'placeSlideInFormOnAllPages')}
-          />
-        </div>
-        <div className="mailpoet-toggle-list-description">
-          {MailPoet.I18n.t('placeFormBellowAllPosts')}
-        </div>
-        <div className="mailpoet-toggle-list-toggle">
-          <Toggle
-            name="placeSlideInFormOnAllPosts"
-            checked={formSettings.placeSlideInFormOnAllPosts || false}
-            onCheck={partial(updateSettings, 'placeSlideInFormOnAllPosts')}
-          />
-        </div>
-      </div>
+      <ToggleControl
+        label={MailPoet.I18n.t('placeFormOnAllPages')}
+        checked={formSettings.placeSlideInFormOnAllPages || false}
+        onChange={partial(updateSettings, 'placeSlideInFormOnAllPages')}
+      />
+      <ToggleControl
+        label={MailPoet.I18n.t('placeFormOnAllPosts')}
+        checked={formSettings.placeSlideInFormOnAllPosts || false}
+        onChange={partial(updateSettings, 'placeSlideInFormOnAllPosts')}
+      />
       <SelectControl
         label={MailPoet.I18n.t('formPlacementDelay')}
         value={slideInFormDelay}

@@ -1,7 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import Toggle from 'common/toggle';
 import { useSelect, useDispatch } from '@wordpress/data';
+import { ToggleControl } from '@wordpress/components';
 import { partial } from 'lodash';
 import { SizeSettings } from 'form_editor/components/size_settings';
 
@@ -20,28 +20,16 @@ const BelowPostsSettings = () => {
 
   return (
     <>
-      <div className="mailpoet-toggle-list">
-        <div className="mailpoet-toggle-list-description">
-          {MailPoet.I18n.t('placeFormBellowAllPages')}
-        </div>
-        <div className="mailpoet-toggle-list-toggle">
-          <Toggle
-            name="placeFormBellowAllPages"
-            checked={formSettings.placeFormBellowAllPages || false}
-            onCheck={partial(updateSettings, 'placeFormBellowAllPages')}
-          />
-        </div>
-        <div className="mailpoet-toggle-list-description">
-          {MailPoet.I18n.t('placeFormBellowAllPosts')}
-        </div>
-        <div className="mailpoet-toggle-list-toggle" data-automation-id="place-form-bellow-all-posts-toggle">
-          <Toggle
-            name="placeFormBellowAllPosts"
-            checked={formSettings.placeFormBellowAllPosts || false}
-            onCheck={partial(updateSettings, 'placeFormBellowAllPosts')}
-          />
-        </div>
-      </div>
+      <ToggleControl
+        label={MailPoet.I18n.t('placeFormOnAllPages')}
+        checked={formSettings.placeFormBellowAllPages || false}
+        onChange={partial(updateSettings, 'placeFormBellowAllPages')}
+      />
+      <ToggleControl
+        label={MailPoet.I18n.t('placeFormOnAllPosts')}
+        checked={formSettings.placeFormBellowAllPosts || false}
+        onChange={partial(updateSettings, 'placeFormBellowAllPosts')}
+      />
       <SizeSettings
         label={MailPoet.I18n.t('formSettingsWidth')}
         value={formSettings.belowPostStyles.width}
