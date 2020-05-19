@@ -1,0 +1,56 @@
+.mailpoet-form-toggle {
+  cursor: pointer;
+  height: $form-control-choice-height;
+  position: relative;
+  width: 40px;
+}
+
+.mailpoet-form-toggle-control {
+  background: $color-input-background;
+  border: 1px solid $color-input-border;
+  border-radius: $form-control-choice-height / 2;
+  box-sizing: border-box;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: all .2s ease;
+  width: 100%;
+
+  &:after {
+    background: #fff;
+    border: 1px solid $color-input-border;
+    border-radius: $form-control-choice-height / 2;
+    box-sizing: border-box;
+    content: '';
+    height: calc(100% + 2px);
+    left: -1px;
+    position: absolute;
+    top: -1px;
+    transition: all .2s ease;
+    width: $form-control-choice-height;
+  }
+
+  input:checked ~ & {
+    background: $color-secondary-middle;
+    border-color: $color-secondary-middle;
+
+    &:after {
+      border-color: $color-secondary-middle;
+      transform: translateX(40px - $form-control-choice-height);
+    }
+  }
+}
+
+.mailpoet-form-toggle-small {
+  height: $form-control-choice-height-small;
+  width: 24px;
+
+  .mailpoet-form-toggle-control:after {
+    width: $form-control-choice-height-small;
+  }
+
+  input:checked ~ .mailpoet-form-toggle-control:after {
+    transform: translateX(24px - $form-control-choice-height-small);
+  }
+}
