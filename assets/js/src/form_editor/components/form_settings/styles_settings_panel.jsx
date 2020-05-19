@@ -93,12 +93,12 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
           />
           <RangeControl
             label={MailPoet.I18n.t('formSettingsFormPadding')}
-            value={settings.formPadding !== undefined ? settings.formPadding : 10}
+            value={settings.formPadding !== undefined ? settings.formPadding : 20}
             min={0}
             max={40}
             allowReset
             onChange={(value) => {
-              updateStyles('formPadding', value !== undefined ? value : 10);
+              updateStyles('formPadding', value !== undefined ? value : 20);
             }}
           />
         </div>
