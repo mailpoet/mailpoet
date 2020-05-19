@@ -39,7 +39,7 @@ class PreviewPage {
   }
 
   public function renderPage(int $formId, string $formType): string {
-    $this->assetsController->setupFrontEndDependencies();
+    $this->assetsController->setupFormPreviewDependencies();
     $formData = $this->fetchFormData($formId);
     if (!is_array($formData)) {
       return '';
