@@ -32,7 +32,7 @@ export const SizeSettings = ({
   const [localValue, setLocalValue] = useState(value ?? { unit: 'pixel', value: undefined });
   return (
     <div className="mailpoet-size-settings-control">
-      <h3>{label}</h3>
+      <h3 className="mailpoet-styles-settings-heading">{label}</h3>
       <RadioControl
         selected={localValue.unit || 'pixel'}
         options={[
