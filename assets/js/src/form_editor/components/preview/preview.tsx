@@ -4,12 +4,11 @@ import React, {
   useRef,
 } from 'react';
 import MailPoet from 'mailpoet';
-import { Spinner } from '@wordpress/components';
+import { Spinner, SelectControl } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import Preview from 'common/preview/preview.jsx';
 import Modal from 'common/modal/modal.jsx';
-import { onChange } from 'common/functions';
 import BelowPostsSettings from './below_posts_settings';
 import PopUpSettings from './popup_settings';
 import OtherSettings from './other_settings';
@@ -94,21 +93,19 @@ const FormPreview = () => {
       {isPreviewReady && (
         <div className="mailpoet_preview_content_wrapper">
           <div className="mailpoet_preview_sidebar">
-            <label>
-              {MailPoet.I18n.t('formPlacementLabel')}
-              {' '}
-              <select
-                onChange={onChange(setFormType)}
-                value={previewSettings.formType}
-                data-automation-id="form_type_selection"
-              >
-                <option value="others">{MailPoet.I18n.t('placeFormOthers')}</option>
-                <option value="below_post">{MailPoet.I18n.t('placeFormBellowPages')}</option>
-                <option value="fixed_bar">{MailPoet.I18n.t('placeFixedBarFormOnPages')}</option>
-                <option value="popup">{MailPoet.I18n.t('placePopupFormOnPages')}</option>
-                <option value="slide_in">{MailPoet.I18n.t('placeSlideInFormOnPages')}</option>
-              </select>
-            </label>
+            <SelectControl
+              label={MailPoet.I18n.t('formPlacementLabel')}
+              value={previewSettings.formType}
+              onChange={setFormType}
+              data-automation-id="form_type_selection"
+              options={[
+                { value: 'others', label: MailPoet.I18n.t('placeFormOthers') },
+                { value: 'below_post', label: MailPoet.I18n.t('placeFormBellowPages') },
+                { value: 'fixed_bar', label: MailPoet.I18n.t('placeFixedBarFormOnPages') },
+                { value: 'popup', label: MailPoet.I18n.t('placePopupFormOnPages') },
+                { value: 'slide_in', label: MailPoet.I18n.t('placeSlideInFormOnPages') },
+              ]}
+            />
             {previewSettings.formType === 'others' && <OtherSettings />}
             {previewSettings.formType === 'below_post' && <BelowPostsSettings />}
             {previewSettings.formType === 'fixed_bar' && <FixedBarSettings />}
