@@ -101,7 +101,9 @@ class NewsletterSaveController {
     $oldSenderAddress = $newsletter->getSenderAddress();
 
     $this->updateNewsletter($newsletter, $data);
-    $this->updateSegments($newsletter, $data['segments'] ?? []);
+    if (!empty($data['segments'])) {
+      $this->updateSegments($newsletter, $data['segments']);
+    }
     $this->updateOptions($newsletter, $data['options'] ?? []);
 
     // fetch model with updated options (for back compatibility)
