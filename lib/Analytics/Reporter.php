@@ -21,9 +21,17 @@ class Reporter {
   /** @var WooCommerceHelper */
   private $woocommerceHelper;
 
-  public function __construct(SettingsController $settings, WooCommerceHelper $woocommerceHelper) {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    SettingsController $settings,
+    WooCommerceHelper $woocommerceHelper,
+    WPFunctions $wp
+  ) {
     $this->settings = $settings;
     $this->woocommerceHelper = $woocommerceHelper;
+    $this->wp = $wp;
   }
 
   public function getData() {
@@ -42,13 +50,13 @@ class Reporter {
       'PHP version' => PHP_VERSION,
       'MySQL version' => $wpdb->db_version(),
       'WordPress version' => $wp_version, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      'Multisite environment' => WPFunctions::get()->isMultisite() ? 'yes' : 'no',
-      'RTL' => WPFunctions::get()->isRtl() ? 'yes' : 'no',
+      'Multisite environment' => $this->wp->isMultisite() ? 'yes' : 'no',
+      'RTL' => $this->wp->isRtl() ? 'yes' : 'no',
       'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,
       'WP_MAX_MEMORY_LIMIT' => WP_MAX_MEMORY_LIMIT,
       'PHP memory_limit' => ini_get('memory_limit'),
       'PHP max_execution_time' => ini_get('max_execution_time'),
-      'users_can_register' => WPFunctions::get()->getOption('users_can_register') ? 'yes' : 'no',
+      'users_can_register' => $this->wp->getOption('users_can_register') ? 'yes' : 'no',
       'MailPoet Free version' => MAILPOET_VERSION,
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
       'Total number of subscribers' => Subscriber::getTotalSubscribers(),
@@ -73,27 +81,27 @@ class Reporter {
       'Number of segments' => isset($segments['dynamic']) ? (int)$segments['dynamic'] : 0,
       'Number of lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
       'Stop sending to inactive subscribers' => $inactiveSubscribersStatus,
-      'Plugin > MailPoet Premium' => WPFunctions::get()->isPluginActive('mailpoet-premium/mailpoet-premium.php'),
-      'Plugin > bounce add-on' => WPFunctions::get()->isPluginActive('mailpoet-bounce-handler/mailpoet-bounce-handler.php'),
-      'Plugin > Bloom' => WPFunctions::get()->isPluginActive('bloom-for-publishers/bloom.php'),
-      'Plugin > WP Holler' => WPFunctions::get()->isPluginActive('holler-box/holler-box.php'),
-      'Plugin > WP-SMTP' => WPFunctions::get()->isPluginActive('wp-mail-smtp/wp_mail_smtp.php'),
+      'Plugin > MailPoet Premium' => $this->wp->isPluginActive('mailpoet-premium/mailpoet-premium.php'),
+      'Plugin > bounce add-on' => $this->wp->isPluginActive('mailpoet-bounce-handler/mailpoet-bounce-handler.php'),
+      'Plugin > Bloom' => $this->wp->isPluginActive('bloom-for-publishers/bloom.php'),
+      'Plugin > WP Holler' => $this->wp->isPluginActive('holler-box/holler-box.php'),
+      'Plugin > WP-SMTP' => $this->wp->isPluginActive('wp-mail-smtp/wp_mail_smtp.php'),
       'Plugin > WooCommerce' => $hasWc,
-      'Plugin > WooCommerce Subscription' => WPFunctions::get()->isPluginActive('woocommerce-subscriptions/woocommerce-subscriptions.php'),
-      'Plugin > WooCommerce Follow Up Emails' => WPFunctions::get()->isPluginActive('woocommerce-follow-up-emails/woocommerce-follow-up-emails.php'),
-      'Plugin > WooCommerce Email Customizer' => WPFunctions::get()->isPluginActive('woocommerce-email-customizer/woocommerce-email-customizer.php'),
-      'Plugin > WooCommerce Memberships' => WPFunctions::get()->isPluginActive('woocommerce-memberships/woocommerce-memberships.php'),
-      'Plugin > WooCommerce MailChimp' => WPFunctions::get()->isPluginActive('woocommerce-mailchimp/woocommerce-mailchimp.php'),
-      'Plugin > MailChimp for WooCommerce' => WPFunctions::get()->isPluginActive('mailchimp-for-woocommerce/mailchimp-woocommerce.php'),
-      'Plugin > The Event Calendar' => WPFunctions::get()->isPluginActive('the-events-calendar/the-events-calendar.php'),
-      'Plugin > Gravity Forms' => WPFunctions::get()->isPluginActive('gravityforms/gravityforms.php'),
-      'Plugin > Ninja Forms' => WPFunctions::get()->isPluginActive('ninja-forms/ninja-forms.php'),
-      'Plugin > WPForms' => WPFunctions::get()->isPluginActive('wpforms-lite/wpforms.php'),
-      'Plugin > Formidable Forms' => WPFunctions::get()->isPluginActive('formidable/formidable.php'),
-      'Plugin > Contact Form 7' => WPFunctions::get()->isPluginActive('contact-form-7/wp-contact-form-7.php'),
-      'Plugin > Easy Digital Downloads' => WPFunctions::get()->isPluginActive('easy-digital-downloads/easy-digital-downloads.php'),
-      'Plugin > WooCommerce Multi-Currency' => WPFunctions::get()->isPluginActive('woocommerce-multi-currency/woocommerce-multi-currency.php'),
-      'Plugin > Multi Currency for WooCommerce' => WPFunctions::get()->isPluginActive('woo-multi-currency/woo-multi-currency.php'),
+      'Plugin > WooCommerce Subscription' => $this->wp->isPluginActive('woocommerce-subscriptions/woocommerce-subscriptions.php'),
+      'Plugin > WooCommerce Follow Up Emails' => $this->wp->isPluginActive('woocommerce-follow-up-emails/woocommerce-follow-up-emails.php'),
+      'Plugin > WooCommerce Email Customizer' => $this->wp->isPluginActive('woocommerce-email-customizer/woocommerce-email-customizer.php'),
+      'Plugin > WooCommerce Memberships' => $this->wp->isPluginActive('woocommerce-memberships/woocommerce-memberships.php'),
+      'Plugin > WooCommerce MailChimp' => $this->wp->isPluginActive('woocommerce-mailchimp/woocommerce-mailchimp.php'),
+      'Plugin > MailChimp for WooCommerce' => $this->wp->isPluginActive('mailchimp-for-woocommerce/mailchimp-woocommerce.php'),
+      'Plugin > The Event Calendar' => $this->wp->isPluginActive('the-events-calendar/the-events-calendar.php'),
+      'Plugin > Gravity Forms' => $this->wp->isPluginActive('gravityforms/gravityforms.php'),
+      'Plugin > Ninja Forms' => $this->wp->isPluginActive('ninja-forms/ninja-forms.php'),
+      'Plugin > WPForms' => $this->wp->isPluginActive('wpforms-lite/wpforms.php'),
+      'Plugin > Formidable Forms' => $this->wp->isPluginActive('formidable/formidable.php'),
+      'Plugin > Contact Form 7' => $this->wp->isPluginActive('contact-form-7/wp-contact-form-7.php'),
+      'Plugin > Easy Digital Downloads' => $this->wp->isPluginActive('easy-digital-downloads/easy-digital-downloads.php'),
+      'Plugin > WooCommerce Multi-Currency' => $this->wp->isPluginActive('woocommerce-multi-currency/woocommerce-multi-currency.php'),
+      'Plugin > Multi Currency for WooCommerce' => $this->wp->isPluginActive('woo-multi-currency/woo-multi-currency.php'),
       'Web host' => $this->settings->get('mta_group') == 'website' ? $this->settings->get('web_host') : null,
     ];
     if ($hasWc) {
