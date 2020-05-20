@@ -89,7 +89,7 @@ class PreviewPage {
       'form_id' => $formId,
       'form_success_message' => $formData['settings']['success_message'] ?? null,
       'form_type' => $formDisplayType,
-      'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId),
+      'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId, $formDisplayType),
       'html' => $this->formRenderer->renderHTML($formData),
       'success' => $formDisplayType === FormEntity::DISPLAY_TYPE_OTHERS,
       'error' => $formDisplayType === FormEntity::DISPLAY_TYPE_OTHERS,

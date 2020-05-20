@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Form\Util;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Util\Styles;
 
 class StylesTest extends \MailPoetUnitTest {
@@ -35,56 +36,56 @@ class StylesTest extends \MailPoetUnitTest {
 
   public function testItShouldNotRenderStylesForFormWithoutSettings() {
     $form = Fixtures::get('simple_form_body');
-    $styles = $this->styles->renderFormSettingsStyles($form);
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->equals('');
   }
 
   public function testItShouldRenderBackgroundColour() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['backgroundColor' => 'red'];
-    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix');
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->contains('background-color: red');
   }
 
   public function testItShouldRenderFontColour() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['fontColor' => 'red'];
-    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix');
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->contains('color: red');
   }
 
   public function testItShouldRenderBorder() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['border_size' => '22', 'border_color' => 'red'];
-    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix');
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->contains('border: 22px solid red');
   }
 
   public function testItShouldRenderPadding() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['form_padding' => '22'];
-    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix');
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->contains('form.mailpoet_form {padding: 22px');
   }
 
   public function testItShouldRenderAlignment() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['alignment' => 'right'];
-    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix');
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->contains('text-align: right');
   }
 
   public function testItShouldRenderBorderWithRadius() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['border_size' => '22', 'border_color' => 'red', 'border_radius' => '11'];
-    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix');
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->contains('border: 22px solid red;border-radius: 11px');
   }
 
   public function testItShouldRenderImageBackground() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['background_image_url' => 'xxx'];
-    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix');
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->contains('background-image: url(xxx)');
     expect($styles)->contains('background-position: center');
     expect($styles)->contains('background-repeat: no-repeat');
@@ -94,7 +95,7 @@ class StylesTest extends \MailPoetUnitTest {
   public function testItShouldRenderImageBackgroundTile() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['background_image_url' => 'xxx', 'background_image_display' => 'tile'];
-    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix');
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->contains('background-image: url(xxx)');
     expect($styles)->contains('background-position: center');
     expect($styles)->contains('background-repeat: repeat');
@@ -104,10 +105,104 @@ class StylesTest extends \MailPoetUnitTest {
   public function testItShouldRenderImageBackgroundFit() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['background_image_url' => 'xxx', 'background_image_display' => 'fit'];
-    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix');
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->contains('background-image: url(xxx)');
     expect($styles)->contains('background-position: center top');
     expect($styles)->contains('background-repeat: no-repeat');
     expect($styles)->contains('background-size: contain');
+  }
+
+  public function testItRendersWidthCssForBellowPost() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['backgroundColor' => 'red'];
+    // BC Style
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_BELOW_POST);
+    list($styleWithoutMedia) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->notContains('width:');
+    expect($styleWithoutMedia)->notContains('max-width:');
+    // Pixel
+    $width = [
+      'unit' => 'pixel',
+      'value' => '900',
+    ];
+    $form['settings'] = ['below_post_styles' => ['width' => $width]];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_BELOW_POST);
+    list($styleWithoutMedia) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('width: 900px;');
+    expect($styleWithoutMedia)->notContains('max-width:');
+  }
+
+  public function testItRendersWidthCssForFixedBar() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['backgroundColor' => 'red'];
+    // BC Style
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_FIXED_BAR);
+    list($styleWithoutMedia) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('max-width: 960px;');
+    // Percent
+    $width = [
+      'unit' => 'percent',
+      'value' => '90',
+    ];
+    $form['settings'] = ['fixed_bar_styles' => ['width' => $width]];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_FIXED_BAR);
+    list($styleWithoutMedia) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('width: 90%;max-width: 100%;');
+  }
+
+  public function testItRendersWidthCssForPopup() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['backgroundColor' => 'red'];
+    // BC Style
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_POPUP);
+    list($styleWithoutMedia) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('width: 560px;max-width: 560px;');
+    // Pixel
+    $width = [
+      'unit' => 'pixel',
+      'value' => '900',
+    ];
+    $form['settings'] = ['popup_styles' => ['width' => $width]];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_POPUP);
+    list($styleWithoutMedia) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('width: 900px;max-width: 100vw;');
+  }
+
+  public function testItRendersWidthCssForSlideIn() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['backgroundColor' => 'red'];
+    // BC Style
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_SLIDE_IN);
+    list($styleWithoutMedia) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('max-width: 600px;min-width: 350px;');
+    // Percent
+    $width = [
+      'unit' => 'percent',
+      'value' => '90',
+    ];
+    $form['settings'] = ['slide_in_styles' => ['width' => $width]];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_SLIDE_IN);
+    list($styleWithoutMedia) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('width: 90%;max-width: 100vw;');
+  }
+
+  public function testItRendersWidthCssForOthers() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['backgroundColor' => 'red'];
+    // BC Style
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    list($styleWithoutMedia) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->notContains('width:');
+    expect($styleWithoutMedia)->notContains('max-width:');
+    // Percent
+    $width = [
+      'unit' => 'percent',
+      'value' => '90',
+    ];
+    $form['settings'] = ['other_styles' => ['width' => $width]];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    list($styleWithoutMedia) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('width: 90%;');
+    expect($styleWithoutMedia)->notContains('max-width:');
   }
 }

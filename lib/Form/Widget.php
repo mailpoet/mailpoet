@@ -5,6 +5,7 @@ namespace MailPoet\Form;
 use MailPoet\API\JSON\API;
 use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
 use MailPoet\Settings\SettingsController;
@@ -220,7 +221,7 @@ class Widget extends \WP_Widget {
         'form_type' => $formType,
         'form_success_message' => $form['settings']['success_message'],
         'title' => $title,
-        'styles' => $this->formRenderer->renderStyles($form, '#' . $formId),
+        'styles' => $this->formRenderer->renderStyles($form, '#' . $formId, FormEntity::DISPLAY_TYPE_OTHERS),
         'html' => $this->formRenderer->renderHTML($form),
         'before_widget' => $beforeWidget,
         'after_widget' => $afterWidget,

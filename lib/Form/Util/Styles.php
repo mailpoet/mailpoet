@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form\Util;
 
+use MailPoet\Entities\FormEntity;
 use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
 
 class Styles {
@@ -111,8 +112,7 @@ EOL;
     return implode(PHP_EOL, $formattedStyles);
   }
 
-  public function renderFormSettingsStyles(array $form, string $selector = null): string {
-    if (is_null($selector)) return '';
+  public function renderFormSettingsStyles(array $form, string $selector, string $displayType): string {
     if (!isset($form['settings'])) return '';
     $formSettings = $form['settings'];
     // Wrapper styles
@@ -165,8 +165,68 @@ EOL;
     if (isset($formSettings['form_padding'])) {
       $formStyles[] = 'padding: ' . $formSettings['form_padding'] . 'px';
     }
-    $formElementStyles = $selector . ' form.mailpoet_form {' . join(';', $formStyles) . ';}';
+    $formElementStyles = '';
+    if ($formStyles) {
+      $formElementStyles = $selector . ' form.mailpoet_form {' . join(';', $formStyles) . ';}';
+    }
 
-    return $formWrapperStyles . $formElementStyles . $media;
+    // Width styles
+    $widthStyles = $this->renderWidthStyles($formSettings, $selector, $displayType);
+
+    return $formWrapperStyles . $formElementStyles . $widthStyles . $media;
+  }
+
+  private function renderWidthStyles($formSettings, $selector, $displayType) {
+    $styles = [];
+
+    if ($displayType === FormEntity::DISPLAY_TYPE_POPUP) {
+      if (isset($formSettings['popup_styles']['width'])) {
+        $width = $this->getWidthValue($formSettings['popup_styles']['width']);
+        $styles[] = "width: $width";
+        $styles[] = "max-width: 100vw";
+      } else { // BC compatibilty
+        $styles[] = 'width: 560px';
+        $styles[] = 'max-width: 560px';
+      }
+    } elseif ($displayType === FormEntity::DISPLAY_TYPE_SLIDE_IN) {
+      if (isset($formSettings['slide_in_styles']['width'])) {
+        $width = $this->getWidthValue($formSettings['slide_in_styles']['width']);
+        $styles[] = "width: $width";
+        $styles[] = "max-width: 100vw";
+      } else { // BC compatibilty
+        $styles[] = 'max-width: 600px';
+        $styles[] = 'min-width: 350px';
+      }
+    } elseif ($displayType === FormEntity::DISPLAY_TYPE_FIXED_BAR) {
+      if (isset($formSettings['fixed_bar_styles']['width'])) {
+        $width = $this->getWidthValue($formSettings['fixed_bar_styles']['width']);
+        $styles[] = "width: $width";
+        $styles[] = "max-width: 100%";
+      } else { // BC compatibilty
+        $styles[] = 'max-width: 960px';
+      }
+    } elseif ($displayType === FormEntity::DISPLAY_TYPE_BELOW_POST) {
+      if (isset($formSettings['below_post_styles']['width'])) {
+        $width = $this->getWidthValue($formSettings['below_post_styles']['width']);
+        $styles[] = "width: $width";
+      }
+    } elseif ($displayType === FormEntity::DISPLAY_TYPE_OTHERS) {
+      if (isset($formSettings['other_styles']['width'])) {
+        $width = $this->getWidthValue($formSettings['other_styles']['width']);
+        $styles[] = "width: $width";
+      }
+    }
+
+    $widthSelector = $selector;
+    $widthSelector .= $displayType === FormEntity::DISPLAY_TYPE_FIXED_BAR ? ' form.mailpoet_form' : '';
+
+    if (!$styles) {
+      return '';
+    }
+    return $widthSelector . '{' . join(';', $styles) . ';}';
+  }
+
+  private function getWidthValue(array $width) {
+    return $width['value'] . ($width['unit'] === 'percent' ? '%' : 'px');
   }
 }
