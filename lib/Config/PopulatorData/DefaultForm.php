@@ -62,6 +62,6 @@ class DefaultForm {
   }
 
   public function getStyles() {
-    return $this->formStyles->getDefaultStyles();
+    return $this->formStyles->getDefaultCustomStyles();
   }
 }

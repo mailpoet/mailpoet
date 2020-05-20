@@ -5,7 +5,7 @@ namespace MailPoet\Form\Util;
 use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
 
 class Styles {
-  private $defaultStyles = <<<EOL
+  private $defaultCustomStyles = <<<EOL
 /* form */
 .mailpoet_form {
 }
@@ -88,11 +88,11 @@ class Styles {
 }
 EOL;
 
-  public function getDefaultStyles() {
-    return $this->defaultStyles;
+  public function getDefaultCustomStyles() {
+    return $this->defaultCustomStyles;
   }
 
-  public function render($stylesheet, $prefix = '') {
+  public function prefixStyles($stylesheet, $prefix = '') {
     if (!$stylesheet) return;
     $styles = new CSSParser($stylesheet);
     $styles = $styles->parse();
