@@ -1,7 +1,3 @@
-select {
-  outline: none;
-}
-
 .mailpoet-form-select {
   height: auto;
   min-height: $form-control-height;
@@ -63,7 +59,7 @@ select {
 
 .mailpoet-form-react-select__single-value {
   color: $color-text !important;
-  max-width: 100%;
+  max-width: 97%; // leave space for narrow input to search another value
 }
 
 .mailpoet-form-react-select__multi-value {
