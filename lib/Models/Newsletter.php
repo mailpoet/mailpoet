@@ -2,10 +2,6 @@
 
 namespace MailPoet\Models;
 
-use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
-use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
-use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
-use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Settings\SettingsController;
@@ -13,7 +9,6 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
 
 use function MailPoetVendor\array_column;
 
@@ -580,83 +575,6 @@ class Newsletter extends Model {
     )->findOne();
 
     return ((int)$queue->count) > 0;
-  }
-
-  public static function getAnalytics() {
-    $welcomeNewslettersCount = Newsletter::getPublished()
-      ->filter('filterType', self::TYPE_WELCOME)
-      ->filter('filterStatus', self::STATUS_ACTIVE)
-      ->count();
-
-    $notificationsCount = Newsletter::getPublished()
-      ->filter('filterType', self::TYPE_NOTIFICATION)
-      ->filter('filterStatus', self::STATUS_ACTIVE)
-      ->count();
-
-    $automaticCount = Newsletter::getPublished()
-      ->filter('filterType', self::TYPE_AUTOMATIC)
-      ->filter('filterStatus', self::STATUS_ACTIVE)
-      ->count();
-
-    $newslettersCount = Newsletter::getPublished()
-      ->filter('filterType', self::TYPE_STANDARD)
-      ->filter('filterStatus', self::STATUS_SENT)
-      ->count();
-
-    $firstPurchaseEmailsCount = Newsletter::getPublished()
-      ->filter('filterType', Newsletter::TYPE_AUTOMATIC, FirstPurchase::SLUG)
-      ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
-      ->count();
-
-    $productPurchasedEmailsCount = Newsletter::getPublished()
-      ->filter('filterType', Newsletter::TYPE_AUTOMATIC, PurchasedProduct::SLUG)
-      ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
-      ->count();
-
-    $productPurchasedInCategoryEmailsCount = Newsletter::getPublished()
-      ->filter('filterType', Newsletter::TYPE_AUTOMATIC, PurchasedInCategory::SLUG)
-      ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
-      ->count();
-
-    $abandonedCartEmailsCount = Newsletter::getPublished()
-      ->filter('filterType', Newsletter::TYPE_AUTOMATIC, AbandonedCart::SLUG)
-      ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
-      ->count();
-
-    $sentNewsletters3Months = self::sentAfter(Carbon::now()->subMonths(3));
-    $sentNewsletters30Days = self::sentAfter(Carbon::now()->subDays(30));
-
-    return [
-      'welcome_newsletters_count' => $welcomeNewslettersCount,
-      'notifications_count' => $notificationsCount,
-      'automatic_emails_count' => $automaticCount,
-      'sent_newsletters_count' => $newslettersCount,
-      'sent_newsletters_3_months' => $sentNewsletters3Months,
-      'sent_newsletters_30_days' => $sentNewsletters30Days,
-      'first_purchase_emails_count' => $firstPurchaseEmailsCount,
-      'product_purchased_emails_count' => $productPurchasedEmailsCount,
-      'product_purchased_in_category_emails_count' => $productPurchasedInCategoryEmailsCount,
-      'abandoned_cart_emails_count' => $abandonedCartEmailsCount,
-    ];
-  }
-
-  public static function sentAfter($date) {
-    return static::tableAlias('newsletters')
-      ->where('newsletters.type', self::TYPE_STANDARD)
-      ->where('newsletters.status', self::STATUS_SENT)
-      ->join(
-        MP_SENDING_QUEUES_TABLE,
-        'queues.newsletter_id = newsletters.id',
-        'queues'
-      )
-      ->join(
-        MP_SCHEDULED_TASKS_TABLE,
-        'queues.task_id = tasks.id',
-        'tasks'
-      )
-      ->where('tasks.status', SendingQueue::STATUS_COMPLETED)
-      ->whereGte('tasks.processed_at', $date)
-      ->count();
   }
 
   public static function search($orm, $search = '') {

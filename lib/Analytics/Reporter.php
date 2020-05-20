@@ -4,9 +4,9 @@ namespace MailPoet\Analytics;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
@@ -15,6 +15,9 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class Reporter {
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
   /** @var SettingsController */
   private $settings;
 
@@ -25,10 +28,12 @@ class Reporter {
   private $wp;
 
   public function __construct(
+    NewslettersRepository $newslettersRepository,
     SettingsController $settings,
     WooCommerceHelper $woocommerceHelper,
     WPFunctions $wp
   ) {
+    $this->newslettersRepository = $newslettersRepository;
     $this->settings = $settings;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
@@ -37,7 +42,7 @@ class Reporter {
   public function getData() {
     global $wpdb, $wp_version, $woocommerce;  // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $mta = $this->settings->get('mta', []);
-    $newsletters = Newsletter::getAnalytics();
+    $newsletters = $this->newslettersRepository->getAnalytics();
     $isCronTriggerMethodWP = $this->settings->get('cron_trigger.method') === CronTrigger::METHOD_WORDPRESS;
     $checker = new ServicesChecker();
     $bounceAddress = $this->settings->get('bounce.address');
@@ -120,7 +125,7 @@ class Reporter {
   }
 
   public function getTrackingData() {
-    $newsletters = Newsletter::getAnalytics();
+    $newsletters = $this->newslettersRepository->getAnalytics();
     $segments = Segment::getAnalytics();
     $mta = $this->settings->get('mta', []);
     $installedAt = new Carbon($this->settings->get('installed_at'));
