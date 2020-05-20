@@ -13,19 +13,19 @@ class DisplayFormInWPContent {
   const NO_FORM_TRANSIENT_KEY = 'no_forms_displayed_bellow_content';
 
   const SETUP = [
-    'below_post' => [
+    FormEntity::DISPLAY_TYPE_BELOW_POST => [
       'post' => 'place_form_bellow_all_posts',
       'page' => 'place_form_bellow_all_pages',
     ],
-    'popup' => [
+    FormEntity::DISPLAY_TYPE_POPUP => [
       'post' => 'place_popup_form_on_all_posts',
       'page' => 'place_popup_form_on_all_pages',
     ],
-    'fixed_bar' => [
+    FormEntity::DISPLAY_TYPE_FIXED_BAR => [
       'post' => 'place_fixed_bar_form_on_all_posts',
       'page' => 'place_fixed_bar_form_on_all_pages',
     ],
-    'slide_in' => [
+    FormEntity::DISPLAY_TYPE_SLIDE_IN => [
       'post' => 'place_slide_in_form_on_all_posts',
       'page' => 'place_slide_in_form_on_all_pages',
     ],

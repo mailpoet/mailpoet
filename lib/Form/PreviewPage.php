@@ -3,6 +3,7 @@
 namespace MailPoet\Form;
 
 use MailPoet\Config\Renderer as TemplateRenderer;
+use MailPoet\Entities\FormEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PreviewPage {
@@ -80,27 +81,27 @@ class PreviewPage {
     return null;
   }
 
-  private function getFormContent(array $formData, int $formId, string $formType): string {
+  private function getFormContent(array $formData, int $formId, string $formDisplayType): string {
     $htmlId = 'mailpoet_form_preview_' . $formId;
     $templateData = [
       'is_preview' => true,
       'form_html_id' => $htmlId,
       'form_id' => $formId,
       'form_success_message' => $formData['settings']['success_message'] ?? null,
-      'form_type' => $formType,
+      'form_type' => $formDisplayType,
       'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId),
       'html' => $this->formRenderer->renderHTML($formData),
-      'success' => $formType === 'others',
-      'error' => $formType === 'others',
+      'success' => $formDisplayType === FormEntity::DISPLAY_TYPE_OTHERS,
+      'error' => $formDisplayType === FormEntity::DISPLAY_TYPE_OTHERS,
       'delay' => 1,
-      'position' => $formData['settings'][$formType . '_form_position'] ?? '',
+      'position' => $formData['settings'][$formDisplayType . '_form_position'] ?? '',
       'backgroundColor' => $formData['settings']['backgroundColor'] ?? '',
     ];
-    $formPosition = $formData['settings'][$formType . '_form_position'] ?? '';
-    if (!$formPosition && $formType === 'fixed_bar') {
+    $formPosition = $formData['settings'][$formDisplayType . '_form_position'] ?? '';
+    if (!$formPosition && $formDisplayType === FormEntity::DISPLAY_TYPE_FIXED_BAR) {
       $formPosition = 'top';
     }
-    if (!$formPosition && $formType === 'slide_in') {
+    if (!$formPosition && $formDisplayType === FormEntity::DISPLAY_TYPE_SLIDE_IN) {
       $formPosition = 'right';
     }
     $templateData['position'] = $formPosition;
