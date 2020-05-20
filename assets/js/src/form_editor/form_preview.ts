@@ -69,6 +69,12 @@ jQuery(($) => {
           previewForm.addClass('mailpoet_form_position_bottom');
         }
       }
+
+      // Detect tight container
+      previewForm.removeClass('mailpoet_form_tight_container');
+      if (previewForm.width() < 500) {
+        previewForm.addClass('mailpoet_form_tight_container');
+      }
     };
     window.addEventListener('message', updateForm, false);
 
