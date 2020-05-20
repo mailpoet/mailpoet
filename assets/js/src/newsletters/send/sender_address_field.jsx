@@ -13,15 +13,24 @@ class SenderField extends React.Component {
   }
 
   onChange(event) {
-    this.setState({ emailAddress: event.target.value });
-    this.props.onValueChange(event);
+    this.setState({ emailAddress: event.target.value.toLowerCase() });
+    this.props.onValueChange({
+      ...event,
+      target: {
+        ...event.target,
+        value: event.target.value.toLowerCase(),
+      },
+    });
   }
 
   render() {
     return (
       <>
         <FormFieldText
-          item={this.props.item}
+          item={{
+            ...this.props.item,
+            sender_address: this.state.emailAddress,
+          }}
           field={this.props.field}
           onValueChange={this.onChange}
         />

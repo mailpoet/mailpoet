@@ -1,5 +1,10 @@
 import React from 'react';
-import { t, onChange, isEmail } from 'common/functions';
+import {
+  isEmail,
+  t,
+  onChange,
+  setLowercaseValue,
+} from 'common/functions';
 import { useSetting, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -37,7 +42,7 @@ export default function NewSubscriberNotifications() {
         />
         {t('no')}
         <br />
-        <input type="email" value={email} onChange={onChange(setEmail)} placeholder="me@mydomain.com" />
+        <input type="email" value={email} onChange={onChange(setLowercaseValue(setEmail))} placeholder="me@mydomain.com" />
         {hasError && (
           <div className="mailpoet_error_item mailpoet_error">
             {t('pleaseFillEmail')}

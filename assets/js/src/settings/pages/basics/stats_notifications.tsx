@@ -1,6 +1,10 @@
 import React from 'react';
 import {
-  t, onToggle, onChange, isEmail,
+  isEmail,
+  t,
+  onChange,
+  onToggle,
+  setLowercaseValue,
 } from 'common/functions';
 import { useSetting, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
@@ -40,7 +44,7 @@ export default function StatsNotifications() {
         />
         <label htmlFor="stats-automated">{t('welcomeAndWcEmails')}</label>
         <br />
-        <input type="email" value={email} onChange={onChange(setEmail)} placeholder="me@mydomain.com" />
+        <input type="email" value={email} onChange={onChange(setLowercaseValue(setEmail))} placeholder="me@mydomain.com" />
         {hasError && (
           <div className="mailpoet_error_item mailpoet_error">
             {t('pleaseFillEmail')}
