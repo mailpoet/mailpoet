@@ -5,7 +5,6 @@ namespace MailPoet\Analytics;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Settings\SettingsController;
-use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoetVendor\Carbon\Carbon;
 
 class AnalyticsTest extends \MailPoetTest {
@@ -20,11 +19,8 @@ class AnalyticsTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->settings = SettingsController::getInstance();
-    $this->analytics = new Analytics(
-      new Reporter($this->settings, new WooCommerceHelper()),
-      $this->settings
-    );
+    $this->settings = $this->diContainer->get(SettingsController::class);
+    $this->analytics = $this->diContainer->get(Analytics::class);
     // Remove premium plugin hooks so that tests pass also with premium active
     remove_all_filters(Analytics::ANALYTICS_FILTER);
   }
