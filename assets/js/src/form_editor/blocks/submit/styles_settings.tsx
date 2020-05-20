@@ -48,10 +48,13 @@ const StylesSettings = ({
       return;
     }
     const updated = { ...localStylesRef.current };
+    updated.backgroundColor = '#eeeeee';
     updated.bold = false;
-    updated.borderRadius = 1;
+    updated.borderRadius = 0;
     updated.borderSize = 1;
-    updated.borderColor = 'black';
+    updated.borderColor = '#313131';
+    updated.fontColor = '#313131';
+    updated.fontSize = undefined;
     updated.inheritFromTheme = newValue;
     onChange(updated);
     localStylesRef.current = updated;

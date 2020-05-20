@@ -35,10 +35,11 @@ const InputStylesSettings = ({
       return;
     }
     const updated = { ...localStylesRef.current };
+    updated.backgroundColor = '#ffffff';
     updated.bold = false;
-    updated.borderRadius = 1;
+    updated.borderRadius = 0;
     updated.borderSize = 1;
-    updated.borderColor = 'black';
+    updated.borderColor = '#313131';
     updated.inheritFromTheme = newValue;
     onChange(updated);
     localStylesRef.current = updated;
