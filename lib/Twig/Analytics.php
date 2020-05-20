@@ -3,19 +3,13 @@
 namespace MailPoet\Twig;
 
 use MailPoet\Analytics\Analytics as AnalyticsGenerator;
-use MailPoet\Analytics\Reporter;
-use MailPoet\Settings\SettingsController;
-use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\DI\ContainerWrapper;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
 
 class Analytics extends AbstractExtension {
   public function getFunctions() {
-    $settings = SettingsController::getInstance();
-    $analytics = new AnalyticsGenerator(
-      new Reporter($settings, new WooCommerceHelper()),
-      $settings
-    );
+    $analytics = ContainerWrapper::getInstance()->get(AnalyticsGenerator::class);
     return [
       new TwigFunction(
         'get_analytics_data',
