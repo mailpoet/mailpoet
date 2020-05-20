@@ -30,7 +30,7 @@ class Renderer {
     $html = '<style type="text/css">';
     $html .= '.mailpoet_hp_email_label{display:none!important;}'; // move honeypot field out of sight
     $html .= $this->styleUtils->prefixStyles($this->getCustomStyles($form), $prefix);
-    $html .= $this->renderFormDivWrapperStyles($form, $prefix);
+    $html .= $this->styleUtils->renderFormDivWrapperStyles($form, $prefix);
     $html .= '</style>';
 
     return $html;
@@ -95,63 +95,7 @@ class Renderer {
     </div>';
   }
 
-  private function renderFormDivWrapperStyles(array $form, string $selector = null): string {
-    if (is_null($selector)) return '';
-    if (!isset($form['settings'])) return '';
-    $formSettings = $form['settings'];
-    $styles = [];
-
-    if (isset($formSettings['backgroundColor'])) {
-      $styles[] = 'background-color: ' . trim($formSettings['backgroundColor']);
-    }
-
-    if (isset($formSettings['border_size']) && isset($formSettings['border_color'])) {
-      $styles[] = 'border: ' . $formSettings['border_size'] . 'px solid ' . $formSettings['border_color'];
-    }
-
-    if (isset($formSettings['border_radius'])) {
-      $styles[] = 'border-radius: ' . $formSettings['border_radius'] . 'px';
-    }
-
-    if (isset($formSettings['background_image_url'])) {
-      $styles[] = 'background-image: url(' . trim($formSettings['background_image_url']) . ')';
-      $backgroundPosition = 'center';
-      $backgroundRepeat = 'no-repeat';
-      $backgroundSize = 'cover';
-      if (isset($formSettings['background_image_display']) && $formSettings['background_image_display'] === 'fit') {
-        $backgroundPosition = 'center top';
-        $backgroundSize = 'contain';
-      }
-      if (isset($formSettings['background_image_display']) && $formSettings['background_image_display'] === 'tile') {
-        $backgroundRepeat = 'repeat';
-        $backgroundSize = 'auto';
-      }
-      $styles[] = 'background-position: ' . $backgroundPosition;
-      $styles[] = 'background-repeat: ' . $backgroundRepeat;
-      $styles[] = 'background-size: ' . $backgroundSize;
-    }
-    $media = "@media (max-width: 500px) {{$selector} {background-image: none;}}";
-
-    return $selector . '{' . join(';', $styles) . '}' . $media;
-  }
-
   public function renderFormElementStyles(array $form): string {
-    if (!isset($form['settings'])) return '';
-    $formSettings = $form['settings'];
-    $styles = [];
-
-    if (isset($formSettings['fontColor'])) {
-      $styles[] = 'color: ' . trim($formSettings['fontColor']);
-    }
-
-    if (isset($formSettings['form_padding'])) {
-      $styles[] = 'padding: ' . $formSettings['form_padding'] . 'px';
-    }
-
-    if (isset($formSettings['alignment'])) {
-      $styles[] = 'text-align: ' . $formSettings['alignment'];
-    }
-
-    return join(';', $styles);
+    return $this->styleUtils->renderFormElementStyles($form);
   }
 }
