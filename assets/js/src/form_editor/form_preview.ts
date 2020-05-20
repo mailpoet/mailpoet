@@ -39,6 +39,11 @@ jQuery(($) => {
         formElement.css('width', `${width.value}${unit}`);
       } else {
         previewForm.css('width', `${width.value}${unit}`);
+        if (unit === 'px') { // Update others container width to render full pixel size
+          $('#mailpoet_widget_preview #sidebar').css('width', `${width.value}${unit}`);
+        } else { // Reset container size to default render percent size
+          $('#mailpoet_widget_preview #sidebar').css('width', null);
+        }
       }
 
       // Ajdust others (widget) container
