@@ -429,6 +429,9 @@ class NewsletterSend extends React.Component {
           item.ga_campaign = generateGaTrackingCampaignName(item.id, value);
         }
       }
+      if (name === 'reply_to_address') {
+        item[name] = value.toLowerCase();
+      }
 
       return { item };
     });

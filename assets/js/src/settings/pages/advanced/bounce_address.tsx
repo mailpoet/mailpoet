@@ -1,5 +1,5 @@
 import React from 'react';
-import { t, onChange } from 'common/functions';
+import { t, onChange, setLowercaseValue } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -33,7 +33,7 @@ export default function BounceAddress() {
           placeholder="bounce@mydomain.com"
           data-automation-id="bounce-address-field"
           value={email}
-          onChange={onChange(setEmail)}
+          onChange={onChange(setLowercaseValue(setEmail))}
         />
       </Inputs>
     </>

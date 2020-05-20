@@ -1,6 +1,11 @@
 import React from 'react';
 import { Label, Inputs } from 'settings/components';
-import { isEmail, t, onChange } from 'common/functions';
+import {
+  isEmail,
+  t,
+  onChange,
+  setLowercaseValue,
+} from 'common/functions';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx';
 
@@ -38,7 +43,7 @@ export default function DefaultSender() {
           placeholder="from@mydomain.com"
           data-automation-id="from-email-field"
           value={senderEmail}
-          onChange={onChange(setSenderEmail)}
+          onChange={onChange(setLowercaseValue(setSenderEmail))}
         />
         {invalidSenderEmail && (
           <span className="mailpoet_error_item mailpoet_error">
@@ -65,7 +70,7 @@ export default function DefaultSender() {
           placeholder="reply_to@mydomain.com"
           data-automation-id="reply_to-email-field"
           value={replyToEmail}
-          onChange={onChange(setReplyToEmail)}
+          onChange={onChange(setLowercaseValue(setReplyToEmail))}
         />
         {invalidReplyToEmail && (
           <span className="mailpoet_error_item mailpoet_error">
