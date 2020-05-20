@@ -104,7 +104,9 @@ class NewsletterSaveController {
     if (!empty($data['segments'])) {
       $this->updateSegments($newsletter, $data['segments']);
     }
-    $this->updateOptions($newsletter, $data['options'] ?? []);
+    if (!empty($data['options'])) {
+      $this->updateOptions($newsletter, $data['options']);
+    }
 
     // fetch model with updated options (for back compatibility)
     $newsletterModel = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
@@ -201,10 +203,6 @@ class NewsletterSaveController {
   }
 
   private function updateOptions(NewsletterEntity $newsletter, array $options) {
-    if (!$options) {
-      return;
-    }
-
     $optionFields = $this->newsletterOptionFieldsRepository->findBy(['newsletterType' => $newsletter->getType()]);
     foreach ($optionFields as $optionField) {
       if (!isset($options[$optionField->getName()])) {
