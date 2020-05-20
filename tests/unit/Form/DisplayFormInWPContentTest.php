@@ -38,7 +38,6 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->renderer = $this->createMock(Renderer::class);
     $this->renderer->expects($this->any())->method('renderStyles')->willReturn('<style></style>');
     $this->renderer->expects($this->any())->method('renderHTML')->willReturn('<form></form>');
-    $this->renderer->expects($this->any())->method('renderFormElementStyles')->willReturn('');
     $this->hook = new DisplayFormInWPContent($this->wp, $this->repository, $this->renderer, $this->assetsController, $this->templateRenderer);
   }
 

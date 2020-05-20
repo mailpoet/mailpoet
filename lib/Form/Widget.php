@@ -226,7 +226,6 @@ class Widget extends \WP_Widget {
         'after_widget' => $afterWidget,
         'before_title' => $beforeTitle,
         'after_title' => $afterTitle,
-        'form_element_styles' => $this->formRenderer->renderFormElementStyles($form),
       ];
 
       // (POST) non ajax success/error variables

@@ -140,7 +140,6 @@ class DisplayFormInWPContent {
       'form_type' => $displayType,
       'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId),
       'html' => $this->formRenderer->renderHTML($formData),
-      'form_element_styles' => $this->formRenderer->renderFormElementStyles($formData),
     ];
 
     // (POST) non ajax success/error variables

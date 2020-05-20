@@ -111,10 +111,11 @@ EOL;
     return implode(PHP_EOL, $formattedStyles);
   }
 
-  public function renderFormDivWrapperStyles(array $form, string $selector = null): string {
+  public function renderFormSettingsStyles(array $form, string $selector = null): string {
     if (is_null($selector)) return '';
     if (!isset($form['settings'])) return '';
     $formSettings = $form['settings'];
+    // Wrapper styles
     $styles = [];
 
     if (isset($formSettings['backgroundColor'])) {
@@ -146,28 +147,26 @@ EOL;
       $styles[] = 'background-repeat: ' . $backgroundRepeat;
       $styles[] = 'background-size: ' . $backgroundSize;
     }
-    $media = "@media (max-width: 500px) {{$selector} {background-image: none;}}";
-
-    return $selector . '{' . join(';', $styles) . '}' . $media;
-  }
-
-  public function renderFormElementStyles(array $form): string {
-    if (!isset($form['settings'])) return '';
-    $formSettings = $form['settings'];
-    $styles = [];
 
     if (isset($formSettings['fontColor'])) {
       $styles[] = 'color: ' . trim($formSettings['fontColor']);
     }
 
-    if (isset($formSettings['form_padding'])) {
-      $styles[] = 'padding: ' . $formSettings['form_padding'] . 'px';
-    }
-
     if (isset($formSettings['alignment'])) {
       $styles[] = 'text-align: ' . $formSettings['alignment'];
     }
+    $formWrapperStyles = $selector . '{' . join(';', $styles) . ';}';
 
-    return join(';', $styles);
+    // Media styles
+    $media = "@media (max-width: 500px) {{$selector} {background-image: none;}}";
+
+    // Form element styles
+    $formStyles = [];
+    if (isset($formSettings['form_padding'])) {
+      $formStyles[] = 'padding: ' . $formSettings['form_padding'] . 'px';
+    }
+    $formElementStyles = $selector . ' form.mailpoet_form {' . join(';', $formStyles) . ';}';
+
+    return $formWrapperStyles . $formElementStyles . $media;
   }
 }

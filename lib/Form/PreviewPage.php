@@ -90,7 +90,6 @@ class PreviewPage {
       'form_type' => $formType,
       'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId),
       'html' => $this->formRenderer->renderHTML($formData),
-      'form_element_styles' => $this->formRenderer->renderFormElementStyles($formData),
       'success' => $formType === 'others',
       'error' => $formType === 'others',
       'delay' => 1,
