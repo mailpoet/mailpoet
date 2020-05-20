@@ -230,13 +230,11 @@ div.mailpoet_form_popup {
   display: none;
   left: 50%;
   max-height: calc(100vh - 60px);
-  max-width: 560px;
   overflow-y: auto;
   padding: 20px;
   position: fixed;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 560px;
   z-index: 100001;
 }
 
@@ -264,12 +262,11 @@ div.mailpoet_form_fixed_bar {
   overflow-y: auto;
   padding: 10px;
   position: fixed;
-  width: 100%;
+  width: 100% !important;
   z-index: 100000;
 
   form {
     margin: 0 auto;
-    max-width: 960px;
   }
 
   .mailpoet_form_close_icon {
@@ -292,8 +289,6 @@ div.mailpoet_form_slide_in {
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
   display: none;
   max-height: calc(100vh - 60px);
-  max-width: 600px;
-  min-width: 350px;
   overflow-y: auto;
   padding: 10px;
   position: fixed;

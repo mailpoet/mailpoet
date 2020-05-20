@@ -10,11 +10,12 @@ jQuery(($) => {
     previewForm.submit((e) => { e.preventDefault(); return false; });
 
     const updateForm = (event) => {
-      let width = null;
       if (!event.data) {
         return;
       }
+      let width = null;
       const formType = event.data.formType;
+      // Get width settings based on type
       if (formType === 'popup') {
         width = event.data.formSettings?.popupStyles.width;
       } else if (formType === 'fixed_bar') {
@@ -27,10 +28,26 @@ jQuery(($) => {
         width = event.data.formSettings?.otherStyles.width;
       }
 
-      if (width) {
-        const unit = width.unit === 'pixel' ? 'px' : '%';
+      if (!width) {
+        return;
+      }
+
+      // Apply width settings
+      const unit = width.unit === 'pixel' ? 'px' : '%';
+      if (formType === 'fixed_bar') {
+        const formElement = previewForm.find('form.mailpoet_form');
+        formElement.css('width', `${width.value}${unit}`);
+      } else {
         previewForm.css('width', `${width.value}${unit}`);
-        previewForm.css('max-width', `${width.value}${unit}`);
+      }
+
+      // Ajdust others (widget) container
+      if (formType === 'others') {
+        if (unit === 'px') { // Update others container width so that we can render full pixel size
+          $('#mailpoet_widget_preview #sidebar').css('width', `${width.value}${unit}`);
+        } else { // Reset container size to default render percent size
+          $('#mailpoet_widget_preview #sidebar').css('width', null);
+        }
       }
 
       if (formType === 'slide_in') {

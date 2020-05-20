@@ -26,11 +26,11 @@ class Renderer {
     $this->blocksRenderer = $blocksRenderer;
   }
 
-  public function renderStyles(array $form, string $prefix): string {
+  public function renderStyles(array $form, string $prefix, string $displayType): string {
     $html = '<style type="text/css">';
     $html .= '.mailpoet_hp_email_label{display:none!important;}'; // move honeypot field out of sight
     $html .= $this->styleUtils->prefixStyles($this->getCustomStyles($form), $prefix);
-    $html .= $this->styleUtils->renderFormSettingsStyles($form, $prefix);
+    $html .= $this->styleUtils->renderFormSettingsStyles($form, $prefix, $displayType);
     $html .= '</style>';
 
     return $html;

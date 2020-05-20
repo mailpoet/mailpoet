@@ -138,7 +138,7 @@ class DisplayFormInWPContent {
       'form_id' => $form->getId(),
       'form_success_message' => $formSettings['success_message'] ?? null,
       'form_type' => $displayType,
-      'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId),
+      'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId, $displayType),
       'html' => $this->formRenderer->renderHTML($formData),
     ];
 
