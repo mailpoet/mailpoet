@@ -74,7 +74,7 @@ class FormEditor {
     if ($form instanceof Form) {
       $form = $form->asArray();
     }
-    $form['styles'] = $this->formRenderer->getStyles($form);
+    $form['styles'] = $this->formRenderer->getCustomStyles($form);
     $customFields = $this->customFieldsRepository->findAll();
     $dateTypes = $this->dateBlock->getDateTypes();
     $data = [
@@ -86,7 +86,7 @@ class FormEditor {
       ],
       'pages' => Pages::getAll(),
       'segments' => Segment::getSegmentsWithSubscriberCount(),
-      'styles' => $this->formRenderer->getStyles($form),
+      'styles' => $this->formRenderer->getCustomStyles($form),
       'date_types' => array_map(function ($label, $value) {
         return [
           'label' => $label,

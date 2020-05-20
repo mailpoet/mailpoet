@@ -7,7 +7,7 @@ use MailPoet\Form\Util\Styles;
 class StylesTest extends \MailPoetUnitTest {
   public function testItSetsDefaultCSSStyles() {
     $styles = new Styles();
-    expect($styles->getDefaultStyles())->notEmpty();
+    expect($styles->getDefaultCustomStyles())->notEmpty();
   }
 
   public function testItProcessesAndRendersStyles() {
@@ -16,7 +16,7 @@ class StylesTest extends \MailPoetUnitTest {
     input[name=first_name]    , input.some_class,     .some_class { color: red  ; background: blue; } .another_style { fonT-siZe: 20px                            }
     ';
     $styleProcesser = new Styles();
-    $extractedAndPrefixedStyles = $styleProcesser->render($stylesheet, $prefix = 'mailpoet');
+    $extractedAndPrefixedStyles = $styleProcesser->prefixStyles($stylesheet, $prefix = 'mailpoet');
     // 1. comments should be stripped
     // 2. each selector should be refixed
     // 3. multiple spaces, missing semicolons should be fixed

@@ -29,7 +29,7 @@ class Renderer {
   public function renderStyles(array $form = [], string $prefix = null): string {
     $html = '<style type="text/css">';
     $html .= '.mailpoet_hp_email_label{display:none!important;}'; // move honeypot field out of sight
-    $html .= $this->styleUtils->render($this->getStyles($form), $prefix);
+    $html .= $this->styleUtils->prefixStyles($this->getCustomStyles($form), $prefix);
     $html .= $this->renderFormDivWrapperStyles($form, $prefix);
     $html .= '</style>';
 
@@ -43,12 +43,12 @@ class Renderer {
     return '';
   }
 
-  public function getStyles(array $form = []): string {
+  public function getCustomStyles(array $form = []): string {
     if (isset($form['styles'])
     && strlen(trim($form['styles'])) > 0) {
       return strip_tags($form['styles']);
     } else {
-      return $this->styleUtils->getDefaultStyles();
+      return $this->styleUtils->getDefaultCustomStyles();
     }
   }
 
