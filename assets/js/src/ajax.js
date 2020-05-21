@@ -15,6 +15,14 @@ function requestFailed(errorMessage, xhr) {
   };
 }
 
+// Renew MailPoet nonce via heartbeats to keep auth
+// for AJAX requests on long-open pages
+jQuery(document).on('heartbeat-tick.mailpoet-ajax', (event, data) => {
+  if (data.mailpoet_token) {
+    window.mailpoet_token = data.mailpoet_token;
+  }
+});
+
 MailPoet.Ajax = {
   version: 0.5,
   options: {},

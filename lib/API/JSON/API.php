@@ -84,6 +84,12 @@ class API {
       'wp_ajax_nopriv_mailpoet',
       [$this, 'setupAjax']
     );
+
+    // nonce refreshing via heartbeats
+    WPFunctions::get()->addAction(
+      'wp_refresh_nonces',
+      [$this, 'addTokenToHeartbeatResponse']
+    );
   }
 
   public function setupAjax() {
@@ -232,6 +238,11 @@ class API {
       Security::generateToken(),
       self::CURRENT_VERSION
     );
+  }
+
+  public function addTokenToHeartbeatResponse($response) {
+    $response['mailpoet_token'] = Security::generateToken();
+    return $response;
   }
 
   public function addEndpointNamespace($namespace, $version) {
