@@ -60,8 +60,7 @@ Module.save = function () {
     }
     App.getChannel().trigger('afterEditorSave', json, response);
   }).fail(function (response) {
-    // TODO: Handle saving errors
-    App.getChannel().trigger('afterEditorSave', {}, response);
+    App.getChannel().trigger('editorSaveFailed', {}, response);
   });
 };
 
@@ -133,6 +132,7 @@ Module.SaveView = Marionette.View.extend({
     this.setDropdownDirectionDown();
     App.getChannel().on('beforeEditorSave', this.beforeSave, this);
     App.getChannel().on('afterEditorSave', this.afterSave, this);
+    App.getChannel().on('editorSaveFailed', this.handleSavingErrors, this);
   },
   setDropdownDirectionDown: function () {
     this.wrapperClass = 'mailpoet_save_dropdown_down';
@@ -156,6 +156,9 @@ Module.SaveView = Marionette.View.extend({
     // Update 'Last saved timer'
     this.$('.mailpoet_editor_last_saved .mailpoet_autosaved_message').removeClass('mailpoet_hidden');
     this.$('.mailpoet_autosaved_at').text('');
+  },
+  handleSavingErrors: function () {
+    this.showError(MailPoet.I18n.t('newsletterSavingError'));
   },
   showSaveOptions: function () {
     this.$('.mailpoet_save_show_options').addClass('mailpoet_save_show_options_active');
@@ -270,7 +273,14 @@ Module.SaveView = Marionette.View.extend({
         this.showValidationError(MailPoet.I18n.t('newsletterIsEmpty'));
         return;
       }
+    } else {
+      // Newsletter body object is missing. This logic shouldn't normally be triggered because
+      // validation should not be invoked if saving errors occur, but in case it does happen,
+      // this message is better than the validation-specific ones like "no unsubscribe link".
+      this.handleSavingErrors();
+      return;
     }
+
     if (App.getConfig().get('validation.validateUnsubscribeLinkPresent')
         && body.indexOf('[link:subscription_unsubscribe_url]') < 0
         && body.indexOf('[link:subscription_unsubscribe]') < 0
@@ -294,15 +304,20 @@ Module.SaveView = Marionette.View.extend({
 
     this.hideValidationError();
   },
-  showValidationError: function (message) {
+  showError: function (message) {
     var $el = this.$('.mailpoet_save_error');
     $el.html(message.replace(/\. /g, '.<br>'));
     $el.removeClass('mailpoet_hidden');
-
+  },
+  hideError: function () {
+    this.$('.mailpoet_save_error').addClass('mailpoet_hidden');
+  },
+  showValidationError: function (message) {
+    this.showError(message);
     this.$('.mailpoet_save_next').addClass('button-disabled');
   },
   hideValidationError: function () {
-    this.$('.mailpoet_save_error').addClass('mailpoet_hidden');
+    this.hideError();
     this.$('.mailpoet_save_next').removeClass('button-disabled');
   },
   activateWooCommerceCustomizer: function () {
