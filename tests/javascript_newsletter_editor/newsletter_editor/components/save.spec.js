@@ -103,6 +103,15 @@ describe('Save', function () {
   });
 
   describe('view', function () {
+    var validNewsletter = {
+      body: {
+        content: {
+          blocks: [
+            { type: 'footer' },
+          ],
+        },
+      },
+    };
     before(function () {
       var newsletter = { get: sinon.stub().withArgs('type').returns('newsletter') };
       EditorApplication._contentContainer = { isValid: sinon.stub().returns(true) };
@@ -134,7 +143,7 @@ describe('Save', function () {
       });
 
       it('hides errors for valid newsletter', function () {
-        view.validateNewsletter({});
+        view.validateNewsletter(validNewsletter);
         expect(hideValidationErrorStub.callCount).to.be.equal(1);
       });
 
@@ -157,7 +166,7 @@ describe('Save', function () {
         var newsletter = { get: sinon.stub().withArgs('type').returns('notification') };
         var showValidationErrorStub = sinon.stub(view, 'showValidationError');
         EditorApplication.getNewsletter = sinon.stub().returns(newsletter);
-        view.validateNewsletter({});
+        view.validateNewsletter(validNewsletter);
         expect(showValidationErrorStub.callCount).to.be.equal(1);
       });
     });
