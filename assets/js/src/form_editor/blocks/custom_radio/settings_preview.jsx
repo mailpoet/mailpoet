@@ -12,6 +12,7 @@ const PreviewItem = ({
   remove,
   onUpdate,
   onCheck,
+  index,
 }) => (
   <div
     className="mailpoet-form-segments-settings-list"
@@ -30,12 +31,17 @@ const PreviewItem = ({
       data-automation-id="custom_field_value_settings_value"
       onChange={(event) => onUpdate(value.id, event.target.value)}
     />
-    <Dashicon
-      icon="no-alt"
-      color="#900"
-      className="mailpoet-form-segments-segment-remove"
-      onClick={partial(remove, value.id)}
-    />
+    {
+      (index !== 0)
+      && (
+        <Dashicon
+          icon="no-alt"
+          color="#900"
+          className="mailpoet-form-segments-segment-remove"
+          onClick={partial(remove, value.id)}
+        />
+      )
+    }
   </div>
 );
 
@@ -47,6 +53,7 @@ PreviewItem.propTypes = {
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
   onCheck: PropTypes.func.isRequired,
+  index: PropTypes.number.isRequired,
   remove: PropTypes.func.isRequired,
 };
 
