@@ -44,18 +44,7 @@ class Text {
     $name = $this->rendererHelper->getFieldName($block);
 
     $html = '';
-    if (
-      isset($block['params']['label_within'])
-      && $block['params']['label_within']
-      && isset($block['styles']['font_color'])
-    ) {
-      $html .= '<style>'
-        . 'input[name="data[' . $name . ']"]::placeholder{'
-        . 'color:' . $block['styles']['font_color'] . ';'
-        . 'opacity: 1;'
-        . '}'
-        . '</style>';
-    }
+    $html .= $this->inputStylesRenderer->renderPlaceholderStyles($block, 'input[name="data[' . $name . ']"]');
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 

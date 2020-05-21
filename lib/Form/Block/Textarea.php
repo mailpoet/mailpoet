@@ -33,18 +33,7 @@ class Textarea {
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
     $lines = (isset($block['params']['lines']) ? (int)$block['params']['lines'] : 1);
-    if (
-      isset($block['params']['label_within'])
-      && $block['params']['label_within']
-      && isset($block['styles']['font_color'])
-    ) {
-      $html .= '<style>'
-        . 'textarea[name="data[' . $name . ']"]::placeholder{'
-        . 'color:' . $block['styles']['font_color'] . ';'
-        . 'opacity: 1;'
-        . '}'
-        . '</style>';
-    }
+    $html .= $this->inputStylesRenderer->renderPlaceholderStyles($block, 'textarea[name="data[' . $name . ']"]');
 
     $html .= '<textarea class="mailpoet_textarea" rows="' . $lines . '" ';
 

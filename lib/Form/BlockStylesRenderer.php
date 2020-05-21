@@ -75,4 +75,20 @@ class BlockStylesRenderer {
     }
     return 'margin: 0 auto;';
   }
+
+  public function renderPlaceholderStyles(array $block, string $selector): string {
+    if (
+      isset($block['params']['label_within'])
+      && $block['params']['label_within']
+      && isset($block['styles']['font_color'])
+    ) {
+      return '<style>'
+        . $selector . '::placeholder{'
+        . 'color:' . $block['styles']['font_color'] . ';'
+        . 'opacity: 1;'
+        . '}'
+        . '</style>';
+    }
+    return '';
+  }
 }

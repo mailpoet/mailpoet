@@ -88,4 +88,13 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     expect($this->renderer->renderForSelect([], ['alignment' => 'right']))->equals('margin: 0 0 0 auto;');
     expect($this->renderer->renderForSelect([], ['alignment' => 'center']))->equals('margin: 0 auto;');
   }
+
+  public function testItShouldRenderPlaceholderStyles() {
+    expect($this->renderer->renderPlaceholderStyles([], 'input'))->equals('');
+    expect($this->renderer->renderPlaceholderStyles(['params' => ['label_within' => '1']], 'input'))->equals('');
+    expect($this->renderer->renderPlaceholderStyles([
+      'params' => ['label_within' => '1'],
+      'styles' => ['font_color' => 'red'],
+    ], 'input'))->notEquals('');
+  }
 }
