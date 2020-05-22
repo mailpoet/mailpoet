@@ -33,6 +33,7 @@ const CheckboxGroup = ({
     if (!isChecked && index !== -1) {
       newValues = values.filter((val: CheckboxValueType) => val !== value);
     }
+    newValues.sort();
     setValues(newValues);
     onChange(newValues);
   };
