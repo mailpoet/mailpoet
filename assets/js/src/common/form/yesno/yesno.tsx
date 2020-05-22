@@ -17,6 +17,7 @@ const YesNo = ({
       classnames({
         'mailpoet-form-yesno': true,
         'mailpoet-form-yesno-error': showError,
+        'mailpoet-disabled': attributes.disabled,
       })
     }
   >

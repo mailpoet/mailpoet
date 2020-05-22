@@ -16,6 +16,7 @@ const Toggle = ({
       classnames({
         'mailpoet-form-toggle': true,
         [`mailpoet-form-toggle-${dimension}`]: dimension,
+        'mailpoet-disabled': attributes.disabled,
       })
     }
   >

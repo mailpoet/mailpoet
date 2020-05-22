@@ -69,6 +69,7 @@ const ReactSelect = ({
         'mailpoet-form-select',
         {
           [`mailpoet-form-input-${dimension}`]: dimension,
+          'mailpoet-disabled': props.disabled,
           'mailpoet-full-width': isFullWidth,
         }
       )
