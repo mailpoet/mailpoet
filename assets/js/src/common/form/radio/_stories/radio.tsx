@@ -14,6 +14,11 @@ const options = [
   { value: 2, label: 'Group option 2' },
 ];
 
+const optionsDisabled = [
+  { value: 1, label: 'Group option 1' },
+  { value: 2, label: 'Group option 2', disabled: true },
+];
+
 export const Radios = () => (
   <>
     <Heading level={3}>Inline individual radios</Heading>
@@ -62,6 +67,14 @@ export const Radios = () => (
       name="story-group"
       onChange={action('radio-group')}
       options={options}
+    />
+    <br />
+
+    <Heading level={3}>Disabled inline group radios</Heading>
+    <RadioGroup
+      name="story-group-disabled"
+      onChange={action('radio-group-disabled')}
+      options={optionsDisabled}
     />
     <br />
 

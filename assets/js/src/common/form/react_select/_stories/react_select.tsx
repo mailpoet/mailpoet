@@ -83,6 +83,13 @@ export const ReactSelect = () => {
           defaultValue={[options[2], options[1]]}
           onChange={action('regular multi')}
         />
+        <div className="mailpoet-gap" />
+        <Select
+          disabled
+          options={options}
+          placeholder="Disabled select"
+          onChange={action('regular single')}
+        />
       </div>
       <br />
       <Heading level={3}>Full-width select boxes</Heading>

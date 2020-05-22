@@ -31,6 +31,16 @@ export const Toggles = () => (
           name="toggle-2"
         />
       </Grid.SpaceBetween>
+      <div className="mailpoet-gap" />
+      <Grid.SpaceBetween>
+        <label htmlFor="toggle-3">Toggle disabled</label>
+        <Toggle
+          disabled
+          onCheck={action('toggle-3')}
+          id="toggle-3"
+          name="toggle-3"
+        />
+      </Grid.SpaceBetween>
     </Grid.Column>
   </>
 );
