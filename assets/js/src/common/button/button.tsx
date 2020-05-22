@@ -35,8 +35,8 @@ const Button = ({
         {
           [`mailpoet-button-${dimension}`]: dimension,
           [`mailpoet-button-${variant}`]: variant,
-          'mailpoet-button-disabled': isDisabled,
           'mailpoet-button-with-spinner': withSpinner,
+          'mailpoet-disabled': isDisabled,
           'mailpoet-full-width': isFullWidth,
         }
       )

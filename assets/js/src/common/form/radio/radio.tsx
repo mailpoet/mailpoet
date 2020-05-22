@@ -17,6 +17,7 @@ const Radio = ({
     className={
       classnames({
         'mailpoet-form-radio': true,
+        'mailpoet-disabled': attributes.disabled,
         'mailpoet-full-width': isFullWidth,
       })
     }

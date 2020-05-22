@@ -17,6 +17,7 @@ const Checkbox = ({
     className={
       classnames({
         'mailpoet-form-checkbox': true,
+        'mailpoet-disabled': attributes.disabled,
         'mailpoet-full-width': isFullWidth,
       })
     }
