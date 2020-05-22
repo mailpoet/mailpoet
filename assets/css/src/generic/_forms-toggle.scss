@@ -28,6 +28,7 @@
     background: #fff;
     border: 1px solid $color-input-border;
     border-radius: $form-control-choice-height / 2;
+    box-shadow: 0 4px 8px rgba(#dcdcdc, .5);
     box-sizing: border-box;
     content: '';
     height: calc(100% + 2px);
@@ -44,6 +45,7 @@
 
     &:after {
       border-color: $color-secondary-middle;
+      box-shadow: -3px 0 8px rgba($color-secondary-middle, .4);
       transform: translateX(40px - $form-control-choice-height);
     }
   }
