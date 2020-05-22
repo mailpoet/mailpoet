@@ -42,6 +42,10 @@ export const NativeSelect = () => (
         <option value="2">Option 2</option>
         <option value="3">Option 3</option>
       </Select>
+      <div className="mailpoet-gap" />
+      <Select disabled>
+        <option value="1">Disabled</option>
+      </Select>
     </div>
     <br />
     <Heading level={3}>Full-width select boxes</Heading>

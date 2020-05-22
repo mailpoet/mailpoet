@@ -67,6 +67,12 @@ export const Inputs = () => (
         iconStart={icon}
         iconEnd={icon}
       />
+      <div className="mailpoet-gap" />
+      <Input
+        disabled
+        type="text"
+        placeholder="Disabled input"
+      />
     </div>
     <br />
     <Heading level={3}>Full-width inputs</Heading>

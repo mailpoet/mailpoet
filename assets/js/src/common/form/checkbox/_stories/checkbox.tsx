@@ -14,6 +14,11 @@ const options = [
   { value: 2, label: 'Group option 2' },
 ];
 
+const optionsDisabled = [
+  { value: 1, label: 'Group option 1', disabled: true },
+  { value: 2, label: 'Group option 2' },
+];
+
 export const Checkboxes = () => (
   <>
     <Heading level={3}>Inline individual checkboxes</Heading>
@@ -62,6 +67,14 @@ export const Checkboxes = () => (
       name="story-group"
       onChange={action('checkbox-group')}
       options={options}
+    />
+    <br />
+
+    <Heading level={3}>Disabled inline group checkboxes</Heading>
+    <CheckboxGroup
+      name="story-group-disabled"
+      onChange={action('checkbox-group-disabled')}
+      options={optionsDisabled}
     />
     <br />
 

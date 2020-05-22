@@ -33,6 +33,17 @@ export const YesNos = () => (
           name="yesno-2"
         />
       </Grid.SpaceBetween>
+      <div className="mailpoet-gap" />
+      <Grid.SpaceBetween verticalAlign="center">
+        <div>
+          YesNo disabled
+        </div>
+        <YesNo
+          disabled
+          onCheck={action('yesno-3')}
+          name="yesno-3"
+        />
+      </Grid.SpaceBetween>
     </Grid.Column>
   </>
 );
