@@ -48,7 +48,7 @@ const FormPreview = () => {
   }, [isPreview]);
 
   useEffect(() => {
-    if (!iframeElement.current) {
+    if (!iframeElement.current || !iframeLoaded) {
       return;
     }
     const data = { formType: previewSettings.formType, formSettings };
@@ -56,7 +56,7 @@ const FormPreview = () => {
       data,
       (window as any).mailpoet_form_preview_page
     );
-  }, [formSettings, iframeElement, previewSettings]);
+  }, [formSettings, iframeElement, previewSettings, iframeLoaded]);
 
   if (!isPreview) return null;
 
