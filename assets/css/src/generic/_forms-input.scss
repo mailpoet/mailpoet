@@ -2,7 +2,7 @@
   align-items: center;
   background: $color-input-background;
   border: 1px solid $color-input-border;
-  border-radius: 4px;
+  border-radius: $form-control-border-radius;
   box-sizing: border-box;
   display: inline-flex;
   height: $form-control-height;

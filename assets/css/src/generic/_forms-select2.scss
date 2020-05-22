@@ -105,7 +105,7 @@
 
 .mailpoet-form-select2-dropdown {
   border-color: $color-input-border;
-  border-radius: 4px;
+  border-radius: $form-control-border-radius;
   box-sizing: content-box;
   color: $color-text;
   font-family: $font-family;
@@ -121,7 +121,7 @@
     .select2-search__field {
       background: #fff;
       border: 1px solid $color-input-border;
-      border-radius: 4px;
+      border-radius: $form-control-border-radius;
       font-size: 14px;
       padding: 8px;
 

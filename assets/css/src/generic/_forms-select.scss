@@ -59,7 +59,7 @@
 
 .mailpoet-form-react-select__single-value {
   color: $color-text !important;
-  max-width: 97%; // leave space for narrow input to search another value
+  max-width: calc(100% - 8px); // leave space for narrow input to search another value
 }
 
 .mailpoet-form-react-select__multi-value {
@@ -105,7 +105,7 @@
 
 .mailpoet-form-react-select__menu {
   border: 1px solid $color-input-border !important;
-  border-radius: 0 0 4px 4px !important;
+  border-radius: 0 0 $form-control-border-radius $form-control-border-radius !important;
   box-shadow: none !important;
   left: -1px !important;
   margin-bottom: -4px !important;
