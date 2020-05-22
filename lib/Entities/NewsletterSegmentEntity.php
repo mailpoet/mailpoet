@@ -19,7 +19,7 @@ class NewsletterSegmentEntity {
   use SafeToOneAssociationLoadTrait;
 
   /**
-   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="newsletter_segments")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="newsletterSegments")
    * @var NewsletterEntity
    */
   private $newsletter;
