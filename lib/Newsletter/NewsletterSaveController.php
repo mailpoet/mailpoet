@@ -182,12 +182,12 @@ class NewsletterSaveController {
 
   private function updateSegments(NewsletterEntity $newsletter, array $segments) {
     $newsletter->getNewsletterSegments()->clear();
-    foreach ($segments as $segment) {
-      if (!is_array($segment) || !isset($segment['id'])) {
+    foreach ($segments as $segmentData) {
+      if (!is_array($segmentData) || !isset($segmentData['id'])) {
         continue;
       }
 
-      $segment = $this->entityManager->getReference(SegmentEntity::class, (int)$segment['id']);
+      $segment = $this->entityManager->getReference(SegmentEntity::class, (int)$segmentData['id']);
       $newsletterSegment = $this->newsletterSegmentRepository->findBy([
         'newsletter' => $newsletter,
         'segment' => $segment,
