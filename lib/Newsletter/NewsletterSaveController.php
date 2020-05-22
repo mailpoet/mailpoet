@@ -181,7 +181,7 @@ class NewsletterSaveController {
   }
 
   private function updateSegments(NewsletterEntity $newsletter, array $segments) {
-    $newsletter->getNewsletterSegments()->clear();
+    $newsletterSegments = [];
     foreach ($segments as $segmentData) {
       if (!is_array($segmentData) || !isset($segmentData['id'])) {
         continue;
@@ -197,8 +197,21 @@ class NewsletterSaveController {
         $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
         $this->entityManager->persist($newsletterSegment);
       }
-      $newsletter->getNewsletterSegments()->add($newsletterSegment);
+
+      if (!$newsletter->getNewsletterSegments()->contains($newsletterSegment)) {
+        $newsletter->getNewsletterSegments()->add($newsletterSegment);
+      }
+      $newsletterSegments[] = $newsletterSegment;
     }
+
+    // on Doctrine < 2.6, when using orphan removal, we need to remove items manually instead of replacing the
+    // whole collection (see https://github.com/doctrine/orm/commit/1587aac4ff6b0753ddd5f8b8d4558b6b40096057)
+    foreach ($newsletter->getNewsletterSegments() as $newsletterSegment) {
+      if (!in_array($newsletterSegment, $newsletterSegments, true)) {
+        $newsletter->getNewsletterSegments()->removeElement($newsletterSegment); // triggers orphan removal
+      }
+    }
+
     $this->entityManager->flush();
   }
 
