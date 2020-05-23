@@ -13,6 +13,7 @@
     class="mailpoet_form mailpoet_form_<%= form_type %>"
     <% if(is_preview) %>
       data-is-preview="1"
+      data-editor-url="<%= editor_url %>"
     <% endif %>
   >
     <% if form_type == 'popup' or form_type == 'fixed_bar' or form_type == 'slide_in' %>

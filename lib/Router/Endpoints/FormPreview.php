@@ -45,6 +45,10 @@ class FormPreview {
     if (!isset($this->data['id']) || !isset($this->data['form_type'])) {
       return '';
     }
-    return $this->formPreviewPage->renderPage((int)$this->data['id'], (string)$this->data['form_type']);
+    return $this->formPreviewPage->renderPage(
+      (int)$this->data['id'],
+      (string)$this->data['form_type'],
+      (string)$this->data['editor_url']
+    );
   }
 }

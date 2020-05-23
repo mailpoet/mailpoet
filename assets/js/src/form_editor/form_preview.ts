@@ -13,6 +13,12 @@ jQuery(($) => {
       if (!event.data) {
         return;
       }
+      // Allow message processing only when send from editor's origin
+      const editorUrl = new URL(previewForm.data('editor-url'));
+      if (editorUrl.origin !== event.origin) {
+        return;
+      }
+
       let width = null;
       const formType = event.data.formType;
       // Get width settings based on type
