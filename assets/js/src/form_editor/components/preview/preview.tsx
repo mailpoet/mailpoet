@@ -43,6 +43,11 @@ const FormPreview = () => {
     []
   );
 
+  const editorUrl = useSelect(
+    (select) => select('mailpoet-form-editor').getEditorUrl(),
+    []
+  );
+
   useEffect(() => {
     setIframeLoaded(false);
   }, [isPreview]);
@@ -72,6 +77,7 @@ const FormPreview = () => {
   const urlData = {
     id: formId,
     form_type: previewSettings.formType,
+    editor_url: editorUrl,
   };
   let iframeSrc = `${(window as any).mailpoet_form_preview_page}&data=${btoa(JSON.stringify(urlData))}`;
   // Add anchor to scroll to certain types of form

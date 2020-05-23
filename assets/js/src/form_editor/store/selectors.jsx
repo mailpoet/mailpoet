@@ -110,6 +110,9 @@ export default {
   hasUnsavedChanges(state) {
     return state.hasUnsavedChanges;
   },
+  getEditorUrl(state) {
+    return state.editorUrl;
+  },
 
   /**
    * Goes thru all parents of the block and return

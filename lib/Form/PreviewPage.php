@@ -39,7 +39,7 @@ class PreviewPage {
     $this->assetsController = $assetsController;
   }
 
-  public function renderPage(int $formId, string $formType): string {
+  public function renderPage(int $formId, string $formType, string $editorUrl): string {
     $this->assetsController->setupFormPreviewDependencies();
     $formData = $this->fetchFormData($formId);
     if (!is_array($formData)) {
@@ -49,7 +49,7 @@ class PreviewPage {
       'form/form_preview.html',
       [
         'post' => $this->getPostContent(),
-        'form' => $this->getFormContent($formData, $formId, $formType),
+        'form' => $this->getFormContent($formData, $formId, $formType, $editorUrl),
         'formType' => $formType,
       ]
     );
@@ -81,10 +81,11 @@ class PreviewPage {
     return null;
   }
 
-  private function getFormContent(array $formData, int $formId, string $formDisplayType): string {
+  private function getFormContent(array $formData, int $formId, string $formDisplayType, string $editorUrl): string {
     $htmlId = 'mailpoet_form_preview_' . $formId;
     $templateData = [
       'is_preview' => true,
+      'editor_url' => $editorUrl,
       'form_html_id' => $htmlId,
       'form_id' => $formId,
       'form_success_message' => $formData['settings']['success_message'] ?? null,

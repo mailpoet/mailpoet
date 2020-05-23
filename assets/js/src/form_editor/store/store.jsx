@@ -59,6 +59,7 @@ export default () => {
       openedPanels: ['basic-settings'],
     },
     previewSettings,
+    editorUrl: window.location.href,
   };
 
   const config = {
