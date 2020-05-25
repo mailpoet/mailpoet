@@ -1,5 +1,7 @@
 import React, { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
+import iconYes from './icons/yes';
+import iconNo from './icons/no';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   name: string,
@@ -27,7 +29,9 @@ const YesNo = ({
         onChange={(e) => onCheck(true)}
         {...attributes}
       />
-      <span className="mailpoet-form-yesno-control mailpoet-form-yesno-yes" />
+      <span className="mailpoet-form-yesno-control mailpoet-form-yesno-yes">
+        {iconYes}
+      </span>
     </label>
     <label>
       <input
@@ -35,7 +39,9 @@ const YesNo = ({
         onChange={(e) => onCheck(false)}
         {...attributes}
       />
-      <span className="mailpoet-form-yesno-control mailpoet-form-yesno-no" />
+      <span className="mailpoet-form-yesno-control mailpoet-form-yesno-no">
+        {iconNo}
+      </span>
     </label>
   </div>
 );
