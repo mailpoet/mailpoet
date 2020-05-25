@@ -2,7 +2,6 @@
 
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterPost;
 use MailPoet\Newsletter\AutomatedLatestContent;
@@ -10,37 +9,35 @@ use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Renderer {
-  public $newsletter;
   public $posts;
   public $ALC;
 
-  public function __construct(array $newsletter) {
-    $this->newsletter = $newsletter;
+  public function __construct(AutomatedLatestContent $ALC) {
     $this->posts = [];
-    $this->ALC = ContainerWrapper::getInstance()->get(AutomatedLatestContent::class);
+    $this->ALC = $ALC;
   }
 
-  public function render($data) {
+  public function render($newsletter, $data) {
     $columnCount = count($data['blocks']);
     $columnsLayout = isset($data['columnLayout']) ? $data['columnLayout'] : null;
     $columnWidths = ColumnsHelper::columnWidth($columnCount, $columnsLayout);
     $columnContent = [];
 
     foreach ($data['blocks'] as $index => $columnBlocks) {
-      $renderedBlockElement = $this->renderBlocksInColumn($columnBlocks, $columnWidths[$index]);
+      $renderedBlockElement = $this->renderBlocksInColumn($newsletter, $columnBlocks, $columnWidths[$index]);
       $columnContent[] = $renderedBlockElement;
     }
 
     return $columnContent;
   }
 
-  private function renderBlocksInColumn($block, $columnBaseWidth) {
+  private function renderBlocksInColumn($newsletter, $block, $columnBaseWidth) {
     $blockContent = '';
     $_this = $this;
-    array_map(function($block) use (&$blockContent, $columnBaseWidth, $_this) {
-      $renderedBlockElement = $_this->createElementFromBlockType($block, $columnBaseWidth);
+    array_map(function($block) use (&$blockContent, $columnBaseWidth, $newsletter, $_this) {
+      $renderedBlockElement = $_this->createElementFromBlockType($newsletter, $block, $columnBaseWidth);
       if (isset($block['blocks'])) {
-        $renderedBlockElement = $_this->renderBlocksInColumn($block, $columnBaseWidth);
+        $renderedBlockElement = $_this->renderBlocksInColumn($newsletter, $block, $columnBaseWidth);
         // nested vertical column container is rendered as an array
         if (is_array($renderedBlockElement)) {
           $renderedBlockElement = implode('', $renderedBlockElement);
@@ -52,9 +49,9 @@ class Renderer {
     return $blockContent;
   }
 
-  public function createElementFromBlockType($block, $columnBaseWidth) {
+  public function createElementFromBlockType($newsletter, $block, $columnBaseWidth) {
     if ($block['type'] === 'automatedLatestContent') {
-      $content = $this->processAutomatedLatestContent($block, $columnBaseWidth);
+      $content = $this->processAutomatedLatestContent($newsletter, $block, $columnBaseWidth);
       return $content;
     }
     $block = StylesHelper::applyTextAlignment($block);
@@ -65,11 +62,11 @@ class Renderer {
     return $blockClass::render($block, $columnBaseWidth);
   }
 
-  public function automatedLatestContentTransformedPosts($args) {
+  public function automatedLatestContentTransformedPosts($newsletter, $args) {
     $newerThanTimestamp = false;
     $newsletterId = false;
-    if ($this->newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
-      $newsletterId = $this->newsletter['parent_id'];
+    if ($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
+      $newsletterId = $newsletter['parent_id'];
 
       $lastPost = NewsletterPost::getNewestNewsletterPost($newsletterId);
       if ($lastPost) {
@@ -85,13 +82,12 @@ class Renderer {
     return $this->ALC->transformPosts($args, $aLCPosts);
   }
 
-  public function processAutomatedLatestContent($args, $columnBaseWidth) {
+  public function processAutomatedLatestContent($newsletter, $args, $columnBaseWidth) {
     $transformedPosts = [
-      'blocks' => $this->automatedLatestContentTransformedPosts($args),
+      'blocks' => $this->automatedLatestContentTransformedPosts($newsletter, $args),
     ];
     $transformedPosts = StylesHelper::applyTextAlignment($transformedPosts);
-    $renderedPosts = $this->renderBlocksInColumn($transformedPosts, $columnBaseWidth);
-    return $renderedPosts;
+    return $this->renderBlocksInColumn($newsletter, $transformedPosts, $columnBaseWidth);
   }
 
   public function getPosts() {
