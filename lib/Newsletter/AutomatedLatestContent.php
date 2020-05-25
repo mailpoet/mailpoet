@@ -9,19 +9,24 @@ use MailPoet\WP\Functions as WPFunctions;
 class AutomatedLatestContent {
   const DEFAULT_POSTS_PER_PAGE = 10;
 
-  private $newsletterId;
-  private $newerThanTimestamp;
-
   /** @var LoggerFactory */
   private $loggerFactory;
 
-  public function __construct($newsletterId = false, $newerThanTimestamp = false) {
-    $this->newsletterId = $newsletterId;
-    $this->newerThanTimestamp = $newerThanTimestamp;
-    $this->loggerFactory = LoggerFactory::getInstance();
+  /** @var int|false */
+  private $newsletterId;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    LoggerFactory $loggerFactory,
+    WPFunctions $wp
+  ) {
+    $this->loggerFactory = $loggerFactory;
+    $this->wp = $wp;
   }
 
-  public function filterOutSentPosts($where) {
+  public function filterOutSentPosts(string $where): string {
     $sentPostsQuery = 'SELECT ' . MP_NEWSLETTER_POSTS_TABLE . '.post_id FROM '
       . MP_NEWSLETTER_POSTS_TABLE . ' WHERE '
       . MP_NEWSLETTER_POSTS_TABLE . ".newsletter_id='" . $this->newsletterId . "'";
@@ -41,14 +46,15 @@ class AutomatedLatestContent {
     $query->is_home = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
-  public function getPosts($args, $postsToExclude = []) {
+  public function getPosts($args, $postsToExclude = [], $newsletterId = false, $newerThanTimestamp = false) {
+    $this->newsletterId = $newsletterId;
     // Get posts as logged out user, so private posts hidden by other plugins (e.g. UAM) are also excluded
-    $currentUserId = WPFunctions::get()->getCurrentUserId();
-    WPFunctions::get()->wpSetCurrentUser(0);
+    $currentUserId = $this->wp->getCurrentUserId();
+    $this->wp->wpSetCurrentUser(0);
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'loading automated latest content',
-      ['args' => $args, 'posts_to_exclude' => $postsToExclude, 'newsletter_id' => $this->newsletterId, 'newer_than_timestamp' => $this->newerThanTimestamp]
+      ['args' => $args, 'posts_to_exclude' => $postsToExclude, 'newsletter_id' => $newsletterId, 'newer_than_timestamp' => $newerThanTimestamp]
     );
     $postsPerPage = (!empty($args['amount']) && (int)$args['amount'] > 0)
       ? (int)$args['amount']
@@ -81,30 +87,30 @@ class AutomatedLatestContent {
     // the query.
     $parameters['suppress_filters'] = false;
 
-    if ($this->newerThanTimestamp) {
+    if ($newerThanTimestamp) {
       $parameters['date_query'] = [
         [
           'column' => 'post_date',
-          'after' => $this->newerThanTimestamp,
+          'after' => $newerThanTimestamp,
         ],
       ];
     }
 
     // set low priority to execute 'ensureConstistentQueryType' before any other filter
     $filterPriority = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
-    WPFunctions::get()->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
-    $this->_attachSentPostsFilter();
+    $this->wp->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
+    $this->_attachSentPostsFilter($newsletterId);
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'getting automated latest content',
       ['parameters' => $parameters]
     );
-    $posts = WPFunctions::get()->getPosts($parameters);
+    $posts = $this->wp->getPosts($parameters);
     $this->logPosts($posts);
 
-    WPFunctions::get()->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
-    $this->_detachSentPostsFilter();
-    WPFunctions::get()->wpSetCurrentUser($currentUserId);
+    $this->wp->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
+    $this->_detachSentPostsFilter($newsletterId);
+    $this->wp->wpSetCurrentUser($currentUserId);
     return $posts;
   }
 
@@ -150,15 +156,15 @@ class AutomatedLatestContent {
     return empty($taxonomiesQuery) ? [] : [$taxonomiesQuery];
   }
 
-  private function _attachSentPostsFilter() {
-    if ($this->newsletterId > 0) {
-      WPFunctions::get()->addAction('posts_where', [$this, 'filterOutSentPosts']);
+  private function _attachSentPostsFilter($newsletterId) {
+    if ($newsletterId > 0) {
+      $this->wp->addAction('posts_where', [$this, 'filterOutSentPosts']);
     }
   }
 
-  private function _detachSentPostsFilter() {
-    if ($this->newsletterId > 0) {
-      WPFunctions::get()->removeAction('posts_where', [$this, 'filterOutSentPosts']);
+  private function _detachSentPostsFilter($newsletterId) {
+    if ($newsletterId > 0) {
+      $this->wp->removeAction('posts_where', [$this, 'filterOutSentPosts']);
     }
   }
 
