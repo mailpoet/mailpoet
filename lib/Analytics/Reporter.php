@@ -4,9 +4,9 @@ namespace MailPoet\Analytics;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
@@ -17,6 +17,9 @@ use MailPoetVendor\Carbon\Carbon;
 class Reporter {
   /** @var NewslettersRepository */
   private $newslettersRepository;
+
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
 
   /** @var SettingsController */
   private $settings;
@@ -29,11 +32,13 @@ class Reporter {
 
   public function __construct(
     NewslettersRepository $newslettersRepository,
+    SegmentsRepository $segmentsRepository,
     SettingsController $settings,
     WooCommerceHelper $woocommerceHelper,
     WPFunctions $wp
   ) {
     $this->newslettersRepository = $newslettersRepository;
+    $this->segmentsRepository = $segmentsRepository;
     $this->settings = $settings;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
@@ -46,7 +51,7 @@ class Reporter {
     $isCronTriggerMethodWP = $this->settings->get('cron_trigger.method') === CronTrigger::METHOD_WORDPRESS;
     $checker = new ServicesChecker();
     $bounceAddress = $this->settings->get('bounce.address');
-    $segments = Segment::getAnalytics();
+    $segments = $this->segmentsRepository->getCountsPerType();
     $hasWc = $this->woocommerceHelper->isWooCommerceActive();
     $inactiveSubscribersMonths = (int)round((int)$this->settings->get('deactivate_subscriber_after_inactive_days') / 30);
     $inactiveSubscribersStatus = $inactiveSubscribersMonths === 0 ? 'never' : "$inactiveSubscribersMonths months";
@@ -126,7 +131,7 @@ class Reporter {
 
   public function getTrackingData() {
     $newsletters = $this->newslettersRepository->getAnalytics();
-    $segments = Segment::getAnalytics();
+    $segments = $this->segmentsRepository->getCountsPerType();
     $mta = $this->settings->get('mta', []);
     $installedAt = new Carbon($this->settings->get('installed_at'));
     return [
