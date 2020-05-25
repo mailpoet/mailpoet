@@ -52,7 +52,7 @@ class CustomFieldEntity {
   }
 
   /**
-   * @return array
+   * @return array|null
    */
   public function getParams() {
     return $this->params;
