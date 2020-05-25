@@ -2,8 +2,10 @@
 
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterPost;
+use MailPoet\Newsletter\AutomatedLatestContent;
 use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
@@ -15,20 +17,7 @@ class Renderer {
   public function __construct(array $newsletter) {
     $this->newsletter = $newsletter;
     $this->posts = [];
-    $newerThanTimestamp = false;
-    $newsletterId = false;
-    if ($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
-      $newsletterId = $newsletter['parent_id'];
-
-      $lastPost = NewsletterPost::getNewestNewsletterPost($newsletterId);
-      if ($lastPost) {
-        $newerThanTimestamp = $lastPost->createdAt;
-      }
-    }
-    $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent(
-      $newsletterId,
-      $newerThanTimestamp
-    );
+    $this->ALC = ContainerWrapper::getInstance()->get(AutomatedLatestContent::class);
   }
 
   public function render($data) {
@@ -77,8 +66,18 @@ class Renderer {
   }
 
   public function automatedLatestContentTransformedPosts($args) {
+    $newerThanTimestamp = false;
+    $newsletterId = false;
+    if ($this->newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
+      $newsletterId = $this->newsletter['parent_id'];
+
+      $lastPost = NewsletterPost::getNewestNewsletterPost($newsletterId);
+      if ($lastPost) {
+        $newerThanTimestamp = $lastPost->createdAt;
+      }
+    }
     $postsToExclude = $this->getPosts();
-    $aLCPosts = $this->ALC->getPosts($args, $postsToExclude);
+    $aLCPosts = $this->ALC->getPosts($args, $postsToExclude, $newsletterId, $newerThanTimestamp);
     foreach ($aLCPosts as $post) {
       $postsToExclude[] = $post->ID;
     }
