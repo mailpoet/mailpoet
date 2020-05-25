@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Renderer;
 use MailPoet\Config\Env;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
+use MailPoet\Newsletter\AutomatedLatestContent;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
@@ -31,7 +32,9 @@ class Renderer {
   public function __construct($newsletter, $preview = false) {
     $this->newsletter = ($newsletter instanceof Newsletter) ? $newsletter->asArray() : $newsletter;
     $this->preview = $preview;
-    $this->blocksRenderer = new Blocks\Renderer($this->newsletter);
+    $this->blocksRenderer = new Blocks\Renderer(
+      ContainerWrapper::getInstance()->get(AutomatedLatestContent::class)
+    );
     $this->columnsRenderer = new Columns\Renderer();
     $this->preprocessor = new Preprocessor(
       $this->blocksRenderer,
@@ -60,7 +63,7 @@ class Renderer {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
 
-    $content = $this->preprocessor->process($content);
+    $content = $this->preprocessor->process($newsletter, $content);
     $renderedBody = $this->renderBody($content);
     $renderedStyles = $this->renderStyles($styles);
     $customFontsLinks = StylesHelper::getCustomFontsLinks($styles);
@@ -100,7 +103,7 @@ class Renderer {
     $_this = $this;
     $renderedContent = array_map(function($contentBlock) use($_this) {
 
-      $columnsData = $_this->blocksRenderer->render($contentBlock);
+      $columnsData = $_this->blocksRenderer->render($_this->newsletter, $contentBlock);
 
       return $_this->columnsRenderer->render(
         $contentBlock,
