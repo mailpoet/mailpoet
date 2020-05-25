@@ -21,6 +21,9 @@ class Reporter {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var ServicesChecker */
+  private $servicesChecker;
+
   /** @var SettingsController */
   private $settings;
 
@@ -33,12 +36,14 @@ class Reporter {
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
+    ServicesChecker $servicesChecker,
     SettingsController $settings,
     WooCommerceHelper $woocommerceHelper,
     WPFunctions $wp
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
+    $this->servicesChecker = $servicesChecker;
     $this->settings = $settings;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
@@ -49,7 +54,6 @@ class Reporter {
     $mta = $this->settings->get('mta', []);
     $newsletters = $this->newslettersRepository->getAnalytics();
     $isCronTriggerMethodWP = $this->settings->get('cron_trigger.method') === CronTrigger::METHOD_WORDPRESS;
-    $checker = new ServicesChecker();
     $bounceAddress = $this->settings->get('bounce.address');
     $segments = $this->segmentsRepository->getCountsPerType();
     $hasWc = $this->woocommerceHelper->isWooCommerceActive();
@@ -81,7 +85,7 @@ class Reporter {
       'Bounce email address' => !empty($bounceAddress),
       'Newsletter task scheduler (cron)' => $isCronTriggerMethodWP ? 'visitors' : 'script',
       'Open and click tracking' => (boolean)$this->settings->get('tracking.enabled', false),
-      'Premium key valid' => $checker->isPremiumKeyValid(),
+      'Premium key valid' => $this->servicesChecker->isPremiumKeyValid(),
       'New subscriber notifications' => NewSubscriberNotificationMailer::isDisabled($this->settings->get(NewSubscriberNotificationMailer::SETTINGS_KEY)),
       'Number of standard newsletters sent in last 3 months' => $newsletters['sent_newsletters_3_months'],
       'Number of standard newsletters sent in last 30 days' => $newsletters['sent_newsletters_30_days'],
