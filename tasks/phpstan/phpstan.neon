@@ -24,6 +24,8 @@ parameters:
   dynamicConstantNames:
     - WP_DEBUG
     - MAILPOET_PREMIUM_INITIALIZED
+  doctrine:
+    objectManagerLoader: create-entity-manager.php
 
   # exclude level 6 errors
   checkGenericClassInNonGenericObjectType: false
@@ -32,4 +34,5 @@ parameters:
   checkMissingTypehints: false
 includes:
   - vendor/phpstan/phpstan-doctrine/extension.neon
+  - vendor/phpstan/phpstan-doctrine/rules.neon
   - phpstan-baseline.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff
