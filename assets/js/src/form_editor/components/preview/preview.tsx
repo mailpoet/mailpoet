@@ -48,6 +48,11 @@ const FormPreview = () => {
     []
   );
 
+  const previewPageUrl = useSelect(
+    (select) => select('mailpoet-form-editor').getPreviewPageUrl(),
+    []
+  );
+
   useEffect(() => {
     setIframeLoaded(false);
   }, [isPreview]);
@@ -57,11 +62,8 @@ const FormPreview = () => {
       return;
     }
     const data = { formType: previewSettings.formType, formSettings };
-    iframeElement.current.contentWindow.postMessage(
-      data,
-      (window as any).mailpoet_form_preview_page
-    );
-  }, [formSettings, iframeElement, previewSettings, iframeLoaded]);
+    iframeElement.current.contentWindow.postMessage(data, previewPageUrl);
+  }, [formSettings, iframeElement, previewSettings, iframeLoaded, previewPageUrl]);
 
   if (!isPreview) return null;
 
@@ -79,7 +81,7 @@ const FormPreview = () => {
     form_type: previewSettings.formType,
     editor_url: editorUrl,
   };
-  let iframeSrc = `${(window as any).mailpoet_form_preview_page}&data=${btoa(JSON.stringify(urlData))}`;
+  let iframeSrc = `${previewPageUrl}&data=${btoa(JSON.stringify(urlData))}`;
   // Add anchor to scroll to certain types of form
   if (['below_post'].includes(previewSettings.formType)) {
     iframeSrc += `#mailpoet_form_preview_${formId}`;

@@ -113,6 +113,9 @@ export default {
   getEditorUrl(state) {
     return state.editorUrl;
   },
+  getPreviewPageUrl(state) {
+    return state.previewPageUrl;
+  },
 
   /**
    * Goes thru all parents of the block and return

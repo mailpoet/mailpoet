@@ -60,6 +60,7 @@ export default () => {
     },
     previewSettings,
     editorUrl: window.location.href,
+    previewPageUrl: window.mailpoet_form_preview_page,
   };
 
   const config = {
