@@ -104,10 +104,9 @@ customFields.forEach((customField) => {
   };
   if (customField.params) {
     field.params = customField.params;
-  }
-
-  if (customField.params.values) {
-    field.values = customField.params.values;
+    if (customField.params.values) {
+      field.values = customField.params.values;
+    }
   }
 
   // add placeholders for selects (date, select)
