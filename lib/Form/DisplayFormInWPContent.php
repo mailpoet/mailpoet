@@ -132,7 +132,7 @@ class DisplayFormInWPContent {
       'settings' => $form->getSettings(),
     ];
     $formSettings = $form->getSettings();
-    $htmlId = 'mp_form_below_' . $form->getId();
+    $htmlId = 'mp_form_' . $displayType . $form->getId();
     $templateData = [
       'form_html_id' => $htmlId,
       'form_id' => $form->getId(),
