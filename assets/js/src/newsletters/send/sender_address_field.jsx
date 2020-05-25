@@ -18,6 +18,7 @@ class SenderField extends React.Component {
       ...event,
       target: {
         ...event.target,
+        name: event.target.name,
         value: event.target.value.toLowerCase(),
       },
     });
