@@ -279,11 +279,12 @@ class NewsletterSaveController {
       $this->entityManager->remove($queue);
       $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
     } else {
-      $queue->setNewsletterRenderedBody(null);
-      $queue->setNewsletterRenderedSubject(null);
+      $queueModel = $newsletterModel->getQueue();
+      $queueModel->newsletterRenderedSubject = null;
+      $queueModel->newsletterRenderedBody = null;
 
       $newsletterQueueTask = new NewsletterQueueTask();
-      $newsletterQueueTask->preProcessNewsletter($newsletterModel, $newsletterModel->getQueue());
+      $newsletterQueueTask->preProcessNewsletter($newsletterModel, $queueModel);
 
       // 'preProcessNewsletter' modifies queue by old model - let's reload it
       $this->entityManager->refresh($queue);
