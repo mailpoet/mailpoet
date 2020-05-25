@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.4
-Stable tag: 3.47.0
+Stable tag: 3.47.1
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.47.1 - 2020-05-25 =
+* Added: background image to form editor;
+* Added: input background color;
+* Fixed: saving should work if the newsletter editor is left open for a long time.
 
 = 3.47.0 - 2020-05-19 =
 * Fixed: showing two columns in popup form side by side;
