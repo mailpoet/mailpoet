@@ -11,5 +11,9 @@
     },
     "config": {
         "sort-packages": true
+    },
+    "scripts": {
+        "post-install-cmd": "php prefix-phpstan-doctrine.php",
+        "post-update-cmd": "php prefix-phpstan-doctrine.php"
     }
 }
