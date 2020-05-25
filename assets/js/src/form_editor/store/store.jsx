@@ -12,10 +12,14 @@ import validateForm from './form_validator.jsx';
 import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
 import mapFormDataAfterLoading from './map_form_data_after_loading.jsx';
 
+const customFields = window.mailpoet_custom_fields.map(
+  (field) => ({ ...field, params: field.params || {} })
+);
+
 const formBodyToBlocks = formBodyToBlocksFactory(
   SETTINGS_DEFAULTS.colors,
   SETTINGS_DEFAULTS.fontSizes,
-  window.mailpoet_custom_fields
+  customFields
 );
 
 let previewSettings = null;
@@ -43,8 +47,8 @@ export default () => {
     formExports: window.mailpoet_form_exports,
     formErrors: validateForm(formData, formBlocks),
     segments: window.mailpoet_form_segments,
+    customFields,
     pages: window.mailpoet_form_pages,
-    customFields: window.mailpoet_custom_fields,
     isFormSaving: false,
     isCustomFieldSaving: false,
     isCustomFieldCreating: false,
