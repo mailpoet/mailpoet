@@ -33,14 +33,13 @@ class RendererTest extends \MailPoetTest {
       'type' => 'standard',
       'status' => 'active',
     ];
-    $this->renderer = new Renderer($this->newsletter);
+    $this->renderer = new Renderer();
     $this->columnRenderer = new ColumnRenderer();
     $this->dOMParser = new \pQuery();
   }
 
   public function testItRendersCompleteNewsletter() {
-    $this->renderer->preview = true; // do not render logo
-    $template = $this->renderer->render();
+    $template = $this->renderer->render($this->newsletter, true);// do not render logo
     expect(isset($template['html']))->true();
     expect(isset($template['text']))->true();
     $DOM = $this->dOMParser->parseStr($template['html']);
@@ -549,48 +548,45 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItSetsSubject() {
-    $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
-    $template = $this->renderer->render();
+    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $template = $this->renderer->render($this->newsletter);
     $DOM = $this->dOMParser->parseStr($template['html']);
     $subject = trim($DOM('title')->text());
     expect($subject)->equals($this->newsletter['subject']);
   }
 
   public function testItSetsPreheader() {
-    $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
-    $template = $this->renderer->render();
+    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $template = $this->renderer->render($this->newsletter);
     $DOM = $this->dOMParser->parseStr($template['html']);
     $preheader = trim($DOM('td.mailpoet_preheader')->text());
     expect($preheader)->equals($this->newsletter['preheader']);
   }
 
   public function testItDoesNotAddMailpoetLogoWhenPremiumIsActive() {
-    $this->renderer->preview = false;
     $this->renderer->mssActivated = false;
     $this->renderer->premiumActivated = true;
 
-    $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
-    $template = $this->renderer->render();
+    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $template = $this->renderer->render($this->newsletter, false);
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
 
   public function testItDoesNotAddMailpoetLogoWhenMSSIsActive() {
-    $this->renderer->preview = false;
     $this->renderer->premiumActivated = false;
     $this->renderer->mssActivated = true;
 
-    $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
-    $template = $this->renderer->render();
+    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $template = $this->renderer->render($this->newsletter, false);
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
 
   public function testItDoesNotAddMailpoetLogoWhenPreviewIsEnabled() {
     $this->renderer->mssActivated = false;
     $this->renderer->premiumActivated = false;
-    $this->renderer->preview = true;
 
-    $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
-    $template = $this->renderer->render();
+    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $template = $this->renderer->render($this->newsletter, true);
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
 
@@ -598,15 +594,14 @@ class RendererTest extends \MailPoetTest {
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $this->renderer->mssActivated = false;
     $this->renderer->premiumActivated = false;
-    $this->renderer->preview = false;
 
-    $template = $this->renderer->render();
+    $template = $this->renderer->render($this->newsletter, false);
     expect($template['html'])->contains('mailpoet_logo_newsletter.png');
   }
 
   public function testItPostProcessesTemplate() {
-    $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
-    $template = $this->renderer->render();
+    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $template = $this->renderer->render($this->newsletter);
     // !important should be stripped from everywhere except from with the <style> tag
     expect(preg_match('/<style.*?important/s', $template['html']))->equals(1);
     expect(preg_match('/mailpoet_template.*?important/s', $template['html']))->equals(0);

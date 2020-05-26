@@ -27,8 +27,8 @@ class Renderer {
   }
 
   public function render(Newsletter $newsletter, NewsletterRenderer $renderer = null) {
-    $renderer = $renderer ?: new NewsletterRenderer($newsletter, true);
-    $html = explode(Preprocessor::WC_CONTENT_PLACEHOLDER, $renderer->render('html'));
+    $renderer = $renderer ?: new NewsletterRenderer();
+    $html = explode(Preprocessor::WC_CONTENT_PLACEHOLDER, $renderer->render($newsletter, true, 'html'));
     $this->htmlBeforeContent = $html[0];
     $this->htmlAfterContent = $html[1];
   }

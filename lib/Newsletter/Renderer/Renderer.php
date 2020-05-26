@@ -17,20 +17,13 @@ class Renderer {
   public $columnsRenderer;
   public $preprocessor;
   public $cSSInliner;
-  public $newsletter;
-  public $preview;
   public $premiumActivated;
   public $mssActivated;
   private $template;
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
 
-  /**
-   * @param \MailPoet\Models\Newsletter|array $newsletter
-   */
-  public function __construct($newsletter, $preview = false) {
-    $this->newsletter = ($newsletter instanceof Newsletter) ? $newsletter->asArray() : $newsletter;
-    $this->preview = $preview;
+  public function __construct() {
     $this->blocksRenderer = ContainerWrapper::getInstance()->get(Blocks\Renderer::class);
     $this->columnsRenderer = new Columns\Renderer();
     $this->preprocessor = new Preprocessor(
@@ -44,8 +37,11 @@ class Renderer {
     $this->mssActivated = $bridge->isMPSendingServiceEnabled();
   }
 
-  public function render($type = false) {
-    $newsletter = $this->newsletter;
+  /**
+   * @param \MailPoet\Models\Newsletter|array $newsletter
+   */
+  public function render($newsletter, $preview = false, $type = false) {
+    $newsletter = ($newsletter instanceof Newsletter) ? $newsletter->asArray() : $newsletter;
     $body = (is_array($newsletter['body']))
       ? $newsletter['body']
       : [];
@@ -56,12 +52,12 @@ class Renderer {
       ? $body['globalStyles']
       : [];
 
-    if (!$this->premiumActivated && !$this->mssActivated && !$this->preview) {
+    if (!$this->premiumActivated && !$this->mssActivated && !$preview) {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
 
     $content = $this->preprocessor->process($newsletter, $content);
-    $renderedBody = $this->renderBody($content);
+    $renderedBody = $this->renderBody($newsletter, $content);
     $renderedStyles = $this->renderStyles($styles);
     $customFontsLinks = StylesHelper::getCustomFontsLinks($styles);
 
@@ -89,18 +85,19 @@ class Renderer {
   }
 
   /**
+   * @param array $newsletter
    * @param array $content
    * @return string
    */
-  private function renderBody($content) {
+  private function renderBody($newsletter, $content) {
     $blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']
       : [];
 
     $_this = $this;
-    $renderedContent = array_map(function($contentBlock) use($_this) {
+    $renderedContent = array_map(function($contentBlock) use($_this, $newsletter) {
 
-      $columnsData = $_this->blocksRenderer->render($_this->newsletter, $contentBlock);
+      $columnsData = $_this->blocksRenderer->render($newsletter, $contentBlock);
 
       return $_this->columnsRenderer->render(
         $contentBlock,

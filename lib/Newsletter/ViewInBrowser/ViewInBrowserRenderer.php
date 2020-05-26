@@ -47,8 +47,8 @@ class ViewInBrowserRenderer {
         $newsletterBody = str_replace(Links::DATA_TAG_OPEN, '', $newsletterBody);
       }
     } else {
-      $renderer = new Renderer($newsletter, $wpUserPreview);
-      $newsletterBody = $renderer->render('html');
+      $renderer = new Renderer();
+      $newsletterBody = $renderer->render($newsletter, $wpUserPreview, 'html');
     }
     $shortcodes = new Shortcodes(
       $newsletter,
