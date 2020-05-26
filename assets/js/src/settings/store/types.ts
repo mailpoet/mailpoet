@@ -99,6 +99,7 @@ export type Settings = {
     transactional_email_id: string,
     optin_on_checkout: {
       enabled: '1' | ''
+      segments: string[]
       message: string
     }
     accept_cookie_revenue_tracking: {

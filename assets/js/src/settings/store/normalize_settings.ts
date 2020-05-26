@@ -96,6 +96,7 @@ export default function normalizeSettings(data: any): Settings {
       transactional_email_id: text,
       optin_on_checkout: asObject({
         enabled: enabledRadio,
+        segments: emptyArray,
         message: text,
       }),
       accept_cookie_revenue_tracking: asObject({

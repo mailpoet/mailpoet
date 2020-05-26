@@ -54,6 +54,10 @@
   margin-top: 10px;
 }
 
+label[for="mailpoet_wc_checkout_optin_segments"] span {
+  font-size: 12px;
+}
+
 .mailpoet_success_item:before {
   content: '✔ ';
 }
