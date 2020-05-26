@@ -14,6 +14,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class Subscription {
   const CHECKOUT_OPTIN_INPUT_NAME = 'mailpoet_woocommerce_checkout_optin';
   const OPTIN_ENABLED_SETTING_NAME = 'woocommerce.optin_on_checkout.enabled';
+  const OPTIN_SEGMENTS_SETTING_NAME = 'woocommerce.optin_on_checkout.segments';
   const OPTIN_MESSAGE_SETTING_NAME = 'woocommerce.optin_on_checkout.message';
 
   /** @var SettingsController */
@@ -89,6 +90,7 @@ class Subscription {
 
     $checkoutOptinEnabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
     $wcSegment = Segment::getWooCommerceSegment();
+    $moreSegmentsToSubscribe = (array)$this->settings->get(self::OPTIN_SEGMENTS_SETTING_NAME, []);
 
     if (!$checkoutOptinEnabled || empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
       // Opt-in is disabled or checkbox is unchecked
@@ -114,7 +116,7 @@ class Subscription {
 
     SubscriberSegment::subscribeToSegments(
       $subscriber,
-      [$wcSegment->id]
+      array_merge([$wcSegment->id], $moreSegmentsToSubscribe)
     );
 
     return true;
