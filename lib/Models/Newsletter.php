@@ -6,6 +6,7 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Renderer\Renderer;
@@ -570,7 +571,7 @@ class Newsletter extends Model {
   }
 
   public function render() {
-    $renderer = new Renderer();
+    $renderer = ContainerWrapper::getInstance()->get(Renderer::class);
     return $renderer->render($this);
   }
 

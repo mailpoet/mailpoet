@@ -279,6 +279,9 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Social::class);
     $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Spacer::class);
     $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Text::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Columns\Renderer::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Preprocessor::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Renderer::class);
     $container->autowire(\MailPoet\Newsletter\Segment\NewsletterSegmentRepository::class);
     $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class);
     $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class)->setPublic(true);
@@ -306,6 +309,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\WP\Emoji::class)->setPublic(true);
     $container->autowire(\MailPoet\WP\Functions::class)->setPublic(true);
     // Third party classes
+    $container->autowire(\MailPoetVendor\CSS::class)->setClass(\MailPoetVendor\CSS::class);
     $container->autowire(\MailPoetVendor\csstidy::class)->setClass(\MailPoetVendor\csstidy::class);
 
     return $container;

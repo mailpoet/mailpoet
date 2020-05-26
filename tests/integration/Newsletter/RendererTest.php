@@ -21,8 +21,8 @@ class RendererTest extends \MailPoetTest {
   public $newsletter;
   const COLUMN_BASE_WIDTH = 660;
 
-  public function __construct() {
-    parent::__construct();
+  public function _before() {
+    parent::_before();
     $this->newsletter = [
       'body' => json_decode(
         (string)file_get_contents(dirname(__FILE__) . '/RendererTestData.json'), true
@@ -33,7 +33,7 @@ class RendererTest extends \MailPoetTest {
       'type' => 'standard',
       'status' => 'active',
     ];
-    $this->renderer = new Renderer();
+    $this->renderer = $this->diContainer->get(Renderer::class);
     $this->columnRenderer = new ColumnRenderer();
     $this->dOMParser = new \pQuery();
   }

@@ -8,6 +8,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Url;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Security;
@@ -63,7 +64,12 @@ class SendPreviewControllerTest extends \MailPoetTest {
       ),
     ]);
 
-    $sendPreviewController = new SendPreviewController($mailer, new MetaInfo(), new WPFunctions());
+    $sendPreviewController = new SendPreviewController(
+      $mailer,
+      new MetaInfo(),
+      $this->diContainer->get(Renderer::class),
+      new WPFunctions()
+    );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
 
@@ -85,7 +91,12 @@ class SendPreviewControllerTest extends \MailPoetTest {
     $this->expectException(SendPreviewException::class);
     $this->expectExceptionMessage('The email could not be sent: failed');
 
-    $sendPreviewController = new SendPreviewController($mailer, new MetaInfo(), new WPFunctions());
+    $sendPreviewController = new SendPreviewController(
+      $mailer,
+      new MetaInfo(),
+      $this->diContainer->get(Renderer::class),
+      new WPFunctions()
+    );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
 }

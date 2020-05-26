@@ -18,9 +18,17 @@ class ViewInBrowserRenderer {
   /** @var bool */
   private $isTrackingEnabled;
 
-  public function __construct(Emoji $emoji, SettingsController $settings) {
+  /** @var Renderer */
+  private $renderer;
+
+  public function __construct(
+    Emoji $emoji,
+    SettingsController $settings,
+    Renderer $renderer
+  ) {
     $this->emoji = $emoji;
     $this->isTrackingEnabled = $settings->get('tracking.enabled');
+    $this->renderer = $renderer;
   }
 
   public function render(
@@ -47,8 +55,7 @@ class ViewInBrowserRenderer {
         $newsletterBody = str_replace(Links::DATA_TAG_OPEN, '', $newsletterBody);
       }
     } else {
-      $renderer = new Renderer();
-      $newsletterBody = $renderer->render($newsletter, $wpUserPreview, 'html');
+      $newsletterBody = $this->renderer->render($newsletter, $wpUserPreview, 'html');
     }
     $shortcodes = new Shortcodes(
       $newsletter,

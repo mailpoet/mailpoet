@@ -21,14 +21,19 @@ class SendPreviewController {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var Renderer */
+  private $renderer;
+
   public function __construct(
     Mailer $mailer,
     MetaInfo $mailerMetaInfo,
+    Renderer $renderer,
     WPFunctions $wp
   ) {
     $this->mailer = $mailer;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->wp = $wp;
+    $this->renderer = $renderer;
   }
 
   public function sendPreview(NewsletterEntity $newsletter, string $emailAddress) {
@@ -38,8 +43,7 @@ class SendPreviewController {
       throw new SendPreviewException("Newsletter with ID '{$newsletter->getId()}' not found");
     }
 
-    $renderer = new Renderer();
-    $renderedNewsletter = $renderer->render($newsletterModel, $preview = true);
+    $renderedNewsletter = $this->renderer->render($newsletterModel, $preview = true);
     $divider = '***MailPoet***';
     $dataForShortcodes = array_merge(
       [$newsletter->getSubject()],
