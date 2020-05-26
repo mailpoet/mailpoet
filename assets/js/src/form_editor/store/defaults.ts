@@ -2,37 +2,52 @@
  * Default values for various settings
  */
 
-export const belowPostStyles = {
-  width: {
-    unit: 'percent',
-    value: 100,
+export const belowPostForm = {
+  styles: {
+    width: {
+      unit: 'percent',
+      value: 100,
+    },
   },
 };
 
-export const popupStyles = {
-  width: {
-    unit: 'pixel',
-    value: 560,
+export const popupForm = {
+  styles: {
+    width: {
+      unit: 'pixel',
+      value: 560,
+    },
+  },
+  formDelay: 15,
+};
+
+export const fixedBarForm = {
+  styles: {
+    width: {
+      unit: 'percent',
+      value: 100,
+    },
+  },
+  position: 'top',
+  formDelay: 15,
+};
+
+export const otherForm = {
+  styles: {
+    width: {
+      unit: 'percent',
+      value: 100,
+    },
   },
 };
 
-export const fixedBarStyles = {
-  width: {
-    unit: 'percent',
-    value: 100,
+export const slideInForm = {
+  styles: {
+    width: {
+      unit: 'pixel',
+      value: 560,
+    },
   },
-};
-
-export const otherStyles = {
-  width: {
-    unit: 'percent',
-    value: 100,
-  },
-};
-
-export const slideInStyles = {
-  width: {
-    unit: 'pixel',
-    value: 560,
-  },
+  position: 'right',
+  formDelay: 15,
 };

@@ -20,11 +20,6 @@ const SlideInSettings = () => {
     changeFormSettings(settings);
   };
 
-  const slideInFormDelay = formSettings.slideInFormDelay === undefined
-    ? 15
-    : formSettings.slideInFormDelay;
-  const slideInFormPosition = formSettings.slideInFormPosition === undefined ? 'right' : formSettings.slideInFormPosition;
-
   return (
     <>
       <p>{MailPoet.I18n.t('placeSlideInFormOnPagesDescription')}</p>
@@ -41,7 +36,7 @@ const SlideInSettings = () => {
       />
       <SelectControl
         label={MailPoet.I18n.t('formPlacementDelay')}
-        value={slideInFormDelay}
+        value={formSettings.slideInFormDelay}
         onChange={partial(updateSettings, 'slideInFormDelay')}
         options={delayValues.map((delayValue) => ({
           value: delayValue,
@@ -50,7 +45,7 @@ const SlideInSettings = () => {
       />
       <RadioControl
         label={MailPoet.I18n.t('formPlacementPlacementPosition')}
-        selected={slideInFormPosition}
+        selected={formSettings.slideInFormPosition}
         options={[
           { label: MailPoet.I18n.t('formPlacementPlacementPositionLeft'), value: 'left' },
           { label: MailPoet.I18n.t('formPlacementPlacementPositionRight'), value: 'right' },

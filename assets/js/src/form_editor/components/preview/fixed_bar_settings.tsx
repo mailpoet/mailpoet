@@ -20,11 +20,6 @@ const FixedBarSettings = () => {
     changeFormSettings(settings);
   };
 
-  const fixedBarFormDelay = formSettings.fixedBarFormDelay === undefined
-    ? 15
-    : formSettings.fixedBarFormDelay;
-  const fixedBarFormPosition = formSettings.fixedBarFormPosition === undefined ? 'top' : formSettings.fixedBarFormPosition;
-
   return (
     <>
       <p>{MailPoet.I18n.t('placeFixedBarFormOnPagesDescription')}</p>
@@ -41,7 +36,7 @@ const FixedBarSettings = () => {
       />
       <SelectControl
         label={MailPoet.I18n.t('formPlacementDelay')}
-        value={fixedBarFormDelay}
+        value={formSettings.fixedBarFormDelay}
         onChange={partial(updateSettings, 'fixedBarFormDelay')}
         options={delayValues.map((delayValue) => ({
           value: delayValue,
@@ -50,7 +45,7 @@ const FixedBarSettings = () => {
       />
       <RadioControl
         label={MailPoet.I18n.t('formPlacementPlacementPosition')}
-        selected={fixedBarFormPosition}
+        selected={formSettings.fixedBarFormPosition}
         options={[
           { label: MailPoet.I18n.t('formPlacementPlacementPositionTop'), value: 'top' },
           { label: MailPoet.I18n.t('formPlacementPlacementPositionBottom'), value: 'bottom' },
