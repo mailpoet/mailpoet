@@ -171,6 +171,14 @@ class SubscriptionTest extends \MailPoetTest {
     $subscribedSegments = $this->subscriber->segments()->findArray();
     expect($subscribedSegments)->count(0);
 
+    // extra segment to subscribe to
+    $segmentData = [
+      'name' => 'some name',
+      'description' => 'some description',
+    ];
+    $segment = Segment::createOrUpdate($segmentData);
+    $this->settings->set(Subscription::OPTIN_SEGMENTS_SETTING_NAME, [$segment->id]);
+
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
     $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
@@ -182,7 +190,11 @@ class SubscriptionTest extends \MailPoetTest {
     unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(1);
+    expect($subscribedSegments)->count(2);
+
+    $subscribedSegmentIds = array_column($subscribedSegments, 'id');
+    expect(in_array($this->wcSegment->id, $subscribedSegmentIds))->true();
+    expect(in_array($segment->id, $subscribedSegmentIds))->true();
 
     $subscriber = Subscriber::findOne($this->subscriber->id);
     expect($subscriber->source)->equals(Source::WOOCOMMERCE_CHECKOUT);
