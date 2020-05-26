@@ -20,7 +20,7 @@ class NewsletterOptionEntity {
 
 
   /**
-   * @ORM\Column(type="text")
+   * @ORM\Column(type="text", nullable=true)
    * @var string|null
    */
   private $value;

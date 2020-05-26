@@ -351,31 +351,6 @@ parameters:
 			path: ../../tests/integration/Cron/Workers/WooCommerceOrdersTest.php
 
 		-
-			message: "#^Cannot call method setName\\(\\) on object\\|null\\.$#"
-			count: 1
-			path: ../../tests/integration/Doctrine/EventListeners/TimestampListenerTest.php
-
-		-
-			message: "#^Cannot call method getCreatedAt\\(\\) on object\\|null\\.$#"
-			count: 1
-			path: ../../tests/integration/Doctrine/EventListeners/TimestampListenerTest.php
-
-		-
-			message: "#^Cannot call method getUpdatedAt\\(\\) on object\\|null\\.$#"
-			count: 1
-			path: ../../tests/integration/Doctrine/EventListeners/TimestampListenerTest.php
-
-		-
-			message: "#^Cannot call method getJsonData\\(\\) on object\\|null\\.$#"
-			count: 4
-			path: ../../tests/integration/Doctrine/Types/JsonTypesTest.php
-
-		-
-			message: "#^Cannot call method getJsonOrSerializedData\\(\\) on object\\|null\\.$#"
-			count: 4
-			path: ../../tests/integration/Doctrine/Types/JsonTypesTest.php
-
-		-
 			message: "#^Parameter \\#1 \\$orm of method MailPoet\\\\DynamicSegments\\\\Filters\\\\EmailAction\\:\\:toSql\\(\\) expects MailPoetVendor\\\\Idiorm\\\\ORM, MailPoet\\\\Models\\\\Subscriber given\\.$#"
 			count: 8
 			path: ../../tests/integration/DynamicSegments/Filters/EmailActionTest.php
@@ -759,8 +734,3 @@ parameters:
 			message: "#^Parameter \\#1 \\$argument of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
 			count: 1
 			path: ../../tests/integration/_bootstrap.php
-
-		-
-			message: "#^Parameter \\#1 \\$newsletter of method MailPoet\\\\Entities\\\\NewsletterTemplateEntity\\:\\:setNewsletter\\(\\) expects MailPoet\\\\Entities\\\\NewsletterEntity\\|null, object given\\.$#"
-			count: 1
-			path: ../../tests/integration/API/JSON/v1/NewsletterTemplatesTest.php

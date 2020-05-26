@@ -36,7 +36,7 @@ class StatisticsNewsletterEntity {
   private $subscriber;
 
   /**
-   * @ORM\Column(type="datetimetz")
+   * @ORM\Column(type="datetimetz", nullable=true)
    * @var \DateTimeInterface|null
    */
   private $sentAt;

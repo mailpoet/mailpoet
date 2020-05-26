@@ -32,7 +32,7 @@ class StatisticsOpenEntity {
 
   /**
    * @ORM\Column(type="integer")
-   * @var int|null
+   * @var int
    */
   private $subscriberId;
 
@@ -77,7 +77,7 @@ class StatisticsOpenEntity {
   }
 
   /**
-   * @param int|null $subscriberId
+   * @param int $subscriberId
    */
   public function setSubscriberId($subscriberId) {
     $this->subscriberId = $subscriberId;

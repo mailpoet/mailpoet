@@ -20,13 +20,13 @@ class NewsletterSegmentEntity {
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="newsletterSegments")
-   * @var NewsletterEntity
+   * @var NewsletterEntity|null
    */
   private $newsletter;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SegmentEntity")
-   * @var SegmentEntity
+   * @var SegmentEntity|null
    */
   private $segment;
 

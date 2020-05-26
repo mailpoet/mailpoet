@@ -42,13 +42,13 @@ class SendingQueueEntity {
   private $newsletterRenderedBody;
 
   /**
-   * @ORM\Column(type="string")
+   * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
   private $newsletterRenderedSubject;
 
   /**
-   * @ORM\Column(type="text")
+   * @ORM\Column(type="text", nullable=true)
    * @var string|null
    */
   private $subscribers;
