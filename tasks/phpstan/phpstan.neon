@@ -32,6 +32,10 @@ parameters:
   checkMissingIterableValueType: false
   checkMissingVarTagTypehint: false
   checkMissingTypehints: false
+
+  # analysis of templates is extremely slow, let's skip them for now
+  excludes_analyse:
+    - ../../lib/Config/PopulatorData/Templates
 includes:
   - vendor/phpstan/phpstan-doctrine/extension.neon
   - vendor/phpstan/phpstan-doctrine/rules.neon
