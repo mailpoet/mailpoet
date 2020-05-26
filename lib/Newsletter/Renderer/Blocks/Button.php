@@ -6,8 +6,8 @@ use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Button {
-  public static function render($element, $columnBaseWidth) {
-    $element['styles']['block']['width'] = self::calculateWidth($element, $columnBaseWidth);
+  public function render($element, $columnBaseWidth) {
+    $element['styles']['block']['width'] = $this->calculateWidth($element, $columnBaseWidth);
     $styles = 'display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none !important;text-align:center;' . StylesHelper::getBlockStyles($element, $exclude = ['textAlign']);
     $styles = EHelper::escapeHtmlStyleAttr($styles);
     $template = '
@@ -43,7 +43,7 @@ class Button {
     return $template;
   }
 
-  public static function calculateWidth($element, $columnBaseWidth) {
+  public function calculateWidth($element, $columnBaseWidth) {
     $columnWidth = $columnBaseWidth - (StylesHelper::$paddingWidth * 2);
     $borderWidth = (int)$element['styles']['block']['borderWidth'];
     $buttonWidth = (int)$element['styles']['block']['width'];

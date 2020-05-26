@@ -20,7 +20,7 @@ class ImageTest extends \MailPoetUnitTest {
   ];
 
   public function testItRendersCorrectly() {
-    $output = Image::render($this->block, 200);
+    $output = (new Image)->render($this->block, 200);
     $expectedResult = '
       <tr>
         <td class="mailpoet_image mailpoet_padded_vertical mailpoet_padded_side" align="center" valign="top">
@@ -32,7 +32,7 @@ class ImageTest extends \MailPoetUnitTest {
 
   public function testItRendersWithoutLink() {
     $this->block['link'] = null;
-    $output = Image::render($this->block, 200);
+    $output = (new Image)->render($this->block, 200);
     $expectedResult = '
       <tr>
         <td class="mailpoet_image mailpoet_padded_vertical mailpoet_padded_side" align="center" valign="top">

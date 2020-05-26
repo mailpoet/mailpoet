@@ -270,6 +270,15 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Options\NewsletterOptionsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Preview\SendPreviewController::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Button::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Divider::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Footer::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Header::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Image::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Social::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Spacer::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Text::class);
     $container->autowire(\MailPoet\Newsletter\Segment\NewsletterSegmentRepository::class);
     $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class);
     $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class)->setPublic(true);

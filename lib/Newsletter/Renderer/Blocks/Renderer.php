@@ -12,9 +12,51 @@ class Renderer {
   public $posts;
   public $ALC;
 
-  public function __construct(AutomatedLatestContent $ALC) {
+  /** @var Button */
+  private $button;
+
+  /** @var Divider */
+  private $divider;
+
+  /** @var Footer */
+  private $footer;
+
+  /** @var Header */
+  private $header;
+
+  /** @var Image */
+  private $image;
+
+  /** @var Social */
+  private $social;
+
+  /** @var Spacer */
+  private $spacer;
+
+  /** @var Text */
+  private $text;
+
+  public function __construct(
+    AutomatedLatestContent $ALC,
+    Button $button,
+    Divider $divider,
+    Footer $footer,
+    Header $header,
+    Image $image,
+    Social $social,
+    Spacer $spacer,
+    Text $text
+  ) {
     $this->posts = [];
     $this->ALC = $ALC;
+    $this->button = $button;
+    $this->divider = $divider;
+    $this->footer = $footer;
+    $this->header = $header;
+    $this->image = $image;
+    $this->social = $social;
+    $this->spacer = $spacer;
+    $this->text = $text;
   }
 
   public function render($newsletter, $data) {
@@ -51,15 +93,28 @@ class Renderer {
 
   public function createElementFromBlockType($newsletter, $block, $columnBaseWidth) {
     if ($block['type'] === 'automatedLatestContent') {
-      $content = $this->processAutomatedLatestContent($newsletter, $block, $columnBaseWidth);
-      return $content;
+      return $this->processAutomatedLatestContent($newsletter, $block, $columnBaseWidth);
     }
     $block = StylesHelper::applyTextAlignment($block);
-    $blockClass = __NAMESPACE__ . '\\' . ucfirst($block['type']);
-    if (!class_exists($blockClass)) {
-      return '';
+    switch ($block['type']) {
+      case 'button':
+        return $this->button->render($block, $columnBaseWidth);
+      case 'divider':
+        return $this->divider->render($block);
+      case 'footer':
+        return $this->footer->render($block);
+      case 'header':
+        return $this->header->render($block);
+      case 'image':
+        return $this->image->render($block, $columnBaseWidth);
+      case 'social':
+        return $this->social->render($block);
+      case 'spacer':
+        return $this->spacer->render($block);
+      case 'text':
+        return $this->text->render($block);
     }
-    return $blockClass::render($block, $columnBaseWidth);
+    return '';
   }
 
   public function automatedLatestContentTransformedPosts($newsletter, $args) {

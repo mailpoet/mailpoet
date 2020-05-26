@@ -25,7 +25,7 @@ class FooterTest extends \MailPoetUnitTest {
   ];
 
   public function testItRendersCorrectly() {
-    $output = Footer::render($this->block);
+    $output = (new Footer)->render($this->block);
     $expectedResult = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_footer"  style="line-height: 19.2px;color: #222222;font-family: roboto, \'helvetica neue\', helvetica, arial, sans-serif;font-size: 12px;text-align: center;">
@@ -37,7 +37,7 @@ class FooterTest extends \MailPoetUnitTest {
 
   public function testItRendersWithBackgroundColor() {
     $this->block['styles']['block']['backgroundColor'] = '#f0f0f0';
-    $output = Footer::render($this->block);
+    $output = (new Footer)->render($this->block);
     $expectedResult = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_footer" bgcolor="#f0f0f0" style="line-height: 19.2px;background-color: #f0f0f0;color: #222222;font-family: roboto, \'helvetica neue\', helvetica, arial, sans-serif;font-size: 12px;text-align: center;">
@@ -49,7 +49,7 @@ class FooterTest extends \MailPoetUnitTest {
 
   public function testItPrefersInlinedCssForLinks() {
     $this->block['text'] = '<p>Footer text. <a href="http://example.com" style="color:#aaaaaa;">link</a></p>';
-    $output = Footer::render($this->block);
+    $output = (new Footer)->render($this->block);
     expect($output)->contains('<a href="http://example.com" style="color:#aaaaaa;text-decoration:none">link</a>');
   }
 }

@@ -15,7 +15,7 @@ class SpacerTest extends \MailPoetUnitTest {
   ];
 
   public function testItRendersCorrectly() {
-    $output = Spacer::render($this->block);
+    $output = (new Spacer)->render($this->block);
     $expectedResult = '
       <tr>
         <td class="mailpoet_spacer" height="13" valign="top"></td>
@@ -25,7 +25,7 @@ class SpacerTest extends \MailPoetUnitTest {
 
   public function testsItRendersWithBackground() {
     $this->block['styles']['block']['backgroundColor'] = "#ffffff";
-    $output = Spacer::render($this->block);
+    $output = (new Spacer)->render($this->block);
     $expectedResult = '
       <tr>
         <td class="mailpoet_spacer" bgcolor="#ffffff" height="13" valign="top"></td>
