@@ -85,6 +85,14 @@ describe('Form Data Load Mapper', () => {
       expect(map(data).settings).to.have.property('otherStyles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
     });
 
+    it('Sets default delays and positions', () => {
+      expect(map(data).settings).to.have.property('popupFormDelay').eq(15);
+      expect(map(data).settings).to.have.property('fixedBarFormDelay').eq(15);
+      expect(map(data).settings).to.have.property('slideInFormDelay').eq(15);
+      expect(map(data).settings).to.have.property('slideInFormPosition').eq('right');
+      expect(map(data).settings).to.have.property('fixedBarFormPosition').eq('top');
+    });
+
     it('Keeps set placement styles', () => {
       const mapData = {
         ...data,

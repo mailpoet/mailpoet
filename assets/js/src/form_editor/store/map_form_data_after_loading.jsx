@@ -10,15 +10,20 @@ export default function mapFormDataAfterLoading(data) {
       placeFormBellowAllPosts: data.settings.place_form_bellow_all_posts === '1',
       placePopupFormOnAllPages: data.settings.place_popup_form_on_all_pages === '1',
       placePopupFormOnAllPosts: data.settings.place_popup_form_on_all_posts === '1',
-      popupFormDelay: asNum(data.settings.popup_form_delay),
+      popupFormDelay: data.settings.popup_form_delay !== undefined
+        ? asNum(data.settings.popup_form_delay) : defaults.popupForm.formDelay,
       placeFixedBarFormOnAllPages: data.settings.place_fixed_bar_form_on_all_pages === '1',
       placeFixedBarFormOnAllPosts: data.settings.place_fixed_bar_form_on_all_posts === '1',
-      fixedBarFormDelay: asNum(data.settings.fixed_bar_form_delay),
-      fixedBarFormPosition: data.settings.fixed_bar_form_position,
+      fixedBarFormDelay: data.settings.fixed_bar_form_delay !== undefined
+        ? asNum(data.settings.fixed_bar_form_delay)
+        : defaults.fixedBarForm.formDelay,
+      fixedBarFormPosition: data.settings.fixed_bar_form_position ?? defaults.fixedBarForm.position,
       placeSlideInFormOnAllPages: data.settings.place_slide_in_form_on_all_pages === '1',
       placeSlideInFormOnAllPosts: data.settings.place_slide_in_form_on_all_posts === '1',
-      slideInFormDelay: asNum(data.settings.slide_in_form_delay),
-      slideInFormPosition: data.settings.slide_in_form_position,
+      slideInFormDelay: data.settings.slide_in_form_delay !== undefined
+        ? asNum(data.settings.slide_in_form_delay)
+        : defaults.slideInForm.formDelay,
+      slideInFormPosition: data.settings.slide_in_form_position ?? defaults.slideInForm.position,
       borderRadius: asNum(data.settings.border_radius),
       borderSize: asNum(data.settings.border_size),
       formPadding: data.settings.form_padding ? asNum(data.settings.form_padding) : 20,
@@ -26,11 +31,11 @@ export default function mapFormDataAfterLoading(data) {
       borderColor: data.settings.border_color,
       backgroundImageUrl: data.settings.background_image_url,
       backgroundImageDisplay: data.settings.background_image_display,
-      belowPostStyles: { ...defaults.belowPostStyles, ...data.settings.below_post_styles },
-      slideInStyles: { ...defaults.slideInStyles, ...data.settings.slide_in_styles },
-      fixedBarStyles: { ...defaults.fixedBarStyles, ...data.settings.fixed_bar_styles },
-      popupStyles: { ...defaults.popupStyles, ...data.settings.popup_styles },
-      otherStyles: { ...defaults.otherStyles, ...data.settings.other_styles },
+      belowPostStyles: { ...defaults.belowPostForm.styles, ...data.settings.below_post_styles },
+      slideInStyles: { ...defaults.slideInForm.styles, ...data.settings.slide_in_styles },
+      fixedBarStyles: { ...defaults.fixedBarForm.styles, ...data.settings.fixed_bar_styles },
+      popupStyles: { ...defaults.popupForm.styles, ...data.settings.popup_styles },
+      otherStyles: { ...defaults.otherForm.styles, ...data.settings.other_styles },
     },
   };
 

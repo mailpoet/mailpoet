@@ -20,9 +20,6 @@ const PopUpSettings = () => {
     settings[key] = value;
     changeFormSettings(settings);
   };
-  const popupFormDelay = formSettings.popupFormDelay === undefined
-    ? 15
-    : formSettings.popupFormDelay;
 
   return (
     <>
@@ -40,7 +37,7 @@ const PopUpSettings = () => {
       />
       <SelectControl
         label={MailPoet.I18n.t('formPlacementDelay')}
-        value={popupFormDelay}
+        value={formSettings.popupFormDelay}
         onChange={partial(updateSettings, 'popupFormDelay')}
         options={delayValues.map((delayValue) => ({
           value: delayValue,
