@@ -3,38 +3,50 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\DomNode;
-use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
-  public $blocksRenderer;
-  public $columnsRenderer;
-  public $preprocessor;
-  public $cSSInliner;
+  /** @var Blocks\Renderer */
+  private $blocksRenderer;
+
+  /** @var Columns\Renderer */
+  private $columnsRenderer;
+
+  /** @var Preprocessor */
+  private $preprocessor;
+
+  /** @var \MailPoetVendor\CSS */
+  private $cSSInliner;
+
+  /** @var Bridge */
+  private $bridge;
+
   public $premiumActivated;
   public $mssActivated;
   private $template;
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
 
-  public function __construct() {
-    $this->blocksRenderer = ContainerWrapper::getInstance()->get(Blocks\Renderer::class);
-    $this->columnsRenderer = new Columns\Renderer();
-    $this->preprocessor = new Preprocessor(
-      $this->blocksRenderer,
-      ContainerWrapper::getInstance()->get(TransactionalEmails::class)
-    );
-    $this->cSSInliner = new \MailPoetVendor\CSS();
+  public function __construct(
+    Blocks\Renderer $blocksRenderer,
+    Columns\Renderer $columnsRenderer,
+    Preprocessor $preprocessor,
+    \MailPoetVendor\CSS $cSSInliner,
+    Bridge $bridge
+  ) {
+    $this->blocksRenderer = $blocksRenderer;
+    $this->columnsRenderer = $columnsRenderer;
+    $this->preprocessor = $preprocessor;
+    $this->cSSInliner = $cSSInliner;
+    $this->bridge = $bridge;
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
     $this->premiumActivated = License::getLicense();
-    $bridge = new Bridge();
-    $this->mssActivated = $bridge->isMPSendingServiceEnabled();
+    $this->mssActivated = $this->bridge->isMPSendingServiceEnabled();
   }
 
   /**
@@ -94,16 +106,15 @@ class Renderer {
       ? $content['blocks']
       : [];
 
-    $_this = $this;
-    $renderedContent = array_map(function($contentBlock) use($_this, $newsletter) {
+    $renderedContent = [];
+    foreach ($blocks as $contentBlock) {
+      $columnsData = $this->blocksRenderer->render($newsletter, $contentBlock);
 
-      $columnsData = $_this->blocksRenderer->render($newsletter, $contentBlock);
-
-      return $_this->columnsRenderer->render(
+      $renderedContent[] = $this->columnsRenderer->render(
         $contentBlock,
         $columnsData
       );
-    }, $blocks);
+    }
     return implode('', $renderedContent);
   }
 

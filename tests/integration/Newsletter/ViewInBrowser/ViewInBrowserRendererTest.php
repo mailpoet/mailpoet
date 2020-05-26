@@ -9,6 +9,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
+use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -149,7 +150,11 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       }),
     ]);
     $this->settings->set('tracking.enabled', false);
-    $viewInBrowser = new ViewInBrowserRenderer($emoji, $this->diContainer->get(SettingsController::class));
+    $viewInBrowser = new ViewInBrowserRenderer(
+      $emoji,
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(Renderer::class)
+    );
     $renderedBody = $viewInBrowser->render(
       $preview = false,
       $this->newsletter,

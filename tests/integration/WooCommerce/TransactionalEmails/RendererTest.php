@@ -7,6 +7,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
+use MailPoet\Services\Bridge;
 use MailPoetVendor\csstidy;
 
 class RendererTest extends \MailPoetTest {
@@ -36,20 +37,26 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testGetHTMLBeforeContent() {
-    $renderer = new Renderer(new csstidy);
-    $newsletterRenderer = new NewsletterRenderer();
-    $newsletterRenderer->preprocessor = new Preprocessor(
-      $newsletterRenderer->blocksRenderer,
-      Stub::make(
-        \MailPoet\WooCommerce\TransactionalEmails::class,
-        [
-          'getWCEmailSettings' => [
-            'base_text_color' => '',
-            'base_color' => '',
-          ],
-        ]
-      )
+    $newsletterRenderer = new NewsletterRenderer(
+      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
+      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
+      new Preprocessor(
+        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
+        Stub::make(
+          \MailPoet\WooCommerce\TransactionalEmails::class,
+          [
+            'getWCEmailSettings' => [
+              'base_text_color' => '',
+              'base_color' => '',
+            ],
+          ]
+        )
+      ),
+      $this->diContainer->get(\MailPoetVendor\CSS::class),
+      $this->diContainer->get(Bridge::class)
     );
+
+    $renderer = new Renderer(new csstidy, $newsletterRenderer);
     $renderer->render($this->newsletter);
     $html = $renderer->getHTMLBeforeContent('Heading Text');
     expect($html)->contains('Some text before heading');
@@ -59,20 +66,25 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testGetHTMLAfterContent() {
-    $newsletterRenderer = new NewsletterRenderer();
-    $renderer = new Renderer(new csstidy, $newsletterRenderer);
-    $newsletterRenderer->preprocessor = new Preprocessor(
-      $newsletterRenderer->blocksRenderer,
-      Stub::make(
-        \MailPoet\WooCommerce\TransactionalEmails::class,
-        [
-          'getWCEmailSettings' => [
-            'base_text_color' => '',
-            'base_color' => '',
-          ],
-        ]
-      )
+    $newsletterRenderer = new NewsletterRenderer(
+      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
+      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
+      new Preprocessor(
+        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
+        Stub::make(
+          \MailPoet\WooCommerce\TransactionalEmails::class,
+          [
+            'getWCEmailSettings' => [
+              'base_text_color' => '',
+              'base_color' => '',
+            ],
+          ]
+        )
+      ),
+      $this->diContainer->get(\MailPoetVendor\CSS::class),
+      $this->diContainer->get(Bridge::class)
     );
+    $renderer = new Renderer(new csstidy, $newsletterRenderer);
     $renderer->render($this->newsletter);
     $html = $renderer->getHTMLAfterContent();
     expect($html)->notContains('Some text before heading');
@@ -82,7 +94,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testPrefixCss() {
-    $renderer = new Renderer(new csstidy);
+    $renderer = new Renderer(new csstidy, $this->diContainer->get(NewsletterRenderer::class));
     $css = $renderer->prefixCss('
       #some_id {color: black}
       .some-class {height: 50px; width: 30px}
