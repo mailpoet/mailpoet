@@ -8,6 +8,7 @@ use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
 use MailPoet\Services\Bridge;
+use MailPoet\Util\License\License;
 use MailPoetVendor\csstidy;
 
 class RendererTest extends \MailPoetTest {
@@ -53,7 +54,8 @@ class RendererTest extends \MailPoetTest {
         )
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->diContainer->get(Bridge::class)
+      $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(License::class)
     );
 
     $renderer = new Renderer(new csstidy, $newsletterRenderer);
@@ -82,7 +84,8 @@ class RendererTest extends \MailPoetTest {
         )
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->diContainer->get(Bridge::class)
+      $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(License::class)
     );
     $renderer = new Renderer(new csstidy, $newsletterRenderer);
     $renderer->render($this->newsletter);

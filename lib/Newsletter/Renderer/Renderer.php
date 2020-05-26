@@ -26,9 +26,9 @@ class Renderer {
   /** @var Bridge */
   private $bridge;
 
-  public $premiumActivated;
-  public $mssActivated;
-  private $template;
+  /** @var License */
+  private $license;
+
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
 
@@ -37,16 +37,15 @@ class Renderer {
     Columns\Renderer $columnsRenderer,
     Preprocessor $preprocessor,
     \MailPoetVendor\CSS $cSSInliner,
-    Bridge $bridge
+    Bridge $bridge,
+    License $license
   ) {
     $this->blocksRenderer = $blocksRenderer;
     $this->columnsRenderer = $columnsRenderer;
     $this->preprocessor = $preprocessor;
     $this->cSSInliner = $cSSInliner;
     $this->bridge = $bridge;
-    $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
-    $this->premiumActivated = License::getLicense();
-    $this->mssActivated = $this->bridge->isMPSendingServiceEnabled();
+    $this->license = $license;
   }
 
   /**
@@ -64,7 +63,11 @@ class Renderer {
       ? $body['globalStyles']
       : [];
 
-    if (!$this->premiumActivated && !$this->mssActivated && !$preview) {
+    if (
+      !$this->license->hasLicense()
+      && !$this->bridge->isMailpoetSendingServiceEnabled()
+      && !$preview
+    ) {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
 
@@ -73,13 +76,16 @@ class Renderer {
     $renderedStyles = $this->renderStyles($styles);
     $customFontsLinks = StylesHelper::getCustomFontsLinks($styles);
 
-    $template = $this->injectContentIntoTemplate($this->template, [
-      htmlspecialchars($newsletter['subject']),
-      $renderedStyles,
-      $customFontsLinks,
-      EHelper::escapeHtmlText($newsletter['preheader']),
-      $renderedBody,
-    ]);
+    $template = $this->injectContentIntoTemplate(
+      (string)file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE),
+      [
+        htmlspecialchars($newsletter['subject']),
+        $renderedStyles,
+        $customFontsLinks,
+        EHelper::escapeHtmlText($newsletter['preheader']),
+        $renderedBody,
+      ]
+    );
     if ($template === null) {
       $template = '';
     }

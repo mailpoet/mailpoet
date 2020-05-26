@@ -53,6 +53,16 @@ class Bridge {
     }
   }
 
+  public function isMailpoetSendingServiceEnabled() {
+    try {
+      $mailerConfig = SettingsController::getInstance()->get(Mailer::MAILER_CONFIG_SETTING_NAME);
+      return !empty($mailerConfig['method'])
+        && $mailerConfig['method'] === Mailer::METHOD_MAILPOET;
+    } catch (\Exception $e) {
+      return false;
+    }
+  }
+
   public static function isMSSKeySpecified() {
     $settings = SettingsController::getInstance();
     $key = $settings->get(self::API_KEY_SETTING_NAME);
