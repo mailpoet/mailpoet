@@ -27,7 +27,7 @@ class ButtonTest extends \MailPoetUnitTest {
   ];
 
   public function testItRendersCorrectly() {
-    $output = Button::render($this->block, 200);
+    $output = (new Button)->render($this->block, 200);
     $expectedResult = '
       <tr>
         <td class="mailpoet_padded_vertical mailpoet_padded_side" valign="top">

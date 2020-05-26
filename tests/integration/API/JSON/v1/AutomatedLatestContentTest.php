@@ -3,7 +3,6 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use MailPoet\API\JSON\v1\AutomatedLatestContent;
-use MailPoet\WP\Functions as WPFunctions;
 
 class AutomatedLatestContentTest extends \MailPoetTest {
   public function testItGetsPostTypes() {

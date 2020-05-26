@@ -8,7 +8,7 @@ use MailPoet\Util\pQuery\pQuery;
 use MailPoetVendor\CSS;
 
 class Footer {
-  public static function render($element) {
+  public function render($element) {
     $element['text'] = preg_replace('/\n/', '<br />', $element['text']);
     $element['text'] = preg_replace('/(<\/?p.*?>)/i', '', $element['text']);
     $lineHeight = sprintf(

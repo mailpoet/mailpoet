@@ -5,7 +5,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Social {
-  public static function render($element) {
+  public function render($element) {
     $iconsBlock = '';
     if (is_array($element['icons'])) {
       foreach ($element['icons'] as $index => $icon) {

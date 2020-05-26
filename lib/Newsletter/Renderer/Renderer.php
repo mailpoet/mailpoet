@@ -5,7 +5,6 @@ namespace MailPoet\Newsletter\Renderer;
 use MailPoet\Config\Env;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
-use MailPoet\Newsletter\AutomatedLatestContent;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
@@ -32,9 +31,7 @@ class Renderer {
   public function __construct($newsletter, $preview = false) {
     $this->newsletter = ($newsletter instanceof Newsletter) ? $newsletter->asArray() : $newsletter;
     $this->preview = $preview;
-    $this->blocksRenderer = new Blocks\Renderer(
-      ContainerWrapper::getInstance()->get(AutomatedLatestContent::class)
-    );
+    $this->blocksRenderer = ContainerWrapper::getInstance()->get(Blocks\Renderer::class);
     $this->columnsRenderer = new Columns\Renderer();
     $this->preprocessor = new Preprocessor(
       $this->blocksRenderer,

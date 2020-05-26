@@ -8,16 +8,16 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\Util\pQuery\pQuery;
 
 class Text {
-  public static function render($element) {
+  public function render($element) {
     $html = $element['text'];
     // replace &nbsp; with spaces
     $html = str_replace('&nbsp;', ' ', $html);
     $html = str_replace('\xc2\xa0', ' ', $html);
-    $html = self::convertBlockquotesToTables($html);
-    $html = self::convertParagraphsToTables($html);
-    $html = self::styleLists($html);
-    $html = self::styleHeadings($html);
-    $html = self::removeLastLineBreak($html);
+    $html = $this->convertBlockquotesToTables($html);
+    $html = $this->convertParagraphsToTables($html);
+    $html = $this->styleLists($html);
+    $html = $this->styleHeadings($html);
+    $html = $this->removeLastLineBreak($html);
     $template = '
       <tr>
         <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;">
@@ -27,7 +27,7 @@ class Text {
     return $template;
   }
 
-  public static function convertBlockquotesToTables($html) {
+  public function convertBlockquotesToTables($html) {
     $dOMParser = new pQuery();
     $DOM = $dOMParser->parseStr($html);
     $blockquotes = $DOM->query('blockquote');
@@ -67,12 +67,12 @@ class Text {
           </tr>
         </tbody>'
       );
-      $blockquote = self::insertLineBreak($blockquote);
+      $blockquote = $this->insertLineBreak($blockquote);
     }
     return $DOM->__toString();
   }
 
-  public static function convertParagraphsToTables($html) {
+  public function convertParagraphsToTables($html) {
     $dOMParser = new pQuery();
     $DOM = $dOMParser->parseStr($html);
     $paragraphs = $DOM->query('p');
@@ -95,7 +95,7 @@ class Text {
             !$previousElement ||
             (preg_match('/h\d+/', $previousElementTag))
         ) {
-          $paragraph = self::insertLineBreak($paragraph);
+          $paragraph = $this->insertLineBreak($paragraph);
         }
         $paragraph->remove();
         continue;
@@ -136,7 +136,7 @@ class Text {
     return $DOM->__toString();
   }
 
-  public static function styleLists($html) {
+  public function styleLists($html) {
     $dOMParser = new pQuery();
     $DOM = $dOMParser->parseStr($html);
     $lists = $DOM->query('ol, ul, li');
@@ -156,7 +156,7 @@ class Text {
     return $DOM->__toString();
   }
 
-  public static function styleHeadings($html) {
+  public function styleHeadings($html) {
     $dOMParser = new pQuery();
     $DOM = $dOMParser->parseStr($html);
     $headings = $DOM->query('h1, h2, h3, h4');
@@ -169,11 +169,11 @@ class Text {
     return $DOM->__toString();
   }
 
-  public static function removeLastLineBreak($html) {
+  public function removeLastLineBreak($html) {
     return preg_replace('/(^)?(<br[^>]*?\/?>)+$/i', '', $html);
   }
 
-  public static function insertLineBreak($element) {
+  public function insertLineBreak($element) {
     $element->parent->insertChild(
       [
         'tag_name' => 'br',

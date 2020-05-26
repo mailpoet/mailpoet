@@ -18,7 +18,7 @@ class DividerTest extends \MailPoetUnitTest {
   ];
 
   public function testItRendersCorrectly() {
-    $output = Divider::render($this->block);
+    $output = (new Divider)->render($this->block);
     $expectedResult = '
       <tr>
         <td class="mailpoet_divider" valign="top" style="padding: 13px 20px 13px 20px;">
