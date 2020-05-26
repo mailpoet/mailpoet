@@ -3,14 +3,20 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Models\Newsletter;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
+use MailPoet\RuntimeException;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Renderer {
+  const NEWSLETTER_TEMPLATE = 'Template.html';
+  const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
+
   /** @var Blocks\Renderer */
   private $blocksRenderer;
 
@@ -29,8 +35,8 @@ class Renderer {
   /** @var License */
   private $license;
 
-  const NEWSLETTER_TEMPLATE = 'Template.html';
-  const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
 
   public function __construct(
     Blocks\Renderer $blocksRenderer,
@@ -38,6 +44,7 @@ class Renderer {
     Preprocessor $preprocessor,
     \MailPoetVendor\CSS $cSSInliner,
     Bridge $bridge,
+    NewslettersRepository $newslettersRepository,
     License $license
   ) {
     $this->blocksRenderer = $blocksRenderer;
@@ -46,15 +53,29 @@ class Renderer {
     $this->cSSInliner = $cSSInliner;
     $this->bridge = $bridge;
     $this->license = $license;
+    $this->newslettersRepository = $newslettersRepository;
   }
 
   /**
-   * @param \MailPoet\Models\Newsletter|array $newsletter
+   * This is only temporary, when all calls are refactored to doctrine and only entity is passed we don't need this
+   * @param \MailPoet\Models\Newsletter|NewsletterEntity $newsletter
+   * @return NewsletterEntity|null
    */
+  private function getNewsletter($newsletter) {
+    if ($newsletter instanceof NewsletterEntity) return $newsletter;
+    if ($newsletter instanceof Newsletter) {
+      $newsletterId = $newsletter->id;
+    }
+    return $this->newslettersRepository->findOneById($newsletterId);
+  }
+
   public function render($newsletter, $preview = false, $type = false) {
-    $newsletter = ($newsletter instanceof Newsletter) ? $newsletter->asArray() : $newsletter;
-    $body = (is_array($newsletter['body']))
-      ? $newsletter['body']
+    $newsletter = $this->getNewsletter($newsletter);
+    if (!$newsletter instanceof NewsletterEntity) {
+      throw new RuntimeException('Newsletter was not found');
+    }
+    $body = (is_array($newsletter->getBody()))
+      ? $newsletter->getBody()
       : [];
     $content = (array_key_exists('content', $body))
       ? $body['content']
@@ -79,10 +100,10 @@ class Renderer {
     $template = $this->injectContentIntoTemplate(
       (string)file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE),
       [
-        htmlspecialchars($newsletter['subject']),
+        htmlspecialchars($newsletter->getSubject()),
         $renderedStyles,
         $customFontsLinks,
-        EHelper::escapeHtmlText($newsletter['preheader']),
+        EHelper::escapeHtmlText($newsletter->getPreheader()),
         $renderedBody,
       ]
     );
@@ -103,11 +124,11 @@ class Renderer {
   }
 
   /**
-   * @param array $newsletter
+   * @param NewsletterEntity $newsletter
    * @param array $content
    * @return string
    */
-  private function renderBody($newsletter, $content) {
+  private function renderBody(NewsletterEntity $newsletter, array $content) {
     $blocks = (array_key_exists('blocks', $content))
       ? $content['blocks']
       : [];

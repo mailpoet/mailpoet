@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Newsletter;
 
 use Codeception\Stub;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Renderer\Blocks\Renderer;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\WooCommerce\TransactionalEmails;
@@ -17,7 +18,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
       ],
     ]);
     $preprocessor = new Preprocessor($renderer, $transactionalEmails);
-    expect($preprocessor->processBlock([], ['type' => 'woocommerceHeading']))->equals([[
+    expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceHeading']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
       'styles' => [
@@ -42,7 +43,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
   public function testProcessWooCommerceContentBlock() {
     $renderer = Stub::make(Renderer::class);
     $preprocessor = new Preprocessor($renderer, Stub::make(TransactionalEmails::class));
-    expect($preprocessor->processBlock([], ['type' => 'woocommerceContent']))->equals([[
+    expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceContent']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
       'styles' => [

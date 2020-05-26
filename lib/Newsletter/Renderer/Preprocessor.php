@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Renderer;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Editor\LayoutHelper;
 use MailPoet\Newsletter\Renderer\Blocks\Renderer as BlocksRenderer;
 use MailPoet\WooCommerce\TransactionalEmails;
@@ -32,10 +33,10 @@ class Preprocessor {
 
   /**
    * @param array $content
-   * @param array $newsletter
+   * @param NewsletterEntity $newsletter
    * @return array
    */
-  public function process($newsletter, $content) {
+  public function process(NewsletterEntity $newsletter, $content) {
     if (!array_key_exists('blocks', $content)) {
       return $content;
     }
@@ -47,12 +48,7 @@ class Preprocessor {
     return $content;
   }
 
-    /**
-   * @param array $block
-   * @param array $newsletter
-   * @return array
-   */
-  public function processBlock($newsletter, $block) {
+  public function processBlock(NewsletterEntity $newsletter, array $block): array {
     switch ($block['type']) {
       case 'automatedLatestContentLayout':
         return $this->blocksRenderer->automatedLatestContentTransformedPosts($newsletter, $block);
