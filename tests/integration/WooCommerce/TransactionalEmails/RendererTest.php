@@ -37,7 +37,7 @@ class RendererTest extends \MailPoetTest {
 
   public function testGetHTMLBeforeContent() {
     $renderer = new Renderer(new csstidy);
-    $newsletterRenderer = new NewsletterRenderer($this->newsletter, true);
+    $newsletterRenderer = new NewsletterRenderer();
     $newsletterRenderer->preprocessor = new Preprocessor(
       $newsletterRenderer->blocksRenderer,
       Stub::make(
@@ -60,7 +60,7 @@ class RendererTest extends \MailPoetTest {
 
   public function testGetHTMLAfterContent() {
     $renderer = new Renderer(new csstidy);
-    $newsletterRenderer = new NewsletterRenderer($this->newsletter, true);
+    $newsletterRenderer = new NewsletterRenderer();
     $newsletterRenderer->preprocessor = new Preprocessor(
       $newsletterRenderer->blocksRenderer,
       Stub::make(

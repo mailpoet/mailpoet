@@ -570,8 +570,8 @@ class Newsletter extends Model {
   }
 
   public function render() {
-    $renderer = new Renderer($this);
-    return $renderer->render();
+    $renderer = new Renderer();
+    return $renderer->render($this);
   }
 
   public function wasScheduledForSubscriber($subscriberId) {
