@@ -36,10 +36,9 @@ class TransactionalEmailsUnitTest extends \MailPoetUnitTest {
     ]);
     $settings = Stub::make(SettingsController::class);
     $template = Stub::make(Template::class);
-    $renderer = Stub::make(Renderer::class);
     $woocommerceHelper = Stub::make(WooCommerceHelper::class);
     $newslettersRepository = Stub::make(NewslettersRepository::class);
-    $transactionalEmails = new TransactionalEmails($wp, $settings, $template, $renderer, $woocommerceHelper, $newslettersRepository);
+    $transactionalEmails = new TransactionalEmails($wp, $settings, $template, $woocommerceHelper, $newslettersRepository);
     expect($transactionalEmails->getEmailHeadings())->equals([
       'new_account' => 'Test: New Order: #0001',
       'processing_order' => 'Thank you for your order',

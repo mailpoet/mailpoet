@@ -14,21 +14,27 @@ class Renderer {
   /** @var csstidy */
   private $cssParser;
 
+  /** @var NewsletterRenderer */
+  private $renderer;
+
   /** @var string */
   private $htmlBeforeContent;
 
   /** @var string */
   private $htmlAfterContent;
 
-  public function __construct(csstidy $cssParser) {
+  public function __construct(
+    csstidy $cssParser,
+    NewsletterRenderer $renderer
+  ) {
     $this->cssParser = $cssParser;
     $this->htmlBeforeContent = '';
     $this->htmlAfterContent = '';
+    $this->renderer = $renderer;
   }
 
-  public function render(Newsletter $newsletter, NewsletterRenderer $renderer = null) {
-    $renderer = $renderer ?: new NewsletterRenderer();
-    $html = explode(Preprocessor::WC_CONTENT_PLACEHOLDER, $renderer->render($newsletter, true, 'html'));
+  public function render(Newsletter $newsletter) {
+    $html = explode(Preprocessor::WC_CONTENT_PLACEHOLDER, $this->renderer->render($newsletter, true, 'html'));
     $this->htmlBeforeContent = $html[0];
     $this->htmlAfterContent = $html[1];
   }
