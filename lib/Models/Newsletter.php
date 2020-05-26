@@ -6,10 +6,8 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
@@ -568,11 +566,6 @@ class Newsletter extends Model {
       $this->options = array_column($options, 'value', 'name');
     }
     return $this;
-  }
-
-  public function render() {
-    $renderer = ContainerWrapper::getInstance()->get(Renderer::class);
-    return $renderer->render($this);
   }
 
   public function wasScheduledForSubscriber($subscriberId) {

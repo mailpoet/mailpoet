@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
@@ -12,6 +13,7 @@ use MailPoet\Models\NewsletterSegment as NewsletterSegmentModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
+use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\GATracking;
 use MailPoet\Util\Helpers;
@@ -33,6 +35,9 @@ class Newsletter {
 
   /** @var LoggerFactory */
   private $loggerFactory;
+
+  /** @var Renderer */
+  private $renderer;
 
   /** @var Emoji */
   private $emoji;
@@ -57,6 +62,7 @@ class Newsletter {
       $emoji = new Emoji();
     }
     $this->emoji = $emoji;
+    $this->renderer = ContainerWrapper::getInstance()->get(Renderer::class);
   }
 
   public function getNewsletterFromQueue($queue) {
@@ -103,7 +109,7 @@ class Newsletter {
       // hook to the newsletter post-processing filter and add tracking image
       $this->trackingImageInserted = OpenTracking::addTrackingImage();
       // render newsletter
-      $renderedNewsletter = $newsletter->render();
+      $renderedNewsletter = $this->renderer->render($newsletter);
       $renderedNewsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $renderedNewsletter,
@@ -114,7 +120,7 @@ class Newsletter {
       $renderedNewsletter = LinksTask::process($renderedNewsletter, $newsletter, $sendingTask);
     } else {
       // render newsletter
-      $renderedNewsletter = $newsletter->render();
+      $renderedNewsletter = $this->renderer->render($newsletter);
       $renderedNewsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $renderedNewsletter,
