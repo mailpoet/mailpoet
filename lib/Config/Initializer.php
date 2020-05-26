@@ -12,7 +12,7 @@ use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
-use MailPoet\WooCommerce\TransactionalEmails as WCTransactionalEmails;
+use MailPoet\WooCommerce\TransactionalEmailHooks as WCTransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 

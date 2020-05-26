@@ -50,7 +50,7 @@ class RendererTest extends \MailPoetTest {
         ]
       )
     );
-    $renderer->render($this->newsletter, $newsletterRenderer);
+    $renderer->render($this->newsletter);
     $html = $renderer->getHTMLBeforeContent('Heading Text');
     expect($html)->contains('Some text before heading');
     expect($html)->contains('Heading Text');
@@ -59,8 +59,8 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testGetHTMLAfterContent() {
-    $renderer = new Renderer(new csstidy);
     $newsletterRenderer = new NewsletterRenderer();
+    $renderer = new Renderer(new csstidy, $newsletterRenderer);
     $newsletterRenderer->preprocessor = new Preprocessor(
       $newsletterRenderer->blocksRenderer,
       Stub::make(
@@ -73,7 +73,7 @@ class RendererTest extends \MailPoetTest {
         ]
       )
     );
-    $renderer->render($this->newsletter, $newsletterRenderer);
+    $renderer->render($this->newsletter);
     $html = $renderer->getHTMLAfterContent();
     expect($html)->notContains('Some text before heading');
     expect($html)->notContains('Heading Text');

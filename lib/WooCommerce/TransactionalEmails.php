@@ -4,10 +4,8 @@ namespace MailPoet\WooCommerce;
 
 use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\WooCommerce\TransactionalEmails\Renderer;
 use MailPoet\WooCommerce\TransactionalEmails\Template;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -26,20 +24,22 @@ class TransactionalEmails {
   /** @var Helper */
   private $woocommerceHelper;
 
-  /** @var Renderer */
-  private $renderer;
-
   /** @var array */
   private $emailHeadings;
 
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  public function __construct(WPFunctions $wp, SettingsController $settings, Template $template, Renderer $renderer, Helper $woocommerceHelper, NewslettersRepository $newslettersRepository) {
+  public function __construct(
+    WPFunctions $wp,
+    SettingsController $settings,
+    Template $template,
+    Helper $woocommerceHelper,
+    NewslettersRepository $newslettersRepository
+  ) {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->template = $template;
-    $this->renderer = $renderer;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->newslettersRepository = $newslettersRepository;
     $this->emailHeadings = [
@@ -84,25 +84,6 @@ class TransactionalEmails {
     return $values;
   }
 
-  public function useTemplateForWoocommerceEmails() {
-    $this->wp->addAction('woocommerce_init', function() {
-      /** @var callable */
-      $emailHeaderCallback = [\WC()->mailer(), 'email_header'];
-      /** @var callable */
-      $emailFooterCallback = [\WC()->mailer(), 'email_footer'];
-      $this->wp->removeAction('woocommerce_email_header', $emailHeaderCallback);
-      $this->wp->removeAction('woocommerce_email_footer', $emailFooterCallback);
-      $this->wp->addAction('woocommerce_email_header', function($emailHeading) {
-        $this->renderer->render($this->getNewsletter());
-        echo $this->renderer->getHTMLBeforeContent($emailHeading);
-      });
-      $this->wp->addAction('woocommerce_email_footer', function() {
-        echo $this->renderer->getHTMLAfterContent();
-      });
-      $this->wp->addAction('woocommerce_email_styles', [$this->renderer, 'prefixCss']);
-    });
-  }
-
   private function createNewsletter() {
     $wcEmailSettings = $this->getWCEmailSettings();
     $newsletter = new NewsletterEntity;
@@ -114,10 +95,6 @@ class TransactionalEmails {
     return $newsletter;
   }
 
-  private function getNewsletter() {
-    return Newsletter::findOne($this->settings->get(self::SETTING_EMAIL_ID));
-  }
-
   private function replacePlaceholders($text) {
     $title = $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES);
     $address = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
@@ -127,28 +104,6 @@ class TransactionalEmails {
       [$title, $address, $orderDate, '0001'],
       $text
     );
-  }
-
-  public function enableEmailSettingsSyncToWooCommerce() {
-    $this->wp->addFilter('mailpoet_api_newsletters_save_after', [$this, 'syncEmailSettingsToWooCommerce']);
-  }
-
-  public function syncEmailSettingsToWooCommerce(array $newsletterData) {
-    if ($newsletterData['type'] !== NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL) {
-      return $newsletterData;
-    }
-
-    $styles = $newsletterData['body']['globalStyles'];
-    $optionsToSync = [
-      'woocommerce_email_background_color' => $styles['body']['backgroundColor'],
-      'woocommerce_email_base_color' => $styles['woocommerce']['brandingColor'],
-      'woocommerce_email_body_background_color' => $styles['wrapper']['backgroundColor'],
-      'woocommerce_email_text_color' => $styles['text']['fontColor'],
-    ];
-    foreach ($optionsToSync as $wcName => $value) {
-      $this->wp->updateOption($wcName, $value);
-    }
-    return $newsletterData;
   }
 
   public function getWCEmailSettings() {
