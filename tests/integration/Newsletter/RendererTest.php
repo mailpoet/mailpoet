@@ -3,6 +3,8 @@
 namespace MailPoet\Test\Newsletter;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Button;
 use MailPoet\Newsletter\Renderer\Blocks\Divider;
 use MailPoet\Newsletter\Renderer\Blocks\Footer;
@@ -22,8 +24,10 @@ class RendererTest extends \MailPoetTest {
   public $dOMParser;
   public $columnRenderer;
 
-  /** @var Renderer & MockObject */
+  /** @var Renderer */
   public $renderer;
+
+  /** @var NewsletterEntity */
   public $newsletter;
 
   /** @var License & MockObject */
@@ -35,16 +39,14 @@ class RendererTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->newsletter = [
-      'body' => json_decode(
-        (string)file_get_contents(dirname(__FILE__) . '/RendererTestData.json'), true
-      ),
-      'id' => 1,
-      'subject' => 'Some subject',
-      'preheader' => 'Some preheader',
-      'type' => 'standard',
-      'status' => 'active',
-    ];
+    $this->newsletter = new NewsletterEntity();
+    $this->newsletter->setBody(json_decode(
+      (string)file_get_contents(dirname(__FILE__) . '/RendererTestData.json'), true
+    ));
+    $this->newsletter->setSubject('Some subject');
+    $this->newsletter->setPreheader('Some preheader');
+    $this->newsletter->setType('standard');
+    $this->newsletter->setStatus('active');
     $this->license = $this->createMock(License::class);
     $this->bridge = $this->createMock(Bridge::class);
     $this->renderer = new Renderer(
@@ -53,6 +55,7 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(Preprocessor::class),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->bridge,
+      $this->diContainer->get(NewslettersRepository::class),
       $this->license
     );
     $this->columnRenderer = new ColumnRenderer();
@@ -247,7 +250,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersHeader() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][0];
     $DOM = $this->dOMParser->parseStr((new Header)->render($template));
     // element should be properly nested, and styles should be applied
@@ -258,7 +261,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersImage() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
     $DOM = $this->dOMParser->parseStr((new Image)->render($template, self::COLUMN_BASE_WIDTH));
     // element should be properly nested, it's width set and style applied
@@ -266,7 +269,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersAlignedImage() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
     // default alignment (center)
     unset($template['styles']['block']['textAlign']);
@@ -326,7 +329,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersImageWithLink() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
     $template['link'] = 'http://example.com';
     $DOM = $this->dOMParser->parseStr((new Image)->render($template, self::COLUMN_BASE_WIDTH));
@@ -404,7 +407,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersText() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][2];
     $DOM = $this->dOMParser->parseStr((new Text)->render($template));
     // blockquotes and paragraphs should be converted to spans and placed inside a table
@@ -444,7 +447,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersDivider() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][3];
     $DOM = $this->dOMParser->parseStr((new Divider)->render($template));
     // element should be properly nested and its border-top-width set
@@ -456,7 +459,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersSpacer() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][4];
     $DOM = $this->dOMParser->parseStr((new Spacer)->render($template));
     // element should be properly nested and its height set
@@ -464,7 +467,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItSetsSpacerBackground() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][4];
     $DOM = $this->dOMParser->parseStr((new Spacer)->render($template));
     expect($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))->null();
@@ -475,7 +478,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItCalculatesButtonWidth() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $template['styles']['block']['width'] = '700px';
     $buttonWidth = (new Button)->calculateWidth($template, self::COLUMN_BASE_WIDTH);
@@ -483,7 +486,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersButton() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $DOM = $this->dOMParser->parseStr((new Button)->render($template, self::COLUMN_BASE_WIDTH));
     // element should be properly nested with arcsize/styles/fillcolor set
@@ -518,7 +521,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItUsesFullFontFamilyNameInElementStyles() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $template['styles']['block']['fontFamily'] = 'Lucida';
     $DOM = $this->dOMParser->parseStr((new Button)->render($template, self::COLUMN_BASE_WIDTH));
@@ -530,7 +533,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersSocialIcons() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][6];
     $DOM = $this->dOMParser->parseStr((new Social)->render($template));
     // element should be properly nested, contain social icons and
@@ -558,7 +561,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersFooter() {
-    $newsletter = $this->newsletter['body'];
+    $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][3]['blocks'][0]['blocks'][0];
     $DOM = $this->dOMParser->parseStr((new Footer)->render($template));
     // element should be properly nested, and styles should be applied
@@ -569,26 +572,26 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItSetsSubject() {
-    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->render($this->newsletter);
     $DOM = $this->dOMParser->parseStr($template['html']);
     $subject = trim($DOM('title')->text());
-    expect($subject)->equals($this->newsletter['subject']);
+    expect($subject)->equals($this->newsletter->getSubject());
   }
 
   public function testItSetsPreheader() {
-    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->render($this->newsletter);
     $DOM = $this->dOMParser->parseStr($template['html']);
     $preheader = trim($DOM('td.mailpoet_preheader')->text());
-    expect($preheader)->equals($this->newsletter['preheader']);
+    expect($preheader)->equals($this->newsletter->getPreheader());
   }
 
   public function testItDoesNotAddMailpoetLogoWhenPremiumIsActive() {
     $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(false);
     $this->license->method('hasLicense')->willReturn(true);
 
-    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->render($this->newsletter, false);
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
@@ -597,7 +600,7 @@ class RendererTest extends \MailPoetTest {
     $this->license->method('hasLicense')->willReturn(false);
     $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(true);
 
-    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->render($this->newsletter, false);
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
@@ -606,13 +609,13 @@ class RendererTest extends \MailPoetTest {
     $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(false);
     $this->license->method('hasLicense')->willReturn(false);
 
-    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->render($this->newsletter, true);
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
 
   public function testItAddsMailpoetLogo() {
-    $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(false);
     $this->license->method('hasLicense')->willReturn(false);
 
@@ -621,7 +624,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItPostProcessesTemplate() {
-    $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
+    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->render($this->newsletter);
     // !important should be stripped from everywhere except from with the <style> tag
     expect(preg_match('/<style.*?important/s', $template['html']))->equals(1);

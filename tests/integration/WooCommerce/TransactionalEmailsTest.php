@@ -5,6 +5,7 @@ namespace MailPoet\WooCommerce;
 use Codeception\Stub;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SettingEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
@@ -29,6 +30,18 @@ class TransactionalEmailsTest extends \MailPoetTest {
   private $newslettersRepository;
 
   public function _before() {
+    $this->entityManager
+      ->createQueryBuilder()
+      ->delete()
+      ->from(NewsletterEntity::class, 'n')
+      ->getQuery()
+      ->execute();
+    $this->entityManager
+      ->createQueryBuilder()
+      ->delete()
+      ->from(SettingEntity::class, 's')
+      ->getQuery()
+      ->execute();
     $this->wp = new WPFunctions();
     $this->settings = SettingsController::getInstance();
     $this->originalWcSettings = $this->settings->get('woocommerce');
@@ -40,6 +53,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
       Stub::makeEmpty(WooCommerceHelper::class),
       $this->newslettersRepository
     );
+    $this->settings->set('woocommerce', $this->originalWcSettings);
   }
 
   public function testInitCreatesTransactionalEmailAndSavesItsId() {
@@ -90,15 +104,5 @@ class TransactionalEmailsTest extends \MailPoetTest {
     $footerTextBlock = $body['content']['blocks'][5]['blocks'][0]['blocks'][1];
     expect($footerTextBlock['text'])->equals('<p style="text-align: center;">Text <a href="http://example.com">Link</a></p>');
     $this->wp->updateOption('woocommerce_email_footer_text', $optionOriginalValue);
-  }
-
-  public function _after() {
-    $this->entityManager
-      ->createQueryBuilder()
-      ->delete()
-      ->from(NewsletterEntity::class, 'n')
-      ->getQuery()
-      ->execute();
-    $this->settings->set('woocommerce', $this->originalWcSettings);
   }
 }

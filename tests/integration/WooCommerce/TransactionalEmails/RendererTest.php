@@ -5,6 +5,7 @@ namespace MailPoet\WooCommerce\TransactionalEmails;
 use Codeception\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
 use MailPoet\Services\Bridge;
@@ -17,23 +18,19 @@ class RendererTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->newsletter = Stub::make(Newsletter::class, [
-      'asArray' => function() {
-        return [
-          'type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL,
-          'subject' => 'WooCommerce Transactional Email',
-          'preheader' => '',
-          'body' => [
-            'content' => L::col([
-              L::row([L::col([['type' => 'text', 'text' => 'Some text before heading']])]),
-              ['type' => 'woocommerceHeading'],
-              L::row([L::col([['type' => 'text', 'text' => 'Some text between heading and content']])]),
-              ['type' => 'woocommerceContent'],
-              L::row([L::col([['type' => 'text', 'text' => 'Some text after content']])]),
-            ]),
-          ],
-        ];
-      },
+    $this->newsletter = Newsletter::createOrUpdate([
+      'type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL,
+      'subject' => 'WooCommerce Transactional Email',
+      'preheader' => '',
+      'body' => [
+        'content' => L::col([
+          L::row([L::col([['type' => 'text', 'text' => 'Some text before heading']])]),
+          ['type' => 'woocommerceHeading'],
+          L::row([L::col([['type' => 'text', 'text' => 'Some text between heading and content']])]),
+          ['type' => 'woocommerceContent'],
+          L::row([L::col([['type' => 'text', 'text' => 'Some text after content']])]),
+        ]),
+      ],
     ]);
   }
 
@@ -55,6 +52,7 @@ class RendererTest extends \MailPoetTest {
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(License::class)
     );
 
@@ -85,6 +83,7 @@ class RendererTest extends \MailPoetTest {
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(License::class)
     );
     $renderer = new Renderer(new csstidy, $newsletterRenderer);

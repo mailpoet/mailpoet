@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterPost;
 use MailPoet\Newsletter\AutomatedLatestContent;
@@ -59,7 +60,7 @@ class Renderer {
     $this->text = $text;
   }
 
-  public function render($newsletter, $data) {
+  public function render(NewsletterEntity $newsletter, $data) {
     $columnCount = count($data['blocks']);
     $columnsLayout = isset($data['columnLayout']) ? $data['columnLayout'] : null;
     $columnWidths = ColumnsHelper::columnWidth($columnCount, $columnsLayout);
@@ -73,7 +74,7 @@ class Renderer {
     return $columnContent;
   }
 
-  private function renderBlocksInColumn($newsletter, $block, $columnBaseWidth) {
+  private function renderBlocksInColumn(NewsletterEntity $newsletter, $block, $columnBaseWidth) {
     $blockContent = '';
     $_this = $this;
     array_map(function($block) use (&$blockContent, $columnBaseWidth, $newsletter, $_this) {
@@ -91,7 +92,7 @@ class Renderer {
     return $blockContent;
   }
 
-  public function createElementFromBlockType($newsletter, $block, $columnBaseWidth) {
+  public function createElementFromBlockType(NewsletterEntity $newsletter, $block, $columnBaseWidth) {
     if ($block['type'] === 'automatedLatestContent') {
       return $this->processAutomatedLatestContent($newsletter, $block, $columnBaseWidth);
     }
@@ -117,15 +118,19 @@ class Renderer {
     return '';
   }
 
-  public function automatedLatestContentTransformedPosts($newsletter, $args) {
+  public function automatedLatestContentTransformedPosts(NewsletterEntity $newsletter, $args) {
     $newerThanTimestamp = false;
     $newsletterId = false;
-    if ($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
-      $newsletterId = $newsletter['parent_id'];
+    if ($newsletter->getType() === Newsletter::TYPE_NOTIFICATION_HISTORY) {
+      $parent = $newsletter->getParent();
+      if ($parent instanceof NewsletterEntity) {
+        $newsletterId = $parent->getId();
 
-      $lastPost = NewsletterPost::getNewestNewsletterPost($newsletterId);
-      if ($lastPost) {
-        $newerThanTimestamp = $lastPost->createdAt;
+        $lastPost = NewsletterPost::getNewestNewsletterPost($newsletterId);
+        if ($lastPost) {
+          $newerThanTimestamp = $lastPost->createdAt;
+        }
+
       }
     }
     $postsToExclude = $this->getPosts();
@@ -137,7 +142,7 @@ class Renderer {
     return $this->ALC->transformPosts($args, $aLCPosts);
   }
 
-  public function processAutomatedLatestContent($newsletter, $args, $columnBaseWidth) {
+  public function processAutomatedLatestContent(NewsletterEntity $newsletter, $args, $columnBaseWidth) {
     $transformedPosts = [
       'blocks' => $this->automatedLatestContentTransformedPosts($newsletter, $args),
     ];
