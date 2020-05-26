@@ -3,6 +3,7 @@
 namespace MailPoet\Doctrine;
 
 use MailPoet\Config\Env;
+use MailPoet\Doctrine\Types\BigIntType;
 use MailPoet\Doctrine\Types\JsonOrSerializedType;
 use MailPoet\Doctrine\Types\JsonType;
 use MailPoet\Doctrine\Types\SerializedArrayType;
@@ -18,6 +19,7 @@ class ConnectionFactory {
   private $minWaitTimeout = 60;
 
   private $types = [
+    BigIntType::NAME => BigIntType::class,
     JsonType::NAME => JsonType::class,
     JsonOrSerializedType::NAME => JsonOrSerializedType::class,
     SerializedArrayType::NAME => SerializedArrayType::class,
