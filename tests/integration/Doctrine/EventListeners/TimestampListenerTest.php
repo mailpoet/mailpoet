@@ -66,6 +66,7 @@ class TimestampListenerTest extends \MailPoetTest {
     ");
 
     $entity = $this->entityManager->find(TimestampEntity::class, 123);
+    assert($entity instanceof TimestampEntity); // PHPStan
     $entity->setName('Updated');
     $this->entityManager->flush();
 

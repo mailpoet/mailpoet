@@ -34,7 +34,7 @@ class StatisticsClickEntity {
 
   /**
    * @ORM\Column(type="integer")
-   * @var int|null
+   * @var int
    */
   private $subscriberId;
 
@@ -103,7 +103,7 @@ class StatisticsClickEntity {
   }
 
   /**
-   * @param int|null $subscriberId
+   * @param int $subscriberId
    */
   public function setSubscriberId($subscriberId) {
     $this->subscriberId = $subscriberId;

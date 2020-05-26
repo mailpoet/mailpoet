@@ -70,6 +70,7 @@ class JsonTypesTest extends \MailPoetTest {
     );
 
     $entity = $this->entityManager->find(JsonEntity::class, 1);
+    assert($entity instanceof JsonEntity); // PHPStan
     expect($entity->getJsonData())->same($this->testData);
     expect($entity->getJsonOrSerializedData())->same($this->testData);
   }
@@ -84,6 +85,7 @@ class JsonTypesTest extends \MailPoetTest {
     );
 
     $entity = $this->entityManager->find(JsonEntity::class, 1);
+    assert($entity instanceof JsonEntity); // PHPStan
     expect($entity->getJsonData())->null();
     expect($entity->getJsonOrSerializedData())->same($this->testData);
   }
@@ -111,6 +113,7 @@ class JsonTypesTest extends \MailPoetTest {
     );
 
     $entity = $this->entityManager->find(JsonEntity::class, 1);
+    assert($entity instanceof JsonEntity); // PHPStan
     expect($entity->getJsonData())->null();
     expect($entity->getJsonOrSerializedData())->null();
   }
@@ -126,6 +129,7 @@ class JsonTypesTest extends \MailPoetTest {
     );
 
     $entity = $this->entityManager->find(JsonEntity::class, 1);
+    assert($entity instanceof JsonEntity); // PHPStan
     expect($entity->getJsonData())->null();
     expect($entity->getJsonOrSerializedData())->null();
   }

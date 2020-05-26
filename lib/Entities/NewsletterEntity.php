@@ -42,7 +42,7 @@ class NewsletterEntity {
   use SafeToOneAssociationLoadTrait;
 
   /**
-   * @ORM\Column(type="string")
+   * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
   private $hash;
@@ -103,13 +103,13 @@ class NewsletterEntity {
   private $body;
 
   /**
-   * @ORM\Column(type="datetimetz")
+   * @ORM\Column(type="datetimetz", nullable=true)
    * @var DateTimeInterface|null
    */
   private $sentAt;
 
   /**
-   * @ORM\Column(type="string")
+   * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
   private $unsubscribeToken;

@@ -27,7 +27,7 @@ class SubscriberEntity {
   use DeletedAtTrait;
 
   /**
-   * @ORM\Column(type="bigint")
+   * @ORM\Column(type="bigint", nullable=true)
    * @var int|null
    */
   private $wpUserId;
@@ -111,7 +111,7 @@ class SubscriberEntity {
   private $unsubscribeToken;
 
   /**
-   * @ORM\Column(type="string")
+   * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
   private $linkToken;

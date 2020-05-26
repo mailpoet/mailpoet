@@ -188,6 +188,10 @@ class NewsletterSaveController {
       }
 
       $segment = $this->entityManager->getReference(SegmentEntity::class, (int)$segmentData['id']);
+      if (!$segment) {
+        continue;
+      }
+
       $newsletterSegment = $this->newsletterSegmentRepository->findOneBy([
         'newsletter' => $newsletter,
         'segment' => $segment,

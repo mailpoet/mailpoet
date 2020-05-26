@@ -28,13 +28,13 @@ class ScheduledTaskEntity {
   use DeletedAtTrait;
 
   /**
-   * @ORM\Column(type="string")
+   * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
   private $type;
 
   /**
-   * @ORM\Column(type="string")
+   * @ORM\Column(type="string", nullable=true)
    * @var string|null
    */
   private $status;
@@ -46,13 +46,13 @@ class ScheduledTaskEntity {
   private $priority = 0;
 
   /**
-   * @ORM\Column(type="datetimetz")
+   * @ORM\Column(type="datetimetz", nullable=true)
    * @var DateTimeInterface|null
    */
   private $scheduledAt;
 
   /**
-   * @ORM\Column(type="datetimetz")
+   * @ORM\Column(type="datetimetz", nullable=true)
    * @var DateTimeInterface|null
    */
   private $processedAt;
