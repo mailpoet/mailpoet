@@ -13,4 +13,8 @@ class License {
     }
     return $license;
   }
+
+  public function hasLicense(): bool {
+    return (bool)self::getLicense();
+  }
 }

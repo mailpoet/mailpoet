@@ -12,13 +12,25 @@ use MailPoet\Newsletter\Renderer\Blocks\Social;
 use MailPoet\Newsletter\Renderer\Blocks\Spacer;
 use MailPoet\Newsletter\Renderer\Blocks\Text;
 use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnRenderer;
+use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Services\Bridge;
+use MailPoet\Util\License\License;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class RendererTest extends \MailPoetTest {
   public $dOMParser;
   public $columnRenderer;
+
+  /** @var Renderer & MockObject */
   public $renderer;
   public $newsletter;
+
+  /** @var License & MockObject */
+  private $license;
+
+  /** @var Bridge & MockObject */
+  private $bridge;
   const COLUMN_BASE_WIDTH = 660;
 
   public function _before() {
@@ -33,7 +45,16 @@ class RendererTest extends \MailPoetTest {
       'type' => 'standard',
       'status' => 'active',
     ];
-    $this->renderer = $this->diContainer->get(Renderer::class);
+    $this->license = $this->createMock(License::class);
+    $this->bridge = $this->createMock(Bridge::class);
+    $this->renderer = new Renderer(
+      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
+      $this->diContainer->get(ColumnRenderer::class),
+      $this->diContainer->get(Preprocessor::class),
+      $this->diContainer->get(\MailPoetVendor\CSS::class),
+      $this->bridge,
+      $this->license
+    );
     $this->columnRenderer = new ColumnRenderer();
     $this->dOMParser = new \pQuery();
   }
@@ -564,8 +585,8 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAddMailpoetLogoWhenPremiumIsActive() {
-    $this->renderer->mssActivated = false;
-    $this->renderer->premiumActivated = true;
+    $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(false);
+    $this->license->method('hasLicense')->willReturn(true);
 
     $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render($this->newsletter, false);
@@ -573,8 +594,8 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAddMailpoetLogoWhenMSSIsActive() {
-    $this->renderer->premiumActivated = false;
-    $this->renderer->mssActivated = true;
+    $this->license->method('hasLicense')->willReturn(false);
+    $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(true);
 
     $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render($this->newsletter, false);
@@ -582,8 +603,8 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAddMailpoetLogoWhenPreviewIsEnabled() {
-    $this->renderer->mssActivated = false;
-    $this->renderer->premiumActivated = false;
+    $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(false);
+    $this->license->method('hasLicense')->willReturn(false);
 
     $this->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
     $template = $this->renderer->render($this->newsletter, true);
@@ -592,8 +613,8 @@ class RendererTest extends \MailPoetTest {
 
   public function testItAddsMailpoetLogo() {
     $this->renderer->newsletter['body'] = json_decode(Fixtures::get('newsletter_body_template'), true);
-    $this->renderer->mssActivated = false;
-    $this->renderer->premiumActivated = false;
+    $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(false);
+    $this->license->method('hasLicense')->willReturn(false);
 
     $template = $this->renderer->render($this->newsletter, false);
     expect($template['html'])->contains('mailpoet_logo_newsletter.png');
