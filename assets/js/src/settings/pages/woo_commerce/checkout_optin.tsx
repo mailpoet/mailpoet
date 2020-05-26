@@ -1,10 +1,11 @@
 import React from 'react';
 import { t, onToggle, onChange } from 'common/functions';
-import { Label, Inputs } from 'settings/components';
+import { Label, Inputs, SegmentsSelect } from 'settings/components';
 import { useSetting, useAction } from 'settings/store/hooks';
 
 export default function CheckoutOptin() {
   const [enabled, setEnabled] = useSetting('woocommerce', 'optin_on_checkout', 'enabled');
+  const [segments, setSegments] = useSetting('woocommerce', 'optin_on_checkout', 'segments');
   const [message, setMessage] = useSetting('woocommerce', 'optin_on_checkout', 'message');
   const setErrorFlag = useAction('setErrorFlag');
   const emptyMessage = message.trim() === '';
@@ -27,6 +28,23 @@ export default function CheckoutOptin() {
           checked={enabled === '1'}
           onChange={onToggle(setEnabled, '')}
         />
+        {enabled === '1' && (
+          <>
+            <br />
+            <label htmlFor="mailpoet_wc_checkout_optin_segments">
+              {t('wcOptinSegmentsTitle')}
+              <br />
+              <span>{t('leaveEmptyToSubscribeToWCCustomers')}</span>
+            </label>
+            <br />
+            <SegmentsSelect
+              id="mailpoet_wc_checkout_optin_segments"
+              value={segments}
+              setValue={setSegments}
+              placeholder={t('wcOptinSegmentsPlaceholder')}
+            />
+          </>
+        )}
       </Inputs>
       {enabled === '1' && (
         <>
