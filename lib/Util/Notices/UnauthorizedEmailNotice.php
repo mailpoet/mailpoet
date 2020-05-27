@@ -5,7 +5,6 @@ namespace MailPoet\Util\Notices;
 use MailPoet\Newsletter\Renderer\EscapeHelper;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
 
@@ -33,7 +32,6 @@ class UnauthorizedEmailNotice {
 
   public function display($validationError) {
     $message = $this->getMessageText($validationError);
-    $message .= $this->getSettingsButtons($validationError);
     $message .= $this->getFixThisButton();
     $extraClasses = 'mailpoet-js-error-unauthorized-emails-notice';
     Notice::displayError($message, $extraClasses, self::OPTION_NAME, false, false);
@@ -45,16 +43,6 @@ class UnauthorizedEmailNotice {
       'mailpoet');
     $message = str_replace('%s', EscapeHelper::escapeHtmlText($validationError['invalid_sender_address']), $text);
     return "<p>$message</p>";
-  }
-
-  private function getSettingsButtons($validationError) {
-    $buttons = '';
-    if (!empty($validationError['invalid_sender_address'])) {
-      $button = $this->wp->_x('Update my Default sender email address', 'Please reuse the current translation of “Default sender”', 'mailpoet');
-      $button = Helpers::replaceLinkTags("[link]{$button}[/link]", 'admin.php?page=mailpoet-settings', ['class' => 'button button-secondary']);
-      $buttons .= "<p>$button</p>";
-    }
-    return $buttons;
   }
 
   private function getFixThisButton() {
