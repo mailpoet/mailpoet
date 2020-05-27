@@ -9,7 +9,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class FunctionsTest extends \MailPoetTest {
   public function testItExecutesIsRtlFunction() {
     $template = ['template' => '{% if is_rtl() %}rtl{% endif %}'];
-    $twig = new \MailPoetVendor\Twig_Environment(new \MailPoetVendor\Twig_Loader_Array($template));
+    $twig = new \MailPoetVendor\Twig_Environment(new \MailPoetVendor\Twig\Loader\ArrayLoader($template));
     WPFunctions::set(Stub::make(new WPFunctions, [
       'isRtl' => Stub::consecutive(true, false),
     ]));
