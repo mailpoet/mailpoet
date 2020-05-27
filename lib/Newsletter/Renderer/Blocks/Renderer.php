@@ -3,9 +3,10 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterPost;
 use MailPoet\Newsletter\AutomatedLatestContent;
+use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
@@ -37,7 +38,11 @@ class Renderer {
   /** @var Text */
   private $text;
 
+  /** @var NewsletterPostsRepository */
+  private $newsletterPostsRepository;
+
   public function __construct(
+    NewsletterPostsRepository $newsletterPostsRepository,
     AutomatedLatestContent $ALC,
     Button $button,
     Divider $divider,
@@ -58,6 +63,7 @@ class Renderer {
     $this->social = $social;
     $this->spacer = $spacer;
     $this->text = $text;
+    $this->newsletterPostsRepository = $newsletterPostsRepository;
   }
 
   public function render(NewsletterEntity $newsletter, $data) {
@@ -126,9 +132,9 @@ class Renderer {
       if ($parent instanceof NewsletterEntity) {
         $newsletterId = $parent->getId();
 
-        $lastPost = NewsletterPost::getNewestNewsletterPost($newsletterId);
-        if ($lastPost) {
-          $newerThanTimestamp = $lastPost->createdAt;
+        $lastPost = $this->newsletterPostsRepository->findOneBy(['newsletter' => $newsletter], ['createdAt' => 'desc']);
+        if ($lastPost instanceof NewsletterPostEntity) {
+          $newerThanTimestamp = $lastPost->getCreatedAt();
         }
 
       }
