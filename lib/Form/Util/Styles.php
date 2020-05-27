@@ -150,6 +150,23 @@ EOL;
 
     // Media styles
     $media = "@media (max-width: 500px) {{$selector} {background-image: none;}}";
+    if (in_array(
+      $displayType,
+      [FormEntity::DISPLAY_TYPE_POPUP, FormEntity::DISPLAY_TYPE_FIXED_BAR, FormEntity::DISPLAY_TYPE_SLIDE_IN]
+    )) {
+      $media .= " @media (max-width: 500px) {{$selector} {
+        animation: none;
+        border: none;
+        border-radius: 0;
+        bottom: 0;
+        left: 0;
+        max-height: 40%;
+        right: 0;
+        top: auto;
+        transform: none;
+        width: 100%;
+      }} ";
+    }
 
     // Form element styles
     $formStyles = [];

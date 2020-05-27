@@ -243,14 +243,6 @@ div.mailpoet_form_popup {
   margin: 0 0 0 auto;
 }
 
-@include breakpoint-max-width($form-break-small-width) {
-  div.mailpoet_form_popup {
-    border-radius: 0;
-    max-height: 100vh;
-    width: 100% !important;
-  }
-}
-
 div.mailpoet_form_fixed_bar {
   background-color: white;
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
@@ -293,10 +285,6 @@ div.mailpoet_form_slide_in {
   position: fixed;
   z-index: 100000;
 
-  @include breakpoint-max-width($form-break-small-width) {
-    min-width: 100%;
-  }
-
   @include breakpoint-min-width($form-break-small-width) {
     &.mailpoet_form_position_left {
       border-top-right-radius: 10px;
@@ -331,6 +319,12 @@ div.mailpoet_form_popup.active,
 div.mailpoet_form_fixed_bar.active,
 div.mailpoet_form_slide_in.active {
   display: block;
+}
+
+@include breakpoint-max-width($form-break-small-width) {
+  .mailpoet_form_popup_overlay.active {
+    display: none;
+  }
 }
 
 // MailPoet Form - Image block
