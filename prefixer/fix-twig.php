@@ -243,7 +243,10 @@ foreach ($replacements as $singleFile) {
   file_put_contents($singleFile['file'], $data);
 }
 
-// Remove unwanted class aliases
+// Remove unwanted class aliases in lib/Twig subdirectories
+// We need to keep first level files in lib/Twig since most of them are still needed
+exec("find ../vendor-prefixed/twig/twig/lib/Twig -maxdepth 1 -mindepth 1 -type d -exec rm -rf '{}' \;");
+// Fix rest of the files in lib
 // Files in twig/lib directory contain class aliases which makes namespaced classes global
 // e.g. \class_alias('MailPoetVendor\\Twig_CompilerInterface', 'Twig_CompilerInterface', \false);
 $iterator = new RecursiveDirectoryIterator("../vendor-prefixed/twig/twig/lib", RecursiveDirectoryIterator::SKIP_DOTS);
