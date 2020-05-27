@@ -60,20 +60,22 @@ class NewslettersRepository extends Repository {
 
   public function getAnalytics(): array {
     // for automatic emails join 'event' newsletter option to further group the counts
-    $eventOptionIdSubquery = $this->entityManager->createQueryBuilder()
+    $eventOptionId = (int)$this->entityManager->createQueryBuilder()
       ->select('nof.id')
       ->from(NewsletterOptionFieldEntity::class, 'nof')
       ->andWhere('nof.newsletterType = :eventOptionFieldType')
       ->andWhere('nof.name = :eventOptionFieldName')
-      ->getQuery();
+      ->setParameter('eventOptionFieldType', NewsletterEntity::TYPE_AUTOMATIC)
+      ->setParameter('eventOptionFieldName', 'event')
+      ->getQuery()
+      ->getSingleScalarResult();
 
     $results = $this->doctrineRepository->createQueryBuilder('n')
       ->select('n.type, eventOption.value AS event, COUNT(n) AS cnt')
-      ->leftJoin('n.options', 'eventOption', Join::WITH, "eventOption.optionField = ({$eventOptionIdSubquery->getDQL()})")
-      ->setParameter('eventOptionFieldType', NewsletterEntity::TYPE_AUTOMATIC)
-      ->setParameter('eventOptionFieldName', 'event')
+      ->leftJoin('n.options', 'eventOption', Join::WITH, "eventOption.optionField = :eventOptionId")
       ->andWhere('n.deletedAt IS NULL')
       ->andWhere('n.status IN (:statuses)')
+      ->setParameter('eventOptionId', $eventOptionId)
       ->setParameter('statuses', [NewsletterEntity::STATUS_ACTIVE, NewsletterEntity::STATUS_SENT])
       ->groupBy('n.type, eventOption.value')
       ->getQuery()
