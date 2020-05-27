@@ -43,6 +43,10 @@ class Bridge {
     $this->settings = $settingsController;
   }
 
+  /**
+   * @deprecated Use non static function isMailpoetSendingServiceEnabled instead
+   * @return bool
+   */
   public static function isMPSendingServiceEnabled() {
     try {
       $mailerConfig = SettingsController::getInstance()->get(Mailer::MAILER_CONFIG_SETTING_NAME);
