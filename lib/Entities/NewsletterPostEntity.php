@@ -20,7 +20,7 @@ class NewsletterPostEntity {
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="newsletterSegments")
-   * @var NewsletterEntity
+   * @var NewsletterEntity|null
    */
   private $newsletter;
 
