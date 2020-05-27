@@ -1,0 +1,52 @@
+<?php
+
+namespace MailPoet\Entities;
+
+use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
+use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
+use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
+use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="newsletter_posts")
+ */
+class NewsletterPostEntity {
+  use AutoincrementedIdTrait;
+  use CreatedAtTrait;
+  use UpdatedAtTrait;
+  use SafeToOneAssociationLoadTrait;
+
+  /**
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="newsletterSegments")
+   * @var NewsletterEntity
+   */
+  private $newsletter;
+
+  /**
+   * @ORM\Column(type="int")
+   * @var int
+   */
+  private $postId;
+
+  public function __construct(NewsletterEntity $newsletter, int $postId) {
+    $this->newsletter = $newsletter;
+    $this->postId = $postId;
+  }
+
+  /**
+   * @return NewsletterEntity|null
+   */
+  public function getNewsletter() {
+    $this->safelyLoadToOneAssociation('newsletter');
+    return $this->newsletter;
+  }
+
+  /**
+   * @return int
+   */
+  public function getPostId(): int {
+    return $this->postId;
+  }
+}
