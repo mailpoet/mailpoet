@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   Panel,
   PanelBody,
@@ -22,6 +22,9 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
     []
   );
   const settingsRef = useRef(settings);
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
   const updateStyles = (property, value) => {
     const updated = { ...settingsRef.current };
     updated[property] = value;
