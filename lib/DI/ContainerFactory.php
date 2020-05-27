@@ -10,15 +10,11 @@ class ContainerFactory {
   /** @var IContainerConfigurator */
   private $configurator;
 
-  /** @var bool */
-  private $debug;
-
   /**
    * ContainerFactory constructor.
    * @param bool $debug
    */
-  public function __construct(IContainerConfigurator $configurator, $debug = false) {
-    $this->debug = $debug;
+  public function __construct(IContainerConfigurator $configurator) {
     $this->configurator = $configurator;
   }
 
@@ -27,9 +23,9 @@ class ContainerFactory {
    */
   public function getContainer() {
     $dumpClass = '\\' . $this->configurator->getDumpNamespace() . '\\' . $this->configurator->getDumpClassname();
-    if (!$this->debug && class_exists($dumpClass)) {
+    if (class_exists($dumpClass)) {
       $container = new $dumpClass();
-    } else {
+    } else { // Only for dev environment
       $container = $this->getConfiguredContainer();
       $container->compile();
     }
