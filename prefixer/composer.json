@@ -30,7 +30,8 @@
       "php fix-twig.php",
       "php fix-doctrine.php",
       "php fix-swiftmailer.php",
-      "php fix-validator.php"
+      "php fix-validator.php",
+      "php fix-monolog.php"
     ]
   },
   "config": {
