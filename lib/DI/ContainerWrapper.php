@@ -51,18 +51,18 @@ class ContainerWrapper implements ContainerInterface {
     if (self::$instance) {
       return self::$instance;
     }
-    $freeContainerFactory = new ContainerFactory(new ContainerConfigurator(), $debug);
+    $freeContainerFactory = new ContainerFactory(new ContainerConfigurator());
     $freeContainer = $freeContainerFactory->getContainer();
     $premiumContainer = null;
     if (class_exists(\MailPoet\Premium\DI\ContainerConfigurator::class)) {
-      $premiumContainer = self::createPremiumContainer($freeContainer, $debug);
+      $premiumContainer = self::createPremiumContainer($freeContainer);
     }
     self::$instance = new ContainerWrapper($freeContainer, $premiumContainer);
     return self::$instance;
   }
 
-  private static function createPremiumContainer(Container $freeContainer, $debug = false) {
-    $premiumContainerFactory = new ContainerFactory(new \MailPoet\Premium\DI\ContainerConfigurator(), $debug);
+  private static function createPremiumContainer(Container $freeContainer) {
+    $premiumContainerFactory = new ContainerFactory(new \MailPoet\Premium\DI\ContainerConfigurator());
     $premiumContainer = $premiumContainerFactory->getContainer();
     $premiumContainer->set(IContainerConfigurator::FREE_CONTAINER_SERVICE_SLUG, $freeContainer);
     $freeContainer->set(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG, $premiumContainer);
