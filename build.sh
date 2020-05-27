@@ -128,6 +128,15 @@ rm -rf $plugin_name/vendor-prefixed/nesbot/carbon/bin
 rm -rf $plugin_name/vendor-prefixed/nesbot/carbon/src/Carbon/Laravel
 rm -f $plugin_name/vendor-prefixed/egulias/email-validator/psalm*.xml
 
+# Remove DI Container files
+echo '[BUILD] Removing DI Container development dependencies'
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Compiler
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Config
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Dumper
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Loader
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/LazyProxy
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Extension
+
 # Copy release files.
 echo '[BUILD] Copying release files'
 cp license.txt $plugin_name
