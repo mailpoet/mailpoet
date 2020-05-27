@@ -159,6 +159,11 @@ find $plugin_name -type d -print0 | while read -d $'\0' dir; do
   fi
 done
 
+# Strip whitespaces and comments from PHP files in vendor and vendor prefixed folders
+echo '[BUILD] Strip whitespaces and comments from PHP files in vendor folder'
+php "$(dirname "$0")"/tasks/strip-whitespaces.php $plugin_name/vendor
+php "$(dirname "$0")"/tasks/strip-whitespaces.php $plugin_name/vendor-prefixed
+
 # Zip final release.
 echo '[BUILD] Creating final release zip'
 zip -r $plugin_name.zip $plugin_name
