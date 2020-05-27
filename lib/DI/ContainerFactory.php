@@ -10,10 +10,6 @@ class ContainerFactory {
   /** @var IContainerConfigurator */
   private $configurator;
 
-  /**
-   * ContainerFactory constructor.
-   * @param bool $debug
-   */
   public function __construct(IContainerConfigurator $configurator) {
     $this->configurator = $configurator;
   }
