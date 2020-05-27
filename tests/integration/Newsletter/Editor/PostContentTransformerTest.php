@@ -310,39 +310,6 @@ class PostContentTransformerTest extends \MailPoetTest {
     $transformer->transform($post);
   }
 
-  public function testShouldNotAddClassToParagraphsInExcerptWithLayout() {
-    $args = [
-      'withLayout' => true,
-      'displayType' => 'excerpt',
-      'featuredImagePosition' => 'right',
-    ];
-
-    $post = (object)[
-      'post_type' => 'post',
-    ];
-    $expectedWithPostClass = false;
-
-    /** @var PostTransformerContentsExtractor&MockObject $extractor */
-    $extractor = $this->make(
-      PostTransformerContentsExtractor::class,
-      [
-        'getContent' => Expected::once($this->contentMock),
-        'getFeaturedImage' => null,
-        'getTitle' => 'Title',
-      ]
-    );
-    $extractor->expects($this->once())
-      ->method('getContent')
-      ->with(
-        $this->equalTo($post),
-        $this->equalTo($expectedWithPostClass),
-        $this->equalTo('excerpt')
-      );
-
-    $transformer = new PostTransformer($args, $extractor);
-    $transformer->transform($post);
-  }
-
   /**
    * @return PostTransformer
    */

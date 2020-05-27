@@ -71,7 +71,7 @@ class PostTransformer {
   }
 
   private function getStructureWithLayout($post) {
-    $withPostClass = $this->args['displayType'] === 'full';
+    $withPostClass = $this->args['displayType'] === 'full' || $this->args['displayType'] === 'excerpt';
     $content = $this->extractor->getContent($post, $withPostClass, $this->args['displayType']);
     $title = $this->extractor->getTitle($post);
     $featuredImage = $this->extractor->getFeaturedImage($post);
