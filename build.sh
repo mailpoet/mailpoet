@@ -123,6 +123,10 @@ echo '[BUILD] Removing risky and demo files from vendor libraries'
 rm -f $plugin_name/vendor-prefixed/cerdic/css-tidy/css_optimiser.php
 rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/demo
 rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font/captcha4.ttf # big font
+rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/bin
+rm -rf $plugin_name/vendor-prefixed/nesbot/carbon/bin
+rm -rf $plugin_name/vendor-prefixed/nesbot/carbon/src/Carbon/Laravel
+rm -f $plugin_name/vendor-prefixed/egulias/email-validator/psalm*.xml
 
 # Copy release files.
 echo '[BUILD] Copying release files'
