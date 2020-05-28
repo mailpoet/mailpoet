@@ -21,6 +21,8 @@ export default function mapFormDataBeforeSaving(data) {
       form_padding: data.settings.formPadding,
       input_padding: data.settings.inputPadding,
       border_color: data.settings.borderColor,
+      success_validation_color: data.settings.successValidationColor,
+      error_validation_color: data.settings.errorValidationColor,
       background_image_url: data.settings.backgroundImageUrl,
       background_image_display: data.settings.backgroundImageDisplay,
       below_post_styles: data.settings.belowPostStyles,
@@ -44,6 +46,8 @@ export default function mapFormDataBeforeSaving(data) {
   delete mappedData.settings.placeSlideInFormOnAllPosts;
   delete mappedData.settings.slideInFormDelay;
   delete mappedData.settings.slideInFormPosition;
+  delete mappedData.settings.successValidationColor;
+  delete mappedData.settings.errorValidationColor;
   delete mappedData.settings.borderRadius;
   delete mappedData.settings.borderSize;
   delete mappedData.settings.formPadding;

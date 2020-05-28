@@ -112,6 +112,16 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
               updateStyles('formPadding', value !== undefined ? value : 20);
             }}
           />
+          <ColorSettings
+            name={MailPoet.I18n.t('successValidationColorTitle')}
+            value={settings.successValidationColor}
+            onChange={partial(updateStyles, 'successValidationColor')}
+          />
+          <ColorSettings
+            name={MailPoet.I18n.t('errorValidationColorTitle')}
+            value={settings.errorValidationColor}
+            onChange={partial(updateStyles, 'errorValidationColor')}
+          />
         </div>
       </PanelBody>
     </Panel>
