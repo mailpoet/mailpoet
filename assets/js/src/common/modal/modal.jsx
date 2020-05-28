@@ -8,7 +8,6 @@ import ModalHeader from './header.jsx';
 function Modal({
   onRequestClose,
   title,
-  displayTitle,
   children,
   isDismissible,
   shouldCloseOnEsc,
@@ -32,15 +31,13 @@ function Modal({
         className="mailpoet-modal-content"
         role="document"
       >
-        {
-          displayTitle && (
-            <ModalHeader
-              isDismissible={isDismissible}
-              onClose={onRequestClose}
-              title={title}
-            />
-          )
-        }
+        { title && (
+          <ModalHeader
+            isDismissible={isDismissible}
+            onClose={onRequestClose}
+            title={title}
+          />
+        ) }
         { children }
       </div>
     </ModalFrame>,
@@ -55,7 +52,6 @@ Modal.propTypes = {
   overlayClassName: PropTypes.string,
   title: PropTypes.string,
   onRequestClose: PropTypes.func,
-  displayTitle: PropTypes.bool,
   fullScreen: PropTypes.bool,
   focusOnMount: PropTypes.bool,
   shouldCloseOnEsc: PropTypes.bool,
@@ -72,7 +68,6 @@ Modal.defaultProps = {
   shouldCloseOnEsc: true,
   shouldCloseOnClickOutside: true,
   isDismissible: true,
-  displayTitle: true,
   fullScreen: false,
 };
 
