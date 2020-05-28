@@ -29,6 +29,8 @@ export default function mapFormDataAfterLoading(data) {
       formPadding: data.settings.form_padding ? asNum(data.settings.form_padding) : 20,
       inputPadding: data.settings.input_padding ? asNum(data.settings.input_padding) : 5,
       borderColor: data.settings.border_color,
+      successValidationColor: data.settings.success_validation_color,
+      errorValidationColor: data.settings.error_validation_color,
       backgroundImageUrl: data.settings.background_image_url,
       backgroundImageDisplay: data.settings.background_image_display,
       belowPostStyles: { ...defaults.belowPostForm.styles, ...data.settings.below_post_styles },
