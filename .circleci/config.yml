@@ -18,6 +18,7 @@ anchors:
     multisite: 1
     requires:
       - unit_tests
+      - static_analysis
     <<: *only_master_and_release
 
 executors:
@@ -325,32 +326,38 @@ workflows:
           group_arg: -g acceptance_group_1
           requires:
             - unit_tests
+            - static_analysis
       - acceptance_tests:
           name: acceptance_tests_2
           group_arg: -g acceptance_group_2
           requires:
             - unit_tests
+            - static_analysis
       - acceptance_tests:
           name: acceptance_tests_3
           group_arg: -g acceptance_group_3
           requires:
             - unit_tests
+            - static_analysis
       - acceptance_tests:
           name: acceptance_tests_4
           group_arg: -g acceptance_group_4
           requires:
             - unit_tests
+            - static_analysis
       - acceptance_tests:
           name: acceptance_tests_5
           group_arg: -g acceptance_group_5
           requires:
             - unit_tests
+            - static_analysis
       - js_tests:
           requires:
             - build_and_code_qa
       - integration_tests:
           requires:
             - unit_tests
+            - static_analysis
       - acceptance_tests:
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_1
@@ -378,6 +385,7 @@ workflows:
           run_command: ./do test:multisite-integration --xml
           requires:
             - unit_tests
+            - static_analysis
       - build_release_zip:
           requires:
             - build_and_code_qa
