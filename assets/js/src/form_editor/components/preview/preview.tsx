@@ -8,7 +8,7 @@ import { Spinner, SelectControl } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import Preview from 'common/preview/preview.jsx';
-import Modal from 'common/modal/modal.jsx';
+import Modal from 'common/modal/modal';
 import BelowPostsSettings from './below_posts_settings';
 import PopUpSettings from './popup_settings';
 import OtherSettings from './other_settings';

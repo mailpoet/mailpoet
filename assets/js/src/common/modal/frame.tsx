@@ -1,13 +1,19 @@
 import React from 'react';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+
+type Props = {
+  fullScreen?: boolean,
+  role?: string,
+  className?: string,
+  children: React.ReactNode,
+};
 
 function ModalFrame({
   children,
   className,
   role,
   fullScreen,
-}) {
+}: Props) {
   return (
     <div
       className={classnames(
@@ -16,19 +22,12 @@ function ModalFrame({
         className
       )}
       role={role}
-      tabIndex="-1"
+      tabIndex={-1}
     >
       {children}
     </div>
   );
 }
-
-ModalFrame.propTypes = {
-  fullScreen: PropTypes.bool,
-  role: PropTypes.string,
-  className: PropTypes.string,
-  children: PropTypes.node.isRequired,
-};
 
 ModalFrame.defaultProps = {
   role: 'dialog',

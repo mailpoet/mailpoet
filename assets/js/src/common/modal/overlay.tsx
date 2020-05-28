@@ -1,8 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 
 const ESCAPE = 27;
+
+type Props = {
+  onRequestClose?: (event: React.SyntheticEvent) => void,
+  shouldCloseOnEsc?: boolean,
+  shouldCloseOnClickOutside?: boolean,
+  className?: string,
+  children: React.ReactNode,
+};
 
 function ModalOverlay({
   onRequestClose,
@@ -10,7 +17,7 @@ function ModalOverlay({
   shouldCloseOnClickOutside,
   className,
   children,
-}) {
+}: Props) {
   const overlayRef = useRef(null);
 
   // get focus on render so keys such as ESC work immediately
@@ -18,27 +25,27 @@ function ModalOverlay({
     overlayRef.current.focus();
   }, []);
 
-  function onClose(event) {
+  function onClose(event: React.SyntheticEvent) {
     if (onRequestClose) {
       onRequestClose(event);
     }
   }
 
-  function handleFocusOutside(event) {
+  function handleFocusOutside(event: React.MouseEvent) {
     // filter only to clicks on overlay
     if (shouldCloseOnClickOutside && overlayRef.current === event.target) {
       onClose(event);
     }
   }
 
-  function handleEscapeKeyDown(event) {
+  function handleEscapeKeyDown(event: React.KeyboardEvent) {
     if (shouldCloseOnEsc) {
       event.stopPropagation();
       onClose(event);
     }
   }
 
-  function handleKeyDown(event) {
+  function handleKeyDown(event: React.KeyboardEvent) {
     if (event.keyCode === ESCAPE) {
       handleEscapeKeyDown(event);
     }
@@ -54,20 +61,12 @@ function ModalOverlay({
       onKeyDown={handleKeyDown}
       onClick={handleFocusOutside}
       role="button"
-      tabIndex="0"
+      tabIndex={0}
     >
       {children}
     </div>
   );
 }
-
-ModalOverlay.propTypes = {
-  onRequestClose: PropTypes.func,
-  shouldCloseOnEsc: PropTypes.bool,
-  shouldCloseOnClickOutside: PropTypes.bool,
-  className: PropTypes.string,
-  children: PropTypes.node.isRequired,
-};
 
 ModalOverlay.defaultProps = {
   onRequestClose: () => {},

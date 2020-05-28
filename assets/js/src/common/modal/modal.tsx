@@ -1,11 +1,23 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
 
-import ModalFrame from './frame.jsx';
-import ModalHeader from './header.jsx';
-import ModalOverlay from './overlay.jsx';
-import closeIcon from './close_icon';
+import ModalFrame from './frame';
+import ModalHeader from './header';
+import ModalOverlay from './overlay';
+import ModalCloseIcon from './close_icon';
+
+type Props = {
+  isDismissible?: boolean,
+  contentClassName?: string,
+  overlayClassName?: string,
+  title?: string,
+  onRequestClose?: () => void,
+  fullScreen?: boolean,
+  shouldCloseOnEsc?: boolean,
+  shouldCloseOnClickOutside?: boolean,
+  role?: string,
+  children: React.ReactNode,
+};
 
 function Modal({
   onRequestClose,
@@ -18,7 +30,7 @@ function Modal({
   contentClassName,
   overlayClassName,
   fullScreen,
-}) {
+}: Props) {
   return createPortal(
     <ModalOverlay
       onRequestClose={onRequestClose}
@@ -35,7 +47,7 @@ function Modal({
           <ModalHeader title={title} />
         ) }
         { isDismissible && (
-          <button type="button" onClick={onRequestClose} className="mailpoet-modal-close">{closeIcon}</button>
+          <button type="button" onClick={onRequestClose} className="mailpoet-modal-close">{ModalCloseIcon}</button>
         ) }
         <div
           className="mailpoet-modal-content"
@@ -48,19 +60,6 @@ function Modal({
     document.getElementById('mailpoet-modal')
   );
 }
-
-Modal.propTypes = {
-  children: PropTypes.node,
-  isDismissible: PropTypes.bool,
-  contentClassName: PropTypes.string,
-  overlayClassName: PropTypes.string,
-  title: PropTypes.string,
-  onRequestClose: PropTypes.func,
-  fullScreen: PropTypes.bool,
-  shouldCloseOnEsc: PropTypes.bool,
-  shouldCloseOnClickOutside: PropTypes.bool,
-  role: PropTypes.string,
-};
 
 Modal.defaultProps = {
   bodyOpenClassName: 'modal-open',
