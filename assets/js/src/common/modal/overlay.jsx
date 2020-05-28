@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
@@ -12,6 +12,12 @@ function ModalOverlay({
   children,
 }) {
   const overlayRef = useRef(null);
+
+  // get focus on render so keys such as ESC work immediately
+  useEffect(() => {
+    overlayRef.current.focus();
+  }, []);
+
   function onClose(event) {
     if (onRequestClose) {
       onRequestClose(event);
