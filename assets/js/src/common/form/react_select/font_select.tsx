@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import Select, { Props } from './react_select';
 
 const customFonts = [
@@ -79,6 +80,8 @@ const standardFonts = [
 ];
 
 const FontSelect = ({
+  customFontsElementId,
+  displayCustomFontsStylesheet,
   ...props
 }: Props) => {
   const fonts = [
@@ -109,12 +112,37 @@ const FontSelect = ({
   standardFonts.forEach((fontName) => fonts[1].options.push(buildOption(fontName)));
   customFonts.forEach((fontName) => fonts[2].options.push(buildOption(fontName)));
 
+  let link;
+  if (displayCustomFontsStylesheet) {
+    const customFontsUrl = customFonts
+      .map((fontName) => fontName.replace(' ', '+'))
+      .join('|');
+    link = (
+      <link
+        rel="stylesheet"
+        href={`https://fonts.googleapis.com/css?family=${customFontsUrl}`}
+      />
+    );
+
+    if (customFontsElementId) {
+      createPortal(link, document.getElementById(customFontsElementId));
+      link = undefined;
+    }
+  }
+
   return (
-    <Select
-      options={fonts}
-      {...props} // eslint-disable-line react/jsx-props-no-spreading
-    />
+    <>
+      {link}
+      <Select
+        options={fonts}
+        {...props} // eslint-disable-line react/jsx-props-no-spreading
+      />
+    </>
   );
+};
+
+FontSelect.defaultProps = {
+  displayCustomFontsStylesheet: true,
 };
 
 export default FontSelect;
