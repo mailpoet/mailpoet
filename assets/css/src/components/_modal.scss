@@ -4,9 +4,7 @@
 
 .mailpoet-modal-screen-overlay {
   align-items: center;
-  animation: edit-post__fade-in-animation .2s ease-out 0s;
-  animation-duration: 100ms;
-  animation-fill-mode: forwards;
+  animation: mailpoet-modal-screen-overlay-fadein-animation .1s ease-out;
   background-color: rgba(#000, .7);
   bottom: 0;
   display: flex;
@@ -16,6 +14,11 @@
   right: 0;
   top: 0;
   z-index: $modal-screen-overlay-z-index;
+}
+
+@keyframes mailpoet-modal-screen-overlay-fadein-animation {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 // Full-screen on mobiles
@@ -34,10 +37,7 @@
   // Centered on desktops
 
   @include breakpoint-min-width(600px) {
-    // Animate the modal frame/contents appearing on the page.
     animation: mailpoet-modal-appear-animation .1s ease-out;
-    animation-duration: 100ms;
-    animation-fill-mode: forwards;
     height: auto;
     max-height: calc(100% - #{ 2 * $grid-gap });
     max-width: calc(100% - #{ 2 * $grid-gap });
@@ -47,13 +47,8 @@
 }
 
 @keyframes mailpoet-modal-appear-animation {
-  from {
-    margin-top: $grid-gap * 4;
-  }
-
-  to {
-    margin-top: 0;
-  }
+  from { margin-top: $grid-gap * 4; }
+  to { margin-top: 0; }
 }
 
 .mailpoet-modal-header {
