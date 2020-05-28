@@ -27,17 +27,17 @@ function Modal({
       overlayClassName={overlayClassName}
       fullScreen={fullScreen}
     >
+      { title && (
+        <ModalHeader
+          isDismissible={isDismissible}
+          onClose={onRequestClose}
+          title={title}
+        />
+      ) }
       <div
         className="mailpoet-modal-content"
         role="document"
       >
-        { title && (
-          <ModalHeader
-            isDismissible={isDismissible}
-            onClose={onRequestClose}
-            title={title}
-          />
-        ) }
         { children }
       </div>
     </ModalFrame>,
