@@ -83,11 +83,17 @@ const FontSelect = ({
 }: Props) => {
   const fonts = [
     {
-      label: 'standard',
+      label: 'Theme’s default fonts',
+      value: undefined,
+    },
+    {
+      label: 'Standard fonts',
+      value: '',
       options: [],
     },
     {
-      label: 'custom',
+      label: 'Custom fonts',
+      value: '',
       options: [],
     },
   ];
@@ -100,8 +106,8 @@ const FontSelect = ({
     },
   });
 
-  standardFonts.forEach((fontName) => fonts[0].options.push(buildOption(fontName)));
-  customFonts.forEach((fontName) => fonts[1].options.push(buildOption(fontName)));
+  standardFonts.forEach((fontName) => fonts[1].options.push(buildOption(fontName)));
+  customFonts.forEach((fontName) => fonts[2].options.push(buildOption(fontName)));
 
   return (
     <Select
