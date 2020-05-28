@@ -9,8 +9,6 @@ function ModalFrame({
   onRequestClose,
   shouldCloseOnEsc,
   overlayClassName,
-  contentLabel,
-  aria: { describedby, labelledby },
   children,
   className,
   role,
@@ -64,9 +62,6 @@ function ModalFrame({
           className
         )}
         role={role}
-        aria-label={contentLabel}
-        aria-labelledby={contentLabel ? null : labelledby}
-        aria-describedby={describedby}
         tabIndex="-1"
       >
         {children}
@@ -82,13 +77,8 @@ ModalFrame.propTypes = {
   shouldCloseOnClickOutside: PropTypes.bool,
   role: PropTypes.string,
   className: PropTypes.string,
-  contentLabel: PropTypes.string,
   overlayClassName: PropTypes.string,
   children: PropTypes.node.isRequired,
-  aria: PropTypes.shape({
-    describedby: PropTypes.string,
-    labelledby: PropTypes.string,
-  }),
 };
 
 ModalFrame.defaultProps = {
@@ -98,11 +88,6 @@ ModalFrame.defaultProps = {
   fullScreen: false,
   shouldCloseOnClickOutside: true,
   className: '',
-  aria: {
-    describedby: '',
-    labelledby: '',
-  },
-  contentLabel: null,
   overlayClassName: '',
 };
 

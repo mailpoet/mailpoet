@@ -6,16 +6,12 @@ import closeIcon from './close_icon.jsx';
 const ModalHeader = ({
   title,
   onClose,
-  headingId,
   isDismissible,
 }) => (
   <div className="mailpoet-modal-header">
     <div className="mailpoet-modal-header-heading-container">
       { title && (
-        <h1
-          id={headingId}
-          className="mailpoet-modal-header-heading"
-        >
+        <h1 className="mailpoet-modal-header-heading">
           { title }
         </h1>
       ) }
@@ -28,14 +24,12 @@ const ModalHeader = ({
 
 ModalHeader.propTypes = {
   title: PropTypes.string,
-  headingId: PropTypes.string,
   onClose: PropTypes.func,
   isDismissible: PropTypes.bool,
 };
 
 ModalHeader.defaultProps = {
   title: null,
-  headingId: 'heading-id',
   onClose: () => {},
   isDismissible: true,
 };
