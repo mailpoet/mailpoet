@@ -125,6 +125,9 @@ class Pages {
     $this->wp->addShortcode('mailpoet_manage_subscription', [$this, 'getManageContent']);
   }
 
+  /**
+   * @return Subscriber|null
+   */
   private function getSubscriber() {
     if (!is_null($this->subscriber)) {
       return $this->subscriber;
@@ -135,20 +138,21 @@ class Pages {
     $wpUser = $this->wp->wpGetCurrentUser();
 
     if (!$email && $wpUser->exists()) {
-      return Subscriber::where('wp_user_id', $wpUser->ID)->findOne();
+      $subscriber = Subscriber::where('wp_user_id', $wpUser->ID)->findOne();
+      return $subscriber !== false ? $subscriber : null;
     }
 
     if (!$email) {
-      return false;
+      return null;
     }
 
     $subscriber = Subscriber::where('email', $email)->findOne();
-    return ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) ? $subscriber : false;
+    return ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) ? $subscriber : null;
   }
 
   public function confirm() {
     $this->subscriber = $this->getSubscriber();
-    if ($this->subscriber === false) {
+    if ($this->subscriber === null) {
       return false;
     }
 
@@ -190,7 +194,7 @@ class Pages {
 
   public function unsubscribe() {
     if (!$this->isPreview()
-      && ($this->subscriber !== false)
+      && ($this->subscriber !== null)
       && ($this->subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED)
     ) {
       if ((bool)$this->settings->get('tracking.enabled') && isset($this->data['queueId'])) {
@@ -205,7 +209,7 @@ class Pages {
   public function setPageTitle($pageTitle = '') {
     global $post;
 
-    if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === false) {
+    if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === null) {
       return $this->wp->__("Hmmm... we don't have a record of you.", 'mailpoet');
     }
 
@@ -239,7 +243,7 @@ class Pages {
 
   public function setPageContent($pageContent = '[mailpoet_page]') {
     // if we're not in preview mode or captcha page and the subscriber does not exist
-    if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === false) {
+    if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === null) {
       return $this->wp->__("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
     }
 
@@ -318,25 +322,25 @@ class Pages {
   }
 
   private function getManageTitle() {
-    if ($this->isPreview() || $this->subscriber !== false) {
+    if ($this->isPreview() || $this->subscriber !== null) {
       return $this->wp->__("Manage your subscription", 'mailpoet');
     }
   }
 
   private function getUnsubscribeTitle() {
-    if ($this->isPreview() || $this->subscriber !== false) {
+    if ($this->isPreview() || $this->subscriber !== null) {
       return $this->wp->__("You are now unsubscribed.", 'mailpoet');
     }
   }
 
   private function getConfirmUnsubscribeTitle() {
-    if ($this->isPreview() || $this->subscriber !== false) {
+    if ($this->isPreview() || $this->subscriber !== null) {
       return $this->wp->__('Confirm you want to unsubscribe', 'mailpoet');
     }
   }
 
   private function getConfirmContent() {
-    if ($this->isPreview() || $this->subscriber !== false) {
+    if ($this->isPreview() || $this->subscriber !== null) {
       return $this->wp->__("Yup, we've added you to our email list. You'll hear from us shortly.", 'mailpoet');
     }
   }
@@ -350,7 +354,7 @@ class Pages {
         'last_name' => 'Doe',
         'link_token' => 'bfd0889dbc7f081e171fa0cee7401df2',
       ]);
-    } else if ($this->subscriber !== false) {
+    } else if ($this->subscriber !== null) {
       $subscriber = $this->subscriber
       ->withCustomFields()
       ->withSubscriptions();
@@ -544,7 +548,7 @@ class Pages {
 
   private function getUnsubscribeContent() {
     $content = '';
-    if ($this->isPreview() || $this->subscriber !== false) {
+    if ($this->isPreview() || $this->subscriber !== null) {
       $content .= '<p>' . __('Accidentally unsubscribed?', 'mailpoet') . ' <strong>';
       $content .= '[mailpoet_manage]';
       $content .= '</strong></p>';
