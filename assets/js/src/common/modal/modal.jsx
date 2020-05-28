@@ -54,7 +54,7 @@ function Modal({
         { children }
       </div>
     </ModalFrame>,
-    document.getElementById('mailpoet_modal')
+    document.getElementById('mailpoet-modal')
   );
 }
 
