@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import ModalFrame from './frame.jsx';
 import ModalHeader from './header.jsx';
+import closeIcon from './close_icon';
 
 function Modal({
   onRequestClose,
@@ -28,11 +29,10 @@ function Modal({
       fullScreen={fullScreen}
     >
       { title && (
-        <ModalHeader
-          isDismissible={isDismissible}
-          onClose={onRequestClose}
-          title={title}
-        />
+        <ModalHeader title={title} />
+      ) }
+      { isDismissible && (
+        <button type="button" onClick={onRequestClose} className="mailpoet-modal-close">{closeIcon}</button>
       ) }
       <div
         className="mailpoet-modal-content"
