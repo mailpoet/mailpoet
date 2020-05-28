@@ -7,8 +7,8 @@ use MailPoet\Newsletter\Renderer\Blocks\Renderer as BlocksRenderer;
 use MailPoet\WooCommerce\TransactionalEmails;
 
 class Preprocessor {
-  const WC_HEADING_PLACEHOLDER = '[mailpet_woocommerce_heading_placeholder]';
-  const WC_CONTENT_PLACEHOLDER = '[mailpet_woocommerce_content_placeholder]';
+  const WC_HEADING_PLACEHOLDER = '[mailpoet_woocommerce_heading_placeholder]';
+  const WC_CONTENT_PLACEHOLDER = '[mailpoet_woocommerce_content_placeholder]';
 
   const WC_HEADING_BEFORE = '
     <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
