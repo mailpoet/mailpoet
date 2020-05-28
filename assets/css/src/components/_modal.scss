@@ -38,8 +38,8 @@
     animation-duration: 100ms;
     animation-fill-mode: forwards;
     height: auto;
-    max-height: calc(100% - #{ $modal-grid-size-large } - #{ $modal-grid-size-large });
-    max-width: calc(100% - #{ $modal-grid-size-large } - #{ $modal-grid-size-large });
+    max-height: calc(100% - #{ 2 * $grid-gap });
+    max-width: calc(100% - #{ 2 * $grid-gap });
     min-width: $modal-min-width;
     width: auto;
   }
@@ -47,7 +47,7 @@
 
 @keyframes mailpoet-modal-appear-animation {
   from {
-    margin-top: $modal-grid-size * 4;
+    margin-top: $grid-gap * 4;
   }
 
   to {
@@ -57,7 +57,7 @@
 
 .mailpoet-modal-header {
   background: white;
-  padding: 0 $modal-grid-size-xlarge;
+  padding: 0 $grid-gap;
   top: 0;
   z-index: $modal-header-z-index;
 
@@ -96,7 +96,7 @@
   box-sizing: border-box;
   height: 100%;
   overflow: auto;
-  padding: 0 $modal-grid-size-xlarge $modal-grid-size-xlarge;
+  padding: 0 $grid-gap $grid-gap;
 }
 
 .mailpoet-modal-full-screen {
