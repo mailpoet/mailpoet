@@ -28,6 +28,7 @@
   display: flex;
   flex-flow: column;
   height: 100%;
+  position: relative;
   width: 100%;
 
   // Centered on desktops
@@ -60,28 +61,6 @@
   padding: 0 $grid-gap;
   top: 0;
   z-index: $modal-header-z-index;
-
-  .mailpoet-modal-close {
-    background: none;
-    border: 0;
-    cursor: pointer;
-    height: $modal-close-button-size;
-    outline: none;
-    padding: $modal-close-button-padding;
-    position: relative;
-    right: -$modal-close-button-padding;
-    top: -$modal-close-button-padding;
-    width: $modal-close-button-size;
-
-    svg {
-      opacity: .5;
-      stroke: #979797;
-
-      &:hover {
-        stroke: #636363;
-      }
-    }
-  }
 }
 
 .mailpoet-modal-header-heading-container {
@@ -90,6 +69,27 @@
   flex-direction: row;
   flex-grow: 1;
   justify-content: left;
+}
+
+.mailpoet-modal-close {
+  background: $color-secondary-light;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  height: $modal-close-button-size;
+  margin-top: -$modal-close-button-size / 2;
+  outline: none;
+  position: absolute;
+  right: $grid-gap;
+  top: $grid-gap + ($heading-font-size-h3 * $heading-line-height) / 2;
+  width: $modal-close-button-size;
+  z-index: $modal-header-z-index + 1;
+
+  svg {
+    height: 10px;
+    stroke: $color-secondary;
+    width: 10px;
+  }
 }
 
 .mailpoet-modal-content {
