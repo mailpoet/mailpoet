@@ -38,7 +38,7 @@ export default function normalizeSettings(data: any): Settings {
       method: asEnum(['WordPress', 'MailPoet', 'Linux Cron'], 'WordPress'),
     }),
     tracking: asObject({ enabled: enabledRadio }),
-    send_transactional_emails: enabledRadio,
+    send_transactional_emails: disabledRadio,
     deactivate_subscriber_after_inactive_days: asEnum(['', '90', '180', '365'], '180'),
     analytics: asObject({ enabled: disabledRadio }),
     captcha: asObject({
