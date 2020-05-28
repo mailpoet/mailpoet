@@ -112,6 +112,20 @@ class StylesTest extends \MailPoetUnitTest {
     expect($styles)->contains('background-size: contain');
   }
 
+  public function testItShouldRenderErrorMessageColor() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['error_validation_color' => 'xxx'];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    expect($styles)->contains('#prefix .mailpoet_validate_error {color: xxx}');
+  }
+
+  public function testItShouldRenderSuccessMessageColor() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['success_validation_color' => 'xxx'];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    expect($styles)->contains('#prefix .mailpoet_validate_success {color: xxx}');
+  }
+
   public function testItRendersWidthCssForBellowPost() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['backgroundColor' => 'red'];

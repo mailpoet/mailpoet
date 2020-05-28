@@ -67,15 +67,6 @@ class Styles {
 .mailpoet_message {
 }
 
-.mailpoet_validate_success {
-  font-weight: 600;
-  color:#468847;
-}
-
-.mailpoet_validate_error {
-  color:#B94A48;
-}
-
 .mailpoet_form_loading {
   width: 30px;
   text-align: center;
@@ -173,7 +164,13 @@ EOL;
     // Width styles
     $widthStyles = $this->renderWidthStyles($formSettings, $selector, $displayType);
 
-    return $formWrapperStyles . $formElementStyles . $widthStyles . $media;
+    $messagesStyles = $this->renderMessagesStyles($formSettings, $selector);
+
+    return $formWrapperStyles
+      . $formElementStyles
+      . $widthStyles
+      . $messagesStyles
+      . $media;
   }
 
   private function renderWidthStyles($formSettings, $selector, $displayType) {
@@ -228,5 +225,31 @@ EOL;
 
   private function getWidthValue(array $width) {
     return $width['value'] . ($width['unit'] === 'percent' ? '%' : 'px');
+  }
+
+  private function renderMessagesStyles(array $formSettings, string $selector): string {
+    $styles = '';
+    if (isset($formSettings['success_validation_color']) && $formSettings['success_validation_color']) {
+      $success = $formSettings['success_validation_color'];
+      $styles .= "
+        $selector .mailpoet_validate_success {color: $success}
+        $selector input.parsley-success {color: $success}
+        $selector select.parsley-success {color: $success}
+        $selector textarea.parsley-success {color: $success}
+      ";
+    }
+    if (isset($formSettings['error_validation_color']) && $formSettings['error_validation_color']) {
+      $error = $formSettings['error_validation_color'];
+      $styles .= "
+        $selector .mailpoet_validate_error {color: $error}
+        $selector input.parsley-error {color: $error}
+        $selector select.parsley-error {color: $error}
+        $selector textarea.textarea.parsley-error {color: $error}
+        $selector .parsley-errors-list {color: $error}
+        $selector .parsley-required {color: $error}
+        $selector .parsley-custom-error-message {color: $error}
+      ";
+    }
+    return $styles;
   }
 }
