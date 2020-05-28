@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import Select, { Props as ReactSelectProps } from 'react-select';
 
-type Props = ReactSelectProps & {
+export type Props = ReactSelectProps & {
   dimension?: 'small',
   isFullWidth?: boolean,
   iconStart?: JSX.Element,
@@ -16,22 +16,29 @@ const LabelRenderer = (data: any) => (
   </div>
 );
 
-const Option = (props: any) => (
-  <div
-    ref={props.innerRef}
-    {...props.innerProps} // eslint-disable-line react/jsx-props-no-spreading
-    className={
-      classnames({
-        'mailpoet-form-react-select__option': true,
-        'mailpoet-form-react-select__option--is-disabled': props.isDisabled,
-        'mailpoet-form-react-select__option--is-focused': props.isFocused,
-        'mailpoet-form-react-select__option--is-selected': props.isSelected,
-      })
-    }
-  >
-    {LabelRenderer(props.data)}
-  </div>
-);
+const Option = (props: any) => {
+  let style = {};
+  if (props.data?.style) {
+    style = props.data.style;
+  }
+  return (
+    <div
+      style={style}
+      ref={props.innerRef}
+      {...props.innerProps} // eslint-disable-line react/jsx-props-no-spreading
+      className={
+        classnames({
+          'mailpoet-form-react-select__option': true,
+          'mailpoet-form-react-select__option--is-disabled': props.isDisabled,
+          'mailpoet-form-react-select__option--is-focused': props.isFocused,
+          'mailpoet-form-react-select__option--is-selected': props.isSelected,
+        })
+      }
+    >
+      {LabelRenderer(props.data)}
+    </div>
+  );
+};
 
 const SingleValue = (props: any) => (
   <div
