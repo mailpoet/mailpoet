@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import closeIcon from './close_icon.jsx';
+import Heading from 'common/typography/heading/heading';
 
 const ModalHeader = ({
   title,
@@ -10,9 +11,9 @@ const ModalHeader = ({
 }) => (
   <div className="mailpoet-modal-header">
     <div className="mailpoet-modal-header-heading-container">
-      <h1 className="mailpoet-modal-header-heading">
+      <Heading level={3}>
         { title }
-      </h1>
+      </Heading>
     </div>
     { isDismissible && (
       <button type="button" onClick={onClose} className="mailpoet-modal-close">{closeIcon}</button>
