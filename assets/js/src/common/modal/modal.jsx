@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import ModalFrame from './frame.jsx';
 import ModalHeader from './header.jsx';
+import ModalOverlay from './overlay.jsx';
 import closeIcon from './close_icon';
 
 function Modal({
@@ -19,28 +20,31 @@ function Modal({
   fullScreen,
 }) {
   return createPortal(
-    <ModalFrame
+    <ModalOverlay
       onRequestClose={onRequestClose}
       shouldCloseOnEsc={shouldCloseOnEsc}
       shouldCloseOnClickOutside={shouldCloseOnClickOutside}
-      role={role}
-      className={contentClassName}
-      overlayClassName={overlayClassName}
-      fullScreen={fullScreen}
+      className={overlayClassName}
     >
-      { title && (
-        <ModalHeader title={title} />
-      ) }
-      { isDismissible && (
-        <button type="button" onClick={onRequestClose} className="mailpoet-modal-close">{closeIcon}</button>
-      ) }
-      <div
-        className="mailpoet-modal-content"
-        role="document"
+      <ModalFrame
+        role={role}
+        className={contentClassName}
+        fullScreen={fullScreen}
       >
-        { children }
-      </div>
-    </ModalFrame>,
+        { title && (
+          <ModalHeader title={title} />
+        ) }
+        { isDismissible && (
+          <button type="button" onClick={onRequestClose} className="mailpoet-modal-close">{closeIcon}</button>
+        ) }
+        <div
+          className="mailpoet-modal-content"
+          role="document"
+        >
+          { children }
+        </div>
+      </ModalFrame>
+    </ModalOverlay>,
     document.getElementById('mailpoet-modal')
   );
 }
