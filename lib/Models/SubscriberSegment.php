@@ -17,7 +17,7 @@ class SubscriberSegment extends Model {
   }
 
   public static function unsubscribeFromSegments($subscriber, $segmentIds = []) {
-    if ($subscriber === false) return false;
+    if (!$subscriber) return false;
 
     // Reset confirmation emails count, so user can resubscribe
     $subscriber->countConfirmations = 0;
