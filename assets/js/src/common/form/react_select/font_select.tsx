@@ -1,6 +1,13 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import Select, { Props } from './react_select';
+import Mailpoet from 'mailpoet';
+import Select, { Props as ReactSelectProps } from './react_select';
+
+export type Props = ReactSelectProps & {
+  customFontsElementId?: string,
+  displayCustomFontsStylesheet?: boolean,
+  onChange: (value: any) => void,
+};
 
 const customFonts = [
   'Abril FatFace',
@@ -81,7 +88,8 @@ const standardFonts = [
 
 const FontSelect = ({
   customFontsElementId,
-  displayCustomFontsStylesheet,
+  displayCustomFontsStylesheet = true,
+  onChange,
   ...props
 }: Props) => {
   const fonts = [
@@ -135,14 +143,16 @@ const FontSelect = ({
       {link}
       <Select
         options={fonts}
+        onChange={(newValue) => {
+          // typescript yells at me for no apparent reason, I don't know why this needs to be here
+          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // @ts-ignore
+          onChange(newValue.value);
+        }}
         {...props} // eslint-disable-line react/jsx-props-no-spreading
       />
     </>
   );
-};
-
-FontSelect.defaultProps = {
-  displayCustomFontsStylesheet: true,
 };
 
 export default FontSelect;
