@@ -41,13 +41,13 @@
 // Components
 // Actual UI components.
 
+@import 'components/modal';
 @import 'components/parsley';
 @import 'components-plugin/automatic-emails';
 @import 'components-plugin/browser-preview';
 @import 'components-plugin/dynamic-segments';
 @import 'components-plugin/common';
 @import 'components-plugin/legacy-modal';
-@import 'components-plugin/modal';
 @import 'components-plugin/notice';
 @import 'components-plugin/listing';
 @import 'components-plugin/listing-newsletters';
