@@ -58,17 +58,15 @@
 
 .mailpoet-modal-header {
   background: white;
+  border-bottom: 1px solid $color-tertiary-light;
+  margin-bottom: $grid-gap;
   padding: 0 $grid-gap;
   top: 0;
   z-index: $modal-header-z-index;
-}
 
-.mailpoet-modal-header-heading-container {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  flex-grow: 1;
-  justify-content: left;
+  h3 {
+    margin-right: $modal-close-button-size + $grid-gap;
+  }
 }
 
 .mailpoet-modal-close {
