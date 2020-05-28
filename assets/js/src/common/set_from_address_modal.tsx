@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
-import Modal from 'common/modal/modal.jsx';
+import Modal from 'common/modal/modal';
 import { GlobalContext } from 'context';
 
 const mailPoetApiVersion = (window as any).mailpoet_api_version as string;
