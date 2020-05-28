@@ -25,8 +25,9 @@
   border-radius: 4px;
   box-shadow: $modal-shadow-modal;
   box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
   height: 100%;
-  overflow: auto;
   width: 100%;
 
   // Centered on desktops
@@ -37,7 +38,7 @@
     animation-duration: 100ms;
     animation-fill-mode: forwards;
     height: auto;
-    max-height: calc(100% - #{ $modal-header-height } - #{ $modal-header-height });
+    max-height: calc(100% - #{ $modal-grid-size-large } - #{ $modal-grid-size-large });
     max-width: calc(100% - #{ $modal-grid-size-large } - #{ $modal-grid-size-large });
     min-width: $modal-min-width;
     width: auto;
@@ -54,35 +55,11 @@
   }
 }
 
-// Fix header to the top so it is always there to provide context to the modal
-// if the content needs to be scrolled (for example, on the keyboard shortcuts
-// modal screen).
 .mailpoet-modal-header {
-  align-items: center;
   background: white;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  height: $modal-header-height;
-  justify-content: space-between;
-  margin: 0 -#{$modal-grid-size-xlarge} $modal-grid-size-xlarge;
   padding: 0 $modal-grid-size-xlarge;
-  // For z-index to take effect, the element must be positioned. A "sticky"
-  // element is positioned, but since this is not supported in IE11,
-  // "relative" is used as a fallback.
-  position: relative;
-  position: sticky;
   top: 0;
   z-index: $modal-header-z-index;
-
-  // Rules inside this query are only run by Microsoft Edge.
-  // Edge has bugs around position: sticky;, so it needs a separate top rule.
-  // See also https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/17555420/.
-
-  @supports (-ms-ime-align:auto) {
-    position: fixed;
-    width: 100%;
-  }
 
   .mailpoet-modal-close {
     background: none;
@@ -118,14 +95,8 @@
 .mailpoet-modal-content {
   box-sizing: border-box;
   height: 100%;
+  overflow: auto;
   padding: 0 $modal-grid-size-xlarge $modal-grid-size-xlarge;
-
-  // Rules inside this query are only run by Microsoft Edge.
-  // This is a companion top padding to the fixed rule in line 77.
-
-  @supports (-ms-ime-align:auto) {
-    padding-top: $modal-header-height;
-  }
 }
 
 .mailpoet-modal-full-screen {
