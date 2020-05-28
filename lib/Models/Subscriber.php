@@ -221,58 +221,42 @@ class Subscriber extends Model {
     return $orm;
   }
 
-  private static function updateGroupsQuery($data, $query) {
-    $wpSegment = Segment::getWPSegment();
-    if (isset($data['filter']['segment']) && $data['filter']['segment'] === $wpSegment->id) {
-      return $query;
-    }
-    $settings = SettingsController::getInstance();
-    if (
-      ($settings->get('premium.premium_key_state.state') === 'valid')
-      &&
-      ($settings->get('premium.premium_key_state.data.support_tier') === 'premium')
-    ) {
-      $query->whereNull('wp_user_id');
-    }
-    return $query;
-  }
-
   public static function groups($data) {
     return [
       [
         'name' => 'all',
         'label' => WPFunctions::get()->__('All', 'mailpoet'),
-        'count' => self::updateGroupsQuery($data, self::getPublished())->count(),
+        'count' => self::getPublished()->count(),
       ],
       [
         'name' => self::STATUS_SUBSCRIBED,
         'label' => WPFunctions::get()->__('Subscribed', 'mailpoet'),
-        'count' => self::updateGroupsQuery($data, self::filter(self::STATUS_SUBSCRIBED))->count(),
+        'count' => self::filter(self::STATUS_SUBSCRIBED)->count(),
       ],
       [
         'name' => self::STATUS_UNCONFIRMED,
         'label' => WPFunctions::get()->__('Unconfirmed', 'mailpoet'),
-        'count' => self::updateGroupsQuery($data, self::filter(self::STATUS_UNCONFIRMED))->count(),
+        'count' => self::filter(self::STATUS_UNCONFIRMED)->count(),
       ],
       [
         'name' => self::STATUS_UNSUBSCRIBED,
         'label' => WPFunctions::get()->__('Unsubscribed', 'mailpoet'),
-        'count' => self::updateGroupsQuery($data, self::filter(self::STATUS_UNSUBSCRIBED))->count(),
+        'count' => self::filter(self::STATUS_UNSUBSCRIBED)->count(),
       ],
       [
         'name' => self::STATUS_INACTIVE,
         'label' => WPFunctions::get()->__('Inactive', 'mailpoet'),
-        'count' => self::updateGroupsQuery($data, self::filter(self::STATUS_INACTIVE))->count(),
+        'count' => self::filter(self::STATUS_INACTIVE)->count(),
       ],
       [
         'name' => self::STATUS_BOUNCED,
         'label' => WPFunctions::get()->__('Bounced', 'mailpoet'),
-        'count' => self::updateGroupsQuery($data, self::filter(self::STATUS_BOUNCED))->count(),
+        'count' => self::filter(self::STATUS_BOUNCED)->count(),
       ],
       [
         'name' => 'trash',
         'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
-        'count' => self::updateGroupsQuery($data, self::getTrashed())->count(),
+        'count' => self::getTrashed()->count(),
       ],
     ];
   }
