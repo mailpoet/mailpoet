@@ -85,7 +85,7 @@ jQuery(($) => {
 
   $(() => {
     $('.mailpoet_form').each((index, element) => {
-      $(element).children('.mailpoet_paragraph').last().addClass('last');
+      $(element).children('.mailpoet_paragraph, .mailpoet_form_image, .mailpoet_form_paragraph').last().addClass('last');
     });
     $('.mailpoet_form_close_icon').click((event) => {
       const closeIcon = $(event.target);
