@@ -377,3 +377,7 @@ div.mailpoet_form_slide_in.active {
   margin-bottom: $form-block-margin;
   width: 100%;
 }
+
+.mailpoet_message {
+  clear: both; // Message is a last item in form. Cleanup ensures that nothing floats out and paddings are respected.
+}
