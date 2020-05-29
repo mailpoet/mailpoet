@@ -164,16 +164,19 @@ EOL;
     // Width styles
     $widthStyles = $this->renderWidthStyles($formSettings, $selector, $displayType);
 
+    $typeSpecificStyles = $this->getFormTypeSpecificStyles($selector, $displayType);
+
     $messagesStyles = $this->renderMessagesStyles($formSettings, $selector);
 
     return $formWrapperStyles
       . $formElementStyles
       . $widthStyles
       . $messagesStyles
+      . $typeSpecificStyles
       . $media;
   }
 
-  private function renderWidthStyles($formSettings, $selector, $displayType) {
+  private function renderWidthStyles(array $formSettings, string $selector, string $displayType): string {
     $styles = [];
 
     if ($displayType === FormEntity::DISPLAY_TYPE_POPUP) {
@@ -251,5 +254,15 @@ EOL;
       ";
     }
     return $styles;
+  }
+
+  private function getFormTypeSpecificStyles(string $selector, string $displayType): string {
+    $styles = [];
+    if ($displayType === FormEntity::DISPLAY_TYPE_SLIDE_IN) {
+      $styles[] = $selector . '.mailpoet_form_slide_in { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }';
+      $styles[] = $selector . '.mailpoet_form_position_right { border-top-right-radius: 0; }';
+      $styles[] = $selector . '.mailpoet_form_position_left { border-top-left-radius: 0; }';
+    }
+    return join('', $styles);
   }
 }
