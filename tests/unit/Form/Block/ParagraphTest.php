@@ -24,7 +24,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'content' => 'Paragraph',
       ],
     ]);
-    expect($html)->equals('<p>Paragraph</p>');
+    expect($html)->equals('<p class="mailpoet_form_paragraph">Paragraph</p>');
   }
 
   public function testItShouldRenderClass() {
@@ -34,7 +34,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'class_name' => 'class1 class2',
       ],
     ]);
-    expect($html)->equals('<p class="class1 class2">Paragraph</p>');
+    expect($html)->equals('<p class="mailpoet_form_paragraph class1 class2">Paragraph</p>');
   }
 
   public function testItShouldRenderAlign() {
@@ -44,7 +44,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'align' => 'right',
       ],
     ]);
-    expect($html)->equals('<p style="text-align: right">Paragraph</p>');
+    expect($html)->equals('<p class="mailpoet_form_paragraph" style="text-align: right">Paragraph</p>');
   }
 
   public function testItShouldRenderTextColor() {
@@ -54,7 +54,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'text_color' => 'red',
       ],
     ]);
-    expect($html)->equals('<p style="color: red">Paragraph</p>');
+    expect($html)->equals('<p class="mailpoet_form_paragraph" style="color: red">Paragraph</p>');
   }
 
   public function testItShouldRenderBackgroundColor() {
@@ -64,7 +64,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'background_color' => 'red',
       ],
     ]);
-    expect($html)->equals('<p style="background-color: red">Paragraph</p>');
+    expect($html)->equals('<p class="mailpoet_form_paragraph" style="background-color: red">Paragraph</p>');
   }
 
   public function testItShouldRenderFontSize() {
@@ -74,7 +74,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'font_size' => '33',
       ],
     ]);
-    expect($html)->equals('<p style="font-size: 33px">Paragraph</p>');
+    expect($html)->equals('<p class="mailpoet_form_paragraph" style="font-size: 33px">Paragraph</p>');
   }
 
   public function testItShouldRenderDropCap() {
@@ -84,6 +84,6 @@ class ParagraphTest extends \MailPoetUnitTest {
         'drop_cap' => '1',
       ],
     ]);
-    expect($html)->equals('<p class="has-drop-cap">Paragraph</p>');
+    expect($html)->equals('<p class="mailpoet_form_paragraph has-drop-cap">Paragraph</p>');
   }
 }
