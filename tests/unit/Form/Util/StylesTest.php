@@ -219,4 +219,14 @@ class StylesTest extends \MailPoetUnitTest {
     expect($styleWithoutMedia)->contains('width: 90%;');
     expect($styleWithoutMedia)->notContains('max-width:');
   }
+
+  public function testItRendersSlideInSpecificStyles() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['background_color' => 'red'];
+    // BC Style
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_SLIDE_IN);
+    expect($styles)->contains('#prefix.mailpoet_form_slide_in { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }');
+    expect($styles)->contains('#prefix.mailpoet_form_position_right { border-top-right-radius: 0; }');
+    expect($styles)->contains('#prefix.mailpoet_form_position_left { border-top-left-radius: 0; }');
+  }
 }
