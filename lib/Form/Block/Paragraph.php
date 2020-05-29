@@ -34,7 +34,7 @@ class Paragraph {
   }
 
   private function renderClass(array $block) {
-    $classes = [];
+    $classes = ['mailpoet_form_paragraph'];
     if (isset($block['params']['class_name'])) {
       $classes[] = $block['params']['class_name'];
     }
