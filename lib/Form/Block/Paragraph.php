@@ -51,16 +51,16 @@ class Paragraph {
 
   private function renderStyle(array $block) {
     $styles = [];
-    if (isset($block['params']['background_color'])) {
+    if (!empty($block['params']['background_color'])) {
       $styles[] = 'background-color: ' . $block['params']['background_color'];
     }
-    if (isset($block['params']['align'])) {
+    if (!empty($block['params']['align'])) {
       $styles[] = 'text-align: ' . $block['params']['align'];
     }
-    if (isset($block['params']['text_color'])) {
+    if (!empty($block['params']['text_color'])) {
       $styles[] = 'color: ' . $block['params']['text_color'];
     }
-    if (isset($block['params']['font_size'])) {
+    if (!empty($block['params']['font_size'])) {
       $styles[] = 'font-size: ' . $block['params']['font_size'] . 'px';
     }
     if (empty($styles)) {
