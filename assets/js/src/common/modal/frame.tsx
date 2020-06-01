@@ -8,9 +8,9 @@ type Props = {
 };
 
 function ModalFrame({
-  children,
-  className = '',
   fullScreen = false,
+  className = '',
+  children,
 }: Props) {
   return (
     <div

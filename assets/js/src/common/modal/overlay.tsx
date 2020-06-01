@@ -4,17 +4,17 @@ import classnames from 'classnames';
 const ESCAPE = 27;
 
 type Props = {
-  onRequestClose?: (event: React.SyntheticEvent) => void,
   shouldCloseOnEsc?: boolean,
   shouldCloseOnClickOutside?: boolean,
+  onRequestClose?: (event: React.SyntheticEvent) => void,
   className?: string,
   children: React.ReactNode,
 };
 
 function ModalOverlay({
-  onRequestClose = () => {},
   shouldCloseOnEsc = true,
   shouldCloseOnClickOutside = true,
+  onRequestClose = () => {},
   className = '',
   children,
 }: Props) {
