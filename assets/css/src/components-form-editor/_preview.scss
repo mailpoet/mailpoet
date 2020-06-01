@@ -9,20 +9,6 @@
 }
 
 .mailpoet_form_preview_modal {
-  border-radius: 0;
-  margin: 0;
-  min-height: 100%;
-  min-width: 100%;
-
-  .mailpoet-modal-header {
-    height: 20px;
-    margin-bottom: 0;
-
-    .mailpoet-modal-close {
-      top: 10px;
-    }
-  }
-
   .mailpoet-modal-content {
     align-items: stretch;
     display: flex;
@@ -82,7 +68,7 @@
   height: 100%;
 
   .mailpoet_preview_sidebar {
-    padding: 35px 20px 10px 0;
+    padding: 42px 20px 10px 0;
     width: 300px;
 
     > .components-base-control,
