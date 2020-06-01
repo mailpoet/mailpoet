@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import Mailpoet from 'mailpoet';
+import MailPoet from 'mailpoet';
 import Select, { Props as ReactSelectProps } from './react_select';
 
 export type Props = ReactSelectProps & {
@@ -94,16 +94,16 @@ const FontSelect = ({
 }: Props) => {
   const fonts = [
     {
-      label: 'Theme’s default fonts',
+      label: MailPoet.I18n.t('formFontsDefaultTheme'),
       value: undefined,
     },
     {
-      label: 'Standard fonts',
+      label: MailPoet.I18n.t('formFontsStandard'),
       value: '',
       options: [],
     },
     {
-      label: 'Custom fonts',
+      label: MailPoet.I18n.t('formFontsCustom'),
       value: '',
       options: [],
     },
