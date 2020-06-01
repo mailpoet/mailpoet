@@ -16,7 +16,7 @@ import StepOfferClearout from './import/step_offer_clearout';
 
 const container = document.getElementById('import_container');
 
-const subscribersLimitForValidation = 200;
+const subscribersLimitForValidation = 100;
 
 const ImportSubscribers = () => {
   const [stepMethodSelectionData, setStepMethodSelectionData] = useState(undefined);
