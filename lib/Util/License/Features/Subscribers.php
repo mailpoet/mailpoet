@@ -30,12 +30,15 @@ class Subscribers {
   public function check() {
     $limit = $this->getSubscribersLimit();
     if ($limit === false) return false;
-    if ($this->hasPremiumSupport()) {
-      $subscribersCount = $this->subscribersRepository->getTotalSubscribersWithoutWPUsers();
-    } else {
-      $subscribersCount = $this->subscribersRepository->getTotalSubscribers();
-    }
+    $subscribersCount = $this->getSubscribersCount();
     return $subscribersCount > $limit;
+  }
+
+  public function getSubscribersCount() {
+    if ($this->hasPremiumSupport()) {
+      return $this->subscribersRepository->getTotalSubscribersWithoutWPUsers();
+    }
+    return $this->subscribersRepository->getTotalSubscribers();
   }
 
   public function hasValidApiKey() {
@@ -84,7 +87,7 @@ class Subscribers {
     return (int)$this->settings->get(self::PREMIUM_SUBSCRIBERS_LIMIT_SETTING_KEY);
   }
 
-  private function hasPremiumSupport() {
+  public function hasPremiumSupport() {
     return $this->hasValidPremiumKey() && $this->settings->get(self::PREMIUM_SUPPORT_SETTING_KEY) === 'premium';
   }
 
