@@ -7,6 +7,7 @@ import MethodPaste from './step_method_selection/method_paste.jsx';
 import MethodUpload from './step_method_selection/method_upload.jsx';
 import MethodMailChimp from './step_method_selection/method_mailchimp.jsx';
 import processCsv from './step_method_selection/process_csv.jsx';
+import PreviousNextStepButtons from './previous_next_step_buttons';
 
 const getNextStepLink = (importData, subscribersLimitForValidation, method) => {
   if (importData === undefined) {
@@ -38,6 +39,10 @@ function StepMethodSelection({
     history.push(getNextStepLink(parsedData, subscribersLimitForValidation, method));
   };
 
+  const previousStep = () => {
+    history.push('/step_offer_clearout');
+  };
+
   const processLocal = () => {
     const data = method === 'paste-method' ? pastedCsvData : file;
     processCsv(data, (sanitizedData) => {
@@ -57,6 +62,7 @@ function StepMethodSelection({
       />
       { method === 'paste-method' && (
       <MethodPaste
+        onPrevious={previousStep}
         onValueChange={setPastedCsvData}
         onFinish={processLocal}
         canFinish={!!pastedCsvData.trim()}
@@ -65,6 +71,7 @@ function StepMethodSelection({
       )}
       { method === 'file-method' && (
       <MethodUpload
+        onPrevious={previousStep}
         onValueChange={setFile}
         onFinish={processLocal}
         canFinish={!!file}
@@ -73,6 +80,7 @@ function StepMethodSelection({
       )}
       { method === 'mailchimp-method' && (
       <MethodMailChimp
+        onPrevious={previousStep}
         onFinish={(data) => {
           MailPoet.trackEvent('Subscribers import started', {
             source: 'MailChimp',
@@ -81,6 +89,12 @@ function StepMethodSelection({
           finish(data);
         }}
       />
+      )}
+      { method === undefined && (
+        <PreviousNextStepButtons
+          canGoNext={false}
+          onPreviousAction={previousStep}
+        />
       )}
     </div>
   );
