@@ -55,7 +55,6 @@
 .mailpoet-modal-header {
   background: white;
   border-bottom: 1px solid $color-tertiary-light;
-  margin-bottom: $grid-gap;
   padding: 0 $grid-gap;
   top: 0;
   z-index: $modal-header-z-index;
@@ -90,7 +89,7 @@
   box-sizing: border-box;
   height: 100%;
   overflow: auto;
-  padding: 0 $grid-gap $grid-gap;
+  padding: $grid-gap;
 }
 
 .mailpoet-modal-full-screen {
