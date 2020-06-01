@@ -12,6 +12,7 @@ import StepMethodSelection from './import/step_method_selection.jsx';
 import StepInputValidation from './import/step_input_validation.jsx';
 import StepDataManipulation from './import/step_data_manipulation.jsx';
 import StepResults from './import/step_results.jsx';
+import StepOfferClearout from './import/step_offer_clearout';
 
 const container = document.getElementById('import_container');
 
@@ -27,6 +28,12 @@ const ImportSubscribers = () => {
         <Notices />
         <ScrollToTop>
           <Switch>
+            <Route
+              path="/step_offer_clearout"
+              render={(props) => (
+                <StepOfferClearout history={props.history} />
+              )}
+            />
             <Route
               path="/step_method_selection"
               render={(props) => (
@@ -74,7 +81,7 @@ const ImportSubscribers = () => {
             />
             <Route
               path="*"
-              render={() => <Redirect to="/step_method_selection" />}
+              render={() => <Redirect to="/step_offer_clearout" />}
             />
           </Switch>
         </ScrollToTop>

@@ -7,6 +7,7 @@ class SubscriberManageImportExportCest {
     $i->wantTo('Import a big list');
     $i->login();
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
+    $this->proceedThroughClearout($i);
     $this->uploadCsvFile($i, 'MailPoetImportBigList.csv');
 
     // I see validation step, select a wrong source and should be blocked
@@ -17,6 +18,7 @@ class SubscriberManageImportExportCest {
 
     // Repeat the test, this time choose the right source, but say you sent to the list long time ago
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
+    $this->proceedThroughClearout($i);
     $this->uploadCsvFile($i, 'MailPoetImportBigList.csv');
     $i->waitForElement('[data-automation-id="mailpoet_import_validation_step"]');
     $i->checkOption('[data-automation-id="mailpoet_import_validation_step_option1"]');
@@ -28,6 +30,7 @@ class SubscriberManageImportExportCest {
 
     // Repeat the test, happy path
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
+    $this->proceedThroughClearout($i);
     $this->uploadCsvFile($i, 'MailPoetImportBigList.csv');
     $i->waitForElement('[data-automation-id="mailpoet_import_validation_step"]');
     $i->checkOption('[data-automation-id="mailpoet_import_validation_step_option1"]');
@@ -43,6 +46,7 @@ class SubscriberManageImportExportCest {
     $i->login();
     $i->amOnMailPoetPage ('Subscribers');
     $i->click('[data-automation-id="import-subscribers-button"]');
+    $this->proceedThroughClearout($i);
     $this->uploadCsvFile($i);
     $i->waitForText('2 records had issues and were skipped');
     $i->click('[data-automation-id="show-more-details"]');
@@ -94,5 +98,11 @@ class SubscriberManageImportExportCest {
     $i->click(['xpath' => '//*[@id="select2-mailpoet_segments_select-results"]/li[1]']);
     $i->click('.mailpoet_data_manipulation_step [data-automation-id="import-next-step"]');
     $i->waitForText('Import again');
+  }
+
+  private function proceedThroughClearout(\AcceptanceTester $i) {
+    $proceedLinkText = 'Got it, I’ll proceed to import';
+    $i->waitForText($proceedLinkText);
+    $i->click($proceedLinkText);
   }
 }
