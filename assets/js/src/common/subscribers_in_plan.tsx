@@ -31,7 +31,7 @@ const SubscribersInPlan = ({
   );
   const mailpoetSubscribersCount = (
     <b key="2">
-      {MailPoet.I18n.t('mailpoetSubscribersCount')
+      {MailPoet.I18n.t('subscribersInPlanCount')
         .replace('%$1d', mailpoetSubscribers.toLocaleString())
         .replace('%$2d', mailpoetSubscribersLimit ? mailpoetSubscribersLimit.toLocaleString() : '∞')}
     </b>
