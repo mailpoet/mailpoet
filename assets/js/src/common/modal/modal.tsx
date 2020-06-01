@@ -15,7 +15,6 @@ type Props = {
   fullScreen?: boolean,
   shouldCloseOnEsc?: boolean,
   shouldCloseOnClickOutside?: boolean,
-  role?: string,
   children: React.ReactNode,
 };
 
@@ -26,7 +25,6 @@ function Modal({
   isDismissible,
   shouldCloseOnEsc,
   shouldCloseOnClickOutside,
-  role,
   contentClassName,
   overlayClassName,
   fullScreen,
@@ -39,7 +37,6 @@ function Modal({
       className={overlayClassName}
     >
       <ModalFrame
-        role={role}
         className={contentClassName}
         fullScreen={fullScreen}
       >
@@ -63,7 +60,6 @@ function Modal({
 
 Modal.defaultProps = {
   onRequestClose: () => {},
-  role: 'dialog',
   title: null,
   shouldCloseOnEsc: true,
   shouldCloseOnClickOutside: true,

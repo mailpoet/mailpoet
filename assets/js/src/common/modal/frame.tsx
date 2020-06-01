@@ -3,7 +3,6 @@ import classnames from 'classnames';
 
 type Props = {
   fullScreen?: boolean,
-  role?: string,
   className?: string,
   children: React.ReactNode,
 };
@@ -11,7 +10,6 @@ type Props = {
 function ModalFrame({
   children,
   className,
-  role,
   fullScreen,
 }: Props) {
   return (
@@ -21,7 +19,7 @@ function ModalFrame({
         { 'mailpoet-modal-full-screen': fullScreen },
         className
       )}
-      role={role}
+      role="dialog"
       tabIndex={-1}
     >
       {children}
@@ -30,7 +28,6 @@ function ModalFrame({
 }
 
 ModalFrame.defaultProps = {
-  role: 'dialog',
   fullScreen: false,
   className: '',
 };
