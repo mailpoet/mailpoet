@@ -82,7 +82,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onNoItemsFound: (group) => {
-    if (group === 'bounced' && !window.mailpoet_premium_active && !window.mss_active) {
+    if (group === 'bounced' && !window.mailpoet_premium_active && !window.mailpoet_mss_active) {
       return (
         <div>
           <p>{MailPoet.I18n.t('bouncedSubscribersHelp')}</p>
@@ -379,7 +379,12 @@ class SubscriberList extends React.Component {
 
         <SubscribersInPlan
           subscribersInPlan={window.mailpoet_subscribers_in_plan_count}
-          hasValidApiKey={window.mailpoet_has_valid_api_key}
+          subscribersInPlanLimit={window.mailpoet_subscribers_limit}
+          mailpoetSubscribers={window.mailpoet_premium_subscribers_count}
+          mailpoetSubscribersLimit={window.mailpoet_subscribers_limit}
+          hasPremiumSupport={window.mailpoet_has_premium_support}
+          wpUsersCount={window.mailpoet_wp_users_count}
+          mssActive={window.mailpoet_mss_active}
         />
 
         <SubscribersLimitNotice />
