@@ -4,6 +4,7 @@ import classnames from 'classnames';
 const ESCAPE = 27;
 
 type Props = {
+  isDismissible?: boolean,
   shouldCloseOnEsc?: boolean,
   shouldCloseOnClickOutside?: boolean,
   onRequestClose?: (event: React.SyntheticEvent) => void,
@@ -12,6 +13,7 @@ type Props = {
 };
 
 function ModalOverlay({
+  isDismissible = true,
   shouldCloseOnEsc = true,
   shouldCloseOnClickOutside = true,
   onRequestClose = () => {},
@@ -56,6 +58,7 @@ function ModalOverlay({
       ref={overlayRef}
       className={classnames(
         'mailpoet-modal-screen-overlay',
+        isDismissible ? 'mailpoet-modal-is-dismissible' : null,
         className
       )}
       onKeyDown={handleKeyDown}

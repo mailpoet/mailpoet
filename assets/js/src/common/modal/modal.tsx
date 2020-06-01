@@ -31,6 +31,7 @@ function Modal({
 }: Props) {
   return createPortal(
     <ModalOverlay
+      isDismissible={isDismissible}
       onRequestClose={onRequestClose}
       shouldCloseOnEsc={shouldCloseOnEsc}
       shouldCloseOnClickOutside={shouldCloseOnClickOutside}
