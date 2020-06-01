@@ -21,8 +21,8 @@
   to { opacity: 1; }
 }
 
-// Full-screen on mobiles
 .mailpoet-modal-frame {
+  animation: mailpoet-modal-appear-animation .1s ease-out;
   background: white;
   border: $modal-border-width solid $modal-light-gray-500;
   border-radius: 4px;
@@ -30,19 +30,20 @@
   box-sizing: border-box;
   display: flex;
   flex-flow: column;
-  height: 100%;
+  height: auto;
+  max-height: 90%;
+  max-width: 90%;
+  min-width: $modal-min-width;
   position: relative;
-  width: 100%;
+  width: auto;
 
-  // Centered on desktops
-
-  @include breakpoint-min-width(600px) {
-    animation: mailpoet-modal-appear-animation .1s ease-out;
-    height: auto;
-    max-height: calc(100% - #{ 2 * $grid-gap });
-    max-width: calc(100% - #{ 2 * $grid-gap });
-    min-width: $modal-min-width;
-    width: auto;
+  @include respond-to(small-screen) {
+    border: none;
+    border-radius: 0;
+    height: 100%;
+    max-height: 100%;
+    max-width: 100%;
+    width: 100%;
   }
 }
 
