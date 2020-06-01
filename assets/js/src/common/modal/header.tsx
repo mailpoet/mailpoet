@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Heading from 'common/typography/heading/heading';
+import Heading from '../typography/heading/heading';
 
 type Props = {
   title: string,
