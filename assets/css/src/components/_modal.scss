@@ -59,7 +59,7 @@
   top: 0;
   z-index: $modal-header-z-index;
 
-  h3 {
+  .mailpoet-modal-is-dismissible & h3 {
     margin-right: $modal-close-button-size + $grid-gap;
   }
 }
