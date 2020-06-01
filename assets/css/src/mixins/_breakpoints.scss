@@ -9,3 +9,25 @@
     @content;
   }
 }
+
+@mixin respond-to($media) {
+  @if $media == small-screen {
+    @media screen and (max-width: $mailpoet-breakpoint-small) { @content; }
+  }
+
+  @else if $media == not-small-screen {
+    @media screen and (min-width: $mailpoet-breakpoint-small + 1) { @content; }
+  }
+
+  @else if $media == medium-screen {
+    @media screen and (max-width: $mailpoet-breakpoint-medium) { @content; }
+  }
+
+  @else if $media == only-medium-screen {
+    @media screen and (min-width: $mailpoet-breakpoint-small + 1) and (max-width: $mailpoet-breakpoint-medium) { @content; }
+  }
+
+  @else if $media == min-medium-screen {
+    @media screen and (min-width: $mailpoet-breakpoint-small + 1) { @content; }
+  }
+}
