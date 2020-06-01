@@ -1,25 +1,68 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import HelpTooltip from 'help-tooltip.jsx';
+import ReactStringReplace from 'react-string-replace';
 
 type Props = {
   subscribersInPlan: number | false,
-  hasValidApiKey: boolean,
+  subscribersInPlanLimit: number | false,
+  mailpoetSubscribers: number | false,
+  mailpoetSubscribersLimit: number | false,
+  hasPremiumSupport: boolean,
+  wpUsersCount: number | false,
+  mssActive: boolean,
 };
 
-const SubscribersInPlan = ({ subscribersInPlan, hasValidApiKey }: Props) => {
-  if (!subscribersInPlan) return null;
-  if (!hasValidApiKey) return null;
+const SubscribersInPlan = ({
+  subscribersInPlan,
+  subscribersInPlanLimit,
+  mailpoetSubscribers,
+  mailpoetSubscribersLimit,
+  hasPremiumSupport,
+  wpUsersCount,
+  mssActive,
+}: Props) => {
+  const subscribersInPlanCount = (
+    <b key="1">
+      {MailPoet.I18n.t('subscribersInPlanCount')
+        .replace('%$1d', subscribersInPlan.toLocaleString())
+        .replace('%$2d', subscribersInPlanLimit.toLocaleString())}
+    </b>
+  );
+  const mailpoetSubscribersCount = (
+    <b key="2">
+      {MailPoet.I18n.t('mailpoetSubscribersCount')
+        .replace('%$1d', mailpoetSubscribers.toLocaleString())
+        .replace('%$2d', mailpoetSubscribersLimit ? mailpoetSubscribersLimit.toLocaleString() : '∞')}
+    </b>
+  );
+  let mailpoetSubscribersTooltip;
+  if (hasPremiumSupport) {
+    mailpoetSubscribersTooltip = MailPoet.I18n.t('mailpoetSubscribersTooltipPremium');
+  } else {
+    mailpoetSubscribersTooltip = MailPoet.I18n.t('mailpoetSubscribersTooltipFree')
+      .replace('%$1d', wpUsersCount.toLocaleString());
+  }
   return (
-    <h3>
-      {MailPoet.I18n.t('subscribersInPlan')
-        .replace('%$1d', subscribersInPlan.toLocaleString())}
+    <div className="mailpoet_subscribers_in_plan">
+      {mssActive && subscribersInPlanLimit && (
+        <>
+          {ReactStringReplace(MailPoet.I18n.t('subscribersInPlan'), '%s', () => subscribersInPlanCount)}
+          {' '}
+          <HelpTooltip
+            tooltip={MailPoet.I18n.t('subscribersInPlanTooltip')}
+            place="right"
+          />
+          <span className="mailpoet_subscribers_in_plan_spacer">{' '}</span>
+        </>
+      )}
+      {ReactStringReplace(MailPoet.I18n.t('mailpoetSubscribers'), '%s', () => mailpoetSubscribersCount)}
       {' '}
       <HelpTooltip
-        tooltip={MailPoet.I18n.t('subscribersInPlanTooltip')}
+        tooltip={mailpoetSubscribersTooltip}
         place="right"
       />
-    </h3>
+    </div>
   );
 };
 
