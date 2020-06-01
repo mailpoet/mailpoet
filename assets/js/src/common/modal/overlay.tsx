@@ -12,10 +12,10 @@ type Props = {
 };
 
 function ModalOverlay({
-  onRequestClose,
-  shouldCloseOnEsc,
-  shouldCloseOnClickOutside,
-  className,
+  onRequestClose = () => {},
+  shouldCloseOnEsc = true,
+  shouldCloseOnClickOutside = true,
+  className = '',
   children,
 }: Props) {
   const overlayRef = useRef(null);
@@ -67,12 +67,5 @@ function ModalOverlay({
     </div>
   );
 }
-
-ModalOverlay.defaultProps = {
-  onRequestClose: () => {},
-  shouldCloseOnEsc: true,
-  shouldCloseOnClickOutside: true,
-  className: '',
-};
 
 export default ModalOverlay;

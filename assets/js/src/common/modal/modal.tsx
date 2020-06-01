@@ -19,15 +19,15 @@ type Props = {
 };
 
 function Modal({
-  onRequestClose,
-  title,
+  onRequestClose = () => {},
+  title = null,
   children,
-  isDismissible,
-  shouldCloseOnEsc,
-  shouldCloseOnClickOutside,
-  contentClassName,
-  overlayClassName,
-  fullScreen,
+  isDismissible = true,
+  shouldCloseOnEsc = true,
+  shouldCloseOnClickOutside = true,
+  contentClassName = '',
+  overlayClassName = '',
+  fullScreen = false,
 }: Props) {
   return createPortal(
     <ModalOverlay
@@ -57,14 +57,5 @@ function Modal({
     document.getElementById('mailpoet-modal')
   );
 }
-
-Modal.defaultProps = {
-  onRequestClose: () => {},
-  title: null,
-  shouldCloseOnEsc: true,
-  shouldCloseOnClickOutside: true,
-  isDismissible: true,
-  fullScreen: false,
-};
 
 export default Modal;

@@ -9,8 +9,8 @@ type Props = {
 
 function ModalFrame({
   children,
-  className,
-  fullScreen,
+  className = '',
+  fullScreen = false,
 }: Props) {
   return (
     <div
@@ -26,10 +26,5 @@ function ModalFrame({
     </div>
   );
 }
-
-ModalFrame.defaultProps = {
-  fullScreen: false,
-  className: '',
-};
 
 export default ModalFrame;
