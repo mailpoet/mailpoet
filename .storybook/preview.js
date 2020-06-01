@@ -5,4 +5,4 @@ import '../assets/dist/css/mailpoet-plugin.css';
 import '../assets/dist/css/mailpoet-form-editor.css';
 
 addDecorator(withPerformance);
-addDecorator(story => <div id="wpbody" style={{fontFamily:'sans-serif'}}>{story()}</div>);
+addDecorator(story => <div id="wpbody" style={{fontFamily:'sans-serif'}}><div id="mailpoet-modal"></div>{story()}</div>);
