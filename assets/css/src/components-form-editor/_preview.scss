@@ -1,6 +1,6 @@
 .mailpoet_spinner_wrapper {
   align-items: center;
-  background: #ffffff;
+  background: #fff;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -31,9 +31,9 @@
   }
 
   .mailpoet_browser_preview {
-    height: 100%;
     display: flex;
     flex-direction: column;
+    height: 100%;
     width: 100%;
 
     .mailpoet_spinner_wrapper {
@@ -70,22 +70,24 @@
 
 .mailpoet_form_preview_disclaimer {
   bottom: 10px;
-  font-size: 0.9em;
+  font-size: .9em;
   position: absolute;
   right: 0;
   width: 380px;
 }
 
 .mailpoet_preview_content_wrapper {
-  height: 100%;
   display: flex;
   flex-direction: row;
+  height: 100%;
 
   .mailpoet_preview_sidebar {
     padding: 35px 20px 10px 0;
     width: 300px;
 
-    & > .components-base-control, & > p, & > hr {
+    > .components-base-control,
+    > p,
+    > hr {
       margin-bottom: 18px;
     }
 
