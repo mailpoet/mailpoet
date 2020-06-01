@@ -557,6 +557,9 @@ class Pages {
   }
 
   private function getConfirmUnsubscribeContent() {
+    if (!$this->isPreview() && $this->subscriber === null) {
+      return '';
+    }
     $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
     $templateData = [
       'unsubscribeUrl' => $this->subscriptionUrlFactory->getUnsubscribeUrl($this->subscriber, $queueId),
