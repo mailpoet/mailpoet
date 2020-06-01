@@ -13,6 +13,7 @@ const MethodPaste = ({
   canFinish,
   onFinish,
   data,
+  onPrevious,
 }) => {
   const onChange = (e) => {
     onValueChange(e.target.value);
@@ -52,7 +53,7 @@ const MethodPaste = ({
       </label>
       <PreviousNextStepButtons
         canGoNext={canFinish}
-        hidePrevious
+        onPreviousAction={onPrevious}
         onNextAction={onFinish}
       />
     </>
@@ -61,6 +62,7 @@ const MethodPaste = ({
 
 MethodPaste.propTypes = {
   onFinish: PropTypes.func,
+  onPrevious: PropTypes.func,
   canFinish: PropTypes.bool.isRequired,
   onValueChange: PropTypes.func.isRequired,
   data: PropTypes.string,
@@ -68,6 +70,7 @@ MethodPaste.propTypes = {
 
 MethodPaste.defaultProps = {
   onFinish: () => {},
+  onPrevious: () => {},
   data: '',
 };
 

@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import Selection from '../../../../form/fields/selection.jsx';
 import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
-const MethodMailChimp = ({ onFinish }) => {
+const MethodMailChimp = ({ onFinish, onPrevious }) => {
   const [key, setKey] = useState('');
   const [mailChimpLoadedLists, setMailChimpLoadedLists] = useState(undefined);
   const [selectedLists, setSelectedLists] = useState([]);
@@ -114,7 +114,7 @@ const MethodMailChimp = ({ onFinish }) => {
       {showListsSelection()}
       <PreviousNextStepButtons
         canGoNext={Array.isArray(selectedLists) && selectedLists.length > 0}
-        hidePrevious
+        onPreviousAction={onPrevious}
         onNextAction={process}
       />
     </div>
@@ -123,10 +123,12 @@ const MethodMailChimp = ({ onFinish }) => {
 
 MethodMailChimp.propTypes = {
   onFinish: PropTypes.func,
+  onPrevious: PropTypes.func,
 };
 
 MethodMailChimp.defaultProps = {
   onFinish: () => {},
+  onPrevious: () => {},
 };
 
 export default MethodMailChimp;
