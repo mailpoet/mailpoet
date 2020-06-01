@@ -62,7 +62,6 @@ function Modal({
 }
 
 Modal.defaultProps = {
-  bodyOpenClassName: 'modal-open',
   onRequestClose: () => {},
   role: 'dialog',
   title: null,
