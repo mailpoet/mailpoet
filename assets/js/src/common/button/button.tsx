@@ -12,6 +12,7 @@ type Props = {
   iconEnd?: JSX.Element,
   onClick?: () => void,
   href?: string,
+  target?: '_blank' | '_self' | '_parent' | '_top' | string,
 };
 
 const Button = ({
@@ -25,10 +26,12 @@ const Button = ({
   iconEnd,
   onClick,
   href,
+  target,
 }: Props) => (
   <a
     href={href}
     onClick={onClick}
+    target={target}
     className={
       classnames(
         'mailpoet-button',
