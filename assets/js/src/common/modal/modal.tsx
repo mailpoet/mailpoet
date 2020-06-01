@@ -7,27 +7,27 @@ import ModalOverlay from './overlay';
 import ModalCloseIcon from './close_icon';
 
 type Props = {
-  isDismissible?: boolean,
-  contentClassName?: string,
-  overlayClassName?: string,
   title?: string,
-  onRequestClose?: () => void,
-  fullScreen?: boolean,
+  isDismissible?: boolean,
   shouldCloseOnEsc?: boolean,
   shouldCloseOnClickOutside?: boolean,
+  onRequestClose?: () => void,
+  fullScreen?: boolean,
+  contentClassName?: string,
+  overlayClassName?: string,
   children: React.ReactNode,
 };
 
 function Modal({
-  onRequestClose = () => {},
   title = null,
-  children,
   isDismissible = true,
   shouldCloseOnEsc = true,
   shouldCloseOnClickOutside = true,
+  onRequestClose = () => {},
+  fullScreen = false,
   contentClassName = '',
   overlayClassName = '',
-  fullScreen = false,
+  children,
 }: Props) {
   return createPortal(
     <ModalOverlay
