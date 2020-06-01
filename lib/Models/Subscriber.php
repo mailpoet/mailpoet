@@ -27,7 +27,7 @@ use function MailPoetVendor\array_column;
  * @property int $wpUserId
  * @property array $segments
  * @property array $subscriptions
- * @property string $unconfirmedData
+ * @property string|null $unconfirmedData
  * @property int $isWoocommerceUser
  */
 
