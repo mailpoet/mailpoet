@@ -2,6 +2,13 @@ const path = require('path');
 
 module.exports = {
   stories: ['../assets/js/src/**/_stories/*.tsx'],
+  webpackFinal: (config) => ({
+    ...config,
+    resolve: {
+      ...config.resolve,
+      modules: ['node_modules', '../assets/js/src'],
+    },
+  }),
   addons: [
     '@storybook/addon-actions',
     '@storybook/addon-links',
