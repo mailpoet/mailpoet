@@ -157,6 +157,7 @@ class DisplayFormInWPContent {
     $templateData['delay'] = $formSettings[$displayType . '_form_delay'] ?? 0;
     $templateData['position'] = $formSettings[$displayType . '_form_position'] ?? '';
     $templateData['backgroundColor'] = $formSettings['backgroundColor'] ?? '';
+    $templateData['fontFamily'] = $formSettings['font_family'] ?? '';
 
     // generate security token
     $templateData['token'] = Security::generateToken();
