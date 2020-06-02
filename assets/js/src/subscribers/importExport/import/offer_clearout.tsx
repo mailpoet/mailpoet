@@ -7,7 +7,7 @@ type Props = {
 }
 
 export default ({ onProceed }: Props) => (
-  <div className="mailpoet-offer-clearout-step__container">
+  <div className="mailpoet-offer-clearout-step-container">
     <p>{MailPoet.I18n.t('offerClearoutText1')}</p>
     <p>{MailPoet.I18n.t('offerClearoutText2')}</p>
     <p>{MailPoet.I18n.t('offerClearoutText3')}</p>
