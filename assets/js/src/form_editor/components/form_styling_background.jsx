@@ -14,6 +14,7 @@ const FormStylingBackground = ({ children }) => {
     formPadding,
     backgroundImageUrl,
     backgroundImageDisplay,
+    fontFamily,
   } = useSelect((select) => select('mailpoet-form-editor').getFormSettings(), []);
 
   let borderStyle;
@@ -21,8 +22,8 @@ const FormStylingBackground = ({ children }) => {
     borderStyle = 'solid';
   }
 
-  let font;
-  if (fontSize) font = Number(fontSize);
+  let fontNum = '';
+  if (fontSize) fontNum = Number(fontSize);
   let radius;
   if (borderRadius) radius = Number(borderRadius);
   let padding;
@@ -35,7 +36,8 @@ const FormStylingBackground = ({ children }) => {
   let style = {
     backgroundColor,
     color: fontColor,
-    fontSize: font,
+    fontSize: fontNum,
+    fontFamily,
     lineHeight: 1.2,
     borderRadius: radius,
     borderWidth: borderSize,
