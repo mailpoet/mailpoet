@@ -88,8 +88,12 @@
 .mailpoet-modal-content {
   box-sizing: border-box;
   height: 100%;
+  min-height: 2 * $grid-gap + $heading-font-size-h3 * $heading-line-height;
   overflow: auto;
   padding: $grid-gap;
+
+  > *:first-child { margin-top: 0; }
+  > *:last-child { margin-bottom: 0; }
 }
 
 .mailpoet-modal-full-screen {
