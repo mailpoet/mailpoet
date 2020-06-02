@@ -11,7 +11,7 @@
       left: 50px;
     }
   }
-  
+
   @include breakpoint-max-width(960px) {
     .BeaconFabButtonFrame,
     .BeaconContainer {

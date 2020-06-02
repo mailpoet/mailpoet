@@ -4,8 +4,7 @@ $newsletter-box-margin-big: 40px;
 $newsletter-box-margin-small: 20px;
 $newsletter-box-description-space-between-heading-and-paragraph: 5px;
 $newsletter-box-description-height: 110px;
-$newsletter-box-description-text-height:
-	$newsletter-box-description-height - $newsletter-box-description-space-between-heading-and-paragraph;
+$newsletter-box-description-text-height: $newsletter-box-description-height - $newsletter-box-description-space-between-heading-and-paragraph;
 $newsletter-box-heading-line-height: $newsletter-box-description-text-height / 4;
 $newsletter-box-heading-font-size: $newsletter-box-heading-line-height * 5 / 7;
 $newsletter-box-description-line-height: $newsletter-box-heading-line-height / 2;
