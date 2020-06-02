@@ -37,6 +37,8 @@
   position: relative;
   width: auto;
 
+  &:focus { outline: none; }
+
   @include respond-to(small-screen) {
     border: none;
     border-radius: 0;
