@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.4
-Stable tag: 3.47.1
+Stable tag: 3.47.2
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.47.2 - 2020-06-02 =
+* Added: colors for form confirmation and error;
+* Improved: lowercase all MailPoet related email addresses;
+* Improved: render space between paragraphs when using showing post excerpt;
+* Improved: form width, height and mobile responsiveness;
+* Improved: default padding on form elements updated;
+* Improved: signup to any list on WooCommerce checkout;
+* Improved: border controls for forms;
+* Fixed: typo in woocommerce placeholders. Thanks Sarah!
 
 = 3.47.1 - 2020-05-25 =
 * Added: background image to form editor;
