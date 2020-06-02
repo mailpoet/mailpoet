@@ -16,7 +16,12 @@ import { mapColorSlugToValue } from '../../store/blocks_to_form_body.jsx';
 import ParagraphEdit from '../paragraph_edit.jsx';
 
 const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
-  const { fontColor, fontSize, alignment } = useSelect(
+  const {
+    fontColor,
+    fontSize,
+    alignment,
+    fontFamily,
+  } = useSelect(
     (select) => {
       const settings = select('mailpoet-form-editor').getFormSettings();
       const { getSettings } = select('core/block-editor');
@@ -36,6 +41,7 @@ const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
         fontColor: parentTextColor || settings.fontColor,
         fontSize: settings.fontSize,
         alignment: settings.alignment,
+        fontFamily: settings.fontFamily,
       };
     },
     []
@@ -85,6 +91,9 @@ const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
   }
   if (alignment) {
     styles.push(` body {text-align: ${alignment}}`);
+  }
+  if (fontFamily) {
+    styles.push(` body {font-family: "${fontFamily}"}`);
   }
 
   const key = `${renderedContent}_${styles}`;
