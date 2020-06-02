@@ -14,6 +14,7 @@ import HorizontalAlignment from 'common/styles';
 import ColorSettings from 'form_editor/components/color_settings';
 import FontSizeSettings from 'form_editor/components/font_size_settings';
 import ImageSettings from 'form_editor/components/image_settings';
+import FontFamilySettings from '../font_family_settings';
 
 const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
@@ -61,6 +62,11 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
             name={MailPoet.I18n.t('formSettingsStylesFontSize')}
             value={settings.fontSize}
             onChange={partial(updateStyles, 'fontSize')}
+          />
+          <FontFamilySettings
+            name={MailPoet.I18n.t('formSettingsStylesFontFamily')}
+            value={settings.fontFamily}
+            onChange={partial(updateStyles, 'fontFamily')}
           />
           <RangeControl
             label={MailPoet.I18n.t('formSettingsInputPadding')}

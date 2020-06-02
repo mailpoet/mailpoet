@@ -21,6 +21,7 @@ import UnsavedChangesNotice from './unsaved_changes_notice.jsx';
 import FormStyles from './form_styles.jsx';
 import Preview from './preview/preview';
 import FormStylingBackground from './form_styling_background.jsx';
+import { CustomFontsStyleSheetLink } from './font_family_settings';
 
 /**
  * This component renders the form editor app.
@@ -57,6 +58,7 @@ export default () => {
 
   return (
     <>
+      <CustomFontsStyleSheetLink />
       <DropZoneProvider>
         <SlotFillProvider>
           <div className={layoutClass}>
