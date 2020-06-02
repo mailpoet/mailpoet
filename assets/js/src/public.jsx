@@ -46,6 +46,15 @@ jQuery(($) => {
     return true;
   }
 
+  function renderFontFamily(fontName, formDiv) {
+    const originalFontFamily = formDiv.css('font-family');
+    const newFontFamily = `"${fontName}", ${originalFontFamily}`;
+    formDiv.css('font-family', newFontFamily);
+    formDiv.find('input, option').css('font-family', 'inherit');
+    formDiv.find('input[type=text], textarea, input[type=email], select').css('font-family', newFontFamily);
+    formDiv.find(':header').css('font-family', 'inherit');
+  }
+
   function showForm(formDiv, showOverlay = false) {
     const form = formDiv.find('form');
     const position = form.data('position');
@@ -86,6 +95,12 @@ jQuery(($) => {
   $(() => {
     $('.mailpoet_form').each((index, element) => {
       $(element).children('.mailpoet_paragraph, .mailpoet_form_image, .mailpoet_form_paragraph').last().addClass('last');
+    });
+    $('form.mailpoet_form').each((index, element) => {
+      const form = $(element);
+      if (form.data('font-family')) {
+        renderFontFamily(form.data('font-family'), form.parent());
+      }
     });
     $('.mailpoet_form_close_icon').click((event) => {
       const closeIcon = $(event.target);
