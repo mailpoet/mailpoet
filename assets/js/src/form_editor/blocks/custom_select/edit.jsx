@@ -108,6 +108,10 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
       inputStyles.margin = convertAlignmentToMargin(inputStyles.textAlign);
     }
 
+    if (settings.fontFamily) {
+      inputStyles.fontFamily = settings.fontFamily;
+    }
+
     return (
       <select style={inputStyles} className="mailpoet_select" id={clientId} value={defaultValue} readOnly>
         {
