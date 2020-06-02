@@ -21,6 +21,7 @@ export default function mapFormDataBeforeSaving(data) {
       form_padding: data.settings.formPadding,
       input_padding: data.settings.inputPadding,
       border_color: data.settings.borderColor,
+      font_family: data.settings.fontFamily,
       success_validation_color: data.settings.successValidationColor,
       error_validation_color: data.settings.errorValidationColor,
       background_image_url: data.settings.backgroundImageUrl,
@@ -60,6 +61,7 @@ export default function mapFormDataBeforeSaving(data) {
   delete mappedData.settings.fixedBarStyles;
   delete mappedData.settings.popupStyles;
   delete mappedData.settings.otherStyles;
+  delete mappedData.settings.fontFamily;
 
   return mappedData;
 }
