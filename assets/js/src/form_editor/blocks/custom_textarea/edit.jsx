@@ -159,10 +159,14 @@ const CustomTextAreaEdit = ({
 
   const textarea = useRef(null);
   const getTextArea = (placeholder) => {
-    let style = '';
+    let style = `#${id}::placeholder {`;
     if (placeholderStyle.color !== undefined) {
-      style = `#${id}::placeholder {color: ${placeholderStyle.color};}`;
+      style += `color: ${placeholderStyle.color};`;
     }
+    if (settings.fontFamily) {
+      style += `font-family: ${settings.fontFamily};`;
+    }
+    style += '}';
     return (
       <>
         <style>
