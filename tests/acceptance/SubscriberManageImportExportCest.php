@@ -26,7 +26,8 @@ class SubscriberManageImportExportCest {
     $i->waitForElement('[data-automation-id="last_sent_to_list"]');
     $i->selectOption('[data-automation-id="last_sent_to_list"]', 'over2years');
     $i->click('[data-automation-id="last_sent_to_list_next"]');
-    $i->waitForElement('[data-automation-id="import_old_list_block"]');
+    $i->waitForText('We highly recommend cleaning your lists before importing them to MailPoet.');
+    $i->canSee('Try clearout.io for free');
 
     // Repeat the test, happy path
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');

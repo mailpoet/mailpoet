@@ -31,7 +31,7 @@ const ImportSubscribers = () => {
             <Route
               path="/step_offer_clearout"
               render={(props) => (
-                <StepOfferClearout history={props.history} />
+                <StepOfferClearout {...props} />
               )}
             />
             <Route
