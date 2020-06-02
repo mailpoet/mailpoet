@@ -9,7 +9,7 @@ import createNewSegment from './create_new_segment.jsx';
 
 function SelectSegment({ setSelectedSegments }) {
   const { segments: segmentsContext } = useContext(GlobalContext);
-  const { all: originalSegments } = segmentsContext;
+  const { all: originalSegments, updateAll: updateContextSegments } = segmentsContext;
   const [selectionSegments, setSelectionSegments] = useState(originalSegments);
 
   useLayoutEffect(() => {
@@ -22,6 +22,7 @@ function SelectSegment({ setSelectedSegments }) {
     destroySelection();
     setSelectedSegments([]);
     setSelectionSegments([...selectionSegments, segment]);
+    updateContextSegments([...selectionSegments, segment]);
   };
 
   return (
