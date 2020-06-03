@@ -51,3 +51,11 @@ export const slideInForm = {
   position: 'right',
   formDelay: 15,
 };
+
+export const formStyles = {
+  formPadding: 20,
+  inputPadding: 5,
+  borderSize: 0,
+  borderRadius: 0,
+  alignment: 'left',
+};

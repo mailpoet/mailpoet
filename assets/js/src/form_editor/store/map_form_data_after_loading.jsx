@@ -24,10 +24,19 @@ export default function mapFormDataAfterLoading(data) {
         ? asNum(data.settings.slide_in_form_delay)
         : defaults.slideInForm.formDelay,
       slideInFormPosition: data.settings.slide_in_form_position ?? defaults.slideInForm.position,
-      borderRadius: asNum(data.settings.border_radius),
-      borderSize: asNum(data.settings.border_size),
-      formPadding: data.settings.form_padding ? asNum(data.settings.form_padding) : 20,
-      inputPadding: data.settings.input_padding ? asNum(data.settings.input_padding) : 5,
+      alignment: data.settings.alignment ?? defaults.formStyles.alignment,
+      borderRadius: data.settings.border_radius !== undefined
+        ? asNum(data.settings.border_radius)
+        : defaults.formStyles.borderRadius,
+      borderSize: data.settings.border_size !== undefined
+        ? asNum(data.settings.border_size)
+        : defaults.formStyles.borderSize,
+      formPadding: data.settings.form_padding !== undefined
+        ? asNum(data.settings.form_padding)
+        : defaults.formStyles.formPadding,
+      inputPadding: data.settings.input_padding !== undefined
+        ? asNum(data.settings.input_padding)
+        : defaults.formStyles.inputPadding,
       borderColor: data.settings.border_color,
       fontFamily: data.settings.font_family,
       successValidationColor: data.settings.success_validation_color,
