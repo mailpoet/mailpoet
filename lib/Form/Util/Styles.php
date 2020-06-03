@@ -165,6 +165,7 @@ EOL;
         top: auto;
         transform: none;
         width: 100%;
+        min-width: 100%;
       }} ";
     }
 
