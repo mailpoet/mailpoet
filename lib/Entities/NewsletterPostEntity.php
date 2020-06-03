@@ -19,13 +19,13 @@ class NewsletterPostEntity {
   use SafeToOneAssociationLoadTrait;
 
   /**
-   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity", inversedBy="newsletterSegments")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @var NewsletterEntity|null
    */
   private $newsletter;
 
   /**
-   * @ORM\Column(type="int")
+   * @ORM\Column(type="integer")
    * @var int
    */
   private $postId;
