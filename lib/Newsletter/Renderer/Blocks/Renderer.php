@@ -132,7 +132,7 @@ class Renderer {
       if ($parent instanceof NewsletterEntity) {
         $newsletterId = $parent->getId();
 
-        $lastPost = $this->newsletterPostsRepository->findOneBy(['newsletter' => $newsletter], ['createdAt' => 'desc']);
+        $lastPost = $this->newsletterPostsRepository->findOneBy(['newsletter' => $parent], ['createdAt' => 'desc']);
         if ($lastPost instanceof NewsletterPostEntity) {
           $newerThanTimestamp = $lastPost->getCreatedAt();
         }
