@@ -31,7 +31,7 @@ It has to contain an email and all required custom fields. To get defined custom
 | email (required) | string | 150 chars | a valid email address |
 | first_name (optional) | string/null | 255 chars | Fist name of the subscriber. |
 | last_name (optional) | string/null | 255 chars  |  Last name of the subscriber. |
-| cf_* (optional/required) | string/null | 65K chars  | A custom field (see [Get Subscriber Fields](GetSubscriberFields.md)).  |
+| cf_* (optional/required) | string/boolean/null | 65K chars  | A custom field (see [Get Subscriber Fields](GetSubscriberFields.md)). <br> If a custom field is a checkbox, send truthy or falsy value (`true`/`false, `1`/`0` or `"1"`\`"0"`). |
 
 ### `$list_ids` (optional)
 An array containing list ids into which subscriber will be added.
@@ -48,7 +48,7 @@ All options are optional. If omitted a default value is used.
 
 ## Error handling
 
-All expected errors from the API are exceptions of class `\MailPoet\API\MP\v1\APIException`. 
+All expected errors from the API are exceptions of class `\MailPoet\API\MP\v1\APIException`.
 Code of the exception is populated to distinguish between different errors.
 
 An exception of base class `\Exception` can be thrown when something unexpected happens.
