@@ -67,13 +67,17 @@
 }
 
 .mailpoet-modal-close {
+  align-items: center;
   background: $color-secondary-light;
   border: 0;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
   height: $modal-close-button-size;
+  justify-content: center;
   margin-top: -$modal-close-button-size / 2;
   outline: none;
+  padding: 0;
   position: absolute;
   right: $grid-gap;
   top: $grid-gap + ($heading-font-size-h3 * $heading-line-height) / 2;
