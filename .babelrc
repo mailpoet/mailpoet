@@ -8,7 +8,8 @@
     "babel-plugin-typescript-to-proptypes",
     "@babel/plugin-proposal-class-properties",
     [
-      "@babel/plugin-transform-runtime", {
+      "@babel/plugin-transform-runtime",
+      {
         "sourceType": "unambiguous",
         "corejs": 3
       }
