@@ -172,7 +172,15 @@ EOL;
     // Form element styles
     $formStyles = [];
     if (isset($formSettings['form_padding'])) {
-      $formStyles[] = 'padding: ' . $formSettings['form_padding'] . 'px';
+      if (in_array(
+        $displayType,
+        [FormEntity::DISPLAY_TYPE_POPUP, FormEntity::DISPLAY_TYPE_FIXED_BAR, FormEntity::DISPLAY_TYPE_SLIDE_IN]
+      )) {
+        $padding = $formSettings['form_padding'];
+        $media .= " @media (min-width: 500px) {{$selector} {padding: {$padding}px;}} ";
+      } else {
+        $formStyles[] = 'padding: ' . $formSettings['form_padding'] . 'px';
+      }
     }
     $formElementStyles = '';
     if ($formStyles) {

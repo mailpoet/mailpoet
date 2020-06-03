@@ -68,6 +68,13 @@ class StylesTest extends \MailPoetUnitTest {
     expect($styles)->contains('form.mailpoet_form {padding: 22px');
   }
 
+  public function testItShouldNotRenderPaddingForMobile() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['form_padding' => '22'];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_SLIDE_IN);
+    expect($styles)->contains('min-width: 500px) {#prefix {padding: 22px;');
+  }
+
   public function testItShouldRenderAlignment() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['alignment' => 'right'];
