@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter;
 
+use DateTimeInterface;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Editor\Transformer;
 use MailPoet\WP\Functions as WPFunctions;
@@ -87,11 +88,11 @@ class AutomatedLatestContent {
     // the query.
     $parameters['suppress_filters'] = false;
 
-    if ($newerThanTimestamp) {
+    if ($newerThanTimestamp instanceof DateTimeInterface) {
       $parameters['date_query'] = [
         [
           'column' => 'post_date',
-          'after' => $newerThanTimestamp,
+          'after' => $newerThanTimestamp->format('Y-m-d H:i:s'),
         ],
       ];
     }
