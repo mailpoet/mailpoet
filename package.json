@@ -137,7 +137,7 @@
     "json-loader": "^0.5.7",
     "mocha": "^7.0.1",
     "node-sass": "^4.13.1",
-    "postcss-cli": "^7.1.0",
+    "postcss-cli": "^7.1.1",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.4.0",
     "storybook-addon-performance": "^0.7.0",
