@@ -194,6 +194,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Form\FormFactory::class);
     $container->autowire(\MailPoet\Form\PreviewPage::class);
     $container->autowire(\MailPoet\Form\Util\Styles::class);
+    $container->autowire(\MailPoet\Form\Util\CustomFonts::class);
     // Helpscout
     $container->autowire(\MailPoet\Helpscout\Beacon::class);
     // Listing

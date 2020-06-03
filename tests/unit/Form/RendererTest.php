@@ -5,6 +5,7 @@ namespace MailPoet\Test\Form;
 use Codeception\Util\Fixtures;
 use MailPoet\Form\BlocksRenderer;
 use MailPoet\Form\Renderer;
+use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Captcha;
@@ -25,6 +26,9 @@ class RendererTest extends \MailPoetUnitTest {
   /** @var MockObject & BlocksRenderer */
   private $blocksRendererMock;
 
+  /** @var MockObject & CustomFonts */
+  private $customFonts;
+
   /** @var HtmlParser */
   private $htmlParser;
 
@@ -33,7 +37,8 @@ class RendererTest extends \MailPoetUnitTest {
     $this->stylesMock = $this->createMock(Styles::class);
     $this->settingsMock = $this->createMock(SettingsController::class);
     $this->blocksRendererMock = $this->createMock(BlocksRenderer::class);
-    $this->renderer = new Renderer($this->stylesMock, $this->settingsMock, $this->blocksRendererMock);
+    $this->customFonts = $this->createMock(CustomFonts::class);
+    $this->renderer = new Renderer($this->stylesMock, $this->settingsMock, $this->customFonts, $this->blocksRendererMock);
     $this->htmlParser = new HtmlParser();
   }
 
