@@ -235,6 +235,12 @@ div.mailpoet_form_popup {
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 100001;
+
+  @include breakpoint-max-width($form-break-small-width) {
+    .mailpoet_form_close_icon {
+      float: right;
+    }
+  }
 }
 
 .mailpoet_form_close_icon {
@@ -292,6 +298,12 @@ div.mailpoet_form_slide_in {
 
     &.mailpoet_form_position_right {
       border-top-left-radius: 10px;
+    }
+  }
+
+  @include breakpoint-max-width($form-break-small-width) {
+    .mailpoet_form_close_icon {
+      float: right;
     }
   }
 }
