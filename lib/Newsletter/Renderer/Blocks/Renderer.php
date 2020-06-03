@@ -11,8 +11,15 @@ use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Renderer {
-  public $posts;
-  public $ALC;
+  /**
+   * Cache for rendered posts in newsletter.
+   * Used to prevent duplicate post in case a newsletter contains 2 ALC blocks
+   * @var array
+   */
+  public $renderedPostsInNewsletter;
+
+  /** @var AutomatedLatestContent  */
+  private $ALC;
 
   /** @var Button */
   private $button;
@@ -53,7 +60,7 @@ class Renderer {
     Spacer $spacer,
     Text $text
   ) {
-    $this->posts = [];
+    $this->renderedPostsInNewsletter = [];
     $this->ALC = $ALC;
     $this->button = $button;
     $this->divider = $divider;
@@ -139,12 +146,12 @@ class Renderer {
 
       }
     }
-    $postsToExclude = $this->getPosts();
+    $postsToExclude = $this->getRenderedPosts((int)$newsletterId);
     $aLCPosts = $this->ALC->getPosts($args, $postsToExclude, $newsletterId, $newerThanTimestamp);
     foreach ($aLCPosts as $post) {
       $postsToExclude[] = $post->ID;
     }
-    $this->setPosts($postsToExclude);
+    $this->setRenderedPosts((int)$newsletterId, $postsToExclude);
     return $this->ALC->transformPosts($args, $aLCPosts);
   }
 
@@ -156,11 +163,11 @@ class Renderer {
     return $this->renderBlocksInColumn($newsletter, $transformedPosts, $columnBaseWidth);
   }
 
-  private function getPosts() {
-    return $this->posts;
+  private function getRenderedPosts(int $newsletterId) {
+    return $this->renderedPostsInNewsletter[$newsletterId] ?? [];
   }
 
-  private function setPosts($posts) {
-    return $this->posts = $posts;
+  private function setRenderedPosts(int $newsletterId, array $posts) {
+    return $this->renderedPostsInNewsletter[$newsletterId] = $posts;
   }
 }
