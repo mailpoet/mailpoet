@@ -156,11 +156,11 @@ class Renderer {
     return $this->renderBlocksInColumn($newsletter, $transformedPosts, $columnBaseWidth);
   }
 
-  public function getPosts() {
+  private function getPosts() {
     return $this->posts;
   }
 
-  public function setPosts($posts) {
+  private function setPosts($posts) {
     return $this->posts = $posts;
   }
 }
