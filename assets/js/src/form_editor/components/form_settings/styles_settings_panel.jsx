@@ -14,6 +14,7 @@ import HorizontalAlignment from 'common/styles';
 import ColorSettings from 'form_editor/components/color_settings';
 import FontSizeSettings from 'form_editor/components/font_size_settings';
 import ImageSettings from 'form_editor/components/image_settings';
+import { formStyles as defaultFormStyles } from 'form_editor/store/defaults';
 import FontFamilySettings from '../font_family_settings';
 
 const BasicSettingsPanel = ({ onToggle, isOpened }) => {
@@ -26,9 +27,10 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   useEffect(() => {
     settingsRef.current = settings;
   }, [settings]);
+
   const updateStyles = (property, value) => {
     const updated = { ...settingsRef.current };
-    updated[property] = value;
+    updated[property] = value ?? (defaultFormStyles[property] ?? undefined);
     changeFormSettings(updated);
     settingsRef.current = updated;
   };
@@ -70,7 +72,7 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
           />
           <RangeControl
             label={MailPoet.I18n.t('formSettingsInputPadding')}
-            value={settings.inputPadding !== undefined ? settings.inputPadding : 5}
+            value={settings.inputPadding}
             min={0}
             max={30}
             allowReset
@@ -106,17 +108,15 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
               { value: HorizontalAlignment.Center, label: MailPoet.I18n.t('formSettingsAlignmentCenter') },
               { value: HorizontalAlignment.Right, label: MailPoet.I18n.t('formSettingsAlignmentRight') },
             ]}
-            value={settings.alignment !== undefined ? settings.alignment : 'left'}
+            value={settings.alignment}
           />
           <RangeControl
             label={MailPoet.I18n.t('formSettingsFormPadding')}
-            value={settings.formPadding !== undefined ? settings.formPadding : 20}
+            value={settings.formPadding}
             min={0}
             max={40}
             allowReset
-            onChange={(value) => {
-              updateStyles('formPadding', value !== undefined ? value : 20);
-            }}
+            onChange={partial(updateStyles, 'formPadding')}
           />
           <ColorSettings
             name={MailPoet.I18n.t('successValidationColorTitle')}
