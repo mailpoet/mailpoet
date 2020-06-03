@@ -149,7 +149,7 @@ class ManageSubscriptionLinkCest {
         $i->wait(2);
         $i->reloadPage();
         $i->waitForListingItemsToLoad();
-        $i->see('Sent to 1 of 1');
+        $i->see('Processed 1 of 1');
         return;
       } catch (Exception $e) {
         continue;
