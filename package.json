@@ -139,7 +139,7 @@
     "node-sass": "^4.13.1",
     "postcss-cli": "^7.1.1",
     "sinon": "^9.0.2",
-    "sinon-chai": "^3.4.0",
+    "sinon-chai": "^3.5.0",
     "storybook-addon-performance": "^0.11.0",
     "string-replace-loader": "^2.1.1",
     "stylelint": "^13.5.0",
