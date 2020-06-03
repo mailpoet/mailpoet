@@ -180,6 +180,10 @@ class Functions {
     return get_date_from_gmt($string, $format);
   }
 
+  public function getGmtFromDate($string, $format = 'Y-m-d H:i:s') {
+    return get_gmt_from_date($string, $format);
+  }
+
   public function getEditProfileUrl($userId = 0, $scheme = 'admin') {
     return get_edit_profile_url($userId, $scheme);
   }
@@ -506,6 +510,10 @@ class Functions {
 
   public function wpInsertPost(array $postarr, $wpError = false) {
     return wp_insert_post($postarr, $wpError);
+  }
+
+  public function wpDeletePost(int $id, $force = false) {
+    return wp_delete_post($id, $force);
   }
 
   public function wpJsonEncode($data, $options = 0, $depth = 512) {
