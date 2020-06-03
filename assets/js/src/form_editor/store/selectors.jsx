@@ -116,6 +116,9 @@ export default {
   getPreviewPageUrl(state) {
     return state.previewPageUrl;
   },
+  getAllCustomFonts(state) {
+    return state.customFonts;
+  },
 
   /**
    * Goes thru all parents of the block and return

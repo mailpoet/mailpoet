@@ -2,72 +2,8 @@ import React from 'react';
 import {
   CustomSelectControl,
 } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 import MailPoet from 'mailpoet';
-
-export const customFonts = [
-  'Abril FatFace',
-  'Alegreya',
-  'Alegreya Sans',
-  'Amatic SC',
-  'Anonymous Pro',
-  'Architects Daughter',
-  'Archivo',
-  'Archivo Narrow',
-  'Asap',
-  'Barlow',
-  'BioRhyme',
-  'Bonbon',
-  'Cabin',
-  'Cairo',
-  'Cardo',
-  'Chivo',
-  'Concert One',
-  'Cormorant',
-  'Crimson Text',
-  'Eczar',
-  'Exo 2',
-  'Fira Sans',
-  'Fjalla One',
-  'Frank Ruhl Libre',
-  'Great Vibes',
-  'Heebo',
-  'IBM Plex',
-  'Inconsolata',
-  'Indie Flower',
-  'Inknut Antiqua',
-  'Inter',
-  'Karla',
-  'Libre Baskerville',
-  'Libre Franklin',
-  'Montserrat',
-  'Neuton',
-  'Notable',
-  'Nothing You Could Do',
-  'Noto Sans',
-  'Nunito',
-  'Old Standard TT',
-  'Oxygen',
-  'Pacifico',
-  'Poppins',
-  'Proza Libre',
-  'PT Sans',
-  'PT Serif',
-  'Rakkas',
-  'Reenie Beanie',
-  'Roboto Slab',
-  'Ropa Sans',
-  'Rubik',
-  'Shadows Into Light',
-  'Space Mono',
-  'Spectral',
-  'Sue Ellen Francisco',
-  'Titillium Web',
-  'Ubuntu',
-  'Varela',
-  'Vollkorn',
-  'Work Sans',
-  'Yatra One',
-];
 
 const standardFonts = [
   'Arial',
@@ -92,6 +28,10 @@ const FontFamilySettings = ({
   value,
   name,
 }: Props) => {
+  const customFonts = useSelect(
+    (select) => select('mailpoet-form-editor').getAllCustomFonts(),
+    []
+  );
   const disabledStyle = {
     color: 'lightgray',
     backgroundColor: 'white',
@@ -155,14 +95,19 @@ const FontFamilySettings = ({
 
 export default FontFamilySettings;
 
-const customFontsUrl = customFonts
-  .map((fontName) => fontName.replace(' ', '+'))
-  .map((fontName) => fontName.concat(':400,400i,700,700'))
-  .join('|');
-
-export const CustomFontsStyleSheetLink = () => (
-  <link
-    rel="stylesheet"
-    href={`https://fonts.googleapis.com/css?family=${customFontsUrl}`}
-  />
-);
+export const CustomFontsStyleSheetLink = () => {
+  const customFonts = useSelect(
+    (select) => select('mailpoet-form-editor').getAllCustomFonts(),
+    []
+  );
+  const customFontsUrl = customFonts
+    .map((fontName) => fontName.replace(' ', '+'))
+    .map((fontName) => fontName.concat(':400,400i,700,700'))
+    .join('|');
+  return (
+    <link
+      rel="stylesheet"
+      href={`https://fonts.googleapis.com/css?family=${customFontsUrl}`}
+    />
+  );
+};
