@@ -8,6 +8,7 @@ use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Form\Block;
 use MailPoet\Form\FormFactory;
 use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Export;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
@@ -35,9 +36,7 @@ class FormEditor {
   /** @var WPFunctions */
   private $wp;
 
-  /**
-   * @var FormFactory
-   */
+  /** @var FormFactory */
   private $formsFactory;
 
   public function __construct(
@@ -98,6 +97,7 @@ class FormEditor {
       'sub_menu' => 'mailpoet-forms',
       'custom_fields' => $this->customFieldsResponseBuilder->buildBatch($customFields),
       'preview_page_url' => $this->getPreviewPageUrl(),
+      'custom_fonts' => CustomFonts::FONTS,
     ];
     $this->wp->wpEnqueueMedia();
     $this->pageRenderer->displayPage('form/editor.html', $data);

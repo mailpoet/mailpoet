@@ -5,7 +5,7 @@ namespace MailPoet\Form\Util;
 use MailPoet\WP\Functions;
 
 class CustomFonts {
-  const fonts = [
+  const FONTS = [
     'Abril FatFace',
     'Alegreya',
     'Alegreya Sans',
@@ -81,10 +81,10 @@ class CustomFonts {
     $this->wp->wpEnqueueStyle('mailpoet_custom_fonts_css', $this->generateLink());
   }
 
-  private function generateLink():string {
+  private function generateLink(): string {
     $fonts = array_map(function ($fontName) {
       return urlencode($fontName) . ':400,400i,700,700i';
-    }, self::fonts);
+    }, self::FONTS);
     $fonts = implode('|', $fonts);
     return 'https://fonts.googleapis.com/css?family=' . $fonts;
   }

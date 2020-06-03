@@ -61,6 +61,7 @@ export default () => {
     previewSettings,
     editorUrl: window.location.href,
     previewPageUrl: window.mailpoet_form_preview_page,
+    customFonts: window.mailpoet_custom_fonts,
   };
 
   const config = {
