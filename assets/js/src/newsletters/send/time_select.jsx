@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Select from 'common/form/select/select.tsx';
 
 class TimeSelect extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
@@ -15,15 +16,16 @@ class TimeSelect extends React.Component { // eslint-disable-line react/prefer-s
     );
 
     return (
-      <select
+      <Select
         name={this.props.name || 'time'}
         value={this.props.value}
         disabled={this.props.disabled}
         onChange={this.props.onChange}
+        isMinWidth
         {...this.props.validation} // eslint-disable-line react/jsx-props-no-spreading
       >
         {options}
-      </select>
+      </Select>
     );
   }
 }
