@@ -11,8 +11,12 @@ use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
+
+use function MailPoetVendor\array_column;
 
 /**
  * @extends Repository<NewsletterEntity>
@@ -105,13 +109,44 @@ class NewslettersRepository extends Repository {
     ];
   }
 
-  public function bulkTrash(array $ids) {
-    $queryBuilder = $this->entityManager->createQueryBuilder();
-    $queryBuilder->update(NewsletterEntity::class, 'n')
+  /**
+   * @return int - number of processed ids
+   */
+  public function bulkTrash(array $ids): int {
+    if (empty($ids)) {
+      return 0;
+    }
+    $this->entityManager->createQueryBuilder()
+      ->update(NewsletterEntity::class, 'n')
       ->set('n.deletedAt', 'CURRENT_TIMESTAMP()')
       ->where('n.id IN (:ids)')
       ->setParameter('ids', $ids)
       ->getQuery()->execute();
+
+    // Trash scheduled tasks
+    $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       UPDATE $scheduledTasksTable t
+       JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
+       SET t.`deleted_at` = NOW()
+       WHERE q.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    // Trash scheduled tasks
+    $this->entityManager->getConnection()->executeUpdate("
+       UPDATE $sendingQueueTable q
+       SET q.`deleted_at` = NOW()
+       WHERE q.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    // Trash children
+    $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.parent IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()->getScalarResult();
+    return count($ids) + $this->bulkTrash(array_column($childrenIds, 'id'));
   }
 
   public function bulkRestore(array $ids) {
