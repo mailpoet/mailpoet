@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const webpackManifestPlugin = require('webpack-manifest-plugin');
-const webpackCleanPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpackTerserPlugin = require('terser-webpack-plugin');
 const webpackCopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
@@ -59,9 +59,7 @@ const baseConfig = {
     fs: 'empty'
   },
   plugins: [
-    new webpackCleanPlugin([
-      './assets/dist/js/*',
-    ]),
+    new CleanWebpackPlugin(),
   ],
   module: {
     rules: [
@@ -205,12 +203,14 @@ const adminConfig = {
   plugins: [
     ...baseConfig.plugins,
 
-    new webpackCopyPlugin([
-      {
-        from: 'node_modules/tinymce/skins/ui/oxide',
-        to: 'skins/ui/oxide'
-      },
-    ])
+    new webpackCopyPlugin({
+      patterns: [
+        {
+          from: 'node_modules/tinymce/skins/ui/oxide',
+          to: 'skins/ui/oxide'
+        },
+      ],
+    }),
   ],
   optimization: {
     runtimeChunk: {
