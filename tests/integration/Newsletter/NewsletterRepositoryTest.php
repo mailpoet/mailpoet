@@ -55,6 +55,51 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     expect($scheduledTask->getDeletedAt())->notNull();
   }
 
+  public function testItBulkRestoresNewslettersAndChildren() {
+    $newsletter1 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
+    $this->createQueueWithTask($newsletter1, null); // Null for scheduled task being processed
+    $newsletter2 = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
+    $newsletter2Child1 = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_SCHEDULED, $newsletter2);
+    $this->createQueueWithTask($newsletter2Child1);
+    // Trash
+    $this->repository->bulkTrash([$newsletter1->getId(), $newsletter2->getId()]);
+    // Restore
+    $this->repository->bulkRestore([$newsletter1->getId(), $newsletter2->getId()]);
+    $this->entityManager->refresh($newsletter1);
+    $this->entityManager->refresh($newsletter2);
+
+    // Should trash the newsletters
+    expect($newsletter1->getDeletedAt())->null();
+    expect($newsletter2->getDeletedAt())->null();
+    expect($newsletter1->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+    expect($newsletter2->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
+
+
+    // Should restore sending queue and task
+    $newsletter1Queue = $newsletter1->getLatestQueue();
+    assert($newsletter1Queue instanceof SendingQueueEntity);
+    $this->entityManager->refresh($newsletter1Queue);
+    expect($newsletter1Queue->getDeletedAt())->null();
+    $scheduledTask = $newsletter1Queue->getTask();
+    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->entityManager->refresh($scheduledTask);
+    expect($scheduledTask->getDeletedAt())->null();
+    // Pause sending tasks which were in progress
+    expect($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+
+    // Should restore children + task + queue
+    $this->entityManager->refresh($newsletter2Child1);
+    expect($newsletter2Child1->getDeletedAt())->null();
+    $childrenQueue = $newsletter2Child1->getLatestQueue();
+    assert($childrenQueue instanceof SendingQueueEntity);
+    $this->entityManager->refresh($childrenQueue);
+    expect($childrenQueue->getDeletedAt())->null();
+    $scheduledTask = $childrenQueue->getTask();
+    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->entityManager->refresh($scheduledTask);
+    expect($scheduledTask->getDeletedAt())->null();
+  }
+
   public function _after() {
     $this->cleanup();
   }

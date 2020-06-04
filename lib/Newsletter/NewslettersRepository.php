@@ -150,13 +150,54 @@ class NewslettersRepository extends Repository {
   }
 
   public function bulkRestore(array $ids) {
-    $queryBuilder = $this->entityManager->createQueryBuilder();
-    $queryBuilder->update(NewsletterEntity::class, 'n')
+    if (empty($ids)) {
+      return 0;
+    }
+    $this->entityManager->createQueryBuilder()->update(NewsletterEntity::class, 'n')
       ->set('n.deletedAt', ':deletedAt')
       ->where('n.id IN (:ids)')
       ->setParameter('deletedAt', null)
       ->setParameter('ids', $ids)
       ->getQuery()->execute();
+
+    // Restore scheduled tasks
+    $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       UPDATE $scheduledTasksTable t
+       JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
+       SET t.`deleted_at` = null
+       WHERE q.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    // Pause restored running scheduled tasks
+    $this->entityManager->getConnection()->executeUpdate("
+       UPDATE $scheduledTasksTable t
+       JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
+       SET t.`status` = :status
+       WHERE q.`newsletter_id` IN (:ids)
+       AND t.`status` IS NULL
+    ", [
+      'ids' => $ids,
+      'status' => ScheduledTaskEntity::STATUS_PAUSED,
+    ], [
+      'ids' => Connection::PARAM_INT_ARRAY,
+    ]);
+
+    // Restore sending queues
+    $this->entityManager->getConnection()->executeUpdate("
+       UPDATE $sendingQueueTable q
+       SET q.`deleted_at` = null
+       WHERE q.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    // Restore children
+    $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.parent IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()->getScalarResult();
+    return count($ids) + $this->bulkRestore(array_column($childrenIds, 'id'));
   }
 
   public function bulkDelete(array $ids) {
