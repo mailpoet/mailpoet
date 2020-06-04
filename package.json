@@ -56,7 +56,7 @@
     "jquery": "^3.5.1",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.15",
-    "moment": "^2.22.1",
+    "moment": "^2.26.0",
     "mousetrap": "^1.6.3",
     "papaparse": "^5.2.0",
     "parsleyjs": "^2.8.1",
