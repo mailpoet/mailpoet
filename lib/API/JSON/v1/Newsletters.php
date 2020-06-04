@@ -25,15 +25,13 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class Newsletters extends APIEndpoint {
-
-  /** @var Listing\BulkActionController */
-  private $bulkAction;
 
   /** @var Listing\Handler */
   private $listingHandler;
@@ -76,7 +74,6 @@ class Newsletters extends APIEndpoint {
   private $newsletterSaveController;
 
   public function __construct(
-    Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
     WPFunctions $wp,
     SettingsController $settings,
@@ -90,7 +87,6 @@ class Newsletters extends APIEndpoint {
     SendPreviewController $sendPreviewController,
     NewsletterSaveController $newsletterSaveController
   ) {
-    $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
     $this->settings = $settings;
@@ -356,14 +352,23 @@ class Newsletters extends APIEndpoint {
   }
 
   public function bulkAction($data = []) {
-    try {
-      $meta = $this->bulkAction->apply('\MailPoet\Models\Newsletter', $data);
-      return $this->successResponse(null, $meta);
-    } catch (\Exception $e) {
-      return $this->errorResponse([
-        $e->getCode() => $e->getMessage(),
-      ]);
+    if (isset($data['listing']['selection']) && is_array($data['listing']['selection'])) {
+      $ids = array_map('intval', $data['listing']['selection']);
+    } else {
+      $definition = $this->listingHandler->getListingDefinition($data);
+      $ids = $this->newsletterListingRepository->getIds($definition);
     }
+    if ($data['action'] === 'trash') {
+      $this->newslettersRepository->bulkTrash($ids);
+    } elseif ($data['action'] === 'restore') {
+      $this->newslettersRepository->bulkRestore($ids);
+    } elseif ($data['action'] === 'delete') {
+      $this->newslettersRepository->bulkDelete($ids);
+    } else {
+      throw UnexpectedValueException::create()
+        ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
+    }
+    return $this->successResponse(null, ['count' => count($ids)]);
   }
 
   public function create($data = []) {
