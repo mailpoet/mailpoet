@@ -97,6 +97,7 @@ class PreviewPage {
       'delay' => 1,
       'position' => $formData['settings'][$formDisplayType . '_form_position'] ?? '',
       'backgroundColor' => $formData['settings']['backgroundColor'] ?? '',
+      'fontFamily' => $formData['settings']['font_family'] ?? '',
     ];
     $formPosition = $formData['settings'][$formDisplayType . '_form_position'] ?? '';
     if (!$formPosition && $formDisplayType === FormEntity::DISPLAY_TYPE_FIXED_BAR) {
