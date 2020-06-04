@@ -73,7 +73,7 @@
     "satismeter-loader": "^1.1.0",
     "select2": "^4.0.13",
     "setimmediate": "^1.0.5",
-    "slugify": "^1.3.6",
+    "slugify": "^1.4.0",
     "spectrum-colorpicker": "^1.6.2",
     "tinymce": "^5.2.2",
     "underscore": "1.8.3",
