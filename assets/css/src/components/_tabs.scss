@@ -1,0 +1,42 @@
+.mailpoet-tab {
+  align-items: center;
+  background: none;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: $font-size;
+  justify-content: center;
+  line-height: 24px;
+  margin-bottom: -1px;
+  max-width: 100%;
+  min-height: 56px;
+  padding: 8px 20px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: top;
+
+  &:focus {
+    outline: none;
+  }
+
+  &.mailpoet-tab-active {
+    background: $color-white;
+    border-color: $color-tertiary-light;
+    color: $color-secondary;
+  }
+}
+
+.mailpoet-tab-content {
+  background: $color-white;
+  border: 1px solid $color-tertiary-light;
+  border-radius: 4px;
+  padding: 24px;
+
+  > *:first-child { margin-top: 0; }
+  > *:last-child { margin-bottom: 0; }
+}
