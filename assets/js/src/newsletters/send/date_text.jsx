@@ -1,29 +1,14 @@
 import React from 'react';
-import jQuery from 'jquery';
-import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
+import DatePicker from 'common/datepicker/datepicker.tsx';
 
-const datepickerTranslations = {
-  closeText: MailPoet.I18n.t('close'),
-  currentText: MailPoet.I18n.t('today'),
-  nextText: MailPoet.I18n.t('next'),
-  prevText: MailPoet.I18n.t('previous'),
-  monthNames: [
-    MailPoet.I18n.t('january'),
-    MailPoet.I18n.t('february'),
-    MailPoet.I18n.t('march'),
-    MailPoet.I18n.t('april'),
-    MailPoet.I18n.t('may'),
-    MailPoet.I18n.t('june'),
-    MailPoet.I18n.t('july'),
-    MailPoet.I18n.t('august'),
-    MailPoet.I18n.t('september'),
-    MailPoet.I18n.t('october'),
-    MailPoet.I18n.t('november'),
-    MailPoet.I18n.t('december'),
-  ],
-  monthNamesShort: [
+import { registerLocale } from 'react-datepicker';
+import locale from 'date-fns/locale/en-US';
+import buildLocalizeFn from 'date-fns/locale/_lib/buildLocalizeFn';
+
+const monthValues = {
+  abbreviated: [
     MailPoet.I18n.t('januaryShort'),
     MailPoet.I18n.t('februaryShort'),
     MailPoet.I18n.t('marchShort'),
@@ -37,25 +22,24 @@ const datepickerTranslations = {
     MailPoet.I18n.t('novemberShort'),
     MailPoet.I18n.t('decemberShort'),
   ],
-  dayNames: [
-    MailPoet.I18n.t('sunday'),
-    MailPoet.I18n.t('monday'),
-    MailPoet.I18n.t('tuesday'),
-    MailPoet.I18n.t('wednesday'),
-    MailPoet.I18n.t('thursday'),
-    MailPoet.I18n.t('friday'),
-    MailPoet.I18n.t('saturday'),
+  wide: [
+    MailPoet.I18n.t('january'),
+    MailPoet.I18n.t('february'),
+    MailPoet.I18n.t('march'),
+    MailPoet.I18n.t('april'),
+    MailPoet.I18n.t('may'),
+    MailPoet.I18n.t('june'),
+    MailPoet.I18n.t('july'),
+    MailPoet.I18n.t('august'),
+    MailPoet.I18n.t('september'),
+    MailPoet.I18n.t('october'),
+    MailPoet.I18n.t('november'),
+    MailPoet.I18n.t('december'),
   ],
-  dayNamesShort: [
-    MailPoet.I18n.t('sundayShort'),
-    MailPoet.I18n.t('mondayShort'),
-    MailPoet.I18n.t('tuesdayShort'),
-    MailPoet.I18n.t('wednesdayShort'),
-    MailPoet.I18n.t('thursdayShort'),
-    MailPoet.I18n.t('fridayShort'),
-    MailPoet.I18n.t('saturdayShort'),
-  ],
-  dayNamesMin: [
+};
+
+const dayValues = {
+  narrow: [
     MailPoet.I18n.t('sundayMin'),
     MailPoet.I18n.t('mondayMin'),
     MailPoet.I18n.t('tuesdayMin'),
@@ -64,81 +48,68 @@ const datepickerTranslations = {
     MailPoet.I18n.t('fridayMin'),
     MailPoet.I18n.t('saturdayMin'),
   ],
+  abbreviated: [
+    MailPoet.I18n.t('sundayShort'),
+    MailPoet.I18n.t('mondayShort'),
+    MailPoet.I18n.t('tuesdayShort'),
+    MailPoet.I18n.t('wednesdayShort'),
+    MailPoet.I18n.t('thursdayShort'),
+    MailPoet.I18n.t('fridayShort'),
+    MailPoet.I18n.t('saturdayShort'),
+  ],
+  wide: [
+    MailPoet.I18n.t('sunday'),
+    MailPoet.I18n.t('monday'),
+    MailPoet.I18n.t('tuesday'),
+    MailPoet.I18n.t('wednesday'),
+    MailPoet.I18n.t('thursday'),
+    MailPoet.I18n.t('friday'),
+    MailPoet.I18n.t('saturday'),
+  ],
 };
 
+locale.localize.month = buildLocalizeFn({
+  values: monthValues,
+  defaultWidth: 'wide',
+});
+locale.localize.day = buildLocalizeFn({
+  values: dayValues,
+  defaultWidth: 'wide',
+});
+locale.options.weekStartsOn = typeof window.mailpoet_start_of_week !== 'undefined'
+  ? window.mailpoet_start_of_week
+  : 1;
+
+registerLocale('mailpoet', locale);
+
 class DateText extends React.Component {
-  constructor(props) {
-    super(props);
-    this.dateInput = React.createRef();
-  }
-
-  componentDidMount() {
-    const $element = jQuery(this.dateInput.current);
-    const that = this;
-    if ($element.datepicker) {
-      // Override jQuery UI datepicker Date parsing and formatting
-      jQuery.datepicker.parseDate = function parseDate(format, value) {
-        // Transform string format to Date object
-        return MailPoet.Date.toDate(value, {
-          parseFormat: this.props.displayFormat,
-          format,
-        });
-      };
-      jQuery.datepicker.formatDate = function formatDate(format, value) {
-        // Transform Date object to string format
-        const newValue = MailPoet.Date.format(value, {
-          format,
-        });
-        return newValue;
-      };
-
-      $element.datepicker(_.extend({
-        dateFormat: this.props.displayFormat,
-        firstDay: window.mailpoet_start_of_week,
-        isRTL: false,
-        onSelect: function onSelect(value) {
-          that.onChange({
-            target: {
-              name: that.getFieldName(),
-              value,
-            },
-          });
-        },
-      }, datepickerTranslations));
-
-      this.datepickerInitialized = true;
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.datepickerInitialized) {
-      jQuery(this.dateInput.current).datepicker('destroy');
-    }
-  }
-
-  onChange = (event) => {
+  onChange = (value, event) => {
     const changeEvent = event;
     // Swap display format to storage format
-    const displayDate = changeEvent.target.value;
-    const storageDate = this.getStorageDate(displayDate);
+    const storageDate = this.getStorageDate(value);
 
+    changeEvent.target.name = this.getFieldName();
     changeEvent.target.value = storageDate;
     this.props.onChange(changeEvent);
   };
 
   getFieldName = () => this.props.name || 'date';
 
-  getDisplayDate = (date) => {
+  getDisplayDateFormat = (format) => {
+    const convertedFormat = MailPoet.Date.convertFormat(format);
+    // Convert moment format to date-fns, see: https://git.io/fxCyr
+    return convertedFormat.replace(/D/g, 'd').replace(/Y/g, 'y').replace(/\[/g, '').replace(/\]/g, '');
+  };
+
+  getDate = (date) => {
     const formatting = {
       parseFormat: this.props.storageFormat,
-      format: this.props.displayFormat,
     };
-    return MailPoet.Date.format(date, formatting);
+    return MailPoet.Date.toDate(date, formatting);
   };
 
   getStorageDate = (date) => {
     const formatting = {
-      parseFormat: this.props.displayFormat,
       format: this.props.storageFormat,
     };
     return MailPoet.Date.format(date, formatting);
@@ -146,15 +117,14 @@ class DateText extends React.Component {
 
   render() {
     return (
-      <input
-        type="text"
-        size="30"
+      <DatePicker
         name={this.getFieldName()}
-        value={this.getDisplayDate(this.props.value)}
-        readOnly
+        selected={this.getDate(this.props.value)}
+        dateFormat={this.getDisplayDateFormat(this.props.displayFormat)}
         disabled={this.props.disabled}
         onChange={this.onChange}
-        ref={this.dateInput}
+        minDate={this.getDate(window.mailpoet_current_date)}
+        locale="mailpoet"
         {...this.props.validation} // eslint-disable-line react/jsx-props-no-spreading
       />
     );

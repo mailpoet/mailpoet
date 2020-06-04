@@ -5,6 +5,7 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   children?: React.ReactNode,
   dimension?: 'small',
   isFullWidth?: boolean,
+  isMinWidth?: boolean,
   iconStart?: JSX.Element,
 };
 
@@ -12,6 +13,7 @@ const Select = ({
   children,
   dimension,
   isFullWidth,
+  isMinWidth,
   iconStart,
   ...attributes
 }: Props) => (
@@ -24,6 +26,7 @@ const Select = ({
           [`mailpoet-form-input-${dimension}`]: dimension,
           'mailpoet-disabled': attributes.disabled,
           'mailpoet-full-width': isFullWidth,
+          'mailpoet-min-width': isMinWidth,
         }
       )
     }
