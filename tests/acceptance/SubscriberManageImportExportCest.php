@@ -58,7 +58,7 @@ class SubscriberManageImportExportCest {
     // Test reimporting the same list
     $i->click('Import again');
     $this->uploadCsvFile($i);
-    $this->chooseListAndConfirm($i);
+    $this->createNewListAndConfirm($i);
     $i->see('9 existing subscribers were updated and added to');
 
     //confirm subscribers from import list were added
@@ -96,6 +96,21 @@ class SubscriberManageImportExportCest {
     // trigger dropdown to display selections
     $i->click('input.select2-search__field');
     // choose first list
+    $i->click(['xpath' => '//*[@id="select2-mailpoet_segments_select-results"]/li[1]']);
+    $i->click('.mailpoet_data_manipulation_step [data-automation-id="import-next-step"]');
+    $i->waitForText('Import again');
+  }
+
+  private function createNewListAndConfirm(\AcceptanceTester $i) {
+    $newListName = 'Simple List';
+    // first create a new list
+    $i->click('a.mailpoet_create_segment');
+    $i->fillField('input#new_segment_name', $newListName);
+    $i->fillField('textarea#new_segment_description', 'This is just a simple list.');
+    $i->click('input#new_segment_process');
+    // trigger dropdown to display selections and search for recently created list
+    $i->waitForElementVisible('input.select2-search__field');
+    $i->fillField('input.select2-search__field', $newListName);
     $i->click(['xpath' => '//*[@id="select2-mailpoet_segments_select-results"]/li[1]']);
     $i->click('.mailpoet_data_manipulation_step [data-automation-id="import-next-step"]');
     $i->waitForText('Import again');
