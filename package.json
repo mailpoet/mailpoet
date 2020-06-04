@@ -108,7 +108,7 @@
     "@types/react-select": "^3.0.12",
     "@typescript-eslint/eslint-plugin": "^2.21.0",
     "@typescript-eslint/parser": "^2.21.0",
-    "autoprefixer": "^9.7.4",
+    "autoprefixer": "^9.8.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.4",
     "babel-plugin-transform-commonjs": "^1.1.4",
