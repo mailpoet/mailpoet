@@ -104,4 +104,31 @@ class NewslettersRepository extends Repository {
       'abandoned_cart_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC][AbandonedCart::SLUG] ?? 0,
     ];
   }
+
+  public function bulkTrash(array $ids) {
+    $queryBuilder = $this->entityManager->createQueryBuilder();
+    $queryBuilder->update(NewsletterEntity::class, 'n')
+      ->set('n.deletedAt', 'CURRENT_TIMESTAMP()')
+      ->where('n.id IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()->execute();
+  }
+
+  public function bulkRestore(array $ids) {
+    $queryBuilder = $this->entityManager->createQueryBuilder();
+    $queryBuilder->update(NewsletterEntity::class, 'n')
+      ->set('n.deletedAt', ':deletedAt')
+      ->where('n.id IN (:ids)')
+      ->setParameter('deletedAt', null)
+      ->setParameter('ids', $ids)
+      ->getQuery()->execute();
+  }
+
+  public function bulkDelete(array $ids) {
+    $queryBuilder = $this->entityManager->createQueryBuilder();
+    $queryBuilder->delete(NewsletterEntity::class, 'n')
+      ->where('n.id IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()->execute();
+  }
 }

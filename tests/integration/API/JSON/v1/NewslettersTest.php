@@ -11,7 +11,6 @@ use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -694,7 +693,6 @@ class NewslettersTest extends \MailPoetTest {
 
   private function createNewslettersEndpointWithMocks(array $mocks): Newsletters {
     return new Newsletters(
-      $this->diContainer->get(BulkActionController::class),
       $this->diContainer->get(Handler::class),
       $mocks['wp'] ?? $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
