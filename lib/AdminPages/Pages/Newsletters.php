@@ -193,8 +193,6 @@ class Newsletters {
     $data['sent_newsletters_count'] = (int)Newsletter::where('status', Newsletter::STATUS_SENT)->count();
     $data['woocommerce_transactional_email_id'] = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID);
     $data['display_detailed_stats'] = Installer::getPremiumStatus()['premium_plugin_initialized'];
-    $this->wp->wpEnqueueScript('jquery-ui');
-    $this->wp->wpEnqueueScript('jquery-ui-datepicker');
 
     $this->pageRenderer->displayPage('newsletters.html', $data);
   }
