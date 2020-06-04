@@ -66,5 +66,23 @@ export const NativeSelect = () => (
       </Select>
     </div>
     <br />
+    <Heading level={3}>Min-width select boxes</Heading>
+    <div>
+      <Select isMinWidth>
+        <option value="1">Opt 1</option>
+        <option value="2">Opt 2</option>
+        <option value="3">Opt 3</option>
+      </Select>
+      <div className="mailpoet-gap" />
+      <Select
+        isMinWidth
+        iconStart={icon}
+      >
+        <option value="1">Opt 1</option>
+        <option value="2">Opt 2</option>
+        <option value="3">Opt 3</option>
+      </Select>
+    </div>
+    <br />
   </>
 );
