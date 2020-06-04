@@ -102,7 +102,7 @@ export const CustomFontsStyleSheetLink = () => {
   );
   const customFontsUrl = customFonts
     .map((fontName) => fontName.replace(' ', '+'))
-    .map((fontName) => fontName.concat(':400,400i,700,700'))
+    .map((fontName) => fontName.concat(':400,400i,700,700i'))
     .join('|');
   return (
     <link
