@@ -77,7 +77,7 @@
     "spectrum-colorpicker": "^1.6.2",
     "tinymce": "^5.2.2",
     "underscore": "1.8.3",
-    "velocity-animate": "1.2.3"
+    "velocity-animate": "^1.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",
