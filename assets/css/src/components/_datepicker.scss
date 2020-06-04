@@ -1,0 +1,95 @@
+@import '../../../../node_modules/react-datepicker/src/stylesheets/datepicker';
+
+.mailpoet-datepicker {
+  display: inline-block;
+  vertical-align: middle;
+
+  .react-datepicker {
+    background-color: $color-input-background;
+    border: solid 1px $color-tertiary-light;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px 0 $color-tertiary-light;
+    font-family: $font-family;
+    font-size: $font-size;
+    height: 400px;
+    width: $grid-column;
+  }
+
+  .react-datepicker-wrapper,
+  .react-datepicker-wrapper input {
+    width: 100%;
+  }
+
+  .react-datepicker__header {
+    background-color: transparent;
+    border-bottom: 0;
+  }
+
+  .react-datepicker__current-month {
+    color: $color-tertiary;
+    font-size: $heading-font-size-h3;
+    height: 55px;
+    line-height: 40px;
+  }
+
+  .react-datepicker__day-name {
+    color: $color-tertiary;
+    font-stretch: normal;
+    font-style: normal;
+    font-weight: normal;
+    height: 24px;
+    letter-spacing: normal;
+    line-height: normal;
+    margin: 0;
+    text-align: center;
+    width: 50px;
+  }
+
+  .react-datepicker__day,
+  .react-datepicker__day--today {
+    background-color: $color-white;
+    border: solid 1px $color-tertiary-light;
+    color: inherit;
+    display: inline-block;
+    font-weight: bold;
+    height: 48px;
+    line-height: 48px;
+    margin: 0;
+    text-align: center;
+    width: 49px;
+  }
+
+  .react-datepicker__day:hover {
+    background-color: $color-secondary-light;
+    border-radius: 0;
+  }
+
+  .react-datepicker__day--selected {
+    background-color: $color-secondary;
+    border-radius: 0;
+    color: $color-white;
+  }
+
+  .react-datepicker__day--disabled {
+    color: $color-text-light;
+    font-weight: normal;
+  }
+
+  .react-datepicker__day--outside-month {
+    visibility: hidden;
+  }
+
+  .react-datepicker__navigation--previous {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none'%3E%3Crect width='40' height='40' fill='%23FFE0D0' rx='20'/%3E%3Cpath fill='%23FF5301' d='M14 20.497l3.55 4.057c.128.144.274.254.439.331.164.077.338.115.52.115.348 0 .64-.116.878-.349.237-.232.356-.518.356-.857 0-.186-.035-.365-.106-.537-.071-.172-.173-.325-.305-.46l-.966-.983h6.346c.36 0 .665-.125.914-.376.25-.251.374-.565.374-.941 0-.368-.124-.678-.374-.931-.249-.253-.553-.38-.914-.38h-6.346l.966-1.13c.137-.148.24-.303.308-.463.069-.16.103-.32.103-.478 0-.302-.122-.563-.367-.784-.244-.22-.533-.331-.867-.331-.187 0-.364.04-.53.119-.167.079-.31.188-.429.327L14 20.496z'/%3E%3C/g%3E%3C/svg%3E%0A");
+    border: 0;
+    height: 40px;
+    width: 40px;
+  }
+
+  .react-datepicker__navigation--next {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none'%3E%3Crect width='40' height='40' fill='%23FFE0D0' rx='20'/%3E%3Cpath fill='%23FF5301' d='M26 20.497l-3.55 4.057c-.128.144-.274.254-.439.331-.164.077-.338.115-.52.115-.348 0-.64-.116-.878-.349-.237-.232-.356-.518-.356-.857 0-.186.035-.365.106-.537.071-.172.173-.325.305-.46l.966-.983h-6.346c-.36 0-.665-.125-.914-.376-.25-.251-.374-.565-.374-.941 0-.368.124-.678.374-.931.249-.253.553-.38.914-.38h6.346l-.966-1.13c-.137-.148-.24-.303-.308-.463-.069-.16-.103-.32-.103-.478 0-.302.122-.563.367-.784.244-.22.533-.331.867-.331.187 0 .364.04.53.119.167.079.31.188.429.327l3.55 4.05z'/%3E%3C/g%3E%3C/svg%3E%0A");
+    border: 0;
+    height: 40px;
+    width: 40px;
+  }
+}
