@@ -6,26 +6,33 @@ use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class NewsletterRepositoryTest extends \MailPoetTest {
   /** @var NewslettersRepository */
   private $repository;
 
+  /** @var ScheduledTaskSubscribersRepository */
+  private $taskSubscribersRepository;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
     $this->repository = $this->diContainer->get(NewslettersRepository::class);
+    $this->taskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
   }
 
   public function testItBulkTrashNewslettersAndChildren() {
     $newsletter1 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD);
-    $this->createQueueWithTaskAndSegment($newsletter1);
+    $this->createQueueWithTaskAndSegmentAndSubscribers($newsletter1);
     $newsletter2 = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
     $newsletter2Child1 = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_SCHEDULED, $newsletter2);
-    $this->createQueueWithTaskAndSegment($newsletter2Child1);
+    $this->createQueueWithTaskAndSegmentAndSubscribers($newsletter2Child1);
     $this->repository->bulkTrash([$newsletter1->getId(), $newsletter2->getId()]);
     $this->entityManager->refresh($newsletter1);
     $this->entityManager->refresh($newsletter2);
@@ -59,10 +66,10 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
   public function testItBulkRestoresNewslettersAndChildren() {
     $newsletter1 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
-    $this->createQueueWithTaskAndSegment($newsletter1, null); // Null for scheduled task being processed
+    $this->createQueueWithTaskAndSegmentAndSubscribers($newsletter1, null); // Null for scheduled task being processed
     $newsletter2 = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
     $newsletter2Child1 = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_SCHEDULED, $newsletter2);
-    $this->createQueueWithTaskAndSegment($newsletter2Child1);
+    $this->createQueueWithTaskAndSegmentAndSubscribers($newsletter2Child1);
     // Trash
     $this->repository->bulkTrash([$newsletter1->getId(), $newsletter2->getId()]);
     // Restore
@@ -104,10 +111,10 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
   public function testItBulkDeleteNewslettersAndChildren() {
     $newsletter1 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
-    $this->createQueueWithTaskAndSegment($newsletter1, null); // Null for scheduled task being processed
+    $this->createQueueWithTaskAndSegmentAndSubscribers($newsletter1, null); // Null for scheduled task being processed
     $newsletter2 = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_ACTIVE);
     $newsletter2Child1 = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::STATUS_SCHEDULED, $newsletter2);
-    $this->createQueueWithTaskAndSegment($newsletter2Child1);
+    $this->createQueueWithTaskAndSegmentAndSubscribers($newsletter2Child1);
     // Trash
     $this->repository->bulkTrash([$newsletter1->getId(), $newsletter2->getId()]);
     $newsletter1Queue = $newsletter1->getLatestQueue();
@@ -118,10 +125,14 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     assert($childrenQueue instanceof SendingQueueEntity);
     $scheduledTask1 = $newsletter1Queue->getTask();
     assert($scheduledTask1 instanceof ScheduledTaskEntity);
+    $scheduledTask1Subscriber = $this->taskSubscribersRepository->findOneBy(['task' => $scheduledTask1]);
+    assert($scheduledTask1Subscriber instanceof ScheduledTaskSubscriberEntity);
     $childrenScheduledTask = $childrenQueue->getTask();
     assert($childrenScheduledTask instanceof ScheduledTaskEntity);
     $childSegment = $newsletter2Child1->getNewsletterSegments()->first();
     assert($childSegment instanceof NewsletterSegmentEntity);
+    $childrenScheduledTaskSubscriber = $this->taskSubscribersRepository->findOneBy(['task' => $childrenScheduledTask]);
+    assert($childrenScheduledTaskSubscriber instanceof ScheduledTaskSubscriberEntity);
 
     // Delete
     $this->repository->bulkDelete([$newsletter1->getId(), $newsletter2->getId()]);
@@ -146,6 +157,10 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     // Sending queues
     expect($this->entityManager->find(SendingQueueEntity::class, $newsletter1Queue->getId()))->null();
     expect($this->entityManager->find(SendingQueueEntity::class, $childrenQueue->getId()))->null();
+
+    // Scheduled tasks subscribers
+    expect($this->taskSubscribersRepository->findOneBy(['task' => $scheduledTask1]))->null();
+    expect($this->taskSubscribersRepository->findOneBy(['task' => $childrenScheduledTask]))->null();
 
     // Scheduled tasks
     expect($this->entityManager->find(ScheduledTaskEntity::class, $scheduledTask1->getId()))->null();
@@ -172,7 +187,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  private function createQueueWithTaskAndSegment(NewsletterEntity $newsletter, $status = ScheduledTaskEntity::STATUS_SCHEDULED): SendingQueueEntity {
+  private function createQueueWithTaskAndSegmentAndSubscribers(NewsletterEntity $newsletter, $status = ScheduledTaskEntity::STATUS_SCHEDULED): SendingQueueEntity {
     $task = new ScheduledTaskEntity();
     $task->setType(SendingTask::TASK_TYPE);
     $task->setStatus($status);
@@ -190,6 +205,13 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $segment->setDescription('');
     $this->entityManager->persist($segment);
 
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail("sub{$newsletter->getId()}@mailpoet.com");
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->persist($subscriber);
+    $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
+    $this->entityManager->persist($scheduledTaskSubscriber);
+
     $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
     $newsletter->getNewsletterSegments()->add($newsletterSegment);
     $this->entityManager->persist($newsletterSegment);
@@ -203,5 +225,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(NewsletterSegmentEntity::class);
     $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
   }
 }
