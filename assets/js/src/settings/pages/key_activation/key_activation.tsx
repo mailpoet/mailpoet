@@ -6,7 +6,12 @@ import { t } from 'common/functions';
 import { MssStatus } from 'settings/store/types';
 import { Label, Inputs } from 'settings/components';
 import SetFromAddressModal from 'common/set_from_address_modal';
-import { KeyMessages, MssMessages, PremiumMessages } from './messages';
+import {
+  KeyMessages,
+  MssMessages,
+  PremiumMessages,
+  ServiceUnavailableMessage,
+} from './messages';
 
 export default function KeyActivation() {
   const { notices } = useContext<any>(GlobalContext);
@@ -26,6 +31,13 @@ export default function KeyActivation() {
   };
 
   function Messages() {
+    if (state.code === 503) {
+      return (
+        <div className="key-activation-messages">
+          <ServiceUnavailableMessage />
+        </div>
+      );
+    }
     return (
       <div className="key-activation-messages">
         <KeyMessages />
@@ -67,7 +79,7 @@ export default function KeyActivation() {
           </div>
         )}
       </div>
-    )
+    );
   }
 
   const showFromAddressModal = state.fromAddressModalCanBeShown
