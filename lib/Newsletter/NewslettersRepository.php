@@ -12,6 +12,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
@@ -213,9 +214,18 @@ class NewslettersRepository extends Repository {
       $deletedChildrenCount = $this->bulkDelete(array_column($childrenIds, 'id'));
     }
 
-    // Delete scheduled tasks and queues
+    // Delete scheduled tasks and scheduled task subscribers
     $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    // Delete sending tasks subscribers
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE ts FROM $scheduledTaskSubscribersTable ts
+       JOIN $scheduledTasksTable t ON t.`id` = ts.`task_id`
+       JOIN $sendingQueueTable q ON q.`task_id` = t.`id`
+       WHERE q.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
     $this->entityManager->getConnection()->executeUpdate("
        DELETE t FROM $scheduledTasksTable t
        JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
