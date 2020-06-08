@@ -300,7 +300,7 @@ class Newsletters extends APIEndpoint {
     }
 
     $newsletter->setBody(
-      $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', json_decode($data['body']))
+      json_decode($this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $data['body']), true)
     );
     $this->newslettersRepository->flush();
 
