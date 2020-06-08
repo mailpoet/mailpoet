@@ -200,7 +200,10 @@ class Services extends APIEndpoint {
         break;
     }
 
-    return $this->errorResponse([APIError::BAD_REQUEST => $error]);
+    return $this->errorResponse(
+      [APIError::BAD_REQUEST => $error],
+      ['code' => $result['code'] ?? null]
+    );
   }
 
   public function recheckKeys() {
