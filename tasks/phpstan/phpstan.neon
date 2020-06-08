@@ -17,6 +17,10 @@ parameters:
     - '#Parameter \#1 \$function of function call_user_func_array expects callable(): mixed, .wc_.*. given.#'
     - '#Parameter \#1 \$reader of class MailPoetVendor\\Doctrine\\ORM\\Mapping\\Driver\\AnnotationDriver constructor expects MailPoetVendor\\Doctrine\\Common\\Annotations\\AnnotationReader, MailPoetVendor\\Doctrine\\Common\\Annotations\\CachedReader given#'
     - '/(with|has) no (return )?typehint specified/' # exclude level 6 errors
+    - # Primary keys ScheduledTaskSubscriberEntity of are foreign keys and foreign keys may be null because of missing related record
+      message: '#Property MailPoet\\Entities\\[a-zA-Z]+::$[a-z]+ type mapping mismatch: property can contain MailPoet\\Entities\\[a-zA-Z]+|null but database expects MailPoet\\Entities\\[a-zA-Z]+.#'
+      path: ../../lib/Entities/ScheduledTaskSubscriberEntity.php
+      count: 2
 
    # Doctrine repository annotates return values as object|null, we override them to specific generics (T|null)
     - '#Method MailPoet\\Doctrine\\Repository::findOneBy(Id)?\(\) should return T of object\|null but returns object\|null\.#'
