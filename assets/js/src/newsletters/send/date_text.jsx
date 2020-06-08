@@ -1,7 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import DatePicker from 'common/datepicker/datepicker.tsx';
+import Datepicker from 'common/datepicker/datepicker.tsx';
 
 import { registerLocale } from 'react-datepicker';
 import locale from 'date-fns/locale/en-US';
@@ -117,7 +117,7 @@ class DateText extends React.Component {
 
   render() {
     return (
-      <DatePicker
+      <Datepicker
         name={this.getFieldName()}
         selected={this.getDate(this.props.value)}
         dateFormat={this.getDisplayDateFormat(this.props.displayFormat)}

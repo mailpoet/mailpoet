@@ -5,7 +5,7 @@ import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
 type Props = ReactDatePickerProps & {
 };
 
-const DatePicker = ({
+const Datepicker = ({
   ...props
 }: Props) => (
   <div
@@ -25,4 +25,4 @@ const DatePicker = ({
   </div>
 );
 
-export default DatePicker;
+export default Datepicker;

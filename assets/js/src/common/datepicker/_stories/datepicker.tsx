@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { action } from '@storybook/addon-actions';
-import DatePicker from '../datepicker';
+import Datepicker from '../datepicker';
 import Heading from '../../typography/heading/heading';
 
 export default {
   title: 'Datepickers',
-  component: DatePicker,
+  component: Datepicker,
 };
 
-const DatePickerWrapper = ({
+const DatepickerWrapper = ({
   ...props
 }) => {
   const [startDate, setStartDate] = useState(new Date());
@@ -17,7 +17,7 @@ const DatePickerWrapper = ({
     setStartDate(date);
   };
   return (
-    <DatePicker
+    <Datepicker
       {...props} // eslint-disable-line react/jsx-props-no-spreading
       selected={startDate}
       onChange={onChange}
@@ -28,32 +28,32 @@ const DatePickerWrapper = ({
 export const Datepickers = () => (
   <>
     <Heading level={3}>Datepicker</Heading>
-    <p>
-      <DatePickerWrapper
+    <div>
+      <DatepickerWrapper
         dateFormat="MMMM d, yyyy"
         onChange={action('normal datepicker')}
       />
-    </p>
+    </div>
     <br />
 
     <Heading level={3}>Datepicker with a minimum date</Heading>
-    <p>
-      <DatePickerWrapper
+    <div>
+      <DatepickerWrapper
         dateFormat="MMMM d, yyyy"
         minDate={new Date()}
         onChange={action('datepicker with a minimum date')}
       />
-    </p>
+    </div>
     <br />
 
     <Heading level={3}>Disabled datepicker</Heading>
-    <p>
-      <DatePickerWrapper
+    <div>
+      <DatepickerWrapper
         dateFormat="MMMM d, yyyy"
         disabled
         onChange={action('disabled datepicker')}
       />
-    </p>
+    </div>
     <br />
   </>
 );
