@@ -205,6 +205,7 @@ export type KeyActivationState = {
   fromAddressModalCanBeShown: boolean
   inProgress: boolean
   congratulatoryMssEmailSentTo: string|null
+  code?: number
 }
 
 export enum TestEmailState {
