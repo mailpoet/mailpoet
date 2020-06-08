@@ -10,6 +10,7 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoetVendor\Carbon\Carbon;
@@ -133,7 +134,7 @@ class NewslettersRepository extends Repository {
        WHERE q.`newsletter_id` IN (:ids)
     ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
-    // Trash scheduled tasks
+    // Trash sending queues tasks
     $this->entityManager->getConnection()->executeUpdate("
        UPDATE $sendingQueueTable q
        SET q.`deleted_at` = NOW()
@@ -201,10 +202,45 @@ class NewslettersRepository extends Repository {
   }
 
   public function bulkDelete(array $ids) {
+    // Delete children
+    $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.parent IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()->getScalarResult();
+    $deletedChildrenCount = 0;
+    if (count($childrenIds)) {
+      $deletedChildrenCount = $this->bulkDelete(array_column($childrenIds, 'id'));
+    }
+
+    // Delete scheduled tasks and queues
+    $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE t FROM $scheduledTasksTable t
+       JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
+       WHERE q.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    // Delete sending queues
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE q FROM $sendingQueueTable q
+       WHERE q.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    // Delete newsletter segments
+    $newsletterSegmentsTable = $this->entityManager->getClassMetadata(NewsletterSegmentEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE ns FROM $newsletterSegmentsTable ns
+       WHERE ns.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
     $queryBuilder = $this->entityManager->createQueryBuilder();
     $queryBuilder->delete(NewsletterEntity::class, 'n')
       ->where('n.id IN (:ids)')
       ->setParameter('ids', $ids)
       ->getQuery()->execute();
+
+    return $deletedChildrenCount + count($ids);
   }
 }
