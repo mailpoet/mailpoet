@@ -27,6 +27,9 @@ class SendingServiceKeyCheck extends KeyCheckWorker {
     return Bridge::isMPSendingServiceEnabled();
   }
 
+  /**
+   * @return \DateTimeInterface|Carbon
+   */
   public function getNextRunDate() {
     // when key pending approval, check key sate every hour
     if ($this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
