@@ -20,11 +20,55 @@ export default function KeyActivation() {
   const [senderAddress, setSenderAddress] = useSetting('sender', 'address');
   const [unauthorizedAddresses, setUnauthorizedAddresses] = useSetting('authorized_emails_addresses_check');
   const [apiKeyState] = useSetting('mta', 'mailpoet_api_key_state', 'data');
-
   const setAuthorizedAddress = async (address: string) => {
     await setSenderAddress(address);
     await setUnauthorizedAddresses(null);
   };
+
+  function Messages() {
+    return (
+      <div className="key-activation-messages">
+        <KeyMessages />
+        {state.mssStatus !== null && (
+          <MssMessages
+            keyMessage={state.mssMessage}
+            activationCallback={async () => {
+              await verifyMssKey(state.key);
+              sendCongratulatoryMssEmail();
+              setState({ fromAddressModalCanBeShown: true });
+            }}
+          />
+        )}
+        {state.congratulatoryMssEmailSentTo && (
+          <div className="mailpoet_success_item mailpoet_success">
+            {
+              t('premiumTabCongratulatoryMssEmailSent')
+                .replace('[email_address]', state.congratulatoryMssEmailSentTo)
+            }
+          </div>
+        )}
+        {state.premiumStatus !== null && (
+          <PremiumMessages
+            keyMessage={state.premiumMessage}
+            installationStatus={state.premiumInstallationStatus}
+            installationCallback={installPremiumPlugin}
+            activationCallback={() => activatePremiumPlugin(false)}
+          />
+        )}
+
+        {showPendingApprovalNotice && (
+          <div className="mailpoet_success">
+            <div className="pending_approval_heading">
+              {t('premiumTabPendingApprovalHeading')}
+            </div>
+            <div>
+              {t('premiumTabPendingApprovalMessage')}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
 
   const showFromAddressModal = state.fromAddressModalCanBeShown
     && state.mssStatus === MssStatus.VALID_MSS_ACTIVE
@@ -84,48 +128,7 @@ export default function KeyActivation() {
         >
           {t('premiumTabVerifyButton')}
         </button>
-        {state.isKeyValid !== null && (
-          <div className="key-activation-messages">
-            <KeyMessages />
-            {state.mssStatus !== null && (
-              <MssMessages
-                keyMessage={state.mssMessage}
-                activationCallback={async () => {
-                  await verifyMssKey(state.key);
-                  sendCongratulatoryMssEmail();
-                  setState({ fromAddressModalCanBeShown: true });
-                }}
-              />
-            )}
-            {state.congratulatoryMssEmailSentTo && (
-              <div className="mailpoet_success_item mailpoet_success">
-                {
-                  t('premiumTabCongratulatoryMssEmailSent')
-                    .replace('[email_address]', state.congratulatoryMssEmailSentTo)
-                }
-              </div>
-            )}
-            {state.premiumStatus !== null && (
-              <PremiumMessages
-                keyMessage={state.premiumMessage}
-                installationStatus={state.premiumInstallationStatus}
-                installationCallback={installPremiumPlugin}
-                activationCallback={() => activatePremiumPlugin(false)}
-              />
-            )}
-
-            {showPendingApprovalNotice && (
-              <div className="mailpoet_success">
-                <div className="pending_approval_heading">
-                  {t('premiumTabPendingApprovalHeading')}
-                </div>
-                <div>
-                  {t('premiumTabPendingApprovalMessage')}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+        {state.isKeyValid !== null && Messages()}
       </Inputs>
       {showFromAddressModal && (
         <SetFromAddressModal
