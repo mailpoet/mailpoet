@@ -11,6 +11,6 @@ export default async function ({ endpoint, action, data }) {
     return { success: true, res };
   } catch (res) {
     const error = res.errors.map((e) => e.message);
-    return { success: false, error };
+    return { success: false, error, res };
   }
 }
