@@ -53,7 +53,7 @@ class JsonType extends Type {
   private function handleErrors() {
     $error = json_last_error();
     if ($error !== JSON_ERROR_NONE) {
-      throw new \RuntimeException(json_last_error_msg(), $error);
+      throw new \RuntimeException('Error when parsing JSON database value: "' . json_last_error_msg() . '"', $error);
     }
   }
 }
