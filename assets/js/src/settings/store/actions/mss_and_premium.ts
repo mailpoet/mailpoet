@@ -63,6 +63,7 @@ export function* verifyPremiumKey(key: string) {
     return updateKeyActivationState({
       premiumStatus: PremiumStatus.INVALID,
       premiumMessage: error.join(' ') || null,
+      code: res?.meta?.code,
     });
   }
 
