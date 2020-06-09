@@ -33,6 +33,7 @@
   .react-datepicker__header {
     background-color: transparent;
     border-bottom: 0;
+    padding-top: 0;
   }
 
   .react-datepicker__month {
@@ -44,7 +45,7 @@
     font-size: $heading-font-size-h3;
     height: 40px;
     line-height: 40px;
-    padding: ($grid-gap / 2) 0;
+    padding: $grid-gap 0;
   }
 
   .react-datepicker__day-name {
