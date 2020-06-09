@@ -97,4 +97,15 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'styles' => ['font_color' => 'red'],
     ], 'input'))->notEquals('');
   }
+
+  public function testItShouldRenderFontFamily() {
+    $styles = [];
+    $settings = [
+      'font_family' => 'font1',
+    ];
+    $result = $this->renderer->renderForButton($styles, $settings);
+    expect($result)->contains("font-family:'font1'");
+    $result = $this->renderer->renderForButton(['font_family' => 'font2'], $settings);
+    expect($result)->contains("font-family:'font2'");
+  }
 }
