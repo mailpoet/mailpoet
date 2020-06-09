@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.4
-Stable tag: 3.47.3
+Stable tag: 3.47.4
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,18 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.47.4 - 2020-06-09 =
+* Added: choose a font for your form;
+* Added: clean your list on import using Clearout service;
+* Improved: sped up installation of MailPoet plugin;
+* Improved: unified design of mobile's fixed-bar, slide-in & popup forms;
+* Improved: new design for modal windows;
+* Improved: show understandable subscribers counts towards MailPoet limits;
+* Improved: more understandable error message when data in database ale malformed;
+* Improved: clarified sending checkbox value in API docs;
+* Fixed: showing wrong default option in "Send all site's emails with..." option;
+* Fixed: all Post Notifications will send an email if set up for the same category.
 
 = 3.47.3 - 2020-06-03 =
 * Fixed: a bug which caused old posts to be sent.
