@@ -5,6 +5,8 @@ namespace MailPoet\Newsletter;
 use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -134,6 +136,8 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $childNewsletterStatsNotification = $this->createStatNotification($newsletter2Child1, $childrenScheduledTask);
     $newsletter1Link = $this->createNewsletterLink($newsletter1, $newsletter1Queue);
     $childLink = $this->createNewsletterLink($newsletter2Child1, $childrenQueue);
+    $optionField = $this->createNewsletterOptionField(NewsletterEntity::TYPE_NOTIFICATION, 'option');
+    $optionValue = $this->createNewsletterOption($newsletter2Child1, $optionField, 'value');
 
     // Trash
     $this->repository->bulkTrash([$newsletter1->getId(), $newsletter2->getId()]);
@@ -154,6 +158,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->detach($childNewsletterStatsNotification);
     $this->entityManager->detach($newsletter1Link);
     $this->entityManager->detach($childLink);
+    $this->entityManager->detach($optionValue);
 
     // Check they were all deleted
     // Newsletters
@@ -184,6 +189,9 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     // Newsletter links
     expect($this->entityManager->find(NewsletterLinkEntity::class, $newsletter1Link->getId()))->null();
     expect($this->entityManager->find(NewsletterLinkEntity::class, $childLink->getId()))->null();
+
+    // Option fields values
+    expect($this->entityManager->find(NewsletterOptionEntity::class, $optionValue->getId()))->null();
   }
 
   public function _after() {
@@ -249,6 +257,23 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     return $link;
   }
 
+  private function createNewsletterOptionField(string $newsletterType, string $name): NewsletterOptionFieldEntity {
+    $newsletterOptionField = new NewsletterOptionFieldEntity();
+    $newsletterOptionField->setNewsletterType($newsletterType);
+    $newsletterOptionField->setName($name);
+    $this->entityManager->persist($newsletterOptionField);
+    $this->entityManager->flush();
+    return $newsletterOptionField;
+  }
+
+  private function createNewsletterOption(NewsletterEntity $newsletter, NewsletterOptionFieldEntity $field, $value): NewsletterOptionEntity {
+    $option = new NewsletterOptionEntity($newsletter, $field);
+    $option->setValue($value);
+    $this->entityManager->persist($option);
+    $this->entityManager->flush();
+    return $option;
+  }
+
   private function cleanup() {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
@@ -259,5 +284,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
     $this->truncateEntity(StatsNotificationEntity::class);
     $this->truncateEntity(NewsletterLinkEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
   }
 }
