@@ -41,6 +41,9 @@ class Paragraph {
     if (isset($block['params']['drop_cap']) && $block['params']['drop_cap'] === '1') {
       $classes[] = 'has-drop-cap';
     }
+    if (!empty($block['params']['background_color'])) {
+      $classes[] = 'mailpoet-has-background-color';
+    }
     if (empty($classes)) {
       return null;
     }

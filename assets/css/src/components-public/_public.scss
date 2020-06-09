@@ -386,3 +386,7 @@ div.mailpoet_form_slide_in.active {
 .mailpoet_message {
   clear: both; // Message is a last item in form. Cleanup ensures that nothing floats out and paddings are respected.
 }
+
+.mailpoet-has-background-color {
+  padding: 20px 30px;
+}
