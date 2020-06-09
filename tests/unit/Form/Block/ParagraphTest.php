@@ -64,7 +64,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'background_color' => 'red',
       ],
     ]);
-    expect($html)->equals('<p class="mailpoet_form_paragraph" style="background-color: red">Paragraph</p>');
+    expect($html)->contains('style="background-color: red');
   }
 
   public function testItShouldRenderFontSize() {
@@ -85,5 +85,15 @@ class ParagraphTest extends \MailPoetUnitTest {
       ],
     ]);
     expect($html)->equals('<p class="mailpoet_form_paragraph has-drop-cap">Paragraph</p>');
+  }
+
+  public function testItShouldRenderBackgroundClass() {
+    $html = $this->paragraph->render([
+      'params' => [
+        'content' => 'Paragraph',
+        'background_color' => 'red',
+      ],
+    ]);
+    expect($html)->contains('<p class="mailpoet_form_paragraph mailpoet-has-background-color');
   }
 }
