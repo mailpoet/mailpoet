@@ -50,7 +50,7 @@ jQuery(($) => {
     const originalFontFamily = formDiv.css('font-family');
     const newFontFamily = `"${fontName}", ${originalFontFamily}`;
     formDiv.css('font-family', newFontFamily);
-    formDiv.find('input, option').css('font-family', 'inherit');
+    formDiv.find('option').css('font-family', 'inherit');
     formDiv.find('input[type=text], textarea, input[type=email], select').css('font-family', newFontFamily);
     formDiv.find(':header').css('font-family', 'inherit');
   }

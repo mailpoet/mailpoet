@@ -23,11 +23,18 @@ class BlockStylesRenderer {
     if (isset($styles['border_color'])) {
       $rules[] = "border-color:{$styles['border_color']};";
     }
-    if (isset($formSettings['input_padding'])) {
+    if (isset($styles['padding'])) {
+      $rules[] = "padding:{$styles['padding']}px;";
+    } elseif (isset($formSettings['input_padding'])) {
       $rules[] = "padding:{$formSettings['input_padding']}px;";
     }
     if (isset($formSettings['alignment'])) {
       $rules[] = $this->convertAlignmentToMargin($formSettings['alignment']);
+    }
+    if (isset($styles['font_family'])) {
+      $rules[] = "font-family:'{$styles['font_family']}';" ;
+    } elseif (isset($formSettings['font_family'])) {
+      $rules[] = "font-family:'{$formSettings['font_family']}';" ;
     }
     if (isset($styles['font_size'])) {
       $rules[] = "font-size:" . intval($styles['font_size']) . "px;";
