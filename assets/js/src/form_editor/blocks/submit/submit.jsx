@@ -1,5 +1,5 @@
 import MailPoet from 'mailpoet';
-import edit from './edit.jsx';
+import edit from './edit';
 import icon from './icon.jsx';
 
 export const name = 'mailpoet-form/submit-button';
