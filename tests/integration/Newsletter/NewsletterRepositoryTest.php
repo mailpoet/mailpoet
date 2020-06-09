@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter;
 
 use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -131,6 +132,8 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     assert($childrenScheduledTaskSubscriber instanceof ScheduledTaskSubscriberEntity);
     $newsletter1StatsNotification = $this->createStatNotification($newsletter1, $scheduledTask1);
     $childNewsletterStatsNotification = $this->createStatNotification($newsletter2Child1, $childrenScheduledTask);
+    $newsletter1Link = $this->createNewsletterLink($newsletter1, $newsletter1Queue);
+    $childLink = $this->createNewsletterLink($newsletter2Child1, $childrenQueue);
 
     // Trash
     $this->repository->bulkTrash([$newsletter1->getId(), $newsletter2->getId()]);
@@ -149,6 +152,8 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->detach($childSegment);
     $this->entityManager->detach($newsletter1StatsNotification);
     $this->entityManager->detach($childNewsletterStatsNotification);
+    $this->entityManager->detach($newsletter1Link);
+    $this->entityManager->detach($childLink);
 
     // Check they were all deleted
     // Newsletters
@@ -175,6 +180,10 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     // Newsletter stats notifications
     expect($this->entityManager->find(StatsNotificationEntity::class, $newsletter1StatsNotification->getId()))->null();
     expect($this->entityManager->find(StatsNotificationEntity::class, $childNewsletterStatsNotification->getId()))->null();
+
+    // Newsletter links
+    expect($this->entityManager->find(NewsletterLinkEntity::class, $newsletter1Link->getId()))->null();
+    expect($this->entityManager->find(NewsletterLinkEntity::class, $childLink->getId()))->null();
   }
 
   public function _after() {
@@ -233,6 +242,13 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     return $statsNotification;
   }
 
+  private function createNewsletterLink(NewsletterEntity $newsletter, SendingQueueEntity $queue): NewsletterLinkEntity {
+    $link = new NewsletterLinkEntity($newsletter, $queue, 'http://example.com', 'abcd');
+    $this->entityManager->persist($link);
+    $this->entityManager->flush();
+    return $link;
+  }
+
   private function cleanup() {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
@@ -242,5 +258,6 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
     $this->truncateEntity(StatsNotificationEntity::class);
+    $this->truncateEntity(NewsletterLinkEntity::class);
   }
 }
