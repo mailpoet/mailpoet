@@ -7,6 +7,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -138,6 +139,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $childLink = $this->createNewsletterLink($newsletter2Child1, $childrenQueue);
     $optionField = $this->createNewsletterOptionField(NewsletterEntity::TYPE_NOTIFICATION, 'option');
     $optionValue = $this->createNewsletterOption($newsletter2Child1, $optionField, 'value');
+    $newsletterPost = $this->createNewsletterPost($newsletter2, 1);
 
     // Trash
     $this->repository->bulkTrash([$newsletter1->getId(), $newsletter2->getId()]);
@@ -159,6 +161,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->detach($newsletter1Link);
     $this->entityManager->detach($childLink);
     $this->entityManager->detach($optionValue);
+    $this->entityManager->detach($newsletterPost);
 
     // Check they were all deleted
     // Newsletters
@@ -192,6 +195,9 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
     // Option fields values
     expect($this->entityManager->find(NewsletterOptionEntity::class, $optionValue->getId()))->null();
+
+    // Newsletter post
+    expect($this->entityManager->find(NewsletterPostEntity::class, $newsletterPost->getId()))->null();
   }
 
   public function _after() {
@@ -274,6 +280,13 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     return $option;
   }
 
+  private function createNewsletterPost(NewsletterEntity $newsletter, int $postId): NewsletterPostEntity {
+    $post = new NewsletterPostEntity($newsletter, $postId);
+    $this->entityManager->persist($post);
+    $this->entityManager->flush();
+    return $post;
+  }
+
   private function cleanup() {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
@@ -286,5 +299,6 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->truncateEntity(NewsletterLinkEntity::class);
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterPostEntity::class);
   }
 }

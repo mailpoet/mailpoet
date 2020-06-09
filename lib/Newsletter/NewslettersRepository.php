@@ -12,6 +12,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -217,10 +218,12 @@ class NewslettersRepository extends Repository {
       $deletedChildrenCount = $this->bulkDelete(array_column($childrenIds, 'id'));
     }
 
-    // Delete scheduled tasks and scheduled task subscribers
-    $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
-    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
-    $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    // Delete newsletter posts
+    $postsTable = $this->entityManager->getClassMetadata(NewsletterPostEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE np FROM $postsTable np
+       WHERE np.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
     // Delete newsletter options
     $optionsTable = $this->entityManager->getClassMetadata(NewsletterOptionEntity::class)->getTableName();
@@ -242,6 +245,11 @@ class NewslettersRepository extends Repository {
        DELETE sn FROM $statsNotificationsTable sn
        WHERE sn.`newsletter_id` IN (:ids)
     ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    // Delete scheduled tasks and scheduled task subscribers
+    $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
 
     // Delete sending tasks subscribers
     $this->entityManager->getConnection()->executeUpdate("
