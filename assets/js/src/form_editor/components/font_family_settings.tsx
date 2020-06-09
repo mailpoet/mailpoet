@@ -47,6 +47,7 @@ const FontFamilySettings = ({
       key: MailPoet.I18n.t('formFontsDefaultTheme'),
       name: MailPoet.I18n.t('formFontsDefaultTheme'),
       selectable: true,
+      value: undefined,
     },
     {
       key: MailPoet.I18n.t('formFontsStandard'),
@@ -59,6 +60,7 @@ const FontFamilySettings = ({
       name: fontName,
       selectable: true,
       style: getFontStyle(fontName),
+      value: fontName,
     })),
     {
       key: MailPoet.I18n.t('formFontsCustom'),
@@ -71,10 +73,11 @@ const FontFamilySettings = ({
       name: fontName,
       selectable: true,
       style: getFontStyle(fontName),
+      value: fontName,
     })),
   ];
 
-  let selectedValue = options.find((item) => item.name === value);
+  let selectedValue = options.find((item) => item.value === value);
   if (!selectedValue) {
     selectedValue = options[0];
   }
@@ -83,7 +86,7 @@ const FontFamilySettings = ({
       options={options}
       onChange={(selected) => {
         if (selected.selectedItem.selectable) {
-          onChange(selected.selectedItem.name);
+          onChange(selected.selectedItem.value);
         }
       }}
       value={selectedValue}
