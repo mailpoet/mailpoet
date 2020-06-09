@@ -14,6 +14,7 @@ use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatsNotificationEntity;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -218,6 +219,14 @@ class NewslettersRepository extends Repository {
     $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+
+    // Delete stats notifications
+    $statsNotificationsTable = $this->entityManager->getClassMetadata(StatsNotificationEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE sn FROM $statsNotificationsTable sn
+       WHERE sn.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
     // Delete sending tasks subscribers
     $this->entityManager->getConnection()->executeUpdate("
        DELETE ts FROM $scheduledTaskSubscribersTable ts
