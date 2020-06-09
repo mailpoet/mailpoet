@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import MailPoet from 'mailpoet';
 import BlockSettings from './block_settings.jsx';
-import FormSettings from './form_settings/form_settings.jsx';
+import FormSettings from './form_settings/form_settings';
 
 const SidebarHeader = ({ children, closeSidebar }) => (
   <>
