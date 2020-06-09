@@ -59,6 +59,12 @@ const mapBlockStyles = (styles) => {
   if (has(styles, 'border_color') && styles.border_color) {
     mappedStyles.borderColor = styles.border_color;
   }
+  if (has(styles, 'padding') && styles.padding !== undefined) {
+    mappedStyles.padding = parseInt(styles.padding, 10);
+  }
+  if (has(styles, 'font_family') && styles.font_family) {
+    mappedStyles.fontFamily = styles.font_family;
+  }
   return mappedStyles;
 };
 
