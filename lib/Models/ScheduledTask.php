@@ -36,7 +36,7 @@ class ScheduledTask extends Model {
 
   public function __construct() {
     parent::__construct();
-    $this->wp = new WPFunctions();
+    $this->wp = WPFunctions::get();
   }
 
   public function subscribers() {

@@ -317,8 +317,14 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItReschedulesQueueDeliveryWhenMailpoetSubscriberHasNotConfirmedSubscription() {
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $timestamp = WPFunctions::get()->currentTime('timestamp');
+    $wpFunctions = $this->make(WPFunctions::class, [
+      'currentTime' => $timestamp,
+    ]);
+    WPFunctions::set($wpFunctions);
+    $currentTime = Carbon::createFromTimestamp($timestamp);
     Carbon::setTestNow($currentTime); // mock carbon to return current time
+
     $subscriber = $this->_createSubscriber($wpUserId = null, 'unconfirmed');
     $segment = $this->_createSegment();
     $subscriberSegment = $this->_createSubscriberSegment($subscriber->id, $segment->id);
@@ -344,6 +350,7 @@ class SchedulerTest extends \MailPoetTest {
     expect(Carbon::parse($updatedQueue->scheduledAt))->equals(
       $currentTime->addMinutes(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT)
     );
+    WPFunctions::set(new WPFunctions());
   }
 
   public function testItDoesntRunQueueDeliveryWhenMailpoetSubscriberHasUnsubscribed() {
