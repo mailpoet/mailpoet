@@ -31,7 +31,11 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
           />
         </PanelBody>
       </Panel>
-      <StylesSettings onChange={(styles) => setAttributes({ styles })} styles={attributes.styles} />
+      <StylesSettings
+        onChange={(styles) => setAttributes({ styles })}
+        styles={attributes.styles}
+        formSettings={settings}
+      />
     </InspectorControls>
   );
 
@@ -44,12 +48,14 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
     fontSize: attributes.styles.fontSize ? `${attributes.styles.fontSize}px` : 'inherit',
     color: attributes.styles.fontColor || 'inherit',
   } : {};
-
+  console.log('settings', settings);
   if (attributes.styles.fullWidth) {
     styles.width = '100%';
   }
 
-  if (settings.inputPadding !== undefined) {
+  if ((attributes.styles.padding !== undefined) && !attributes.styles.inheritFromTheme) {
+    styles.padding = attributes.styles.padding;
+  } else if (settings.inputPadding !== undefined) {
     styles.padding = settings.inputPadding;
   }
 
@@ -91,6 +97,7 @@ SubmitEdit.propTypes = {
       borderColor: PropTypes.string,
       fontColor: PropTypes.string,
       fontSize: PropTypes.number,
+      padding: PropTypes.number,
     }),
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
