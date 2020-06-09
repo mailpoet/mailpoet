@@ -7,6 +7,10 @@ import StylesSettingsPanel from './styles_settings_panel.jsx';
 import FormPlacementPanel from './form_placement_panel.jsx';
 import CustomCssPanel from './custom_css_panel.jsx';
 
+export type FormSettingsType = {
+  inputPadding: number,
+};
+
 export default () => {
   const { toggleSidebarPanel } = useDispatch('mailpoet-form-editor');
   const openedPanels = useSelect(
