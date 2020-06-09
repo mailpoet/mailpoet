@@ -90,6 +90,7 @@
   .react-datepicker__day--disabled {
     color: $color-text-light;
     font-weight: normal;
+    pointer-events: none;
   }
 
   .react-datepicker__day--outside-month {
