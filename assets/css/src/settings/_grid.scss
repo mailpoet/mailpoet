@@ -2,3 +2,6 @@ $grid-column: 368px;
 $grid-column-small: 272px;
 $grid-editor-width: 660px;
 $grid-gap: 16px;
+$grid-gap-half: $grid-gap / 2;
+$grid-gap-medium: $grid-gap * 1.5;
+$grid-gap-large: $grid-gap * 2;
