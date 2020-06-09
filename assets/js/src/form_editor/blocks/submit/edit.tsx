@@ -68,6 +68,10 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
     styles.backgroundColor = attributes.styles.backgroundColor;
   }
 
+  if (attributes.styles.fontFamily && !attributes.styles.inheritFromTheme) {
+    styles.fontFamily = attributes.styles.fontFamily;
+  }
+
   const className = classnames('mailpoet_submit', { button: attributes.styles.inheritFromTheme });
 
   return (
