@@ -81,7 +81,9 @@ const Tabs = ({
               role="tab"
               onClick={() => onClick(child.key.toString())}
             >
-              {child.props.title}
+              {child.props.iconStart}
+              {child.props.title && <span>{child.props.title}</span>}
+              {child.props.iconEnd}
             </button>
           ))
         }

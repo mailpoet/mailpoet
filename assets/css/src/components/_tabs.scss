@@ -29,6 +29,25 @@
     border-color: $color-tertiary-light;
     color: $color-secondary;
   }
+
+  svg {
+    fill: currentColor;
+    height: 16px;
+    width: 16px;
+
+    &:first-child {
+      margin-right: 6px;
+    }
+
+    &:last-child {
+      margin-left: 6px;
+    }
+
+    &:only-child {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
 }
 
 .mailpoet-tab-content {
