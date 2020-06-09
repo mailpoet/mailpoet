@@ -50,7 +50,13 @@ class AbandonedCartTest extends \MailPoetTest {
     Carbon::setTestNow($this->currentTime);
 
     $this->wp = $this->makeEmpty(WPFunctions::class, [
-      'currentTime' => $this->currentTime->getTimestamp(),
+      'currentTime' => function ($arg) {
+        if ($arg === 'timestamp') {
+          return $this->currentTime->getTimestamp();
+        } elseif ($arg === 'mysql') {
+          return $this->currentTime->format('Y-m-d H:i:s');
+        }
+      },
     ]);
     WPFunctions::set($this->wp);
 
