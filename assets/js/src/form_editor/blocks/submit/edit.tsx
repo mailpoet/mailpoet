@@ -12,9 +12,10 @@ import { useSelect } from '@wordpress/data';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 import StylesSettings from './styles_settings';
+import { FormSettingsType } from '../../components/form_settings/form_settings';
 
 const SubmitEdit = ({ attributes, setAttributes }) => {
-  const settings = useSelect(
+  const settings: FormSettingsType = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
@@ -39,7 +40,7 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
     </InspectorControls>
   );
 
-  const styles = !attributes.styles.inheritFromTheme ? {
+  const styles: React.CSSProperties = !attributes.styles.inheritFromTheme ? {
     fontWeight: attributes.styles.bold ? 'bold' : 'inherit',
     borderRadius: attributes.styles.borderRadius !== undefined ? `${attributes.styles.borderRadius}px` : 0,
     borderWidth: attributes.styles.borderSize !== undefined ? `${attributes.styles.borderSize}px` : '1px',
@@ -48,7 +49,7 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
     fontSize: attributes.styles.fontSize ? `${attributes.styles.fontSize}px` : 'inherit',
     color: attributes.styles.fontColor || 'inherit',
   } : {};
-  console.log('settings', settings);
+
   if (attributes.styles.fullWidth) {
     styles.width = '100%';
   }
