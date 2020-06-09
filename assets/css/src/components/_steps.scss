@@ -61,3 +61,16 @@
   color: $color-secondary;
   font-weight: bold;
 }
+
+.mailpoet-steps-content {
+  background: $color-white;
+  padding: $grid-gap-large;
+
+  @include respond-to(small-screen) {
+    padding: $grid-gap;
+  }
+
+  @include respond-to(only-meduim-screen) {
+    padding: $grid-gap-medium;
+  }
+}
