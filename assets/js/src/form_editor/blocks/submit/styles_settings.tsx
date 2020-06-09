@@ -10,6 +10,7 @@ import { partial } from 'lodash';
 
 import ColorSettings from 'form_editor/components/color_settings';
 import FontSizeSetting from 'form_editor/components/font_size_settings';
+import { FormSettingsType } from 'form_editor/components/form_settings/form_settings';
 
 type Styles = {
   fullWidth: boolean,
@@ -21,16 +22,19 @@ type Styles = {
   borderSize?: number,
   borderRadius?: number,
   borderColor?: string,
+  padding?: number,
 }
 
 type Props = {
   styles: Styles,
   onChange: (styles: Styles) => any,
+  formSettings: FormSettingsType,
 }
 
 const StylesSettings = ({
   styles,
   onChange,
+  formSettings,
 }: Props) => {
   const localStylesRef = useRef(styles);
   const localStyles = localStylesRef.current;
@@ -55,6 +59,7 @@ const StylesSettings = ({
     updated.borderColor = '#313131';
     updated.fontColor = '#313131';
     updated.fontSize = undefined;
+    updated.padding = formSettings.inputPadding;
     updated.inheritFromTheme = newValue;
     onChange(updated);
     localStylesRef.current = updated;
@@ -97,6 +102,18 @@ const StylesSettings = ({
                 checked={localStyles.bold || false}
                 onChange={partial(updateStyles, 'bold')}
                 className="mailpoet-automation-styles-bold-toggle"
+              />
+              <RangeControl
+                label={MailPoet.I18n.t('formSettingsInputPadding')}
+                value={
+                  localStyles.padding !== undefined
+                    ? localStyles.padding
+                    : formSettings.inputPadding
+                }
+                min={0}
+                max={30}
+                allowReset
+                onChange={partial(updateStyles, 'padding')}
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderSize')}
