@@ -170,45 +170,6 @@ class Newsletter extends Model {
     return parent::trash();
   }
 
-  public static function bulkTrash($orm) {
-    // bulk trash queue and notification history associations
-    parent::bulkAction($orm, function($ids) {
-      $children = Newsletter::whereIn('parent_id', $ids)->select('id')->findArray();
-      if ($children) {
-        Newsletter::rawExecute(
-          'UPDATE `' . Newsletter::$_table . '` ' .
-          'SET `deleted_at` = NOW() ' .
-          'WHERE `parent_id` IN (' . join(',', Helpers::flattenArray($ids)) . ')'
-        );
-        ScheduledTask::rawExecute(
-          'UPDATE `' . ScheduledTask::$_table . '` t ' .
-          'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
-          'SET t.`deleted_at` = NOW() ' .
-          'WHERE q.`newsletter_id` IN (' . join(',', array_merge(Helpers::flattenArray($children), $ids)) . ')'
-        );
-        SendingQueue::rawExecute(
-          'UPDATE `' . SendingQueue::$_table . '` ' .
-          'SET `deleted_at` = NOW() ' .
-          'WHERE `newsletter_id` IN (' . join(',', array_merge(Helpers::flattenArray($children), $ids)) . ')'
-        );
-      } else {
-        ScheduledTask::rawExecute(
-          'UPDATE `' . ScheduledTask::$_table . '` t ' .
-          'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
-          'SET t.`deleted_at` = NOW() ' .
-          'WHERE q.`newsletter_id` IN (' . join(',', Helpers::flattenArray($ids)) . ')'
-        );
-        SendingQueue::rawExecute(
-          'UPDATE `' . SendingQueue::$_table . '` ' .
-          'SET `deleted_at` = NOW() ' .
-          'WHERE `newsletter_id` IN (' . join(',', Helpers::flattenArray($ids)) . ')'
-        );
-      }
-    });
-
-    return parent::bulkTrash($orm);
-  }
-
   public function delete() {
     // delete queue, notification history and segment associations
     $children = $this->children()->select('id')->findArray();
@@ -231,32 +192,6 @@ class Newsletter extends Model {
     }
 
     return parent::delete();
-  }
-
-  public static function bulkDelete($orm) {
-    // bulk delete queue, notification history and segment associations
-    parent::bulkAction($orm, function($ids) {
-      $children = Newsletter::whereIn('parent_id', $ids)->select('id')->findArray();
-      if ($children) {
-        $children = Helpers::flattenArray($children);
-        Newsletter::whereIn('parent_id', $ids)->deleteMany();
-        SendingQueue::getTasks()
-          ->whereIn('queues.newsletter_id', array_merge($children, $ids))
-          ->findResultSet()
-          ->delete();
-        SendingQueue::whereIn('newsletter_id', array_merge($children, $ids))->deleteMany();
-        NewsletterSegment::whereIn('newsletter_id', array_merge($children, $ids))->deleteMany();
-      } else {
-        SendingQueue::getTasks()
-          ->whereIn('queues.newsletter_id', $ids)
-          ->findResultSet()
-          ->delete();
-        SendingQueue::whereIn('newsletter_id', $ids)->deleteMany();
-        NewsletterSegment::whereIn('newsletter_id', $ids)->deleteMany();
-      }
-    });
-
-    return parent::bulkDelete($orm);
   }
 
   public function restore() {
@@ -301,52 +236,6 @@ class Newsletter extends Model {
     }
 
     return parent::restore();
-  }
-
-  public static function bulkRestore($orm) {
-    // bulk restore trashed queue and notification history associations
-    parent::bulkAction($orm, function($ids) {
-      $children = Newsletter::whereIn('parent_id', $ids)->select('id')->findArray();
-      if ($children) {
-        Newsletter::whereIn('parent_id', $ids)
-          ->whereNotNull('deleted_at')
-          ->findResultSet()
-          ->set('deleted_at', null)
-          ->save();
-        SendingQueue::getTasks()
-          ->whereIn('queues.newsletter_id', Helpers::flattenArray($children))
-          ->whereNotNull('tasks.deleted_at')
-          ->findResultSet()
-          ->set('deleted_at', null)
-          ->save();
-        SendingQueue::whereIn('newsletter_id', Helpers::flattenArray($children))
-          ->whereNotNull('deleted_at')
-          ->findResultSet()
-          ->set('deleted_at', null)
-          ->save();
-      } else {
-        SendingQueue::getTasks()
-          ->whereIn('queues.newsletter_id', $ids)
-          ->whereNotNull('tasks.deleted_at')
-          ->findResultSet()
-          ->set('deleted_at', null)
-          ->save();
-        // Pause associated running scheduled tasks
-        SendingQueue::getTasks()
-          ->whereIn('queues.newsletter_id', $ids)
-          ->whereNull('tasks.status')
-          ->findResultSet()
-          ->set('status', ScheduledTaskEntity::STATUS_PAUSED)
-          ->save();
-        SendingQueue::whereIn('newsletter_id', $ids)
-          ->whereNotNull('deleted_at')
-          ->findResultSet()
-          ->set('deleted_at', null)
-          ->save();
-      }
-    });
-
-    return parent::bulkRestore($orm);
   }
 
   public function setStatus($status = null) {
