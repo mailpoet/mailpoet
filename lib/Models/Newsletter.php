@@ -2,8 +2,9 @@
 
 namespace MailPoet\Models;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
@@ -134,108 +135,23 @@ class Newsletter extends Model {
   }
 
   public function trash() {
-    // trash queue associations
-    $children = $this->children()->select('id')->findArray();
-    if ($children) {
-      $this->children()->rawExecute(
-        'UPDATE `' . self::$_table . '` ' .
-        'SET `deleted_at` = NOW() ' .
-        'WHERE `parent_id` = ' . $this->id
-      );
-      ScheduledTask::rawExecute(
-        'UPDATE `' . ScheduledTask::$_table . '` t ' .
-        'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
-        'SET t.`deleted_at` = NOW() ' .
-        'WHERE q.`newsletter_id` IN (' . join(',', array_merge(Helpers::flattenArray($children), [$this->id])) . ')'
-      );
-      SendingQueue::rawExecute(
-        'UPDATE `' . SendingQueue::$_table . '` ' .
-        'SET `deleted_at` = NOW() ' .
-        'WHERE `newsletter_id` IN (' . join(',', array_merge(Helpers::flattenArray($children), [$this->id])) . ')'
-      );
-    } else {
-      ScheduledTask::rawExecute(
-        'UPDATE `' . ScheduledTask::$_table . '` t ' .
-        'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
-        'SET t.`deleted_at` = NOW() ' .
-        'WHERE q.`newsletter_id` = ' . $this->id
-      );
-      SendingQueue::rawExecute(
-        'UPDATE `' . SendingQueue::$_table . '` ' .
-        'SET `deleted_at` = NOW() ' .
-        'WHERE `newsletter_id` = ' . $this->id
-      );
-    }
-
-    return parent::trash();
-  }
-
-  public function delete() {
-    // delete queue, notification history and segment associations
-    $children = $this->children()->select('id')->findArray();
-    if ($children) {
-      $children = Helpers::flattenArray($children);
-      $this->children()->deleteMany();
-      SendingQueue::getTasks()
-        ->whereIn('queues.newsletter_id', array_merge($children, [$this->id]))
-        ->findResultSet()
-        ->delete();
-      SendingQueue::whereIn('newsletter_id', array_merge($children, [$this->id]))->deleteMany();
-      NewsletterSegment::whereIn('newsletter_id', array_merge($children, [$this->id]))->deleteMany();
-    } else {
-      SendingQueue::getTasks()
-        ->where('queues.newsletter_id', $this->id)
-        ->findResultSet()
-        ->delete();
-      $this->queue()->deleteMany();
-      $this->segmentRelations()->deleteMany();
-    }
-
-    return parent::delete();
+    $this->save();
+    trigger_error('Calling Newsletter::trash() is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository instead.', E_USER_DEPRECATED);
+    ContainerWrapper::getInstance()->get(NewslettersRepository::class)->bulkTrash([$this->id]);
+    return $this;
   }
 
   public function restore() {
-    // restore trashed queue and notification history associations
-    $children = $this->children()->select('id')->findArray();
-    if ($children) {
-      $this->children()->rawExecute(
-        'UPDATE `' . self::$_table . '` ' .
-        'SET `deleted_at` = null ' .
-        'WHERE `parent_id` = ' . $this->id
-      );
-      ScheduledTask::rawExecute(
-        'UPDATE `' . ScheduledTask::$_table . '` t ' .
-        'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
-        'SET t.`deleted_at` = null ' .
-        'WHERE q.`newsletter_id` IN (' . join(',', array_merge(Helpers::flattenArray($children), [$this->id])) . ')'
-      );
-      SendingQueue::rawExecute(
-        'UPDATE `' . SendingQueue::$_table . '` ' .
-        'SET `deleted_at` = null ' .
-        'WHERE `newsletter_id` IN (' . join(',', array_merge(Helpers::flattenArray($children), [$this->id])) . ')'
-      );
-    } else {
-      ScheduledTask::rawExecute(
-        'UPDATE `' . ScheduledTask::$_table . '` t ' .
-        'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
-        'SET t.`deleted_at` = null ' .
-        'WHERE q.`newsletter_id` = ' . $this->id
-      );
-      // Pause associated running scheduled task
-      ScheduledTask::rawExecute(
-        'UPDATE `' . ScheduledTask::$_table . '` t ' .
-        'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
-        'SET t.`status` = "' . ScheduledTaskEntity::STATUS_PAUSED . '" ' .
-        'WHERE q.`newsletter_id` = ' . $this->id . ' AND t.`status` IS NULL'
-      );
-      SendingQueue::rawExecute(
-        'UPDATE `' . SendingQueue::$_table . '` ' .
-        'SET `deleted_at` = null ' .
-        'WHERE `newsletter_id` = ' . $this->id
-      );
-    }
+    $this->save();
+    trigger_error('Calling Newsletter::restore() is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository instead.', E_USER_DEPRECATED);
+    ContainerWrapper::getInstance()->get(NewslettersRepository::class)->bulkRestore([$this->id]);
+    return $this;
+  }
 
-    return parent::restore();
+  public function delete() {
+    trigger_error('Calling Newsletter::delete() is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository instead.', E_USER_DEPRECATED);
+    ContainerWrapper::getInstance()->get(NewslettersRepository::class)->bulkDelete([$this->id]);
+    return null;
   }
 
   public function setStatus($status = null) {
