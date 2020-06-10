@@ -104,7 +104,8 @@ class Handler {
       $data['sort_by'],
       $data['sort_order'],
       $data['offset'],
-      $data['limit']
+      $data['limit'],
+      $data['selection'] ?? []
     );
   }
 

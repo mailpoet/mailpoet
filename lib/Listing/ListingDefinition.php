@@ -27,6 +27,9 @@ class ListingDefinition {
   /** @var int */
   private $limit;
 
+  /** @var int[] */
+  private $selection;
+
   public function __construct(
     string $group = null,
     array $filters,
@@ -35,7 +38,8 @@ class ListingDefinition {
     string $sortBy,
     string $sortOrder,
     int $offset,
-    int $limit
+    int $limit,
+    array $selection = []
   ) {
     $this->group = $group;
     $this->filters = $filters;
@@ -45,6 +49,7 @@ class ListingDefinition {
     $this->sortOrder = $sortOrder;
     $this->offset = $offset;
     $this->limit = $limit;
+    $this->selection = array_map('intval', $selection);
   }
 
   /** @return string|null */
@@ -79,5 +84,9 @@ class ListingDefinition {
 
   public function getLimit(): int {
     return $this->limit;
+  }
+
+  public function getSelection(): array {
+    return $this->selection;
   }
 }

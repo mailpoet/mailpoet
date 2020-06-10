@@ -352,12 +352,8 @@ class Newsletters extends APIEndpoint {
   }
 
   public function bulkAction($data = []) {
-    if (isset($data['listing']['selection']) && is_array($data['listing']['selection'])) {
-      $ids = array_map('intval', $data['listing']['selection']);
-    } else {
-      $definition = $this->listingHandler->getListingDefinition($data);
-      $ids = $this->newsletterListingRepository->getIds($definition);
-    }
+    $definition = $this->listingHandler->getListingDefinition($data['listing']);
+    $ids = $this->newsletterListingRepository->getActionableIds($definition);
     if ($data['action'] === 'trash') {
       $this->newslettersRepository->bulkTrash($ids);
     } elseif ($data['action'] === 'restore') {
