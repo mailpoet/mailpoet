@@ -17,6 +17,10 @@ use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
+use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
@@ -217,6 +221,31 @@ class NewslettersRepository extends Repository {
     if (count($childrenIds)) {
       $deletedChildrenCount = $this->bulkDelete(array_column($childrenIds, 'id'));
     }
+
+    // Delete statistics data
+    $newsletterStatisticsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE s FROM $newsletterStatisticsTable s
+       WHERE s.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    $statisticsOpensTable = $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE s FROM $statisticsOpensTable s
+       WHERE s.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    $statisticsClicksTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE s FROM $statisticsClicksTable s
+       WHERE s.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+    $statisticsPurchasesTable = $this->entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE s FROM $statisticsPurchasesTable s
+       WHERE s.`newsletter_id` IN (:ids)
+    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
     // Delete newsletter posts
     $postsTable = $this->entityManager->getClassMetadata(NewsletterPostEntity::class)->getTableName();

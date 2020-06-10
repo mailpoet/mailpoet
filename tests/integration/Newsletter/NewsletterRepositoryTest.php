@@ -13,6 +13,10 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
+use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
@@ -88,7 +92,6 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     expect($newsletter1->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
     expect($newsletter2->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
 
-
     // Should restore sending queue and task
     $newsletter1Queue = $newsletter1->getLatestQueue();
     assert($newsletter1Queue instanceof SendingQueueEntity);
@@ -141,6 +144,13 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $optionValue = $this->createNewsletterOption($newsletter2Child1, $optionField, 'value');
     $newsletterPost = $this->createNewsletterPost($newsletter2, 1);
 
+    $subscriber = $scheduledTask1Subscriber->getSubscriber();
+    assert($subscriber instanceof SubscriberEntity);
+    $statisticsNewsletter = $this->createNewsletterStatistics($newsletter1, $newsletter1Queue, $subscriber);
+    $statisticsOpen = $this->createOpenStatistics($newsletter1, $newsletter1Queue, $subscriber);
+    $statisticsClick = $this->createClickStatistics($newsletter1, $newsletter1Queue, $subscriber, $newsletter1Link);
+    $statisticsPurchase = $this->createPurchaseStatistics($newsletter1, $newsletter1Queue, $statisticsClick, $subscriber);
+
     // Trash
     $this->repository->bulkTrash([$newsletter1->getId(), $newsletter2->getId()]);
     // Delete
@@ -162,6 +172,10 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->detach($childLink);
     $this->entityManager->detach($optionValue);
     $this->entityManager->detach($newsletterPost);
+    $this->entityManager->detach($statisticsNewsletter);
+    $this->entityManager->detach($statisticsOpen);
+    $this->entityManager->detach($statisticsClick);
+    $this->entityManager->detach($statisticsPurchase);
 
     // Check they were all deleted
     // Newsletters
@@ -198,6 +212,12 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
     // Newsletter post
     expect($this->entityManager->find(NewsletterPostEntity::class, $newsletterPost->getId()))->null();
+
+    // Statistics data
+    expect($this->entityManager->find(StatisticsNewsletterEntity::class, $statisticsNewsletter->getId()))->null();
+    expect($this->entityManager->find(StatisticsOpenEntity::class, $statisticsOpen->getId()))->null();
+    expect($this->entityManager->find(StatisticsClickEntity::class, $statisticsClick->getId()))->null();
+    expect($this->entityManager->find(StatisticsWooCommercePurchaseEntity::class, $statisticsPurchase->getId()))->null();
   }
 
   public function _after() {
@@ -287,6 +307,45 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     return $post;
   }
 
+  private function createNewsletterStatistics(NewsletterEntity $newsletter, SendingQueueEntity $queue, SubscriberEntity $subscriber): StatisticsNewsletterEntity {
+    $statisticsNewsletter = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber);
+    $this->entityManager->persist($statisticsNewsletter);
+    $this->entityManager->flush();
+    return $statisticsNewsletter;
+  }
+
+  private function createOpenStatistics(NewsletterEntity $newsletter, SendingQueueEntity $queue, SubscriberEntity $subscriber): StatisticsOpenEntity {
+    $statistics = new StatisticsOpenEntity($newsletter, $queue, (int)$subscriber->getId());
+    $this->entityManager->persist($statistics);
+    $this->entityManager->flush();
+    return $statistics;
+  }
+
+  private function createClickStatistics(
+    NewsletterEntity $newsletter,
+    SendingQueueEntity $queue,
+    SubscriberEntity $subscriber,
+    NewsletterLinkEntity $link
+  ): StatisticsClickEntity {
+    $statistics = new StatisticsClickEntity($newsletter, $queue, (int)$subscriber->getId(), $link, 1);
+    $this->entityManager->persist($statistics);
+    $this->entityManager->flush();
+    return $statistics;
+  }
+
+  private function createPurchaseStatistics(
+    NewsletterEntity $newsletter,
+    SendingQueueEntity $queue,
+    StatisticsClickEntity $click,
+    SubscriberEntity $subscriber
+  ): StatisticsWooCommercePurchaseEntity {
+    $statistics = new StatisticsWooCommercePurchaseEntity($newsletter, $queue, $click, 1, 'EUR', 100);
+    $statistics->setSubscriber($subscriber);
+    $this->entityManager->persist($statistics);
+    $this->entityManager->flush();
+    return $statistics;
+  }
+
   private function cleanup() {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
@@ -300,5 +359,9 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterOptionEntity::class);
     $this->truncateEntity(NewsletterPostEntity::class);
+    $this->truncateEntity(StatisticsWooCommercePurchaseEntity::class);
+    $this->truncateEntity(StatisticsOpenEntity::class);
+    $this->truncateEntity(StatisticsClickEntity::class);
+    $this->truncateEntity(StatisticsNewsletterEntity::class);
   }
 }
