@@ -54,17 +54,13 @@ const Tabs = ({
 
   // when activeKey changed by a prop let's reflect that in the state
   useEffect(() => {
-    if (activeTab !== activeKey) {
-      setIsOpen(false);
-      setActiveTab(activeKey);
-      onSwitch(activeKey);
-    }
+    switchTab(activeKey);
   }, [activeKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const validChildren = validateChildren(children);
   const activeChild = getActiveChild(activeTab, validChildren);
 
-  const onClick = (tabKey: string) => {
+  const switchTab = (tabKey: string) => {
     setIsOpen(false);
     if (tabKey !== activeTab) {
       setActiveTab(tabKey);
@@ -94,7 +90,7 @@ const Tabs = ({
               className={classnames('mailpoet-tab', { 'mailpoet-tab-active': child === activeChild })}
               type="button"
               role="tab"
-              onClick={() => onClick(child.key.toString())}
+              onClick={() => switchTab(child.key.toString())}
             >
               {title(child.props)}
             </button>
