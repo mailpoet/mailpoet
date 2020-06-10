@@ -74,3 +74,16 @@ h2 {
     line-height: 1.2;
   }
 }
+
+.mailpoet_toolbar_item {
+  align-items: center;
+  background-color: white;
+  border-bottom: 1px solid #b5bcc2;
+  border-top: 1px solid #b5bcc2;
+  display: flex;
+  padding-left: $grid-gap / 2;
+
+  .mailpoet-font-family-select {
+    width: $grid-column-small;
+  }
+}

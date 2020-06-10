@@ -21,12 +21,14 @@ type Props = {
   onChange: (value: string|undefined) => any,
   value?: string,
   name: string,
+  hideLabelFromVision?: boolean
 }
 
 const FontFamilySettings = ({
   onChange,
   value,
   name,
+  hideLabelFromVision = false,
 }: Props) => {
   const customFonts = useSelect(
     (select) => select('mailpoet-form-editor').getAllCustomFonts(),
@@ -92,6 +94,7 @@ const FontFamilySettings = ({
       value={selectedValue}
       label={name}
       className="mailpoet-font-family-select"
+      hideLabelFromVision={hideLabelFromVision}
     />
   );
 };
