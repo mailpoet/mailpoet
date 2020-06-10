@@ -7,6 +7,7 @@ import Editor from './components/editor.jsx';
 import initStore from './store/store.jsx';
 import { initBlocks } from './blocks/blocks.jsx';
 import initHooks from './hooks';
+import initRichText from './rich_text/init.ts';
 
 const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
@@ -26,6 +27,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initHooks();
     initStore();
     initBlocks();
+    initRichText();
     ReactDOM.render(
       <React.StrictMode>
         <App />
