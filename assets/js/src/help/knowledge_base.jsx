@@ -1,14 +1,9 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-import Tabs from './tabs.jsx';
-
 function KnowledgeBase() {
   return (
-    <div>
-
-      <Tabs tab="knowledgeBase" />
-
+    <>
       <p>{MailPoet.I18n.t('knowledgeBaseIntro')}</p>
       <ul>
         <li><a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/category/116-common-problems">Common Problems</a></li>
@@ -21,7 +16,7 @@ function KnowledgeBase() {
         <li><a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/category/121-subscribers-and-lists">Subscribers and Lists</a></li>
       </ul>
       <a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/" className="button button-primary">{MailPoet.I18n.t('knowledgeBaseButton')}</a>
-    </div>
+    </>
   );
 }
 

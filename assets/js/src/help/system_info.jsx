@@ -1,7 +1,6 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
-import Tabs from './tabs.jsx';
 
 function handleFocus(event) {
   event.target.select();
@@ -29,16 +28,13 @@ function printData(data) {
 function SystemInfo() {
   const systemInfoData = window.systemInfoData;
   return (
-    <div>
-
-      <Tabs tab="systemInfo" />
-
-      <div className="mailpoet_notice notice inline" style={{ marginTop: '1em' }}>
+    <>
+      <div className="mailpoet_notice notice inline">
         <p>{MailPoet.I18n.t('systemInfoIntro')}</p>
       </div>
 
       {printData(systemInfoData)}
-    </div>
+    </>
   );
 }
 
