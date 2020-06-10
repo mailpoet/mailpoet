@@ -36,7 +36,11 @@ abstract class ListingRepository {
     return (int)$queryBuilder->getQuery()->getSingleScalarResult();
   }
 
-  public function getIds(ListingDefinition $definition): array {
+  public function getActionableIds(ListingDefinition $definition): array {
+    $ids = $definition->getSelection();
+    if (!empty($ids)) {
+      return $ids;
+    }
     $queryBuilder = clone $this->queryBuilder;
     $this->applyFromClause($queryBuilder);
     $this->applyConstraints($queryBuilder, $definition);
