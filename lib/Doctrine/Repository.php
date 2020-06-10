@@ -87,6 +87,13 @@ abstract class Repository {
     $this->entityManager->remove($entity);
   }
 
+  /**
+   * @param T $entity
+   */
+  public function refresh($entity) {
+    $this->entityManager->refresh($entity);
+  }
+
   public function flush() {
     $this->entityManager->flush();
   }

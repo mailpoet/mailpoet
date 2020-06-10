@@ -211,6 +211,9 @@ class NewslettersRepository extends Repository {
   }
 
   public function bulkDelete(array $ids) {
+    if (empty($ids)) {
+      return 0;
+    }
     $this->entityManager->getConnection()->beginTransaction();
     try {
       // Delete children
