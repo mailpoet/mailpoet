@@ -1,4 +1,5 @@
-.mailpoet-tab {
+.mailpoet-tab,
+.mailpoet-tabs-title {
   align-items: center;
   background: none;
   border: 1px solid transparent;
@@ -50,6 +51,10 @@
   }
 }
 
+.mailpoet-tabs-title {
+  display: none;
+}
+
 .mailpoet-tab-content {
   background: $color-white;
   border: 1px solid $color-tertiary-light;
@@ -58,4 +63,47 @@
 
   > *:first-child { margin-top: 0; }
   > *:last-child { margin-bottom: 0; }
+}
+
+@include respond-to(small-screen) {
+  .mailpoet-tabs-title {
+    background: $color-white;
+    border: 1px solid $color-tertiary-light;
+    border-bottom: none;
+    border-radius: 0;
+    display: flex;
+    font-weight: bold;
+    justify-content: flex-start;
+    margin-bottom: 0;
+    width: 100%;
+
+    &:after {
+      content: '▾';
+      margin-left: auto;
+    }
+
+    .mailpoet-tabs-is-open > &:after {
+      transform: rotate(180deg);
+    }
+  }
+
+  .mailpoet-tab {
+    background: $color-white;
+    border: 1px solid $color-tertiary-light;
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .mailpoet-tabs-wrapper {
+    display: none;
+
+    .mailpoet-tabs-is-open > & {
+      display: block;
+    }
+  }
+
+  .mailpoet-tab-content {
+    border-radius: 0;
+  }
 }
