@@ -59,8 +59,8 @@ class ViewInBrowserRenderer {
     }
     $shortcodes = new Shortcodes(
       $newsletter,
-      $subscriber,
-      $queue,
+      $subscriber ?: false,
+      $queue ?: false,
       $wpUserPreview
     );
     $renderedNewsletter = $shortcodes->replace($newsletterBody);
