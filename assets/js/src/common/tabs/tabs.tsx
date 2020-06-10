@@ -50,10 +50,12 @@ const Tabs = ({
   children,
 }: Props) => {
   const [activeTab, setActiveTab] = useState(activeKey);
+  const [isOpen, setIsOpen] = useState(false);
 
   // when activeKey changed by a prop let's reflect that in the state
   useEffect(() => {
     if (activeTab !== activeKey) {
+      setIsOpen(false);
       setActiveTab(activeKey);
       onSwitch(activeKey);
     }
@@ -63,14 +65,27 @@ const Tabs = ({
   const activeChild = getActiveChild(activeTab, validChildren);
 
   const onClick = (tabKey: string) => {
+    setIsOpen(false);
     if (tabKey !== activeTab) {
       setActiveTab(tabKey);
       onSwitch(tabKey);
     }
   };
 
+  const title = (props) => (
+    <>
+      {props.iconStart}
+      {props.title && <span>{props.title}</span>}
+      {props.iconEnd}
+    </>
+  );
+
   return (
-    <div className="mailpoet-tabs">
+    <div className={classnames('mailpoet-tabs', { 'mailpoet-tabs-is-open': isOpen })}>
+      <button type="button" className="mailpoet-tabs-title" onClick={() => setIsOpen(!isOpen)}>
+        {title(activeChild.props)}
+      </button>
+
       <div className="mailpoet-tabs-wrapper">
         {
           validChildren.map((child: React.ReactElement) => (
@@ -81,9 +96,7 @@ const Tabs = ({
               role="tab"
               onClick={() => onClick(child.key.toString())}
             >
-              {child.props.iconStart}
-              {child.props.title && <span>{child.props.title}</span>}
-              {child.props.iconEnd}
+              {title(child.props)}
             </button>
           ))
         }
