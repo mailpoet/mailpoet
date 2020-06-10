@@ -42,6 +42,7 @@ use MailPoetVendor\Idiorm\ORM;
 
 class NewslettersTest extends \MailPoetTest {
   public $postNotification;
+  /** @var Newsletter */
   public $newsletter;
   /** @var Newsletters */
   private $endpoint;
@@ -49,9 +50,13 @@ class NewslettersTest extends \MailPoetTest {
   /** @var CronHelper */
   private $cronHelper;
 
+  /** @var NewslettersRepository */
+  private $newsletterRepository;
+
   public function _before() {
     parent::_before();
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->newsletterRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
     $this->endpoint = Stub::copy(
       ContainerWrapper::getInstance()->get(Newsletters::class),
       [
@@ -319,7 +324,7 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItCanRestoreANewsletter() {
-    $this->newsletter->trash();
+    $this->newsletterRepository->bulkTrash([$this->newsletter->id]);
 
     $trashedNewsletter = Newsletter::findOne($this->newsletter->id);
     expect($trashedNewsletter->deletedAt)->notNull();

@@ -62,6 +62,8 @@ class SendingQueueTest extends \MailPoetTest {
   private $statsNotificationsWorker;
   /** @var LoggerFactory */
   private $loggerFactory;
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
 
   public function _before() {
     parent::_before();
@@ -118,6 +120,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->cronHelper
     );
+    $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
   }
 
   private function getDirectUnsubscribeURL() {
@@ -261,8 +264,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($queue)->notEquals(false);
 
     // delete newsletter
-    Newsletter::findOne($this->newsletter->id)
-      ->delete();
+    $this->newslettersRepository->bulkDelete([$this->newsletter->id]);
 
     // queue no longer exists
     $this->sendingQueueWorker->process();

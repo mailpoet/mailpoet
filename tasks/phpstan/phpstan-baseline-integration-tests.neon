@@ -251,11 +251,6 @@ parameters:
 			path: ../../tests/integration/Cron/Workers/SendingQueue/MigrationTest.php
 
 		-
-			message: "#^Cannot call method delete\\(\\) on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 1
-			path: ../../tests/integration/Cron/Workers/SendingQueue/SendingQueueTest.php
-
-		-
 			message: "#^Cannot access property \\$status on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
 			count: 5
 			path: ../../tests/integration/Cron/Workers/SendingQueue/SendingQueueTest.php
