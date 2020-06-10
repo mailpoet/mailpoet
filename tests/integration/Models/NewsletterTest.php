@@ -22,6 +22,7 @@ class NewsletterTest extends \MailPoetTest {
   public $sendingQueue;
   public $segment2;
   public $segment1;
+  /** @var Newsletter */
   public $newsletter;
 
   public function _before() {
@@ -92,6 +93,7 @@ class NewsletterTest extends \MailPoetTest {
 
   public function testItUpdatesTheUpdatedAtOnUpdate() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $createdAt = $newsletter->createdAt;
 
     sleep(1);
@@ -170,7 +172,7 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItCannotSetAnEmptyDeletedAt() {
-    $this->newsletter->deleted_at = '';
+    $this->newsletter->deletedAt = '';
     $newsletter = $this->newsletter->save();
     expect($newsletter->deletedAt)->equals('NULL');
   }
@@ -299,9 +301,11 @@ class NewsletterTest extends \MailPoetTest {
   public function testItCanBeRestored() {
     $this->newsletter->status = Newsletter::STATUS_SENT;
     $this->newsletter->trash();
-    expect($this->newsletter->deleted_at)->notNull();
+    $this->newsletter = $this->reloadNewsletter($this->newsletter);
+    expect($this->newsletter->deletedAt)->notNull();
     $this->newsletter->restore();
-    expect($this->newsletter->deleted_at)->equals('NULL');
+    $this->newsletter = $this->reloadNewsletter($this->newsletter);
+    expect($this->newsletter->deletedAt)->null();
     expect($this->newsletter->status)->equals(Newsletter::STATUS_SENT);
   }
 
@@ -495,6 +499,7 @@ class NewsletterTest extends \MailPoetTest {
     $data = ['subject' => 'duplicate newsletter'];
     $duplicateNewsletter = $this->newsletter->duplicate($data);
     $duplicateNewsletter = Newsletter::findOne($duplicateNewsletter->id);
+    assert($duplicateNewsletter instanceof Newsletter);
     // hash is different
     expect($duplicateNewsletter->hash)->notEquals($this->newsletter->hash);
     expect(strlen($duplicateNewsletter->hash))->equals(Security::HASH_LENGTH);
@@ -593,6 +598,12 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter = $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
     expect($newsletter->status)->equals(Newsletter::STATUS_DRAFT);
     expect($newsletter->getErrors())->notEmpty();
+  }
+
+  private function reloadNewsletter(Newsletter $newsletter): Newsletter {
+    $newsletter = Newsletter::findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
+    return $newsletter;
   }
 
   public function _after() {

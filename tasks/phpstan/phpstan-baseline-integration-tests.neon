@@ -482,7 +482,7 @@ parameters:
 
 		-
 			message: "#^Cannot access property \\$subject on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 5
+			count: 3
 			path: ../../tests/integration/Models/NewsletterTest.php
 
 		-
@@ -492,7 +492,7 @@ parameters:
 
 		-
 			message: "#^Cannot access property \\$body on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 2
+			count: 1
 			path: ../../tests/integration/Models/NewsletterTest.php
 
 		-
@@ -502,46 +502,21 @@ parameters:
 
 		-
 			message: "#^Cannot access property \\$createdAt on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 6
+			count: 4
 			path: ../../tests/integration/Models/NewsletterTest.php
 
 		-
 			message: "#^Cannot access property \\$updatedAt on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 3
-			path: ../../tests/integration/Models/NewsletterTest.php
-
-		-
-			message: "#^Cannot call method save\\(\\) on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 1
-			path: ../../tests/integration/Models/NewsletterTest.php
-
-		-
-			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 3
-			path: ../../tests/integration/Models/NewsletterTest.php
-
-		-
-			message: "#^Cannot access property \\$event on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 1
-			path: ../../tests/integration/Models/NewsletterTest.php
-
-		-
-			message: "#^Cannot access property \\$hash on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
 			count: 2
 			path: ../../tests/integration/Models/NewsletterTest.php
 
 		-
-			message: "#^Cannot access property \\$status on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 1
+			message: "#^Cannot access property \\$id on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
+			count: 2
 			path: ../../tests/integration/Models/NewsletterTest.php
 
 		-
-			message: "#^Cannot access property \\$sentAt on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
-			count: 1
-			path: ../../tests/integration/Models/NewsletterTest.php
-
-		-
-			message: "#^Cannot access property \\$deletedAt on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
+			message: "#^Cannot access property \\$event on MailPoet\\\\Models\\\\Newsletter\\|false\\.$#"
 			count: 1
 			path: ../../tests/integration/Models/NewsletterTest.php
 
