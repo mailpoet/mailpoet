@@ -10,7 +10,6 @@ function PitchMss(props) {
     <div className="mailpoet_congratulate_success mailpoet_congratulate_mss_pitch">
       <WelcomeWizardStepLayoutBody
         illustrationUrl={props.MSSPitchIllustrationUrl}
-        displayProgressBar={false}
       >
         <div className="mailpoet_welcome_wizard_step_content">
           <h1>{MailPoet.I18n.t('congratulationsMSSPitchHeader')}</h1>

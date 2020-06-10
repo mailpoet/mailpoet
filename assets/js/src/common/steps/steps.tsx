@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import range from 'lodash/range';
 import React from 'react';
 import classNames from 'classnames';
 
@@ -10,7 +10,7 @@ type Props = {
 
 const Steps = ({ count, current, titles }: Props) => (
   <div className="mailpoet-steps">
-    {_.range(1, count + 1).map((i) => (
+    {range(1, count + 1).map((i) => (
       <div
         key={i}
         className={classNames('mailpoet-step', {
