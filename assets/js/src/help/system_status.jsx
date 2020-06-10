@@ -3,7 +3,6 @@ import React from 'react';
 import ReactStringReplace from 'react-string-replace';
 import CronStatus from './cron_status.jsx';
 import QueueStatus from './queue_status.jsx';
-import Tabs from './tabs.jsx';
 
 function renderStatusMessage(status, error, link, linkBeacon, additionalInfo) {
   const noticeType = (status) ? 'success' : 'error';
@@ -63,16 +62,15 @@ function SystemStatus() {
   const systemStatusData = window.systemStatusData;
 
   return (
-    <div>
-      <Tabs tab="systemStatus" />
-      <div className="mailpoet_notice notice inline" style={{ marginTop: '1em' }}>
+    <>
+      <div className="mailpoet_notice notice inline">
         <p>{systemStatusData.mss.enabled ? MailPoet.I18n.t('systemStatusIntroCronMSS') : MailPoet.I18n.t('systemStatusIntroCron')}</p>
       </div>
       {renderCronSection(systemStatusData)}
       {renderMSSSection(systemStatusData)}
       <CronStatus status_data={systemStatusData.cronStatus} />
       <QueueStatus status_data={systemStatusData.queueStatus} />
-    </div>
+    </>
   );
 }
 export default SystemStatus;

@@ -8,7 +8,7 @@ import TasksListDataRow from './tasks_list/tasks_list_data_row.jsx';
 const QueueStatus = (props) => {
   const status = props.status_data;
   return (
-    <div>
+    <>
       <h4>{MailPoet.I18n.t('systemStatusQueueTitle')}</h4>
       <KeyValueTable
         max_width="400px"
@@ -54,7 +54,7 @@ const QueueStatus = (props) => {
 
       <h5>{MailPoet.I18n.t('completedTasks')}</h5>
       <TasksList tasks={status.latestTasks.filter((task) => (task.status === 'completed'))} />
-    </div>
+    </>
   );
 };
 
