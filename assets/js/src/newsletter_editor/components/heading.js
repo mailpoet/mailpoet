@@ -39,7 +39,9 @@ App.on('start', function (StartApp) { // eslint-disable-line func-names
     });
     MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-preheader'), {
       tooltipId: 'tooltip-designer-preheader-ti',
-      tooltip: MailPoet.I18n.t('helpTooltipDesignerPreheader'),
+      tooltip: MailPoet.I18n.t('helpTooltipDesignerPreheader')
+        + ' '
+        + MailPoet.I18n.t('helpTooltipDesignerPreheaderWarning'),
     });
   }
 });
