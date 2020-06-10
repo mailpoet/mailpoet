@@ -26,8 +26,8 @@ class ManageListsCest {
     $i->click('New List');
     $i->click('Back');
     $i->click('New List');
-    $i->fillField('input.regular-text', $newListTitle);
-    $i->fillField('textarea.regular-text', $newListDesc);
+    $i->fillField('Name', $newListTitle);
+    $i->fillField('Description', $newListDesc);
     $i->click('Save');
     $i->waitForText('WordPress Users', 5, '[data-automation-id="listing_item_1"]');
     $i->see($newListTitle, '[data-automation-id="listing_item_4"]');
@@ -52,8 +52,8 @@ class ManageListsCest {
 
     // Edit existing list
     $i->clickItemRowActionByItemName($newListTitle, 'Edit');
-    $i->fillField('input.regular-text', $editedListTitle);
-    $i->fillField('textarea.regular-text', $editedListDesc);
+    $i->fillField('Name', $editedListTitle);
+    $i->fillField('Description', $editedListDesc);
     $i->click('Save');
     $i->waitForText('WordPress Users', 5, '[data-automation-id="listing_item_1"]');
     $i->see($editedListTitle, '[data-automation-id="listing_item_4"]');
