@@ -12,7 +12,7 @@ import { useSelect } from '@wordpress/data';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 import StylesSettings from './styles_settings';
-import { FormSettingsType } from '../../components/form_settings/form_settings';
+import { FormSettingsType } from '../../store/form_data_types';
 
 const SubmitEdit = ({ attributes, setAttributes }) => {
   const settings: FormSettingsType = useSelect(
