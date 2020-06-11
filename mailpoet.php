@@ -7,7 +7,7 @@
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
  * Author URI: http://www.mailpoet.com
- * Requires at least: 4.7
+ * Requires at least: 5.2
  * Tested up to: 5.4
  *
  * @package WordPress
