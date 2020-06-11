@@ -81,7 +81,7 @@ const RoutedTabs = ({
             </RouterAwareTabs>
           )}
         />
-        <Redirect to={`/${activeKey}`} />
+        <Redirect to={`${routerPrefix}${activeKey}`} />
       </Switch>
     </>
   );
