@@ -126,6 +126,15 @@ class NewslettersRepository extends Repository {
     if (empty($ids)) {
       return 0;
     }
+    // Fetch children id for trashing
+    $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.parent IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()->getScalarResult();
+
+    $ids = array_merge($ids, array_column($childrenIds, 'id'));
+
     $this->entityManager->createQueryBuilder()
       ->update(NewsletterEntity::class, 'n')
       ->set('n.deletedAt', 'CURRENT_TIMESTAMP()')
@@ -150,19 +159,21 @@ class NewslettersRepository extends Repository {
        WHERE q.`newsletter_id` IN (:ids)
     ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
-    // Trash children
-    $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
-      ->from(NewsletterEntity::class, 'n')
-      ->where('n.parent IN (:ids)')
-      ->setParameter('ids', $ids)
-      ->getQuery()->getScalarResult();
-    return count($ids) + $this->bulkTrash(array_column($childrenIds, 'id'));
+    return count($ids);
   }
 
   public function bulkRestore(array $ids) {
     if (empty($ids)) {
       return 0;
     }
+    // Fetch children ids to restore
+    $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.parent IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()->getScalarResult();
+    $ids = array_merge($ids, array_column($childrenIds, 'id'));
+
     $this->entityManager->createQueryBuilder()->update(NewsletterEntity::class, 'n')
       ->set('n.deletedAt', ':deletedAt')
       ->where('n.id IN (:ids)')
@@ -201,13 +212,7 @@ class NewslettersRepository extends Repository {
        WHERE q.`newsletter_id` IN (:ids)
     ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
-    // Restore children
-    $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
-      ->from(NewsletterEntity::class, 'n')
-      ->where('n.parent IN (:ids)')
-      ->setParameter('ids', $ids)
-      ->getQuery()->getScalarResult();
-    return count($ids) + $this->bulkRestore(array_column($childrenIds, 'id'));
+    return count($ids);
   }
 
   public function bulkDelete(array $ids) {
@@ -216,16 +221,13 @@ class NewslettersRepository extends Repository {
     }
     $this->entityManager->getConnection()->beginTransaction();
     try {
-      // Delete children
+      // Fetch children ids for deleting
       $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
         ->from(NewsletterEntity::class, 'n')
         ->where('n.parent IN (:ids)')
         ->setParameter('ids', $ids)
         ->getQuery()->getScalarResult();
-      $deletedChildrenCount = 0;
-      if (count($childrenIds)) {
-        $deletedChildrenCount = $this->bulkDelete(array_column($childrenIds, 'id'));
-      }
+      $ids = array_merge($ids, array_column($childrenIds, 'id'));
       // Delete statistics data
       $newsletterStatisticsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
       $this->entityManager->getConnection()->executeUpdate("
@@ -317,7 +319,7 @@ class NewslettersRepository extends Repository {
         ->setParameter('ids', $ids)
         ->getQuery()->execute();
       $this->entityManager->getConnection()->commit();
-      return $deletedChildrenCount + count($ids);
+      return count($ids);
     } catch (\Exception $e) {
       $this->entityManager->getConnection()->rollBack();
       throw $e;
