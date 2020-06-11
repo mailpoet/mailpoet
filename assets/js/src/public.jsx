@@ -61,6 +61,13 @@ jQuery(($) => {
       const inputNewFontFamily = `"${inputFontFamily}", ${inputOriginalFontFamily}`;
       element.css('font-family', inputNewFontFamily);
     });
+
+    formDiv.find('.mailpoet-has-font').each(function applyFontFamilyToRichText() {
+      const element = $(this);
+      const spanOriginalFontFamily = element.css('font-family');
+      const spanNewFontFamily = `"${spanOriginalFontFamily}", ${originalFontFamily}`;
+      element.css('font-family', spanNewFontFamily);
+    });
   }
 
   function showForm(formDiv, showOverlay = false) {
