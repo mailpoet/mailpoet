@@ -12,7 +12,7 @@ const settings = {
   name,
   title,
   tagName: 'span',
-  className: 'has-font',
+  className: 'mailpoet-has-font',
   attributes: {
     style: 'style',
     font: 'data-font',
