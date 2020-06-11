@@ -5,6 +5,7 @@ type Props = {
   iconStart?: JSX.Element,
   iconEnd?: JSX.Element,
   route?: string,
+  automationId?: string,
   children: React.ReactNode
 };
 
@@ -13,6 +14,7 @@ const Tab = ({
   iconStart = null,
   iconEnd = null,
   route = null,
+  automationId = null,
   children,
 }: Props) => (
   <>

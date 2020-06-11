@@ -91,6 +91,7 @@ const Tabs = ({
               type="button"
               role="tab"
               onClick={() => switchTab(child.key.toString())}
+              data-automation-id={child.props.automationId}
             >
               {title(child.props)}
             </button>
