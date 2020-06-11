@@ -11,15 +11,22 @@ import {
 
 import Tabs, { Props as TabProps } from './tabs';
 
-const RouterAwareTabs = (props: TabProps) => {
+const RouterAwareTabs = (props: TabProps & {
+  keyPathMap: { [key: string]: string },
+  routerPrefix?: string,
+}) => {
   const match = useRouteMatch();
   const history = useHistory();
 
+  const activeKey = Object.keys(props.keyPathMap).find(
+    (key) => props.keyPathMap[key] === match.path
+  );
+
   return (
     <Tabs
-      activeKey={match.path.replace(/^\//, '')}
+      activeKey={activeKey}
       onSwitch={(tabKey) => {
-        const path = `/${tabKey}`;
+        const path = `${props.routerPrefix}${tabKey}`;
         if (history.location && path !== history.location.pathname) {
           history.push(path);
         }
@@ -33,20 +40,24 @@ const RouterAwareTabs = (props: TabProps) => {
 
 type Props = TabProps & {
   routerType?: 'hash' | 'browser',
+  routerPrefix?: string,
 };
 
 const RoutedTabs = ({
   routerType = 'hash',
+  routerPrefix = '/',
   activeKey,
   onSwitch = () => {},
   children,
 }: Props) => {
-  const keys = React.Children.map(
-    children,
-    (child: React.ReactElement) => (child ? child.key : null)
-  ).filter((key) => key);
+  const keyPathMap: { [key: string]: string } = {};
+  React.Children.map(children, (child: React.ReactElement) => {
+    if (child) {
+      keyPathMap[child.key] = `${routerPrefix}${child.props.route || child.key}`;
+    }
+  });
 
-  if (!keys.includes(activeKey)) {
+  if (!keyPathMap[activeKey]) {
     throw new Error(`Child <Tab> with key ${activeKey} not found in <RoutedTabs> children`);
   }
 
@@ -58,9 +69,16 @@ const RoutedTabs = ({
       <Switch>
         <Route
           exact
-          path={keys.map((key: string) => `/${key}`)}
+          path={Object.values(keyPathMap)}
           render={() => (
-            <RouterAwareTabs activeKey={activeKey} onSwitch={onSwitch}>{children}</RouterAwareTabs>
+            <RouterAwareTabs
+              activeKey={activeKey}
+              onSwitch={onSwitch}
+              keyPathMap={keyPathMap}
+              routerPrefix={routerPrefix}
+            >
+              {children}
+            </RouterAwareTabs>
           )}
         />
         <Redirect to={`/${activeKey}`} />
