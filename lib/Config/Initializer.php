@@ -72,6 +72,9 @@ class Initializer {
   /** @var \MailPoet\PostEditorBlocks\PostEditorBlock */
   private $postEditorBlock;
 
+  /** @var Localizer */
+  private $localizer;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   public function __construct(
@@ -90,7 +93,8 @@ class Initializer {
     DatabaseInitializer $databaseInitializer,
     WCTransactionalEmails $wcTransactionalEmails,
     PostEditorBlock $postEditorBlock,
-    WooCommerceHelper $wcHelper
+    WooCommerceHelper $wcHelper,
+    Localizer $localizer
   ) {
       $this->rendererFactory = $rendererFactory;
       $this->accessControl = $accessControl;
@@ -108,6 +112,7 @@ class Initializer {
       $this->wcTransactionalEmails = $wcTransactionalEmails;
       $this->wcHelper = $wcHelper;
       $this->postEditorBlock = $postEditorBlock;
+      $this->localizer = $localizer;
   }
 
   public function init() {
@@ -254,8 +259,7 @@ class Initializer {
   }
 
   public function setupLocalizer() {
-    $localizer = new Localizer();
-    $localizer->init();
+    $this->localizer->init();
   }
 
   public function setupCapabilities() {
@@ -297,8 +301,7 @@ class Initializer {
   public function setupUserLocale() {
     if (get_user_locale() === WPFunctions::get()->getLocale()) return;
     WPFunctions::get()->unloadTextdomain(Env::$pluginName);
-    $localizer = new Localizer();
-    $localizer->init();
+    $this->localizer->init();
   }
 
   public function setupPages() {
