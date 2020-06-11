@@ -84,6 +84,35 @@ class SubscriberManageImportExportCest {
     $i->seeNoJSErrors();
   }
 
+  public function importListViaPasteBox(\AcceptanceTester $i) {
+    $i->wantTo('Import a subscriber list via paste box');
+    $i->login();
+    $i->amOnMailPoetPage ('Subscribers');
+    $i->click('[data-automation-id="import-subscribers-button"]');
+    $this->proceedThroughClearout($i);
+    $this->pasteSimpleList($i);
+    $i->click('[data-automation-id="import-next-step"]');
+    $this->chooseListAndConfirm($i);
+    $i->see('3 subscribers added to "My First List".');
+    $i->click('View subscribers');
+    $i->searchFor('mailpoet1@yopmail.com');
+    $i->waitForText('mailpoet1@yopmail.com');
+    $i->searchFor('mailpoet2@yopmail.com');
+    $i->waitForText('mailpoet2@yopmail.com');
+    $i->searchFor('mailpoet3@yopmail.com');
+    $i->waitForText('mailpoet3@yopmail.com');
+    $i->seeNoJSErrors();
+  }
+
+  private function pasteSimpleList(\AcceptanceTester $i) {
+    $i->waitForText('Paste the data into a text box');
+    $i->click('[data-automation-id="import-paste-method"]');
+    $i->fillField('textarea#paste_input',
+    'mailpoet1@yopmail.com, John, Doe
+    mailpoet2@yopmail.com, Jane, Doe
+    mailpoet3@yopmail.com, James, Doe');
+  }
+
   private function uploadCsvFile(\AcceptanceTester $i, $fileName = 'MailPoetImportList.csv') {
     $i->waitForText('Upload a file');
     $i->click('[data-automation-id="import-csv-method"]');
