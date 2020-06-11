@@ -10,7 +10,6 @@ import { partial } from 'lodash';
 
 import ColorSettings from 'form_editor/components/color_settings';
 import FontSizeSetting from 'form_editor/components/font_size_settings';
-import { FormSettingsType } from 'form_editor/components/form_settings/form_settings';
 import FontFamilySettings from '../../components/font_family_settings';
 
 type Styles = {
@@ -30,13 +29,15 @@ type Styles = {
 type Props = {
   styles: Styles,
   onChange: (styles: Styles) => any,
-  formSettings: FormSettingsType,
+  formInputPadding: number,
+  formFontFamily: string,
 }
 
 const StylesSettings = ({
   styles,
   onChange,
-  formSettings,
+  formInputPadding,
+  formFontFamily,
 }: Props) => {
   const localStylesRef = useRef(styles);
   const localStyles = localStylesRef.current;
@@ -61,7 +62,7 @@ const StylesSettings = ({
     updated.borderColor = '#313131';
     updated.fontColor = '#313131';
     updated.fontSize = undefined;
-    updated.padding = formSettings.inputPadding;
+    updated.padding = formInputPadding;
     updated.inheritFromTheme = newValue;
     onChange(updated);
     localStylesRef.current = updated;
@@ -107,7 +108,7 @@ const StylesSettings = ({
               />
               <FontFamilySettings
                 name={MailPoet.I18n.t('formSettingsStylesFontFamily')}
-                value={styles.fontFamily || formSettings.fontFamily}
+                value={styles.fontFamily || formFontFamily}
                 onChange={partial(updateStyles, 'fontFamily')}
               />
               <RangeControl
@@ -115,7 +116,7 @@ const StylesSettings = ({
                 value={
                   localStyles.padding !== undefined
                     ? localStyles.padding
-                    : formSettings.inputPadding
+                    : formInputPadding
                 }
                 min={0}
                 max={30}

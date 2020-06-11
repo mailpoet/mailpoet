@@ -35,7 +35,8 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
       <StylesSettings
         onChange={(styles) => setAttributes({ styles })}
         styles={attributes.styles}
-        formSettings={settings}
+        formInputPadding={settings.inputPadding}
+        formFontFamily={settings.fontFamily}
       />
     </InspectorControls>
   );
