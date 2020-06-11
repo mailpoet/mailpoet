@@ -46,6 +46,12 @@ class DisplayFormInWPContent {
   /** @var TemplateRenderer */
   private $templateRenderer;
 
+  /**
+   * We want to display forms only once per page, once we render we need to stop
+   * @var bool
+   */
+  private $alreadyDisplayed;
+
   public function __construct(
     WPFunctions $wp,
     FormsRepository $formsRepository,
@@ -58,6 +64,7 @@ class DisplayFormInWPContent {
     $this->formRenderer = $formRenderer;
     $this->assetsController = $assetsController;
     $this->templateRenderer = $templateRenderer;
+    $this->alreadyDisplayed = false;
   }
 
   /**
@@ -81,6 +88,7 @@ class DisplayFormInWPContent {
       $result .= $this->getContentBellow($form, $displayType);
     }
 
+    $this->alreadyDisplayed = true;
     return $result;
   }
 
@@ -89,6 +97,7 @@ class DisplayFormInWPContent {
     if (!$this->wp->isSingle() && !$this->wp->isPage()) return false;
     $cache = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
     if (isset($cache[$this->wp->getPostType()])) return false;
+    if ($this->alreadyDisplayed) return false;
     return true;
   }
 
