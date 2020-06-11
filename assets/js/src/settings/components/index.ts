@@ -1,4 +1,3 @@
-export { default as Tabs } from './tabs';
 export { default as Label } from './label';
 export { default as Inputs } from './inputs';
 export { default as SaveButton } from './save_button';
