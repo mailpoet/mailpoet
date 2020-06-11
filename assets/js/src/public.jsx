@@ -50,9 +50,17 @@ jQuery(($) => {
     const originalFontFamily = formDiv.css('font-family');
     const newFontFamily = `"${fontName}", ${originalFontFamily}`;
     formDiv.css('font-family', newFontFamily);
-    formDiv.find('option').css('font-family', 'inherit');
+    formDiv.find('input, option').css('font-family', 'inherit');
     formDiv.find('input[type=text], textarea, input[type=email], select').css('font-family', newFontFamily);
     formDiv.find(':header').css('font-family', 'inherit');
+
+    formDiv.find('input[data-font-family]').each(function applyFontFamilyToInput() {
+      const element = $(this);
+      const inputFontFamily = element.data('font-family');
+      const inputOriginalFontFamily = element.css('font-family');
+      const inputNewFontFamily = `"${inputFontFamily}", ${inputOriginalFontFamily}`;
+      element.css('font-family', inputNewFontFamily);
+    });
   }
 
   function showForm(formDiv, showOverlay = false) {
