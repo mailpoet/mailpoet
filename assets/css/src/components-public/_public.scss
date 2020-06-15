@@ -213,6 +213,7 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
 }
 
 div.mailpoet_form_popup {
+  animation: fade-in-up 1s 1 cubic-bezier(0.77,0,.175,1);
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
@@ -236,6 +237,7 @@ div.mailpoet_form_popup {
 }
 
 div.mailpoet_form_fixed_bar {
+  animation: fade-in-up 1s 1 cubic-bezier(0.77,0,.175,1);
   background-color: white;
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
   display: none;
@@ -261,9 +263,9 @@ div.mailpoet_form_fixed_bar {
 }
 
 div.mailpoet_form_slide_in {
-  animation: slide-top 1.5s cubic-bezier(.25, .46, .45, .94) both;
+  animation: fade-in-up 1s 1 cubic-bezier(0.77,0,.175,1);
   background-color: white;
-  bottom: -100px; // animation starts at -100px and finishes at 0, see slide-top keyframes bellow
+  bottom: 0;
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
   display: none;
   max-height: calc(100vh - 60px);
@@ -282,13 +284,15 @@ div.mailpoet_form_slide_in {
   }
 }
 
-@keyframes slide-top {
+@keyframes fade-in-up {
   0% {
-    transform: translateY(0);
+    opacity: 0;
+    transform: translateY(30%);
   }
 
   100% {
-    transform: translateY(-100px);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
