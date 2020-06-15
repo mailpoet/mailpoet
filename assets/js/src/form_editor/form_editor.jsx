@@ -7,6 +7,7 @@ import Editor from './components/editor.jsx';
 import initStore from './store/store.jsx';
 import { initBlocks } from './blocks/blocks.jsx';
 import initHooks from './hooks';
+import initTranslations from './translations';
 import initRichText from './rich_text/init.ts';
 
 const App = () => (
@@ -28,6 +29,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initStore();
     initBlocks();
     initRichText();
+    initTranslations(window.mailpoet_translations);
     ReactDOM.render(
       <React.StrictMode>
         <App />

@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
+use MailPoet\Config\Localizer;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Form\Block;
 use MailPoet\Form\FormFactory;
@@ -39,6 +40,9 @@ class FormEditor {
   /** @var FormFactory */
   private $formsFactory;
 
+  /** @var Localizer */
+  private $localizer;
+
   public function __construct(
     PageRenderer $pageRenderer,
     CustomFieldsRepository $customFieldsRepository,
@@ -46,7 +50,8 @@ class FormEditor {
     FormRenderer $formRenderer,
     Block\Date $dateBlock,
     WPFunctions $wp,
-    FormFactory $formsFactory
+    FormFactory $formsFactory,
+    Localizer $localizer
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->customFieldsRepository = $customFieldsRepository;
@@ -55,6 +60,7 @@ class FormEditor {
     $this->dateBlock = $dateBlock;
     $this->wp = $wp;
     $this->formsFactory = $formsFactory;
+    $this->localizer = $localizer;
   }
 
   public function render() {
@@ -98,6 +104,7 @@ class FormEditor {
       'custom_fields' => $this->customFieldsResponseBuilder->buildBatch($customFields),
       'preview_page_url' => $this->getPreviewPageUrl(),
       'custom_fonts' => CustomFonts::FONTS,
+      'translations' => $this->getGutenbergScriptsTranslations(),
     ];
     $this->wp->wpEnqueueMedia();
     $this->pageRenderer->displayPage('form/editor.html', $data);
@@ -116,5 +123,44 @@ class FormEditor {
     ];
     $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
     return $url;
+  }
+
+  /**
+   * JS Translations are distributed and loaded per script. We can't use wp_set_script_translations
+   * because translation filename is determined based on script filename and path.
+   * This function loads JSON files with Gutenberg script's translations distributed within WordPress.
+   * Implemented based on load_script_textdomain function
+   * @see https://developer.wordpress.org/reference/functions/load_script_textdomain/
+   * @return string[]
+   */
+  private function getGutenbergScriptsTranslations() {
+    $locale = $this->localizer->locale();
+    if (!$locale) {
+      return [];
+    }
+    // List of scripts - relative path to translations directory (default: wp-content/languages)
+    $translationsToLoad = [
+      'wp-includes/js/dist/blocks.js',
+      'wp-includes/js/dist/components.js',
+      'wp-includes/js/dist/block-editor.js',
+      'wp-includes/js/dist/block-library.js',
+      'wp-includes/js/dist/editor.js',
+      'wp-includes/js/dist/media-utils.js',
+      'wp-includes/js/dist/format-library.js',
+      'wp-includes/js/dist/edit-post.js',
+    ];
+
+    $translations = [];
+    foreach ($translationsToLoad as $translation) {
+      $file = WP_LANG_DIR . '/' . $locale . '-' . md5( $translation ) . '.json';
+      if (!file_exists($file)) {
+        continue;
+      }
+      $translationsData = file_get_contents($file);
+      if ($translationsData) {
+        $translations[] = $translationsData;
+      }
+    }
+    return $translations;
   }
 }
