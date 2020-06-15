@@ -5,9 +5,6 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
-import ListingHeading from 'newsletters/listings/heading.jsx';
-import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
-
 import QueueStatus from 'newsletters/listings/queue_status.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
 import {
@@ -158,10 +155,6 @@ const renderItem = (newsletter, actions, meta) => {
 
 const NewsletterListNotificationHistory = (props) => (
   <>
-    <ListingHeading />
-
-    <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
-
     <Link
       className="page-title-action"
       to="/notification"

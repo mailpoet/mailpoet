@@ -3,8 +3,6 @@ import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
-import ListingHeading from 'newsletters/listings/heading.jsx';
-import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
 import {
   checkCronStatus,
@@ -21,8 +19,6 @@ import {
   monthDayValues,
   nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
-import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
-import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 
 const messages = {
   onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
@@ -334,16 +330,7 @@ class NewsletterListNotification extends React.Component {
 
   render() {
     return (
-      <div>
-        <ListingHeading />
-
-        <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
-        <SubscribersLimitNotice />
-        <InvalidMssKeyNotice
-          mssKeyInvalid={window.mailpoet_mss_key_invalid}
-          subscribersCount={window.mailpoet_subscribers_count}
-        />
-
+      <>
         {this.state.newslettersCount === 0 && (
           <NewsletterTypes
             filter={(type) => type.slug === 'notification'}
@@ -376,7 +363,7 @@ class NewsletterListNotification extends React.Component {
             }}
           />
         )}
-      </div>
+      </>
     );
   }
 }

@@ -1,12 +1,8 @@
 import React from 'react';
 import Listing from 'listing/listing.jsx';
-import ListingHeading from 'newsletters/listings/heading.jsx';
-import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 import { checkMailerStatus, addStatsCTAAction } from 'newsletters/listings/utils.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
 import NewsletterTypes from 'newsletters/types.jsx';
-import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
-import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
@@ -365,16 +361,7 @@ class Listings extends React.Component {
     const { match, location } = this.props;
 
     return (
-      <div>
-        <ListingHeading />
-
-        <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
-        <SubscribersLimitNotice />
-        <InvalidMssKeyNotice
-          mssKeyInvalid={window.mailpoet_mss_key_invalid}
-          subscribersCount={window.mailpoet_subscribers_count}
-        />
-
+      <>
         {this.renderWarning()}
 
         {this.state.newslettersCount === 0 && (
@@ -408,7 +395,7 @@ class Listings extends React.Component {
             }}
           />
         )}
-      </div>
+      </>
     );
   }
 }

@@ -27,6 +27,11 @@ import Notices from 'notices/notices.jsx';
 import RoutedTabs from 'common/tabs/routed_tabs';
 import Tab from 'common/tabs/tab';
 import withNpsPoll from 'nps_poll.jsx';
+import ListingHeading from 'newsletters/listings/heading.jsx';
+import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
+import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
+import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
+import TransactionalEmailsProposeOptInNotice from 'notices/transactional_emails_propose_opt_in_notice';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
@@ -182,6 +187,22 @@ const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <HashRouter>
       <Notices />
+      <ListingHeading />
+
+      <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
+      <SubscribersLimitNotice />
+      <TransactionalEmailsProposeOptInNotice
+        mailpoetInstalledDaysAgo={window.mailpoet_installed_days_ago}
+        sendTransactionalEmails={window.mailpoet_send_transactional_emails}
+        mtaMethod={window.mailpoet_mta_method}
+        apiVersion={window.mailpoet_api_version}
+        noticeDismissed={window.mailpoet_transactional_emails_opt_in_notice_dismissed}
+      />
+      <InvalidMssKeyNotice
+        mssKeyInvalid={window.mailpoet_mss_key_invalid}
+        subscribersCount={window.mailpoet_subscribers_count}
+      />
+
       <Switch>
         <Route exact path="/" render={() => <Redirect to={window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'} />} />
         {routes.map((route) => (
