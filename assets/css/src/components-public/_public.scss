@@ -229,8 +229,10 @@ div.mailpoet_form_popup {
 .mailpoet_form_close_icon {
   cursor: pointer;
   display: block;
-  float: right;
   margin: 0 0 0 auto;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
 div.mailpoet_form_fixed_bar {
