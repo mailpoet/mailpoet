@@ -102,6 +102,7 @@ SubmitEdit.propTypes = {
       borderRadius: PropTypes.number,
       borderColor: PropTypes.string,
       fontColor: PropTypes.string,
+      fontFamily: PropTypes.string,
       fontSize: PropTypes.number,
       padding: PropTypes.number,
     }),

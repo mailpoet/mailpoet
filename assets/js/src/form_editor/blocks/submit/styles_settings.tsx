@@ -30,7 +30,7 @@ type Props = {
   styles: Styles,
   onChange: (styles: Styles) => any,
   formInputPadding: number,
-  formFontFamily: string,
+  formFontFamily?: string,
 }
 
 const StylesSettings = ({
