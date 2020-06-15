@@ -1,11 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
-import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
@@ -163,8 +162,6 @@ const NewsletterListNotificationHistory = (props) => (
 
     <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
 
-    <ListingTabs tab="notification" />
-
     <Link
       className="page-title-action"
       to="/notification"
@@ -203,4 +200,4 @@ NewsletterListNotificationHistory.propTypes = {
   }).isRequired,
 };
 
-export default NewsletterListNotificationHistory;
+export default withRouter(NewsletterListNotificationHistory);
