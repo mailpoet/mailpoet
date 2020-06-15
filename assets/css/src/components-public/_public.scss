@@ -267,7 +267,6 @@ div.mailpoet_form_fixed_bar {
 }
 
 div.mailpoet_form_slide_in {
-  animation: fade-in-up 1s 1 cubic-bezier(0.77,0,.175,1);
   background-color: white;
   bottom: 0;
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
@@ -276,6 +275,11 @@ div.mailpoet_form_slide_in {
   overflow-y: auto;
   position: fixed;
   z-index: 100000;
+
+  &.mailpoet_form_position_left,
+  &.mailpoet_form_position_right {
+    animation: fade-in-up 1s 1 cubic-bezier(.77, 0, .175, 1);
+  }
 
   @include breakpoint-min-width($form-break-small-width) {
     &.mailpoet_form_position_left {
