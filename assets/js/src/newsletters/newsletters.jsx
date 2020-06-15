@@ -43,7 +43,12 @@ const trackTabSwitch = (tabKey) => MailPoet.trackEvent(
 const Tabs = withNpsPoll(() => {
   const { parentId } = useParams();
   return (
-    <RoutedTabs activeKey="standard" routerType="switch-only" onSwitch={(tabKey) => trackTabSwitch(tabKey)}>
+    <RoutedTabs
+      activeKey="standard"
+      routerType="switch-only"
+      onSwitch={(tabKey) => trackTabSwitch(tabKey)}
+      automationId="newsletters_listing_tabs"
+    >
       <Tab
         key="standard"
         route="standard/(.*)?"

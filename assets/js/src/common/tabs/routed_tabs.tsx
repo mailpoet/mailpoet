@@ -32,6 +32,7 @@ const RouterAwareTabs = (props: TabProps & {
         }
         props.onSwitch(tabKey);
       }}
+      automationId={props.automationId}
     >
       {props.children}
     </Tabs>
@@ -48,6 +49,7 @@ const RoutedTabs = ({
   routerPrefix = '/',
   activeKey,
   onSwitch = () => {},
+  automationId = null,
   children,
 }: Props) => {
   const keyPathMap: { [key: string]: string } = {};
@@ -74,6 +76,7 @@ const RoutedTabs = ({
             <RouterAwareTabs
               activeKey={activeKey}
               onSwitch={onSwitch}
+              automationId={automationId}
               keyPathMap={keyPathMap}
               routerPrefix={routerPrefix}
             >
