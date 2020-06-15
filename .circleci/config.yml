@@ -136,6 +136,22 @@ jobs:
     - run:
         name: "Static analysis"
         command: ./do qa:phpstan
+  qa_js:
+    executor: wpcli_php_oldest
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "QA JavaScript"
+          command: ./do qa:javascript
+  qa_php:
+    executor: wpcli_php_latest
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "QA PHP"
+          command: ./do qa:php
   js_tests:
     executor: wpcli_php_oldest
     steps:
@@ -318,36 +334,52 @@ workflows:
       - static_analysis:
           requires:
             - build
+      - qa_js:
+          requires:
+            - build
+      - qa_php:
+          requires:
+            - build
       - acceptance_tests:
           name: acceptance_tests_1
           group_arg: -g acceptance_group_1
           requires:
             - unit_tests
             - static_analysis
+            - qa_js
+            - qa_php
       - acceptance_tests:
           name: acceptance_tests_2
           group_arg: -g acceptance_group_2
           requires:
             - unit_tests
             - static_analysis
+            - qa_js
+            - qa_php
       - acceptance_tests:
           name: acceptance_tests_3
           group_arg: -g acceptance_group_3
           requires:
             - unit_tests
             - static_analysis
+            - qa_js
+            - qa_php
       - acceptance_tests:
           name: acceptance_tests_4
           group_arg: -g acceptance_group_4
           requires:
             - unit_tests
             - static_analysis
+            - qa_js
+            - qa_php
       - acceptance_tests:
           name: acceptance_tests_5
           group_arg: -g acceptance_group_5
           requires:
             - unit_tests
             - static_analysis
+            - qa_js
+            - qa_php
       - js_tests:
           requires:
             - build
@@ -355,6 +387,8 @@ workflows:
           requires:
             - unit_tests
             - static_analysis
+            - qa_js
+            - qa_php
       - acceptance_tests:
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_1
@@ -383,6 +417,8 @@ workflows:
           requires:
             - unit_tests
             - static_analysis
+            - qa_js
+            - qa_php
       - build_release_zip:
           requires:
             - build
