@@ -22,7 +22,7 @@ jQuery(($) => {
    * @param form jQuery object of form form.mailpoet_form
    */
   function checkFormContainer(form) {
-    if (form.width() < 500) {
+    if (form.width() < 400) {
       form.addClass('mailpoet_form_tight_container');
     } else {
       form.removeClass('mailpoet_form_tight_container');
