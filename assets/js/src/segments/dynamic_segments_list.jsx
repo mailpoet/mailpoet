@@ -1,9 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import Listing from 'listing/listing.jsx';
 import PropTypes from 'prop-types';
-import Tabs from './tabs';
 
 import SubscribersInPlan from '../common/subscribers_in_plan';
 
@@ -136,8 +135,6 @@ function DynamicSegmentList(props) {
         mssActive={window.mailpoet_mss_active}
       />
 
-      <Tabs />
-
       <Listing
         limit={window.mailpoet_listing_per_page}
         location={props.location}
@@ -180,4 +177,4 @@ DynamicSegmentList.propTypes = {
   }).isRequired,
 };
 
-export default DynamicSegmentList;
+export default withRouter(DynamicSegmentList);
