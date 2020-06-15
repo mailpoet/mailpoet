@@ -213,7 +213,7 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
 }
 
 div.mailpoet_form_popup {
-  animation: fade-in-up 1s 1 cubic-bezier(0.77,0,.175,1);
+  animation: fade-in-up-popup 1s 1 cubic-bezier(0.77,0,.175,1);
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
@@ -297,6 +297,18 @@ div.mailpoet_form_slide_in {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-up-popup {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
   }
 }
 
