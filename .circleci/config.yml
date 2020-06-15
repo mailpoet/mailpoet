@@ -142,8 +142,8 @@ jobs:
       - attach_workspace:
           at: /home/circleci/mailpoet
       - run:
-          name: "QA JavaScript"
-          command: ./do qa:javascript
+          name: "QA Frontend Assets"
+          command: ./do qa:frontend-assets
   qa_php:
     executor: wpcli_php_latest
     steps:

@@ -95,7 +95,7 @@ class RoboFile extends \Robo\Tasks {
     // Clean up folder from previous files
     array_map('unlink', glob("assets/dist/css/*.*"));
 
-    $this->_exec('npm run stylelint -- "assets/css/src/components/**/*.scss"');
+    $this->_exec('npm run stylelint -- "assets/css/src/**/*.scss"');
     $this->_exec('npm run scss');
     $compilationResult = $this->_exec('npm run autoprefixer');
 
@@ -350,7 +350,7 @@ class RoboFile extends \Robo\Tasks {
   public function qa() {
     $collection = $this->collectionBuilder();
     $collection->addCode([$this, 'qaPhp']);
-    $collection->addCode([$this, 'qaJavascript']);
+    $collection->addCode([$this, 'qaFrontendAssets']);
     return $collection->run();
   }
 
@@ -363,7 +363,7 @@ class RoboFile extends \Robo\Tasks {
     return $collection->run();
   }
 
-  public function qaJavascript() {
+  public function qaFrontendAssets() {
     $collection = $this->collectionBuilder();
     $collection->addCode([$this, 'qaLintJavascript']);
     $collection->addCode([$this, 'qaLintCss']);
@@ -379,7 +379,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function qaLintCss() {
-    return $this->_exec('npm run stylelint -- "assets/css/src/components/**/*.scss"');
+    return $this->_exec('npm run stylelint-check -- "assets/css/src/**/*.scss"');
   }
 
   public function qaCodeSniffer($severity='errors') {
