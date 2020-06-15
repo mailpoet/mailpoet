@@ -39,7 +39,7 @@ const RouterAwareTabs = (props: TabProps & {
 };
 
 type Props = TabProps & {
-  routerType?: 'hash' | 'browser',
+  routerType?: 'hash' | 'browser' | 'switch-only',
   routerPrefix?: string,
 };
 
@@ -85,6 +85,10 @@ const RoutedTabs = ({
       </Switch>
     </>
   );
+
+  if (routerType === 'switch-only') {
+    return routedTabs;
+  }
 
   return routerType === 'browser'
     ? <BrowserRouter>{routedTabs}</BrowserRouter>
