@@ -19,7 +19,7 @@ class EditExistingNewsletterCest {
     $i->waitForElement($titleElement);
     $i->fillField($titleElement, $editedNewsletterTitle);
     $i->click('Next');
-    $i->waitForText('This subscriber segment');
+    $i->waitForElement('[data-automation-id="newsletter_send_form"]');
     $i->click('Save as draft and close');
     $i->amOnMailpoetPage('Emails');
     $i->waitForText($editedNewsletterTitle);
