@@ -349,10 +349,22 @@ class RoboFile extends \Robo\Tasks {
 
   public function qa() {
     $collection = $this->collectionBuilder();
+    $collection->addCode([$this, 'qaPhp']);
+    $collection->addCode([$this, 'qaJavascript']);
+    return $collection->run();
+  }
+
+  public function qaPhp() {
+    $collection = $this->collectionBuilder();
     $collection->addCode([$this, 'qaLint']);
     $collection->addCode(function() {
       return $this->qaCodeSniffer('all');
     });
+    return $collection->run();
+  }
+
+  public function qaJavascript() {
+    $collection = $this->collectionBuilder();
     $collection->addCode([$this, 'qaLintJavascript']);
     $collection->addCode([$this, 'qaLintCss']);
     return $collection->run();
