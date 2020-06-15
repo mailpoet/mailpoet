@@ -18,6 +18,7 @@
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
     "scss": "node-sass assets/css/src/ --output assets/dist/css/ --output-style compact",
     "stylelint": "stylelint --fix",
+    "stylelint-check": "stylelint",
     "test": "env NODE_PATH=$NODE_PATH:./assets/js/src mocha --require tests/javascript/babel_register.js tests/javascript/**/*.spec.js",
     "check-types": "tsc --noEmit",
     "storybook": "start-storybook -s ./ -p 8083",
