@@ -83,7 +83,7 @@ jQuery(($) => {
 
       // Detect tight container
       previewForm.removeClass('mailpoet_form_tight_container');
-      if (previewForm.width() < 500) {
+      if (previewForm.width() < 400) {
         previewForm.addClass('mailpoet_form_tight_container');
       }
     };
