@@ -161,6 +161,7 @@ EOL;
         bottom: 0;
         left: 0;
         max-height: 40%;
+        padding: 20px;
         right: 0;
         top: auto;
         transform: none;
