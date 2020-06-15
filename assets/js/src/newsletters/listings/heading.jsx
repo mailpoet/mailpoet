@@ -4,7 +4,7 @@ import MailPoet from 'mailpoet';
 
 const ListingHeading = () => (
   <div>
-    <h1 className="title">
+    <h1 className="mailpoet-newsletter-listing-heading title">
       {MailPoet.I18n.t('pageTitle')}
       <Link
         id="mailpoet-new-email"

@@ -6,8 +6,6 @@ import { withRouter } from 'react-router-dom';
 
 import confirmAlert from 'common/confirm_alert.jsx';
 import Listing from 'listing/listing.jsx';
-import ListingHeading from 'newsletters/listings/heading.jsx';
-import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 import QueueStatus from 'newsletters/listings/queue_status.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
 import {
@@ -16,9 +14,6 @@ import {
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
 import NewsletterTypes from 'newsletters/types.jsx';
-import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
-import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
-import TransactionalEmailsProposeOptInNotice from 'notices/transactional_emails_propose_opt_in_notice';
 import { GlobalContext } from 'context/index.jsx';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
@@ -228,23 +223,7 @@ class NewsletterListStandard extends React.Component {
 
   render() {
     return (
-      <div>
-        <ListingHeading />
-
-        <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
-        <SubscribersLimitNotice />
-        <TransactionalEmailsProposeOptInNotice
-          mailpoetInstalledDaysAgo={window.mailpoet_installed_days_ago}
-          sendTransactionalEmails={window.mailpoet_send_transactional_emails}
-          mtaMethod={window.mailpoet_mta_method}
-          apiVersion={window.mailpoet_api_version}
-          noticeDismissed={window.mailpoet_transactional_emails_opt_in_notice_dismissed}
-        />
-        <InvalidMssKeyNotice
-          mssKeyInvalid={window.mailpoet_mss_key_invalid}
-          subscribersCount={window.mailpoet_subscribers_count}
-        />
-
+      <>
         {this.state.newslettersCount === 0 && (
           <NewsletterTypes
             filter={(type) => type.slug === 'standard'}
@@ -277,7 +256,7 @@ class NewsletterListStandard extends React.Component {
             }}
           />
         )}
-      </div>
+      </>
     );
   }
 }

@@ -86,3 +86,8 @@
 .mailpoet_badge_video_grey {
   background: #c3c3c3;
 }
+
+// h1.title needed to override WP styles specificity
+h1.title.mailpoet-newsletter-listing-heading {
+  margin-bottom: $grid-gap;
+}
