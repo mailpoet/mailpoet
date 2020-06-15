@@ -78,9 +78,9 @@ class WordPressMailer extends \PHPMailer {
       'body' => [],
     ];
 
-    if ($this->ContentType === 'text/plain') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    if (strpos($this->ContentType, 'text/plain') === 0) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $email['body']['text'] = $this->Body; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    } elseif ($this->ContentType === 'text/html') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    } elseif (strpos($this->ContentType, 'text/html') === 0) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $text = @Html2Text::convert(strtolower($this->CharSet) === 'utf-8' ? $this->Body : utf8_encode($this->Body)); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $email['body']['text'] = $text;
       $email['body']['html'] = $this->Body; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
