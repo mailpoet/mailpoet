@@ -9,6 +9,11 @@ jQuery(($) => {
 
     previewForm.submit((e) => { e.preventDefault(); return false; });
 
+    const toggleClass = (form, from, to) => {
+      form.removeClass(from);
+      setTimeout(() => form.addClass(to));
+    };
+
     const updateForm = (event) => {
       if (!event.data) {
         return;
@@ -63,21 +68,17 @@ jQuery(($) => {
 
       if (formType === 'slide_in') {
         if (previewForm.hasClass('mailpoet_form_position_left') && event.data.formSettings?.slideInFormPosition === 'right') {
-          previewForm.removeClass('mailpoet_form_position_left');
-          previewForm.addClass('mailpoet_form_position_right');
+          toggleClass(previewForm, 'mailpoet_form_position_left', 'mailpoet_form_position_right');
         } else if (previewForm.hasClass('mailpoet_form_position_right') && event.data.formSettings?.slideInFormPosition === 'left') {
-          previewForm.removeClass('mailpoet_form_position_right');
-          previewForm.addClass('mailpoet_form_position_left');
+          toggleClass(previewForm, 'mailpoet_form_position_right', 'mailpoet_form_position_left');
         }
       }
 
       if (formType === 'fixed_bar') {
         if (previewForm.hasClass('mailpoet_form_position_bottom') && event.data.formSettings?.fixedBarFormPosition === 'top') {
-          previewForm.removeClass('mailpoet_form_position_bottom');
-          previewForm.addClass('mailpoet_form_position_top');
+          toggleClass(previewForm, 'mailpoet_form_position_bottom', 'mailpoet_form_position_top');
         } else if (previewForm.hasClass('mailpoet_form_position_top') && event.data.formSettings?.fixedBarFormPosition === 'bottom') {
-          previewForm.removeClass('mailpoet_form_position_top');
-          previewForm.addClass('mailpoet_form_position_bottom');
+          toggleClass(previewForm, 'mailpoet_form_position_top', 'mailpoet_form_position_bottom');
         }
       }
 
