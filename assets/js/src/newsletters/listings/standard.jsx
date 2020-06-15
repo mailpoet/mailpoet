@@ -2,10 +2,10 @@ import React from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 
 import confirmAlert from 'common/confirm_alert.jsx';
 import Listing from 'listing/listing.jsx';
-import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 import QueueStatus from 'newsletters/listings/queue_status.jsx';
@@ -245,8 +245,6 @@ class NewsletterListStandard extends React.Component {
           subscribersCount={window.mailpoet_subscribers_count}
         />
 
-        <ListingTabs tab="standard" />
-
         {this.state.newslettersCount === 0 && (
           <NewsletterTypes
             filter={(type) => type.slug === 'standard'}
@@ -293,4 +291,4 @@ NewsletterListStandard.propTypes = {
   }).isRequired,
 };
 
-export default NewsletterListStandard;
+export default withRouter(NewsletterListStandard);

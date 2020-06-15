@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
-  HashRouter, Switch, Route, Redirect,
+  HashRouter, Switch, Route, Redirect, useParams,
 } from 'react-router-dom';
 import Hooks from 'wp-js-hooks';
+import MailPoet from 'mailpoet';
 import _ from 'underscore';
 
 import NewsletterTypes from 'newsletters/types.jsx';
@@ -22,6 +23,9 @@ import NewsletterSendingStatus from 'newsletters/sending_status.jsx';
 import CampaignStatsPage from 'newsletters/campaign_stats/page.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
+import RoutedTabs from 'common/tabs/routed_tabs';
+import Tab from 'common/tabs/tab';
+import withNpsPoll from 'nps_poll.jsx';
 
 const getAutomaticEmailsRoutes = () => {
   if (!window.mailpoet_automatic_emails) return [];
@@ -36,23 +40,56 @@ const getAutomaticEmailsRoutes = () => {
   }));
 };
 
+const trackTabSwitch = (tabKey) => MailPoet.trackEvent(
+  `Tab Emails > ${tabKey} clicked`,
+  { 'MailPoet Free version': window.mailpoet_version },
+);
+
+const Tabs = withNpsPoll(() => {
+  const { parentId } = useParams();
+  return (
+    <RoutedTabs activeKey="standard" routerType="switch-only" onSwitch={(tabKey) => trackTabSwitch(tabKey)}>
+      <Tab
+        key="standard"
+        route="standard/(.*)?"
+        title={MailPoet.I18n.t('tabStandardTitle')}
+        automationId={MailPoet.I18n.t('tabStandardTitle')}
+      >
+        <NewsletterListStandard />
+      </Tab>
+      <Tab
+        key="welcome"
+        route="welcome/(.*)?"
+        title={MailPoet.I18n.t('tabWelcomeTitle')}
+        automationId={MailPoet.I18n.t('tabWelcomeTitle')}
+      >
+        <NewsletterListWelcome />
+      </Tab>
+      <Tab
+        key="notification"
+        route="notification/(.*)?"
+        title={MailPoet.I18n.t('tabNotificationTitle')}
+        automationId={MailPoet.I18n.t('tabNotificationTitle')}
+      >
+        {
+          parentId
+            ? <NewsletterListNotificationHistory />
+            : <NewsletterListNotification />
+        }
+      </Tab>
+    </RoutedTabs>
+  );
+});
+
 const routes = Hooks.applyFilters('mailpoet_newsletters_before_router', [
   /* Listings */
   {
-    path: '/standard/(.*)?',
-    component: NewsletterListStandard,
+    path: '/notification/history/:parentId/(.*)?',
+    component: Tabs,
   },
   {
-    path: '/welcome/(.*)?',
-    component: NewsletterListWelcome,
-  },
-  {
-    path: '/notification/history/:parent_id/(.*)?',
-    component: NewsletterListNotificationHistory,
-  },
-  {
-    path: '/notification/(.*)?',
-    component: NewsletterListNotification,
+    path: '/(standard|welcome|notification)/(.*)?',
+    component: Tabs,
   },
   /* New newsletter: types */
   {

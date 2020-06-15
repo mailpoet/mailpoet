@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 import Listing from 'listing/listing.jsx';
-import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 
@@ -361,8 +360,6 @@ class NewsletterListWelcome extends React.Component {
           subscribersCount={window.mailpoet_subscribers_count}
         />
 
-        <ListingTabs tab="welcome" />
-
         {this.state.newslettersCount === 0 && (
           <NewsletterTypes
             filter={(type) => type.slug === 'welcome'}
@@ -407,4 +404,4 @@ NewsletterListWelcome.propTypes = {
   }).isRequired,
 };
 
-export default NewsletterListWelcome;
+export default withRouter(NewsletterListWelcome);
