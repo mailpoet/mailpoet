@@ -39,7 +39,6 @@ class ManageWelcomeEmailCest {
     $i->waitForText('Reply-to');
     $i->click('Save as draft and close');
     $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
-    $i->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForText($newsletterTitle);
   }
 
