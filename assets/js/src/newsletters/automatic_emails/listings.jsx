@@ -1,6 +1,5 @@
 import React from 'react';
 import Listing from 'listing/listing.jsx';
-import ListingTabs from 'newsletters/listings/tabs.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 import { checkMailerStatus, addStatsCTAAction } from 'newsletters/listings/utils.jsx';
@@ -13,7 +12,7 @@ import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
@@ -376,8 +375,6 @@ class Listings extends React.Component {
           subscribersCount={window.mailpoet_subscribers_count}
         />
 
-        <ListingTabs tab="woocommerce" />
-
         {this.renderWarning()}
 
         {this.state.newslettersCount === 0 && (
@@ -425,4 +422,4 @@ Listings.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
-export default Listings;
+export default withRouter(Listings);

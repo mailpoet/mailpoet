@@ -2,11 +2,8 @@ import React from 'react';
 import _ from 'underscore';
 import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
-import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
-import EventsConditions from 'newsletters/automatic_emails/events_conditions.jsx';
 import AutomaticEmailsBreadcrumb from 'newsletters/types/automatic_emails/breadcrumb.jsx';
 import SendEventConditions from 'newsletters/automatic_emails/send_event_conditions.jsx';
-import Listings from 'newsletters/automatic_emails/listings.jsx';
 import GATrackingField from 'newsletters/send/ga_tracking.jsx';
 
 const emails = window.mailpoet_woocommerce_automatic_emails || [];
@@ -47,79 +44,8 @@ if (newslettersContainer && !_.isEmpty(emails)) {
     return [...existingTypes, ...newTypes];
   };
 
-  const addEmailsRoutes = (routes) => {
-    // remove routes declared in Free version if they are declared in Premium
-    const existingRoutes = _.reject(routes, (route) => _.has(emails, route.name));
-
-    const emailsRoutes = [];
-    const emailsEventsRoutes = [];
-    const emailsListingsRoute = [];
-
-    _.each(emails, (email) => {
-      const { events } = email;
-
-      if (_.isObject(events)) {
-        _.each(events, (event) => {
-          emailsEventsRoutes.push({
-            path: `/new/${email.slug}/${event.slug}/conditions`,
-            name: event.slug,
-            render: (props) => {
-              const componentProps = {
-                ...props,
-                email,
-                name: event.slug,
-              };
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              return (<EventsConditions {...componentProps} />);
-            },
-          });
-        });
-      }
-
-      emailsRoutes.push({
-        path: `/new/${email.slug}`,
-        name: email.slug,
-        render: (props) => {
-          const componentProps = {
-            ...props,
-            email,
-          };
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          return (<AutomaticEmailEventsList {...componentProps} />);
-        },
-      });
-
-      emailsListingsRoute.push({
-        path: `/${email.slug}/(.*)?`,
-        params: {
-          tab: email.slug,
-        },
-        component: Listings,
-      });
-    });
-    return [...emailsEventsRoutes, ...emailsRoutes, ...emailsListingsRoute, ...existingRoutes];
-  };
-
   Hooks.addFilter('mailpoet_newsletters_types', 'mailpoet', addEmails);
-  Hooks.addFilter('mailpoet_newsletters_before_router', 'mailpoet', addEmailsRoutes);
 }
-
-const addListingsTabs = (tabs) => {
-  const listingsTabs = [];
-
-  _.each(emails, (email) => {
-    listingsTabs.push({
-      name: email.slug,
-      label: email.title,
-      link: `/${email.slug}`,
-      display: window.mailpoet_woocommerce_active,
-    });
-  });
-
-  return [...tabs, ...listingsTabs];
-};
-
-Hooks.addFilter('mailpoet_newsletters_listings_tabs', 'mailpoet', addListingsTabs);
 
 const addTemplateSelectionBreadcrumb = (defaultBreadcrumb, newsletterType, step) => (
   (newsletterType === 'automatic')

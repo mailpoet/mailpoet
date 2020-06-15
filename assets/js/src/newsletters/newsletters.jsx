@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import {
   HashRouter, Switch, Route, Redirect, useParams,
 } from 'react-router-dom';
-import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 
@@ -15,11 +14,13 @@ import NewsletterTypeStandard from 'newsletters/types/standard.jsx';
 import NewsletterTypeNotification from 'newsletters/types/notification/notification.jsx';
 import NewsletterTypeWelcome from 'newsletters/types/welcome/welcome.jsx';
 import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
+import EventsConditions from 'newsletters/automatic_emails/events_conditions.jsx';
 import NewsletterListStandard from 'newsletters/listings/standard.jsx';
 import NewsletterListWelcome from 'newsletters/listings/welcome.jsx';
 import NewsletterListNotification from 'newsletters/listings/notification.jsx';
 import NewsletterListNotificationHistory from 'newsletters/listings/notification_history.jsx';
 import NewsletterSendingStatus from 'newsletters/sending_status.jsx';
+import Listings from 'newsletters/automatic_emails/listings.jsx';
 import CampaignStatsPage from 'newsletters/campaign_stats/page.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
@@ -27,18 +28,7 @@ import RoutedTabs from 'common/tabs/routed_tabs';
 import Tab from 'common/tabs/tab';
 import withNpsPoll from 'nps_poll.jsx';
 
-const getAutomaticEmailsRoutes = () => {
-  if (!window.mailpoet_automatic_emails) return [];
-
-  return _.map(window.mailpoet_automatic_emails, (automaticEmail) => ({
-    path: `new/${automaticEmail.slug}`,
-    name: automaticEmail.slug,
-    component: AutomaticEmailEventsList,
-    data: {
-      email: automaticEmail,
-    },
-  }));
-};
+const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
 const trackTabSwitch = (tabKey) => MailPoet.trackEvent(
   `Tab Emails > ${tabKey} clicked`,
@@ -53,7 +43,7 @@ const Tabs = withNpsPoll(() => {
         key="standard"
         route="standard/(.*)?"
         title={MailPoet.I18n.t('tabStandardTitle')}
-        automationId={MailPoet.I18n.t('tabStandardTitle')}
+        automationId={`tab-${MailPoet.I18n.t('tabStandardTitle')}`}
       >
         <NewsletterListStandard />
       </Tab>
@@ -61,7 +51,7 @@ const Tabs = withNpsPoll(() => {
         key="welcome"
         route="welcome/(.*)?"
         title={MailPoet.I18n.t('tabWelcomeTitle')}
-        automationId={MailPoet.I18n.t('tabWelcomeTitle')}
+        automationId={`tab-${MailPoet.I18n.t('tabWelcomeTitle')}`}
       >
         <NewsletterListWelcome />
       </Tab>
@@ -69,7 +59,7 @@ const Tabs = withNpsPoll(() => {
         key="notification"
         route="notification/(.*)?"
         title={MailPoet.I18n.t('tabNotificationTitle')}
-        automationId={MailPoet.I18n.t('tabNotificationTitle')}
+        automationId={`tab-${MailPoet.I18n.t('tabNotificationTitle')}`}
       >
         {
           parentId
@@ -77,11 +67,64 @@ const Tabs = withNpsPoll(() => {
             : <NewsletterListNotification />
         }
       </Tab>
+      {window.mailpoet_woocommerce_active && _.map(automaticEmails, (email) => (
+        <Tab
+          key={email.slug}
+          route={`${email.slug}/(.*)?`}
+          title={email.title}
+          automationId={`tab-${email.title}`}
+        >
+          <Listings />
+        </Tab>
+      ))}
     </RoutedTabs>
   );
 });
 
-const routes = Hooks.applyFilters('mailpoet_newsletters_before_router', [
+const getAutomaticEmailsRoutes = () => {
+  const routes = [];
+  _.each(automaticEmails, (email) => {
+    routes.push({
+      path: `/${email.slug}/(.*)?`,
+      component: Tabs,
+    });
+
+    const { events } = email;
+    if (_.isObject(events)) {
+      _.each(events, (event) => {
+        routes.push({
+          path: `/new/${email.slug}/${event.slug}/conditions`,
+          render: (props) => {
+            const componentProps = {
+              ...props,
+              email,
+              name: event.slug,
+            };
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            return (<EventsConditions {...componentProps} />);
+          },
+        });
+      });
+    }
+
+    routes.push({
+      path: `/new/${email.slug}`,
+      render: (props) => {
+        const componentProps = {
+          ...props,
+          email,
+        };
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        return (<AutomaticEmailEventsList {...componentProps} />);
+      },
+    });
+  });
+  return routes;
+};
+
+const routes = [
+  ...getAutomaticEmailsRoutes(),
+
   /* Listings */
   {
     path: '/notification/history/:parentId/(.*)?',
@@ -133,8 +176,7 @@ const routes = Hooks.applyFilters('mailpoet_newsletters_before_router', [
     path: '/stats/:id/(.*)?',
     component: CampaignStatsPage,
   },
-  ...getAutomaticEmailsRoutes(),
-]);
+];
 
 const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
