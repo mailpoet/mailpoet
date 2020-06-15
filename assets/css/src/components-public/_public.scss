@@ -84,11 +84,6 @@ $form-columns-space-between: 20px;
 }
 
 .mailpoet_form_fixed_bar {
-  // in fixed form bar we want to remove the bottom margins of all last paragraphs to keep the height of the bar small
-  .mailpoet_paragraph.last {
-    margin-bottom: 0;
-  }
-
   @include breakpoint-min-width($form-break-small-width) {
     .mailpoet_form_columns .mailpoet_form_column .mailpoet_paragraph:last-child {
       margin-bottom: 0;
@@ -97,11 +92,6 @@ $form-columns-space-between: 20px;
 }
 
 div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
-  // we want to remove the bottom margins of all last paragraphs to keep the height of the bar small
-  .mailpoet_paragraph.last {
-    margin-bottom: 0;
-  }
-
   @include breakpoint-min-width($form-break-small-width) {
     .mailpoet_paragraph:last-child,
     .mailpoet_paragraph p:last-child {
@@ -239,8 +229,8 @@ div.mailpoet_form_popup {
 .mailpoet_form_close_icon {
   cursor: pointer;
   display: block;
-  margin: 0 0 0 auto;
   float: right;
+  margin: 0 0 0 auto;
 }
 
 div.mailpoet_form_fixed_bar {

@@ -194,11 +194,14 @@ EOL;
 
     $messagesStyles = $this->renderMessagesStyles($formSettings, $selector);
 
+    $additionalStyles = $selector . ' .mailpoet_paragraph.last {margin-bottom: 0}';
+
     return $formWrapperStyles
       . $formElementStyles
       . $widthStyles
       . $messagesStyles
       . $typeSpecificStyles
+      . $additionalStyles
       . $media;
   }
 
