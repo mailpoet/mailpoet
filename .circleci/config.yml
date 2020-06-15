@@ -46,7 +46,7 @@ executors:
         command: [--default-authentication-plugin=mysql_native_password]
 
 jobs:
-  build_and_code_qa:
+  build:
     executor: wpcli_php_latest
     resource_class: medium
     steps:
@@ -119,9 +119,6 @@ jobs:
           name: Dump tests ENV variables for acceptance tests
           command: |
             (printenv | grep WP_TEST_ > .env) || true
-      - run:
-          name: "QA Scripts"
-          command: ./do qa
       - persist_to_workspace:
           root: /home/circleci/mailpoet
           paths:
@@ -313,14 +310,14 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - build_and_code_qa
+      - build
       - unit_tests:
           name: unit_tests
           requires:
-            - build_and_code_qa
+            - build
       - static_analysis:
           requires:
-            - build_and_code_qa
+            - build
       - acceptance_tests:
           name: acceptance_tests_1
           group_arg: -g acceptance_group_1
@@ -353,7 +350,7 @@ workflows:
             - static_analysis
       - js_tests:
           requires:
-            - build_and_code_qa
+            - build
       - integration_tests:
           requires:
             - unit_tests
@@ -388,7 +385,7 @@ workflows:
             - static_analysis
       - build_release_zip:
           requires:
-            - build_and_code_qa
+            - build
             - acceptance_tests_1
             - acceptance_tests_2
             - acceptance_tests_3
@@ -410,33 +407,33 @@ workflows:
               only:
                 - master
     jobs:
-      - build_and_code_qa
+      - build
       - acceptance_tests:
           name: acceptance_latest
           requires:
-            - build_and_code_qa
+            - build
       - acceptance_tests:
           name: acceptance_oldest
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
           wordpress_image_version: wp-4.9_php7.0_20200130.1
           requires:
-            - build_and_code_qa
+            - build
       - unit_tests:
           name: unit_latest
           requires:
-            - build_and_code_qa
+            - build
       - unit_tests:
           name: unit_oldest
           executor: wpcli_php_mysql_oldest
           requires:
-            - build_and_code_qa
+            - build
       - integration_tests:
           name: integration_latest
           requires:
-            - build_and_code_qa
+            - build
       - integration_tests:
           name: integration_oldest
           executor: wpcli_php_mysql_oldest
           requires:
-            - build_and_code_qa
+            - build
