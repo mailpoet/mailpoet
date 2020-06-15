@@ -19,7 +19,12 @@ const Tabs = () => (
     <Tab key="" route="*" title={MailPoet.I18n.t('pageTitle')}>
       <SegmentList />
     </Tab>
-    <Tab key="segments" route="segments/(.*)?" title={MailPoet.I18n.t('pageTitleSegments')}>
+    <Tab
+      key="segments"
+      route="segments/(.*)?"
+      title={MailPoet.I18n.t('pageTitleSegments')}
+      automationId="dynamic-segments-tab"
+    >
       <DynamicSegmentList />
     </Tab>
   </RoutedTabs>

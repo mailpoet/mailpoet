@@ -41,12 +41,14 @@ const getActiveChild = (activeTab: string, children: React.ReactElement[]): Reac
 type Props = {
   activeKey: string,
   onSwitch?: (tabKey: string) => void,
+  automationId?: string,
   children: React.ReactNode,
 };
 
 const Tabs = ({
   activeKey,
   onSwitch = () => {},
+  automationId = null,
   children,
 }: Props) => {
   const [activeTab, setActiveTab] = useState(activeKey);
@@ -77,7 +79,7 @@ const Tabs = ({
   );
 
   return (
-    <div className={classnames('mailpoet-tabs', { 'mailpoet-tabs-is-open': isOpen })}>
+    <div className={classnames('mailpoet-tabs', { 'mailpoet-tabs-is-open': isOpen })} data-automation-id={automationId}>
       <button type="button" className="mailpoet-tabs-title" onClick={() => setIsOpen(!isOpen)}>
         {title(activeChild.props)}
       </button>
