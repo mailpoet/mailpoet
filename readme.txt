@@ -185,14 +185,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = 3.47.5 - 2020-06-16 =
-* Added: padding & custom fonts for form's buttons;
 * Added: text styles in forms;
-* Improved: don't allow very long preview text, which would otherwise be trimmed;
-* Improved: show hint, that Automated Latest Content posts are only a preview posts;
-* Improved: new design for datepickers;
-* Improved: more meaningful error message when verifying key;
-* Improved: faster emails listing loading with lots of emails;
+* Added: padding & custom fonts for form's buttons;
 * Improved: miscellaneous changes to forms;
+* Improved: faster emails listing loading with lots of emails;
+* Improved: show hint, that Automated Latest Content posts are only a preview posts;
+* Improved: more meaningful error message when verifying key;
+* Improved: new design for datepickers;
+* Improved: don't allow very long email preview text, which would otherwise be trimmed;
 * Fixed: padding of paragraph block in forms;
 * Fixed: showing multiple MailPoet forms in some themes (e.g. Shapely).
 
