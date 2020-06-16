@@ -17,6 +17,7 @@ class DataGenerator {
   }
 
   public function run($generatorName) {
+    if (!$generatorName) $generatorName = self::PAST_REVENUES_GENERATOR;
     ini_set('memory_limit', '1024M');
     $timer = time();
     try {
