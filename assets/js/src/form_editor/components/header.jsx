@@ -27,7 +27,7 @@ export default () => {
           isLarge
           onClick={showPreview}
           isPressed={isPreview}
-          className="editor-post-preview"
+          className="mailpoet-preview-button"
           data-automation-id="form_preview_button"
         >
           {__('Preview')}
