@@ -35,7 +35,7 @@ export const initBlocks = () => {
     { slug: 'obligatory', title: '' }, // Blocks from this category are not in block insert popup
   ];
 
-  categories.push({ slug: 'layout', title: MailPoet.I18n.t('layoutBlocksCategory') });
+  categories.push({ slug: 'design', title: MailPoet.I18n.t('layoutBlocksCategory') });
   categories.push({ slug: 'fields', title: MailPoet.I18n.t('fieldsBlocksCategory') });
   categories.push({ slug: 'custom-fields', title: MailPoet.I18n.t('customFieldsBlocksCategory') });
   setCategories(categories);

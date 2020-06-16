@@ -13,7 +13,7 @@ const settings = {
   ...heading.metadata,
   ...heading.settings,
   ...settingsReset,
-  category: 'layout',
+  category: 'design',
   supports: {
     ...heading.settings.supports,
     html: false,

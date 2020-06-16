@@ -12,6 +12,6 @@ const settings = {
   ...column.metadata,
   ...column.settings,
   ...settingsReset,
-  category: 'layout',
+  category: 'design',
 };
 export { settings };

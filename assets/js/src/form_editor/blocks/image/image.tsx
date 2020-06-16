@@ -13,7 +13,7 @@ const settings = {
   ...image.metadata,
   ...image.settings,
   ...settingsReset,
-  category: 'layout',
+  category: 'design',
   supports: {
     ...image.settings.supports,
     html: false,
