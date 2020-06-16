@@ -12,7 +12,7 @@ const settings = {
   ...paragraph.metadata,
   ...paragraph.settings,
   ...settingsReset,
-  category: 'layout',
+  category: 'design',
   supports: {
     ...paragraph.settings.supports,
     html: false,
