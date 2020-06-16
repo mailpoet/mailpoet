@@ -10,7 +10,7 @@ export default () => {
     (select) => select('mailpoet-form-editor').getFormName(),
     []
   );
-  const titleClass = classnames('wp-block editor-post-title__block', {
+  const titleClass = classnames('wp-block editor-post-title editor-post-title__block', {
     'is-selected': isSelected,
   });
   const { changeFormName } = useDispatch('mailpoet-form-editor');
@@ -37,7 +37,7 @@ export default () => {
   };
 
   return (
-    <div className="editor-post-title">
+    <div className="edit-post-visual-editor__post-title-wrapper">
       <div className={titleClass}>
         <div>
           <label htmlFor="post-title" className="screen-reader-text">

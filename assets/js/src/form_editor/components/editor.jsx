@@ -42,7 +42,7 @@ export default () => {
     []
   );
 
-  const layoutClass = classnames('edit-post-layout block-editor-editor-skeleton', {
+  const layoutClass = classnames('edit-post-layout interface-interface-skeleton', {
     'is-sidebar-opened': sidebarOpened,
   });
 
@@ -62,10 +62,10 @@ export default () => {
       <DropZoneProvider>
         <SlotFillProvider>
           <div className={layoutClass}>
-            <div className="block-editor-editor-skeleton__header">
+            <div className="interface-interface-skeleton__header">
               <Header />
             </div>
-            <div className="block-editor-editor-skeleton__body">
+            <div className="interface-interface-skeleton__body">
               <BlockEditorProvider
                 value={select('mailpoet-form-editor').getFormBlocks()}
                 onInput={blocksChangedInBlockEditor}
@@ -73,7 +73,7 @@ export default () => {
                 settings={editorSettings}
                 useSubRegistry={false}
               >
-                <div className="block-editor-editor-skeleton__content">
+                <div className="interface-interface-skeleton__content">
                   <Notices />
                   <Popover.Slot name="block-toolbar" />
                   <UnsavedChangesNotice />
@@ -92,10 +92,8 @@ export default () => {
                     </div>
                   </BlockSelectionClearer>
                 </div>
-                <div className="block-editor-editor-skeleton__sidebar">
-                  <div>
-                    { sidebarOpened ? <Sidebar /> : null }
-                  </div>
+                <div className="interface-interface-skeleton__sidebar">
+                  { sidebarOpened ? <Sidebar /> : null }
                 </div>
                 <Popover.Slot />
               </BlockEditorProvider>

@@ -10,7 +10,7 @@ import FormSettings from './form_settings/form_settings';
 
 const SidebarHeader = ({ children, closeSidebar }) => (
   <>
-    <div className="components-panel__header edit-post-sidebar-header edit-post-sidebar__panel-tabs">
+    <div className="components-panel__header interface-complementary-area-header edit-post-sidebar__panel-tabs">
       { children }
       <Button
         onClick={closeSidebar}
@@ -50,13 +50,13 @@ export default () => {
   }, [selectedBlockId, switchSidebarTab]);
 
   return (
-    <div className="edit-post-sidebar mailpoet_form_editor_sidebar">
+    <div className="edit-post-sidebar interface-complementary-area mailpoet_form_editor_sidebar">
       <SidebarHeader closeSidebar={() => toggleSidebar(false)}>
         <ul>
           <li>
             <button
               onClick={() => switchSidebarTab('form')}
-              className={classnames('edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'form' })}
+              className={classnames('components-button edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'form' })}
               type="button"
             >
               {MailPoet.I18n.t('form')}
@@ -65,7 +65,7 @@ export default () => {
           <li>
             <button
               onClick={() => switchSidebarTab('block')}
-              className={classnames('edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'block' })}
+              className={classnames('components-button edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'block' })}
               type="button"
             >
               {__('Block')}
