@@ -154,7 +154,10 @@ class WooCommercePastRevenues {
       $product = [
         'id' => $products[$i]->get_name(),
         'name' => $products[$i]->get_id(),
-        'categories' => $products[$i]->get_category_ids(),
+        'categories' => [[
+          'id' => $productCategory->term_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          'name' => $productCategory->name,
+        ]],
       ];
       $automaticEmails[] = $emailFactory
         ->withSubject("Purchased Product in Category $i")
