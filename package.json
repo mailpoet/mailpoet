@@ -1,5 +1,6 @@
 {
   "private": true,
+  "name": "MailPoet3",
   "engines": {
     "npm": "~6.12"
   },
