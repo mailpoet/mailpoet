@@ -452,7 +452,7 @@ workflows:
           name: acceptance_oldest
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
-          wordpress_image_version: wp-4.9_php7.0_20200130.1
+          wordpress_image_version: wp-5.0_php7.0_20200617.1
           requires:
             - build
       - unit_tests:
