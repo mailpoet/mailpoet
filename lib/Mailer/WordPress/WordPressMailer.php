@@ -73,21 +73,26 @@ class WordPressMailer extends \PHPMailer {
   }
 
   private function getEmail() {
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $email = [
-      'subject' => $this->Subject, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'subject' => $this->Subject,
       'body' => [],
     ];
 
-    if (strpos($this->ContentType, 'text/plain') === 0) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      $email['body']['text'] = $this->Body; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    } elseif (strpos($this->ContentType, 'text/html') === 0) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      $text = @Html2Text::convert(strtolower($this->CharSet) === 'utf-8' ? $this->Body : utf8_encode($this->Body)); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    if (strpos($this->ContentType, 'text/plain') === 0) {
+      $email['body']['text'] = $this->Body;
+    } elseif (strpos($this->ContentType, 'text/html') === 0) {
+      $text = @Html2Text::convert(strtolower($this->CharSet) === 'utf-8' ? $this->Body : utf8_encode($this->Body));
       $email['body']['text'] = $text;
-      $email['body']['html'] = $this->Body; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $email['body']['html'] = $this->Body;
+    } elseif (strpos($this->ContentType, 'multipart/alternative') === 0) {
+      $email['body']['text'] = $this->AltBody;
+      $email['body']['html'] = $this->Body;
     } else {
       throw new \phpmailerException('Unsupported email content type has been used. Please use only text or HTML emails.');
     }
     return $email;
+    // phpcs:enable
   }
 
   private function formatAddress($wordpressAddress) {

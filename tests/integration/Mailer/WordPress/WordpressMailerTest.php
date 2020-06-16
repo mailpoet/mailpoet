@@ -8,6 +8,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Subscribers\SubscribersRepository;
 
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 class WordpressMailerTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
@@ -45,8 +46,8 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Subject = 'Subject'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $wpMailer->Body = 'Email Text Body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Subject = 'Subject';
+    $wpMailer->Body = 'Email Text Body';
     $wpMailer->isHTML(false);
     $wpMailer->send();
   }
@@ -66,8 +67,8 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
-    $wpMailer->Subject = 'Subject'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $wpMailer->Body = 'Body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Subject = 'Subject';
+    $wpMailer->Body = 'Body';
     $wpMailer->isHTML(false);
     $wpMailer->send();
   }
@@ -90,9 +91,35 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Subject = 'Subject'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $wpMailer->Body = 'Email Html Body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Subject = 'Subject';
+    $wpMailer->Body = 'Email Html Body';
     $wpMailer->isHTML(true);
+    $wpMailer->send();
+  }
+
+  public function testItFormatsMultipartNewsletterForMailer() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer
+      ->expects($this->once())
+      ->method('send')
+      ->with($this->equalTo([
+        'subject' => 'Subject',
+        'body' => [
+          'text' => 'Email Text Body',
+          'html' => 'Email Html Body',
+        ],
+      ]))
+      ->willReturn(['response' => true]);
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer->expects($this->never())->method('send');
+
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->addAddress('email@example.com');
+    $wpMailer->Subject = 'Subject';
+    $wpMailer->Body = 'Email Html Body';
+    $wpMailer->AltBody = 'Email Text Body';
+    $wpMailer->isHTML(true);
+    $wpMailer->ContentType = 'multipart/alternative';
     $wpMailer->send();
   }
 
@@ -107,7 +134,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Body = 'body';
     expect($wpMailer->send())->true();
   }
 
@@ -126,7 +153,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Body = 'body';
     expect($wpMailer->send())->true();
   }
 
@@ -144,7 +171,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Body = 'body';
 
     $errorMessage = null;
     try {
@@ -167,8 +194,8 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $wpMailer->ContentType = 'application/json'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Body = 'body';
+    $wpMailer->ContentType = 'application/json';
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
   }
@@ -187,7 +214,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
-    $wpMailer->Body = 'body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Body = 'body';
 
     $errorMessage = null;
     try {
@@ -225,8 +252,8 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
-    $wpMailer->Subject = 'Subject'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $wpMailer->Body = 'Body'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wpMailer->Subject = 'Subject';
+    $wpMailer->Body = 'Body';
     $wpMailer->send();
   }
 
@@ -234,3 +261,4 @@ class WordpressMailerTest extends \MailPoetTest {
     $this->subscribersRepository->truncate();
   }
 }
+// phpcs:enable
