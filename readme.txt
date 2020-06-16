@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 4.7
 Tested up to: 5.4
-Stable tag: 3.47.4
+Stable tag: 3.47.5
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,18 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.47.5 - 2020-06-16 =
+* Added: padding & custom fonts for form's buttons;
+* Added: text styles in forms;
+* Improved: don't allow very long preview text, which would otherwise be trimmed;
+* Improved: show hint, that Automated Latest Content posts are only a preview posts;
+* Improved: new design for datepickers;
+* Improved: more meaningful error message when verifying key;
+* Improved: faster emails listing loading with lots of emails;
+* Improved: miscellaneous changes to forms;
+* Fixed: padding of paragraph block in forms;
+* Fixed: showing multiple MailPoet forms in some themes (e.g. Shapely).
 
 = 3.47.4 - 2020-06-09 =
 * Added: choose a font for your form;
