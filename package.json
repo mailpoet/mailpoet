@@ -23,7 +23,8 @@
     "test": "env NODE_PATH=$NODE_PATH:./assets/js/src mocha --require tests/javascript/babel_register.js tests/javascript/**/*.spec.js",
     "check-types": "tsc --noEmit",
     "storybook": "start-storybook -s ./ -p 8083",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "postinstall": "node packages_postinstall.js"
   },
   "dependencies": {
     "@babel/runtime": "^7.10.2",
