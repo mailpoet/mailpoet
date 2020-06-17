@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use \Codeception\Util\Locator;
+use Codeception\Util\Locator;
 
 class AdvancedSettingsCest {
   public function toggleAnonymousDataSetting(\AcceptanceTester $i) {
