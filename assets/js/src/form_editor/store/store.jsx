@@ -1,3 +1,4 @@
+import '@wordpress/notices';
 /**
  * The store is implemented using @wordpress/data module
  * @see https://developer.wordpress.org/block-editor/packages/packages-data/

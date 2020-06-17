@@ -44,6 +44,7 @@
     "@wordpress/html-entities": "^2.7.0",
     "@wordpress/i18n": "^3.13.0",
     "@wordpress/media-utils": "^1.7.2",
+    "@wordpress/notices": "^2.6.0",
     "@wordpress/rich-text": "^3.18.0",
     "@wordpress/url": "^2.16.0",
     "backbone": "1.3.3",
