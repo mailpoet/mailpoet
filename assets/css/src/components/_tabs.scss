@@ -7,6 +7,7 @@
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   box-sizing: border-box;
+  color: $color-tertiary;
   cursor: pointer;
   display: inline-flex;
   font-size: $font-size;
@@ -78,8 +79,11 @@
     width: 100%;
 
     &:after {
-      content: '▾';
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23071C6D' d='M10 0H2c-.552 0-1 .448-1 1 0 .216.07.427.2.6l4 5.333c.331.442.958.532 1.4.2.076-.057.143-.124.2-.2l4-5.333c.331-.442.242-1.069-.2-1.4-.173-.13-.384-.2-.6-.2z'/%3E%3C/svg%3E%0A") no-repeat center;
+      content: '';
+      height: 8px;
       margin-left: auto;
+      width: 12px;
     }
 
     .mailpoet-tabs-is-open > &:after {
