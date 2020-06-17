@@ -42,9 +42,18 @@ export default () => {
     []
   );
 
-  const layoutClass = classnames('edit-post-layout interface-interface-skeleton', {
-    'is-sidebar-opened': sidebarOpened,
-  });
+  const selectedBlock = useSelect(
+    (sel) => sel('core/block-editor').getSelectedBlock(),
+    []
+  );
+
+  const layoutClass = classnames(
+    'edit-post-layout interface-interface-skeleton',
+    selectedBlock ? selectedBlock.name.replace('/', '-') : null,
+    {
+      'is-sidebar-opened': sidebarOpened,
+    }
+  );
 
   const { blocksChangedInBlockEditor } = useDispatch('mailpoet-form-editor');
 
