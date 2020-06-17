@@ -36,6 +36,12 @@ class StatisticsUnsubscribeEntity {
    */
   private $subscriberId;
 
+  /**
+   * @ORM\Column(type="string")
+   * @var string
+   */
+  private $source = 'unknown';
+
   public function __construct(
     NewsletterEntity $newsletter,
     SendingQueueEntity $queue,
@@ -60,5 +66,19 @@ class StatisticsUnsubscribeEntity {
   public function getQueue() {
     $this->safelyLoadToOneAssociation('queue');
     return $this->queue;
+  }
+
+  /**
+   * @return string
+   */
+  public function getSource(): string {
+    return $this->source;
+  }
+
+  /**
+   * @param string $source
+   */
+  public function setSource(string $source) {
+    $this->source = $source;
   }
 }
