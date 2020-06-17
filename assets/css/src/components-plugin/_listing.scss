@@ -12,6 +12,13 @@
 }
 
 .mailpoet_listing_table {
+  .mailpoet-tabs & {
+    border-left: #000;
+    border-right: #000;
+    margin: $grid-gap 0 - $grid-gap;
+    width: calc(100% + 2 * #{$grid-gap});
+  }
+
   th span {
     white-space: nowrap;
   }
