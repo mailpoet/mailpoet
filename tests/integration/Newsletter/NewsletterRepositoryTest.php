@@ -115,6 +115,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     assert($scheduledTask instanceof ScheduledTaskEntity);
     $this->entityManager->refresh($scheduledTask);
     expect($scheduledTask->getDeletedAt())->null();
+    expect($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
   }
 
   public function testItBulkDeleteNewslettersAndChildren() {
