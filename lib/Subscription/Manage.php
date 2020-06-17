@@ -2,11 +2,14 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Util\Url as UrlHelper;
 
@@ -24,9 +27,19 @@ class Manage {
   /** @var SettingsController */
   private $settings;
 
-  public function __construct(UrlHelper $urlHelper, FieldNameObfuscator $fieldNameObfuscator, LinkTokens $linkTokens, SettingsController $settings) {
+  /** @var Unsubscribes */
+  private $unsubscribesTracker;
+
+  public function __construct(
+    UrlHelper $urlHelper,
+    FieldNameObfuscator $fieldNameObfuscator,
+    LinkTokens $linkTokens,
+    Unsubscribes $unsubscribesTracker,
+    SettingsController $settings
+  ) {
     $this->urlHelper = $urlHelper;
     $this->fieldNameObfuscator = $fieldNameObfuscator;
+    $this->unsubscribesTracker = $unsubscribesTracker;
     $this->linkTokens = $linkTokens;
     $this->settings = $settings;
   }
@@ -43,6 +56,19 @@ class Manage {
 
     if (!empty($subscriberData['email'])) {
       $subscriber = Subscriber::where('email', $subscriberData['email'])->findOne();
+
+      if (
+        ($subscriberData['status'] === SubscriberEntity::STATUS_UNSUBSCRIBED)
+        && ($subscriber instanceof Subscriber)
+        && ($subscriber->status === SubscriberEntity::STATUS_SUBSCRIBED)
+      ) {
+        $this->unsubscribesTracker->track(
+          (int)$subscriber->id,
+          null,
+          StatisticsUnsubscribeEntity::SOURCE_MANAGE
+        );
+      }
+
       if ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) {
         if ($subscriberData['email'] !== Pages::DEMO_EMAIL) {
           $this->updateSubscriptions($subscriber, $subscriberData);

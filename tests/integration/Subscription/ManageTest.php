@@ -8,6 +8,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\Manage;
 use MailPoet\Util\Url as UrlHelper;
@@ -54,6 +55,7 @@ class ManageTest extends \MailPoetTest {
           return true;
         },
       ]),
+      $this->diContainer->get(Unsubscribes::class),
       $this->settings
     );
     $_POST['action'] = 'mailpoet_subscription_update';

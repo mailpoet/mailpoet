@@ -17,6 +17,8 @@ class StatisticsUnsubscribeEntity {
   use SafeToOneAssociationLoadTrait;
 
   const SOURCE_NEWSLETTER = 'newsletter';
+  const SOURCE_MANAGE = 'manage';
+
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")
