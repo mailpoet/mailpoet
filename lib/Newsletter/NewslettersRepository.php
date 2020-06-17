@@ -173,26 +173,17 @@ class NewslettersRepository extends Repository {
       ->setParameter('ids', $ids)
       ->getQuery()->execute();
 
-    // Restore scheduled tasks
+    // Restore scheduled tasks and pause running ones
     $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeUpdate("
        UPDATE $scheduledTasksTable t
        JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
-       SET t.`deleted_at` = null
+       SET t.`deleted_at` = null, t.`status` = IFNULL(t.status, :pausedStatus)
        WHERE q.`newsletter_id` IN (:ids)
-    ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
-
-    // Pause restored running scheduled tasks
-    $this->entityManager->getConnection()->executeUpdate("
-       UPDATE $scheduledTasksTable t
-       JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
-       SET t.`status` = :status
-       WHERE q.`newsletter_id` IN (:ids)
-       AND t.`status` IS NULL
     ", [
       'ids' => $ids,
-      'status' => ScheduledTaskEntity::STATUS_PAUSED,
+      'pausedStatus' => ScheduledTaskEntity::STATUS_PAUSED,
     ], [
       'ids' => Connection::PARAM_INT_ARRAY,
     ]);
