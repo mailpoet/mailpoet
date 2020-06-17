@@ -152,7 +152,7 @@ class NewslettersRepository extends Repository {
        WHERE q.`newsletter_id` IN (:ids)
     ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
-    // Trash sending queues tasks
+    // Trash sending queues
     $this->entityManager->getConnection()->executeUpdate("
        UPDATE $sendingQueueTable q
        SET q.`deleted_at` = NOW()
@@ -286,7 +286,7 @@ class NewslettersRepository extends Repository {
       $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
       $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
 
-      // Delete sending tasks subscribers
+      // Delete scheduled tasks subscribers
       $this->entityManager->getConnection()->executeUpdate("
          DELETE ts FROM $scheduledTaskSubscribersTable ts
          JOIN $scheduledTasksTable t ON t.`id` = ts.`task_id`
