@@ -1,16 +1,21 @@
 .mailpoet-tabs {
   position: relative;
+  z-index: 1;
 }
 
-.mailpoet-tabs-is-open:after {
-  background: rgba(30, 36, 40, .1);
-  content: '';
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 1;
+.mailpoet-tabs-is-open {
+  z-index: 2;
+
+  &:after {
+    background: rgba(30, 36, 40, .1);
+    content: '';
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+  }
 }
 
 .mailpoet-tab,
