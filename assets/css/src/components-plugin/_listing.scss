@@ -52,3 +52,9 @@
     }
   }
 }
+
+.mailpoet-listing-mobile-search-holder {
+  @include respond-to(small-screen) {
+    height: 100px;
+  }
+}

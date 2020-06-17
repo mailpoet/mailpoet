@@ -665,7 +665,7 @@ class Listing extends React.Component {
             </tfoot>
 
           </table>
-          <div className="tablenav bottom">
+          <div className="tablenav bottom clearfix">
             <ListingBulkActions
               count={this.state.count}
               bulk_actions={bulkActions}
@@ -680,6 +680,8 @@ class Listing extends React.Component {
               onSetPage={this.handleSetPage}
             />
           </div>
+
+          { search ? <div className="mailpoet-listing-mobile-search-holder" /> : '' }
         </div>
       </>
     );
