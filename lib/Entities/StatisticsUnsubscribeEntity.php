@@ -43,8 +43,8 @@ class StatisticsUnsubscribeEntity {
   private $source = 'unknown';
 
   public function __construct(
-    NewsletterEntity $newsletter,
-    SendingQueueEntity $queue,
+    NewsletterEntity $newsletter = null,
+    SendingQueueEntity $queue = null,
     int $subscriberId
   ) {
     $this->newsletter = $newsletter;
