@@ -6,6 +6,8 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Config\AccessControl;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing;
 use MailPoet\Models\Form;
@@ -17,6 +19,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
@@ -71,6 +74,9 @@ class Subscribers extends APIEndpoint {
   /** @var FieldNameObfuscator */
   private $fieldNameObfuscator;
 
+  /** @var Unsubscribes */
+  private $unsubscribesTracker;
+
   public function __construct(
     Listing\BulkActionController $bulkActionController,
     SubscribersListings $subscribersListings,
@@ -83,6 +89,7 @@ class Subscribers extends APIEndpoint {
     CaptchaSession $captchaSession,
     ConfirmationEmailMailer $confirmationEmailMailer,
     SubscriptionUrlFactory $subscriptionUrlFactory,
+    Unsubscribes $unsubscribesTracker,
     FieldNameObfuscator $fieldNameObfuscator
   ) {
     $this->bulkActionController = $bulkActionController;
@@ -97,6 +104,7 @@ class Subscribers extends APIEndpoint {
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->fieldNameObfuscator = $fieldNameObfuscator;
+    $this->unsubscribesTracker = $unsubscribesTracker;
   }
 
   public function get($data = []) {
@@ -346,6 +354,23 @@ class Subscribers extends APIEndpoint {
     }
     $data['segments'] = array_merge($data['segments'], $this->getNonDefaultSubscribedSegments($data));
     $newSegments = $this->findNewSegments($data);
+    if (isset($data['id']) && (int)$data['id'] > 0) {
+      $oldSubscriber = Subscriber::findOne((int)$data['id']);
+      if (
+        isset($data['status'])
+        && ($data['status'] === SubscriberEntity::STATUS_UNSUBSCRIBED)
+        && ($oldSubscriber instanceof Subscriber)
+        && ($oldSubscriber->status === SubscriberEntity::STATUS_SUBSCRIBED)
+      ) {
+        $currentUser = $this->wp->wpGetCurrentUser();
+        $this->unsubscribesTracker->track(
+          (int)$oldSubscriber->id,
+          null,
+          StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR,
+          $currentUser->display_name // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        );
+      }
+    }
     $subscriber = Subscriber::createOrUpdate($data);
     $errors = $subscriber->getErrors();
 

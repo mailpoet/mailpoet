@@ -23,7 +23,9 @@ class Unsubscribes {
     $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
   }
 
-  public function track(int $subscriberId, int $queueId = null, string $source) {
+  public function track(int $subscriberId, int $queueId = null, string $source, string $meta = null) {
+    $queue = null;
+    $statistics = null;
     if ($queueId) {
       $queue = $this->sendingQueuesRepository->findOneById($queueId);
     }
@@ -43,8 +45,11 @@ class Unsubscribes {
       }
     }
 
-    if (!$statistics) {
+    if ($statistics === null) {
       $statistics = new StatisticsUnsubscribeEntity(null, null, $subscriberId);
+    }
+    if ($meta !== null) {
+      $statistics->setMeta($meta);
     }
     $statistics->setSource($source);
     $this->statisticsUnsubscribesRepository->persist($statistics);

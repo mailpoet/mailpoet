@@ -453,6 +453,7 @@ class Migrator {
       'queue_id int(11) unsigned NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       "source varchar(255) DEFAULT 'unknown',",
+      'meta varchar(255) NULL,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id_subscriber_id (newsletter_id, subscriber_id),',
       'KEY queue_id (queue_id),',
