@@ -87,7 +87,7 @@
 .mailpoet-tab-content {
   background: $color-white;
   border: 1px solid $color-tertiary-light;
-  border-radius: 4px;
+  border-radius: 0 4px 4px;
   padding: $grid-gap;
 
   > *:first-child { margin-top: 0; }
