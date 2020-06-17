@@ -50,7 +50,6 @@ export default () => {
 
   // Editor settings - see @wordpress/block-editor/src/store/defaults.js
   const editorSettings = {
-    showInserterHelpPanel: false, // Disable TIPs section in add block pop up
     mediaUpload: canUserUpload ? uploadMedia : null,
     maxWidth: 580,
     __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
