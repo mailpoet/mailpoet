@@ -2,6 +2,13 @@
   clear: both;
   position: relative;
   z-index: 1;
+
+  @include respond-to(small-screen) {
+    p.search-box {
+      left: $grid-gap;
+      width: calc(100% - 2 * #{$grid-gap});
+    }
+  }
 }
 
 .mailpoet-tabs-is-open {
