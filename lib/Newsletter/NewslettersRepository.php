@@ -127,13 +127,8 @@ class NewslettersRepository extends Repository {
       return 0;
     }
     // Fetch children id for trashing
-    $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
-      ->from(NewsletterEntity::class, 'n')
-      ->where('n.parent IN (:ids)')
-      ->setParameter('ids', $ids)
-      ->getQuery()->getScalarResult();
-
-    $ids = array_merge($ids, array_column($childrenIds, 'id'));
+    $childrenIds = $this->fetchChildrenIds($ids);
+    $ids = array_merge($ids, $childrenIds);
 
     $this->entityManager->createQueryBuilder()
       ->update(NewsletterEntity::class, 'n')
@@ -167,12 +162,8 @@ class NewslettersRepository extends Repository {
       return 0;
     }
     // Fetch children ids to restore
-    $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
-      ->from(NewsletterEntity::class, 'n')
-      ->where('n.parent IN (:ids)')
-      ->setParameter('ids', $ids)
-      ->getQuery()->getScalarResult();
-    $ids = array_merge($ids, array_column($childrenIds, 'id'));
+    $childrenIds = $this->fetchChildrenIds($ids);
+    $ids = array_merge($ids, $childrenIds);
 
     $this->entityManager->createQueryBuilder()->update(NewsletterEntity::class, 'n')
       ->set('n.deletedAt', ':deletedAt')
@@ -222,12 +213,8 @@ class NewslettersRepository extends Repository {
     $this->entityManager->getConnection()->beginTransaction();
     try {
       // Fetch children ids for deleting
-      $childrenIds = $this->entityManager->createQueryBuilder()->select( 'n.id')
-        ->from(NewsletterEntity::class, 'n')
-        ->where('n.parent IN (:ids)')
-        ->setParameter('ids', $ids)
-        ->getQuery()->getScalarResult();
-      $ids = array_merge($ids, array_column($childrenIds, 'id'));
+      $childrenIds = $this->fetchChildrenIds($ids);
+      $ids = array_merge($ids, $childrenIds);
       // Delete statistics data
       $newsletterStatisticsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
       $this->entityManager->getConnection()->executeUpdate("
@@ -324,5 +311,14 @@ class NewslettersRepository extends Repository {
       $this->entityManager->getConnection()->rollBack();
       throw $e;
     }
+  }
+
+  private function fetchChildrenIds(array $parentIds) {
+    $ids = $this->entityManager->createQueryBuilder()->select('n.id')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.parent IN (:ids)')
+      ->setParameter('ids', $parentIds)
+      ->getQuery()->getScalarResult();
+    return array_column($ids, 'id');
   }
 }
