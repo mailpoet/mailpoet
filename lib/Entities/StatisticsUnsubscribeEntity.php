@@ -18,6 +18,7 @@ class StatisticsUnsubscribeEntity {
 
   const SOURCE_NEWSLETTER = 'newsletter';
   const SOURCE_MANAGE = 'manage';
+  const SOURCE_ADMINISTRATOR = 'admin';
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
@@ -44,6 +45,12 @@ class StatisticsUnsubscribeEntity {
    * @var string
    */
   private $source = 'unknown';
+
+  /**
+   * @ORM\Column(type="string", nullable=true)
+   * @var string|null
+   */
+  private $meta;
 
   public function __construct(
     NewsletterEntity $newsletter = null,
@@ -83,5 +90,12 @@ class StatisticsUnsubscribeEntity {
    */
   public function setSource(string $source) {
     $this->source = $source;
+  }
+
+  /**
+   * @param string $meta
+   */
+  public function setMeta(string $meta) {
+    $this->meta = $meta;
   }
 }
