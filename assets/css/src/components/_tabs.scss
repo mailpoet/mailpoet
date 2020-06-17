@@ -1,3 +1,18 @@
+.mailpoet-tabs {
+  position: relative;
+}
+
+.mailpoet-tabs-is-open:after {
+  background: rgba(30, 36, 40, .1);
+  content: '';
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
 .mailpoet-tab,
 .mailpoet-tabs-title {
   align-items: center;
@@ -77,6 +92,7 @@
     justify-content: flex-start;
     margin-bottom: 0;
     width: 100%;
+    z-index: 2;
 
     &:after {
       background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23071C6D' d='M10 0H2c-.552 0-1 .448-1 1 0 .216.07.427.2.6l4 5.333c.331.442.958.532 1.4.2.076-.057.143-.124.2-.2l4-5.333c.331-.442.242-1.069-.2-1.4-.173-.13-.384-.2-.6-.2z'/%3E%3C/svg%3E%0A") no-repeat center;
@@ -101,6 +117,11 @@
 
   .mailpoet-tabs-wrapper {
     display: none;
+    left: 0;
+    position: absolute;
+    top: 56px;
+    width: 100%;
+    z-index: 2;
 
     .mailpoet-tabs-is-open > & {
       display: block;
