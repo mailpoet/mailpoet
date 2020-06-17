@@ -11,7 +11,7 @@ const Heading = ({
 }: Props) => (
   React.createElement(
     `h${level}`,
-    undefined,
+    { className: `mailpoet-h${level}` },
     children
   )
 );
