@@ -20,18 +20,10 @@ class FormEditorAddNamesCest {
     $i->clickItemRowActionByItemName($formName, 'Edit');
     $i->waitForElement('[data-automation-id="form_title_input"]');
 
-    $i->click('.block-list-appender button');// CLICK the big button that adds new blocks
-    $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
-    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(2) .components-panel__body-toggle'); // toggle fields
-    $i->click('.editor-block-list-item-mailpoet-form-first-name-input'); // add first name block to the editor
-    $i->click('.block-list-appender button');// CLICK the big button that adds new blocks
-    $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
-    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(3) .components-panel__body-toggle'); // toggle fields, get the second field, first one is now "Most Used"
-    $i->click('.editor-block-list-item-mailpoet-form-last-name-input'); // add last name block to the editor
+    $i->addFromBlockInEditor('First name');
+    $i->addFromBlockInEditor('Last name');
 
-    $i->click('[data-automation-id="form_save_button"]');
-    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
-    $i->seeNoJSErrors();
+    $i->saveFormInEditor();
     // Reload page and check data were saved
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');

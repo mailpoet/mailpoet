@@ -40,9 +40,7 @@ class FormEditorUpdateMandatoryFieldsCest {
     $i->assertAttributeContains($blockSubmitInput, 'value', $updatedSubmitLabel);
     $i->seeNoJSErrors();
     // Save changes
-    $i->click('[data-automation-id="form_save_button"]');
-    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
-    $i->seeNoJSErrors();
+    $i->saveFormInEditor();
     // Reload page and check data were saved
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');

@@ -31,9 +31,7 @@ class FormEditorCustomClassesCest {
     $i->assertAttributeContains('[data-type="mailpoet-form/email-input"] .mailpoet_paragraph', 'class', $classNames);
 
     // Save form
-    $i->click('[data-automation-id="form_save_button"]');
-    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
-    $i->seeNoJSErrors();
+    $i->saveFormInEditor();
 
     // Reload page and check data were saved
     $i->reloadPage();
