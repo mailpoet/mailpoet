@@ -2,7 +2,9 @@
 
 <% block content %>
 <div class="mailpoet-premium-page">
-  <h1><%= _x('We take care of your email, <br> so your email can take care of you', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
+  <h1 class="mailpoet-h1">
+    <%= _x('We take care of your email, <br> so your email can take care of you', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+  </h1>
   <div class="mailpoet-premium-page-intro">
     <img
       src="<%= cdn_url('premium/blue_jay_marbles.png') %>"
@@ -31,8 +33,10 @@
 
   <% if (subscriber_count < 1000 ) %>
   <div class="mailpoet-premium-page-text">
-    <h1><%= _x('MailPoet Premium is actually yours for free', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
-    <h3>
+    <h1 class="mailpoet-h1">
+      <%= _x('MailPoet Premium is actually yours for free', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h1>
+    <h3 class="mailpoet-h3">
       <%= _x('Website owners with less than 1,000 subscribers, like you, get the Premium add-on and let MailPoet deliver your emails for free.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </h3>
     <a
@@ -47,7 +51,9 @@
   <% endif %>
 
   <div class="mailpoet-premium-page-text mailpoet-premium-page-text-narrow">
-    <h1><%= _x('Does this sound like you?', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
+    <h1 class="mailpoet-h1">
+      <%= _x('Does this sound like you?', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h1>
     <p>
       <%= _x('“I spent hours tweaking my last newsletter and a subscriber told me it landed in their <b>spambox!</b> It’s frustrating and I don’t know what I’m doing wrong.”', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </p>
@@ -67,7 +73,9 @@
   <hr>
 
   <div class="mailpoet-premium-page-text">
-    <h1><%= _x('Upgrade to MailPoet Premium', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
+    <h1 class="mailpoet-h1">
+      <%= _x('Upgrade to MailPoet Premium', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h1>
     <p>
       <%= _x('Everything you need to create and send emails that look great and land in inboxes every time — guaranteed.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </p>
@@ -76,7 +84,9 @@
     </p>
     <div class="mailpoet-premium-page-features">
       <div class="mailpoet-premium-page-feature">
-        <h2><%= _x('Detailed Analytics at a Glance', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h2>
+        <h2 class="mailpoet-h2">
+          <%= _x('Detailed Analytics at a Glance', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </h2>
         <p>
           <%= _x('Learn more about your subscribers and see the bigger picture behind your campaign successes and failures.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
           <%= _x('See who opened your emails and which links they clicked.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
@@ -84,7 +94,9 @@
         </p>
       </div>
       <div class="mailpoet-premium-page-feature">
-        <h2><%= _x('Advanced Email Delivery', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h2>
+        <h2 class="mailpoet-h2">
+          <%= _x('Advanced Email Delivery', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </h2>
         <p>
           <%= _x('We built the MailPoet Sending Service to meet the demands of WordPress.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
           <%= _x('It sends 50,000 emails per hour, with unparalleled speed and performance, 99% uptime, and zero loss.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
@@ -92,28 +104,36 @@
         </p>
       </div>
       <div class="mailpoet-premium-page-feature">
-        <h2><%= _x('Email that scales with you', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h2>
+        <h2 class="mailpoet-h2">
+          <%= _x('Email that scales with you', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </h2>
         <p>
           <%= _x('Whether you send 10 or 100,000 emails a day, your emails will always be delivered on time, every time.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
           <%= _x('Our advanced email infrastructure routinely handles small business newsletters through to huge mailing lists with tens of thousands of subscribers.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
         </p>
       </div>
       <div class="mailpoet-premium-page-feature">
-        <h2><%= _x('Industry-Leading Deliverability', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h2>
+        <h2 class="mailpoet-h2">
+          <%= _x('Industry-Leading Deliverability', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </h2>
         <p>
           <%= _x('We monitor the 30+ million emails that pass through our servers each month, ensuring they always reach inboxes.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
           <%= _x('It’s how we maintain our 98.5% deliverability rate, often exceeding industry standards.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
         </p>
       </div>
       <div class="mailpoet-premium-page-feature">
-        <h2><%= _x('Email Marketing for WooCommerce', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h2>
+        <h2 class="mailpoet-h2">
+          <%= _x('Email Marketing for WooCommerce', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </h2>
         <p>
           <%= _x('Let MailPoet fuel your WooCommerce marketing and increase your sales.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
           <%= _x('Add products from your store directly to emails and send personalized recommendations to customers based on their purchasing habits.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
         </p>
       </div>
       <div class="mailpoet-premium-page-feature">
-        <h2><%= _x('Fast Priority Support', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h2>
+        <h2 class="mailpoet-h2">
+          <%= _x('Fast Priority Support', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </h2>
         <p>
           <%= _x('Enjoy fast, reliable support via email.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
           <%= _x('No interns here — just real email experts applying 30 years of combined experience to help you send better emails for WordPress.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
@@ -124,15 +144,21 @@
   </div>
   <hr>
   <div class="mailpoet-premium-page-text">
-    <h1><%= _x('Get Started Now', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
+    <h1 class="mailpoet-h1">
+      <%= _x('Get Started Now', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h1>
     <p>
       <%= _x('Choose the MailPoet Premium option that’s right for you.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </p>
     <div class="mailpoet-premium-page-options">
       <div>
         <p><b><%= _x('Most Flexible', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></b></p>
-        <h2><%= _x('Premium', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h2>
-        <h3><%= _x('$149/year', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h3>
+        <h2 class="mailpoet-h2">
+          <%= _x('Premium', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </h2>
+        <h3 class="mailpoet-h3">
+          <%= _x('$149/year', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </h3>
         <ul>
           <li><%= _x('Unlimited subscribers', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
           <li><%= _x('Send emails via your web host or third party service', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
@@ -151,8 +177,12 @@
       </div>
       <div>
         <p><b><%= _x('Most Reliable', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></b></p>
-        <h2><%= _x('Premium + Sending', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h2>
-        <h3><%= _x('From $12/month', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h3>
+        <h2 class="mailpoet-h2">
+          <%= _x('Premium + Sending', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </h2>
+        <h3 class="mailpoet-h3">
+          <%= _x('From $12/month', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </h3>
         <ul>
           <li><%= _x('Pay by number of subscribers', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
           <li><%= _x('Send emails via the MailPoet Sending Service', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
@@ -174,8 +204,12 @@
   </div>
   <hr>
   <div class="mailpoet-premium-page-text">
-    <h3 class="mailpoet-premium-page-paragraph-before-heading"><%= _x('Unlimited Websites', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h3>
-    <h1><%= _x('Our Agency License Fits With Your Business', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
+    <h3 class="mailpoet-h3 mailpoet-premium-page-paragraph-before-heading">
+      <%= _x('Unlimited Websites', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h3>
+    <h1 class="mailpoet-h1">
+      <%= _x('Our Agency License Fits With Your Business', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h1>
     <p>
       <%= _x('You’re busy creating and maintaining several WordPress websites for your clients.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
       <%= _x('You’re looking for a turnkey email solution that doesn’t require you to train your clients and that’s quick to configure because you want to keep things simple for yourself.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
@@ -200,8 +234,12 @@
   </div>
   <hr>
   <div class="mailpoet-premium-page-text">
-    <h3 class="mailpoet-premium-page-paragraph-before-heading"><%= _x('Try MailPoet Premium for 30 days with our', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h3>
-    <h1><%= _x('100% Satisfaction Guarantee', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
+    <h3 class="mailpoet-h3 mailpoet-premium-page-paragraph-before-heading">
+      <%= _x('Try MailPoet Premium for 30 days with our', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h3>
+    <h1 class="mailpoet-h1">
+      <%= _x('100% Satisfaction Guarantee', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h1>
     <p>
       <%= _x('We’re not happy unless you are.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
       <%= _x('That’s why we offer a 30-day money-back guarantee.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
@@ -213,7 +251,9 @@
   </div>
   <hr>
   <div class="mailpoet-premium-page-text">
-    <h1><%= _x('MailPoet works. Here’s the proof.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
+    <h1 class="mailpoet-h1">
+      <%= _x('MailPoet works. Here’s the proof.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h1>
     <p>
       <b>
         <%= _x('MailPoet is a trusted leader in email for WordPress since 2011. We’re also delighted to have a lot of raving fans! Every month, 5,000 new websites join our community. MailPoet is the stickiest email plugin for WordPress thanks to the reliability and simplicity at the core of our product improvements.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
@@ -255,7 +295,9 @@
   </div>
   <hr>
   <div class="mailpoet-premium-page-text">
-    <h1><%= _x('Your alternative: keep using the free plugin', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
+    <h1 class="mailpoet-h1">
+      <%= _x('Your alternative: keep using the free plugin', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h1>
     <p>
       <%= _x('Don’t get us wrong, we WANT you to use our free plugin (we created it, after all!). But imagine being able to grow your email list past 1,000 subscribers and:', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </p>
@@ -268,8 +310,10 @@
   </div>
   <hr>
   <div class="mailpoet-premium-page-text">
-    <h1><%= _x('Get Started Now', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></h1>
-    <h3>
+    <h1 class="mailpoet-h1">
+      <%= _x('Get Started Now', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+    </h1>
+    <h3 class="mailpoet-h3">
       <%= _x('You have nothing to lose and everything to gain — to help you achieve your email marketing goals and grow your business.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </h3>
     <a
