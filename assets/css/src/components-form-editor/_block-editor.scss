@@ -88,3 +88,8 @@ h2 {
     width: 300px;
   }
 }
+
+// Fix z-index for block inserter popup to display it over wpadmibar
+.block-editor-inserter__popover {
+  z-index: 100000 !important;
+}
