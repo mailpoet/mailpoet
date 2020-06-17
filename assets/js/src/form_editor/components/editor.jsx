@@ -103,11 +103,11 @@ export default () => {
                 <div className="interface-interface-skeleton__sidebar">
                   { sidebarOpened ? <Sidebar /> : null }
                 </div>
-                <Popover.Slot />
               </BlockEditorProvider>
             </div>
             <FormStyles />
           </div>
+          <Popover.Slot />
         </SlotFillProvider>
       </DropZoneProvider>
       <Preview />
