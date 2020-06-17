@@ -30,133 +30,133 @@
     }
   }
 
-  .mailpoet-premium-page-intro {
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 3em;
-
-    @include breakpoint-max-width(500px) {
-      flex-wrap: wrap;
-    }
-
-    img {
-      margin-right: 100px;
-
-      @include breakpoint-max-width(1100px) {
-        height: 50%;
-        margin-right: 75px;
-        width: 50%;
-      }
-
-      @include breakpoint-max-width(500px) {
-        height: 40%;
-        margin: 0 auto;
-        width: 40%;
-      }
-    }
-
-    @include breakpoint-max-width(500px) {
-      .mailpoet-premium-page-intro-link-wrap {
-        text-align: center;
-      }
-    }
-  }
-
-  .mailpoet-premium-page-bullet-list {
-    li:before {
-      content: '·';
-      padding-right: 5px;
-    }
-  }
-
-  .mailpoet-premium-page-text {
-    padding-bottom: 4em;
-    text-align: center;
-
-    .button.mailpoet-button-bigger:last-child {
-      margin-bottom: 0;
-    }
-
-    .mailpoet-premium-page-paragraph-before-heading {
-      margin-top: 2.8em;
-    }
-
-    .mailpoet-premium-page-paragraph-before-heading + h1 {
-      margin-top: 0;
-    }
-  }
-
-  .mailpoet-premium-page-text-narrow {
-    margin: auto;
-    max-width: 700px;
-  }
-
-  .mailpoet-premium-page-features {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
-
-    .mailpoet-premium-page-feature {
-      width: 29%;
-
-      @include breakpoint-max-width(640px) {
-        width: 49%;
-      }
-
-      @include breakpoint-max-width(500px) {
-        width: 100%;
-      }
-
-      p,
-      h2 {
-        text-align: left;
-      }
-    }
-  }
-
-  .mailpoet-premium-page-options {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
-
-    > div {
-      align-items: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      margin: 0 20px;
-
-      @include breakpoint-max-width(500px) {
-        width: 100%;
-      }
-    }
-
-    @include breakpoint-max-width(880px) {
-      display: block;
-
-      > div { display: block; }
-    }
-
-    ul {
-      display: inline-block;
-      text-align: left;
-
-      li:before {
-        content: '-';
-        padding-right: 5px;
-      }
-    }
-  }
-
-  .mailpoet-premium-page-options-divider {
-    flex-grow: 100;
-  }
-
   @include breakpoint-max-width(1100px) {
     h2 {
       font-size: 2em; // The text WooCommerce is too long and so on smaller displays it overflows. This helps.
     }
   }
+}
+
+.mailpoet-premium-page-intro {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 3em;
+
+  @include breakpoint-max-width(500px) {
+    flex-wrap: wrap;
+  }
+
+  img {
+    margin-right: 100px;
+
+    @include breakpoint-max-width(1100px) {
+      height: 50%;
+      margin-right: 75px;
+      width: 50%;
+    }
+
+    @include breakpoint-max-width(500px) {
+      height: 40%;
+      margin: 0 auto;
+      width: 40%;
+    }
+  }
+
+  @include breakpoint-max-width(500px) {
+    .mailpoet-premium-page-intro-link-wrap {
+      text-align: center;
+    }
+  }
+}
+
+.mailpoet-premium-page-bullet-list {
+  li:before {
+    content: '·';
+    padding-right: 5px;
+  }
+}
+
+.mailpoet-premium-page-text {
+  padding-bottom: 4em;
+  text-align: center;
+
+  .button.mailpoet-button-bigger:last-child {
+    margin-bottom: 0;
+  }
+
+  .mailpoet-premium-page-paragraph-before-heading {
+    margin-top: 2.8em;
+  }
+
+  .mailpoet-premium-page-paragraph-before-heading + h1 {
+    margin-top: 0;
+  }
+}
+
+.mailpoet-premium-page-text-narrow {
+  margin: auto;
+  max-width: 700px;
+}
+
+.mailpoet-premium-page-features {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+
+  .mailpoet-premium-page-feature {
+    width: 29%;
+
+    @include breakpoint-max-width(640px) {
+      width: 49%;
+    }
+
+    @include breakpoint-max-width(500px) {
+      width: 100%;
+    }
+
+    p,
+    h2 {
+      text-align: left;
+    }
+  }
+}
+
+.mailpoet-premium-page-options {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+
+  > div {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0 20px;
+
+    @include breakpoint-max-width(500px) {
+      width: 100%;
+    }
+  }
+
+  @include breakpoint-max-width(880px) {
+    display: block;
+
+    > div { display: block; }
+  }
+
+  ul {
+    display: inline-block;
+    text-align: left;
+
+    li:before {
+      content: '-';
+      padding-right: 5px;
+    }
+  }
+}
+
+.mailpoet-premium-page-options-divider {
+  flex-grow: 100;
 }
