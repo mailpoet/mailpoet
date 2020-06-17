@@ -44,7 +44,8 @@ class UnsubscribesTest extends \MailPoetTest {
   public function testItTracksUnsubscribeEvent() {
     $this->unsubscribes->track(
       $this->subscriber->id,
-      $this->queue->id
+      $this->queue->id,
+      'source'
     );
     expect(count(StatisticsUnsubscribes::findMany()))->equals(1);
   }
@@ -53,7 +54,8 @@ class UnsubscribesTest extends \MailPoetTest {
     for ($count = 0; $count <= 2; $count++) {
       $this->unsubscribes->track(
         $this->subscriber->id,
-        $this->queue->id
+        $this->queue->id,
+        'source'
       );
     }
     expect(count(StatisticsUnsubscribes::findMany()))->equals(1);
