@@ -417,4 +417,19 @@ class AcceptanceTester extends \Codeception\Actor {
     $postData = json_decode($postData[0], true);
     return $postData['guid'];
   }
+
+  public function addFromBlockInEditor($name) {
+    $i = $this;
+    $i->click('.block-list-appender button');// CLICK the button that adds new blocks
+    $i->fillField('Search for a block', $name);
+    $i->waitForText($name, 5, '.block-editor-block-types-list__item-title');
+    $i->click($name, '.block-editor-block-types-list__list-item');
+  }
+
+  public function saveFormInEditor() {
+    $i = $this;
+    $i->click('[data-automation-id="form_save_button"]');
+    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
+    $i->seeNoJSErrors();
+  }
 }

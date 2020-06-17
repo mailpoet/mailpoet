@@ -20,10 +20,7 @@ class FormEditorFormPreviewCest {
     $i->clickItemRowActionByItemName($formName, 'Edit');
     $i->waitForElement('[data-automation-id="form_title_input"]');
 
-    $i->click('.block-list-appender button');// CLICK the big button that adds new blocks
-    $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
-    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(2) .components-panel__body-toggle'); // toggle fields
-    $i->click('.editor-block-list-item-mailpoet-form-first-name-input'); // add first name block to the editor
+    $i->addFromBlockInEditor('First name');
 
     // Open preview
     $i->click('[data-automation-id="form_preview_button"]');

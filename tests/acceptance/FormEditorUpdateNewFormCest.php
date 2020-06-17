@@ -23,9 +23,7 @@ class FormEditorUpdateNewFormCest {
     $i->seeNoJSErrors();
     // Select list and save form
     $i->selectOptionInSelect2($segmentName);
-    $i->click('[data-automation-id="form_save_button"]');
-    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
-    $i->seeNoJSErrors();
+    $i->saveFormInEditor();
     // Reload page and check data were saved
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');

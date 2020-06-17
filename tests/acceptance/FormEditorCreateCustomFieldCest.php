@@ -20,14 +20,10 @@ class FormEditorCreateCustomFieldCest {
     $i->clickItemRowActionByItemName($formName, 'Edit');
     $i->waitForElement('[data-automation-id="form_title_input"]');
     // Insert create custom field block
-    $i->click('.block-list-appender button');// CLICK the big button that adds new blocks
-
-    $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
-    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(3) .components-panel__body-toggle'); // toggle custom fields
-    $i->click('.editor-block-list-item-mailpoet-form-add-custom-field'); // add create custom field block
-    $i->waitForElement('[data-automation-id="create_custom_field_form"]');
+    $i->addFromBlockInEditor('Create Custom Field');
 
     // Configure custom select custom field
+    $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Select');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom select');
     $i->waitForElement('[data-automation-id="custom_field_value_settings"]');
@@ -44,9 +40,7 @@ class FormEditorCreateCustomFieldCest {
     $this->checkCustomSelectInForm($i);
 
     // Save the form
-    $i->click('[data-automation-id="form_save_button"]');
-    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
-    $i->seeNoJSErrors();
+    $i->saveFormInEditor();
 
     // Reload page and check data were saved
     $i->reloadPage();
