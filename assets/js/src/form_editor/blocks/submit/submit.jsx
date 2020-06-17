@@ -14,6 +14,13 @@ export const settings = {
       type: 'string',
       default: MailPoet.I18n.t('blockSubmitLabel'),
     },
+    styles: {
+      type: 'object',
+      default: {
+        fullWidth: true,
+        inheritFromTheme: true,
+      },
+    },
   },
   supports: {
     html: false,
