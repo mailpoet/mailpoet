@@ -201,10 +201,9 @@ class Newsletters extends APIEndpoint {
   }
 
   public function restore($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $newsletter = $this->newslettersRepository->findOneById($id);
+    $newsletter = $this->getNewsletter($data);
     if ($newsletter instanceof NewsletterEntity) {
-      $this->newslettersRepository->bulkRestore([$id]);
+      $this->newslettersRepository->bulkRestore([$newsletter->getId()]);
       $this->newslettersRepository->refresh($newsletter);
       return $this->successResponse(
         $this->newslettersResponseBuilder->build($newsletter),
@@ -218,10 +217,9 @@ class Newsletters extends APIEndpoint {
   }
 
   public function trash($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $newsletter = $this->newslettersRepository->findOneById($id);
+    $newsletter = $this->getNewsletter($data);
     if ($newsletter instanceof NewsletterEntity) {
-      $this->newslettersRepository->bulkTrash([$id]);
+      $this->newslettersRepository->bulkTrash([$newsletter->getId()]);
       $this->newslettersRepository->refresh($newsletter);
       return $this->successResponse(
         $this->newslettersResponseBuilder->build($newsletter),
@@ -235,10 +233,9 @@ class Newsletters extends APIEndpoint {
   }
 
   public function delete($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $newsletter = $this->newslettersRepository->findOneById($id);
+    $newsletter = $this->getNewsletter($data);
     if ($newsletter instanceof NewsletterEntity) {
-      $this->newslettersRepository->bulkDelete([$id]);
+      $this->newslettersRepository->bulkDelete([$newsletter->getId()]);
       return $this->successResponse(null, ['count' => 1]);
     } else {
       return $this->errorResponse([
