@@ -3,6 +3,7 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\Config\Renderer as TemplateRenderer;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Form\AssetsController;
 use MailPoet\Form\Block\Date as FormBlockDate;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -200,7 +201,11 @@ class Pages {
       && ($this->subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED)
     ) {
       if ((bool)$this->settings->get('tracking.enabled') && isset($this->data['queueId'])) {
-        $this->unsubscribesTracker->track((int)$this->subscriber->id, (int)$this->data['queueId']);
+        $this->unsubscribesTracker->track(
+          (int)$this->subscriber->id,
+          (int)$this->data['queueId'],
+          StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER
+        );
       }
       $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
       $this->subscriber->save();
