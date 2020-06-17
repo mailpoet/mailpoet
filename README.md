@@ -12,7 +12,7 @@ MailPoet done the right way.
 # Setup
 
 ## Requirements
-- PHP 5.6+
+- PHP 7.0
 - NodeJS
 - WordPress
 - Docker & Docker Compose
