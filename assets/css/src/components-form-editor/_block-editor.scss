@@ -82,8 +82,8 @@ h2 {
   }
 }
 
-// Make the sidebar a bit wider than in post editor (280px)
 @include breakpoint-min-width($mailpoet-breakpoint-small) {
+  // Make the sidebar a bit wider than in post editor (280px)
   .interface-complementary-area {
     width: 300px;
   }
