@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use \Codeception\Util\Locator;
+
 class AdvancedSettingsCest {
   public function toggleAnonymousDataSetting(\AcceptanceTester $i) {
     $i->wantTo('Confirm anonymous data settings can be toggled on Advanced Settings Page');
@@ -78,6 +80,20 @@ class AdvancedSettingsCest {
     $i->click('System Info');
     $i->waitForText('The information below is useful');
     $i->waitForText($systemInfoWordPressCron);
+  }
+
+  public function checkMembersPlugin(\AcceptanceTester $i) {
+    $i->wantTo('Install Members plugin and confirm output');
+    $i->login();
+    $i->amOnMailPoetPage('Settings');
+    $i->click('[data-automation-id="settings-advanced-tab"]');
+    //check if there's proper text & link present without Members plugin
+    $i->see('Members', Locator::href('https://wordpress.org/plugins/members/'));
+    //install the Members plugin by MemberPress
+    $i->cli(['plugin', 'install', 'members', '--activate']);
+    //check if there's proper text & link present with Members plugin
+    $i->reloadPage();
+    $i->see('Manage using the Members plugin', Locator::href('?page=roles'));
   }
 
   public function toggleLogging(\AcceptanceTester $i) {
