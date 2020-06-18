@@ -73,7 +73,7 @@ const Tabs = ({
   const title = (props) => (
     <>
       {props.iconStart}
-      {props.title && <span>{props.title}</span>}
+      {props.title && <span data-title={props.title}>{props.title}</span>}
       {props.iconEnd}
     </>
   );

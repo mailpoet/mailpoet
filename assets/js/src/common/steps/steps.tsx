@@ -19,7 +19,7 @@ const Steps = ({ count, current, titles }: Props) => (
         })}
       >
         <div className="mailpoet-step-badge">{i >= current ? i : ''}</div>
-        {titles[i - 1] && <div className="mailpoet-step-title" title={titles[i - 1] || ''}>{titles[i - 1] || ''}</div>}
+        {titles[i - 1] && <div className="mailpoet-step-title" data-title={titles[i - 1] || ''}>{titles[i - 1] || ''}</div>}
       </div>
     ))}
   </div>
