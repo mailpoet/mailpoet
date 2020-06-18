@@ -93,3 +93,12 @@ h2 {
 .block-editor-inserter__popover {
   z-index: 100000 !important;
 }
+
+// Gutenberg renders 40vh height area called click-redirect under a post.
+// When user clicks into that area it moves focus to the last paragraph.
+// It is a default block in post editor always added automatically at the end of post.
+// We don't want such a behavior since it often moves focus to form title so we set 0 height
+.edit-post-visual-editor .block-editor-writing-flow__click-redirect {
+  height: 0;
+  min-height: 0;
+}
