@@ -58,6 +58,7 @@
     background: $color-white;
     border-color: $color-tertiary-light;
     color: $color-secondary;
+    font-weight: bold;
   }
 
   svg {
@@ -77,6 +78,16 @@
       margin-left: 0;
       margin-right: 0;
     }
+  }
+
+  // Hack so the text is not jumping when changed to bold when active
+  > span:before {
+    content: attr(data-title);
+    display: block;
+    font-weight: bold;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
   }
 }
 

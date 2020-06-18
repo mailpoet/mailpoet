@@ -64,7 +64,7 @@
 
   // Hack so the text is not jumping when changed to bold when active
   &:before {
-    content: attr(title);
+    content: attr(data-title);
     display: block;
     font-weight: bold;
     height: 0;
