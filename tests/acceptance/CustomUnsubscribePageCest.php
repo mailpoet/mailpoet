@@ -12,9 +12,7 @@ class CustomUnsubscribePageCest {
     $i->login();
     $i->amOnPage('/wp-admin/edit.php?post_type=page');
     $i->waitForText($pageTitle);
-    $i->click($pageTitle);
-    //see live page with shortcode output
-    $i->click('View Page');
+    $i->clickItemRowActionByItemName($pageTitle, 'View');
     $i->waitForText($pageTitle);
     $i->waitForText($pageText);
   }
