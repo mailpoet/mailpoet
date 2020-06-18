@@ -54,6 +54,7 @@
 
 .mailpoet-step-title {
   padding-left: $grid-gap-half;
+  text-align: center;
 
   // Hack so the text is not jumping when changed to bold when active
   &:before {
@@ -67,6 +68,10 @@
 
   .mailpoet-step-active & {
     color: $color-secondary;
+    font-weight: bold;
+  }
+
+  .mailpoet-step-done & {
     font-weight: bold;
   }
 }
