@@ -379,7 +379,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $approximatePaymentMethodInputHeight = 40;
     $i->scrollTo('#payment_method_' . $method, 0, -$approximatePaymentMethodInputHeight);
     $i->waitForElementNotVisible('.blockOverlay', 30); // wait for payment method loading overlay to disappear
-    $i->click('#payment_method_' . $method);
+    $i->click('label[for="payment_method_' . $method . '"]');
   }
 
   /**
