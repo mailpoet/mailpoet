@@ -98,4 +98,11 @@ class StatisticsUnsubscribeEntity {
   public function setMeta(string $meta) {
     $this->meta = $meta;
   }
+
+  /**
+   * @return string|null
+   */
+  public function getMeta() {
+    return $this->meta;
+  }
 }

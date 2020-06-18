@@ -22,6 +22,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\LinkTokens;
@@ -74,6 +75,7 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(ConfirmationEmailMailer::class),
       new SubscriptionUrlFactory($wp, $settings, new LinkTokens),
       $container->get(Unsubscribes::class),
+      $container->get(StatisticsUnsubscribesRepository::class),
       $obfuscator
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
@@ -135,12 +137,11 @@ class SubscribersTest extends \MailPoetTest {
 
     $response = $this->endpoint->get(['id' => $this->subscriber1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Subscriber::findOne($this->subscriber1->id)
-        ->withCustomFields()
-        ->withSubscriptions()
-        ->asArray()
-    );
+    expect($response->data['id'])->equals($this->subscriber1->id);
+    expect($response->data['first_name'])->equals($this->subscriber1->first_name);
+    expect($response->data['email'])->equals($this->subscriber1->email);
+    expect($response->data['unsubscribes'])->equals([]);
+    expect($response->data['subscriptions'])->equals([]);
   }
 
   public function testItCanSaveANewSubscriber() {

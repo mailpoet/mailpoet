@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import Form from 'form/form.jsx';
 import ReactStringReplace from 'react-string-replace';
@@ -163,15 +164,48 @@ function beforeFormContent(subscriber) {
   return undefined;
 }
 
-function afterFormContent() {
+function afterFormContent(values) {
   return (
-    <p className="description">
-      <strong>
-        { MailPoet.I18n.t('tip') }
-      </strong>
-      {' '}
-      { MailPoet.I18n.t('customFieldsTip') }
-    </p>
+    <>
+      {values?.unsubscribes?.map((unsubscribe) => {
+        const date = moment(unsubscribe.createdAt.date).format('dddd MMMM Do YYYY at h:mm:ss a');
+        let message;
+        if (unsubscribe.source === 'admin') {
+          message = MailPoet.I18n.t('unsubcribedAdmin')
+            .replace('%$1d', date)
+            .replace('%$2d', unsubscribe.meta);
+        } else if (unsubscribe.source === 'manage') {
+          message = MailPoet.I18n.t('unsubcribedManage').replace('%$1d', date);
+        } else if (unsubscribe.source === 'newsletter') {
+          message = ReactStringReplace(
+            MailPoet.I18n.t('unsubcribedNewsletter').replace('%$1d', date),
+            /\[link\]/g,
+            (match, i) => (
+              <a
+                key={i}
+                href={`admin.php?page=mailpoet-newsletter-editor&id=${unsubscribe.newsletterId}`}
+              >
+                { unsubscribe.newsletterSubject }
+              </a>
+            )
+          );
+        } else {
+          message = MailPoet.I18n.t('unsubcribedUnknown').replace('%$1d', date);
+        }
+        return (
+          <p className="description" key={message}>
+            {message}
+          </p>
+        );
+      })}
+      <p className="description">
+        <strong>
+          { MailPoet.I18n.t('tip') }
+        </strong>
+        {' '}
+        { MailPoet.I18n.t('customFieldsTip') }
+      </p>
+    </>
   );
 }
 
