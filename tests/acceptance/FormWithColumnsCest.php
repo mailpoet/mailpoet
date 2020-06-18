@@ -25,23 +25,16 @@ class FormWithColumnsCest {
     $i->clickItemRowActionByItemName($formName, 'Edit');
     $i->waitForElement('[data-automation-id="form_title_input"]');
 
-    $i->click('.block-list-appender button');// CLICK the big button that adds new blocks
-    $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
-    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(1) .components-panel__body-toggle'); // toggle layout
-    $i->click('.editor-block-list-item-columns'); // columns block
+    $i->addFromBlockInEditor('Columns');
+    // Select first variant (2 columns)
     $i->waitForElement('.block-editor-block-variation-picker__variations');
     $i->click('.block-editor-block-variation-picker__variations li:first-child button');
-    $i->waitForElement('.block-editor-inner-blocks');
-    $i->click('.block-editor-inner-blocks .block-list-appender button'); // CLICK the big button in column that adds new blocks
-    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(3) .components-panel__body-toggle'); // toggle fields
-    $i->click('.editor-block-list-item-mailpoet-form-first-name-input'); // add first name block to the editor
-    $i->click('.block-editor-inner-blocks .block-list-appender button');// CLICK the big button in column that adds new blocks
-    $i->waitForElement('.block-editor-inserter__results .components-panel__body-toggle');
-    $i->click('.block-editor-inserter__results .components-panel__body:nth-child(3) .components-panel__body-toggle'); // toggle fields, get the second field, first one is now "Most Used"
-    $i->click('.editor-block-list-item-mailpoet-form-last-name-input'); // add last name block to the editor
+    $i->waitForElement('.block-editor-block-list__block');
+    // Add inputs into column
+    $i->addFromBlockInEditor('First name', '.block-editor-block-list__block');
+    $i->addFromBlockInEditor('Last name', '.block-editor-block-list__block');
     $i->seeNoJSErrors();
-    $i->click('[data-automation-id="form_save_button"]');
-    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
+    $i->saveFormInEditor();
     // Reload page and check data were saved
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
