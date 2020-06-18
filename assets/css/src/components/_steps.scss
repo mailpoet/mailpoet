@@ -3,11 +3,12 @@
   background: $color-input-background;
   border-bottom: 1px solid $color-tertiary-light;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  padding: $grid-gap-medium;
+  padding: $grid-gap-medium - 4px $grid-gap-medium;
 
   @include respond-to(small-screen) {
-    padding: $grid-gap;
+    padding: $grid-gap - 4px $grid-gap;
   }
 }
 
@@ -18,14 +19,11 @@
   display: flex;
   font-size: $font-size-small;
   line-height: $line-height;
+  margin: 4px 0;
   padding: 0 $grid-gap;
 
   &:last-child {
     border: none;
-  }
-
-  @include respond-to(small-screen) {
-    padding: 0 $grid-gap;
   }
 }
 
