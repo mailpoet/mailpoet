@@ -6,6 +6,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Config\AccessControl;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
@@ -19,6 +20,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
@@ -77,6 +79,9 @@ class Subscribers extends APIEndpoint {
   /** @var Unsubscribes */
   private $unsubscribesTracker;
 
+  /** @var StatisticsUnsubscribesRepository */
+  private $statisticsUnsubscribesRepository;
+
   public function __construct(
     Listing\BulkActionController $bulkActionController,
     SubscribersListings $subscribersListings,
@@ -90,6 +95,7 @@ class Subscribers extends APIEndpoint {
     ConfirmationEmailMailer $confirmationEmailMailer,
     SubscriptionUrlFactory $subscriptionUrlFactory,
     Unsubscribes $unsubscribesTracker,
+    StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository,
     FieldNameObfuscator $fieldNameObfuscator
   ) {
     $this->bulkActionController = $bulkActionController;
@@ -105,6 +111,7 @@ class Subscribers extends APIEndpoint {
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->fieldNameObfuscator = $fieldNameObfuscator;
     $this->unsubscribesTracker = $unsubscribesTracker;
+    $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
   }
 
   public function get($data = []) {
@@ -115,12 +122,30 @@ class Subscribers extends APIEndpoint {
         APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),
       ]);
     } else {
-      return $this->successResponse(
-        $subscriber
-          ->withCustomFields()
-          ->withSubscriptions()
-          ->asArray()
-      );
+      $unsubscribes = $this->statisticsUnsubscribesRepository->findBy([
+        'subscriberId' => $id,
+      ], [
+        'createdAt' => 'desc',
+      ]);
+      $result = $subscriber
+        ->withCustomFields()
+        ->withSubscriptions()
+        ->asArray();
+      $result['unsubscribes'] = [];
+      foreach ($unsubscribes as $unsubscribe) {
+        $mapped = [
+          'source' => $unsubscribe->getSource(),
+          'meta' => $unsubscribe->getMeta(),
+          'createdAt' => $unsubscribe->getCreatedAt(),
+        ];
+        $newsletter = $unsubscribe->getNewsletter();
+        if ($newsletter instanceof NewsletterEntity) {
+          $mapped['newsletterId'] = $newsletter->getId();
+          $mapped['newsletterSubject'] = $newsletter->getSubject();
+        }
+        $result['unsubscribes'][] = $mapped;
+      }
+      return $this->successResponse($result);
     }
   }
 
