@@ -15,8 +15,10 @@ const settings = {
   ...settingsReset,
   category: 'design',
   supports: {
-    ...heading.settings.supports,
+    ...heading.metadata.supports,
     html: false,
+    __experimentalFontSize: false, // Temporarily turned off until we add support on frontend
+    __experimentalLineHeight: false, // Temporarily turned off until we add support on frontend
   },
 };
 
