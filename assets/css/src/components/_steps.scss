@@ -19,7 +19,7 @@
   font-family: $font-family;
   font-size: $font-size-small;
   line-height: $line-height;
-  padding: 0 $grid-gap-medium;
+  padding: 0 $grid-gap;
 
   &:last-child {
     border: none;
@@ -54,7 +54,7 @@
 }
 
 .mailpoet-step-title {
-  padding-left: $grid-gap;
+  padding-left: $grid-gap-half;
 
   .mailpoet-step-active & {
     color: $color-secondary;
