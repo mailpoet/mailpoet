@@ -15,7 +15,7 @@ const settings = {
   ...settingsReset,
   category: 'design',
   supports: {
-    ...image.settings.supports,
+    ...image.metadata.supports,
     html: false,
   },
 };

@@ -8,14 +8,17 @@ const settingsReset = {
   deprecated: null,
   save: () => null,
 };
+
 const settings = {
   ...paragraph.metadata,
   ...paragraph.settings,
   ...settingsReset,
   category: 'design',
   supports: {
-    ...paragraph.settings.supports,
+    ...paragraph.metadata.supports,
     html: false,
+    __experimentalFontSize: true,
+    __experimentalLineHeight: false, // Temporarily turned off until we add support on frontend
   },
 };
 
