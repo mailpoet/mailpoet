@@ -418,9 +418,13 @@ class AcceptanceTester extends \Codeception\Actor {
     return $postData['guid'];
   }
 
-  public function addFromBlockInEditor($name) {
+  public function addFromBlockInEditor($name, $context = null) {
     $i = $this;
-    $i->click('.block-list-appender button');// CLICK the button that adds new blocks
+    $appender = '.block-list-appender button';
+    if ($context) {
+      $appender = "$context $appender";
+    }
+    $i->click($appender);// CLICK the button that adds new blocks
     $i->fillField('Search for a block', $name);
     $i->waitForText($name, 5, '.block-editor-block-types-list__item-title');
     $i->click($name, '.block-editor-block-types-list__list-item');
