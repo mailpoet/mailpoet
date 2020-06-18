@@ -1,44 +1,17 @@
 <?php
+// throw exception if anything fails
+set_error_handler(function ($severity, $message, $file, $line) {
+  throw new ErrorException($message, 0, $severity, $file, $line);
+});
 
 $replacements = [
   [
-    'file' => '../vendor-prefixed/twig/twig/src/ExpressionParser.php',
+    'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/GetAttrExpression.php',
     'find' => [
-      '\'Twig\\\\Node\\\\Expression\\\\TestExpression\'',
-      '\'Twig\\\\Node\\\\Expression\\\\FunctionExpression\'',
-      '\'Twig\\\\Node\\\\Expression\\\\FilterExpression\'',
+      '\'twig_get_attribute(',
     ],
     'replace' => [
-      '\'MailPoetVendor\\\\Twig\\\\Node\\\\Expression\\\\TestExpression\'',
-      '\'MailPoetVendor\\\\Twig\\\\Node\\\\Expression\\\\FunctionExpression\'',
-      '\'MailPoetVendor\\\\Twig\\\\Node\\\\Expression\\\\FilterExpression\'',
-    ],
-  ],
-  [
-    'file' => '../vendor-prefixed/twig/twig/src/TwigFilter.php',
-    'find' => [
-      '\'\\\\Twig\\\\Node\\\\Expression\\\\FilterExpression\'',
-    ],
-    'replace' => [
-      '\'\\\\MailPoetVendor\\\\Twig\\\\Node\\\\Expression\\\\FilterExpression\'',
-    ],
-  ],
-  [
-    'file' => '../vendor-prefixed/twig/twig/src/TwigFunction.php',
-    'find' => [
-      '\'\\\\Twig\\\\Node\\\\Expression\\\\FunctionExpression\'',
-    ],
-    'replace' => [
-      '\'\\\\MailPoetVendor\\\\Twig\\\\Node\\\\Expression\\\\FunctionExpression\'',
-    ],
-  ],
-  [
-    'file' => '../vendor-prefixed/twig/twig/src/TwigTest.php',
-    'find' => [
-      '\'\\\\Twig\\\\Node\\\\Expression\\\\TestExpression\'',
-    ],
-    'replace' => [
-      '\'\\\\MailPoetVendor\\\\Twig\\\\Node\\\\Expression\\\\TestExpression\'',
+      '\'\\\\MailPoetVendor\\\\twig_get_attribute(',
     ],
   ],
   [
@@ -68,10 +41,11 @@ $replacements = [
       '\'twig_number_format_filter\'',
       '\'twig_round\'',
       '\'twig_urlencode_filter\'',
-      '\'twig_jsonencode_filter\'',
       '\'twig_convert_encoding\'',
       '\'twig_title_string_filter\'',
       '\'twig_capitalize_string_filter\'',
+      '\'twig_upper_filter\'',
+      '\'twig_lower_filter\'',
       '\'twig_trim_filter\'',
       '\'twig_spaceless\'',
       '\'twig_join_filter\'',
@@ -79,6 +53,7 @@ $replacements = [
       '\'twig_sort_filter\'',
       '\'twig_array_merge\'',
       '\'twig_array_batch\'',
+      '\'twig_array_column\'',
       '\'twig_array_filter\'',
       '\'twig_array_map\'',
       '\'twig_array_reduce\'',
@@ -89,21 +64,14 @@ $replacements = [
       '\'twig_last\'',
       '\'_twig_default_filter\'',
       '\'twig_get_array_keys_filter\'',
-      '\'twig_escape_filter\'',
-      '\'twig_upper_filter\'',
-      '\'twig_lower_filter\'',
-      '\'twig_escape_filter_is_safe\'',
-      '\'_twig_escape_js_callback\'',
-      '\'_twig_escape_css_callback\'',
-      '\'_twig_escape_html_attr_callback\'',
-      '\'twig_source\'',
-      '\'twig_test_empty\'',
-      '\'_twig_markup2string\'',
-      '\'twig_test_iterable\'',
+      '\'twig_constant\'',
+      '\'twig_cycle\'',
       '\'twig_random\'',
       '\'twig_date_converter\'',
-      '\'twig_cycle\'',
-      '\'twig_constant\'',
+      '\'twig_include\'',
+      '\'twig_source\'',
+      '\'twig_test_empty\'',
+      '\'twig_test_iterable\'',
     ],
     'replace' => [
       '\'\\\\MailPoetVendor\\\\twig_date_format_filter\'',
@@ -112,10 +80,11 @@ $replacements = [
       '\'\\\\MailPoetVendor\\\\twig_number_format_filter\'',
       '\'\\\\MailPoetVendor\\\\twig_round\'',
       '\'\\\\MailPoetVendor\\\\twig_urlencode_filter\'',
-      '\'\\\\MailPoetVendor\\\\twig_jsonencode_filter\'',
       '\'\\\\MailPoetVendor\\\\twig_convert_encoding\'',
       '\'\\\\MailPoetVendor\\\\twig_title_string_filter\'',
       '\'\\\\MailPoetVendor\\\\twig_capitalize_string_filter\'',
+      '\'\\\\MailPoetVendor\\\\twig_upper_filter\'',
+      '\'\\\\MailPoetVendor\\\\twig_lower_filter\'',
       '\'\\\\MailPoetVendor\\\\twig_trim_filter\'',
       '\'\\\\MailPoetVendor\\\\twig_spaceless\'',
       '\'\\\\MailPoetVendor\\\\twig_join_filter\'',
@@ -123,6 +92,7 @@ $replacements = [
       '\'\\\\MailPoetVendor\\\\twig_sort_filter\'',
       '\'\\\\MailPoetVendor\\\\twig_array_merge\'',
       '\'\\\\MailPoetVendor\\\\twig_array_batch\'',
+      '\'\\\\MailPoetVendor\\\\twig_array_column\'',
       '\'\\\\MailPoetVendor\\\\twig_array_filter\'',
       '\'\\\\MailPoetVendor\\\\twig_array_map\'',
       '\'\\\\MailPoetVendor\\\\twig_array_reduce\'',
@@ -133,21 +103,45 @@ $replacements = [
       '\'\\\\MailPoetVendor\\\\twig_last\'',
       '\'\\\\MailPoetVendor\\\\_twig_default_filter\'',
       '\'\\\\MailPoetVendor\\\\twig_get_array_keys_filter\'',
-      '\'\\\\MailPoetVendor\\\\twig_escape_filter\'',
-      '\'\\\\MailPoetVendor\\\\twig_upper_filter\'',
-      '\'\\\\MailPoetVendor\\\\twig_lower_filter\'',
-      '\'\\\\MailPoetVendor\\\\twig_escape_filter_is_safe\'',
-      '\'\\\\MailPoetVendor\\\\_twig_escape_js_callback\'',
-      '\'\\\\MailPoetVendor\\\\_twig_escape_css_callback\'',
-      '\'\\\\MailPoetVendor\\\\_twig_escape_html_attr_callback\'',
-      '\'\\\\MailPoetVendor\\\\twig_source\'',
-      '\'\\\\MailPoetVendor\\\\twig_test_empty\'',
-      '\'\\\\MailPoetVendor\\\\_twig_markup2string\'',
-      '\'\\\\MailPoetVendor\\\\twig_test_iterable\'',
+      '\'\\\\MailPoetVendor\\\\twig_constant\'',
+      '\'\\\\MailPoetVendor\\\\twig_cycle\'',
       '\'\\\\MailPoetVendor\\\\twig_random\'',
       '\'\\\\MailPoetVendor\\\\twig_date_converter\'',
-      '\'\\\\MailPoetVendor\\\\twig_cycle\'',
-      '\'\\\\MailPoetVendor\\\\twig_constant\'',
+      '\'\\\\MailPoetVendor\\\\twig_include\'',
+      '\'\\\\MailPoetVendor\\\\twig_source\'',
+      '\'\\\\MailPoetVendor\\\\twig_test_empty\'',
+      '\'\\\\MailPoetVendor\\\\twig_test_iterable\'',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Extension/DebugExtension.php',
+    'find' => [
+      '\'twig_var_dump\'',
+    ],
+    'replace' => [
+      '\'\\\\MailPoetVendor\\\\twig_var_dump\'',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Extension/EscaperExtension.php',
+    'find' => [
+      '\'twig_escape_filter\'',
+      '\'twig_escape_filter_is_safe\'',
+      '\'twig_raw_filter\'',
+    ],
+    'replace' => [
+      '\'\\\\MailPoetVendor\\\\twig_escape_filter\'',
+      '\'\\\\MailPoetVendor\\\\twig_escape_filter_is_safe\'',
+      '\'\\\\MailPoetVendor\\\\twig_raw_filter\'',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Extension/StringLoaderExtension.php',
+    'find' => [
+      '\'twig_template_from_string\'',
+    ],
+    'replace' => [
+      '\'\\\\MailPoetVendor\\\\twig_template_from_string\'',
     ],
   ],
   [
@@ -169,24 +163,13 @@ $replacements = [
     ],
   ],
   [
-    'file' => '../vendor-prefixed/twig/twig/src/Node/SandboxedPrintNode.php',
-    'find' => [
-      '\'\\\\Twig\\\\Extension\\\\SandboxExtension',
-    ],
-    'replace' => [
-      '\'\\\\MailPoetVendor\\\\Twig\\\\Extension\\\\SandboxExtension',
-    ],
-  ],
-  [
     'file' => '../vendor-prefixed/twig/twig/src/Environment.php',
     'find' => [
       '\'\\\\Twig\\\\Template\'',
-      '\'Twig_Extension\'',
       '\'Twig\\\\Extension\\\\AbstractExtension\'',
     ],
     'replace' => [
       '\'\\\\MailPoetVendor\\\\Twig\\\\Template\'',
-      '\'MailPoetVendor\\\\Twig_Extension\'',
       '\'MailPoetVendor\\\\Twig\\\\Extension\\\\AbstractExtension\'',
     ],
   ],
@@ -221,6 +204,7 @@ $replacements = [
       '"use Twig\\\\Sandbox\\\\SecurityNotAllowedTagError;',
       '"use Twig\\\\Sandbox\\\\SecurityNotAllowedFilterError;',
       '"use Twig\\\\Sandbox\\\\SecurityNotAllowedFunctionError;',
+      '"use Twig\\\\Extension\\\\SandboxExtension;',
     ],
     'replace' => [
       '"use MailPoetVendor\\\\Twig\\\\Environment;',
@@ -233,6 +217,7 @@ $replacements = [
       '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedTagError;',
       '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedFilterError;',
       '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedFunctionError;',
+      '"use MailPoetVendor\\\\Twig\\\\Extension\\\\SandboxExtension;',
     ],
   ],
 ];
@@ -243,18 +228,6 @@ foreach ($replacements as $singleFile) {
   file_put_contents($singleFile['file'], $data);
 }
 
-// Remove unwanted class aliases in lib/Twig subdirectories
+// Remove unwanted class aliases in lib/Twig
 // We need to keep first level files in lib/Twig since most of them are still needed
-exec("find ../vendor-prefixed/twig/twig/lib/Twig -maxdepth 1 -mindepth 1 -type d -exec rm -rf '{}' \;");
-// Fix rest of the files in lib
-// Files in twig/lib directory contain class aliases which makes namespaced classes global
-// e.g. \class_alias('MailPoetVendor\\Twig_CompilerInterface', 'Twig_CompilerInterface', \false);
-$iterator = new RecursiveDirectoryIterator("../vendor-prefixed/twig/twig/lib", RecursiveDirectoryIterator::SKIP_DOTS);
-$files = new RecursiveIteratorIterator($iterator, RecursiveIteratorIterator::SELF_FIRST);
-foreach ($files as $file) {
-  if (substr($file, -3) === 'php') {
-    $data = file_get_contents($file);
-    $data = preg_replace('/\\\\class.alias.*MailPoetVendor.*\);/', '', $data, -1, $count);
-    file_put_contents($file, $data);
-  }
-}
+exec("rm -rf ../vendor-prefixed/twig/twig/lib/Twig");
