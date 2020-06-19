@@ -54,19 +54,11 @@
 }
 
 .mailpoet-premium-page-text {
-  padding-bottom: 4em;
+  padding: $grid-gap-large 0;
   text-align: center;
 
-  .button.mailpoet-button-bigger:last-child {
-    margin-bottom: 0;
-  }
-
-  .mailpoet-premium-page-paragraph-before-heading {
-    margin-top: 2.8em;
-  }
-
-  .mailpoet-premium-page-paragraph-before-heading + h1 {
-    margin-top: 0;
+  h3.mailpoet-h3 {
+    font-weight: normal;
   }
 }
 
