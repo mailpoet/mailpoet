@@ -2,17 +2,11 @@
 
 <% block content %>
 <div class="mailpoet-premium-page">
-  <h1 class="mailpoet-h1">
-    <%= _x('We take care of your email, <br> so your email can take care of you', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-  </h1>
-  <div class="mailpoet-premium-page-intro">
-    <img
-      src="<%= cdn_url('premium/blue_jay_marbles.png') %>"
-      alt="<%= __('Image blue bird') %>"
-      width=400
-      height=444
-    >
+  <div class="mailpoet-premium-page-intro mailpoet-grid-two-columns">
     <div>
+      <h1 class="mailpoet-h1">
+        <%= _x('We take care of your email, <br> so your email can take care of you', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+      </h1>
       <p>
         <%= _x('Ready to take your email to the next level?', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
         <%= _x('You’ve built your email list with our free plugin — now grow your business with Premium and Sending features.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
@@ -21,14 +15,18 @@
         <a
           target="_blank"
           href="<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=purchase') | escape('html_attr') %>"
-          class="premium-button"
+          class="mailpoet-button"
         >
           <%= _x('Upgrade', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
         </a>
       </div>
-
     </div>
+    <img
+      src="<%= cdn_url('premium/1-we-take-care.svg') %>"
+      alt="<%= __('Image bird feeder') %>"
+    >
   </div>
+
   <hr>
 
   <% if (subscriber_count < 1000 ) %>

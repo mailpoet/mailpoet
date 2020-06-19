@@ -37,34 +37,12 @@
 }
 
 .mailpoet-premium-page-intro {
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 3em;
-
-  @include breakpoint-max-width(500px) {
-    flex-wrap: wrap;
-  }
+  align-items: center;
+  padding: $grid-gap-large 0;
 
   img {
-    margin-right: 100px;
-
-    @include breakpoint-max-width(1100px) {
-      height: 50%;
-      margin-right: 75px;
-      width: 50%;
-    }
-
-    @include breakpoint-max-width(500px) {
-      height: 40%;
-      margin: 0 auto;
-      width: 40%;
-    }
-  }
-
-  @include breakpoint-max-width(500px) {
-    .mailpoet-premium-page-intro-link-wrap {
-      text-align: center;
-    }
+    margin: auto;
+    max-width: 270px;
   }
 }
 
