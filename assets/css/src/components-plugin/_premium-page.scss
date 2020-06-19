@@ -4,41 +4,35 @@
 }
 
 .mailpoet-premium-page {
-  display: flex;
-  flex-direction: column;
-  margin: 25px auto 0;
-  padding: 0 150px;
+  color: $color-tertiary;
+  margin: $grid-gap-large auto 0;
+  max-width: 1200px;
 
-  @include breakpoint-max-width(1500px) {
-    padding: 0;
+  p,
+  ul {
+    font-family: $font-family;
+    font-size: $font-size;
+    line-height: $line-height;
   }
 
-  .premium-button {
-    background: #0085ba;
-    border: 1px solid #006799;
-    border-radius: 3px;
-    box-sizing: border-box;
-    color: #fff;
-    cursor: pointer;
-    display: inline-block;
-    font-size: 1.5em;
-    line-height: normal;
-    margin: 1em 0;
-    padding: 8px 18px 9px;
-    text-decoration: none;
-    vertical-align: top;
-    white-space: nowrap;
-
-    &:hover,
-    &:focus {
-      background: #008ec2;
-    }
+  p.mailpoet-premium-page-text-large {
+    font-size: 22px;
   }
 
-  @include breakpoint-max-width(1100px) {
-    h2 {
-      font-size: 2em; // The text WooCommerce is too long and so on smaller displays it overflows. This helps.
-    }
+  h1 {
+    margin-top: 0;
+  }
+
+  hr {
+    background: $color-tertiary-light;
+    border: none;
+    height: 1px;
+    margin: $grid-gap-large 0;
+    width: 100%;
+  }
+
+  .mailpoet-button {
+    margin-top: $grid-gap;
   }
 }
 
