@@ -46,6 +46,20 @@
   }
 }
 
+.mailpoet-premium-page-does-this-sound-like-you {
+  align-items: center;
+  grid-template-columns: 1fr 2fr;
+
+  .mailpoet-grid-two-columns {
+    grid-column-gap: 2 * $grid-gap-large;
+    padding: $grid-gap-large 0;
+  }
+
+  img {
+    max-width: 100%;
+  }
+}
+
 .mailpoet-premium-page-bullet-list {
   li:before {
     content: '·';

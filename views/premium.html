@@ -49,26 +49,36 @@
   <hr>
   <% endif %>
 
-  <div class="mailpoet-premium-page-text mailpoet-premium-page-text-narrow">
-    <h1 class="mailpoet-h1">
-      <%= _x('Does this sound like you?', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </h1>
-    <p>
-      <%= _x('“I spent hours tweaking my last newsletter and a subscriber told me it landed in their <b>spambox!</b> It’s frustrating and I don’t know what I’m doing wrong.”', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </p>
-    <p>
-      <%= _x('“<b>I wish I knew</b> how many people were reading my emails and which links they were clicking…”', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </p>
-    <p>
-      <%= _x('“Ugh… My web host <b>doesn’t support WordPress email.</b>“', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </p>
-    <p>
-      <%= _x('“I have a lot of patience, but my <b>WooCommerce emails failing</b> to send during a busy sales period, like Black Friday, is starting to wear thin.”', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </p>
-    <p>
-      <%= _x('“I need an email plugin for WordPress <b>that just works!</b>”', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </p>
+  <div class="mailpoet-premium-page-does-this-sound-like-you mailpoet-grid-two-columns">
+    <img
+      src="<%= cdn_url('premium/blue_jay_marbles.png') %>"
+      alt="<%= __('Image blue bird') %>"
+    >
+
+    <div>
+      <h1 class="mailpoet-h1">
+        <%= _x('Does this sound like you?', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+      </h1>
+      <div class="mailpoet-grid-two-columns">
+        <p>
+          <%= _x('“I spent hours tweaking my last newsletter and a subscriber told me it landed in their <b>spambox!</b> It’s frustrating and I don’t know what I’m doing wrong.”', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </p>
+        <p>
+          <%= _x('“<b>I wish I knew</b> how many people were reading my emails and which links they were clicking…”', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </p>
+        <p>
+          <%= _x('“Ugh… My web host <b>doesn’t support WordPress email.</b>“', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </p>
+        <p>
+          <%= _x('“I have a lot of patience, but my <b>WooCommerce emails failing</b> to send during a busy sales period, like Black Friday, is starting to wear thin.”', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </p>
+        <p>
+          <%= _x('“I need an email plugin for WordPress <b>that just works!</b>”', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        </p>
+      </div>
+    </div>
   </div>
+
   <hr>
 
   <div class="mailpoet-premium-page-text">
