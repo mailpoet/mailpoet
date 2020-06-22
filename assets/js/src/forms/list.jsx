@@ -127,25 +127,12 @@ const itemActions = [
 
 class FormList extends React.Component {
   createForm = () => {
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'forms',
-      action: 'create',
-    }).done((response) => {
-      MailPoet.trackEvent('Forms > Add New', {
-        'MailPoet Free version': window.mailpoet_version,
-      });
-      setTimeout(() => {
-        window.location = window.mailpoet_form_edit_url + response.data.id;
-      }, 200);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
-          { scroll: true }
-        );
-      }
+    MailPoet.trackEvent('Forms > Add New', {
+      'MailPoet Free version': window.mailpoet_version,
     });
+    setTimeout(() => {
+      window.location = window.mailpoet_form_edit_url;
+    }, 200); // leave some time for the event to track
   };
 
   renderItem = (form, actions) => {
