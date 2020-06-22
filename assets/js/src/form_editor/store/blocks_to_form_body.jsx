@@ -166,6 +166,11 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
                 block.attributes.textColor,
                 block.attributes.customTextColor
               ),
+              background_color: mapColorSlugToValue(
+                colorDefinitions,
+                block.attributes.backgroundColor,
+                block.attributes.customBackgroundColor
+              ),
               anchor: block.attributes.anchor || null,
               class_name: block.attributes.className || null,
             },
