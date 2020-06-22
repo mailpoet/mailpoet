@@ -80,4 +80,15 @@ class HeadingTest extends \MailPoetUnitTest {
     ]);
     expect($html)->equals('<h1 style="color: red">Header</h1>');
   }
+
+  public function testItShouldRenderBackgroundColor() {
+    $html = $this->heading->render([
+      'params' => [
+        'content' => 'Header',
+        'background_color' => 'red',
+      ],
+    ]);
+    expect($html)->contains('style="background-color: red');
+    expect($html)->contains('class="mailpoet-has-background-color"');
+  }
 }
