@@ -1,6 +1,23 @@
+@mixin full-width-background($background) {
+  position: relative;
+  z-index: 0;
+
+  &:before {
+    background: $background;
+    bottom: -$grid-gap-large;
+    content: '';
+    left: -100vw;
+    position: absolute;
+    right: -100vw;
+    top: -$grid-gap-large;
+    z-index: -1;
+  }
+}
+
 .mailpoet_page_mailpoet-premium #wpcontent {
   background: white linear-gradient(to top, $color-white, #ffe6d9) no-repeat;
   background-size: auto 300px;
+  overflow-x: hidden;
 }
 
 .mailpoet-premium-page {
