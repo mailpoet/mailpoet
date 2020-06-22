@@ -399,6 +399,7 @@ describe('Blocks to Form Body', () => {
         level: 3,
         align: 'center',
         customTextColor: '#123',
+        customBackgroundColor: '#321',
         anchor: 'anchor',
         className: 'class',
       },
@@ -408,6 +409,7 @@ describe('Blocks to Form Body', () => {
     expect(input.params.level).to.be.equal(3);
     expect(input.params.align).to.be.equal('center');
     expect(input.params.text_color).to.be.equal('#123');
+    expect(input.params.background_color).to.be.equal('#321');
     expect(input.params.anchor).to.be.equal('anchor');
     expect(input.params.class_name).to.be.equal('class');
   });
