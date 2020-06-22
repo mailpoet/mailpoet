@@ -9,6 +9,7 @@ import { initBlocks } from './blocks/blocks.jsx';
 import initHooks from './hooks';
 import initTranslations from './translations';
 import initRichText from './rich_text/init.ts';
+import './template_selection';
 
 const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
