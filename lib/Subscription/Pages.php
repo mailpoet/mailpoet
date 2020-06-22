@@ -118,6 +118,8 @@ class Pages {
     $this->wp->addFilter('document_title_parts', [$this,'setWindowTitleParts'], 10, 1);
     $this->wp->addFilter('the_title', [$this,'setPageTitle'], 10, 1);
     $this->wp->addFilter('the_content', [$this,'setPageContent'], 10, 1);
+    $this->wp->removeAction('wp_head', 'noindex', 1);
+    $this->wp->addAction('wp_head', [$this, 'setMetaRobots'], 1);
   }
 
   public function initShortcodes() {
@@ -204,6 +206,10 @@ class Pages {
       $this->subscriber->save();
       SubscriberSegment::unsubscribeFromSegments($this->subscriber);
     }
+  }
+
+  public function setMetaRobots() {
+    echo '<meta name="robots" content="noindex,nofollow">';
   }
 
   public function setPageTitle($pageTitle = '') {
