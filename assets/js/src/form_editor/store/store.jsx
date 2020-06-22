@@ -13,16 +13,6 @@ import validateForm from './form_validator.jsx';
 import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
 import mapFormDataAfterLoading from './map_form_data_after_loading.jsx';
 
-const customFields = window.mailpoet_custom_fields.map(
-  (field) => ({ ...field, params: field.params || {} })
-);
-
-const formBodyToBlocks = formBodyToBlocksFactory(
-  SETTINGS_DEFAULTS.colors,
-  SETTINGS_DEFAULTS.fontSizes,
-  customFields
-);
-
 let previewSettings = null;
 try {
   previewSettings = JSON.parse(window.localStorage.getItem('mailpoet_form_preview_settings'));
@@ -31,6 +21,16 @@ try {
 }
 
 export default () => {
+  const customFields = window.mailpoet_custom_fields.map(
+    (field) => ({ ...field, params: field.params || {} })
+  );
+
+  const formBodyToBlocks = formBodyToBlocksFactory(
+    SETTINGS_DEFAULTS.colors,
+    SETTINGS_DEFAULTS.fontSizes,
+    customFields
+  );
+
   const formData = { ...window.mailpoet_form_data };
   const formBlocks = formBodyToBlocks(formData.body);
   delete formData.body;
