@@ -20,6 +20,8 @@
 <script>
   <% autoescape 'js' %>
   var mailpoet_templates = <%= json_encode(templates) %>;
+  var mailpoet_form_edit_url =
+    "<%= admin_url('admin.php?page=mailpoet-form-editor&action=create&template-id=') %>";
   <% endautoescape %>
 </script>
 
@@ -29,6 +31,7 @@
 <% block translations %>
 <%= localize({
   'heading': __('Select form template'),
+  'blankTemplate': _x('Blank template', 'the first item in the templates selection list'),
 }) %>
 <% endblock %>
 

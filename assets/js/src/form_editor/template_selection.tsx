@@ -9,7 +9,10 @@ const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <>
       <Notices />
-      <Selection />
+      <Selection
+        templates={(window as any).mailpoet_templates}
+        formEditorUrl={(window as any).mailpoet_form_edit_url}
+      />
     </>
   </GlobalContext.Provider>
 );
