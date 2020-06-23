@@ -171,14 +171,14 @@ function afterFormContent(values) {
         const date = moment(unsubscribe.createdAt.date).format('dddd MMMM Do YYYY [at] h:mm:ss a');
         let message;
         if (unsubscribe.source === 'admin') {
-          message = MailPoet.I18n.t('unsubcribedAdmin')
+          message = MailPoet.I18n.t('unsubscribedAdmin')
             .replace('%$1d', date)
             .replace('%$2d', unsubscribe.meta);
         } else if (unsubscribe.source === 'manage') {
-          message = MailPoet.I18n.t('unsubcribedManage').replace('%$1d', date);
+          message = MailPoet.I18n.t('unsubscribedManage').replace('%$1d', date);
         } else if (unsubscribe.source === 'newsletter') {
           message = ReactStringReplace(
-            MailPoet.I18n.t('unsubcribedNewsletter').replace('%$1d', date),
+            MailPoet.I18n.t('unsubscribedNewsletter').replace('%$1d', date),
             /\[link\]/g,
             (match, i) => (
               <a
@@ -190,7 +190,7 @@ function afterFormContent(values) {
             )
           );
         } else {
-          message = MailPoet.I18n.t('unsubcribedUnknown').replace('%$1d', date);
+          message = MailPoet.I18n.t('unsubscribedUnknown').replace('%$1d', date);
         }
         return (
           <p className="description" key={message}>
