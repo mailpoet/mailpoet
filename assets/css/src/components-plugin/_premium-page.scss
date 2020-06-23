@@ -205,3 +205,30 @@
 .mailpoet-premium-page-options-divider {
   flex-grow: 100;
 }
+
+.mailpoet-premium-page-our-agency-license {
+  align-items: center;
+  grid-template-columns: 3fr 2fr;
+  padding: $grid-gap-large 0;
+}
+
+.mailpoet-premium-page-unlimited-websites {
+  display: inline-block;
+  font-weight: bold;
+  margin: 0 0 $grid-gap-half;
+  position: relative;
+  text-transform: uppercase;
+  z-index: 0;
+
+  &:after {
+    background-color: $color-secondary-light;
+    border-radius: 2px;
+    bottom: .2em;
+    content: '';
+    height: .8em;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    z-index: -1;
+  }
+}

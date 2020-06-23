@@ -218,36 +218,44 @@
 
   <hr>
 
-  <div class="mailpoet-premium-page-text">
-    <h3 class="mailpoet-h3 mailpoet-premium-page-paragraph-before-heading">
-      <%= _x('Unlimited Websites', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </h3>
-    <h1 class="mailpoet-h1">
-      <%= _x('Our Agency License Fits With Your Business', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </h1>
-    <p>
-      <%= _x('You’re busy creating and maintaining several WordPress websites for your clients.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-      <%= _x('You’re looking for a turnkey email solution that doesn’t require you to train your clients and that’s quick to configure because you want to keep things simple for yourself.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-      <%= _x('Moreover, you need a solution that’s stable and secure.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-      <%= _x('This is where MailPoet fits perfectly.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </p>
-    <ul class="mailpoet-premium-page-bullet-list">
-      <li><%= _x('Quickly deploy an easy to learn email solution for all your clients', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
-      <li><%= _x('Easily manage all your customers from a single account', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
-      <li><%= _x('Activate MailPoet Premium features on an unlimited number of websites', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
-      <li><%= _x('Send unlimited emails for each site up 1,000 subscribers', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
-      <li><%= _x('Send to more than 1,000 subscribers with any other sending methods (your host, Sendgrid & Amazon SES)', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
-      <li><%= _x('Exchange with our deliverability manager for any sending issues', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
-    </ul>
-    <a
-      target="_blank"
-      href="<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=purchase') | escape('html_attr') %>"
-      class="premium-button"
+  <div class="mailpoet-premium-page-our-agency-license mailpoet-grid-two-columns">
+    <div>
+      <p class="mailpoet-premium-page-unlimited-websites">
+        <%= _x('Unlimited Websites', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+      </p>
+      <h1 class="mailpoet-h1">
+        <%= _x('Our Agency License Fits With Your Business', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+      </h1>
+      <p>
+        <%= _x('You’re busy creating and maintaining several WordPress websites for your clients.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        <%= _x('You’re looking for a turnkey email solution that doesn’t require you to train your clients and that’s quick to configure because you want to keep things simple for yourself.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        <%= _x('Moreover, you need a solution that’s stable and secure.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+        <%= _x('This is where MailPoet fits perfectly.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+      </p>
+      <ul class="mailpoet-premium-page-bullet-list">
+        <li><%= _x('Quickly deploy an easy to learn email solution for all your clients', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
+        <li><%= _x('Easily manage all your customers from a single account', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
+        <li><%= _x('Activate MailPoet Premium features on an unlimited number of websites', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
+        <li><%= _x('Send unlimited emails for each site up 1,000 subscribers', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
+        <li><%= _x('Send to more than 1,000 subscribers with any other sending methods (your host, Sendgrid & Amazon SES)', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
+        <li><%= _x('Exchange with our deliverability manager for any sending issues', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %></li>
+      </ul>
+      <a
+        target="_blank"
+        href="<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=purchase') | escape('html_attr') %>"
+        class="mailpoet-button"
+      >
+        <%= _x('Buy Now (currently 33% discount)', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+      </a>
+    </div>
+    <img
+      src="<%= cdn_url('premium/3-our-agency-license.svg') %>"
+      alt="<%= __('Image woodpecker') %>"
     >
-      <%= _x('Buy Now (currently 33% discount)', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </a>
   </div>
+
   <hr>
+
   <div class="mailpoet-premium-page-text">
     <h3 class="mailpoet-h3 mailpoet-premium-page-paragraph-before-heading">
       <%= _x('Try MailPoet Premium for 30 days with our', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
