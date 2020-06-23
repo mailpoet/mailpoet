@@ -8,8 +8,64 @@
   .wrap {
     margin: 0;
   }
+
+  div.updated,
+  div.error,
+  .notice {
+    display: none !important;
+  }
 }
 
+.mailpoet-wizard-logo {
+  margin-bottom: 100px;
+  text-align: center;
+
+  @include respond-to(medium-screen) {
+    margin-bottom: 20px;
+  }
+}
+
+.mailpoet-wizard-step {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+
+  @include respond-to(medium-screen) {
+    flex-direction: column;
+  }
+}
+
+.mailpoet-wizard-step-illustration {
+  margin-right: $grid-gap;
+  max-width: $grid-column;
+  text-align: center;
+  width: 100%;
+
+  img {
+    max-height: 300px;
+    max-width: 100%;
+  }
+
+  @include respond-to(medium-screen) {
+    margin-right: 0;
+    max-width: $grid-column-small;
+
+    img {
+      max-height: 240px;
+    }
+  }
+}
+
+.mailpoet-wizard-step-content {
+  max-width: $grid-column-small + $grid-gap + $grid-column;
+  width: 100%;
+
+  @include respond-to(medium-screen) {
+    max-width: $grid-column;
+  }
+}
+
+// Welcome wizard - old styles
 .mailpoet_welcome_wizard_header {
   text-align: center;
 }
@@ -25,42 +81,9 @@
   }
 }
 
-.mailpoet_welcome_wizard_flex {
-  display: flex;
-}
-
-.mailpoet_welcome_wizard_illustration {
-  flex-grow: 1;
-  height: 400px;
-  padding: 60px 40px 40px 60px;
-  text-align: right;
-  width: 50%;
-
-  img {
-    max-height: 100%;
-    max-width: 100%;
-  }
-
-  @include breakpoint-max-width(782px) {
-    display: none;
-  }
-}
-
 .mailpoet_welcome_wizard_step_revenue_tracking {
   input[type='submit'] {
     margin-top: 40px;
-  }
-}
-
-.mailpoet_welcome_wizard_step {
-  flex-grow: 1;
-  padding: 60px 60px 40px 40px;
-  text-align: left;
-  width: 50%;
-
-  @include breakpoint-max-width(782px) {
-    padding: 30px;
-    width: 100%;
   }
 }
 

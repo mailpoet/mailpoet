@@ -78,72 +78,70 @@ const WelcomeWizardStepsController = (props) => {
     <>
       <Steps count={stepsCount} current={step} />
       <StepsContent>
-        <div className="mailpoet_welcome_wizard_steps">
-          { stepName === 'WelcomeWizardSenderStep'
-            ? (
-              <WelcomeWizardStepLayout
-                illustrationUrl={window.wizard_sender_illustration_url}
-              >
-                <WelcomeWizardSenderStep
-                  update_sender={updateSender}
-                  submit_sender={submitSender}
-                  finish={skipSenderStep}
-                  loading={loading}
-                  sender={sender}
-                />
-              </WelcomeWizardStepLayout>
-            ) : null}
+        { stepName === 'WelcomeWizardSenderStep'
+          ? (
+            <WelcomeWizardStepLayout
+              illustrationUrl={window.wizard_sender_illustration_url}
+            >
+              <WelcomeWizardSenderStep
+                update_sender={updateSender}
+                submit_sender={submitSender}
+                finish={skipSenderStep}
+                loading={loading}
+                sender={sender}
+              />
+            </WelcomeWizardStepLayout>
+          ) : null}
 
-          { stepName === 'WelcomeWizardMigratedUserStep'
-            ? (
-              <WelcomeWizardStepLayout
-                illustrationUrl={window.wizard_sender_illustration_url}
-              >
-                <WelcomeWizardMigratedUserStep
-                  next={() => redirect(step)}
-                />
-              </WelcomeWizardStepLayout>
-            ) : null}
+        { stepName === 'WelcomeWizardMigratedUserStep'
+          ? (
+            <WelcomeWizardStepLayout
+              illustrationUrl={window.wizard_sender_illustration_url}
+            >
+              <WelcomeWizardMigratedUserStep
+                next={() => redirect(step)}
+              />
+            </WelcomeWizardStepLayout>
+          ) : null}
 
-          { stepName === 'WelcomeWizardEmailCourseStep'
-            ? (
-              <WelcomeWizardStepLayout
-                illustrationUrl={window.wizard_email_course_illustration_url}
-              >
-                <WelcomeWizardEmailCourseStep
-                  next={() => redirect(step)}
-                />
-              </WelcomeWizardStepLayout>
-            ) : null}
+        { stepName === 'WelcomeWizardEmailCourseStep'
+          ? (
+            <WelcomeWizardStepLayout
+              illustrationUrl={window.wizard_email_course_illustration_url}
+            >
+              <WelcomeWizardEmailCourseStep
+                next={() => redirect(step)}
+              />
+            </WelcomeWizardStepLayout>
+          ) : null}
 
-          { stepName === 'WelcomeWizardUsageTrackingStep'
-            ? (
-              <WelcomeWizardStepLayout
-                illustrationUrl={window.wizard_tracking_illustration_url}
-              >
-                <WelcomeWizardUsageTrackingStep
-                  skip_action={() => redirect(step)}
-                  allow_action={activateTracking}
-                  allow_text={stepsCount > 3
-                    ? MailPoet.I18n.t('allowAndContinue') : MailPoet.I18n.t('allowAndFinish')}
-                  loading={loading}
-                />
-              </WelcomeWizardStepLayout>
-            ) : null}
+        { stepName === 'WelcomeWizardUsageTrackingStep'
+          ? (
+            <WelcomeWizardStepLayout
+              illustrationUrl={window.wizard_tracking_illustration_url}
+            >
+              <WelcomeWizardUsageTrackingStep
+                skip_action={() => redirect(step)}
+                allow_action={activateTracking}
+                allow_text={stepsCount > 3
+                  ? MailPoet.I18n.t('allowAndContinue') : MailPoet.I18n.t('allowAndFinish')}
+                loading={loading}
+              />
+            </WelcomeWizardStepLayout>
+          ) : null}
 
-          { stepName === 'WelcomeWizardPitchMSSStep'
-            ? (
-              <WelcomeWizardStepLayout
-                illustrationUrl={window.wizard_MSS_pitch_illustration_url}
-              >
-                <WelcomeWizardPitchMSSStep
-                  next={() => redirect(step)}
-                  subscribersCount={window.subscribers_count}
-                  mailpoetAccountUrl={window.mailpoet_account_url}
-                />
-              </WelcomeWizardStepLayout>
-            ) : null}
-        </div>
+        { stepName === 'WelcomeWizardPitchMSSStep'
+          ? (
+            <WelcomeWizardStepLayout
+              illustrationUrl={window.wizard_MSS_pitch_illustration_url}
+            >
+              <WelcomeWizardPitchMSSStep
+                next={() => redirect(step)}
+                subscribersCount={window.subscribers_count}
+                mailpoetAccountUrl={window.mailpoet_account_url}
+              />
+            </WelcomeWizardStepLayout>
+          ) : null}
       </StepsContent>
     </>
   );
