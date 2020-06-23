@@ -33,8 +33,8 @@ class DefaultsExtension extends Extension {
     update_option('users_can_register', '1', 'yes');
     update_site_option('registration', 'user');
     update_option('permalink_structure', '/%year%/%monthnum%/%day%/%postname%/', 'yes');
-    update_option('template', 'twentyseventeen', 'yes');
-    update_option('stylesheet', 'twentyseventeen', 'yes');
+    update_option('template', 'twentynineteen', 'yes');
+    update_option('stylesheet', 'twentynineteen', 'yes');
 
     // posts & pages
     $this->createPost('post', 'hello-world', 'Hello world!', 'Hello from WordPress.');

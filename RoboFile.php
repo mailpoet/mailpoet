@@ -267,7 +267,7 @@ class RoboFile extends \Robo\Tasks {
       ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
       ($opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
       '-e MULTISITE=1 ' .
-      'codeception --steps --debug -vvv' .
+      'codeception --steps --debug -vvv ' .
       '-f ' . ($opts['file'] ? $opts['file'] : '')
     )->dir(__DIR__ . '/tests/docker')->run();
   }
