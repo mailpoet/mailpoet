@@ -592,6 +592,14 @@ class Functions {
     return wpautop($pee, $br);
   }
 
+  public function inTheLoop(): bool {
+    return in_the_loop();
+  }
+
+  public function isMainQuery(): bool {
+    return is_main_query();
+  }
+
   /**
    * @param string $action
    * @param array|object $args
