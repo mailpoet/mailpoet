@@ -38,7 +38,7 @@ class FormEditor {
                     'params' => ['label' => 'Email', 'class_name' => '', 'required' => '1'],
                     'id' => 'email',
                     'name' => 'Email',
-                    'styles' => ['full_width' => '1']
+                    'styles' => ['full_width' => '1'],
                   ],
                   [
                     'type' => 'text',
@@ -47,7 +47,7 @@ class FormEditor {
                     'name' => 'First name',
                     'styles' => ['full_width' => '1'],
                   ],
-                ]
+                ],
               ],
               [
                 'type' => 'column',
@@ -191,12 +191,12 @@ class FormEditor {
   }
 
   public function render() {
-     if (!isset($_GET['id']) && !isset($_GET['action'])) {
+    if (!isset($_GET['id']) && !isset($_GET['action'])) {
       $this->renderTemplateSelection();
       return;
     }
     if (isset($_GET['action']) && $_GET['action'] === 'create') {
-      $this->createForm($_GET['template-id']);
+      $this->createForm();
     }
     $form = Form::findOne((int)$_GET['id']);
     if ($form instanceof Form) {
@@ -233,7 +233,7 @@ class FormEditor {
     $this->pageRenderer->displayPage('form/editor.html', $data);
   }
 
-  private function renderTemplateSelection() {
+  public function renderTemplateSelection() {
     $templates = array_values(self::TEMPLATES);
     if (empty($templates) || !$this->flagsController->isSupported(FeaturesController::TEMPLATES_SELECTION)) {
       $this->createForm();
@@ -244,13 +244,8 @@ class FormEditor {
     $this->pageRenderer->displayPage('form/template_selection.html', $data);
   }
 
-  private function createForm($templateId = null) {
-    if (!is_null($templateId) && isset(self::TEMPLATES[$templateId])) {
-      $form = $this->formsFactory->createFormFromTemplate(self::TEMPLATES[$templateId]);
-    }
-    if (!isset($form)) {
-      $form = $this->formsFactory->createEmptyForm();
-    }
+  private function createForm() {
+    $form = $this->formsFactory->createEmptyForm();
 
     $this->wp->wpSafeRedirect(
       $this->wp->getSiteUrl(null,
