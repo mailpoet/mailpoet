@@ -1,15 +1,26 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
+import Button from '../../common/button/button';
+import Heading from '../../common/typography/heading/heading';
 
 const WelcomeWizardMigratedUserStep = (props) => (
-  <div className="mailpoet_welcome_wizard_step_content">
-    <h1>{MailPoet.I18n.t('welcomeWizardLetsStartTitle')}</h1>
+  <>
+    <Heading level={1}>{MailPoet.I18n.t('welcomeWizardLetsStartTitle')}</Heading>
+
+    <div className="mailpoet-gap" />
     <p>{MailPoet.I18n.t('welcomeWizardSenderMigratedUserText')}</p>
-    <div className="mailpoet_welcome_wizard_step_controls">
-      <button type="button" className="button button-primary" onClick={props.next}>{MailPoet.I18n.t('next')}</button>
-    </div>
-  </div>
+    <div className="mailpoet-gap" />
+    <div className="mailpoet-gap" />
+
+    <Button
+      isFullWidth
+      onClick={props.next}
+      type="button"
+    >
+      {MailPoet.I18n.t('continue')}
+    </Button>
+  </>
 );
 
 WelcomeWizardMigratedUserStep.propTypes = {
