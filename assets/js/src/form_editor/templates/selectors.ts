@@ -7,4 +7,7 @@ export default {
   getFormEditorUrl(state): string {
     return state.formEditorUrl;
   },
+  getSelectTemplateFailed(state): boolean {
+    return state.selectTemplateFailed;
+  },
 };
