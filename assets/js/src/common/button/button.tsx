@@ -12,6 +12,7 @@ type Props = {
   iconEnd?: JSX.Element,
   onClick?: () => void,
   href?: string,
+  type?: string,
   target?: '_blank' | '_self' | '_parent' | '_top' | string,
 };
 
@@ -27,28 +28,31 @@ const Button = ({
   onClick,
   href,
   target,
-}: Props) => (
-  <a
-    href={href}
-    onClick={onClick}
-    target={target}
-    className={
-      classnames(
-        'mailpoet-button',
-        {
-          [`mailpoet-button-${dimension}`]: dimension,
-          [`mailpoet-button-${variant}`]: variant,
-          'mailpoet-button-with-spinner': withSpinner,
-          'mailpoet-disabled': isDisabled,
-          'mailpoet-full-width': isFullWidth,
-        }
-      )
-    }
-  >
-    {iconStart}
-    {children && <span>{children}</span>}
-    {iconEnd}
-  </a>
-);
+}: Props) => {
+  const Element = href ? 'a' : 'button';
+  return (
+    <Element
+      href={href}
+      onClick={onClick}
+      target={target}
+      className={
+        classnames(
+          'mailpoet-button',
+          {
+            [`mailpoet-button-${dimension}`]: dimension,
+            [`mailpoet-button-${variant}`]: variant,
+            'mailpoet-button-with-spinner': withSpinner,
+            'mailpoet-disabled': isDisabled,
+            'mailpoet-full-width': isFullWidth,
+          }
+        )
+      }
+    >
+      {iconStart}
+      {children && <span>{children}</span>}
+      {iconEnd}
+    </Element>
+  );
+};
 
 export default Button;
