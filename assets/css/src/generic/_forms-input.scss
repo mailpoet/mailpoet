@@ -19,10 +19,12 @@
     appearance: none;
     background: transparent;
     border: 0;
+    border-radius: 3px;
     color: $color-text;
     flex-grow: 1;
     font-size: $font-size;
     line-height: $form-control-line-height;
+    margin: 0;
     padding:
       $form-control-spacing - 1px
       $form-control-spacing * 2
