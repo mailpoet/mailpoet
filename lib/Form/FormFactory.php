@@ -5,6 +5,10 @@ namespace MailPoet\Form;
 use MailPoet\Models\Form;
 
 class FormFactory {
+  /**
+   * @param array $template
+   * @return Form
+   */
   public function createFormFromTemplate(array $template) {
     if (isset($template['id'])) {
       unset($template['id']);

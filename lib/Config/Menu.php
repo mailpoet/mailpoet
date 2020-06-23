@@ -188,6 +188,26 @@ class Menu {
       });
     });
 
+    // form editor templates
+    $formTemplateSelectionEditorPage = $this->wp->addSubmenuPage(
+      true,
+      $this->setPageTitle(__('Form Editor', 'mailpoet')),
+      $this->wp->__('Form Editor', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_FORMS,
+      'mailpoet-form-editor-template-selection',
+      [
+        $this,
+        'formEditorTemplateSelection',
+      ]
+    );
+
+    // add body class for form editor page
+    $this->wp->addAction('load-' . $formTemplateSelectionEditorPage, function() {
+      $this->wp->addAction('admin_body_class', function ($classes) {
+        return ltrim($classes . ' block-editor-page');
+      });
+    });
+
 
     // Subscribers page
     $subscribersPage = $this->wp->addSubmenuPage(
@@ -452,6 +472,10 @@ class Menu {
 
   public function formEditor() {
     $this->container->get(FormEditor::class)->render();
+  }
+
+  public function formEditorTemplateSelection() {
+    $this->container->get(FormEditor::class)->renderTemplateSelection();
   }
 
   public function setPageTitle($title) {
