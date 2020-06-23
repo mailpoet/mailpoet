@@ -91,3 +91,47 @@
 h1.title.mailpoet-newsletter-listing-heading {
   margin-bottom: $grid-gap;
 }
+
+.mailpoet-listing-status-unknown,
+.mailpoet-listing-status-scheduled,
+.mailpoet-listing-status-in-progress,
+.mailpoet-listing-status-sent {
+  display: flex;
+  justify-items: center;
+}
+
+.mailpoet-listing-status-unknown {
+  color: $color-text-light;
+  font-weight: bold;
+
+  .mailpoet-listing-status-percentage {
+    stroke: $color-text-light;
+  }
+}
+
+.mailpoet-listing-status-scheduled,
+.mailpoet-listing-status-in-progress {
+  color: $color-secondary;
+
+  .mailpoet-listing-status-percentage {
+    stroke: $color-secondary;
+  }
+}
+
+.mailpoet-listing-status-sent {
+  color: $color-tertiary;
+
+  .mailpoet-listing-status-percentage {
+    stroke: $color-tertiary;
+  }
+}
+
+.mailpoet-listing-status-percentage {
+  stroke-width: 2px;
+}
+
+.mailpoet-listing-status-label {
+  font-size: 12px;
+  line-height: 24px;
+  padding-left: 8px;
+}
