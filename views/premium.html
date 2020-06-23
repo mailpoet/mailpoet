@@ -344,8 +344,10 @@
       </ul>
     </div>
   </div>
+
   <hr>
-  <div class="mailpoet-premium-page-text">
+
+  <div class="mailpoet-premium-page-text mailpoet-premium-page-text-narrow">
     <h1 class="mailpoet-h1">
       <%= _x('Get Started Now', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </h1>
@@ -355,7 +357,7 @@
     <a
       target="_blank"
       href="<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=purchase') | escape('html_attr') %>"
-      class="premium-button"
+      class="mailpoet-button"
     >
       <%= _x('Upgrade now', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </a>
@@ -374,6 +376,13 @@
       %>
     </p>
   </div>
+</div>
+
+<div class="mailpoet-premium-page-footer-image">
+  <img
+    src="<%= cdn_url('premium/5-footer.png') %>"
+    alt="<%= __('Image rooster crowing') %>"
+  >
 </div>
 <% endblock %>
 
