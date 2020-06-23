@@ -5,6 +5,7 @@ import jQuery from 'jquery';
 import PropTypes from 'prop-types';
 import Listing from 'listing/listing.jsx';
 import withNpsPoll from 'nps_poll.jsx';
+import { GlobalContext } from 'context/index.jsx';
 
 const columns = [
   {
@@ -126,13 +127,35 @@ const itemActions = [
 ];
 
 class FormList extends React.Component {
-  createForm = () => {
-    MailPoet.trackEvent('Forms > Add New', {
-      'MailPoet Free version': window.mailpoet_version,
-    });
-    setTimeout(() => {
-      window.location = window.mailpoet_form_edit_url;
-    }, 200); // leave some time for the event to track
+  createForm = (templatesEnabled) => {
+    if (templatesEnabled) {
+      MailPoet.trackEvent('Forms > Add New', {
+        'MailPoet Free version': window.mailpoet_version,
+      });
+      setTimeout(() => {
+        window.location = window.mailpoet_form_template_selection_url;
+      }, 200); // leave some time for the event to track
+    } else {
+      MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'forms',
+        action: 'create',
+      }).done((response) => {
+        MailPoet.trackEvent('Forms > Add New', {
+          'MailPoet Free version': window.mailpoet_version,
+        });
+        setTimeout(() => {
+          window.location = window.mailpoet_form_edit_url + response.data.id;
+        }, 200);
+      }).fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map((error) => error.message),
+            { scroll: true }
+          );
+        }
+      });
+    }
   };
 
   renderItem = (form, actions) => {
@@ -179,33 +202,37 @@ class FormList extends React.Component {
 
   render() {
     return (
-      <div>
-        <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')}
-          {' '}
-          <button
-            className="page-title-action"
-            onClick={this.createForm}
-            data-automation-id="create_new_form"
-            type="button"
-          >
-            {MailPoet.I18n.t('new')}
-          </button>
-        </h1>
+      <GlobalContext.Consumer>
+        {(value) => (
+          <div>
+            <h1 className="title">
+              {MailPoet.I18n.t('pageTitle')}
+              {' '}
+              <button
+                className="page-title-action"
+                onClick={() => this.createForm(value.features.isSupported('templates-selection'))}
+                data-automation-id="create_new_form"
+                type="button"
+              >
+                {MailPoet.I18n.t('new')}
+              </button>
+            </h1>
 
-        <Listing
-          limit={window.mailpoet_listing_per_page}
-          location={this.props.location}
-          params={this.props.match.params}
-          messages={messages}
-          search={false}
-          endpoint="forms"
-          onRenderItem={this.renderItem}
-          columns={columns}
-          bulk_actions={bulkActions}
-          item_actions={itemActions}
-        />
-      </div>
+            <Listing
+              limit={window.mailpoet_listing_per_page}
+              location={this.props.location}
+              params={this.props.match.params}
+              messages={messages}
+              search={false}
+              endpoint="forms"
+              onRenderItem={this.renderItem}
+              columns={columns}
+              bulk_actions={bulkActions}
+              item_actions={itemActions}
+            />
+          </div>
+        )}
+      </GlobalContext.Consumer>
     );
   }
 }
