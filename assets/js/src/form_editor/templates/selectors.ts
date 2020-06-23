@@ -1,0 +1,10 @@
+import { TemplateType } from './types';
+
+export default {
+  getTemplates(state): Array<TemplateType> {
+    return state.templates;
+  },
+  getFormEditorUrl(state): string {
+    return state.formEditorUrl;
+  },
+};
