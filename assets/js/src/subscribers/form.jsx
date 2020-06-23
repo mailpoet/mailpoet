@@ -168,7 +168,7 @@ function afterFormContent(values) {
   return (
     <>
       {values?.unsubscribes?.map((unsubscribe) => {
-        const date = moment(unsubscribe.createdAt.date).format('dddd MMMM Do YYYY at h:mm:ss a');
+        const date = moment(unsubscribe.createdAt.date).format('dddd MMMM Do YYYY [at] h:mm:ss a');
         let message;
         if (unsubscribe.source === 'admin') {
           message = MailPoet.I18n.t('unsubcribedAdmin')
