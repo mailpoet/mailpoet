@@ -15,9 +15,14 @@
 }
 
 .mailpoet_page_mailpoet-premium #wpcontent {
-  background: white linear-gradient(to top, $color-white, #ffe6d9) no-repeat;
+  background: linear-gradient(to top, $color-white, #ffe6d9) no-repeat;
   background-size: auto 300px;
   overflow-x: hidden;
+}
+
+.mailpoet_page_mailpoet-premium #wpwrap {
+  background: white;
+  z-index: -1;
 }
 
 .mailpoet-premium-page {
@@ -252,4 +257,25 @@
   align-items: center;
   grid-template-columns: 2fr 3fr;
   padding: $grid-gap-large 0;
+}
+
+.mailpoet-premium-page-footer-image {
+  padding-bottom: 35%;
+  width: 100%;
+}
+
+.mailpoet-premium-page-footer-image img {
+  bottom: 0;
+  left: -20px;
+  position: absolute;
+  right: 0;
+  width: calc(100% + 20px);
+  z-index: -1;
+
+  &:before {
+    content: '';
+    display: block;
+    height: 1000px;
+    width: 100%;
+  }
 }
