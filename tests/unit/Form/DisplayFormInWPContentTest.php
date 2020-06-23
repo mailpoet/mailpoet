@@ -31,6 +31,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     parent::_before();
     $this->repository = $this->createMock(FormsRepository::class);
     $this->wp = $this->createMock(WPFunctions::class);
+    $this->wp->expects($this->any())->method('inTheLoop')->willReturn(true);
+    $this->wp->expects($this->any())->method('isMainQuery')->willReturn(true);
     $this->wp->expects($this->any())->method('wpCreateNonce')->willReturn('asdfgh');
     WPFunctions::set($this->wp);
     $this->assetsController = $this->createMock(AssetsController::class);
@@ -246,38 +248,6 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
     expect($result)->endsWith($formHtml);
-  }
-
-  public function testAppendsOnlyOnce() {
-    $formHtml = '<form id="test-form"></form>';
-    $this->wp->expects($this->any())->method('isSingle')->willReturn(false);
-    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
-    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
-    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
-    $this->wp
-      ->expects($this->never())
-      ->method('setTransient');
-    $form = new FormEntity('My Form');
-    $form->setSettings([
-      'segments' => ['3'],
-      'place_fixed_bar_form_on_all_pages' => '1',
-      'place_fixed_bar_form_on_all_posts' => '1',
-      'success_message' => 'Hello',
-    ]);
-    $form->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe!'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
-    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
-
-    $result = $this->hook->display('content');
-    expect($result)->notEquals('content');
-    expect($result)->endsWith($formHtml);
-
-    $result = $this->hook->display('content');
-    expect($result)->equals('content');
   }
 
   public function testOnlyOneFormInEachCategory() {

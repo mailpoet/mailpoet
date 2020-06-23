@@ -46,12 +46,6 @@ class DisplayFormInWPContent {
   /** @var TemplateRenderer */
   private $templateRenderer;
 
-  /**
-   * We want to display forms only once per page, once we render we need to stop
-   * @var bool
-   */
-  private $alreadyDisplayed;
-
   public function __construct(
     WPFunctions $wp,
     FormsRepository $formsRepository,
@@ -64,7 +58,6 @@ class DisplayFormInWPContent {
     $this->formRenderer = $formRenderer;
     $this->assetsController = $assetsController;
     $this->templateRenderer = $templateRenderer;
-    $this->alreadyDisplayed = false;
   }
 
   /**
@@ -87,17 +80,21 @@ class DisplayFormInWPContent {
     foreach ($forms as $displayType => $form) {
       $result .= $this->getContentBellow($form, $displayType);
     }
-
-    $this->alreadyDisplayed = true;
     return $result;
   }
 
   private function shouldDisplay(): bool {
+    // This is a fix Yoast plugin and Shapely theme compatibility
+    // This is to make sure we only display once for each page
+    // Yast plugin calls `get_the_excerpt` which also triggers hook `the_content` we don't want to include our form in that
+    // Shapely calls the hook `the_content` multiple times on the page as well and we would display popup multiple times - not ideal
+    if (!$this->wp->inTheLoop() || !$this->wp->isMainQuery()) {
+      return false;
+    }
     // this code ensures that we display the form only on a page which is related to single post
     if (!$this->wp->isSingle() && !$this->wp->isPage()) return false;
     $cache = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
     if (isset($cache[$this->wp->getPostType()])) return false;
-    if ($this->alreadyDisplayed) return false;
     return true;
   }
 
