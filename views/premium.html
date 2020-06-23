@@ -2,7 +2,7 @@
 
 <% block content %>
 <div class="mailpoet-premium-page">
-  <div class="mailpoet-premium-page-intro mailpoet-grid-two-columns">
+  <div class="mailpoet-premium-page-intro mailpoet-premium-page-section mailpoet-grid-two-columns">
     <div>
       <h1 class="mailpoet-h1">
         <%= _x('We take care of your email, <br> so your email can take care of you', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
@@ -30,11 +30,11 @@
   <hr>
 
   <% if (subscriber_count < 1000 ) %>
-  <div class="mailpoet-premium-page-text mailpoet-premium-page-text-narrow">
+  <div class="mailpoet-premium-page-section mailpoet-premium-page-section-narrow mailpoet-premium-page-text-center">
     <h1 class="mailpoet-h1">
       <%= _x('MailPoet Premium is actually yours for free', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </h1>
-    <p class="mailpoet-premium-page-text-large">
+    <p class="mailpoet-premium-page-section-large">
       <%= _x('Website owners with less than 1,000 subscribers, like you, get the Premium add-on and let MailPoet deliver your emails for free.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </p>
     <a
@@ -49,7 +49,7 @@
   <hr>
   <% endif %>
 
-  <div class="mailpoet-premium-page-does-this-sound-like-you mailpoet-grid-two-columns">
+  <div class="mailpoet-premium-page-does-this-sound-like-you mailpoet-premium-page-section mailpoet-grid-two-columns">
     <img
       src="<%= cdn_url('premium/blue_jay_marbles.png') %>"
       alt="<%= __('Image blue bird') %>"
@@ -81,7 +81,7 @@
 
   <hr>
 
-  <div class="mailpoet-premium-page-text">
+  <div class="mailpoet-premium-page-section mailpoet-premium-page-text-center">
     <h1 class="mailpoet-h1">
       <%= _x('Upgrade to MailPoet Premium', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </h1>
@@ -151,8 +151,10 @@
       </div>
     </div>
   </div>
+
   <hr>
-  <div class="mailpoet-premium-page-get-started mailpoet-premium-page-text">
+
+  <div class="mailpoet-premium-page-get-started mailpoet-premium-page-section mailpoet-premium-page-text-center">
     <h1 class="mailpoet-h1">
       <%= _x('Get Started Now', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </h1>
@@ -218,7 +220,7 @@
 
   <hr>
 
-  <div class="mailpoet-premium-page-our-agency-license mailpoet-grid-two-columns">
+  <div class="mailpoet-premium-page-our-agency-license mailpoet-premium-page-section mailpoet-grid-two-columns">
     <div>
       <p class="mailpoet-premium-page-unlimited-websites">
         <%= _x('Unlimited Websites', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
@@ -256,7 +258,7 @@
 
   <hr>
 
-  <div class="mailpoet-premium-page-satisfaction-guarantee mailpoet-premium-page-text mailpoet-premium-page-text-narrow">
+  <div class="mailpoet-premium-page-satisfaction-guarantee mailpoet-premium-page-section mailpoet-premium-page-section-narrow mailpoet-premium-page-text-center">
     <p class="mailpoet-premium-page-text-large">
       <%= _x('Try MailPoet Premium for 30 days with our', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </p>
@@ -275,11 +277,11 @@
 
   <hr>
 
-  <div class="mailpoet-premium-page-mailpoet-works mailpoet-premium-page-text">
+  <div class="mailpoet-premium-page-section mailpoet-premium-page-mailpoet-works mailpoet-premium-page-text-center">
     <h1 class="mailpoet-h1">
       <%= _x('MailPoet works. Here’s the proof.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </h1>
-    <div class="mailpoet-premium-page-text-narrow">
+    <div class="mailpoet-premium-page-section-narrow">
       <p>
         <%= _x('MailPoet is a trusted leader in email for WordPress since 2011. We’re also delighted to have a lot of raving fans! Every month, 5,000 new websites join our community. MailPoet is the stickiest email plugin for WordPress thanks to the reliability and simplicity at the core of our product improvements.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
       </p>
@@ -324,7 +326,7 @@
 
   <hr>
 
-  <div class="mailpoet-premium-page-your-alternative mailpoet-grid-two-columns">
+  <div class="mailpoet-premium-page-your-alternative mailpoet-premium-page-section mailpoet-grid-two-columns">
     <img
       src="<%= cdn_url('premium/4-your-alternative.svg') %>"
       alt="<%= __('Image bird flies from a cage') %>"
@@ -347,13 +349,13 @@
 
   <hr>
 
-  <div class="mailpoet-premium-page-text mailpoet-premium-page-text-narrow">
+  <div class="mailpoet-premium-page-section mailpoet-premium-page-section-narrow mailpoet-premium-page-text-center">
     <h1 class="mailpoet-h1">
       <%= _x('Get Started Now', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </h1>
-    <h3 class="mailpoet-h3">
+    <p class="mailpoet-premium-page-text-large">
       <%= _x('You have nothing to lose and everything to gain — to help you achieve your email marketing goals and grow your business.', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </h3>
+    </p>
     <a
       target="_blank"
       href="<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=purchase') | escape('html_attr') %>"

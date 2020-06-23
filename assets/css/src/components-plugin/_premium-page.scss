@@ -58,9 +58,21 @@
   }
 }
 
+.mailpoet-premium-page-section {
+  padding: $grid-gap-large 0;
+}
+
+.mailpoet-premium-page-section-narrow {
+  margin: auto;
+  max-width: 700px;
+}
+
+.mailpoet-premium-page-text-center {
+  text-align: center;
+}
+
 .mailpoet-premium-page-intro {
   align-items: center;
-  padding: $grid-gap-large 0;
 
   img {
     margin: auto;
@@ -74,7 +86,6 @@
 
   .mailpoet-grid-two-columns {
     grid-column-gap: 2 * $grid-gap-large;
-    padding: $grid-gap-large 0;
   }
 
   img {
@@ -91,20 +102,6 @@
     content: '·';
     padding-right: 5px;
   }
-}
-
-.mailpoet-premium-page-text {
-  padding: $grid-gap-large 0;
-  text-align: center;
-
-  h3.mailpoet-h3 {
-    font-weight: normal;
-  }
-}
-
-.mailpoet-premium-page-text-narrow {
-  margin: auto;
-  max-width: 700px;
 }
 
 .mailpoet-premium-page-features {
@@ -214,7 +211,6 @@
 .mailpoet-premium-page-our-agency-license {
   align-items: center;
   grid-template-columns: 3fr 2fr;
-  padding: $grid-gap-large 0;
 }
 
 .mailpoet-premium-page-unlimited-websites {
@@ -256,7 +252,6 @@
 .mailpoet-premium-page-your-alternative {
   align-items: center;
   grid-template-columns: 2fr 3fr;
-  padding: $grid-gap-large 0;
 }
 
 .mailpoet-premium-page-footer-image {
