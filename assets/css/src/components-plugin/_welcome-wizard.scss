@@ -1,6 +1,10 @@
 .admin_page_mailpoet-welcome-wizard {
   background: #fff;
 
+  p {
+    font-size: $font-size;
+  }
+
   #wpcontent {
     padding: 0;
   }
@@ -65,6 +69,12 @@
   }
 }
 
+.mailpoet-wizard-label {
+  display: block;
+  font-size: $font-size;
+  margin-bottom: $grid-gap-half;
+}
+
 // Welcome wizard - old styles
 .mailpoet_welcome_wizard_header {
   text-align: center;
@@ -117,33 +127,6 @@
     list-style: disc;
     padding-left: 30px;
   }
-}
-
-#mailpoet_sender_form {
-  margin-top: 30px;
-  width: 330px;
-
-  label {
-    display: block;
-    font-size: 15px;
-    margin-bottom: 20px;
-  }
-
-  input[type='text'] {
-    font-size: 15px;
-    height: 30px;
-    margin-top: 10px;
-    width: 350px;
-  }
-
-  a.sender_form_small {
-    color: #595c65;
-    font-size: 12px;
-  }
-}
-
-.mailpoet_sender_form_loading {
-  opacity: .5;
 }
 
 .mailpoet_welcome_wizard_step_controls {
