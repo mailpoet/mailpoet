@@ -385,7 +385,6 @@ class Subscribers extends APIEndpoint {
         isset($data['status'])
         && ($data['status'] === SubscriberEntity::STATUS_UNSUBSCRIBED)
         && ($oldSubscriber instanceof Subscriber)
-        && ($oldSubscriber->status === SubscriberEntity::STATUS_SUBSCRIBED)
       ) {
         $currentUser = $this->wp->wpGetCurrentUser();
         $this->unsubscribesTracker->track(
