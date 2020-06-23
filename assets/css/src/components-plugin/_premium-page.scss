@@ -238,3 +238,12 @@
     margin: 0;
   }
 }
+
+.mailpoet-premium-page-mailpoet-works {
+  @include full-width-background(linear-gradient(to top, $color-white, #ffe6d9));
+
+  .mailpoet-grid-three-columns {
+    grid-gap: $grid-gap-large;
+    margin-top: $grid-gap-large;
+  }
+}
