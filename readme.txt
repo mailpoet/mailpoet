@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.2
 Tested up to: 5.4
-Stable tag: 3.47.5
+Stable tag: 3.47.6
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,18 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.47.6 - 2020-06-23 =
+* Improved: the unsubscription process to avoid security robots accidentally unsubscribing subscribers. Thanks, Mark!
+* Improved: we're now using the latest Gutenberg version;
+* Improved: default animations for forms;
+* Improved: added explanation when sending email to multiple lists;
+* Improved: new design for tabs;
+* Improved: trashing and deleting newsletter performance with large lists;
+* Fixed: shortcodes render default values in previews again;
+* Fixed: occasional conflict with other plugins when sending emails due to Content Type;
+* Fixed: conflict with WishList Members plugin when sending all emails with MailPoet. Thanks, Beit!
+* Fixed: sending HTML email from Contact Form 7 plugin.
 
 = 3.47.5 - 2020-06-16 =
 * Added: text styles in forms;
