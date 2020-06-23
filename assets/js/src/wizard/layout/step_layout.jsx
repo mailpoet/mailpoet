@@ -5,8 +5,8 @@ import WelcomeWizardStepLayoutBody from './step_layout_body.jsx';
 
 const WelcomeWizardStepLayout = (props) => (
   <>
-    <div className="mailpoet_welcome_wizard_header">
-      <img src={window.mailpoet_logo_url} width="200" height="87" alt="MailPoet logo" />
+    <div className="mailpoet-wizard-logo">
+      <img src={window.mailpoet_logo_url} width="160" height="50" alt="MailPoet logo" />
     </div>
     <WelcomeWizardStepLayoutBody
       illustrationUrl={props.illustrationUrl}
