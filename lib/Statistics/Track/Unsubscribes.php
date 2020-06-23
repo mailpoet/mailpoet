@@ -23,7 +23,7 @@ class Unsubscribes {
     $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
   }
 
-  public function track(int $subscriberId, int $queueId = null, string $source, string $meta = null) {
+  public function track(int $subscriberId, string $source, int $queueId = null, string $meta = null) {
     $queue = null;
     $statistics = null;
     if ($queueId) {

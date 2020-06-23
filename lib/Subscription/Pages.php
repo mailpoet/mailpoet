@@ -203,8 +203,8 @@ class Pages {
       if ((bool)$this->settings->get('tracking.enabled') && isset($this->data['queueId'])) {
         $this->unsubscribesTracker->track(
           (int)$this->subscriber->id,
-          (int)$this->data['queueId'],
-          StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER
+          StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER,
+          (int)$this->data['queueId']
         );
       }
       $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
