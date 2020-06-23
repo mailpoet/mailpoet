@@ -398,10 +398,14 @@ describe('Blocks to Form Body', () => {
         content: 'Heading content',
         level: 3,
         align: 'center',
-        customTextColor: '#123',
-        customBackgroundColor: '#321',
         anchor: 'anchor',
         className: 'class',
+        style: {
+          color: {
+            background: '#321',
+            text: '#123',
+          },
+        },
       },
     }]);
     expect(input.type).to.be.equal('heading');
@@ -566,8 +570,12 @@ describe('Blocks to Form Body', () => {
     expect(mapped.params.background_color).to.be.equal('#ffffff');
 
     columns.attributes = {
-      customTextColor: '#aaaaaa',
-      customBackgroundColor: '#bbbbbb',
+      style: {
+        color: {
+          text: '#aaaaaa',
+          background: '#bbbbbb',
+        },
+      },
     };
     const [mapped2] = formBlocksToBody([columns]);
     expect(mapped2.params.text_color).to.be.equal('#aaaaaa');

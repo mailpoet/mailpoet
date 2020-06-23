@@ -164,12 +164,12 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
               text_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.textColor,
-                block.attributes.customTextColor
+                block.attributes.style?.color?.text
               ),
               background_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.backgroundColor,
-                block.attributes.customBackgroundColor
+                block.attributes.style?.color?.background
               ),
               anchor: block.attributes.anchor || null,
               class_name: block.attributes.className || null,
@@ -191,12 +191,12 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
               text_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.textColor,
-                block.attributes.customTextColor
+                block.attributes.style?.color?.text
               ),
               background_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.backgroundColor,
-                block.attributes.customBackgroundColor
+                block.attributes.style?.color?.background
               ),
               class_name: block.attributes.className || null,
             },
@@ -245,12 +245,12 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
               text_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.textColor,
-                block.attributes.customTextColor
+                block.attributes.style?.color?.text
               ),
               background_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.backgroundColor,
-                block.attributes.customBackgroundColor
+                block.attributes.style?.color?.background
               ),
             },
           };

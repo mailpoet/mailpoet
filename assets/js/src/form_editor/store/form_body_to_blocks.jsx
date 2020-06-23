@@ -157,7 +157,11 @@ const mapColumnBlocks = (data, fontSizeDefinitions, colorDefinitions, customFiel
     clientId: generateId(),
     name: `core/${data.type}`,
     isValid: true,
-    attributes: {},
+    attributes: {
+      style: {
+        color: {},
+      },
+    },
     innerBlocks: mapFormBodyToBlocks(data.body ? data.body : []),
   };
   const textColorSlug = mapColorSlug(colorDefinitions, data.params.text_color);
@@ -170,11 +174,11 @@ const mapColumnBlocks = (data, fontSizeDefinitions, colorDefinitions, customFiel
   }
   if (has(data.params, 'text_color')) {
     mapped.attributes.textColor = textColorSlug;
-    mapped.attributes.customTextColor = !textColorSlug ? data.params.text_color : undefined;
+    mapped.attributes.style.color.text = !textColorSlug ? data.params.text_color : undefined;
   }
   if (has(data.params, 'background_color')) {
     mapped.attributes.backgroundColor = backgroundColorSlug;
-    mapped.attributes.customBackgroundColor = !backgroundColorSlug
+    mapped.attributes.style.color.background = !backgroundColorSlug
       ? data.params.background_color : undefined;
   }
   if (has(data.params, 'class_name') && data.params.class_name) {
@@ -222,6 +226,16 @@ export const formBodyToBlocksFactory = (
           className: null,
         },
       };
+
+      if (['heading', 'paragraph'].includes(item.type)) {
+        mapped.attributes.style = {
+          color: {
+            text: undefined,
+            background: undefined,
+          },
+        };
+      }
+
       if (item.params && has(item.params, 'class_name')) {
         mapped.attributes.className = item.params.class_name;
       }
@@ -237,13 +251,22 @@ export const formBodyToBlocksFactory = (
       if (item.params && has(item.params, 'text_color')) {
         const textColorSlug = mapColorSlug(colorDefinitions, item.params.text_color);
         mapped.attributes.textColor = textColorSlug;
-        mapped.attributes.customTextColor = !textColorSlug ? item.params.text_color : undefined;
+        if (['heading', 'paragraph'].includes(item.type)) {
+          mapped.attributes.style.color.text = !textColorSlug ? item.params.text_color : undefined;
+        } else {
+          mapped.attributes.customTextColor = !textColorSlug ? item.params.text_color : undefined;
+        }
       }
       if (item.params && has(item.params, 'background_color')) {
         const slug = mapColorSlug(colorDefinitions, item.params.background_color);
         mapped.attributes.backgroundColor = slug;
-        mapped.attributes.customBackgroundColor = !slug
-          ? item.params.background_color : undefined;
+        if (['heading', 'paragraph'].includes(item.type)) {
+          mapped.attributes.style.color.background = !slug
+            ? item.params.background_color : undefined;
+        } else {
+          mapped.attributes.customBackgroundColor = !slug
+            ? item.params.background_color : undefined;
+        }
       }
       if (item.params && has(item.params, 'font_size')) {
         const slug = mapFontSizeSlug(fontSizeDefinitions, item.params.font_size);
