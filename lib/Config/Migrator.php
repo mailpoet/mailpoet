@@ -572,8 +572,8 @@ class Migrator {
 
   private function updateNullInUnsubscribeStats() {
     global $wpdb;
-    // perform once for versions below or equal to 3.47.5
-    if (version_compare($this->settings->get('db_version', '3.47.5'), '3.47.5', '>')) {
+    // perform once for versions below or equal to 3.47.6
+    if (version_compare($this->settings->get('db_version', '3.47.6'), '3.47.6', '>')) {
       return false;
     }
     $query = "
