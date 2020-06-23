@@ -390,8 +390,8 @@ class Subscribers extends APIEndpoint {
         $currentUser = $this->wp->wpGetCurrentUser();
         $this->unsubscribesTracker->track(
           (int)$oldSubscriber->id,
-          null,
           StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR,
+          null,
           $currentUser->display_name // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         );
       }

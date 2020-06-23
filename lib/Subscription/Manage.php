@@ -64,7 +64,6 @@ class Manage {
       ) {
         $this->unsubscribesTracker->track(
           (int)$subscriber->id,
-          null,
           StatisticsUnsubscribeEntity::SOURCE_MANAGE
         );
       }
