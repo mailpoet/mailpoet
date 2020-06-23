@@ -4,7 +4,7 @@ import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { Button } from '@wordpress/components';
 
-import { TemplateType } from './types';
+import { TemplateType } from './store/types';
 
 export default () => {
   const templates: Array<TemplateType> = useSelect(
