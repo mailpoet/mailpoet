@@ -321,20 +321,28 @@
       <%= _x('Read all the reviews', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
     </a>
   </div>
+
   <hr>
-  <div class="mailpoet-premium-page-text">
-    <h1 class="mailpoet-h1">
-      <%= _x('Your alternative: keep using the free plugin', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </h1>
-    <p>
-      <%= _x('Don’t get us wrong, we WANT you to use our free plugin (we created it, after all!). But imagine being able to grow your email list past 1,000 subscribers and:', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
-    </p>
-    <ul class="mailpoet-premium-page-bullet-list">
-      <li><%= __('Never having to wait very long for support.') %></li>
-      <li><%= __('Having access to detailed analytics that help you understand your subscribers.') %></li>
-      <li><%= __('Boosting your WooCommerce sales with smart and integrated email marketing.') %></li>
-      <li><%= __('Not having MailPoet branding in the footer of your emails.') %></li>
-    </ul>
+
+  <div class="mailpoet-premium-page-your-alternative mailpoet-grid-two-columns">
+    <img
+      src="<%= cdn_url('premium/4-your-alternative.svg') %>"
+      alt="<%= __('Image bird flies from a cage') %>"
+    >
+    <div>
+      <h1 class="mailpoet-h1">
+        <%= _x('Your alternative: keep using the free plugin', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+      </h1>
+      <p>
+        <%= _x('Don’t get us wrong, we WANT you to use our free plugin (we created it, after all!). But imagine being able to grow your email list past 1,000 subscribers and:', 'This text resides in the Premium page: /wp-admin/admin.php?page=mailpoet-premium') %>
+      </p>
+      <ul class="mailpoet-premium-page-bullet-list">
+        <li><%= __('Never having to wait very long for support.') %></li>
+        <li><%= __('Having access to detailed analytics that help you understand your subscribers.') %></li>
+        <li><%= __('Boosting your WooCommerce sales with smart and integrated email marketing.') %></li>
+        <li><%= __('Not having MailPoet branding in the footer of your emails.') %></li>
+      </ul>
+    </div>
   </div>
   <hr>
   <div class="mailpoet-premium-page-text">

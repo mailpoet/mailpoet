@@ -247,3 +247,9 @@
     margin-top: $grid-gap-large;
   }
 }
+
+.mailpoet-premium-page-your-alternative {
+  align-items: center;
+  grid-template-columns: 2fr 3fr;
+  padding: $grid-gap-large 0;
+}
