@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 import Selection from './templates/selection';
-import initStore from './templates/store';
+import initStore from './templates/store/store';
 
 const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
