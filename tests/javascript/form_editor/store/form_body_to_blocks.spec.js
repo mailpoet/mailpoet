@@ -525,8 +525,8 @@ describe('Form Body To Blocks', () => {
     const [block] = formBodyToBlocks([nested]);
     expect(block.attributes.textColor).to.be.equal('white');
     expect(block.attributes.backgroundColor).to.be.equal('black');
-    expect(block.attributes.customTextColor).to.be.undefined;
-    expect(block.attributes.customBackgroundColor).to.be.undefined;
+    expect(block.attributes.style.color.text).to.be.undefined;
+    expect(block.attributes.style.color.background).to.be.undefined;
 
     nested.params = {
       text_color: '#aaaaaa',
@@ -535,8 +535,8 @@ describe('Form Body To Blocks', () => {
     const [block2] = formBodyToBlocks([nested]);
     expect(block2.attributes.textColor).to.be.undefined;
     expect(block2.attributes.backgroundColor).to.be.undefined;
-    expect(block2.attributes.customTextColor).to.be.equal('#aaaaaa');
-    expect(block2.attributes.customBackgroundColor).to.be.equal('#bbbbbb');
+    expect(block2.attributes.style.color.text).to.be.equal('#aaaaaa');
+    expect(block2.attributes.style.color.background).to.be.equal('#bbbbbb');
   });
 
   it('Should map class name', () => {
@@ -626,7 +626,7 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.align).to.be.equal('right');
     expect(block.attributes.className).to.be.equal('class');
     expect(block.attributes.anchor).to.be.equal('anchor');
-    expect(block.attributes.customTextColor).to.be.equal('#f78da7');
+    expect(block.attributes.style.color.text).to.be.equal('#f78da7');
   });
 
   it('It should map image', () => {
