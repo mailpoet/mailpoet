@@ -4,6 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
+use Codeception\Util\Locator;
 
 class SubscriberManagementCest {
 
@@ -130,12 +131,33 @@ class SubscriberManagementCest {
   public function editSubscriber(\AcceptanceTester $i) {
     $i->wantTo('Edit a subscriber');
     $newSubscriberEmail = 'editglobaluser99@fakemail.fake';
+    $unsubscribedMessage = ['xpath' => '//*[@class="description"]'];
+    $this->generateMultipleLists();
     $this->generateSingleSubscriber('editglobaluser99@fakemail.fake', 'Edit', 'ThisGlobalUser');
     $i->login();
     $i->amOnMailPoetPage ('Subscribers');
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
     $i->waitForText('Subscriber');
+    $i->fillField(['name' => 'first_name'], 'EditedNew');
+    $i->fillField(['name' => 'last_name'], 'EditedGlobalUser');
+    $i->selectOption('[data-automation-id="subscriber-status"]', 'Unsubscribed');
+    $i->click('Save');
+    $i->waitForElementVisible('[data-automation-id="listing_item_1"]');
+    $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
+    $i->waitForText('Subscriber');
+    $i->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Unsubscribed');
+    $i->see('Unsubscribed at', $unsubscribedMessage);
+    $i->selectOptionInSelect2('Cooking');
+    $i->selectOptionInSelect2('Camping');
+    $i->selectOption('[data-automation-id="subscriber-status"]', 'Subscribed');
+    $i->click('Save');
+    $i->waitForElementVisible('[data-automation-id="listing_item_1"]');
+    $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
+    $i->waitForText('Subscriber');
+    $i->seeSelectedInSelect2('Cooking');
+    $i->seeSelectedInSelect2('Camping');
+    $i->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Subscribed');
   }
 
   public function inactiveSubscribers(\AcceptanceTester $i) {
