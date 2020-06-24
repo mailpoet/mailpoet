@@ -55,7 +55,7 @@ class Subscription {
 
   private function getSubscriptionField($inputName, $checked, $labelString) {
     return '<p class="form-row">
-      <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
+      <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox" data-automation-id="woo-commerce-subscription-opt-in">
       <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="' . $this->wp->escAttr($inputName) . '" id="' . $this->wp->escAttr($inputName) . '" ' . ($checked ? 'checked' : '') . ' />
         <span class="woocommerce-terms-and-conditions-checkbox-text">' . $this->wp->escHtml($labelString) . '</label>
     </p>';
