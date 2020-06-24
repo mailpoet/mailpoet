@@ -49,7 +49,7 @@ class RevenueTrackingCookieCest {
     $i->waitForElement('.mailpoet_progress_label');
 
     $i->logOut();
-    $this->checkEmailWasReceived($i, $newsletterSubject);
+    $i->checkEmailWasReceived($newsletterSubject);
 
     // click a link in the newsletter and check the cookie has been created
     $i->click(Locator::contains('span.subject', $newsletterSubject));
@@ -87,30 +87,12 @@ class RevenueTrackingCookieCest {
     $i->waitForElement('.mailpoet_progress_label');
 
     $i->logOut();
-    $this->checkEmailWasReceived($i, $newsletterSubject);
+    $i->checkEmailWasReceived($newsletterSubject);
     // click a link in the newsletter and check the cookie has NOT been created
     $i->click(Locator::contains('span.subject', $newsletterSubject));
     $i->switchToIframe('preview-html');
     $i->click('Read the post');
     $i->switchToNextTab();
     $i->dontSeeCookie('mailpoet_revenue_tracking');
-  }
-
-  /**
-   * Checks that email was received by looking for a subject in inbox.
-   * In case it was not found reloads the inbox and check once more.
-   * Emails are sent via cron and might not be sent immediately.
-   * @param \AcceptanceTester $i
-   * @param string $subject
-   * @throws \Exception
-   */
-  private function checkEmailWasReceived(\AcceptanceTester $i, $subject) {
-    $i->amOnMailboxAppPage();
-    try {
-      $i->waitForText($subject);
-    } catch (\Exception $e) {
-      $i->amOnMailboxAppPage();
-      $i->waitForText($subject);
-    }
   }
 }
