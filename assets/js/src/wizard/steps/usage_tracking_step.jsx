@@ -1,51 +1,57 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
+import Button from '../../common/button/button';
+import Grid from '../../common/grid';
+import Heading from '../../common/typography/heading/heading';
+import List from '../../common/typography/list/list';
 
 const WelcomeWizardUsageTrackingStep = (props) => (
-  <div className="mailpoet_welcome_wizard_step_content">
-    <h1>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepTitle')}</h1>
+  <>
+    <Heading level={1}>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepTitle')}</Heading>
+
+    <div className="mailpoet-gap" />
     <p>{MailPoet.I18n.t('welcomeWizardTrackingText')}</p>
-    <h2 className="welcome_wizard_tracking_sub_title">{MailPoet.I18n.t('welcomeWizardUsageTrackingStepSubTitle')}</h2>
-    <ul className="welcome_wizard_tracking_list">
-      <li>{MailPoet.I18n.t('welcomeWizardTrackingList1')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardTrackingList2')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardTrackingList3')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardTrackingList4')}</li>
-      <li>{MailPoet.I18n.t('welcomeWizardTrackingList5')}</li>
-    </ul>
-    <a
-      href=" https://kb.mailpoet.com/article/130-sharing-your-data-with-us"
-      data-beacon-article="57ce0aaac6979108399a0454"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {MailPoet.I18n.t('welcomeWizardTrackingLink')}
-    </a>
-    <div
-      className={
-        `mailpoet_welcome_wizard_step_controls
-        ${(props.loading ? 'mailpoet_welcome_wizard_step_controls_loading' : '')}`
-      }
-    >
-      <button
-        type="button"
-        className="button"
-        onClick={props.skip_action}
-        disabled={props.loading}
+    <div className="mailpoet-gap" />
+
+    <Heading level={5}>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepSubTitle')}</Heading>
+    <Grid.TwoColumnsList>
+      <List>
+        <li>{MailPoet.I18n.t('welcomeWizardTrackingList1')}</li>
+        <li>{MailPoet.I18n.t('welcomeWizardTrackingList2')}</li>
+        <li>{MailPoet.I18n.t('welcomeWizardTrackingList3')}</li>
+        <li>{MailPoet.I18n.t('welcomeWizardTrackingList4')}</li>
+        <li>{MailPoet.I18n.t('welcomeWizardTrackingList5')}</li>
+      </List>
+    </Grid.TwoColumnsList>
+    <p>
+      <a
+        href=" https://kb.mailpoet.com/article/130-sharing-your-data-with-us"
+        data-beacon-article="57ce0aaac6979108399a0454"
+        target="_blank"
+        rel="noopener noreferrer"
       >
-        {MailPoet.I18n.t('skip')}
-      </button>
-      <button
-        type="button"
-        className="button button-primary"
-        onClick={props.allow_action}
-        disabled={props.loading}
-      >
-        {props.allow_text}
-      </button>
-    </div>
-  </div>
+        {MailPoet.I18n.t('welcomeWizardTrackingLink')}
+      </a>
+    </p>
+
+    <div className="mailpoet-gap" />
+    <Button
+      isFullWidth
+      onClick={props.allow_action}
+      withSpinner={props.loading}
+    >
+      {props.allow_text}
+    </Button>
+    <Button
+      isDisabled={props.loading}
+      isFullWidth
+      onClick={props.skip_action}
+      variant="link"
+    >
+      {MailPoet.I18n.t('skip')}
+    </Button>
+  </>
 );
 
 WelcomeWizardUsageTrackingStep.propTypes = {
