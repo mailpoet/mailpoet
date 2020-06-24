@@ -23,35 +23,34 @@ const WelcomeWizardSenderStep = (props) => (
         props.submit_sender();
       }}
     >
-      <Grid.SpaceBetween>
-        <Grid.Column dimension="small">
-          <label htmlFor="senderName">
-            <span className="mailpoet-wizard-label">{MailPoet.I18n.t('senderName')}</span>
-            <Input
-              name="senderName"
-              type="text"
-              placeholder="John Doe"
-              value={props.sender ? props.sender.name : ''}
-              data-parsley-required
-              onChange={(e) => props.update_sender({ name: e.target.value })}
-            />
-          </label>
-        </Grid.Column>
-        <Grid.Column>
-          <label htmlFor="senderAddress">
-            <span className="mailpoet-wizard-label">{MailPoet.I18n.t('senderAddress')}</span>
-            <Input
-              name="senderAddress"
-              type="text"
-              placeholder="john@doe.com"
-              value={props.sender ? props.sender.address : ''}
-              data-parsley-required
-              data-parsley-type="email"
-              onChange={(e) => props.update_sender({ address: e.target.value })}
-            />
-          </label>
-        </Grid.Column>
-      </Grid.SpaceBetween>
+      <Grid.TwoColumns>
+        <label htmlFor="senderName">
+          <span className="mailpoet-wizard-label">{MailPoet.I18n.t('senderName')}</span>
+          <Input
+            isFullWidth
+            name="senderName"
+            type="text"
+            placeholder="John Doe"
+            value={props.sender ? props.sender.name : ''}
+            data-parsley-required
+            onChange={(e) => props.update_sender({ name: e.target.value })}
+          />
+        </label>
+
+        <label htmlFor="senderAddress">
+          <span className="mailpoet-wizard-label">{MailPoet.I18n.t('senderAddress')}</span>
+          <Input
+            isFullWidth
+            name="senderAddress"
+            type="text"
+            placeholder="john@doe.com"
+            value={props.sender ? props.sender.address : ''}
+            data-parsley-required
+            data-parsley-type="email"
+            onChange={(e) => props.update_sender({ address: e.target.value })}
+          />
+        </label>
+      </Grid.TwoColumns>
 
       <div className="mailpoet-gap" />
       <div className="mailpoet-gap" />
