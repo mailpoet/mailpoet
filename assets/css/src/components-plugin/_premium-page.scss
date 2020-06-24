@@ -58,8 +58,20 @@
   }
 }
 
-.mailpoet-premium-page-section {
+// "div" used for higher specificity for mobile styles
+div.mailpoet-premium-page-section {
   padding: $grid-gap-large 0;
+
+  @include respond-to(small-screen) {
+    grid-template-columns: 1fr;
+    text-align: center;
+
+    > img {
+      margin: auto;
+      max-width: 150px;
+      order: -1;
+    }
+  }
 }
 
 .mailpoet-premium-page-section-narrow {
