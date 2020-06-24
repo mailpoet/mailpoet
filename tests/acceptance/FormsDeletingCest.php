@@ -66,4 +66,29 @@ class FormsDeletingCest {
     $i->waitForElementNotVisible($formName);
     $i->waitForText($formName . '2');
   }
+
+  public function emptyTrash(\AcceptanceTester $i) {
+    $formName = 'Delete form permanently';
+    $form = new Form();
+    $form->withName($formName)->withDeleted()->create();
+    $form = new Form();
+    $form->withName($formName . '2')->create();
+
+    $i->wantTo('Empty a trash on Forms page');
+
+    $i->login();
+    $i->amOnMailpoetPage('Forms');
+
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($formName);
+
+    $i->click('[data-automation-id="empty_trash"]');
+
+    $i->waitForText('1 form was permanently deleted.');
+    $i->waitForElementNotVisible($formName);
+    $i->click('[data-automation-id="filters_all"]');
+
+    $i->waitForText($formName . '2');
+  }
 }
