@@ -10,12 +10,20 @@
   display: grid;
   grid-column-gap: $grid-gap;
   grid-template-columns: 1fr 1fr;
+
+  @include respond-to(small-screen) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .mailpoet-grid-three-columns {
   display: grid;
   grid-column-gap: $grid-gap;
   grid-template-columns: 1fr 1fr 1fr;
+
+  @include respond-to(small-screen) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .mailpoet-grid-space-between {
