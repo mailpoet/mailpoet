@@ -8,7 +8,7 @@
 
 .mailpoet-grid-two-columns {
   display: grid;
-  grid-column-gap: $grid-gap;
+  grid-gap: $grid-gap;
   grid-template-columns: 1fr 1fr;
 
   @include respond-to(small-screen) {
@@ -18,7 +18,7 @@
 
 .mailpoet-grid-three-columns {
   display: grid;
-  grid-column-gap: $grid-gap;
+  grid-gap: $grid-gap;
   grid-template-columns: 1fr 1fr 1fr;
 
   @include respond-to(small-screen) {
@@ -29,6 +29,7 @@
 .mailpoet-grid-space-between {
   align-items: flex-start;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
 }
 
