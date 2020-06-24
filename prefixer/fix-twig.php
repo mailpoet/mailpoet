@@ -229,5 +229,4 @@ foreach ($replacements as $singleFile) {
 }
 
 // Remove unwanted class aliases in lib/Twig
-// We need to keep first level files in lib/Twig since most of them are still needed
 exec("rm -rf ../vendor-prefixed/twig/twig/lib/Twig");
