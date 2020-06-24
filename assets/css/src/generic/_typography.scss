@@ -25,3 +25,18 @@ h2.mailpoet-h2 { font-size: $heading-font-size-h2; }
 h3.mailpoet-h3 { font-size: $heading-font-size-h3; }
 h4.mailpoet-h4 { font-size: $heading-font-size-h4; }
 h5.mailpoet-h5 { font-size: $heading-font-size-h5; }
+
+.mailpoet-ol,
+.mailpoet-ul {
+  font-size: $font-size;
+  margin: 0 0 $grid-gap;
+  padding: 0 0 0 $grid-gap;
+}
+
+.mailpoet-ol {
+  list-style-type: decimal;
+}
+
+.mailpoet-ul {
+  list-style-type: disc;
+}
