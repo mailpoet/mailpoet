@@ -16,6 +16,11 @@ class DeleteTrashedSegmentCest {
       ->withUserRoleFilter('Administrator')
       ->withDeleted()
       ->create();
+    $segmentFactory
+      ->withName($segmentTitle . '2')
+      ->withUserRoleFilter('Administrator')
+      ->withDeleted()
+      ->create();
     $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->id . '"]';
 
     $i->login();
@@ -29,5 +34,6 @@ class DeleteTrashedSegmentCest {
     $i->waitForText('1 segment was permanently deleted.', 10);
     $i->dontSeeElement($listingAutomationSelector);
     $i->seeNoJSErrors();
+    $i->waitForText($segmentTitle . '2');
   }
 }

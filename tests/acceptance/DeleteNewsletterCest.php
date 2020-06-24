@@ -41,6 +41,8 @@ class DeleteNewsletterCest {
     $newsletterName = 'Goodbye Forever Newsletter';
     $newsletter = new Newsletter();
     $newsletter->withSubject($newsletterName)->withDeleted()->create();
+    $newsletter = new Newsletter();
+    $newsletter->withSubject($newsletterName . '2')->withDeleted()->create();
     $i->wantTo('Forever delete a newsletter');
     $i->login();
     $i->amOnMailpoetPage('Emails');
@@ -50,5 +52,7 @@ class DeleteNewsletterCest {
     $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
     $i->waitForText('1 email was permanently deleted.');
     $i->waitForElementNotVisible($newsletterName);
+
+    $i->waitForText($newsletterName . '2');
   }
 }
