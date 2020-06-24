@@ -93,6 +93,10 @@
   }
 }
 
+.mailpoet-premium-page-upgrade-to-premium .mailpoet-grid-three-columns {
+  grid-gap: $grid-gap-large;
+}
+
 .mailpoet-premium-page-get-started {
   @include full-width-background(linear-gradient(to top, $color-white, #ffe6d9));
 }
