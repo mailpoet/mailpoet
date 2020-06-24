@@ -55,4 +55,27 @@ class DeleteNewsletterCest {
 
     $i->waitForText($newsletterName . '2');
   }
+
+  public function emptyTrash(\AcceptanceTester $i) {
+    $newsletterName = 'Goodbye Forever Newsletter';
+    $i->wantTo('Empty a trash on Newsletters page');
+    $newsletter = new Newsletter();
+    $newsletter->withSubject($newsletterName)->withDeleted()->create();
+    $newsletter = new Newsletter();
+    $newsletter->withSubject($newsletterName . '2')->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newsletterName);
+
+    $i->click('[data-automation-id="empty_trash"]');
+
+    $i->waitForText('1 email was permanently deleted.');
+    $i->waitForElementNotVisible($newsletterName);
+    $i->click('[data-automation-id="filters_all"]');
+
+    $i->waitForText($newsletterName . '2');
+  }
 }

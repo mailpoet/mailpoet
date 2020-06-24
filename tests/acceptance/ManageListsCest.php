@@ -61,34 +61,66 @@ class ManageListsCest {
 
     // Trash existing list
     $i->clickItemRowActionByItemName($editedListTitle, 'Move to trash');
-    $i->waitForText('1 list was moved to the trash. Note that deleting a list does not delete its subscribers.', 10);
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]', 10);
+    $i->waitForText('1 list was moved to the trash. Note that deleting a list does not delete its subscribers.');
+    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]', 10);
-    $i->waitForText($editedListTitle, 10);
+    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
+    $i->waitForText($editedListTitle);
     $i->seeNoJSErrors();
 
     // Restore trashed list
     $i->clickItemRowActionByItemName($editedListTitle, 'Restore');
-    $i->waitForText('1 list has been restored from the Trash.', 10);
+    $i->waitForText('1 list has been restored from the Trash.');
     $i->seeInCurrentURL(urlencode('group[all]'));
-    $i->waitForText($editedListTitle, 10);
+    $i->waitForText($editedListTitle);
     $i->seeNoJSErrors();
 
     // Trash and delete existing list
+    $segmentFactory = new Segment();
     $segmentFactory
       ->withName($newListTitle . '2')
       ->withDescription($newListDesc)
       ->create();
     $i->clickItemRowActionByItemName($editedListTitle, 'Move to trash');
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]', 10);
+    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForElementVisible('[data-automation-id="filters_trash"]', 10);
+    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
     $i->clickItemRowActionByItemName($editedListTitle, 'Delete permanently');
-    $i->waitForText('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.', 10);
+    $i->waitForText('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
     $i->seeNoJSErrors();
     $i->seeInCurrentURL(urlencode('group[all]'));
     $i->dontSee($editedListTitle, '[data-automation-id="listing_item_4"]');
     $i->see($newListTitle . '2');
+  }
+
+  public function emptyTrash(\AcceptanceTester $i) {
+    // Trash and delete existing list
+    $newListTitle = 'Empty Trash List';
+    $newListDesc = 'Description';
+    $segmentFactory = new Segment();
+    $segmentFactory
+      ->withName($newListTitle)
+      ->withDescription($newListDesc)
+      ->withDeleted()
+      ->create();
+    $segmentFactory = new Segment();
+    $segmentFactory
+      ->withName('List to keep')
+      ->withDescription($newListDesc)
+      ->create();
+
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForElementVisible('[data-automation-id="empty_trash"]');
+
+    $i->click('[data-automation-id="empty_trash"]');
+
+    $i->waitForText('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
+    $i->dontSee($newListTitle);
+    $i->seeNoJSErrors();
+    $i->click('[data-automation-id="filters_all"]');
+    $i->see('List to keep');
   }
 }

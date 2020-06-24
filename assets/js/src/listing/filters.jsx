@@ -82,6 +82,7 @@ class ListingFilters extends React.Component {
           onClick={this.handleEmptyTrash}
           type="submit"
           value={MailPoet.I18n.t('emptyTrash')}
+          data-automation-id="empty_trash"
           className="button"
         />
       );
