@@ -3,6 +3,7 @@ import Heading from '../heading';
 
 export default {
   title: 'Typography',
+  component: Heading,
 };
 
 export const Headings = () => (
