@@ -6,6 +6,7 @@ import StepsContent from '../steps_content';
 
 export default {
   title: 'Steps',
+  component: Steps,
 };
 
 export const StepsWithoutTitles = () => {
