@@ -49,6 +49,7 @@ class FormsDeletingCest {
     $formName = 'Delete form permanently';
     $form = new Form();
     $form->withName($formName)->withDeleted()->create();
+    $form->withName($formName . '2')->withDeleted()->create();
 
     $i->wantTo('Delete a form permanently trash');
 
@@ -63,5 +64,6 @@ class FormsDeletingCest {
 
     $i->waitForText('1 form was permanently deleted.');
     $i->waitForElementNotVisible($formName);
+    $i->waitForText($formName . '2');
   }
 }

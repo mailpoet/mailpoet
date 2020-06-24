@@ -62,6 +62,13 @@ class DeleteAutomaticWooCommerceEmailCest {
       ->withDeleted()
       ->create();
 
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory
+      ->withSubject($newsletterName . '2')
+      ->withAutomaticTypeWooCommerceFirstPurchase()
+      ->withDeleted()
+      ->create();
+
     $i->wantTo('Delete trashed automatic WooCommerce email');
     $i->login();
     $i->amOnMailpoetPage('Emails');
@@ -72,5 +79,6 @@ class DeleteAutomaticWooCommerceEmailCest {
     $i->clickItemRowActionByItemName($newsletterName, 'Delete Permanently');
     $i->waitForText('permanently deleted.');
     $i->waitForElementNotVisible($newsletterName);
+    $i->waitForText($newsletterName . '2');
   }
 }

@@ -42,7 +42,7 @@ class ManageListsCest {
     $editedListTitle = 'King Kong';
     $editedListDesc = 'Hardest King Kong in the world!';
     $segmentFactory = new Segment();
-    $segment = $segmentFactory
+    $segmentFactory
       ->withName($newListTitle)
       ->withDescription($newListDesc)
       ->create();
@@ -76,6 +76,10 @@ class ManageListsCest {
     $i->seeNoJSErrors();
 
     // Trash and delete existing list
+    $segmentFactory
+      ->withName($newListTitle . '2')
+      ->withDescription($newListDesc)
+      ->create();
     $i->clickItemRowActionByItemName($editedListTitle, 'Move to trash');
     $i->waitForElementVisible('[data-automation-id="filters_trash"]', 10);
     $i->click('[data-automation-id="filters_trash"]');
@@ -85,5 +89,6 @@ class ManageListsCest {
     $i->seeNoJSErrors();
     $i->seeInCurrentURL(urlencode('group[all]'));
     $i->dontSee($editedListTitle, '[data-automation-id="listing_item_4"]');
+    $i->see($newListTitle . '2');
   }
 }
