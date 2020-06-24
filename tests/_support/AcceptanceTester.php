@@ -442,4 +442,21 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
     $i->seeNoJSErrors();
   }
+
+  /**
+   * Checks that email was received by looking for a subject in inbox.
+   * In case it was not found reloads the inbox and check once more.
+   * Emails are sent via cron and might not be sent immediately.
+   * @param string $subject
+   */
+  public function checkEmailWasReceived($subject) {
+    $i = $this;
+    $i->amOnMailboxAppPage();
+    try {
+      $i->waitForText($subject);
+    } catch (\Exception $e) {
+      $i->amOnMailboxAppPage();
+      $i->waitForText($subject);
+    }
+  }
 }
