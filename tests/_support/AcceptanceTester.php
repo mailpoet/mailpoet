@@ -357,8 +357,11 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function optInForSubscription() {
     $i = $this;
-    $i->waitForElementClickable('#mailpoet_woocommerce_checkout_optin');
-    $i->checkOption('#mailpoet_woocommerce_checkout_optin');
+    $checked = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin").checked');
+    if (!$checked) {
+      $i->waitForElementClickable('[data-automation-id="woo-commerce-subscription-opt-in"]');
+      $i->click('[data-automation-id="woo-commerce-subscription-opt-in"]');
+    }
   }
 
   /**
@@ -366,11 +369,14 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function optOutOfSubscription() {
     $i = $this;
-    $i->waitForElementClickable('#mailpoet_woocommerce_checkout_optin');
-    $i->uncheckOption('#mailpoet_woocommerce_checkout_optin');
+    $checked = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin").checked');
+    if ($checked) {
+      $i->waitForElementClickable('[data-automation-id="woo-commerce-subscription-opt-in"]');
+      $i->click('[data-automation-id="woo-commerce-subscription-opt-in"]');
+    }
   }
 
-  /**
+    /**
    * Select a payment method (cheque, cod, ppec_paypal)
    */
   public function selectPaymentMethod($method = 'cod') {
