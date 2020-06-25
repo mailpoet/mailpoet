@@ -37,7 +37,7 @@ class SettingsTest extends \MailPoetTest {
       new Bridge,
       $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => true ]),
       $this->make(TransactionalEmails::class),
-      $this->make(ServicesChecker::class)
+      $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
   }
 
@@ -70,7 +70,7 @@ class SettingsTest extends \MailPoetTest {
       $this->make(Bridge::class, ['onSettingsSave' => Expected::once()]),
       $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()]),
       $this->make(TransactionalEmails::class),
-      $this->make(ServicesChecker::class)
+      $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
 
     $response = $this->endpoint->set(/* missing data */);

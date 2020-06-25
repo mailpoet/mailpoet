@@ -180,6 +180,7 @@ class AddSendingKeyCest {
 
     // ensure status is running
     $i->amOnMailpoetPage('Help#/systemStatus');
+    $i->scrollTo('.mailpoet-tab-content');
     $i->waitForText('Status running');
   }
 }
