@@ -6,12 +6,12 @@ import NewsletterStatus from '../newsletter_status';
 MailPoet.I18n.add('notSentYet', 'Not sent yet!');
 
 export default {
-  title: 'NewsletterStatus',
+  title: 'Listing',
 };
 
-export const NotSentYet = () => (<NewsletterStatus />);
+export const NewsletterStatusNotSentYet = () => (<NewsletterStatus />);
 
-export const ScheduledInTheFuture = () => {
+export const NewsletterStatusScheduledInTheFuture = () => {
   const now = new Date();
   const inOneHour = addHours(now, 1);
   const inSixHours = addHours(now, 6);
@@ -39,7 +39,7 @@ export const ScheduledInTheFuture = () => {
   );
 };
 
-export const SendingInProgress = () => {
+export const NewsletterStatusSendingInProgress = () => {
   const scheduledFor = subHours(new Date(), 1);
   return (
     <>
@@ -60,7 +60,7 @@ export const SendingInProgress = () => {
 };
 
 
-export const Sent = () => (
+export const NewsletterStatusSent = () => (
   <NewsletterStatus
     scheduledFor={subHours(new Date(), 1)}
     total={100}
