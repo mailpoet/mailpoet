@@ -7,6 +7,7 @@ a {
   }
 }
 
+h1.mailpoet-h0,
 h1.mailpoet-h1,
 h2.mailpoet-h2,
 h3.mailpoet-h3,
@@ -18,6 +19,7 @@ h5.mailpoet-h5 {
   margin: $grid-gap 0;
 }
 
+h1.mailpoet-h0 { font-size: $heading-font-size-h0; }
 h1.mailpoet-h1 { font-size: $heading-font-size-h1; }
 h2.mailpoet-h2 { font-size: $heading-font-size-h2; }
 h3.mailpoet-h3 { font-size: $heading-font-size-h3; }
