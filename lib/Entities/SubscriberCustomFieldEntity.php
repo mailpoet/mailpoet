@@ -10,19 +10,13 @@ use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="subscriber_segment")
+ * @ORM\Table(name="subscriber_custom_field")
  */
-class SubscriberSegmentEntity {
+class SubscriberCustomFieldEntity {
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
   use UpdatedAtTrait;
   use SafeToOneAssociationLoadTrait;
-
-  /**
-   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SegmentEntity")
-   * @var SegmentEntity|null
-   */
-  private $segment;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SubscriberEntity")
@@ -31,27 +25,25 @@ class SubscriberSegmentEntity {
   private $subscriber;
 
   /**
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\CustomFieldEntity")
+   * @var CustomFieldEntity|null
+   */
+  private $customField;
+
+  /**
    * @ORM\Column(type="string")
    * @var string
    */
-  private $status;
+  private $value;
 
   public function __construct(
-    SegmentEntity $segment,
     SubscriberEntity $subscriber,
-    string $status
+    CustomFieldEntity $customField,
+    string $value
   ) {
-    $this->segment = $segment;
     $this->subscriber = $subscriber;
-    $this->status = $status;
-  }
-
-  /**
-   * @return SegmentEntity|null
-   */
-  public function getSegment() {
-    $this->safelyLoadToOneAssociation('segment');
-    return $this->segment;
+    $this->customField = $customField;
+    $this->value = $value;
   }
 
   /**
@@ -62,10 +54,14 @@ class SubscriberSegmentEntity {
     return $this->subscriber;
   }
 
+  public function getValue(): string {
+    return $this->value;
+  }
+
   /**
-   * @return string
+   * @return CustomFieldEntity|null
    */
-  public function getStatus(): string {
-    return $this->status;
+  public function getCustomField() {
+    return $this->customField;
   }
 }

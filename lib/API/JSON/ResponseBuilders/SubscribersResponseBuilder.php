@@ -2,11 +2,13 @@
 
 namespace MailPoet\API\JSON\ResponseBuilders;
 
+use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
+use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 
 class SubscribersResponseBuilder {
@@ -17,12 +19,22 @@ class SubscribersResponseBuilder {
   /** @var StatisticsUnsubscribesRepository */
   private $statisticsUnsubscribesRepository;
 
+  /** @var CustomFieldsRepository */
+  private $customFieldsRepository;
+
+  /** @var SubscriberCustomFieldRepository */
+  private $subscriberCustomFieldRepository;
+
   public function __construct(
     SubscriberSegmentRepository $subscriberSegmentRepository,
+    CustomFieldsRepository $customFieldsRepository,
+    SubscriberCustomFieldRepository $subscriberCustomFieldRepository,
     StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository
   ) {
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
+    $this->customFieldsRepository = $customFieldsRepository;
+    $this->subscriberCustomFieldRepository = $subscriberCustomFieldRepository;
   }
 
   public function build(SubscriberEntity $subscriberEntity): array {
@@ -32,13 +44,12 @@ class SubscribersResponseBuilder {
       'is_woocommerce_user' => $subscriberEntity->getIsWoocommerceUser(),
       'subscriptions' => $this->buildSubscriptions($subscriberEntity),
       'unsubscribes' => $this->buildUnsubscribes($subscriberEntity),
-      // TODO custom fields
       'status' => $subscriberEntity->getStatus(),
       'last_name' => $subscriberEntity->getLastName(),
       'first_name' => $subscriberEntity->getFirstName(),
       'email' => $subscriberEntity->getEmail(),
     ];
-
+    $data = $this->buildCustomFields($subscriberEntity, $data);
     return $data;
   }
 
@@ -79,5 +90,19 @@ class SubscribersResponseBuilder {
       $result[] = $mapped;
     }
     return $result;
+  }
+
+  private function buildCustomFields(SubscriberEntity $subscriberEntity, array $data): array {
+    $customFields = $this->customFieldsRepository->findAll();
+
+    foreach ($customFields as $customField) {
+      $subscriberCustomField = $this->subscriberCustomFieldRepository->findOneBy(
+        ['subscriber' => $subscriberEntity, 'customField' => $customField]
+      );
+      if ($subscriberCustomField instanceof SubscriberCustomFieldEntity) {
+        $data['cf_' . $customField->getId()] = $subscriberCustomField->getValue();
+      }
+    }
+    return $data;
   }
 }
