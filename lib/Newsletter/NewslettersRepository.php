@@ -253,15 +253,26 @@ class NewslettersRepository extends Repository {
          WHERE nl.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
-      // Delete stats notifications
+      // Delete stats notifications tasks
+      $scheduledTasksTable = $entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
       $statsNotificationsTable = $entityManager->getClassMetadata(StatsNotificationEntity::class)->getTableName();
+      $taskIds = $entityManager->getConnection()->executeQuery("
+         SELECT task_id FROM $statsNotificationsTable sn
+         WHERE sn.`newsletter_id` IN (:ids)
+      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY])->fetchAll();
+      $taskIds = array_column($taskIds, 'task_id');
+      $entityManager->getConnection()->executeUpdate("
+         DELETE st FROM $scheduledTasksTable st
+         WHERE st.`id` IN (:ids)
+      ", ['ids' => $taskIds], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+      // Delete stats notifications
       $entityManager->getConnection()->executeUpdate("
          DELETE sn FROM $statsNotificationsTable sn
          WHERE sn.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Delete scheduled tasks and scheduled task subscribers
-      $scheduledTasksTable = $entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
       $sendingQueueTable = $entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
       $scheduledTaskSubscribersTable = $entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
 
