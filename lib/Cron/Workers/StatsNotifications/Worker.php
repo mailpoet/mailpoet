@@ -89,6 +89,8 @@ class Worker {
   public function process($timer = false) {
     $timer = $timer ?: microtime(true);
     $settings = $this->settings->get(self::SETTINGS_KEY);
+    // Cleanup potential orphaned task created due bug MAILPOET-3015
+    $this->repository->deleteOrphanedScheduledTasks();
     foreach ($this->repository->findScheduled(Sending::RESULT_BATCH_SIZE) as $statsNotificationEntity) {
       try {
         $extraParams = [
