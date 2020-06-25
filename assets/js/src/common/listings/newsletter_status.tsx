@@ -12,10 +12,10 @@ type NewsletterStatusProps = {
 }
 
 const NewsletterStatus = ({ scheduledFor, processed, total }: NewsletterStatusProps) => {
-  const unknown = !scheduledFor;
+  const unknown = !scheduledFor && !processed && !total;
   const scheduled = scheduledFor && isFuture(scheduledFor);
-  const inProgress = scheduledFor && isPast(scheduledFor) && processed < total;
-  const sent = scheduledFor && isPast(scheduledFor) && processed === total;
+  const inProgress = (!scheduledFor || isPast(scheduledFor)) && processed < total;
+  const sent = (!scheduledFor || isPast(scheduledFor)) && processed >= total;
   let percentage = 0;
   let label = t('notSentYet');
   if (scheduled) {
