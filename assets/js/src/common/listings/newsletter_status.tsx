@@ -63,7 +63,7 @@ const CircularProgress = ({ percentage }: CircularProgressProps) => {
       height="24"
       viewBox="0 0 24 24"
     >
-      <circle fill="none" cx="12" cy="12" r="8" stroke="#E5E9F8" />
+      <circle fill="none" cx="12" cy="12" r="8" className="mailpoet-listing-status-percentage-background" />
       <circle
         r="8"
         cx="12"
