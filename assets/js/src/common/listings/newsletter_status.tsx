@@ -36,12 +36,14 @@ const NewsletterStatus = ({ scheduledFor, processed, total }: NewsletterStatusPr
   }
   return (
     <div className={classNames({
+      'mailpoet-listing-status': true,
       'mailpoet-listing-status-unknown': unknown,
       'mailpoet-listing-status-scheduled': scheduled,
       'mailpoet-listing-status-in-progress': inProgress,
       'mailpoet-listing-status-sent': sent,
     })}
     >
+      {scheduled && <ScheduledIcon />}
       <CircularProgress percentage={percentage} />
       <div className="mailpoet-listing-status-label">{label}</div>
     </div>
@@ -57,13 +59,8 @@ const CircularProgress = ({ percentage }: CircularProgressProps) => {
   const filled = perimeter * (percentage / 100);
   const empty = perimeter - filled;
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-    >
-      <circle fill="none" cx="12" cy="12" r="8" className="mailpoet-listing-status-percentage-background" />
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8" className="mailpoet-listing-status-percentage-background" />
       <circle
         r="8"
         cx="12"
@@ -76,5 +73,11 @@ const CircularProgress = ({ percentage }: CircularProgressProps) => {
     </svg>
   );
 };
+
+const ScheduledIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <path className="mailpoet-listing-status-scheduled-icon" strokeLinecap="round" d="M12 7L12 12 15 15" />
+  </svg>
+);
 
 export default NewsletterStatus;
