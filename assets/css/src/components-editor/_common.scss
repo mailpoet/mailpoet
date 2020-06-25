@@ -1,44 +1,42 @@
-.admin_page_mailpoet-newsletter-editor {
-  a {
-    color: $color-primary-button;
-    text-decoration: none;
+a {
+  color: $color-primary-button;
+  text-decoration: none;
+}
+
+.mailpoet_hidden {
+  display: none !important;
+}
+
+.mailpoet_form_narrow_select2 span.select2-container {
+  width: 103px !important;
+}
+
+span.select2-container--open > span.select2-dropdown {
+  min-width: 150px;
+}
+
+span.select2-container--open > span.select2-dropdown li.select2-results__option {
+  font-size: 13px;
+  margin: 0 !important;
+
+  .select2-results__group {
+    color: #bfbfbf;
+    font-weight: normal;
   }
 
-  .mailpoet_hidden {
-    display: none !important;
-  }
-
-  .mailpoet_form_narrow_select2 span.select2-container {
-    width: 103px !important;
-  }
-
-  span.select2-container--open > span.select2-dropdown {
-    min-width: 150px;
-  }
-
-  span.select2-container--open > span.select2-dropdown li.select2-results__option {
+  .select2-results__option {
     font-size: 13px;
-    margin: 0 !important;
+    padding-left: 15px;
 
-    .select2-results__group {
-      color: #bfbfbf;
-      font-weight: normal;
-    }
-
-    .select2-results__option {
-      font-size: 13px;
-      padding-left: 15px;
-
-      &[aria-selected=true] {
-        background-color: #eee;
-        color: #444;
-      }
+    &[aria-selected=true] {
+      background-color: #eee;
+      color: #444;
     }
   }
+}
 
-  .mailpoet_settings_notice {
-    color: #999;
-  }
+.mailpoet_settings_notice {
+  color: #999;
 }
 
 #mailpoet_editor_content ol,
