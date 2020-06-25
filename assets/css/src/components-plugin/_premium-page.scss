@@ -17,7 +17,7 @@
 .mailpoet_page_mailpoet-premium,
 .admin_page_mailpoet-premium {
   #wpcontent {
-    background: linear-gradient(to top, $color-white, #ffe6d9) no-repeat;
+    background: linear-gradient(to top, $color-white, $color-secondary-light) no-repeat;
     background-size: auto 300px;
     overflow-x: hidden;
   }
@@ -118,7 +118,7 @@ div.mailpoet-premium-page-section {
 }
 
 .mailpoet-premium-page-get-started {
-  @include full-width-background(linear-gradient(to top, $color-white, #ffe6d9));
+  @include full-width-background(linear-gradient(to top, $color-white, $color-secondary-light));
 }
 
 .mailpoet-premium-page-bullet-list {
@@ -189,7 +189,7 @@ div.mailpoet-premium-page-section {
     }
 
     li:before {
-      background-color: #ffe0d0;
+      background-color: $color-secondary-light;
       background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0.175 -0.365 17.008 17.008"%3E%3Cpath fill="%23ff5301" d="M16.983 1.923c0 .814-.369 1.607-1.106 2.38l-.114.115-6.453 6.796c-1.37 1.44-2.539 2.555-3.502 3.341s-1.644 1.18-2.041 1.18c-.417 0-.936-.197-1.556-.59-.62-.394-1.02-.799-1.2-1.216-.152-.349-.298-1.086-.434-2.214a30.519 30.519 0 0 1-.204-3.664c0-.717.299-1.38.897-1.988.6-.609 1.261-.914 1.983-.914.689 0 1.1.63 1.232 1.89l.03.324c.111.967.24 1.643.387 2.024.148.383.347.573.597.573.104 0 .299-.112.584-.339.356-.29.697-.598 1.022-.923l6.63-6.566c.557-.557 1.055-.978 1.491-1.263.439-.286.812-.429 1.117-.429.23 0 .394.087.49.261.098.175.146.467.146.877v.345h.004z"/%3E%3C/svg%3E%0A');
       background-position: center;
       background-repeat: no-repeat;
@@ -265,7 +265,7 @@ div.mailpoet-premium-page-section {
 }
 
 .mailpoet-premium-page-mailpoet-works {
-  @include full-width-background(linear-gradient(to top, $color-white, #ffe6d9));
+  @include full-width-background(linear-gradient(to top, $color-white, $color-secondary-light));
 
   .mailpoet-grid-three-columns {
     grid-gap: $grid-gap-large;
