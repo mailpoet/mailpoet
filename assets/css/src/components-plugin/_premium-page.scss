@@ -34,6 +34,10 @@
     font-family: $font-family;
     font-size: $font-size;
     line-height: $line-height;
+
+    a {
+      color: $color-secondary;
+    }
   }
 
   p.mailpoet-premium-page-text-large {
