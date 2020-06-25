@@ -11,6 +11,12 @@
   height: $grid-gap;
 }
 
+.mailpoet-gap-large {
+  display: block;
+  height: $grid-gap-large;
+  width: $grid-gap-large;
+}
+
 .mailpoet-disabled {
   opacity: .5;
   pointer-events: none;
