@@ -14,15 +14,13 @@ const App = () => (
   </GlobalContext.Provider>
 );
 
-window.addEventListener('DOMContentLoaded', () => {
-  const appElement = document.querySelector('#mailpoet_form_edit_templates');
-  if (appElement) {
-    initStore();
-    ReactDOM.render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>,
-      appElement
-    );
-  }
-});
+const appElement = document.querySelector('#mailpoet_form_edit_templates');
+if (appElement) {
+  initStore();
+  ReactDOM.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+    appElement
+  );
+}
