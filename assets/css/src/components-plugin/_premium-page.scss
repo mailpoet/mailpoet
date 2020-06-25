@@ -14,14 +14,17 @@
   }
 }
 
-.mailpoet_page_mailpoet-premium #wpcontent {
-  background: linear-gradient(to top, $color-white, #ffe6d9) no-repeat;
-  background-size: auto 300px;
-  overflow-x: hidden;
-}
+.mailpoet_page_mailpoet-premium,
+.admin_page_mailpoet-premium {
+  #wpcontent {
+    background: linear-gradient(to top, $color-white, #ffe6d9) no-repeat;
+    background-size: auto 300px;
+    overflow-x: hidden;
+  }
 
-.mailpoet_page_mailpoet-premium #wpwrap {
-  background: white;
+  #wpwrap {
+    background: white;
+  }
 }
 
 .mailpoet-premium-page {
