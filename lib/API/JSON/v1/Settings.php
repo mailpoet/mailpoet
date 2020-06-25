@@ -73,7 +73,11 @@ class Settings extends APIEndpoint {
 
       $this->onSettingsChange($oldSettings, $this->settings->getAll());
 
-      $this->bridge->onSettingsSave($settings);
+      // when pending approval, leave this to cron / Key Activation tab logic
+      if (!$this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
+        $this->bridge->onSettingsSave($settings);
+      }
+
       $this->authorizedEmailsController->onSettingsSave($settings);
       if ($signupConfirmation !== $this->settings->get('signup_confirmation.enabled')) {
         Form::updateSuccessMessages();

@@ -17,6 +17,7 @@ export default function KeyActivation() {
   const { notices } = useContext<any>(GlobalContext);
   const state = useSelector('getKeyActivationState')();
   const setState = useAction('updateKeyActivationState');
+  const saveSettings = useAction('saveSettings');
   const verifyMssKey = useAction('verifyMssKey');
   const verifyPremiumKey = useAction('verifyPremiumKey');
   const installPremiumPlugin = useAction('installPremiumPlugin');
@@ -103,6 +104,7 @@ export default function KeyActivation() {
     });
     MailPoet.Modal.loading(true);
     setState({ inProgress: true });
+    await saveSettings();
     await verifyMssKey(state.key);
     await sendCongratulatoryMssEmail();
     await verifyPremiumKey(state.key);
