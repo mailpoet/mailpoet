@@ -376,7 +376,7 @@ class AcceptanceTester extends \Codeception\Actor {
     }
   }
 
-    /**
+  /**
    * Select a payment method (cheque, cod, ppec_paypal)
    */
   public function selectPaymentMethod($method = 'cod') {
