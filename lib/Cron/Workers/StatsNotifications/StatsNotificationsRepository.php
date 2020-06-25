@@ -55,4 +55,14 @@ class StatsNotificationsRepository extends Repository {
     }
     return $query->getQuery()->getResult();
   }
+
+  public function deleteOrphanedScheduledTasks() {
+    $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $statsNotificationsTable = $this->entityManager->getClassMetadata(StatsNotificationEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeUpdate("
+       DELETE st FROM $scheduledTasksTable st
+       LEFT JOIN $statsNotificationsTable sn ON sn.task_id = st.id
+       WHERE sn.id IS NULL AND st.type = :taskType;
+    ", ['taskType' => Worker::TASK_TYPE]);
+  }
 }
