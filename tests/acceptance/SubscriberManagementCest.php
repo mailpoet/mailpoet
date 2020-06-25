@@ -4,7 +4,6 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
-use Codeception\Util\Locator;
 
 class SubscriberManagementCest {
 
