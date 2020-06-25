@@ -94,6 +94,54 @@ class SubscriberManagementCest {
     $i->seeNoJSErrors();
   }
 
+  public function deleteGlobalSubscriberForever(\AcceptanceTester $i) {
+    $i->wantTo('Delete a subscriber forever');
+    $newSubscriberEmail = 'deletesubscriberforever@fakemail.fake';
+    $newSubscriberEmail2 = 'deletesubscriberforever2@fakemail.fake';
+    $this->generateSingleSubscriber($newSubscriberEmail, 'Delete', 'ThisGlobalUser');
+    $this->generateSingleSubscriber($newSubscriberEmail2, 'Keep', 'ThisSubscriber');
+    $i->login();
+    $i->amOnMailPoetPage('Subscribers');
+    $i->waitForListingItemsToLoad();
+    $i->clickItemRowActionByItemName($newSubscriberEmail, 'Move to trash');
+    $i->waitForListingItemsToLoad();
+    $i->clickItemRowActionByItemName($newSubscriberEmail2, 'Move to trash');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newSubscriberEmail);
+    $i->clickItemRowActionByItemName($newSubscriberEmail, 'Delete Permanently');
+    $i->waitForText('1 subscriber was permanently deleted.');
+    $i->dontSee($newSubscriberEmail);
+
+    $i->waitForText($newSubscriberEmail2);
+    $i->seeNoJSErrors();
+  }
+
+  public function emptyTrash(\AcceptanceTester $i) {
+    $i->wantTo('Delete a subscriber forever');
+    $newSubscriberEmail = 'deletesubscriberforever@fakemail.fake';
+    $newSubscriberEmail2 = 'deletesubscriberforever2@fakemail.fake';
+    $this->generateSingleSubscriber($newSubscriberEmail, 'Delete', 'ThisGlobalUser');
+    $this->generateSingleSubscriber($newSubscriberEmail2, 'Keep', 'ThisSubscriber');
+    $i->login();
+    $i->amOnMailPoetPage('Subscribers');
+    $i->waitForListingItemsToLoad();
+    $i->clickItemRowActionByItemName($newSubscriberEmail, 'Move to trash');
+
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($newSubscriberEmail);
+
+    $i->click('[data-automation-id="empty_trash"]');
+
+    $i->waitForText('1 subscriber was permanently deleted.');
+    $i->dontSee($newSubscriberEmail);
+    $i->click('[data-automation-id="filters_all"]');
+
+    $i->waitForText($newSubscriberEmail2);
+    $i->seeNoJSErrors();
+  }
+
   public function addSubscriberToList(\AcceptanceTester $i) {
     $i->wantTo('Add a subscriber to a list');
     $newSubscriberEmail = 'addtolistuser99@fakemail.fake';
