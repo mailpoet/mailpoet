@@ -22,7 +22,6 @@
 
 .mailpoet_page_mailpoet-premium #wpwrap {
   background: white;
-  z-index: -1;
 }
 
 .mailpoet-premium-page {
@@ -61,6 +60,8 @@
 // "div" used for higher specificity for mobile styles
 div.mailpoet-premium-page-section {
   padding: $grid-gap-large 0;
+  position: relative;
+  z-index: 1;
 
   @include respond-to(small-screen) {
     grid-template-columns: 1fr;
@@ -281,7 +282,6 @@ div.mailpoet-premium-page-section {
   position: absolute;
   right: 0;
   width: calc(100% + 20px);
-  z-index: -1;
 
   &:before {
     content: '';
