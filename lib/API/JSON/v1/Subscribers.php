@@ -5,8 +5,8 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\Config\AccessControl;
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
@@ -20,12 +20,12 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -79,8 +79,11 @@ class Subscribers extends APIEndpoint {
   /** @var Unsubscribes */
   private $unsubscribesTracker;
 
-  /** @var StatisticsUnsubscribesRepository */
-  private $statisticsUnsubscribesRepository;
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /** @var SubscribersResponseBuilder */
+  private $subscribersResponseBuilder;
 
   public function __construct(
     Listing\BulkActionController $bulkActionController,
@@ -95,7 +98,8 @@ class Subscribers extends APIEndpoint {
     ConfirmationEmailMailer $confirmationEmailMailer,
     SubscriptionUrlFactory $subscriptionUrlFactory,
     Unsubscribes $unsubscribesTracker,
-    StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository,
+    SubscribersRepository $subscribersRepository,
+    SubscribersResponseBuilder $subscribersResponseBuilder,
     FieldNameObfuscator $fieldNameObfuscator
   ) {
     $this->bulkActionController = $bulkActionController;
@@ -111,42 +115,19 @@ class Subscribers extends APIEndpoint {
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->fieldNameObfuscator = $fieldNameObfuscator;
     $this->unsubscribesTracker = $unsubscribesTracker;
-    $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
+    $this->subscribersRepository = $subscribersRepository;
+    $this->subscribersResponseBuilder = $subscribersResponseBuilder;
   }
 
   public function get($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $subscriber = Subscriber::findOne($id);
-    if ($subscriber === false) {
+    $subscriber = $this->getSubscriber($data);
+    if (!$subscriber instanceof SubscriberEntity) {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),
       ]);
-    } else {
-      $unsubscribes = $this->statisticsUnsubscribesRepository->findBy([
-        'subscriberId' => $id,
-      ], [
-        'createdAt' => 'desc',
-      ]);
-      $result = $subscriber
-        ->withCustomFields()
-        ->withSubscriptions()
-        ->asArray();
-      $result['unsubscribes'] = [];
-      foreach ($unsubscribes as $unsubscribe) {
-        $mapped = [
-          'source' => $unsubscribe->getSource(),
-          'meta' => $unsubscribe->getMeta(),
-          'createdAt' => $unsubscribe->getCreatedAt(),
-        ];
-        $newsletter = $unsubscribe->getNewsletter();
-        if ($newsletter instanceof NewsletterEntity) {
-          $mapped['newsletterId'] = $newsletter->getId();
-          $mapped['newsletterSubject'] = $newsletter->getSubject();
-        }
-        $result['unsubscribes'][] = $mapped;
-      }
-      return $this->successResponse($result);
     }
+    $result = $this->subscribersResponseBuilder->build($subscriber);
+    return $this->successResponse($result);
   }
 
   public function listing($data = []) {
@@ -534,5 +515,15 @@ class Subscribers extends APIEndpoint {
         $e->getCode() => $e->getMessage(),
       ]);
     }
+  }
+
+  /**
+   * @param array $data
+   * @return SubscriberEntity|null
+   */
+  private function getSubscriber($data) {
+    return isset($data['id'])
+      ? $this->subscribersRepository->findOneById((int)$data['id'])
+      : null;
   }
 }
