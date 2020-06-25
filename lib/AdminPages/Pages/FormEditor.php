@@ -6,7 +6,6 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\Config\Localizer;
 use MailPoet\CustomFields\CustomFieldsRepository;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Form\Block;
 use MailPoet\Form\FormFactory;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -165,9 +164,6 @@ class FormEditor {
   /** @var Localizer */
   private $localizer;
 
-  /** @var FeaturesController */
-  private $flagsController;
-
   public function __construct(
     PageRenderer $pageRenderer,
     CustomFieldsRepository $customFieldsRepository,
@@ -176,7 +172,6 @@ class FormEditor {
     Block\Date $dateBlock,
     WPFunctions $wp,
     FormFactory $formsFactory,
-    FeaturesController $flagsController,
     Localizer $localizer
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -187,7 +182,6 @@ class FormEditor {
     $this->wp = $wp;
     $this->formsFactory = $formsFactory;
     $this->localizer = $localizer;
-    $this->flagsController = $flagsController;
   }
 
   public function render() {
@@ -235,9 +229,6 @@ class FormEditor {
 
   public function renderTemplateSelection() {
     $templates = array_values(self::TEMPLATES);
-    if (empty($templates) || !$this->flagsController->isSupported(FeaturesController::TEMPLATES_SELECTION)) {
-      $this->createForm();
-    }
     $data = [
       'templates' => $templates,
     ];
