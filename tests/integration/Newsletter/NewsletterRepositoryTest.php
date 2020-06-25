@@ -137,8 +137,12 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     assert($notificationHistorySegment instanceof NewsletterSegmentEntity);
     $notificationHistoryScheduledTaskSubscriber = $this->taskSubscribersRepository->findOneBy(['task' => $notificationHistoryScheduledTask]);
     assert($notificationHistoryScheduledTaskSubscriber instanceof ScheduledTaskSubscriberEntity);
-    $standardStatsNotification = $this->createStatNotification($standardNewsletter, $standardScheduledTaks);
-    $notificationHistoryStatsNotification = $this->createStatNotification($notificationHistory, $notificationHistoryScheduledTask);
+    $standardStatsNotification = $this->createStatNotification($standardNewsletter);
+    $standardStatsNotificationScheduledTask = $standardStatsNotification->getTask();
+    assert($standardStatsNotificationScheduledTask instanceof ScheduledTaskEntity);
+    $notificationHistoryStatsNotification = $this->createStatNotification($notificationHistory);
+    $notificationHistoryStatsNotificationScheduledTask = $notificationHistoryStatsNotification->getTask();
+    assert($notificationHistoryStatsNotificationScheduledTask instanceof ScheduledTaskEntity);
     $standardLink = $this->createNewsletterLink($standardNewsletter, $standardQueue);
     $notificationHistoryLink = $this->createNewsletterLink($notificationHistory, $notificationHistoryQueue);
     $optionField = $this->createNewsletterOptionField(NewsletterEntity::TYPE_NOTIFICATION, 'option');
@@ -168,7 +172,9 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->detach($standardSegment);
     $this->entityManager->detach($notificationHistorySegment);
     $this->entityManager->detach($standardStatsNotification);
+    $this->entityManager->detach($standardStatsNotificationScheduledTask);
     $this->entityManager->detach($notificationHistoryStatsNotification);
+    $this->entityManager->detach($notificationHistoryStatsNotificationScheduledTask);
     $this->entityManager->detach($standardLink);
     $this->entityManager->detach($notificationHistoryLink);
     $this->entityManager->detach($optionValue);
@@ -201,8 +207,12 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     expect($this->entityManager->find(NewsletterSegmentEntity::class, $notificationHistorySegment->getId()))->null();
 
     // Newsletter stats notifications
-    expect($this->entityManager->find(StatsNotificationEntity::class, $standardStatsNotification->getId()))->null();
+    expect($this->entityManager->find(StatsNotificationEntity::class, $standardStatsNotificationScheduledTask->getId()))->null();
     expect($this->entityManager->find(StatsNotificationEntity::class, $notificationHistoryStatsNotification->getId()))->null();
+
+    // Newsletter stats notifications scheduled tasks
+    expect($this->entityManager->find(ScheduledTaskEntity::class, $standardStatsNotificationScheduledTask->getId()))->null();
+    expect($this->entityManager->find(ScheduledTaskEntity::class, $notificationHistoryStatsNotificationScheduledTask->getId()))->null();
 
     // Newsletter links
     expect($this->entityManager->find(NewsletterLinkEntity::class, $standardLink->getId()))->null();
@@ -270,7 +280,11 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     return $queue;
   }
 
-  private function createStatNotification(NewsletterEntity $newsletter, ScheduledTaskEntity $task): StatsNotificationEntity {
+  private function createStatNotification(NewsletterEntity $newsletter): StatsNotificationEntity {
+    $task = new ScheduledTaskEntity();
+    $task->setType('stats_notification');
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($task);
     $statsNotification = new StatsNotificationEntity($newsletter, $task);
     $this->entityManager->persist($statsNotification);
     $this->entityManager->flush();
