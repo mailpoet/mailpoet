@@ -593,7 +593,7 @@ class Listing extends React.Component {
       <>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         { this.state.meta.mta_method && <MailerError {...this.state.meta} /> }
-        <div>
+        <div className="mailpoet-listing">
           { groups }
           { search }
           <div className="tablenav top clearfix">

@@ -47,12 +47,14 @@ class SettingsInactiveSubscribersChangeCest {
         $i->wait(2);
         $i->reloadPage();
         $i->waitForListingItemsToLoad();
-        $i->see('Inactive (0)');
+        $i->see('Inactive');
+        $i->dontSeeElement('[data-automation-id="filters_inactive"] .mailpoet-listing-groups-count');
         return;
       } catch (Exception $e) {
         continue;
       }
     }
-    $i->see('Inactive (0)');
+    $i->see('Inactive');
+    $i->dontSeeElement('[data-automation-id="filters_inactive"] .mailpoet-listing-groups-count');
   }
 }
