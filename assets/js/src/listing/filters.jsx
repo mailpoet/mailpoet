@@ -2,6 +2,7 @@ import React from 'react';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
+import Button from 'common/button/button.tsx';
 import Select from 'common/form/select/select.tsx';
 
 class ListingFilters extends React.Component {
@@ -68,13 +69,16 @@ class ListingFilters extends React.Component {
     let emptyTrash;
     if (this.props.group === 'trash') {
       emptyTrash = (
-        <input
-          onClick={this.handleEmptyTrash}
-          type="submit"
-          value={MailPoet.I18n.t('emptyTrash')}
-          data-automation-id="empty_trash"
-          className="button"
-        />
+        <span className="mailpoet-listing-filters-empty-trash">
+          <Button
+            dimension="small"
+            variant="light"
+            onClick={this.handleEmptyTrash}
+            automationId="empty_trash"
+          >
+            {MailPoet.I18n.t('emptyTrash')}
+          </Button>
+        </span>
       );
     }
 

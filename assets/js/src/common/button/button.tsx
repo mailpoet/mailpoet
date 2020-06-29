@@ -14,6 +14,7 @@ type Props = {
   href?: string,
   type?: 'button' | 'submit' | 'reset',
   target?: '_blank' | '_self' | '_parent' | '_top' | string,
+  automationId?: string,
 };
 
 const Button = ({
@@ -29,6 +30,7 @@ const Button = ({
   href,
   type,
   target,
+  automationId,
 }: Props) => {
   const Element = href ? 'a' : 'button';
   return (
@@ -49,6 +51,7 @@ const Button = ({
           }
         )
       }
+      data-automation-id={automationId}
     >
       {iconStart}
       {children && <span>{children}</span>}
