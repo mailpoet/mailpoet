@@ -13,18 +13,17 @@ class ListingGroups extends React.Component {
   }
 
   render() {
-    const groups = this.props.groups.map((group, index) => {
+    const groups = this.props.groups.map((group) => {
       if (group.name === 'trash' && group.count === 0) {
         return false;
       }
 
       const classes = classNames(
-        { current: (group.name === this.props.group) }
+        { 'mailpoet-listing-groups-current': (group.name === this.props.group) }
       );
 
       return (
         <li key={group.name}>
-          {(index > 0) ? ' |' : ''}
           <a
             href="#"
             className={classes}
@@ -34,20 +33,24 @@ class ListingGroups extends React.Component {
             }}
             data-automation-id={`filters_${group.label.replace(' ', '_').toLowerCase()}`}
           >
-            {group.label}
-            &nbsp;
-            <span className="count">
-            (
-              { parseInt(group.count, 10).toLocaleString() }
-            )
+            <span className="mailpoet-listing-groups-title">
+              {group.label}
             </span>
+            {group.count > 0 && (
+              <>
+                &nbsp;
+                <span className="mailpoet-listing-groups-count">
+                  { parseInt(group.count, 10).toLocaleString() }
+                </span>
+              </>
+            )}
           </a>
         </li>
       );
     });
 
     return (
-      <ul className="subsubsub">
+      <ul className="mailpoet-listing-groups">
         { groups }
       </ul>
     );
