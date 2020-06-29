@@ -31,8 +31,7 @@ class EditSignUpConfirmationEmailCest {
     $i->createFormAndSubscribe();
 
     // check the received email
-    $i->amOnMailboxAppPage();
-    $i->waitForText('Confirmation email subject');
+    $i->checkEmailWasReceived('Confirmation email subject');
     $i->click(Locator::contains('span.subject', 'Confirmation email subject'));
 
     $i->waitForText('Confirmation email subject');

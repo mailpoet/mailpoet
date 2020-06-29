@@ -70,8 +70,7 @@ class SubscribeOnRegistrationPageCest {
       $i->click('Next');
       $i->waitForText('muregisterpagesignupconfirmation is your new username');
     }
-    $i->amOnMailboxAppPage();
-    $i->waitForElement(Locator::contains('span.subject', 'Confirm your subscription'));
+    $i->checkEmailWasReceived('Confirm your subscription');
     $i->click(Locator::contains('span.subject', 'Confirm your subscription'));
     $i->switchToIframe('preview-html');
     $i->click('I confirm my subscription!');

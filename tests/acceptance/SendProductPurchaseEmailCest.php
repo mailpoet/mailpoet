@@ -38,8 +38,7 @@ class SendProductPurchaseEmailCest {
     $userEmail = 'user2@email.test';
     $i->orderProduct($product, $userEmail);
 
-    $i->amOnMailboxAppPage();
-    $i->waitForText($emailSubject, 20);
+    $i->checkEmailWasReceived($emailSubject);
     $i->click(Locator::contains('span.subject', $emailSubject));
     $i->waitForText($userEmail, 20);
   }
