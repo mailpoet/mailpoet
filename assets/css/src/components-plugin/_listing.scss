@@ -126,6 +126,24 @@ input.mailpoet-listing-current-page {
   opacity: .2;
 }
 
+td.mailpoet-listing-bulk-actions-container {
+  padding: 0;
+}
+
+.mailpoet-listing-bulk-actions {
+  background-color: $color-white;
+  padding: ($grid-gap / 2) $grid-gap;
+
+  a {
+    color: red;
+    font-size: $font-size;
+    font-weight: bold;
+    line-height: 1.5;
+    margin-right: 1em;
+    text-decoration: underline;
+  }
+}
+
 .mailpoet-listing-select-all {
   background-color: #f1f1f1;
 }
