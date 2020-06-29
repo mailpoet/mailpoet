@@ -68,8 +68,7 @@ class ReceivePostNotificationCest {
     $i->waitForText('Processed 1 of 1', 90);
 
     // confirm newsletter is received
-    $i->amOnMailboxAppPage();
-    $i->waitForText($newsletterSubject, 90);
+    $i->checkEmailWasReceived($newsletterSubject);
     $i->click(Locator::contains('span.subject', $newsletterSubject));
     $i->switchToIframe('preview-html');
     $i->waitForText($postTitle, 90);

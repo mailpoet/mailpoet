@@ -90,8 +90,7 @@ class SubscriptionFormCest {
     $i->click('.mailpoet_submit');
     $i->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
 
-    $i->amOnMailboxAppPage();
-    $i->waitForElement(Locator::contains('span.subject', 'Confirm your subscription'));
+    $i->checkEmailWasReceived('Confirm your subscription');
     $i->click(Locator::contains('span.subject', 'Confirm your subscription'));
     $i->switchToIframe('preview-html');
     $i->click('I confirm my subscription!');

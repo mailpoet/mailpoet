@@ -21,8 +21,7 @@ class CreateNewWordPressUserCest {
 
     //create a wp user with wp role subscriber
     $i->cli(['user', 'create', 'narwhal', 'standardtest@example.com', '--role=subscriber']);
-    $i->amOnMailboxAppPage();
-    $i->waitForElement(Locator::contains('span.subject', 'Confirm your subscription'));
+    $i->checkEmailWasReceived('Confirm your subscription');
     $i->click(Locator::contains('span.subject', 'Confirm your subscription'));
     $i->switchToIframe('preview-html');
     $i->click('I confirm my subscription!');

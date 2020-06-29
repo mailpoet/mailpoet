@@ -46,7 +46,6 @@ class SubscribersListingCest {
     $i->clickItemRowActionByItemName($allowedEmail, 'Resend confirmation email');
     $i->waitForText('1 confirmation email has been sent.');
 
-    $i->amOnMailboxAppPage();
-    $i->waitForText('Confirm your subscription');
+    $i->checkEmailWasReceived('Confirm your subscription');
   }
 }
