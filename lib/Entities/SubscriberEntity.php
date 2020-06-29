@@ -7,6 +7,8 @@ use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
+use MailPoetVendor\Doctrine\Common\Collections\Collection;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -115,6 +117,17 @@ class SubscriberEntity {
    * @var string|null
    */
   private $linkToken;
+
+
+  /**
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\SubscriberSegmentEntity", mappedBy="subscriber")
+   * @var iterable<SubscriberSegmentEntity>&Collection
+   */
+  private $subscriberSegments;
+
+  public function __construct() {
+    $this->subscriberSegments = new ArrayCollection();
+  }
 
   /**
    * @return int|null
@@ -345,5 +358,20 @@ class SubscriberEntity {
    */
   public function setLinkToken($linkToken) {
     $this->linkToken = $linkToken;
+  }
+
+  /**
+   * @return Collection
+   */
+  public function getSubscriberSegments() {
+    return $this->subscriberSegments;
+  }
+
+  public function getSegments() {
+    return $this->subscriberSegments->map(function (SubscriberSegmentEntity $subscriberSegment) {
+      return $subscriberSegment->getSegment();
+    })->filter(function ($segment) {
+      return $segment !== null;
+    });
   }
 }
