@@ -120,23 +120,23 @@ input.mailpoet-listing-current-page {
   width: 37px;
 }
 
-.mailpoet_listing_loading tbody tr,
+.mailpoet-listing-loading tbody tr,
 .mailpoet_form_loading tbody tr {
   opacity: .2;
 }
 
-.mailpoet_select_all {
+.mailpoet-listing-select-all {
   background-color: #f1f1f1;
 }
 
-.mailpoet_select_all td {
+.mailpoet-listing-select-all td {
   text-align: center;
 }
 
-.mailpoet_listing_table {
-  .mailpoet-tabs & {
-    border-left: #000;
-    border-right: #000;
+.mailpoet-listing-table {
+  .mailpoet-listing & {
+    border-left: $color-black;
+    border-right: $color-black;
     margin: $grid-gap 0 - $grid-gap;
     width: calc(100% + 2 * #{$grid-gap});
   }
@@ -145,17 +145,41 @@ input.mailpoet-listing-current-page {
     white-space: nowrap;
   }
 
-  thead .mailpoet-check-column,
-  tfoot .mailpoet-check-column {
-    padding: 10px 0 0 3px;
+  thead th,
+  thead th a {
+    color: $color-text-light !important;
+    font-size: $font-size-extra-small;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 12px 10px;
+    text-transform: uppercase;
+  }
+
+  thead .mailpoet-listing-check-column,
+  tfoot .mailpoet-listing-check-column {
+    padding: 8px 10px;
     vertical-align: top;
     width: 2.2em;
   }
 
-  tbody .mailpoet-check-column {
+  tbody .mailpoet-listing-check-column {
     margin: 0 0 0 8px;
-    padding: 11px 0 0 3px;
+    padding: 8px 10px;
     vertical-align: text-top;
+  }
+
+  tbody tr .mailpoet-listing-check-column input[type='checkbox'] {
+    + span {
+      visibility: hidden;
+    }
+
+    &:checked + span {
+      visibility: visible;
+    }
+  }
+
+  tbody tr:hover .mailpoet-listing-check-column input[type='checkbox'] + span {
+    visibility: visible;
   }
 
   thead th.column-primary,

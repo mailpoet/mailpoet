@@ -20,7 +20,7 @@ class ListingItems extends React.Component { // eslint-disable-line react/prefer
 
       return (
         <tbody>
-          <tr className="no-items">
+          <tr className="mailpoet-listing-no-items">
             <td
               colSpan={
                 this.props.columns.length
@@ -35,7 +35,7 @@ class ListingItems extends React.Component { // eslint-disable-line react/prefer
       );
     }
     const selectAllClasses = classNames(
-      'mailpoet_select_all',
+      'mailpoet-listing-select-all',
       {
         mailpoet_hidden: (
           this.props.selection === false

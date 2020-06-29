@@ -15,7 +15,7 @@ class FormsListingCest {
     $i->login();
     $i->amOnMailpoetPage('Forms');
 
-    $i->waitForText('Test Form', 5, '.mailpoet_listing_table');
+    $i->waitForText('Test Form', 5, '.mailpoet-listing-table');
     $i->seeNoJSErrors();
   }
 }

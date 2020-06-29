@@ -19,7 +19,7 @@ const TasksList = (props) => {
               show_scheduled_at={props.show_scheduled_at}
             />
           )) : (
-            <tr className="no-items">
+            <tr className="mailpoet-listing-no-items">
               <td colSpan={colsCount}>{MailPoet.I18n.t('nothingToShow')}</td>
             </tr>
           )

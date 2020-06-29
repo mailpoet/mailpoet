@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
+import Checkbox from 'common/form/checkbox/checkbox.tsx';
 
 class ListingItem extends React.Component {
   constructor(props) {
@@ -44,18 +45,18 @@ class ListingItem extends React.Component {
 
     if (this.props.is_selectable === true) {
       checkbox = (
-        <th className="mailpoet-check-column" scope="row">
+        <th className="mailpoet-listing-check-column" scope="row">
           <label className="screen-reader-text" htmlFor={`listing-row-checkbox-${this.props.item.id}`}>
             {
               `Select ${this.props.item[this.props.columns[0].name]}`
             }
           </label>
-          <input
-            type="checkbox"
+          <Checkbox
             value={this.props.item.id}
             checked={
               this.props.item.selected || this.props.selection === 'all'
             }
+            onCheck={() => {}}
             onChange={this.handleSelectItem}
             disabled={this.props.selection === 'all'}
             id={`listing-row-checkbox-${this.props.item.id}`}

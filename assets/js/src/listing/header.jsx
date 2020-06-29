@@ -1,6 +1,7 @@
 import MailPoet from 'mailpoet';
 import React from 'react';
 import PropTypes from 'prop-types';
+import Checkbox from 'common/form/checkbox/checkbox.tsx';
 import ListingColumn from './listing_column.jsx';
 
 class ListingHeader extends React.Component {
@@ -35,16 +36,16 @@ class ListingHeader extends React.Component {
     if (this.props.is_selectable === true) {
       checkbox = (
         <th
-          className="manage-column column-cb mailpoet-check-column"
+          className="manage-column column-cb mailpoet-listing-check-column"
         >
           <label className="screen-reader-text" htmlFor="select_all">
             {MailPoet.I18n.t('selectAll')}
           </label>
-          <input
-            type="checkbox"
+          <Checkbox
             name="select_all"
             id="select_all"
             checked={this.props.selection}
+            onCheck={() => {}}
             onChange={this.handleSelectItems}
           />
         </th>
