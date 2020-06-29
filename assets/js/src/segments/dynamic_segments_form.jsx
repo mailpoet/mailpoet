@@ -10,9 +10,9 @@ import emailFields from './dynamic_segments_filters/email.jsx';
 import woocommerceFields from './dynamic_segments_filters/woocommerce.jsx';
 
 const messages = {
-  onUpdate: () => MailPoet.Notice.success(MailPoet.I18n.t('segmentUpdated')),
+  onUpdate: () => MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentUpdated')),
   onCreate: (data) => {
-    MailPoet.Notice.success(MailPoet.I18n.t('segmentAdded'));
+    MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentAdded'));
     MailPoet.trackEvent('Segments > Add new', {
       'MailPoet Free version': window.mailpoet_version,
       type: data.segmentType || 'unknown type',
