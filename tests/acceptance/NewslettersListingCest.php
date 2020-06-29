@@ -55,8 +55,8 @@ class NewslettersListingCest {
     $i->waitForText('Settings saved');
 
     $i->amOnMailpoetPage('Emails');
-    $i->waitForText('Subject');
-    $i->dontSee('Opened, Clicked');
+    $i->waitForText('SUBJECT');
+    $i->dontSee('OPENED, CLICKED');
 
     // column is visible when tracking is enabled
     $i->amOnMailpoetPage('Settings');
@@ -66,8 +66,8 @@ class NewslettersListingCest {
     $i->waitForText('Settings saved');
 
     $i->amOnMailpoetPage('Emails');
-    $i->waitForText('Subject');
-    $i->see('Opened, Clicked');
+    $i->waitForText('SUBJECT');
+    $i->see('OPENED, CLICKED');
     $i->seeNoJSErrors();
   }
 }

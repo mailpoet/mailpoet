@@ -97,7 +97,7 @@ class ManageWelcomeEmailCest {
     $i->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForText($newsletterTitle);
     $i->searchFor($failureConditionNewsletter);
-    $i->waitForElement('tr.no-items');
+    $i->waitForElement('tr.mailpoet-listing-no-items');
     $i->searchFor($newsletterTitle);
     $i->waitForText($newsletterTitle);
   }

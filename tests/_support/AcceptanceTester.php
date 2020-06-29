@@ -42,7 +42,7 @@ class AcceptanceTester extends \Codeception\Actor {
   const WP_URL = 'http://' . self::WP_DOMAIN;
   const MAIL_URL = 'http://mailhog:8025';
   const AUTHORIZED_SENDING_EMAIL = 'staff@mailpoet.com';
-  const LISTING_LOADING_SELECTOR = '.mailpoet_listing_loading';
+  const LISTING_LOADING_SELECTOR = '.mailpoet-listing-loading';
 
   /**
    * Define custom actions here
@@ -170,7 +170,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function waitForListingItemsToLoad() {
     $i = $this;
-    $i->waitForElementNotVisible('.mailpoet_listing_loading');
+    $i->waitForElementNotVisible('.mailpoet-listing-loading');
   }
 
   public function clickLabelWithInput($inputName, $inputValue) {

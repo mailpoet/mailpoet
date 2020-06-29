@@ -421,7 +421,7 @@ class Listing extends React.Component {
         selectedIds = jQuery.merge(selectedIds, [id]);
         // check whether all items on the page are selected
         if (
-          jQuery('tbody .mailpoet-check-column :checkbox:not(:checked)').length === 0
+          jQuery('tbody .mailpoet-listing-check-column :checkbox:not(:checked)').length === 0
         ) {
           selection = 'page';
         }
@@ -544,12 +544,12 @@ class Listing extends React.Component {
     const itemActions = this.props.item_actions || [];
 
     const tableClasses = classNames(
-      'mailpoet_listing_table',
+      'mailpoet-listing-table',
       'wp-list-table',
       'widefat',
       'fixed',
       'striped',
-      { mailpoet_listing_loading: this.state.loading }
+      { 'mailpoet-listing-loading': this.state.loading }
     );
 
     // search
