@@ -87,6 +87,39 @@
   }
 }
 
+.mailpoet-listing-pages {
+  color: $color-text-light;
+  float: right;
+  font-size: $font-size-extra-small;
+  font-weight: 600;
+  margin: 0 0 9px;
+}
+
+.mailpoet-listing-pages-num {
+  margin-right: 21px;
+}
+
+.mailpoet-listing-pages-links > span,
+.mailpoet-listing-pages-links > a {
+  padding: 0 3px;
+}
+
+.mailpoet-listing-pages-first,
+.mailpoet-listing-pages-previous,
+.mailpoet-listing-pages-next,
+.mailpoet-listing-pages-last {
+  vertical-align: middle;
+}
+
+input.mailpoet-listing-current-page {
+  border: 1px solid $color-tertiary-light;
+  color: $color-text-light;
+  font-size: $font-size-extra-small;
+  margin-right: 8px;
+  text-align: center;
+  width: 37px;
+}
+
 .mailpoet_listing_loading tbody tr,
 .mailpoet_form_loading tbody tr {
   opacity: .2;
