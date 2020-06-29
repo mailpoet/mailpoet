@@ -9,14 +9,14 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   iconStart?: JSX.Element,
 };
 
-const Select = ({
+const Select = React.forwardRef(({
   children,
   dimension,
   isFullWidth,
   isMinWidth,
   iconStart,
   ...attributes
-}: Props) => (
+}: Props, ref?: React.Ref<HTMLSelectElement>) => (
   <div
     className={
       classnames(
@@ -32,10 +32,10 @@ const Select = ({
     }
   >
     {iconStart}
-    <select {...attributes}>
+    <select {...attributes} ref={ref}>
       {children}
     </select>
   </div>
-);
+));
 
 export default Select;
