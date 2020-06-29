@@ -66,6 +66,9 @@ class Paragraph {
     if (!empty($block['params']['font_size'])) {
       $styles[] = 'font-size: ' . $block['params']['font_size'] . 'px';
     }
+    if (!empty($block['params']['line_height'])) {
+      $styles[] = 'line-height: ' . $block['params']['line_height'];
+    }
     if (empty($styles)) {
       return null;
     }

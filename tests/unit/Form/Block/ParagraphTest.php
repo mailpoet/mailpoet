@@ -77,6 +77,16 @@ class ParagraphTest extends \MailPoetUnitTest {
     expect($html)->equals('<p class="mailpoet_form_paragraph" style="font-size: 33px">Paragraph</p>');
   }
 
+  public function testItShouldRenderLineHeight() {
+    $html = $this->paragraph->render([
+      'params' => [
+        'content' => 'Paragraph',
+        'line_height' => '2.3',
+      ],
+    ]);
+    expect($html)->equals('<p class="mailpoet_form_paragraph" style="line-height: 2.3">Paragraph</p>');
+  }
+
   public function testItShouldRenderDropCap() {
     $html = $this->paragraph->render([
       'params' => [

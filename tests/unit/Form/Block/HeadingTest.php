@@ -91,4 +91,24 @@ class HeadingTest extends \MailPoetUnitTest {
     expect($html)->contains('style="background-color: red');
     expect($html)->contains('class="mailpoet-has-background-color"');
   }
+
+  public function testItShouldRenderFontSize() {
+    $html = $this->heading->render([
+      'params' => [
+        'content' => 'Header',
+        'font_size' => '33',
+      ],
+    ]);
+    expect($html)->equals('<h2 style="font-size: 33px">Header</h2>');
+  }
+
+  public function testItShouldRenderLineHeight() {
+    $html = $this->heading->render([
+      'params' => [
+        'content' => 'Header',
+        'line_height' => '2.3',
+      ],
+    ]);
+    expect($html)->equals('<h2 style="line-height: 2.3">Header</h2>');
+  }
 }

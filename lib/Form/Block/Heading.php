@@ -80,6 +80,12 @@ class Heading {
     if (isset($block['params']['text_color'])) {
       $styles[] = 'color: ' . $block['params']['text_color'];
     }
+    if (!empty($block['params']['font_size'])) {
+      $styles[] = 'font-size: ' . $block['params']['font_size'] . 'px';
+    }
+    if (!empty($block['params']['line_height'])) {
+      $styles[] = 'line-height: ' . $block['params']['line_height'];
+    }
     if (!empty($block['params']['background_color'])) {
       $styles[] = 'background-color: ' . $block['params']['background_color'];
     }
