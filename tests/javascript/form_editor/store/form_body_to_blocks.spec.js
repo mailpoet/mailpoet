@@ -580,6 +580,22 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.align).to.be.undefined;
   });
 
+  it('It should map heading font size', () => {
+    const heading = { ...headingInput, params: { font_size: 13 } };
+
+    const [block] = formBodyToBlocks([heading]);
+    expect(block.attributes.fontSize).to.equal('small');
+  });
+
+  it('It should map heading custom font size and line height', () => {
+    const heading = { ...headingInput, params: { font_size: 34, line_height: '1.5' } };
+
+    const [block] = formBodyToBlocks([heading]);
+    expect(block.attributes.fontSize).to.be.undefined;
+    expect(block.attributes.style.typography.fontSize).to.eq(34);
+    expect(block.attributes.style.typography.lineHeight).to.eq('1.5');
+  });
+
   it('It should map paragraph', () => {
     const paragraph = { ...paragraphInput };
 
@@ -592,18 +608,19 @@ describe('Form Body To Blocks', () => {
   });
 
   it('It should map paragraph font size', () => {
-    const heading = { ...headingInput, params: { font_size: 13 } };
+    const heading = { ...paragraphInput, params: { font_size: 13 } };
 
     const [block] = formBodyToBlocks([heading]);
     expect(block.attributes.fontSize).to.equal('small');
   });
 
-  it('It should map paragraph custom font size', () => {
-    const heading = { ...headingInput, params: { font_size: 34 } };
+  it('It should map paragraph custom font size and line height', () => {
+    const heading = { ...paragraphInput, params: { font_size: 34, line_height: '1.5' } };
 
     const [block] = formBodyToBlocks([heading]);
     expect(block.attributes.fontSize).to.be.undefined;
-    expect(block.attributes.customFontSize).to.eq(34);
+    expect(block.attributes.style.typography.fontSize).to.eq(34);
+    expect(block.attributes.style.typography.lineHeight).to.eq('1.5');
   });
 
   it('It should map heading with data', () => {

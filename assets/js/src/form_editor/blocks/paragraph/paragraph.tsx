@@ -17,8 +17,6 @@ const settings = {
   supports: {
     ...paragraph.metadata.supports,
     html: false,
-    __experimentalFontSize: true,
-    __experimentalLineHeight: false, // Temporarily turned off until we add support on frontend
   },
 };
 

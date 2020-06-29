@@ -161,11 +161,17 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
               content: block.attributes.content,
               level: block.attributes.level,
               align: block.attributes.align || 'left',
+              font_size: mapFontSizeSlugToValue(
+                fontSizeDefinitions,
+                block.attributes.fontSize,
+                block.attributes.style?.typography?.fontSize
+              ),
               text_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.textColor,
                 block.attributes.style?.color?.text
               ),
+              line_height: block.attributes.style?.typography?.lineHeight,
               background_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.backgroundColor,
@@ -186,8 +192,9 @@ export const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, c
               font_size: mapFontSizeSlugToValue(
                 fontSizeDefinitions,
                 block.attributes.fontSize,
-                block.attributes.customFontSize
+                block.attributes.style?.typography?.fontSize
               ),
+              line_height: block.attributes.style?.typography?.lineHeight,
               text_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.textColor,

@@ -233,6 +233,10 @@ export const formBodyToBlocksFactory = (
             text: undefined,
             background: undefined,
           },
+          typography: {
+            fontSize: undefined,
+            lineHeight: undefined,
+          },
         };
       }
 
@@ -271,7 +275,10 @@ export const formBodyToBlocksFactory = (
       if (item.params && has(item.params, 'font_size')) {
         const slug = mapFontSizeSlug(fontSizeDefinitions, item.params.font_size);
         mapped.attributes.fontSize = slug;
-        mapped.attributes.customFontSize = !slug ? item.params.font_size : undefined;
+        mapped.attributes.style.typography.fontSize = !slug ? item.params.font_size : undefined;
+      }
+      if (item.params && has(item.params, 'line_height')) {
+        mapped.attributes.style.typography.lineHeight = item.params.line_height;
       }
       let level = 2;
       switch (item.id) {
