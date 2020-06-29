@@ -2,6 +2,7 @@ import React from 'react';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
+import Select from 'common/form/select/select.tsx';
 
 class ListingFilters extends React.Component {
   componentDidUpdate() {
@@ -45,10 +46,13 @@ class ListingFilters extends React.Component {
     const filters = this.props.filters;
     const availableFilters = this.getAvailableFilters()
       .map((filter, i) => (
-        <select
+        <Select
+          isMinWidth
+          dimension="small"
           ref={(c) => { this[`filter-${i}`] = c; }}
           key={`filter-${filter}`}
           name={filter}
+          onChange={this.handleFilterAction}
         >
           { filters[filter].map((option) => (
             <option
@@ -58,22 +62,8 @@ class ListingFilters extends React.Component {
               { option.label }
             </option>
           )) }
-        </select>
+        </Select>
       ));
-
-    let button;
-
-    if (availableFilters.length > 0) {
-      button = (
-        <input
-          id="post-query-submit"
-          onClick={this.handleFilterAction}
-          type="submit"
-          value={MailPoet.I18n.t('filter')}
-          className="button"
-        />
-      );
-    }
 
     let emptyTrash;
     if (this.props.group === 'trash') {
@@ -89,9 +79,8 @@ class ListingFilters extends React.Component {
     }
 
     return (
-      <div className="alignleft actions actions">
+      <div className="mailpoet-listing-filters">
         { availableFilters }
-        { button }
         { emptyTrash }
       </div>
     );
