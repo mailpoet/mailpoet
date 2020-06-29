@@ -190,12 +190,12 @@ class AcceptanceTester extends \Codeception\Actor {
     expect($attributeValue)->notContains($notContains);
   }
 
-  public function searchFor($query, $element = '#search_input', $button = 'Search') {
+  public function searchFor($query, $element = '#search_input') {
     $i = $this;
     $i->waitForElement($element);
     $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
     $i->fillField($element, $query);
-    $i->click($button);
+    $i->pressKey($element, \WebDriverKeys::ENTER);
     $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
   }
 

@@ -595,8 +595,7 @@ class Listing extends React.Component {
         { this.state.meta.mta_method && <MailerError {...this.state.meta} /> }
         <div className="mailpoet-listing">
           { groups }
-          { search }
-          <div className="tablenav top clearfix">
+          <div>
             <ListingBulkActions
               count={this.state.count}
               bulk_actions={bulkActions}
@@ -604,6 +603,7 @@ class Listing extends React.Component {
               selected_ids={this.state.selected_ids}
               onBulkAction={this.handleBulkAction}
             />
+            { search }
             <ListingFilters
               filters={this.state.filters}
               filter={this.state.filter}
