@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Workers\KeyCheck;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
@@ -40,10 +41,17 @@ class SendingServiceKeyCheck extends KeyCheckWorker {
   }
 
   public function checkKey() {
+    $wasPendingApproval = $this->servicesChecker->isMailPoetAPIKeyPendingApproval();
+
     $mssKey = $this->settings->get(Mailer::MAILER_CONFIG_SETTING_NAME)['mailpoet_api_key'];
     $result = $this->bridge->checkMSSKey($mssKey);
     $this->bridge->storeMSSKeyAndState($mssKey, $result);
     $this->bridge->updateSubscriberCount($result);
+
+    $isPendingApproval = $this->servicesChecker->isMailPoetAPIKeyPendingApproval();
+    if ($wasPendingApproval && !$isPendingApproval) {
+      MailerLog::resumeSending();
+    }
     return $result;
   }
 }
