@@ -77,7 +77,7 @@
     "react-router-dom": "^5.2.0",
     "react-select": "^3.1.0",
     "react-string-replace": "^0.3.2",
-    "react-tooltip": "^4.0.3",
+    "react-tooltip": "^4.2.6",
     "satismeter-loader": "^1.1.0",
     "select2": "^4.0.13",
     "setimmediate": "^1.0.5",
