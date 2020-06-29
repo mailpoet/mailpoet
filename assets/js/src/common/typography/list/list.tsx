@@ -10,10 +10,10 @@ const List = ({
   isOrdered,
 }: Props) => {
   const Element = isOrdered ? 'ol' : 'ul';
-  return React.createElement(
-    Element,
-    { className: `mailpoet-${Element}` },
-    children
+  return (
+    <Element className={`mailpoet-${Element}`}>
+      {children}
+    </Element>
   );
 };
 
