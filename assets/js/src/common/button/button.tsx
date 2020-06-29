@@ -12,7 +12,7 @@ type Props = {
   iconEnd?: JSX.Element,
   onClick?: () => void,
   href?: string,
-  type?: string,
+  type?: 'button' | 'submit' | 'reset',
   target?: '_blank' | '_self' | '_parent' | '_top' | string,
 };
 
@@ -27,6 +27,7 @@ const Button = ({
   iconEnd,
   onClick,
   href,
+  type,
   target,
 }: Props) => {
   const Element = href ? 'a' : 'button';
@@ -34,6 +35,7 @@ const Button = ({
     <Element
       href={href}
       onClick={onClick}
+      type={type}
       target={target}
       className={
         classnames(
