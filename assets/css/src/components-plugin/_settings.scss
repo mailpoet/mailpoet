@@ -48,6 +48,10 @@
   .mailpoet_emails_per_second_warning {
     color: $color-editor-warning;
   }
+
+  .mailpoet-note {
+    font-style: italic;
+  }
 }
 
 .mailpoet_woocommerce_editor_button {
