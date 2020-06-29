@@ -4,7 +4,6 @@ import _ from 'underscore';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
-import ListingBulkActions from 'listing/bulk_actions.jsx';
 import ListingHeader from 'listing/header.jsx';
 import ListingPages from 'listing/pages.jsx';
 import ListingSearch from 'listing/search.jsx';
@@ -596,13 +595,6 @@ class Listing extends React.Component {
         <div className="mailpoet-listing">
           { groups }
           <div>
-            <ListingBulkActions
-              count={this.state.count}
-              bulk_actions={bulkActions}
-              selection={this.state.selection}
-              selected_ids={this.state.selected_ids}
-              onBulkAction={this.handleBulkAction}
-            />
             { search }
             <ListingFilters
               filters={this.state.filters}
@@ -650,33 +642,16 @@ class Listing extends React.Component {
               group={this.state.group}
               count={this.state.count}
               limit={this.state.limit}
+              bulk_actions={bulkActions}
+              onBulkAction={this.handleBulkAction}
               item_actions={itemActions}
               messages={messages}
               items={items}
               search={this.state.search}
             />
 
-            <tfoot>
-              <ListingHeader
-                onSort={this.handleSort}
-                onSelectItems={this.handleSelectItems}
-                selection={this.state.selection}
-                sort_by={sortBy}
-                sort_order={sortOrder}
-                columns={columns}
-                is_selectable={bulkActions.length > 0}
-              />
-            </tfoot>
-
           </table>
           <div className="tablenav bottom clearfix">
-            <ListingBulkActions
-              count={this.state.count}
-              bulk_actions={bulkActions}
-              selection={this.state.selection}
-              selected_ids={this.state.selected_ids}
-              onBulkAction={this.handleBulkAction}
-            />
             <ListingPages
               count={this.state.count}
               page={this.state.page}
