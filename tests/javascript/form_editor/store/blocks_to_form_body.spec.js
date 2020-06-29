@@ -365,17 +365,23 @@ describe('Blocks to Form Body', () => {
     expect(input.params.font_size).to.be.equal(13);
   });
 
-  it('Should map custom font size in paragraph block', () => {
+  it('Should map custom font size and line height in paragraph block', () => {
     const [input] = formBlocksToBody([
       {
         ...paragraphBlock,
         attributes: {
           fontSize: undefined,
-          customFontSize: 37,
+          style: {
+            typography: {
+              fontSize: 37,
+              lineHeight: '2.5',
+            },
+          },
         },
       },
     ]);
     expect(input.params.font_size).to.be.equal(37);
+    expect(input.params.line_height).to.be.equal('2.5');
   });
 
   it('Should map minimal heading block', () => {
@@ -416,6 +422,37 @@ describe('Blocks to Form Body', () => {
     expect(input.params.background_color).to.be.equal('#321');
     expect(input.params.anchor).to.be.equal('anchor');
     expect(input.params.class_name).to.be.equal('class');
+  });
+
+  it('Should map font size in heading block', () => {
+    const [input] = formBlocksToBody([
+      {
+        ...headingBlock,
+        attributes: {
+          fontSize: 'small',
+        },
+      },
+    ]);
+    expect(input.params.font_size).to.be.equal(13);
+  });
+
+  it('Should map custom font size in heading block', () => {
+    const [input] = formBlocksToBody([
+      {
+        ...headingBlock,
+        attributes: {
+          fontSize: undefined,
+          style: {
+            typography: {
+              fontSize: 37,
+              lineHeight: '2.5',
+            },
+          },
+        },
+      },
+    ]);
+    expect(input.params.font_size).to.be.equal(37);
+    expect(input.params.line_height).to.be.equal('2.5');
   });
 
   it('Should map empty image block', () => {
