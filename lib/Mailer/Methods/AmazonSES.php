@@ -28,9 +28,12 @@ class AmazonSES {
     'US East (N. Virginia)' => 'us-east-1',
     'US West (Oregon)' => 'us-west-2',
     'EU (Ireland)' => 'eu-west-1',
+    'EU (London)' => 'eu-west-2',
     'EU (Frankfurt)' => 'eu-central-1',
+    'Canada (Central)' => 'ca-central-1',
     'Asia Pacific (Mumbai)' => 'ap-south-1',
     'Asia Pacific (Sydney)' => 'ap-southeast-2',
+    'South America (Sao Paulo)' => 'sa-east-1',
   ];
 
   /** @var AmazonSESMapper */
