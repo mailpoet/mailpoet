@@ -80,9 +80,10 @@
 
 .mailpoet-listing-filters {
   display: inline-block;
-  padding-left: 16px;
+  margin-left: $grid-gap;
 
   .mailpoet-form-select {
+    margin-right: $grid-gap;
     min-height: 30px;
   }
 }
