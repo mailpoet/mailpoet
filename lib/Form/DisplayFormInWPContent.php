@@ -146,6 +146,7 @@ class DisplayFormInWPContent {
       'form_type' => $displayType,
       'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId, $displayType),
       'html' => $this->formRenderer->renderHTML($formData),
+      'close_button_icon' => $formSettings['close_button'] ?? 'classic',
     ];
 
     // (POST) non ajax success/error variables
