@@ -90,7 +90,7 @@ class SubscriberManagementCest {
     $i->waitForText($newSubscriberEmail);
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Restore');
     $i->amOnMailpoetPage('Subscribers');
-    $i->waitForText($newSubscriberEmail);
+    $i->waitForText($newSubscriberEmail, 20);
     $i->seeNoJSErrors();
   }
 
@@ -113,7 +113,7 @@ class SubscriberManagementCest {
     $i->waitForText('1 subscriber was permanently deleted.');
     $i->dontSee($newSubscriberEmail);
 
-    $i->waitForText($newSubscriberEmail2);
+    $i->waitForText($newSubscriberEmail2, 20);
     $i->seeNoJSErrors();
   }
 
@@ -130,7 +130,7 @@ class SubscriberManagementCest {
 
     $i->waitForElement('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForText($newSubscriberEmail);
+    $i->waitForText($newSubscriberEmail, 20);
 
     $i->click('[data-automation-id="empty_trash"]');
 
@@ -138,7 +138,7 @@ class SubscriberManagementCest {
     $i->dontSee($newSubscriberEmail);
     $i->click('[data-automation-id="filters_all"]');
 
-    $i->waitForText($newSubscriberEmail2);
+    $i->waitForText($newSubscriberEmail2, 20);
     $i->seeNoJSErrors();
   }
 

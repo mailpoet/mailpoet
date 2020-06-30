@@ -29,12 +29,12 @@ class DeleteTrashedSegmentCest {
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForElement('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
+    $i->waitForText($segmentTitle, 20, $listingAutomationSelector);
     $i->clickItemRowActionByItemName($segmentTitle, 'Delete permanently');
     $i->waitForText('1 segment was permanently deleted.');
     $i->dontSeeElement($listingAutomationSelector);
     $i->seeNoJSErrors();
-    $i->waitForText($segmentTitle . '2');
+    $i->waitForText($segmentTitle . '2', 20);
   }
 
   public function emptyTrash(\AcceptanceTester $i) {
@@ -61,7 +61,7 @@ class DeleteTrashedSegmentCest {
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForElement('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
-    $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
+    $i->waitForText($segmentTitle, 20, $listingAutomationSelector);
 
     $i->click('[data-automation-id="empty_trash"]');
     $i->waitForText('1 segment was permanently deleted.');
@@ -69,6 +69,6 @@ class DeleteTrashedSegmentCest {
     $i->seeNoJSErrors();
 
     $i->click('[data-automation-id="filters_all"]');
-    $i->waitForText($segmentTitle . '2');
+    $i->waitForText($segmentTitle . '2', 20);
   }
 }
