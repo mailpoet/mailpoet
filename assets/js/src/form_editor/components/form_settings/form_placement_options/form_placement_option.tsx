@@ -27,7 +27,8 @@ const FormPlacementOption = ({
       className={
         classnames(
           'form-placement-option',
-          { 'form-placement-option-active': active && canBeActive }
+          'selection-item',
+          { 'selection-item-active': active && canBeActive }
         )
       }
       onMouseEnter={() => setHover(true)}
@@ -44,12 +45,12 @@ const FormPlacementOption = ({
       tabIndex={0}
     >
       <div>
-        <div className="form-placement-option-settings">
+        <div className="selection-item-settings">
           <div
             className={
               classnames(
-                'form-placement-settings-icon',
-                { 'form-placement-settings-icon-hover': hover }
+                'selection-item-icon',
+                { 'selection-item-icon-hover': hover }
               )
             }
           >
@@ -57,12 +58,12 @@ const FormPlacementOption = ({
           </div>
           {
             hover && !active && canBeActive
-            && <div className="form-placement-settings-oval" />
+            && <div className="selection-item-settings-oval" />
           }
           {
             active && canBeActive
             && (
-              <div className="form-placement-settings-check">
+              <div className="selection-item-check">
                 {CheckIcon}
               </div>
             )
@@ -71,13 +72,13 @@ const FormPlacementOption = ({
         <div className="form-placement-option-icon">
           {icon}
         </div>
-      </div>
-      <div className="form-placement-option-label">
-        <p>{label}</p>
+        <div className="form-placement-option-label">
+          <p>{label}</p>
+        </div>
       </div>
       {
         hover
-        && <div className="form-placement-settings-overlay" />
+        && <div className="selection-item-overlay" />
       }
     </div>
   );
