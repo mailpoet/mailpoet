@@ -27,7 +27,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method asArray\\(\\) on MailPoet\\\\Models\\\\Form\\|false\\.$#"
-			count: 8
+			count: 7
 			path: ../../tests/integration/API/JSON/v1/FormsTest.php
 
 		-
