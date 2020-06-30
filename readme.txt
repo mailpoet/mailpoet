@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.2
 Tested up to: 5.4
-Stable tag: 3.47.6
+Stable tag: 3.47.7
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.47.7 - 2020-06-30 =
+* Added: new Amazon SES locations;
+* Added: keep a record when a subscriber is unsubscribed;
+* Improved: new design of Premium page;
+* Fixed: custom links color is correctly shown in email editor;
+* Fixed: conflict with Yoast SEO plugin and MailPoet forms.
 
 = 3.47.6 - 2020-06-23 =
 * Improved: the unsubscription process to avoid security robots accidentally unsubscribing subscribers. Thanks, Mark!
