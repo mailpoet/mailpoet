@@ -116,6 +116,9 @@ export default {
   getPreviewPageUrl(state) {
     return state.previewPageUrl;
   },
+  getCloseIconsUrl(state) {
+    return state.closeIconsUrl;
+  },
   getAllCustomFonts(state) {
     return state.customFonts;
   },

@@ -50,7 +50,7 @@ const SelectionItem = ({
       role="button"
       tabIndex={0}
     >
-      <div>
+      <div className="selection-item-body">
         <div className="selection-item-settings">
           {
             displaySettingsIcon
