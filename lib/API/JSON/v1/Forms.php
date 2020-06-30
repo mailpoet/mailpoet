@@ -2,7 +2,6 @@
 
 namespace MailPoet\API\JSON\v1;
 
-use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
@@ -88,25 +87,15 @@ class Forms extends APIEndpoint {
   }
 
   public function create($data = []) {
-    if (isset($data['template-id']) && isset(FormEditor::TEMPLATES[$data['template-id']])) {
-      return $this->save(
-        $this->formFactory->createFormFromTemplate(
-          FormEditor::TEMPLATES[$data['template-id']]
-        )
-      );
+    if (isset($data['template-id'])) {
+      $formEntity = $this->formFactory->createFormFromTemplate($data['template-id']);
+    } else {
+      $formEntity = $this->formFactory->createEmptyForm();
     }
-    return $this->save($this->formFactory->createEmptyForm());
-  }
 
-  public function save(Form $form) {
-    $errors = $form->getErrors();
-
-    if (empty($errors)) {
-      $form = Form::findOne($form->id);
-      if(!$form instanceof Form) return $this->errorResponse();
-      return $this->successResponse($form->asArray());
-    }
-    return $this->badRequest($errors);
+    $form = Form::findOne($formEntity->getId());
+    if(!$form instanceof Form) return $this->errorResponse();
+    return $this->successResponse($form->asArray());
   }
 
   public function previewEditor($data = []) {

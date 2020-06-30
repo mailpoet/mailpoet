@@ -72,18 +72,6 @@ class FormsTest extends \MailPoetTest {
     expect($response->data['name'])->equals('');
   }
 
-  public function testItCanSaveAForm() {
-    $formData = [
-      'name' => 'My First Form',
-    ];
-
-    $response = $this->endpoint->save(Form::createOrUpdate($formData));
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Form::where('name', 'My First Form')->findOne()->asArray()
-    );
-  }
-
   public function testItCanStoreDataForPreview() {
     $response = $this->endpoint->create();
     $formId = $response->data['id'];

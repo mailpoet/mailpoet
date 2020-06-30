@@ -240,7 +240,7 @@ class FormEditor {
 
     $this->wp->wpSafeRedirect(
       $this->wp->getSiteUrl(null,
-        '/wp-admin/admin.php?page=mailpoet-form-editor&id=' . $form->id()
+        '/wp-admin/admin.php?page=mailpoet-form-editor&id=' . $form->getId()
       )
     );
     exit;
