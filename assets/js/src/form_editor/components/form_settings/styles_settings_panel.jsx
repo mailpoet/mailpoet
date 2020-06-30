@@ -14,7 +14,7 @@ import HorizontalAlignment from 'common/styles';
 import ColorSettings from 'form_editor/components/color_settings';
 import FontSizeSettings from 'form_editor/components/font_size_settings';
 import ImageSettings from 'form_editor/components/image_settings';
-import CloseButtonSettings from 'form_editor/components/close_button_settings';
+import { CloseButtonsSettings } from 'form_editor/components/close_button_settings';
 import { formStyles as defaultFormStyles } from 'form_editor/store/defaults';
 import FontFamilySettings from '../font_family_settings';
 
@@ -129,7 +129,7 @@ const StylesSettingsPanel = ({ onToggle, isOpened }) => {
             value={settings.errorValidationColor}
             onChange={partial(updateStyles, 'errorValidationColor')}
           />
-          <CloseButtonSettings
+          <CloseButtonsSettings
             name={MailPoet.I18n.t('closeButtonHeading')}
             value={settings.closeButton}
             onChange={partial(updateStyles, 'closeButton')}
