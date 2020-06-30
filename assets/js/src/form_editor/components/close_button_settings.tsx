@@ -32,7 +32,6 @@ const CloseButton = ({
   </SelectionItem>
 );
 
-
 type Props = {
   name: string
   value?: string|undefined

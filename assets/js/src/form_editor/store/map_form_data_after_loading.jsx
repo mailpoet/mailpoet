@@ -43,6 +43,7 @@ export default function mapFormDataAfterLoading(data) {
       errorValidationColor: data.settings.error_validation_color,
       backgroundImageUrl: data.settings.background_image_url,
       backgroundImageDisplay: data.settings.background_image_display,
+      closeButton: data.settings.close_button,
       belowPostStyles: { ...defaults.belowPostForm.styles, ...data.settings.below_post_styles },
       slideInStyles: { ...defaults.slideInForm.styles, ...data.settings.slide_in_styles },
       fixedBarStyles: { ...defaults.fixedBarForm.styles, ...data.settings.fixed_bar_styles },
