@@ -62,6 +62,7 @@ export default () => {
     previewSettings,
     editorUrl: window.location.href,
     previewPageUrl: window.mailpoet_form_preview_page,
+    closeIconsUrl: window.mailpoet_close_icons_url,
     customFonts: window.mailpoet_custom_fonts,
   };
 
