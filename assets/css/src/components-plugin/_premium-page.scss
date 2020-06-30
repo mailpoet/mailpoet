@@ -17,8 +17,6 @@
 .mailpoet_page_mailpoet-premium,
 .admin_page_mailpoet-premium {
   #wpcontent {
-    background: linear-gradient(to top, $color-white, $color-secondary-light) no-repeat;
-    background-size: auto 300px;
     overflow-x: hidden;
   }
 
@@ -31,6 +29,10 @@
   .update-nag,
   .notice {
     display: none !important;
+  }
+
+  img {
+    max-width: 100%;
   }
 }
 
@@ -99,6 +101,7 @@ div.mailpoet-premium-page-section {
 }
 
 .mailpoet-premium-page-intro {
+  @include full-width-background(linear-gradient(to top, $color-white, $color-secondary-light));
   align-items: center;
 
   img {
