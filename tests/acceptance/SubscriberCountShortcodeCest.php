@@ -24,7 +24,6 @@ class SubscriberCountShortcodeCest {
     $pageText = 'Your subscriber count is';
     $pageContent = "$pageText [mailpoet_subscribers_count segments=\"$segment->id\"]";
     $i->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle", "--post_content=$pageContent"]);
-    $this->prepareSubscribersData();
     $i->login();
     $i->amOnPage('/wp-admin/edit.php?post_type=page');
     $i->waitForText($pageTitle);
@@ -63,5 +62,4 @@ class SubscriberCountShortcodeCest {
       (new Subscriber())->withStatus('unsubscribed')->withSegments([$segment])->create();
     }
   }
-
 }
