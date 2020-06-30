@@ -10,6 +10,7 @@ class TemplateRepository {
 
   private $templates = [
     'initial_form' => InitialForm::class,
+    'demo_form' => DemoForm::class,
   ];
 
   public function getFormEntityForTemplate($templateId): FormEntity {
