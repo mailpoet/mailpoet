@@ -453,10 +453,10 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     $i->amOnMailboxAppPage();
     try {
-      $i->waitForText($subject, 20);
+      $i->waitForText($subject, 30);
     } catch (\Exception $e) {
       $i->amOnMailboxAppPage();
-      $i->waitForText($subject, 30);
+      $i->waitForText($subject, 60);
     }
   }
 }
