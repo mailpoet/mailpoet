@@ -90,6 +90,7 @@ class PreviewPage {
       'form_id' => $formId,
       'form_success_message' => $formData['settings']['success_message'] ?? null,
       'form_type' => $formDisplayType,
+      'close_button_icon' => $formData['settings']['close_button'] ?? 'classic',
       'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId, $formDisplayType),
       'html' => $this->formRenderer->renderHTML($formData),
       'success' => $formDisplayType === FormEntity::DISPLAY_TYPE_OTHERS,
