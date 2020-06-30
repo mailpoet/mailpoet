@@ -102,7 +102,7 @@
 }
 
 .components-button.mailpoet-save-button {
-  background-color: #ff5301;
+  background-color: $gutenberg-control-active-color;
   border-radius: 4px;
   color: #fff;
   display: block;
@@ -121,5 +121,80 @@
   &:hover {
     background-color: #fff !important;
     color: #ff5301 !important;
+  }
+}
+
+.selection-item {
+  background-color: #fff;
+  border: solid $selection-item-active-border $selection-item-base-color;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px 0 $selection-item-base-color;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 6px;
+  pointer-events: auto;
+  position: relative;
+}
+
+.selection-item-overlay {
+  background-color: rgba(0, 0, 0, .3);
+  border-radius: 2px;
+  height: 100%;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 3;
+}
+
+.selection-item-active {
+  border: solid $selection-item-active-border $gutenberg-control-active-color;
+  box-shadow: 0 4px 8px 0 rgba(156, 166, 204, .5);
+}
+
+.selection-item-settings {
+  display: flex;
+  flex-direction: row;
+  height: 25px;
+  justify-content: space-between;
+  pointer-events: none;
+  width: 100%;
+  z-index: 4;
+}
+
+.selection-item-settings-oval {
+  background-color: $selection-item-oval-color;
+  border: solid 1px $selection-item-oval-border-color;
+  border-radius: 7px;
+  height: 13px;
+  pointer-events: none;
+  width: 13px;
+}
+
+.selection-item-settings-check {
+  height: 13px;
+  pointer-events: none;
+  width: 13px;
+  z-index: 4;
+}
+
+.selection-item-settings-icon {
+  height: 14px;
+  pointer-events: none;
+  width: 14px;
+  z-index: 4;
+
+  svg {
+    fill: $selection-item-base-color;
+  }
+}
+
+.selection-item-settings-icon-hover {
+  svg {
+    fill: white;
   }
 }
