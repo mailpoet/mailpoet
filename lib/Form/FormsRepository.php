@@ -26,4 +26,12 @@ class FormsRepository extends Repository {
       ->getQuery()
       ->getResult();
   }
+
+  public function count(): int {
+    return (int)$this->doctrineRepository
+      ->createQueryBuilder('f')
+      ->select('count(f.id)')
+      ->getQuery()
+      ->getSingleScalarResult();
+  }
 }

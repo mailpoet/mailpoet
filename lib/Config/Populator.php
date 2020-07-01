@@ -2,7 +2,6 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\Config\PopulatorData\DefaultForm;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\Beamer;
@@ -12,7 +11,7 @@ use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Features\FeaturesController;
-use MailPoet\Form\Util\Styles;
+use MailPoet\Form\FormFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Form;
 use MailPoet\Models\Newsletter;
@@ -50,18 +49,22 @@ class Populator {
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
   /** @var FeaturesController */
   private $flagsController;
+  /** @var FormFactory */
+  private $formFactory;
 
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     Captcha $captcha,
     ReferralDetector $referralDetector,
-    FeaturesController $flagsController
+    FeaturesController $flagsController,
+    FormFactory $formFactory
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->captcha = $captcha;
     $this->referralDetector = $referralDetector;
+    $this->formFactory = $formFactory;
     $this->prefix = Env::$dbPrefix;
     $this->models = [
       'newsletter_option_fields',
@@ -334,7 +337,8 @@ class Populator {
     WP::synchronizeUsers();
 
     // Default segment
-    if (Segment::where('type', 'default')->count() === 0) {
+    $defaultSegment = Segment::where('type', 'default')->orderByAsc('id')->limit(1)->findOne();
+    if (!$defaultSegment instanceof Segment) {
       $defaultSegment = Segment::create();
       $newList = [
         'name' => $this->wp->__('My First List', 'mailpoet'),
@@ -347,21 +351,11 @@ class Populator {
       $defaultSegment->hydrate($newList);
       $defaultSegment->save();
     }
+    return $defaultSegment;
   }
 
-  private function createDefaultForm($defaultSegment) {
-    if (Form::count() === 0) {
-      $factory = new DefaultForm(new Styles());
-      if (!$defaultSegment) {
-        $defaultSegment = Segment::where('type', 'default')->orderByAsc('id')->limit(1)->findOne();
-      }
-      Form::createOrUpdate([
-        'name' => $factory->getName(),
-        'body' => serialize($factory->getBody()),
-        'settings' => serialize($factory->getSettings($defaultSegment)),
-        'styles' => $factory->getStyles(),
-      ]);
-    }
+  private function createDefaultForm(Segment $defaultSegment) {
+    $this->formFactory->ensureDefaultFormExists((int)$defaultSegment->id());
   }
 
   protected function newsletterOptionFields() {

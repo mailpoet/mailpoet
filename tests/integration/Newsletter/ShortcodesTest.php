@@ -5,6 +5,7 @@ namespace MailPoet\Test\Newsletter;
 use Codeception\Util\Stub;
 use MailPoet\Config\Populator;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Form\FormFactory;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
@@ -42,7 +43,14 @@ class ShortcodesTest extends \MailPoetTest {
     $this->settings = SettingsController::getInstance();
     $referralDetector = new ReferralDetector(WPFunctions::get(), $this->settings);
     $featuresController = Stub::makeEmpty(FeaturesController::class);
-    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referralDetector, $featuresController);
+    $populator = new Populator(
+      $this->settings,
+      WPFunctions::get(),
+      new Captcha,
+      $referralDetector,
+      $featuresController,
+      $this->diContainer->get(FormFactory::class)
+    );
     $populator->up();
     $this->wPUser = $this->_createWPUser();
     $this->wPPost = $this->_createWPPost();

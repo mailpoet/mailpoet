@@ -9,6 +9,7 @@ use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Form\FormFactory;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -31,7 +32,14 @@ class SetupTest extends \MailPoetTest {
 
     $settings = SettingsController::getInstance();
     $referralDetector = new ReferralDetector($wp, $settings);
-    $populator = new Populator($settings, $wp, new Captcha(), $referralDetector, $featuresController);
+    $populator = new Populator(
+      $settings,
+      $wp,
+      new Captcha(),
+      $referralDetector,
+      $featuresController,
+      $this->diContainer->get(FormFactory::class)
+    );
     $router = new Setup($wp, new Activator($settings, $populator));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
