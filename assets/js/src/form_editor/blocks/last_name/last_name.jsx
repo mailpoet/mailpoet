@@ -1,7 +1,7 @@
 import MailPoet from 'mailpoet';
+import { defaultBlockStyles } from 'form_editor/store/mapping/to_blocks/styles_mapper';
 import icon from './icon.jsx';
 import edit from './edit.jsx';
-import { defaultBlockStyles } from '../../store/form_body_to_blocks.jsx';
 
 export const name = 'mailpoet-form/last-name-input';
 

@@ -1,3 +1,4 @@
+import '@wordpress/block-editor/build-module/hooks/padding.js';
 import { registerBlockType, setCategories } from '@wordpress/blocks';
 import { select } from '@wordpress/data';
 import MailPoet from 'mailpoet';
