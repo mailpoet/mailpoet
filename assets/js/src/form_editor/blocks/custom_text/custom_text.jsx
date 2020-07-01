@@ -1,6 +1,6 @@
+import { defaultBlockStyles } from 'form_editor/store/mapping/to_blocks/styles_mapper';
 import Icon from './icon.jsx';
 import Edit from './edit.jsx';
-import { defaultBlockStyles } from '../../store/form_body_to_blocks.jsx';
 
 export const name = 'mailpoet-form/custom-text';
 

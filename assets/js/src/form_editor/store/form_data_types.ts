@@ -37,3 +37,17 @@ export type FormSettingsType = {
   slideInStyles: PlacementStyles
   successValidationColor?: string
 };
+
+export type InputBlockStyles = {
+  fullWidth: boolean
+  inheritFromTheme: boolean
+  bold?: boolean
+  backgroundColor?: string
+  borderSize?: number
+  fontSize?: number
+  fontColor?: string
+  borderRadius?: number
+  borderColor?: string
+  padding?: number
+  fontFamily?: string
+}

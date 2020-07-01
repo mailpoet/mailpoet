@@ -1,20 +1,11 @@
 /* eslint-disable camelcase */
 import { has } from 'lodash';
 import asNum from './server_value_as_num';
+import { mapInputBlockStyles } from './mapping/to_blocks/styles_mapper';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 import { defaultAttributes as dividerDefaultAttributes } from '../blocks/divider/divider_types';
 
 const generateId = () => (`${Math.random().toString()}-${Date.now()}`);
-
-export const defaultBlockStyles = {
-  fullWidth: true,
-  inheritFromTheme: true,
-};
-
-const backwardCompatibleBlockStyles = {
-  fullWidth: false,
-  inheritFromTheme: true,
-};
 
 export const customFieldValuesToBlockValues = (values) => values.map((value) => {
   const mappedValue = {
@@ -26,47 +17,6 @@ export const customFieldValuesToBlockValues = (values) => values.map((value) => 
   }
   return mappedValue;
 });
-
-const mapBlockStyles = (styles) => {
-  if (!styles) {
-    return backwardCompatibleBlockStyles;
-  }
-  const mappedStyles = {
-    fullWidth: styles.full_width === '1' || styles.full_width === true,
-  };
-  // Detect if styles inherit from theme by checking if bold param is present
-  if (!has(styles, 'bold')) {
-    mappedStyles.inheritFromTheme = true;
-    return mappedStyles;
-  }
-  mappedStyles.inheritFromTheme = false;
-  mappedStyles.bold = styles.bold === '1' || styles.bold === true;
-  if (has(styles, 'background_color') && styles.background_color) {
-    mappedStyles.backgroundColor = styles.background_color;
-  }
-  if (has(styles, 'border_size') && styles.border_size !== undefined) {
-    mappedStyles.borderSize = parseInt(styles.border_size, 10);
-  }
-  if (has(styles, 'font_size') && styles.font_size !== undefined) {
-    mappedStyles.fontSize = parseInt(styles.font_size, 10);
-  }
-  if (has(styles, 'font_color') && styles.font_color) {
-    mappedStyles.fontColor = styles.font_color;
-  }
-  if (has(styles, 'border_radius') && styles.border_radius !== undefined) {
-    mappedStyles.borderRadius = parseInt(styles.border_radius, 10);
-  }
-  if (has(styles, 'border_color') && styles.border_color) {
-    mappedStyles.borderColor = styles.border_color;
-  }
-  if (has(styles, 'padding') && styles.padding !== undefined) {
-    mappedStyles.padding = parseInt(styles.padding, 10);
-  }
-  if (has(styles, 'font_family') && styles.font_family) {
-    mappedStyles.fontFamily = styles.font_family;
-  }
-  return mappedStyles;
-};
 
 const mapCustomField = (item, customFields, mappedCommonProperties) => {
   const customField = customFields.find((cf) => cf.id === parseInt(item.id, 10));
@@ -110,7 +60,7 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
   }
 
   if (customField.type === 'text' || customField.type === 'textarea') {
-    mapped.attributes.styles = mapBlockStyles(item.styles);
+    mapped.attributes.styles = mapInputBlockStyles(item.styles);
   }
   return mapped;
 };
@@ -289,7 +239,7 @@ export const formBodyToBlocksFactory = (
             name: 'mailpoet-form/email-input',
             attributes: {
               ...mapped.attributes,
-              styles: mapBlockStyles(item.styles),
+              styles: mapInputBlockStyles(item.styles),
             },
           };
         case 'heading':
@@ -352,7 +302,7 @@ export const formBodyToBlocksFactory = (
             name: 'mailpoet-form/first-name-input',
             attributes: {
               ...mapped.attributes,
-              styles: mapBlockStyles(item.styles),
+              styles: mapInputBlockStyles(item.styles),
             },
           };
         case 'last_name':
@@ -361,7 +311,7 @@ export const formBodyToBlocksFactory = (
             name: 'mailpoet-form/last-name-input',
             attributes: {
               ...mapped.attributes,
-              styles: mapBlockStyles(item.styles),
+              styles: mapInputBlockStyles(item.styles),
             },
           };
         case 'segments':
@@ -387,7 +337,7 @@ export const formBodyToBlocksFactory = (
             name: 'mailpoet-form/submit-button',
             attributes: {
               ...mapped.attributes,
-              styles: mapBlockStyles(item.styles),
+              styles: mapInputBlockStyles(item.styles),
             },
           };
         case 'divider':
