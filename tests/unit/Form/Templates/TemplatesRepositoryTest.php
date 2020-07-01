@@ -33,12 +33,12 @@ class TemplatesRepositoryTest extends \MailPoetUnitTest {
     $this->settingsMock->method('get')->willReturnOnConsecutiveCalls([true, false]);
     $formEntity = $this->repository->getFormEntityForTemplate(TemplateRepository::INITIAL_FORM_TEMPLATE);
     expect($formEntity)->isInstanceOf(FormEntity::class);
-    $settings = $formEntity->getSettings();
+    $settings = $formEntity->getSettings() ?? [];
     expect($settings['success_message'])->equals('Check your inbox or spam folder to confirm your subscription.');
 
     $formEntity = $this->repository->getFormEntityForTemplate(TemplateRepository::INITIAL_FORM_TEMPLATE);
     expect($formEntity)->isInstanceOf(FormEntity::class);
-    $settings = $formEntity->getSettings();
+    $settings = $formEntity->getSettings() ?? [];
     expect($settings['success_message'])->equals('You’ve been successfully subscribed to our newsletter!');
   }
 }

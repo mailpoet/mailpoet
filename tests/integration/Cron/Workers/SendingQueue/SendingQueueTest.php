@@ -15,6 +15,7 @@ use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsSche
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Form\FormFactory;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
@@ -72,7 +73,14 @@ class SendingQueueTest extends \MailPoetTest {
     $this->settings = SettingsController::getInstance();
     $referralDetector = new ReferralDetector(WPFunctions::get(), $this->settings);
     $featuresController = Stub::makeEmpty(FeaturesController::class);
-    $populator = new Populator($this->settings, WPFunctions::get(), new Captcha, $referralDetector, $featuresController);
+    $populator = new Populator(
+      $this->settings,
+      WPFunctions::get(),
+      new Captcha,
+      $referralDetector,
+      $featuresController,
+      $this->diContainer->get(FormFactory::class)
+    );
     $populator->up();
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'john@doe.com';

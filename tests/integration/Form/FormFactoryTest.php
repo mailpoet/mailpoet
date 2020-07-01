@@ -38,4 +38,36 @@ class FormFactoryTest extends \MailPoetTest {
     expect($formEntity->getSettings())->notEmpty();
     expect($formEntity->getStyles())->string();
   }
+
+  public function testItCanOverrideTemplateSettings() {
+    $settings = [
+      'success_message' => 'Hello Buddy!',
+      'segments' => [1, 2, 3],
+    ];
+    $formEntity = $this->formFactory->createFormFromTemplate(TemplateRepository::INITIAL_FORM_TEMPLATE, $settings);
+    assert($formEntity instanceof FormEntity);
+    $formSettings = $formEntity->getSettings() ?? [];
+    expect($formSettings['success_message'])->equals('Hello Buddy!');
+    expect($formSettings['segments'])->equals([1, 2, 3]);
+  }
+
+  public function testItCanEnsureDefaultFormExists() {
+    $this->cleanup();
+    $formEntity = $this->formFactory->ensureDefaultFormExists(2);
+    assert($formEntity instanceof FormEntity);
+    $formSettings = $formEntity->getSettings() ?? [];
+    expect($formSettings['segments'])->equals(['2']);
+    // Doesn't create any form if some exists
+    $formEntity = $this->formFactory->ensureDefaultFormExists(2);
+    expect($formEntity)->null();
+  }
+
+  public function _after() {
+    parent::_after();
+    $this->cleanup();
+  }
+
+  private function cleanup() {
+    $this->truncateEntity(FormEntity::class);
+  }
 }
