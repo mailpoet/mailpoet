@@ -14,7 +14,5 @@ const settings = {
   ...settingsReset,
   category: 'design',
 };
-// Turn off Gradient support in columns
-// eslint-disable-next-line no-underscore-dangle
-settings.supports.__experimentalColor.gradients = false;
+
 export { settings };
