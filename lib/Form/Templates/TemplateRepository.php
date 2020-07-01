@@ -8,9 +8,11 @@ use MailPoet\UnexpectedValueException;
 
 class TemplateRepository {
   const INITIAL_FORM_TEMPLATE = 'initial_form';
+  const DEFAULT_FORM_TEMPLATE = 'default_form';
 
   private $templates = [
     'initial_form' => InitialForm::class,
+    'default_form' => DefaultForm::class,
     'demo_form' => DemoForm::class,
   ];
 
