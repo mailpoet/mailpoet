@@ -7,6 +7,7 @@ use Codeception\Stub\Expected;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -49,6 +50,31 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     $nextRunDate = $this->worker->getNextRunDate();
     expect($nextRunDate)->greaterThan(Carbon::now()->addMinutes(55));
     expect($nextRunDate)->lessThan(Carbon::now()->addMinutes(65));
+  }
+
+  public function testItResumesSendingWhenKeyApproved() {
+    MailerLog::pauseSending(MailerLog::getMailerLog());
+    expect(MailerLog::isSendingPaused())->true();
+
+    $servicesChecker = $this->make(ServicesChecker::class, [
+      'isMailPoetAPIKeyPendingApproval' => Stub::consecutive(true, false),
+    ]);
+
+    $worker = new SendingServiceKeyCheck(
+      $this->diContainer->get(SettingsController::class),
+      $servicesChecker
+    );
+
+    $bridge = $this->make(new Bridge, [
+      'checkMSSKey' => ['code' => Bridge::KEY_VALID],
+      'storeMSSKeyAndState' => null,
+      'updateSubscriberCount' => Expected::once(),
+    ]);
+    $worker->bridge = $bridge;
+
+    $this->setMailPoetSendingMethod();
+    $worker->checkKey();
+    expect(MailerLog::isSendingPaused())->false();
   }
 
   public function testItChecksMSSKey() {
