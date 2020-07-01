@@ -23,7 +23,7 @@ class TemplateRepository {
     $this->settings = $settings;
   }
 
-  public function getFormEntityForTemplate($templateId): FormEntity {
+  public function getFormEntityForTemplate(string $templateId): FormEntity {
     if (!isset($this->templates[$templateId])) {
       throw UnexpectedValueException::create()
         ->withErrors(["Template with id $templateId doesn't exist."]);
@@ -37,6 +37,18 @@ class TemplateRepository {
     $formEntity->setSettings($settings);
     $formEntity->setStyles($template->getStyles());
     return $formEntity;
+  }
+
+  /**
+   * @param string[] $templateIds
+   * @return FormEntity[] associative array with template ids as keys
+   */
+  public function getFormsForTemplates(array $templateIds): array {
+    $result = [];
+    foreach ($templateIds as $templateId) {
+      $result[$templateId] = $this->getFormEntityForTemplate($templateId);
+    }
+    return $result;
   }
 
   private function getDefaultSuccessMessage() {
