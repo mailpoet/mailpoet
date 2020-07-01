@@ -80,7 +80,7 @@ class BlockStylesRenderer {
     if ($alignment === 'center') {
       return 'margin: 0 auto;';
     }
-    return 'margin: 0 auto;';
+    return 'margin: 0 auto 0 0;';
   }
 
   public function renderPlaceholderStyles(array $block, string $selector): string {
