@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { debounce } from 'lodash';
 import { useSelect } from '@wordpress/data';
-import { mapColorSlugToValue } from '../../store/blocks_to_form_body.jsx';
+import { mapColorSlugToValue } from 'form_editor/store/mapping/from_blocks/styles_mapper';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 

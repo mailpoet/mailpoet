@@ -1,5 +1,5 @@
 import { select } from '@wordpress/data';
-import { blocksToFormBodyFactory } from './blocks_to_form_body';
+import blocksToFormBodyFactory from './blocks_to_form_body';
 import mapFormDataBeforeSaving from './map_form_data_before_saving';
 
 export function toggleSidebar(toggleTo) {

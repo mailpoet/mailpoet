@@ -51,3 +51,29 @@ export type InputBlockStyles = {
   padding?: number
   fontFamily?: string
 }
+
+export type InputBlockStylesServerData = {
+  full_width: boolean|string
+  bold?: boolean|string
+  background_color?: string
+  border_size?: string|number
+  font_size?: string|number
+  font_color?: string
+  border_radius?: string|number
+  border_color?: string
+  padding?: string|number
+  font_family?: string
+}
+
+export type ColorDefinition = {
+  name: string,
+  slug: string,
+  color: string,
+}
+
+
+export type FontSizeDefinition = {
+  name: string,
+  slug: string,
+  size: number,
+}
