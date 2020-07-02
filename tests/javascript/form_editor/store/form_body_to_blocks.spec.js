@@ -21,20 +21,10 @@ import {
   image,
 } from './form_to_block_test_data.js';
 
-const colorDefinitions = [{
-  name: 'Black',
-  slug: 'black',
-  color: '#000000',
-}, {
-  name: 'White',
-  slug: 'white',
-  color: '#ffffff',
-}];
-
-const fontSizeDefinitions = [
-  { name: 'Small', size: 13, slug: 'small' },
-  { name: 'Normal', size: 16, slug: 'normal' },
-];
+import {
+  fontSizeDefinitions,
+  colorDefinitions,
+} from './editor_settings';
 
 const formBodyToBlocks = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, []);
 
