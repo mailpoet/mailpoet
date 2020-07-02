@@ -4,6 +4,7 @@ import {
   InputBlockStylesServerData,
   FontSizeDefinition,
   ColorDefinition,
+  GradientDefinition,
 } from 'form_editor/store/form_data_types';
 
 export const mapInputBlockStyles = (styles: InputBlockStyles) => {
@@ -48,6 +49,15 @@ export const mapColorSlugToValue = (
 ): string => {
   const result = colorDefinitions.find((color) => color.slug === colorSlug);
   return result ? result.color : colorValue;
+};
+
+export const mapGradientSlugToValue = (
+  colorDefinitions: GradientDefinition[],
+  slug: string,
+  value: string = null
+): string => {
+  const result = colorDefinitions.find((color) => color.slug === slug);
+  return result ? result.gradient : value;
 };
 
 export const mapFontSizeSlugToValue = (

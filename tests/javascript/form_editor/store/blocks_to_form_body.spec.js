@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { partial } from 'lodash';
 import blocksToFormBodyFactory from '../../../../assets/js/src/form_editor/store/blocks_to_form_body.jsx';
 import {
   emailBlock,
@@ -22,6 +23,7 @@ import {
 import {
   fontSizeDefinitions,
   colorDefinitions,
+  gradientDefinitions,
 } from './editor_settings';
 
 const checkBodyInputBasics = (input) => {
@@ -30,7 +32,13 @@ const checkBodyInputBasics = (input) => {
   expect(input.type).to.be.not.empty;
 };
 
-const formBlocksToBody = blocksToFormBodyFactory(colorDefinitions, fontSizeDefinitions, []);
+const getMapper = partial(
+  blocksToFormBodyFactory,
+  fontSizeDefinitions,
+  colorDefinitions,
+  gradientDefinitions,
+);
+const formBlocksToBody = getMapper([]);
 
 describe('Blocks to Form Body', () => {
   it('Should throw an error for wrong input', () => {
@@ -265,7 +273,7 @@ describe('Blocks to Form Body', () => {
       type: 'text',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = blocksToFormBodyFactory(colorDefinitions, fontSizeDefinitions, [customField]);
+    const map = getMapper([customField]);
     const [input] = map([customTextBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('1');
@@ -293,7 +301,7 @@ describe('Blocks to Form Body', () => {
       updated_at: '2019-12-10T15:05:06+00:00',
     };
 
-    const map = blocksToFormBodyFactory(colorDefinitions, fontSizeDefinitions, [customField]);
+    const map = getMapper([customField]);
     const [input] = map([customSelectBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('6');
@@ -320,7 +328,7 @@ describe('Blocks to Form Body', () => {
       type: 'radio',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = blocksToFormBodyFactory(colorDefinitions, blocksToFormBodyFactory, [customField]);
+    const map = getMapper([customField]);
     const [input] = map([customRadioBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('2');
@@ -507,7 +515,7 @@ describe('Blocks to Form Body', () => {
       updated_at: '2019-12-13T15:22:07+00:00',
     };
 
-    const map = blocksToFormBodyFactory(colorDefinitions, blocksToFormBodyFactory, [customField]);
+    const map = getMapper([customField]);
     const [input] = map([customCheckBox]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('3');
@@ -536,7 +544,7 @@ describe('Blocks to Form Body', () => {
       updated_at: '2019-12-13T15:22:07+00:00',
     };
 
-    const map = blocksToFormBodyFactory(colorDefinitions, blocksToFormBodyFactory, [customField]);
+    const map = getMapper([customField]);
     const [input] = map([customDateBlock]);
     checkBodyInputBasics(input);
     expect(input.id).to.be.equal('6');
@@ -609,6 +617,25 @@ describe('Blocks to Form Body', () => {
     expect(mapped2.params.background_color).to.be.equal('#bbbbbb');
   });
 
+  it('Should map gradient for columns', () => {
+    const columns = { ...nestedColumns };
+    columns.attributes = {
+      gradient: 'black-white',
+    };
+    const [mapped] = formBlocksToBody([columns]);
+    expect(mapped.params.gradient).to.be.equal('linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
+
+    columns.attributes = {
+      style: {
+        color: {
+          gradient: 'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+        },
+      },
+    };
+    const [mapped2] = formBlocksToBody([columns]);
+    expect(mapped2.params.gradient).to.be.equal('linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
+  });
+
   it('Should map class names', () => {
     const columns = { ...nestedColumns };
     columns.attributes = {
@@ -653,7 +680,7 @@ describe('Blocks to Form Body', () => {
     };
     const customText = { ...customTextBlock };
     customText.attributes.className = 'my-class-4';
-    const map = blocksToFormBodyFactory(colorDefinitions, [], [customField]);
+    const map = getMapper([customField]);
     const [mappedCustomText] = map([customText]);
     expect(mappedCustomText.params.class_name).to.be.equal('my-class-4');
   });
