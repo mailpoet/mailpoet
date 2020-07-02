@@ -226,7 +226,7 @@ export const formBodyToBlocksFactory = (
         const slug = mapFontSizeSlug(fontSizeDefinitions, item.params.font_size);
         mapped.attributes.fontSize = slug;
         mapped.attributes.style.typography.fontSize = !slug
-          ? parseInt(item.params.font_size, 10) : undefined;
+          ? asNum(item.params.font_size) : undefined;
       }
       if (item.params && has(item.params, 'line_height')) {
         mapped.attributes.style.typography.lineHeight = item.params.line_height;
