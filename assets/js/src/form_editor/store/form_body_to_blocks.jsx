@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { has } from 'lodash';
 import asNum from './server_value_as_num';
-import { mapInputBlockStyles } from './mapping/to_blocks/styles_mapper';
+import { mapInputBlockStyles, mapColorSlug, mapFontSizeSlug } from './mapping/to_blocks/styles_mapper';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 import { defaultAttributes as dividerDefaultAttributes } from '../blocks/divider/divider_types';
 
@@ -63,31 +63,6 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
     mapped.attributes.styles = mapInputBlockStyles(item.styles);
   }
   return mapped;
-};
-
-/**
- * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
- * @param {string} colorValue
- */
-const mapColorSlug = (colorDefinitions, colorValue) => {
-  const result = colorDefinitions.find((color) => color.color === colorValue);
-  return result ? result.slug : undefined;
-};
-
-/**
- * @param {Array.<{name: string, slug: string, size: number}>} fontSizeDefinitions
- * @param {string} fontSizeValue
- */
-const mapFontSizeSlug = (fontSizeDefinitions, fontSizeValue) => {
-  let value = 0;
-  if (fontSizeValue) {
-    value = asNum(fontSizeValue);
-    if (value === undefined) {
-      value = 2;
-    }
-  }
-  const result = fontSizeDefinitions.find((fontSize) => fontSize.size === value);
-  return result ? result.slug : undefined;
 };
 
 /**
