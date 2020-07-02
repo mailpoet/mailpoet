@@ -48,7 +48,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     expect($class->textContent)->contains('my-class');
   }
 
-  public function testItShouldCustomBackground() {
+  public function testItShouldRenderCustomBackground() {
     $block = $this->block;
     $block['params']['background_color'] = '#ffffff';
     $html = $this->columns->render($block, 'content');
@@ -59,12 +59,23 @@ class ColumnsTest extends \MailPoetUnitTest {
     expect($class->textContent)->contains('mailpoet_column_with_background');
   }
 
-  public function testItShouldCustomTextColor() {
+  public function testItShouldRenderCustomTextColor() {
     $block = $this->block;
     $block['params']['text_color'] = '#ffffee';
     $html = $this->columns->render($block, 'content');
     $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
     expect($style->textContent)->contains('color:#ffffee;');
+  }
+
+  public function testItShouldGradientBackground() {
+    $block = $this->block;
+    $block['params']['gradient'] = 'linear-gradient(red, yellow)';
+    $html = $this->columns->render($block, 'content');
+    $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $style = $this->htmlParser->getAttribute($columns, 'style');
+    expect($style->textContent)->contains('background:linear-gradient(red, yellow);');
+    $class = $this->htmlParser->getAttribute($columns, 'class');
+    expect($class->textContent)->contains('mailpoet_column_with_background');
   }
 }

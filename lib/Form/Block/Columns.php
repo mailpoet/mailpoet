@@ -12,8 +12,11 @@ class Columns {
     if (isset($params['text_color'])) {
       $styles[] = "color:{$params['text_color']};";
     }
-    if (isset($params['background_color'])) {
+    if (isset($params['background_color']) && !isset($params['gradient'])) {
       $styles[] = "background-color:{$params['background_color']};";
+    }
+    if (isset($params['gradient'])) {
+      $styles[] = "background:{$params['gradient']};";
     }
     if (count($styles)) {
       return ' style="' . implode('', $styles) . '"';
@@ -26,7 +29,7 @@ class Columns {
     if (!empty($params['vertical_alignment'])) {
       $classes[] = "mailpoet_vertically_align_{$params['vertical_alignment']}";
     }
-    if (!empty($params['background_color'])) {
+    if (!empty($params['background_color']) || !empty($params['gradient'])) {
       $classes[] = "mailpoet_column_with_background";
     }
     if (!empty($params['text_color'])) {
