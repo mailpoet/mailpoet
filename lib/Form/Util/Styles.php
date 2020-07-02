@@ -37,8 +37,12 @@ class Styles {
     // Wrapper styles
     $styles = [];
 
-    if (isset($formSettings['backgroundColor'])) {
+    if (isset($formSettings['backgroundColor']) && empty($formSettings['gradient'])) {
       $styles[] = 'background-color: ' . trim($formSettings['backgroundColor']);
+    }
+
+    if (!empty($formSettings['gradient'])) {
+      $styles[] = 'background: ' . trim($formSettings['gradient']);
     }
 
     if (isset($formSettings['border_size']) && isset($formSettings['border_color'])) {
