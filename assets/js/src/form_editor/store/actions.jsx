@@ -154,8 +154,9 @@ export function* showPreview(formType = null) {
   const formData = select('mailpoet-form-editor').getFormData();
   const formBlocks = select('mailpoet-form-editor').getFormBlocks();
   const blocksToFormBody = blocksToFormBodyFactory(
-    editorSettings.colors,
     editorSettings.fontSizes,
+    editorSettings.colors,
+    editorSettings.gradients,
     customFields
   );
   const { success, error } = yield {

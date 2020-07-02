@@ -3,6 +3,7 @@ import {
   mapInputBlockStyles,
   mapColorSlugToValue,
   mapFontSizeSlugToValue,
+  mapGradientSlugToValue,
 } from './mapping/from_blocks/styles_mapper';
 
 const mapCustomField = (block, customFields, mappedCommonProperties) => {
@@ -67,11 +68,17 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
 
 /**
  * Factory for block to form data mapper
- * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
  * @param {Array.<{name: string, slug: string, size: number}>} fontSizeDefinitions
+ * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
+ * @param {Array.<{name: string, slug: string, gradient: string}>} gradientDefinitions
  * @param customFields - list of all custom Fields
  */
-const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, customFields) => {
+const blocksToFormBodyFactory = (
+  fontSizeDefinitions,
+  colorDefinitions,
+  gradientDefinitions,
+  customFields
+) => {
   if (!Array.isArray(customFields)) {
     throw new Error('Mapper expects customFields to be an array.');
   }
@@ -207,6 +214,11 @@ const blocksToFormBodyFactory = (colorDefinitions, fontSizeDefinitions, customFi
                 colorDefinitions,
                 block.attributes.backgroundColor,
                 block.attributes.style?.color?.background
+              ),
+              gradient: mapGradientSlugToValue(
+                gradientDefinitions,
+                block.attributes.gradient,
+                block.attributes.style?.color?.gradient
               ),
             },
           };

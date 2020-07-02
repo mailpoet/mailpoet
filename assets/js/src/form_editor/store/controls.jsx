@@ -45,8 +45,9 @@ export default {
     const { getSettings } = select('core/block-editor');
     const settings = getSettings();
     const blocksToFormBody = blocksToFormBodyFactory(
-      settings.colors,
       settings.fontSizes,
+      settings.colors,
+      settings.gradients,
       customFields
     );
     const requestData = {
