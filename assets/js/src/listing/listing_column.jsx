@@ -34,7 +34,7 @@ class ListingColumn extends React.Component {
           }}
         >
           <span>{ this.props.column.label }</span>
-          <span className="sorting-indicator" />
+          <span className="mailpoet-listing-sorting-arrow" />
         </a>
       );
     } else {
