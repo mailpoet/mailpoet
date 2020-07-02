@@ -47,6 +47,13 @@ class StylesTest extends \MailPoetUnitTest {
     expect($styles)->contains('background-color: red');
   }
 
+  public function testItShouldRenderBackgroundGradient() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = ['gradient' => 'linear-gradient(#fff, #000)'];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    expect($styles)->contains('background: linear-gradient(#fff, #000)');
+  }
+
   public function testItShouldRenderFontColour() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['fontColor' => 'red'];
