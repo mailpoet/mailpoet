@@ -33,6 +33,9 @@ export const mapInputBlockStyles = (styles: InputBlockStylesServerData) => {
   if (has(styles, 'background_color') && styles.background_color) {
     mappedStyles.backgroundColor = styles.background_color;
   }
+  if (has(styles, 'gradient') && styles.gradient) {
+    mappedStyles.gradient = styles.gradient;
+  }
   if (has(styles, 'border_size') && styles.border_size !== undefined) {
     mappedStyles.borderSize = +styles.border_size;
   }

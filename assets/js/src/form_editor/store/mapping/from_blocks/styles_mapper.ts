@@ -18,6 +18,9 @@ export const mapInputBlockStyles = (styles: InputBlockStyles) => {
   if (has(styles, 'backgroundColor') && styles.backgroundColor) {
     mappedStyles.background_color = styles.backgroundColor;
   }
+  if (has(styles, 'gradient') && styles.gradient) {
+    mappedStyles.gradient = styles.gradient;
+  }
   if (has(styles, 'fontSize') && styles.fontSize !== undefined) {
     mappedStyles.font_size = styles.fontSize;
   }
