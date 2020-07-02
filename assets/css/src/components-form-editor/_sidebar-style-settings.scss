@@ -71,3 +71,13 @@
   margin-top: -7px;
   width: 24px;
 }
+
+.mailpoet-color-gradient-picker {
+  .block-editor-color-gradient-control__color-indicator {
+    font-weight: bold;
+  }
+
+  .component-color-indicator {
+    vertical-align: text-bottom;
+  }
+}
