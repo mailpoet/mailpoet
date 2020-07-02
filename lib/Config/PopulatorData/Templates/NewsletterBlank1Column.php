@@ -1,8 +1,8 @@
 <?php
+
 namespace MailPoet\Config\PopulatorData\Templates;
 
 use MailPoet\WP\Functions as WPFunctions;
-
 
 class NewsletterBlank1Column {
 
@@ -59,7 +59,7 @@ class NewsletterBlank1Column {
                 "blocks" => [
                   [
                     "type" => "header",
-                    "text" => WPFunctions::get()->__("<a href=\"[link:newsletter_view_in_browser_url]\">View this in your browser.</a>", 'mailpoet'),
+                    "text" => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
                     "styles" => [
                       "block" => [
                         "backgroundColor" => "transparent",
@@ -197,7 +197,7 @@ class NewsletterBlank1Column {
                   ],
                   [
                     "type" => "footer",
-                    "text" => WPFunctions::get()->__("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", 'mailpoet'),
+                    "text" => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage your subscription</a><br />Add your postal address here!</p>',
                     "styles" => [
                       "block" => [
                         "backgroundColor" => "transparent",
@@ -258,6 +258,4 @@ class NewsletterBlank1Column {
   private function getThumbnail() {
     return $this->external_template_image_url . '/thumbnail.20190411-1500.jpg';
   }
-
 }
-

@@ -284,7 +284,7 @@ class PostNotificationsBlank1Column {
                   ],
                   [
                     "type" => "footer",
-                    "text" => WPFunctions::get()->__("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", 'mailpoet'),
+                    "text" => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage your subscription</a><br />Add your postal address here!</p>',
                     "styles" => [
                       "block" => [
                         "backgroundColor" => "transparent",
