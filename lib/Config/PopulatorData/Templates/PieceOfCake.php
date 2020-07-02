@@ -364,7 +364,7 @@ class PieceOfCake {
                 'blocks' => [
                   0 => [
                     'type' => 'text',
-                    'text' => '<p style="text-align: right; line-height: 1.3;"><strong><a href="[link:subscription_unsubscribe_url]" style="color: #d42b2b; text-decoration: none; font-size: 12px; text-align: center;">Unsubscribe</a></strong></p>
+                    'text' => '<p style="text-align: right; line-height: 1.3;"><strong><a href="[link:subscription_unsubscribe_url]" style="color: #d42b2b; text-decoration: none; font-size: 12px; text-align: center;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a></strong></p>
                       <p style="text-align: right; line-height: 1.3;"><strong><a href="[link:subscription_manage_url]" style="color: #d42b2b; text-decoration: none; font-size: 12px; text-align: center;">Manage&nbsp;Subscription</a></strong></p>',
                   ],
                 ],

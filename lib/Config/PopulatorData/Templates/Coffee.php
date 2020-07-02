@@ -931,7 +931,7 @@ class Coffee {
                               3 =>
                                  [
                                   'type' => 'footer',
-                                  'text' => '<p><strong><span style="color: #000000;"><a href="[link:subscription_unsubscribe_url]" style="color: #000000;">Unsubscribe</a> | <a href="[link:subscription_manage_url]" style="color: #000000;">Manage subscription</a></span></strong><br />Add your postal address here!</p>',
+                                  'text' => '<p><strong><span style="color: #000000;"><a href="[link:subscription_unsubscribe_url]" style="color: #000000;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #000000;">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></span></strong><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
                                   'styles' =>
                                      [
                                       'block' =>

@@ -657,7 +657,7 @@ class Sunglasses {
                               1 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<p style="text-align: center; font-size: 11px;"><strong><span style="color: #808080;"><a href="[link:subscription_unsubscribe_url]" style="color: #808080;">Unsubscribe</a>&nbsp;|&nbsp;<a href="[link:subscription_manage_url]" style="color: #808080;">Manage your subscription</a></span></strong><br /><span style="color: #808080;">Add your postal address here!</span></p>',
+                                  'text' => '<p style="text-align: center; font-size: 11px;"><strong><span style="color: #808080;"><a href="[link:subscription_unsubscribe_url]" style="color: #808080;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a>&nbsp;|&nbsp;<a href="[link:subscription_manage_url]" style="color: #808080;">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></span></strong><br /><span style="color: #808080;">'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</span></p>',
                                  ],
                              ],
                          ],

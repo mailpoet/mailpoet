@@ -1118,7 +1118,7 @@ class FlowersWithCoupon {
                   2 =>
                    [
                     'type' => 'footer',
-                    'text' => '<p><span style="color: #b3748a;"><a href="[link:subscription_unsubscribe_url]" style="color: #b3748a;">Unsubscribe</a> | <a href="[link:subscription_manage_url]" style="color: #b3748a;">Manage subscription</a></span><br />Add your postal address here!</p>',
+                    'text' => '<p><span style="color: #b3748a;"><a href="[link:subscription_unsubscribe_url]" style="color: #b3748a;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #b3748a;">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></span><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
                     'styles' =>
                      [
                       'block' =>
@@ -1351,7 +1351,7 @@ class FlowersWithCoupon {
          ],
         'footer' =>
          [
-          'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
+          'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
           'styles' =>
            [
             'block' =>
@@ -1488,7 +1488,7 @@ class FlowersWithCoupon {
          ],
         'header' =>
          [
-          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
           'styles' =>
            [
             'block' =>
