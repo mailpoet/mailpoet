@@ -461,7 +461,7 @@ class FestivalEvent {
                   ],
                   2 => [
                     'type' => 'footer',
-                    'text' => '<p>Mauris tristique ultricies ullamcorper. <br />Don\'t want to hear from us?&nbsp;<a href="[link:subscription_unsubscribe_url]">Unsubscribe</a></p><p></p><p>Add your postal address here.&nbsp;</p>',
+                    'text' => '<p>Mauris tristique ultricies ullamcorper. <br />Don\'t want to hear from us?&nbsp;<a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a></p><p></p><p>Add your postal address here.&nbsp;</p>',
                     'styles' => [
                       'block' => [
                         'backgroundColor' => 'transparent',

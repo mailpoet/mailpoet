@@ -695,7 +695,7 @@ class YogaStudio {
                 'blocks' => [
                   0 => [
                     'type' => 'footer',
-                    'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a></p><p><a href="[link:subscription_manage_url]">Manage subscription</a></p>',
+                    'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a></p><p><a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></p>',
                     'styles' => [
                       'block' => [
                         'backgroundColor' => 'transparent',

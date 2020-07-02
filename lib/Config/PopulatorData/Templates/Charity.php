@@ -771,7 +771,7 @@ class Charity {
                               1 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<p style="font-size: 11px;"><span style="color: #000000;"><a href="[link:subscription_unsubscribe_url]" style="color: #000000;">Unsubscribe</a>&nbsp;|&nbsp;<a href="[link:subscription_manage_url]" style="color: #000000;">Manage subscription</a></span><br /><span style="color: #000000;">Add your postal address here!</span></p>',
+                                  'text' => '<p style="font-size: 11px;"><span style="color: #000000;"><a href="[link:subscription_unsubscribe_url]" style="color: #000000;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a>&nbsp;|&nbsp;<a href="[link:subscription_manage_url]" style="color: #000000;">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></span><br /><span style="color: #000000;">'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</span></p>',
                                  ],
                              ],
                          ],
@@ -984,7 +984,7 @@ class Charity {
              ],
           'footer' =>
              [
-              'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
+              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
               'styles' =>
                  [
                   'block' =>
@@ -1109,7 +1109,7 @@ class Charity {
              ],
           'header' =>
              [
-              'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
+              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
               'styles' =>
                  [
                   'block' =>

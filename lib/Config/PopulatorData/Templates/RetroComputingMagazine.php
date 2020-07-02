@@ -160,7 +160,7 @@ class RetroComputingMagazine {
                               0 =>
                                  [
                                   'type' => 'header',
-                                  'text' => '<p><span style="color: #ffffff;"><a href="[link:newsletter_view_in_browser_url]" style="color: #ffffff;">View this in your browser.</a></span></p>',
+                                  'text' => '<p><span style="color: #ffffff;"><a href="[link:newsletter_view_in_browser_url]" style="color: #ffffff;">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a></span></p>',
                                   'styles' =>
                                      [
                                       'block' =>
@@ -589,7 +589,7 @@ class RetroComputingMagazine {
                               3 =>
                                  [
                                   'type' => 'footer',
-                                  'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage your subscription</a><br />Add your postal address here!</p>',
+                                  'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
                                   'styles' =>
                                      [
                                       'block' =>

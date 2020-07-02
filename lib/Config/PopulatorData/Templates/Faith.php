@@ -350,7 +350,7 @@ class Faith {
                 'blocks' => [
                   0 => [
                     'type' => 'footer',
-                    'text' => '<a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br /><b>Add your postal address here!</b>',
+                    'text' => '<a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br /><b>'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</b>',
                     'styles' => [
                       'block' => [
                         'backgroundColor' => '#e7eff6',
