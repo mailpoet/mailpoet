@@ -6,6 +6,7 @@ const FormStylingBackground = ({ children }) => {
   const {
     fontColor,
     backgroundColor,
+    gradient,
     fontSize,
     borderRadius,
     borderSize,
@@ -34,7 +35,6 @@ const FormStylingBackground = ({ children }) => {
   }
 
   let style = {
-    backgroundColor,
     color: fontColor,
     fontSize: fontNum,
     fontFamily,
@@ -48,6 +48,14 @@ const FormStylingBackground = ({ children }) => {
     width: 700,
     margin: '0 auto',
   };
+
+  if (backgroundColor && !gradient) {
+    style.backgroundColor = backgroundColor;
+  }
+
+  if (gradient) {
+    style.background = gradient;
+  }
 
   if (backgroundImageUrl !== undefined) {
     let backgroundPosition = 'center';
