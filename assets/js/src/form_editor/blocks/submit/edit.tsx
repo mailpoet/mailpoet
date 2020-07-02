@@ -69,6 +69,11 @@ const SubmitEdit = ({ attributes, setAttributes }) => {
     styles.backgroundColor = attributes.styles.backgroundColor;
   }
 
+  if (attributes.styles.gradient && !attributes.styles.inheritFromTheme) {
+    styles.backgroundColor = undefined;
+    styles.background = attributes.styles.gradient;
+  }
+
   if (attributes.styles.fontFamily && !attributes.styles.inheritFromTheme) {
     styles.fontFamily = attributes.styles.fontFamily;
   }
