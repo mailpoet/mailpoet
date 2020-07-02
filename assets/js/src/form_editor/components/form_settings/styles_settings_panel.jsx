@@ -12,6 +12,7 @@ import { partial } from 'lodash';
 import HorizontalAlignment from 'common/styles';
 
 import ColorSettings from 'form_editor/components/color_settings';
+import ColorGradientSettings from 'form_editor/components/color_gradient_settings';
 import FontSizeSettings from 'form_editor/components/font_size_settings';
 import ImageSettings from 'form_editor/components/image_settings';
 import { CloseButtonsSettings } from 'form_editor/components/close_button_settings';
@@ -44,10 +45,12 @@ const StylesSettingsPanel = ({ onToggle, isOpened }) => {
         onToggle={onToggle}
       >
         <div className="mailpoet-styles-settings">
-          <ColorSettings
+          <ColorGradientSettings
             name={MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
-            value={settings.backgroundColor}
-            onChange={partial(updateStyles, 'backgroundColor')}
+            colorValue={settings.backgroundColor}
+            gradientValue={settings.gradient}
+            onColorChange={partial(updateStyles, 'backgroundColor')}
+            onGradientChange={partial(updateStyles, 'gradient')}
           />
           <ImageSettings
             name={MailPoet.I18n.t('formSettingsStylesBackgroundImage')}
