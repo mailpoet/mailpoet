@@ -71,6 +71,11 @@ export type ColorDefinition = {
   color: string,
 }
 
+export type GradientDefinition = {
+  name: string,
+  slug: string,
+  gradient: string,
+}
 
 export type FontSizeDefinition = {
   name: string,
