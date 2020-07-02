@@ -1,4 +1,7 @@
+import { select } from '@wordpress/data';
+
 import MailPoet from 'mailpoet';
+import { STORE_NAME } from 'settings/store';
 
 import {
   Action, KeyActivationState, MssStatus, PremiumStatus, PremiumInstallationStatus,
@@ -26,15 +29,16 @@ export function* verifyMssKey(key: string) {
     mssMessage: res.data.message || null,
   };
 
+  const data = select(STORE_NAME).getSettings();
+  data.mta_group = 'mailpoet';
+  data.mta = { method: 'MailPoet', mailpoet_api_key: key };
+  data.signup_confirmation.enabled = '1';
+
   const call = yield {
     type: 'CALL_API',
     endpoint: 'settings',
     action: 'set',
-    data: {
-      mta_group: 'mailpoet',
-      mta: { method: 'MailPoet', mailpoet_api_key: key },
-      signup_confirmation: { enabled: '1' },
-    },
+    data,
   };
   if (!call.success) {
     fields.mssStatus = MssStatus.VALID_MSS_NOT_ACTIVE;
