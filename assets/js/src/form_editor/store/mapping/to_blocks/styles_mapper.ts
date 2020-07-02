@@ -1,5 +1,11 @@
 import { has } from 'lodash';
-import { InputBlockStyles, InputBlockStylesServerData } from 'form_editor/store/form_data_types';
+import {
+  InputBlockStyles,
+  InputBlockStylesServerData,
+  FontSizeDefinition,
+  ColorDefinition,
+} from 'form_editor/store/form_data_types';
+import asNum from '../../server_value_as_num';
 
 export const defaultBlockStyles: InputBlockStyles = {
   fullWidth: true,
@@ -48,4 +54,21 @@ export const mapInputBlockStyles = (styles: InputBlockStylesServerData) => {
     mappedStyles.fontFamily = styles.font_family;
   }
   return mappedStyles;
+};
+
+export const mapColorSlug = (colorDefinitions: ColorDefinition[], colorValue) => {
+  const result = colorDefinitions.find((color) => color.color === colorValue);
+  return result ? result.slug : undefined;
+};
+
+export const mapFontSizeSlug = (fontSizeDefinitions: FontSizeDefinition[], fontSizeValue) => {
+  let value = 0;
+  if (fontSizeValue) {
+    value = asNum(fontSizeValue);
+    if (value === undefined) {
+      value = 2;
+    }
+  }
+  const result = fontSizeDefinitions.find((fontSize) => fontSize.size === value);
+  return result ? result.slug : undefined;
 };
