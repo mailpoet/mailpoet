@@ -83,6 +83,18 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     expect($result)->contains('padding:40px;');
   }
 
+  public function testItShouldRenderButtonGradient() {
+    $styles = [
+      'gradient' => 'linear-gradient(#eee, #ddd)',
+    ];
+    $settings = [
+      'input_padding' => '40',
+      'fontSize' => 13,
+    ];
+    $result = $this->renderer->renderForButton($styles, $settings);
+    expect($result)->contains('background: linear-gradient(#eee, #ddd);');
+  }
+
   public function testItShouldRenderSegmentInputStyles() {
     expect($this->renderer->renderForSelect([], ['input_padding' => 10]))->equals('padding:10px;');
     expect($this->renderer->renderForSelect([], ['alignment' => 'right']))->equals('margin: 0 0 0 auto;');

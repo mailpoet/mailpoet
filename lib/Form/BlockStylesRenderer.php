@@ -8,7 +8,7 @@ class BlockStylesRenderer {
     if (isset($styles['full_width']) && intval($styles['full_width'])) {
       $rules[] = 'width:100%;';
     }
-    if (isset($styles['background_color'])) {
+    if (isset($styles['background_color']) && empty($styles['gradient'])) {
       $rules[] = "background-color:{$styles['background_color']};";
     }
     if (isset($styles['border_size']) || isset($styles['border_radius']) || isset($styles['border_color'])) {
@@ -55,6 +55,9 @@ class BlockStylesRenderer {
     $rules = [];
     if (!isset($styles['border_color'])) {
       $rules[] = "border-color:transparent;";
+    }
+    if (!empty($styles['gradient'])) {
+      $rules[] = "background: {$styles['gradient']};";
     }
     if (isset($styles['bold']) && $styles['bold'] === '1') {
       $rules[] = "font-weight:bold;";
