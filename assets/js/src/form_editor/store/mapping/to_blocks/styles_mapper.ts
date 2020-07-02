@@ -4,6 +4,7 @@ import {
   InputBlockStylesServerData,
   FontSizeDefinition,
   ColorDefinition,
+  GradientDefinition,
 } from 'form_editor/store/form_data_types';
 import asNum from '../../server_value_as_num';
 
@@ -58,6 +59,11 @@ export const mapInputBlockStyles = (styles: InputBlockStylesServerData) => {
 
 export const mapColorSlug = (colorDefinitions: ColorDefinition[], colorValue) => {
   const result = colorDefinitions.find((color) => color.color === colorValue);
+  return result ? result.slug : undefined;
+};
+
+export const mapGradientSlug = (definitions: GradientDefinition[], value) => {
+  const result = definitions.find((color) => color.gradient === value);
   return result ? result.slug : undefined;
 };
 

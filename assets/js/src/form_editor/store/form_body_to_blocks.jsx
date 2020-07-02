@@ -1,7 +1,12 @@
 /* eslint-disable camelcase */
 import { has } from 'lodash';
 import asNum from './server_value_as_num';
-import { mapInputBlockStyles, mapColorSlug, mapFontSizeSlug } from './mapping/to_blocks/styles_mapper';
+import {
+  mapInputBlockStyles,
+  mapColorSlug,
+  mapFontSizeSlug,
+  mapGradientSlug,
+} from './mapping/to_blocks/styles_mapper';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 import { defaultAttributes as dividerDefaultAttributes } from '../blocks/divider/divider_types';
 
@@ -67,15 +72,23 @@ const mapCustomField = (item, customFields, mappedCommonProperties) => {
 
 /**
  * @param {Object} data - column or columns block data
- * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
  * @param {Array.<{name: string, slug: string, size: number}>} fontSizeDefinitions
+ * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
+ * @param {Array.<{name: string, slug: string, gradient: string}>} gradientDefinitions
  * @param customFields - list of all custom Fields
  */
-const mapColumnBlocks = (data, fontSizeDefinitions, colorDefinitions, customFields = []) => {
+const mapColumnBlocks = (
+  data,
+  fontSizeDefinitions,
+  colorDefinitions,
+  gradientDefinitions,
+  customFields = []
+) => {
   // eslint-disable-next-line no-use-before-define
   const mapFormBodyToBlocks = formBodyToBlocksFactory(
-    colorDefinitions,
     fontSizeDefinitions,
+    colorDefinitions,
+    gradientDefinitions,
     customFields
   );
   const mapped = {
@@ -91,6 +104,7 @@ const mapColumnBlocks = (data, fontSizeDefinitions, colorDefinitions, customFiel
   };
   const textColorSlug = mapColorSlug(colorDefinitions, data.params.text_color);
   const backgroundColorSlug = mapColorSlug(colorDefinitions, data.params.background_color);
+  const gradientSlug = mapGradientSlug(gradientDefinitions, data.params.gradient);
   if (has(data.params, 'width')) {
     mapped.attributes.width = parseFloat(data.params.width);
   }
@@ -106,6 +120,11 @@ const mapColumnBlocks = (data, fontSizeDefinitions, colorDefinitions, customFiel
     mapped.attributes.style.color.background = !backgroundColorSlug
       ? data.params.background_color : undefined;
   }
+  if (has(data.params, 'gradient')) {
+    mapped.attributes.gradient = gradientSlug;
+    mapped.attributes.style.color.gradient = !gradientSlug
+      ? data.params.gradient : undefined;
+  }
   if (has(data.params, 'class_name') && data.params.class_name) {
     mapped.attributes.className = data.params.class_name;
   }
@@ -114,13 +133,15 @@ const mapColumnBlocks = (data, fontSizeDefinitions, colorDefinitions, customFiel
 
 /**
  * Factory for form data to blocks mapper
- * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
  * @param {Array.<{name: string, slug: string, size: number}>} fontSizeDefinitions
+ * @param {Array.<{name: string, slug: string, color: string}>} colorDefinitions
+ * @param {Array.<{name: string, slug: string, gradient: string}>} gradientsDefinitions
  * @param customFields - list of all custom Fields
  */
 export const formBodyToBlocksFactory = (
-  colorDefinitions,
   fontSizeDefinitions,
+  colorDefinitions,
+  gradientsDefinitions,
   customFields = []
 ) => {
   if (!Array.isArray(customFields)) {
@@ -138,7 +159,13 @@ export const formBodyToBlocksFactory = (
 
     return data.map((item) => {
       if (['column', 'columns'].includes(item.type)) {
-        return mapColumnBlocks(item, fontSizeDefinitions, colorDefinitions, customFields);
+        return mapColumnBlocks(
+          item,
+          fontSizeDefinitions,
+          colorDefinitions,
+          gradientsDefinitions,
+          customFields
+        );
       }
 
       const mapped = {

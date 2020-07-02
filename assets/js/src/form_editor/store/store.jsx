@@ -26,8 +26,9 @@ export default () => {
   );
 
   const formBodyToBlocks = formBodyToBlocksFactory(
-    SETTINGS_DEFAULTS.colors,
     SETTINGS_DEFAULTS.fontSizes,
+    SETTINGS_DEFAULTS.colors,
+    SETTINGS_DEFAULTS.gradients,
     customFields
   );
 

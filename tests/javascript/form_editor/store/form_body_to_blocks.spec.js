@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { partial } from 'lodash';
 import { formBodyToBlocksFactory } from '../../../../assets/js/src/form_editor/store/form_body_to_blocks.jsx';
 
 import {
@@ -24,9 +25,16 @@ import {
 import {
   fontSizeDefinitions,
   colorDefinitions,
+  gradientDefinitions,
 } from './editor_settings';
 
-const formBodyToBlocks = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, []);
+const getMapper = partial(
+  formBodyToBlocksFactory,
+  fontSizeDefinitions,
+  colorDefinitions,
+  gradientDefinitions
+);
+const formBodyToBlocks = getMapper([]);
 
 const checkBlockBasics = (block) => {
   expect(block.clientId).to.be.a('string');
@@ -47,10 +55,10 @@ describe('Form Body To Blocks', () => {
 
   it('Should throw an error for wrong custom fields input', () => {
     const error = 'Mapper expects customFields to be an array.';
-    expect(() => formBodyToBlocksFactory([], [], null)).to.throw(error);
-    expect(() => formBodyToBlocksFactory([], [], 'hello')).to.throw(error);
-    expect(() => formBodyToBlocksFactory([], [], () => {})).to.throw(error);
-    expect(() => formBodyToBlocksFactory([], [], 1)).to.throw(error);
+    expect(() => getMapper(null)).to.throw(error);
+    expect(() => getMapper('hello')).to.throw(error);
+    expect(() => getMapper(() => {})).to.throw(error);
+    expect(() => getMapper(1)).to.throw(error);
   });
 
   it('Should map email input to block', () => {
@@ -88,11 +96,7 @@ describe('Form Body To Blocks', () => {
       type: 'textarea',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = formBodyToBlocksFactory(
-      colorDefinitions,
-      [],
-      [customFieldText, customFieldTextarea]
-    );
+    const map = getMapper([customFieldText, customFieldTextarea]);
     const [email, firstName, lastName, customText, customTextArea, submit] = map([
       { ...emailInput, position: '1' },
       { ...firstNameInput, position: '2' },
@@ -140,7 +144,7 @@ describe('Form Body To Blocks', () => {
       border_color: '#cccccc',
     };
 
-    const map = formBodyToBlocksFactory(colorDefinitions, [], [customFieldText]);
+    const map = getMapper([customFieldText]);
     const [email, customText] = map([
       { ...emailInput, styles: emailStyles },
       { ...customTextInput, styles: customTextStyles },
@@ -176,9 +180,7 @@ describe('Form Body To Blocks', () => {
       font_color: '#aaaaaa',
     };
 
-    const map = formBodyToBlocksFactory(colorDefinitions);
-
-    const [defaultSubmit, styledSubmit] = map([
+    const [defaultSubmit, styledSubmit] = formBodyToBlocks([
       { ...submitInput, styles: defaultSubmitStyles },
       { ...submitInput, styles: styledSubmitStyles },
     ]);
@@ -335,7 +337,7 @@ describe('Form Body To Blocks', () => {
       type: 'text',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, [customField]);
+    const map = getMapper([customField]);
     const [block] = map([customTextInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('1_');
@@ -363,7 +365,7 @@ describe('Form Body To Blocks', () => {
       type: 'radio',
       updated_at: '2019-12-10T15:05:06+00:00',
     };
-    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, [customField]);
+    const map = getMapper([customField]);
     const [block] = map([customRadioInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('3_');
@@ -393,7 +395,7 @@ describe('Form Body To Blocks', () => {
       },
       position: null,
     };
-    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, [customField]);
+    const map = getMapper([customField]);
     const [block] = map([customCheckboxInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('4_');
@@ -422,7 +424,7 @@ describe('Form Body To Blocks', () => {
       },
       position: null,
     };
-    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, [customField]);
+    const map = getMapper([customField]);
     const [block] = map([customSelectInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('5_');
@@ -449,7 +451,7 @@ describe('Form Body To Blocks', () => {
       updated_at: '2019-12-13T15:22:07+00:00',
     };
 
-    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, [customField]);
+    const map = getMapper([customField]);
     const [block] = map([customDateInput]);
     checkBlockBasics(block);
     expect(block.clientId).to.be.include('6_');
@@ -529,6 +531,23 @@ describe('Form Body To Blocks', () => {
     expect(block2.attributes.style.color.background).to.be.equal('#bbbbbb');
   });
 
+  it('Should map columns gradient', () => {
+    const nested = { ...nestedColumns };
+    nested.params = {
+      gradient: 'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+    };
+    const [block] = formBodyToBlocks([nested]);
+    expect(block.attributes.gradient).to.be.equal('black-white');
+    expect(block.attributes.style.color.gradient).to.be.undefined;
+
+    nested.params = {
+      gradient: 'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+    };
+    const [block2] = formBodyToBlocks([nested]);
+    expect(block2.attributes.gradient).to.be.undefined;
+    expect(block2.attributes.style.color.gradient).to.be.equal('linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
+  });
+
   it('Should map class name', () => {
     const nested = { ...nestedColumns };
     nested.params = {
@@ -556,7 +575,7 @@ describe('Form Body To Blocks', () => {
     };
     const customText = { ...customTextInput, position: '1' };
     customText.params.class_name = 'custom-class-3 custom-class-4';
-    const map = formBodyToBlocksFactory(colorDefinitions, [], [customField]);
+    const map = getMapper([customField]);
     const [mappedCustomText] = map([customText]);
     expect(mappedCustomText.attributes.className).to.be.equal('custom-class-3 custom-class-4');
   });
@@ -676,7 +695,7 @@ describe('Form Body To Blocks', () => {
     };
     const customFields = [customField];
     // Map columns with custom field
-    const map = formBodyToBlocksFactory(colorDefinitions, fontSizeDefinitions, customFields);
+    const map = getMapper(customFields);
     const [columns] = map([columnsWithCustomField]);
     const firstColumn = columns.innerBlocks[0];
     expect(firstColumn.innerBlocks.length).to.be.equal(1);
