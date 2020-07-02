@@ -43,6 +43,7 @@ export type InputBlockStyles = {
   inheritFromTheme: boolean
   bold?: boolean
   backgroundColor?: string
+  gradient?: string
   borderSize?: number
   fontSize?: number
   fontColor?: string
@@ -56,6 +57,7 @@ export type InputBlockStylesServerData = {
   full_width: boolean|string
   bold?: boolean|string
   background_color?: string
+  gradient?: string
   border_size?: string|number
   font_size?: string|number
   font_color?: string

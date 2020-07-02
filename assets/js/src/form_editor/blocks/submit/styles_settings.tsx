@@ -8,27 +8,15 @@ import {
 } from '@wordpress/components';
 import { partial } from 'lodash';
 
+import ColorGradientSettings from 'form_editor/components/color_gradient_settings';
 import ColorSettings from 'form_editor/components/color_settings';
 import FontSizeSetting from 'form_editor/components/font_size_settings';
+import { InputBlockStyles } from 'form_editor/store/form_data_types';
 import FontFamilySettings from '../../components/font_family_settings';
 
-type Styles = {
-  fullWidth: boolean,
-  inheritFromTheme: boolean,
-  bold?: boolean,
-  backgroundColor?: string,
-  fontColor?: string,
-  fontSize?: number,
-  fontFamily?: string,
-  borderSize?: number,
-  borderRadius?: number,
-  borderColor?: string,
-  padding?: number,
-}
-
 type Props = {
-  styles: Styles,
-  onChange: (styles: Styles) => any,
+  styles: InputBlockStyles,
+  onChange: (styles: InputBlockStyles) => any,
   formInputPadding: number,
   formFontFamily?: string,
 }
@@ -85,10 +73,12 @@ const StylesSettings = ({
           />
           {!localStyles.inheritFromTheme ? (
             <>
-              <ColorSettings
+              <ColorGradientSettings
                 name={MailPoet.I18n.t('formSettingsStylesBackgroundColor')}
-                value={styles.backgroundColor}
-                onChange={partial(updateStyles, 'backgroundColor')}
+                colorValue={styles.backgroundColor}
+                gradientValue={styles.gradient}
+                onColorChange={partial(updateStyles, 'backgroundColor')}
+                onGradientChange={partial(updateStyles, 'gradient')}
               />
               <ColorSettings
                 name={MailPoet.I18n.t('formSettingsStylesFontColor')}
