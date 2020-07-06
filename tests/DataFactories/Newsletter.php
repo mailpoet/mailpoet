@@ -66,6 +66,16 @@ class Newsletter {
     return $this;
   }
 
+  public function withDraftStatus() {
+    $this->data['status'] = \MailPoet\Models\Newsletter::STATUS_DRAFT;
+    return $this;
+  }
+
+  public function withScheduledStatus() {
+    $this->data['status'] = \MailPoet\Models\Newsletter::STATUS_SCHEDULED;
+    return $this;
+  }
+
   public function withSenderAddress($address) {
     $this->data['sender_address'] = $address;
     return $this;
@@ -249,6 +259,16 @@ class Newsletter {
     return $this;
   }
 
+  public function withScheduledQueue(array $options = []) {
+    $this->queueOptions = [
+      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'count_processed' => 0,
+      'count_total' => 1,
+    ];
+    $this->queueOptions = array_merge($this->queueOptions, $options);
+    return $this;
+  }
+
   public function withSubscriber($subscriber, array $data = []) {
     $this->taskSubscribers[] = array_merge([
       'subscriber_id' => $subscriber->id,
@@ -289,6 +309,7 @@ class Newsletter {
       $sendingTask->status = $this->queueOptions['status'];
       $sendingTask->countProcessed = $this->queueOptions['count_processed'];
       $sendingTask->countTotal = $this->queueOptions['count_total'];
+      $sendingTask->newsletterRenderedSubject = $this->queueOptions['subject'] ?? $this->data['subject'];
       $sendingTask->save();
 
       foreach ($this->taskSubscribers as $data) {
