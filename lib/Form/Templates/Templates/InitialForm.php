@@ -1,6 +1,8 @@
 <?php
 
-namespace MailPoet\Form\Templates;
+namespace MailPoet\Form\Templates\Templates;
+
+use MailPoet\Form\Templates\Template;
 
 class InitialForm implements Template {
   public function getName(): string {
