@@ -47,7 +47,7 @@ const CloseButtonsSettings = ({
     (sel) => sel('mailpoet-form-editor').getCloseIconsUrl(),
     []
   );
-  const current = value ?? 'round_white';
+
   return (
     <div>
       <h3 className="mailpoet-styles-settings-heading">
@@ -56,37 +56,37 @@ const CloseButtonsSettings = ({
       <div className="close-button-selection-item-list">
         <CloseButton
           label="round_white"
-          active={current === 'round_white'}
+          active={value === 'round_white'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/round_white.svg')}
           onClick={() => onChange('round_white')}
         />
         <CloseButton
           label="round_black"
-          active={current === 'round_black'}
+          active={value === 'round_black'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/round_black.svg')}
           onClick={() => onChange('round_black')}
         />
         <CloseButton
           label="square_white"
-          active={current === 'square_white'}
+          active={value === 'square_white'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/square_white.svg')}
           onClick={() => onChange('square_white')}
         />
         <CloseButton
           label="square_black"
-          active={current === 'square_black'}
+          active={value === 'square_black'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/square_black.svg')}
           onClick={() => onChange('square_black')}
         />
         <CloseButton
           label="classic"
-          active={current === 'classic'}
+          active={value === 'classic'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/classic.svg')}
           onClick={() => onChange('classic')}
         />
         <CloseButton
           label="classic_white"
-          active={current === 'classic_white'}
+          active={value === 'classic_white'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/classic_white.svg')}
           onClick={() => onChange('classic_white')}
         />
