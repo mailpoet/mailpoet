@@ -58,4 +58,5 @@ export const formStyles = {
   borderSize: 0,
   borderRadius: 0,
   alignment: 'left',
+  closeButton: 'round_white',
 };
