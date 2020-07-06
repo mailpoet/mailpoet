@@ -97,3 +97,13 @@ span.select2-container--open > span.select2-dropdown li.select2-results__option 
 input.mailpoet_option_offset_left_small {
   margin-left: 10px !important;
 }
+
+.mailpoet_editor_messages {
+  position: absolute;
+  right: 0;
+  top: 100%;
+}
+
+#mailpoet_editor_heading_right .mailpoet_notice {
+  padding-right: 40px;
+}
