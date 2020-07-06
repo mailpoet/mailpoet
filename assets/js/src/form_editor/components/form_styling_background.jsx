@@ -33,8 +33,9 @@ const FormStylingBackground = ({ children }) => {
   if (alignment) {
     textAlign = alignment;
   }
+  const backgrounds = [];
 
-  let style = {
+  const style = {
     color: fontColor,
     fontSize: fontNum,
     fontFamily,
@@ -49,15 +50,7 @@ const FormStylingBackground = ({ children }) => {
     margin: '0 auto',
   };
 
-  if (backgroundColor && !gradient) {
-    style.backgroundColor = backgroundColor;
-  }
-
-  if (gradient) {
-    style.background = gradient;
-  }
-
-  if (backgroundImageUrl !== undefined) {
+  if (backgroundImageUrl !== undefined && backgroundImageUrl) {
     let backgroundPosition = 'center';
     let backgroundRepeat = 'no-repeat';
     let backgroundSize = 'cover';
@@ -70,13 +63,20 @@ const FormStylingBackground = ({ children }) => {
       backgroundRepeat = 'repeat';
       backgroundSize = 'auto';
     }
-    style = {
-      ...style,
-      backgroundRepeat,
-      backgroundPosition,
-      backgroundSize,
-      backgroundImage: `url(${backgroundImageUrl})`,
-    };
+
+    backgrounds.push(`url(${backgroundImageUrl}) ${backgroundPosition}/${backgroundSize} ${backgroundRepeat}`);
+  }
+
+  if (gradient) {
+    backgrounds.push(gradient);
+  }
+
+  if (backgroundColor) {
+    backgrounds.push(backgroundColor);
+  }
+
+  if (backgrounds.length) {
+    style.background = backgrounds.join(', ');
   }
 
   return (

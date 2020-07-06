@@ -44,7 +44,7 @@ class StylesTest extends \MailPoetUnitTest {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['backgroundColor' => 'red'];
     $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
-    expect($styles)->contains('background-color: red');
+    expect($styles)->contains('background: red');
   }
 
   public function testItShouldRenderBackgroundGradient() {
@@ -100,30 +100,47 @@ class StylesTest extends \MailPoetUnitTest {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['background_image_url' => 'xxx'];
     $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
-    expect($styles)->contains('background-image: url(xxx)');
-    expect($styles)->contains('background-position: center');
-    expect($styles)->contains('background-repeat: no-repeat');
-    expect($styles)->contains('background-size: cover');
+    list($styleWithoutMedia, $mediaStyles) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('background: url(xxx) center / cover no-repeat');
+    expect($mediaStyles)->contains('background-image: none');
   }
 
   public function testItShouldRenderImageBackgroundTile() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['background_image_url' => 'xxx', 'background_image_display' => 'tile'];
     $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
-    expect($styles)->contains('background-image: url(xxx)');
-    expect($styles)->contains('background-position: center');
-    expect($styles)->contains('background-repeat: repeat');
-    expect($styles)->contains('background-size: auto');
+    expect($styles)->contains('background: url(xxx) center / auto repeat');
   }
 
   public function testItShouldRenderImageBackgroundFit() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['background_image_url' => 'xxx', 'background_image_display' => 'fit'];
     $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
-    expect($styles)->contains('background-image: url(xxx)');
-    expect($styles)->contains('background-position: center top');
-    expect($styles)->contains('background-repeat: no-repeat');
-    expect($styles)->contains('background-size: contain');
+    expect($styles)->contains('background: url(xxx) center top / contain no-repeat');
+  }
+
+  public function testItShouldRenderImageWithGradientBackground() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = [
+      'background_image_url' => 'xxx',
+      'gradient' => 'linear-gradient(#fff, #000)',
+    ];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    list($styleWithoutMedia, $mediaStyles) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('background: url(xxx) center / cover no-repeat, linear-gradient(#fff, #000)');
+    expect($mediaStyles)->contains('background: linear-gradient(#fff, #000)');
+  }
+
+  public function testItShouldRenderImageWithColorBackground() {
+    $form = Fixtures::get('simple_form_body');
+    $form['settings'] = [
+      'background_image_url' => 'xxx',
+      'backgroundColor' => 'red',
+    ];
+    $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    list($styleWithoutMedia, $mediaStyles) = explode('@media ', $styles);
+    expect($styleWithoutMedia)->contains('background: url(xxx) center / cover no-repeat, red');
+    expect($mediaStyles)->contains('background: red');
   }
 
   public function testItShouldRenderErrorMessageColor() {

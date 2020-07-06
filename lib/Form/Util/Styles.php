@@ -37,14 +37,6 @@ class Styles {
     // Wrapper styles
     $styles = [];
 
-    if (isset($formSettings['backgroundColor']) && empty($formSettings['gradient'])) {
-      $styles[] = 'background-color: ' . trim($formSettings['backgroundColor']);
-    }
-
-    if (!empty($formSettings['gradient'])) {
-      $styles[] = 'background: ' . trim($formSettings['gradient']);
-    }
-
     if (isset($formSettings['border_size']) && isset($formSettings['border_color'])) {
       $styles[] = 'border: ' . $formSettings['border_size'] . 'px solid ' . $formSettings['border_color'];
     }
@@ -53,8 +45,9 @@ class Styles {
       $styles[] = 'border-radius: ' . $formSettings['border_radius'] . 'px';
     }
 
-    if (isset($formSettings['background_image_url'])) {
-      $styles[] = 'background-image: url(' . trim($formSettings['background_image_url']) . ')';
+    $backgrounds = [];
+    $mobileBackgrounds = [];
+    if (isset($formSettings['background_image_url']) && $formSettings['background_image_url']) {
       $backgroundPosition = 'center';
       $backgroundRepeat = 'no-repeat';
       $backgroundSize = 'cover';
@@ -66,9 +59,21 @@ class Styles {
         $backgroundRepeat = 'repeat';
         $backgroundSize = 'auto';
       }
-      $styles[] = 'background-position: ' . $backgroundPosition;
-      $styles[] = 'background-repeat: ' . $backgroundRepeat;
-      $styles[] = 'background-size: ' . $backgroundSize;
+      $backgrounds[] = "url(" . trim($formSettings['background_image_url']) . ") $backgroundPosition / $backgroundSize $backgroundRepeat";
+    }
+
+    if (!empty($formSettings['gradient'])) {
+      $backgrounds[] = trim($formSettings['gradient']);
+      $mobileBackgrounds[] = trim($formSettings['gradient']);
+    }
+
+    if (!empty($formSettings['backgroundColor']) ) {
+      $backgrounds[] = trim($formSettings['backgroundColor']);
+      $mobileBackgrounds[] = trim($formSettings['backgroundColor']);
+    }
+
+    if ($backgrounds) {
+      $styles[] = 'background: ' . join(', ', $backgrounds);
     }
 
     if (isset($formSettings['fontColor'])) {
@@ -81,7 +86,12 @@ class Styles {
     $formWrapperStyles = $selector . '{' . join(';', $styles) . ';}';
 
     // Media styles
-    $media = "@media (max-width: 500px) {{$selector} {background-image: none;}}";
+    if ($mobileBackgrounds) {
+      $media = "@media (max-width: 500px) {{$selector} {background: " . join(', ', $mobileBackgrounds) . ";}}";
+    } else {
+      $media = "@media (max-width: 500px) {{$selector} {background-image: none;}}";
+    }
+
     if (in_array(
       $displayType,
       [FormEntity::DISPLAY_TYPE_POPUP, FormEntity::DISPLAY_TYPE_FIXED_BAR, FormEntity::DISPLAY_TYPE_SLIDE_IN]
