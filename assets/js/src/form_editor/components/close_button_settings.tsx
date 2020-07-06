@@ -55,34 +55,35 @@ const CloseButtonsSettings = ({
       </h3>
       <div className="close-button-selection-item-list">
         <CloseButton
-          label="classic"
-          active={value === 'classic'}
-          iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/classic.svg')}
-          onClick={() => onChange('classic')}
-        />
-        <CloseButton
-          label="round_black"
-          active={value === 'round_black'}
-          iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/round_black.svg')}
-          onClick={() => onChange('round_black')}
-        />
-        <CloseButton
           label="round_white"
-          active={value === 'round_white'}
+          active={current === 'round_white'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/round_white.svg')}
           onClick={() => onChange('round_white')}
         />
         <CloseButton
+          label="round_black"
+          active={current === 'round_black'}
+          iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/round_black.svg')}
+          onClick={() => onChange('round_black')}
+        />
+        <CloseButton
+          label="square_white"
+          active={current === 'square_white'}
+          iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/square_white.svg')}
+          onClick={() => onChange('square_white')}
+        />
+        <CloseButton
           label="square_black"
-          active={value === 'square_black'}
+          active={current === 'square_black'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/square_black.svg')}
           onClick={() => onChange('square_black')}
         />
         <CloseButton
-          label="square_white"
-          active={value === 'square_white'}
-          iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/square_white.svg')}
-          onClick={() => onChange('square_white')}
+          label="classic"
+          active={current === 'classic'}
+          iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/classic.svg')}
+          onClick={() => onChange('classic')}
+        />
         />
       </div>
     </div>
