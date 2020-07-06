@@ -47,6 +47,7 @@ const CloseButtonsSettings = ({
     (sel) => sel('mailpoet-form-editor').getCloseIconsUrl(),
     []
   );
+  const current = value ?? 'round_white';
   return (
     <div>
       <h3 className="mailpoet-styles-settings-heading">
