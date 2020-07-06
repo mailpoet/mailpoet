@@ -84,6 +84,11 @@ const CloseButtonsSettings = ({
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/classic.svg')}
           onClick={() => onChange('classic')}
         />
+        <CloseButton
+          label="classic_white"
+          active={current === 'classic_white'}
+          iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/classic_white.svg')}
+          onClick={() => onChange('classic_white')}
         />
       </div>
     </div>
