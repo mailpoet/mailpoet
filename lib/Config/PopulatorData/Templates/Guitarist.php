@@ -1,6 +1,7 @@
 <?php
 
 namespace MailPoet\Config\PopulatorData\Templates;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Guitarist {
 

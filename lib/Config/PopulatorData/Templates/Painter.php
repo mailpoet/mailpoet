@@ -2,6 +2,8 @@
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Painter {
 
   private $template_image_url;
@@ -1030,7 +1032,7 @@ class Painter {
                    [
                     'type' => 'text',
                     'text' => '<p style="text-align: center;"><strong>Canvas Studio</strong></p>
-    <p style="text-align: center; font-size: 11px;"><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a>&nbsp;|&nbsp;<a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+    <p style="text-align: center; font-size: 11px;"><a href="[link:subscription_unsubscribe_url]">' . WPFunctions::get()->__("Unsubscribe", 'mailpoet') . '</a>&nbsp;|&nbsp;<a href="[link:subscription_manage_url]">' . WPFunctions::get()->__("Manage your subscription", 'mailpoet') . '</a><br />' . WPFunctions::get()->__("Add your postal address here!", 'mailpoet') . '</p>',
                    ],
                  ],
                ],
@@ -1243,7 +1245,7 @@ class Painter {
          ],
         'footer' =>
          [
-          'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+          'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . WPFunctions::get()->__("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . WPFunctions::get()->__("Manage your subscription", 'mailpoet') . '</a><br />' . WPFunctions::get()->__("Add your postal address here!", 'mailpoet') . '</p>',
           'styles' =>
            [
             'block' =>
@@ -1390,7 +1392,7 @@ class Painter {
          ],
         'header' =>
          [
-          'text' => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a>',
           'styles' =>
            [
             'block' =>
@@ -1415,5 +1417,4 @@ class Painter {
        ],
     ];
   }
-
 }

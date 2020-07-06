@@ -2,6 +2,8 @@
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Motor {
 
   private $template_image_url;
@@ -785,7 +787,7 @@ class Motor {
                   1 =>
                    [
                     'type' => 'footer',
-                    'text' => '<p><span style="color: #d52a2a;"><a href="[link:subscription_unsubscribe_url]" style="color: #d52a2a;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #d52a2a;">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a></span><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+                    'text' => '<p><span style="color: #d52a2a;"><a href="[link:subscription_unsubscribe_url]" style="color: #d52a2a;">' . WPFunctions::get()->__("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]" style="color: #d52a2a;">' . WPFunctions::get()->__("Manage your subscription", 'mailpoet') . '</a></span><br />' . WPFunctions::get()->__("Add your postal address here!", 'mailpoet') . '</p>',
                     'styles' =>
                      [
                       'block' =>
@@ -1047,7 +1049,7 @@ class Motor {
          ],
         'footer' =>
          [
-          'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.WPFunctions::get()->__("Manage your subscription", 'mailpoet').'</a><br />'.WPFunctions::get()->__("Add your postal address here!", 'mailpoet').'</p>',
+          'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . WPFunctions::get()->__("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . WPFunctions::get()->__("Manage your subscription", 'mailpoet') . '</a><br />' . WPFunctions::get()->__("Add your postal address here!", 'mailpoet') . '</p>',
           'styles' =>
            [
             'block' =>
@@ -1183,7 +1185,7 @@ class Motor {
          ],
         'header' =>
          [
-          'text' => '<a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a>',
           'styles' =>
            [
             'block' =>
@@ -1208,5 +1210,4 @@ class Motor {
        ],
     ];
   }
-
 }
