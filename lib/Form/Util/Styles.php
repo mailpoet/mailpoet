@@ -3,7 +3,7 @@
 namespace MailPoet\Form\Util;
 
 use MailPoet\Entities\FormEntity;
-use MailPoet\Form\Templates\InitialForm;
+use MailPoet\Form\Templates\Templates\InitialForm;
 use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
 
 class Styles {

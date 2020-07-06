@@ -3,6 +3,9 @@
 namespace MailPoet\Form\Templates;
 
 use MailPoet\Entities\FormEntity;
+use MailPoet\Form\Templates\Templates\DefaultForm;
+use MailPoet\Form\Templates\Templates\DemoForm;
+use MailPoet\Form\Templates\Templates\InitialForm;
 use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 

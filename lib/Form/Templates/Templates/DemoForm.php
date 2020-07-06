@@ -1,6 +1,8 @@
 <?php
 
-namespace MailPoet\Form\Templates;
+namespace MailPoet\Form\Templates\Templates;
+
+use MailPoet\Form\Templates\Template;
 
 /**
  * Temporary form template. Remove after we get real data from designer
