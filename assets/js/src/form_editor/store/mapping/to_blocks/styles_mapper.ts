@@ -37,22 +37,22 @@ export const mapInputBlockStyles = (styles: InputBlockStylesServerData) => {
     mappedStyles.gradient = styles.gradient;
   }
   if (has(styles, 'border_size') && styles.border_size !== undefined) {
-    mappedStyles.borderSize = +styles.border_size;
+    mappedStyles.borderSize = Number(styles.border_size);
   }
   if (has(styles, 'font_size') && styles.font_size !== undefined) {
-    mappedStyles.fontSize = +styles.font_size;
+    mappedStyles.fontSize = Number(styles.font_size);
   }
   if (has(styles, 'font_color') && styles.font_color) {
     mappedStyles.fontColor = styles.font_color;
   }
   if (has(styles, 'border_radius') && styles.border_radius !== undefined) {
-    mappedStyles.borderRadius = +styles.border_radius;
+    mappedStyles.borderRadius = Number(styles.border_radius);
   }
   if (has(styles, 'border_color') && styles.border_color) {
     mappedStyles.borderColor = styles.border_color;
   }
   if (has(styles, 'padding') && styles.padding !== undefined) {
-    mappedStyles.padding = +styles.padding;
+    mappedStyles.padding = Number(styles.padding);
   }
   if (has(styles, 'font_family') && styles.font_family) {
     mappedStyles.fontFamily = styles.font_family;
