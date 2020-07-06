@@ -68,7 +68,7 @@ class NewsletterListingRepository extends ListingRepository {
         'value' => $item['id'],
       ];
     }
-    return ['segments' => $segmentList];
+    return ['segment' => $segmentList];
   }
 
   public function getGroups(ListingDefinition $definition): array {

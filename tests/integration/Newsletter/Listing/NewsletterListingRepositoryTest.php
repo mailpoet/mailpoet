@@ -293,6 +293,41 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     expect($newsletters)->count(0);
   }
 
+  public function testItReturnsCorrectSegmentFilterData() {
+    $newsletter1 = new NewsletterEntity();
+    $newsletter1->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter1->setSubject('Newsletter with segment 1');
+    $this->entityManager->persist($newsletter1);
+
+    $segment1 = new SegmentEntity();
+    $segment1->setName('Segment 1');
+    $segment1->setType(SegmentEntity::TYPE_DEFAULT);
+    $segment1->setDescription('Segment description');
+    $this->entityManager->persist($segment1);
+
+    $newsletterSegment1 = new NewsletterSegmentEntity($newsletter1, $segment1);
+    $this->entityManager->persist($newsletterSegment1);
+
+    $segment2 = new SegmentEntity();
+    $segment2->setName('Segment 2');
+    $segment2->setType(SegmentEntity::TYPE_DEFAULT);
+    $segment2->setDescription('Segment without any newsletter');
+    $this->entityManager->persist($segment2);
+    $this->entityManager->flush();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+    $filters = $newsletterListingRepository->getFilters($listingHandler->getListingDefinition([
+      'limit' => 1,
+      'offset' => 0,
+    ]));
+
+    expect($filters['segment'])->count(2); // All list + 1 segments
+    expect($filters['segment'][0]['label'])->equals('All Lists');
+    expect($filters['segment'][1]['label'])->equals('Segment 1 (1)');
+    expect($filters['segment'][1]['value'])->equals($segment1->getId());
+  }
+
   public function _after() {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(SegmentEntity::class);
