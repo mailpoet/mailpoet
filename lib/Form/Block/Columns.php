@@ -12,7 +12,7 @@ class Columns {
     if (isset($params['text_color'])) {
       $styles[] = "color:{$params['text_color']};";
     }
-    if (isset($params['background_color']) && !isset($params['gradient'])) {
+    if (!empty($params['background_color'])) {
       $styles[] = "background-color:{$params['background_color']};";
     }
     if (isset($params['gradient'])) {
