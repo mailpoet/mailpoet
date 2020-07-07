@@ -6,6 +6,10 @@
   .components-base-control {
     margin-bottom: 0;
   }
+
+  .components-base-control__label {
+    font-weight: bold;
+  }
 }
 
 .mailpoet-styles-settings-heading {
@@ -19,6 +23,10 @@
 .mailpoet-font-family-select {
   button {
     width: 100%;
+  }
+
+  .components-custom-select-control__label {
+    font-weight: bold;
   }
 }
 
