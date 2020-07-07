@@ -3,6 +3,7 @@
 use Codeception\Event\SuiteEvent;
 use Codeception\Events;
 use Codeception\Extension;
+use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\UserFlags;
 
@@ -22,6 +23,9 @@ class DefaultsExtension extends Extension {
 
     $userFlags = new UserFlags(1);
     $userFlags->withDefaultFlags();
+
+    $scheduledTasks = new ScheduledTask();
+    $scheduledTasks->withDefaultTasks();
   }
 
   private function setupWordPress() {
