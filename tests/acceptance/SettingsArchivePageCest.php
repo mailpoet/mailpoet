@@ -12,11 +12,9 @@ class SettingsArchivePageCest {
     $segment = $segmentFactory->withName('Empty Send')->create();
     $pageTitle = 'EmptyNewsletterArchive';
     $pageContent = "[mailpoet_archive segments=\"$segment->id\"]";
-    $i->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle", "--post_content=$pageContent"]);
+    $postUrl = $i->createPost($pageTitle, $pageContent);
     $i->login();
-    $i->amOnPage('/wp-admin/edit.php?post_type=page');
-    $i->waitForText($pageTitle);
-    $i->clickItemRowActionByItemName($pageTitle, 'View');
+    $i->amOnUrl($postUrl);
     $i->waitForText($pageTitle);
     $i->waitForText('Oops! There are no newsletters to display.');
   }
@@ -29,11 +27,9 @@ class SettingsArchivePageCest {
     $newsletterFactory->withSubject('SentNewsletter')->withSentStatus()->withSendingQueue()->withSegments([$segment2])->create();
     $pageTitle2 = 'SentNewsletterArchive';
     $pageContent2 = "[mailpoet_archive segments=\"$segment2->id\"]";
-    $i->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle2", "--post_content=$pageContent2"]);
+    $postUrl = $i->createPost($pageTitle2, $pageContent2);
     $i->login();
-    $i->amOnPage('/wp-admin/edit.php?post_type=page');
-    $i->waitForText($pageTitle2);
-    $i->clickItemRowActionByItemName($pageTitle2, 'View');
+    $i->amOnUrl($postUrl);
     $i->waitForText($pageTitle2);
     $i->waitForText('SentNewsletter');
   }
@@ -48,11 +44,9 @@ class SettingsArchivePageCest {
     $newsletterFactory->withSubject('ScheduledNewsletter')->withScheduledStatus()->withScheduledQueue()->withSegments([$segment3])->create();
     $pageTitle3 = 'SentNewsletterArchive';
     $pageContent3 = "[mailpoet_archive segments=\"$segment3->id\"]";
-    $i->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle3", "--post_content=$pageContent3"]);
+    $postUrl = $i->createPost($pageTitle3, $pageContent3);
     $i->login();
-    $i->amOnPage('/wp-admin/edit.php?post_type=page');
-    $i->waitForText($pageTitle3);
-    $i->clickItemRowActionByItemName($pageTitle3, 'View');
+    $i->amOnUrl($postUrl);
     $i->waitForText($pageTitle3);
     $i->waitForText('SentNewsletter');
     $i->dontSee('DraftNewsletter');
@@ -67,9 +61,7 @@ class SettingsArchivePageCest {
     $i->waitForText('SentNewsletter3');
     $i->clickItemRowActionByItemName('SentNewsletter3', 'Move to trash');
     $i->waitForText('1 email was moved to the trash.');
-    $i->amOnPage('/wp-admin/edit.php?post_type=page');
-    $i->waitForText($pageTitle3);
-    $i->clickItemRowActionByItemName($pageTitle3, 'View');
+    $i->amOnUrl($postUrl);
     $i->waitForText($pageTitle3);
     $i->waitForText('SentNewsletter');
     $i->waitForText('SentNewsletter2');
