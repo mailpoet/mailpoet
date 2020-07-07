@@ -72,7 +72,7 @@ services:
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
     volumes:
       - /dev/shm:/dev/shm
-    image: selenium/standalone-chrome-debug:3.141.59-xenon
+    image: selenium/standalone-chrome-debug:3.141.59-20200525
     ports:
       - 4444
       - 5900:5900
