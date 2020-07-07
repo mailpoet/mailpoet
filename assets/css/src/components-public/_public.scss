@@ -432,5 +432,8 @@ div.mailpoet_form_slide_in.active {
 .mailpoet-heading {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: 18px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 18px * .7 !important;
+    margin-top: 18px * 1.4 !important;
   }
 }
