@@ -46,7 +46,7 @@ class DividerTest extends \MailPoetUnitTest {
     $block['params']['type'] = 'spacer';
     $block['params']['height'] = '10';
     $result = $this->divider->render($block);
-    expect($result)->equals("<div class='mailpoet_spacer ' style='height: 10px;'></div>");
+    expect($result)->equals("<div class='mailpoet_spacer' style='height: 10px;'></div>");
   }
 
   public function testItRendersDivider() {
@@ -62,7 +62,7 @@ class DividerTest extends \MailPoetUnitTest {
 
     expect($result)->contains('height: 12px;');
     expect($result)->contains("class='mailpoet_divider");
-    expect($result)->contains("class='mailpoet_spacer");
+    expect($result)->contains("class='mailpoet_spacer mailpoet_has_divider");
     expect($result)->contains("border-top-style: dotted;");
     expect($result)->contains("border-top-width: 10px;");
     expect($result)->contains("border-top-color: red;");

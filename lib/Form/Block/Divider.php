@@ -13,9 +13,16 @@ class Divider {
   ];
 
   public function render($block): string {
-    $classes = isset($block['params']['class_name']) ? $block['params']['class_name'] : '';
+    $classes = ['mailpoet_spacer'];
+    if (isset($block['params']['type']) && $block['params']['type'] === 'divider') {
+      $classes[] = 'mailpoet_has_divider';
+    }
+    if (!empty($block['params']['class_name'])) {
+      $classes[] = $block['params']['class_name'];
+    }
+    $classAttr = join(' ', $classes);
     $height = $block['params']['height'] ?? self::DEFAULT_ATTRIBUTES['height'];
-    return "<div class='mailpoet_spacer $classes' style='height: {$height}px;'>"
+    return "<div class='{$classAttr}' style='height: {$height}px;'>"
     . $this->renderDivider($block)
     . '</div>';
   }
