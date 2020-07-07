@@ -378,9 +378,7 @@ div.mailpoet_form_slide_in.active {
   }
 
   @include breakpoint-max-width($form-break-small-width - 1) {
-    .mailpoet_form_form.mailpoet_form_tight_container &:last-child {
-      margin-bottom: 15px;
-    }
+    display: none;
   }
 }
 
