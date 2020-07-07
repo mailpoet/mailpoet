@@ -49,7 +49,7 @@ class Heading {
   }
 
   private function renderClass(array $block): string {
-    $classes = [];
+    $classes = ['mailpoet-heading'];
     if (isset($block['params']['class_name'])) {
       $classes[] = $block['params']['class_name'];
     }
@@ -58,9 +58,6 @@ class Heading {
       $classes[] = 'mailpoet-has-background-color';
     }
 
-    if (empty($classes)) {
-      return '';
-    }
     return 'class="'
       . join(' ', $classes)
       . '"';
