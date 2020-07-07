@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import ListingBulkActions from 'listing/bulk_actions.jsx';
 import ListingItem from 'listing/listing_item.jsx';
+import Grid from 'common/grid';
 
 class ListingItems extends React.Component { // eslint-disable-line react/prefer-stateless-function, max-len
   render() {
@@ -35,65 +36,71 @@ class ListingItems extends React.Component { // eslint-disable-line react/prefer
         </tbody>
       );
     }
+
+    const isSelectAllHidden = this.props.selection === false
+      || (this.props.count <= this.props.limit);
+    const areBulkActionsHidden = !(this.props.selected_ids.length > 0 || this.props.selection);
+
+    const actionAndSelectAllRowClasses = classNames(
+      'mailpoet-listing-actions-and-select-all-row',
+      {
+        mailpoet_hidden: areBulkActionsHidden && isSelectAllHidden,
+      }
+    );
     const selectAllClasses = classNames(
       'mailpoet-listing-select-all',
       {
-        mailpoet_hidden: (
-          this.props.selection === false
-            || (this.props.count <= this.props.limit)
-        ),
+        mailpoet_hidden: isSelectAllHidden,
       }
     );
 
     return (
       <tbody>
-        <tr>
+        <tr className={actionAndSelectAllRowClasses}>
           <td
-            className="mailpoet-listing-bulk-actions-container"
             colSpan={
               this.props.columns.length
                   + (this.props.is_selectable ? 1 : 0)
             }
           >
-            {(this.props.selected_ids.length > 0 || this.props.selection) && (
-              <ListingBulkActions
-                count={this.props.count}
-                bulk_actions={this.props.bulk_actions}
-                selection={this.props.selection}
-                selected_ids={this.props.selected_ids}
-                onBulkAction={this.props.onBulkAction}
-              />
-            ) }
-          </td>
-        </tr>
-        <tr className={selectAllClasses}>
-          <td colSpan={
-            this.props.columns.length
-                + (this.props.is_selectable ? 1 : 0)
-          }
-          >
-            {
-              (this.props.selection !== 'all')
-                ? MailPoet.I18n.t('selectAllLabel')
-                : MailPoet.I18n.t('selectedAllLabel').replace(
-                  '%d',
-                  this.props.count.toLocaleString()
-                )
-            }
-              &nbsp;
-            <a
-              href="#"
-              onClick={(event) => {
-                event.preventDefault();
-                this.props.onSelectAll(event);
-              }}
-            >
-              {
-                (this.props.selection !== 'all')
-                  ? MailPoet.I18n.t('selectAllLink')
-                  : MailPoet.I18n.t('clearSelection')
-              }
-            </a>
+            <Grid.SpaceBetween verticalAlign="center">
+              <div className="mailpoet-listing-bulk-actions-container">
+                { !areBulkActionsHidden && (
+                  <ListingBulkActions
+                    count={this.props.count}
+                    bulk_actions={this.props.bulk_actions}
+                    selection={this.props.selection}
+                    selected_ids={this.props.selected_ids}
+                    onBulkAction={this.props.onBulkAction}
+                  />
+                ) }
+              </div>
+              <div className={selectAllClasses}>
+                {
+                  (this.props.selection !== 'all')
+                    ? MailPoet.I18n.t('selectAllLabel')
+                    : MailPoet.I18n.t('selectedAllLabel').replace(
+                      '%d',
+                      this.props.count.toLocaleString()
+                    )
+                }
+                  &nbsp;
+                <a
+                  href="#"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    this.props.onSelectAll(event);
+                  }}
+                >
+                  {
+                    (this.props.selection !== 'all')
+                      ? MailPoet.I18n.t('selectAllLink')
+                      : MailPoet.I18n.t('clearSelection')
+                  }
+                </a>
+                .
+              </div>
+            </Grid.SpaceBetween>
           </td>
         </tr>
 
