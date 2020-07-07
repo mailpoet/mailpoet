@@ -85,32 +85,8 @@ class Styles {
     }
     $formWrapperStyles = $selector . '{' . join(';', $styles) . ';}';
 
-    // Media styles
-    if ($mobileBackgrounds) {
-      $media = "@media (max-width: 500px) {{$selector} {background: " . join(', ', $mobileBackgrounds) . ";}}";
-    } else {
-      $media = "@media (max-width: 500px) {{$selector} {background-image: none;}}";
-    }
-
-    if (in_array(
-      $displayType,
-      [FormEntity::DISPLAY_TYPE_POPUP, FormEntity::DISPLAY_TYPE_FIXED_BAR, FormEntity::DISPLAY_TYPE_SLIDE_IN]
-    )) {
-      $media .= " @media (max-width: 500px) {{$selector} {
-        animation: none;
-        border: none;
-        border-radius: 0;
-        bottom: 0;
-        left: 0;
-        max-height: 40%;
-        padding: 20px;
-        right: 0;
-        top: auto;
-        transform: none;
-        width: 100%;
-        min-width: 100%;
-      }} ";
-    }
+    // Media styles for mobile
+    $media = $this->getMobileStyles($selector, $displayType, $mobileBackgrounds);
 
     // Form element styles
     $formStyles = [];
@@ -236,5 +212,34 @@ class Styles {
       $styles[] = $selector . '.mailpoet_form_position_left { border-top-left-radius: 0; }';
     }
     return join('', $styles);
+  }
+
+  private function getMobileStyles(string $selector, string $displayType, array $mobileBackgrounds): string {
+    $wrapperStyles = [];
+    if ($mobileBackgrounds) {
+      $wrapperStyles[] = 'background: ' . join(', ', $mobileBackgrounds) . ';';
+    } else {
+      $wrapperStyles[] = 'background-image: none;';
+    }
+    if (in_array(
+      $displayType,
+      [FormEntity::DISPLAY_TYPE_POPUP, FormEntity::DISPLAY_TYPE_FIXED_BAR, FormEntity::DISPLAY_TYPE_SLIDE_IN]
+    )) {
+      $wrapperStyles = array_merge($wrapperStyles, [
+        'animation: none;',
+        'border: none;',
+        'border-radius: 0;',
+        'bottom: 0;',
+        'left: 0;',
+        'max-height: 40%;',
+        'padding: 20px;',
+        'right: 0;',
+        'top: auto;',
+        'transform: none;',
+        'width: 100%;',
+        'min-width: 100%;',
+      ]);
+    }
+    return "@media (max-width: 500px) {{$selector} {" . join('', $wrapperStyles) . "}";
   }
 }
