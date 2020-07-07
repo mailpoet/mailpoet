@@ -6,7 +6,9 @@ import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
+import Button from 'common/button/button.tsx';
 import Listing from 'listing/listing.jsx';
+import Modal from 'common/modal/modal.tsx';
 import Selection from 'form/fields/selection.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
@@ -99,11 +101,29 @@ const messages = {
   },
 };
 
+const createModal = (submitModal, closeModal, field, title) => (
+  <Modal
+    title={title}
+    onRequestClose={closeModal}
+    isDismissible
+  >
+    <Selection field={field} />
+    <span className="mailpoet-gap-half" />
+    <Button
+      onClick={submitModal}
+      dimension="small"
+      variant="light"
+    >
+      {MailPoet.I18n.t('apply')}
+    </Button>
+  </Modal>
+);
+
 const bulkActions = [
   {
     name: 'moveToList',
     label: MailPoet.I18n.t('moveToList'),
-    onSelect: function onSelect() {
+    onSelect: function onSelect(submitModal, closeModal) {
       const field = {
         id: 'move_to_segment',
         name: 'move_to_segment',
@@ -115,9 +135,7 @@ const bulkActions = [
         },
       };
 
-      return (
-        <Selection field={field} />
-      );
+      return createModal(submitModal, closeModal, field, MailPoet.I18n.t('moveToList'));
     },
     getData: function getData() {
       return {
@@ -135,7 +153,7 @@ const bulkActions = [
   {
     name: 'addToList',
     label: MailPoet.I18n.t('addToList'),
-    onSelect: function onSelect() {
+    onSelect: function onSelect(submitModal, closeModal) {
       const field = {
         id: 'add_to_segment',
         name: 'add_to_segment',
@@ -147,9 +165,7 @@ const bulkActions = [
         },
       };
 
-      return (
-        <Selection field={field} />
-      );
+      return createModal(submitModal, closeModal, field, MailPoet.I18n.t('addToList'));
     },
     getData: function getData() {
       return {
@@ -167,7 +183,7 @@ const bulkActions = [
   {
     name: 'removeFromList',
     label: MailPoet.I18n.t('removeFromList'),
-    onSelect: function onSelect() {
+    onSelect: function onSelect(submitModal, closeModal) {
       const field = {
         id: 'remove_from_segment',
         name: 'remove_from_segment',
@@ -179,9 +195,7 @@ const bulkActions = [
         },
       };
 
-      return (
-        <Selection field={field} />
-      );
+      return createModal(submitModal, closeModal, field, MailPoet.I18n.t('removeFromList'));
     },
     getData: function getData() {
       return {
