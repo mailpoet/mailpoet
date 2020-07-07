@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.2
 Tested up to: 5.4
-Stable tag: 3.47.7
+Stable tag: 3.47.8
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.47.8 - 2020-07-07 =
+* Added: choice of close button style for forms;
+* Improved: new first-time wizard design;
+* Fixed: filtering newsletters by lists;
+* Fixed: emails of new MailPoet Sending Service users to not be blocked once the subscription is approved;
+* Fixed: custom sign-up confirmation message is not deleted after key verification.
 
 = 3.47.7 - 2020-06-30 =
 * Added: new Amazon SES locations;
