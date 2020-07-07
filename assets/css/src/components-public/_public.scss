@@ -1,3 +1,8 @@
+$form-break-small-width: 500px;
+$form-block-margin: 20px;
+$form-columns-with-background-padding: 10px;
+$form-columns-space-between: 20px;
+
 /* labels */
 .mailpoet_text_label,
 .mailpoet_textarea_label,
@@ -7,6 +12,26 @@
 .mailpoet_list_label,
 .mailpoet_date_label {
   display: block;
+
+  @include breakpoint-max-width($form-break-small-width - 1) {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+  }
+}
+
+.mailpoet_submit,
+.mailpoet_paragraph,
+.mailpoet_form_paragraph,
+.mailpoet_textarea,
+.mailpoet_text,
+.mailpoet_select,
+.mailpoet_form_image,
+.mailpoet_message,
+.mailpoet_paragraph select {
+  @include breakpoint-max-width($form-break-small-width - 1) {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+  }
 }
 
 .mailpoet_textarea {
@@ -65,11 +90,6 @@
 }
 
 // Form columns
-$form-break-small-width: 500px;
-$form-block-margin: 20px;
-$form-columns-with-background-padding: 10px;
-$form-columns-space-between: 20px;
-
 .mailpoet_form .mailpoet_paragraph {
   margin-bottom: $form-block-margin;
 }
