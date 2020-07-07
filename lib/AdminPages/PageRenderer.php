@@ -39,6 +39,7 @@ class PageRenderer {
     $defaults = [
       'feature_flags' => $this->featuresController->getAllFlags(),
       'referral_id' => $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME),
+      'mailpoet_api_key_state' => $this->settings->get('mta.mailpoet_api_key_state'),
     ];
     try {
       if (class_exists(Debugger::class)) {
