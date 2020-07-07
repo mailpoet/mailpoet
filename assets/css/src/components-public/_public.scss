@@ -389,6 +389,16 @@ div.mailpoet_form_slide_in.active {
   justify-content: center;
   margin-bottom: $form-block-margin;
   width: 100%;
+
+  @include breakpoint-max-width($form-break-small-width - 1) {
+    &:not(.mailpoet_has_divider) {
+      display: none;
+    }
+
+    &.mailpoet_has_divider {
+      max-height: 10px;
+    }
+  }
 }
 
 .mailpoet_message {
