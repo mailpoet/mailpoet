@@ -33,6 +33,11 @@
     height: 100%;
   }
 
+  .mailpoet_browser_preview_container_mobile {
+    margin-top: 0;
+    max-height: $form-preview-mobile-height;
+  }
+
   .mailpoet_browser_preview_border {
     position: relative;
   }
