@@ -9,7 +9,6 @@ class ListingBulkActions extends React.Component {
       extra: false,
     };
     this.handleApplyAction = this.handleApplyAction.bind(this);
-    this.handleChangeAction = this.handleChangeAction.bind(this);
   }
 
   getSelectedAction(actionName) {
@@ -28,6 +27,16 @@ class ListingBulkActions extends React.Component {
     const action = this.getSelectedAction(actionName);
 
     if (action === null) {
+      return;
+    }
+
+    // action on select callback
+    if (action.onSelect !== undefined && !this.state.extra) {
+      const submitModal = () => this.handleApplyAction(actionName);
+      const closeModal = () => this.setState({ extra: false });
+      this.setState({
+        extra: action.onSelect(submitModal, closeModal),
+      });
       return;
     }
 
@@ -58,21 +67,6 @@ class ListingBulkActions extends React.Component {
     });
   }
 
-  handleChangeAction(e, actionName) {
-    this.setState({
-      extra: false,
-    }, () => {
-      const action = this.getSelectedAction(actionName);
-
-      // action on select callback
-      if (action !== null && action.onSelect !== undefined) {
-        this.setState({
-          extra: action.onSelect(e),
-        });
-      }
-    });
-  }
-
   render() {
     if (this.props.bulk_actions.length === 0) {
       return null;
@@ -90,7 +84,6 @@ class ListingBulkActions extends React.Component {
               href="#"
               key={`action-${action.name}`}
               onClick={(e) => {
-                /* this.handleChangeAction(e, action.name); */
                 e.preventDefault();
                 return this.handleApplyAction(action.name);
               }}
