@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Codeception\Scenario;
 use MailPoet\Test\DataFactories\Settings;
 
 class NewsletterCreationCest {
@@ -77,12 +78,16 @@ class NewsletterCreationCest {
     $i->click('Send');
   }
 
-  public function createNewsletterWhenKeyPendingApproval(\AcceptanceTester $i) {
+  public function createNewsletterWhenKeyPendingApproval(\AcceptanceTester $i, Scenario $scenario) {
+    $mailPoetSendingKey = getenv('WP_TEST_MAILER_MAILPOET_API');
+    if (!getenv('WP_TEST_MAILER_MAILPOET_API')) {
+      $scenario->skip("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
+    }
     $settings = new Settings();
     $settings->withSendingMethodMailPoet();
     $settings->withMssKeyPendingApproval();
 
-    $segmentName = $i->createListWithSubscriber();
+    $i->createListWithSubscriber();
 
     $i->login();
     $i->amOnMailpoetPage('Emails');
