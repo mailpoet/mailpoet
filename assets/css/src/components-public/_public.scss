@@ -408,3 +408,9 @@ div.mailpoet_form_slide_in.active {
 .mailpoet-has-background-color {
   padding: 20px 30px;
 }
+
+.mailpoet-heading {
+  @include breakpoint-max-width($form-break-small-width - 1) {
+    font-size: 18px !important;
+  }
+}
