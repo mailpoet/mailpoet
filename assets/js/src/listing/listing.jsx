@@ -381,7 +381,10 @@ class Listing extends React.Component {
       action: 'bulkAction',
       data,
     }).done(() => {
-      this.getItems();
+      const isEmptyTrashAction = selectedIds === 'all' && params.group === 'trash' && params.action === 'delete';
+      if (!isEmptyTrashAction) {
+        this.getItems();
+      }
     }).fail((response) => {
       if (response.errors.length > 0) {
         this.context.notices.error(
