@@ -3,13 +3,17 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
 import MailPoet from 'mailpoet';
+import FormSettings from 'form_editor/components/form_settings/form_settings';
 import BlockSettings from './block_settings.jsx';
-import FormSettings from './form_settings/form_settings';
-import SidebarHeader from './sidebar/sidebar_header';
+import SidebarHeader from './sidebar_header';
 
-export default () => {
+type Props = {
+  onClose: () => any,
+};
+
+export default ({ onClose }: Props) => {
   const activeTab = useSelect(
-    (select) => select('mailpoet-form-editor').getSidebarActiveTab(),
+    (select) => select('mailpoet-form-editor').getDefaultSidebarActiveTab(),
     []
   );
 
@@ -18,23 +22,23 @@ export default () => {
     []
   );
 
-  const { toggleSidebar, switchSidebarTab } = useDispatch('mailpoet-form-editor');
+  const { switchDefaultSidebarTab } = useDispatch('mailpoet-form-editor');
 
   useEffect(() => {
     if (selectedBlockId) {
-      switchSidebarTab('block');
+      switchDefaultSidebarTab('block');
     } else {
-      switchSidebarTab('form');
+      switchDefaultSidebarTab('form');
     }
-  }, [selectedBlockId, switchSidebarTab]);
+  }, [selectedBlockId, switchDefaultSidebarTab]);
 
   return (
-    <div className="edit-post-sidebar interface-complementary-area mailpoet_form_editor_sidebar">
-      <SidebarHeader closeSidebar={() => toggleSidebar(false)}>
+    <>
+      <SidebarHeader closeSidebar={onClose}>
         <ul>
           <li>
             <button
-              onClick={() => switchSidebarTab('form')}
+              onClick={() => switchDefaultSidebarTab('form')}
               className={classnames('components-button edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'form' })}
               type="button"
             >
@@ -43,7 +47,7 @@ export default () => {
           </li>
           <li>
             <button
-              onClick={() => switchSidebarTab('block')}
+              onClick={() => switchDefaultSidebarTab('block')}
               className={classnames('components-button edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'block' })}
               type="button"
             >
@@ -53,6 +57,6 @@ export default () => {
         </ul>
       </SidebarHeader>
       {activeTab === 'form' ? <FormSettings /> : <BlockSettings />}
-    </div>
+    </>
   );
 };
