@@ -9,11 +9,8 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import Preview from 'common/preview/preview.jsx';
 import Modal from 'common/modal/modal';
-import BelowPostsSettings from './below_posts_settings';
-import PopUpSettings from './popup_settings';
-import OtherSettings from './other_settings';
-import FixedBarSettings from './fixed_bar_settings';
-import SlideInSettings from './slide_in_settings';
+import PlacementSettingsPanel from 'form_editor/components/form_settings/form_placement_options/settings_panel';
+
 
 const FormPreview = () => {
   const iframeElement = useRef(null);
@@ -115,11 +112,7 @@ const FormPreview = () => {
                 { value: 'slide_in', label: MailPoet.I18n.t('placeSlideInFormOnPages') },
               ]}
             />
-            {previewSettings.formType === 'others' && <OtherSettings />}
-            {previewSettings.formType === 'below_post' && <BelowPostsSettings />}
-            {previewSettings.formType === 'fixed_bar' && <FixedBarSettings />}
-            {previewSettings.formType === 'popup' && <PopUpSettings />}
-            {previewSettings.formType === 'slide_in' && <SlideInSettings />}
+            <PlacementSettingsPanel activePanel={previewSettings.formType} />
           </div>
           <Preview
             onDisplayTypeChange={onPreviewTypeChange}
