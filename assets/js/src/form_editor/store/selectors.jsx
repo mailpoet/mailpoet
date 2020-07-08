@@ -72,7 +72,21 @@ export default {
     if (settings.placeFixedBarFormOnAllPages || settings.placeFixedBarFormOnAllPosts) {
       previewSettings.formType = 'fixed_bar';
     }
+    if (settings.placeSlideInFormOnAllPages || settings.placeSlideInFormOnAllPosts) {
+      previewSettings.formType = 'slide_in';
+    }
     return previewSettings;
+  },
+  getFormWidth(state, displayType) {
+    const settings = state.formData.settings;
+    switch (displayType) {
+      case 'below_post': return settings.belowPostStyles.width;
+      case 'popup': return settings.popupStyles.width;
+      case 'slide_in': return settings.slideInStyles.width;
+      case 'fixed_bar': return settings.fixedBarStyles.width;
+      case 'others': return settings.otherStyles.width;
+      default: throw Error(`Invalid form display type ${displayType}`);
+    }
   },
   getIsCustomFieldSaving(state) {
     return state.isCustomFieldSaving;
