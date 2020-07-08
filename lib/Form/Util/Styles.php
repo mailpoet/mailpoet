@@ -240,6 +240,6 @@ class Styles {
         'min-width: 100%;',
       ]);
     }
-    return "@media (max-width: 500px) {{$selector} {" . join('', $wrapperStyles) . "}";
+    return "@media (max-width: 500px) {{$selector} {" . join('', $wrapperStyles) . "}}";
   }
 }
