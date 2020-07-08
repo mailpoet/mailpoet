@@ -3,8 +3,8 @@
 namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\DynamicSegment;
-use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\Settings;
 
 class ManageSegmentsCest {
   public function _before() {
@@ -154,7 +154,9 @@ class ManageSegmentsCest {
 
   private function createUser($name, $role, $email) {
     $userId = wp_create_user($name, "$name-password", $email);
+    assert(is_int($userId));
     $user = get_user_by('ID', $userId);
+    assert($user instanceof \WP_User);
     foreach ($user->roles as $defaultRole) {
       $user->remove_role($defaultRole);
     }
