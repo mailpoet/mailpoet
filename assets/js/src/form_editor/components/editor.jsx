@@ -14,7 +14,7 @@ import {
 import classnames from 'classnames';
 import fetchLinkSuggestions from '../utils/link_suggestions';
 import Header from './header.jsx';
-import Sidebar from './sidebar.jsx';
+import Sidebar from './sidebar/sidebar';
 import FormTitle from './form_title.jsx';
 import Notices from './notices.jsx';
 import UnsavedChangesNotice from './unsaved_changes_notice.jsx';

@@ -187,9 +187,9 @@ export function removeNotice(id) {
   };
 }
 
-export function switchSidebarTab(id) {
+export function switchDefaultSidebarTab(id) {
   return {
-    type: 'SWITCH_SIDEBAR_TAB',
+    type: 'SWITCH_DEFAULT_SIDEBAR_TAB',
     id,
   };
 }

@@ -17,7 +17,7 @@ import {
 import saveFormDone from './reducers/save_form_done.jsx';
 import saveFormFailed from './reducers/save_form_failed.jsx';
 import saveFormStartedFactory from './reducers/save_form_started.jsx';
-import switchSidebarTab from './reducers/switch_sidebar_tab.jsx';
+import switchDefaultSidebarTab from './reducers/switch_sidebar_tab.jsx';
 import toggleSidebar from './reducers/toggle_sidebar.jsx';
 import toggleSidebarPanel from './reducers/toggle_sidebar_panel.jsx';
 import changeFormBlocks from './reducers/change_form_blocks.jsx';
@@ -55,7 +55,7 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'SAVE_CUSTOM_FIELD_DONE': return saveCustomFieldDone(state, action);
     case 'SAVE_CUSTOM_FIELD_FAILED': return saveCustomFieldFailed(state, action);
     case 'SAVE_CUSTOM_FIELD_STARTED': return saveCustomFieldStarted(state);
-    case 'SWITCH_SIDEBAR_TAB': return switchSidebarTab(state, action);
+    case 'SWITCH_DEFAULT_SIDEBAR_TAB': return switchDefaultSidebarTab(state, action);
     case 'TOGGLE_SIDEBAR': return toggleSidebar(state, action);
     case 'TOGGLE_SIDEBAR_PANEL': return toggleSidebarPanel(state, action);
     case 'DELETE_CUSTOM_FIELD_STARTED': return customFieldDeleteStart(state, action);

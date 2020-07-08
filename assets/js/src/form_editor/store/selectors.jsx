@@ -92,7 +92,7 @@ export default {
   getFormErrors(state) {
     return state.formErrors;
   },
-  getSidebarActiveTab(state) {
+  getDefaultSidebarActiveTab(state) {
     return state.sidebar.activeTab;
   },
   getSidebarOpenedPanels(state) {
