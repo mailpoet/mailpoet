@@ -589,24 +589,26 @@ class Listing extends React.Component {
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         { this.state.meta.mta_method && <MailerError {...this.state.meta} /> }
         <div className="mailpoet-listing">
-          { groups }
-          <div>
-            { search }
-            <ListingFilters
-              filters={this.state.filters}
-              filter={this.state.filter}
-              group={this.state.group}
-              onBeforeSelectFilter={this.props.onBeforeSelectFilter || null}
-              onSelectFilter={this.handleFilter}
-              onEmptyTrash={this.handleEmptyTrash}
-            />
-            {extraActions}
-            <ListingPages
-              count={this.state.count}
-              page={this.state.page}
-              limit={this.state.limit}
-              onSetPage={this.handleSetPage}
-            />
+          <div className="mailpoet-listing-header">
+            { groups }
+            <div>
+              { search }
+              <ListingFilters
+                filters={this.state.filters}
+                filter={this.state.filter}
+                group={this.state.group}
+                onBeforeSelectFilter={this.props.onBeforeSelectFilter || null}
+                onSelectFilter={this.handleFilter}
+                onEmptyTrash={this.handleEmptyTrash}
+              />
+              {extraActions}
+              <ListingPages
+                count={this.state.count}
+                page={this.state.page}
+                limit={this.state.limit}
+                onSetPage={this.handleSetPage}
+              />
+            </div>
           </div>
           <table className={tableClasses}>
             <thead>
@@ -647,7 +649,7 @@ class Listing extends React.Component {
             />
 
           </table>
-          <div className="tablenav bottom clearfix">
+          <div className="mailpoet-listing-footer clearfix">
             <ListingPages
               count={this.state.count}
               page={this.state.page}

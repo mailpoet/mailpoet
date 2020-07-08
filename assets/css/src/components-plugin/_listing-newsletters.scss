@@ -153,3 +153,9 @@ h1.title.mailpoet-newsletter-listing-heading {
   stroke: $color-secondary;
   stroke-width: 2px;
 }
+
+@include respond-to(small-screen) {
+  .mailpoet-newsletter-listing-heading-wrapper {
+    float: left;
+  }
+}
