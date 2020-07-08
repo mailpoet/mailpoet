@@ -436,7 +436,6 @@ div.mailpoet_form_slide_in.active {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-heading-font-size !important;
     line-height: $form-mobile-line-height !important;
-    margin-bottom: $form-mobile-heading-font-size * ($form-mobile-line-height / 2) !important;
-    margin-top: $form-mobile-heading-font-size * $form-mobile-line-height !important;
+    margin: $form-mobile-heading-font-size * ($form-mobile-line-height / 2) 0 !important;
   }
 }
