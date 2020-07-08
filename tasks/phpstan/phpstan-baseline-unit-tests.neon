@@ -26,26 +26,6 @@ parameters:
 			path: ../../tests/_support/Helper/WordPress.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of function get_user_by expects int\\|string, int\\|WP_Error given\\.$#"
-			count: 1
-			path: ../../tests/acceptance/ViewSegmentSubscribersCest.php
-
-		-
-			message: "#^Cannot access property \\$roles on WP_User\\|false\\.$#"
-			count: 1
-			path: ../../tests/acceptance/ViewSegmentSubscribersCest.php
-
-		-
-			message: "#^Cannot call method remove_role\\(\\) on WP_User\\|false\\.$#"
-			count: 1
-			path: ../../tests/acceptance/ViewSegmentSubscribersCest.php
-
-		-
-			message: "#^Cannot call method add_role\\(\\) on WP_User\\|false\\.$#"
-			count: 1
-			path: ../../tests/acceptance/ViewSegmentSubscribersCest.php
-
-		-
 			message: "#^Property MailPoet\\\\Test\\\\WP\\\\ReadmeTest\\:\\:\\$data \\(string\\) does not accept string\\|false\\.$#"
 			count: 1
 			path: ../../tests/unit/WP/ReadmeTest.php
