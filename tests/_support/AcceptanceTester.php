@@ -359,6 +359,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     $checked = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin").checked');
     if (!$checked) {
+      $i->scrollTo(['css' => '[data-automation-id="woo-commerce-subscription-opt-in"]'], 0, -40);
       $i->waitForElementClickable('[data-automation-id="woo-commerce-subscription-opt-in"]');
       $i->click('[data-automation-id="woo-commerce-subscription-opt-in"]');
     }
@@ -371,6 +372,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     $checked = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin").checked');
     if ($checked) {
+      $i->scrollTo(['css' => '[data-automation-id="woo-commerce-subscription-opt-in"]'], 0, -40);
       $i->waitForElementClickable('[data-automation-id="woo-commerce-subscription-opt-in"]');
       $i->click('[data-automation-id="woo-commerce-subscription-opt-in"]');
     }
