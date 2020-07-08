@@ -20,8 +20,9 @@ class Supervisor {
 
   public function checkDaemon() {
     $daemon = $this->daemon;
+    $updatedAt = $daemon ? (int)$daemon['updated_at'] : 0;
     $executionTimeoutExceeded =
-      (time() - (int)$daemon['updated_at']) >= $this->cronHelper->getDaemonExecutionTimeout();
+      (time() - $updatedAt) >= $this->cronHelper->getDaemonExecutionTimeout();
     $daemonIsInactive =
       isset($daemon['status']) && $daemon['status'] === CronHelper::DAEMON_STATUS_INACTIVE;
     if ($executionTimeoutExceeded || $daemonIsInactive) {
