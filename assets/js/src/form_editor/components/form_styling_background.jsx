@@ -18,6 +18,16 @@ const FormStylingBackground = ({ children }) => {
     fontFamily,
   } = useSelect((select) => select('mailpoet-form-editor').getFormSettings(), []);
 
+  const previewSettings = useSelect(
+    (select) => select('mailpoet-form-editor').getPreviewSettings(),
+    []
+  );
+
+  const formWidth = useSelect(
+    (select) => select('mailpoet-form-editor').getFormWidth(previewSettings.formType),
+    [previewSettings.formType]
+  );
+
   let borderStyle;
   if (borderSize && borderColor) {
     borderStyle = 'solid';
@@ -46,9 +56,15 @@ const FormStylingBackground = ({ children }) => {
     borderStyle,
     textAlign,
     padding,
-    width: 700,
+    width: formWidth.unit === 'pixel' ? formWidth.value : `${formWidth.value}%`,
     margin: '0 auto',
+    maxWidth: '100%',
   };
+
+  // Render virtual container for widgets with width in percent
+  if (previewSettings.formType === 'others' && formWidth.unit === 'percent') {
+    style.maxWidth = 600;
+  }
 
   if (backgroundImageUrl !== undefined && backgroundImageUrl) {
     let backgroundPosition = 'center';
