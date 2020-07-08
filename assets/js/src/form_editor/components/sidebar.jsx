@@ -1,32 +1,11 @@
 import React, { useEffect } from 'react';
-import { Button } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import MailPoet from 'mailpoet';
 import BlockSettings from './block_settings.jsx';
 import FormSettings from './form_settings/form_settings';
-
-const SidebarHeader = ({ children, closeSidebar }) => (
-  <>
-    <div className="components-panel__header interface-complementary-area-header edit-post-sidebar__panel-tabs">
-      { children }
-      <Button
-        onClick={closeSidebar}
-        icon="no-alt"
-      />
-    </div>
-  </>
-);
-
-SidebarHeader.propTypes = {
-  closeSidebar: PropTypes.func.isRequired,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
-};
+import SidebarHeader from './sidebar/sidebar_header';
 
 export default () => {
   const activeTab = useSelect(
