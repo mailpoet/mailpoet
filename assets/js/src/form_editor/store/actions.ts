@@ -125,6 +125,20 @@ export function saveFormFailed(message = undefined) {
   };
 }
 
+export type CHANGE_ACTIVE_SIDEBAR = {
+  type: 'CHANGE_ACTIVE_SIDEBAR',
+  sidebar: 'default' | 'placement_settings',
+};
+
+export function changeActiveSidebar(
+  sidebar: 'default' | 'placement_settings'
+): CHANGE_ACTIVE_SIDEBAR {
+  return {
+    type: 'CHANGE_ACTIVE_SIDEBAR',
+    sidebar,
+  };
+}
+
 export function* changePreviewSettings(settings) {
   yield {
     type: 'STORE_LOCALLY',
@@ -137,15 +151,17 @@ export function* changePreviewSettings(settings) {
   };
 }
 
-export function* showPreview(formType = null) {
-  if (formType !== null && typeof formType === 'string') {
-    const previewSettings = select('mailpoet-form-editor').getPreviewSettings();
-    const updatedPreviewSettings = {
-      ...previewSettings,
-      formType,
-    };
-    yield* changePreviewSettings(updatedPreviewSettings);
-  }
+export function* showPlacementSettings(formType: string) {
+  const previewSettings = select('mailpoet-form-editor').getPreviewSettings();
+  const updatedPreviewSettings = {
+    ...previewSettings,
+    formType,
+  };
+  yield* changePreviewSettings(updatedPreviewSettings);
+  return changeActiveSidebar('placement_settings');
+}
+
+export function* showPreview() {
   yield {
     type: 'SHOW_PREVIEW',
   };

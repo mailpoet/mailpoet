@@ -12,14 +12,14 @@ const FixedBar = () => {
   );
   const placeFixedBarFormOnAllPages = formSettings.placeFixedBarFormOnAllPages || false;
   const placeFixedBarFormOnAllPosts = formSettings.placeFixedBarFormOnAllPosts || false;
-  const { showPreview } = useDispatch('mailpoet-form-editor');
+  const { showPlacementSettings } = useDispatch('mailpoet-form-editor');
 
   return (
     <FormPlacementOption
       active={placeFixedBarFormOnAllPages || placeFixedBarFormOnAllPosts}
       label={MailPoet.I18n.t('placeFixedBarFormOnPages')}
       icon={Icon}
-      onClick={() => (showPreview('fixed_bar'))}
+      onClick={() => (showPlacementSettings('fixed_bar'))}
       canBeActive
     />
   );

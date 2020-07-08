@@ -12,14 +12,14 @@ const Popup = () => {
   );
   const placePopupFormOnAllPages = formSettings.placePopupFormOnAllPages || false;
   const placePopupFormOnAllPosts = formSettings.placePopupFormOnAllPosts || false;
-  const { showPreview } = useDispatch('mailpoet-form-editor');
+  const { showPlacementSettings } = useDispatch('mailpoet-form-editor');
 
   return (
     <FormPlacementOption
       active={placePopupFormOnAllPages || placePopupFormOnAllPosts}
       label={MailPoet.I18n.t('placePopupFormOnPages')}
       icon={Icon}
-      onClick={() => (showPreview('popup'))}
+      onClick={() => (showPlacementSettings('popup'))}
       canBeActive
     />
   );

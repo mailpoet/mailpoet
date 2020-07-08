@@ -122,6 +122,9 @@ export default {
   getAllCustomFonts(state) {
     return state.customFonts;
   },
+  getActiveSidebar(state) {
+    return state.sidebar.activeSidebar;
+  },
 
   /**
    * Goes thru all parents of the block and return

@@ -29,6 +29,7 @@ import {
   customFieldDeleteDone,
   customFieldDeleteFailed,
 } from './reducers/custom_field_delete.jsx';
+import changeActiveSidebar from './reducers/change_active_sidebar';
 
 const createCustomFieldStarted = createCustomFieldStartedFactory(MailPoet);
 const saveFormStarted = saveFormStartedFactory(MailPoet);
@@ -61,6 +62,7 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'DELETE_CUSTOM_FIELD_STARTED': return customFieldDeleteStart(state, action);
     case 'DELETE_CUSTOM_FIELD_DONE': return customFieldDeleteDone(state, action);
     case 'DELETE_CUSTOM_FIELD_FAILED': return customFieldDeleteFailed(state, action);
+    case 'CHANGE_ACTIVE_SIDEBAR': return changeActiveSidebar(state, action);
     default:
       return state;
   }
