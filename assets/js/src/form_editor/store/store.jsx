@@ -57,6 +57,7 @@ export default () => {
     notices: [],
     hasUnsavedChanges: false,
     sidebar: {
+      activeSidebar: 'default',
       activeTab: 'form',
       openedPanels: ['basic-settings'],
     },

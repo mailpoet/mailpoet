@@ -5,14 +5,14 @@ import Icon from './icons/sidebar_icon';
 import FormPlacementOption from './form_placement_option';
 
 const Other = () => {
-  const { showPreview } = useDispatch('mailpoet-form-editor');
+  const { showPlacementSettings } = useDispatch('mailpoet-form-editor');
 
   return (
     <FormPlacementOption
       active={false}
       label={MailPoet.I18n.t('formPlacementOtherLabel')}
       icon={Icon}
-      onClick={() => (showPreview('others'))}
+      onClick={() => (showPlacementSettings('others'))}
       canBeActive={false}
     />
   );

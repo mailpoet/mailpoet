@@ -35,11 +35,8 @@ class DisplayFormBellowPostCest {
     $i->waitForElement('[data-automation-id="form_title_input"]');
     $i->click('.form-sidebar-form-placement-panel');
     $i->click('[data-automation-id="form-placement-option-Below pages"]');
-    $i->waitForText('Display on all pages', 10, '.mailpoet_preview_sidebar');
     $i->checkOption('Display on all posts');
-    $i->click('.mailpoet-modal-close');
-    $i->click('[data-automation-id="form_save_button"]');
-    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
+    $i->saveFormInEditor();
 
     // see the post
     $postUrl = $i->createPost($postTitle, 'Content');
