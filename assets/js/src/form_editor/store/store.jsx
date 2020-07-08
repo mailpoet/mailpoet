@@ -5,7 +5,7 @@ import '@wordpress/notices';
  */
 import { registerStore } from '@wordpress/data';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
-import * as actions from './actions.jsx';
+import * as actions from './actions';
 import createReducer from './reducer.jsx';
 import selectors from './selectors.jsx';
 import controls from './controls.jsx';
