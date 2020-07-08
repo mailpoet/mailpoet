@@ -19,6 +19,9 @@ class ScheduledTask {
     }
   }
 
+  /**
+   * Reschedules tasks created after plugin activation so that they don't block cron tasks in tests
+   */
   public function withDefaultTasks() {
     $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
     $datetime->addDay();

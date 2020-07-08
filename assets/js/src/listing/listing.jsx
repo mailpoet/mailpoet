@@ -381,6 +381,7 @@ class Listing extends React.Component {
       action: 'bulkAction',
       data,
     }).done(() => {
+      // Reload items after a bulk action except for empty trash action which redirects to All tab.
       const isEmptyTrashAction = selectedIds === 'all' && params.group === 'trash' && params.action === 'delete';
       if (!isEmptyTrashAction) {
         this.getItems();
