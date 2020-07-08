@@ -2,6 +2,9 @@ $form-break-small-width: 500px;
 $form-block-margin: 20px;
 $form-columns-with-background-padding: 10px;
 $form-columns-space-between: 20px;
+$form-mobile-font-size: 16px;
+$form-mobile-heading-font-size: 18px;
+$form-mobile-line-height: 1.4;
 
 /* labels */
 .mailpoet_text_label,
@@ -14,8 +17,8 @@ $form-columns-space-between: 20px;
   display: block;
 
   @include breakpoint-max-width($form-break-small-width - 1) {
-    font-size: 16px !important;
-    line-height: 1.4 !important;
+    font-size: $form-mobile-font-size !important;
+    line-height: $form-mobile-line-height !important;
   }
 }
 
@@ -29,8 +32,8 @@ $form-columns-space-between: 20px;
 .mailpoet_message,
 .mailpoet_paragraph select {
   @include breakpoint-max-width($form-break-small-width - 1) {
-    font-size: 16px !important;
-    line-height: 1.4 !important;
+    font-size: $form-mobile-font-size !important;
+    line-height: $form-mobile-line-height !important;
   }
 }
 
@@ -431,9 +434,9 @@ div.mailpoet_form_slide_in.active {
 
 .mailpoet-heading {
   @include breakpoint-max-width($form-break-small-width - 1) {
-    font-size: 18px !important;
-    line-height: 1.4 !important;
-    margin-bottom: 18px * .7 !important;
-    margin-top: 18px * 1.4 !important;
+    font-size: $form-mobile-heading-font-size !important;
+    line-height: $form-mobile-line-height !important;
+    margin-bottom: $form-mobile-heading-font-size * ($form-mobile-line-height / 2) !important;
+    margin-top: $form-mobile-heading-font-size * $form-mobile-line-height !important;
   }
 }
