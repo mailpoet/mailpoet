@@ -4,8 +4,13 @@
 
 .button.mailpoet_feature_announcement_button {
   height: 28px;
+  min-height: auto;
   padding: 0 5px 1px;
   position: relative;
+
+  @include respond-to(small-screen) {
+    margin-top: 10px;
+  }
 }
 
 .mailpoet_feature_announcement_icon {

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 
 const ListingHeading = () => (
-  <div>
+  <div className="mailpoet-newsletter-listing-heading-wrapper">
     <h1 className="mailpoet-newsletter-listing-heading title">
       {MailPoet.I18n.t('pageTitle')}
       <Link

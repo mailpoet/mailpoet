@@ -2,13 +2,6 @@
   clear: both;
   position: relative;
   z-index: 1;
-
-  @include respond-to(small-screen) {
-    p.search-box {
-      left: $grid-gap;
-      width: calc(100% - 2 * #{$grid-gap});
-    }
-  }
 }
 
 .mailpoet-tabs-is-open {
@@ -106,6 +99,11 @@
 }
 
 @include respond-to(small-screen) {
+  .mailpoet-tabs {
+    margin-left: -10px;
+    margin-right: -12px;
+  }
+
   .mailpoet-tabs-title {
     background: $color-white;
     border: 1px solid $color-tertiary-light;
@@ -154,5 +152,6 @@
 
   .mailpoet-tab-content {
     border-radius: 0;
+    padding-top: 0;
   }
 }

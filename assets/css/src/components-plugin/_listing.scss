@@ -251,8 +251,47 @@ div.mailpoet-listing-bulk-actions-container {
   }
 }
 
-.mailpoet-listing-mobile-search-holder {
-  @include respond-to(small-screen) {
-    height: 100px;
+.mailpoet-listing-footer {
+  background-color: $color-white;
+}
+
+@include respond-to(small-screen) {
+  .mailpoet-listing {
+    padding: 0;
+  }
+
+  .mailpoet-listing-header {
+    display: none;
+  }
+
+  .mailpoet-listing-pages {
+    float: none;
+    text-align: center;
+  }
+
+  tr.mailpoet-listing-actions-and-select-all-row {
+    display: none;
+  }
+
+  .mailpoet-listing-table {
+    .mailpoet-listing & {
+      border-top: 0;
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+
+    thead,
+    .mailpoet-listing-check-column {
+      display: none;
+    }
+  }
+
+  .mailpoet-listing-footer {
+    margin: 0 0 - $grid-gap;
+    padding-top: $grid-gap;
+  }
+
+  .mailpoet-listing-mobile-search-holder {
+    display: none;
   }
 }
