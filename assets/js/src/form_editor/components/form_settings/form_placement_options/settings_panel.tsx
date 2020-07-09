@@ -11,13 +11,13 @@ type Props = {
 }
 
 const SettingsPanel = ({ activePanel }: Props) => (
-  <>
+  <div className="mailpoet-styles-settings">
     {activePanel === 'others' && <OtherSettings />}
     {activePanel === 'below_post' && <BelowPostsSettings />}
     {activePanel === 'fixed_bar' && <FixedBarSettings />}
     {activePanel === 'popup' && <PopUpSettings />}
     {activePanel === 'slide_in' && <SlideInSettings />}
-  </>
+  </div>
 );
 
 export default SettingsPanel;
