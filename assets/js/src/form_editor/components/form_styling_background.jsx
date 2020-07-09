@@ -95,6 +95,21 @@ const FormStylingBackground = ({ children }) => {
     style.background = backgrounds.join(', ');
   }
 
+  if (previewSettings.formType === 'fixed_bar') {
+    const innerStyle = {
+      width: style.width,
+      margin: '0 auto',
+    };
+    style.width = '100%';
+    return (
+      <div className="mailpoet-form-background" style={style}>
+        <div style={innerStyle}>
+          {children}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mailpoet-form-background" style={style}>
       {children}
