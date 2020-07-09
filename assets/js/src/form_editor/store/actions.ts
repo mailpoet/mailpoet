@@ -1,4 +1,4 @@
-import { select } from '@wordpress/data';
+import { select, dispatch } from '@wordpress/data';
 import blocksToFormBodyFactory from './blocks_to_form_body';
 import mapFormDataBeforeSaving from './map_form_data_before_saving';
 
@@ -133,6 +133,10 @@ export type CHANGE_ACTIVE_SIDEBAR = {
 export function changeActiveSidebar(
   sidebar: 'default' | 'placement_settings'
 ): CHANGE_ACTIVE_SIDEBAR {
+  // Ensure no blocks are selected
+  if (sidebar === 'placement_settings') {
+    dispatch('core/block-editor').clearSelectedBlock();
+  }
   return {
     type: 'CHANGE_ACTIVE_SIDEBAR',
     sidebar,
