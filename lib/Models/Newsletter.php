@@ -516,6 +516,7 @@ class Newsletter extends Model {
     $orm = self::tableAlias('newsletters')
       ->distinct()->select('newsletters.*')
       ->select('newsletter_rendered_subject')
+      ->select('task_id')
       ->whereIn('newsletters.type', [
         self::TYPE_STANDARD,
         self::TYPE_NOTIFICATION_HISTORY,
@@ -534,7 +535,7 @@ class Newsletter extends Model {
       ->whereNull('newsletters.deleted_at')
       ->select('tasks.processed_at')
       ->orderByDesc('tasks.processed_at')
-      ->orderByAsc('tasks.id');
+      ->orderByAsc('task_id');
 
     if (!empty($segmentIds)) {
       $orm->join(
