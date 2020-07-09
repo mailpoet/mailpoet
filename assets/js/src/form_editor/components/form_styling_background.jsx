@@ -61,8 +61,8 @@ const FormStylingBackground = ({ children }) => {
     maxWidth: '100%',
   };
 
-  // Render virtual container for widgets with width in percent
-  if (previewSettings.formType === 'others' && formWidth.unit === 'percent') {
+  // Render virtual container for widgets and below pages/post forms with width in percent
+  if (['others', 'below_post'].includes(previewSettings.formType) && formWidth.unit === 'percent') {
     style.maxWidth = 600;
   }
 
