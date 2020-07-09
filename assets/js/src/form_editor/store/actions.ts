@@ -165,6 +165,7 @@ export function* showPreview() {
   yield {
     type: 'SHOW_PREVIEW',
   };
+  yield changeActiveSidebar('default');
   const editorSettings = select('core/block-editor').getSettings();
   const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
   const formData = select('mailpoet-form-editor').getFormData();
