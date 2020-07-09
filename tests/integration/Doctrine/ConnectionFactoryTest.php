@@ -100,7 +100,6 @@ class ConnectionFactoryTest extends \MailPoetTest {
     ')->fetch();
 
     // check timezone, SQL mode, wait timeout
-    expect($result['@@session.sql_mode'])->notContains('ONLY_FULL_GROUP_BY');
     expect($result['@@session.time_zone'])->equals(Env::$dbTimezoneOffset);
     expect($result['@@session.wait_timeout'])->greaterOrEquals(60);
 

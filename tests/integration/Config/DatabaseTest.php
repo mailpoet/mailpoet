@@ -36,8 +36,6 @@ class DatabaseTest extends \MailPoetTest {
         '@@session.time_zone as timeZone'
       )
       ->findOne();
-    // disable ONLY_FULL_GROUP_BY
-    expect($result->sqlMode)->notContains('ONLY_FULL_GROUP_BY');
     // time zone should be set based on WP's time zone
     expect($result->timeZone)->equals(Env::$dbTimezoneOffset);
   }
