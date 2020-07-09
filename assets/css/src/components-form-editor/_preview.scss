@@ -73,34 +73,7 @@
   height: 100%;
 
   .mailpoet_preview_sidebar {
-    padding: 42px 20px 10px 0;
+    padding: 42px 16px 10px 0;
     width: 300px;
-
-    > .components-base-control,
-    > p,
-    > hr {
-      margin-bottom: 18px;
-    }
-
-    .components-base-control__label {
-      display: block;
-    }
-
-    .components-radio-control__option {
-      display: inline-block;
-      margin-right: 1em;
-      width: auto;
-    }
-
-    .mailpoet-styles-settings-heading {
-      color: initial;
-      font-size: 13px;
-      font-weight: normal;
-      margin-bottom: 4px;
-    }
-
-    .mailpoet-size-settings-control .components-range-control__number {
-      min-width: 5em;
-    }
   }
 }

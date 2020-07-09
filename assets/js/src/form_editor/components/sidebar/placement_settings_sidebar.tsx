@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelect } from '@wordpress/data';
+import { Panel, PanelBody } from '@wordpress/components';
 import MailPoet from 'mailpoet';
 import PlacementSettingsPanel from 'form_editor/components/form_settings/form_placement_options/settings_panel';
 import SidebarHeader from './sidebar_header';
@@ -24,7 +25,11 @@ export default ({ onClose }:Props) => {
           {previewSettings.formType === 'slide_in' && MailPoet.I18n.t('placeSlideInFormOnPages')}
         </h3>
       </SidebarHeader>
-      <PlacementSettingsPanel activePanel={previewSettings.formType} />
+      <Panel>
+        <PanelBody>
+          <PlacementSettingsPanel activePanel={previewSettings.formType} />
+        </PanelBody>
+      </Panel>
     </>
   );
 };

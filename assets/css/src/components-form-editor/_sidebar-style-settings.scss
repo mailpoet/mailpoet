@@ -8,7 +8,22 @@
   }
 
   .components-base-control__label {
+    display: block;
     font-weight: bold;
+  }
+
+  .components-radio-control__option {
+    display: inline-block;
+    margin-right: 1em;
+    width: auto;
+  }
+
+  .mailpoet-size-settings-control .components-range-control__number {
+    min-width: 5em;
+  }
+
+  hr {
+    margin: 0;
   }
 }
 
