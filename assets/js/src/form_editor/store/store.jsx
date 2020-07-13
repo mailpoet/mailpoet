@@ -13,13 +13,6 @@ import validateForm from './form_validator.jsx';
 import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
 import mapFormDataAfterLoading from './map_form_data_after_loading.jsx';
 
-let previewSettings = null;
-try {
-  previewSettings = JSON.parse(window.localStorage.getItem('mailpoet_form_preview_settings'));
-} catch (e) {
-  // We just keep it null
-}
-
 export default () => {
   const customFields = window.mailpoet_custom_fields.map(
     (field) => ({ ...field, params: field.params || {} })
@@ -41,6 +34,14 @@ export default () => {
     months: window.mailpoet_month_names,
   };
   formData.settings.segments = formData.settings.segments ? formData.settings.segments : [];
+
+  let previewSettings = null;
+  try {
+    previewSettings = JSON.parse(window.localStorage.getItem(`mailpoet_form_preview_settings${formData.id}`));
+  } catch (e) {
+    // We just keep it null
+  }
+
   const defaultState = {
     formBlocks,
     formData: mapFormDataAfterLoading(formData),
