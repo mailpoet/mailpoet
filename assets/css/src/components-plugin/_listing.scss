@@ -47,10 +47,13 @@
   li a span.mailpoet-listing-groups-count {
     background-color: $color-tertiary-light;
     border-radius: 8px;
+    display: inline-block;
     font-size: $font-size-extra-small;
     font-weight: 600;
-    margin-left: 2px;
-    padding: 1px 6px;
+    line-height: 16px;
+    margin: 1px 0 0 2px;
+    padding: 0 6px;
+    vertical-align: top;
   }
 
   li a.mailpoet-listing-groups-current span.mailpoet-listing-groups-count {
