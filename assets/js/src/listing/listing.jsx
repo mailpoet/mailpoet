@@ -661,8 +661,6 @@ class Listing extends React.Component {
               onSetPage={this.handleSetPage}
             />
           </div>
-
-          { search ? <div className="mailpoet-listing-mobile-search-holder" /> : '' }
         </div>
       </>
     );
