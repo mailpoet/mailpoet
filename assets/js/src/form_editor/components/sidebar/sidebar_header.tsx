@@ -3,7 +3,7 @@ import { Button } from '@wordpress/components';
 
 type Props = {
   closeSidebar: () => any,
-  children: React.ReactNode | React.ReactNode[],
+  children: React.ReactNode,
 }
 
 const SidebarHeader = ({ children, closeSidebar }: Props) => (
