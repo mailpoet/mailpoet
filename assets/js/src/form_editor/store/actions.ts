@@ -144,9 +144,10 @@ export function changeActiveSidebar(
 }
 
 export function* changePreviewSettings(settings) {
+  const formData = select('mailpoet-form-editor').getFormData();
   yield {
     type: 'STORE_LOCALLY',
-    key: 'mailpoet_form_preview_settings',
+    key: `mailpoet_form_preview_settings${formData.id}`,
     value: settings,
   };
   yield {
