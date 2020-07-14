@@ -5,8 +5,9 @@ namespace MailPoet\Mailer\Methods;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
+use MailPoet\Mailer\WordPress\PHPMailerLoader;
 
-require_once ABSPATH . WPINC . '/class-phpmailer.php';
+PHPMailerLoader::load();
 
 class PHPMail {
   public $sender;

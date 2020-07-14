@@ -248,3 +248,11 @@ parameters:
 			message: "#^Parameter \\#2 \\$segment of class MailPoet\\\\Entities\\\\NewsletterSegmentEntity constructor expects MailPoet\\\\Entities\\\\SegmentEntity, object given\\.$#"
 			count: 1
 			path: ../../lib/Newsletter/NewsletterSaveController.php
+		-
+			message: "#^Class PHPMailer\\\\PHPMailer\\\\PHPMailer not found\\.$#"
+			count: 1
+			path: ../../lib/Mailer/WordPress/PHPMailerLoader.php
+		-
+			message: "#^Class PHPMailer\\\\PHPMailer\\\\Exception not found\\.$#"
+			count: 1
+			path: ../../lib/Mailer/WordPress/PHPMailerLoader.php

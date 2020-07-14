@@ -7,9 +7,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Subscribers\SubscribersRepository;
 
-if (!class_exists('PHPMailer')) {
-  require_once ABSPATH . WPINC . '/class-phpmailer.php';
-}
+PHPMailerLoader::load();
 
 class WordPressMailer extends \PHPMailer {
 
