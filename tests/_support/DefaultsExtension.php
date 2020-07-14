@@ -52,6 +52,7 @@ class DefaultsExtension extends Extension {
   }
 
   private function setupWooCommerce() {
+    global $wpdb;
     // address
     update_option('woocommerce_store_address', 'Address', 'yes');
     update_option('woocommerce_store_address_2', '', 'yes');
@@ -86,6 +87,11 @@ class DefaultsExtension extends Extension {
     update_option('woocommerce_customer_new_account_settings', ['enabled' => 'no']);
     update_option('woocommerce_new_order_settings', ['enabled' => 'no']);
     update_option('woocommerce_customer_completed_order_settings', ['enabled' => 'no']);
+
+    // mark all WC cron actions complete
+    $tableName = ! empty($wpdb->actionscheduler_actions) ? $wpdb->actionscheduler_actions : $wpdb->prefix . 'actionscheduler_actions';// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $sql = "UPDATE {$tableName} SET status = 'complete'";
+    $wpdb->query($sql);
   }
 
   private function createPage($name, $tile, $content) {
