@@ -235,7 +235,9 @@ class Newsletters extends APIEndpoint {
   public function delete($data = []) {
     $newsletter = $this->getNewsletter($data);
     if ($newsletter instanceof NewsletterEntity) {
+      $this->wp->doAction('mailpoet_api_newsletters_delete_before', [$newsletter->getId()]);
       $this->newslettersRepository->bulkDelete([$newsletter->getId()]);
+      $this->wp->doAction('mailpoet_api_newsletters_delete_after', [$newsletter->getId()]);
       return $this->successResponse(null, ['count' => 1]);
     } else {
       return $this->errorResponse([
@@ -351,7 +353,9 @@ class Newsletters extends APIEndpoint {
     } elseif ($data['action'] === 'restore') {
       $this->newslettersRepository->bulkRestore($ids);
     } elseif ($data['action'] === 'delete') {
+      $this->wp->doAction('mailpoet_api_newsletters_delete_before', $ids);
       $this->newslettersRepository->bulkDelete($ids);
+      $this->wp->doAction('mailpoet_api_newsletters_delete_after', $ids);
     } else {
       throw UnexpectedValueException::create()
         ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
