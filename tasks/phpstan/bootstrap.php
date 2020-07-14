@@ -5,7 +5,10 @@ define('ABSPATH', getenv('WP_ROOT') . '/');
 require_once ABSPATH . 'wp-load.php';
 require_once ABSPATH . 'wp-admin/includes/admin.php';
 require_once(ABSPATH . 'wp-admin/includes/ms.php');
-require_once ABSPATH . 'wp-includes/class-phpmailer.php';
+
+use MailPoet\Mailer\WordPress\PHPMailerLoader;
+
+PHPMailerLoader::load();
 
 if (!class_exists('\MailPoet\Premium\DI\ContainerConfigurator')) {
   require_once __DIR__ . '/PremiumContainerConfigurator.php';
