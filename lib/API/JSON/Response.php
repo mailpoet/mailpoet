@@ -30,14 +30,13 @@ abstract class Response {
     if (!empty($this->meta)) {
       $response['meta'] = $this->meta;
     }
-    if ($data !== null) {
-      $response = array_merge($response, $data);
+    if ($data === null) {
+      $data = [];
     }
+    $response = array_merge($response, $data);
 
-    if (!empty($response)) {
-      @header('Content-Type: application/json; charset=' . get_option('blog_charset'));
-      echo WPFunctions::get()->wpJsonEncode($response);
-    }
+    @header('Content-Type: application/json; charset=' . get_option('blog_charset'));
+    echo WPFunctions::get()->wpJsonEncode($response);
     die();
   }
 
