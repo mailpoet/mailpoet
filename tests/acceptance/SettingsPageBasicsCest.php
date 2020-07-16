@@ -48,16 +48,28 @@ class SettingsPageBasicsCest {
     $i->wantTo('Allow users to subscribe to lists in site comments');
     $postTitle = 'Hello world!';
     $i->login();
+    //go to settings and opt-in for comments
     $i->amOnMailPoetPage('Settings');
     $i->checkOption('[data-automation-id="subscribe-on_comment-checkbox"]');
     $i->selectOptionInSelect2('My First List');
-    //save settings
     $i->click('[data-automation-id="settings-submit-button"]');
+    //go to the post and perform commenting + opting
     $i->amOnPage('/');
     $i->waitForText($postTitle);
     $i->click($postTitle);
-    $i->scrollTo('.comment-form-mailpoet');
-    $i->waitForElement(['css' => '.comment-form-mailpoet']);
+    $i->waitForText($postTitle);
+    $i->scrollTo('#commentform');
+    $i->waitForElementVisible(['css' => '.comment-form-mailpoet']);
+    $i->see('Yes, add me to your mailing list');
+    $i->fillField('#comment', 'This is just a lorem ipsum dolor text.');
+    $i->click('#mailpoet_subscribe_on_comment');
+    $i->click('Post Comment');
+    //check if user is really subscribed to a list
+    $i->amOnMailpoetPage('Lists');
+    $i->clickItemRowActionByItemName('My First List', 'View Subscribers');
+    $i->waitForText('Subscribers');
+    $i->waitForText('test@test.com');
+    $i->waitForText('Unconfirmed');
     //clear checkbox to hide Select2 from next test
     $i->amOnMailPoetPage('Settings');
     $i->uncheckOption('[data-automation-id="subscribe-on_comment-checkbox"]');
