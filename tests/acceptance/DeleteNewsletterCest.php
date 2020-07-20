@@ -90,7 +90,6 @@ class DeleteNewsletterCest {
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForText($newsletterName);
     $i->click('[data-automation-id="empty_trash"]');
-    $i->makeScreenshot('ss2');
     $i->waitForText('2 emails were permanently deleted.');
     $i->waitForElementNotVisible($newsletterName);
     $i->click('[data-automation-id="filters_all"]');
