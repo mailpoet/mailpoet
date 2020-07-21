@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.2
 Tested up to: 5.4
-Stable tag: 3.47.9
+Stable tag: 3.47.10
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.47.10 - 2020-07-21 =
+* Added: form width setting;
+* Added: before and after deleting newsletter actions;
+* Improved: new design for listings header;
+* Improved: API better handles empty lines at the beginning of PHP files.
 
 = 3.47.9 - 2020-07-14 =
 * Improved: responsiveness of signup forms;
