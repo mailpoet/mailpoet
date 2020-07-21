@@ -186,7 +186,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 = 3.47.10 - 2020-07-21 =
 * Added: form width setting;
-* Added: before and after deleting newsletter actions;
+* Added: before and after deleting newsletter hooks;
 * Improved: new design for listings header;
 * Improved: API better handles empty lines at the beginning of PHP files.
 
