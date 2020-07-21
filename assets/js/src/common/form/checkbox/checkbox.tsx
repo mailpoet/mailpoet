@@ -5,12 +5,14 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   onCheck: (isChecked: boolean) => void,
   children?: React.ReactNode,
   isFullWidth?: boolean,
+  automationId?: string,
 };
 
 const Checkbox = ({
   children,
   isFullWidth,
   onCheck,
+  automationId,
   ...attributes
 }: Props) => (
   <label
@@ -21,6 +23,7 @@ const Checkbox = ({
         'mailpoet-full-width': isFullWidth,
       })
     }
+    data-automation-id={automationId}
   >
     <input
       type="checkbox"

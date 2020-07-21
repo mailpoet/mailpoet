@@ -44,6 +44,7 @@ class ListingHeader extends React.Component {
           <Checkbox
             name="select_all"
             id="select_all"
+            automationId="select_all"
             checked={this.props.selection}
             onCheck={() => {}}
             onChange={this.handleSelectItems}
