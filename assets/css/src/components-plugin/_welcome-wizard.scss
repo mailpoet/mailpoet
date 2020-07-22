@@ -1,4 +1,5 @@
-.admin_page_mailpoet-welcome-wizard {
+.admin_page_mailpoet-welcome-wizard,
+.admin_page_mailpoet-woocommerce-setup {
   background: #fff;
 
   p {
@@ -165,12 +166,29 @@
   justify-content: center;
 }
 
-.mailpoet_wizard_woocommerce_list {
-  text-align: center;
+.mailpoet_wizard_woocommerce_option {
+  box-shadow: 0 -1px 0 0 $color-tertiary-light;
+  padding-bottom: 25px;
+  padding-top: 1px;
+}
 
-  label {
-    color: #595c65;
-    display: block;
-    margin-top: 10px;
+.mailpoet_wizard_gdpr {
+  color: $color-text-light;
+  font-size: $font-size-small;
+  line-height: 1.14;
+
+  span {
+    background-color: $color-tertiary-light-70pc-opaque;
+    border-radius: 2px;
+    color: $color-tertiary;
+    font-size: $font-size-extra-small;
+    line-height: 2;
+    margin-right: 8px;
+    padding: 3px 4px;
   }
+}
+
+.mailpoet_wizard_woocommerce_toggle {
+  float: right;
+  padding-top: 3.5em;
 }
