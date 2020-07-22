@@ -42,8 +42,7 @@ class PermanentNotices {
   public function init() {
     $excludeWizard = [
       'mailpoet-welcome-wizard',
-      'mailpoet-woocommerce-list-import',
-      'mailpoet-revenue-tracking-permission',
+      'mailpoet-woocommerce-setup',
     ];
     $this->wp->addAction('wp_ajax_dismissed_notice_handler', [
       $this,
