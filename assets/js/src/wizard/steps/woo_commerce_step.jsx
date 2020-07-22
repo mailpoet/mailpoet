@@ -45,6 +45,7 @@ const WizardWooCommerceStep = (props) => {
               showError={error === 'importType'}
               onCheck={(value) => setImportType(value ? 'subscribed' : 'unsubscribed')}
               name="mailpoet_woocommerce_import_type"
+              automationId="woocommerce_import_type"
             />
           </div>
           <p>
@@ -76,6 +77,7 @@ const WizardWooCommerceStep = (props) => {
               showError={error === 'allowed'}
               onCheck={(value) => setAllowed(value)}
               name="mailpoet_woocommerce_tracking"
+              automationId="woocommerce_tracking"
             />
           </div>
           <p>
@@ -107,6 +109,7 @@ const WizardWooCommerceStep = (props) => {
           type="submit"
           withSpinner={props.loading}
           disabled={props.loading}
+          automationId="submit_woocommerce_setup"
         >
           {finishButtonText}
         </Button>

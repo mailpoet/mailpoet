@@ -178,6 +178,16 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->click("//*[name()='label'][.//*[name()='input'][@name='{$inputName}'][@value='{$inputValue}']]");
   }
 
+  public function clickToggleYes($yesNoCSSSelector) {
+    $i = $this;
+    $i->click($yesNoCSSSelector . ' .mailpoet-form-yesno-yes');
+  }
+
+  public function clickToggleNo($yesNoCSSSelector) {
+    $i = $this;
+    $i->click($yesNoCSSSelector . ' .mailpoet-form-yesno-no');
+  }
+
   public function assertAttributeContains($selector, $attribute, $contains) {
     $i = $this;
     $attributeValue = $i->grabAttributeFrom($selector, $attribute);
