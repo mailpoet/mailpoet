@@ -7,6 +7,7 @@ import WelcomeWizardMigratedUserStep from './steps/migrated_user_step.jsx';
 import WelcomeWizardEmailCourseStep from './steps/email_course_step.jsx';
 import WelcomeWizardUsageTrackingStep from './steps/usage_tracking_step.jsx';
 import WelcomeWizardPitchMSSStep from './steps/pitch_mss_step.jsx';
+import WooCommerceController from './woocommerce_controller.jsx';
 import WelcomeWizardStepLayout from './layout/step_layout.jsx';
 
 import CreateSenderSettings from './create_sender_settings.jsx';
@@ -66,10 +67,17 @@ const WelcomeWizardStepsController = (props) => {
       .then(() => (redirect(step)));
   }
 
-  function skipSenderStep() {
+  function skipSenderStep(e) {
+    e.preventDefault();
     setLoading(true);
     updateSettings(CreateSenderSettings({ address: window.admin_email, name: '' }))
-      .then(finishWizard);
+      .then(() => {
+        if (window.is_woocommerce_active) {
+          redirect(stepsCount - 1);
+        } else {
+          finishWizard();
+        }
+      });
   }
 
   const stepName = mapStepNumberToStepName(step);
@@ -141,6 +149,11 @@ const WelcomeWizardStepsController = (props) => {
                 mailpoetAccountUrl={window.mailpoet_account_url}
               />
             </WelcomeWizardStepLayout>
+          ) : null}
+
+        { stepName === 'WizardWooCommerceStep'
+          ? (
+            <WooCommerceController isWizardStep />
           ) : null}
       </StepsContent>
     </>

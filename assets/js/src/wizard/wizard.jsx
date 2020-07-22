@@ -9,15 +9,12 @@ import {
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 import WelcomeWizardStepsController from './welcome_wizard_controller.jsx';
-import WooCommerceImportController from './woocommerce_import_controller.jsx';
-import RevenueTrackingPermissionController from './revenue_tracking_permission.jsx';
+import WooCommerceController from './woocommerce_controller.jsx';
 
 const App = () => {
   let basePath = '/steps/1';
-  if (window.location.search.includes('revenue-tracking-permission')) {
-    basePath = '/revenue-tracking-permission';
-  } else if (window.location.search.includes('woocommerce-list-import')) {
-    basePath = '/import';
+  if (window.location.search.includes('woocommerce-setup')) {
+    basePath = '/woocommerce';
   }
   const contextValue = useGlobalContextValue(window);
   return (
@@ -26,8 +23,7 @@ const App = () => {
         <Notices />
         <Switch>
           <Route path="/steps/:step" component={WelcomeWizardStepsController} />
-          <Route path="/import" component={WooCommerceImportController} />
-          <Route path="/revenue-tracking-permission" component={RevenueTrackingPermissionController} />
+          <Route path="/woocommerce" component={WooCommerceController} />
           <Route render={() => <Redirect to={basePath} />} />
         </Switch>
       </HashRouter>

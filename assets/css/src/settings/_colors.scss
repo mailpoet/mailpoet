@@ -22,6 +22,7 @@ $color-tertiary: #071c6d;
 $color-tertiary-hover: darken($color-tertiary, 10%);
 $color-tertiary-light: #e5e9f8;
 $color-tertiary-light-half-opaque: rgba($color-tertiary-light, .5);
+$color-tertiary-light-70pc-opaque: rgba($color-tertiary-light, .7);
 $color-tertiary-light-hover: darken($color-tertiary-light, 10%);
 
 // Typography colors
