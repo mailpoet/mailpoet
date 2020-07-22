@@ -7,11 +7,13 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   name: string,
   onCheck: (isChecked: boolean) => void,
   showError?: boolean,
+  automationId?: string,
 };
 
 const YesNo = ({
   onCheck,
   showError,
+  automationId,
   ...attributes
 }: Props) => (
   <div
@@ -22,6 +24,7 @@ const YesNo = ({
         'mailpoet-disabled': attributes.disabled,
       })
     }
+    data-automation-id={automationId}
   >
     <label>
       <input
