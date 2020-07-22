@@ -98,25 +98,25 @@ class Changelog {
       return;
     }
     if (
-      !in_array($_GET['page'], ['mailpoet-revenue-tracking-permission', 'mailpoet-woocommerce-list-import', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
+      !in_array($_GET['page'], ['mailpoet-woocommerce-setup', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
       && !$this->settings->get('woocommerce_import_screen_displayed')
       && $this->wooCommerceHelper->isWooCommerceActive()
       && $this->wooCommerceHelper->getOrdersCountCreatedBefore($this->settings->get('installed_at')) > 0
       && $this->wp->currentUserCan('administrator')
     ) {
-      $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-list-import'));
+      $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-setup'));
     }
   }
 
   private function checkRevenueTrackingPermissionPage() {
     if (
-      !in_array($_GET['page'], ['mailpoet-revenue-tracking-permission', 'mailpoet-woocommerce-list-import', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
+      !in_array($_GET['page'], ['mailpoet-woocommerce-setup', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
       && ($this->settings->get('woocommerce.accept_cookie_revenue_tracking.set') === null)
       && $this->settings->get('tracking.enabled')
       && $this->wooCommerceHelper->isWooCommerceActive()
       && $this->wp->currentUserCan('administrator')
     ) {
-      $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-revenue-tracking-permission'));
+      $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-setup'));
     }
   }
 

@@ -10,7 +10,6 @@ use MailPoet\AdminPages\Pages\MP2Migration;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
 use MailPoet\AdminPages\Pages\Premium;
-use MailPoet\AdminPages\Pages\RevenueTrackingPermission;
 use MailPoet\AdminPages\Pages\Segments;
 use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\Subscribers;
@@ -18,7 +17,7 @@ use MailPoet\AdminPages\Pages\SubscribersExport;
 use MailPoet\AdminPages\Pages\SubscribersImport;
 use MailPoet\AdminPages\Pages\Update;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
-use MailPoet\AdminPages\Pages\WooCommerceListImport;
+use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
@@ -338,29 +337,16 @@ class Menu {
       ]
     );
 
-    // WooCommerce List Import
+    // WooCommerce Setup
     $this->wp->addSubmenuPage(
       true,
-      $this->setPageTitle($this->wp->__('WooCommerce List Import', 'mailpoet')),
-      $this->wp->__('WooCommerce List Import', 'mailpoet'),
+      $this->setPageTitle($this->wp->__('WooCommerce Setup', 'mailpoet')),
+      $this->wp->__('WooCommerce Setup', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-      'mailpoet-woocommerce-list-import',
+      'mailpoet-woocommerce-setup',
       [
         $this,
-        'wooCommerceListImport',
-      ]
-    );
-
-    // WooCommerce List Import
-    $this->wp->addSubmenuPage(
-      true,
-      $this->setPageTitle($this->wp->__('Track WooCommerce revenues with cookies', 'mailpoet')),
-      $this->wp->__('Track WooCommerce revenues with cookies', 'mailpoet'),
-      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-      'mailpoet-revenue-tracking-permission',
-      [
-        $this,
-        'revenueTrackingPermission',
+        'wooCommerceSetup',
       ]
     );
 
@@ -414,12 +400,8 @@ class Menu {
     $this->container->get(WelcomeWizard::class)->render();
   }
 
-  public function wooCommerceListImport() {
-    $this->container->get(WooCommerceListImport::class)->render();
-  }
-
-  public function revenueTrackingPermission() {
-    $this->container->get(RevenueTrackingPermission::class)->render();
+  public function wooCommerceSetup() {
+    $this->container->get(WooCommerceSetup::class)->render();
   }
 
   public function update() {
