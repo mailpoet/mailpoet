@@ -125,7 +125,7 @@
   line-height: 1.14;
 
   span {
-    background-color: $color-tertiary-light-70pc-opaque;
+    background-color: rgba($color-tertiary-light, .7);
     border-radius: 2px;
     color: $color-tertiary;
     font-size: $font-size-extra-small;
