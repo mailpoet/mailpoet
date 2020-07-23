@@ -110,7 +110,11 @@
 }
 
 .mailpoet-wizard-woocommerce-option {
+  align-items: center;
   box-shadow: 0 -1px 0 0 $color-tertiary-light;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
   padding-bottom: 25px;
   padding-top: 1px;
 }
@@ -132,6 +136,5 @@
 }
 
 .mailpoet-wizard-woocommerce-toggle {
-  float: right;
-  padding-top: 3.5em;
+  margin-left: $grid-gap;
 }

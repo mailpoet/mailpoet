@@ -43,26 +43,28 @@ const WizardWooCommerceStep = (props) => {
               automationId="woocommerce_import_type"
             />
           </div>
-          <p>
-            {ReactStringReplace(
-              MailPoet.I18n.t('wooCommerceSetupImportInfo'),
-              /\[link\](.*?)\[\/link\]/,
-              (match) => (
-                <a
-                  key={match}
-                  href="https://kb.mailpoet.com/article/284-import-old-customers-to-the-woocommerce-customers-list"
-                  data-beacon-article="5d722c7104286364bc8ecf19"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {match}
-                </a>
-              )
-            )}
-          </p>
-          <div className="mailpoet-wizard-gdpr">
-            <span>GDPR</span>
-            {MailPoet.I18n.t('wooCommerceSetupImportGDPRInfo')}
+          <div>
+            <p>
+              {ReactStringReplace(
+                MailPoet.I18n.t('wooCommerceSetupImportInfo'),
+                /\[link\](.*?)\[\/link\]/,
+                (match) => (
+                  <a
+                    key={match}
+                    href="https://kb.mailpoet.com/article/284-import-old-customers-to-the-woocommerce-customers-list"
+                    data-beacon-article="5d722c7104286364bc8ecf19"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {match}
+                  </a>
+                )
+              )}
+            </p>
+            <div className="mailpoet-wizard-gdpr">
+              <span>GDPR</span>
+              {MailPoet.I18n.t('wooCommerceSetupImportGDPRInfo')}
+            </div>
           </div>
         </div>
 
@@ -75,26 +77,28 @@ const WizardWooCommerceStep = (props) => {
               automationId="woocommerce_tracking"
             />
           </div>
-          <p>
-            {ReactStringReplace(
-              MailPoet.I18n.t('wooCommerceSetupTrackingInfo'),
-              /\[link\](.*?)\[\/link\]/,
-              (match) => (
-                <a
-                  key={match}
-                  href="https://kb.mailpoet.com/article/280-woocommerce-cookie-tracking"
-                  data-beacon-article="5d5fa44c2c7d3a7a4d778906"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {match}
-                </a>
-              )
-            )}
-          </p>
-          <div className="mailpoet-wizard-gdpr">
-            <span>GDPR</span>
-            {MailPoet.I18n.t('wooCommerceSetupTrackingGDPRInfo')}
+          <div>
+            <p>
+              {ReactStringReplace(
+                MailPoet.I18n.t('wooCommerceSetupTrackingInfo'),
+                /\[link\](.*?)\[\/link\]/,
+                (match) => (
+                  <a
+                    key={match}
+                    href="https://kb.mailpoet.com/article/280-woocommerce-cookie-tracking"
+                    data-beacon-article="5d5fa44c2c7d3a7a4d778906"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {match}
+                  </a>
+                )
+              )}
+            </p>
+            <div className="mailpoet-wizard-gdpr">
+              <span>GDPR</span>
+              {MailPoet.I18n.t('wooCommerceSetupTrackingGDPRInfo')}
+            </div>
           </div>
         </div>
 
