@@ -11,7 +11,7 @@ function PitchMss(props) {
       <WelcomeWizardStepLayoutBody
         illustrationUrl={props.MSSPitchIllustrationUrl}
       >
-        <div className="mailpoet_welcome_wizard_step_content">
+        <div className="mailpoet-welcome-wizard-step-content">
           <h1>{MailPoet.I18n.t('congratulationsMSSPitchHeader')}</h1>
           <h2>{MailPoet.I18n.t('congratulationsMSSPitchSubHeader')}</h2>
           <p>

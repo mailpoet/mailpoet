@@ -39,8 +39,8 @@ const WizardWooCommerceStep = (props) => {
       <div className="mailpoet-gap" />
 
       <form onSubmit={submit}>
-        <div className="mailpoet_wizard_woocommerce_option">
-          <div className="mailpoet_wizard_woocommerce_toggle">
+        <div className="mailpoet-wizard-woocommerce-option">
+          <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
               showError={error === 'importType'}
               onCheck={(value) => setImportType(value ? 'subscribed' : 'unsubscribed')}
@@ -65,14 +65,14 @@ const WizardWooCommerceStep = (props) => {
               )
             )}
           </p>
-          <div className="mailpoet_wizard_gdpr">
+          <div className="mailpoet-wizard-gdpr">
             <span>GDPR</span>
             {MailPoet.I18n.t('wooCommerceSetupImportGDPRInfo')}
           </div>
         </div>
 
-        <div className="mailpoet_wizard_woocommerce_option">
-          <div className="mailpoet_wizard_woocommerce_toggle">
+        <div className="mailpoet-wizard-woocommerce-option">
+          <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
               showError={error === 'allowed'}
               onCheck={(value) => setAllowed(value)}
@@ -97,7 +97,7 @@ const WizardWooCommerceStep = (props) => {
               )
             )}
           </p>
-          <div className="mailpoet_wizard_gdpr">
+          <div className="mailpoet-wizard-gdpr">
             <span>GDPR</span>
             {MailPoet.I18n.t('wooCommerceSetupTrackingGDPRInfo')}
           </div>
