@@ -81,28 +81,6 @@
   height: 150px;
 }
 
-// Welcome wizard - old styles
-.mailpoet_welcome_wizard_header {
-  text-align: center;
-}
-
-.mailpoet_welcome_wizard_steps {
-  padding-top: 20px;
-  width: 100%;
-
-  div.updated,
-  div.error,
-  .notice {
-    display: none !important;
-  }
-}
-
-.mailpoet_welcome_wizard_step_revenue_tracking {
-  input[type='submit'] {
-    margin-top: 40px;
-  }
-}
-
 .mailpoet_welcome_wizard_step_content {
   margin-top: 40px;
   max-width: 620px;
@@ -124,46 +102,11 @@
     + p,
     + ul { margin-top: -20px; }
   }
-
-  .welcome_wizard_tracking_sub_title {
-    margin-bottom: 0;
-  }
-
-  .welcome_wizard_tracking_list {
-    list-style: disc;
-    padding-left: 30px;
-  }
-}
-
-.mailpoet_welcome_wizard_step_controls {
-  margin: 40px 0 10px;
-
-  .button + .button {
-    margin-left: 20px;
-  }
-
-  a {
-    cursor: pointer;
-  }
-}
-
-.mailpoet_welcome_wizard_woo_screenshot {
-  box-shadow: 2px 3px 18px rgba(#000, .3);
-  margin-top: -20px;
-  max-width: 100%;
-  width: 350px;
 }
 
 .welcome_wizard_video {
   position: absolute;
   top: -1000px;
-}
-
-.mailpoet_welcome_wizard_centered_column {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .mailpoet_wizard_woocommerce_option {
