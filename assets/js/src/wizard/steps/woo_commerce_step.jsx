@@ -10,20 +10,15 @@ import YesNo from '../../common/form/yesno/yesno';
 const WizardWooCommerceStep = (props) => {
   const [allowed, setAllowed] = useState(null);
   const [importType, setImportType] = useState(null);
-  const [error, setError] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const submit = (event) => {
     event.preventDefault();
-    if (importType === null) {
-      setError('importType');
-      return false;
-    }
-    if (allowed === null) {
-      setError('allowed');
+    setSubmitted(true);
+    if (importType === null || allowed === null) {
       return false;
     }
     props.submitForm(importType, allowed === 'true');
-    setError(null);
     return false;
   };
 
@@ -42,7 +37,7 @@ const WizardWooCommerceStep = (props) => {
         <div className="mailpoet-wizard-woocommerce-option">
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
-              showError={error === 'importType'}
+              showError={submitted && importType === null}
               onCheck={(value) => setImportType(value ? 'subscribed' : 'unsubscribed')}
               name="mailpoet_woocommerce_import_type"
               automationId="woocommerce_import_type"
@@ -74,7 +69,7 @@ const WizardWooCommerceStep = (props) => {
         <div className="mailpoet-wizard-woocommerce-option">
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
-              showError={error === 'allowed'}
+              showError={submitted && allowed === null}
               onCheck={(value) => setAllowed(value)}
               name="mailpoet_woocommerce_tracking"
               automationId="woocommerce_tracking"
