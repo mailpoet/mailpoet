@@ -81,7 +81,7 @@
   height: 150px;
 }
 
-.mailpoet_welcome_wizard_step_content {
+.mailpoet-welcome-wizard-step-content {
   margin-top: 40px;
   max-width: 620px;
   min-height: 30vh;
@@ -104,18 +104,18 @@
   }
 }
 
-.welcome_wizard_video {
+.mailpoet-wizard-video {
   position: absolute;
   top: -1000px;
 }
 
-.mailpoet_wizard_woocommerce_option {
+.mailpoet-wizard-woocommerce-option {
   box-shadow: 0 -1px 0 0 $color-tertiary-light;
   padding-bottom: 25px;
   padding-top: 1px;
 }
 
-.mailpoet_wizard_gdpr {
+.mailpoet-wizard-gdpr {
   color: $color-text-light;
   font-size: $font-size-small;
   line-height: 1.14;
@@ -131,7 +131,7 @@
   }
 }
 
-.mailpoet_wizard_woocommerce_toggle {
+.mailpoet-wizard-woocommerce-toggle {
   float: right;
   padding-top: 3.5em;
 }

@@ -31,7 +31,7 @@ const App = () => {
   );
 };
 
-const container = document.getElementById('mailpoet_wizard_container');
+const container = document.getElementById('mailpoet-wizard-container');
 
 if (container) {
   ReactDOM.render(<App />, container);
