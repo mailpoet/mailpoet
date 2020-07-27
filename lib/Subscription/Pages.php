@@ -572,12 +572,14 @@ class Pages {
       return '';
     }
     $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
+    $unsubscribeUrl = $this->subscriptionUrlFactory->getUnsubscribeUrl($this->subscriber, $queueId);
     $templateData = [
-      'unsubscribeUrl' => $this->subscriptionUrlFactory->getUnsubscribeUrl($this->subscriber, $queueId),
+      'unsubscribeUrl' => $unsubscribeUrl,
     ];
     return $this->wp->applyFilters(
       'mailpoet_unsubscribe_confirmation_page',
-      $this->templateRenderer->render('subscription/confirm_unsubscribe.html', $templateData)
+      $this->templateRenderer->render('subscription/confirm_unsubscribe.html', $templateData),
+      $unsubscribeUrl
     );
   }
 
