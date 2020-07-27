@@ -62,6 +62,8 @@ export default () => {
     mediaUpload: canUserUpload ? uploadMedia : null,
     maxWidth: 580,
     __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
+    __experimentalBlockPatterns: [], // we don't want patterns in our inserter
+    __experimentalBlockPatternCategories: [],
   };
 
   return (
