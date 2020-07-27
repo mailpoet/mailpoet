@@ -24,7 +24,6 @@ export default () => {
       <div className="edit-post-header__settings">
         <Button
           isSecondary
-          isLarge
           onClick={showPreview}
           isPressed={isPreview}
           className="mailpoet-preview-button"
@@ -34,7 +33,6 @@ export default () => {
         </Button>
         <Button
           isPrimary
-          isLarge
           className="editor-post-publish-button"
           data-automation-id="form_save_button"
           isBusy={isFormSaving}
@@ -55,7 +53,6 @@ export default () => {
         <div className="toolbar">
           <Button
             isSecondary
-            isLarge
             href="?page=mailpoet-forms#/"
             className="mailpoet-editor-header-button"
           >
