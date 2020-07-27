@@ -28,6 +28,7 @@ export type Settings = {
       unsubscribe: string
       confirmation: string
       captcha: string
+      confirm_unsubscribe: string
     }
     segments: string[]
   }
