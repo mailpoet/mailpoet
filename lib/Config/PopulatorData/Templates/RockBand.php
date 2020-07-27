@@ -144,7 +144,7 @@ class RockBand {
                   0 =>
                    [
                     'type' => 'header',
-                    'text' => '<p><a href="[link:newsletter_view_in_browser_url]">View email in browser &gt;</a></p>',
+                    'text' => '<p><a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a></p>',
                     'styles' =>
                      [
                       'block' =>
