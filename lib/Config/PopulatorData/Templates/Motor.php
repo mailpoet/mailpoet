@@ -235,7 +235,7 @@ class Motor {
                    [
                     'type' => 'text',
                     'text' => '<p style="text-align: center;"><span style="color: #d52a2a;"><strong>Welcome to Vector Motors</strong></span></p>
-    <p style="text-align: center; font-size: 11px;"><span style="color: #d52a2a;"><a href="[link:newsletter_view_in_browser_url]">View email in browser &gt;</a></span></p>',
+    <p style="text-align: center; font-size: 11px;"><span style="color: #d52a2a;"><a href="[link:newsletter_view_in_browser_url]">'.WPFunctions::get()->__("View this in your browser.", 'mailpoet').'</a></span></p>',
                    ],
                  ],
                ],
