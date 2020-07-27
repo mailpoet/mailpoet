@@ -107,6 +107,7 @@ class Pages {
         'unsubscribe' => $subscriptionUrlFactory->getSubscriptionUrl($page, 'unsubscribe'),
         'manage' => $subscriptionUrlFactory->getSubscriptionUrl($page, 'manage'),
         'confirm' => $subscriptionUrlFactory->getSubscriptionUrl($page, 'confirm'),
+        'confirm_unsubscribe' => $subscriptionUrlFactory->getSubscriptionUrl($page, 'confirm_unsubscribe'),
       ],
     ];
   }

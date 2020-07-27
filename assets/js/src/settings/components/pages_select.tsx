@@ -8,7 +8,7 @@ type Props = {
   automationId?: string
   linkAutomationId?: string
   setValue: (x: string) => any
-  preview: 'manage' | 'unsubscribe' | 'confirm'
+  preview: 'manage' | 'unsubscribe' | 'confirm' | 'confirm_unsubscribe'
 }
 
 export default (props: Props) => {

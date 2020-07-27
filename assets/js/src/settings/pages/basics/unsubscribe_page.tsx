@@ -5,7 +5,8 @@ import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs, PagesSelect } from 'settings/components';
 
 export default function UnsubscribePage() {
-  const [page, setPage] = useSetting('subscription', 'pages', 'unsubscribe');
+  const [unsubscribePage, setUnsubscribePage] = useSetting('subscription', 'pages', 'unsubscribe');
+  const [unsubscribeConfirmationPage, setUnsubscribeConfirmationPage] = useSetting('subscription', 'pages', 'confirm_unsubscribe');
   return (
     <>
       <Label
@@ -19,7 +20,8 @@ export default function UnsubscribePage() {
                 () => <code key="mp">[mailpoet_page]</code>
               )
             }
-            <br /><br />
+            <br />
+            <br />
             {
               ReactStringReplace(
                 t('unsubscribeDescription2'),
@@ -32,10 +34,25 @@ export default function UnsubscribePage() {
         htmlFor="subscription-pages-unsubscribe"
       />
       <Inputs>
+        {t('confirmationPageTitle')}
+        :
+        <br />
         <PagesSelect
-          value={page}
+          value={unsubscribeConfirmationPage}
+          preview="confirm_unsubscribe"
+          setValue={setUnsubscribeConfirmationPage}
+          id="subscription-pages-unsubscribe-confirmation"
+          linkAutomationId="unsubscribe_page_preview_link_confirmation"
+        />
+        <br />
+        <br />
+        {t('successPageTitle')}
+        :
+        <br />
+        <PagesSelect
+          value={unsubscribePage}
           preview="unsubscribe"
-          setValue={setPage}
+          setValue={setUnsubscribePage}
           id="subscription-pages-unsubscribe"
           linkAutomationId="unsubscribe_page_preview_link"
         />
