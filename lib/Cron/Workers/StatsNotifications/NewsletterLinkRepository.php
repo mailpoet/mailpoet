@@ -4,6 +4,8 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 
 /**
  * @extends Repository<NewsletterLinkEntity>
@@ -18,16 +20,24 @@ class NewsletterLinkRepository extends Repository {
    * @return NewsletterLinkEntity|null
    */
   public function findTopLinkForNewsletter($newsletterId) {
-    return $this->doctrineRepository
-      ->createQueryBuilder('nl')
-      ->join('nl.clicks', 'c')
-      ->addSelect('COUNT(c.id) AS HIDDEN counter')
-      ->where('nl.newsletter = :newsletterId')
+    $statisticsClicksTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
+    $topIdQuery = $this->entityManager->getConnection()->createQueryBuilder()
+      ->select('c.link_id')
+      ->addSelect('count(c.id) AS counter')
+      ->from($statisticsClicksTable, 'c')
+      ->where('c.newsletter_id = :newsletterId')
       ->setParameter('newsletterId', $newsletterId)
-      ->groupBy('nl.id')
+      ->groupBy('c.link_id')
       ->orderBy('counter', 'desc')
       ->setMaxResults(1)
-      ->getQuery()
-      ->getOneOrNullResult();
+      ->execute();
+    if (!$topIdQuery instanceof Statement) {
+      return null;
+    }
+    $topId = $topIdQuery->fetch();
+    if (is_array($topId) && isset($topId['link_id'])) {
+      return $this->findOneById((int)$topId['link_id']);
+    }
+    return null;
   }
 }
