@@ -31,8 +31,8 @@ class FormWithColumnsCest {
     $i->click('.block-editor-block-variation-picker__variations li:first-child button');
     $i->waitForElement('.block-editor-block-list__block');
     // Add inputs into column
-    $i->addFromBlockInEditor('First name', '.block-editor-block-list__block');
-    $i->addFromBlockInEditor('Last name', '.block-editor-block-list__block');
+    $this->addFieldInColumn($i, 'First name');
+    $this->addFieldInColumn($i, 'Last name');
     $i->seeNoJSErrors();
     $i->saveFormInEditor();
     // Reload page and check data were saved
@@ -60,5 +60,12 @@ class FormWithColumnsCest {
     $i->waitForText($subscriberEmail);
     $i->waitForText($subscriberFirstName);
     $i->waitForText($subscriberLastName);
+  }
+
+  private function addFieldInColumn(\AcceptanceTester $i, $name) {
+    $i->click('//div[@class="block-list-appender"][1]');
+    $i->fillField('.block-editor-inserter__search-input', $name);
+    $i->waitForText($name, 5, '.block-editor-block-types-list__item-title');
+    $i->click($name, '.block-editor-block-types-list__list-item');
   }
 }
