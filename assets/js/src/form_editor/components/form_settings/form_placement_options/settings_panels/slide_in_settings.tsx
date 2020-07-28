@@ -20,6 +20,9 @@ const SlideInSettings = () => {
     changeFormSettings(settings);
   };
 
+  const isActive = formSettings.placeSlideInFormOnAllPages
+    || formSettings.placeSlideInFormOnAllPosts;
+
   return (
     <>
       <p>{MailPoet.I18n.t('placeSlideInFormOnPagesDescription')}</p>
@@ -34,37 +37,41 @@ const SlideInSettings = () => {
         checked={formSettings.placeSlideInFormOnAllPosts || false}
         onChange={partial(updateSettings, 'placeSlideInFormOnAllPosts')}
       />
-      <SelectControl
-        label={MailPoet.I18n.t('formPlacementDelay')}
-        value={formSettings.slideInFormDelay}
-        onChange={partial(updateSettings, 'slideInFormDelay')}
-        options={delayValues.map((delayValue) => ({
-          value: delayValue,
-          label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
-        }))}
-      />
-      <RadioControl
-        label={MailPoet.I18n.t('formPlacementPlacementPosition')}
-        selected={formSettings.slideInFormPosition}
-        options={[
-          { label: MailPoet.I18n.t('formPlacementPlacementPositionLeft'), value: 'left' },
-          { label: MailPoet.I18n.t('formPlacementPlacementPositionRight'), value: 'right' },
-        ]}
-        onChange={partial(updateSettings, 'slideInFormPosition')}
-      />
-      <SizeSettings
-        label={MailPoet.I18n.t('formSettingsWidth')}
-        value={formSettings.slideInStyles.width}
-        minPixels={200}
-        maxPixels={1200}
-        minPercents={10}
-        maxPercents={100}
-        defaultPixelValue={560}
-        defaultPercentValue={100}
-        onChange={(width) => (
-          updateSettings('slideInStyles', { ...formSettings.slideInStyles, width })
-        )}
-      />
+      {isActive && (
+        <>
+          <SelectControl
+            label={MailPoet.I18n.t('formPlacementDelay')}
+            value={formSettings.slideInFormDelay}
+            onChange={partial(updateSettings, 'slideInFormDelay')}
+            options={delayValues.map((delayValue) => ({
+              value: delayValue,
+              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
+            }))}
+          />
+          <RadioControl
+            label={MailPoet.I18n.t('formPlacementPlacementPosition')}
+            selected={formSettings.slideInFormPosition}
+            options={[
+              { label: MailPoet.I18n.t('formPlacementPlacementPositionLeft'), value: 'left' },
+              { label: MailPoet.I18n.t('formPlacementPlacementPositionRight'), value: 'right' },
+            ]}
+            onChange={partial(updateSettings, 'slideInFormPosition')}
+          />
+          <SizeSettings
+            label={MailPoet.I18n.t('formSettingsWidth')}
+            value={formSettings.slideInStyles.width}
+            minPixels={200}
+            maxPixels={1200}
+            minPercents={10}
+            maxPercents={100}
+            defaultPixelValue={560}
+            defaultPercentValue={100}
+            onChange={(width) => (
+              updateSettings('slideInStyles', { ...formSettings.slideInStyles, width })
+            )}
+          />
+        </>
+      )}
     </>
   );
 };
