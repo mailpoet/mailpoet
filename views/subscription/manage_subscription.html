@@ -1,0 +1,15 @@
+<% block content %>
+<form method="post" action="<%= actionUrl|escape %>" novalidate>
+  <input type="hidden" name="action" value="mailpoet_subscription_update" />
+  <input type="hidden" name="data[segments]" value="" />
+  <input type="hidden" name="mailpoet_redirect" value="<%= redirectUrl|escape %>"/>
+  <input type="hidden" name="data[email]" value="<%= email|escape %>" />
+  <input type="hidden" name="token" value="<%= token %>" />
+  <p class="mailpoet_paragraph">
+    <label> <%= __('Email', 'mailpoet') %>*<br /><strong><%= email|escape %></strong></label>
+    <br />
+    <span style="font-size:85%;"><%= editEmailInfo|raw %></span>
+  </p>
+  <%= formHtml|raw %>
+</form>
+<% endblock %>
