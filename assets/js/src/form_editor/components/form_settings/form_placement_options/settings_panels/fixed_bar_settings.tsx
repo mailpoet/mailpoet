@@ -20,6 +20,9 @@ const FixedBarSettings = () => {
     changeFormSettings(settings);
   };
 
+  const isActive = formSettings.placeFixedBarFormOnAllPages
+    || formSettings.placeFixedBarFormOnAllPosts;
+
   return (
     <>
       <p>{MailPoet.I18n.t('placeFixedBarFormOnPagesDescription')}</p>
@@ -34,37 +37,41 @@ const FixedBarSettings = () => {
         checked={formSettings.placeFixedBarFormOnAllPosts || false}
         onChange={partial(updateSettings, 'placeFixedBarFormOnAllPosts')}
       />
-      <SelectControl
-        label={MailPoet.I18n.t('formPlacementDelay')}
-        value={formSettings.fixedBarFormDelay}
-        onChange={partial(updateSettings, 'fixedBarFormDelay')}
-        options={delayValues.map((delayValue) => ({
-          value: delayValue,
-          label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
-        }))}
-      />
-      <RadioControl
-        label={MailPoet.I18n.t('formPlacementPlacementPosition')}
-        selected={formSettings.fixedBarFormPosition}
-        options={[
-          { label: MailPoet.I18n.t('formPlacementPlacementPositionTop'), value: 'top' },
-          { label: MailPoet.I18n.t('formPlacementPlacementPositionBottom'), value: 'bottom' },
-        ]}
-        onChange={partial(updateSettings, 'fixedBarFormPosition')}
-      />
-      <SizeSettings
-        label={MailPoet.I18n.t('formSettingsWidth')}
-        value={formSettings.fixedBarStyles.width}
-        minPixels={200}
-        maxPixels={1200}
-        minPercents={10}
-        maxPercents={100}
-        defaultPixelValue={560}
-        defaultPercentValue={100}
-        onChange={(width) => (
-          updateSettings('fixedBarStyles', { ...formSettings.fixedBarStyles, width })
-        )}
-      />
+      {isActive && (
+        <>
+          <SelectControl
+            label={MailPoet.I18n.t('formPlacementDelay')}
+            value={formSettings.fixedBarFormDelay}
+            onChange={partial(updateSettings, 'fixedBarFormDelay')}
+            options={delayValues.map((delayValue) => ({
+              value: delayValue,
+              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
+            }))}
+          />
+          <RadioControl
+            label={MailPoet.I18n.t('formPlacementPlacementPosition')}
+            selected={formSettings.fixedBarFormPosition}
+            options={[
+              { label: MailPoet.I18n.t('formPlacementPlacementPositionTop'), value: 'top' },
+              { label: MailPoet.I18n.t('formPlacementPlacementPositionBottom'), value: 'bottom' },
+            ]}
+            onChange={partial(updateSettings, 'fixedBarFormPosition')}
+          />
+          <SizeSettings
+            label={MailPoet.I18n.t('formSettingsWidth')}
+            value={formSettings.fixedBarStyles.width}
+            minPixels={200}
+            maxPixels={1200}
+            minPercents={10}
+            maxPercents={100}
+            defaultPixelValue={560}
+            defaultPercentValue={100}
+            onChange={(width) => (
+              updateSettings('fixedBarStyles', { ...formSettings.fixedBarStyles, width })
+            )}
+          />
+        </>
+      )}
     </>
   );
 };

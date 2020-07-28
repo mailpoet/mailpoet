@@ -21,6 +21,8 @@ const PopUpSettings = () => {
     changeFormSettings(settings);
   };
 
+  const isActive = formSettings.placePopupFormOnAllPages || formSettings.placePopupFormOnAllPosts;
+
   return (
     <>
       <p>{MailPoet.I18n.t('placePopupFormOnPagesDescription')}</p>
@@ -35,28 +37,32 @@ const PopUpSettings = () => {
         checked={formSettings.placePopupFormOnAllPosts || false}
         onChange={partial(updateSettings, 'placePopupFormOnAllPosts')}
       />
-      <SelectControl
-        label={MailPoet.I18n.t('formPlacementDelay')}
-        value={formSettings.popupFormDelay}
-        onChange={partial(updateSettings, 'popupFormDelay')}
-        options={delayValues.map((delayValue) => ({
-          value: delayValue,
-          label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
-        }))}
-      />
-      <SizeSettings
-        label={MailPoet.I18n.t('formSettingsWidth')}
-        value={formSettings.popupStyles.width}
-        minPixels={200}
-        maxPixels={1200}
-        minPercents={10}
-        maxPercents={100}
-        defaultPixelValue={560}
-        defaultPercentValue={100}
-        onChange={(width) => (
-          updateSettings('popupStyles', { ...formSettings.popupStyles, width })
-        )}
-      />
+      {isActive && (
+        <>
+          <SelectControl
+            label={MailPoet.I18n.t('formPlacementDelay')}
+            value={formSettings.popupFormDelay}
+            onChange={partial(updateSettings, 'popupFormDelay')}
+            options={delayValues.map((delayValue) => ({
+              value: delayValue,
+              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
+            }))}
+          />
+          <SizeSettings
+            label={MailPoet.I18n.t('formSettingsWidth')}
+            value={formSettings.popupStyles.width}
+            minPixels={200}
+            maxPixels={1200}
+            minPercents={10}
+            maxPercents={100}
+            defaultPixelValue={560}
+            defaultPercentValue={100}
+            onChange={(width) => (
+              updateSettings('popupStyles', { ...formSettings.popupStyles, width })
+            )}
+          />
+        </>
+      )}
     </>
   );
 };

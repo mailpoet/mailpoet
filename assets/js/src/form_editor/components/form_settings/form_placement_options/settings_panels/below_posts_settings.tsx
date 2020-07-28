@@ -18,6 +18,8 @@ const BelowPostsSettings = () => {
     changeFormSettings(settings);
   };
 
+  const isActive = formSettings.placeFormBellowAllPages || formSettings.placeFormBellowAllPosts;
+
   return (
     <>
       <ToggleControl
@@ -30,19 +32,21 @@ const BelowPostsSettings = () => {
         checked={formSettings.placeFormBellowAllPosts || false}
         onChange={partial(updateSettings, 'placeFormBellowAllPosts')}
       />
-      <SizeSettings
-        label={MailPoet.I18n.t('formSettingsWidth')}
-        value={formSettings.belowPostStyles.width}
-        minPixels={200}
-        maxPixels={1200}
-        minPercents={10}
-        maxPercents={100}
-        defaultPixelValue={560}
-        defaultPercentValue={100}
-        onChange={(width) => (
-          updateSettings('belowPostStyles', { ...formSettings.belowPostStyles, width })
-        )}
-      />
+      {isActive && (
+        <SizeSettings
+          label={MailPoet.I18n.t('formSettingsWidth')}
+          value={formSettings.belowPostStyles.width}
+          minPixels={200}
+          maxPixels={1200}
+          minPercents={10}
+          maxPercents={100}
+          defaultPixelValue={560}
+          defaultPercentValue={100}
+          onChange={(width) => (
+            updateSettings('belowPostStyles', { ...formSettings.belowPostStyles, width })
+          )}
+        />
+      )}
     </>
   );
 };
