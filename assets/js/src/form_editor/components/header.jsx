@@ -65,6 +65,7 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
           </Button>
           <ToolbarItem
             as={Button}
+            data-automation-id="form_inserter_open"
             className="edit-post-header-toolbar__inserter-toggle"
             isPrimary
             isPressed={isInserterOpened}
