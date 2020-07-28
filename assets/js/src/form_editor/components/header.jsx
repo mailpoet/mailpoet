@@ -1,10 +1,15 @@
 import React from 'react';
-import { Button } from '@wordpress/components';
+import {
+  Button,
+  __experimentalToolbarItem as ToolbarItem,
+} from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { __ } from '@wordpress/i18n';
+import { plus } from '@wordpress/icons';
+import { __, _x } from '@wordpress/i18n';
 import MailPoet from 'mailpoet';
+import PropTypes from 'prop-types';
 
-export default () => {
+const Header = ({ isInserterOpened, setIsInserterOpened }) => {
   const sidebarOpened = useSelect(
     (select) => select('mailpoet-form-editor').getSidebarOpened(),
     []
@@ -58,8 +63,27 @@ export default () => {
           >
             {MailPoet.I18n.t('back')}
           </Button>
+          <ToolbarItem
+            as={Button}
+            className="edit-post-header-toolbar__inserter-toggle"
+            isPrimary
+            isPressed={isInserterOpened}
+            onClick={() => setIsInserterOpened(!isInserterOpened)}
+            icon={plus}
+            label={_x(
+              'Add block',
+              'Generic label for block inserter button'
+            )}
+          />
         </div>
       </div>
     </div>
   );
 };
+
+Header.propTypes = {
+  isInserterOpened: PropTypes.bool.isRequired,
+  setIsInserterOpened: PropTypes.func.isRequired,
+};
+
+export default Header;

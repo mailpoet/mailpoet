@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '@wordpress/core-data';
 import { select, useSelect, useDispatch } from '@wordpress/data';
-import { DropZoneProvider, Popover, SlotFillProvider } from '@wordpress/components';
+import {
+  DropZoneProvider,
+  Popover,
+  SlotFillProvider,
+} from '@wordpress/components';
 import { uploadMedia } from '@wordpress/media-utils';
 import {
   BlockEditorKeyboardShortcuts,
@@ -15,6 +19,7 @@ import classnames from 'classnames';
 import fetchLinkSuggestions from '../utils/link_suggestions';
 import Header from './header.jsx';
 import Sidebar from './sidebar/sidebar';
+import Inserter from './inserter';
 import FormTitle from './form_title.jsx';
 import Notices from './notices.jsx';
 import UnsavedChangesNotice from './unsaved_changes_notice.jsx';
@@ -33,6 +38,7 @@ import { CustomFontsStyleSheetLink } from './font_family_settings';
  * https://developer.wordpress.org/block-editor/packages/packages-block-editor/
  */
 export default () => {
+  const [isInserterOpen, setIsInserterOpen] = useState(false);
   const sidebarOpened = useSelect(
     (sel) => sel('mailpoet-form-editor').getSidebarOpened(),
     []
@@ -64,6 +70,7 @@ export default () => {
     __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
     __experimentalBlockPatterns: [], // we don't want patterns in our inserter
     __experimentalBlockPatternCategories: [],
+    __experimentalSetIsInserterOpened: setIsInserterOpen,
   };
 
   return (
@@ -73,7 +80,10 @@ export default () => {
         <SlotFillProvider>
           <div className={layoutClass}>
             <div className="interface-interface-skeleton__header">
-              <Header />
+              <Header
+                isInserterOpened={isInserterOpen}
+                setIsInserterOpened={setIsInserterOpen}
+              />
             </div>
             <div className="interface-interface-skeleton__body">
               <BlockEditorProvider
@@ -83,6 +93,9 @@ export default () => {
                 settings={editorSettings}
                 useSubRegistry={false}
               >
+                <div className="interface-interface-skeleton__left-sidebar">
+                  {isInserterOpen && (<Inserter setIsInserterOpened={setIsInserterOpen} />)}
+                </div>
                 <div className="interface-interface-skeleton__content">
                   <Notices />
                   <Popover.Slot name="block-toolbar" />

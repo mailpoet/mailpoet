@@ -43,6 +43,7 @@
     "@wordpress/hooks": "^2.9.0",
     "@wordpress/html-entities": "^2.8.0",
     "@wordpress/i18n": "^3.14.0",
+    "@wordpress/icons": "^2.4.0",
     "@wordpress/media-utils": "^1.15.0",
     "@wordpress/notices": "^2.8.2",
     "@wordpress/rich-text": "^3.20.2",
