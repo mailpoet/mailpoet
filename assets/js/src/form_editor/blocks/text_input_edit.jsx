@@ -80,7 +80,7 @@ const TextInputEdit = ({
           id={id}
           ref={input}
           className="mailpoet_text"
-          type={name === 'email' ? 'email' : 'text'}
+          type="text"
           name={name}
           placeholder={placeholder}
           data-automation-id={`editor_${name}_input`}
