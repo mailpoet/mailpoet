@@ -510,51 +510,36 @@ class Pages {
       ]
     );
 
-    $formHtml = '<form method="POST" ' .
-      'action="' . admin_url('admin-post.php') . '" ' .
-      'novalidate>';
-    $formHtml .= '<input type="hidden" name="action"' .
-      ' value="mailpoet_subscription_update" />';
-    $formHtml .= '<input type="hidden" name="data[segments]" value="" />';
-    $formHtml .= '<input type="hidden" name="mailpoet_redirect" ' .
-      'value="' . htmlspecialchars($this->urlHelper->getCurrentUrl(), ENT_QUOTES) . '" />';
-    $formHtml .= '<input type="hidden" name="data[email]" value="' .
-      $subscriber->email .
-    '" />';
-    $formHtml .= '<input type="hidden" name="token" value="' .
-      $this->linkTokens->getToken($subscriber) .
-    '" />';
+    $templateData = [
+      'actionUrl' => admin_url('admin-post.php'),
+      'redirectUrl' => $this->urlHelper->getCurrentUrl(),
+      'email' => $subscriber->email,
+      'token' => $this->linkTokens->getToken($subscriber),
+      'editEmailInfo' => __('Need to change your email address? Unsubscribe here, then simply sign up again.', 'mailpoet'),
+      'formHtml' => $this->formRenderer->renderBlocks($form, [], $honeypot = false),
+    ];
 
-    $formHtml .= '<p class="mailpoet_paragraph">';
-    $formHtml .= '<label>' . __('Email', 'mailpoet') . ' *<br /><strong>' . htmlspecialchars($subscriber->email) . '</strong></label>';
-    $formHtml .= '<br /><span style="font-size:85%;">';
-    // special case for WP users as they cannot edit their subscriber's email
     if ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
-      // check if subscriber's associated WP user is the currently logged in WP user
       $wpCurrentUser = $this->wp->wpGetCurrentUser();
       if ($wpCurrentUser->user_email === $subscriber->email) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $formHtml .= Helpers::replaceLinkTags(
-          $this->wp->__('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
+        $templateData['editEmailInfo'] = Helpers::replaceLinkTags(
+          __('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
           $this->wp->getEditProfileUrl(),
           ['target' => '_blank']
         );
       } else {
-        $formHtml .= Helpers::replaceLinkTags(
-          $this->wp->__('[link]Log in to your account[/link] to update your email.', 'mailpoet'),
+        $templateData['editEmailInfo'] = Helpers::replaceLinkTags(
+          __('[link]Log in to your account[/link] to update your email.', 'mailpoet'),
           $this->wp->wpLoginUrl(),
           ['target' => '_blank']
         );
       }
-    } else {
-      $formHtml .= $this->wp->__('Need to change your email address? Unsubscribe here, then simply sign up again.', 'mailpoet');
     }
-    $formHtml .= '</span>';
-    $formHtml .= '</p>';
 
-    // subscription form
-    $formHtml .= $this->formRenderer->renderBlocks($form, [], $honeypot = false);
-    $formHtml .= '</form>';
-    return $formHtml;
+    return $this->wp->applyFilters(
+      'mailpoet_manage_subscription_page',
+      $this->templateRenderer->render('subscription/manage_subscription.html', $templateData)
+    );
   }
 
   private function getUnsubscribeContent() {

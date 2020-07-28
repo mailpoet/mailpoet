@@ -73,7 +73,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->contains('form method="POST"');
+    expect($result)->contains('form method="post"');
     expect($result)->contains($subscriber->email);
   }
 
