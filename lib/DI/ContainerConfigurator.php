@@ -263,6 +263,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscription\Comment::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Manage::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscription\ManageSubscriptionFormRenderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Pages::class)->setPublic(true)
       ->setShared(false); // Get a new instance each time $container->get() is called, needed for tests
     $container->autowire(\MailPoet\Subscription\Registration::class)->setPublic(true);

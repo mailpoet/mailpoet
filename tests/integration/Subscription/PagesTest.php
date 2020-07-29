@@ -7,8 +7,6 @@ use Codeception\Util\Fixtures;
 use MailPoet\Config\Renderer;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\AssetsController;
-use MailPoet\Form\Block\Date as FormBlockDate;
-use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -24,9 +22,9 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscription\CaptchaRenderer;
+use MailPoet\Subscription\ManageSubscriptionFormRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;
-use MailPoet\Util\Url as UrlHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -194,16 +192,14 @@ class PagesTest extends \MailPoetTest {
       $newSubscriberNotificationsMock ?? $container->get(NewSubscriberNotificationMailer::class),
       $container->get(WPFunctions::class),
       $container->get(SettingsController::class),
-      $container->get(UrlHelper::class),
       $container->get(CaptchaRenderer::class),
       $container->get(WelcomeScheduler::class),
       $container->get(LinkTokens::class),
       $container->get(SubscriptionUrlFactory::class),
       $container->get(AssetsController::class),
-      $container->get(FormRenderer::class),
-      $container->get(FormBlockDate::class),
       $container->get(Renderer::class),
-      $unsubscribesMock ?? $container->get(Unsubscribes::class)
+      $unsubscribesMock ?? $container->get(Unsubscribes::class),
+      $container->get(ManageSubscriptionFormRenderer::class)
     );
   }
 }
