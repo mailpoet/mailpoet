@@ -78,6 +78,20 @@ export default function KeyActivation() {
             </div>
           </div>
         )}
+
+        {!state.isKeyValid && (
+          <p>
+            <a
+              href="https://kb.mailpoet.com/article/319-known-errors-when-validating-a-mailpoet-key"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-beacon-article="5ef1da9d2c7d3a10cba966c5"
+              className="mailpoet_error"
+            >
+              {MailPoet.I18n.t('learnMore')}
+            </a>
+          </p>
+        )}
       </div>
     );
   }
