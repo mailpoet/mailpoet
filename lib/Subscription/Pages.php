@@ -5,10 +5,6 @@ namespace MailPoet\Subscription;
 use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Form\AssetsController;
-use MailPoet\Form\Block\Date as FormBlockDate;
-use MailPoet\Form\Renderer as FormRenderer;
-use MailPoet\Models\CustomField;
-use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -17,7 +13,6 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Util\Helpers;
-use MailPoet\Util\Url as UrlHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Pages {
@@ -38,9 +33,6 @@ class Pages {
   /** @var SettingsController */
   private $settings;
 
-  /** @var UrlHelper */
-  private $urlHelper;
-
   /** @var WPFunctions */
   private $wp;
 
@@ -59,46 +51,39 @@ class Pages {
   /** @var AssetsController */
   private $assetsController;
 
-  /** @var FormRenderer */
-  private $formRenderer;
-
-  /** @var FormBlockDate */
-  private $dateBlock;
-
   /** @var TemplateRenderer */
   private $templateRenderer;
 
   /** @var Unsubscribes */
   private $unsubscribesTracker;
 
+  /** @var ManageSubscriptionFormRenderer */
+  private $manageSubscriptionFormRenderer;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
     SettingsController $settings,
-    UrlHelper $urlHelper,
     CaptchaRenderer $captchaRenderer,
     WelcomeScheduler $welcomeScheduler,
     LinkTokens $linkTokens,
     SubscriptionUrlFactory $subscriptionUrlFactory,
     AssetsController $assetsController,
-    FormRenderer $formRenderer,
-    FormBlockDate $dateBlock,
     TemplateRenderer $templateRenderer,
-    Unsubscribes $unsubscribesTracker
+    Unsubscribes $unsubscribesTracker,
+    ManageSubscriptionFormRenderer $manageSubscriptionFormRenderer
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
     $this->settings = $settings;
-    $this->urlHelper = $urlHelper;
     $this->captchaRenderer = $captchaRenderer;
     $this->welcomeScheduler = $welcomeScheduler;
     $this->linkTokens = $linkTokens;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->assetsController = $assetsController;
-    $this->formRenderer = $formRenderer;
-    $this->dateBlock = $dateBlock;
     $this->templateRenderer = $templateRenderer;
     $this->unsubscribesTracker = $unsubscribesTracker;
+    $this->manageSubscriptionFormRenderer = $manageSubscriptionFormRenderer;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -372,174 +357,7 @@ class Pages {
     } else {
       return $this->wp->__('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
-
-    $customFields = array_map(function($customField) use($subscriber) {
-      $customField->id = 'cf_' . $customField->id;
-      $customField = $customField->asArray();
-      $customField['params']['value'] = $subscriber->{$customField['id']};
-
-      if ($customField['type'] === 'date') {
-        $dateFormats = $this->dateBlock->getDateFormats();
-        $customField['params']['date_format'] = array_shift(
-          $dateFormats[$customField['params']['date_type']]
-        );
-      }
-      if (!isset($customField['params']['label'])) {
-         $customField['params']['label'] = $customField['name'];
-      }
-
-      return $customField;
-    }, CustomField::findMany());
-
-    $segmentIds = $this->settings->get('subscription.segments', []);
-    if (!empty($segmentIds)) {
-      $segments = Segment::getPublic()
-        ->whereIn('id', $segmentIds)
-        ->findMany();
-    } else {
-      $segments = Segment::getPublic()
-        ->findMany();
-    }
-    $subscribedSegmentIds = [];
-    if (!empty($this->subscriber->subscriptions)) {
-      foreach ($this->subscriber->subscriptions as $subscription) {
-        if ($subscription['status'] === Subscriber::STATUS_SUBSCRIBED) {
-          $subscribedSegmentIds[] = $subscription['segment_id'];
-        }
-      }
-    }
-
-    $segments = array_map(function($segment) use($subscribedSegmentIds) {
-      return [
-        'id' => $segment->id,
-        'name' => $segment->name,
-        'is_checked' => in_array($segment->id, $subscribedSegmentIds),
-      ];
-    }, $segments);
-
-
-    $fields = [
-      [
-        'id' => 'first_name',
-        'type' => 'text',
-        'params' => [
-          'label' => $this->wp->__('First name', 'mailpoet'),
-          'value' => $subscriber->firstName,
-          'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()),
-        ],
-      ],
-      [
-        'id' => 'last_name',
-        'type' => 'text',
-        'params' => [
-          'label' => $this->wp->__('Last name', 'mailpoet'),
-          'value' => $subscriber->lastName,
-          'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()),
-        ],
-      ],
-      [
-        'id' => 'status',
-        'type' => 'select',
-        'params' => [
-          'required' => true,
-          'label' => $this->wp->__('Status', 'mailpoet'),
-          'values' => [
-            [
-              'value' => [
-                Subscriber::STATUS_SUBSCRIBED => $this->wp->__('Subscribed', 'mailpoet'),
-              ],
-              'is_checked' => (
-                $subscriber->status === Subscriber::STATUS_SUBSCRIBED
-              ),
-            ],
-            [
-              'value' => [
-                Subscriber::STATUS_UNSUBSCRIBED => $this->wp->__('Unsubscribed', 'mailpoet'),
-              ],
-              'is_checked' => (
-                $subscriber->status === Subscriber::STATUS_UNSUBSCRIBED
-              ),
-            ],
-            [
-              'value' => [
-                Subscriber::STATUS_BOUNCED => $this->wp->__('Bounced', 'mailpoet'),
-              ],
-              'is_checked' => (
-                $subscriber->status === Subscriber::STATUS_BOUNCED
-              ),
-              'is_disabled' => true,
-              'is_hidden' => (
-                $subscriber->status !== Subscriber::STATUS_BOUNCED
-              ),
-            ],
-            [
-              'value' => [
-                Subscriber::STATUS_INACTIVE => $this->wp->__('Inactive', 'mailpoet'),
-              ],
-              'is_checked' => (
-                $subscriber->status === Subscriber::STATUS_INACTIVE
-              ),
-              'is_hidden' => (
-                $subscriber->status !== Subscriber::STATUS_INACTIVE
-              ),
-            ],
-          ],
-        ],
-      ],
-    ];
-
-    $form = array_merge(
-      $fields,
-      $customFields,
-      [
-        [
-          'id' => 'segments',
-          'type' => 'segment',
-          'params' => [
-            'label' => $this->wp->__('Your lists', 'mailpoet'),
-            'values' => $segments,
-          ],
-        ],
-        [
-          'id' => 'submit',
-          'type' => 'submit',
-          'params' => [
-            'label' => $this->wp->__('Save', 'mailpoet'),
-          ],
-        ],
-      ]
-    );
-
-    $templateData = [
-      'actionUrl' => admin_url('admin-post.php'),
-      'redirectUrl' => $this->urlHelper->getCurrentUrl(),
-      'email' => $subscriber->email,
-      'token' => $this->linkTokens->getToken($subscriber),
-      'editEmailInfo' => __('Need to change your email address? Unsubscribe here, then simply sign up again.', 'mailpoet'),
-      'formHtml' => $this->formRenderer->renderBlocks($form, [], $honeypot = false),
-    ];
-
-    if ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
-      $wpCurrentUser = $this->wp->wpGetCurrentUser();
-      if ($wpCurrentUser->user_email === $subscriber->email) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $templateData['editEmailInfo'] = Helpers::replaceLinkTags(
-          __('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
-          $this->wp->getEditProfileUrl(),
-          ['target' => '_blank']
-        );
-      } else {
-        $templateData['editEmailInfo'] = Helpers::replaceLinkTags(
-          __('[link]Log in to your account[/link] to update your email.', 'mailpoet'),
-          $this->wp->wpLoginUrl(),
-          ['target' => '_blank']
-        );
-      }
-    }
-
-    return $this->wp->applyFilters(
-      'mailpoet_manage_subscription_page',
-      $this->templateRenderer->render('subscription/manage_subscription.html', $templateData)
-    );
+    return $this->manageSubscriptionFormRenderer->renderForm($subscriber);
   }
 
   private function getUnsubscribeContent() {
