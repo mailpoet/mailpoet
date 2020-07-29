@@ -55,7 +55,59 @@ class ManageSubscriptionFormRenderer {
   }
 
   public function renderForm(Subscriber $subscriber): string {
-    $customFields = array_map(function($customField) use($subscriber) {
+    $basicFields = $this->getBasicFields($subscriber);
+    $customFields = $this->getCustomFields($subscriber);
+    $segmentField = $this->getSegmentField($subscriber);
+
+    $form = array_merge(
+      $basicFields,
+      $customFields,
+      [
+        $segmentField,
+        [
+          'id' => 'submit',
+          'type' => 'submit',
+          'params' => [
+            'label' => __('Save', 'mailpoet'),
+          ],
+        ],
+      ]
+    );
+
+    $templateData = [
+      'actionUrl' => admin_url('admin-post.php'),
+      'redirectUrl' => $this->urlHelper->getCurrentUrl(),
+      'email' => $subscriber->email,
+      'token' => $this->linkTokens->getToken($subscriber),
+      'editEmailInfo' => __('Need to change your email address? Unsubscribe here, then simply sign up again.', 'mailpoet'),
+      'formHtml' => $this->formRenderer->renderBlocks($form, [], $honeypot = false),
+    ];
+
+    if ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
+      $wpCurrentUser = $this->wp->wpGetCurrentUser();
+      if ($wpCurrentUser->user_email === $subscriber->email) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        $templateData['editEmailInfo'] = Helpers::replaceLinkTags(
+          __('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
+          $this->wp->getEditProfileUrl(),
+          ['target' => '_blank']
+        );
+      } else {
+        $templateData['editEmailInfo'] = Helpers::replaceLinkTags(
+          __('[link]Log in to your account[/link] to update your email.', 'mailpoet'),
+          $this->wp->wpLoginUrl(),
+          ['target' => '_blank']
+        );
+      }
+    }
+
+    return $this->wp->applyFilters(
+      'mailpoet_manage_subscription_page',
+      $this->templateRenderer->render('subscription/manage_subscription.html', $templateData)
+    );
+  }
+
+  private function getCustomFields(Subscriber $subscriber): array {
+    return array_map(function($customField) use($subscriber) {
       $customField->id = 'cf_' . $customField->id;
       $customField = $customField->asArray();
       $customField['params']['value'] = $subscriber->{$customField['id']};
@@ -72,35 +124,10 @@ class ManageSubscriptionFormRenderer {
 
       return $customField;
     }, CustomField::findMany());
+  }
 
-    $segmentIds = $this->settings->get('subscription.segments', []);
-    if (!empty($segmentIds)) {
-      $segments = Segment::getPublic()
-        ->whereIn('id', $segmentIds)
-        ->findMany();
-    } else {
-      $segments = Segment::getPublic()
-        ->findMany();
-    }
-    $subscribedSegmentIds = [];
-    if (!empty($subscriber->subscriptions)) {
-      foreach ($subscriber->subscriptions as $subscription) {
-        if ($subscription['status'] === Subscriber::STATUS_SUBSCRIBED) {
-          $subscribedSegmentIds[] = $subscription['segment_id'];
-        }
-      }
-    }
-
-    $segments = array_map(function($segment) use($subscribedSegmentIds) {
-      return [
-        'id' => $segment->id,
-        'name' => $segment->name,
-        'is_checked' => in_array($segment->id, $subscribedSegmentIds),
-      ];
-    }, $segments);
-
-
-    $fields = [
+  private function getBasicFields(Subscriber $subscriber): array {
+    return [
       [
         'id' => 'first_name',
         'type' => 'text',
@@ -169,58 +196,42 @@ class ManageSubscriptionFormRenderer {
         ],
       ],
     ];
+  }
 
-    $form = array_merge(
-      $fields,
-      $customFields,
-      [
-        [
-          'id' => 'segments',
-          'type' => 'segment',
-          'params' => [
-            'label' => __('Your lists', 'mailpoet'),
-            'values' => $segments,
-          ],
-        ],
-        [
-          'id' => 'submit',
-          'type' => 'submit',
-          'params' => [
-            'label' => __('Save', 'mailpoet'),
-          ],
-        ],
-      ]
-    );
-
-    $templateData = [
-      'actionUrl' => admin_url('admin-post.php'),
-      'redirectUrl' => $this->urlHelper->getCurrentUrl(),
-      'email' => $subscriber->email,
-      'token' => $this->linkTokens->getToken($subscriber),
-      'editEmailInfo' => __('Need to change your email address? Unsubscribe here, then simply sign up again.', 'mailpoet'),
-      'formHtml' => $this->formRenderer->renderBlocks($form, [], $honeypot = false),
-    ];
-
-    if ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
-      $wpCurrentUser = $this->wp->wpGetCurrentUser();
-      if ($wpCurrentUser->user_email === $subscriber->email) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $templateData['editEmailInfo'] = Helpers::replaceLinkTags(
-          __('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
-          $this->wp->getEditProfileUrl(),
-          ['target' => '_blank']
-        );
-      } else {
-        $templateData['editEmailInfo'] = Helpers::replaceLinkTags(
-          __('[link]Log in to your account[/link] to update your email.', 'mailpoet'),
-          $this->wp->wpLoginUrl(),
-          ['target' => '_blank']
-        );
+  private function getSegmentField(Subscriber $subscriber): array {
+    $segmentIds = $this->settings->get('subscription.segments', []);
+    if (!empty($segmentIds)) {
+      $segments = Segment::getPublic()
+        ->whereIn('id', $segmentIds)
+        ->findMany();
+    } else {
+      $segments = Segment::getPublic()
+        ->findMany();
+    }
+    $subscribedSegmentIds = [];
+    if (!empty($subscriber->subscriptions)) {
+      foreach ($subscriber->subscriptions as $subscription) {
+        if ($subscription['status'] === Subscriber::STATUS_SUBSCRIBED) {
+          $subscribedSegmentIds[] = $subscription['segment_id'];
+        }
       }
     }
 
-    return $this->wp->applyFilters(
-      'mailpoet_manage_subscription_page',
-      $this->templateRenderer->render('subscription/manage_subscription.html', $templateData)
-    );
+    $segments = array_map(function($segment) use($subscribedSegmentIds) {
+      return [
+        'id' => $segment->id,
+        'name' => $segment->name,
+        'is_checked' => in_array($segment->id, $subscribedSegmentIds),
+      ];
+    }, $segments);
+
+    return [
+      'id' => 'segments',
+      'type' => 'segment',
+      'params' => [
+        'label' => __('Your lists', 'mailpoet'),
+        'values' => $segments,
+      ],
+    ];
   }
 }
