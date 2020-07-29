@@ -1,5 +1,5 @@
 <% block content %>
-<form method="post" action="<%= actionUrl|escape %>" novalidate>
+<form class="mailpoet-manage-subscription" method="post" action="<%= actionUrl|escape %>" novalidate>
   <input type="hidden" name="action" value="mailpoet_subscription_update" />
   <input type="hidden" name="data[segments]" value="" />
   <input type="hidden" name="mailpoet_redirect" value="<%= redirectUrl|escape %>"/>
