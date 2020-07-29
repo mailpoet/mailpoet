@@ -7,6 +7,7 @@ import { Label, Inputs, PagesSelect } from 'settings/components';
 export default function UnsubscribePage() {
   const [unsubscribePage, setUnsubscribePage] = useSetting('subscription', 'pages', 'unsubscribe');
   const [unsubscribeConfirmationPage, setUnsubscribeConfirmationPage] = useSetting('subscription', 'pages', 'confirm_unsubscribe');
+
   return (
     <>
       <Label
