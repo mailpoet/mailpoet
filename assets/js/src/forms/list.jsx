@@ -18,6 +18,10 @@ const columns = [
     label: MailPoet.I18n.t('segments'),
   },
   {
+    name: 'type',
+    label: MailPoet.I18n.t('type'),
+  },
+  {
     name: 'signups',
     label: MailPoet.I18n.t('signups'),
   },
@@ -83,6 +87,26 @@ const bulkActions = [
     onSuccess: messages.onTrash,
   },
 ];
+
+function getFormPlacement(settings) {
+  const placements = [];
+  if (settings.place_fixed_bar_form_on_all_pages === '1' || settings.place_fixed_bar_form_on_all_posts === '1') {
+    placements.push(MailPoet.I18n.t('placeFixedBarFormOnPages'));
+  }
+  if (settings.place_form_bellow_all_pages === '1' || settings.place_form_bellow_all_posts === '1') {
+    placements.push(MailPoet.I18n.t('placeFormBellowPages'));
+  }
+  if (settings.place_popup_form_on_all_pages === '1' || settings.place_popup_form_on_all_posts === '1') {
+    placements.push(MailPoet.I18n.t('placePopupFormOnPages'));
+  }
+  if (settings.place_slide_in_form_on_all_pages === '1' || settings.place_slide_in_form_on_all_posts === '1') {
+    placements.push(MailPoet.I18n.t('placeSlideInFormOnPages'));
+  }
+  if (placements.length > 0) {
+    return placements.join(', ');
+  }
+  return MailPoet.I18n.t('placeFormOthers');
+}
 
 const itemActions = [
   {
@@ -174,6 +198,8 @@ class FormList extends React.Component {
       segments = `${MailPoet.I18n.t('userChoice')} ${segments}`;
     }
 
+    const placement = getFormPlacement(form.settings);
+
     return (
       <div>
         <td className={rowClasses}>
@@ -189,6 +215,9 @@ class FormList extends React.Component {
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('segments')}>
           { segments }
+        </td>
+        <td className="column" data-colname={MailPoet.I18n.t('type')}>
+          { placement }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('signups')}>
           { form.signups }
