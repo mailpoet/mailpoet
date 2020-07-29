@@ -25,6 +25,7 @@ export default function normalizeSettings(data: any): Settings {
         unsubscribe: text,
         confirmation: text,
         captcha: text,
+        confirm_unsubscribe: text,
       }),
       segments: emptyArray,
     }),
