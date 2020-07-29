@@ -439,3 +439,16 @@ div.mailpoet_form_slide_in.active {
     margin: $form-mobile-heading-font-size * ($form-mobile-line-height / 2) 0 !important;
   }
 }
+
+// Manage Subscrition page
+.mailpoet-manage-subscription {
+  .mailpoet_text_label,
+  .mailpoet_textarea_label,
+  .mailpoet_select_label,
+  .mailpoet_radio_label,
+  .mailpoet_checkbox_label,
+  .mailpoet_list_label,
+  .mailpoet_date_label {
+    padding-right: 10px;
+  }
+}
