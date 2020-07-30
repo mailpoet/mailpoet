@@ -63,6 +63,27 @@ const CustomFieldSettings = ({
 
   return (
     <div className="custom-field-settings">
+      <ToggleControl
+        label={MailPoet.I18n.t('blockMandatory')}
+        checked={localMandatory}
+        onChange={setLocalMandatory}
+      />
+      <ToggleControl
+        label={MailPoet.I18n.t('customFieldDefaultToday')}
+        checked={localDefaultToday}
+        onChange={setLocalDefaultToday}
+      />
+      <SelectControl
+        label={MailPoet.I18n.t('customFieldDateType')}
+        value={localDateType}
+        onChange={(value) => {
+          setLocalDateType(value);
+          const dateFormats = dateSettings.dateFormats[value];
+          setLocalDateFormat(dateFormats[0]);
+        }}
+        options={dateSettings.dateTypes}
+      />
+      {createDateFormatsSelect()}
       {onSave ? (
         <Button
           isPrimary
@@ -85,27 +106,6 @@ const CustomFieldSettings = ({
           onDelete={onCustomFieldDelete}
         />
       ) : null}
-      <ToggleControl
-        label={MailPoet.I18n.t('blockMandatory')}
-        checked={localMandatory}
-        onChange={setLocalMandatory}
-      />
-      <ToggleControl
-        label={MailPoet.I18n.t('customFieldDefaultToday')}
-        checked={localDefaultToday}
-        onChange={setLocalDefaultToday}
-      />
-      <SelectControl
-        label={MailPoet.I18n.t('customFieldDateType')}
-        value={localDateType}
-        onChange={(value) => {
-          setLocalDateType(value);
-          const dateFormats = dateSettings.dateFormats[value];
-          setLocalDateFormat(dateFormats[0]);
-        }}
-        options={dateSettings.dateTypes}
-      />
-      {createDateFormatsSelect()}
     </div>
   );
 };

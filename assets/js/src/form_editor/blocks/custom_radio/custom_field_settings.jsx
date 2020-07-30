@@ -55,27 +55,6 @@ const CustomFieldSettings = ({
 
   return (
     <div className="custom-field-settings" data-automation-id="custom_field_settings">
-      {onSave ? (
-        <Button
-          isPrimary
-          onClick={() => onSave({
-            mandatory: localMandatory,
-            values: localValues,
-          })}
-          isBusy={isSaving}
-          disabled={isSaving || !hasUnsavedChanges}
-          className="button-on-top"
-        >
-          {MailPoet.I18n.t('customFieldSaveCTA')}
-        </Button>
-      ) : null}
-      {onCustomFieldDelete ? (
-        <CustomFieldDelete
-          isBusy={isSaving || isDeleting}
-          onDelete={onCustomFieldDelete}
-        />
-      ) : null}
-
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -102,6 +81,26 @@ const CustomFieldSettings = ({
       >
         {MailPoet.I18n.t('customFieldAddItem')}
       </Button>
+      {onSave ? (
+        <Button
+          isPrimary
+          onClick={() => onSave({
+            mandatory: localMandatory,
+            values: localValues,
+          })}
+          isBusy={isSaving}
+          disabled={isSaving || !hasUnsavedChanges}
+          className="button-on-top"
+        >
+          {MailPoet.I18n.t('customFieldSaveCTA')}
+        </Button>
+      ) : null}
+      {onCustomFieldDelete ? (
+        <CustomFieldDelete
+          isBusy={isSaving || isDeleting}
+          onDelete={onCustomFieldDelete}
+        />
+      ) : null}
     </div>
   );
 };
