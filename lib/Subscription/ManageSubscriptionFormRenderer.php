@@ -74,6 +74,8 @@ class ManageSubscriptionFormRenderer {
       ]
     );
 
+    $form = $this->wp->applyFilters('mailpoet_manage_subscription_page_form_fields', $form);
+
     $templateData = [
       'actionUrl' => admin_url('admin-post.php'),
       'redirectUrl' => $this->urlHelper->getCurrentUrl(),
