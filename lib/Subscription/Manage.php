@@ -54,6 +54,7 @@ class Manage {
     $subscriberData = $_POST['data'];
     $subscriberData = $this->fieldNameObfuscator->deobfuscateFormPayload($subscriberData);
 
+    $result = [];
     if (!empty($subscriberData['email'])) {
       $subscriber = Subscriber::where('email', $subscriberData['email'])->findOne();
 
@@ -76,9 +77,10 @@ class Manage {
           $subscriber->getErrors();
         }
       }
+      $result = ['success' => true];
     }
 
-    $this->urlHelper->redirectBack();
+    $this->urlHelper->redirectBack($result);
   }
 
   private function updateSubscriptions(Subscriber $subscriber, array $subscriberData) {

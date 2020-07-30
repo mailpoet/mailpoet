@@ -42,6 +42,8 @@ class ManageSubscriptionLinkCest {
     $i->click('Manage your subscription');
     $i->switchToNextTab();
     $i->waitForText('Manage your subscription');
+    $successMessage = 'Your preferences have been saved.';
+    $i->dontSee($successMessage);
 
     $formStatusElement = '[data-automation-id="form_status"]';
 
@@ -52,6 +54,7 @@ class ManageSubscriptionLinkCest {
     $i->click('Save');
     $i->waitForElement($formStatusElement);
     $i->seeOptionIsSelected($formStatusElement, 'Unsubscribed');
+    $i->see($successMessage);
 
     // change status back to subscribed
     $i->selectOption($formStatusElement, 'Subscribed');
