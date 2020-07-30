@@ -11,5 +11,10 @@
     <span style="font-size:85%;"><%= editEmailInfo|raw %></span>
   </p>
   <%= formHtml|raw %>
+  <% if formState == 'success' %>
+  <p class="mailpoet-submit-success">
+    <%= _x('Your preferences have been saved.', 'success message after saving subscription settings') %>
+  </p>
+  <% endif %>
 </form>
 <% endblock %>

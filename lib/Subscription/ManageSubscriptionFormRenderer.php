@@ -15,6 +15,9 @@ use MailPoet\Util\Url as UrlHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ManageSubscriptionFormRenderer {
+  const FORM_STATE_SUCCESS = 'success';
+  const FORM_STATE_NOT_SUBMITTED = 'not_submitted';
+
   /** @var SettingsController */
   private $settings;
 
@@ -54,7 +57,7 @@ class ManageSubscriptionFormRenderer {
     $this->templateRenderer = $templateRenderer;
   }
 
-  public function renderForm(Subscriber $subscriber): string {
+  public function renderForm(Subscriber $subscriber, string $formState = self::FORM_STATE_NOT_SUBMITTED): string {
     $basicFields = $this->getBasicFields($subscriber);
     $customFields = $this->getCustomFields($subscriber);
     $segmentField = $this->getSegmentField($subscriber);
@@ -83,6 +86,7 @@ class ManageSubscriptionFormRenderer {
       'token' => $this->linkTokens->getToken($subscriber),
       'editEmailInfo' => __('Need to change your email address? Unsubscribe here, then simply sign up again.', 'mailpoet'),
       'formHtml' => $this->formRenderer->renderBlocks($form, [], $honeypot = false),
+      'formState' => $formState,
     ];
 
     if ($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
