@@ -357,7 +357,11 @@ class Pages {
     } else {
       return $this->wp->__('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
-    return $this->manageSubscriptionFormRenderer->renderForm($subscriber);
+
+    return $this->wp->applyFilters(
+      'mailpoet_manage_subscription_page',
+      $this->manageSubscriptionFormRenderer->renderForm($subscriber)
+    );
   }
 
   private function getUnsubscribeContent() {
