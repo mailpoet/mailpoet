@@ -102,7 +102,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Config\RendererFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\ServicesChecker::class);
     $container->autowire(\MailPoet\Config\Shortcodes::class)
-      ->setShared(false); // Get a new instance each time $container->get() is called, needed for tests
+      ->setShared(false) // Get a new instance each time $container->get() is called, needed for tests
+      ->setPublic(true);
     $container->register(\MailPoet\Config\Renderer::class)
       ->setPublic(true)
       ->setFactory([new Reference(\MailPoet\Config\RendererFactory::class), 'getRenderer']);

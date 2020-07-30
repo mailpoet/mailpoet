@@ -77,6 +77,28 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result)->contains($subscriber->email);
   }
 
+  public function testItAppliesFilterForManageSubscriptionForm() {
+    $wpUser = wp_set_current_user(1);
+    $wp = new WPFunctions;
+    expect($wp->isUserLoggedIn())->true();
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->email = $wpUser->data->user_email;
+    $subscriber->wpUserId = $wpUser->ID;
+    $subscriber->save();
+
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
+    $shortcodes->init();
+
+    $wp->addAction('mailpoet_manage_subscription_page', function ($page) {
+      return $page . ' MY CUSTOM CONTENT';
+    });
+    $result = do_shortcode('[mailpoet_manage_subscription]');
+    expect($result)->contains('form class="mailpoet-manage-subscription" method="post"');
+    expect($result)->contains('MY CUSTOM CONTENT');
+    $wp->removeAllActions('mailpoet_manage_subscription_page');
+  }
+
   public function testItDoesNotDisplayManageSubscriptionFormForLoggedinNonexistentSubscribers() {
     $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();

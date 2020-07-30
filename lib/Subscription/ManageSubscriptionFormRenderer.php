@@ -100,10 +100,7 @@ class ManageSubscriptionFormRenderer {
       }
     }
 
-    return $this->wp->applyFilters(
-      'mailpoet_manage_subscription_page',
-      $this->templateRenderer->render('subscription/manage_subscription.html', $templateData)
-    );
+    return $this->templateRenderer->render('subscription/manage_subscription.html', $templateData);
   }
 
   private function getCustomFields(Subscriber $subscriber): array {
