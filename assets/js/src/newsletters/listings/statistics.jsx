@@ -4,8 +4,7 @@ import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import HelpTooltip from 'help-tooltip.jsx';
-import StatsBadge from 'newsletters/badges/stats.jsx';
+import NewsletterStats from 'common/listings/newsletter_stats';
 import { trackStatsCTAClicked } from 'newsletters/listings/utils.jsx';
 
 const wrapInLink = (content, params, id, totalSent) => {
@@ -59,20 +58,13 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
 
   let percentageClicked = 0;
   let percentageOpened = 0;
-  let percentageUnsubscribed = 0;
   let revenue = null;
 
   if (totalSent > 0) {
     percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
     percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
-    percentageUnsubscribed = (newsletter.statistics.unsubscribed * 100) / totalSent;
     revenue = newsletter.statistics.revenue;
   }
-
-  // format to 1 decimal place
-  const percentageClickedDisplay = MailPoet.Num.toLocaleFixed(percentageClicked, 1);
-  const percentageOpenedDisplay = MailPoet.Num.toLocaleFixed(percentageOpened, 1);
-  const percentageUnsubscribedDisplay = MailPoet.Num.toLocaleFixed(percentageUnsubscribed, 1);
 
   let showStatsTimeout;
   let newsletterDate;
@@ -99,66 +91,9 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
   const minNewslettersSent = 20;
   const minNewsletterOpens = 5;
 
-  let openedAndClickedStats;
-  if (totalSent >= minNewslettersSent
+  const showBadges = totalSent >= minNewslettersSent
     && newsletter.statistics.opened >= minNewsletterOpens
-    && !tooEarlyForStats
-  ) {
-    // display stats with badges
-    openedAndClickedStats = (
-      <div className="mailpoet_stats_text">
-        <div>
-          <span>
-            {percentageOpenedDisplay}
-            %
-            {' '}
-          </span>
-          <StatsBadge
-            stat="opened"
-            rate={percentageOpened}
-            tooltipId={`opened-${newsletter.id}`}
-          />
-        </div>
-        <div>
-          <span>
-            {percentageClickedDisplay}
-            %
-            {' '}
-          </span>
-          <StatsBadge
-            stat="clicked"
-            rate={percentageClicked}
-            tooltipId={`clicked-${newsletter.id}`}
-          />
-        </div>
-        <div>
-          <span className="mailpoet_stat_hidden">
-            {percentageUnsubscribedDisplay}
-            %
-          </span>
-        </div>
-      </div>
-    );
-  } else {
-    // display simple stats
-    openedAndClickedStats = (
-      <div>
-        <span className="mailpoet_stats_text">
-          {percentageOpenedDisplay}
-          %,
-          {' '}
-          {percentageClickedDisplay}
-          %
-          <span className="mailpoet_stat_hidden">
-            ,
-            {' '}
-            {percentageUnsubscribedDisplay}
-            %
-          </span>
-        </span>
-      </div>
-    );
-  }
+    && !tooEarlyForStats;
 
   const wrapContentInLink = (content, idPrefix) => wrapInLink(
     content,
@@ -167,20 +102,20 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
     totalSent
   );
 
+  const openedClickedAndRevenueStats = (
+    <NewsletterStats
+      opened={percentageOpened}
+      clicked={percentageClicked}
+      revenues={(revenue && revenue.value > 0) ? revenue.formatted : null}
+      hideBadges={!showBadges}
+      newsletterId={newsletter.id}
+      wrapContentInLink={wrapContentInLink}
+    />
+  );
+
   const content = (
     <>
-      {wrapContentInLink(openedAndClickedStats, 'opened-and-clicked')}
-      {revenue !== null && revenue.value > 0 && (
-        <div className="mailpoet_stats_text">
-          {wrapContentInLink(revenue.formatted, 'revenue')}
-          {' '}
-          <HelpTooltip
-            tooltip={MailPoet.I18n.t('revenueStatsTooltip')}
-            place="left"
-            tooltipId="helpTooltipStatsRevenue"
-          />
-        </div>
-      )}
+      {openedClickedAndRevenueStats}
       {tooEarlyForStats && wrapContentInLink(
         (
           <div className="mailpoet_badge mailpoet_badge_green">
