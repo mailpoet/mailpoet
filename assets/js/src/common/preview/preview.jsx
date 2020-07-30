@@ -54,6 +54,9 @@ function Preview({
           {children}
         </div>
       </div>
+      {(displayType !== 'desktop') && (
+        <p className="mailpoet_form_preview_disclaimer">{MailPoet.I18n.t('formPreviewMobileDisclaimer')}</p>
+      )}
     </div>
   );
 }
