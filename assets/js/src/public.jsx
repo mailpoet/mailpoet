@@ -254,5 +254,10 @@ jQuery(($) => {
     });
 
     $('.mailpoet_captcha_update').on('click', updateCaptcha);
+
+    // Manage subscription form
+    $('.mailpoet-manage-subscription').on('submit', () => {
+      $('.mailpoet-manage-subscription .mailpoet-submit-success').hide();
+    });
   });
 });
