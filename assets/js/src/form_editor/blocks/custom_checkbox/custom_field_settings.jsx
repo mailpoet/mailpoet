@@ -40,23 +40,6 @@ const CustomFieldSettings = ({
 
   return (
     <div className="custom-field-settings">
-      {onSave ? (
-        <Button
-          isPrimary
-          onClick={() => onSave(localData)}
-          isBusy={isSaving}
-          disabled={isSaving || !hasUnsavedChanges}
-          className="button-on-top"
-        >
-          {MailPoet.I18n.t('customFieldSaveCTA')}
-        </Button>
-      ) : null}
-      {onCustomFieldDelete ? (
-        <CustomFieldDelete
-          isBusy={isSaving || isDeleting}
-          onDelete={onCustomFieldDelete}
-        />
-      ) : null}
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -74,6 +57,23 @@ const CustomFieldSettings = ({
           onChange={(event) => setLocalCheckboxLabel(event.target.value)}
         />
       </BaseControl>
+      {onSave ? (
+        <Button
+          isPrimary
+          onClick={() => onSave(localData)}
+          isBusy={isSaving}
+          disabled={isSaving || !hasUnsavedChanges}
+          className="button-on-top"
+        >
+          {MailPoet.I18n.t('customFieldSaveCTA')}
+        </Button>
+      ) : null}
+      {onCustomFieldDelete ? (
+        <CustomFieldDelete
+          isBusy={isSaving || isDeleting}
+          onDelete={onCustomFieldDelete}
+        />
+      ) : null}
     </div>
   );
 };
