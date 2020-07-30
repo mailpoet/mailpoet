@@ -1,4 +1,5 @@
 import React from 'react';
+import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import StatsBadge from './newsletter_stats/stats';
 import Tooltip from '../tooltip/tooltip';
