@@ -62,6 +62,8 @@ class Forms extends APIEndpoint {
   }
 
   public function listing($data = []) {
+    $data['sort_order'] = $data['sort_order'] ?? 'desc';
+    $data['sort_by'] = $data['sort_by'] ?? 'updated_at';
     $listingData = $this->listingHandler->get('\MailPoet\Models\Form', $data);
 
     $data = [];
