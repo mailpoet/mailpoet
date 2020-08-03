@@ -32,6 +32,19 @@ class WPTest extends \MailPoetTest {
     expect($dbSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
+  public function testSynchronizeUserKeepsStatusOfOldSubscriber() {
+    $randomNumber = rand();
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'user-sync-test' . $randomNumber . '@example.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'wp_user_id' => null,
+    ]);
+    $id = $this->insertUser($randomNumber);
+    WP::synchronizeUser($id);
+    $dbSubscriber = Subscriber::where('wp_user_id', $id)->findOne();
+    expect($dbSubscriber->status)->equals($subscriber->status);
+  }
+
   public function testSynchronizeUserStatusIsSubscribedForNewUserWithSignUpConfirmationDisabled() {
     $this->settings->set('signup_confirmation', ['enabled' => '0']);
     $randomNumber = rand();

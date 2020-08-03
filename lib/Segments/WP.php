@@ -43,6 +43,11 @@ class WP {
     $wpSegment = Segment::getWPSegment();
     if (!$wpSegment) return;
 
+    // find subscriber by email when is false
+    if (!$subscriber) {
+      $subscriber = Subscriber::where('email', $wpUser->user_email)->findOne(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    }
+
     $scheduleWelcomeNewsletter = false;
     if (in_array($currentFilter, ['profile_update', 'user_register'])) {
       $scheduleWelcomeNewsletter = true;
