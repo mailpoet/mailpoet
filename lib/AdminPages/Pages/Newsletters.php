@@ -12,6 +12,7 @@ use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
+use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
@@ -54,6 +55,9 @@ class Newsletters {
   /** @var ServicesChecker */
   private $servicesChecker;
 
+  /** @var NewsletterTemplatesRepository */
+  private $newsletterTemplatesRepository;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -64,7 +68,8 @@ class Newsletters {
     Installation $installation,
     FeaturesController $featuresController,
     SubscribersFeature $subscribersFeature,
-    ServicesChecker $servicesChecker
+    ServicesChecker $servicesChecker,
+    NewsletterTemplatesRepository $newsletterTemplatesRepository
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -76,6 +81,7 @@ class Newsletters {
     $this->featuresController = $featuresController;
     $this->subscribersFeature = $subscribersFeature;
     $this->servicesChecker = $servicesChecker;
+    $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
   }
 
   public function render() {
@@ -193,6 +199,7 @@ class Newsletters {
     $data['sent_newsletters_count'] = (int)Newsletter::where('status', Newsletter::STATUS_SENT)->count();
     $data['woocommerce_transactional_email_id'] = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID);
     $data['display_detailed_stats'] = Installer::getPremiumStatus()['premium_plugin_initialized'];
+    $data['newsletters_templates_recently_sent_count'] = $this->newsletterTemplatesRepository->getRecentlySentCount();
 
     $this->pageRenderer->displayPage('newsletters.html', $data);
   }
