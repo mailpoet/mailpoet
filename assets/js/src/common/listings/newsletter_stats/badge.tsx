@@ -1,34 +1,29 @@
 import React from 'react';
-import classNames from 'classnames';
-import ReactStringReplace from 'react-string-replace';
+import Tag from '../../tag/tag';
 import Tooltip from '../../tooltip/tooltip';
 
 type BadgeProps = {
   name: string,
   tooltip?: string | React.ReactNode,
   tooltipId?: string,
-  type?: string,
+  type?: 'average' | 'good' | 'excellent',
 }
 
 function Badge(props: BadgeProps) {
-  const badgeClasses = classNames(
-    'mailpoet-listing-stats-badge',
-    props.type ? `mailpoet-listing-stats-badge-${props.type}` : ''
-  );
-
   const tooltip = props.tooltip || false;
   // tooltip ID must be unique, defaults to tooltip text
   const tooltipId = props.tooltipId || tooltip.toString();
 
   return (
     <span>
-      <span
-        className={badgeClasses}
+      <Tag
+        isInverted
+        variant={props.type}
         data-tip
         data-for={tooltipId}
       >
         {props.name}
-      </span>
+      </Tag>
       { tooltip && (
         <Tooltip
           place="top"

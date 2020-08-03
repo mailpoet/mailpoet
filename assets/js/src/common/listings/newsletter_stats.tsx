@@ -1,8 +1,8 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import classNames from 'classnames';
 import StatsBadge from './newsletter_stats/stats';
 import Tooltip from '../tooltip/tooltip';
+import Tag from '../tag/tag';
 
 type NewsletterStatsProps = {
   opened: number,
@@ -35,7 +35,7 @@ const NewsletterStats = ({
         %
       </div>
       {!hideBadges && (
-        <div className="mailpoet-listing-stats-badges">
+        <div>
           <StatsBadge
             stat="opened"
             rate={opened}
@@ -57,13 +57,7 @@ const NewsletterStats = ({
     const revenuesTooltipId = `revenues-${newsletterId || '0'}`;
     revenueStats = (
       <div>
-        <span
-          className="mailpoet-listing-stats-revenues"
-          data-tip
-          data-for={revenuesTooltipId}
-        >
-          {revenues}
-        </span>
+        <Tag data-tip data-for={revenuesTooltipId}>{revenues}</Tag>
         <Tooltip
           place="top"
           multiline

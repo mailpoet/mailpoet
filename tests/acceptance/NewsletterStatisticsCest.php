@@ -47,7 +47,7 @@ class NewsletterStatisticsCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->waitForText($title);
-    $i->see('5,00€', '.mailpoet-listing-stats-revenues');
+    $i->see('5,00€', '.mailpoet-tag');
   }
 
   public function dontShowWooCommercePurchaseStatisticsWithZeroValue(\AcceptanceTester $i) {
@@ -65,7 +65,7 @@ class NewsletterStatisticsCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->waitForText($title);
-    $i->dontSee('€', '.mailpoet-listing-stats-revenues');
+    $i->dontSee('€', '.mailpoet-tag');
   }
 
   private function createNewsletter($newsletterTitle) {

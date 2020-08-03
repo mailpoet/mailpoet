@@ -170,50 +170,13 @@ h1.title.mailpoet-newsletter-listing-heading {
 
 .mailpoet-listing-stats-opened-clicked {
   display: flex;
+  line-height: 22px;
+
+  + div { margin-top: 4px; }
 }
 
 .mailpoet-listing-stats-percentages {
-  line-height: 1.7;
   margin-right: 5px;
-}
-
-.mailpoet-listing-stats-badges {
-  line-height: 1.7;
-}
-
-.mailpoet-listing-stats-badge {
-  border-radius: 2px;
-  color: $color-white;
-  display: inline-block;
-  font-size: $font-size-xx-small;
-  font-weight: normal;
-  line-height: 1.6;
-  padding: 0;
-  text-align: center;
-  width: 60px;
-}
-
-.mailpoet-listing-stats-badge-average {
-  background-color: $color-stats-average;
-}
-
-.mailpoet-listing-stats-badge-good {
-  background-color: $color-stats-good;
-}
-
-.mailpoet-listing-stats-badge-excellent {
-  background-color: $color-stats-excellent;
-}
-
-.mailpoet-listing-stats-revenues {
-  border: solid 1px $color-tertiary;
-  border-radius: 2px;
-  display: inline-block;
-  font-size: $font-size-xx-small;
-  font-weight: normal;
-  line-height: 1.6;
-  padding: 1px 3px;
-  text-align: center;
 }
 
 .mailpoet-listing-stats-tooltip-title {
