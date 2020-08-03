@@ -3,6 +3,7 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -57,6 +58,14 @@ class SubscriberListingRepository extends ListingRepository {
 
   protected function applySorting(QueryBuilder $queryBuilder, string $sortBy, string $sortOrder) {
     $queryBuilder->addOrderBy("s.$sortBy", $sortOrder);
+  }
+
+  public function getGroups(ListingDefinition $definition): array {
+    return [];// TODO
+  }
+
+  public function getFilters(ListingDefinition $definition): array {
+    return [];//TODO
   }
 
 }

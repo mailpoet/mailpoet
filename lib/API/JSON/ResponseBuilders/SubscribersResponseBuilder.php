@@ -10,8 +10,10 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class SubscribersResponseBuilder {
+  const DATE_FORMAT = 'Y-m-d H:i:s';
 
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
@@ -25,7 +27,11 @@ class SubscribersResponseBuilder {
   /** @var SubscriberCustomFieldRepository */
   private $subscriberCustomFieldRepository;
 
+  /** @var EntityManager */
+  private $entityManager;
+
   public function __construct(
+    EntityManager $entityManager,
     SubscriberSegmentRepository $subscriberSegmentRepository,
     CustomFieldsRepository $customFieldsRepository,
     SubscriberCustomFieldRepository $subscriberCustomFieldRepository,
@@ -35,6 +41,28 @@ class SubscribersResponseBuilder {
     $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
     $this->customFieldsRepository = $customFieldsRepository;
     $this->subscriberCustomFieldRepository = $subscriberCustomFieldRepository;
+    $this->entityManager = $entityManager;
+  }
+
+  public function buildForListing(array $subscribers): array {
+    $this->prefetchSegments($subscribers);
+    $data = [];
+    foreach ($subscribers as $subscriber) {
+      $data[] = $this->buildListingItem($subscriber);
+    }
+    return $data;
+  }
+
+  private function buildListingItem(SubscriberEntity $subscriber): array {
+    return [
+      'id' => (string)$subscriber->getId(), // (string) for BC
+      'email' => $subscriber->getEmail(),
+      'first_name' => $subscriber->getFirstName(),
+      'last_name' => $subscriber->getLastName(),
+      'subscriptions' => $this->buildSubscriptions($subscriber),
+      'status' => $subscriber->getStatus(),
+      'created_at' => ($createdAt = $subscriber->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
+    ];
   }
 
   public function build(SubscriberEntity $subscriberEntity): array {
@@ -60,7 +88,7 @@ class SubscribersResponseBuilder {
       $segment = $subscription->getSegment();
       if ($segment instanceof SegmentEntity) {
         $result[] = [
-          'segment_id' => $segment->getId(),
+          'segment_id' => (string)$segment->getId(),
           'status' => $subscription->getStatus(),
           'updated_at' => $subscription->getUpdatedAt(),
         ];
@@ -104,5 +132,20 @@ class SubscribersResponseBuilder {
       }
     }
     return $data;
+  }
+
+  /**
+   * @param SubscriberEntity[] $subscribers
+   */
+  private function prefetchSegments(array $subscribers) {
+    $this->entityManager->createQueryBuilder()
+      ->select('PARTIAL s.{id}, ssg, sg')
+      ->from(SubscriberEntity::class, 's')
+      ->join('s.subscriberSegments', 'ssg')
+      ->join('ssg.segment', 'sg')
+      ->where('s.id IN (:subscribers)')
+      ->setParameter('subscribers', $subscribers)
+      ->getQuery()
+      ->getResult();
   }
 }

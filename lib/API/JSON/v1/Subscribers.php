@@ -25,6 +25,7 @@ use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
+use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
@@ -85,6 +86,9 @@ class Subscribers extends APIEndpoint {
   /** @var SubscribersResponseBuilder */
   private $subscribersResponseBuilder;
 
+  /** @var SubscriberListingRepository */
+  private $newsletterListingRepository;
+
   public function __construct(
     Listing\BulkActionController $bulkActionController,
     SubscribersListings $subscribersListings,
@@ -100,6 +104,7 @@ class Subscribers extends APIEndpoint {
     Unsubscribes $unsubscribesTracker,
     SubscribersRepository $subscribersRepository,
     SubscribersResponseBuilder $subscribersResponseBuilder,
+    SubscriberListingRepository $newsletterListingRepository,
     FieldNameObfuscator $fieldNameObfuscator
   ) {
     $this->bulkActionController = $bulkActionController;
@@ -117,6 +122,7 @@ class Subscribers extends APIEndpoint {
     $this->unsubscribesTracker = $unsubscribesTracker;
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
+    $this->newsletterListingRepository = $newsletterListingRepository;
   }
 
   public function get($data = []) {
@@ -131,9 +137,18 @@ class Subscribers extends APIEndpoint {
   }
 
   public function listing($data = []) {
-
     if (!isset($data['filter']['segment'])) {
-      $listingData = $this->listingHandler->get('\MailPoet\Models\Subscriber', $data);
+      $definition = $this->listingHandler->getListingDefinition($data);
+      $items = $this->newsletterListingRepository->getData($definition);
+      $count = $this->newsletterListingRepository->getCount($definition);
+      $filters = $this->newsletterListingRepository->getFilters($definition);
+      $groups = $this->newsletterListingRepository->getGroups($definition);
+
+      return $this->successResponse($this->subscribersResponseBuilder->buildForListing($items), [
+        'count' => $count,
+        'filters' => $filters,
+        'groups' => $groups,
+      ]);
     } else {
       $listingData = $this->subscribersListings->getListingsInSegment($data);
     }
