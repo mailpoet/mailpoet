@@ -1,6 +1,7 @@
 <?php
 
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
+use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Models\Form as FormModel;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
@@ -123,7 +124,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     $i->waitForElement($element);
     $i->fillField($element, $value);
-    $i->pressKey($element, \WebDriverKeys::ENTER);
+    $i->pressKey($element, WebDriverKeys::ENTER);
   }
 
   /**
@@ -205,7 +206,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->waitForElement($element);
     $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
     $i->fillField($element, $query);
-    $i->pressKey($element, \WebDriverKeys::ENTER);
+    $i->pressKey($element, WebDriverKeys::ENTER);
     $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
   }
 

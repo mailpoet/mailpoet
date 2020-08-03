@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class EditorHistoryCest {
@@ -38,12 +39,12 @@ class EditorHistoryCest {
     $this->assessButtons($i, true, false);
 
     // Keyboard undo
-    $i->pressKey('body', [\WebDriverKeys::CONTROL, 'z']);
+    $i->pressKey('body', [WebDriverKeys::CONTROL, 'z']);
     $i->waitForElementNotVisible(self::BUTTON_SELECTOR);
     $this->assessButtons($i, false, true);
 
     // Keyboard redo
-    $i->pressKey('body', [\WebDriverKeys::SHIFT, \WebDriverKeys::CONTROL, 'z']);
+    $i->pressKey('body', [WebDriverKeys::SHIFT, WebDriverKeys::CONTROL, 'z']);
     $i->waitForElementVisible(self::BUTTON_SELECTOR);
     $this->assessButtons($i, true, false);
   }
