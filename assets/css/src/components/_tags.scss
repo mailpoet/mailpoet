@@ -1,0 +1,42 @@
+.mailpoet-tag {
+  border: 1px solid $color-tertiary;
+  border-radius: 3px;
+  color: $color-tertiary;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: normal;
+  line-height: 14px;
+  padding: 2px 4px 0;
+}
+
+.mailpoet-tag-inverted {
+  background: $color-tertiary;
+  color: #fff !important;
+}
+
+.mailpoet-tag-average {
+  border-color: $color-stats-average;
+  color: $color-stats-average;
+
+  &.mailpoet-tag-inverted {
+    background: $color-stats-average;
+  }
+}
+
+.mailpoet-tag-good {
+  border-color: $color-stats-good;
+  color: $color-stats-good;
+
+  &.mailpoet-tag-inverted {
+    background: $color-stats-good;
+  }
+}
+
+.mailpoet-tag-excellent {
+  border-color: $color-stats-excellent;
+  color: $color-stats-excellent;
+
+  &.mailpoet-tag-inverted {
+    background: $color-stats-excellent;
+  }
+}
