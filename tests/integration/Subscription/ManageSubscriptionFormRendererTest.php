@@ -21,7 +21,7 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
   public function testItGeneratesForm() {
     $subscriber = $this->getSubscriber($this->getSegment());
     $form = $this->formRenderer->renderForm(Subscriber::findOne($subscriber->getId()));
-    expect($form)->regExp('/<form class="mailpoet-manage-subscription" method="post" action="[a-z0-9:\/\.]+wp-admin\/admin-post.php" novalidate>/');
+    expect($form)->regExp('/<form class="mailpoet-manage-subscription" method="post" action="[a-z0-9:\/\._]+wp-admin\/admin-post.php" novalidate>/');
     expect($form)->contains('<input type="hidden" name="data[email]" value="subscriber@test.com" />');
     expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="First name" value="Fname" data-automation-id="form_first_name" \/>/');
     expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="Last name" value="Lname" data-automation-id="form_last_name" \/>/');
