@@ -22,8 +22,8 @@ const NewsletterStats = ({
   wrapContentInLink,
 }: NewsletterStatsProps) => {
   // format to 1 decimal place
-  const clickedDisplay = MailPoet.Num.toLocaleFixed(opened, 1);
-  const openedDisplay = MailPoet.Num.toLocaleFixed(clicked, 1);
+  const openedDisplay = MailPoet.Num.toLocaleFixed(opened, 1);
+  const clickedDisplay = MailPoet.Num.toLocaleFixed(clicked, 1);
 
   let openedAndClickedStats = (
     <div className="mailpoet-listing-stats-opened-clicked">
