@@ -10,15 +10,15 @@
 }
 
 .mailpoet_stat_excellent {
-  color: $badge-color-excellent;
+  color: $color-badge-excellent;
 }
 
 .mailpoet_stat_good {
-  color: $badge-color-good;
+  color: $color-badge-good;
 }
 
 .mailpoet_stat_bad {
-  color: $badge-color-bad;
+  color: $color-badge-bad;
 }
 
 .mailpoet_stat_hidden {
@@ -45,25 +45,25 @@
 
 .mailpoet_badge_excellent,
 .mailpoet_badge_teal {
-  background: $badge-color-excellent;
+  background: $color-badge-excellent;
 }
 
 .mailpoet_badge_good,
 .mailpoet_badge_yellow {
-  background: $badge-color-good;
+  background: $color-badge-good;
 }
 
 .mailpoet_badge_bad,
 .mailpoet_badge_red {
-  background: $badge-color-bad;
+  background: $color-badge-bad;
 }
 
 .mailpoet_badge_green {
-  background: $badge-color-green;
+  background: $color-badge-green;
 }
 
 .mailpoet_badge_video {
-  background: $badge-color-video-guide;
+  background: $color-badge-video-guide;
   display: inline-block;
   line-height: 20px;
   padding: 3px 6px;
@@ -73,7 +73,7 @@
   &:hover,
   &:active,
   &:focus {
-    background: $badge-color-green;
+    background: $color-badge-green;
     color: #fff;
   }
 
