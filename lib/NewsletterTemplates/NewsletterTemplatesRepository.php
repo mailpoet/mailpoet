@@ -87,4 +87,13 @@ class NewsletterTemplatesRepository extends Repository {
       ->getQuery()
       ->execute();
   }
+
+  public function getRecentlySentCount(): int {
+    return (int)$this->doctrineRepository->createQueryBuilder('nt')
+      ->select('COUNT(nt.id)')
+      ->where('nt.categories = :categories')
+      ->setParameter('categories', self::RECENTLY_SENT_CATEGORIES)
+      ->getQuery()
+      ->getSingleScalarResult();
+  }
 }

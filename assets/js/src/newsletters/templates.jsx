@@ -12,24 +12,34 @@ import { GlobalContext } from 'context/index.jsx';
 
 const getEditorUrl = (id) => `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
 
-const templatesCategories = [
-  {
-    name: 'standard',
-    label: MailPoet.I18n.t('tabStandardTitle'),
-  },
-  {
-    name: 'welcome',
-    label: MailPoet.I18n.t('tabWelcomeTitle'),
-  },
-  {
-    name: 'notification',
-    label: MailPoet.I18n.t('tabNotificationTitle'),
-  },
-  {
-    name: 'blank',
-    label: MailPoet.I18n.t('tabBlankTitle'),
-  },
-];
+const templatesCategories = [];
+if (window.mailpoet_newsletters_templates_recently_sent_count) {
+  templatesCategories.push({
+    name: 'recent',
+    label: MailPoet.I18n.t('recentlySent'),
+  });
+}
+
+templatesCategories.push(
+  ...[
+    {
+      name: 'standard',
+      label: MailPoet.I18n.t('tabStandardTitle'),
+    },
+    {
+      name: 'welcome',
+      label: MailPoet.I18n.t('tabWelcomeTitle'),
+    },
+    {
+      name: 'notification',
+      label: MailPoet.I18n.t('tabNotificationTitle'),
+    },
+    {
+      name: 'blank',
+      label: MailPoet.I18n.t('tabBlankTitle'),
+    },
+  ]
+);
 
 if (window.mailpoet_woocommerce_active) {
   templatesCategories.push({
@@ -40,10 +50,6 @@ if (window.mailpoet_woocommerce_active) {
 
 templatesCategories.push(
   ...[
-    {
-      name: 'recent',
-      label: MailPoet.I18n.t('recentlySent'),
-    },
     {
       name: 'saved',
       label: MailPoet.I18n.t('savedTemplates'),
@@ -127,8 +133,18 @@ class NewsletterTemplates extends React.Component {
   }
 
   sortTemplates() {
+    const blankFirstCategories = ['welcome', 'notification', 'standard'];
     Object.keys(this.templates).forEach((category) => {
       this.templates[category].sort((a, b) => {
+        // MAILPOET-2087 - templates of type "blank" should be first
+        if (blankFirstCategories.includes(category)) {
+          if (a.categories.includes('"blank"') && !b.categories.includes('"blank"')) {
+            return -1;
+          }
+          if (!a.categories.includes('"blank"') && b.categories.includes('"blank"')) {
+            return 1;
+          }
+        }
         if (a.id < b.id) {
           return 1;
         }
@@ -149,7 +165,9 @@ class NewsletterTemplates extends React.Component {
       },
     }).done((response) => {
       emailType = response.data.type;
-      if (_.findWhere(templatesCategories, { name: response.data.type })) {
+      if (window.mailpoet_newsletters_templates_recently_sent_count) {
+        selectedTab = 'recent';
+      } else if (_.findWhere(templatesCategories, { name: response.data.type })) {
         selectedTab = response.data.type;
       } else if (
         response.data.type === 'automatic'
