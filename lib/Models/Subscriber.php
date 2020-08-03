@@ -222,6 +222,7 @@ class Subscriber extends Model {
   }
 
   public static function groups($data) {
+
     return [
       [
         'name' => 'all',

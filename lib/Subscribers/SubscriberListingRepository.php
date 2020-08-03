@@ -72,7 +72,68 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   public function getGroups(ListingDefinition $definition): array {
-    return [];// TODO
+    $queryBuilder = clone $this->queryBuilder;
+    $this->applyFromClause($queryBuilder);
+
+    // total count
+    $countQueryBuilder = clone $queryBuilder;
+    $countQueryBuilder->select('COUNT(s) AS subscribersCount');
+    $countQueryBuilder->andWhere('s.deletedAt IS NULL');
+    $totalCount = (int)$countQueryBuilder->getQuery()->getSingleScalarResult();
+
+    // trashed count
+    $trashedCountQueryBuilder = clone $queryBuilder;
+    $trashedCountQueryBuilder->select('COUNT(s) AS subscribersCount');
+    $trashedCountQueryBuilder->andWhere('s.deletedAt IS NOT NULL');
+    $trashedCount = (int)$trashedCountQueryBuilder->getQuery()->getSingleScalarResult();
+
+    // count-by-status query
+    $queryBuilder->select('s.status, COUNT(s) AS subscribersCount');
+    $queryBuilder->andWhere('s.deletedAt IS NULL');
+    $queryBuilder->groupBy('s.status');
+
+    $map = [];
+    foreach ($queryBuilder->getQuery()->getResult() as $item) {
+      $map[$item['status']] = (int)$item['subscribersCount'];
+    }
+
+    return [
+      [
+        'name' => 'all',
+        'label' => WPFunctions::get()->__('All', 'mailpoet'),
+        'count' => $totalCount,
+      ],
+      [
+        'name' => SubscriberEntity::STATUS_SUBSCRIBED,
+        'label' => WPFunctions::get()->__('Subscribed', 'mailpoet'),
+        'count' => $map[SubscriberEntity::STATUS_SUBSCRIBED] ?? 0,
+      ],
+      [
+        'name' => SubscriberEntity::STATUS_UNCONFIRMED,
+        'label' => WPFunctions::get()->__('Unconfirmed', 'mailpoet'),
+        'count' => $map[SubscriberEntity::STATUS_UNCONFIRMED] ?? 0,
+      ],
+      [
+        'name' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+        'label' => WPFunctions::get()->__('Unsubscribed', 'mailpoet'),
+        'count' => $map[SubscriberEntity::STATUS_UNSUBSCRIBED] ?? 0,
+      ],
+      [
+        'name' => SubscriberEntity::STATUS_INACTIVE,
+        'label' => WPFunctions::get()->__('Inactive', 'mailpoet'),
+        'count' => $map[SubscriberEntity::STATUS_INACTIVE] ?? 0,
+      ],
+      [
+        'name' => SubscriberEntity::STATUS_BOUNCED,
+        'label' => WPFunctions::get()->__('Bounced', 'mailpoet'),
+        'count' => $map[SubscriberEntity::STATUS_BOUNCED] ?? 0,
+      ],
+      [
+        'name' => 'trash',
+        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
+        'count' => $trashedCount,
+      ],
+    ];
   }
 
   public function getFilters(ListingDefinition $definition): array {
