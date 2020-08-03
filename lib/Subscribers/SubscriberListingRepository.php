@@ -5,6 +5,9 @@ namespace MailPoet\Subscribers;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
+use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class SubscriberListingRepository extends ListingRepository {
@@ -15,6 +18,14 @@ class SubscriberListingRepository extends ListingRepository {
     SubscriberEntity::STATUS_BOUNCED,
     SubscriberEntity::STATUS_UNCONFIRMED,
   ];
+
+  /** @var EntityManager */
+  private $entityManager;
+
+  public function __construct(EntityManager $entityManager) {
+    parent::__construct($entityManager);
+    $this->entityManager = $entityManager;
+  }
 
   protected function applySelectClause(QueryBuilder $queryBuilder) {
     $queryBuilder->select("PARTIAL s.{id,email,firstName,lastName,status,createdAt}");
@@ -65,7 +76,58 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   public function getFilters(ListingDefinition $definition): array {
-    return [];//TODO
+    $group = $definition->getGroup();
+
+    $queryBuilder = clone $this->queryBuilder;
+    $this->applyFromClause($queryBuilder);
+
+    if ($group) {
+      $this->applyGroup($queryBuilder, $group);
+    }
+
+    $queryBuilderNoSegment = clone $queryBuilder;
+    $subscribersWithoutSegment = $queryBuilderNoSegment
+      ->select('COUNT(s) AS subscribersCount')
+      ->leftJoin('s.subscriberSegments', 'ssg', Join::WITH, $queryBuilderNoSegment->expr()->eq('ssg.status', ':statusSubscribed'))
+      ->leftJoin('ssg.segment', 'sg', Join::WITH, $queryBuilderNoSegment->expr()->isNull('sg.deletedAt'))
+      ->where('deletedAt IS NULL')
+      ->where('sg.id IS NULL')
+      ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED)
+      ->getQuery()->getSingleScalarResult();
+
+    $subscribersWithoutSegmentLabel = sprintf(
+      WPFunctions::get()->__('Subscribers without a list (%s)', 'mailpoet'),
+      number_format((float)$subscribersWithoutSegment)
+    );
+
+    $queryBuilder
+      ->select('sg.id, sg.name, COUNT(s) AS subscribersCount')
+      ->join('s.subscriberSegments', 'ssg')
+      ->join('ssg.segment', 'sg')
+      ->groupBy('sg.id')
+      ->orderBy('sg.name')
+      ->having('subscribersCount > 0');
+
+    // format segment list
+    $segmentList = [
+      [
+        'label' => WPFunctions::get()->__('All Lists', 'mailpoet'),
+        'value' => '',
+      ],
+    ];
+
+    $segmentList[] = [
+      'label' => $subscribersWithoutSegmentLabel,
+      'value' => 'none',
+    ];
+
+    foreach ($queryBuilder->getQuery()->getResult() as $item) {
+      $segmentList[] = [
+        'label' => sprintf('%s (%d)', $item['name'], number_format((float)$item['subscribersCount'])),
+        'value' => $item['id'],
+      ];
+    }
+    return ['segment' => $segmentList];
   }
 
 }
