@@ -16,7 +16,7 @@
     "symfony/polyfill-intl-idn": "1.18.0",
     "symfony/polyfill-mbstring": "1.18.0",
     "symfony/polyfill-php72": "1.18.0",
-    "symfony/validator": "3.4.37",
+    "symfony/validator": "3.4.43",
     "twig/twig": "2.12.5"
   },
   "scripts": {
