@@ -1,8 +1,8 @@
 <?php
+
 namespace MailPoet\Config\PopulatorData\Templates;
 
 use MailPoet\WP\Functions as WPFunctions;
-
 
 class PieceOfCake {
 
@@ -364,7 +364,7 @@ class PieceOfCake {
                 'blocks' => [
                   0 => [
                     'type' => 'text',
-                    'text' => '<p style="text-align: right; line-height: 1.3;"><strong><a href="[link:subscription_unsubscribe_url]" style="color: #d42b2b; text-decoration: none; font-size: 12px; text-align: center;">'.WPFunctions::get()->__("Unsubscribe", 'mailpoet').'</a></strong></p>
+                    'text' => '<p style="text-align: right; line-height: 1.3;"><strong><a href="[link:subscription_unsubscribe_url]" style="color: #d42b2b; text-decoration: none; font-size: 12px; text-align: center;">' . WPFunctions::get()->__("Unsubscribe", 'mailpoet') . '</a></strong></p>
                       <p style="text-align: right; line-height: 1.3;"><strong><a href="[link:subscription_manage_url]" style="color: #d42b2b; text-decoration: none; font-size: 12px; text-align: center;">Manage&nbsp;Subscription</a></strong></p>',
                   ],
                 ],
@@ -442,5 +442,4 @@ class PieceOfCake {
   private function getThumbnail() {
     return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
-
 }
