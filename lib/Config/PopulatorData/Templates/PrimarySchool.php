@@ -102,7 +102,7 @@ class PrimarySchool {
                   1 =>
                    [
                     'type' => 'header',
-                    'text' => '<p><strong><a href="[link:newsletter_view_in_browser_url]">View in browser &gt;</a></strong></p>',
+                    'text' => '<p><strong><a href="[link:newsletter_view_in_browser_url]">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a></strong></p>',
                     'styles' =>
                      [
                       'block' =>

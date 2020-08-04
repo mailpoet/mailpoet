@@ -152,7 +152,7 @@ class Photography {
                   1 =>
                    [
                     'type' => 'text',
-                    'text' => '<p style="text-align: right;"><a href="[link:newsletter_view_in_browser_url]">View online &gt;</a></p>',
+                    'text' => '<p style="text-align: right;"><a href="[link:newsletter_view_in_browser_url]">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a></p>',
                    ],
                  ],
                ],

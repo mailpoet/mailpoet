@@ -102,7 +102,7 @@ class ComputerRepair {
                   1 =>
                    [
                     'type' => 'text',
-                    'text' => '<p style="text-align: center;"><span style="color: #999999;"><a href="[link:newsletter_view_in_browser_url]" style="color: #999999;">View in browser &gt;</a></span></p>',
+                    'text' => '<p style="text-align: center;"><span style="color: #999999;"><a href="[link:newsletter_view_in_browser_url]" style="color: #999999;">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a></span></p>',
                    ],
                  ],
                ],
