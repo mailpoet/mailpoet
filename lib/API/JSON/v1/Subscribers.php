@@ -87,7 +87,7 @@ class Subscribers extends APIEndpoint {
   private $subscribersResponseBuilder;
 
   /** @var SubscriberListingRepository */
-  private $newsletterListingRepository;
+  private $subscriberListingRepository;
 
   public function __construct(
     Listing\BulkActionController $bulkActionController,
@@ -104,7 +104,7 @@ class Subscribers extends APIEndpoint {
     Unsubscribes $unsubscribesTracker,
     SubscribersRepository $subscribersRepository,
     SubscribersResponseBuilder $subscribersResponseBuilder,
-    SubscriberListingRepository $newsletterListingRepository,
+    SubscriberListingRepository $subscriberListingRepository,
     FieldNameObfuscator $fieldNameObfuscator
   ) {
     $this->bulkActionController = $bulkActionController;
@@ -122,7 +122,7 @@ class Subscribers extends APIEndpoint {
     $this->unsubscribesTracker = $unsubscribesTracker;
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
-    $this->newsletterListingRepository = $newsletterListingRepository;
+    $this->subscriberListingRepository = $subscriberListingRepository;
   }
 
   public function get($data = []) {
@@ -139,10 +139,15 @@ class Subscribers extends APIEndpoint {
   public function listing($data = []) {
     if (!isset($data['filter']['segment'])) {
       $definition = $this->listingHandler->getListingDefinition($data);
-      $items = $this->newsletterListingRepository->getData($definition);
-      $count = $this->newsletterListingRepository->getCount($definition);
-      $filters = $this->newsletterListingRepository->getFilters($definition);
-      $groups = $this->newsletterListingRepository->getGroups($definition);
+      $items = $this->subscriberListingRepository->getData($definition);
+      $count = $this->subscriberListingRepository->getCount($definition);
+      $filters = $this->subscriberListingRepository->getFilters($definition);
+      $groups = $this->subscriberListingRepository->getGroups($definition);
+
+      $filters['segment'] = $this->wp->applyFilters(
+        'mailpoet_subscribers_listings_filters_segments',
+        $filters['segment']
+      );
 
       return $this->successResponse($this->subscribersResponseBuilder->buildForListing($items), [
         'count' => $count,
@@ -150,30 +155,33 @@ class Subscribers extends APIEndpoint {
         'groups' => $groups,
       ]);
     } else {
+      // this branch is here temporarily until we refactor dynamic segments to doctrine [MAILPOET-3077]
       $listingData = $this->subscribersListings->getListingsInSegment($data);
-    }
 
-    $result = [];
-    foreach ($listingData['items'] as $subscriber) {
-      $subscriberResult = $subscriber
-        ->withSubscriptions()
-        ->asArray();
-      if (isset($data['filter']['segment'])) {
-        $subscriberResult = $this->preferUnsubscribedStatusFromSegment($subscriberResult, $data['filter']['segment']);
+      $result = [];
+      foreach ($listingData['items'] as $subscriber) {
+        $subscriberResult = $subscriber
+          ->withSubscriptions()
+          ->asArray();
+        if (isset($data['filter']['segment'])) {
+          $subscriberResult = $this->preferUnsubscribedStatusFromSegment($subscriberResult, $data['filter']['segment']);
+        }
+        $result[] = $subscriberResult;
       }
-      $result[] = $subscriberResult;
+
+      $listingData['filters']['segment'] = $this->wp->applyFilters(
+        'mailpoet_subscribers_listings_filters_segments',
+        $listingData['filters']['segment'] ?? []
+      );
+
+      return $this->successResponse(
+        $result, [
+          'count' => $listingData['count'],
+          'filters' => $listingData['filters'],
+          'groups' => $listingData['groups'],
+        ]
+      );
     }
-
-    $listingData['filters']['segment'] = $this->wp->applyFilters(
-      'mailpoet_subscribers_listings_filters_segments',
-      $listingData['filters']['segment'] ?? []
-    );
-
-    return $this->successResponse($result, [
-      'count' => $listingData['count'],
-      'filters' => $listingData['filters'],
-      'groups' => $listingData['groups'],
-    ]);
   }
 
   private function preferUnsubscribedStatusFromSegment(array $subscriber, $segmentId) {

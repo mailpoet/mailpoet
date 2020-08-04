@@ -38,6 +38,7 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
+use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
@@ -98,6 +99,7 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(Unsubscribes::class),
       $container->get(SubscribersRepository::class),
       $container->get(SubscribersResponseBuilder::class),
+      $container->get(SubscriberListingRepository::class),
       $obfuscator
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
