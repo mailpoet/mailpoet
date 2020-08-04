@@ -86,6 +86,15 @@ $woocommerceBlacklistFilters = [
   'after_setup_theme',
   'switch_blog',
   'shutdown',
+  'plugins_loaded',
+  'rest_api_init',
+  'admin_menu',
+  'admin_notices',
+  'activated_plugin',
+  'activate_woocommerce-admin/woocommerce-admin.php',
+  'deactivate_woocommerce-admin/woocommerce-admin.php',
+  'deactivated_plugin',
+  'woocommerce_admin_features',
 ];
 foreach ($woocommerceBlacklistFilters as $woocommerceBlacklistFilter) {
   unset($GLOBALS['wp_filter'][$woocommerceBlacklistFilter]);
