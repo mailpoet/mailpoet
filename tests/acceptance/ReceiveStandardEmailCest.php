@@ -10,8 +10,8 @@ class ReceiveStandardEmailCest {
   /** @var Settings */
   private $settings;
 
-  protected function _inject(Settings $settings) {
-    $this->settings = $settings;
+  public function _before() {
+    $this->settings = new Settings();
   }
 
   public function receiveStandardEmail(\AcceptanceTester $i) {

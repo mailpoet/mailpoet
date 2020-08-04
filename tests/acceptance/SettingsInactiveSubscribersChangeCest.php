@@ -15,11 +15,8 @@ class SettingsInactiveSubscribersChangeCest {
   /** @var Settings */
   private $settings;
 
-  protected function _inject(Settings $settings) {
-    $this->settings = $settings;
-  }
-
   public function _before() {
+    $this->settings = new Settings();
     $segment = (new Segment())->withName(self::INACTIVE_LIST_NAME)->create();
     (new Subscriber())->withSegments([$segment])->create();
     for ($i = 0; $i < self::INACTIVE_SUBSCRIBERS_COUNT; $i++) {

@@ -11,11 +11,8 @@ class RevenueTrackingCookieCest {
   /** @var Settings */
   private $settings;
 
-  protected function _inject(Settings $settings) {
-    $this->settings = $settings;
-  }
-
   public function _before(\AcceptanceTester $i) {
+    $this->settings = new Settings();
     $i->activateWooCommerce();
     $this->settings->withCronTriggerMethod('WordPress');
   }

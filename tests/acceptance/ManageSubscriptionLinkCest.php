@@ -18,11 +18,8 @@ class ManageSubscriptionLinkCest {
     $this->newsletterTitle = 'Subscription links Email ' . \MailPoet\Util\Security::generateRandomString();
   }
 
-  protected function _inject(Settings $settings) {
-    $this->settings = $settings;
-  }
-
   public function _before() {
+    $this->settings = new Settings();
     $this->settings
       ->withConfirmationEmailEnabled()
       ->withCronTriggerMethod('WordPress');
