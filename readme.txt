@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.2
 Tested up to: 5.4
-Stable tag: 3.47.11
+Stable tag: 3.48.0
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.48.0 - 2020-08-04 =
+* Added: manage your subscription page is more customizable;
+* Added: additional Type column in forms listing;
+* Improved: modified date column in forms listing;
+* Improved: unsubscribe page is now more customizable.
 
 = 3.47.11 - 2020-07-28 =
 * Improved: better initial WooCommerce setup.
