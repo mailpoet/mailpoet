@@ -29,7 +29,7 @@
     "codeception/verify": "1.3.0",
     "composer/xdebug-handler": "^1.3",
     "consolidation/robo": "^1.3.0",
-    "guzzlehttp/guzzle": "6.5.2",
+    "guzzlehttp/guzzle": "6.5.5",
     "henrikbjorn/lurker": "^1.2",
     "lucatume/wp-browser": "2.6.5",
     "phpunit/phpunit": "6.5.14",
