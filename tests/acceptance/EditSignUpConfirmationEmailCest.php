@@ -36,7 +36,7 @@ class EditSignUpConfirmationEmailCest {
 
     $i->waitForText('Confirmation email subject');
     $i->waitForText('Confirmation Test From <from-confirmation-test@example.com>');
-    $i->switchToIframe('preview-html');
+    $i->switchToIframe('#preview-html');
     $i->waitForText('Confirmation email body link');
   }
 }

@@ -34,7 +34,7 @@ class SubscribeToMultipleListsCest {
     //Subscribe via that form
     $i->amOnMailboxAppPage();
     $i->click(Locator::contains('span.subject', 'Subscribe to multiple test subject'));
-    $i->switchToIframe('preview-html');
+    $i->switchToIframe('#preview-html');
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
     $i->see('You have subscribed');
