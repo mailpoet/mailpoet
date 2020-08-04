@@ -13,9 +13,9 @@ class DisplayFormBellowPostCest {
   /** @var Form */
   private $forms;
 
-  protected function _inject(Segment $segments, Form $forms) {
-    $this->segments = $segments;
-    $this->forms = $forms;
+  public function _before() {
+    $this->segments = new Segment();
+    $this->forms = new Form();
   }
 
   public function displayForm(\AcceptanceTester $i) {

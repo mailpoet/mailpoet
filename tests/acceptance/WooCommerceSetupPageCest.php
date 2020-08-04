@@ -18,11 +18,8 @@ class WooCommerceSetupPageCest {
   /** @var WooCommerceOrder*/
   private $orderFactory;
 
-  protected function _inject(Settings $settings) {
-    $this->settings = $settings;
-  }
-
   public function _before(\AcceptanceTester $i) {
+    $this->settings = new Settings();
     $i->activateWooCommerce();
     $this->customerFactory = new WooCommerceCustomer($i);
     $this->orderFactory = new WooCommerceOrder($i);
