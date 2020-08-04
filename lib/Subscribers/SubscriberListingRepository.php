@@ -46,9 +46,7 @@ class SubscriberListingRepository extends ListingRepository {
   protected function applySearch(QueryBuilder $queryBuilder, string $search) {
     $search = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], trim($search)); // escape for 'LIKE'
     $queryBuilder
-      ->andWhere('s.email LIKE :search')
-      ->orWhere('s.firstName LIKE :search')
-      ->orWhere('s.lastName LIKE :search')
+      ->andWhere('s.email LIKE :search or s.firstName LIKE :search or s.lastName LIKE :search')
       ->setParameter('search', "%$search%");
   }
 
@@ -144,8 +142,8 @@ class SubscriberListingRepository extends ListingRepository {
       ->select('COUNT(s) AS subscribersCount')
       ->leftJoin('s.subscriberSegments', 'ssg', Join::WITH, (string)$queryBuilderNoSegment->expr()->eq('ssg.status', ':statusSubscribed'))
       ->leftJoin('ssg.segment', 'sg', Join::WITH, (string)$queryBuilderNoSegment->expr()->isNull('sg.deletedAt'))
-      ->where('deletedAt IS NULL')
-      ->where('sg.id IS NULL')
+      ->andWhere('s.deletedAt IS NULL')
+      ->andWhere('sg.id IS NULL')
       ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED)
       ->getQuery()->getSingleScalarResult();
 
@@ -159,7 +157,7 @@ class SubscriberListingRepository extends ListingRepository {
       ->leftJoin('s.subscriberSegments', 'ssg', Join::WITH, (string)$queryBuilderNoSegment->expr()->eq('ssg.status', ':statusSubscribed'))
       ->join('ssg.segment', 'sg')
       ->groupBy('sg.id')
-      ->where('sg.deletedAt IS NULL')
+      ->andWhere('sg.deletedAt IS NULL')
       ->andWhere('s.deletedAt IS NULL')
       ->andWhere('s.status = :statusSubscribed')
       ->orderBy('sg.name')
