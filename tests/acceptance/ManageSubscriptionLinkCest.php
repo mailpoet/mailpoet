@@ -30,7 +30,7 @@ class ManageSubscriptionLinkCest {
     $this->sendEmail($i);
     $i->amOnMailboxAppPage();
     $i->click(Locator::contains('span.subject', $this->newsletterTitle));
-    $i->switchToIframe('preview-html');
+    $i->switchToIframe('#preview-html');
     $i->waitForElementChange(
         \Codeception\Util\Locator::contains('a', 'Manage your subscription'), function ($el) {
             return $el->getAttribute('target') === "_blank";
@@ -100,7 +100,7 @@ class ManageSubscriptionLinkCest {
     $i->wantTo('Verify that "unsubscribe" link works and subscriber can confirm switching status to unsubscribed');
     $i->amOnMailboxAppPage();
     $i->click(Locator::contains('span.subject', $this->newsletterTitle));
-    $i->switchToIframe('preview-html');
+    $i->switchToIframe('#preview-html');
     $i->waitForElementChange(
         \Codeception\Util\Locator::contains('a', 'Unsubscribe'), function ($el) {
             return $el->getAttribute('target') === "_blank";

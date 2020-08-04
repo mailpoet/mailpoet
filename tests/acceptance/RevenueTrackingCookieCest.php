@@ -50,7 +50,7 @@ class RevenueTrackingCookieCest {
 
     // click a link in the newsletter and check the cookie has been created
     $i->click(Locator::contains('span.subject', $newsletterSubject));
-    $i->switchToIframe('preview-html');
+    $i->switchToIframe('#preview-html');
     $i->click('Read the post');
     $i->switchToNextTab();
     $i->canSeeCookie('mailpoet_revenue_tracking');
@@ -87,7 +87,7 @@ class RevenueTrackingCookieCest {
     $i->checkEmailWasReceived($newsletterSubject);
     // click a link in the newsletter and check the cookie has NOT been created
     $i->click(Locator::contains('span.subject', $newsletterSubject));
-    $i->switchToIframe('preview-html');
+    $i->switchToIframe('#preview-html');
     $i->click('Read the post');
     $i->switchToNextTab();
     $i->dontSeeCookie('mailpoet_revenue_tracking');

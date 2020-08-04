@@ -23,7 +23,7 @@ class CreateNewWordPressUserCest {
     $i->cli(['user', 'create', 'narwhal', 'standardtest@example.com', '--role=subscriber']);
     $i->checkEmailWasReceived('Confirm your subscription');
     $i->click(Locator::contains('span.subject', 'Confirm your subscription'));
-    $i->switchToIframe('preview-html');
+    $i->switchToIframe('#preview-html');
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
     $i->see('You have subscribed');

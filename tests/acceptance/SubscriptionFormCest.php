@@ -72,7 +72,7 @@ class SubscriptionFormCest {
 
     $i->amOnPage('/form-test');
     $i->executeJS('window.scrollTo(0, document.body.scrollHeight);');
-    $i->switchToIframe('mailpoet_form_iframe');
+    $i->switchToIframe('#mailpoet_form_iframe');
     $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
     $i->scrollTo('.mailpoet_submit');
     $i->click('.mailpoet_submit');
@@ -92,7 +92,7 @@ class SubscriptionFormCest {
 
     $i->checkEmailWasReceived('Confirm your subscription');
     $i->click(Locator::contains('span.subject', 'Confirm your subscription'));
-    $i->switchToIframe('preview-html');
+    $i->switchToIframe('#preview-html');
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
     $i->see('You have subscribed');
@@ -117,7 +117,7 @@ class SubscriptionFormCest {
     $i->waitForText('Settings saved');
     $i->amOnPage('/form-test');
     $i->scrollTo('.mailpoet_form_iframe');
-    $i->switchToIframe('mailpoet_form_iframe');
+    $i->switchToIframe('#mailpoet_form_iframe');
     $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
     $i->click('.mailpoet_submit');
     $i->waitForText("You’ve been successfully subscribed to our newsletter!", self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');

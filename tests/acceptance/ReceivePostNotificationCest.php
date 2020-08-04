@@ -70,7 +70,7 @@ class ReceivePostNotificationCest {
     // confirm newsletter is received
     $i->checkEmailWasReceived($newsletterSubject);
     $i->click(Locator::contains('span.subject', $newsletterSubject));
-    $i->switchToIframe('preview-html');
+    $i->switchToIframe('#preview-html');
     $i->waitForText($postTitle, 90);
   }
 }

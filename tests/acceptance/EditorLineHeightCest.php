@@ -47,7 +47,7 @@ class EditorLineHeightCest {
     $i->waitForElementClickable('.mailpoet_show_preview');
     $i->click('.mailpoet_show_preview');
     $i->waitForElement('#mailpoet_browser_preview_iframe');
-    $i->switchToIframe('mailpoet_browser_preview_iframe');
+    $i->switchToIframe('#mailpoet_browser_preview_iframe');
     $this->checkLineHeightInPreview($i, $textSize, $textLineHeight, 'p');
     $this->checkLineHeightInPreview($i, $h1Size, $headingLineHeight, 'h1');
     $this->checkLineHeightInPreview($i, $h2Size, $headingLineHeight, 'h2');

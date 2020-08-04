@@ -48,7 +48,7 @@ class ReceiveWelcomeEmailCest {
     // confirm subscription
     $i->checkEmailWasReceived($confirmationEmailName);
     $i->click(Locator::contains('span.subject', $confirmationEmailName));
-    $i->switchToIframe('preview-html');
+    $i->switchToIframe('#preview-html');
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
     $i->reloadPage();
