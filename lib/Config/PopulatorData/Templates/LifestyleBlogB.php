@@ -152,7 +152,7 @@ class LifestyleBlogB {
                   1 =>
                    [
                     'type' => 'header',
-                    'text' => '<p><span style="color: #b25088;"><a href="[link:newsletter_view_in_browser_url]" style="color: #b25088;">View online &gt;</a></span></p>',
+                    'text' => '<p><span style="color: #b25088;"><a href="[link:newsletter_view_in_browser_url]" style="color: #b25088;">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a></span></p>',
                     'styles' =>
                      [
                       'block' =>

@@ -55,7 +55,7 @@ class PieceOfCake {
                 'blocks' => [
                   0 => [
                     'type' => 'header',
-                    'text' => '<p><strong>Open daily from 9am to 9pm |&nbsp;<a href="[link:newsletter_view_in_browser_url]">View Online</a></strong></p>',
+                    'text' => '<p><strong>Open daily from 9am to 9pm |&nbsp;<a href="[link:newsletter_view_in_browser_url]">' . WPFunctions::get()->__("View this in your browser.", 'mailpoet') . '</a></strong></p>',
                     'styles' => [
                       'block' => [
                         'backgroundColor' => '#ececeb',
