@@ -166,7 +166,7 @@ class Subscribers extends APIEndpoint {
 
     $listingData['filters']['segment'] = $this->wp->applyFilters(
       'mailpoet_subscribers_listings_filters_segments',
-      $listingData['filters']['segment']
+      $listingData['filters']['segment'] ?? []
     );
 
     return $this->successResponse($result, [

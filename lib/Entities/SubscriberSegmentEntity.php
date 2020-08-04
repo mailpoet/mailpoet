@@ -68,4 +68,11 @@ class SubscriberSegmentEntity {
   public function getStatus(): string {
     return $this->status;
   }
+
+  /**
+   * @param string $status
+   */
+  public function setStatus(string $status) {
+    $this->status = $status;
+  }
 }

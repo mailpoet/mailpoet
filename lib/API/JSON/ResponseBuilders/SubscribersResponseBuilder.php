@@ -61,7 +61,7 @@ class SubscribersResponseBuilder {
       'last_name' => $subscriber->getLastName(),
       'subscriptions' => $this->buildSubscriptions($subscriber),
       'status' => $subscriber->getStatus(),
-      'created_at' => ($createdAt = $subscriber->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
+      'created_at' => $subscriber->getCreatedAt()->format(self::DATE_FORMAT),
     ];
   }
 

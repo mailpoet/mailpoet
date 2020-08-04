@@ -19,14 +19,6 @@ class SubscriberListingRepository extends ListingRepository {
     SubscriberEntity::STATUS_UNCONFIRMED,
   ];
 
-  /** @var EntityManager */
-  private $entityManager;
-
-  public function __construct(EntityManager $entityManager) {
-    parent::__construct($entityManager);
-    $this->entityManager = $entityManager;
-  }
-
   protected function applySelectClause(QueryBuilder $queryBuilder) {
     $queryBuilder->select("PARTIAL s.{id,email,firstName,lastName,status,createdAt}");
   }
@@ -53,9 +45,11 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search) {
-    $search = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $search); // escape for 'LIKE'
+    $search = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], trim($search)); // escape for 'LIKE'
     $queryBuilder
-      ->andWhere('s.subject LIKE :search')
+      ->andWhere('s.email LIKE :search')
+      ->orWhere('s.firstName LIKE :search')
+      ->orWhere('s.lastName LIKE :search')
       ->setParameter('search', "%$search%");
   }
 
@@ -149,8 +143,8 @@ class SubscriberListingRepository extends ListingRepository {
     $queryBuilderNoSegment = clone $queryBuilder;
     $subscribersWithoutSegment = $queryBuilderNoSegment
       ->select('COUNT(s) AS subscribersCount')
-      ->leftJoin('s.subscriberSegments', 'ssg', Join::WITH, $queryBuilderNoSegment->expr()->eq('ssg.status', ':statusSubscribed'))
-      ->leftJoin('ssg.segment', 'sg', Join::WITH, $queryBuilderNoSegment->expr()->isNull('sg.deletedAt'))
+      ->leftJoin('s.subscriberSegments', 'ssg', Join::WITH, (string)$queryBuilderNoSegment->expr()->eq('ssg.status', ':statusSubscribed'))
+      ->leftJoin('ssg.segment', 'sg', Join::WITH, (string)$queryBuilderNoSegment->expr()->isNull('sg.deletedAt'))
       ->where('deletedAt IS NULL')
       ->where('sg.id IS NULL')
       ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED)
@@ -163,11 +157,15 @@ class SubscriberListingRepository extends ListingRepository {
 
     $queryBuilder
       ->select('sg.id, sg.name, COUNT(s) AS subscribersCount')
-      ->join('s.subscriberSegments', 'ssg')
+      ->leftJoin('s.subscriberSegments', 'ssg', Join::WITH, (string)$queryBuilderNoSegment->expr()->eq('ssg.status', ':statusSubscribed'))
       ->join('ssg.segment', 'sg')
       ->groupBy('sg.id')
+      ->where('sg.deletedAt IS NULL')
+      ->andWhere('s.deletedAt IS NULL')
+      ->andWhere('s.status = :statusSubscribed')
       ->orderBy('sg.name')
-      ->having('subscribersCount > 0');
+      ->having('subscribersCount > 0')
+      ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
 
     // format segment list
     $segmentList = [
@@ -190,5 +188,4 @@ class SubscriberListingRepository extends ListingRepository {
     }
     return ['segment' => $segmentList];
   }
-
 }
