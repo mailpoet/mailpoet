@@ -221,47 +221,6 @@ class Subscriber extends Model {
     return $orm;
   }
 
-  public static function groups($data) {
-
-    return [
-      [
-        'name' => 'all',
-        'label' => WPFunctions::get()->__('All', 'mailpoet'),
-        'count' => self::getPublished()->count(),
-      ],
-      [
-        'name' => self::STATUS_SUBSCRIBED,
-        'label' => WPFunctions::get()->__('Subscribed', 'mailpoet'),
-        'count' => self::filter(self::STATUS_SUBSCRIBED)->count(),
-      ],
-      [
-        'name' => self::STATUS_UNCONFIRMED,
-        'label' => WPFunctions::get()->__('Unconfirmed', 'mailpoet'),
-        'count' => self::filter(self::STATUS_UNCONFIRMED)->count(),
-      ],
-      [
-        'name' => self::STATUS_UNSUBSCRIBED,
-        'label' => WPFunctions::get()->__('Unsubscribed', 'mailpoet'),
-        'count' => self::filter(self::STATUS_UNSUBSCRIBED)->count(),
-      ],
-      [
-        'name' => self::STATUS_INACTIVE,
-        'label' => WPFunctions::get()->__('Inactive', 'mailpoet'),
-        'count' => self::filter(self::STATUS_INACTIVE)->count(),
-      ],
-      [
-        'name' => self::STATUS_BOUNCED,
-        'label' => WPFunctions::get()->__('Bounced', 'mailpoet'),
-        'count' => self::filter(self::STATUS_BOUNCED)->count(),
-      ],
-      [
-        'name' => 'trash',
-        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
-        'count' => self::getTrashed()->count(),
-      ],
-    ];
-  }
-
   public static function groupBy($orm, $group = null) {
     if ($group === 'trash') {
       return $orm->whereNotNull('deleted_at');
