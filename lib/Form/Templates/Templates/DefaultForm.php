@@ -7,7 +7,7 @@ use MailPoet\Form\Templates\Template;
 /**
  * Template for default form created on plugin activation
  */
-class DefaultForm extends InitialForm implements Template {
+class DefaultForm extends Template {
   public function getName(): string {
     return _x('My First Form', 'default name of form (GDPR friendly) to capture emails', 'mailpoet');
   }

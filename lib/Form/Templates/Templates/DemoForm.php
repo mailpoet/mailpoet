@@ -7,7 +7,7 @@ use MailPoet\Form\Templates\Template;
 /**
  * Temporary form template. Remove after we get real data from designer
  */
-class DemoForm implements Template {
+class DemoForm extends Template {
   public function getName(): string {
     return 'My Fancy Form';
   }
