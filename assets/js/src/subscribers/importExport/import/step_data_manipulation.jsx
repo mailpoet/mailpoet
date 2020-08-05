@@ -5,6 +5,8 @@ import PreviousNextStepButtons from './previous_next_step_buttons.jsx';
 import Warnings from './step_data_manipulation/warnings.jsx';
 import MatchTable from './step_data_manipulation/match_table.jsx';
 import SelectSegment from './step_data_manipulation/select_segment.jsx';
+import NewSubscribersStatus from './step_data_manipulation/new_subscribers_status.jsx';
+import ExistingSubscribersStatus from './step_data_manipulation/existing_subscribers_status.jsx';
 import UpdateExistingSubscribers from './step_data_manipulation/update_existing_subscribers.jsx';
 import doImport from './step_data_manipulation/do_import.jsx';
 
@@ -29,6 +31,8 @@ function StepDataManipulation({
 }) {
   const [selectedSegments, setSelectedSegments] = useState([]);
   const [updateExistingSubscribers, setUpdateExistingSubscribers] = useState(true);
+  const [newSubscribersStatus, setNewSubscribersStatus] = useState('subscribed');
+  const [existingSubscribersStatus, setExistingSubscribersStatus] = useState('dontUpdate');
   useEffect(
     () => {
       if (typeof (stepMethodSelectionData) === 'undefined') {
@@ -67,6 +71,14 @@ function StepDataManipulation({
         header={stepMethodSelectionData.header}
       />
       <SelectSegment setSelectedSegments={setSelectedSegments} />
+      <NewSubscribersStatus
+        newSubscribersStatus={newSubscribersStatus}
+        setNewSubscribersStatus={setNewSubscribersStatus}
+      />
+      <ExistingSubscribersStatus
+        existingSubscribersStatus={existingSubscribersStatus}
+        setExistingSubscribersStatus={setExistingSubscribersStatus}
+      />
       <UpdateExistingSubscribers
         setUpdateExistingSubscribers={setUpdateExistingSubscribers}
         updateExistingSubscribers={updateExistingSubscribers}
