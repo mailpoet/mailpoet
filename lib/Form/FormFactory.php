@@ -4,6 +4,7 @@ namespace MailPoet\Form;
 
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Templates\TemplateRepository;
+use MailPoet\Settings\SettingsController;
 
 class FormFactory {
 
@@ -13,15 +14,23 @@ class FormFactory {
   /** @var TemplateRepository */
   private $formTemplateRepository;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function __construct(
     FormsRepository $formRepository,
-    TemplateRepository $formTemplateRepository
+    TemplateRepository $formTemplateRepository,
+    SettingsController $settings
   ) {
     $this->formRepository = $formRepository;
     $this->formTemplateRepository = $formTemplateRepository;
+    $this->settings = $settings;
   }
 
   public function createFormFromTemplate(string $templateId, array $settings = []): FormEntity {
+    if (!isset($settings['success_message'])) {
+      $settings['success_message'] = $this->getDefaultSuccessMessage();
+    }
     $formEntity = $this->formTemplateRepository->getFormEntityForTemplate($templateId);
     $formSettings = $formEntity->getSettings() ?? [];
     $formEntity->setSettings(array_merge($formSettings, $settings));
@@ -46,5 +55,12 @@ class FormFactory {
       TemplateRepository::DEFAULT_FORM_TEMPLATE,
       ['segments' => [(string)$defaultSegmentId]]
     );
+  }
+
+  private function getDefaultSuccessMessage() {
+    if ($this->settings->get('signup_confirmation.enabled')) {
+      return __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet');
+    }
+    return __('You’ve been successfully subscribed to our newsletter!', 'mailpoet');
   }
 }

@@ -6,7 +6,6 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Templates\Templates\DefaultForm;
 use MailPoet\Form\Templates\Templates\DemoForm;
 use MailPoet\Form\Templates\Templates\InitialForm;
-use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 
 class TemplateRepository {
@@ -19,13 +18,6 @@ class TemplateRepository {
     'demo_form' => DemoForm::class,
   ];
 
-  /** @var SettingsController */
-  private $settings;
-
-  public function __construct(SettingsController $settings) {
-    $this->settings = $settings;
-  }
-
   public function getFormEntityForTemplate(string $templateId): FormEntity {
     if (!isset($this->templates[$templateId])) {
       throw UnexpectedValueException::create()
@@ -35,9 +27,7 @@ class TemplateRepository {
     $template = new $this->templates[$templateId]();
     $formEntity = new FormEntity($template->getName());
     $formEntity->setBody($template->getBody());
-    $settings = $formEntity->getSettings();
-    $settings['success_message'] = $this->getDefaultSuccessMessage();
-    $formEntity->setSettings($settings);
+    $formEntity->setSettings($template->getSettings());
     $formEntity->setStyles($template->getStyles());
     return $formEntity;
   }
@@ -52,12 +42,5 @@ class TemplateRepository {
       $result[$templateId] = $this->getFormEntityForTemplate($templateId);
     }
     return $result;
-  }
-
-  private function getDefaultSuccessMessage() {
-    if ($this->settings->get('signup_confirmation.enabled')) {
-      return __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet');
-    }
-    return __('You’ve been successfully subscribed to our newsletter!', 'mailpoet');
   }
 }
