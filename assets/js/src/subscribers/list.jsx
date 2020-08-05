@@ -231,9 +231,17 @@ const itemActions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
-    link: function link(subscriber) {
+    link: function link(subscriber, location) {
       return (
-        <Link to={`/edit/${subscriber.id}`}>{MailPoet.I18n.t('edit')}</Link>
+        <Link to={{
+          pathname: `/edit/${subscriber.id}`,
+          state: {
+            backUrl: location?.pathname,
+          },
+        }}
+        >
+          {MailPoet.I18n.t('edit')}
+        </Link>
       );
     },
   },
@@ -377,7 +385,12 @@ const SubscriberList = ({ match }) => {
         {' '}
         <Link
           className="page-title-action"
-          to="/new"
+          to={{
+            pathname: '/new',
+            state: {
+              backUrl: location?.pathname,
+            },
+          }}
         >
           {MailPoet.I18n.t('new')}
         </Link>
