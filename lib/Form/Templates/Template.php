@@ -2,6 +2,8 @@
 
 namespace MailPoet\Form\Templates;
 
+use MailPoet\Entities\FormEntity;
+
 abstract class Template {
   abstract public function getName(): string;
 
@@ -90,5 +92,13 @@ abstract class Template {
   background-color: #5b5b5b;
 }
 EOL;
+  }
+
+  public function toFormEntity(): FormEntity {
+    $formEntity = new FormEntity($this->getName());
+    $formEntity->setBody($this->getBody());
+    $formEntity->setSettings($this->getSettings());
+    $formEntity->setStyles($this->getStyles());
+    return $formEntity;
   }
 }
