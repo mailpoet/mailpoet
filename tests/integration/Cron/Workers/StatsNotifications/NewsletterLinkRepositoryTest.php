@@ -7,6 +7,7 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class NewsletterLinkRepositoryTest extends \MailPoetTest {
@@ -33,10 +34,14 @@ class NewsletterLinkRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($link1);
     $this->entityManager->persist($link2);
 
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail("sub{$newsletter->getId()}@mailpoet.com");
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->persist($subscriber);
 
-    $click1 = new StatisticsClickEntity($newsletter, $queue, (int)1, $link1, 1);
-    $click2 = new StatisticsClickEntity($newsletter, $queue, (int)1, $link1, 1);
-    $click3 = new StatisticsClickEntity($newsletter, $queue, (int)1, $link2, 1);
+    $click1 = new StatisticsClickEntity($newsletter, $queue, $subscriber, $link1, 1);
+    $click2 = new StatisticsClickEntity($newsletter, $queue, $subscriber, $link1, 1);
+    $click3 = new StatisticsClickEntity($newsletter, $queue, $subscriber, $link2, 1);
 
     $this->entityManager->persist($click1);
     $this->entityManager->persist($click2);

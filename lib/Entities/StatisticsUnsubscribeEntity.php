@@ -35,10 +35,11 @@ class StatisticsUnsubscribeEntity {
   private $queue;
 
   /**
-   * @ORM\Column(type="integer")
-   * @var int
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SubscriberEntity")
+   * @ORM\JoinColumn(name="subscriber_id", referencedColumnName="id")
+   * @var SubscriberEntity|null
    */
-  private $subscriberId;
+  private $subscriber;
 
   /**
    * @ORM\Column(type="string")
@@ -55,11 +56,11 @@ class StatisticsUnsubscribeEntity {
   public function __construct(
     NewsletterEntity $newsletter = null,
     SendingQueueEntity $queue = null,
-    int $subscriberId
+    SubscriberEntity $subscriber
   ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;
-    $this->subscriberId = $subscriberId;
+    $this->subscriber = $subscriber;
   }
 
   /**

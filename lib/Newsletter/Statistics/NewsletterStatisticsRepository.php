@@ -132,7 +132,7 @@ class NewsletterStatisticsRepository extends Repository {
 
   private function getStatisticCounts(string $statisticsEntityName, array $newsletters): array {
     $results = $this->entityManager->createQueryBuilder()
-      ->select('IDENTITY(stats.newsletter) AS id, COUNT(DISTINCT stats.subscriberId) as cnt')
+      ->select('IDENTITY(stats.newsletter) AS id, COUNT(DISTINCT stats.subscriber) as cnt')
       ->from($statisticsEntityName, 'stats')
       ->where('stats.newsletter IN (:newsletters)')
       ->groupBy('stats.newsletter')
