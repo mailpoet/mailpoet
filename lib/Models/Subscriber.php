@@ -682,7 +682,6 @@ class Subscriber extends Model {
       'is_woocommerce_user',
       'email',
       'created_at',
-      'status',
       'last_subscribed_at',
     ];
     // check if there is anything to update after excluding ignored columns

@@ -3,7 +3,14 @@ import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import 'asyncqueue';
 
-export default (subscribersToImport, segments, updateExistingSubscribers, onImportComplete) => {
+export default (
+  subscribersToImport,
+  segments,
+  newSubscribersStatus,
+  existingSubscribersStatus,
+  updateExistingSubscribers,
+  onImportComplete
+) => {
   const columns = {};
   const queue = new jQuery.AsyncQueue();
   let batchNumber = 0;
@@ -52,6 +59,8 @@ export default (subscribersToImport, segments, updateExistingSubscribers, onImpo
           subscribers: clickSubscribers[batchNumber],
           timestamp,
           segments,
+          newSubscribersStatus,
+          existingSubscribersStatus,
           updateSubscribers: updateExistingSubscribers,
         }),
       }).done((response) => {

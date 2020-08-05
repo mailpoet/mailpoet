@@ -46,6 +46,8 @@ function StepDataManipulation({
     doImport(
       stepMethodSelectionData.subscribers,
       selectedSegments,
+      newSubscribersStatus,
+      existingSubscribersStatus,
       updateExistingSubscribers,
       (importResults) => {
         setStepDataManipulationData(importResults);
