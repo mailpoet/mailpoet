@@ -126,6 +126,7 @@ class ListingItems extends React.Component { // eslint-disable-line react/prefer
               is_selectable={this.props.is_selectable}
               item_actions={this.props.item_actions}
               group={this.props.group}
+              location={this.props.location}
               key={key}
               item={renderItem}
             />
@@ -166,11 +167,15 @@ ListingItems.propTypes = {
   bulk_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
   onBulkAction: PropTypes.func.isRequired,
   search: PropTypes.string,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }),
 };
 
 ListingItems.defaultProps = {
   getListingItemKey: undefined,
   search: undefined,
+  location: undefined,
 };
 
 export default ListingItems;
