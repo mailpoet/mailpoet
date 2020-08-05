@@ -117,7 +117,7 @@ class FormEditor {
   }
 
   public function renderTemplateSelection() {
-    $templateForms = $this->templatesRepository->getFormsForTemplates($this->activeTemplates);
+    $templateForms = $this->templatesRepository->getFormTemplates($this->activeTemplates);
     $templatesData = [];
     foreach ($templateForms as $templateId => $form) {
       $templatesData[] = [

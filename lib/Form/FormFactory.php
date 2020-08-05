@@ -31,7 +31,8 @@ class FormFactory {
     if (!isset($settings['success_message'])) {
       $settings['success_message'] = $this->getDefaultSuccessMessage();
     }
-    $formEntity = $this->formTemplateRepository->getFormEntityForTemplate($templateId);
+    $formTemplate = $this->formTemplateRepository->getFormTemplate($templateId);
+    $formEntity = $formTemplate->toFormEntity();
     $formSettings = $formEntity->getSettings() ?? [];
     $formEntity->setSettings(array_merge($formSettings, $settings));
     $this->formRepository->persist($formEntity);
