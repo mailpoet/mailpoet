@@ -76,7 +76,7 @@ class ScheduledTaskSubscriber extends Model {
 
   public static function listingQuery($data) {
     $group = isset($data['group']) ? $data['group'] : 'all';
-    return self::join(Subscriber::$_table, ["subscriber_id", "=", "subscribers.id"], "subscribers")
+    $query = self::join(Subscriber::$_table, ["subscriber_id", "=", "subscribers.id"], "subscribers")
       ->filter($group, $data['params'])
       ->select('error', 'error')
       ->select('failed', 'failed')
@@ -86,6 +86,19 @@ class ScheduledTaskSubscriber extends Model {
       ->select('subscribers.id', 'subscriberId')
       ->select('subscribers.last_name', 'lastName')
       ->select('subscribers.first_name', 'firstName');
+    if (isset($data['search'])) {
+      $search = trim($data['search']);
+      $search = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $search); // escape for 'LIKE'
+      if (strlen($search) === 0) {
+        return $query;
+      }
+      $search = '%' . $search . '%';
+      return $query->whereRaw(
+        '(`subscribers`.`email` LIKE ? OR `subscribers`.`first_name` LIKE ? OR `subscribers`.`last_name` LIKE ?)',
+        [$search, $search, $search]
+      );
+    }
+    return $query;
   }
 
   public static function groups($data) {
