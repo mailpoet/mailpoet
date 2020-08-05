@@ -482,7 +482,6 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscribers[1]['status'])->equals($values[1]['status']);
 
     $values[0]['first_name'] = 'John';
-    $values[0]['status'] = 'subscribed';
     Subscriber::updateMultiple($columns, $values);
     $subscribers = Subscriber::findArray();
     expect($subscribers[0]['first_name'])->equals($values[0]['first_name']);

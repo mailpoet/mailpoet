@@ -52,6 +52,8 @@ class ImportTest extends \MailPoetTest {
         $this->segment1->id,
       ],
       'timestamp' => time(),
+      'newSubscribersStatus' => Subscriber::STATUS_SUBSCRIBED,
+      'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
       'updateSubscribers' => true,
     ];
     $this->subscribersFields = [
@@ -139,6 +141,8 @@ class ImportTest extends \MailPoetTest {
       ],
       'segments' => [],
       'timestamp' => time(),
+      'newSubscribersStatus' => Subscriber::STATUS_SUBSCRIBED,
+      'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
       'updateSubscribers' => true,
     ];
     $import = new Import($data);
@@ -211,6 +215,8 @@ class ImportTest extends \MailPoetTest {
       ],
       'segments' => [1],
       'timestamp' => time(),
+      'newSubscribersStatus' => Subscriber::STATUS_SUBSCRIBED,
+      'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
       'updateSubscribers' => true,
     ];
     $import = new Import($data);
@@ -426,26 +432,6 @@ class ImportTest extends \MailPoetTest {
     expect($updatedSubscriber->status)->equals('unsubscribed');
   }
 
-  public function testItDoesNotUpdateExistingSubscribersStatusWhenStatusColumnIsPresent() {
-    $data = $this->testData;
-    $data['columns']['status'] = ['index' => 4];
-    $data['subscribers'][0][] = 'subscribed';
-    $data['subscribers'][1][] = 'subscribed';
-    $import = new Import($data);
-    $existingSubscriber = Subscriber::create();
-    $existingSubscriber->hydrate(
-      [
-        'first_name' => 'Adam',
-        'last_name' => 'Smith',
-        'email' => 'Adam@Smith.com',
-        'status' => 'unsubscribed',
-      ]);
-    $existingSubscriber->save();
-    $result = $import->process();
-    $updatedSubscriber = Subscriber::where('email', $existingSubscriber->email)->findOne();
-    expect($updatedSubscriber->status)->equals('unsubscribed');
-  }
-
   public function testItImportsNewsSubscribersWithAllAdditionalParameters() {
     $data = $this->testData;
     $data['columns']['status'] = ['index' => 4];
@@ -488,6 +474,35 @@ class ImportTest extends \MailPoetTest {
     $import->process();
     $updatedSubscriber = Subscriber::where('email', $existingSubscriber->email)->findOne();
     expect($updatedSubscriber->lastSubscribedAt)->equals('2017-12-12 12:12:00');
+  }
+
+  public function testItDoesUpdateStatusExistingSubscriberWhenExistingSubscribersStatusIsSet() {
+    $data = $this->testData;
+    $data['existingSubscribersStatus'] = Subscriber::STATUS_SUBSCRIBED;
+    $existingSubscriber = Subscriber::create();
+    $existingSubscriber->hydrate(
+      [
+        'first_name' => 'Adam',
+        'last_name' => 'Smith',
+        'email' => 'Adam@Smith.com',
+        'status' => Subscriber::STATUS_UNSUBSCRIBED,
+        'last_subscribed_at' => '2020-08-08 08:08:00',
+      ]);
+    $import = new Import($data);
+    $import->process();
+    $updatedSubscriber = Subscriber::where('email', $existingSubscriber->email)->findOne();
+    expect($updatedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
+  public function testItDoesStatusNewSubscriberWhenNewSubscribersStatusIsSet() {
+    $data = $this->testData;
+    $data['newSubscribersStatus'] = Subscriber::STATUS_UNSUBSCRIBED;
+    $import = new Import($data);
+    $import->process();
+    $newSubscriber = Subscriber::where('email', 'Adam@Smith.com')->findOne();
+    expect($newSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    $newSubscriber = Subscriber::where('email', 'mary@jane.com')->findOne();
+    expect($newSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
   public function testItRunsImport() {
