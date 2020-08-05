@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -211,11 +211,13 @@ function afterFormContent(values) {
 
 const SubscriberForm = ({ match }) => {
   const location = useLocation();
+  const history = useHistory();
+  const backUrl = location.state?.backUrl || '/';
   return (
     <div>
       <h1 className="title">
         {MailPoet.I18n.t('subscriber')}
-        <Link className="page-title-action" to={location.state?.backUrl || '/'}>{MailPoet.I18n.t('backToList')}</Link>
+        <Link className="page-title-action" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
       </h1>
 
       <SubscribersLimitNotice />
@@ -228,6 +230,7 @@ const SubscriberForm = ({ match }) => {
         messages={messages}
         beforeFormContent={beforeFormContent}
         afterFormContent={afterFormContent}
+        onSuccess={() => history.push(backUrl)}
       />
     </div>
   );
