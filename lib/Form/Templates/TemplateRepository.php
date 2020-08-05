@@ -25,11 +25,7 @@ class TemplateRepository {
     }
     /** @var Template $template */
     $template = new $this->templates[$templateId]();
-    $formEntity = new FormEntity($template->getName());
-    $formEntity->setBody($template->getBody());
-    $formEntity->setSettings($template->getSettings());
-    $formEntity->setStyles($template->getStyles());
-    return $formEntity;
+    return $template->toFormEntity();
   }
 
   /**
