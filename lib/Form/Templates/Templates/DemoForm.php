@@ -2,12 +2,12 @@
 
 namespace MailPoet\Form\Templates\Templates;
 
-use MailPoet\Form\Templates\Template;
+use MailPoet\Form\Templates\FormTemplate;
 
 /**
  * Temporary form template. Remove after we get real data from designer
  */
-class DemoForm extends Template {
+class DemoForm extends FormTemplate {
   public function getName(): string {
     return 'My Fancy Form';
   }

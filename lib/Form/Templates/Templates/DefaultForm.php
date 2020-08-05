@@ -2,12 +2,12 @@
 
 namespace MailPoet\Form\Templates\Templates;
 
-use MailPoet\Form\Templates\Template;
+use MailPoet\Form\Templates\FormTemplate;
 
 /**
  * Template for default form created on plugin activation
  */
-class DefaultForm extends Template {
+class DefaultForm extends FormTemplate {
   public function getName(): string {
     return _x('My First Form', 'default name of form (GDPR friendly) to capture emails', 'mailpoet');
   }

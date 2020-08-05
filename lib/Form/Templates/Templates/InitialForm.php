@@ -2,9 +2,9 @@
 
 namespace MailPoet\Form\Templates\Templates;
 
-use MailPoet\Form\Templates\Template;
+use MailPoet\Form\Templates\FormTemplate;
 
-class InitialForm extends Template {
+class InitialForm extends FormTemplate {
   public function getName(): string {
     return '';
   }
