@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -209,26 +209,29 @@ function afterFormContent(values) {
   );
 }
 
-const SubscriberForm = ({ match }) => (
-  <div>
-    <h1 className="title">
-      {MailPoet.I18n.t('subscriber')}
-      <Link className="page-title-action" to="/">{MailPoet.I18n.t('backToList')}</Link>
-    </h1>
+const SubscriberForm = ({ match }) => {
+  const location = useLocation();
+  return (
+    <div>
+      <h1 className="title">
+        {MailPoet.I18n.t('subscriber')}
+        <Link className="page-title-action" to={location.state?.backUrl || '/'}>{MailPoet.I18n.t('backToList')}</Link>
+      </h1>
 
-    <SubscribersLimitNotice />
+      <SubscribersLimitNotice />
 
-    <Form
-      automationId="subscriber_edit_form"
-      endpoint="subscribers"
-      fields={fields}
-      params={match.params}
-      messages={messages}
-      beforeFormContent={beforeFormContent}
-      afterFormContent={afterFormContent}
-    />
-  </div>
-);
+      <Form
+        automationId="subscriber_edit_form"
+        endpoint="subscribers"
+        fields={fields}
+        params={match.params}
+        messages={messages}
+        beforeFormContent={beforeFormContent}
+        afterFormContent={afterFormContent}
+      />
+    </div>
+  );
+};
 
 SubscriberForm.propTypes = {
   match: PropTypes.shape({
