@@ -343,7 +343,7 @@ const SubscriberList = ({ match }) => {
               to={{
                 pathname: `/edit/${subscriber.id}`,
                 state: {
-                  test: 'lala',
+                  backUrl: location?.pathname,
                 },
               }}
             >
