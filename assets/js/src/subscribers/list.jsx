@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
@@ -264,18 +264,20 @@ const itemActions = [
   },
 ];
 
-class SubscriberList extends React.Component {
-  getSegmentFromId = (segmentId) => {
-    let result = false;
-    window.mailpoet_segments.forEach((segment) => {
-      if (segment.id === segmentId) {
-        result = segment;
-      }
-    });
-    return result;
-  };
+const getSegmentFromId = (segmentId) => {
+  let result = false;
+  window.mailpoet_segments.forEach((segment) => {
+    if (segment.id === segmentId) {
+      result = segment;
+    }
+  });
+  return result;
+};
 
-  renderItem = (subscriber, actions) => {
+const SubscriberList = ({ match }) => {
+  const location = useLocation();
+
+  const renderItem = (subscriber, actions) => {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -318,7 +320,7 @@ class SubscriberList extends React.Component {
       const subscribedSegments = [];
 
       subscriber.subscriptions.forEach((subscription) => {
-        const segment = this.getSegmentFromId(subscription.segment_id);
+        const segment = getSegmentFromId(subscription.segment_id);
         if (segment === false) return;
         if (subscription.status === 'subscribed') {
           subscribedSegments.push(segment.name);
@@ -338,7 +340,12 @@ class SubscriberList extends React.Component {
           <strong>
             <Link
               className="row-title"
-              to={`/edit/${subscriber.id}`}
+              to={{
+                pathname: `/edit/${subscriber.id}`,
+                state: {
+                  test: 'lala',
+                },
+              }}
             >
               { subscriber.email }
             </Link>
@@ -363,70 +370,67 @@ class SubscriberList extends React.Component {
     );
   };
 
-  render() {
-    return (
-      <div>
-        <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')}
-          {' '}
-          <Link
-            className="page-title-action"
-            to="/new"
-          >
-            {MailPoet.I18n.t('new')}
-          </Link>
-          <a
-            className="page-title-action"
-            href="?page=mailpoet-import"
-            data-automation-id="import-subscribers-button"
-          >
-            {MailPoet.I18n.t('import')}
-          </a>
-          <a
-            id="mailpoet_export_button"
-            className="page-title-action"
-            href="?page=mailpoet-export"
-          >
-            {MailPoet.I18n.t('export')}
-          </a>
-        </h1>
+  return (
+    <div>
+      <h1 className="title">
+        {MailPoet.I18n.t('pageTitle')}
+        {' '}
+        <Link
+          className="page-title-action"
+          to="/new"
+        >
+          {MailPoet.I18n.t('new')}
+        </Link>
+        <a
+          className="page-title-action"
+          href="?page=mailpoet-import"
+          data-automation-id="import-subscribers-button"
+        >
+          {MailPoet.I18n.t('import')}
+        </a>
+        <a
+          id="mailpoet_export_button"
+          className="page-title-action"
+          href="?page=mailpoet-export"
+        >
+          {MailPoet.I18n.t('export')}
+        </a>
+      </h1>
 
-        <SubscribersInPlan
-          subscribersInPlan={window.mailpoet_subscribers_in_plan_count}
-          subscribersInPlanLimit={window.mailpoet_subscribers_limit}
-          mailpoetSubscribers={window.mailpoet_premium_subscribers_count}
-          mailpoetSubscribersLimit={window.mailpoet_subscribers_limit}
-          hasPremiumSupport={window.mailpoet_has_premium_support}
-          wpUsersCount={window.mailpoet_wp_users_count}
-          mssActive={window.mailpoet_mss_active}
-        />
+      <SubscribersInPlan
+        subscribersInPlan={window.mailpoet_subscribers_in_plan_count}
+        subscribersInPlanLimit={window.mailpoet_subscribers_limit}
+        mailpoetSubscribers={window.mailpoet_premium_subscribers_count}
+        mailpoetSubscribersLimit={window.mailpoet_subscribers_limit}
+        hasPremiumSupport={window.mailpoet_has_premium_support}
+        wpUsersCount={window.mailpoet_wp_users_count}
+        mssActive={window.mailpoet_mss_active}
+      />
 
-        <SubscribersLimitNotice />
-        <InvalidMssKeyNotice
-          mssKeyInvalid={window.mailpoet_mss_key_invalid}
-          subscribersCount={window.mailpoet_subscribers_count}
-        />
+      <SubscribersLimitNotice />
+      <InvalidMssKeyNotice
+        mssKeyInvalid={window.mailpoet_mss_key_invalid}
+        subscribersCount={window.mailpoet_subscribers_count}
+      />
 
-        <Listing
-          limit={window.mailpoet_listing_per_page}
-          location={this.props.location}
-          params={this.props.match.params}
-          endpoint="subscribers"
-          onRenderItem={this.renderItem}
-          columns={columns}
-          bulk_actions={bulkActions}
-          item_actions={itemActions}
-          messages={messages}
-          sort_by="created_at"
-          sort_order="desc"
-        />
-      </div>
-    );
-  }
-}
+      <Listing
+        limit={window.mailpoet_listing_per_page}
+        location={location}
+        params={match.params}
+        endpoint="subscribers"
+        onRenderItem={renderItem}
+        columns={columns}
+        bulk_actions={bulkActions}
+        item_actions={itemActions}
+        messages={messages}
+        sort_by="created_at"
+        sort_order="desc"
+      />
+    </div>
+  );
+};
 
 SubscriberList.propTypes = {
-  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   match: PropTypes.shape({
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
