@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Form\Templates;
 
-use MailPoet\Entities\FormEntity;
+use MailPoet\Form\Templates\Template;
 use MailPoet\Form\Templates\TemplateRepository;
 
 class TemplatesRepositoryTest extends \MailPoetUnitTest {
@@ -14,9 +14,9 @@ class TemplatesRepositoryTest extends \MailPoetUnitTest {
     $this->repository = new TemplateRepository();
   }
 
-  public function testItCanBuildFormEntity() {
-    $formEntity = $this->repository->getFormEntityForTemplate(TemplateRepository::INITIAL_FORM_TEMPLATE);
-    expect($formEntity)->isInstanceOf(FormEntity::class);
+  public function testItCanBuildFormTemplate() {
+    $formEntity = $this->repository->getFormTemplate(TemplateRepository::INITIAL_FORM_TEMPLATE);
+    expect($formEntity)->isInstanceOf(Template::class);
     expect($formEntity->getStyles())->notEmpty();
     expect($formEntity->getBody())->notEmpty();
     expect($formEntity->getSettings())->notEmpty();

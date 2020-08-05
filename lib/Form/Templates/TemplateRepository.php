@@ -2,7 +2,6 @@
 
 namespace MailPoet\Form\Templates;
 
-use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Templates\Templates\DefaultForm;
 use MailPoet\Form\Templates\Templates\DemoForm;
 use MailPoet\Form\Templates\Templates\InitialForm;
@@ -18,24 +17,24 @@ class TemplateRepository {
     'demo_form' => DemoForm::class,
   ];
 
-  public function getFormEntityForTemplate(string $templateId): FormEntity {
+  public function getFormTemplate(string $templateId): Template {
     if (!isset($this->templates[$templateId])) {
       throw UnexpectedValueException::create()
         ->withErrors(["Template with id $templateId doesn't exist."]);
     }
     /** @var Template $template */
     $template = new $this->templates[$templateId]();
-    return $template->toFormEntity();
+    return $template;
   }
 
   /**
    * @param string[] $templateIds
-   * @return FormEntity[] associative array with template ids as keys
+   * @return Template[] associative array with template ids as keys
    */
-  public function getFormsForTemplates(array $templateIds): array {
+  public function getFormTemplates(array $templateIds): array {
     $result = [];
     foreach ($templateIds as $templateId) {
-      $result[$templateId] = $this->getFormEntityForTemplate($templateId);
+      $result[$templateId] = $this->getFormTemplate($templateId);
     }
     return $result;
   }
