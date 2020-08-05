@@ -33,10 +33,11 @@ class StatisticsClickEntity {
   private $queue;
 
   /**
-   * @ORM\Column(type="integer")
-   * @var int
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SubscriberEntity")
+   * @ORM\JoinColumn(name="subscriber_id", referencedColumnName="id")
+   * @var SubscriberEntity|null
    */
-  private $subscriberId;
+  private $subscriber;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterLinkEntity", inversedBy="clicks")
@@ -53,13 +54,13 @@ class StatisticsClickEntity {
   public function __construct(
     NewsletterEntity $newsletter,
     SendingQueueEntity $queue,
-    int $subscriberId,
+    SubscriberEntity $subscriber,
     NewsletterLinkEntity $link,
     int $count
   ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;
-    $this->subscriberId = $subscriberId;
+    $this->subscriber = $subscriber;
     $this->link = $link;
     $this->count = $count;
   }
@@ -103,10 +104,10 @@ class StatisticsClickEntity {
   }
 
   /**
-   * @param int $subscriberId
+   * @param SubscriberEntity|null $subscriber
    */
-  public function setSubscriberId($subscriberId) {
-    $this->subscriberId = $subscriberId;
+  public function setSubscriber($subscriber) {
+    $this->subscriber = $subscriber;
   }
 
   /**

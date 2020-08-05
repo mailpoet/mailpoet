@@ -330,7 +330,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
   }
 
   private function createOpenStatistics(NewsletterEntity $newsletter, SendingQueueEntity $queue, SubscriberEntity $subscriber): StatisticsOpenEntity {
-    $statistics = new StatisticsOpenEntity($newsletter, $queue, (int)$subscriber->getId());
+    $statistics = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
     $this->entityManager->persist($statistics);
     $this->entityManager->flush();
     return $statistics;
@@ -342,7 +342,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     SubscriberEntity $subscriber,
     NewsletterLinkEntity $link
   ): StatisticsClickEntity {
-    $statistics = new StatisticsClickEntity($newsletter, $queue, (int)$subscriber->getId(), $link, 1);
+    $statistics = new StatisticsClickEntity($newsletter, $queue, $subscriber, $link, 1);
     $this->entityManager->persist($statistics);
     $this->entityManager->flush();
     return $statistics;

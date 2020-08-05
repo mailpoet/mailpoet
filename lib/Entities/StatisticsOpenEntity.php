@@ -31,19 +31,20 @@ class StatisticsOpenEntity {
   private $queue;
 
   /**
-   * @ORM\Column(type="integer")
-   * @var int
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SubscriberEntity")
+   * @ORM\JoinColumn(name="subscriber_id", referencedColumnName="id")
+   * @var SubscriberEntity|null
    */
-  private $subscriberId;
+  private $subscriber;
 
   public function __construct(
     NewsletterEntity $newsletter,
     SendingQueueEntity $queue,
-    int $subscriberId
+    SubscriberEntity $subscriber
   ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;
-    $this->subscriberId = $subscriberId;
+    $this->subscriber = $subscriber;
   }
 
   /**
@@ -77,9 +78,9 @@ class StatisticsOpenEntity {
   }
 
   /**
-   * @param int $subscriberId
+   * @param SubscriberEntity|null $subscriber
    */
-  public function setSubscriberId($subscriberId) {
-    $this->subscriberId = $subscriberId;
+  public function setSubscriber($subscriber) {
+    $this->subscriber = $subscriber;
   }
 }

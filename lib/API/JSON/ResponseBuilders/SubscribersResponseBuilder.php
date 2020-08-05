@@ -102,7 +102,7 @@ class SubscribersResponseBuilder {
 
   private function buildUnsubscribes(SubscriberEntity $subscriberEntity): array {
     $unsubscribes = $this->statisticsUnsubscribesRepository->findBy([
-      'subscriberId' => $subscriberEntity->getId(),
+      'subscriber' => $subscriberEntity,
     ], [
       'createdAt' => 'desc',
     ]);
