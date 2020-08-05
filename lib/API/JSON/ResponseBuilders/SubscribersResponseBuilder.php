@@ -61,6 +61,9 @@ class SubscribersResponseBuilder {
       'last_name' => $subscriber->getLastName(),
       'subscriptions' => $this->buildSubscriptions($subscriber),
       'status' => $subscriber->getStatus(),
+      'count_confirmations' => $subscriber->getConfirmationsCount(),
+      'wp_user_id' => $subscriber->getWpUserId(),
+      'is_woocommerce_user' => $subscriber->getIsWoocommerceUser(),
       'created_at' => $subscriber->getCreatedAt()->format(self::DATE_FORMAT),
     ];
   }
