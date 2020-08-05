@@ -152,7 +152,15 @@ class ListingItem extends React.Component {
     } else {
       itemActions = (
         <span className="edit">
-          <Link to={`/edit/${this.props.item.id}`}>{MailPoet.I18n.t('edit')}</Link>
+          <Link to={{
+            pathname: `/edit/${this.props.item.id}`,
+            state: {
+              backUrl: this.props.location?.pathname,
+            },
+          }}
+          >
+            {MailPoet.I18n.t('edit')}
+          </Link>
         </span>
       );
     }
