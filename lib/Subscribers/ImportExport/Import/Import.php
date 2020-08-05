@@ -19,6 +19,8 @@ use function MailPoetVendor\array_column;
 class Import {
   public $subscribersData;
   public $segmentsIds;
+  public $newSubscribersStatus;
+  public $existingSubscribersStatus;
   public $updateSubscribers;
   public $subscribersFields;
   public $subscribersCustomFields;
@@ -27,6 +29,7 @@ class Import {
   public $updatedAt;
   public $requiredSubscribersFields;
   const DB_QUERY_CHUNK_SIZE = 100;
+  const STATUS_DONT_UPDATE = 'dont_update';
 
   public function __construct($data) {
     $this->validateImportData($data);
@@ -35,6 +38,8 @@ class Import {
       $data['columns']
     );
     $this->segmentsIds = $data['segments'];
+    $this->newSubscribersStatus = $data['newSubscribersStatus'];
+    $this->existingSubscribersStatus = $data['existingSubscribersStatus'];
     $this->updateSubscribers = $data['updateSubscribers'];
     $this->subscribersFields = $this->getSubscribersFields(
       array_keys($data['columns'])
@@ -59,6 +64,8 @@ class Import {
       'columns',
       'segments',
       'timestamp',
+      'newSubscribersStatus',
+      'existingSubscribersStatus',
       'updateSubscribers',
     ];
     // 1. data should contain all required fields
@@ -94,7 +101,7 @@ class Import {
       if ($newSubscribers['data']) {
         // add, if required, missing required fields to new subscribers
         $newSubscribers = $this->addMissingRequiredFields($newSubscribers);
-        $newSubscribers = $this->setSubscriptionStatusToSubscribed($newSubscribers);
+        $newSubscribers = $this->setSubscriptionStatusToDefault($newSubscribers, $this->newSubscribersStatus);
         $newSubscribers = $this->setSource($newSubscribers);
         $newSubscribers = $this->setLinkToken($newSubscribers);
         $createdSubscribers =
@@ -105,6 +112,14 @@ class Import {
           );
       }
       if ($existingSubscribers['data'] && $this->updateSubscribers) {
+        $allowedStatuses = [
+          Subscriber::STATUS_SUBSCRIBED,
+          Subscriber::STATUS_UNSUBSCRIBED,
+          Subscriber::STATUS_INACTIVE,
+        ];
+        if (in_array($this->existingSubscribersStatus, $allowedStatuses, true)) {
+          $existingSubscribers = $this->addField($existingSubscribers, 'status', $this->existingSubscribersStatus);
+        }
         $updatedSubscribers =
           $this->createOrUpdateSubscribers(
             'update',
@@ -258,31 +273,41 @@ class Import {
   }
 
   public function addMissingRequiredFields($subscribers) {
-    $subscribersCount = count($subscribers['data'][key($subscribers['data'])]);
     foreach (array_keys($this->requiredSubscribersFields) as $requiredField) {
-      if (in_array($requiredField, $subscribers['fields'])) continue;
-      $subscribers['data'][$requiredField] = array_fill(
-        0,
-        $subscribersCount,
-        $this->requiredSubscribersFields[$requiredField]
-      );
-      $subscribers['fields'][] = $requiredField;
+      $subscribers = $this->addField($subscribers, $requiredField, $this->requiredSubscribersFields[$requiredField]);
     }
     return $subscribers;
   }
 
-  private function setSubscriptionStatusToSubscribed($subscribersData) {
+  private function addField($subscribers, $fieldName, $fieldValue) {
+    if (in_array($fieldName, $subscribers['fields'])) return $subscribers;
+
+    $subscribersCount = count($subscribers['data'][key($subscribers['data'])]);
+    $subscribers['data'][$fieldName] = array_fill(
+      0,
+      $subscribersCount,
+      $fieldValue
+
+    );
+    $subscribers['fields'][] = $fieldName;
+
+    return $subscribers;
+  }
+
+  private function setSubscriptionStatusToDefault($subscribersData, $defaultStatus) {
     if (!in_array('status', $subscribersData['fields'])) return $subscribersData;
-    $subscribersData['data']['status'] = array_map(function() {
-      return Subscriber::STATUS_SUBSCRIBED;
+    $subscribersData['data']['status'] = array_map(function() use ($defaultStatus) {
+      return $defaultStatus;
     }, $subscribersData['data']['status']);
 
-    if (!in_array('last_subscribed_at', $subscribersData['fields'])) {
-      $subscribersData['fields'][] = 'last_subscribed_at';
+    if ($defaultStatus === Subscriber::STATUS_SUBSCRIBED) {
+      if (!in_array('last_subscribed_at', $subscribersData['fields'])) {
+        $subscribersData['fields'][] = 'last_subscribed_at';
+      }
+      $subscribersData['data']['last_subscribed_at'] = array_map(function() {
+        return $this->createdAt;
+      }, $subscribersData['data']['status']);
     }
-    $subscribersData['data']['last_subscribed_at'] = array_map(function() {
-      return $this->createdAt;
-    }, $subscribersData['data']['status']);
     return $subscribersData;
   }
 
