@@ -4,7 +4,7 @@ namespace MailPoet\Form\Templates;
 
 use MailPoet\Entities\FormEntity;
 
-abstract class Template {
+abstract class FormTemplate {
   abstract public function getName(): string;
 
   abstract public function getBody(): array;

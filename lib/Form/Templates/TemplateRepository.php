@@ -17,19 +17,19 @@ class TemplateRepository {
     'demo_form' => DemoForm::class,
   ];
 
-  public function getFormTemplate(string $templateId): Template {
+  public function getFormTemplate(string $templateId): FormTemplate {
     if (!isset($this->templates[$templateId])) {
       throw UnexpectedValueException::create()
         ->withErrors(["Template with id $templateId doesn't exist."]);
     }
-    /** @var Template $template */
+    /** @var FormTemplate $template */
     $template = new $this->templates[$templateId]();
     return $template;
   }
 
   /**
    * @param string[] $templateIds
-   * @return Template[] associative array with template ids as keys
+   * @return FormTemplate[] associative array with template ids as keys
    */
   public function getFormTemplates(array $templateIds): array {
     $result = [];
