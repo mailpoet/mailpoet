@@ -118,7 +118,7 @@ class ListingItem extends React.Component {
                 className={action.name}
               >
                 {(!isFirst) ? ' | ' : ''}
-                { action.link(this.props.item) }
+                { action.link(this.props.item, this.props.location) }
               </span>
             );
           } else {
@@ -242,6 +242,13 @@ ListingItem.propTypes = {
   onRefreshItems: PropTypes.func.isRequired,
   onRenderItem: PropTypes.func.isRequired,
   group: PropTypes.string.isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }),
+};
+
+ListingItem.defaultProps = {
+  location: undefined,
 };
 
 export default ListingItem;

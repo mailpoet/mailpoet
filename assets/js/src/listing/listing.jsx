@@ -650,6 +650,7 @@ class Listing extends React.Component {
               messages={messages}
               items={items}
               search={this.state.search}
+              location={this.props.location}
             />
 
           </table>
