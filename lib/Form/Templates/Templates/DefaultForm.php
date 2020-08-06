@@ -8,6 +8,8 @@ use MailPoet\Form\Templates\FormTemplate;
  * Template for default form created on plugin activation
  */
 class DefaultForm extends FormTemplate {
+  const ID = 'default_form';
+
   public function getName(): string {
     return _x('My First Form', 'default name of form (GDPR friendly) to capture emails', 'mailpoet');
   }
