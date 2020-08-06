@@ -3,3 +3,44 @@
     color: lighten(#555, 33);
   }
 }
+
+.mailpoet-subscriber-stats-summary-grid {
+  display: grid;
+  grid-gap: 16px;
+  grid-template-columns: auto auto 1fr;
+
+  .mailpoet-listing-pages {
+    margin-bottom: 0;
+  }
+
+  .mailpoet-listing .mailpoet-listing-table {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .mailpoet-tab-content.mailpoet-subscriber-stats-summary {
+    display: inline-block;
+    margin-top: 16px;
+    min-width: 300px;
+    padding: 8px 16px;
+  }
+
+  .mailpoet-tab-content.mailpoet-subscriber-stats-summary table.mailpoet-listing-table {
+    margin: 0 -16px;
+  }
+
+  .mailpoet-tab-content.mailpoet-subscriber-stats-summary .mailpoet-listing-table td {
+    border-bottom: 1px solid #e5e9f8;
+    color: #071c6d;
+    font-size: 14px;
+  }
+
+  .mailpoet-tab-content.mailpoet-subscriber-stats-summary .mailpoet-listing-table tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .mailpoet-tab-content.mailpoet-subscriber-stats-summary td a {
+    color: #071c6d;
+    text-decoration: underline;
+  }
+}
