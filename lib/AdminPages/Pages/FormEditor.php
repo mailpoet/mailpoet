@@ -48,7 +48,6 @@ class FormEditor {
   private $templatesRepository;
 
   private $activeTemplates = [
-    'demo_form',
     'template_3_below_pages',
     'template_3_fixed_bar',
     'template_3_popup',

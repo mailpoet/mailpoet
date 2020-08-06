@@ -3,7 +3,6 @@
 namespace MailPoet\Form\Templates;
 
 use MailPoet\Form\Templates\Templates\DefaultForm;
-use MailPoet\Form\Templates\Templates\DemoForm;
 use MailPoet\Form\Templates\Templates\InitialForm;
 use MailPoet\Form\Templates\Templates\Template3BelowPages;
 use MailPoet\Form\Templates\Templates\Template3FixedBar;
@@ -24,7 +23,6 @@ class TemplateRepository {
     'template_3_popup' => Template3Popup::class,
     'template_3_slide_in' => Template3SlideIn::class,
     'template_3_widget' => Template3Widget::class,
-    'demo_form' => DemoForm::class,
   ];
 
   public function getFormTemplate(string $templateId): FormTemplate {
