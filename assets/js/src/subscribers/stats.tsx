@@ -7,6 +7,7 @@ import Loading from 'common/loading';
 import { useGlobalContextValue } from 'context';
 
 import Heading from './stats/heading';
+import Summary from './stats/summary';
 
 export type StatsType = {
   email: string
@@ -42,7 +43,7 @@ export const SubscriberStats = () => {
         );
       }
     });
-  }, [match.params.id]);
+  }, [match.params.id, showError]);
 
   if (loading) {
     return (<Loading />);
@@ -51,6 +52,13 @@ export const SubscriberStats = () => {
   return (
     <div>
       <Heading email={stats.email} />
+      <div className="mailpoet-subscriber-stats-summary-grid">
+        <Summary
+          click={stats.click}
+          open={stats.open}
+          totalSent={stats.total_sent}
+        />
+      </div>
     </div>
   );
 };
