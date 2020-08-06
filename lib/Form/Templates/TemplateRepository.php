@@ -12,17 +12,17 @@ use MailPoet\Form\Templates\Templates\Template3Widget;
 use MailPoet\UnexpectedValueException;
 
 class TemplateRepository {
-  const INITIAL_FORM_TEMPLATE = 'initial_form';
-  const DEFAULT_FORM_TEMPLATE = 'default_form';
+  const INITIAL_FORM_TEMPLATE = InitialForm::ID;
+  const DEFAULT_FORM_TEMPLATE = DefaultForm::ID;
 
   private $templates = [
-    'initial_form' => InitialForm::class,
-    'default_form' => DefaultForm::class,
-    'template_3_below_pages' => Template3BelowPages::class,
-    'template_3_fixed_bar' => Template3FixedBar::class,
-    'template_3_popup' => Template3Popup::class,
-    'template_3_slide_in' => Template3SlideIn::class,
-    'template_3_widget' => Template3Widget::class,
+    InitialForm::ID => InitialForm::class,
+    DefaultForm::ID => DefaultForm::class,
+    Template3BelowPages::ID => Template3BelowPages::class,
+    Template3FixedBar::ID => Template3FixedBar::class,
+    Template3Popup::ID => Template3Popup::class,
+    Template3SlideIn::ID => Template3SlideIn::class,
+    Template3Widget::ID => Template3Widget::class,
   ];
 
   public function getFormTemplate(string $templateId): FormTemplate {

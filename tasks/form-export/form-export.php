@@ -55,6 +55,7 @@ function mailpoetExportForm(int $id) {
   $settings = $form->getSettings();
   $settings['success_message'] = '';
   $settings['segments'] = [];
+  $template = str_replace('TEMPLATE_ID', strtolower(preg_replace("/[^A-Za-z0-9]/", '_', $form->getName())), $template);
   $template = str_replace('TEMPLATE_SETTINGS', mailpoetVarExport($settings), $template);
   $template = str_replace('TEMPLATE_STYLES', $form->getStyles(), $template);
   $template = str_replace('TEMPLATE_NAME', $form->getName(), $template);

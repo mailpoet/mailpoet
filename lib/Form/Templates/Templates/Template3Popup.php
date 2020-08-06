@@ -5,6 +5,8 @@ namespace MailPoet\Form\Templates\Templates;
 use MailPoet\Form\Templates\FormTemplate;
 
 class Template3Popup extends FormTemplate {
+  const ID = 'template_3_popup';
+
   public function getName(): string {
     return 'Template 3 Popup';
   }
