@@ -60,6 +60,8 @@ function mailpoetExportForm(int $id) {
   $template = str_replace('TEMPLATE_NAME', $form->getName(), $template);
   $template = str_replace('class Template', 'class ' . preg_replace("/[^A-Za-z0-9]/", '', $form->getName()), $template);
 
+  $template = mailpoetAddStringTranslations($template);
+
   $template = htmlspecialchars($template);
   echo "<textarea style=\"width:90%;height:90vh;\">$template</textarea>";
   die;
@@ -72,13 +74,31 @@ function mailpoetGetFormsRepository(): FormsRepository {
   return ContainerWrapper::getInstance()->get(FormsRepository::class);
 }
 
+function mailpoetAddStringTranslations(string $template): string {
+  // Replace label translations
+  $matches = [];
+  preg_match_all("/'label' => '(.+)'/u", $template, $matches);
+  foreach ($matches[0] as $key => $fullMatch) {
+    $stringToTranslate = $matches[1][$key];
+    $template = str_replace($fullMatch, "'label' => _x('$stringToTranslate', 'Form label', 'mailpoet')", $template);
+  }
+  // Replace paragraph and heading contents with translations
+  $matches = [];
+  preg_match_all("/'content' => '(.+)'/u", $template, $matches);
+  foreach ($matches[0] as $key => $fullMatch) {
+    $stringToTranslate = $matches[1][$key];
+    $template = str_replace($fullMatch, "'content' => _x('$stringToTranslate', 'Text in a web form. Keep HTML tags!', 'mailpoet')", $template);
+  }
+  return $template;
+}
+
 /**
  * @see https://stackoverflow.com/questions/24316347/how-to-format-var-export-to-php5-4-array-syntax
  */
 function mailpoetVarExport($var, $indent="    "): string {
   switch (gettype($var)) {
     case 'string':
-      return '\'' . addcslashes($var, "\\\$\"\r\n\t\v\f") . '\'';
+      return '\'' . addcslashes($var, "\\\$'\r\n\t\v\f") . '\'';
     case 'array':
       $indexed = array_keys($var) === range(0, count($var) - 1);
       $r = [];
