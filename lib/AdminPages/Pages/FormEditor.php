@@ -49,6 +49,11 @@ class FormEditor {
 
   private $activeTemplates = [
     'demo_form',
+    'template_3_below_pages',
+    'template_3_fixed_bar',
+    'template_3_popup',
+    'template_3_slide_in',
+    'template_3_widget',
   ];
 
   public function __construct(

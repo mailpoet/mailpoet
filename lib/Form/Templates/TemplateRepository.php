@@ -5,6 +5,11 @@ namespace MailPoet\Form\Templates;
 use MailPoet\Form\Templates\Templates\DefaultForm;
 use MailPoet\Form\Templates\Templates\DemoForm;
 use MailPoet\Form\Templates\Templates\InitialForm;
+use MailPoet\Form\Templates\Templates\Template3BelowPages;
+use MailPoet\Form\Templates\Templates\Template3FixedBar;
+use MailPoet\Form\Templates\Templates\Template3Popup;
+use MailPoet\Form\Templates\Templates\Template3SlideIn;
+use MailPoet\Form\Templates\Templates\Template3Widget;
 use MailPoet\UnexpectedValueException;
 
 class TemplateRepository {
@@ -14,6 +19,11 @@ class TemplateRepository {
   private $templates = [
     'initial_form' => InitialForm::class,
     'default_form' => DefaultForm::class,
+    'template_3_below_pages' => Template3BelowPages::class,
+    'template_3_fixed_bar' => Template3FixedBar::class,
+    'template_3_popup' => Template3Popup::class,
+    'template_3_slide_in' => Template3SlideIn::class,
+    'template_3_widget' => Template3Widget::class,
     'demo_form' => DemoForm::class,
   ];
 
