@@ -6,6 +6,8 @@ import MailPoet from 'mailpoet';
 import Loading from 'common/loading';
 import { useGlobalContextValue } from 'context';
 
+import Heading from './stats/heading';
+
 export type StatsType = {
   email: string
   total_sent: number
@@ -48,7 +50,7 @@ export const SubscriberStats = () => {
 
   return (
     <div>
-      xyz
+      <Heading email={stats.email} />
     </div>
   );
 };
