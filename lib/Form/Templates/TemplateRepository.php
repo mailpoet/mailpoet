@@ -9,6 +9,11 @@ use MailPoet\Form\Templates\Templates\Template3FixedBar;
 use MailPoet\Form\Templates\Templates\Template3Popup;
 use MailPoet\Form\Templates\Templates\Template3SlideIn;
 use MailPoet\Form\Templates\Templates\Template3Widget;
+use MailPoet\Form\Templates\Templates\Template4BelowPages;
+use MailPoet\Form\Templates\Templates\Template4FixedBar;
+use MailPoet\Form\Templates\Templates\Template4Popup;
+use MailPoet\Form\Templates\Templates\Template4SlideIn;
+use MailPoet\Form\Templates\Templates\Template4Widget;
 use MailPoet\UnexpectedValueException;
 
 class TemplateRepository {
@@ -23,6 +28,11 @@ class TemplateRepository {
     Template3Popup::ID => Template3Popup::class,
     Template3SlideIn::ID => Template3SlideIn::class,
     Template3Widget::ID => Template3Widget::class,
+    Template4BelowPages::ID => Template4BelowPages::class,
+    Template4FixedBar::ID => Template4FixedBar::class,
+    Template4Popup::ID => Template4Popup::class,
+    Template4SlideIn::ID => Template4SlideIn::class,
+    Template4Widget::ID => Template4Widget::class,
   ];
 
   public function getFormTemplate(string $templateId): FormTemplate {
