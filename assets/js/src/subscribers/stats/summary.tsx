@@ -25,14 +25,14 @@ export default ({ totalSent, open, click }: PropTypes) => {
           <tbody>
             <tr>
               <td>{MailPoet.I18n.t('statsSentEmail')}</td>
-              <td><b>{totalSent}</b></td>
+              <td><b>{totalSent.toLocaleString()}</b></td>
               <td />
             </tr>
             <tr>
               <td>
                 <Tag>{MailPoet.I18n.t('statsOpened')}</Tag>
               </td>
-              <td><b>{open}</b></td>
+              <td><b>{open.toLocaleString()}</b></td>
               <td>
                 {displayPercentages
                   && (
@@ -47,7 +47,7 @@ export default ({ totalSent, open, click }: PropTypes) => {
               <td>
                 <Tag isInverted>{MailPoet.I18n.t('statsClicked')}</Tag>
               </td>
-              <td><b>{click}</b></td>
+              <td><b>{click.toLocaleString()}</b></td>
               <td>
                 {displayPercentages
                 && (
@@ -60,7 +60,7 @@ export default ({ totalSent, open, click }: PropTypes) => {
             </tr>
             <tr>
               <td>{MailPoet.I18n.t('statsNotClicked')}</td>
-              <td><b>{totalSent - open}</b></td>
+              <td><b>{(totalSent - open).toLocaleString()}</b></td>
               <td>
                 {displayPercentages
                 && (
