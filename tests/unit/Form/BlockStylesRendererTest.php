@@ -55,7 +55,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     expect($this->renderer->renderForButton(['border_size' => 10]))->equals('border-style:solid;border-width:10px;border-color:transparent;');
     expect($this->renderer->renderForButton(['background_color' => '#dddddd']))->equals('background-color:#dddddd;border-color:transparent;');
     expect($this->renderer->renderForButton(['font_color' => '#aaa']))->equals('color:#aaa;border-color:transparent;');
-    expect($this->renderer->renderForButton(['font_size' => 10]))->equals('font-size:10px;line-height:1.5;border-color:transparent;');
+    expect($this->renderer->renderForButton(['font_size' => 10]))->equals('font-size:10px;line-height:1.5;height:auto;border-color:transparent;');
   }
 
   public function testItShouldCompleteButtonStyles() {
