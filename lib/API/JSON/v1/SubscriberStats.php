@@ -6,6 +6,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
@@ -39,11 +40,16 @@ class SubscriberStats extends APIEndpoint {
       ]);
     }
     $statistics = $this->subscribersStatisticsRepository->getStatistics($subscriber);
-    return $this->successResponse([
+    $response = [
       'email' => $subscriber->getEmail(),
       'total_sent' => $statistics->getTotalSentCount(),
       'open' => $statistics->getOpenCount(),
       'click' => $statistics->getClickCount(),
-    ]);
+    ];
+    $woocommerce = $statistics->getWooCommerceRevenue();
+    if ($woocommerce instanceof WooCommerceRevenue) {
+      $response['woocommerce'] = $woocommerce->asArray();
+    }
+    return $this->successResponse($response);
   }
 }
