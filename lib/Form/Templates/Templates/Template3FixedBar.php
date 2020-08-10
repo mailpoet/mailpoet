@@ -202,6 +202,7 @@ class Template3FixedBar extends FormTemplate {
       ],
       'close_button' => 'classic',
       'fontSize' => '16',
+      'font_family' => 'Montserrat',
     ];
   }
 

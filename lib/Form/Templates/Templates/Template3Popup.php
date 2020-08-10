@@ -169,6 +169,7 @@ class Template3Popup extends FormTemplate {
       ],
       'close_button' => 'classic',
       'font_family' => 'Montserrat',
+      'fontSize' => '16',
     ];
   }
 

@@ -168,6 +168,8 @@ class Template3Widget extends FormTemplate {
       ],
       'close_button' => 'round_white',
       'border_color' => '#000000',
+      'fontSize' => '16',
+      'font_family' => 'Montserrat',
     ];
   }
 
