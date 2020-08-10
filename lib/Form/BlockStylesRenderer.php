@@ -44,6 +44,7 @@ class BlockStylesRenderer {
     }
     if (isset($formSettings['fontSize']) || isset($styles['font_size'])) {
       $rules[] = "line-height:1.5;";
+      $rules[] = "height:auto;";
     }
     if (isset($styles['font_color'])) {
       $rules[] = "color:{$styles['font_color']};";
