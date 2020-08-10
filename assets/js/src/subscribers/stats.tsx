@@ -8,12 +8,20 @@ import { useGlobalContextValue } from 'context';
 
 import Heading from './stats/heading';
 import Summary from './stats/summary';
+import WoocommerceRevenues from './stats/woocommerce_revenues';
 
 export type StatsType = {
   email: string
   total_sent: number
   open: number
   click: number
+  woocommerce: {
+    currency: string
+    value: number
+    count: number
+    formatted: string
+    formatted_average: string
+  }
 }
 
 export const SubscriberStats = () => {
@@ -58,6 +66,13 @@ export const SubscriberStats = () => {
           open={stats.open}
           totalSent={stats.total_sent}
         />
+        {stats.woocommerce && (
+          <WoocommerceRevenues
+            averageRevenueValue={stats.woocommerce.formatted_average}
+            count={stats.woocommerce.count}
+            revenueValue={stats.woocommerce.formatted}
+          />
+        )}
       </div>
     </div>
   );
