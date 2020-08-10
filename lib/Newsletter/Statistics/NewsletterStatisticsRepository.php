@@ -167,7 +167,7 @@ class NewsletterStatisticsRepository extends Repository {
 
     $revenues = [];
     foreach ($results ?: [] as $result) {
-      $revenues[(int)$result['id']] = new NewsletterWooCommerceRevenue(
+      $revenues[(int)$result['id']] = new WooCommerceRevenue(
         $currency,
         (float)$result['total'],
         (int)$result['cnt'],

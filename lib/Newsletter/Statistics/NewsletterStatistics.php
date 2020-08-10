@@ -16,7 +16,7 @@ class NewsletterStatistics {
   /** @var int */
   private $totalSentCount;
 
-  /** @var NewsletterWooCommerceRevenue|null */
+  /** @var WooCommerceRevenue|null */
   private $wooCommerceRevenue;
 
   public function __construct($clickCount, $openCount, $unsubscribeCount, $totalSentCount, $wooCommerceRevenue) {
@@ -56,7 +56,7 @@ class NewsletterStatistics {
   }
 
   /**
-   * @return NewsletterWooCommerceRevenue|null
+   * @return WooCommerceRevenue|null
    */
   public function getWooCommerceRevenue() {
     return $this->wooCommerceRevenue;

@@ -4,7 +4,7 @@ namespace MailPoet\Newsletter\Statistics;
 
 use MailPoet\WooCommerce\Helper;
 
-class NewsletterWooCommerceRevenue {
+class WooCommerceRevenue {
 
   /** @var string */
   private $currency;
