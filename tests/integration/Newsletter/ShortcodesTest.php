@@ -6,6 +6,7 @@ use Codeception\Util\Stub;
 use MailPoet\Config\Populator;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\FormFactory;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
@@ -20,6 +21,7 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Idiorm\ORM;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
@@ -49,6 +51,8 @@ class ShortcodesTest extends \MailPoetTest {
       new Captcha,
       $referralDetector,
       $featuresController,
+      $this->diContainer->get(FormsRepository::class),
+      $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(FormFactory::class)
     );
     $populator->up();

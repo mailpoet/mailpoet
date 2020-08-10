@@ -16,6 +16,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\FormFactory;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
@@ -42,6 +43,7 @@ use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
@@ -79,6 +81,8 @@ class SendingQueueTest extends \MailPoetTest {
       new Captcha,
       $referralDetector,
       $featuresController,
+      $this->diContainer->get(FormsRepository::class),
+      $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(FormFactory::class)
     );
     $populator->up();

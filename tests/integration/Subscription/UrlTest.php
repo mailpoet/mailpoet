@@ -6,6 +6,7 @@ use Codeception\Util\Stub;
 use MailPoet\Config\Populator;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\FormFactory;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Models\Subscriber;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Router\Router;
@@ -15,6 +16,7 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class UrlTest extends \MailPoetTest {
 
@@ -35,6 +37,8 @@ class UrlTest extends \MailPoetTest {
       new Captcha,
       $referralDetector,
       $featuresController,
+      $this->diContainer->get(FormsRepository::class),
+      $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(FormFactory::class)
     );
     $populator->up();
