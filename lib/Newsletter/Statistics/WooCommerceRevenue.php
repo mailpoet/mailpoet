@@ -45,6 +45,15 @@ class WooCommerceRevenue {
     return $this->wooCommerceHelper->getRawPrice($this->value, ['currency' => $this->currency]);
   }
 
+  /** @return string */
+  public function getFormattedAverageValue(): string {
+    $average = 0;
+    if ($this->ordersCount > 0) {
+      $average = $this->value / $this->ordersCount;
+    }
+    return $this->wooCommerceHelper->getRawPrice($average, ['currency' => $this->currency]);
+  }
+
   /**
    * @return array
    */
@@ -54,6 +63,7 @@ class WooCommerceRevenue {
       'value' => (float)$this->value,
       'count' => (int)$this->ordersCount,
       'formatted' => $this->getFormattedValue(),
+      'formatted_average' => $this->getFormattedAverageValue(),
     ];
   }
 }
