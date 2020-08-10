@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Entities\FormEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
@@ -385,6 +386,7 @@ class Migrator {
     $attributes = [
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,', // should be null but db_delta can't handle this change
+      'status varchar(20) NOT NULL DEFAULT "' . FormEntity::STATUS_ENABLED . '",',
       'body longtext,',
       'settings longtext,',
       'styles longtext,',

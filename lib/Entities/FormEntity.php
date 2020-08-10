@@ -24,6 +24,9 @@ class FormEntity {
   const DISPLAY_TYPE_SLIDE_IN = 'slide_in';
   const DISPLAY_TYPE_OTHERS = 'others';
 
+  const STATUS_ENABLED = 'enabled';
+  const STATUS_DISABLED = 'disabled';
+
   /**
    * @ORM\Column(type="string")
    * @var string
@@ -35,6 +38,12 @@ class FormEntity {
    * @var array|null
    */
   private $body;
+
+  /**
+   * @ORM\Column(type="string")
+   * @var string
+   */
+  private $status;
 
   /**
    * @ORM\Column(type="serialized_array")
@@ -50,6 +59,7 @@ class FormEntity {
 
   public function __construct($name) {
     $this->name = $name;
+    $this->status = self::STATUS_ENABLED;
   }
 
   /**
