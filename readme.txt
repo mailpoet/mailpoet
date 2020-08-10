@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.2
 Tested up to: 5.4
-Stable tag: 3.48.0
+Stable tag: 3.48.1
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.48.1 - 2020-08-10 =
+* Added: set subscribers status on import;
+* Improved: remember subscribers listing filters and page after editing a subscriber;
+* Improved: subscriber status is not changed when the same user is added as WordPress user;
+* Improved: redesigned opened/clicked badges on emails listing;
+* Improved: template translations;
+* Fixed: searching in "Sending Status".
 
 = 3.48.0 - 2020-08-04 =
 * Added: manage your subscription page is more customizable;
