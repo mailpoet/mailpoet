@@ -40,3 +40,14 @@ h5.mailpoet-h5 { font-size: $heading-font-size-h5; }
 .mailpoet-ul {
   list-style-type: disc;
 }
+
+.mailpoet-link {
+  color: $color-secondary;
+  text-decoration: underline;
+
+  &:hover,
+  &:focus {
+    color: $color-secondary-hover;
+    text-decoration: none;
+  }
+}

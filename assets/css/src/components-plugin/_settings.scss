@@ -117,103 +117,37 @@ ul.sending-method-benefits {
   font-size: 14px;
 }
 
-.mailpoet_sending_methods {
+.mailpoet-sending-methods {
+  font-size: 14px;
+}
+
+.mailpoet-sending-method {
+  display: block;
+  margin-left: $form-control-choice-height;
+  padding: $grid-gap;
+
+  .mailpoet-form-radio-control {
+    left: -$form-control-choice-height;
+    position: absolute;
+    top: 17px;
+  }
+
+  .mailpoet-h4 {
+    margin-top: 0;
+  }
+}
+
+.mailpoet-sending-method-benefits {
+  margin: $grid-gap-medium 0;
+}
+
+.mailpoet-sending-method-actions {
+  align-items: center;
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  margin: 25px 0 0;
+  margin-top: $grid-gap;
 
-  > li {
-    background-color: #fff;
-    border: 2px solid #dcdcdc;
-    display: flex;
-    flex-basis: 0;
+  @include respond-to(small-screen) {
     flex-direction: column;
-    flex-grow: 1;
-    flex-shrink: 1;
-    margin: 0 25px 25px 0;
-    max-width: 500px;
-
-    .mailpoet_sending_method_description {
-      flex-grow: 1;
-      flex-shrink: 0;
-      padding: 25px;
-    }
-
-    &:hover:not(.mailpoet_active) {
-      border-color: #c5c5c5;
-    }
-  }
-
-  > li:last-child {
-    margin-right: 0;
-  }
-
-  h3 {
-    font-size: 1.5em;
-    height: 54px;
-    text-align: center;
-  }
-
-  .mailpoet_description {
-    font-size: 14px;
-  }
-
-  .mailpoet_status {
-    align-items: center;
-    background-color: #dcdcdc;
-    color: #fff;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    min-height: 2em;
-    padding: 1em;
-    text-overflow: ellipsis;
-
-    span {
-      font-weight: bold;
-      visibility: hidden;
-    }
-
-    div {
-      margin-left: 1em;
-    }
-  }
-
-  .mailpoet_active {
-    border: 2px solid #088b00;
-
-    &.mailpoet_invalid_key {
-      border: 2px solid #dc3232;
-    }
-
-    .mailpoet_status {
-      background-color: #088b00;
-
-      &.mailpoet_invalid_key {
-        background-color: #dc3232;
-
-        .mailpoet_actions {
-          color: white;
-
-          a:not(.button-primary) {
-            color: white;
-          }
-        }
-      }
-
-      span {
-        visibility: visible;
-      }
-    }
-
-    #mailpoet_mta_activate {
-      visibility: hidden;
-    }
-  }
-
-  .mailpoet_actions {
-    color: initial;
   }
 }
 
