@@ -10,11 +10,13 @@ use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\FormFactory;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class SetupTest extends \MailPoetTest {
   public function _before() {
@@ -38,6 +40,8 @@ class SetupTest extends \MailPoetTest {
       new Captcha(),
       $referralDetector,
       $featuresController,
+      $this->diContainer->get(FormsRepository::class),
+      $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(FormFactory::class)
     );
     $router = new Setup($wp, new Activator($settings, $populator));

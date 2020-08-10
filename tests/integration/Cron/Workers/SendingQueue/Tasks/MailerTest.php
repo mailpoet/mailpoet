@@ -8,6 +8,7 @@ use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\FormFactory;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Subscriber;
 use MailPoet\Referrals\ReferralDetector;
@@ -15,6 +16,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Idiorm\ORM;
 
 class MailerTest extends \MailPoetTest {
@@ -37,6 +39,8 @@ class MailerTest extends \MailPoetTest {
       new Captcha,
       $referralDetector,
       $featuresController,
+      $this->diContainer->get(FormsRepository::class),
+      $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(FormFactory::class)
     );
     $populator->up();

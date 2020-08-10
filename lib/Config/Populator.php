@@ -12,6 +12,7 @@ use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\FormFactory;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Form;
 use MailPoet\Models\Newsletter;
@@ -33,6 +34,7 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Populator {
   public $prefix;
@@ -51,6 +53,13 @@ class Populator {
   private $flagsController;
   /** @var FormFactory */
   private $formFactory;
+  /** @var FormsRepository */
+  private $formsRepository;
+
+  /**
+   * @var EntityManager
+   */
+  private $entityManager;
 
   public function __construct(
     SettingsController $settings,
@@ -58,6 +67,8 @@ class Populator {
     Captcha $captcha,
     ReferralDetector $referralDetector,
     FeaturesController $flagsController,
+    FormsRepository $formsRepository,
+    EntityManager $entityManager,
     FormFactory $formFactory
   ) {
     $this->settings = $settings;
@@ -147,6 +158,8 @@ class Populator {
       'FarmersMarket',
     ];
     $this->flagsController = $flagsController;
+    $this->formsRepository = $formsRepository;
+    $this->entityManager = $entityManager;
   }
 
   public function up() {
@@ -174,6 +187,7 @@ class Populator {
     $this->detectReferral();
     $this->updateFormsSuccessMessages();
     $this->moveGoogleAnalyticsFromPremium();
+    $this->addPlacementStatusToForms();
   }
 
   private function createMailPoetPage() {
@@ -686,6 +700,50 @@ class Populator {
       NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE
     ));
+  }
+
+  private function addPlacementStatusToForms() {
+    if (version_compare($this->settings->get('db_version', '3.48.1'), '3.48.1', '>')) {
+      return;
+    }
+    $forms = $this->formsRepository->findAll();
+    foreach ($forms as $form) {
+      $settings = $form->getSettings();
+      if (
+        (isset($settings['place_form_bellow_all_posts']) && $settings['place_form_bellow_all_posts'] === '1')
+        || (isset($settings['place_form_bellow_all_pages']) && $settings['place_form_bellow_all_pages'] === '1')
+      ) {
+        $settings['form_placement_bellow_posts_enabled'] = '1';
+      } else {
+        $settings['form_placement_bellow_posts_enabled'] = '';
+      }
+      if (
+        (isset($settings['place_popup_form_on_all_posts']) && $settings['place_popup_form_on_all_posts'] === '1')
+        || (isset($settings['place_popup_form_on_all_pages']) && $settings['place_popup_form_on_all_pages'] === '1')
+      ) {
+        $settings['form_placement_popup_enabled'] = '1';
+      } else {
+        $settings['form_placement_popup_enabled'] = '';
+      }
+      if (
+        (isset($settings['place_fixed_bar_form_on_all_posts']) && $settings['place_fixed_bar_form_on_all_posts'] === '1')
+        || (isset($settings['place_fixed_bar_form_on_all_pages']) && $settings['place_fixed_bar_form_on_all_pages'] === '1')
+      ) {
+        $settings['form_placement_fixed_bar_enabled'] = '1';
+      } else {
+        $settings['form_placement_fixed_bar_enabled'] = '';
+      }
+      if (
+        (isset($settings['place_slide_in_form_on_all_posts']) && $settings['place_slide_in_form_on_all_posts'] === '1')
+        || (isset($settings['place_slide_in_form_on_all_pages']) && $settings['place_slide_in_form_on_all_pages'] === '1')
+      ) {
+        $settings['form_placement_slide_in_enabled'] = '1';
+      } else {
+        $settings['form_placement_slide_in_enabled'] = '';
+      }
+      $form->setSettings($settings);
+    }
+    $this->entityManager->flush();
   }
 
   private function moveGoogleAnalyticsFromPremium() {
