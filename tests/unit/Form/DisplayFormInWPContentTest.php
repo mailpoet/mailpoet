@@ -54,6 +54,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'segments' => ['3'],
       'place_form_bellow_all_pages' => '',
       'place_form_bellow_all_posts' => '1',
+      'form_placement_bellow_posts_enabled' => '1',
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -87,6 +88,30 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'segments' => ['3'],
       'place_form_bellow_all_pages' => '',
       'place_form_bellow_all_posts' => '',
+      'form_placement_bellow_posts_enabled' => '',
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([[
+      'type' => 'submit',
+      'params' => ['label' => 'Subscribe!'],
+      'id' => 'submit',
+      'name' => 'Submit',
+    ]]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+    $result = $this->hook->display('content');
+    expect($result)->equals('content');
+  }
+
+  public function testDoesNotAppendFormIfEnabledAndPlacementIsDisabled() {
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(false);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'place_form_bellow_all_pages' => '',
+      'place_form_bellow_all_posts' => '',
+      'form_placement_bellow_posts_enabled' => '1',
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -116,6 +141,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'segments' => ['3'],
       'place_form_bellow_all_pages' => '',
       'place_form_bellow_all_posts' => '1',
+      'form_placement_bellow_posts_enabled' => '1',
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -144,6 +170,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'segments' => ['3'],
       'place_form_bellow_all_pages' => '1',
       'place_form_bellow_all_posts' => '',
+      'form_placement_bellow_posts_enabled' => '1',
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -202,6 +229,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'place_form_bellow_all_posts' => '',
       'place_popup_form_on_all_pages' => '1',
       'place_popup_form_on_all_posts' => '',
+      'form_placement_bellow_posts_enabled' => '',
+      'form_placement_popup_enabled' => '1',
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -235,6 +264,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'place_popup_form_on_all_posts' => '',
       'place_fixed_bar_form_on_all_pages' => '1',
       'place_fixed_bar_form_on_all_posts' => '1',
+      'form_placement_bellow_posts_enabled' => '',
+      'form_placement_fixed_bar_enabled' => '1',
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -259,6 +290,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form1->setSettings([
       'segments' => ['3'],
       'place_fixed_bar_form_on_all_pages' => '1',
+      'form_placement_fixed_bar_enabled' => '1',
       'success_message' => 'Hello',
     ]);
     $form1->setBody([[
@@ -271,6 +303,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form2->setSettings([
       'segments' => ['3'],
       'place_fixed_bar_form_on_all_pages' => '1',
+      'form_placement_fixed_bar_enabled' => '1',
       'success_message' => 'Hello',
     ]);
     $form2->setBody([[
