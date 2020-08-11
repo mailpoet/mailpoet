@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Form\FormFactory;
 use MailPoet\Form\PreviewPage;
@@ -127,6 +128,7 @@ class Forms extends APIEndpoint {
     $body = (isset($data['body']) ? $data['body'] : []);
     $settings = (isset($data['settings']) ? $data['settings'] : []);
     $styles = (isset($data['styles']) ? $data['styles'] : '');
+    $status = (isset($data['status']) ? $data['status'] : FormEntity::STATUS_ENABLED);
 
     // check if the form is used as a widget
     $isWidget = false;
@@ -177,6 +179,7 @@ class Forms extends APIEndpoint {
       'body' => $body,
       'settings' => $settings,
       'styles' => $styles,
+      'status' => $status,
     ]);
 
     $errors = $form->getErrors();
