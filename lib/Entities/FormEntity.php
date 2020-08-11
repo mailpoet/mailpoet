@@ -118,6 +118,13 @@ class FormEntity {
     $this->styles = $styles;
   }
 
+  /**
+   * @param string $status
+   */
+  public function setStatus(string $status) {
+    $this->status = $status;
+  }
+
   public function toArray(): array {
     return [
       'id' => $this->getId(),
