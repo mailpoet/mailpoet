@@ -35,6 +35,8 @@ class DisplayFormBellowPostCest {
     $i->waitForElement('[data-automation-id="form_title_input"]');
     $i->click('.form-sidebar-form-placement-panel');
     $i->click('[data-automation-id="form-placement-option-Below pages"]');
+    $i->checkOption('Enable');
+    $i->waitForText('Display on all posts');
     $i->checkOption('Display on all posts');
     $i->saveFormInEditor();
 
