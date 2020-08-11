@@ -195,6 +195,7 @@ class Widget extends \WP_Widget {
     // get form
     $form = Form::getPublished()->findOne($instance['form']);
     if (!$form) return '';
+    if ($form->status !== FormEntity::STATUS_ENABLED) return '';
 
     $form = $form->asArray();
     $formType = 'widget';
