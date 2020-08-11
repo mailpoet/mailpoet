@@ -18,34 +18,41 @@ const BelowPostsSettings = () => {
     changeFormSettings(settings);
   };
 
-  const isActive = formSettings.placeFormBellowAllPages || formSettings.placeFormBellowAllPosts;
+  const isActive = formSettings.placementBellowAllPostsEnabled;
 
   return (
     <>
       <ToggleControl
-        label={MailPoet.I18n.t('placeFormOnAllPages')}
-        checked={formSettings.placeFormBellowAllPages || false}
-        onChange={partial(updateSettings, 'placeFormBellowAllPages')}
-      />
-      <ToggleControl
-        label={MailPoet.I18n.t('placeFormOnAllPosts')}
-        checked={formSettings.placeFormBellowAllPosts || false}
-        onChange={partial(updateSettings, 'placeFormBellowAllPosts')}
+        label={MailPoet.I18n.t('enable')}
+        checked={isActive}
+        onChange={partial(updateSettings, 'placementBellowAllPostsEnabled')}
       />
       {isActive && (
-        <SizeSettings
-          label={MailPoet.I18n.t('formSettingsWidth')}
-          value={formSettings.belowPostStyles.width}
-          minPixels={200}
-          maxPixels={1200}
-          minPercents={10}
-          maxPercents={100}
-          defaultPixelValue={560}
-          defaultPercentValue={100}
-          onChange={(width) => (
-            updateSettings('belowPostStyles', { ...formSettings.belowPostStyles, width })
-          )}
-        />
+        <>
+          <ToggleControl
+            label={MailPoet.I18n.t('placeFormOnAllPages')}
+            checked={formSettings.placeFormBellowAllPages || false}
+            onChange={partial(updateSettings, 'placeFormBellowAllPages')}
+          />
+          <ToggleControl
+            label={MailPoet.I18n.t('placeFormOnAllPosts')}
+            checked={formSettings.placeFormBellowAllPosts || false}
+            onChange={partial(updateSettings, 'placeFormBellowAllPosts')}
+          />
+          <SizeSettings
+            label={MailPoet.I18n.t('formSettingsWidth')}
+            value={formSettings.belowPostStyles.width}
+            minPixels={200}
+            maxPixels={1200}
+            minPercents={10}
+            maxPercents={100}
+            defaultPixelValue={560}
+            defaultPercentValue={100}
+            onChange={(width) => (
+              updateSettings('belowPostStyles', { ...formSettings.belowPostStyles, width })
+            )}
+          />
+        </>
       )}
     </>
   );

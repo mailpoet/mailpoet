@@ -10,13 +10,11 @@ const SlideIn = () => {
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
-  const placeSlideInFormOnAllPages = formSettings.placeSlideInFormOnAllPages || false;
-  const placeSlideInFormOnAllPosts = formSettings.placeSlideInFormOnAllPosts || false;
   const { showPlacementSettings } = useDispatch('mailpoet-form-editor');
 
   return (
     <FormPlacementOption
-      active={placeSlideInFormOnAllPages || placeSlideInFormOnAllPosts}
+      active={formSettings.placementSlideInEnabled}
       label={MailPoet.I18n.t('placeSlideInFormOnPages')}
       icon={Icon}
       onClick={() => (showPlacementSettings('slide_in'))}
