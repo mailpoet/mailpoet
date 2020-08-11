@@ -104,7 +104,7 @@ class EditorProductsCest {
     // Multiple result for category
     $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
     $i->waitForElementNotVisible('.mailpoet_products_scroll_container > div:nth-child(' . (self::PRODUCTS_COUNT + 1) . ')');
-    $i->waitForText(self::PRODUCT_PREFIX_CATEGORY, 10, '.mailpoet_products_scroll_container');
+    $i->waitForText(self::PRODUCT_PREFIX_CATEGORY, 15, '.mailpoet_products_scroll_container');
     $i->seeNumberOfElements('.mailpoet_products_scroll_container > div', self::PRODUCTS_COUNT);
     $this->clearCategories($i);
 
@@ -118,7 +118,7 @@ class EditorProductsCest {
     // Multiple result for keyword
     $i->fillField('.mailpoet_products_search_term', self::KEYWORD_MULTIPLE_RESULTS);
     $i->waitForElementNotVisible('.mailpoet_products_scroll_container > div:nth-child(' . (self::PRODUCTS_COUNT + 1) . ')');
-    $i->waitForText(self::KEYWORD_MULTIPLE_RESULTS, 10, '.mailpoet_products_scroll_container');
+    $i->waitForText(self::KEYWORD_MULTIPLE_RESULTS, 15, '.mailpoet_products_scroll_container');
     $i->seeNumberOfElements('.mailpoet_products_scroll_container > div', self::PRODUCTS_COUNT);
 
     // Searching for existing post should return zero results
@@ -127,7 +127,7 @@ class EditorProductsCest {
 
     // Product is clickable
     $i->fillField('.mailpoet_products_search_term', self::PRODUCT_NAME);
-    $i->waitForText(self::PRODUCT_NAME, 10, '.mailpoet_products_scroll_container');
+    $i->waitForText(self::PRODUCT_NAME, 15, '.mailpoet_products_scroll_container');
     $i->waitForElementVisible('#mailpoet_select_product_0');
     $i->click('#mailpoet_select_product_0');
     $i->seeCheckboxIsChecked('#mailpoet_select_product_0');
