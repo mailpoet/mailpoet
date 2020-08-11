@@ -6,11 +6,9 @@ use MailPoet\Test\DataFactories\Newsletter;
 
 class ManageWelcomeEmailCest {
 
-  private $welcomeTemplate;
   private $titleElement;
 
   public function __construct() {
-    $this->welcomeTemplate = '[data-automation-id="select_template_0"]';
     $this->titleElement = '[data-automation-id="newsletter_title"]';
   }
 
@@ -30,9 +28,10 @@ class ManageWelcomeEmailCest {
     $i->click('[data-automation-id="create_welcome"]');
     $i->waitForText('Welcome Email');
     $i->click('Next');
-    $i->waitForElement($this->welcomeTemplate);
+    $welcomeTemplate = $i->checkTemplateIsPresent(0, 'welcome');
+    $i->waitForElement($welcomeTemplate);
     $i->see('Welcome Emails', ['css' => 'a.current']);
-    $i->click($this->welcomeTemplate);
+    $i->click($welcomeTemplate);
     $i->waitForElement($this->titleElement);
     $i->fillField($this->titleElement, $newsletterTitle);
     $i->click('Next');
@@ -124,7 +123,7 @@ class ManageWelcomeEmailCest {
     $i->click('[data-automation-id="new_email"]');
     $i->click('[data-automation-id="create_welcome"]');
     $i->click('Next');
-    $i->waitForElement($this->welcomeTemplate);
+    $i->checkTemplateIsPresent(0, 'welcome');
     $i->see('Welcome Emails', ['css' => 'a.current']);
     $i->see($templateTitle);
     $i->click(['xpath' => '//*[text()="' . $templateTitle . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
