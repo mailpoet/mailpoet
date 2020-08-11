@@ -5,15 +5,19 @@ export default function mapFormDataBeforeSaving(data) {
       ...data.settings,
       place_form_bellow_all_pages: data.settings.placeFormBellowAllPages === true ? '1' : '',
       place_form_bellow_all_posts: data.settings.placeFormBellowAllPosts === true ? '1' : '',
+      form_placement_bellow_posts_enabled: data.settings.placementBellowAllPostsEnabled === true ? '1' : '',
       place_popup_form_on_all_pages: data.settings.placePopupFormOnAllPages === true ? '1' : '',
       place_popup_form_on_all_posts: data.settings.placePopupFormOnAllPosts === true ? '1' : '',
+      form_placement_popup_enabled: data.settings.placementPopupEnabled === true ? '1' : '',
       popup_form_delay: data.settings.popupFormDelay,
       place_fixed_bar_form_on_all_pages: data.settings.placeFixedBarFormOnAllPages === true ? '1' : '',
       place_fixed_bar_form_on_all_posts: data.settings.placeFixedBarFormOnAllPosts === true ? '1' : '',
+      form_placement_fixed_bar_enabled: data.settings.placementFixedBarEnabled === true ? '1' : '',
       fixed_bar_form_delay: data.settings.fixedBarFormDelay,
       fixed_bar_form_position: data.settings.fixedBarFormPosition,
       place_slide_in_form_on_all_pages: data.settings.placeSlideInFormOnAllPages === true ? '1' : '',
       place_slide_in_form_on_all_posts: data.settings.placeSlideInFormOnAllPosts === true ? '1' : '',
+      form_placement_slide_in_enabled: data.settings.placementSlideInEnabled === true ? '1' : '',
       slide_in_form_delay: data.settings.slideInFormDelay,
       slide_in_form_position: data.settings.slideInFormPosition,
       border_radius: data.settings.borderRadius,
@@ -35,6 +39,10 @@ export default function mapFormDataBeforeSaving(data) {
     },
   };
 
+  delete mappedData.settings.placementBellowAllPostsEnabled;
+  delete mappedData.settings.placementPopupEnabled;
+  delete mappedData.settings.placementFixedBarEnabled;
+  delete mappedData.settings.placementSlideInEnabled;
   delete mappedData.settings.placeFormBellowAllPages;
   delete mappedData.settings.placeFormBellowAllPosts;
   delete mappedData.settings.placePopupFormOnAllPages;
