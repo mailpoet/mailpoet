@@ -66,16 +66,16 @@ export default {
       formType: 'others',
     };
     const settings = state.formData.settings;
-    if (settings.placeFormBellowAllPages || settings.placeFormBellowAllPosts) {
+    if (settings.placementBellowAllPostsEnabled) {
       previewSettings.formType = 'below_post';
     }
-    if (settings.placePopupFormOnAllPages || settings.placePopupFormOnAllPosts) {
+    if (settings.placementPopupEnabled) {
       previewSettings.formType = 'popup';
     }
-    if (settings.placeFixedBarFormOnAllPages || settings.placeFixedBarFormOnAllPosts) {
+    if (settings.placementFixedBarEnabled) {
       previewSettings.formType = 'fixed_bar';
     }
-    if (settings.placeSlideInFormOnAllPages || settings.placeSlideInFormOnAllPosts) {
+    if (settings.placementSlideInEnabled) {
       previewSettings.formType = 'slide_in';
     }
     return previewSettings;
