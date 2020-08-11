@@ -14,18 +14,22 @@ class DisplayFormInWPContent {
 
   const SETUP = [
     FormEntity::DISPLAY_TYPE_BELOW_POST => [
+      'switch' => 'form_placement_bellow_posts_enabled',
       'post' => 'place_form_bellow_all_posts',
       'page' => 'place_form_bellow_all_pages',
     ],
     FormEntity::DISPLAY_TYPE_POPUP => [
+      'switch' => 'form_placement_popup_enabled',
       'post' => 'place_popup_form_on_all_posts',
       'page' => 'place_popup_form_on_all_pages',
     ],
     FormEntity::DISPLAY_TYPE_FIXED_BAR => [
+      'switch' => 'form_placement_fixed_bar_enabled',
       'post' => 'place_fixed_bar_form_on_all_posts',
       'page' => 'place_fixed_bar_form_on_all_pages',
     ],
     FormEntity::DISPLAY_TYPE_SLIDE_IN => [
+      'switch' => 'form_placement_slide_in_enabled',
       'post' => 'place_slide_in_form_on_all_posts',
       'page' => 'place_slide_in_form_on_all_pages',
     ],
@@ -182,6 +186,13 @@ class DisplayFormInWPContent {
     if (!is_array($settings)) return false;
 
     $keys = self::SETUP[$formType];
+
+    $switchKey = $keys['switch'];
+    if (isset($settings[$switchKey]) && ($settings[$switchKey] !== '1')) {
+      // this form type display is disabled
+      return false;
+    }
+
     $key = '';
     if ($this->wp->isSingular('post')) {
       $key = $keys['post'];
@@ -189,7 +200,7 @@ class DisplayFormInWPContent {
     if ($this->wp->isPage()) {
       $key = $keys['page'];
     }
-
+    // is enabled for this page?
     return (isset($settings[$key]) && ($settings[$key] === '1'));
   }
 }
