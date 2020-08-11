@@ -17,11 +17,7 @@ class CreateWooCommerceNewsletterCest {
     $i->waitForText('Select WooCommerce events conditions');
     $i->click('Next');
 
-    $wooCommerceTab = '[data-automation-id="templates-woocommerce"]';
-    $i->waitForElement($wooCommerceTab);
-    $i->click($wooCommerceTab);
-    $template = '[data-automation-id="select_template_0"]';
-    $i->waitForElement($template);
+    $template = $i->checkTemplateIsPresent(0, 'woocommerce');
     $i->click($template);
 
     $titleElement = '[data-automation-id="newsletter_title"]';
@@ -54,11 +50,7 @@ class CreateWooCommerceNewsletterCest {
     $i->waitForText('Abandoned Shopping Cart');
     $i->click('Next');
 
-    $wooCommerceTab = '[data-automation-id="templates-woocommerce"]';
-    $i->waitForElement($wooCommerceTab);
-    $i->click($wooCommerceTab);
-    $template = '[data-automation-id="select_template_0"]';
-    $i->waitForElement($template);
+    $template = $i->checkTemplateIsPresent(0, 'woocommerce');
     $i->click($template);
 
     $titleElement = '[data-automation-id="newsletter_title"]';

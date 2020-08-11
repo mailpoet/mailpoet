@@ -472,4 +472,18 @@ class AcceptanceTester extends \Codeception\Actor {
       $i->waitForText($subject, 60);
     }
   }
+
+  /**
+   * Makes sure that there is a newsletter template of given order on given template tab
+   * @return string Template element selector
+   */
+  public function checkTemplateIsPresent(int $templateIndex, string $templateCategory = 'standard'): string {
+    $templateTab = "[data-automation-id=\"templates-$templateCategory\"]";
+    $i = $this;
+    $i->waitForElement($templateTab);
+    $i->click($templateTab);
+    $template = "[data-automation-id=\"select_template_$templateIndex\"]";
+    $i->waitForElement($template);
+    return $template;
+  }
 }
