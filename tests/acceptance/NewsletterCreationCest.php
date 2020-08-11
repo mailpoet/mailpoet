@@ -24,6 +24,9 @@ class NewsletterCreationCest {
     $i->click('Next');
 
     // step 3 - select template
+    $templateTab = '[data-automation-id="templates-notification"]';
+    $i->waitForElement($templateTab);
+    $i->click($templateTab);
     $postNotificationTemplate = '[data-automation-id="select_template_1"]';
     $i->waitForElement($postNotificationTemplate);
     $i->see('Post Notifications', ['css' => 'a.current']);
@@ -60,6 +63,9 @@ class NewsletterCreationCest {
     $i->click('[data-automation-id="create_standard"]');
 
     // step 2 - select template
+    $templateTab = '[data-automation-id="templates-standard"]';
+    $i->waitForElement($templateTab);
+    $i->click($templateTab);
     $standardTemplate = '[data-automation-id="select_template_0"]';
     $i->waitForElement($standardTemplate);
     $i->see('Newsletters', ['css' => 'a.current']);
@@ -96,6 +102,9 @@ class NewsletterCreationCest {
     $i->click('[data-automation-id="create_standard"]');
 
     // step 2 - select template
+    $templateTab = '[data-automation-id="templates-standard"]';
+    $i->waitForElement($templateTab);
+    $i->click($templateTab);
     $standardTemplate = '[data-automation-id="select_template_0"]';
     $i->waitForElement($standardTemplate);
     $i->see('Newsletters', ['css' => 'a.current']);

@@ -11,6 +11,9 @@ class CreateWelcomeEmailCest {
     $i->click('[data-automation-id="create_welcome"]');
     $i->waitForText('Welcome Email');
     $i->click('Next');
+    $welcomeTab = '[data-automation-id="templates-welcome"]';
+    $i->waitForElement($welcomeTab);
+    $i->click($welcomeTab);
     $welcomeTemplate = '[data-automation-id="select_template_0"]';
     $i->waitForElement($welcomeTemplate);
     $i->see('Welcome Emails', ['css' => 'a.current']);

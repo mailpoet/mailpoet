@@ -11,6 +11,9 @@ class TemplatesPagesLoadCest {
     $i->amOnMailpoetPage('Emails');
     $i->click('[data-automation-id="create_standard"]');
     $i->waitForText('Select a responsive template');
+    $templateTab = '[data-automation-id="templates-standard"]';
+    $i->waitForElement($templateTab);
+    $i->click($templateTab);
     //Standard email templates tab
     $i->waitForElement('[data-automation-id="select_template_8"]');
     $i->waitForElement('[data-automation-id="select_template_14"]');

@@ -39,6 +39,9 @@ class SavePostNotificationEmailAsTemplateCest {
     $i->click('[data-automation-id="create_notification"]');
     $i->waitForText('Latest Post Notifications');
     $i->click('Next');
+    $notificationTab = '[data-automation-id="templates-notification"]';
+    $i->waitForElement($notificationTab);
+    $i->click($notificationTab);
     $i->waitForElement('[data-automation-id="select_template_0"]');
     $i->see('Template Test Post Notification Title');
     $i->click(['xpath' => '//*[text()="' . $templateTitle . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);

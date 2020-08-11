@@ -16,6 +16,9 @@ class SaveNewsletterAsDraftCest {
     $i->click('[data-automation-id="create_standard"]');
 
     // step 2 - select template
+    $templateTab = '[data-automation-id="templates-standard"]';
+    $i->waitForElement($templateTab);
+    $i->click($templateTab);
     $standardTemplate = '[data-automation-id="select_template_0"]';
     $i->waitForElement($standardTemplate);
     $i->see('Newsletters', ['css' => 'a.current']);

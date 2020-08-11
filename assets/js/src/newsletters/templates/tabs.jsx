@@ -13,6 +13,7 @@ const Tabs = ({ tabs, selected, select }) => (
               event.preventDefault();
               select(name);
             }}
+            data-automation-id={`templates-${name.replace(/\s+/g, '-').toLowerCase()}`}
           >
             {' '}
             {label}
