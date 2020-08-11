@@ -127,11 +127,7 @@ class ManageSubscriptionLinkCest {
     $i->click('[data-automation-id="create_standard"]');
 
     // step 2 - select template
-    $standardTab = '[data-automation-id="templates-standard"]';
-    $i->waitForElement($standardTab);
-    $i->click($standardTab);
-    $firstTemplateElement = '[data-automation-id="select_template_0"]';
-    $i->waitForElement($firstTemplateElement);
+    $firstTemplateElement = $i->checkTemplateIsPresent(0);
     $i->click($firstTemplateElement);
 
     // step 3 - design newsletter (update subject)
