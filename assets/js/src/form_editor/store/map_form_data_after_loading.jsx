@@ -8,18 +8,22 @@ export default function mapFormDataAfterLoading(data) {
       ...data.settings,
       placeFormBellowAllPages: data.settings.place_form_bellow_all_pages === '1',
       placeFormBellowAllPosts: data.settings.place_form_bellow_all_posts === '1',
+      placementBellowAllPostsEnabled: data.settings.form_placement_bellow_posts_enabled === '1',
       placePopupFormOnAllPages: data.settings.place_popup_form_on_all_pages === '1',
       placePopupFormOnAllPosts: data.settings.place_popup_form_on_all_posts === '1',
+      placementPopupEnabled: data.settings.form_placement_popup_enabled === '1',
       popupFormDelay: data.settings.popup_form_delay !== undefined
         ? asNum(data.settings.popup_form_delay) : defaults.popupForm.formDelay,
       placeFixedBarFormOnAllPages: data.settings.place_fixed_bar_form_on_all_pages === '1',
       placeFixedBarFormOnAllPosts: data.settings.place_fixed_bar_form_on_all_posts === '1',
+      placementFixedBarEnabled: data.settings.form_placement_fixed_bar_enabled === '1',
       fixedBarFormDelay: data.settings.fixed_bar_form_delay !== undefined
         ? asNum(data.settings.fixed_bar_form_delay)
         : defaults.fixedBarForm.formDelay,
       fixedBarFormPosition: data.settings.fixed_bar_form_position ?? defaults.fixedBarForm.position,
       placeSlideInFormOnAllPages: data.settings.place_slide_in_form_on_all_pages === '1',
       placeSlideInFormOnAllPosts: data.settings.place_slide_in_form_on_all_posts === '1',
+      placementSlideInEnabled: data.settings.form_placement_slide_in_enabled === '1',
       slideInFormDelay: data.settings.slide_in_form_delay !== undefined
         ? asNum(data.settings.slide_in_form_delay)
         : defaults.slideInForm.formDelay,
