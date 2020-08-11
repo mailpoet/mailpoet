@@ -19,6 +19,7 @@ class Form {
         'segments' => [2],
         'segments_selected_by' => 'admin',
       ],
+      'status' => 'enabled',
       'created_at' => Carbon::now(),
       'updated_at' => Carbon::now(),
     ];
@@ -59,6 +60,7 @@ class Form {
    */
   public function withDisplayBelowPosts() {
     $this->data['settings']['place_form_bellow_all_posts'] = '1';
+    $this->data['settings']['form_placement_bellow_posts_enabled'] = '1';
     return $this;
   }
 
