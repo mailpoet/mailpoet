@@ -4,6 +4,7 @@ import {
   PanelBody,
   RadioControl,
   TextareaControl,
+  ToggleControl,
   SelectControl,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
@@ -33,7 +34,12 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
     []
   );
 
-  const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+  const isFormEnabled = useSelect(
+    (select) => select('mailpoet-form-editor').isFormEnabled(),
+    []
+  );
+
+  const { changeFormSettings, toggleForm } = useDispatch('mailpoet-form-editor');
 
   const onSegmentsChange = (e) => {
     changeFormSettings({
@@ -70,6 +76,11 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   return (
     <Panel>
       <PanelBody title={MailPoet.I18n.t('formSettings')} opened={isOpened} onToggle={onToggle}>
+        <ToggleControl
+          label={MailPoet.I18n.t('displayForm')}
+          checked={isFormEnabled}
+          onChange={toggleForm}
+        />
         <BaseControl
           label={MailPoet.I18n.t('settingsListLabel')}
           className={classnames({ 'mailpoet-form-missing-lists': shouldDisplayMissingListError })}

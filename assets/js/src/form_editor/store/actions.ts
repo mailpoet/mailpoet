@@ -9,6 +9,17 @@ export function toggleSidebar(toggleTo) {
   };
 }
 
+export function toggleForm(enabled) {
+  if (enabled) {
+    return {
+      type: 'ENABLE_FORM',
+    };
+  }
+  return {
+    type: 'DISABLE_FORM',
+  };
+}
+
 export function changeFormBlocks(blocks) {
   return {
     type: 'CHANGE_FORM_BLOCKS',

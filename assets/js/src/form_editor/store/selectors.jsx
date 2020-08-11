@@ -16,6 +16,9 @@ const findBlockPath = (blocks, id, path = []) => (
 );
 
 export default {
+  isFormEnabled(state) {
+    return state.formData.status === 'enabled';
+  },
   getSidebarOpened(state) {
     return state.sidebarOpened;
   },

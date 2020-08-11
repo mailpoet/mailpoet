@@ -30,12 +30,18 @@ import {
   customFieldDeleteFailed,
 } from './reducers/custom_field_delete.jsx';
 import changeActiveSidebar from './reducers/change_active_sidebar';
+import {
+  disableForm,
+  enableForm,
+} from './reducers/toggle_form';
 
 const createCustomFieldStarted = createCustomFieldStartedFactory(MailPoet);
 const saveFormStarted = saveFormStartedFactory(MailPoet);
 
 export default (defaultState) => (state = defaultState, action) => {
   switch (action.type) {
+    case 'ENABLE_FORM': return enableForm(state);
+    case 'DISABLE_FORM': return disableForm(state);
     case 'CREATE_CUSTOM_FIELD_DONE': return createCustomFieldDone(state, action);
     case 'CREATE_CUSTOM_FIELD_FAILED': return createCustomFieldFailed(state, action);
     case 'CREATE_CUSTOM_FIELD_STARTED': return createCustomFieldStarted(state, action);
