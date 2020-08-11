@@ -90,16 +90,16 @@ const bulkActions = [
 
 function getFormPlacement(settings) {
   const placements = [];
-  if (settings.place_fixed_bar_form_on_all_pages === '1' || settings.place_fixed_bar_form_on_all_posts === '1') {
+  if (settings.form_placement_fixed_bar_enabled === '1') {
     placements.push(MailPoet.I18n.t('placeFixedBarFormOnPages'));
   }
-  if (settings.place_form_bellow_all_pages === '1' || settings.place_form_bellow_all_posts === '1') {
+  if (settings.form_placement_bellow_posts_enabled === '1') {
     placements.push(MailPoet.I18n.t('placeFormBellowPages'));
   }
-  if (settings.place_popup_form_on_all_pages === '1' || settings.place_popup_form_on_all_posts === '1') {
+  if (settings.form_placement_popup_enabled === '1') {
     placements.push(MailPoet.I18n.t('placePopupFormOnPages'));
   }
-  if (settings.place_slide_in_form_on_all_pages === '1' || settings.place_slide_in_form_on_all_posts === '1') {
+  if (settings.form_placement_slide_in_enabled === '1') {
     placements.push(MailPoet.I18n.t('placeSlideInFormOnPages'));
   }
   if (placements.length > 0) {
