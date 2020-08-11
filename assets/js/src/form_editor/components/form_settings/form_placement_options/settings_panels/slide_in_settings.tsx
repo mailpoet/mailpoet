@@ -20,25 +20,29 @@ const SlideInSettings = () => {
     changeFormSettings(settings);
   };
 
-  const isActive = formSettings.placeSlideInFormOnAllPages
-    || formSettings.placeSlideInFormOnAllPosts;
+  const isActive = formSettings.placementSlideInEnabled;
 
   return (
     <>
       <p>{MailPoet.I18n.t('placeSlideInFormOnPagesDescription')}</p>
-      <hr />
       <ToggleControl
-        label={MailPoet.I18n.t('placeFormOnAllPages')}
-        checked={formSettings.placeSlideInFormOnAllPages || false}
-        onChange={partial(updateSettings, 'placeSlideInFormOnAllPages')}
-      />
-      <ToggleControl
-        label={MailPoet.I18n.t('placeFormOnAllPosts')}
-        checked={formSettings.placeSlideInFormOnAllPosts || false}
-        onChange={partial(updateSettings, 'placeSlideInFormOnAllPosts')}
+        label={MailPoet.I18n.t('enable')}
+        checked={isActive}
+        onChange={partial(updateSettings, 'placementSlideInEnabled')}
       />
       {isActive && (
         <>
+          <hr />
+          <ToggleControl
+            label={MailPoet.I18n.t('placeFormOnAllPages')}
+            checked={formSettings.placeSlideInFormOnAllPages || false}
+            onChange={partial(updateSettings, 'placeSlideInFormOnAllPages')}
+          />
+          <ToggleControl
+            label={MailPoet.I18n.t('placeFormOnAllPosts')}
+            checked={formSettings.placeSlideInFormOnAllPosts || false}
+            onChange={partial(updateSettings, 'placeSlideInFormOnAllPosts')}
+          />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
             value={formSettings.slideInFormDelay}

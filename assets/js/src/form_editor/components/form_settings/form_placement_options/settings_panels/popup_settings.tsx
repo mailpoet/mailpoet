@@ -21,24 +21,29 @@ const PopUpSettings = () => {
     changeFormSettings(settings);
   };
 
-  const isActive = formSettings.placePopupFormOnAllPages || formSettings.placePopupFormOnAllPosts;
+  const isActive = formSettings.placementPopupEnabled;
 
   return (
     <>
       <p>{MailPoet.I18n.t('placePopupFormOnPagesDescription')}</p>
-      <hr />
       <ToggleControl
-        label={MailPoet.I18n.t('placeFormOnAllPages')}
-        checked={formSettings.placePopupFormOnAllPages || false}
-        onChange={partial(updateSettings, 'placePopupFormOnAllPages')}
-      />
-      <ToggleControl
-        label={MailPoet.I18n.t('placeFormOnAllPosts')}
-        checked={formSettings.placePopupFormOnAllPosts || false}
-        onChange={partial(updateSettings, 'placePopupFormOnAllPosts')}
+        label={MailPoet.I18n.t('enable')}
+        checked={isActive}
+        onChange={partial(updateSettings, 'placementPopupEnabled')}
       />
       {isActive && (
         <>
+          <hr />
+          <ToggleControl
+            label={MailPoet.I18n.t('placeFormOnAllPages')}
+            checked={formSettings.placePopupFormOnAllPages || false}
+            onChange={partial(updateSettings, 'placePopupFormOnAllPages')}
+          />
+          <ToggleControl
+            label={MailPoet.I18n.t('placeFormOnAllPosts')}
+            checked={formSettings.placePopupFormOnAllPosts || false}
+            onChange={partial(updateSettings, 'placePopupFormOnAllPosts')}
+          />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
             value={formSettings.popupFormDelay}

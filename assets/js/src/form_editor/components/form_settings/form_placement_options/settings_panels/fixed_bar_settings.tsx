@@ -20,25 +20,29 @@ const FixedBarSettings = () => {
     changeFormSettings(settings);
   };
 
-  const isActive = formSettings.placeFixedBarFormOnAllPages
-    || formSettings.placeFixedBarFormOnAllPosts;
+  const isActive = formSettings.placementFixedBarEnabled;
 
   return (
     <>
       <p>{MailPoet.I18n.t('placeFixedBarFormOnPagesDescription')}</p>
-      <hr />
       <ToggleControl
-        label={MailPoet.I18n.t('placeFormOnAllPages')}
-        checked={formSettings.placeFixedBarFormOnAllPages || false}
-        onChange={partial(updateSettings, 'placeFixedBarFormOnAllPages')}
-      />
-      <ToggleControl
-        label={MailPoet.I18n.t('placeFormOnAllPosts')}
-        checked={formSettings.placeFixedBarFormOnAllPosts || false}
-        onChange={partial(updateSettings, 'placeFixedBarFormOnAllPosts')}
+        label={MailPoet.I18n.t('enable')}
+        checked={isActive}
+        onChange={partial(updateSettings, 'placementFixedBarEnabled')}
       />
       {isActive && (
         <>
+          <hr />
+          <ToggleControl
+            label={MailPoet.I18n.t('placeFormOnAllPages')}
+            checked={formSettings.placeFixedBarFormOnAllPages || false}
+            onChange={partial(updateSettings, 'placeFixedBarFormOnAllPages')}
+          />
+          <ToggleControl
+            label={MailPoet.I18n.t('placeFormOnAllPosts')}
+            checked={formSettings.placeFixedBarFormOnAllPosts || false}
+            onChange={partial(updateSettings, 'placeFixedBarFormOnAllPosts')}
+          />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
             value={formSettings.fixedBarFormDelay}

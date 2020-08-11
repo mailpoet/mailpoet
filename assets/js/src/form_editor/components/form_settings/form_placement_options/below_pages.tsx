@@ -10,14 +10,12 @@ const BelowPages = () => {
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
-  const placeFormBellowAllPages = formSettings.placeFormBellowAllPages || false;
-  const placeFormBellowAllPosts = formSettings.placeFormBellowAllPosts || false;
 
   const { showPlacementSettings } = useDispatch('mailpoet-form-editor');
 
   return (
     <FormPlacementOption
-      active={placeFormBellowAllPages || placeFormBellowAllPosts}
+      active={formSettings.placementBellowAllPostsEnabled}
       label={MailPoet.I18n.t('placeFormBellowPages')}
       icon={Icon}
       onClick={() => (showPlacementSettings('below_post'))}
