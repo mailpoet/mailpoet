@@ -21,7 +21,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderSingleTextInputStyles() {
-    expect($this->renderer->renderForTextInput(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px;');
+    expect($this->renderer->renderForTextInput(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px !important;');
     expect($this->renderer->renderForTextInput(['border_color' => '#fff']))->equals('border-style:solid;border-color:#fff;');
     expect($this->renderer->renderForTextInput(['border_size' => 10]))->equals('border-style:solid;border-width:10px;');
     expect($this->renderer->renderForTextInput(['background_color' => '#dddddd']))->equals('background-color:#dddddd;');
@@ -40,7 +40,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'fontSize' => 13,
     ];
     $result = $this->renderer->renderForTextInput($styles, $settings);
-    expect($result)->contains('border-radius:10px;');
+    expect($result)->contains('border-radius:10px !important;');
     expect($result)->contains('border-color:#fff;');
     expect($result)->contains('border-width:10px;');
     expect($result)->contains('background-color:#dddddd;');
@@ -50,7 +50,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderSingleButtonStyles() {
-    expect($this->renderer->renderForButton(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px;border-color:transparent;');
+    expect($this->renderer->renderForButton(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px !important;border-color:transparent;');
     expect($this->renderer->renderForButton(['border_color' => '#fff']))->equals('border-style:solid;border-color:#fff;');
     expect($this->renderer->renderForButton(['border_size' => 10]))->equals('border-style:solid;border-width:10px;border-color:transparent;');
     expect($this->renderer->renderForButton(['background_color' => '#dddddd']))->equals('background-color:#dddddd;border-color:transparent;');
@@ -73,7 +73,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'fontSize' => 13,
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
-    expect($result)->contains('border-radius:10px;');
+    expect($result)->contains('border-radius:10px !important;');
     expect($result)->contains('border-color:#fff;');
     expect($result)->contains('border-width:10px;');
     expect($result)->contains('background-color:#dddddd;');
