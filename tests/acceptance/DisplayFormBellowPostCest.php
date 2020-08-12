@@ -45,5 +45,17 @@ class DisplayFormBellowPostCest {
     $i->amOnUrl($postUrl);
     $i->waitForText($postTitle);
     $i->seeElement('[data-automation-id="subscribe-submit-button"]');
+
+    // disable the form
+    $i->amOnMailPoetPage('Forms');
+    $i->waitForText($formName);
+    $i->clickItemRowActionByItemName($formName, 'Edit');
+    $i->waitForElement('[data-automation-id="form_title_input"]');
+    $i->uncheckOption('Display the form');
+    $i->saveFormInEditor();
+
+    $i->amOnUrl($postUrl);
+    $i->waitForText($postTitle);
+    $i->dontSeeElement('[data-automation-id="subscribe-submit-button"]');
   }
 }
