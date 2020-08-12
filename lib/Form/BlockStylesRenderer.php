@@ -15,7 +15,7 @@ class BlockStylesRenderer {
       $rules[] = "border-style:solid;";
     }
     if (isset($styles['border_radius'])) {
-      $rules[] = "border-radius:" . intval($styles['border_radius']) . "px;";
+      $rules[] = "border-radius:" . intval($styles['border_radius']) . "px !important;";
     }
     if (isset($styles['border_size'])) {
       $rules[] = "border-width:" . intval($styles['border_size']) . "px;";
