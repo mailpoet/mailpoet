@@ -25,6 +25,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $fallbackMailer->expects($this->never())->method('send');
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->From = 'email-from@example.com';
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
   }
@@ -46,6 +47,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
+    $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Email Text Body';
     $wpMailer->isHTML(false);
@@ -67,6 +69,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
+    $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Body';
     $wpMailer->isHTML(false);
@@ -91,6 +94,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
+    $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Email Html Body';
     $wpMailer->isHTML(true);
@@ -115,6 +119,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
+    $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
     $wpMailer->Body = 'Email Html Body';
     $wpMailer->AltBody = 'Email Text Body';
@@ -134,6 +139,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
+    $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'body';
     expect($wpMailer->send())->true();
   }
@@ -153,6 +159,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
+    $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'body';
     expect($wpMailer->send())->true();
   }
@@ -171,6 +178,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
+    $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'body';
 
     $errorMessage = null;
@@ -195,6 +203,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
+    $wpMailer->From = 'email-from@example.com';
     $wpMailer->ContentType = 'application/json';
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
@@ -214,6 +223,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
+    $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'body';
 
     $errorMessage = null;
@@ -253,6 +263,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->Subject = 'Subject';
+    $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';
     $wpMailer->send();
   }
