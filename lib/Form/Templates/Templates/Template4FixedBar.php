@@ -292,6 +292,13 @@ p.mailpoet_form_paragraph {
   height: 5px;
   background-color: #5b5b5b;
 }
+h2.mailpoet-heading {
+    margin: 0 0 20px 0;
+}
+
+h1.mailpoet-heading {
+	margin: 0 0 10px;
+}
 EOL;
   }
 }
