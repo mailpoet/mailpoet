@@ -43,7 +43,6 @@ use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
@@ -82,7 +81,6 @@ class SendingQueueTest extends \MailPoetTest {
       $referralDetector,
       $featuresController,
       $this->diContainer->get(FormsRepository::class),
-      $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(FormFactory::class)
     );
     $populator->up();

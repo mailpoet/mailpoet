@@ -16,7 +16,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class SetupTest extends \MailPoetTest {
   public function _before() {
@@ -41,7 +40,6 @@ class SetupTest extends \MailPoetTest {
       $referralDetector,
       $featuresController,
       $this->diContainer->get(FormsRepository::class),
-      $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(FormFactory::class)
     );
     $router = new Setup($wp, new Activator($settings, $populator));

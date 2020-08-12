@@ -34,7 +34,6 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Populator {
   public $prefix;
@@ -56,11 +55,6 @@ class Populator {
   /** @var FormsRepository */
   private $formsRepository;
 
-  /**
-   * @var EntityManager
-   */
-  private $entityManager;
-
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
@@ -68,7 +62,6 @@ class Populator {
     ReferralDetector $referralDetector,
     FeaturesController $flagsController,
     FormsRepository $formsRepository,
-    EntityManager $entityManager,
     FormFactory $formFactory
   ) {
     $this->settings = $settings;
@@ -159,7 +152,6 @@ class Populator {
     ];
     $this->flagsController = $flagsController;
     $this->formsRepository = $formsRepository;
-    $this->entityManager = $entityManager;
   }
 
   public function up() {
@@ -743,7 +735,7 @@ class Populator {
       }
       $form->setSettings($settings);
     }
-    $this->entityManager->flush();
+    $this->formsRepository->flush();
   }
 
   private function moveGoogleAnalyticsFromPremium() {
