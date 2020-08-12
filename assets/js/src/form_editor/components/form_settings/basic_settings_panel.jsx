@@ -13,6 +13,7 @@ import MailPoet from 'mailpoet';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import Selection from '../../../form/fields/selection.jsx';
+import FormTitle from '../form_title';
 
 const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   const settings = useSelect(
@@ -76,6 +77,7 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   return (
     <Panel>
       <PanelBody title={MailPoet.I18n.t('formSettings')} opened={isOpened} onToggle={onToggle}>
+        <FormTitle />
         <ToggleControl
           label={MailPoet.I18n.t('displayForm')}
           checked={isFormEnabled}
