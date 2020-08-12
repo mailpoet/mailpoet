@@ -100,6 +100,10 @@ foreach ($woocommerceBlacklistFilters as $woocommerceBlacklistFilter) {
   unset($GLOBALS['wp_filter'][$woocommerceBlacklistFilter]);
 };
 
+if (isset($GLOBALS['GLOBALS']['_wp_registered_theme_features']['post-formats']['show_in_rest'])) {
+  unset($GLOBALS['GLOBALS']['_wp_registered_theme_features']['post-formats']['show_in_rest']);
+}
+
 // phpcs:ignore PSR1.Classes.ClassDeclaration, Squiz.Classes.ClassFileName
 abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $backupGlobals = true;
