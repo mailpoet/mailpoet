@@ -1,0 +1,32 @@
+.mailpoet-premium-required {
+  background-color: $color-secondary-light;
+  border: 1px solid $color-secondary-middle;
+  border-radius: 4px;
+  color: $color-text;
+  display: grid;
+  gap: $grid-gap;
+  grid-template-columns: 80% auto;
+  max-width: 100%;
+  padding: $grid-gap-medium;
+  width: $grid-editor-width;
+
+  @include respond-to(small-screen) {
+    display: block;
+  }
+}
+
+.mailpoet-premium-required-message {
+  font-size: $font-size-small;
+  grid-column: 1 / span 1;
+
+  > *:first-child { margin-top: 0; }
+
+  @include respond-to(not-small-screen) {
+    > *:last-child { margin-bottom: 0; }
+  }
+}
+
+.mailpoet-premium-required-button {
+  grid-column: 2 / span 1;
+  place-self: center;
+}
