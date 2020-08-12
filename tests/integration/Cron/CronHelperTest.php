@@ -306,7 +306,10 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItReturnsErrorMessageAsPingResponseWhenCronUrlCannotBeAccessed() {
     $wp = Stub::make(new WPFunctions, [
-      'applyFilters' => [],
+      'applyFilters' => function ($name, $args) {
+        if ($name !== 'mailpoet_cron_request_url') return $args;
+        return 'invalid url';
+      },
     ]);
     $cronHelper = new CronHelper($this->settings, $wp);
     expect($cronHelper->pingDaemon())->equals('A valid URL was not provided.');
