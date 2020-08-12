@@ -16,7 +16,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Idiorm\ORM;
 
 class MailerTest extends \MailPoetTest {
@@ -40,7 +39,6 @@ class MailerTest extends \MailPoetTest {
       $referralDetector,
       $featuresController,
       $this->diContainer->get(FormsRepository::class),
-      $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(FormFactory::class)
     );
     $populator->up();
