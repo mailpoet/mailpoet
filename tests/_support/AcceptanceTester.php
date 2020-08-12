@@ -487,4 +487,14 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->waitForElement($template);
     return $template;
   }
+
+  public function clearFormField(string $selector) {
+    $i = $this;
+    $i->click($selector); // Focus in the field
+    $value = $i->grabAttributeFrom($selector, 'value');
+
+    for ($j = 0; $j < mb_strlen($value); $j++) {
+      $i->pressKey($selector, WebDriverKeys::BACKSPACE);// delete the field
+    }
+  }
 }
