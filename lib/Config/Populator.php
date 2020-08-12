@@ -703,7 +703,7 @@ class Populator {
   }
 
   private function addPlacementStatusToForms() {
-    if (version_compare($this->settings->get('db_version', '3.48.1'), '3.48.1', '>')) {
+    if (version_compare($this->settings->get('db_version', '3.49.0'), '3.48.1', '>')) {
       return;
     }
     $forms = $this->formsRepository->findAll();
