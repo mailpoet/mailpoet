@@ -1,0 +1,10 @@
+.mailpoet-badge {
+  background-color: $color-tertiary;
+  border-left: 12px solid $color-secondary;
+  border-radius: 2px;
+  box-shadow: inset 12px 0 0 $color-secondary-middle;
+  color: $color-white;
+  display: inline-block;
+  line-height: $line-height;
+  padding: 1px 8px 1px 20px;
+}
