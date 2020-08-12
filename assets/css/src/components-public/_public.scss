@@ -24,18 +24,22 @@ $form-mobile-line-height: 1.4;
   }
 }
 
-.mailpoet_submit,
-.mailpoet_paragraph,
-.mailpoet_form_paragraph,
-.mailpoet_textarea,
-.mailpoet_text,
-.mailpoet_select,
-.mailpoet_form_image,
-.mailpoet_message,
-.mailpoet_paragraph select {
-  @include breakpoint-max-width($form-break-small-width - 1) {
-    font-size: $form-mobile-font-size !important;
-    line-height: $form-mobile-line-height !important;
+.mailpoet_form {
+  .mailpoet_submit,
+  .mailpoet_paragraph,
+  .mailpoet_form_paragraph,
+  .mailpoet_textarea,
+  .mailpoet_text,
+  .mailpoet_select,
+  .mailpoet_form_image,
+  .mailpoet_message,
+  .mailpoet_paragraph select {
+    max-width: 100%; // Reset potential max-width limits from theme
+
+    @include breakpoint-max-width($form-break-small-width - 1) {
+      font-size: $form-mobile-font-size !important;
+      line-height: $form-mobile-line-height !important;
+    }
   }
 }
 
