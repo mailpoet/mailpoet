@@ -27,6 +27,7 @@ class FormEditorButtonStylesCest {
     $i->waitForElement('[data-automation-id="input_styles_settings"]');
     $i->click('.mailpoet-automation-inherit-theme-toggle input'); // Display custom settings
     $i->click('.mailpoet-automation-styles-bold-toggle input'); // Toggle bold on
+    $i->clearFormField('.mailpoet-automation-styles-border-size input[type="number"]');
     $i->fillField('.mailpoet-automation-styles-border-size input[type="number"]', 10); // Set border size
 
     // Check element has styles
