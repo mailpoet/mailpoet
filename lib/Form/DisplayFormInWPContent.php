@@ -188,7 +188,7 @@ class DisplayFormInWPContent {
     $keys = self::SETUP[$formType];
 
     $switchKey = $keys['switch'];
-    if (isset($settings[$switchKey]) && ($settings[$switchKey] !== '1')) {
+    if (!isset($settings[$switchKey]) || ($settings[$switchKey] !== '1')) {
       // this form type display is disabled
       return false;
     }
