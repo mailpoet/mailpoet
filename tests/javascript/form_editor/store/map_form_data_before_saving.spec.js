@@ -12,6 +12,7 @@ const data = {
     segments_selected_by: 'admin',
     placeFormBellowAllPages: true,
     placeFormBellowAllPosts: false,
+    placementBellowAllPostsEnabled: true,
   },
   styles: 'styles definition',
   created_at: '2020-01-15 07:39:15',
@@ -57,6 +58,7 @@ describe('Form Data Save Mapper', () => {
     it('maps placement', () => {
       expect(map(data).settings).to.have.property('place_form_bellow_all_pages', '1');
       expect(map(data).settings).to.have.property('place_form_bellow_all_posts', '');
+      expect(map(data).settings).to.have.property('form_placement_bellow_posts_enabled', '1');
     });
   });
 });
