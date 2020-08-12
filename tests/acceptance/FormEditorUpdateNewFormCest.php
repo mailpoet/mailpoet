@@ -27,7 +27,7 @@ class FormEditorUpdateNewFormCest {
     // Reload page and check data were saved
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
-    $i->see($formName, '[data-automation-id="form_title_input"]');
+    $i->assertAttributeContains('[data-automation-id="form_title_input"]', 'value', $formName);
     $i->seeSelectedInSelect2($segmentName);
     $i->seeNoJSErrors();
   }

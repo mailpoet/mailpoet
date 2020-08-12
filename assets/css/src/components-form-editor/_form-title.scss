@@ -1,11 +1,7 @@
-.editor-post-title {
-  .editor-post-title__input {
-    overflow: hidden;
-    overflow-wrap: break-word;
-    resize: none;
-  }
-}
-
-.edit-post-visual-editor__post-title-wrapper .editor-post-title {
-  width: 580px;
+.form-editor-title {
+  margin-bottom: $grid-gap;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  resize: none;
+  width: 100%;
 }

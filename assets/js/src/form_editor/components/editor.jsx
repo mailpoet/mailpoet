@@ -20,7 +20,6 @@ import fetchLinkSuggestions from '../utils/link_suggestions';
 import Header from './header.jsx';
 import Sidebar from './sidebar/sidebar';
 import Inserter from './inserter';
-import FormTitle from './form_title.jsx';
 import Notices from './notices.jsx';
 import UnsavedChangesNotice from './unsaved_changes_notice.jsx';
 import FormStyles from './form_styles.jsx';
@@ -106,7 +105,6 @@ export default () => {
                     <div className="mailpoet_form">
                       <WritingFlow>
                         <ObserveTyping>
-                          <FormTitle />
                           <FormStylingBackground>
                             <BlockList />
                           </FormStylingBackground>
