@@ -27,8 +27,6 @@ class PostEditorBlock {
   }
 
   public function init() {
-    // this has to be here until we drop support for WordPress < 5.0
-    if (!function_exists('register_block_type')) return;
     $this->subscriptionFormBlock->init();
 
     if (is_admin()) {
