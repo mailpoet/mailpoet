@@ -104,7 +104,6 @@ class ManageWelcomeEmailCest {
   public function saveWelcomeEmailAsTemplate (\AcceptanceTester $i) {
     $i->wantTo('Save welcome email as a template');
     $templateTitle = 'Welcome Template Test Title';
-    $templateDescr = 'Welcome Template Test Descr';
     $newsletter = $this->createWelcomeEmailWithTitle($i, 'Save Welcome Email As Template Test');
 
     $saveTemplateOption = '[data-automation-id="newsletter_save_as_template_option"]';
@@ -125,6 +124,7 @@ class ManageWelcomeEmailCest {
     $i->click('Next');
     $i->checkTemplateIsPresent(0, 'welcome');
     $i->see('Welcome Emails', ['css' => 'a.current']);
+    $i->scrollTo('[data-automation-id="templates-welcome"]');
     $i->see($templateTitle);
     $i->click(['xpath' => '//*[text()="' . $templateTitle . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
     $i->waitForElement('[data-automation-id="newsletter_title"]');
