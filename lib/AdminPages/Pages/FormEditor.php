@@ -20,6 +20,11 @@ use MailPoet\Form\Templates\Templates\Template4FixedBar;
 use MailPoet\Form\Templates\Templates\Template4Popup;
 use MailPoet\Form\Templates\Templates\Template4SlideIn;
 use MailPoet\Form\Templates\Templates\Template4Widget;
+use MailPoet\Form\Templates\Templates\Template6BelowPages;
+use MailPoet\Form\Templates\Templates\Template6FixedBar;
+use MailPoet\Form\Templates\Templates\Template6Popup;
+use MailPoet\Form\Templates\Templates\Template6SlideIn;
+use MailPoet\Form\Templates\Templates\Template6Widget;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Export;
 use MailPoet\Models\Form;
@@ -68,6 +73,11 @@ class FormEditor {
     Template4Popup::ID,
     Template4SlideIn::ID ,
     Template4Widget::ID,
+    Template6BelowPages::ID,
+    Template6FixedBar::ID,
+    Template6Popup::ID,
+    Template6SlideIn::ID ,
+    Template6Widget::ID,
   ];
 
   public function __construct(
