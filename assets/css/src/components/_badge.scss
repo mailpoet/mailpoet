@@ -1,10 +1,14 @@
+$badge-fancy-border-width: $grid-gap-medium / 2;
+
 .mailpoet-badge {
   background-color: $color-tertiary;
-  border-left: 12px solid $color-secondary;
+  border-left: $badge-fancy-border-width solid $color-secondary;
   border-radius: 2px;
-  box-shadow: inset 12px 0 0 $color-secondary-middle;
+  box-shadow: inset $badge-fancy-border-width 0 0 $color-secondary-middle;
   color: $color-white;
   display: inline-block;
-  line-height: $line-height;
-  padding: 1px 8px 1px 20px;
+  font-size: $font-size;
+  font-weight: bold;
+  line-height: $font-size * 1.5;
+  padding: 1px $grid-gap-half 1px ($badge-fancy-border-width + $grid-gap-half);
 }
