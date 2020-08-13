@@ -55,7 +55,7 @@ class NewsletterCreationCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
 
-    // step 1 - select notification type
+    // step 1 - select newsletter type
     $i->click('[data-automation-id="create_standard"]');
 
     // step 2 - select template
@@ -69,11 +69,30 @@ class NewsletterCreationCest {
     $i->fillField($titleElement, $newsletterTitle);
     $i->click('Next');
 
-    // step 4 - Choose list and send
+    // step 4 - choose list and send
     $sendFormElement = '[data-automation-id="newsletter_send_form"]';
     $i->waitForElement($sendFormElement);
     $i->selectOptionInSelect2($segmentName);
     $i->click('Send');
+
+    // step 5 - verify recently sent newsletter tab and sent newsletter
+    $niceJobText = 'Nice job! Check back in 6 hour(s) for more stats.';
+    $i->waitForText('Emails');
+    $i->waitForText('The newsletter is being sent...');
+    $i->reloadPage();
+    $i->click('[data-automation-id="new_email"]');
+    $i->click('[data-automation-id="create_standard"]');
+    $i->waitForText('Select a responsive template');
+    $i->see('Recently sent', ['css' => 'a.current']);
+    $i->click($standardTemplate);
+    $i->waitForElement($titleElement);
+    $i->fillField($titleElement, $newsletterTitle);
+    $i->click('Next');
+    $i->waitForElement($sendFormElement);
+    $i->selectOptionInSelect2($segmentName);
+    $i->click('Send');
+    $i->waitForText('Newsletters');
+    $i->see($niceJobText);
   }
 
   public function createNewsletterWhenKeyPendingApproval(\AcceptanceTester $i, Scenario $scenario) {
