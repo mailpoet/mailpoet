@@ -4,15 +4,29 @@ namespace MailPoet\Form\Templates\Templates;
 
 use MailPoet\Form\Templates\FormTemplate;
 
-class Template4BelowPages extends FormTemplate {
-  const ID = 'template_4_below_pages';
+class Template6FixedBar extends FormTemplate {
+  const ID = 'template_6_fixed_bar';
 
   public function getName(): string {
-    return 'Template 4 Below Pages';
+    return 'Template 6 Fixed Bar';
   }
 
   public function getBody(): array {
     return [
+      [
+        'type' => 'divider',
+        'params' => [
+          'class_name' => '',
+          'height' => '1',
+          'type' => 'spacer',
+          'style' => 'solid',
+          'divider_height' => '1',
+          'divider_width' => '100',
+          'color' => 'black',
+        ],
+        'id' => 'divider',
+        'name' => 'Divider',
+      ],
       [
         'type' => 'columns',
         'body' => [
@@ -28,14 +42,14 @@ class Template4BelowPages extends FormTemplate {
                 'type' => 'heading',
                 'id' => 'heading',
                 'params' => [
-                  'content' => _x('<strong>Oh hi there 👋 It\'s nice to meet you.</strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
-                  'level' => '3',
+                  'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>Dive in!</strong> Start your journey today.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'level' => '2',
                   'align' => 'left',
-                  'font_size' => '25',
-                  'text_color' => '#0081ff',
-                  'line_height' => '1.5',
+                  'font_size' => '27',
+                  'text_color' => '#38527a',
+                  'line_height' => '1',
                   'background_color' => '',
-                  'anchor' => 'block-heading_0.05691231782049089-1595515365731',
+                  'anchor' => '',
                   'class_name' => '',
                 ],
               ],
@@ -43,26 +57,12 @@ class Template4BelowPages extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => _x('<strong>Sign up to receive awesome content in your inbox, every month.</strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'content' => _x('<strong><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">Sign up to start your fitness program. We promise we\'ll never spam! Take a look at our <a href="https://www.mailpoet.com/privacy-notice/">Privacy Policy</a> for more info.</span></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
                   'drop_cap' => '0',
                   'align' => 'left',
-                  'font_size' => '18',
+                  'font_size' => '14',
                   'line_height' => '1.5',
-                  'text_color' => '#000000',
-                  'background_color' => '',
-                  'class_name' => '',
-                ],
-              ],
-              [
-                'type' => 'paragraph',
-                'id' => 'paragraph',
-                'params' => [
-                  'content' => _x('<em>We don\'t spam! Read our <a href="/privacy-notice/">privacy policy</a> for more info.</em>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
-                  'drop_cap' => '0',
-                  'align' => 'left',
-                  'font_size' => '13',
-                  'line_height' => '1.5',
-                  'text_color' => '',
+                  'text_color' => '#38527a',
                   'background_color' => '',
                   'class_name' => '',
                 ],
@@ -74,13 +74,13 @@ class Template4BelowPages extends FormTemplate {
             'params' => [
               'class_name' => '',
               'vertical_alignment' => 'center',
-              'width' => '50',
+              'width' => '25',
             ],
             'body' => [
               [
                 'type' => 'text',
                 'params' => [
-                  'label' => _x('Enter your e-mail', 'Form label', 'mailpoet'),
+                  'label' => _x('Insert your email address', 'Form label', 'mailpoet'),
                   'class_name' => '',
                   'required' => '1',
                   'label_within' => '1',
@@ -90,16 +90,26 @@ class Template4BelowPages extends FormTemplate {
                 'styles' => [
                   'full_width' => '1',
                   'bold' => '0',
-                  'background_color' => '#f1f1f1',
+                  'background_color' => '#f8fbff',
+                  'font_color' => '#38527a',
                   'border_size' => '0',
-                  'border_radius' => '40',
-                  'border_color' => '#313131',
+                  'border_radius' => '10',
                 ],
               ],
+            ],
+          ],
+          [
+            'type' => 'column',
+            'params' => [
+              'class_name' => '',
+              'vertical_alignment' => 'center',
+              'width' => '25',
+            ],
+            'body' => [
               [
                 'type' => 'submit',
                 'params' => [
-                  'label' => _x('Let\'s keep in touch', 'Form label', 'mailpoet'),
+                  'label' => _x('Get Started!', 'Form label', 'mailpoet'),
                   'class_name' => '',
                 ],
                 'id' => 'submit',
@@ -107,13 +117,12 @@ class Template4BelowPages extends FormTemplate {
                 'styles' => [
                   'full_width' => '1',
                   'bold' => '1',
-                  'background_color' => '#0081ff',
-                  'font_size' => '16',
+                  'gradient' => 'linear-gradient(0deg,rgb(56,82,122) 0%,rgb(81,128,199) 100%)',
+                  'font_size' => '19',
                   'font_color' => '#ffffff',
                   'border_size' => '0',
-                  'border_radius' => '40',
-                  'border_color' => '#313131',
-                  'padding' => '15',
+                  'border_radius' => '10',
+                  'padding' => '12',
                   'font_family' => 'Montserrat',
                 ],
               ],
@@ -121,7 +130,7 @@ class Template4BelowPages extends FormTemplate {
           ],
         ],
         'params' => [
-          'vertical_alignment' => 'center',
+          'vertical_alignment' => '',
           'class_name' => '',
           'text_color' => '',
           'background_color' => '',
@@ -133,16 +142,14 @@ class Template4BelowPages extends FormTemplate {
 
   public function getSettings(): array {
     return [
-      'on_success' => 'message',
       'success_message' => '',
       'segments' => [],
-      'segments_selected_by' => 'admin',
       'alignment' => 'left',
       'fontSize' => '16',
       'form_placement_slide_in_enabled' => '',
-      'form_placement_fixed_bar_enabled' => '',
+      'form_placement_fixed_bar_enabled' => '1',
       'form_placement_popup_enabled' => '',
-      'form_placement_bellow_posts_enabled' => '1',
+      'form_placement_bellow_posts_enabled' => '',
       'place_form_bellow_all_pages' => '',
       'place_form_bellow_all_posts' => '',
       'place_popup_form_on_all_pages' => '',
@@ -150,7 +157,7 @@ class Template4BelowPages extends FormTemplate {
       'popup_form_delay' => '15',
       'place_fixed_bar_form_on_all_pages' => '',
       'place_fixed_bar_form_on_all_posts' => '',
-      'fixed_bar_form_delay' => '15',
+      'fixed_bar_form_delay' => '0',
       'fixed_bar_form_position' => 'top',
       'place_slide_in_form_on_all_pages' => '',
       'place_slide_in_form_on_all_posts' => '',
@@ -158,9 +165,12 @@ class Template4BelowPages extends FormTemplate {
       'slide_in_form_position' => 'right',
       'border_radius' => '0',
       'border_size' => '0',
-      'form_padding' => '25',
-      'input_padding' => '15',
+      'form_padding' => '0',
+      'input_padding' => '12',
       'font_family' => 'Montserrat',
+      'background_image_url' => 'http://mailpoet.info/wp-content/uploads/2020/07/form-bg.jpg',
+      'background_image_display' => 'scale',
+      'close_button' => 'classic',
       'below_post_styles' => [
         'width' => [
           'unit' => 'percent',
@@ -175,14 +185,14 @@ class Template4BelowPages extends FormTemplate {
       ],
       'fixed_bar_styles' => [
         'width' => [
-          'unit' => 'percent',
-          'value' => '100',
+          'unit' => 'pixel',
+          'value' => '1100',
         ],
       ],
       'popup_styles' => [
         'width' => [
           'unit' => 'pixel',
-          'value' => '520',
+          'value' => '560',
         ],
       ],
       'other_styles' => [
@@ -191,7 +201,7 @@ class Template4BelowPages extends FormTemplate {
           'value' => '100',
         ],
       ],
-      'close_button' => 'round_black',
+      'segments_selected_by' => 'admin',
       'success_validation_color' => '#00d084',
       'error_validation_color' => '#cf2e2e',
     ];
@@ -207,8 +217,8 @@ form {
   margin-bottom: 0;
 }
 
-p.mailpoet_form_paragraph {
-    margin-bottom: 10px;
+p.mailpoet_form_paragraph.last {
+    margin-bottom: 5px;
 }
 
 /* columns */
@@ -277,6 +287,10 @@ p.mailpoet_form_paragraph {
   width: 5px;
   height: 5px;
   background-color: #5b5b5b;
+}
+h2.mailpoet-heading {
+    margin-bottom: 20px;
+    margin-top: 0;
 }
 EOL;
   }
