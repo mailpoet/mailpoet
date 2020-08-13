@@ -15,6 +15,7 @@
     "symfony/polyfill-iconv": "1.18.1",
     "symfony/polyfill-intl-idn": "1.18.1",
     "symfony/polyfill-mbstring": "1.18.1",
+    "symfony/polyfill-intl-normalizer": "1.18.1",
     "symfony/polyfill-php72": "1.18.1",
     "symfony/validator": "3.4.43",
     "twig/twig": "2.12.5"
@@ -31,7 +32,8 @@
       "php fix-doctrine.php",
       "php fix-swiftmailer.php",
       "php fix-validator.php",
-      "php fix-monolog.php"
+      "php fix-monolog.php",
+      "php fix-symfony-polyfill.php"
     ]
   },
   "config": {
