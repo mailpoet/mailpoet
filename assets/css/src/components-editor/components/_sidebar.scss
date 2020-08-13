@@ -53,6 +53,10 @@
       cursor: auto;
     }
 
+    .handlediv {
+      float: right;
+    }
+
     .handlediv:before {
       color: $color-primary;
       content: '\f142';
