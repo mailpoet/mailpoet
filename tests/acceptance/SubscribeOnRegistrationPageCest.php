@@ -28,7 +28,7 @@ class SubscribeOnRegistrationPageCest {
       $i->fillField(['name' => 'user_email'], $regpageuseremail);
       $i->checkOption('#mailpoet_subscribe_on_register');
       $i->click('#wp-submit');
-      $i->waitForText('Registration complete. Please check your email.');
+      $i->waitForText('Registration complete. Please check your email');
     } else {
       $i->fillField(['name' => 'user_name'], 'muregisterpagesignup');
       $i->fillField(['name' => 'user_email'], $regpageuseremail);
@@ -61,7 +61,7 @@ class SubscribeOnRegistrationPageCest {
       $i->fillField(['name' => 'user_email'], $userEmail);
       $i->checkOption('#mailpoet_subscribe_on_register');
       $i->click('#wp-submit');
-      $i->waitForText('Registration complete. Please check your email.');
+      $i->waitForText('Registration complete. Please check your email');
     } else {
       $i->fillField(['name' => 'user_name'], 'muregisterpagesignupconfirmation');
       $i->fillField(['name' => 'user_email'], $userEmail);
