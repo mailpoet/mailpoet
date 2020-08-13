@@ -34,6 +34,7 @@ class SaveNewsletterAsTemplateCest {
     $i->waitForText('Newsletters');
 
     $i->checkTemplateIsPresent(0);
+    $i->scrollTo('[data-automation-id="templates-standard"]');
     $i->see('Magical Unicorn Test Template');
     $i->click(['xpath' => '//*[text()="' . $templateName . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);
     $i->waitForElement('[data-automation-id="newsletter_title"]');
