@@ -61,9 +61,11 @@ class SettingsPageBasicsCest {
     $i->scrollTo('#commentform');
     $i->waitForElementVisible(['css' => '.comment-form-mailpoet']);
     $i->see('Yes, add me to your mailing list');
-    $i->fillField('#comment', 'This is just a lorem ipsum dolor text.');
+    $comment = 'This is just a lorem ipsum dolor text.';
+    $i->fillField('#comment', $comment);
     $i->click('#mailpoet_subscribe_on_comment');
     $i->click('Post Comment');
+    $i->waitForText($comment, 10, '.comment-content');
     //check if user is really subscribed to a list
     $i->amOnMailpoetPage('Lists');
     $i->clickItemRowActionByItemName('My First List', 'View Subscribers');
