@@ -10,6 +10,11 @@ use MailPoet\Form\Block;
 use MailPoet\Form\FormFactory;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Templates\TemplateRepository;
+use MailPoet\Form\Templates\Templates\Template10BelowPages;
+use MailPoet\Form\Templates\Templates\Template10FixedBar;
+use MailPoet\Form\Templates\Templates\Template10Popup;
+use MailPoet\Form\Templates\Templates\Template10SlideIn;
+use MailPoet\Form\Templates\Templates\Template10Widget;
 use MailPoet\Form\Templates\Templates\Template3BelowPages;
 use MailPoet\Form\Templates\Templates\Template3FixedBar;
 use MailPoet\Form\Templates\Templates\Template3Popup;
@@ -78,6 +83,11 @@ class FormEditor {
     Template6Popup::ID,
     Template6SlideIn::ID ,
     Template6Widget::ID,
+    Template10BelowPages::ID,
+    Template10FixedBar::ID,
+    Template10Popup::ID,
+    Template10SlideIn::ID ,
+    Template10Widget::ID,
   ];
 
   public function __construct(

@@ -4,6 +4,11 @@ namespace MailPoet\Form\Templates;
 
 use MailPoet\Form\Templates\Templates\DefaultForm;
 use MailPoet\Form\Templates\Templates\InitialForm;
+use MailPoet\Form\Templates\Templates\Template10BelowPages;
+use MailPoet\Form\Templates\Templates\Template10FixedBar;
+use MailPoet\Form\Templates\Templates\Template10Popup;
+use MailPoet\Form\Templates\Templates\Template10SlideIn;
+use MailPoet\Form\Templates\Templates\Template10Widget;
 use MailPoet\Form\Templates\Templates\Template3BelowPages;
 use MailPoet\Form\Templates\Templates\Template3FixedBar;
 use MailPoet\Form\Templates\Templates\Template3Popup;
@@ -43,6 +48,11 @@ class TemplateRepository {
     Template6Popup::ID => Template6Popup::class,
     Template6SlideIn::ID => Template6SlideIn::class,
     Template6Widget::ID => Template6Widget::class,
+    Template10BelowPages::ID => Template10BelowPages::class,
+    Template10FixedBar::ID => Template10FixedBar::class,
+    Template10Popup::ID => Template10Popup::class,
+    Template10SlideIn::ID => Template10SlideIn::class,
+    Template10Widget::ID => Template10Widget::class,
   ];
 
   public function getFormTemplate(string $templateId): FormTemplate {
