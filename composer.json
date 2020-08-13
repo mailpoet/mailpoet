@@ -54,6 +54,7 @@
       "vendor-prefixed/symfony/polyfill-mbstring/bootstrap.php",
       "vendor-prefixed/symfony/polyfill-php72/bootstrap.php",
       "vendor-prefixed/symfony/polyfill-intl-idn/bootstrap.php",
+      "vendor-prefixed/symfony/polyfill-intl-normalizer/bootstrap.php",
       "vendor-prefixed/swiftmailer/swiftmailer/lib/swift_required.php"
     ],
     "psr-4": {
