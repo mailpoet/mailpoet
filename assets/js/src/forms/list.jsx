@@ -14,6 +14,10 @@ const columns = [
     sortable: true,
   },
   {
+    name: 'status',
+    label: MailPoet.I18n.t('status'),
+  },
+  {
     name: 'segments',
     label: MailPoet.I18n.t('segments'),
   },
@@ -182,6 +186,24 @@ class FormList extends React.Component {
     }
   };
 
+
+  renderStatus(form) {
+    return (
+      <div>
+        <p>
+          <select
+            data-id={form.id}
+            defaultValue={form.status}
+            onChange={this.updateStatus}
+          >
+            <option value="enabled">{MailPoet.I18n.t('active')}</option>
+            <option value="disabled">{MailPoet.I18n.t('inactive')}</option>
+          </select>
+        </p>
+      </div>
+    );
+  }
+
   renderItem = (form, actions) => {
     const rowClasses = classNames(
       'manage-column',
@@ -212,6 +234,9 @@ class FormList extends React.Component {
             </a>
           </strong>
           { actions }
+        </td>
+        <td className="column" data-colname={MailPoet.I18n.t('status')}>
+          { this.renderStatus(form) }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('segments')}>
           { segments }
