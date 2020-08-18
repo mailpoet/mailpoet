@@ -3,23 +3,57 @@ export default function mapFormDataBeforeSaving(data) {
     ...data,
     settings: {
       ...data.settings,
-      place_form_bellow_all_pages: data.settings.placeFormBellowAllPages === true ? '1' : '',
-      place_form_bellow_all_posts: data.settings.placeFormBellowAllPosts === true ? '1' : '',
-      form_placement_bellow_posts_enabled: data.settings.placementBellowAllPostsEnabled === true ? '1' : '',
-      place_popup_form_on_all_pages: data.settings.placePopupFormOnAllPages === true ? '1' : '',
-      place_popup_form_on_all_posts: data.settings.placePopupFormOnAllPosts === true ? '1' : '',
-      form_placement_popup_enabled: data.settings.placementPopupEnabled === true ? '1' : '',
-      popup_form_delay: data.settings.popupFormDelay,
-      place_fixed_bar_form_on_all_pages: data.settings.placeFixedBarFormOnAllPages === true ? '1' : '',
-      place_fixed_bar_form_on_all_posts: data.settings.placeFixedBarFormOnAllPosts === true ? '1' : '',
-      form_placement_fixed_bar_enabled: data.settings.placementFixedBarEnabled === true ? '1' : '',
-      fixed_bar_form_delay: data.settings.fixedBarFormDelay,
-      fixed_bar_form_position: data.settings.fixedBarFormPosition,
-      place_slide_in_form_on_all_pages: data.settings.placeSlideInFormOnAllPages === true ? '1' : '',
-      place_slide_in_form_on_all_posts: data.settings.placeSlideInFormOnAllPosts === true ? '1' : '',
-      form_placement_slide_in_enabled: data.settings.placementSlideInEnabled === true ? '1' : '',
-      slide_in_form_delay: data.settings.slideInFormDelay,
-      slide_in_form_position: data.settings.slideInFormPosition,
+      form_placement: {
+        popup: {
+          enabled: data.settings.formPlacement?.popup?.enabled === true ? '1' : '',
+          delay: data.settings.formPlacement?.popup?.delay,
+          styles: data.settings.formPlacement?.popup?.styles,
+          posts: {
+            all: data.settings.formPlacement?.popup?.posts?.all === true ? '1' : '',
+          },
+          pages: {
+            all: data.settings.formPlacement?.popup?.pages?.all === true ? '1' : '',
+          },
+        },
+        fixed_bar: {
+          enabled: data.settings.formPlacement?.fixedBar?.enabled === true ? '1' : '',
+          delay: data.settings.formPlacement?.fixedBar?.delay,
+          styles: data.settings.formPlacement?.fixedBar?.styles,
+          position: data.settings.formPlacement?.fixedBar?.position,
+          posts: {
+            all: data.settings.formPlacement?.fixedBar?.posts?.all === true ? '1' : '',
+          },
+          pages: {
+            all: data.settings.formPlacement?.fixedBar?.pages?.all === true ? '1' : '',
+          },
+        },
+        below_posts: {
+          enabled: data.settings.formPlacement?.belowPosts?.enabled === true ? '1' : '',
+          styles: data.settings.formPlacement?.belowPosts?.styles,
+          posts: {
+            all: data.settings.formPlacement?.belowPosts?.posts?.all === true ? '1' : '',
+          },
+          pages: {
+            all: data.settings.formPlacement?.belowPosts?.pages?.all === true ? '1' : '',
+          },
+        },
+        slide_in: {
+          enabled: data.settings.formPlacement?.slideIn?.enabled === true ? '1' : '',
+          delay: data.settings.formPlacement?.slideIn?.delay,
+          position: data.settings.formPlacement?.slideIn?.position,
+          styles: data.settings.formPlacement?.slideIn?.styles,
+          posts: {
+            all: data.settings.formPlacement?.slideIn?.posts?.all === true ? '1' : '',
+          },
+          pages: {
+            all: data.settings.formPlacement?.slideIn?.pages?.all === true ? '1' : '',
+          },
+        },
+        others: {
+          styles: data.settings.formPlacement?.others?.styles,
+        },
+      },
+
       border_radius: data.settings.borderRadius,
       border_size: data.settings.borderSize,
       form_padding: data.settings.formPadding,
@@ -31,31 +65,10 @@ export default function mapFormDataBeforeSaving(data) {
       background_image_url: data.settings.backgroundImageUrl,
       background_image_display: data.settings.backgroundImageDisplay,
       close_button: data.settings.closeButton,
-      below_post_styles: data.settings.belowPostStyles,
-      slide_in_styles: data.settings.slideInStyles,
-      fixed_bar_styles: data.settings.fixedBarStyles,
-      popup_styles: data.settings.popupStyles,
-      other_styles: data.settings.otherStyles,
     },
   };
 
-  delete mappedData.settings.placementBellowAllPostsEnabled;
-  delete mappedData.settings.placementPopupEnabled;
-  delete mappedData.settings.placementFixedBarEnabled;
-  delete mappedData.settings.placementSlideInEnabled;
-  delete mappedData.settings.placeFormBellowAllPages;
-  delete mappedData.settings.placeFormBellowAllPosts;
-  delete mappedData.settings.placePopupFormOnAllPages;
-  delete mappedData.settings.placePopupFormOnAllPosts;
-  delete mappedData.settings.popupFormDelay;
-  delete mappedData.settings.placeFixedBarFormOnAllPages;
-  delete mappedData.settings.placeFixedBarFormOnAllPosts;
-  delete mappedData.settings.fixedBarFormDelay;
-  delete mappedData.settings.fixedBarFormPosition;
-  delete mappedData.settings.placeSlideInFormOnAllPages;
-  delete mappedData.settings.placeSlideInFormOnAllPosts;
-  delete mappedData.settings.slideInFormDelay;
-  delete mappedData.settings.slideInFormPosition;
+  delete mappedData.settings.placement;
   delete mappedData.settings.successValidationColor;
   delete mappedData.settings.errorValidationColor;
   delete mappedData.settings.borderRadius;
@@ -65,11 +78,6 @@ export default function mapFormDataBeforeSaving(data) {
   delete mappedData.settings.borderColor;
   delete mappedData.settings.backgroundImageUrl;
   delete mappedData.settings.backgroundImageDisplay;
-  delete mappedData.settings.belowPostStyles;
-  delete mappedData.settings.slideInStyles;
-  delete mappedData.settings.fixedBarStyles;
-  delete mappedData.settings.popupStyles;
-  delete mappedData.settings.otherStyles;
   delete mappedData.settings.fontFamily;
   delete mappedData.settings.closeButton;
 

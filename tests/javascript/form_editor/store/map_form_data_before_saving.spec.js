@@ -10,9 +10,17 @@ const data = {
     success_message: 'Check your inbox or spam folder to confirm your subscription.',
     success_page: '5',
     segments_selected_by: 'admin',
-    placeFormBellowAllPages: true,
-    placeFormBellowAllPosts: false,
-    placementBellowAllPostsEnabled: true,
+    formPlacement: {
+      belowPosts: {
+        enabled: true,
+        posts: {
+          all: false,
+        },
+        pages: {
+          all: true,
+        },
+      },
+    },
   },
   styles: 'styles definition',
   created_at: '2020-01-15 07:39:15',
@@ -56,9 +64,21 @@ describe('Form Data Save Mapper', () => {
     });
 
     it('maps placement', () => {
-      expect(map(data).settings).to.have.property('place_form_bellow_all_pages', '1');
-      expect(map(data).settings).to.have.property('place_form_bellow_all_posts', '');
-      expect(map(data).settings).to.have.property('form_placement_bellow_posts_enabled', '1');
+      const result = map(data).settings;
+      expect(result)
+        .to.have.property('form_placement')
+        .that.is.an('object')
+        .that.have.property('below_posts')
+        .that.is.an('object');
+      expect(result.form_placement.below_posts).to.have.property('enabled', '1');
+      expect(result.form_placement.below_posts)
+        .to.have.property('posts')
+        .that.is.an('object')
+        .that.have.property('all', '');
+      expect(result.form_placement.below_posts)
+        .to.have.property('pages')
+        .that.is.an('object')
+        .that.have.property('all', '1');
     });
   });
 });
