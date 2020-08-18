@@ -182,6 +182,30 @@ class FormList extends React.Component {
     }
   };
 
+  updateStatus = (e) => {
+    // make the event persist so that we can still override the selected value
+    // in the ajax callback
+    e.persist();
+
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'forms',
+      action: 'setStatus',
+      data: {
+        id: Number(e.target.getAttribute('data-id')),
+        status: e.target.value,
+      },
+    }).done((response) => {
+      if (response.data.status === 'enabled') {
+        MailPoet.Notice.success(MailPoet.I18n.t('formActivated'));
+      }
+    }).fail((response) => {
+      MailPoet.Notice.showApiErrorNotice(response);
+
+      // reset value to actual newsletter's status
+      e.target.value = response.status;
+    });
+  };
 
   renderStatus(form) {
     return (

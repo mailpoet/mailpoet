@@ -5,6 +5,7 @@ namespace MailPoet\Test\API\JSON\v1;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Forms;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Form\PreviewPage;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
@@ -175,6 +176,43 @@ class FormsTest extends \MailPoetTest {
     ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(0);
+  }
+
+  public function testItCanUpdateFormStatus() {
+    $response = $this->endpoint->setStatus([
+      'status' => FormEntity::STATUS_ENABLED,
+      'id' => $this->form1->id,
+    ]);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    $form = Form::findOne($this->form1->id);
+    assert($form instanceof Form);
+    expect($form->status)->equals(FormEntity::STATUS_ENABLED);
+
+    $response = $this->endpoint->setStatus([
+      'status' => FormEntity::STATUS_DISABLED,
+      'id' => $this->form1->id,
+    ]);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    $form = Form::findOne($this->form1->id);
+    assert($form instanceof Form);
+    expect($form->status)->equals(FormEntity::STATUS_DISABLED);
+
+    $response = $this->endpoint->setStatus([
+      'status' => FormEntity::STATUS_DISABLED,
+      'id' => 'invalid id',
+    ]);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+
+    $response = $this->endpoint->setStatus([
+      'id' => $this->form1->id,
+    ]);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+
+    $response = $this->endpoint->setStatus([
+      'status' => 'invalid status',
+      'id' => $this->form1->id,
+    ]);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
   public function _after() {

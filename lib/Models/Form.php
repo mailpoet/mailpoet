@@ -9,6 +9,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property string|array $settings
  * @property string|array $body
  * @property string $name
+ * @property string $status
  */
 
 class Form extends Model {

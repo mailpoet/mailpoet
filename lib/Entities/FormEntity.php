@@ -125,6 +125,13 @@ class FormEntity {
     $this->status = $status;
   }
 
+  /**
+   * @return string
+   */
+  public function getStatus(): string {
+    return $this->status;
+  }
+
   public function toArray(): array {
     return [
       'id' => $this->getId(),
@@ -132,6 +139,7 @@ class FormEntity {
       'body' => $this->getBody(),
       'settings' => $this->getSettings(),
       'styles' => $this->getStyles(),
+      'status' => $this->getStatus(),
       'created_at' => $this->getCreatedAt(),
       'updated_at' => $this->getUpdatedAt(),
       'deleted_at' => $this->getDeletedAt(),

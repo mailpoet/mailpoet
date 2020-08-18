@@ -8,6 +8,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Form\FormFactory;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Form\PreviewPage;
 use MailPoet\Form\Util;
 use MailPoet\Listing;
@@ -17,6 +18,11 @@ use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Forms extends APIEndpoint {
+
+
+  public $permissions = [
+    'global' => AccessControl::PERMISSION_MANAGE_FORMS,
+  ];
 
   /** @var Listing\BulkActionController */
   private $bulkAction;
@@ -33,15 +39,15 @@ class Forms extends APIEndpoint {
   /** @var WPFunctions */
   private $wp;
 
-  public $permissions = [
-    'global' => AccessControl::PERMISSION_MANAGE_FORMS,
-  ];
+  /** @var FormsRepository */
+  private $formsRepository;
 
   public function __construct(
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
     UserFlagsController $userFlags,
     FormFactory $formFactory,
+    FormsRepository $formsRepository,
     WPFunctions $wp
   ) {
     $this->bulkAction = $bulkAction;
@@ -49,6 +55,7 @@ class Forms extends APIEndpoint {
     $this->userFlags = $userFlags;
     $this->formFactory = $formFactory;
     $this->wp = $wp;
+    $this->formsRepository = $formsRepository;
   }
 
   public function get($data = []) {
@@ -60,6 +67,45 @@ class Forms extends APIEndpoint {
     return $this->errorResponse([
       APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet'),
     ]);
+  }
+
+  public function setStatus($data = []) {
+    $status = (isset($data['status']) ? $data['status'] : null);
+
+    if (!$status) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST  => __('You need to specify a status.', 'mailpoet'),
+      ]);
+    }
+
+    $id = (isset($data['id'])) ? (int)$data['id'] : false;
+    $form = $this->formsRepository->findOneById($id);
+
+    if (!$form instanceof FormEntity) {
+      return $this->errorResponse([
+        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet'),
+      ]);
+    }
+
+    if (!in_array($status, [FormEntity::STATUS_ENABLED, FormEntity::STATUS_DISABLED])) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST  =>
+          sprintf(
+            __('Invalid status. Allowed values are (%1$s), you specified %2$s', 'mailpoet'),
+            join(', ', [FormEntity::STATUS_ENABLED, FormEntity::STATUS_DISABLED]),
+            $status
+          ),
+      ]);
+    }
+
+    $form->setStatus($status);
+    $this->formsRepository->flush();
+
+    $form = $this->formsRepository->findOneById($id);
+    if (!$form instanceof FormEntity) return $this->errorResponse();
+    return $this->successResponse(
+      $form->toArray()
+    );
   }
 
   public function listing($data = []) {
