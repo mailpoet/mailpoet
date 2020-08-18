@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\FormFactory;
@@ -180,6 +181,7 @@ class Populator {
     $this->updateFormsSuccessMessages();
     $this->moveGoogleAnalyticsFromPremium();
     $this->addPlacementStatusToForms();
+    $this->migrateFormPlacement();
   }
 
   private function createMailPoetPage() {
@@ -733,6 +735,68 @@ class Populator {
       } else {
         $settings['form_placement_slide_in_enabled'] = '';
       }
+      $form->setSettings($settings);
+    }
+    $this->formsRepository->flush();
+  }
+
+  private function migrateFormPlacement() {
+    if (version_compare($this->settings->get('db_version', '3.49.1'), '3.49.0', '>')) {
+      return;
+    }
+    $forms = $this->formsRepository->findAll();
+    foreach ($forms as $form) {
+      $settings = $form->getSettings();
+      $settings['form_placement'] = [
+        FormEntity::DISPLAY_TYPE_POPUP => [
+          'enabled' => $settings['form_placement_popup_enabled'],
+          'delay' => $settings['popup_form_delay'] ?? 0,
+          'styles' => $settings['popup_styles'] ?? [],
+          'posts' => [
+            'all' => $settings['place_popup_form_on_all_posts'] ?? '',
+          ],
+          'pages' => [
+            'all' => $settings['place_popup_form_on_all_pages'] ?? '',
+          ],
+        ],
+        FormEntity::DISPLAY_TYPE_FIXED_BAR => [
+          'enabled' => $settings['form_placement_fixed_bar_enabled'],
+          'delay' => $settings['fixed_bar_form_delay'] ?? 0,
+          'styles' => $settings['fixed_bar_styles'] ?? [],
+          'position' => $settings['fixed_bar_form_position'] ?? 'top',
+          'posts' => [
+            'all' => $settings['place_fixed_bar_form_on_all_posts'] ?? '',
+          ],
+          'pages' => [
+            'all' => $settings['place_fixed_bar_form_on_all_pages'] ?? '',
+          ],
+        ],
+        FormEntity::DISPLAY_TYPE_BELOW_POST => [
+          'enabled' => $settings['form_placement_bellow_posts_enabled'],
+          'styles' => $settings['below_post_styles'] ?? [],
+          'posts' => [
+            'all' => $settings['place_form_bellow_all_posts'] ?? '',
+          ],
+          'pages' => [
+            'all' => $settings['place_form_bellow_all_pages'] ?? '',
+          ],
+        ],
+        FormEntity::DISPLAY_TYPE_SLIDE_IN => [
+          'enabled' => $settings['form_placement_slide_in_enabled'],
+          'delay' => $settings['slide_in_form_delay'] ?? 0,
+          'position' => $settings['slide_in_form_position'] ?? 'right',
+          'styles' => $settings['slide_in_styles'] ?? [],
+          'posts' => [
+            'all' => $settings['place_slide_in_form_on_all_posts'] ?? '',
+          ],
+          'pages' => [
+            'all' => $settings['place_slide_in_form_on_all_pages'] ?? '',
+          ],
+        ],
+        FormEntity::DISPLAY_TYPE_OTHERS => [
+          'styles' => $settings['other_styles'] ?? [],
+        ],
+      ];
       $form->setSettings($settings);
     }
     $this->formsRepository->flush();
