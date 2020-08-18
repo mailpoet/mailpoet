@@ -26,10 +26,6 @@ const columns = [
     label: MailPoet.I18n.t('type'),
   },
   {
-    name: 'signups',
-    label: MailPoet.I18n.t('signups'),
-  },
-  {
     name: 'updated_at',
     label: MailPoet.I18n.t('updatedAt'),
     sortable: true,
@@ -200,6 +196,11 @@ class FormList extends React.Component {
             <option value="disabled">{MailPoet.I18n.t('inactive')}</option>
           </select>
         </p>
+        <p>
+          {MailPoet.I18n.t('signups')}
+          {': '}
+          {form.signups.toLocaleString()}
+        </p>
       </div>
     );
   }
@@ -243,9 +244,6 @@ class FormList extends React.Component {
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('type')}>
           { placement }
-        </td>
-        <td className="column" data-colname={MailPoet.I18n.t('signups')}>
-          { form.signups }
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('updatedAt')}>
           <abbr>{ MailPoet.Date.format(form.updated_at) }</abbr>
