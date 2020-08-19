@@ -93,7 +93,7 @@ class SubscribersResponseBuilder {
         $result[] = [
           'segment_id' => (string)$segment->getId(),
           'status' => $subscription->getStatus(),
-          'updated_at' => $subscription->getUpdatedAt(),
+          'updated_at' => $subscription->getUpdatedAt()->format(self::DATE_FORMAT),
         ];
       }
     }
