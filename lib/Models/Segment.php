@@ -251,7 +251,7 @@ class Segment extends Model {
     $query = self::selectMany([self::$_table . '.id', self::$_table . '.name'])
       ->whereIn('type', Segment::getSegmentTypes())
       ->selectExpr(
-        self::$_table . '.*, ' .
+        self::$_table . '.type, ' .
         'COUNT(IF(' .
           MP_SUBSCRIBER_SEGMENT_TABLE . '.status="' . Subscriber::STATUS_SUBSCRIBED . '"'
           . ' AND ' .
