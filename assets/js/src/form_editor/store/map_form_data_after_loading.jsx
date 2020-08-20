@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import asNum from './server_value_as_num';
 import * as defaults from './defaults';
 
@@ -6,28 +7,74 @@ export default function mapFormDataAfterLoading(data) {
     ...data,
     settings: {
       ...data.settings,
-      placeFormBellowAllPages: data.settings.place_form_bellow_all_pages === '1',
-      placeFormBellowAllPosts: data.settings.place_form_bellow_all_posts === '1',
-      placementBellowAllPostsEnabled: data.settings.form_placement_bellow_posts_enabled === '1',
-      placePopupFormOnAllPages: data.settings.place_popup_form_on_all_pages === '1',
-      placePopupFormOnAllPosts: data.settings.place_popup_form_on_all_posts === '1',
-      placementPopupEnabled: data.settings.form_placement_popup_enabled === '1',
-      popupFormDelay: data.settings.popup_form_delay !== undefined
-        ? asNum(data.settings.popup_form_delay) : defaults.popupForm.formDelay,
-      placeFixedBarFormOnAllPages: data.settings.place_fixed_bar_form_on_all_pages === '1',
-      placeFixedBarFormOnAllPosts: data.settings.place_fixed_bar_form_on_all_posts === '1',
-      placementFixedBarEnabled: data.settings.form_placement_fixed_bar_enabled === '1',
-      fixedBarFormDelay: data.settings.fixed_bar_form_delay !== undefined
-        ? asNum(data.settings.fixed_bar_form_delay)
-        : defaults.fixedBarForm.formDelay,
-      fixedBarFormPosition: data.settings.fixed_bar_form_position ?? defaults.fixedBarForm.position,
-      placeSlideInFormOnAllPages: data.settings.place_slide_in_form_on_all_pages === '1',
-      placeSlideInFormOnAllPosts: data.settings.place_slide_in_form_on_all_posts === '1',
-      placementSlideInEnabled: data.settings.form_placement_slide_in_enabled === '1',
-      slideInFormDelay: data.settings.slide_in_form_delay !== undefined
-        ? asNum(data.settings.slide_in_form_delay)
-        : defaults.slideInForm.formDelay,
-      slideInFormPosition: data.settings.slide_in_form_position ?? defaults.slideInForm.position,
+      formPlacement: {
+        popup: {
+          enabled: data.settings.form_placement?.popup?.enabled === '1',
+          delay: data.settings.form_placement?.popup?.delay !== undefined
+            ? asNum(data.settings.form_placement?.popup?.delay)
+            : defaults.popupForm.formDelay,
+          styles: { ...defaults.popupForm.styles, ...data.settings.form_placement?.popup?.styles },
+          posts: {
+            all: data.settings.form_placement?.popup?.posts?.all === '1',
+          },
+          pages: {
+            all: data.settings.form_placement?.popup?.pages?.all === '1',
+          },
+        },
+        fixedBar: {
+          enabled: data.settings.form_placement?.fixed_bar?.enabled === '1',
+          delay: data.settings.form_placement?.fixed_bar?.delay !== undefined
+            ? asNum(data.settings.form_placement?.fixed_bar?.delay)
+            : defaults.fixedBarForm.formDelay,
+          styles: {
+            ...defaults.fixedBarForm.styles,
+            ...data.settings.form_placement?.fixed_bar?.styles,
+          },
+          position: data.settings.form_placement?.fixed_bar?.position
+            ?? defaults.fixedBarForm.position,
+          posts: {
+            all: data.settings.form_placement?.fixed_bar?.posts?.all === '1',
+          },
+          pages: {
+            all: data.settings.form_placement?.fixed_bar?.pages?.all === '1',
+          },
+        },
+        belowPosts: {
+          enabled: data.settings.form_placement?.below_posts?.enabled === '1',
+          styles: {
+            ...defaults.belowPostForm.styles,
+            ...data.settings.form_placement?.below_posts?.styles,
+          },
+          posts: {
+            all: data.settings.form_placement?.below_posts?.posts?.all === '1',
+          },
+          pages: {
+            all: data.settings.form_placement?.below_posts?.pages?.all === '1',
+          },
+        },
+        slideIn: {
+          enabled: data.settings.form_placement?.slide_in?.enabled === '1',
+          delay: data.settings.form_placement?.slide_in?.delay !== undefined
+            ? asNum(data.settings.form_placement?.slide_in?.delay)
+            : defaults.slideInForm.formDelay,
+          position: data.settings.form_placement?.slide_in?.position
+            ?? defaults.slideInForm.position,
+          styles: {
+            ...defaults.slideInForm.styles,
+            ...data.settings.form_placement?.slide_in?.styles,
+          },
+          posts: {
+            all: data.settings.form_placement?.slide_in?.posts?.all === '1',
+          },
+          pages: {
+            all: data.settings.form_placement?.slide_in?.pages?.all === '1',
+          },
+        },
+        others: {
+          styles: { ...defaults.otherForm.styles, ...data.settings.form_placement?.others?.styles },
+        },
+      },
+
       alignment: data.settings.alignment ?? defaults.formStyles.alignment,
       borderRadius: data.settings.border_radius !== undefined
         ? asNum(data.settings.border_radius)
@@ -48,19 +95,25 @@ export default function mapFormDataAfterLoading(data) {
       backgroundImageUrl: data.settings.background_image_url,
       backgroundImageDisplay: data.settings.background_image_display,
       closeButton: data.settings.close_button ?? defaults.formStyles.closeButton,
-      belowPostStyles: { ...defaults.belowPostForm.styles, ...data.settings.below_post_styles },
-      slideInStyles: { ...defaults.slideInForm.styles, ...data.settings.slide_in_styles },
-      fixedBarStyles: { ...defaults.fixedBarForm.styles, ...data.settings.fixed_bar_styles },
-      popupStyles: { ...defaults.popupForm.styles, ...data.settings.popup_styles },
-      otherStyles: { ...defaults.otherForm.styles, ...data.settings.other_styles },
+
     },
   };
 
-  mapped.settings.belowPostStyles.width.value = asNum(mapped.settings.belowPostStyles.width.value);
-  mapped.settings.slideInStyles.width.value = asNum(mapped.settings.slideInStyles.width.value);
-  mapped.settings.fixedBarStyles.width.value = asNum(mapped.settings.fixedBarStyles.width.value);
-  mapped.settings.popupStyles.width.value = asNum(mapped.settings.popupStyles.width.value);
-  mapped.settings.otherStyles.width.value = asNum(mapped.settings.otherStyles.width.value);
+  mapped.settings.formPlacement.belowPosts.styles.width.value = asNum(
+    mapped.settings.formPlacement.belowPosts.styles.width.value
+  );
+  mapped.settings.formPlacement.slideIn.styles.width.value = asNum(
+    mapped.settings.formPlacement.slideIn.styles.width.value
+  );
+  mapped.settings.formPlacement.fixedBar.styles.width.value = asNum(
+    mapped.settings.formPlacement.fixedBar.styles.width.value
+  );
+  mapped.settings.formPlacement.popup.styles.width.value = asNum(
+    mapped.settings.formPlacement.popup.styles.width.value
+  );
+  mapped.settings.formPlacement.others.styles.width.value = asNum(
+    mapped.settings.formPlacement.others.styles.width.value
+  );
 
   return mapped;
 }
