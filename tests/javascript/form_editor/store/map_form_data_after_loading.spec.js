@@ -10,9 +10,17 @@ const data = {
     success_message: 'Check your inbox or spam folder to confirm your subscription.',
     success_page: '5',
     segments_selected_by: 'admin',
-    place_form_bellow_all_pages: '1',
-    place_form_bellow_all_posts: '',
-    form_placement_bellow_posts_enabled: '1',
+    form_placement: {
+      below_posts: {
+        enabled: '1',
+        posts: {
+          all: '',
+        },
+        pages: {
+          all: '1',
+        },
+      },
+    },
   },
   styles: 'styles definition',
   created_at: '2020-01-15 07:39:15',
@@ -56,9 +64,21 @@ describe('Form Data Load Mapper', () => {
     });
 
     it('Maps placement', () => {
-      expect(map(data).settings).to.have.property('placeFormBellowAllPages', true);
-      expect(map(data).settings).to.have.property('placeFormBellowAllPosts', false);
-      expect(map(data).settings).to.have.property('placementBellowAllPostsEnabled', true);
+      const result = map(data).settings;
+      expect(result)
+        .to.have.property('formPlacement')
+        .that.is.an('object')
+        .that.have.property('belowPosts')
+        .that.is.an('object');
+      expect(result.formPlacement.belowPosts).to.have.property('enabled', true);
+      expect(result.formPlacement.belowPosts)
+        .to.have.property('posts')
+        .that.is.an('object')
+        .that.have.property('all', false);
+      expect(result.formPlacement.belowPosts)
+        .to.have.property('pages')
+        .that.is.an('object')
+        .that.have.property('all', true);
     });
 
     it('Sets default form styles', () => {
@@ -83,19 +103,19 @@ describe('Form Data Load Mapper', () => {
     });
 
     it('Sets default placements styles', () => {
-      expect(map(data).settings).to.have.property('belowPostStyles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
-      expect(map(data).settings).to.have.property('popupStyles').that.deep.eq({ width: { unit: 'pixel', value: 560 } });
-      expect(map(data).settings).to.have.property('fixedBarStyles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
-      expect(map(data).settings).to.have.property('slideInStyles').that.deep.eq({ width: { unit: 'pixel', value: 560 } });
-      expect(map(data).settings).to.have.property('otherStyles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
+      expect(map(data).settings.formPlacement.belowPosts).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
+      expect(map(data).settings.formPlacement.popup).to.have.property('styles').that.deep.eq({ width: { unit: 'pixel', value: 560 } });
+      expect(map(data).settings.formPlacement.fixedBar).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
+      expect(map(data).settings.formPlacement.slideIn).to.have.property('styles').that.deep.eq({ width: { unit: 'pixel', value: 560 } });
+      expect(map(data).settings.formPlacement.others).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
     });
 
     it('Sets default delays and positions', () => {
-      expect(map(data).settings).to.have.property('popupFormDelay').eq(15);
-      expect(map(data).settings).to.have.property('fixedBarFormDelay').eq(15);
-      expect(map(data).settings).to.have.property('slideInFormDelay').eq(15);
-      expect(map(data).settings).to.have.property('slideInFormPosition').eq('right');
-      expect(map(data).settings).to.have.property('fixedBarFormPosition').eq('top');
+      expect(map(data).settings.formPlacement.popup).to.have.property('delay').eq(15);
+      expect(map(data).settings.formPlacement.fixedBar).to.have.property('delay').eq(15);
+      expect(map(data).settings.formPlacement.slideIn).to.have.property('delay').eq(15);
+      expect(map(data).settings.formPlacement.slideIn).to.have.property('position').eq('right');
+      expect(map(data).settings.formPlacement.fixedBar).to.have.property('position').eq('top');
     });
 
     it('Keeps set placement styles', () => {
@@ -103,18 +123,20 @@ describe('Form Data Load Mapper', () => {
         ...data,
         settings: {
           ...data.settings,
-          below_post_styles: { width: { unit: 'percent', value: 101 } },
-          popup_styles: { width: { unit: 'percent', value: 102 } },
-          fixed_bar_styles: { width: { unit: 'percent', value: 103 } },
-          slide_in_styles: { width: { unit: 'percent', value: 104 } },
-          other_styles: { width: { unit: 'percent', value: 105 } },
+          form_placement: {
+            below_posts: { styles: { width: { unit: 'percent', value: 101 } } },
+            popup: { styles: { width: { unit: 'percent', value: 102 } } },
+            fixed_bar: { styles: { width: { unit: 'percent', value: 103 } } },
+            slide_in: { styles: { width: { unit: 'percent', value: 104 } } },
+            others: { styles: { width: { unit: 'percent', value: 105 } } },
+          },
         },
       };
-      expect(map(mapData).settings).to.have.property('belowPostStyles').that.deep.eq({ width: { unit: 'percent', value: 101 } });
-      expect(map(mapData).settings).to.have.property('popupStyles').that.deep.eq({ width: { unit: 'percent', value: 102 } });
-      expect(map(mapData).settings).to.have.property('fixedBarStyles').that.deep.eq({ width: { unit: 'percent', value: 103 } });
-      expect(map(mapData).settings).to.have.property('slideInStyles').that.deep.eq({ width: { unit: 'percent', value: 104 } });
-      expect(map(mapData).settings).to.have.property('otherStyles').that.deep.eq({ width: { unit: 'percent', value: 105 } });
+      expect(map(mapData).settings.formPlacement.belowPosts).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 101 } });
+      expect(map(mapData).settings.formPlacement.popup).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 102 } });
+      expect(map(mapData).settings.formPlacement.fixedBar).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 103 } });
+      expect(map(mapData).settings.formPlacement.slideIn).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 104 } });
+      expect(map(mapData).settings.formPlacement.others).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 105 } });
     });
   });
 });
