@@ -9,6 +9,7 @@ import { useGlobalContextValue } from 'context';
 import Heading from './stats/heading';
 import Summary from './stats/summary';
 import WoocommerceRevenues from './stats/woocommerce_revenues';
+import OpenedEmailsStats from './stats/opened_email_stats';
 
 export type StatsType = {
   email: string
@@ -74,6 +75,7 @@ export const SubscriberStats = () => {
           />
         )}
       </div>
+      <OpenedEmailsStats />
     </div>
   );
 };
