@@ -75,7 +75,7 @@ export const SubscriberStats = () => {
           />
         )}
       </div>
-      <OpenedEmailsStats />
+      <OpenedEmailsStats params={match.params} />
     </div>
   );
 };
