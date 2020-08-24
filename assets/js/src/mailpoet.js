@@ -8,6 +8,10 @@ var MailPoet = {
   version: window.mailpoet_version,
   premiumVersion: window.mailpoet_premium_version,
   isWoocommerceActive: window.mailpoet_woocommerce_active,
+  premiumActive: window.mailpoet_premium_active,
+  subscribersLimit: window.mailpoet_subscribers_limit,
+  subscribersLimitReached: window.mailpoet_subscribers_limit_reached,
+  subscribersCount: window.mailpoet_subscribers_count,
 };
 
 // Expose MailPoet globally
