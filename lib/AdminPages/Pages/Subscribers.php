@@ -91,6 +91,7 @@ class Subscribers {
     $data['subscriber_count'] = Subscriber::getTotalSubscribers();
     $data['premium_subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
     $data['has_premium_support'] = $this->subscribersFeature->hasPremiumSupport();
+    $data['link_premium'] = $this->wp->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-premium');
 
     $data['wp_users_count'] = false;
     if (!$data['has_premium_support']) {
