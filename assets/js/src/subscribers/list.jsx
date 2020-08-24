@@ -229,6 +229,23 @@ const bulkActions = [
 
 const itemActions = [
   {
+    name: 'statistics',
+    label: MailPoet.I18n.t('statsListingActionTitle'),
+    link: function link(subscriber, location) {
+      return (
+        <Link to={{
+          pathname: `/stats/${subscriber.id}`,
+          state: {
+            backUrl: location?.pathname,
+          },
+        }}
+        >
+          {MailPoet.I18n.t('statsListingActionTitle')}
+        </Link>
+      );
+    },
+  },
+  {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
     link: function link(subscriber, location) {
