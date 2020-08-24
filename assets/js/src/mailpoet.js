@@ -12,6 +12,7 @@ var MailPoet = {
   subscribersLimit: window.mailpoet_subscribers_limit,
   subscribersLimitReached: window.mailpoet_subscribers_limit_reached,
   subscribersCount: window.mailpoet_subscribers_count,
+  hasValidApiKey: window.mailpoet_has_valid_api_key,
 };
 
 // Expose MailPoet globally
