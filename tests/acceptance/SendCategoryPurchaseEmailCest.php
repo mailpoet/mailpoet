@@ -46,4 +46,31 @@ class SendCategoryPurchaseEmailCest {
     $i->click(Locator::contains('span.subject', $emailSubject));
     $i->waitForText($userEmail, 20);
   }
+
+  public function doNotSendCategoryPurchaseEmail(\AcceptanceTester $i) {
+    $i->wantTo('Buy a product in category and do not receive a "Purchased In This Category" email');
+
+    $productName = 'Category Purchase Test Product';
+    $productFactory = new WooCommerceProduct($i);
+    $categoryId = $productFactory->createCategory('Category 1');
+    $product = $productFactory
+      ->withName($productName)
+      ->withCategoryIds([$categoryId])
+      ->create();
+
+    $emailSubject = 'Product In Category Purchase Test';
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory
+      ->withSubject($emailSubject)
+      ->withAutomaticTypeWooCommerceProductInCategoryPurchased([$product])
+      ->withActiveStatus()
+      ->create();
+
+    $userEmail = Security::generateRandomString() . '-user@email.example';
+    $i->orderProduct($product, $userEmail, true, false);
+
+    $i->amOnMailboxAppPage();
+    $i->dontSee($emailSubject);
+    $i->dontSee($userEmail);
+  }
 }
