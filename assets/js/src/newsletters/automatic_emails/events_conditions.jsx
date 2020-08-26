@@ -1,6 +1,6 @@
 import React from 'react';
 import Selection from 'form/fields/selection.jsx';
-import AutomaticEmailsBreadcrumb from 'newsletters/types/automatic_emails/breadcrumb.jsx';
+import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import EventScheduling from 'newsletters/automatic_emails/events/event_scheduling.jsx';
 import EventOptions from 'newsletters/automatic_emails/events/event_options.jsx';
 import MailPoet from 'mailpoet';
@@ -21,12 +21,6 @@ class EventsConditions extends React.Component {
 
     return (_.isArray(eventOptions.values) && eventOptions.values[0].id)
       ? eventOptions.values[0].id : null;
-  }
-
-  static displayBreadcrumbs() {
-    return (
-      <AutomaticEmailsBreadcrumb step="conditions" />
-    );
   }
 
   constructor(props) {
@@ -215,14 +209,9 @@ class EventsConditions extends React.Component {
   }
 
   render() {
-    const heading = MailPoet.I18n.t('selectAutomaticEmailsEventsConditionsHeading')
-      .replace('%1s', this.email.title);
-
     return (
       <div>
-        <h1>{heading}</h1>
-
-        {this.constructor.displayBreadcrumbs()}
+        <ListingHeadingStepsRoute emailType="woocommerce" />
 
         <div className="events-conditions-container">
           <h1>{this.displayHeader()}</h1>

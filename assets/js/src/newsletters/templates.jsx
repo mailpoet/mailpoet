@@ -1,11 +1,10 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import Breadcrumb from 'newsletters/breadcrumb.jsx';
+import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import Loading from 'common/loading.jsx';
 import Tabs from 'newsletters/templates/tabs.jsx';
 import TemplateBox from 'newsletters/templates/template_box.jsx';
 import ImportTemplate from 'newsletters/templates/import_template.jsx';
-import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 import { GlobalContext } from 'context/index.jsx';
@@ -270,18 +269,9 @@ class NewsletterTemplates extends React.Component {
       content = <ul className="mailpoet_boxes clearfix">{templates}</ul>;
     }
 
-    const breadcrumb = Hooks.applyFilters(
-      'mailpoet_newsletters_template_breadcrumb',
-      <Breadcrumb step="template" />,
-      this.state.emailType,
-      'template'
-    );
-
     return (
       <div>
-        <h1>{MailPoet.I18n.t('selectTemplateTitle')}</h1>
-
-        {breadcrumb}
+        <ListingHeadingStepsRoute emailType={this.state.emailType} />
 
         <Tabs
           tabs={tabs}

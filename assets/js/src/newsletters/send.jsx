@@ -1,7 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
-import Breadcrumb from 'newsletters/breadcrumb.jsx';
+import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import Form from 'form/form.jsx';
 import StandardNewsletterFields from 'newsletters/send/standard.jsx';
 import NotificationNewsletterFields from 'newsletters/send/notification.jsx';
@@ -451,21 +451,13 @@ class NewsletterSend extends React.Component {
       return newField;
     });
     const sendButtonOptions = this.getSendButtonOptions();
-    const breadcrumb = Hooks.applyFilters(
-      'mailpoet_newsletters_send_breadcrumb',
-      <Breadcrumb step="send" />,
-      this.state.item.type,
-      'send'
-    );
 
     const sendingDisabled = window.mailpoet_subscribers_limit_reached
       || window.mailpoet_mss_key_pending_approval;
 
     return (
       <div>
-        <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
-
-        {breadcrumb}
+        <ListingHeadingStepsRoute emailType={this.state.item.type} />
 
         <Form
           id="mailpoet_newsletter"

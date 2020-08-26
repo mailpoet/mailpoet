@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import Breadcrumb from '../../breadcrumb.jsx';
+import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import WelcomeScheduling from './scheduling.jsx';
 
 const field = {
@@ -71,8 +71,7 @@ class NewsletterWelcome extends React.Component {
   render() {
     return (
       <div>
-        <h1>{MailPoet.I18n.t('welcomeNewsletterTypeTitle')}</h1>
-        <Breadcrumb step="type" />
+        <ListingHeadingStepsRoute emailType="welcome" />
 
         <h3>{MailPoet.I18n.t('selectEventToSendWelcomeEmail')}</h3>
 

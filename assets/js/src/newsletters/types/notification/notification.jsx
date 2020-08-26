@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
-import Breadcrumb from 'newsletters/breadcrumb.jsx';
+import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import _ from 'underscore';
 import Scheduling from 'newsletters/types/notification/scheduling.jsx';
 import { withRouter } from 'react-router-dom';
@@ -61,8 +61,7 @@ class NewsletterNotification extends React.Component {
   render() {
     return (
       <div>
-        <h1>{MailPoet.I18n.t('postNotificationNewsletterTypeTitle')}</h1>
-        <Breadcrumb step="type" />
+        <ListingHeadingStepsRoute emailType="notification" />
 
         <h3>{MailPoet.I18n.t('selectFrequency')}</h3>
 

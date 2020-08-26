@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
-import Breadcrumb from 'newsletters/breadcrumb.jsx';
+import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
 
@@ -34,8 +34,7 @@ class NewsletterStandard extends React.Component {
   render() {
     return (
       <div>
-        <h1>{MailPoet.I18n.t('regularNewsletterTypeTitle')}</h1>
-        <Breadcrumb step="type" />
+        <ListingHeadingStepsRoute emailType="standard" />
       </div>
     );
   }

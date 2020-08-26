@@ -1,21 +1,18 @@
 import Hooks from 'wp-js-hooks';
-import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import MailPoet from 'mailpoet';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import ListingHeadingSteps from 'newsletters/listings/heading_steps.jsx';
 import displayTutorial from './tutorial.jsx';
 
-const renderBreadcrumb = (newsletterType) => {
+const renderHeading = (newsletterType) => {
   if (newsletterType !== 'wc_transactional') {
-    const breadcrumbContainer = document.getElementById('mailpoet_editor_breadcrumb');
-    const breadcrumb = Hooks.applyFilters(
-      'mailpoet_newsletters_editor_breadcrumb',
-      <Breadcrumb step="editor" />,
-      newsletterType,
-      'editor'
+    const stepsHeadingContainer = document.getElementById('mailpoet_editor_steps_heading');
+    const stepsHeading = (
+      <ListingHeadingSteps emailType={newsletterType} step={3} />
     );
 
-    ReactDOM.render(breadcrumb, breadcrumbContainer);
+    ReactDOM.render(stepsHeading, stepsHeadingContainer);
   }
 };
 
@@ -56,7 +53,7 @@ const initializeEditor = (config) => {
         });
       });
 
-      renderBreadcrumb(newsletter.type);
+      renderHeading(newsletter.type);
 
       if (newsletter.status === 'sending' && newsletter.queue && newsletter.queue.status === null) {
         MailPoet.Ajax.post({
