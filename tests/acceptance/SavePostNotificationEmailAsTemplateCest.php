@@ -37,7 +37,7 @@ class SavePostNotificationEmailAsTemplateCest {
     $i->amOnMailpoetPage('Emails');
     $i->click('[data-automation-id="new_email"]');
     $i->click('[data-automation-id="create_notification"]');
-    $i->waitForText('Latest Post Notifications');
+    $i->waitForElement('[data-automation-id="post_notification_creation_heading"]');
     $i->click('Next');
     $i->checkTemplateIsPresent(0, 'notification');
     $i->scrollTo('[data-automation-id="templates-notification"]');

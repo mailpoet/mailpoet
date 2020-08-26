@@ -61,7 +61,7 @@ class NewsletterNotification extends React.Component {
   render() {
     return (
       <div>
-        <ListingHeadingStepsRoute emailType="notification" />
+        <ListingHeadingStepsRoute emailType="notification" automationId="post_notification_creation_heading" />
 
         <h3>{MailPoet.I18n.t('selectFrequency')}</h3>
 

@@ -14,7 +14,7 @@ class CreateWooCommerceNewsletterCest {
     $i->click('[data-automation-id="create_woocommerce"]');
     $i->click('[data-automation-id="create_woocommerce_first_purchase"]');
 
-    $i->waitForText('Select WooCommerce events conditions');
+    $i->waitForElement('[data-automation-id="woocommerce_email_creation_heading"]');
     $i->click('Next');
 
     $template = $i->checkTemplateIsPresent(0, 'woocommerce');

@@ -271,7 +271,7 @@ class NewsletterTemplates extends React.Component {
 
     return (
       <div>
-        <ListingHeadingStepsRoute emailType={this.state.emailType} />
+        <ListingHeadingStepsRoute emailType={this.state.emailType} automationId="email_template_selection_heading" />
 
         <Tabs
           tabs={tabs}
