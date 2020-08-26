@@ -42,19 +42,24 @@ const hideWPScreenOptions = () => {
   }
 };
 
-const stepsListingHeading = (step, emailTypeTitle) => (
-  <div className="mailpoet-newsletter-listing-heading-wrapper">
+const stepsListingHeading = (step, emailTypeTitle, automationId) => (
+  <div className="mailpoet-newsletter-listing-heading-wrapper" data-automation-id={automationId}>
     <Steps count={4} current={step} titles={[emailTypeTitle, MailPoet.I18n.t('stepNameTemplate'), MailPoet.I18n.t('stepNameDesign'), MailPoet.I18n.t('stepNameSend')]} />
     <h1 className="mailpoet-newsletter-listing-heading title mailpoet_hidden">{' '}</h1>
   </div>
 );
 
-const ListingHeadingSteps = ({ step, emailType, location }) => {
+const ListingHeadingSteps = ({
+  step,
+  emailType,
+  location,
+  automationId,
+}) => {
   const stepNumber = step || mapPathToSteps(location);
   const emailTypeTitle = getEmailTypeTitle(emailType);
   if (stepNumber !== null) {
     hideWPScreenOptions();
-    return stepsListingHeading(stepNumber, emailTypeTitle);
+    return stepsListingHeading(stepNumber, emailTypeTitle, automationId);
   }
   return null;
 };

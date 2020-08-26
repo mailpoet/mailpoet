@@ -457,7 +457,7 @@ class NewsletterSend extends React.Component {
 
     return (
       <div>
-        <ListingHeadingStepsRoute emailType={this.state.item.type} />
+        <ListingHeadingStepsRoute emailType={this.state.item.type} automationId="newsletter_send_heading" />
 
         <Form
           id="mailpoet_newsletter"

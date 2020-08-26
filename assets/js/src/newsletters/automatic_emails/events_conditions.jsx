@@ -211,7 +211,7 @@ class EventsConditions extends React.Component {
   render() {
     return (
       <div>
-        <ListingHeadingStepsRoute emailType="woocommerce" />
+        <ListingHeadingStepsRoute emailType="woocommerce" automationId="woocommerce_email_creation_heading" />
 
         <div className="events-conditions-container">
           <h1>{this.displayHeader()}</h1>

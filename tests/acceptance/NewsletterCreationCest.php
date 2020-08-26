@@ -19,7 +19,7 @@ class NewsletterCreationCest {
     $i->click('[data-automation-id="create_notification"]');
 
     // step 2 - configure schedule
-    $i->waitForText('Latest Post Notifications');
+    $i->waitForElement('[data-automation-id="post_notification_creation_heading"]');
     $i->selectOption('select[name=intervalType]', 'immediately');
     $i->click('Next');
 
@@ -82,7 +82,7 @@ class NewsletterCreationCest {
     $i->reloadPage();
     $i->click('[data-automation-id="new_email"]');
     $i->click('[data-automation-id="create_standard"]');
-    $i->waitForText('Select a responsive template');
+    $i->waitForElement('[data-automation-id="email_template_selection_heading"]');
     $i->see('Recently sent', ['css' => 'a.current']);
     $i->click($standardTemplate);
     $i->waitForElement($titleElement);
@@ -127,7 +127,7 @@ class NewsletterCreationCest {
     $i->click('Next');
 
     // step 4 - see notice in 'Send preview' with link to authorized emails, 'Send' button must be disabled
-    $i->waitForText('Final Step');
+    $i->waitForElement('[data-automation-id="newsletter_send_heading"]');
     $i->waitForText('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.');
     $href = $i->grabAttributeFrom('//a[text()="your authorized emails"]', 'href');
     $disabled = $i->grabAttributeFrom('input[value="Send"]', 'disabled');

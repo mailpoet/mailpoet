@@ -71,7 +71,7 @@ class NewsletterWelcome extends React.Component {
   render() {
     return (
       <div>
-        <ListingHeadingStepsRoute emailType="welcome" />
+        <ListingHeadingStepsRoute emailType="welcome" automationId="welcome_email_creation_heading" />
 
         <h3>{MailPoet.I18n.t('selectEventToSendWelcomeEmail')}</h3>
 

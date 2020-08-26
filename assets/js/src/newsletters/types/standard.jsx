@@ -34,7 +34,7 @@ class NewsletterStandard extends React.Component {
   render() {
     return (
       <div>
-        <ListingHeadingStepsRoute emailType="standard" />
+        <ListingHeadingStepsRoute emailType="standard" automationId="standard_newsletter_creation_heading" />
       </div>
     );
   }
