@@ -28,6 +28,7 @@ import RoutedTabs from 'common/tabs/routed_tabs';
 import Tab from 'common/tabs/tab';
 import withNpsPoll from 'nps_poll.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
+import ListingHeadingDisplay from 'newsletters/listings/heading_display.jsx';
 import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
@@ -192,9 +193,12 @@ const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <HashRouter>
       <Notices />
-      <ListingHeading />
 
-      <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
+      <ListingHeadingDisplay>
+        <ListingHeading />
+        <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
+      </ListingHeadingDisplay>
+
       <SubscribersLimitNotice />
       <TransactionalEmailsProposeOptInNotice
         mailpoetInstalledDaysAgo={window.mailpoet_installed_days_ago}
