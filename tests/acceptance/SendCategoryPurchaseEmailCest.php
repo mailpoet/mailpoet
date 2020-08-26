@@ -69,8 +69,18 @@ class SendCategoryPurchaseEmailCest {
     $userEmail = Security::generateRandomString() . '-user@email.example';
     $i->orderProduct($product, $userEmail, true, false);
 
+    $this->verifyNoScheduledSending($i);
+    
     $i->amOnMailboxAppPage();
     $i->dontSee($emailSubject);
     $i->dontSee($userEmail);
+  }
+
+  private function verifyNoScheduledSending(\AcceptanceTester $i) {
+    $emailSubject = 'Product In Category Purchase Test';
+    $i->login();
+    $i->amOnMailpoetPage('Help');
+    $i->click('System Status');
+    $i->dontSee($emailSubject);
   }
 }
