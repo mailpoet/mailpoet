@@ -51,6 +51,7 @@ class NewsletterListingRepository extends ListingRepository {
       ->join('n.newsletterSegments', 'ns')
       ->join('ns.segment', 's')
       ->groupBy('s.id')
+      ->addGroupBy('s.name')
       ->orderBy('s.name')
       ->having('COUNT(n) > 0');
 

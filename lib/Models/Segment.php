@@ -268,6 +268,7 @@ class Segment extends Model {
         [MP_SUBSCRIBER_SEGMENT_TABLE . '.subscriber_id', '=', MP_SUBSCRIBERS_TABLE . '.id'])
       ->groupBy(self::$_table . '.id')
       ->groupBy(self::$_table . '.name')
+      ->groupBy(self::$_table . '.type')
       ->orderByAsc(self::$_table . '.name')
       ->whereNull(self::$_table . '.deleted_at');
 
