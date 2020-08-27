@@ -2,7 +2,6 @@ import React from 'react';
 import _ from 'underscore';
 import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
-import AutomaticEmailsBreadcrumb from 'newsletters/types/automatic_emails/breadcrumb.jsx';
 import SendEventConditions from 'newsletters/automatic_emails/send_event_conditions.jsx';
 import GATrackingField from 'newsletters/send/ga_tracking.jsx';
 
@@ -46,16 +45,6 @@ if (newslettersContainer && !_.isEmpty(emails)) {
 
   Hooks.addFilter('mailpoet_newsletters_types', 'mailpoet', addEmails);
 }
-
-const addTemplateSelectionBreadcrumb = (defaultBreadcrumb, newsletterType, step) => (
-  (newsletterType === 'automatic')
-    ? <AutomaticEmailsBreadcrumb step={step} />
-    : defaultBreadcrumb
-);
-
-Hooks.addFilter('mailpoet_newsletters_template_breadcrumb', 'mailpoet', addTemplateSelectionBreadcrumb);
-Hooks.addFilter('mailpoet_newsletters_editor_breadcrumb', 'mailpoet', addTemplateSelectionBreadcrumb);
-Hooks.addFilter('mailpoet_newsletters_send_breadcrumb', 'mailpoet', addTemplateSelectionBreadcrumb);
 
 const extendNewsletterEditorConfig = (defaultConfig, newsletter) => {
   if (newsletter.type !== 'automatic') return defaultConfig;
