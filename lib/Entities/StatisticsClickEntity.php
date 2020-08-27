@@ -6,6 +6,7 @@ use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -46,6 +47,12 @@ class StatisticsClickEntity {
   private $link;
 
   /**
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\StatisticsWooCommercePurchaseEntity", mappedBy="click", fetch="EXTRA_LAZY")*
+   * @var StatisticsWooCommercePurchaseEntity[]|ArrayCollection
+   */
+  private $wooCommercePurchases;
+
+  /**
    * @ORM\Column(type="integer")
    * @var int
    */
@@ -63,6 +70,7 @@ class StatisticsClickEntity {
     $this->subscriber = $subscriber;
     $this->link = $link;
     $this->count = $count;
+    $this->wooCommercePurchases = new ArrayCollection();
   }
 
   /**
@@ -122,5 +130,12 @@ class StatisticsClickEntity {
    */
   public function setCount(int $count) {
     $this->count = $count;
+  }
+
+  /**
+   * @return StatisticsWooCommercePurchaseEntity[]|ArrayCollection
+   */
+  public function getWooCommercePurchases() {
+    return $this->wooCommercePurchases;
   }
 }
