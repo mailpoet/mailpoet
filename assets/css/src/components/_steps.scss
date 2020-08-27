@@ -7,6 +7,18 @@
   justify-content: center;
   padding: $grid-gap-medium - 4px $grid-gap-medium;
 
+  body.toplevel_page_mailpoet-newsletters .mailpoet-newsletter-listing-heading-wrapper & {
+    margin-left: -22px;
+    margin-right: -20px;
+    position: relative;
+    top: -10px;
+  }
+
+  body.admin_page_mailpoet-newsletter-editor .mailpoet-newsletter-listing-heading-wrapper & {
+    position: relative;
+    top: -10px;
+  }
+
   @include respond-to(small-screen) {
     padding: $grid-gap - 4px $grid-gap;
   }
