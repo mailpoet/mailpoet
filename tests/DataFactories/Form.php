@@ -59,8 +59,13 @@ class Form {
    * @return $this
    */
   public function withDisplayBelowPosts() {
-    $this->data['settings']['place_form_bellow_all_posts'] = '1';
-    $this->data['settings']['form_placement_bellow_posts_enabled'] = '1';
+    $this->data['settings']['form_placement'] = [
+      'below_posts' => [
+        'enabled' => '1',
+        'pages' => ['all' => ''],
+        'posts' => ['all' => '1'],
+      ],
+    ];
     return $this;
   }
 

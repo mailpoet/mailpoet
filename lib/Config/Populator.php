@@ -747,6 +747,7 @@ class Populator {
     $forms = $this->formsRepository->findAll();
     foreach ($forms as $form) {
       $settings = $form->getSettings();
+      if (!is_array($settings)) continue;
       $settings['form_placement'] = [
         FormEntity::DISPLAY_TYPE_POPUP => [
           'enabled' => $settings['form_placement_popup_enabled'],

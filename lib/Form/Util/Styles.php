@@ -127,9 +127,12 @@ class Styles {
   private function renderWidthStyles(array $formSettings, string $selector, string $displayType): string {
     $styles = [];
 
+    if (isset($formSettings['form_placement'][$displayType]['styles']['width'])) {
+      $width = $this->getWidthValue($formSettings['form_placement'][$displayType]['styles']['width']);
+    }
+
     if ($displayType === FormEntity::DISPLAY_TYPE_POPUP) {
-      if (isset($formSettings['popup_styles']['width'])) {
-        $width = $this->getWidthValue($formSettings['popup_styles']['width']);
+      if (isset($width)) {
         $styles[] = "width: $width";
         $styles[] = "max-width: 100vw";
       } else { // BC compatibilty
@@ -137,8 +140,7 @@ class Styles {
         $styles[] = 'max-width: 560px';
       }
     } elseif ($displayType === FormEntity::DISPLAY_TYPE_SLIDE_IN) {
-      if (isset($formSettings['slide_in_styles']['width'])) {
-        $width = $this->getWidthValue($formSettings['slide_in_styles']['width']);
+      if (isset($width)) {
         $styles[] = "width: $width";
         $styles[] = "max-width: 100vw";
       } else { // BC compatibilty
@@ -146,21 +148,18 @@ class Styles {
         $styles[] = 'min-width: 350px';
       }
     } elseif ($displayType === FormEntity::DISPLAY_TYPE_FIXED_BAR) {
-      if (isset($formSettings['fixed_bar_styles']['width'])) {
-        $width = $this->getWidthValue($formSettings['fixed_bar_styles']['width']);
+      if (isset($width)) {
         $styles[] = "width: $width";
         $styles[] = "max-width: 100%";
       } else { // BC compatibilty
         $styles[] = 'max-width: 960px';
       }
     } elseif ($displayType === FormEntity::DISPLAY_TYPE_BELOW_POST) {
-      if (isset($formSettings['below_post_styles']['width'])) {
-        $width = $this->getWidthValue($formSettings['below_post_styles']['width']);
+      if (isset($width)) {
         $styles[] = "width: $width";
       }
     } elseif ($displayType === FormEntity::DISPLAY_TYPE_OTHERS) {
-      if (isset($formSettings['other_styles']['width'])) {
-        $width = $this->getWidthValue($formSettings['other_styles']['width']);
+      if (isset($width)) {
         $styles[] = "width: $width";
       }
     }

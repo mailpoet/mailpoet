@@ -12,27 +12,11 @@ class DisplayFormInWPContent {
 
   const NO_FORM_TRANSIENT_KEY = 'no_forms_displayed_bellow_content';
 
-  const SETUP = [
-    FormEntity::DISPLAY_TYPE_BELOW_POST => [
-      'switch' => 'form_placement_bellow_posts_enabled',
-      'post' => 'place_form_bellow_all_posts',
-      'page' => 'place_form_bellow_all_pages',
-    ],
-    FormEntity::DISPLAY_TYPE_POPUP => [
-      'switch' => 'form_placement_popup_enabled',
-      'post' => 'place_popup_form_on_all_posts',
-      'page' => 'place_popup_form_on_all_pages',
-    ],
-    FormEntity::DISPLAY_TYPE_FIXED_BAR => [
-      'switch' => 'form_placement_fixed_bar_enabled',
-      'post' => 'place_fixed_bar_form_on_all_posts',
-      'page' => 'place_fixed_bar_form_on_all_pages',
-    ],
-    FormEntity::DISPLAY_TYPE_SLIDE_IN => [
-      'switch' => 'form_placement_slide_in_enabled',
-      'post' => 'place_slide_in_form_on_all_posts',
-      'page' => 'place_slide_in_form_on_all_pages',
-    ],
+  const TYPES = [
+    FormEntity::DISPLAY_TYPE_BELOW_POST,
+    FormEntity::DISPLAY_TYPE_POPUP,
+    FormEntity::DISPLAY_TYPE_FIXED_BAR,
+    FormEntity::DISPLAY_TYPE_SLIDE_IN,
   ];
 
   /** @var WPFunctions */
@@ -128,7 +112,7 @@ class DisplayFormInWPContent {
   private function filterOneFormInEachDisplayType($forms): array {
     $formsFiltered = [];
     foreach ($forms as $form) {
-      foreach (array_keys(self::SETUP) as $displayType) {
+      foreach (self::TYPES as $displayType) {
         if ($this->shouldDisplayFormType($form, $displayType)) {
           $formsFiltered[$displayType] = $form;
         }
@@ -145,6 +129,7 @@ class DisplayFormInWPContent {
       'settings' => $form->getSettings(),
     ];
     $formSettings = $form->getSettings();
+    if (!is_array($formSettings)) return '';
     $htmlId = 'mp_form_' . $displayType . $form->getId();
     $templateData = [
       'form_html_id' => $htmlId,
@@ -168,8 +153,8 @@ class DisplayFormInWPContent {
       ((int)$_GET['mailpoet_error'] === $form->getId())
     );
 
-    $templateData['delay'] = $formSettings[$displayType . '_form_delay'] ?? 0;
-    $templateData['position'] = $formSettings[$displayType . '_form_position'] ?? '';
+    $templateData['delay'] = $formSettings[$displayType]['delay'] ?? 0;
+    $templateData['position'] = $formSettings[$displayType]['position'] ?? '';
     $templateData['backgroundColor'] = $formSettings['backgroundColor'] ?? '';
     $templateData['fontFamily'] = $formSettings['font_family'] ?? '';
 
@@ -183,24 +168,29 @@ class DisplayFormInWPContent {
 
   private function shouldDisplayFormType(FormEntity $form, string $formType): bool {
     $settings = $form->getSettings();
-    if (!is_array($settings)) return false;
+    // check the structure just to be sure
 
-    $keys = self::SETUP[$formType];
+    if (!is_array($settings)
+      || !isset($settings['form_placement'][$formType])
+      || !is_array($settings['form_placement'][$formType])
+    ) return false;
 
-    $switchKey = $keys['switch'];
-    if (!isset($settings[$switchKey]) || ($settings[$switchKey] !== '1')) {
-      // this form type display is disabled
+    $setup = $settings['form_placement'][$formType];
+    if ($setup['enabled'] !== '1') {
       return false;
     }
 
     $key = '';
     if ($this->wp->isSingular('post')) {
-      $key = $keys['post'];
+      $key = 'posts';
     }
     if ($this->wp->isPage()) {
-      $key = $keys['page'];
+      $key = 'pages';
     }
+
     // is enabled for this page?
-    return (isset($settings[$key]) && ($settings[$key] === '1'));
+    return (isset($setup[$key])
+      && isset($setup[$key]['all'])
+      && $setup[$key]['all'] === '1');
   }
 }

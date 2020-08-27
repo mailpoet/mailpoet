@@ -18,7 +18,7 @@ class FormEntity {
   use UpdatedAtTrait;
   use DeletedAtTrait;
 
-  const DISPLAY_TYPE_BELOW_POST = 'below_post';
+  const DISPLAY_TYPE_BELOW_POST = 'below_posts';
   const DISPLAY_TYPE_FIXED_BAR = 'fixed_bar';
   const DISPLAY_TYPE_POPUP = 'popup';
   const DISPLAY_TYPE_SLIDE_IN = 'slide_in';
