@@ -28,6 +28,8 @@ class EditSignUpConfirmationEmailCest {
     // create form and subscribe
     $i->createFormAndSubscribe();
     // performing some clicks and getting back to verify the content
+    // Explanation: in the past we had issue that the content was changed back to default
+    // when we performed Verify button at Activation Tab and also performed some savings across the plugin.
     $i->amOnMailpoetPage('Settings');
     $i->click('[data-automation-id="activation_settings_tab"]');
     $i->click('Verify');
