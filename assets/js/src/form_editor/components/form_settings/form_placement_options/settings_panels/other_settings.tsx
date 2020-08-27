@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { curry } from 'lodash';
+import { assocPath, compose, __ } from 'lodash/fp';
 import { TextareaControl } from '@wordpress/components';
 import { SizeSettings } from 'form_editor/components/size_settings';
 
@@ -19,12 +20,6 @@ const OtherSettings = () => {
     []
   );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
-
-  const updateSettings = (key, value) => {
-    const settings = { ...formSettings };
-    settings[key] = value;
-    changeFormSettings(settings);
-  };
 
   const addFormWidgetHint = ReactStringReplace(
     MailPoet.I18n.t('addFormWidgetHint'),
@@ -85,7 +80,7 @@ const OtherSettings = () => {
       <hr />
       <SizeSettings
         label={MailPoet.I18n.t('formSettingsWidth')}
-        value={formSettings.otherStyles.width}
+        value={formSettings.formPlacement.others.styles.width}
         minPixels={200}
         maxPixels={1200}
         minPercents={10}
@@ -93,7 +88,7 @@ const OtherSettings = () => {
         defaultPixelValue={200}
         defaultPercentValue={100}
         onChange={(width) => (
-          updateSettings('otherStyles', { ...formSettings.otherStyles, width })
+          changeFormSettings(assocPath('formPlacement.others.styles.width', width, formSettings))
         )}
       />
     </>

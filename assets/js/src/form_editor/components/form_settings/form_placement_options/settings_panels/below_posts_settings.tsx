@@ -2,7 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { ToggleControl } from '@wordpress/components';
-import { partial } from 'lodash';
+import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 
 const BelowPostsSettings = () => {
@@ -12,36 +12,30 @@ const BelowPostsSettings = () => {
   );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
-  const updateSettings = (key, value) => {
-    const settings = { ...formSettings };
-    settings[key] = value;
-    changeFormSettings(settings);
-  };
-
-  const isActive = formSettings.placementBellowAllPostsEnabled;
+  const isActive = formSettings.formPlacement.belowPosts.enabled;
 
   return (
     <>
       <ToggleControl
         label={MailPoet.I18n.t('enable')}
         checked={isActive}
-        onChange={partial(updateSettings, 'placementBellowAllPostsEnabled')}
+        onChange={compose([changeFormSettings, assocPath('formPlacement.belowPosts.enabled', __, formSettings)])}
       />
       {isActive && (
         <>
           <ToggleControl
             label={MailPoet.I18n.t('placeFormOnAllPages')}
-            checked={formSettings.placeFormBellowAllPages || false}
-            onChange={partial(updateSettings, 'placeFormBellowAllPages')}
+            checked={formSettings.formPlacement.belowPosts.pages.all}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.belowPosts.pages.all', __, formSettings)])}
           />
           <ToggleControl
             label={MailPoet.I18n.t('placeFormOnAllPosts')}
-            checked={formSettings.placeFormBellowAllPosts || false}
-            onChange={partial(updateSettings, 'placeFormBellowAllPosts')}
+            checked={formSettings.formPlacement.belowPosts.posts.all}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.belowPosts.posts.all', __, formSettings)])}
           />
           <SizeSettings
             label={MailPoet.I18n.t('formSettingsWidth')}
-            value={formSettings.belowPostStyles.width}
+            value={formSettings.formPlacement.belowPosts.styles.width}
             minPixels={200}
             maxPixels={1200}
             minPercents={10}
@@ -49,7 +43,7 @@ const BelowPostsSettings = () => {
             defaultPixelValue={560}
             defaultPercentValue={100}
             onChange={(width) => (
-              updateSettings('belowPostStyles', { ...formSettings.belowPostStyles, width })
+              changeFormSettings(assocPath('formPlacement.belowPosts.styles.width', width, formSettings))
             )}
           />
         </>

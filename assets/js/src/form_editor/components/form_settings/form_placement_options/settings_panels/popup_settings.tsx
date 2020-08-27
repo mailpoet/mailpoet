@@ -2,7 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import { SelectControl, ToggleControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { partial } from 'lodash';
+import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
@@ -15,13 +15,7 @@ const PopUpSettings = () => {
 
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
-  const updateSettings = (key, value) => {
-    const settings = { ...formSettings };
-    settings[key] = value;
-    changeFormSettings(settings);
-  };
-
-  const isActive = formSettings.placementPopupEnabled;
+  const isActive = formSettings.formPlacement.popup.enabled;
 
   return (
     <>
@@ -29,25 +23,25 @@ const PopUpSettings = () => {
       <ToggleControl
         label={MailPoet.I18n.t('enable')}
         checked={isActive}
-        onChange={partial(updateSettings, 'placementPopupEnabled')}
+        onChange={compose([changeFormSettings, assocPath('formPlacement.popup.enabled', __, formSettings)])}
       />
       {isActive && (
         <>
           <hr />
           <ToggleControl
             label={MailPoet.I18n.t('placeFormOnAllPages')}
-            checked={formSettings.placePopupFormOnAllPages || false}
-            onChange={partial(updateSettings, 'placePopupFormOnAllPages')}
+            checked={formSettings.formPlacement.popup.pages.all}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.popup.pages.all', __, formSettings)])}
           />
           <ToggleControl
             label={MailPoet.I18n.t('placeFormOnAllPosts')}
-            checked={formSettings.placePopupFormOnAllPosts || false}
-            onChange={partial(updateSettings, 'placePopupFormOnAllPosts')}
+            checked={formSettings.formPlacement.popup.posts.all}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.popup.posts.all', __, formSettings)])}
           />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
-            value={formSettings.popupFormDelay}
-            onChange={partial(updateSettings, 'popupFormDelay')}
+            value={formSettings.formPlacement.popup.delay}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.popup.delay', __, formSettings)])}
             options={delayValues.map((delayValue) => ({
               value: delayValue,
               label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
@@ -55,7 +49,7 @@ const PopUpSettings = () => {
           />
           <SizeSettings
             label={MailPoet.I18n.t('formSettingsWidth')}
-            value={formSettings.popupStyles.width}
+            value={formSettings.formPlacement.popup.styles.width}
             minPixels={200}
             maxPixels={1200}
             minPercents={10}
@@ -63,7 +57,7 @@ const PopUpSettings = () => {
             defaultPixelValue={560}
             defaultPercentValue={100}
             onChange={(width) => (
-              updateSettings('popupStyles', { ...formSettings.popupStyles, width })
+              changeFormSettings(assocPath('formPlacement.popup.styles.width', width, formSettings))
             )}
           />
         </>

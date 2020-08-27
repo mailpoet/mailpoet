@@ -14,7 +14,7 @@ const FixedBar = () => {
 
   return (
     <FormPlacementOption
-      active={formSettings.placementFixedBarEnabled}
+      active={formSettings.formPlacement.fixedBar.enabled}
       label={MailPoet.I18n.t('placeFixedBarFormOnPages')}
       icon={Icon}
       onClick={() => (showPlacementSettings('fixed_bar'))}

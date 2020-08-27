@@ -14,7 +14,7 @@ const SlideIn = () => {
 
   return (
     <FormPlacementOption
-      active={formSettings.placementSlideInEnabled}
+      active={formSettings.formPlacement.slideIn.enabled}
       label={MailPoet.I18n.t('placeSlideInFormOnPages')}
       icon={Icon}
       onClick={() => (showPlacementSettings('slide_in'))}

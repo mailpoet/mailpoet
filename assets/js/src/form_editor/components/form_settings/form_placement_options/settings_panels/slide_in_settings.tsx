@@ -2,7 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { SelectControl, RadioControl, ToggleControl } from '@wordpress/components';
-import { partial } from 'lodash';
+import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
@@ -14,13 +14,7 @@ const SlideInSettings = () => {
   );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
-  const updateSettings = (key, value) => {
-    const settings = { ...formSettings };
-    settings[key] = value;
-    changeFormSettings(settings);
-  };
-
-  const isActive = formSettings.placementSlideInEnabled;
+  const isActive = formSettings.formPlacement.slideIn.enabled;
 
   return (
     <>
@@ -28,25 +22,25 @@ const SlideInSettings = () => {
       <ToggleControl
         label={MailPoet.I18n.t('enable')}
         checked={isActive}
-        onChange={partial(updateSettings, 'placementSlideInEnabled')}
+        onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.enabled', __, formSettings)])}
       />
       {isActive && (
         <>
           <hr />
           <ToggleControl
             label={MailPoet.I18n.t('placeFormOnAllPages')}
-            checked={formSettings.placeSlideInFormOnAllPages || false}
-            onChange={partial(updateSettings, 'placeSlideInFormOnAllPages')}
+            checked={formSettings.formPlacement.slideIn.pages.all}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.pages.all', __, formSettings)])}
           />
           <ToggleControl
             label={MailPoet.I18n.t('placeFormOnAllPosts')}
-            checked={formSettings.placeSlideInFormOnAllPosts || false}
-            onChange={partial(updateSettings, 'placeSlideInFormOnAllPosts')}
+            checked={formSettings.formPlacement.slideIn.posts.all}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.posts.all', __, formSettings)])}
           />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
-            value={formSettings.slideInFormDelay}
-            onChange={partial(updateSettings, 'slideInFormDelay')}
+            value={formSettings.formPlacement.slideIn.delay}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.delay', __, formSettings)])}
             options={delayValues.map((delayValue) => ({
               value: delayValue,
               label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
@@ -54,16 +48,16 @@ const SlideInSettings = () => {
           />
           <RadioControl
             label={MailPoet.I18n.t('formPlacementPlacementPosition')}
-            selected={formSettings.slideInFormPosition}
+            selected={formSettings.formPlacement.slideIn.position}
             options={[
               { label: MailPoet.I18n.t('formPlacementPlacementPositionLeft'), value: 'left' },
               { label: MailPoet.I18n.t('formPlacementPlacementPositionRight'), value: 'right' },
             ]}
-            onChange={partial(updateSettings, 'slideInFormPosition')}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.position', __, formSettings)])}
           />
           <SizeSettings
             label={MailPoet.I18n.t('formSettingsWidth')}
-            value={formSettings.slideInStyles.width}
+            value={formSettings.formPlacement.slideIn.styles.width}
             minPixels={200}
             maxPixels={1200}
             minPercents={10}
@@ -71,7 +65,7 @@ const SlideInSettings = () => {
             defaultPixelValue={560}
             defaultPercentValue={100}
             onChange={(width) => (
-              updateSettings('slideInStyles', { ...formSettings.slideInStyles, width })
+              changeFormSettings(assocPath('formPlacement.slideIn.styles.width', width, formSettings))
             )}
           />
         </>
