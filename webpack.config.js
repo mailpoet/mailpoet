@@ -130,6 +130,13 @@ const baseConfig = {
         ]
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/common/index.ts'),
+        use: [
+          'expose-loader?' + globalPrefix + '.Common',
+          'babel-loader',
+        ]
+      },
+      {
         include: /Blob.js$/,
         loader: 'exports-loader?window.Blob',
       },
@@ -195,6 +202,7 @@ const adminConfig = {
       'classnames',
       'help-tooltip.jsx',
       'listing/listing.jsx',
+      'common/index.ts',
       'newsletters/badges/stats.jsx',
     ],
     admin: 'webpack_admin_index.jsx',
