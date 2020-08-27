@@ -2,9 +2,19 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\Settings;
 
 class PreviewStandardNewsletterCest {
+
+  /** @var Settings */
+  private $settings;
+
+  public function _before() {
+    $this->settings = new Settings();
+  }
+
   public function previewStandardNewsletter(\AcceptanceTester $i) {
     $newsletterName = 'Preview in Browser Newsletter';
     $newsletter = new Newsletter();
@@ -20,6 +30,7 @@ class PreviewStandardNewsletterCest {
 
   public function previewStandardNewsletterInEditor(\AcceptanceTester $i) {
     $i->wantTo('Preview and send newsletter inside editor');
+    $this->settings->withCronTriggerMethod('WordPress');
     $newsletterName = 'Preview in Browser Newsletter';
     $newsletter = new Newsletter();
     $newsletter->withSubject($newsletterName)->create();
@@ -28,20 +39,27 @@ class PreviewStandardNewsletterCest {
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Edit');
     $i->click('[data-automation-id="sidebar_preview_region_heading"]');
+    //test sending preview to email
     $i->waitForText('Send preview');
     $i->click('Send preview');
     $i->waitForText('Your test email has been sent!');
     $i->click('.notice-dismiss');
+    //check for error if no email is set
     $i->clearField('#mailpoet_preview_to_email');
     $i->click('Send preview');
     $i->waitForText('Enter an email address to send the preview newsletter to.');
+    //set different email and test sending
     $i->fillField('#mailpoet_preview_to_email', 'test2@test.com');
     $i->click('Send preview');
     $i->waitForText('Your test email has been sent!');
+    //check the preview email in browser
     $i->click('View in browser');
     $i->waitForText('Newsletter Preview');
     $i->click('Open in new tab');
     $i->switchToNextTab();
     $i->waitForElement('.mailpoet_template');
+    //confirm if preview newsletter is received at the end
+    $i->checkEmailWasReceived($newsletterName);
+    $i->click(Locator::contains('span.subject', $newsletterName));
   }
 }
