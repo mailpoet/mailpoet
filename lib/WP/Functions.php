@@ -686,4 +686,13 @@ class Functions {
     global $wpdb;
     return $wpdb->parse_db_host($host);
   }
+
+  /**
+   * @param int|\WP_Post $post
+   * @param string $context
+   * @return string|null
+   */
+  public function getEditPostLink($post, string $context = 'display') {
+    return get_edit_post_link($post, $context);
+  }
 }
