@@ -52,9 +52,13 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '1',
-      'form_placement_bellow_posts_enabled' => '1',
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => ''],
+          'posts' => ['all' => '1'],
+        ],
+      ],
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -86,9 +90,13 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '',
-      'form_placement_bellow_posts_enabled' => '',
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '',
+          'pages' => ['all' => ''],
+          'posts' => ['all' => ''],
+        ],
+      ],
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -109,9 +117,13 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '',
-      'form_placement_bellow_posts_enabled' => '1',
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => ''],
+          'posts' => ['all' => ''],
+        ],
+      ],
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -139,9 +151,13 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '1',
-      'form_placement_bellow_posts_enabled' => '1',
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => ''],
+          'posts' => ['all' => '1'],
+        ],
+      ],
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -168,9 +184,13 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'place_form_bellow_all_pages' => '1',
-      'place_form_bellow_all_posts' => '',
-      'form_placement_bellow_posts_enabled' => '1',
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => '1'],
+          'posts' => ['all' => ''],
+        ],
+      ],
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -225,12 +245,18 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '',
-      'place_popup_form_on_all_pages' => '1',
-      'place_popup_form_on_all_posts' => '',
-      'form_placement_bellow_posts_enabled' => '',
-      'form_placement_popup_enabled' => '1',
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '',
+          'pages' => ['all' => ''],
+          'posts' => ['all' => ''],
+        ],
+        'popup' => [
+          'enabled' => '1',
+          'pages' => ['all' => '1'],
+          'posts' => ['all' => ''],
+        ],
+      ],
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -258,14 +284,23 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '',
-      'place_popup_form_on_all_pages' => '',
-      'place_popup_form_on_all_posts' => '',
-      'place_fixed_bar_form_on_all_pages' => '1',
-      'place_fixed_bar_form_on_all_posts' => '1',
-      'form_placement_bellow_posts_enabled' => '',
-      'form_placement_fixed_bar_enabled' => '1',
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '',
+          'pages' => ['all' => ''],
+          'posts' => ['all' => ''],
+        ],
+        'popup' => [
+          'enabled' => '1',
+          'pages' => ['all' => ''],
+          'posts' => ['all' => ''],
+        ],
+        'fixed_bar' => [
+          'enabled' => '1',
+          'pages' => ['all' => '1'],
+          'posts' => ['all' => '1'],
+        ],
+      ],
       'success_message' => 'Hello',
     ]);
     $form->setBody([[
@@ -289,8 +324,13 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form1 = new FormEntity('My Form');
     $form1->setSettings([
       'segments' => ['3'],
-      'place_fixed_bar_form_on_all_pages' => '1',
-      'form_placement_fixed_bar_enabled' => '1',
+      'form_placement' => [
+        'fixed_bar' => [
+          'enabled' => '1',
+          'pages' => ['all' => '1'],
+          'posts' => ['all' => '1'],
+        ],
+      ],
       'success_message' => 'Hello',
     ]);
     $form1->setBody([[
@@ -302,8 +342,13 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form2 = new FormEntity('My Form');
     $form2->setSettings([
       'segments' => ['3'],
-      'place_fixed_bar_form_on_all_pages' => '1',
-      'form_placement_fixed_bar_enabled' => '1',
+      'form_placement' => [
+        'fixed_bar' => [
+          'enabled' => '1',
+          'pages' => ['all' => '1'],
+          'posts' => ['all' => '1'],
+        ],
+      ],
       'success_message' => 'Hello',
     ]);
     $form2->setBody([[

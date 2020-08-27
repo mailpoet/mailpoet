@@ -170,7 +170,11 @@ class StylesTest extends \MailPoetUnitTest {
       'unit' => 'pixel',
       'value' => '900',
     ];
-    $form['settings'] = ['below_post_styles' => ['width' => $width]];
+    $form['settings'] = [
+      'form_placement' => [
+        'below_posts' => ['styles' => ['width' => $width]],
+      ],
+    ];
     $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_BELOW_POST);
     list($styleWithoutMedia) = explode('@media ', $styles);
     expect($styleWithoutMedia)->contains('width: 900px;');
@@ -189,7 +193,11 @@ class StylesTest extends \MailPoetUnitTest {
       'unit' => 'percent',
       'value' => '90',
     ];
-    $form['settings'] = ['fixed_bar_styles' => ['width' => $width]];
+    $form['settings'] = [
+      'form_placement' => [
+        'fixed_bar' => ['styles' => ['width' => $width]],
+      ],
+    ];
     $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_FIXED_BAR);
     list($styleWithoutMedia) = explode('@media ', $styles);
     expect($styleWithoutMedia)->contains('width: 90%;max-width: 100%;');
@@ -207,7 +215,11 @@ class StylesTest extends \MailPoetUnitTest {
       'unit' => 'pixel',
       'value' => '900',
     ];
-    $form['settings'] = ['popup_styles' => ['width' => $width]];
+    $form['settings'] = [
+      'form_placement' => [
+        'popup' => ['styles' => ['width' => $width]],
+      ],
+    ];
     $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_POPUP);
     list($styleWithoutMedia) = explode('@media ', $styles);
     expect($styleWithoutMedia)->contains('width: 900px;max-width: 100vw;');
@@ -225,7 +237,11 @@ class StylesTest extends \MailPoetUnitTest {
       'unit' => 'percent',
       'value' => '90',
     ];
-    $form['settings'] = ['slide_in_styles' => ['width' => $width]];
+    $form['settings'] = [
+      'form_placement' => [
+        'slide_in' => ['styles' => ['width' => $width]],
+      ],
+    ];
     $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_SLIDE_IN);
     list($styleWithoutMedia) = explode('@media ', $styles);
     expect($styleWithoutMedia)->contains('width: 90%;max-width: 100vw;');
@@ -244,7 +260,11 @@ class StylesTest extends \MailPoetUnitTest {
       'unit' => 'percent',
       'value' => '90',
     ];
-    $form['settings'] = ['other_styles' => ['width' => $width]];
+    $form['settings'] = [
+      'form_placement' => [
+        'others' => ['styles' => ['width' => $width]],
+      ],
+    ];
     $styles = $this->styles->renderFormSettingsStyles($form, '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     list($styleWithoutMedia) = explode('@media ', $styles);
     expect($styleWithoutMedia)->contains('width: 90%;');
