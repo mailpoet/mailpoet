@@ -14,7 +14,7 @@ const Popup = () => {
 
   return (
     <FormPlacementOption
-      active={formSettings.placementPopupEnabled}
+      active={formSettings.formPlacement.popup.enabled}
       label={MailPoet.I18n.t('placePopupFormOnPages')}
       icon={Icon}
       onClick={() => (showPlacementSettings('popup'))}

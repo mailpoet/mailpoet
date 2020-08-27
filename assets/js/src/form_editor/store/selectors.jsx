@@ -66,16 +66,16 @@ export default {
       formType: 'others',
     };
     const settings = state.formData.settings;
-    if (settings.placementBellowAllPostsEnabled) {
+    if (settings.formPlacement.belowPosts.enabled) {
       previewSettings.formType = 'below_post';
     }
-    if (settings.placementPopupEnabled) {
+    if (settings.formPlacement.popup.enabled) {
       previewSettings.formType = 'popup';
     }
-    if (settings.placementFixedBarEnabled) {
+    if (settings.formPlacement.fixedBar.enabled) {
       previewSettings.formType = 'fixed_bar';
     }
-    if (settings.placementSlideInEnabled) {
+    if (settings.formPlacement.slideIn.enabled) {
       previewSettings.formType = 'slide_in';
     }
     return previewSettings;
@@ -83,11 +83,11 @@ export default {
   getFormWidth(state, displayType) {
     const settings = state.formData.settings;
     switch (displayType) {
-      case 'below_post': return settings.belowPostStyles.width;
-      case 'popup': return settings.popupStyles.width;
-      case 'slide_in': return settings.slideInStyles.width;
-      case 'fixed_bar': return settings.fixedBarStyles.width;
-      case 'others': return settings.otherStyles.width;
+      case 'below_post': return settings.formPlacement.belowPosts.styles.width;
+      case 'popup': return settings.formPlacement.popup.styles.width;
+      case 'slide_in': return settings.formPlacement.slideIn.styles.width;
+      case 'fixed_bar': return settings.formPlacement.fixedBar.styles.width;
+      case 'others': return settings.formPlacement.others.styles.width;
       default: throw Error(`Invalid form display type ${displayType}`);
     }
   },

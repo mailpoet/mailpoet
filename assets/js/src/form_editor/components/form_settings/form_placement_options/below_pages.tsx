@@ -15,7 +15,7 @@ const BelowPages = () => {
 
   return (
     <FormPlacementOption
-      active={formSettings.placementBellowAllPostsEnabled}
+      active={formSettings.formPlacement.belowPosts.enabled}
       label={MailPoet.I18n.t('placeFormBellowPages')}
       icon={Icon}
       onClick={() => (showPlacementSettings('below_post'))}
