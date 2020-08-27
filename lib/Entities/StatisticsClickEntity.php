@@ -138,4 +138,8 @@ class StatisticsClickEntity {
   public function getWooCommercePurchases() {
     return $this->wooCommercePurchases;
   }
+
+  public function getCount(): int {
+    return $this->count;
+  }
 }
