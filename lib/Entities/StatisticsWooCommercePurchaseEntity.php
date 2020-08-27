@@ -40,7 +40,7 @@ class StatisticsWooCommercePurchaseEntity {
   private $subscriber;
 
   /**
-   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\StatisticsClickEntity")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\StatisticsClickEntity", inversedBy="wooCommercePurchases")
    * @ORM\JoinColumn(name="click_id", referencedColumnName="id")
    * @var StatisticsClickEntity|null
    */
@@ -117,5 +117,19 @@ class StatisticsWooCommercePurchaseEntity {
    */
   public function setSubscriber($subscriber) {
     $this->subscriber = $subscriber;
+  }
+
+  /**
+   * @return string
+   */
+  public function getOrderCurrency(): string {
+    return $this->orderCurrency;
+  }
+
+  /**
+   * @return float
+   */
+  public function getOrderPriceTotal(): float {
+    return $this->orderPriceTotal;
   }
 }
