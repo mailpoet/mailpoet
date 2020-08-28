@@ -9,7 +9,7 @@
     <input type="radio" name="mailpoet_browser_preview_type" class="mailpoet_browser_preview_type" value="mobile" {{#ifCond previewType '==' 'mobile'}}CHECKED{{/ifCond}} /><%= _x('Mobile', 'Mobile browser preview mode') %>
   </label>
   <label>
-    <input type="radio" name="mailpoet_browser_preview_type" class="mailpoet_browser_preview_type" value="send_to_email" {{#ifCond previewType '==' 'send_to_email'}}CHECKED{{/ifCond}} /><%= __('Send to email') %>
+    <input data-automation-id="switch_send_to_email" type="radio" name="mailpoet_browser_preview_type" class="mailpoet_browser_preview_type" value="send_to_email" {{#ifCond previewType '==' 'send_to_email'}}CHECKED{{/ifCond}} /><%= __('Send to email') %>
   </label>
 </div>
 <div

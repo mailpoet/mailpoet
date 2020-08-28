@@ -118,11 +118,14 @@ class NewsletterCreationCest {
     $i->click($standardTemplate);
 
     // step 3 - see notice in 'Send preview' with link to authorized emails
-    $i->waitForElement('[data-automation-id="sidebar_preview_region_heading"]');
-    $i->click('[data-automation-id="sidebar_preview_region_heading"]', '#mailpoet_editor_sidebar');
+    $i->waitForElement('.mailpoet_show_preview');
+    $i->click('.mailpoet_show_preview');
+    $i->waitForElement('[data-automation-id="switch_send_to_email"]');
+    $i->click('[data-automation-id="switch_send_to_email"]');
     $i->waitForText('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.');
     $href = $i->grabAttributeFrom('//a[text()="your authorized emails"]', 'href');
     expect($href)->same('https://account.mailpoet.com/authorization');
+    $i->click('#mailpoet_modal_close');
     $i->scrollToTop();
     $i->click('Next');
 
