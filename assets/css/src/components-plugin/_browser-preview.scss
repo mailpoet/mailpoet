@@ -54,6 +54,23 @@
   width: 402px;
 }
 
+.mailpoet_browser_preview_container_mobile .mailpoet_preview_send_to_email,
+.mailpoet_browser_preview_container_desktop .mailpoet_preview_send_to_email,
+.mailpoet_browser_preview_container_send_to_email .mailpoet_browser_preview_border {
+  display: none;
+}
+
+.mailpoet_browser_preview_container_mobile .mailpoet_browser_preview_border,
+.mailpoet_browser_preview_container_desktop .mailpoet_browser_preview_border,
+.mailpoet_browser_preview_container_send_to_email .mailpoet_preview_send_to_email {
+  display: block;
+}
+
+.mailpoet_browser_preview_container.mailpoet_browser_preview_container_send_to_email {
+  border: none;
+  width: 402px;
+}
+
 .mailpoet_browser_preview_border {
   border: 1px solid #c3c3c3;
   height: 100%;

@@ -3,14 +3,47 @@
 </div>
 <div class="mailpoet_browser_preview_toggle">
   <label>
-    <input type="radio" name="mailpoet_browser_preview_type" class="mailpoet_browser_preview_type" value="desktop" {{#ifCond previewType '!=' 'mobile'}}CHECKED{{/ifCond}} /><%= _x('Desktop', 'Desktop browser preview mode') %>
+    <input type="radio" name="mailpoet_browser_preview_type" class="mailpoet_browser_preview_type" value="desktop" {{#ifCond previewType '==' 'desktop'}}CHECKED{{/ifCond}} /><%= _x('Desktop', 'Desktop browser preview mode') %>
   </label>
   <label>
     <input type="radio" name="mailpoet_browser_preview_type" class="mailpoet_browser_preview_type" value="mobile" {{#ifCond previewType '==' 'mobile'}}CHECKED{{/ifCond}} /><%= _x('Mobile', 'Mobile browser preview mode') %>
   </label>
+  <label>
+    <input type="radio" name="mailpoet_browser_preview_type" class="mailpoet_browser_preview_type" value="send_to_email" {{#ifCond previewType '==' 'send_to_email'}}CHECKED{{/ifCond}} /><%= __('Send to email') %>
+  </label>
 </div>
-<div class="mailpoet_browser_preview_container {{#ifCond previewType '==' 'mobile'}}mailpoet_browser_preview_container_mobile{{else}}mailpoet_browser_preview_container_desktop{{/ifCond}}">
+<div
+  class="
+    mailpoet_browser_preview_container
+   {{#ifCond previewType '==' 'mobile'}}mailpoet_browser_preview_container_mobile{{/ifCond}}
+   {{#ifCond previewType '==' 'desktop'}}mailpoet_browser_preview_container_desktop{{/ifCond}}
+   {{#ifCond previewType '==' 'send_to_email'}}mailpoet_browser_preview_container_send_to_email{{/ifCond}}
+  "
+>
   <div class="mailpoet_browser_preview_border">
     <iframe id="mailpoet_browser_preview_iframe" class="mailpoet_browser_preview_iframe" src="{{ previewUrl }}" width="{{ width }}" height="{{ height }}"></iframe>
+  </div>
+
+  <div class="mailpoet_preview_send_to_email">
+    <iframe name="mailpoet_save_preview_email_for_autocomplete" style="display:none" src="about:blank"></iframe>
+    <form target="mailpoet_save_preview_email_for_autocomplete">
+      <div class="mailpoet_form_field">
+        <label>
+          <%= __('Send preview to') %><br />
+          <input id="mailpoet_preview_to_email" class="mailpoet_input mailpoet_input_full" type="text" name="to_email" value="<%= current_wp_user.email %>" autocomplete="email" />
+        </label>
+      </div>
+
+      <div class="mailpoet_form_field relative-holder">
+        <input type="submit" id="mailpoet_send_preview" class="button button-primary mailpoet_button_full" value="<%= __('Send preview') %>" />
+        <span id="tooltip-send-preview" class="tooltip-help-send-preview"></span>
+      </div>
+    </form>
+
+    {{#if mssKeyPendingApproval }}
+      <div class="mailpoet_error">
+        <%= __('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to [link]your authorized emails[/link].')|replaceLinkTags('https://account.mailpoet.com/authorization', {'target': '_blank', 'rel': 'noopener noreferrer'})|raw %>
+      </div>
+    {{/if}}
   </div>
 </div>
