@@ -180,15 +180,4 @@ describe('Sidebar', function () {
       });
     });
   });
-
-  describe('preview view', function () {
-    var view;
-    beforeEach(function () {
-      view = new (SidebarComponent.SidebarPreviewView)();
-    });
-
-    it('renders', function () {
-      expect(view.render).to.not.throw();
-    });
-  });
 });
