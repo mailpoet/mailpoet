@@ -444,12 +444,10 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     };
   },
   initialize: function (options) {
-    this.previewType = options.previewType;
+    this.previewType = options.previewType ?? 'mobile';
     this.previewUrl = options.previewUrl;
     this.width = '100%';
     this.height = '100%';
-    // this.width = App.getConfig().get('newsletterPreview.width');
-    // this.height = App.getConfig().get('newsletterPreview.height')
   },
   templateContext: function () {
     return {
