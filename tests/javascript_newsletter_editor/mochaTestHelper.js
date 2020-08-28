@@ -197,7 +197,6 @@ global.templates = {
   sidebarContent: Handlebars.compile(jQuery('#newsletter_editor_template_sidebar_content').html()),
   sidebarLayout: Handlebars.compile(jQuery('#newsletter_editor_template_sidebar_layout').html()),
   sidebarStyles: Handlebars.compile(jQuery('#newsletter_editor_template_sidebar_styles').html()),
-  sidebarPreview: Handlebars.compile(jQuery('#newsletter_editor_template_sidebar_preview').html()),
 
   genericBlockTools: Handlebars.compile(jQuery('#newsletter_editor_template_tools_generic').html()),
 

@@ -104,7 +104,6 @@ SidebarView = Marionette.View.extend({
       availableStyles: App.getAvailableStyles(),
       isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
     }));
-    this.showChildView('previewRegion', new Module.SidebarPreviewView());
   },
   updateHorizontalScroll: function () {
     // Fixes the sidebar so that on narrower screens the horizontal
@@ -243,24 +242,6 @@ Module.SidebarStylesView = Marionette.View.extend({
       value = 'transparent';
     }
     this.model.set(field, value);
-  },
-});
-
-Module.SidebarPreviewView = Marionette.View.extend({
-  getTemplate: function () { return window.templates.sidebarPreview; },
-  templateContext: function () {
-    return {
-      mssKeyPendingApproval: window.mailpoet_mss_key_pending_approval,
-    };
-  },
-  events: {
-
-  },
-  onBeforeDestroy: function () {
-    if (this.previewView) {
-      this.previewView.destroy();
-      this.previewView = null;
-    }
   },
 });
 

@@ -266,10 +266,6 @@
     'newsletter/templates/components/sidebar/layout.hbs'
   ) %>
   <%= partial(
-    'newsletter_editor_template_sidebar_preview',
-    'newsletter/templates/components/sidebar/preview.hbs'
-  ) %>
-  <%= partial(
     'newsletter_editor_template_sidebar_styles',
     'newsletter/templates/components/sidebar/styles.hbs'
   ) %>
@@ -448,9 +444,6 @@
       ),
       sidebarStyles: Handlebars.compile(
         jQuery('#newsletter_editor_template_sidebar_styles').html()
-      ),
-      sidebarPreview: Handlebars.compile(
-        jQuery('#newsletter_editor_template_sidebar_preview').html()
       ),
       newsletterPreview: Handlebars.compile(
         jQuery('#newsletter_editor_template_newsletter_preview').html()
