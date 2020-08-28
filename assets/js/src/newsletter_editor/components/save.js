@@ -445,7 +445,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     };
   },
   initialize: function (options) {
-    this.previewType = options.previewType ?? 'mobile';
+    this.previewType = options.previewType || 'mobile';
     this.previewUrl = options.previewUrl;
     this.width = '100%';
     this.height = '100%';
@@ -461,7 +461,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     };
   },
   changeBrowserPreviewType: function (event) {
-    var value = jQuery(event.target).val();
+    var value = $(event.target).val();
 
     if (value === 'mobile') {
       this.$('.mailpoet_browser_preview_container').addClass('mailpoet_browser_preview_container_mobile');
@@ -503,7 +503,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     // save before sending
     App.getChannel().request('save').always(function () {
       CommunicationComponent.previewNewsletter(data).done(function () {
-        jQuery('#mailpoet_modal_close').trigger('click');
+        $('#mailpoet_modal_close').trigger('click');
         MailPoet.Notice.success(
           MailPoet.I18n.t('newsletterPreviewSent'),
           { scroll: true }
@@ -512,7 +512,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
           'MailPoet Free version': window.mailpoet_version,
           'Domain name': data.subscriber.substring(data.subscriber.indexOf('@') + 1),
         });
-      }).fail(function (response) {
+      }).fail(function () {
         this.previewSendingError = true;
       });
     });

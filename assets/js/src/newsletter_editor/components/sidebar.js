@@ -1,7 +1,5 @@
 /* eslint-disable func-names */
 import App from 'newsletter_editor/App';
-import CommunicationComponent from 'newsletter_editor/components/communication';
-import MailPoet from 'mailpoet';
 import Backbone from 'backbone';
 import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
