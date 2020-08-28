@@ -355,12 +355,6 @@ App.on('start', function (StartApp) {
   });
 
   StartApp._appView.showChildView('sidebarRegion', sidebarView);
-
-  MailPoet.helpTooltip.show(document.getElementById('tooltip-send-preview'), {
-    tooltipId: 'tooltip-editor-send-preview',
-    tooltip: MailPoet.I18n.t('helpTooltipSendPreview'),
-    place: 'left',
-  });
 });
 
 export default Module;
