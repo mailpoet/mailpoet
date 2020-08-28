@@ -441,6 +441,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
   events: function () {
     return {
       'change .mailpoet_browser_preview_type': 'changeBrowserPreviewType',
+      'click #mailpoet_send_preview': 'sendPreview',
     };
   },
   initialize: function (options) {
@@ -448,6 +449,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     this.previewUrl = options.previewUrl;
     this.width = '100%';
     this.height = '100%';
+    this.previewSendingError = false;
   },
   templateContext: function () {
     return {
@@ -455,6 +457,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
       previewUrl: this.previewUrl,
       width: this.width,
       height: this.height,
+      previewSendingError: this.previewSendingError,
     };
   },
   changeBrowserPreviewType: function (event) {
@@ -476,6 +479,44 @@ Module.NewsletterPreviewView = Marionette.View.extend({
 
     window.localStorage.setItem(App.getConfig().get('newsletterPreview.previewTypeLocalStorageKey'), value);
     this.previewType = value;
+  },
+  sendPreview: function () {
+    // get form data
+    var $emailField = this.$('#mailpoet_preview_to_email');
+    var data = {
+      subscriber: $emailField.val(),
+      id: App.getNewsletter().get('id'),
+    };
+
+    if (data.subscriber.length <= 0) {
+      MailPoet.Notice.error(
+        MailPoet.I18n.t('newsletterPreviewEmailMissing'),
+        {
+          positionAfter: $emailField,
+          scroll: true,
+        }
+      );
+      return false;
+    }
+
+    this.previewSendingError = false;
+    // save before sending
+    App.getChannel().request('save').always(function () {
+      CommunicationComponent.previewNewsletter(data).done(function () {
+        jQuery('#mailpoet_modal_close').trigger('click');
+        MailPoet.Notice.success(
+          MailPoet.I18n.t('newsletterPreviewSent'),
+          { scroll: true }
+        );
+        MailPoet.trackEvent('Editor > Preview sent', {
+          'MailPoet Free version': window.mailpoet_version,
+          'Domain name': data.subscriber.substring(data.subscriber.indexOf('@') + 1),
+        });
+      }).fail(function (response) {
+        this.previewSendingError = true;
+      });
+    });
+    return undefined;
   },
 });
 
