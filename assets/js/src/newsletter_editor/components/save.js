@@ -461,10 +461,16 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     var value = jQuery(event.target).val();
 
     if (value === 'mobile') {
-      this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_desktop');
       this.$('.mailpoet_browser_preview_container').addClass('mailpoet_browser_preview_container_mobile');
-    } else {
+      this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_desktop');
+      this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_send_to_email');
+    } else if (value === 'desktop') {
       this.$('.mailpoet_browser_preview_container').addClass('mailpoet_browser_preview_container_desktop');
+      this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_mobile');
+      this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_send_to_email');
+    } else {
+      this.$('.mailpoet_browser_preview_container').addClass('mailpoet_browser_preview_container_send_to_email');
+      this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_desktop');
       this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_mobile');
     }
 
