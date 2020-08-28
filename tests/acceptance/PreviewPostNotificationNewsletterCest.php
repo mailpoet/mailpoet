@@ -41,13 +41,20 @@ class PreviewPostNotificationNewsletterCest {
     $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForText($newsletterName);
     $i->clickItemRowActionByItemName($newsletterName, 'Edit');
-    $i->click('[data-automation-id="sidebar_preview_region_heading"]');
+    $i->waitForElement('.mailpoet_show_preview');
+    $i->click('.mailpoet_show_preview');
+    $i->waitForElement('[data-automation-id="switch_send_to_email"]');
+    $i->click('[data-automation-id="switch_send_to_email"]');
     //test sending preview to email
     $i->waitForText('Send preview');
     $i->click('Send preview');
     $i->waitForText('Your test email has been sent!');
     $i->click('.notice-dismiss');
     //check for error if no email is set
+    $i->waitForElement('.mailpoet_show_preview');
+    $i->click('.mailpoet_show_preview');
+    $i->waitForElement('[data-automation-id="switch_send_to_email"]');
+    $i->click('[data-automation-id="switch_send_to_email"]');
     $i->clearField('#mailpoet_preview_to_email');
     $i->waitForText('Send preview');
     $i->click('Send preview');
@@ -56,12 +63,7 @@ class PreviewPostNotificationNewsletterCest {
     $i->fillField('#mailpoet_preview_to_email', 'test2@test.com');
     $i->click('Send preview');
     $i->waitForText('Your test email has been sent!');
-    //check the preview email in browser
-    $i->click('View in browser');
-    $i->waitForText('Newsletter Preview');
-    $i->click('Open in new tab');
-    $i->switchToNextTab();
-    $i->waitForElement('.mailpoet_template');
+
     //confirm if preview newsletter is received at the end
     $i->checkEmailWasReceived($newsletterName);
     $i->click(Locator::contains('span.subject', $newsletterName));

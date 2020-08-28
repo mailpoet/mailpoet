@@ -458,6 +458,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
       width: this.width,
       height: this.height,
       previewSendingError: this.previewSendingError,
+      mssKeyPendingApproval: window.mailpoet_mss_key_pending_approval,
     };
   },
   changeBrowserPreviewType: function (event) {
