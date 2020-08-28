@@ -43,8 +43,6 @@ class EditorLineHeightCest {
     $this->checkLineHeightInEditor($i, $h3Size, $headingLineHeight, 'h3');
 
     // check rendered Preview
-    $i->click('.mailpoet_preview_region');
-    $i->waitForElementClickable('.mailpoet_show_preview');
     $i->click('.mailpoet_show_preview');
     $i->waitForElement('#mailpoet_browser_preview_iframe');
     $i->switchToIframe('#mailpoet_browser_preview_iframe');

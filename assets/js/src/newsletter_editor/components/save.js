@@ -126,6 +126,7 @@ Module.SaveView = Marionette.View.extend({
     'click .mailpoet_export_template': 'exportTemplate',
     /* WooCommerce */
     'click .mailpoet_save_activate_wc_customizer_button': 'activateWooCommerceCustomizer',
+    'click .mailpoet_show_preview': 'showPreview',
   },
 
   initialize: function () {
@@ -247,6 +248,55 @@ Module.SaveView = Marionette.View.extend({
       });
       this.hideExportTemplate();
     }
+  },
+  showPreview: function () {
+    var json = App.toJSON();
+
+    // Stringify to enable transmission of primitive non-string value types
+    if (!_.isUndefined(json.body)) {
+      json.body = JSON.stringify(json.body);
+    }
+
+    MailPoet.Modal.loading(true);
+
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletters',
+      action: 'showPreview',
+      data: json,
+    }).always(function () {
+      MailPoet.Modal.loading(false);
+    }).done(function (response) {
+      this.previewView = new Module.NewsletterPreviewView({
+        previewType: window.localStorage.getItem(App.getConfig().get('newsletterPreview.previewTypeLocalStorageKey')),
+        previewUrl: response.meta.preview_url,
+      });
+
+      this.previewView.render();
+
+      MailPoet.Modal.popup({
+        template: '',
+        element: this.previewView.$el,
+        minWidth: '95%',
+        height: '100%',
+        title: MailPoet.I18n.t('newsletterPreview'),
+        onCancel: function () {
+          this.previewView.destroy();
+          this.previewView = null;
+        }.bind(this),
+      });
+
+      MailPoet.trackEvent('Editor > Browser Preview', {
+        'MailPoet Free version': window.mailpoet_version,
+      });
+    }.bind(this)).fail(function (response) {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(function (error) { return error.message; }),
+          { scroll: true }
+        );
+      }
+    });
   },
   next: function () {
     this.hideSaveOptions();
@@ -384,6 +434,46 @@ Module.beforeExitWithUnsavedChanges = function (e) {
   }
   return undefined;
 };
+
+Module.NewsletterPreviewView = Marionette.View.extend({
+  className: 'mailpoet_browser_preview_wrapper',
+  getTemplate: function () { return window.templates.newsletterPreview; },
+  events: function () {
+    return {
+      'change .mailpoet_browser_preview_type': 'changeBrowserPreviewType',
+    };
+  },
+  initialize: function (options) {
+    this.previewType = options.previewType;
+    this.previewUrl = options.previewUrl;
+    this.width = '100%';
+    this.height = '100%';
+    // this.width = App.getConfig().get('newsletterPreview.width');
+    // this.height = App.getConfig().get('newsletterPreview.height')
+  },
+  templateContext: function () {
+    return {
+      previewType: this.previewType,
+      previewUrl: this.previewUrl,
+      width: this.width,
+      height: this.height,
+    };
+  },
+  changeBrowserPreviewType: function (event) {
+    var value = jQuery(event.target).val();
+
+    if (value === 'mobile') {
+      this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_desktop');
+      this.$('.mailpoet_browser_preview_container').addClass('mailpoet_browser_preview_container_mobile');
+    } else {
+      this.$('.mailpoet_browser_preview_container').addClass('mailpoet_browser_preview_container_desktop');
+      this.$('.mailpoet_browser_preview_container').removeClass('mailpoet_browser_preview_container_mobile');
+    }
+
+    window.localStorage.setItem(App.getConfig().get('newsletterPreview.previewTypeLocalStorageKey'), value);
+    this.previewType = value;
+  },
+});
 
 App.on('before:start', function (BeforeStartApp) {
   var Application = BeforeStartApp;
