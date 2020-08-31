@@ -13,6 +13,7 @@ var MailPoet = {
   subscribersLimitReached: window.mailpoet_subscribers_limit_reached,
   subscribersCount: window.mailpoet_subscribers_count,
   hasValidApiKey: window.mailpoet_has_valid_api_key,
+  listingPerPage: window.mailpoet_listing_per_page,
 };
 
 // Expose MailPoet globally
