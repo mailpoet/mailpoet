@@ -4,10 +4,10 @@ import _ from 'underscore';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+import Categories from 'common/categories/categories';
 import ListingHeader from 'listing/header.jsx';
 import ListingPages from 'listing/pages.jsx';
 import ListingSearch from 'listing/search.jsx';
-import ListingGroups from 'listing/groups.jsx';
 import ListingFilters from 'listing/filters.jsx';
 import ListingItems from 'listing/listing_items.jsx';
 import MailerError from 'listing/notices.jsx';
@@ -568,10 +568,10 @@ class Listing extends React.Component {
 
     // groups
     let groups = (
-      <ListingGroups
-        groups={this.state.groups}
-        group={this.state.group}
-        onSelectGroup={this.handleGroup}
+      <Categories
+        categories={this.state.groups}
+        active={this.state.group}
+        onSelect={this.handleGroup}
       />
     );
     if (this.props.groups === false) {
