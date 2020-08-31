@@ -14,6 +14,7 @@ var MailPoet = {
   subscribersCount: window.mailpoet_subscribers_count,
   hasValidApiKey: window.mailpoet_has_valid_api_key,
   listingPerPage: window.mailpoet_listing_per_page,
+  getShortcodeLinks: () => (window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : []),
 };
 
 // Expose MailPoet globally
