@@ -798,6 +798,28 @@ class Populator {
           'styles' => $settings['other_styles'] ?? [],
         ],
       ];
+      if (isset($settings['form_placement_slide_in_enabled'])) unset($settings['form_placement_slide_in_enabled']);
+      if (isset($settings['form_placement_fixed_bar_enabled'])) unset($settings['form_placement_fixed_bar_enabled']);
+      if (isset($settings['form_placement_popup_enabled'])) unset($settings['form_placement_popup_enabled']);
+      if (isset($settings['form_placement_bellow_posts_enabled'])) unset($settings['form_placement_bellow_posts_enabled']);
+      if (isset($settings['place_form_bellow_all_pages'])) unset($settings['place_form_bellow_all_pages']);
+      if (isset($settings['place_form_bellow_all_posts'])) unset($settings['place_form_bellow_all_posts']);
+      if (isset($settings['place_popup_form_on_all_pages'])) unset($settings['place_popup_form_on_all_pages']);
+      if (isset($settings['place_popup_form_on_all_posts'])) unset($settings['place_popup_form_on_all_posts']);
+      if (isset($settings['popup_form_delay'])) unset($settings['popup_form_delay']);
+      if (isset($settings['place_fixed_bar_form_on_all_pages'])) unset($settings['place_fixed_bar_form_on_all_pages']);
+      if (isset($settings['place_fixed_bar_form_on_all_posts'])) unset($settings['place_fixed_bar_form_on_all_posts']);
+      if (isset($settings['fixed_bar_form_delay'])) unset($settings['fixed_bar_form_delay']);
+      if (isset($settings['fixed_bar_form_position'])) unset($settings['fixed_bar_form_position']);
+      if (isset($settings['place_slide_in_form_on_all_pages'])) unset($settings['place_slide_in_form_on_all_pages']);
+      if (isset($settings['place_slide_in_form_on_all_posts'])) unset($settings['place_slide_in_form_on_all_posts']);
+      if (isset($settings['slide_in_form_delay'])) unset($settings['slide_in_form_delay']);
+      if (isset($settings['slide_in_form_position'])) unset($settings['slide_in_form_position']);
+      if (isset($settings['other_styles'])) unset($settings['other_styles']);
+      if (isset($settings['slide_in_styles'])) unset($settings['slide_in_styles']);
+      if (isset($settings['below_post_styles'])) unset($settings['below_post_styles']);
+      if (isset($settings['fixed_bar_styles'])) unset($settings['fixed_bar_styles']);
+      if (isset($settings['popup_styles'])) unset($settings['popup_styles']);
       $form->setSettings($settings);
     }
     $this->formsRepository->flush();
