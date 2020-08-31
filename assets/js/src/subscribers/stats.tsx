@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   useRouteMatch,
+  useLocation,
 } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import Loading from 'common/loading';
@@ -27,6 +28,7 @@ export type StatsType = {
 
 export const SubscriberStats = () => {
   const match = useRouteMatch<{id: string}>();
+  const location = useLocation();
   const [stats, setStats] = useState<StatsType|null>(null);
   const [loading, setLoading] = useState(true);
   const contextValue = useGlobalContextValue(window);
@@ -75,7 +77,7 @@ export const SubscriberStats = () => {
           />
         )}
       </div>
-      <OpenedEmailsStats params={match.params} />
+      <OpenedEmailsStats params={match.params} location={location} />
     </div>
   );
 };
