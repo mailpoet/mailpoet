@@ -46,6 +46,7 @@ class PreviewStandardNewsletterCest {
     $i->click('.notice-dismiss');
     //check for error if no email is set
     $i->clearField('#mailpoet_preview_to_email');
+    $i->waitForText('Send preview');
     $i->click('Send preview');
     $i->waitForText('Enter an email address to send the preview newsletter to.');
     //set different email and test sending
