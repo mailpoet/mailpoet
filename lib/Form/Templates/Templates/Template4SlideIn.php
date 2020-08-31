@@ -158,58 +158,28 @@ class Template4SlideIn extends FormTemplate {
       'segments_selected_by' => 'admin',
       'alignment' => 'center',
       'fontSize' => '16',
-      'form_placement_slide_in_enabled' => '1',
-      'form_placement_fixed_bar_enabled' => '',
-      'form_placement_popup_enabled' => '',
-      'form_placement_bellow_posts_enabled' => '',
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '',
-      'place_popup_form_on_all_pages' => '',
-      'place_popup_form_on_all_posts' => '',
-      'popup_form_delay' => '15',
-      'place_fixed_bar_form_on_all_pages' => '',
-      'place_fixed_bar_form_on_all_posts' => '',
-      'fixed_bar_form_delay' => '15',
-      'fixed_bar_form_position' => 'top',
-      'place_slide_in_form_on_all_pages' => '',
-      'place_slide_in_form_on_all_posts' => '',
-      'slide_in_form_delay' => '0',
-      'slide_in_form_position' => 'right',
+      'form_placement' => [
+        'popup' => ['enabled' => ''],
+        'below_posts' => ['enabled' => ''],
+        'fixed_bar' => ['enabled' => ''],
+        'slide_in' => [
+          'enabled' => '1',
+          'delay' => '0',
+          'position' => 'right',
+          'styles' => [
+            'width' => [
+              'unit' => 'pixel',
+              'value' => '380',
+            ],
+          ],
+        ],
+        'others' => [],
+      ],
       'border_radius' => '25',
       'border_size' => '0',
       'form_padding' => '30',
       'input_padding' => '15',
       'font_family' => 'Montserrat',
-      'below_post_styles' => [
-        'width' => [
-          'unit' => 'percent',
-          'value' => '100',
-        ],
-      ],
-      'slide_in_styles' => [
-        'width' => [
-          'unit' => 'pixel',
-          'value' => '380',
-        ],
-      ],
-      'fixed_bar_styles' => [
-        'width' => [
-          'unit' => 'percent',
-          'value' => '100',
-        ],
-      ],
-      'popup_styles' => [
-        'width' => [
-          'unit' => 'pixel',
-          'value' => '520',
-        ],
-      ],
-      'other_styles' => [
-        'width' => [
-          'unit' => 'percent',
-          'value' => '100',
-        ],
-      ],
       'close_button' => 'round_black',
       'success_validation_color' => '#00d084',
       'error_validation_color' => '#cf2e2e',

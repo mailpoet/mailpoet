@@ -143,23 +143,22 @@ class Template10Popup extends FormTemplate {
       'segments' => [],
       'alignment' => 'left',
       'fontSize' => '20',
-      'form_placement_slide_in_enabled' => '',
-      'form_placement_fixed_bar_enabled' => '',
-      'form_placement_popup_enabled' => '1',
-      'form_placement_bellow_posts_enabled' => '',
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '',
-      'place_popup_form_on_all_pages' => '',
-      'place_popup_form_on_all_posts' => '',
-      'popup_form_delay' => '0',
-      'place_fixed_bar_form_on_all_pages' => '',
-      'place_fixed_bar_form_on_all_posts' => '',
-      'fixed_bar_form_delay' => '15',
-      'fixed_bar_form_position' => 'top',
-      'place_slide_in_form_on_all_pages' => '',
-      'place_slide_in_form_on_all_posts' => '',
-      'slide_in_form_delay' => '15',
-      'slide_in_form_position' => 'right',
+      'form_placement' => [
+        'popup' => [
+          'enabled' => '1',
+          'delay' => '0',
+          'styles' => [
+            'width' => [
+              'unit' => 'pixel',
+              'value' => '440',
+            ],
+          ],
+        ],
+        'below_posts' => ['enabled' => ''],
+        'fixed_bar' => ['enabled' => ''],
+        'slide_in' => ['enabled' => ''],
+        'others' => [],
+      ],
       'border_radius' => '24',
       'border_size' => '0',
       'form_padding' => '40',
@@ -167,36 +166,6 @@ class Template10Popup extends FormTemplate {
       'background_image_url' => '',
       'background_image_display' => 'scale',
       'close_button' => 'classic_white',
-      'below_post_styles' => [
-        'width' => [
-          'unit' => 'percent',
-          'value' => '100',
-        ],
-      ],
-      'slide_in_styles' => [
-        'width' => [
-          'unit' => 'pixel',
-          'value' => '560',
-        ],
-      ],
-      'fixed_bar_styles' => [
-        'width' => [
-          'unit' => 'percent',
-          'value' => '100',
-        ],
-      ],
-      'popup_styles' => [
-        'width' => [
-          'unit' => 'pixel',
-          'value' => '440',
-        ],
-      ],
-      'other_styles' => [
-        'width' => [
-          'unit' => 'percent',
-          'value' => '100',
-        ],
-      ],
       'segments_selected_by' => 'admin',
       'gradient' => 'linear-gradient(180deg,rgb(70,219,232) 0%,rgb(197,222,213) 100%)',
       'success_validation_color' => '#00d084',

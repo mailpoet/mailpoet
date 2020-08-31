@@ -172,23 +172,21 @@ class Template10BelowPages extends FormTemplate {
       'segments' => [],
       'alignment' => 'left',
       'fontSize' => '20',
-      'form_placement_slide_in_enabled' => '',
-      'form_placement_fixed_bar_enabled' => '',
-      'form_placement_popup_enabled' => '',
-      'form_placement_bellow_posts_enabled' => '1',
-      'place_form_bellow_all_pages' => '',
-      'place_form_bellow_all_posts' => '',
-      'place_popup_form_on_all_pages' => '',
-      'place_popup_form_on_all_posts' => '',
-      'popup_form_delay' => '15',
-      'place_fixed_bar_form_on_all_pages' => '',
-      'place_fixed_bar_form_on_all_posts' => '',
-      'fixed_bar_form_delay' => '15',
-      'fixed_bar_form_position' => 'top',
-      'place_slide_in_form_on_all_pages' => '',
-      'place_slide_in_form_on_all_posts' => '',
-      'slide_in_form_delay' => '15',
-      'slide_in_form_position' => 'right',
+      'form_placement' => [
+        'popup' => ['enabled' => ''],
+        'below_posts' => [
+          'enabled' => '1',
+          'below_post_styles' => [
+            'width' => [
+              'unit' => 'percent',
+              'value' => '100',
+            ],
+          ],
+        ],
+        'fixed_bar' => ['enabled' => ''],
+        'slide_in' => ['enabled' => ''],
+        'others' => [],
+      ],
       'border_radius' => '4',
       'border_size' => '0',
       'form_padding' => '40',
@@ -196,36 +194,6 @@ class Template10BelowPages extends FormTemplate {
       'background_image_url' => '',
       'background_image_display' => 'scale',
       'close_button' => 'classic_white',
-      'below_post_styles' => [
-        'width' => [
-          'unit' => 'percent',
-          'value' => '100',
-        ],
-      ],
-      'slide_in_styles' => [
-        'width' => [
-          'unit' => 'pixel',
-          'value' => '420',
-        ],
-      ],
-      'fixed_bar_styles' => [
-        'width' => [
-          'unit' => 'percent',
-          'value' => '100',
-        ],
-      ],
-      'popup_styles' => [
-        'width' => [
-          'unit' => 'pixel',
-          'value' => '560',
-        ],
-      ],
-      'other_styles' => [
-        'width' => [
-          'unit' => 'percent',
-          'value' => '100',
-        ],
-      ],
       'segments_selected_by' => 'admin',
       'fontColor' => '#ffffff',
       'gradient' => 'linear-gradient(180deg,rgb(70,219,232) 0%,rgb(197,222,213) 100%)',
