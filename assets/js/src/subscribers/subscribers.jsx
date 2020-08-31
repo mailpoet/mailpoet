@@ -15,7 +15,7 @@ const App = () => (
       <Switch>
         <Route path="/new" component={SubscriberForm} />
         <Route path="/edit/:id" component={SubscriberForm} />
-        <Route path="/stats/:id" component={SubscriberStats} />
+        <Route path="/stats/:id/(.*)?" component={SubscriberStats} />
         <Route path="*" component={SubscriberList} />
       </Switch>
     </HashRouter>
