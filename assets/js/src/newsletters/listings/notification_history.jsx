@@ -165,10 +165,13 @@ const NewsletterListNotificationHistory = (props) => (
     <Listing
       limit={window.mailpoet_listing_per_page}
       location={props.location}
-      params={props.match.params}
+      params={{
+        ...props.match.params,
+        parentId: props.parentId,
+      }}
       endpoint="newsletters"
       type="notification_history"
-      base_url="notification/history/:parent_id"
+      base_url="notification/history/:parentId"
       onRenderItem={renderItem}
       columns={columns}
       messages={messages}
@@ -177,19 +180,21 @@ const NewsletterListNotificationHistory = (props) => (
       auto_refresh
       sort_by="sent_at"
       sort_order="desc"
-      afterGetItems={(state) => { checkMailerStatus(state); checkCronStatus(state); }}
+      afterGetItems={(state) => {
+        checkMailerStatus(state);
+        checkCronStatus(state);
+      }}
     />
   </>
 );
 
 NewsletterListNotificationHistory.propTypes = {
+  parentId: PropTypes.string.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string,
   }).isRequired,
   match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string,
-    }),
+    params: PropTypes.object,
   }).isRequired,
 };
 

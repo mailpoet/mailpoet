@@ -221,7 +221,7 @@ class NewsletterListingRepository extends ListingRepository {
   protected function applyParameters(QueryBuilder $queryBuilder, array $parameters) {
     $type = $parameters['type'] ?? null;
     $group = $parameters['group'] ?? null;
-    $parentId = $parameters['parent_id'] ?? null;
+    $parentId = $parameters['parentId'] ?? null;
 
     if ($type) {
       $this->applyType($queryBuilder, $type, $group);
