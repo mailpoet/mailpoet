@@ -28,25 +28,45 @@
   .mailpoet-tab-content.mailpoet-subscriber-stats-summary table.mailpoet-listing-table {
     margin: 0 (-$grid-gap);
   }
-
-  .mailpoet-tab-content.mailpoet-subscriber-stats-summary .mailpoet-listing-table td {
-    border-bottom: 1px solid $color-tertiary-light;
-    color: $color-tertiary;
-    font-size: $font-size-small;
-  }
-
-  .mailpoet-tab-content.mailpoet-subscriber-stats-summary .mailpoet-listing-table tr:last-child td {
-    border-bottom: 0;
-  }
-
-  .mailpoet-tab-content.mailpoet-subscriber-stats-summary td a {
-    color: $color-tertiary;
-    text-decoration: underline;
-  }
 }
 
 .mailpoet-subscriber-stats-no-access-content {
   display: flex;
   justify-content: center;
   margin: 70px auto;
+}
+
+.mailpoet-subscriber-stats {
+  .mailpoet-listing-table thead tr {
+    box-shadow: 0 2px 4px -2px $color-tertiary-light;
+  }
+
+  td {
+    border-bottom: 1px solid $color-tertiary-light;
+    color: $color-tertiary;
+    font-size: $font-size-small;
+  }
+
+  td a {
+    color: $color-tertiary;
+    text-decoration: underline;
+
+    &:hover {
+      color: $color-secondary;
+      text-decoration: none;
+    }
+  }
+
+  .mailpoet-button {
+    color: $color-white;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-white;
+    }
+  }
+
+  .mailpoet-listing-table tr:last-child td {
+    border-bottom: 0;
+  }
 }

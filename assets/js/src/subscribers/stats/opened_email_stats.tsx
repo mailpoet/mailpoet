@@ -14,7 +14,7 @@ type Props = {
 
 const OpenedEmailsStats = ({ params, location }:Props) => (
   <>
-    <Heading level={2}>
+    <Heading level={4}>
       {MailPoet.I18n.t('openedEmailsHeading')}
     </Heading>
     {!MailPoet.premiumActive || MailPoet.subscribersLimitReached ? (
