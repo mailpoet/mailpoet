@@ -68,7 +68,7 @@ export default function mapFormDataBeforeSaving(data) {
     },
   };
 
-  delete mappedData.settings.placement;
+  delete mappedData.settings.formPlacement;
   delete mappedData.settings.successValidationColor;
   delete mappedData.settings.errorValidationColor;
   delete mappedData.settings.borderRadius;

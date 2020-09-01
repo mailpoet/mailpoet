@@ -153,8 +153,8 @@ class DisplayFormInWPContent {
       ((int)$_GET['mailpoet_error'] === $form->getId())
     );
 
-    $templateData['delay'] = $formSettings[$displayType]['delay'] ?? 0;
-    $templateData['position'] = $formSettings[$displayType]['position'] ?? '';
+    $templateData['delay'] = $formSettings['form_placement'][$displayType]['delay'] ?? 0;
+    $templateData['position'] = $formSettings['form_placement'][$displayType]['position'] ?? '';
     $templateData['backgroundColor'] = $formSettings['backgroundColor'] ?? '';
     $templateData['fontFamily'] = $formSettings['font_family'] ?? '';
 
