@@ -158,7 +158,10 @@ export default {
         ['mailpoet-form/last-name-input', 'mailpoet-form/first-name-input', 'mailpoet-form/email-input'].includes(block.name)
         || block.name.startsWith('mailpoet-form/custom-text')
       ) {
-        updatedBlock.attributes.styles = actionData.styles;
+        updatedBlock.attributes = {
+          ...updatedBlock.attributes,
+          styles: actionData.styles,
+        };
       }
       return updatedBlock;
     });
