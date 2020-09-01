@@ -39,7 +39,10 @@
           type="submit"
           id="mailpoet_send_preview"
           class="button button-primary mailpoet_button_full"
-          value="<%= __('Send preview') %>"
+          value="
+            {{#if sendingPreview}}<%= __('Sending…') %>{{/if}}
+            {{#unless sendingPreview}}<%= __('Send preview') %>{{/unless}}
+          "
           {{#if sendingPreview}}disabled{{/if}}
         />
         <p><%= __('A MailPoet logo will appear in the footer of all emails sent with the free version of MailPoet.') %></p>
