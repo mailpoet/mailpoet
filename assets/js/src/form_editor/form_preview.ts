@@ -1,4 +1,5 @@
 import jQuery from 'jquery';
+import { camelCase } from 'lodash';
 
 jQuery(($) => {
   $(() => {
@@ -24,24 +25,15 @@ jQuery(($) => {
         return;
       }
 
-      let width = null;
       const formType = event.data.formType;
+      const placementName = camelCase(formType);
       // Get width settings based on type
-      if (formType === 'popup') {
-        width = event.data.formSettings?.popupStyles.width;
-      } else if (formType === 'fixed_bar') {
-        width = event.data.formSettings?.fixedBarStyles.width;
-      } else if (formType === 'slide_in') {
-        width = event.data.formSettings?.slideInStyles.width;
-      } else if (formType === 'below_post') {
-        width = event.data.formSettings?.belowPostStyles.width;
-      } else if (formType === 'others') {
-        width = event.data.formSettings?.otherStyles.width;
-      }
+      const width = event.data.formSettings?.formPlacement?.[placementName]?.styles?.width;
 
       if (!width) {
         return;
       }
+      const position = event.data.formSettings?.formPlacement?.[placementName]?.position;
 
       // Apply width settings
       const unit = width.unit === 'pixel' ? 'px' : '%';
@@ -67,17 +59,17 @@ jQuery(($) => {
       }
 
       if (formType === 'slide_in') {
-        if (previewForm.hasClass('mailpoet_form_position_left') && event.data.formSettings?.slideInFormPosition === 'right') {
+        if (previewForm.hasClass('mailpoet_form_position_left') && position === 'right') {
           toggleClass(previewForm, 'mailpoet_form_position_left', 'mailpoet_form_position_right');
-        } else if (previewForm.hasClass('mailpoet_form_position_right') && event.data.formSettings?.slideInFormPosition === 'left') {
+        } else if (previewForm.hasClass('mailpoet_form_position_right') && position === 'left') {
           toggleClass(previewForm, 'mailpoet_form_position_right', 'mailpoet_form_position_left');
         }
       }
 
       if (formType === 'fixed_bar') {
-        if (previewForm.hasClass('mailpoet_form_position_bottom') && event.data.formSettings?.fixedBarFormPosition === 'top') {
+        if (previewForm.hasClass('mailpoet_form_position_bottom') && position === 'top') {
           toggleClass(previewForm, 'mailpoet_form_position_bottom', 'mailpoet_form_position_top');
-        } else if (previewForm.hasClass('mailpoet_form_position_top') && event.data.formSettings?.fixedBarFormPosition === 'bottom') {
+        } else if (previewForm.hasClass('mailpoet_form_position_top') && position === 'bottom') {
           toggleClass(previewForm, 'mailpoet_form_position_top', 'mailpoet_form_position_bottom');
         }
       }
