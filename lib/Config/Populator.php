@@ -741,7 +741,7 @@ class Populator {
   }
 
   private function migrateFormPlacement() {
-    if (version_compare($this->settings->get('db_version', '3.49.1'), '3.49.0', '>')) {
+    if (version_compare($this->settings->get('db_version', '3.49.2'), '3.49.1', '>')) {
       return;
     }
     $forms = $this->formsRepository->findAll();
