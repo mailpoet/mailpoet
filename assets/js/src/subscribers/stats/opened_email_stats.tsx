@@ -21,9 +21,10 @@ const OpenedEmailsStats = ({ params, location }:Props) => (
       <NoAccessInfo
         limitReached={MailPoet.subscribersLimitReached}
         limitValue={MailPoet.subscribersLimit}
-        subscribersCount={MailPoet.subscribersCount}
+        subscribersCountTowardsLimit={MailPoet.subscribersCountTowardsLimit}
         premiumActive={MailPoet.premiumActive}
         hasValidApiKey={MailPoet.hasValidApiKey}
+        hasPremiumSupport={MailPoet.hasPremiumSupport}
       />
     ) : (
       Hooks.applyFilters('mailpoet_subscribers_opened_emails_stats', params, location)

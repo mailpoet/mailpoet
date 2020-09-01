@@ -6,24 +6,33 @@ import Button from 'common/button/button';
 type Props = {
   limitReached: boolean
   limitValue: number
-  subscribersCount: number
+  subscribersCountTowardsLimit: number
   premiumActive: boolean
   hasValidApiKey: boolean
+  hasPremiumSupport: boolean
 }
 
 const NoAccessInfo = ({
   limitReached,
   limitValue,
-  subscribersCount,
+  subscribersCountTowardsLimit,
   premiumActive,
   hasValidApiKey,
+  hasPremiumSupport,
 }: Props) => {
   const getBannerMessage = () => {
     if (!premiumActive) {
       return MailPoet.I18n.t('premiumRequired');
     }
-    return MailPoet.I18n.t('planLimitReached')
-      .replace('[subscribersCount]', subscribersCount)
+    // Covers premium with paid plan
+    if (hasPremiumSupport) {
+      return MailPoet.I18n.t('planLimitReached')
+        .replace('[subscribersCount]', subscribersCountTowardsLimit)
+        .replace('[subscribersCount]', limitValue);
+    }
+    // Covers premium without apikey and premium with free plan api key
+    return MailPoet.I18n.t('freeLimitReached')
+      .replace('[subscribersCount]', subscribersCountTowardsLimit)
       .replace('[subscribersCount]', limitValue);
   };
 
@@ -33,7 +42,7 @@ const NoAccessInfo = ({
         href={
           hasValidApiKey
             ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl()
-            : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(subscribersCount + 1)
+            : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(subscribersCountTowardsLimit + 1)
         }
       >
         {MailPoet.I18n.t('upgrade')}
