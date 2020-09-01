@@ -204,7 +204,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     // existing parent ID
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
       'params' => [
-        'parent_id' => (string)$parent->getId(),
+        'parentId' => (string)$parent->getId(),
       ],
     ]));
     expect($newsletters)->count(1);
@@ -212,7 +212,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     // non-existent parent ID
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
       'params' => [
-        'parent_id' => (string)$newsletter->getId(),
+        'parentId' => (string)$newsletter->getId(),
       ],
     ]));
     expect($newsletters)->count(0);

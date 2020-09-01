@@ -74,7 +74,7 @@ const Tabs = withNpsPoll(() => {
       >
         {
           parentId
-            ? <NewsletterListNotificationHistory />
+            ? <NewsletterListNotificationHistory parentId={parentId} />
             : <NewsletterListNotification />
         }
       </Tab>
