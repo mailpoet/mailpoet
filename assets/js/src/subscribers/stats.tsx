@@ -61,7 +61,7 @@ export const SubscriberStats = () => {
   }
 
   return (
-    <div>
+    <div className="mailpoet-subscriber-stats">
       <Heading email={stats.email} />
       <div className="mailpoet-subscriber-stats-summary-grid">
         <Summary
