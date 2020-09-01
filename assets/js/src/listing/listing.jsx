@@ -551,8 +551,10 @@ class Listing extends React.Component {
       'wp-list-table',
       'widefat',
       'fixed',
-      'striped',
-      { 'mailpoet-listing-loading': this.state.loading }
+      {
+        'mailpoet-listing-loading': this.state.loading,
+        striped: this.props.striped,
+      }
     );
 
     // search
@@ -682,6 +684,7 @@ Listing.propTypes = {
   sort_order: PropTypes.string,
   params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   auto_refresh: PropTypes.bool,
+  striped: PropTypes.bool,
   location: PropTypes.shape({
     pathname: PropTypes.string,
   }),
@@ -714,6 +717,7 @@ Listing.defaultProps = {
   sort_by: null,
   sort_order: undefined,
   auto_refresh: false,
+  striped: true,
   location: undefined,
   base_url: '',
   type: undefined,
