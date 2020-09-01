@@ -566,10 +566,15 @@ class Listing extends React.Component {
       search = false;
     }
 
+    const categories = this.state.groups.map((group) => Object.assign(group, {
+      automationId: `filters_${group.label.replace(' ', '_').toLowerCase()}`,
+    }))
+      .filter((category) => !(category.name === 'trash' && category.count === 0));
+
     // groups
     let groups = (
       <Categories
-        categories={this.state.groups}
+        categories={categories}
         active={this.state.group}
         onSelect={this.handleGroup}
       />
