@@ -60,7 +60,7 @@ const NoAccessInfo = ({
   );
 
   return (
-    <table className="mailpoet-listing-table wp-list-table widefat">
+    <table className="mailpoet-listing-table wp-list-table widefat" data-automation-id="subscriber-stats-no-access">
       <thead>
         <tr>
           <th>{MailPoet.I18n.t('email')}</th>
