@@ -13,6 +13,8 @@ use MailPoet\Subscribers\Source;
 use MailPoet\Util\DateConverter;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 use function MailPoetVendor\array_column;
 
@@ -48,8 +50,8 @@ class Import {
       array_keys($data['columns'])
     );
     $this->subscribersCount = count(reset($this->subscribersData));
-    $this->createdAt = date('Y-m-d H:i:s', (int)$data['timestamp']);
-    $this->updatedAt = date('Y-m-d H:i:s', (int)$data['timestamp'] + 1);
+    $this->createdAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $this->updatedAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 1);
     $this->requiredSubscribersFields = [
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'first_name' => '',
