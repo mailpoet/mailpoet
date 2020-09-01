@@ -8,6 +8,7 @@ import Blob from 'blob';
 import FileSaver from 'file-saver';
 import * as Thumbnail from 'common/thumbnail.ts';
 import _ from 'underscore';
+import SuperModel from 'backbone.supermodel/build/backbone.supermodel';
 
 var Module = {};
 var saveTimeout;
@@ -268,6 +269,7 @@ Module.SaveView = Marionette.View.extend({
       MailPoet.Modal.loading(false);
     }).done(function (response) {
       this.previewView = new Module.NewsletterPreviewView({
+        model: new Module.NewsletterPreviewModel(),
         previewType: window.localStorage.getItem(App.getConfig().get('newsletterPreview.previewTypeLocalStorageKey')),
         previewUrl: response.meta.preview_url,
       });
@@ -435,9 +437,19 @@ Module.beforeExitWithUnsavedChanges = function (e) {
   return undefined;
 };
 
+Module.NewsletterPreviewModel = SuperModel.extend({
+  defaults: {
+    previewSendingError: false,
+    sendingPreview: false,
+  },
+});
+
 Module.NewsletterPreviewView = Marionette.View.extend({
   className: 'mailpoet_browser_preview_wrapper',
   getTemplate: function () { return window.templates.newsletterPreview; },
+  modelEvents: {
+    change: 'render',
+  },
   events: function () {
     return {
       'change .mailpoet_browser_preview_type': 'changeBrowserPreviewType',
@@ -449,7 +461,6 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     this.previewUrl = options.previewUrl;
     this.width = '100%';
     this.height = '100%';
-    this.previewSendingError = false;
   },
   templateContext: function () {
     return {
@@ -457,7 +468,8 @@ Module.NewsletterPreviewView = Marionette.View.extend({
       previewUrl: this.previewUrl,
       width: this.width,
       height: this.height,
-      previewSendingError: this.previewSendingError,
+      previewSendingError: this.model.get('previewSendingError'),
+      sendingPreview: this.model.get('sendingPreview'),
       mssKeyPendingApproval: window.mailpoet_mss_key_pending_approval,
     };
   },
@@ -483,6 +495,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
   },
   sendPreview: function () {
     // get form data
+    var that = this;
     var $emailField = this.$('#mailpoet_preview_to_email');
     var data = {
       subscriber: $emailField.val(),
@@ -500,10 +513,12 @@ Module.NewsletterPreviewView = Marionette.View.extend({
       return false;
     }
 
-    this.previewSendingError = false;
+    this.model.set('previewSendingError', false);
+    this.model.set('sendingPreview', true);
     // save before sending
     App.getChannel().request('save').always(function () {
       CommunicationComponent.previewNewsletter(data).done(function () {
+        that.model.set('sendingPreview', false);
         $('#mailpoet_modal_close').trigger('click');
         MailPoet.Notice.success(
           MailPoet.I18n.t('newsletterPreviewSent'),
@@ -514,7 +529,8 @@ Module.NewsletterPreviewView = Marionette.View.extend({
           'Domain name': data.subscriber.substring(data.subscriber.indexOf('@') + 1),
         });
       }).fail(function () {
-        this.previewSendingError = true;
+        that.model.set('sendingPreview', false);
+        that.model.set('previewSendingError', true);
       });
     });
     return undefined;
