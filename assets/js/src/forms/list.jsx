@@ -90,21 +90,23 @@ const bulkActions = [
 
 function getFormPlacement(settings) {
   const placements = [];
-  if (settings.form_placement_fixed_bar_enabled === '1') {
+  /* eslint-disable camelcase */
+  if (settings?.form_placement?.fixed_bar?.enabled === '1') {
     placements.push(MailPoet.I18n.t('placeFixedBarFormOnPages'));
   }
-  if (settings.form_placement_bellow_posts_enabled === '1') {
+  if (settings?.form_placement?.below_posts?.enabled === '1') {
     placements.push(MailPoet.I18n.t('placeFormBellowPages'));
   }
-  if (settings.form_placement_popup_enabled === '1') {
+  if (settings?.form_placement?.popup?.enabled === '1') {
     placements.push(MailPoet.I18n.t('placePopupFormOnPages'));
   }
-  if (settings.form_placement_slide_in_enabled === '1') {
+  if (settings?.form_placement?.slide_in?.enabled === '1') {
     placements.push(MailPoet.I18n.t('placeSlideInFormOnPages'));
   }
   if (placements.length > 0) {
     return placements.join(', ');
   }
+  /* eslint-enable camelcase */
   return MailPoet.I18n.t('placeFormOthers');
 }
 
