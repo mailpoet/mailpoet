@@ -278,4 +278,15 @@ describe('Save', function () {
       });
     });
   });
+
+  describe('preview view', function () {
+    var view;
+    beforeEach(function () {
+      view = new (SaveComponent.NewsletterPreviewView)();
+    });
+
+    it('renders', function () {
+      expect(view.render).to.not.throw();
+    });
+  });
 });
