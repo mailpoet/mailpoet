@@ -440,6 +440,7 @@ Module.beforeExitWithUnsavedChanges = function (e) {
 Module.NewsletterPreviewModel = SuperModel.extend({
   defaults: {
     previewSendingError: false,
+    previewSendingSuccess: false,
     sendingPreview: false,
   },
 });
@@ -514,23 +515,56 @@ Module.NewsletterPreviewView = Marionette.View.extend({
     }
 
     this.model.set('previewSendingError', false);
+    this.model.set('previewSendingSuccess', false);
     this.model.set('sendingPreview', true);
     // save before sending
     App.getChannel().request('save').always(function () {
       CommunicationComponent.previewNewsletter(data).done(function () {
         that.model.set('sendingPreview', false);
-        $('#mailpoet_modal_close').trigger('click');
-        MailPoet.Notice.success(
-          MailPoet.I18n.t('newsletterPreviewSent'),
-          { scroll: true }
-        );
+        that.model.set('previewSendingSuccess', true);
         MailPoet.trackEvent('Editor > Preview sent', {
           'MailPoet Free version': window.mailpoet_version,
           'Domain name': data.subscriber.substring(data.subscriber.indexOf('@') + 1),
         });
-      }).fail(function () {
+      }).fail(function (response) {
         that.model.set('sendingPreview', false);
         that.model.set('previewSendingError', true);
+        let errorHtml = `<p>${MailPoet.I18n.t('newsletterPreviewError')}</p>`;
+        if (response.errors.length > 0) {
+          const errors = response.errors.map(function (error) {
+            let errorMessage = `
+              <p>
+                ${MailPoet.I18n.t('newsletterPreviewErrorNotice').replace('%$1s', window.config.mtaMethod)}:
+                <i>${error.message}</i>
+              </p>
+            `;
+            if (window.config.mtaMethod === 'PHPMail') {
+              errorMessage += `
+                <p>${MailPoet.I18n.t('newsletterPreviewErrorCheckConfiguration')}</p>
+                <br />
+                <p>${MailPoet.I18n.t('newsletterPreviewErrorUseSendingService')}</p>
+                <p>
+                  <a
+                    href=${MailPoet.MailPoetComUrlFactory.getFreePlanUrl({ utm_campaign: 'sending-error' })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    ${MailPoet.I18n.t('newsletterPreviewErrorSignUpForSendingService')}
+                  </a>
+                </p>
+              `;
+            } else {
+              const checkSettingsNotice = MailPoet.I18n.t('newsletterPreviewErrorCheckSettingsNotice').replace(
+                /\[link\](.*?)\[\/link\]/g,
+                '<a href="?page=mailpoet-settings#mta" key="check-sending">$1</a>'
+              );
+              errorMessage += `<p>${checkSettingsNotice}</p>`;
+            }
+            return errorMessage;
+          });
+          errorHtml = errors.join('');
+        }
+        document.getElementById('mailpoet_preview_sending_error').innerHTML = errorHtml;
       });
     });
     return undefined;
