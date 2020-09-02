@@ -15,6 +15,11 @@ export default (formData, formBlocks) => {
   ) {
     errors.push('missing-lists');
   }
+  if (
+    (customSegmentsBlock && customSegmentsBlock.attributes.values.length === 0)
+  ) {
+    errors.push('missing-lists-in-custom-segments-block');
+  }
   const emailInput = findBlock(formBlocks, 'mailpoet-form/email-input');
   const submit = findBlock(formBlocks, 'mailpoet-form/submit-button');
   if (!emailInput) {
