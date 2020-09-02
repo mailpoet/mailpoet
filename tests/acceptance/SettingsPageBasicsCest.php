@@ -47,6 +47,8 @@ class SettingsPageBasicsCest {
   public function allowSubscribeInComments(\AcceptanceTester $i) {
     $i->wantTo('Allow users to subscribe to lists in site comments');
     $postTitle = 'Hello world!';
+    $comment = 'Hello!';
+    $optinMessage = 'Yes, add me to your mailing list';
     $i->login();
     //go to settings and opt-in for comments
     $i->amOnMailPoetPage('Settings');
@@ -60,9 +62,10 @@ class SettingsPageBasicsCest {
     $i->waitForText($postTitle);
     $i->scrollTo('#commentform');
     $i->waitForElementVisible(['css' => '.comment-form-mailpoet']);
-    $i->see('Yes, add me to your mailing list');
-    $comment = 'This is just a lorem ipsum dolor text.';
+    $i->see($optinMessage);
+    $i->click('#comment');
     $i->fillField('#comment', $comment);
+    $i->waitForText($optinMessage);
     $i->click('#mailpoet_subscribe_on_comment');
     $i->click('Post Comment');
     $i->waitForText($comment, 10, '.comment-content');
@@ -81,7 +84,7 @@ class SettingsPageBasicsCest {
     $i->amOnPage('/');
     $i->waitForText($postTitle);
     $i->click($postTitle);
-    $i->dontSee("Yes, add me to your mailing list");
+    $i->dontSee($optinMessage);
   }
 
   public function checkSenderFreemailWarning(\AcceptanceTester $i) {
