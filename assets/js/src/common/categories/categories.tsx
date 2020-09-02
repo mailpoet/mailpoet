@@ -1,13 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import CategoriesItem from './categories_item';
-
-type Category = {
-  name: string,
-  label: string,
-  count?: number | string,
-  automationId?: string,
-};
+import CategoriesItem, { Category } from './categories_item';
 
 type Props = {
   onSelect: (name: string) => any,
