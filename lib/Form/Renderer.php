@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form;
 
+use MailPoet\Form\Templates\FormTemplate;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Settings\SettingsController;
@@ -55,7 +56,7 @@ class Renderer {
     && strlen(trim($form['styles'])) > 0) {
       return strip_tags($form['styles']);
     } else {
-      return $this->styleUtils->getDefaultCustomStyles();
+      return FormTemplate::DEFAULT_STYLES;
     }
   }
 

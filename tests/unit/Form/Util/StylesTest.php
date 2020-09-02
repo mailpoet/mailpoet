@@ -15,10 +15,6 @@ class StylesTest extends \MailPoetUnitTest {
     $this->styles = new Styles();
   }
 
-  public function testItSetsDefaultCSSStyles() {
-    expect($this->styles->getDefaultCustomStyles())->notEmpty();
-  }
-
   public function testItProcessesAndRendersStyles() {
     $stylesheet = '
     /* some comment */
