@@ -2,6 +2,7 @@
 
 namespace MailPoet\DI;
 
+use MailPoet\Config\Env;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Reference;
@@ -310,6 +311,9 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Util\Installation::class);
     $container->autowire(\MailPoet\Util\License\Features\Subscribers::class);
     $container->autowire(\MailPoet\Util\License\License::class);
+    $container->register(\MailPoet\Util\CdnAssetUrl::class)
+      ->setPublic(true)
+      ->setFactory([__CLASS__, 'getCdnAssetsUrl']);
     // WooCommerce
     $container->autowire(\MailPoet\WooCommerce\Helper::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\Settings::class)->setPublic(true);
@@ -347,5 +351,9 @@ class ContainerConfigurator implements IContainerConfigurator {
       return null;
     }
     return $container->get(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG)->get($id);
+  }
+
+  public static function getCdnAssetsUrl(): \MailPoet\Util\CdnAssetUrl {
+    return new \MailPoet\Util\CdnAssetUrl(Env::$baseUrl);
   }
 }

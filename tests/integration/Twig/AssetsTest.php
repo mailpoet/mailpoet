@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Twig;
 
 use MailPoet\Twig\Assets;
+use MailPoet\Util\CdnAssetUrl;
 
 class AssetsTest extends \MailPoetTest {
   public $assetsExtension;
@@ -19,7 +20,8 @@ class AssetsTest extends \MailPoetTest {
         'assets_manifest_js' => false,
         'assets_manifest_css' => false,
         'version' => $this->version,
-      ]
+      ],
+      new CdnAssetUrl('http://localhost/')
     );
   }
 
@@ -34,7 +36,8 @@ class AssetsTest extends \MailPoetTest {
         'assets_url' => $this->assetsUrl,
         'assets_manifest_js' => $manifest,
         'version' => $this->version,
-      ]
+      ],
+      new CdnAssetUrl('http://localhost/')
     );
 
     expect($assetsExtension->generateJavascript('script1.js', 'script2.js'))->equals(
@@ -63,7 +66,8 @@ class AssetsTest extends \MailPoetTest {
         'assets_url' => $this->assetsUrl,
         'assets_manifest_css' => $manifest,
         'version' => $this->version,
-      ]
+      ],
+      new CdnAssetUrl('http://localhost/')
     );
 
     expect($assetsExtension->generateStylesheet('style1.css', 'style2.css'))->equals(

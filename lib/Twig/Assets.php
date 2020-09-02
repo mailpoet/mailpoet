@@ -2,16 +2,24 @@
 
 namespace MailPoet\Twig;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
 
 class Assets extends AbstractExtension {
-  const CDN_URL = 'https://ps.w.org/mailpoet/';
   private $globals;
 
-  public function __construct($globals) {
+  /** @var CdnAssetUrl */
+  private $cdnAssetsUrl;
+
+  public function __construct(array $globals, CdnAssetUrl $cdnAssetsUrl = null) {
     $this->globals = $globals;
+    if ($cdnAssetsUrl === null) {
+      $cdnAssetsUrl = ContainerWrapper::getInstance()->get(CdnAssetUrl::class);
+    }
+    $this->cdnAssetsUrl = $cdnAssetsUrl;
   }
 
   public function getFunctions() {
@@ -97,7 +105,6 @@ class Assets extends AbstractExtension {
   }
 
   public function generateCdnUrl($path) {
-    $useCdn = defined('MAILPOET_USE_CDN') ? MAILPOET_USE_CDN : true;
-    return ($useCdn ? self::CDN_URL : $this->globals['base_url'] . '/plugin_repository/') . "assets/$path";
+    return $this->cdnAssetsUrl->generateCdnUrl($path);
   }
 }
