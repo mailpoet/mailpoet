@@ -3,15 +3,9 @@
 namespace MailPoet\Form\Util;
 
 use MailPoet\Entities\FormEntity;
-use MailPoet\Form\Templates\Templates\InitialForm;
 use MailPoetVendor\Sabberworm\CSS\Parser as CSSParser;
 
 class Styles {
-  public function getDefaultCustomStyles() {
-    $initFormTemplate = new InitialForm();
-    return $initFormTemplate->getStyles();
-  }
-
   public function prefixStyles($stylesheet, $prefix = '') {
     if (!$stylesheet) return;
     $styles = new CSSParser($stylesheet);

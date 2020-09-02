@@ -5,21 +5,7 @@ namespace MailPoet\Form\Templates;
 use MailPoet\Entities\FormEntity;
 
 abstract class FormTemplate {
-  abstract public function getName(): string;
-
-  abstract public function getBody(): array;
-
-  public function getSettings(): array {
-    return [
-      'on_success' => 'message',
-      'success_message' => '',
-      'segments' => null,
-      'segments_selected_by' => 'admin',
-    ];
-  }
-
-  public function getStyles(): string {
-    return <<<EOL
+  const DEFAULT_STYLES = <<<EOL
 /* form */
 .mailpoet_form {
 }
@@ -92,6 +78,22 @@ abstract class FormTemplate {
   background-color: #5b5b5b;
 }
 EOL;
+
+  abstract public function getName(): string;
+
+  abstract public function getBody(): array;
+
+  public function getSettings(): array {
+    return [
+      'on_success' => 'message',
+      'success_message' => '',
+      'segments' => null,
+      'segments_selected_by' => 'admin',
+    ];
+  }
+
+  public function getStyles(): string {
+    return self::DEFAULT_STYLES;
   }
 
   public function toFormEntity(): FormEntity {
