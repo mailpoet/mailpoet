@@ -1,12 +1,15 @@
 import React from 'react';
 import classNames from 'classnames';
 
-type Props = {
-  onSelect: (name: string) => any,
+export type Category = {
   name: string,
   label: string,
   count?: number | string,
   automationId?: string,
+};
+
+type Props = Category & {
+  onSelect: (name: string) => any,
   active?: boolean,
 };
 
