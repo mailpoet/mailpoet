@@ -113,7 +113,9 @@ class Styles {
 
     $messagesStyles = $this->renderMessagesStyles($formSettings, $selector);
 
-    $additionalStyles = $selector . ' .mailpoet_paragraph.last {margin-bottom: 0}';
+    $additionalStyles = $selector . ' .mailpoet_paragraph.last {margin-bottom: 0} ';
+    $media .= " @media (min-width: 500px) {{$selector} .last .mailpoet_paragraph:last-child {margin-bottom: 0}} ";
+    $media .= " @media (max-width: 500px) {{$selector} .mailpoet_form_column:last-child .mailpoet_paragraph:last-child {margin-bottom: 0}} ";
 
     return $formWrapperStyles
       . $formElementStyles
