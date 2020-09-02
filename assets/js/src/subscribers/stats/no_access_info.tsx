@@ -2,6 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import PremiumRequired from 'common/premium_required/premium_required';
 import Button from 'common/button/button';
+import ReactStringReplace from 'react-string-replace';
 
 type Props = {
   limitReached: boolean
@@ -21,23 +22,39 @@ const NoAccessInfo = ({
   hasPremiumSupport,
 }: Props) => {
   const getBannerMessage = () => {
+    let message = MailPoet.I18n.t('premiumRequired');
     if (!premiumActive) {
-      return MailPoet.I18n.t('premiumRequired');
+      return (
+        <p>
+          {ReactStringReplace(
+            message,
+            /\[link](.*?)\[\/link]/g,
+            (match) => (
+              <a key={match} href={MailPoet.premiumLink}>{match}</a>
+            )
+          )}
+        </p>
+      );
     }
     // Covers premium with paid plan
     if (hasPremiumSupport) {
-      return MailPoet.I18n.t('planLimitReached')
-        .replace('[subscribersCount]', subscribersCountTowardsLimit)
-        .replace('[subscribersCount]', limitValue);
+      message = MailPoet.I18n.t('planLimitReached');
+    } else { // Covers premium without apikey and premium with free plan api key
+      message = MailPoet.I18n.t('freeLimitReached');
     }
-    // Covers premium without apikey and premium with free plan api key
-    return MailPoet.I18n.t('freeLimitReached')
-      .replace('[subscribersCount]', subscribersCountTowardsLimit)
-      .replace('[subscribersCount]', limitValue);
+    return (
+      <p>
+        {ReactStringReplace(
+          message,
+          /(\[subscribersCount]|\[subscribersLimit])/g,
+          (match) => ((match === '[subscribersCount]') ? subscribersCountTowardsLimit : limitValue)
+        )}
+      </p>
+    );
   };
 
   const getCtaButton = () => (
-    limitReached ? (
+    premiumActive && limitReached ? (
       <Button
         href={
           hasValidApiKey
@@ -45,7 +62,7 @@ const NoAccessInfo = ({
             : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(subscribersCountTowardsLimit + 1)
         }
       >
-        {MailPoet.I18n.t('upgrade')}
+        {MailPoet.I18n.t('premiumBannerCtaUpgrade')}
       </Button>
     ) : (
       <Button
@@ -74,9 +91,8 @@ const NoAccessInfo = ({
           <td colSpan={4}>
             <div className="mailpoet-subscriber-stats-no-access-content">
               <PremiumRequired
-                title={limitReached ? MailPoet.I18n.t('upgradeRequired') : MailPoet.I18n.t('premiumFeature')}
-                /* eslint-disable-next-line react/no-danger */
-                message={(<p dangerouslySetInnerHTML={{ __html: getBannerMessage() }} />)}
+                title={premiumActive && limitReached ? MailPoet.I18n.t('upgradeRequired') : MailPoet.I18n.t('premiumFeature')}
+                message={getBannerMessage()}
                 actionButton={getCtaButton()}
               />
             </div>
