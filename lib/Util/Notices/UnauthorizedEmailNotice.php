@@ -38,7 +38,7 @@ class UnauthorizedEmailNotice {
   }
 
   private function getMessageText($validationError) {
-    $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email address %s hasn’t been authorized yet.</b>',
+    $text = $this->wp->_x('<b>Sending all of your emails has been paused</b> because your email address %s hasn’t been authorized yet.',
       'Email addresses have to be authorized to be used to send emails. %s will be replaced by an email address.',
       'mailpoet');
     $message = str_replace('%s', EscapeHelper::escapeHtmlText($validationError['invalid_sender_address']), $text);
