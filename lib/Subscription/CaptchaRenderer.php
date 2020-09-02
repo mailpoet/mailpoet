@@ -111,7 +111,7 @@ class CaptchaRenderer {
 
     $formHtml .= '<div class="mailpoet_form_hide_on_success">';
     $formHtml .= '<p class="mailpoet_paragraph">';
-    $formHtml .= '<img class="mailpoet_captcha mailpoet_captcha_update" src="' . $captchaUrl . '" width="' . $width . '" height="' . $height . '" title="' . $this->wp->__('Click to refresh the captcha', 'mailpoet') . '" />';
+    $formHtml .= '<img class="mailpoet_captcha mailpoet_captcha_update" src="' . $captchaUrl . '" width="' . $width . '" height="' . $height . '" title="' . $this->wp->__('Click to refresh the CAPTCHA', 'mailpoet') . '" />';
     $formHtml .= '</p>';
 
     // subscription form
