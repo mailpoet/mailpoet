@@ -20,8 +20,8 @@ class SearchForNotificationCest {
     $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForListingItemsToLoad();
     $i->searchFor($failureConditionNewsletter);
-    $i->waitForElement('tr.mailpoet-listing-no-items');
+    $i->waitForText('No emails found.', 15, '[data-automation-id="newsletters_listing_tabs"]');
     $i->searchFor($newsletterTitle);
-    $i->waitForText($newsletterTitle);
+    $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
   }
 }

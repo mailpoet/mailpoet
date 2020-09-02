@@ -205,6 +205,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     $i->waitForElement($element);
     $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);
+    $i->clearField($element);
     $i->fillField($element, $query);
     $i->pressKey($element, WebDriverKeys::ENTER);
     $i->waitForElementNotVisible(self::LISTING_LOADING_SELECTOR);

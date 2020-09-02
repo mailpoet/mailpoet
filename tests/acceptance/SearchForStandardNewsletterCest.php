@@ -20,8 +20,8 @@ class SearchForStandardNewsletterCest {
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->searchFor($failureConditionNewsletter);
-    $i->dontSee($newsletterTitle);
+    $i->waitForText('No emails found.', 15, '[data-automation-id="newsletters_listing_tabs"]');
     $i->searchFor($newsletterTitle);
-    $i->waitForText($newsletterTitle);
+    $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
   }
 }
