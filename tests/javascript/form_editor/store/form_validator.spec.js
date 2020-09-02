@@ -99,6 +99,20 @@ describe('Form validator', () => {
     expect(result).to.be.empty;
   });
 
+  it('Should return error for when segments block is empty', () => {
+    const filledSegmentsBlock = { ...segmentsBlock };
+    filledSegmentsBlock.attributes.values = [];
+    const formData = {
+      settings: {
+        segments: [1],
+      },
+    };
+    const blocks = [emailBlock, submitBlock, filledSegmentsBlock];
+    const result = validate(formData, blocks);
+    expect(result).to.not.be.empty;
+    expect(result).to.contain('missing-lists-in-custom-segments-block');
+  });
+
   it('Should return error for missing email', () => {
     const formData = {
       settings: {
