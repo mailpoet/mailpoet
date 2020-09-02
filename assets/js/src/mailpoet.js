@@ -7,6 +7,7 @@ var MailPoet = {
   MailPoetComUrlFactory: MailPoetComUrlFactory(window.mailpoet_referral_id),
   version: window.mailpoet_version,
   premiumVersion: window.mailpoet_premium_version,
+  premiumLink: window.mailpoet_premium_link,
   isWoocommerceActive: window.mailpoet_woocommerce_active,
   premiumActive: window.mailpoet_premium_active,
   subscribersLimit: window.mailpoet_subscribers_limit,
