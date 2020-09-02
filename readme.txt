@@ -62,7 +62,7 @@ With the MailPoet email designer, you can easily design the transactional emails
 
 Increase your sales and stay in touch with your customers with our automatic emails for WooCommerce!
 
-With our WooCommerce emails, you can :
+With our WooCommerce emails, you can:
 
 * Welcome your new customers when they make their first purchase
 * Upsell by sending emails to customers who purchased a specific product or a specific product category
