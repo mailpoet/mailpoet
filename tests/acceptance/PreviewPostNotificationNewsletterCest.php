@@ -49,7 +49,7 @@ class PreviewPostNotificationNewsletterCest {
     $i->waitForText('Send preview');
     $i->click('Send preview');
     $i->waitForText('Your test email has been sent!');
-    $i->click('.notice-dismiss');
+    $i->click('#mailpoet_modal_close');
     //check for error if no email is set
     $i->waitForElement('.mailpoet_show_preview');
     $i->click('.mailpoet_show_preview');

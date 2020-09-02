@@ -46,9 +46,13 @@
           {{#if sendingPreview}}disabled{{/if}}
         />
         <p><%= __('A MailPoet logo will appear in the footer of all emails sent with the free version of MailPoet.') %></p>
-        <p class="mailpoet_error {{#unless previewSendingError}}mailpoet_hidden{{/unless}}">
+        <p class="{{#unless previewSendingSuccess}}mailpoet_hidden{{/unless}}">
+          <%= __('Your test email has been sent!') %>
+        </p>
+        <p class="{{#unless previewSendingSuccess}}mailpoet_hidden{{/unless}}">
           <%= __('Didn’t receive the test email? Read our [link]quick guide[/link] to sending issues.')|replaceLinkTags('https://kb.mailpoet.com/article/146-my-newsletters-are-not-being-received', {'target': '_blank', 'rel': 'noopener noreferrer'})|raw %>
         </p>
+        <div class="{{#unless previewSendingError}}mailpoet_hidden{{/unless}} mailpoet_error" id="mailpoet_preview_sending_error"></div>
       </div>
     </form>
 
