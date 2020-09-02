@@ -70,7 +70,7 @@ function mailpoet_php_version_notice() {
   );
   $noticeP2 = str_replace('[/link]', '</a>', $noticeP2);
 
-  $noticeP3 = __('If you can’t upgrade the PHP version, [link]install this version[/link] of MailPoet. Remember not to update MailPoet ever again!', 'mailpoet');
+  $noticeP3 = __('If you can’t upgrade the PHP version, [link]install this version[/link] of MailPoet. Remember to not update MailPoet ever again!', 'mailpoet');
   $noticeP3 = str_replace(
     '[link]',
     '<a href="https://downloads.wordpress.org/plugin/mailpoet.3.44.0.zip" target="_blank">',
