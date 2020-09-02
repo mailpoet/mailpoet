@@ -159,7 +159,7 @@ class Newsletters {
         'slug' => 'woocommerce',
         'premium' => true,
         'title' => $this->wp->__('WooCommerce', 'mailpoet'),
-        'description' => $this->wp->__('Automatically send an email when there is a new WooCommerce product, order and some other action takes place.', 'mailpoet'),
+        'description' => $this->wp->__('Automatically send an email based on your customers’ purchase behavior. Enhance your customer service and start increasing sales with WooCommerce follow up emails.', 'mailpoet'),
         'events' => [
           [
             'slug' => 'woocommerce_abandoned_shopping_cart',

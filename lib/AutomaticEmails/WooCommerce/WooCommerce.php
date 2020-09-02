@@ -50,7 +50,7 @@ class WooCommerce {
     return [
       'slug' => self::SLUG,
       'title' => WPFunctions::get()->__('WooCommerce', 'mailpoet'),
-      'description' => WPFunctions::get()->__('Automatically send an email when there is a new WooCommerce product, order and some other action takes place.', 'mailpoet'),
+      'description' => WPFunctions::get()->__('Automatically send an email based on your customers’ purchase behavior. Enhance your customer service and start increasing sales with WooCommerce follow up emails.', 'mailpoet'),
       'events' => $this->wp->applyFilters(self::EVENTS_FILTER, []),
     ];
   }
