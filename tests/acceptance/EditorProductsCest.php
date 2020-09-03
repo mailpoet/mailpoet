@@ -88,9 +88,11 @@ class EditorProductsCest {
     $i->wantTo('Filter products');
     $i->amEditingNewsletter($this->newsletter->id);
 
-    // Create products block
+    // Create products block (added wait checks to avoid flakiness)
+    $i->waitForText('Content');
     $i->dragAndDrop('#automation_editor_block_products', '#mce_0');
-    $i->waitForText('PRODUCT SELECTION');
+    $i->waitForText('There is no content to display.');
+    $i->waitForText('Display options');
 
     // Preload tags and categories
     $i->click('.select2-search__field');
@@ -103,10 +105,15 @@ class EditorProductsCest {
 
     // Multiple result for category
     $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-    $i->waitForElementNotVisible('.mailpoet_products_scroll_container > div:nth-child(' . (self::PRODUCTS_COUNT + 1) . ')');
-    $i->waitForText(self::PRODUCT_PREFIX_CATEGORY, 15, '.mailpoet_products_scroll_container');
-    $i->seeNumberOfElements('.mailpoet_products_scroll_container > div', self::PRODUCTS_COUNT);
-    $this->clearCategories($i);
+    try {
+      $i->seeSelectedInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
+      $this->checkElements($i);
+      $this->clearCategories($i);
+  } catch (Exception $e) {
+      $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
+      $this->checkElements($i);
+      $this->clearCategories($i);
+  }
 
     // Click select2 to hide results
     $i->click('.select2-search__field');
@@ -237,6 +244,12 @@ class EditorProductsCest {
     $i->waitForElementNotVisible('.' . implode('.', explode(' ', $productClass)));
     $i->waitForElementVisible(self::EDITOR_PRODUCT_SELECTOR);
     $i->waitForElementNotVisible('.velocity-animating');
+  }
+
+  private function checkElements(\AcceptanceTester $i) {
+    $i->waitForElementNotVisible('.mailpoet_products_scroll_container > div:nth-child(' . (self::PRODUCTS_COUNT + 1) . ')');
+    $i->waitForText(self::PRODUCT_PREFIX_CATEGORY, 15, '.mailpoet_products_scroll_container');
+    $i->seeNumberOfElements('.mailpoet_products_scroll_container > div', self::PRODUCTS_COUNT);
   }
 
   public function testProductsWidget(\AcceptanceTester $i) {
