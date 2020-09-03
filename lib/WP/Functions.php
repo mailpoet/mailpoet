@@ -160,6 +160,10 @@ class Functions {
     return get_categories($args);
   }
 
+  public function getTags($args = '') {
+    return get_tags($args);
+  }
+
   public function getComment($comment = null, $output = OBJECT) {
     return get_comment($comment, $output);
   }
