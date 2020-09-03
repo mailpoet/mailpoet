@@ -6,6 +6,7 @@ export default function mapFormDataBeforeSaving(data) {
       form_placement: {
         popup: {
           enabled: data.settings.formPlacement?.popup?.enabled === true ? '1' : '',
+          exit_intent_enabled: data.settings.formPlacement?.popup?.exitIntentEnabled ? '1' : '',
           delay: data.settings.formPlacement?.popup?.delay,
           styles: data.settings.formPlacement?.popup?.styles,
           posts: {

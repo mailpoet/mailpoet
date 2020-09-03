@@ -4,6 +4,7 @@ import { SelectControl, ToggleControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
+import Heading from '../../../../../common/typography/heading/heading';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
@@ -47,6 +48,15 @@ const PopUpSettings = () => {
               label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
             }))}
           />
+          <div>
+            <p><b>{MailPoet.I18n.t('exitIntentTitle')}</b></p>
+            <p>{MailPoet.I18n.t('exitIntentDescription')}</p>
+            <ToggleControl
+              label={MailPoet.I18n.t('exitIntentSwitch')}
+              checked={formSettings.formPlacement.popup.exitIntentEnabled}
+              onChange={compose([changeFormSettings, assocPath('formPlacement.popup.exitIntentEnabled', __, formSettings)])}
+            />
+          </div>
           <SizeSettings
             label={MailPoet.I18n.t('formSettingsWidth')}
             value={formSettings.formPlacement.popup.styles.width}

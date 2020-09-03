@@ -10,6 +10,7 @@ export default function mapFormDataAfterLoading(data) {
       formPlacement: {
         popup: {
           enabled: data.settings.form_placement?.popup?.enabled === '1',
+          exitIntentEnabled: data.settings.form_placement?.popup?.exit_intent_enabled === '1',
           delay: data.settings.form_placement?.popup?.delay !== undefined
             ? asNum(data.settings.form_placement?.popup?.delay)
             : defaults.popupForm.formDelay,
