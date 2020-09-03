@@ -23,7 +23,7 @@
   var mailpoet_form_data = <%= json_encode(form) %>;
   var mailpoet_form_exports = <%= json_encode(form_exports) %>;
   var mailpoet_form_segments = <%= json_encode(segments) %>;
-  var mailpoet_form_pages = <%= json_encode(pages) %>;
+  var mailpoet_form_pages = <%= json_encode(mailpoet_pages) %>;
   var mailpoet_custom_fields = <%= json_encode(custom_fields) %>;
   var mailpoet_date_types = <%= json_encode(date_types) %>;
   var mailpoet_date_formats = <%= json_encode(date_formats) %>;
@@ -31,6 +31,10 @@
   var mailpoet_form_preview_page = <%= json_encode(preview_page_url) %>;
   var mailpoet_custom_fonts = <%= json_encode(custom_fonts) %>;
   var mailpoet_translations = <%= json_encode(translations) %>;
+  var mailpoet_all_wp_posts = <%= json_encode(posts) %>;
+  var mailpoet_all_wp_pages = <%= json_encode(pages) %>;
+  var mailpoet_all_wp_categories = <%= json_encode(categories) %>;
+  var mailpoet_all_wp_tags = <%= json_encode(tags) %>;
   var mailpoet_close_icons_url = '<%= image_url("form_close_icon") %>';
   <% endautoescape %>
 </script>
