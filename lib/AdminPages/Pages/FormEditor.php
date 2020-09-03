@@ -35,6 +35,11 @@ use MailPoet\Form\Templates\Templates\Template6FixedBar;
 use MailPoet\Form\Templates\Templates\Template6Popup;
 use MailPoet\Form\Templates\Templates\Template6SlideIn;
 use MailPoet\Form\Templates\Templates\Template6Widget;
+use MailPoet\Form\Templates\Templates\Template7BelowPages;
+use MailPoet\Form\Templates\Templates\Template7FixedBar;
+use MailPoet\Form\Templates\Templates\Template7PopUp;
+use MailPoet\Form\Templates\Templates\Template7SlideIn;
+use MailPoet\Form\Templates\Templates\Template7Widget;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Export;
 use MailPoet\Models\Form;
@@ -93,6 +98,11 @@ class FormEditor {
     Template6Popup::ID,
     Template6SlideIn::ID,
     Template6Widget::ID,
+    Template7BelowPages::ID,
+    Template7FixedBar::ID,
+    Template7PopUp::ID,
+    Template7SlideIn::ID,
+    Template7Widget::ID,
     Template10BelowPages::ID,
     Template10FixedBar::ID,
     Template10Popup::ID,

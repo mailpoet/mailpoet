@@ -29,6 +29,11 @@ use MailPoet\Form\Templates\Templates\Template6FixedBar;
 use MailPoet\Form\Templates\Templates\Template6Popup;
 use MailPoet\Form\Templates\Templates\Template6SlideIn;
 use MailPoet\Form\Templates\Templates\Template6Widget;
+use MailPoet\Form\Templates\Templates\Template7BelowPages;
+use MailPoet\Form\Templates\Templates\Template7FixedBar;
+use MailPoet\Form\Templates\Templates\Template7PopUp;
+use MailPoet\Form\Templates\Templates\Template7SlideIn;
+use MailPoet\Form\Templates\Templates\Template7Widget;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\CdnAssetUrl;
 
@@ -62,6 +67,11 @@ class TemplateRepository {
     Template6Popup::ID => Template6Popup::class,
     Template6SlideIn::ID => Template6SlideIn::class,
     Template6Widget::ID => Template6Widget::class,
+    Template7BelowPages::ID => Template7BelowPages::class,
+    Template7FixedBar::ID => Template7FixedBar::class,
+    Template7PopUp::ID => Template7PopUp::class,
+    Template7SlideIn::ID => Template7SlideIn::class,
+    Template7Widget::ID => Template7Widget::class,
     Template10BelowPages::ID => Template10BelowPages::class,
     Template10FixedBar::ID => Template10FixedBar::class,
     Template10Popup::ID => Template10Popup::class,
