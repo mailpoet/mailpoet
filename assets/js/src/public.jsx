@@ -3,6 +3,8 @@ import jQuery from 'jquery';
 import Cookies from 'js-cookie';
 import 'parsleyjs';
 
+const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
+
 jQuery(($) => {
   window.reCaptchaCallback = function reCaptchaCallback() {
     $('.mailpoet_recaptcha').each((index, element) => {
@@ -91,16 +93,16 @@ jQuery(($) => {
       delay = 0;
     }
     const timeout = setTimeout(() => {
-      $(document).off('mouseleave');
+      $(document).off(exitIntentEvent);
       doDisplayForm(formDiv, showOverlay);
     }, delay * 1000);
 
     const exitIntentEnabled = form.data('exit-intent-enabled');
     if (exitIntentEnabled) {
-      $(document).on('mouseleave', () => {
-        doDisplayForm(formDiv, showOverlay);
-        $(document).off('mouseleave');
+      $(document).on(exitIntentEvent, () => {
+        $(document).off(exitIntentEvent);
         clearTimeout(timeout);
+        doDisplayForm(formDiv, showOverlay);
       });
     }
   }
