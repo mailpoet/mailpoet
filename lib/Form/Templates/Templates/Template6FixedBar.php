@@ -7,6 +7,9 @@ use MailPoet\Form\Templates\FormTemplate;
 class Template6FixedBar extends FormTemplate {
   const ID = 'template_6_fixed_bar';
 
+  /** @var string */
+  protected $assetsDirectory = 'template-6';
+
   public function getName(): string {
     return 'Template 6 Fixed Bar';
   }
@@ -168,7 +171,7 @@ class Template6FixedBar extends FormTemplate {
       'form_padding' => '0',
       'input_padding' => '12',
       'font_family' => 'Montserrat',
-      'background_image_url' => 'http://mailpoet.info/wp-content/uploads/2020/07/form-bg.jpg',
+      'background_image_url' => $this->getAssetUrl('form-bg.jpg'),
       'background_image_display' => 'scale',
       'close_button' => 'classic',
       'segments_selected_by' => 'admin',
