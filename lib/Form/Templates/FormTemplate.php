@@ -3,6 +3,7 @@
 namespace MailPoet\Form\Templates;
 
 use MailPoet\Entities\FormEntity;
+use MailPoet\Util\CdnAssetUrl;
 
 abstract class FormTemplate {
   const DEFAULT_STYLES = <<<EOL
@@ -79,6 +80,16 @@ abstract class FormTemplate {
 }
 EOL;
 
+  /** @var CdnAssetUrl */
+  protected $cdnAssetUrl;
+
+  /** @var string */
+  protected $assetsDirectory = '';
+
+  public function __construct(CdnAssetUrl $cdnAssetUrl) {
+    $this->cdnAssetUrl = $cdnAssetUrl;
+  }
+
   abstract public function getName(): string;
 
   abstract public function getBody(): array;
@@ -102,5 +113,9 @@ EOL;
     $formEntity->setSettings($this->getSettings());
     $formEntity->setStyles($this->getStyles());
     return $formEntity;
+  }
+
+  protected function getAssetUrl(string $filename): string {
+    return $this->cdnAssetUrl->generateCdnUrl("form-templates/{$this->assetsDirectory}/$filename");
   }
 }
