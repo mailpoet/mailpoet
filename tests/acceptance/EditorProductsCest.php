@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Test\Acceptance\Exception;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
@@ -103,7 +104,7 @@ class EditorProductsCest {
     $i->waitForText('No products available');
     $this->clearCategories($i);
 
-    // Multiple result for category
+    // Multiple result for category (try/catch added to prevent flakyness)
     $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
     try {
       $i->seeSelectedInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
