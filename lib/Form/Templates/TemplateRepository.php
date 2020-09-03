@@ -25,10 +25,14 @@ use MailPoet\Form\Templates\Templates\Template6Popup;
 use MailPoet\Form\Templates\Templates\Template6SlideIn;
 use MailPoet\Form\Templates\Templates\Template6Widget;
 use MailPoet\UnexpectedValueException;
+use MailPoet\Util\CdnAssetUrl;
 
 class TemplateRepository {
   const INITIAL_FORM_TEMPLATE = InitialForm::ID;
   const DEFAULT_FORM_TEMPLATE = DefaultForm::ID;
+
+  /** @var CdnAssetUrl */
+  private $cdnAssetUrl;
 
   private $templates = [
     InitialForm::ID => InitialForm::class,
@@ -55,13 +59,17 @@ class TemplateRepository {
     Template10Widget::ID => Template10Widget::class,
   ];
 
+  public function __construct(CdnAssetUrl $cdnAssetUrl) {
+    $this->cdnAssetUrl = $cdnAssetUrl;
+  }
+
   public function getFormTemplate(string $templateId): FormTemplate {
     if (!isset($this->templates[$templateId])) {
       throw UnexpectedValueException::create()
         ->withErrors(["Template with id $templateId doesn't exist."]);
     }
     /** @var FormTemplate $template */
-    $template = new $this->templates[$templateId]();
+    $template = new $this->templates[$templateId]($this->cdnAssetUrl);
     return $template;
   }
 
