@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Test\Acceptance\Exception;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
@@ -110,11 +109,12 @@ class EditorProductsCest {
       $i->seeSelectedInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
       $this->checkElements($i);
       $this->clearCategories($i);
-  } catch (Exception $e) {
+    }
+    catch (\Exception $e) {
       $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
       $this->checkElements($i);
       $this->clearCategories($i);
-  }
+    }
 
     // Click select2 to hide results
     $i->click('.select2-search__field');
