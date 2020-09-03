@@ -7,6 +7,9 @@ use MailPoet\Form\Templates\FormTemplate;
 class Template6Popup extends FormTemplate {
   const ID = 'template_6__popup';
 
+  /** @var string */
+  protected $assetsDirectory = 'template-6';
+
   public function getName(): string {
     return 'Template 6 Popup';
   }
@@ -127,7 +130,7 @@ class Template6Popup extends FormTemplate {
       'form_padding' => '35',
       'input_padding' => '16',
       'font_family' => 'Montserrat',
-      'background_image_url' => 'http://mailpoet.info/wp-content/uploads/2020/07/form-bg.jpg',
+      'background_image_url' => $this->getAssetUrl('form-bg.jpg'),
       'background_image_display' => 'scale',
       'close_button' => 'classic',
       'segments_selected_by' => 'admin',
