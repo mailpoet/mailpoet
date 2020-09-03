@@ -16,6 +16,8 @@ import 'tinymce/plugins/link';
 import 'tinymce/plugins/lists';
 import 'tinymce/plugins/paste';
 
+import './tinymce_icons';
+
 var BL = BehaviorsLookup;
 
 BL.TextEditorBehavior = Marionette.Behavior.extend({
