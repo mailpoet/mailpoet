@@ -32,7 +32,7 @@ function mailpoetExportForms() {
 }
 
 function mailpoetRenderFormList() {
-  $forms = mailpoetGetFormsRepository()->findAll();
+  $forms = mailpoetGetFormsRepository()->findBy(['deletedAt' => null]);
   echo "<h1>Pick a form to export!</h1>";
   echo "<ul>";
   foreach ($forms as $form) {
@@ -56,15 +56,26 @@ function mailpoetExportForm(int $id) {
   $settings['success_message'] = '';
   $settings['segments'] = [];
   $template = str_replace('TEMPLATE_ID', strtolower(preg_replace("/[^A-Za-z0-9]/", '_', $form->getName())), $template);
+  $template = str_replace('TEMPLATE_ASSETS_DIR', strtolower(preg_replace("/[^A-Za-z0-9]/", '-', $form->getName())), $template);
   $template = str_replace('TEMPLATE_SETTINGS', mailpoetVarExport($settings), $template);
   $template = str_replace('TEMPLATE_STYLES', $form->getStyles(), $template);
   $template = str_replace('TEMPLATE_NAME', $form->getName(), $template);
   $template = str_replace('class Template', 'class ' . preg_replace("/[^A-Za-z0-9]/", '', $form->getName()), $template);
 
   $template = mailpoetAddStringTranslations($template);
+  list($template, $assetUrls) = mailpoetProcessAssets($template);
 
   $template = htmlspecialchars($template);
-  echo "<textarea style=\"width:90%;height:90vh;\">$template</textarea>";
+  echo "<textarea style=\"width:90%;height:80vh;\">$template</textarea>";
+  if (!$assetUrls) {
+    die;
+  }
+  echo "<h3>Assets to download</h3>";
+  echo "<ul style=\"width:90%;height:10vh;\">";
+  foreach ($assetUrls as $url) {
+    echo "<li><a href='$url' target='_blank'>$url</a></li>";
+  }
+  echo "</url>";
   die;
 }
 
@@ -91,6 +102,48 @@ function mailpoetAddStringTranslations(string $template): string {
     $template = str_replace($fullMatch, "'content' => _x('$stringToTranslate', 'Text in a web form. Keep HTML tags!', 'mailpoet')", $template);
   }
   return $template;
+}
+
+function mailpoetProcessAssets(string $template): array {
+  $assetUrls = [];
+  // background image urls
+  $matches = [];
+  preg_match_all("/'background_image_url' => '(.+)'/u", $template, $matches);
+  foreach ($matches[0] as $key => $fullMatch) {
+    list($assetCode, $url) = mailpoetReplaceAssetUrl($matches[1][$key]);
+    if (!$assetCode) {
+      continue;
+    }
+    $assetUrls[] = $url;
+    $template = str_replace($fullMatch, "'background_image_url' => $assetCode", $template);
+  }
+  // Urls in url property (e.g. image block url)
+  $matches = [];
+  preg_match_all("/'url' => '(.+)'/u", $template, $matches);
+  foreach ($matches[0] as $key => $fullMatch) {
+    list($assetCode, $url) = mailpoetReplaceAssetUrl($matches[1][$key]);
+    if (!$assetCode) {
+      continue;
+    }
+    $assetUrls[] = $url;
+    $template = str_replace($fullMatch, "'url' => $assetCode", $template);
+  }
+  return [$template, $assetUrls];
+}
+
+function mailpoetReplaceAssetUrl(string $url): array {
+  $assetFile = basename(parse_url($url, PHP_URL_PATH));
+  $siteUrl = get_site_url();
+  // Don't touch urls from different site
+  if (strpos($url, $siteUrl) === false) {
+    return [];
+  }
+  // Don't touch url with non-image file extension
+  $ext = strtolower(pathinfo($assetFile, PATHINFO_EXTENSION));
+  if (in_array($ext, ['gif', 'jpg', 'jpeg', 'png']) === false) {
+    return [];
+  }
+  return ['$this->getAssetUrl(\'' . $assetFile . '\')', $url];
 }
 
 /**
