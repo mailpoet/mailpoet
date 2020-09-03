@@ -7,6 +7,9 @@ use MailPoet\Form\Templates\FormTemplate;
 class Template4Popup extends FormTemplate {
   const ID = 'template_4_popup';
 
+  /** @var string */
+  protected $assetsDirectory = 'template-4';
+
   public function getName(): string {
     return 'Template 4 Popup';
   }
@@ -19,12 +22,12 @@ class Template4Popup extends FormTemplate {
         'params' => [
           'class_name' => '',
           'align' => 'center',
-          'url' => 'http://mailpoet.info/wp-content/uploads/2020/07/mailbox@3x.png',
+          'url' => $this->getAssetUrl('mailbox@3x.png'),
           'alt' => '',
           'title' => '',
           'caption' => '',
           'link_destination' => 'none',
-          'link' => 'http://mailpoet.info/mailbox3x/',
+          'link' => '',
           'href' => '',
           'link_class' => '',
           'rel' => '',
