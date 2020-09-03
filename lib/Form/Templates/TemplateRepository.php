@@ -9,6 +9,11 @@ use MailPoet\Form\Templates\Templates\Template10FixedBar;
 use MailPoet\Form\Templates\Templates\Template10Popup;
 use MailPoet\Form\Templates\Templates\Template10SlideIn;
 use MailPoet\Form\Templates\Templates\Template10Widget;
+use MailPoet\Form\Templates\Templates\Template1BelowPages;
+use MailPoet\Form\Templates\Templates\Template1FixedBar;
+use MailPoet\Form\Templates\Templates\Template1Popup;
+use MailPoet\Form\Templates\Templates\Template1SlideIn;
+use MailPoet\Form\Templates\Templates\Template1Widget;
 use MailPoet\Form\Templates\Templates\Template3BelowPages;
 use MailPoet\Form\Templates\Templates\Template3FixedBar;
 use MailPoet\Form\Templates\Templates\Template3Popup;
@@ -37,6 +42,11 @@ class TemplateRepository {
   private $templates = [
     InitialForm::ID => InitialForm::class,
     DefaultForm::ID => DefaultForm::class,
+    Template1BelowPages::ID => Template1BelowPages::class,
+    Template1FixedBar::ID => Template1FixedBar::class,
+    Template1Popup::ID => Template1Popup::class,
+    Template1SlideIn::ID => Template1SlideIn::class,
+    Template1Widget::ID => Template1Widget::class,
     Template3BelowPages::ID => Template3BelowPages::class,
     Template3FixedBar::ID => Template3FixedBar::class,
     Template3Popup::ID => Template3Popup::class,
