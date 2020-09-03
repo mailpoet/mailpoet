@@ -23,7 +23,8 @@
     "test": "env NODE_PATH=$NODE_PATH:./assets/js/src mocha --require tests/javascript/babel_register.js tests/javascript/**/*.spec.js",
     "check-types": "tsc --noEmit",
     "storybook": "start-storybook -s ./ -p 8083",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "postinstall": "./tasks/npm_post_install.sh"
   },
   "dependencies": {
     "@babel/runtime": "^7.10.2",
@@ -83,7 +84,7 @@
     "setimmediate": "^1.0.5",
     "slugify": "^1.4.0",
     "spectrum-colorpicker": "^1.6.2",
-    "tinymce": "^5.2.2",
+    "tinymce": "^5.4.2",
     "underscore": "1.8.3",
     "velocity-animate": "^1.5.2"
   },
