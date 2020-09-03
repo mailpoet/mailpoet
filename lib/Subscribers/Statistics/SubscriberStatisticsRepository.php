@@ -12,6 +12,8 @@ use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
+use function MailPoetVendor\array_column;
+
 /**
  * @extends Repository<SubscriberEntity>
  */
@@ -66,21 +68,21 @@ class SubscriberStatisticsRepository extends Repository {
     }
 
     $currency = $this->wcHelper->getWoocommerceCurrency();
-    $result = $this->entityManager
-      ->createQueryBuilder()
-      ->select('SUM(stats.orderPriceTotal) AS total, COUNT(stats.id) AS cnt')
+    $purchases = $this->entityManager->createQueryBuilder()
+      ->select('stats.orderPriceTotal')
       ->from(StatisticsWooCommercePurchaseEntity::class, 'stats')
       ->where('stats.subscriber = :subscriber')
       ->andWhere('stats.orderCurrency = :currency')
       ->setParameter('subscriber', $subscriber)
       ->setParameter('currency', $currency)
+      ->groupBy('stats.orderId, stats.orderPriceTotal')
       ->getQuery()
-      ->getSingleResult();
-
+      ->getResult();
+    $sum = array_sum(array_column($purchases, 'orderPriceTotal'));
     return new WooCommerceRevenue(
       $currency,
-      (float)$result['total'],
-      (int)$result['cnt'],
+      (float)$sum,
+      count($purchases),
       $this->wcHelper
     );
   }
