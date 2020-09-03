@@ -70,6 +70,15 @@ jQuery(($) => {
     });
   }
 
+  function doDisplayForm(formDiv, showOverlay) {
+    formDiv.addClass('active');
+    checkFormContainer(formDiv);
+
+    if (showOverlay) {
+      formDiv.prev('.mailpoet_form_popup_overlay').addClass('active');
+    }
+  }
+
   function showForm(formDiv, showOverlay = false) {
     const form = formDiv.find('form');
     const position = form.data('position');
@@ -82,13 +91,16 @@ jQuery(($) => {
       delay = 0;
     }
     setTimeout(() => {
-      formDiv.addClass('active');
-      checkFormContainer(formDiv);
-
-      if (showOverlay) {
-        formDiv.prev('.mailpoet_form_popup_overlay').addClass('active');
-      }
+      doDisplayForm(formDiv, showOverlay);
     }, delay * 1000);
+
+    const exitIntentEnabled = form.data('exit-intent-enabled');
+    if (exitIntentEnabled) {
+      $(document).on('mouseleave', () => {
+        doDisplayForm(formDiv, showOverlay);
+        $(document).off('mouseleave');
+      });
+    }
   }
 
   const closeForm = (formDiv) => {
