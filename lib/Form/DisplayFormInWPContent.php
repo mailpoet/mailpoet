@@ -157,6 +157,13 @@ class DisplayFormInWPContent {
     $templateData['position'] = $formSettings['form_placement'][$displayType]['position'] ?? '';
     $templateData['backgroundColor'] = $formSettings['backgroundColor'] ?? '';
     $templateData['fontFamily'] = $formSettings['font_family'] ?? '';
+    $templateData['enableExitIntent'] = false;
+    if (
+      isset($formSettings['form_placement'][$displayType]['exit_intent_enabled'])
+      && ($formSettings['form_placement'][$displayType]['exit_intent_enabled'] === '1')
+    ) {
+      $templateData['enableExitIntent'] = true;
+    }
 
     // generate security token
     $templateData['token'] = Security::generateToken();
