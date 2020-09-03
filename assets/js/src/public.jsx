@@ -90,7 +90,8 @@ jQuery(($) => {
     if (Number.isNaN(delay)) {
       delay = 0;
     }
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
+      $(document).off('mouseleave');
       doDisplayForm(formDiv, showOverlay);
     }, delay * 1000);
 
@@ -99,6 +100,7 @@ jQuery(($) => {
       $(document).on('mouseleave', () => {
         doDisplayForm(formDiv, showOverlay);
         $(document).off('mouseleave');
+        clearTimeout(timeout);
       });
     }
   }
