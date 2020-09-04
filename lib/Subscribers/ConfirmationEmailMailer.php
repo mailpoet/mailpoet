@@ -32,12 +32,27 @@ class ConfirmationEmailMailer {
   /** @var SubscriptionUrlFactory */
   private $subscriptionUrlFactory;
 
+  /** @var array Cache for confirmation emails sent within a request */
+  private $sentEmails = [];
+
   public function __construct(Mailer $mailer, WPFunctions $wp, SettingsController $settings, SubscriptionUrlFactory $subscriptionUrlFactory) {
     $this->mailer = $mailer;
     $this->wp = $wp;
     $this->settings = $settings;
     $this->mailerMetaInfo = new MetaInfo;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
+  }
+
+  /**
+   * Use this method if you want to make sure the confirmation email
+   * is not sent multiple times within a single request
+   * e.g. if sending confirmation emails from hooks
+   */
+  public function sendConfirmationEmailOnce(Subscriber $subscriber): bool {
+    if (isset($this->sentEmails[$subscriber->id])) {
+      return true;
+    }
+    return $this->sendConfirmationEmail($subscriber);
   }
 
   public function sendConfirmationEmail(Subscriber $subscriber) {
@@ -99,10 +114,12 @@ class ConfirmationEmailMailer {
         $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
         return false;
       };
+
       if (!$this->wp->isUserLoggedIn()) {
         $subscriber->countConfirmations++;
         $subscriber->save();
       }
+      $this->sentEmails[$subscriber->id] = true;
       return true;
     } catch (\Exception $e) {
       $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
