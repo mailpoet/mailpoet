@@ -18,6 +18,12 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $subcriptionUrlFacroryMock = $this->createMock(SubscriptionUrlFactory::class);
     $subcriptionUrlFacroryMock->method('getConfirmationUrl')->willReturn('http://example.com');
 
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set(
+      'signup_confirmation.body',
+      $settings->get('signup_confirmation.body') . "\nLists: [lists_to_confirm]"
+    );
+
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'first_name' => 'John',
@@ -26,6 +32,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       'status' => 'unconfirmed',
       'source' => 'api',
     ]);
+    $subscriber->save();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
@@ -37,6 +44,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
             'subscriber_status' => 'unconfirmed',
             'subscriber_source' => 'api',
           ]);
+          return ['response' => true];
         }),
     ], $this);
 
@@ -58,7 +66,15 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       [$segment->id]
     );
 
-    $sender->sendConfirmationEmail($subscriber);
+    $result = $sender->sendConfirmationEmail($subscriber);
+    expect($result)->true();
+    codecept_debug($subscriber);
+    expect($subscriber->countConfirmations)->equals(1);
+
+    $sender->sendConfirmationEmailOnce($subscriber);
+    $subscriberFromDb = Subscriber::findOne($subscriber->id);
+    expect($subscriberFromDb->countConfirmations)->equals(1);
+    expect($subscriber->countConfirmations)->equals(1);
   }
 
   public function testItSetsErrorsWhenConfirmationEmailCannotBeSent() {
