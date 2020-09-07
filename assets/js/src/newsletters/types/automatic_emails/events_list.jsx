@@ -1,5 +1,4 @@
 import React from 'react';
-import AutomaticEmailsBreadcrumb from 'newsletters/types/automatic_emails/breadcrumb.jsx';
 import AutomaticEmailEvent from 'newsletters/types/automatic_emails/event.jsx';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
@@ -49,8 +48,6 @@ class AutomaticEmailEventsList extends React.Component {
         <h1>
           {heading}
         </h1>
-
-        <AutomaticEmailsBreadcrumb step="events" />
 
         {this.displayEvents()}
       </div>

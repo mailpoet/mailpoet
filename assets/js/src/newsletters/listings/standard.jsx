@@ -227,7 +227,6 @@ class NewsletterListStandard extends React.Component {
         {this.state.newslettersCount === 0 && (
           <NewsletterTypes
             filter={(type) => type.slug === 'standard'}
-            showHeader={false}
           />
         )}
         {this.state.newslettersCount !== 0 && (

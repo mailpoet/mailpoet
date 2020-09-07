@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
-import Breadcrumb from 'newsletters/breadcrumb.jsx';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
 import { withRouter } from 'react-router-dom';
@@ -252,13 +251,6 @@ class NewsletterTypes extends React.Component {
       <div>
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
 
-        {this.props.showHeader && (
-          <>
-            <h1>{MailPoet.I18n.t(window.mailpoet_newsletters_count === 0 ? 'createFirstEmailTitle' : 'pickCampaignType')}</h1>
-            <Breadcrumb step="type" />
-          </>
-        )}
-
         <ul className="mailpoet_boxes mailpoet_boxes_types">
           {types.map((type) => (
             <li key={type.slug} data-type={type.slug} className="mailpoet_newsletter_types">
@@ -302,12 +294,10 @@ NewsletterTypes.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
-  showHeader: PropTypes.bool,
 };
 
 NewsletterTypes.defaultProps = {
   filter: null,
-  showHeader: true,
 };
 
 export default withRouter(NewsletterTypes);

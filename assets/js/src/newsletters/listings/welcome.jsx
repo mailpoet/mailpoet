@@ -349,7 +349,6 @@ class NewsletterListWelcome extends React.Component {
         {this.state.newslettersCount === 0 && (
           <NewsletterTypes
             filter={(type) => type.slug === 'welcome'}
-            showHeader={false}
           />
         )}
         {this.state.newslettersCount !== 0 && (
