@@ -29,8 +29,16 @@ h1.mailpoet-h0 { font-size: $heading-font-size-h0; }
 h1.mailpoet-h1 { font-size: $heading-font-size-h1; }
 h2.mailpoet-h2 { font-size: $heading-font-size-h2; }
 h3.mailpoet-h3 { font-size: $heading-font-size-h3; }
-h4.mailpoet-h4 { font-size: $heading-font-size-h4; }
-h5.mailpoet-h5 { font-size: $heading-font-size-h5; }
+
+h4.mailpoet-h4 {
+  font-size: $heading-font-size-h4;
+  font-weight: 600;
+}
+
+h5.mailpoet-h5 {
+  font-size: $heading-font-size-h5;
+  font-weight: 600;
+}
 
 .mailpoet-ol,
 .mailpoet-ul {
