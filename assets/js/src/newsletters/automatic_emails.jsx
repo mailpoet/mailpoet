@@ -1,4 +1,3 @@
-import React from 'react';
 import _ from 'underscore';
 import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
@@ -6,45 +5,6 @@ import SendEventConditions from 'newsletters/automatic_emails/send_event_conditi
 import GATrackingField from 'newsletters/send/ga_tracking.jsx';
 
 const emails = window.mailpoet_woocommerce_automatic_emails || [];
-const newslettersContainer = document.getElementById('newsletters_container');
-
-if (newslettersContainer && !_.isEmpty(emails)) {
-  const addEmails = (types, that) => {
-    // remove automatic emails declared in Free version if they are declared in Premium
-    const existingTypes = _.reject(types, (type) => _.has(emails, type.slug));
-    const newTypes = _.map(emails, (email) => {
-      const updatedEmail = email;
-      const onClick = _.partial(that.setupNewsletter, email.slug);
-
-      updatedEmail.action = (() => (
-        <div>
-          <span
-            className="button button-primary"
-            onClick={onClick}
-            onKeyDown={(event) => {
-              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-              ) {
-                event.preventDefault();
-                onClick();
-              }
-            }}
-            role="button"
-            data-automation-id="create_woocommerce"
-            tabIndex={0}
-          >
-            {email.actionButtonTitle || MailPoet.I18n.t('setUp')}
-          </span>
-        </div>
-      ))();
-
-      return updatedEmail;
-    });
-
-    return [...existingTypes, ...newTypes];
-  };
-
-  Hooks.addFilter('mailpoet_newsletters_types', 'mailpoet', addEmails);
-}
 
 const extendNewsletterEditorConfig = (defaultConfig, newsletter) => {
   if (newsletter.type !== 'automatic') return defaultConfig;

@@ -22,7 +22,7 @@ class AutomaticEmailEventsList extends React.Component {
     this.props.history.push(`/new/${this.email.slug}/${eventSlug}/conditions`);
   }
 
-  displayEvents() {
+  render() {
     const events = _.map(this.emailEvents, (event, index) => (
       <AutomaticEmailEvent
         premium={this.email.premium}
@@ -32,26 +32,7 @@ class AutomaticEmailEventsList extends React.Component {
       />
     ));
 
-    return (
-      <ul className="mailpoet_boxes woocommerce clearfix">
-        {events}
-      </ul>
-    );
-  }
-
-  render() {
-    const heading = MailPoet.I18n.t('selectAutomaticEmailsEventsHeading')
-      .replace('%$1s', this.email.title);
-
-    return (
-      <div>
-        <h1>
-          {heading}
-        </h1>
-
-        {this.displayEvents()}
-      </div>
-    );
+    return events;
   }
 }
 
