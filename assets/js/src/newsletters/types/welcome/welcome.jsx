@@ -85,8 +85,6 @@ class NewsletterWelcome extends React.Component {
             onValueChange={this.handleValueChange}
           />
 
-          <div className="mailpoet-gap" />
-
           <Button
             isFullWidth
             onClick={this.handleNext}

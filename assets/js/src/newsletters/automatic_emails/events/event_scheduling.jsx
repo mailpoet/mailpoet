@@ -55,11 +55,14 @@ class EventScheduling extends React.Component {
     };
 
     return (
-      <Text
-        field={props.field}
-        item={props.item}
-        onValueChange={props.onValueChange}
-      />
+      <>
+        <Text
+          field={props.field}
+          item={props.item}
+          onValueChange={props.onValueChange}
+        />
+        <div className="mailpoet-gap" />
+      </>
     );
   }
 
@@ -90,10 +93,13 @@ class EventScheduling extends React.Component {
     };
 
     return (
-      <Selection
-        field={props.field}
-        onValueChange={props.onValueChange}
-      />
+      <>
+        <Selection
+          field={props.field}
+          onValueChange={props.onValueChange}
+        />
+        <div className="mailpoet-gap" />
+      </>
     );
   }
 
@@ -138,14 +144,17 @@ class EventScheduling extends React.Component {
         {
           event.schedulingReadMoreLink
           && (
-            <a
-              href={event.schedulingReadMoreLink.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="event-scheduling-read-more-link"
-            >
-              {event.schedulingReadMoreLink.text}
-            </a>
+            <>
+              <a
+                href={event.schedulingReadMoreLink.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="event-scheduling-read-more-link"
+              >
+                {event.schedulingReadMoreLink.text}
+              </a>
+              <div className="mailpoet-gap" />
+            </>
           )
         }
       </>

@@ -65,10 +65,13 @@ class EventOptions extends React.Component {
     }
 
     return (
-      <Selection
-        field={props.field}
-        onValueChange={props.onValueChange}
-      />
+      <>
+        <Selection
+          field={props.field}
+          onValueChange={props.onValueChange}
+        />
+        <div className="mailpoet-gap" />
+      </>
     );
   }
 
