@@ -4,6 +4,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { ToggleControl } from '@wordpress/components';
 import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
+import PlacementSettings from './placement_settings';
 
 const BelowPostsSettings = () => {
   const formSettings = useSelect(
@@ -23,16 +24,7 @@ const BelowPostsSettings = () => {
       />
       {isActive && (
         <>
-          <ToggleControl
-            label={MailPoet.I18n.t('placeFormOnAllPages')}
-            checked={formSettings.formPlacement.belowPosts.pages.all}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.belowPosts.pages.all', __, formSettings)])}
-          />
-          <ToggleControl
-            label={MailPoet.I18n.t('placeFormOnAllPosts')}
-            checked={formSettings.formPlacement.belowPosts.posts.all}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.belowPosts.posts.all', __, formSettings)])}
-          />
+          <PlacementSettings settingsPlacementKey="belowPosts" />
           <SizeSettings
             label={MailPoet.I18n.t('formSettingsWidth')}
             value={formSettings.formPlacement.belowPosts.styles.width}
