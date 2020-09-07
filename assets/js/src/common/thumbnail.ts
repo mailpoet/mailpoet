@@ -45,7 +45,7 @@ export const fromUrl = (url) => new Promise((resolve, reject) => {
   };
   iframe.onerror = onError;
   (iframe as any).onError = onError;
-  iframe.className = 'mailpoet_template_iframe';
+  iframe.className = 'mailpoet-template-iframe';
   try {
     document.body.appendChild(iframe);
   } catch (err) {
