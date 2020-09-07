@@ -67,6 +67,10 @@ export default () => {
     previewPageUrl: window.mailpoet_form_preview_page,
     closeIconsUrl: window.mailpoet_close_icons_url,
     customFonts: window.mailpoet_custom_fonts,
+    allWpPosts: window.mailpoet_all_wp_posts,
+    allWpPages: window.mailpoet_all_wp_pages,
+    allWpCategories: window.mailpoet_all_wp_categories,
+    allWpTags: window.mailpoet_all_wp_tags,
   };
 
   const config = {
