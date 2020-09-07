@@ -8,6 +8,8 @@ import { GlobalContext } from 'context/index.jsx';
 
 import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
 import AutomaticEmailEventGroupLogos from 'newsletters/types/automatic_emails/event_group_logos.jsx';
+import Button from 'common/button/button';
+import Heading from 'common/typography/heading/heading';
 import ModalCloseIcon from 'common/modal/close_icon';
 
 class NewsletterTypes extends React.Component {
@@ -65,11 +67,9 @@ class NewsletterTypes extends React.Component {
         title: MailPoet.I18n.t('wooCommerceCustomizerTypeTitle'),
         description: MailPoet.I18n.t('wooCommerceCustomizerTypeDescription'),
         action: (
-          <a
-            className="button button-primary"
-            data-automation-id="customize_woocommerce"
+          <Button
+            automationId="customize_woocommerce"
             onClick={this.openWooCommerceCustomizer}
-            role="button"
             tabIndex={0}
             onKeyDown={(event) => {
               if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
@@ -80,7 +80,7 @@ class NewsletterTypes extends React.Component {
             }}
           >
             {MailPoet.I18n.t('customize')}
-          </a>
+          </Button>
         ),
       },
     ];
@@ -189,11 +189,9 @@ class NewsletterTypes extends React.Component {
         title: MailPoet.I18n.t('regularNewsletterTypeTitle'),
         description: MailPoet.I18n.t('regularNewsletterTypeDescription'),
         action: (
-          <a
-            className="button button-primary"
-            data-automation-id="create_standard"
+          <Button
+            automationId="create_standard"
             onClick={createStandardNewsletter}
-            role="button"
             tabIndex={0}
             disabled={this.state.isCreating}
             onKeyDown={(event) => {
@@ -205,7 +203,7 @@ class NewsletterTypes extends React.Component {
             }}
           >
             {MailPoet.I18n.t('create')}
-          </a>
+          </Button>
         ),
       },
       {
@@ -215,10 +213,9 @@ class NewsletterTypes extends React.Component {
         videoGuide: 'https://kb.mailpoet.com/article/254-video-guide-to-welcome-emails',
         videoGuideBeacon: '5b05ebf20428635ba8b2aa53',
         action: (
-          <a
-            className="button button-primary"
+          <Button
             onClick={createWelcomeNewsletter}
-            data-automation-id="create_welcome"
+            automationId="create_welcome"
             disabled={this.state.isCreating}
             onKeyDown={(event) => {
               if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
@@ -227,11 +224,10 @@ class NewsletterTypes extends React.Component {
                 createWelcomeNewsletter();
               }
             }}
-            role="button"
             tabIndex={0}
           >
             {MailPoet.I18n.t('setUp')}
-          </a>
+          </Button>
         ),
       },
       {
@@ -241,11 +237,9 @@ class NewsletterTypes extends React.Component {
         videoGuide: 'https://kb.mailpoet.com/article/210-video-guide-to-post-notifications',
         videoGuideBeacon: '59ba6fb3042863033a1cd5a5',
         action: (
-          <a
-            className="button button-primary"
-            data-automation-id="create_notification"
+          <Button
+            automationId="create_notification"
             onClick={createNotificationNewsletter}
-            role="button"
             disabled={this.state.isCreating}
             tabIndex={0}
             onKeyDown={(event) => {
@@ -257,7 +251,7 @@ class NewsletterTypes extends React.Component {
             }}
           >
             {MailPoet.I18n.t('setUp')}
-          </a>
+          </Button>
         ),
       },
     ];
