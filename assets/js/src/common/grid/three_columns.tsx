@@ -7,7 +7,7 @@ type Props = {
 };
 
 const ThreeColumns = ({ children, className }: Props) => (
-  <div className={classnames(className, "mailpoet-grid-three-columns")}>
+  <div className={classnames(className, 'mailpoet-grid-three-columns')}>
     {children}
   </div>
 );

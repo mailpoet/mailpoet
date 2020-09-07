@@ -7,7 +7,7 @@ type Props = {
 };
 
 const TwoColumnsList = ({ children, className }: Props) => (
-  <div className={classnames(className, "mailpoet-grid-two-columns-list")}>
+  <div className={classnames(className, 'mailpoet-grid-two-columns-list')}>
     {children}
   </div>
 );

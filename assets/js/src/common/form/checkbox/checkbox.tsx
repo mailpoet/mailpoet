@@ -1,8 +1,8 @@
-import React, { InputHTMLAttributes } from 'react';
+import React, { ChangeEvent, InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
-  onCheck: (isChecked: boolean) => void,
+  onCheck: (isChecked: boolean, event: ChangeEvent) => void,
   children?: React.ReactNode,
   isFullWidth?: boolean,
   automationId?: string,
@@ -27,7 +27,7 @@ const Checkbox = ({
   >
     <input
       type="checkbox"
-      onChange={(e) => onCheck(e.target.checked)}
+      onChange={(e) => onCheck(e.target.checked, e)}
       {...attributes}
     />
     <span className="mailpoet-form-checkbox-control" />
