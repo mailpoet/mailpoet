@@ -1,5 +1,4 @@
 import React from 'react';
-import { action } from '@storybook/addon-actions';
 import Input from '../input';
 import Heading from '../../../typography/heading/heading';
 import icon from './assets/icon';
