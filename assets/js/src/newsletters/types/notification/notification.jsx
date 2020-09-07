@@ -4,6 +4,9 @@ import MailPoet from 'mailpoet';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import _ from 'underscore';
 import Scheduling from 'newsletters/types/notification/scheduling.jsx';
+import Button from 'common/button/button';
+import Heading from 'common/typography/heading/heading';
+import Grid from 'common/grid';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
 
@@ -63,22 +66,25 @@ class NewsletterNotification extends React.Component {
       <div>
         <ListingHeadingStepsRoute emailType="notification" automationId="post_notification_creation_heading" />
 
-        <h3>{MailPoet.I18n.t('selectFrequency')}</h3>
+        <Grid.Column align="center" className="mailpoet-schedule-email">
+          <Heading level={4}>{MailPoet.I18n.t('selectFrequency')}</Heading>
 
-        <Scheduling
-          item={this.state}
-          field={field}
-          onValueChange={this.handleValueChange}
-        />
-
-        <p className="submit">
-          <input
-            className="button button-primary"
-            type="button"
-            onClick={this.handleNext}
-            value={MailPoet.I18n.t('next')}
+          <Scheduling
+            item={this.state}
+            field={field}
+            onValueChange={this.handleValueChange}
           />
-        </p>
+
+          <div className="mailpoet-gap" />
+
+          <Button
+            isFullWidth
+            onClick={this.handleNext}
+            type="button"
+          >
+            {MailPoet.I18n.t('next')}
+          </Button>
+        </Grid.Column>
       </div>
     );
   }

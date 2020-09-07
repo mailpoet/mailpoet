@@ -10,6 +10,12 @@ div.events-conditions-header {
   font-weight: 600;
 }
 
+a.event-scheduling-read-more-link {
+  display: block;
+  line-height: 20px;
+  margin-top: $grid-gap;
+}
+
 div.events-conditions-container {
   div {
     float: left;
@@ -17,7 +23,6 @@ div.events-conditions-container {
 
   a.event-scheduling-read-more-link {
     clear: both;
-    display: block;
     margin-top: 50px;
   }
 

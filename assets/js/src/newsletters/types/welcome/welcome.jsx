@@ -2,6 +2,9 @@ import React from 'react';
 import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
+import Button from 'common/button/button';
+import Heading from 'common/typography/heading/heading';
+import Grid from 'common/grid';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import WelcomeScheduling from './scheduling.jsx';
 
@@ -73,22 +76,25 @@ class NewsletterWelcome extends React.Component {
       <div>
         <ListingHeadingStepsRoute emailType="welcome" automationId="welcome_email_creation_heading" />
 
-        <h3>{MailPoet.I18n.t('selectEventToSendWelcomeEmail')}</h3>
+        <Grid.Column align="center" className="mailpoet-schedule-email">
+          <Heading level={4}>{MailPoet.I18n.t('selectEventToSendWelcomeEmail')}</Heading>
 
-        <WelcomeScheduling
-          item={this.state}
-          field={field}
-          onValueChange={this.handleValueChange}
-        />
-
-        <p className="submit">
-          <input
-            className="button button-primary"
-            type="button"
-            onClick={this.handleNext}
-            value={MailPoet.I18n.t('next')}
+          <WelcomeScheduling
+            item={this.state}
+            field={field}
+            onValueChange={this.handleValueChange}
           />
-        </p>
+
+          <div className="mailpoet-gap" />
+
+          <Button
+            isFullWidth
+            onClick={this.handleNext}
+            type="button"
+          >
+            {MailPoet.I18n.t('next')}
+          </Button>
+        </Grid.Column>
       </div>
     );
   }
