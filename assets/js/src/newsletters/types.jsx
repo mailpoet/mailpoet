@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
 
 import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
+import AutomaticEmailEventGroupLogos from 'newsletters/types/automatic_emails/event_group_logos.jsx';
 import ModalCloseIcon from 'common/modal/close_icon';
 
 class NewsletterTypes extends React.Component {
@@ -34,6 +35,13 @@ class NewsletterTypes extends React.Component {
       const email = automaticEmail;
       return (
         <React.Fragment key={email.slug}>
+          <div className="mailpoet-newsletter-types-separator">
+            <div className="mailpoet-newsletter-types-separator-line" />
+            <div className="mailpoet-newsletter-types-separator-logo">
+              {AutomaticEmailEventGroupLogos[email.slug] || null}
+            </div>
+            <div className="mailpoet-newsletter-types-separator-line" />
+          </div>
           <ul className="mailpoet_boxes woocommerce clearfix">
             <AutomaticEmailEventsList
               email={email}

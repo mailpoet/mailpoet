@@ -5,4 +5,27 @@
       right: 162px;
     }
   }
+
+  .mailpoet-newsletter-types-separator {
+    align-items: center;
+    display: flex;
+    height: 26px;
+    margin-bottom: 22px;
+    margin-top: 25px;
+
+    .mailpoet-newsletter-types-separator-line {
+      background-color: $color-text-light;
+      border-radius: 1px;
+      flex: 1;
+      height: 2px;
+    }
+
+    .mailpoet-newsletter-types-separator-logo {
+      margin: 0 16px;
+
+      svg {
+        height: 26px;
+      }
+    }
+  }
 }
