@@ -26,6 +26,7 @@
     font-size: $font-size;
     line-height: $form-control-line-height;
     margin: 0;
+    max-width: 100%;
     padding:
       $form-control-spacing - 1px
       $form-control-spacing * 2

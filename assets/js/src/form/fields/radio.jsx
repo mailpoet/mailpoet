@@ -1,7 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Radio from 'common/form/radio/radio';
 
 class FormFieldRadio extends React.Component { // eslint-disable-line react/prefer-stateless-function, max-len
+  constructor(props) {
+    super(props);
+    this.onValueChange = this.onValueChange.bind(this);
+  }
+
+  onValueChange = (value, e) => this.props.onValueChange(e);
+
   render() {
     if (this.props.field.values === undefined) {
       return false;
@@ -11,17 +19,14 @@ class FormFieldRadio extends React.Component { // eslint-disable-line react/pref
     const options = Object.keys(this.props.field.values).map(
       (value) => (
         <p key={`radio-${value}`}>
-          <label htmlFor={this.props.field.name}>
-            <input
-              type="radio"
-              checked={selectedValue === value}
-              value={value}
-              onChange={this.props.onValueChange}
-              name={this.props.field.name}
-              id={this.props.field.name}
-            />
+          <Radio
+            checked={selectedValue === value}
+            value={value}
+            onCheck={this.onValueChange}
+            name={this.props.field.name}
+          >
             { this.props.field.values[value] }
-          </label>
+          </Radio>
         </p>
       )
     );
