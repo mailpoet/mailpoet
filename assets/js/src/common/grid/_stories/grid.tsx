@@ -18,6 +18,12 @@ export const Layouts = () => {
 
       <div className="mailpoet-gap" />
 
+      <Grid.Column align="center">
+        {content}
+      </Grid.Column>
+
+      <div className="mailpoet-gap" />
+
       <Heading level={3}>Column - small</Heading>
       <Grid.Column dimension="small">
         {content}

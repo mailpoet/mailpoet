@@ -3,11 +3,13 @@ import classnames from 'classnames';
 
 type Props = {
   children?: React.ReactNode,
+  align?: 'center',
   dimension?: 'small',
 };
 
 const Column = ({
   children,
+  align,
   dimension,
 }: Props) => (
   <div
@@ -16,6 +18,7 @@ const Column = ({
         'mailpoet-grid-column',
         {
           [`mailpoet-grid-column-${dimension}`]: dimension,
+          [`mailpoet-grid-column-${align}`]: align,
         }
       )
     }
