@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Textarea from 'common/form/textarea/textarea';
 
 const FormFieldTextarea = (props) => (
-  <textarea
+  <Textarea
     type="text"
-    className="regular-text"
     name={props.field.name}
     id={`field_${props.field.name}`}
     value={props.item[props.field.name]}
