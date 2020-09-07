@@ -1,4 +1,7 @@
 import React from 'react';
+import Button from 'common/button/button';
+import Heading from 'common/typography/heading/heading';
+import Grid from 'common/grid';
 import Selection from 'form/fields/selection.jsx';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import EventScheduling from 'newsletters/automatic_emails/events/event_scheduling.jsx';
@@ -213,21 +216,22 @@ class EventsConditions extends React.Component {
       <div>
         <ListingHeadingStepsRoute emailType="woocommerce" automationId="woocommerce_email_creation_heading" />
 
-        <div className="events-conditions-container">
-          <h1>{this.displayHeader()}</h1>
+        <Grid.Column align="center" className="mailpoet-schedule-email">
+          <Heading level={4}>{this.displayHeader()}</Heading>
           <div>{this.displayEventOptions()}</div>
           <div>{this.displaySegments()}</div>
           <div>{this.displayScheduling()}</div>
-        </div>
 
-        <p className="submit">
-          <input
-            className="button button-primary"
-            type="button"
+          <div className="mailpoet-gap" />
+
+          <Button
+            isFullWidth
             onClick={this.handleNextStep}
-            value={MailPoet.I18n.t('next')}
-          />
-        </p>
+            type="button"
+          >
+            {MailPoet.I18n.t('next')}
+          </Button>
+        </Grid.Column>
 
         {this.displayEventTip()}
       </div>
