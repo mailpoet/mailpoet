@@ -142,6 +142,18 @@ export default {
   getActiveSidebar(state) {
     return state.sidebar.activeSidebar;
   },
+  getAllWPPosts(state) {
+    return state.allWpPosts;
+  },
+  getAllWPPages(state) {
+    return state.allWpPages;
+  },
+  getAllWPCategories(state) {
+    return state.allWpCategories;
+  },
+  getAllWPTags(state) {
+    return state.allWpTags;
+  },
 
   /**
    * Goes thru all parents of the block and return
