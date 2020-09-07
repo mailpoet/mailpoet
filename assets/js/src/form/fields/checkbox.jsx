@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Checkbox from 'common/form/checkbox/checkbox';
 
 class FormFieldCheckbox extends React.Component {
   constructor(props) {
     super(props);
-    this.checkboxRef = React.createRef();
     this.onValueChange = this.onValueChange.bind(this);
   }
 
-  onValueChange = (e) => {
-    e.target.value = this.checkboxRef.current.checked ? '1' : '0';
+  onValueChange = (value, e) => {
+    e.target.value = value ? '1' : '0';
     return this.props.onValueChange(e);
   };
 
@@ -24,18 +24,14 @@ class FormFieldCheckbox extends React.Component {
     const options = Object.keys(this.props.field.values).map(
       (value) => (
         <p key={`checkbox-${value}`}>
-          <label htmlFor={this.props.field.name}>
-            <input
-              ref={this.checkboxRef}
-              type="checkbox"
-              value="1"
-              checked={isChecked}
-              onChange={this.onValueChange}
-              name={this.props.field.name}
-              id={this.props.field.name}
-            />
+          <Checkbox
+            value="1"
+            checked={isChecked}
+            name={this.props.field.name}
+            onCheck={this.onValueChange}
+          >
             { this.props.field.values[value] }
-          </label>
+          </Checkbox>
         </p>
       )
     );

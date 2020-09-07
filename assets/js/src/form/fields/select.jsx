@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
+import Select from 'common/form/select/select';
 
 class FormFieldSelect extends React.Component {
   render() {
@@ -58,7 +59,7 @@ class FormFieldSelect extends React.Component {
       );
 
     return (
-      <select
+      <Select
         name={this.props.field.name}
         id={`field_${this.props.field.name}`}
         value={this.props.item[this.props.field.name] || ''}
@@ -68,7 +69,7 @@ class FormFieldSelect extends React.Component {
       >
         {placeholder}
         {options}
-      </select>
+      </Select>
     );
   }
 }

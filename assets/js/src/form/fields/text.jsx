@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Input from 'common/form/input/input';
 
 class FormFieldText extends React.Component { // eslint-disable-line react/prefer-stateless-function, max-len
   render() {
@@ -30,7 +31,7 @@ class FormFieldText extends React.Component { // eslint-disable-line react/prefe
     }
 
     return (
-      <input
+      <Input
         type="text"
         disabled={
           (this.props.field.disabled !== undefined)
