@@ -469,6 +469,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
       previewUrl: this.previewUrl,
       width: this.width,
       height: this.height,
+      email: this.$('#mailpoet_preview_to_email').val() || window.currentUserEmail,
       previewSendingError: this.model.get('previewSendingError'),
       sendingPreview: this.model.get('sendingPreview'),
       mssKeyPendingApproval: window.mailpoet_mss_key_pending_approval,
