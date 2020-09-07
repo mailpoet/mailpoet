@@ -12,7 +12,7 @@ export const Layouts = () => {
   return (
     <>
       <Heading level={3}>Column</Heading>
-      <Grid.Column>
+      <Grid.Column className="custom-class">
         {content}
       </Grid.Column>
 
@@ -32,7 +32,7 @@ export const Layouts = () => {
       <div className="mailpoet-gap" />
 
       <Heading level={3}>Two columns</Heading>
-      <Grid.TwoColumns>
+      <Grid.TwoColumns className="custom-class">
         <div>{content}</div>
         <div>{content}</div>
       </Grid.TwoColumns>
@@ -40,7 +40,7 @@ export const Layouts = () => {
       <div className="mailpoet-gap" />
 
       <Heading level={3}>Three columns</Heading>
-      <Grid.ThreeColumns>
+      <Grid.ThreeColumns className="custom-class">
         <div>{content}</div>
         <div>{content}</div>
         <div>{content}</div>
@@ -50,7 +50,7 @@ export const Layouts = () => {
 
       <Heading level={3}>Two columns list</Heading>
       <Grid.Column>
-        <Grid.TwoColumnsList>
+        <Grid.TwoColumnsList className="custom-class">
           <div>
             Option 1
             <br />
@@ -70,7 +70,7 @@ export const Layouts = () => {
 
       <Heading level={3}>Space between</Heading>
       <Grid.Column>
-        <Grid.SpaceBetween>
+        <Grid.SpaceBetween className="custom-class">
           <div>
             Left
             <br />
@@ -86,7 +86,7 @@ export const Layouts = () => {
 
       <Heading level={3}>Space between - vertically centered</Heading>
       <Grid.Column>
-        <Grid.SpaceBetween verticalAlign="center">
+        <Grid.SpaceBetween className="custom-class" verticalAlign="center">
           <div>
             Left
             <br />
