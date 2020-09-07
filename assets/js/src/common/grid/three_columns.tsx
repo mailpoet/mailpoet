@@ -1,11 +1,13 @@
 import React from 'react';
+import classnames from 'classnames';
 
 type Props = {
   children?: React.ReactNode,
+  className?: string,
 };
 
-const ThreeColumns = ({ children }: Props) => (
-  <div className="mailpoet-grid-three-columns">
+const ThreeColumns = ({ children, className }: Props) => (
+  <div className={classnames(className, "mailpoet-grid-three-columns")}>
     {children}
   </div>
 );
