@@ -5,6 +5,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 import AnimationSettings from './animation_settings';
+import PlacementSettings from './placement_settings';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
@@ -29,16 +30,7 @@ const PopUpSettings = () => {
       {isActive && (
         <>
           <hr />
-          <ToggleControl
-            label={MailPoet.I18n.t('placeFormOnAllPages')}
-            checked={formSettings.formPlacement.popup.pages.all}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.popup.pages.all', __, formSettings)])}
-          />
-          <ToggleControl
-            label={MailPoet.I18n.t('placeFormOnAllPosts')}
-            checked={formSettings.formPlacement.popup.posts.all}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.popup.posts.all', __, formSettings)])}
-          />
+          <PlacementSettings settingsPlacementKey="popup" />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
             value={formSettings.formPlacement.popup.delay}

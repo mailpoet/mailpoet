@@ -5,6 +5,7 @@ import { SelectControl, RadioControl, ToggleControl } from '@wordpress/component
 import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 import AnimationSettings from './animation_settings';
+import PlacementSettings from './placement_settings';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
@@ -28,16 +29,7 @@ const SlideInSettings = () => {
       {isActive && (
         <>
           <hr />
-          <ToggleControl
-            label={MailPoet.I18n.t('placeFormOnAllPages')}
-            checked={formSettings.formPlacement.slideIn.pages.all}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.pages.all', __, formSettings)])}
-          />
-          <ToggleControl
-            label={MailPoet.I18n.t('placeFormOnAllPosts')}
-            checked={formSettings.formPlacement.slideIn.posts.all}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.posts.all', __, formSettings)])}
-          />
+          <PlacementSettings settingsPlacementKey="slideIn" />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
             value={formSettings.formPlacement.slideIn.delay}
