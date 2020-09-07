@@ -6,6 +6,11 @@
   width: $grid-column-small;
 }
 
+.mailpoet-grid-column-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .mailpoet-grid-two-columns {
   display: grid;
   grid-gap: $grid-gap;
