@@ -1,0 +1,50 @@
+.mailpoet-form-textarea {
+  background: $color-input-background;
+  border: 1px solid $color-input-border;
+  border-radius: $form-control-border-radius;
+  box-sizing: border-box;
+  display: inline-block;
+  max-width: 100%;
+  padding: 0;
+  position: relative;
+  text-align: left;
+  vertical-align: top;
+  width: $grid-column;
+
+  textarea {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    box-shadow: none !important;
+    box-sizing: border-box;
+    color: $color-text;
+    display: block;
+    font-family: sans-serif;
+    font-size: $font-size;
+    height: $form-control-textarea-height;
+    line-height: $form-control-line-height;
+    margin: 0;
+    max-width: 100%;
+    padding: $form-control-spacing * 2;
+    width: 100%;
+
+    &::placeholder {
+      color: $color-text-light;
+    }
+  }
+
+  &.mailpoet-full-width + .mailpoet-form-textarea.mailpoet-full-width { margin-top: $grid-gap; }
+  &:not(.mailpoet-full-width) + .mailpoet-form-textarea:not(.mailpoet-full-width) { margin-left: $grid-gap; }
+}
+
+.mailpoet-form-textarea-small {
+  font-size: $font-size-small;
+  width: $grid-column-small;
+
+  textarea {
+    font-size: $font-size-small;
+    height: $form-control-textarea-height-small;
+    line-height: $form-control-line-height-small;
+  }
+}
