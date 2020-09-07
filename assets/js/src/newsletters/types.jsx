@@ -6,6 +6,8 @@ import _ from 'underscore';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
 
+import ModalCloseIcon from 'common/modal/close_icon';
+
 class NewsletterTypes extends React.Component {
   constructor(props) {
     super(props);
@@ -250,6 +252,10 @@ class NewsletterTypes extends React.Component {
     return (
       <div>
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
+
+        <div className="mailpoet-newsletter-types-close">
+          <button type="button" onClick={() => this.props.history.push('/')} className="mailpoet-modal-close">{ModalCloseIcon}</button>
+        </div>
 
         <ul className="mailpoet_boxes mailpoet_boxes_types">
           {types.map((type) => (
