@@ -6,6 +6,7 @@ import _ from 'underscore';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
 
+import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
 import ModalCloseIcon from 'common/modal/close_icon';
 
 class NewsletterTypes extends React.Component {
@@ -27,33 +28,21 @@ class NewsletterTypes extends React.Component {
   };
 
   getAutomaticEmails = () => {
-    if (!window.mailpoet_automatic_emails) return [];
+    if (!window.mailpoet_woocommerce_automatic_emails) return [];
 
-    return _.map(window.mailpoet_automatic_emails, (automaticEmail) => {
+    return _.map(window.mailpoet_woocommerce_automatic_emails, (automaticEmail) => {
       const email = automaticEmail;
-      const onClick = _.partial(this.setupNewsletter, automaticEmail.slug);
-      email.action = (() => (
-        <div>
-          <a
-            className="button button-primary"
-            onClick={onClick}
-            role="button"
-            tabIndex={0}
-            disabled={this.state.isCreating}
-            onKeyDown={(event) => {
-              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-              ) {
-                event.preventDefault();
-                this.onClick();
-              }
-            }}
-          >
-            { MailPoet.I18n.t('setUp') }
-          </a>
-        </div>
-      ))();
-
-      return email;
+      return (
+        <React.Fragment key={email.slug}>
+          <ul className="mailpoet_boxes woocommerce clearfix">
+            <AutomaticEmailEventsList
+              email={email}
+              history={this.props.history}
+            />
+            {email.slug === 'woocommerce' && this.getAdditionalTypes().map((type) => this.renderType(type), this)}
+          </ul>
+        </React.Fragment>
+      );
     });
   }
 
@@ -149,6 +138,38 @@ class NewsletterTypes extends React.Component {
     });
   }
 
+  renderType = (type) => {
+    const badgeClassName = (window.mailpoet_is_new_user === true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
+
+    return (
+      <li key={type.slug} data-type={type.slug} className="mailpoet_newsletter_types">
+        <div className="mailpoet_thumbnail">
+          {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
+        </div>
+        <div className="mailpoet_boxes_content">
+          <div className="mailpoet_description">
+            <Heading level={4}>
+              {type.title}
+              {' '}
+              {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
+            </Heading>
+            <p>{type.description}</p>
+            { type.videoGuide && (
+              <a className={badgeClassName} href={type.videoGuide} data-beacon-article={type.videoGuideBeacon} target="_blank" rel="noopener noreferrer">
+                <span className="dashicons dashicons-format-video" />
+                {MailPoet.I18n.t('seeVideoGuide')}
+              </a>
+            ) }
+          </div>
+
+          <div className="mailpoet_actions">
+            {type.action}
+          </div>
+        </div>
+      </li>
+    );
+  }
+
   render() {
     const createStandardNewsletter = _.partial(this.createNewsletter, 'standard');
     const createNotificationNewsletter = _.partial(this.setupNewsletter, 'notification');
@@ -235,14 +256,11 @@ class NewsletterTypes extends React.Component {
 
     let types = Hooks.applyFilters('mailpoet_newsletters_types', [
       ...defaultTypes,
-      ...this.getAutomaticEmails(),
     ], this);
-    types = types.concat(this.getAdditionalTypes());
     if (this.props.filter) {
       types = types.filter(this.props.filter);
     }
 
-    const badgeClassName = (window.mailpoet_is_new_user === true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
     const templatesGETUrl = MailPoet.Ajax.constructGetUrl({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletterTemplates',
@@ -250,7 +268,7 @@ class NewsletterTypes extends React.Component {
     });
 
     return (
-      <div>
+      <div className="mailpoet-newsletter-types">
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
 
         <div className="mailpoet-newsletter-types-close">
@@ -258,34 +276,10 @@ class NewsletterTypes extends React.Component {
         </div>
 
         <ul className="mailpoet_boxes mailpoet_boxes_types">
-          {types.map((type) => (
-            <li key={type.slug} data-type={type.slug} className="mailpoet_newsletter_types">
-              <div className="mailpoet_thumbnail">
-                {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
-              </div>
-              <div className="mailpoet_boxes_content">
-                <div className="mailpoet_description">
-                  <h3>
-                    {type.title}
-                    {' '}
-                    {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
-                  </h3>
-                  <p>{type.description}</p>
-                  { type.videoGuide && (
-                    <a className={badgeClassName} href={type.videoGuide} data-beacon-article={type.videoGuideBeacon} target="_blank" rel="noopener noreferrer">
-                      <span className="dashicons dashicons-format-video" />
-                      {MailPoet.I18n.t('seeVideoGuide')}
-                    </a>
-                  ) }
-                </div>
-
-                <div className="mailpoet_actions">
-                  {type.action}
-                </div>
-              </div>
-            </li>
-          ), this)}
+          {types.map((type) => this.renderType(type), this)}
         </ul>
+
+        {this.getAutomaticEmails()}
 
         <link rel="prefetch" href={templatesGETUrl} as="fetch" />
       </div>
