@@ -122,11 +122,19 @@ class NotificationScheduling extends React.Component {
           onValueChange={this.handleIntervalChange}
           automationId="newsletter_interval_type"
         />
+        <div className="mailpoet-gap" />
 
         {nthWeekDaySelection}
+        {nthWeekDaySelection && <div className="mailpoet-gap" />}
+
         {monthDaySelection}
+        {monthDaySelection && <div className="mailpoet-gap" />}
+
         {weekDaySelection}
+        {weekDaySelection && <div className="mailpoet-gap" />}
+
         {timeOfDaySelection}
+        {timeOfDaySelection && <div className="mailpoet-gap" />}
       </div>
     );
   }

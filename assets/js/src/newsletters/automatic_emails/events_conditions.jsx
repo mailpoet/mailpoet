@@ -222,8 +222,6 @@ class EventsConditions extends React.Component {
           <div>{this.displaySegments()}</div>
           <div>{this.displayScheduling()}</div>
 
-          <div className="mailpoet-gap" />
-
           <Button
             isFullWidth
             onClick={this.handleNextStep}
