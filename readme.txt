@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.5
-Stable tag: 3.49.1
+Stable tag: 3.50.0
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.50.0 - 2020-09-08 =
+* Added: option to display a popup form when a user leaves the page;
+* Improved: email preview button is now located next to Save button;
+* Fixed: filtering on subscribers page;
+* Fixed: Post Notification history showing all post notifications, not just the selected one;
+* Fixed: wrong timezone when importing subscribers.
 
 = 3.49.1 - 2020-08-31 =
 * Improved: redesigned email creation flow breadcrumbs;
