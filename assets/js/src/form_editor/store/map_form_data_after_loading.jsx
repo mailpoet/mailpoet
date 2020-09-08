@@ -18,6 +18,8 @@ export default function mapFormDataAfterLoading(data) {
             ? data.settings.form_placement?.popup?.animation
             : defaults.popupForm.animation,
           styles: { ...defaults.popupForm.styles, ...data.settings.form_placement?.popup?.styles },
+          categories: data.settings.form_placement?.popup?.categories ?? [],
+          tags: data.settings.form_placement?.popup?.tags ?? [],
           posts: {
             all: data.settings.form_placement?.popup?.posts?.all === '1',
             selected: Array.isArray(data.settings.form_placement?.popup?.posts?.selected)
@@ -44,6 +46,8 @@ export default function mapFormDataAfterLoading(data) {
           },
           position: data.settings.form_placement?.fixed_bar?.position
             ?? defaults.fixedBarForm.position,
+          categories: data.settings.form_placement?.fixed_bar?.categories ?? [],
+          tags: data.settings.form_placement?.fixed_bar?.tags ?? [],
           posts: {
             all: data.settings.form_placement?.fixed_bar?.posts?.all === '1',
             selected: Array.isArray(data.settings.form_placement?.fixed_bar?.posts?.selected)
@@ -63,6 +67,8 @@ export default function mapFormDataAfterLoading(data) {
             ...defaults.belowPostForm.styles,
             ...data.settings.form_placement?.below_posts?.styles,
           },
+          categories: data.settings.form_placement?.below_posts?.categories ?? [],
+          tags: data.settings.form_placement?.below_posts?.tags ?? [],
           posts: {
             all: data.settings.form_placement?.below_posts?.posts?.all === '1',
             selected: Array.isArray(data.settings.form_placement?.below_posts?.posts?.selected)
@@ -89,6 +95,8 @@ export default function mapFormDataAfterLoading(data) {
             ...defaults.slideInForm.styles,
             ...data.settings.form_placement?.slide_in?.styles,
           },
+          categories: data.settings.form_placement?.slide_in?.categories ?? [],
+          tags: data.settings.form_placement?.slide_in?.tags ?? [],
           posts: {
             all: data.settings.form_placement?.slide_in?.posts?.all === '1',
             selected: Array.isArray(data.settings.form_placement?.slide_in?.posts?.selected)
