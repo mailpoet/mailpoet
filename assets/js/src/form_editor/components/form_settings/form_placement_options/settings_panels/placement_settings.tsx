@@ -20,6 +20,14 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
+  const tags = useSelect(
+    (select) => select('mailpoet-form-editor').getAllWPTags(),
+    []
+  );
+  const categories = useSelect(
+    (select) => select('mailpoet-form-editor').getAllWPCategories(),
+    []
+  );
   const pages = useSelect(
     (select) => select('mailpoet-form-editor').getAllWPPages(),
     []
@@ -40,7 +48,14 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             changeFormSettings,
             assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, newValue),
             cond([
-              [() => newValue, assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, [])], // if enabled clear selected pages
+              [
+                () => newValue,
+                compose([
+                  assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, []), // if enabled clear selected pages
+                  assocPath(`formPlacement.${settingsPlacementKey}.categories`, []), // if enabled clear selected categories
+                  assocPath(`formPlacement.${settingsPlacementKey}.tags`, []), // if enabled clear selected tags
+                ]),
+              ],
               [() => !newValue, identity], // if disabled do nothing
             ]),
           ])(formSettings);
@@ -73,7 +88,14 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             changeFormSettings,
             assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, newValue),
             cond([
-              [() => newValue, assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, [])], // if enabled clear selected pages
+              [
+                () => newValue,
+                compose([
+                  assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, []), // if enabled clear selected pages
+                  assocPath(`formPlacement.${settingsPlacementKey}.categories`, []), // if enabled clear selected categories
+                  assocPath(`formPlacement.${settingsPlacementKey}.tags`, []), // if enabled clear selected tags
+                ]),
+              ],
               [() => !newValue, identity], // if disabled do nothing
             ]),
           ])(formSettings);
@@ -96,6 +118,48 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
           placeholder: MailPoet.I18n.t('selectPage'),
           getLabel: (page) => page.name,
           selected: () => formSettings.formPlacement[settingsPlacementKey].posts.selected,
+        }}
+      />
+      <h3>{MailPoet.I18n.t('displayOnCategories')}</h3>
+      <Selection
+        item={{
+          id: formSettings.formPlacement[settingsPlacementKey].categories.join(),
+        }}
+        onValueChange={(e) => compose([
+          changeFormSettings,
+          assocPath(`formPlacement.${settingsPlacementKey}.categories`, e.target.value),
+          assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
+          assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
+        ])(formSettings)}
+        field={{
+          id: 'categories',
+          name: 'categories',
+          values: categories,
+          multiple: true,
+          placeholder: MailPoet.I18n.t('selectPage'),
+          getLabel: (category) => category.name,
+          selected: () => formSettings.formPlacement[settingsPlacementKey].categories,
+        }}
+      />
+      <h3>{MailPoet.I18n.t('displayOnTags')}</h3>
+      <Selection
+        item={{
+          id: formSettings.formPlacement[settingsPlacementKey].tags.join(),
+        }}
+        onValueChange={(e) => compose([
+          changeFormSettings,
+          assocPath(`formPlacement.${settingsPlacementKey}.tags`, e.target.value),
+          assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
+          assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
+        ])(formSettings)}
+        field={{
+          id: 'tags',
+          name: 'tags',
+          values: tags,
+          multiple: true,
+          placeholder: MailPoet.I18n.t('selectPage'),
+          getLabel: (tag) => tag.name,
+          selected: () => formSettings.formPlacement[settingsPlacementKey].tags,
         }}
       />
     </>
