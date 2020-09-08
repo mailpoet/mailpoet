@@ -232,6 +232,14 @@ class Functions {
     return get_post($post, $output, $filter);
   }
 
+  public function hasCategory($category = '', $post = null): bool {
+    return has_category($category, $post);
+  }
+
+  public function hasTag($tag = '', $post = null): bool {
+    return has_tag($tag, $post);
+  }
+
   public function getPostThumbnailId($post = null) {
     return get_post_thumbnail_id($post);
   }

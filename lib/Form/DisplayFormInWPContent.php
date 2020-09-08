@@ -187,8 +187,11 @@ class DisplayFormInWPContent {
       return false;
     }
 
-    if ($this->wp->isSingular('post') && $this->shouldDisplayFormOnPost($setup, 'posts')) {
-      return true;
+    if ($this->wp->isSingular('post')) {
+      if ($this->shouldDisplayFormOnPost($setup, 'posts')) return true;
+      if (isset($setup['categories']) && $this->wp->hasCategory($setup['categories'])) return true;
+      if (isset($setup['tags']) && $this->wp->hasTag($setup['tags'])) return true;
+      return false;
     }
     if ($this->wp->isPage() && $this->shouldDisplayFormOnPost($setup, 'pages')) {
       return true;
@@ -197,7 +200,7 @@ class DisplayFormInWPContent {
     return false;
   }
 
-  private function shouldDisplayFormOnPost($setup, $postsKey): bool {
+  private function shouldDisplayFormOnPost(array $setup, string $postsKey): bool {
     if (!isset($setup[$postsKey])) {
       return false;
     }
