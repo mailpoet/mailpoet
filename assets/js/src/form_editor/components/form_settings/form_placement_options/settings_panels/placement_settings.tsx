@@ -24,6 +24,10 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
     (select) => select('mailpoet-form-editor').getAllWPPages(),
     []
   );
+  const posts = useSelect(
+    (select) => select('mailpoet-form-editor').getAllWPPosts(),
+    []
+  );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
   return (
@@ -64,7 +68,35 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
       <ToggleControl
         label={MailPoet.I18n.t('placeFormOnAllPosts')}
         checked={formSettings.formPlacement[settingsPlacementKey].posts.all}
-        onChange={compose([changeFormSettings, assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, __, formSettings)])}
+        onChange={(newValue) => {
+          compose([
+            changeFormSettings,
+            assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, newValue),
+            cond([
+              [() => newValue, assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, [])], // if enabled clear selected pages
+              [() => !newValue, identity], // if disabled do nothing
+            ]),
+          ])(formSettings);
+        }}
+      />
+      <Selection
+        item={{
+          id: formSettings.formPlacement[settingsPlacementKey].posts.selected.join(),
+        }}
+        onValueChange={(e) => compose([
+          changeFormSettings,
+          assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, e.target.value),
+          assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
+        ])(formSettings)}
+        field={{
+          id: 'posts',
+          name: 'posts',
+          values: posts,
+          multiple: true,
+          placeholder: MailPoet.I18n.t('selectPage'),
+          getLabel: (page) => page.name,
+          selected: () => formSettings.formPlacement[settingsPlacementKey].posts.selected,
+        }}
       />
     </>
   );
