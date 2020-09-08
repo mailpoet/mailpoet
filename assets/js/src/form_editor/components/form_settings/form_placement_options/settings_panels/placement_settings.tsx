@@ -61,25 +61,27 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
           ])(formSettings);
         }}
       />
-      <Selection
-        item={{
-          id: formSettings.formPlacement[settingsPlacementKey].pages.selected.join(),
-        }}
-        onValueChange={(e) => compose([
-          changeFormSettings,
-          assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, e.target.value),
-          assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false), // disable all if some pages are selected
-        ])(formSettings)}
-        field={{
-          id: 'pages',
-          name: 'pages',
-          values: pages,
-          multiple: true,
-          placeholder: MailPoet.I18n.t('selectPage'),
-          getLabel: (page) => page.name,
-          selected: () => formSettings.formPlacement[settingsPlacementKey].pages.selected,
-        }}
-      />
+      <div data-automation-id="form-placement-select-page">
+        <Selection
+          item={{
+            id: formSettings.formPlacement[settingsPlacementKey].pages.selected.join(),
+          }}
+          onValueChange={(e) => compose([
+            changeFormSettings,
+            assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, e.target.value),
+            assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false), // disable all if some pages are selected
+          ])(formSettings)}
+          field={{
+            id: 'pages',
+            name: 'pages',
+            values: pages,
+            multiple: true,
+            placeholder: MailPoet.I18n.t('selectPage'),
+            getLabel: (page) => page.name,
+            selected: () => formSettings.formPlacement[settingsPlacementKey].pages.selected,
+          }}
+        />
+      </div>
       <ToggleControl
         label={MailPoet.I18n.t('placeFormOnAllPosts')}
         checked={formSettings.formPlacement[settingsPlacementKey].posts.all}
