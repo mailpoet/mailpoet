@@ -135,7 +135,7 @@ class Subscription {
     $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
     $subscriber->save();
 
-    $this->confirmationEmailMailer->sendConfirmationEmail($subscriber);
+    $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
   }
 
   private function updateSubscriberStatus(Subscriber $subscriber) {
