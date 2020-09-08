@@ -31,3 +31,4 @@ tasks/code_sniffer/vendor
 tasks/phpstan/vendor
 /tools/vendor
 /storybook-static
+assets/js/src/newsletter_editor/behaviors/tinymce_icons.js
