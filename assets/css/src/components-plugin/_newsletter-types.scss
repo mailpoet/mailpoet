@@ -2,33 +2,31 @@
   margin-left: 112px;
   margin-right: 112px;
 
-  .mailpoet-newsletter-types-close {
-    .mailpoet-modal-close {
-      margin-top: 0;
-      right: 162px;
-    }
+  .mailpoet-modal-close {
+    margin-top: 0;
+    right: 162px;
   }
+}
 
-  .mailpoet-newsletter-types-separator {
-    align-items: center;
-    display: flex;
+.mailpoet-newsletter-types-separator {
+  align-items: center;
+  display: flex;
+  height: 26px;
+  margin-bottom: 22px;
+  margin-top: 25px;
+}
+
+.mailpoet-newsletter-types-separator-line {
+  background-color: $color-text-light;
+  border-radius: 1px;
+  flex: 1;
+  height: 2px;
+}
+
+.mailpoet-newsletter-types-separator-logo {
+  margin: 0 16px;
+
+  svg {
     height: 26px;
-    margin-bottom: 22px;
-    margin-top: 25px;
-
-    .mailpoet-newsletter-types-separator-line {
-      background-color: $color-text-light;
-      border-radius: 1px;
-      flex: 1;
-      height: 2px;
-    }
-
-    .mailpoet-newsletter-types-separator-logo {
-      margin: 0 16px;
-
-      svg {
-        height: 26px;
-      }
-    }
   }
 }
