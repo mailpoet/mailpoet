@@ -36,7 +36,11 @@ class HeadersAlreadySentNotice {
   }
 
   public function areHeadersAlreadySent() {
-    return !get_transient(self::OPTION_NAME) && headers_sent();
+    return !get_transient(self::OPTION_NAME) && $this->headersSent();
+  }
+
+  protected function headersSent() {
+    return headers_sent();
   }
 
   public function display($captchaEnabled, $trackingEnabled) {

@@ -37,7 +37,7 @@ class Notice {
         $message
       );
     }
-    self::createNotice(self::TYPE_ERROR, $message, $classes, $dataNoticeName, $renderInParagraph);
+    return self::createNotice(self::TYPE_ERROR, $message, $classes, $dataNoticeName, $renderInParagraph);
   }
 
   public static function displayWarning($message, $classes = '', $dataNoticeName = '', $renderInParagraph = true) {
@@ -45,11 +45,11 @@ class Notice {
   }
 
   public static function displaySuccess($message, $classes = '', $dataNoticeName = '', $renderInParagraph = true) {
-    self::createNotice(self::TYPE_SUCCESS, $message, $classes, $dataNoticeName, $renderInParagraph);
+    return self::createNotice(self::TYPE_SUCCESS, $message, $classes, $dataNoticeName, $renderInParagraph);
   }
 
   public static function displayInfo($message, $classes = '', $dataNoticeName = '', $renderInParagraph = true) {
-    self::createNotice(self::TYPE_INFO, $message, $classes, $dataNoticeName, $renderInParagraph);
+    return self::createNotice(self::TYPE_INFO, $message, $classes, $dataNoticeName, $renderInParagraph);
   }
 
   protected static function createNotice($type, $message, $classes, $dataNoticeName, $renderInParagraph) {
