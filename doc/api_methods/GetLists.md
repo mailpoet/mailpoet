@@ -24,7 +24,7 @@ In MailPoet, subscribers are organized into lists. This method returns an array 
 [
   0 => [
     'id' => '3',
-    'name' => 'My First List',
+    'name' => 'Newsletter mailing list',
     'type' => 'default',
     'description' => 'This list is automatically created when you install MailPoet.',
     'created_at' => '2019-05-07 07:24:37',

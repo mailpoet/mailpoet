@@ -11,7 +11,6 @@ use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\UserFlagEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Form\FormFactory;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
@@ -49,8 +48,6 @@ class Populator {
   /** @var ReferralDetector  */
   private $referralDetector;
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
-  /** @var FeaturesController */
-  private $flagsController;
   /** @var FormFactory */
   private $formFactory;
   /** @var FormsRepository */
@@ -61,7 +58,6 @@ class Populator {
     WPFunctions $wp,
     Captcha $captcha,
     ReferralDetector $referralDetector,
-    FeaturesController $flagsController,
     FormsRepository $formsRepository,
     FormFactory $formFactory
   ) {
@@ -151,7 +147,6 @@ class Populator {
       'Painter',
       'FarmersMarket',
     ];
-    $this->flagsController = $flagsController;
     $this->formsRepository = $formsRepository;
   }
 
@@ -349,13 +344,10 @@ class Populator {
     if (!$defaultSegment instanceof Segment) {
       $defaultSegment = Segment::create();
       $newList = [
-        'name' => $this->wp->__('My First List', 'mailpoet'),
+        'name' => $this->wp->__('Newsletter mailing list', 'mailpoet'),
         'description' =>
           $this->wp->__('This list is automatically created when you install MailPoet.', 'mailpoet'),
       ];
-      if ($this->flagsController->isSupported(FeaturesController::NEW_DEFAULT_LIST_NAME)) {
-        $newList['name'] = $this->wp->__('Newsletter mailing list', 'mailpoet');
-      }
       $defaultSegment->hydrate($newList);
       $defaultSegment->save();
     }

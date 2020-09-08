@@ -93,7 +93,7 @@ class SubscriberManageImportExportCest {
     $this->pasteSimpleList($i);
     $i->click('[data-automation-id="import-next-step"]');
     $this->chooseListAndConfirm($i);
-    $i->see('3 subscribers added to "My First List".');
+    $i->see('3 subscribers added to "Newsletter mailing list".');
     $i->click('View subscribers');
     $i->searchFor('mailpoet1@yopmail.com');
     $i->waitForText('mailpoet1@yopmail.com');

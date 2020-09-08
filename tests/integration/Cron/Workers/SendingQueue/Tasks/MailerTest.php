@@ -6,7 +6,6 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Form\FormFactory;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\Mailer;
@@ -31,13 +30,11 @@ class MailerTest extends \MailPoetTest {
     wp_set_current_user($wpUsers[0]->ID);
     $this->settings = SettingsController::getInstance();
     $referralDetector = new ReferralDetector(WPFunctions::get(), $this->settings);
-    $featuresController = Stub::makeEmpty(FeaturesController::class);
     $populator = new Populator(
       $this->settings,
       WPFunctions::get(),
       new Captcha,
       $referralDetector,
-      $featuresController,
       $this->diContainer->get(FormsRepository::class),
       $this->diContainer->get(FormFactory::class)
     );
