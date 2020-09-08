@@ -20,9 +20,15 @@ export default function mapFormDataAfterLoading(data) {
           styles: { ...defaults.popupForm.styles, ...data.settings.form_placement?.popup?.styles },
           posts: {
             all: data.settings.form_placement?.popup?.posts?.all === '1',
+            selected: Array.isArray(data.settings.form_placement?.popup?.posts?.selected)
+              ? data.settings.form_placement?.popup?.posts?.selected
+              : [],
           },
           pages: {
             all: data.settings.form_placement?.popup?.pages?.all === '1',
+            selected: Array.isArray(data.settings.form_placement?.popup?.pages?.selected)
+              ? data.settings.form_placement?.popup?.pages?.selected
+              : [],
           },
         },
         fixedBar: {
@@ -40,9 +46,15 @@ export default function mapFormDataAfterLoading(data) {
             ?? defaults.fixedBarForm.position,
           posts: {
             all: data.settings.form_placement?.fixed_bar?.posts?.all === '1',
+            selected: Array.isArray(data.settings.form_placement?.fixed_bar?.posts?.selected)
+              ? data.settings.form_placement?.fixed_bar?.posts?.selected
+              : [],
           },
           pages: {
             all: data.settings.form_placement?.fixed_bar?.pages?.all === '1',
+            selected: Array.isArray(data.settings.form_placement?.fixed_bar?.pages?.selected)
+              ? data.settings.form_placement?.fixed_bar?.pages?.selected
+              : [],
           },
         },
         belowPosts: {
@@ -53,9 +65,15 @@ export default function mapFormDataAfterLoading(data) {
           },
           posts: {
             all: data.settings.form_placement?.below_posts?.posts?.all === '1',
+            selected: Array.isArray(data.settings.form_placement?.below_posts?.posts?.selected)
+              ? data.settings.form_placement?.below_posts?.posts?.selected
+              : [],
           },
           pages: {
             all: data.settings.form_placement?.below_posts?.pages?.all === '1',
+            selected: Array.isArray(data.settings.form_placement?.below_posts?.pages?.selected)
+              ? data.settings.form_placement?.below_posts?.pages?.selected
+              : [],
           },
         },
         slideIn: {
@@ -73,9 +91,15 @@ export default function mapFormDataAfterLoading(data) {
           },
           posts: {
             all: data.settings.form_placement?.slide_in?.posts?.all === '1',
+            selected: Array.isArray(data.settings.form_placement?.slide_in?.posts?.selected)
+              ? data.settings.form_placement?.slide_in?.posts?.selected
+              : [],
           },
           pages: {
             all: data.settings.form_placement?.slide_in?.pages?.all === '1',
+            selected: Array.isArray(data.settings.form_placement?.slide_in?.pages?.selected)
+              ? data.settings.form_placement?.slide_in?.pages?.selected
+              : [],
           },
         },
         others: {
