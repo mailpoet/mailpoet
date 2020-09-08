@@ -29,6 +29,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
+    if (!defined('ARRAY_A')) define('ARRAY_A', 'ARRAY_A');
     $this->repository = $this->createMock(FormsRepository::class);
     $this->wp = $this->createMock(WPFunctions::class);
     $this->wp->expects($this->any())->method('inTheLoop')->willReturn(true);
@@ -54,6 +55,27 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
       'segments' => ['3'],
       'form_placement' => ['below_posts' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '1']],],
       'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+    $result = $this->hook->display('content');
+    expect($result)->notEquals('content');
+    expect($result)->endsWith($renderedForm);
+  }
+
+  public function testAppendsRenderedFormAfterOnASpecificPost() {
+    $renderedForm = '<form class="form"></form>';
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 1]);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($renderedForm);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '', 'selected' => ['1']]],
+      ],
     ]);
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
