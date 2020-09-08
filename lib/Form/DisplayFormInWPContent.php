@@ -189,7 +189,7 @@ class DisplayFormInWPContent {
 
     $key = '';
     if ($this->wp->isSingular('post')) {
-      $key = 'posts';
+      return $this->shouldDisplayFormOnPost($setup);
     }
     if ($this->wp->isPage()) {
       $key = 'pages';
@@ -199,5 +199,19 @@ class DisplayFormInWPContent {
     return (isset($setup[$key])
       && isset($setup[$key]['all'])
       && $setup[$key]['all'] === '1');
+  }
+
+  private function shouldDisplayFormOnPost($setup): bool {
+    if (!isset($setup['posts'])) {
+      return false;
+    }
+    if (isset($setup['posts']['all']) && $setup['posts']['all'] === '1') {
+      return true;
+    }
+    $post = $this->wp->getPost(null, ARRAY_A);
+    if (isset($setup['posts']['selected']) && in_array($post['ID'], $setup['posts']['selected'])) {
+      return true;
+    }
+    return false;
   }
 }
