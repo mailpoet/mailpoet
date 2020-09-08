@@ -208,7 +208,7 @@ class SubscriptionTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation', ['enabled' => true]);
     $this->confirmationEmailMailer
       ->expects($this->once())
-      ->method('sendConfirmationEmail');
+      ->method('sendConfirmationEmailOnce');
 
     $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
     $this->subscriber->save();

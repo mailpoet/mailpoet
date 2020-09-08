@@ -88,8 +88,9 @@ class WP {
       $subscribeOnRegisterEnabled = SettingsController::getInstance()->get('subscribe.on_register.enabled');
       $sendConfirmationEmail = $signupConfirmationEnabled && $subscribeOnRegisterEnabled && $currentFilter !== 'profile_update';
       if ($sendConfirmationEmail && ($subscriber->status === Subscriber::STATUS_UNCONFIRMED)) {
+        /** @var ConfirmationEmailMailer $confirmationEmailMailer */
         $confirmationEmailMailer = ContainerWrapper::getInstance()->get(ConfirmationEmailMailer::class);
-        $confirmationEmailMailer->sendConfirmationEmail($subscriber);
+        $confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
       }
 
       // welcome email

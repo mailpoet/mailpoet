@@ -84,7 +84,7 @@ class SubscriberActions {
       // link subscriber to segments
       SubscriberSegment::subscribeToSegments($subscriber, $segmentIds);
 
-      $this->confirmationEmailMailer->sendConfirmationEmail($subscriber);
+      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
 
       if ($subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
         $this->newSubscriberNotificationMailer->send($subscriber, Segment::whereIn('id', $segmentIds)->findMany());
