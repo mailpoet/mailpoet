@@ -29,6 +29,9 @@ class PermanentNotices {
   /** @var BlackFridayNotice */
   private $blackFridayNotice;
 
+  /** @var HeadersAlreadySentNotice */
+  private $headersAlreadySentNotice;
+
   public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings();
@@ -37,6 +40,7 @@ class PermanentNotices {
     $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice(SettingsController::getInstance(), $wp);
     $this->inactiveSubscribersNotice = new InactiveSubscribersNotice(SettingsController::getInstance(), $wp);
     $this->blackFridayNotice = new BlackFridayNotice();
+    $this->headersAlreadySentNotice = new HeadersAlreadySentNotice(SettingsController::getInstance(), $wp);
   }
 
   public function init() {
@@ -68,6 +72,9 @@ class PermanentNotices {
     $this->blackFridayNotice->init(
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
+    $this->headersAlreadySentNotice->init(
+      Menu::isOnMailPoetAdminPage($excludeWizard)
+    );
   }
 
   public function ajaxDismissNoticeHandler() {
@@ -81,6 +88,9 @@ class PermanentNotices {
         break;
       case (BlackFridayNotice::OPTION_NAME):
         $this->blackFridayNotice->disable();
+        break;
+      case (HeadersAlreadySentNotice::OPTION_NAME):
+        $this->headersAlreadySentNotice->disable();
         break;
       case (InactiveSubscribersNotice::OPTION_NAME):
         $this->inactiveSubscribersNotice->disable();
