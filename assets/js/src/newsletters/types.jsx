@@ -273,9 +273,7 @@ class NewsletterTypes extends React.Component {
       <div className="mailpoet-newsletter-types">
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
 
-        <div className="mailpoet-newsletter-types-close">
-          <button type="button" onClick={() => this.props.history.push('/')} className="mailpoet-modal-close">{ModalCloseIcon}</button>
-        </div>
+        <button type="button" onClick={() => this.props.history.push('/')} className="mailpoet-modal-close">{ModalCloseIcon}</button>
 
         <ul className="mailpoet_boxes mailpoet_boxes_types">
           {types.map((type) => this.renderType(type), this)}
