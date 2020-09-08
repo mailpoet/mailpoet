@@ -8,7 +8,6 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Form\FormFactory;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Referrals\ReferralDetector;
@@ -29,8 +28,6 @@ class SetupTest extends \MailPoetTest {
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
 
-    $featuresController = Stub::makeEmpty(FeaturesController::class);
-
     $settings = SettingsController::getInstance();
     $referralDetector = new ReferralDetector($wp, $settings);
     $populator = new Populator(
@@ -38,7 +35,6 @@ class SetupTest extends \MailPoetTest {
       $wp,
       new Captcha(),
       $referralDetector,
-      $featuresController,
       $this->diContainer->get(FormsRepository::class),
       $this->diContainer->get(FormFactory::class)
     );

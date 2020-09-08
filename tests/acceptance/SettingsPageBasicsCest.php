@@ -53,7 +53,7 @@ class SettingsPageBasicsCest {
     //go to settings and opt-in for comments
     $i->amOnMailPoetPage('Settings');
     $i->checkOption('[data-automation-id="subscribe-on_comment-checkbox"]');
-    $i->selectOptionInSelect2('My First List');
+    $i->selectOptionInSelect2('Newsletter mailing list');
     $i->click('[data-automation-id="settings-submit-button"]');
     //go to the post and perform commenting + opting
     $i->amOnPage('/');
@@ -71,7 +71,7 @@ class SettingsPageBasicsCest {
     $i->waitForText($comment, 10, '.comment-content');
     //check if user is really subscribed to a list
     $i->amOnMailpoetPage('Lists');
-    $i->clickItemRowActionByItemName('My First List', 'View Subscribers');
+    $i->clickItemRowActionByItemName('Newsletter mailing list', 'View Subscribers');
     $i->waitForText('Subscribers');
     $i->waitForText('test@test.com');
     $i->waitForText('Unconfirmed');

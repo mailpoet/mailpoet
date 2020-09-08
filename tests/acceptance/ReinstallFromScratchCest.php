@@ -50,7 +50,7 @@ class ReinstallFromScratchCest {
     // Check lists
     $i->amOnMailpoetPage('Lists');
     $i->waitForText('WordPress Users', 30, '[data-automation-id="listing_item_1"]');
-    $i->see('My First List', '[data-automation-id="listing_item_3"]');
+    $i->see('Newsletter mailing list', '[data-automation-id="listing_item_3"]');
     $i->seeNumberOfElements('[data-automation-id^=listing_item_]', 2);
     // Check subscribers
     $i->amOnMailPoetPage('Subscribers');

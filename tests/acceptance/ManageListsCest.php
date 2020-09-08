@@ -11,7 +11,7 @@ class ManageListsCest {
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->waitForText('WordPress Users', 5, '[data-automation-id="listing_item_1"]');
-    $i->see('My First List', '[data-automation-id="listing_item_3"]');
+    $i->see('Newsletter mailing list', '[data-automation-id="listing_item_3"]');
     $i->seeNoJSErrors();
   }
 
