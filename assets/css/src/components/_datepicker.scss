@@ -1,9 +1,6 @@
 @import '../../../../node_modules/react-datepicker/src/stylesheets/datepicker';
 
 .mailpoet-datepicker {
-  display: inline-block;
-  vertical-align: middle;
-
   .react-datepicker {
     background-color: $color-input-background;
     border: solid 1px $color-tertiary-light;

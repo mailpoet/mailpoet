@@ -7,9 +7,6 @@
   }
 
   > svg {
-    &:first-child { margin-right: -($form-control-icon + $form-control-spacing); }
-    + select { padding-left: $form-control-icon + 2 * $form-control-spacing; }
-
     ~ .mailpoet-form-react-select .mailpoet-form-react-select__value-container {
       padding-left: $form-control-icon + 2 * $form-control-spacing !important;
     }

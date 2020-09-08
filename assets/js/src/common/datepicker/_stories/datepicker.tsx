@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { action } from '@storybook/addon-actions';
 import Datepicker from '../datepicker';
 import Heading from '../../typography/heading/heading';
+import Icon from '../icon/calendar';
 
 export default {
   title: 'Datepickers',
@@ -27,11 +28,47 @@ const DatepickerWrapper = ({
 
 export const Datepickers = () => (
   <>
+    <Heading level={3}>Small datepicker</Heading>
+    <div>
+      <DatepickerWrapper
+        dateFormat="MMMM d, yyyy"
+        dimension="small"
+        onChange={action('normal datepicker')}
+      />
+      <div className="mailpoet-gap" />
+      <DatepickerWrapper
+        dateFormat="MMMM d, yyyy"
+        dimension="small"
+        onChange={action('normal datepicker')}
+        iconStart={Icon}
+      />
+      <div className="mailpoet-gap" />
+      <DatepickerWrapper
+        dateFormat="MMMM d, yyyy"
+        dimension="small"
+        onChange={action('normal datepicker')}
+        iconEnd={Icon}
+      />
+    </div>
+    <br />
+
     <Heading level={3}>Datepicker</Heading>
     <div>
       <DatepickerWrapper
         dateFormat="MMMM d, yyyy"
         onChange={action('normal datepicker')}
+      />
+      <div className="mailpoet-gap" />
+      <DatepickerWrapper
+        dateFormat="MMMM d, yyyy"
+        onChange={action('normal datepicker')}
+        iconStart={Icon}
+      />
+      <div className="mailpoet-gap" />
+      <DatepickerWrapper
+        dateFormat="MMMM d, yyyy"
+        onChange={action('normal datepicker')}
+        iconEnd={Icon}
       />
     </div>
     <br />
@@ -52,6 +89,17 @@ export const Datepickers = () => (
         dateFormat="MMMM d, yyyy"
         disabled
         onChange={action('disabled datepicker')}
+      />
+    </div>
+    <br />
+
+    <Heading level={3}>Full-width datepicker</Heading>
+    <div>
+      <DatepickerWrapper
+        dateFormat="MMMM d, yyyy"
+        isFullWidth
+        onChange={action('disabled datepicker')}
+        iconStart={Icon}
       />
     </div>
     <br />

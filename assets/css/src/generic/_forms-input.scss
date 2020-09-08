@@ -44,7 +44,13 @@
     width: $form-control-icon;
 
     &:first-child {
-      margin: 0 (-$form-control-spacing) 0 $form-control-spacing;
+      margin: 0 (-$form-control-spacing - $form-control-icon) 0 $form-control-spacing;
+    }
+
+    + input,
+    + select,
+    + * input {
+      padding-left: $form-control-icon + 2 * $form-control-spacing;
     }
 
     &:last-child {
