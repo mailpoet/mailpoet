@@ -187,29 +187,25 @@ class DisplayFormInWPContent {
       return false;
     }
 
-    $key = '';
-    if ($this->wp->isSingular('post')) {
-      return $this->shouldDisplayFormOnPost($setup);
+    if ($this->wp->isSingular('post') && $this->shouldDisplayFormOnPost($setup, 'posts')) {
+      return true;
     }
-    if ($this->wp->isPage()) {
-      $key = 'pages';
+    if ($this->wp->isPage() && $this->shouldDisplayFormOnPost($setup, 'pages')) {
+      return true;
     }
 
-    // is enabled for this page?
-    return (isset($setup[$key])
-      && isset($setup[$key]['all'])
-      && $setup[$key]['all'] === '1');
+    return false;
   }
 
-  private function shouldDisplayFormOnPost($setup): bool {
-    if (!isset($setup['posts'])) {
+  private function shouldDisplayFormOnPost($setup, $postsKey): bool {
+    if (!isset($setup[$postsKey])) {
       return false;
     }
-    if (isset($setup['posts']['all']) && $setup['posts']['all'] === '1') {
+    if (isset($setup[$postsKey]['all']) && $setup[$postsKey]['all'] === '1') {
       return true;
     }
     $post = $this->wp->getPost(null, ARRAY_A);
-    if (isset($setup['posts']['selected']) && in_array($post['ID'], $setup['posts']['selected'])) {
+    if (isset($setup[$postsKey]['selected']) && in_array($post['ID'], $setup[$postsKey]['selected'])) {
       return true;
     }
     return false;
