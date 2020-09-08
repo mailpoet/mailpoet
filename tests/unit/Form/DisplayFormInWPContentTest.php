@@ -52,21 +52,10 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'form_placement' => [
-        'below_posts' => [
-          'enabled' => '1',
-          'pages' => ['all' => ''],
-          'posts' => ['all' => '1'],
-        ],
-      ],
+      'form_placement' => ['below_posts' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '1']],],
       'success_message' => 'Hello',
     ]);
-    $form->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe!'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
@@ -91,20 +80,11 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setSettings([
       'segments' => ['3'],
       'form_placement' => [
-        'below_posts' => [
-          'enabled' => '',
-          'pages' => ['all' => ''],
-          'posts' => ['all' => ''],
-        ],
+        'below_posts' => ['enabled' => '', 'pages' => ['all' => ''], 'posts' => ['all' => '']],
       ],
       'success_message' => 'Hello',
     ]);
-    $form->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe!'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->display('content');
     expect($result)->equals('content');
@@ -117,21 +97,10 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'form_placement' => [
-        'below_posts' => [
-          'enabled' => '1',
-          'pages' => ['all' => ''],
-          'posts' => ['all' => ''],
-        ],
-      ],
+      'form_placement' => ['below_posts' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '']]],
       'success_message' => 'Hello',
     ]);
-    $form->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe!'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->display('content');
     expect($result)->equals('content');
@@ -151,21 +120,10 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form = new FormEntity('My Form');
     $form->setSettings([
       'segments' => ['3'],
-      'form_placement' => [
-        'below_posts' => [
-          'enabled' => '1',
-          'pages' => ['all' => ''],
-          'posts' => ['all' => '1'],
-        ],
-      ],
+      'form_placement' => ['below_posts' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '1']],],
       'success_message' => 'Hello',
     ]);
-    $form->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe!'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
     $result = $this->hook->display('content');
@@ -185,20 +143,11 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setSettings([
       'segments' => ['3'],
       'form_placement' => [
-        'below_posts' => [
-          'enabled' => '1',
-          'pages' => ['all' => '1'],
-          'posts' => ['all' => ''],
-        ],
+        'below_posts' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '']],
       ],
       'success_message' => 'Hello',
     ]);
-    $form->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe!'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
     $result = $this->hook->display('content');
@@ -246,25 +195,12 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setSettings([
       'segments' => ['3'],
       'form_placement' => [
-        'below_posts' => [
-          'enabled' => '',
-          'pages' => ['all' => ''],
-          'posts' => ['all' => ''],
-        ],
-        'popup' => [
-          'enabled' => '1',
-          'pages' => ['all' => '1'],
-          'posts' => ['all' => ''],
-        ],
+        'below_posts' => ['enabled' => '', 'pages' => ['all' => ''], 'posts' => ['all' => '']],
+        'popup' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '']],
       ],
       'success_message' => 'Hello',
     ]);
-    $form->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe!'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
     $result = $this->hook->display('content');
@@ -285,30 +221,12 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setSettings([
       'segments' => ['3'],
       'form_placement' => [
-        'below_posts' => [
-          'enabled' => '',
-          'pages' => ['all' => ''],
-          'posts' => ['all' => ''],
-        ],
-        'popup' => [
-          'enabled' => '1',
-          'pages' => ['all' => ''],
-          'posts' => ['all' => ''],
-        ],
-        'fixed_bar' => [
-          'enabled' => '1',
-          'pages' => ['all' => '1'],
-          'posts' => ['all' => '1'],
-        ],
-      ],
+        'below_posts' => ['enabled' => '', 'pages' => ['all' => ''], 'posts' => ['all' => '']],
+        'popup' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '']],
+        'fixed_bar' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '1']]],
       'success_message' => 'Hello',
     ]);
-    $form->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe!'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
     $result = $this->hook->display('content');
@@ -324,39 +242,17 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form1 = new FormEntity('My Form');
     $form1->setSettings([
       'segments' => ['3'],
-      'form_placement' => [
-        'fixed_bar' => [
-          'enabled' => '1',
-          'pages' => ['all' => '1'],
-          'posts' => ['all' => '1'],
-        ],
-      ],
+      'form_placement' => ['fixed_bar' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '1']]],
       'success_message' => 'Hello',
     ]);
-    $form1->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe!'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
+    $form1->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $form2 = new FormEntity('My Form');
     $form2->setSettings([
       'segments' => ['3'],
-      'form_placement' => [
-        'fixed_bar' => [
-          'enabled' => '1',
-          'pages' => ['all' => '1'],
-          'posts' => ['all' => '1'],
-        ],
-      ],
+      'form_placement' => ['fixed_bar' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '1']]],
       'success_message' => 'Hello',
     ]);
-    $form2->setBody([[
-      'type' => 'submit',
-      'params' => ['label' => 'Subscribe!'],
-      'id' => 'submit',
-      'name' => 'Submit',
-    ]]);
+    $form2->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form1, $form2]);
 
     $result = $this->hook->display('content');
