@@ -9,9 +9,10 @@ ul.mailpoet_boxes {
 }
 
 .mailpoet_boxes li {
-  align-items: center;
   background-color: #fff;
-  border: 1px solid #dedede;
+  border: 1px solid $color-tertiary-light;
+  border-radius: 4px;
+  box-sizing: border-box;
   display: flex;
   margin: 15px 25px 0 0;
   padding: 15px;
@@ -110,6 +111,7 @@ ul.mailpoet_boxes {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   border: 0;
+  flex-shrink: 0;
   height: $newsletter-thumbnail-height;
   overflow: hidden;
   position: relative;
@@ -183,7 +185,6 @@ ul.mailpoet_boxes {
   flex-grow: 1;
   overflow-wrap: break-word;
   padding-bottom: 0;
-  width: 258px;
   word-wrap: break-word;
 
   h3 {
@@ -237,7 +238,7 @@ ul.mailpoet_boxes {
 .mailpoet_boxes.mailpoet_boxes_types,
 .mailpoet_boxes.woocommerce {
   li {
-    margin: $grid-gap $grid-gap 0 0;
+    margin: 0 $grid-gap $grid-gap 0;
     padding: $grid-gap $grid-gap-large $grid-gap-large $grid-gap-large;
   }
 
