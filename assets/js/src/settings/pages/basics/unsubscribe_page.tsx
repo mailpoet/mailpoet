@@ -21,13 +21,22 @@ export default function UnsubscribePage() {
                 () => <code key="mp">[mailpoet_page]</code>
               )
             }
-            <br />
-            <br />
+            {' '}
             {
               ReactStringReplace(
                 t('unsubscribeDescription2'),
-                'mailpoet_unsubscribe_confirmation_page',
-                () => <code key="mpcp">mailpoet_unsubscribe_confirmation_page</code>
+                /\[link\](.*?)\[\/link\]/,
+                (text) => (
+                  <a
+                    key={text}
+                    href="https://kb.mailpoet.com/article/221-customize-your-unsubscribe-page"
+                    rel="noopener noreferrer"
+                    data-beacon-article="59dcea10042863379ddc8b4d"
+                    target="_blank"
+                  >
+                    {text}
+                  </a>
+                )
               )
             }
           </>
