@@ -45,6 +45,19 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
     expect($notice)->null();
   }
 
+  public function testItPrintsWarningWhenWhitespaceIsInBuffer() {
+    ob_start();
+    echo "  \n \t  \r\n  ";
+    $headersAlreadySentNotice = Stub::construct(
+      HeadersAlreadySentNotice::class,
+      [$this->settings, $this->wp],
+      ['headersSent' => false]
+    );
+    $notice = $headersAlreadySentNotice->init(true);
+    expect($notice->getMessage())->contains('It looks like there\'s an issue with some of the PHP files on your website');
+    ob_end_clean();
+  }
+
   public function testItPrintsNoWarningWhenDisabled() {
     $headersAlreadySentNotice = Stub::construct(
       HeadersAlreadySentNotice::class,

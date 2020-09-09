@@ -36,11 +36,20 @@ class HeadersAlreadySentNotice {
   }
 
   public function areHeadersAlreadySent() {
-    return !get_transient(self::OPTION_NAME) && $this->headersSent();
+    return !get_transient(self::OPTION_NAME)
+      && ($this->headersSent() || $this->isWhitespaceInBuffer());
   }
 
   protected function headersSent() {
     return headers_sent();
+  }
+
+  public function isWhitespaceInBuffer() {
+    $content = ob_get_contents();
+    if (!$content) {
+      return false;
+    }
+    return preg_match('/^\s+$/', $content);
   }
 
   public function display($captchaEnabled, $trackingEnabled) {
