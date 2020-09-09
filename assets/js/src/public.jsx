@@ -85,6 +85,10 @@ jQuery(($) => {
     const form = formDiv.find('form');
     const position = form.data('position');
     formDiv.addClass(`mailpoet_form_position_${position}`);
+    const animation = form.data('animation');
+    if (animation !== '') {
+      formDiv.addClass(`mailpoet_form_animation_${animation}`);
+    }
     const background = form.data('background-color');
     formDiv.css('background-color', background || 'white');
     let delay = form.data('delay');
