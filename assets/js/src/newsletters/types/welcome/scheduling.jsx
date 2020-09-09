@@ -142,14 +142,14 @@ class WelcomeScheduling extends React.Component {
         { roleSegmentSelection }
         <div className="mailpoet-gap" />
 
-        { timeNumber }
-        { timeNumber && <div className="mailpoet-gap" /> }
-
-        <Select
-          field={afterTimeTypeField}
-          item={this.getCurrentValue()}
-          onValueChange={this.handleAfterTimeTypeChange}
-        />
+        <div className="mailpoet-grid-column mailpoet-flex">
+          { timeNumber }
+          <Select
+            field={afterTimeTypeField}
+            item={this.getCurrentValue()}
+            onValueChange={this.handleAfterTimeTypeChange}
+          />
+        </div>
         <div className="mailpoet-gap" />
       </div>
     );
