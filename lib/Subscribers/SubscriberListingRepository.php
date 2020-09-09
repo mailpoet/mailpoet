@@ -177,7 +177,7 @@ class SubscriberListingRepository extends ListingRepository {
 
     foreach ($queryBuilder->getQuery()->getResult() as $item) {
       $segmentList[] = [
-        'label' => sprintf('%s (%d)', $item['name'], number_format((float)$item['subscribersCount'])),
+        'label' => sprintf('%s (%s)', $item['name'], number_format((float)$item['subscribersCount'])),
         'value' => $item['id'],
       ];
     }
