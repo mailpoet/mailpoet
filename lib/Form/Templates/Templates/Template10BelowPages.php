@@ -17,7 +17,7 @@ class Template10BelowPages extends FormTemplate {
         'type' => 'heading',
         'id' => 'heading',
         'params' => [
-          'content' => _x('<strong><span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">LET\'S KEEP IN TOUCH!</span></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<strong><span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">LET’S KEEP IN TOUCH!</span></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'level' => '2',
           'align' => 'center',
           'font_size' => '48',
@@ -32,7 +32,7 @@ class Template10BelowPages extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">We\'d love to keep you updated with our latest news and offers <img draggable="false" role="img" class="emoji" alt="😎" src="https://s.w.org/images/core/emoji/13.0.0/svg/1f60e.svg"></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">We’d love to keep you updated with our latest news and offers <img draggable="false" role="img" class="emoji" alt="😎" src="https://s.w.org/images/core/emoji/13.0.0/svg/1f60e.svg"></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '20',
@@ -56,7 +56,7 @@ class Template10BelowPages extends FormTemplate {
               [
                 'type' => 'text',
                 'params' => [
-                  'label' => _x('What\'s your name?', 'Form label', 'mailpoet'),
+                  'label' => _x('What’s your name?', 'Form label', 'mailpoet'),
                   'class_name' => '',
                   'label_within' => '1',
                 ],
@@ -153,7 +153,7 @@ class Template10BelowPages extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">We don\'t spam! Read our <a href="https://www.mailpoet.com/privacy-notice/">Privacy Policy</a> for more details.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">We don’t spam! Read our <a href="#">Privacy Policy</a> for more details.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '13',

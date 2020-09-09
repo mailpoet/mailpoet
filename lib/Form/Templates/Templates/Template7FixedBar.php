@@ -57,7 +57,7 @@ class Template7FixedBar extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => _x('<span style="font-family: Cairo" data-font="Cairo" class="mailpoet-has-font">Let us do the hard work for you. Sign up to receive our latest deals directly in your inbox. We\'ll never send you spam - promise. Find out more in our <a href="https://www.mailpoet.com/privacy-notice/">Privacy Policy</a>.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'content' => _x('<span style="font-family: Cairo" data-font="Cairo" class="mailpoet-has-font">Let us do the hard work for you. Sign up to receive our latest deals directly in your inbox. We’ll never send you spam - promise. Find out more in our <a href="#">Privacy Policy</a>.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
                   'drop_cap' => '0',
                   'align' => 'left',
                   'font_size' => '13',
