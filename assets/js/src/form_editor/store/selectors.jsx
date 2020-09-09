@@ -44,7 +44,15 @@ export default {
     return state.customFields;
   },
   getAllAvailablePages(state) {
-    return state.pages;
+    const allWPPages = state.allWpPages.map((page) => ({
+      id: page.id,
+      title: page.name,
+    }));
+    const mailpoetPages = state.mailpoetPages.map((page) => ({
+      id: page.ID,
+      title: page.post_title,
+    }));
+    return mailpoetPages.concat(allWPPages);
   },
   getIsFormSaving(state) {
     return state.isFormSaving;
