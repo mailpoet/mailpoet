@@ -31,7 +31,7 @@ function renderSuccess(newsletter, testingPassed) {
   return (
     <Success
       illustrationImageUrl={window.mailpoet_congratulations_success_images[successImgIndex]}
-      MSSPitchIllustrationUrl={window.MSS_pitch_illustration_url}
+      MSSPitchIllustrationUrl={window.mailpoet_congratulations_success_images[successImgIndex]}
       successClicked={successPageClosed}
       newsletter={newsletter}
       isWoocommerceActive={window.mailpoet_woocommerce_active}
