@@ -42,7 +42,7 @@ class Template1Widget extends FormTemplate {
         'type' => 'heading',
         'id' => 'heading',
         'params' => [
-          'content' => _x('<span style="font-family: BioRhyme" data-font="BioRhyme" class="mailpoet-has-font">Don\'t miss these tips!</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<span style="font-family: BioRhyme" data-font="BioRhyme" class="mailpoet-has-font">Don’t miss these tips!</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'level' => '1',
           'align' => 'center',
           'font_size' => '25',
@@ -97,7 +97,7 @@ class Template1Widget extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<em><em><em><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">We don\'t spam! Read more in our <a href="http://mailpoet.info/privacy-policy/">privacy policy</a>.</span></em></em></em>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<em><em><em><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">We don’t spam! Read more in our <a href="#">privacy policy</a>.</span></em></em></em>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '13',

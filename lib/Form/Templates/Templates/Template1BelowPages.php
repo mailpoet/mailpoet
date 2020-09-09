@@ -17,7 +17,7 @@ class Template1BelowPages extends FormTemplate {
         'type' => 'heading',
         'id' => 'heading',
         'params' => [
-          'content' => _x('<img draggable="false" role="img" class="emoji" alt="🤞" src="https://s.w.org/images/core/emoji/13.0.0/svg/1f91e.svg"> <span style="font-family: BioRhyme" data-font="BioRhyme" class="mailpoet-has-font">Don\'t miss these tips!</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<img draggable="false" role="img" class="emoji" alt="🤞" src="https://s.w.org/images/core/emoji/13.0.0/svg/1f91e.svg"> <span style="font-family: BioRhyme" data-font="BioRhyme" class="mailpoet-has-font">Don’t miss these tips!</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'level' => '1',
           'align' => 'center',
           'font_size' => '40',
@@ -120,7 +120,7 @@ class Template1BelowPages extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<em><em><em><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">We don\'t spam! Read more in our <a href="http://mailpoet.info/privacy-policy/">privacy policy</a>.</span></em></em></em>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<em><em><em><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">We don’t spam! Read more in our <a href="#">privacy policy</a>.</span></em></em></em>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '13',

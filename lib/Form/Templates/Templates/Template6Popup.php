@@ -90,7 +90,7 @@ class Template6Popup extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>We promise we\'ll never spam! Take a look at our <a href="https://www.mailpoet.com/privacy-notice/">Privacy Policy </a>for more info.</strong></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>We promise we`ll never spam! Take a look at our <a href="#">Privacy Policy </a>for more info.</strong></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '14',

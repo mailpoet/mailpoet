@@ -31,7 +31,7 @@ class Template4Widget extends FormTemplate {
         'type' => 'heading',
         'id' => 'heading',
         'params' => [
-          'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>Oh hi there 👋</strong><br><strong>It\'s nice to meet you.</strong></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>Oh hi there 👋</strong><br><strong>It’s nice to meet you.</strong></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'level' => '2',
           'align' => 'center',
           'font_size' => '20',
@@ -100,7 +100,7 @@ class Template4Widget extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<em>We don\'t spam! Read our <a href="/privacy-notice/">privacy policy</a> for more info.</em>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<em>We don’t spam! Read our <a href="#">privacy policy</a> for more info.</em>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '13',

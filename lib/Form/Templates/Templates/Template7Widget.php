@@ -100,7 +100,7 @@ class Template7Widget extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<span style="font-family: Cairo" data-font="Cairo" class="mailpoet-has-font">We\'ll never send you spam or share your email address.<br>Find out more in our <a rel="noreferrer noopener" href="https://www.mailpoet.com/privacy-notice/" target="_blank">Privacy Policy</a>.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<span style="font-family: Cairo" data-font="Cairo" class="mailpoet-has-font">We’ll never send you spam or share your email address.<br>Find out more in our <a rel="noreferrer noopener" href="#" target="_blank">Privacy Policy</a>.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '13',

@@ -137,7 +137,7 @@ class Template6BelowPages extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<strong><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">We promise we\'ll never spam! Take a look at our <a href="https://www.mailpoet.com/privacy-notice/">Privacy Policy</a> for more info.</span></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<strong><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">We promise we’ll never spam! Take a look at our <a href="#">Privacy Policy</a> for more info.</span></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '14',
