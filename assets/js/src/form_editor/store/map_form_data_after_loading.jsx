@@ -14,6 +14,9 @@ export default function mapFormDataAfterLoading(data) {
           delay: data.settings.form_placement?.popup?.delay !== undefined
             ? asNum(data.settings.form_placement?.popup?.delay)
             : defaults.popupForm.formDelay,
+          animation: data.settings.form_placement?.popup?.animation !== undefined
+            ? data.settings.form_placement?.popup?.animation
+            : defaults.popupForm.animation,
           styles: { ...defaults.popupForm.styles, ...data.settings.form_placement?.popup?.styles },
           posts: {
             all: data.settings.form_placement?.popup?.posts?.all === '1',
@@ -27,6 +30,8 @@ export default function mapFormDataAfterLoading(data) {
           delay: data.settings.form_placement?.fixed_bar?.delay !== undefined
             ? asNum(data.settings.form_placement?.fixed_bar?.delay)
             : defaults.fixedBarForm.formDelay,
+          animation: data.settings.form_placement?.fixed_bar?.animation
+            ?? defaults.fixedBarForm.animation,
           styles: {
             ...defaults.fixedBarForm.styles,
             ...data.settings.form_placement?.fixed_bar?.styles,
@@ -60,6 +65,8 @@ export default function mapFormDataAfterLoading(data) {
             : defaults.slideInForm.formDelay,
           position: data.settings.form_placement?.slide_in?.position
             ?? defaults.slideInForm.position,
+          animation: data.settings.form_placement?.slide_in?.position
+            ?? defaults.slideInForm.animation,
           styles: {
             ...defaults.slideInForm.styles,
             ...data.settings.form_placement?.slide_in?.styles,

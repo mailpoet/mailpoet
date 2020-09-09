@@ -19,6 +19,7 @@ export const popupForm = {
     },
   },
   formDelay: 15,
+  animation: 'slideup',
 };
 
 export const fixedBarForm = {
@@ -30,6 +31,7 @@ export const fixedBarForm = {
   },
   position: 'top',
   formDelay: 15,
+  animation: 'slideup',
 };
 
 export const otherForm = {
@@ -50,6 +52,7 @@ export const slideInForm = {
   },
   position: 'right',
   formDelay: 15,
+  animation: 'slideup',
 };
 
 export const formStyles = {

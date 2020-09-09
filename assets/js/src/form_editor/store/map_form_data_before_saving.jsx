@@ -9,6 +9,7 @@ export default function mapFormDataBeforeSaving(data) {
           exit_intent_enabled: data.settings.formPlacement?.popup?.exitIntentEnabled ? '1' : '',
           delay: data.settings.formPlacement?.popup?.delay,
           styles: data.settings.formPlacement?.popup?.styles,
+          animation: data.settings.formPlacement?.popup?.animation,
           posts: {
             all: data.settings.formPlacement?.popup?.posts?.all === true ? '1' : '',
           },
@@ -21,6 +22,7 @@ export default function mapFormDataBeforeSaving(data) {
           delay: data.settings.formPlacement?.fixedBar?.delay,
           styles: data.settings.formPlacement?.fixedBar?.styles,
           position: data.settings.formPlacement?.fixedBar?.position,
+          animation: data.settings.formPlacement?.fixedBar?.animation,
           posts: {
             all: data.settings.formPlacement?.fixedBar?.posts?.all === true ? '1' : '',
           },
@@ -42,6 +44,7 @@ export default function mapFormDataBeforeSaving(data) {
           enabled: data.settings.formPlacement?.slideIn?.enabled === true ? '1' : '',
           delay: data.settings.formPlacement?.slideIn?.delay,
           position: data.settings.formPlacement?.slideIn?.position,
+          animation: data.settings.formPlacement?.slideIn?.animation,
           styles: data.settings.formPlacement?.slideIn?.styles,
           posts: {
             all: data.settings.formPlacement?.slideIn?.posts?.all === true ? '1' : '',
