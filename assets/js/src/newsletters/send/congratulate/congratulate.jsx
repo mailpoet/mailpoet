@@ -27,9 +27,10 @@ function renderSuccess(newsletter, testingPassed) {
       'Cron is working': 'true',
     });
   }
+  const successImgIndex = Math.floor(Math.random() * 4);
   return (
     <Success
-      illustrationImageUrl={window.mailpoet_congratulations_success_image}
+      illustrationImageUrl={window.mailpoet_congratulations_success_images[successImgIndex]}
       MSSPitchIllustrationUrl={window.MSS_pitch_illustration_url}
       successClicked={successPageClosed}
       newsletter={newsletter}

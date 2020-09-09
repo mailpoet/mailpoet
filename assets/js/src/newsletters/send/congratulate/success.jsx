@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 import MSSUserSuccess from './success_for_mss_users.jsx';
 import PitchMss from './success_pitch_mss.jsx';
 
-
-function SuccessContent(props) {
+function Success(props) {
   if (!window.has_mss_key_specified) {
     return (
       <PitchMss
@@ -25,32 +24,7 @@ function SuccessContent(props) {
   );
 }
 
-function Success(props) {
-  return (
-    <SuccessContent
-      successClicked={props.successClicked}
-      illustrationImageUrl={props.illustrationImageUrl}
-      MSSPitchIllustrationUrl={props.MSSPitchIllustrationUrl}
-      newsletter={props.newsletter}
-      subscribersCount={props.subscribersCount}
-      mailpoetAccountUrl={props.mailpoetAccountUrl}
-    />
-  );
-}
-
 Success.propTypes = {
-  successClicked: PropTypes.func.isRequired,
-  illustrationImageUrl: PropTypes.string.isRequired,
-  MSSPitchIllustrationUrl: PropTypes.string.isRequired,
-  newsletter: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-  }).isRequired,
-  subscribersCount: PropTypes.number.isRequired,
-  mailpoetAccountUrl: PropTypes.string.isRequired,
-};
-
-SuccessContent.propTypes = {
   successClicked: PropTypes.func.isRequired,
   illustrationImageUrl: PropTypes.string.isRequired,
   MSSPitchIllustrationUrl: PropTypes.string.isRequired,
