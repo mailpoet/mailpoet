@@ -2,6 +2,7 @@ import _ from 'underscore';
 import React from 'react';
 import MailPoet from 'mailpoet';
 import Select from 'form/fields/select.jsx';
+import Selection from 'form/fields/selection.jsx';
 import Text from 'form/fields/text.jsx';
 import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
 import PropTypes from 'prop-types';
@@ -21,17 +22,13 @@ const events = {
   },
 };
 
-const availableSegmentValues = _.object(_.map(
-  availableSegments,
-  (segment) => {
-    const name = `${segment.name} (${parseInt(segment.subscribers, 10).toLocaleString()})`;
-    return [segment.id, name];
-  }
-));
 const segmentField = {
   name: 'segment',
-  values: availableSegmentValues,
-  sortBy: (key, value) => value.toLowerCase(),
+  forceSelect2: true,
+  values: availableSegments,
+  getCount: (segment) => parseInt(segment.subscribers, 10).toLocaleString(),
+  getLabel: (segment) => segment.name,
+  getValue: (segment) => segment.id,
 };
 
 const roleField = {
@@ -116,7 +113,7 @@ class WelcomeScheduling extends React.Component {
       );
     } else {
       roleSegmentSelection = (
-        <Select
+        <Selection
           field={segmentField}
           item={this.getCurrentValue()}
           onValueChange={this.handleSegmentChange}
