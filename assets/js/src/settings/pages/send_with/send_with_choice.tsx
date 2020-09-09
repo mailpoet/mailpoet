@@ -26,6 +26,9 @@ export default function SendWithChoice() {
 
   const mssChosen = (e) => {
     e.preventDefault();
+    if (!isMssActive && !isMssKeyValid) {
+      history.push('/premium');
+    }
     if (!isMssActive && isMssKeyValid) {
       activateMss();
     }
