@@ -124,17 +124,14 @@ class NotificationScheduling extends React.Component {
         />
         <div className="mailpoet-gap" />
 
-        {nthWeekDaySelection}
-        {nthWeekDaySelection && <div className="mailpoet-gap" />}
+        <div className="mailpoet-grid-column mailpoet-flex">
+          {nthWeekDaySelection}
+          {monthDaySelection}
+          {weekDaySelection}
+          {timeOfDaySelection}
+        </div>
 
-        {monthDaySelection}
-        {monthDaySelection && <div className="mailpoet-gap" />}
-
-        {weekDaySelection}
-        {weekDaySelection && <div className="mailpoet-gap" />}
-
-        {timeOfDaySelection}
-        {timeOfDaySelection && <div className="mailpoet-gap" />}
+        {value.intervalType !== 'immediately' && <div className="mailpoet-gap" />}
       </div>
     );
   }

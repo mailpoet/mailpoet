@@ -55,14 +55,11 @@ class EventScheduling extends React.Component {
     };
 
     return (
-      <>
-        <Text
-          field={props.field}
-          item={props.item}
-          onValueChange={props.onValueChange}
-        />
-        <div className="mailpoet-gap" />
-      </>
+      <Text
+        field={props.field}
+        item={props.item}
+        onValueChange={props.onValueChange}
+      />
     );
   }
 
@@ -93,13 +90,10 @@ class EventScheduling extends React.Component {
     };
 
     return (
-      <>
-        <Selection
-          field={props.field}
-          onValueChange={props.onValueChange}
-        />
-        <div className="mailpoet-gap" />
-      </>
+      <Selection
+        field={props.field}
+        onValueChange={props.onValueChange}
+      />
     );
   }
 
@@ -135,12 +129,11 @@ class EventScheduling extends React.Component {
     const { event } = this.props;
     return (
       <>
-        <div className="event-scheduling-time-duration-selection">
+        <div className="mailpoet-grid-column mailpoet-flex">
           {this.displayAfterTimeNumberField()}
-        </div>
-        <div className="event-scheduling-time-interval-selection">
           {this.displayAfterTimeTypeOptions()}
         </div>
+        <div className="mailpoet-gap" />
         {
           event.schedulingReadMoreLink
           && (
