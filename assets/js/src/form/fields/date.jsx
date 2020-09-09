@@ -1,8 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import Select from "../../common/form/select/select";
+import Select from '../../common/form/select/select';
 
 function FormFieldDateYear(props) {
   const yearsRange = 100;

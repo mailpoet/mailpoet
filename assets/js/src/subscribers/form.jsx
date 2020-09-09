@@ -67,7 +67,10 @@ const fields = [
       return (!segment.deleted_at && segment.type === 'default');
     },
     getLabel: function getLabel(segment) {
-      return `${segment.name} (${segment.subscribers})`;
+      return segment.name;
+    },
+    getCount: function getCount(segment) {
+      return segment.subscribers;
     },
     getSearchLabel: function getSearchLabel(segment, subscriber) {
       let label = '';

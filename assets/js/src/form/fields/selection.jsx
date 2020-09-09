@@ -2,7 +2,7 @@ import React from 'react';
 import jQuery from 'jquery';
 import _ from 'underscore';
 import 'react-dom';
-import 'select2';
+import 'select2/dist/js/select2.full';
 import PropTypes from 'prop-types';
 
 class Selection extends React.Component {
@@ -99,10 +99,35 @@ class Selection extends React.Component {
     return item.id;
   };
 
+  getCount = (item) => {
+    if (this.props.field.getCount !== undefined) {
+      return this.props.field.getCount(item, this.props.item);
+    }
+    return null;
+  };
+
+  getTag = (item) => {
+    if (this.props.field.getTag !== undefined) {
+      return this.props.field.getTag(item, this.props.item);
+    }
+    return null;
+  };
+
   setupSelect2 = () => {
     if (this.isSelect2Initialized()) {
       return;
     }
+    const templateRendered = (option) => {
+      let tpl = '';
+      if (option.tag) {
+        tpl += `<span class="mailpoet-form-select2-tag">${option.tag}</span>`;
+      }
+      tpl += `<span class="mailpoet-form-select2-text"><span>${option.text}</span></span>`;
+      if (option.count) {
+        tpl += `<span class="mailpoet-form-select2-count">${option.count}</span>`;
+      }
+      return tpl;
+    };
 
     let select2Options = {
       disabled: this.props.disabled || false,
@@ -111,15 +136,10 @@ class Selection extends React.Component {
         id: '', // the value of the option
         text: this.props.field.placeholder,
       },
-      templateResult: function templateResult(item) {
-        if (item.element && item.element.selected) {
-          return null;
-        }
-        if (item.title) {
-          return item.title;
-        }
-        return item.text;
-      },
+      dropdownCssClass: 'mailpoet-form-select2-dropdown',
+      escapeMarkup: (markup) => markup,
+      templateResult: templateRendered,
+      templateSelection: templateRendered,
     };
 
     const remoteQuery = this.props.field.remoteQuery || null;
@@ -158,6 +178,20 @@ class Selection extends React.Component {
         },
         minimumInputLength: remoteQuery.minimumInputLength || 2,
       });
+    } else {
+      const items = this.getItems(this.props.field);
+      const selectedValues = this.getSelectedValues() || [];
+      const data = items.map((item) => {
+        const id = this.getValue(item);
+        return {
+          id,
+          tag: this.getTag(item),
+          text: this.getLabel(item),
+          count: this.getCount(item),
+          selected: selectedValues.indexOf(id) > -1,
+        };
+      });
+      select2Options = Object.assign(select2Options, { data });
     }
 
     if (this.props.field.extendSelect2Options !== undefined) {
@@ -252,38 +286,21 @@ class Selection extends React.Component {
   };
 
   render() {
-    const items = this.getItems(this.props.field);
     const selectedValues = this.getSelectedValues();
-    const options = items.map((item) => {
-      const label = this.getLabel(item);
-      const searchLabel = this.getSearchLabel(item);
-      const value = this.getValue(item);
-
-      return (
-        <option
-          key={`option-${item.id}`}
-          className="default"
-          value={value}
-          title={searchLabel}
-        >
-          { label }
-        </option>
-      );
-    });
-
     return (
-      <select
-        id={this.getFieldId()}
-        ref={this.selectRef}
-        disabled={this.props.field.disabled}
-        data-placeholder={this.props.field.placeholder}
-        multiple={this.props.field.multiple}
-        defaultValue={selectedValues}
-        {...this.props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
-      >
-        { this.insertEmptyOption() }
-        { options }
-      </select>
+      <div className="mailpoet-form-select mailpoet-form-input">
+        <select
+          id={this.getFieldId()}
+          ref={this.selectRef}
+          disabled={this.props.field.disabled}
+          data-placeholder={this.props.field.placeholder}
+          multiple={this.props.field.multiple}
+          defaultValue={selectedValues}
+          {...this.props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
+        >
+          { this.insertEmptyOption() }
+        </select>
+      </div>
     );
   }
 }
@@ -303,6 +320,8 @@ Selection.propTypes = {
     filter: PropTypes.func,
     getSearchLabel: PropTypes.func,
     getValue: PropTypes.func,
+    getCount: PropTypes.func,
+    getTag: PropTypes.func,
     placeholder: PropTypes.string,
     remoteQuery: PropTypes.object,
     extendSelect2Options: PropTypes.object,
