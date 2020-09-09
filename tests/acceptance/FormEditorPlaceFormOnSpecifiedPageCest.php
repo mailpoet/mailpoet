@@ -7,6 +7,8 @@ use MailPoet\Test\DataFactories\Segment;
 
 class FormEditorPlaceFormOnSpecifiedPageCest {
   public function testFormPlacement(\AcceptanceTester $i) {
+    $i->wantTo('Place form on a specific page');
+    $i->wantTo('Prepare the data');
     $pageTitle = 'Lorem';
     $pageContent = 'Ipsum';
     $segmentFactory = new Segment();
@@ -20,6 +22,7 @@ class FormEditorPlaceFormOnSpecifiedPageCest {
     $pageData = json_decode($pageData[0], true);
     $pageUrl = $pageData['guid'];
 
+    $i->wantTo('Set popup form to display on the created page');
     $i->login();
     $i->amOnMailPoetPage('Forms');
     $i->waitForText($formName);
@@ -31,12 +34,9 @@ class FormEditorPlaceFormOnSpecifiedPageCest {
     $i->waitForText('Display on all posts');
     $i->selectOptionInSelect2($pageTitle, '[data-automation-id="form-placement-select-page"] input.select2-search__field');
 
-    // Save form
+    $i->wantTo('Save the form and check the output');
     $i->saveFormInEditor();
-
-    // check the form
     $i->amOnUrl($pageUrl);
-    $i->wantTo('Place form on a specific page');
     $i->waitForElement('[data-automation-id="form_email"]');
   }
 }
