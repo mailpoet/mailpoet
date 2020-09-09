@@ -4,6 +4,7 @@ namespace MailPoet\Form\Templates;
 
 use MailPoet\Entities\FormEntity;
 use MailPoet\Util\CdnAssetUrl;
+use MailPoet\WP\Functions as WPFunctions;
 
 abstract class FormTemplate {
   const DEFAULT_STYLES = <<<EOL
@@ -83,11 +84,15 @@ EOL;
   /** @var CdnAssetUrl */
   protected $cdnAssetUrl;
 
+  /** @var WPFunctions */
+  protected $wp;
+
   /** @var string */
   protected $assetsDirectory = '';
 
-  public function __construct(CdnAssetUrl $cdnAssetUrl) {
+  public function __construct(CdnAssetUrl $cdnAssetUrl, WPFunctions $wp) {
     $this->cdnAssetUrl = $cdnAssetUrl;
+    $this->wp = $wp;
   }
 
   abstract public function getName(): string;

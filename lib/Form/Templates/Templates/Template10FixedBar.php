@@ -28,7 +28,7 @@ class Template10FixedBar extends FormTemplate {
                 'type' => 'heading',
                 'id' => 'heading',
                 'params' => [
-                  'content' => _x('<strong><span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">LET’S KEEP IN TOUCH!</span></strong> <img draggable="false" role="img" class="emoji" alt="😎" src="https://s.w.org/images/core/emoji/13.0.0/svg/1f60e.svg">', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'content' => _x('<strong><span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">LET’S KEEP IN TOUCH!</span></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet') . ' ' .  $this->wp->wpStaticizeEmoji('😎'),
                   'level' => '2',
                   'align' => 'left',
                   'font_size' => '40',

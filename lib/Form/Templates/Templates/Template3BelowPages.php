@@ -28,7 +28,7 @@ class Template3BelowPages extends FormTemplate {
                 'type' => 'heading',
                 'id' => 'heading',
                 'params' => [
-                  'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>10% off, </strong></span><br><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>especially for you 🎁</strong></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>10% off, </strong></span><br><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>especially for you</strong></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet') . ' ' . $this->wp->wpStaticizeEmoji('🎁'),
                   'level' => '1',
                   'align' => 'center',
                   'font_size' => '40',

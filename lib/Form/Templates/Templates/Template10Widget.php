@@ -32,7 +32,7 @@ class Template10Widget extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">We’d love to keep you updated with our latest news and offers <img draggable="false" role="img" class="emoji" alt="😎" src="https://s.w.org/images/core/emoji/13.0.0/svg/1f60e.svg"></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => _x('<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">We’d love to keep you updated with our latest news and offers</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet') . ' ' .  $this->wp->wpStaticizeEmoji('😎'),
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '18',
