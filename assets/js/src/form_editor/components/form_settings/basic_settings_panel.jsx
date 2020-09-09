@@ -12,7 +12,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import Selection from '../../../form/fields/selection.jsx';
+import Selection from './selection.jsx';
 import FormTitle from '../form_title';
 
 const BasicSettingsPanel = ({ onToggle, isOpened }) => {
