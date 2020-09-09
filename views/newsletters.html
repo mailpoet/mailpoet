@@ -31,7 +31,6 @@
       var mailpoet_mss_key_invalid = <%= mss_key_invalid ? 'true' : 'false' %>;
 
       var has_mss_key_specified = <%= json_encode(has_mss_key_specified) %>;
-      var MSS_pitch_illustration_url = '<%= cdn_url('welcome-wizard/illu-pitch-mss.20190912.png') %>';
       var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email) | escape('js') %>';
       var mailpoet_feature_flags = <%= json_encode(mailpoet_feature_flags) %>;
 

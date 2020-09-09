@@ -4,7 +4,7 @@ import React from 'react';
 const WelcomeWizardStepLayoutBody = (props) => (
   <div className="mailpoet-wizard-step">
     <div className="mailpoet-wizard-step-illustration">
-      <img src={props.illustrationUrl} alt="" />
+      <img src={props.illustrationUrl} width="500" alt="" />
     </div>
     <div className="mailpoet-wizard-step-content">
       {props.children}
