@@ -12,7 +12,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 import CustomFieldSettings from './custom_field_settings.jsx';
-import FormFieldDate from '../../../form/fields/date.jsx';
+import FormFieldDate from './date.jsx';
 import formatLabel from '../label_formatter.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
