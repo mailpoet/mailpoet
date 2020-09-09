@@ -154,7 +154,7 @@ class FormEditor {
           'iframe'    => Export::get('iframe', $form),
           'shortcode' => Export::get('shortcode', $form),
       ],
-      'mailpoet_pages' => Pages::getAll(),
+      'mailpoet_pages' => Pages::getMailPoetPages(),
       'segments' => Segment::getSegmentsWithSubscriberCount(),
       'styles' => $this->formRenderer->getCustomStyles($form),
       'date_types' => array_map(function ($label, $value) {
