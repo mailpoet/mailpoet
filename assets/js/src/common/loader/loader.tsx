@@ -22,6 +22,7 @@ const Loader = ({ variant, size }: Props) => {
         WebkitAnimationDelay: '0s',
         animationDelay: '0s',
       }}
+      display="block"
       preserveAspectRatio="xMidYMid"
       viewBox="0 0 100 100"
     >
