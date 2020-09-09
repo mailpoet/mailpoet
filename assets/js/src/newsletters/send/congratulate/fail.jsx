@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
 
+import { Button } from 'common';
+import Heading from 'common/typography/heading/heading';
+
 function Fail(props) {
   return (
-    <div className="mailpoet_centered">
-      <h1>{MailPoet.I18n.t('congratulationsSendFailHeader')}</h1>
-      <p>
+    <div className="mailpoet_congratulate_fail">
+      <Heading level={1}>{MailPoet.I18n.t('congratulationsSendFailHeader')}</Heading>
+      <h1>
         { ReactStringReplace(
           MailPoet.I18n.t('congratulationsSendFailExplain'),
           /\[link\](.*?)\[\/link\]/g,
@@ -23,8 +26,9 @@ function Fail(props) {
             </a>
           )
         )}
-      </p>
-      <button type="button" className="button" onClick={props.failClicked}>{MailPoet.I18n.t('close')}</button>
+      </h1>
+      <img src={window.mailpoet_congratulations_error_image} alt="" width="500" />
+      <Button dimension="small" type="button" onClick={props.failClicked}>{MailPoet.I18n.t('close')}</Button>
     </div>
   );
 }
