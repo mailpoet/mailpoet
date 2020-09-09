@@ -4,7 +4,7 @@ import { SelectControl, ToggleControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
-import Heading from '../../../../../common/typography/heading/heading';
+import AnimationSettings from './animation_settings';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
@@ -70,6 +70,7 @@ const PopUpSettings = () => {
               changeFormSettings(assocPath('formPlacement.popup.styles.width', width, formSettings))
             )}
           />
+          <AnimationSettings settingsPlacementKey="popup" />
         </>
       )}
     </>

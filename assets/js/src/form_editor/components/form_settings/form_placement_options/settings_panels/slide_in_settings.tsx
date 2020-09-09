@@ -4,6 +4,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { SelectControl, RadioControl, ToggleControl } from '@wordpress/components';
 import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
+import AnimationSettings from './animation_settings';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
@@ -68,6 +69,7 @@ const SlideInSettings = () => {
               changeFormSettings(assocPath('formPlacement.slideIn.styles.width', width, formSettings))
             )}
           />
+          <AnimationSettings settingsPlacementKey="slideIn" />
         </>
       )}
     </>
