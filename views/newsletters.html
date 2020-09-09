@@ -42,7 +42,12 @@
       var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
       var mailpoet_last_announcement_seen = <%= json_encode(last_announcement_seen) %>;
       var mailpoet_user_locale = '<%= get_locale() %>';
-      var mailpoet_congratulations_success_image = '<%= cdn_url('newsletter/congrat-illu-success.20181121-1440.png') %>';
+      var mailpoet_congratulations_success_images = [
+        '<%= cdn_url('newsletter/congratulate-1.png') %>',
+        '<%= cdn_url('newsletter/congratulate-2.png') %>',
+        '<%= cdn_url('newsletter/congratulate-3.png') %>',
+        '<%= cdn_url('newsletter/congratulate-4.png') %>',
+      ];
       var mailpoet_congratulations_loading_image = '<%= cdn_url('newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png') %>';
       var mailpoet_main_page = '<%= mailpoet_main_page %>';
       var mailpoet_review_request_illustration_url = '<%= cdn_url('review-request/review-request-illustration.20190815-1427.svg') %>';
@@ -377,11 +382,13 @@
     'whatsNew': __("What’s new"),
     'updateMailPoetNotice': __('[link]Update MailPoet[/link] to see the latest changes'),
 
-    'congratulationsSendSuccessHeader': __('Congratulations, your newsletter is being sent!'),
-    'congratulationsScheduleSuccessHeader': __('Congratulations, your newsletter is scheduled to be sent.'),
-    'congratulationsWooSuccessHeader': __('Congratulations, your WooCommerce email has been activated.'),
-    'congratulationsPostNotificationSuccessHeader': __('Congratulations, your Post Notification is now active.'),
-    'congratulationsWelcomeEmailSuccessHeader': __('Congratulations, your Welcome Email is now active.'),
+    'congratulationsSuccessHeader': __('Congratulations!'),
+    'congratulationsSendSuccessBody': __('Your newsletter is being sent!'),
+    'congratulationsScheduleSuccessBody': __('Your newsletter is scheduled to be sent.'),
+    'congratulationsWooSuccessBody': __('Your WooCommerce email has been activated.'),
+    'congratulationsPostNotificationSuccessBody': __('Your Post Notification is now active.'),
+    'congratulationsWelcomeEmailSuccessBody': __('Your Welcome Email is now active.'),
+    
     'congratulationsSendFailHeader': __('Oops! We can’t send your newsletter 😕'),
     'congratulationsSendFailExplain': __('Rest assured, this is fairly common and is usually fixed quickly. [link]See our quick guide[/link] to help you solve this and get your website sending.'),
     'congratulationsLoadingHeader': __('Verification'),
