@@ -15,6 +15,7 @@ const data = {
         enabled: true,
         posts: {
           all: false,
+          selected: ['3'],
         },
         pages: {
           all: true,
@@ -83,6 +84,10 @@ describe('Form Data Save Mapper', () => {
         .to.have.property('pages')
         .that.is.an('object')
         .that.have.property('all', '1');
+      expect(result.form_placement.below_posts)
+        .to.have.property('posts')
+        .that.is.an('object')
+        .that.have.property('selected').that.deep.equal(['3']);
     });
 
     it('Maps animation', () => {

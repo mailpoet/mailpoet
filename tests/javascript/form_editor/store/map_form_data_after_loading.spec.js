@@ -15,6 +15,7 @@ const data = {
         enabled: '1',
         posts: {
           all: '',
+          selected: ['1'],
         },
         pages: {
           all: '1',
@@ -83,6 +84,14 @@ describe('Form Data Load Mapper', () => {
         .to.have.property('pages')
         .that.is.an('object')
         .that.have.property('all', true);
+      expect(result.formPlacement.belowPosts)
+        .to.have.property('posts')
+        .that.is.an('object')
+        .that.have.property('selected').that.deep.equal(['1']);
+      expect(result.formPlacement.belowPosts)
+        .to.have.property('pages')
+        .that.is.an('object')
+        .that.have.property('selected').that.deep.equal([]);
     });
 
     it('Sets default form styles', () => {
