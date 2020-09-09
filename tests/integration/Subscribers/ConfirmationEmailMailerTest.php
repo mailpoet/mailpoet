@@ -68,7 +68,6 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
     $result = $sender->sendConfirmationEmail($subscriber);
     expect($result)->true();
-    codecept_debug($subscriber);
     expect($subscriber->countConfirmations)->equals(1);
 
     $sender->sendConfirmationEmailOnce($subscriber);
