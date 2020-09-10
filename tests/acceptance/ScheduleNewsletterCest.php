@@ -23,7 +23,7 @@ class ScheduleNewsletterCest {
     // step 4 - Choose list and schedule
     $i->waitForElement('[data-automation-id="newsletter_send_form"]');
     $i->selectOptionInSelect2($segmentName);
-    $i->checkOption('isScheduled');
+    $i->click('[data-automation-id="email-schedule-checkbox"]');
     $i->click('select[name=time]');
     $i->selectOption('form select[name=time]', '6:00');
     $i->click('Schedule');

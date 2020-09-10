@@ -89,6 +89,7 @@ class StandardScheduling extends React.Component {
           disabled={this.props.field.disabled}
           name="isScheduled"
           onCheck={this.handleCheckboxChange}
+          automationId="email-schedule-checkbox"
         />
 
         {schedulingOptions}
