@@ -4,6 +4,7 @@ namespace MailPoet\Form\Templates;
 
 use MailPoet\Entities\FormEntity;
 use MailPoet\Util\CdnAssetUrl;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 abstract class FormTemplate {
@@ -122,5 +123,9 @@ EOL;
 
   protected function getAssetUrl(string $filename): string {
     return $this->cdnAssetUrl->generateCdnUrl("form-templates/{$this->assetsDirectory}/$filename");
+  }
+
+  protected function replaceLinkTags($source, $link, $attributes = [], $linkTag = false): string {
+    return Helpers::replaceLinkTags($source, $link, $attributes, $linkTag);
   }
 }
