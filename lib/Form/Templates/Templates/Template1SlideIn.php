@@ -42,7 +42,7 @@ class Template1SlideIn extends FormTemplate {
         'type' => 'heading',
         'id' => 'heading',
         'params' => [
-          'content' => _x('<span style="font-family: BioRhyme" data-font="BioRhyme" class="mailpoet-has-font">Don’t miss these tips!</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => '<span style="font-family: BioRhyme" data-font="BioRhyme" class="mailpoet-has-font">' . _x('Don’t miss these tips!', 'Text in a web form.', 'mailpoet') . '</span>',
           'level' => '1',
           'align' => 'center',
           'font_size' => '40',
@@ -97,7 +97,7 @@ class Template1SlideIn extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<em><em><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">We don’t spam! Read more in our <a href="#">privacy policy</a>.</span></em></em>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => '<em><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We don’t spam! Read more in our [link]privacy policy[/link]', 'Text in a web form.', 'mailpoet'), "#") . '</span></em>',
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '13',
