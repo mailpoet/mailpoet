@@ -1,5 +1,12 @@
 .newsletter_congratulate_page {
-  margin-top: 30px;
+  background: $color-white;
+  min-height: 100vh;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 0;
+
+  @include full-width-background(linear-gradient(to top, $color-white, $color-secondary-light));
 }
 
 .mailpoet_newsletter_loading {
