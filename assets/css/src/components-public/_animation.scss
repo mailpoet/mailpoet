@@ -1,0 +1,32 @@
+
+.mailpoet_form_animation_slideup {
+  animation: slide-up 1s 1 cubic-bezier(.77, 0, .175, 1);
+}
+
+.mailpoet_form_popup.mailpoet_form_animation_slideup {
+  animation: slide-up-popup 1s 1 cubic-bezier(.77, 0, .175, 1);
+}
+
+@keyframes slide-up-popup {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
