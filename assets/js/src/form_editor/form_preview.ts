@@ -33,6 +33,14 @@ jQuery(($) => {
       if (!width) {
         return;
       }
+
+      const animation = event.data.formSettings?.formPlacement?.[placementName]?.animation;
+      if (animation !== '') {
+        previewForm.removeClass((index, className) => (className.match(/(^|\s)mailpoet_form_animation\S+/g) || []).join(' '));
+        setTimeout(() => previewForm.addClass(`mailpoet_form_animation_${animation}`));
+        toggleClass(previewForm.prev('.mailpoet_form_popup_overlay'), 'mailpoet_form_overlay_animation', 'mailpoet_form_overlay_animation');
+      }
+
       const position = event.data.formSettings?.formPlacement?.[placementName]?.position;
 
       // Apply width settings
