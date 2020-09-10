@@ -94,12 +94,12 @@ function mailpoetAddStringTranslations(string $template): string {
     $stringToTranslate = $matches[1][$key];
     $template = str_replace($fullMatch, "'label' => _x('$stringToTranslate', 'Form label', 'mailpoet')", $template);
   }
-  // Replace paragraph and heading contents with translations
+  // Add todo comment to paragraphs and headings contents
   $matches = [];
   preg_match_all("/'content' => '(.+)'/u", $template, $matches);
   foreach ($matches[0] as $key => $fullMatch) {
-    $stringToTranslate = $matches[1][$key];
-    $template = str_replace($fullMatch, "'content' => _x('$stringToTranslate', 'Text in a web form. Keep HTML tags!', 'mailpoet')", $template);
+    $content = $matches[1][$key];
+    $template = str_replace($fullMatch, "'content' => '$content', // @todo Add translations, links and emoji processing.", $template);
   }
   return $template;
 }
