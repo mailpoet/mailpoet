@@ -310,42 +310,6 @@ div.mailpoet_form_slide_in {
   }
 }
 
-@keyframes fade-in-up {
-  0% {
-    opacity: 0;
-    transform: translateY(30%);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fade-in-up-popup {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -20%);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
-}
-
-@keyframes fade-in-down {
-  0% {
-    opacity: 0;
-    transform: translateY(-30%);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .mailpoet_form_position_left {
   left: 0;
 }
