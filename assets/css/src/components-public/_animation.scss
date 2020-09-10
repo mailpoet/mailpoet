@@ -58,3 +58,35 @@
     opacity: .7;
   }
 }
+
+.mailpoet_form_animation_slideright {
+  animation: slide-right 1s 1 cubic-bezier(.77, 0, .175, 1);
+}
+
+.mailpoet_form_popup.mailpoet_form_animation_slideright {
+  animation: slide-right-popup 1s 1 cubic-bezier(.77, 0, .175, 1);
+}
+
+@keyframes slide-right {
+  0% {
+    opacity: 0;
+    transform: translateX(-30%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-right-popup {
+  0% {
+    opacity: 0;
+    transform: translate(-80%, -50%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
