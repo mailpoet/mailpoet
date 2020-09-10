@@ -96,11 +96,12 @@ class PreviewPage {
       'success' => false,
       'error' => false,
       'delay' => 1,
-      'position' => $formData['settings'][$formDisplayType . '_form_position'] ?? '',
+      'position' => $formData['settings']['form_placement'][$formDisplayType]['position'] ?? '',
+      'animation' => $formData['settings']['form_placement'][$formDisplayType]['animation'] ?? '',
       'backgroundColor' => $formData['settings']['backgroundColor'] ?? '',
       'fontFamily' => $formData['settings']['font_family'] ?? '',
     ];
-    $formPosition = $formData['settings'][$formDisplayType . '_form_position'] ?? '';
+    $formPosition = $formData['settings']['form_placement'][$formDisplayType]['position'] ?? '';
     if (!$formPosition && $formDisplayType === FormEntity::DISPLAY_TYPE_FIXED_BAR) {
       $formPosition = 'top';
     }
