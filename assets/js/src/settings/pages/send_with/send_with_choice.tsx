@@ -46,7 +46,7 @@ export default function SendWithChoice() {
           <input type="radio" checked={isMssActive} onChange={mssChosen} />
           <span className="mailpoet-form-radio-control" />
           <h4 className="mailpoet-h4">{t('mssTitle')}</h4>
-          <p>{t('solveSendingProblems')}</p>
+          <p>{isMssActive ? t('youreSendingWithMss') : t('solveSendingProblems')}</p>
           <ul className="mailpoet-sending-method-benefits mailpoet_success">
             <li className="mailpoet_success_item">{t('mssBenefit1')}</li>
             <li className="mailpoet_success_item">{t('mssBenefit2')}</li>
