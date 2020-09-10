@@ -30,3 +30,31 @@
     transform: translateY(0);
   }
 }
+
+.mailpoet_form_animation_fadein {
+  animation: fade-in 1s 1 cubic-bezier(.77, 0, .175, 1);
+}
+
+.mailpoet_form_overlay_animation_fadein {
+  animation: fade-in-overlay 1s 1 cubic-bezier(.77, 0, .175, 1);
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-overlay {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: .7;
+  }
+}
