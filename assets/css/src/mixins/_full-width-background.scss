@@ -1,0 +1,14 @@
+@mixin full-width-background($background) {
+  z-index: 0;
+
+  &:before {
+    background: $background;
+    bottom: -$grid-gap-large;
+    content: '';
+    left: -100vw;
+    position: absolute;
+    right: -100vw;
+    top: -$grid-gap-large;
+    z-index: -1;
+  }
+}
