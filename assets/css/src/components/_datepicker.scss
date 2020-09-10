@@ -1,5 +1,15 @@
 @import '../../../../node_modules/react-datepicker/src/stylesheets/datepicker';
 
+.mailpoet-datetime-container {
+  display: flex;
+  justify-content: space-between;
+
+  .mailpoet-datepicker {
+    flex-grow: 1;
+    width: auto;
+  }
+}
+
 .mailpoet-datepicker {
   .react-datepicker {
     background-color: $color-input-background;
