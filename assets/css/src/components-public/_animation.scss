@@ -181,3 +181,39 @@
     transform: scale(1) translate(-50%, -50%);
   }
 }
+
+.mailpoet_form_animation_flip {
+  animation: flip 1s 1 ease-in-out;
+  perspective: 2000px;
+}
+
+.mailpoet_form_popup.mailpoet_form_animation_flip {
+  animation: flip-popup 1s 1 ease-in-out;
+  perspective: 2000px;
+}
+
+@keyframes flip {
+  0% {
+    opacity: 0;
+    transform: rotateY(-60deg);
+    transform-style: preserve-3d;
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes flip-popup {
+  0% {
+    opacity: 0;
+    transform: rotateY(-60deg) translate(-59%, -50%);
+    transform-style: preserve-3d;
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg) translate(-50%, -50%);
+  }
+}
