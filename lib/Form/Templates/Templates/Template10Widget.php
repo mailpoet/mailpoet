@@ -17,7 +17,7 @@ class Template10Widget extends FormTemplate {
         'type' => 'heading',
         'id' => 'heading',
         'params' => [
-          'content' => _x('<strong><span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">LET’S KEEP IN TOUCH!</span></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => '<strong><span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">' . _x('LET’S KEEP IN TOUCH!', 'Text in a web form', 'mailpoet') . '</span></strong>',
           'level' => '2',
           'align' => 'center',
           'font_size' => '25',
@@ -32,7 +32,7 @@ class Template10Widget extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">We’d love to keep you updated with our latest news and offers</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet') . ' ' .  $this->wp->wpStaticizeEmoji('😎'),
+          'content' => '<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">' . _x('We’d love to keep you updated with our latest news and offers', 'Text in a web form.', 'mailpoet') . '</span> ' . $this->wp->wpStaticizeEmoji('😎'),
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '18',
@@ -124,7 +124,7 @@ class Template10Widget extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">We don’t spam! Read our <a href="#">Privacy Policy</a> for more details.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => '<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We don’t spam! Read our [link]Privacy Policy[/link] for more details.', 'Text in a web form.', 'mailpoet'), '#') . '</span>',
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '14',

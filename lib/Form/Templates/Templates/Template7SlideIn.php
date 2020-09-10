@@ -31,7 +31,7 @@ class Template7SlideIn extends FormTemplate {
         'type' => 'heading',
         'id' => 'heading',
         'params' => [
-          'content' => $this->wp->wpStaticizeEmoji('🕶️') . ' ' . _x('<strong><span style="font-family: Abril FatFace" data-font="Abril FatFace" class="mailpoet-has-font">Relax!</span></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => $this->wp->wpStaticizeEmoji('🕶️') . ' <strong><span style="font-family: Abril FatFace" data-font="Abril FatFace" class="mailpoet-has-font">' . _x('Relax!', 'Text in a web form.', 'mailpoet') . '</span></strong>',
           'level' => '2',
           'align' => 'center',
           'font_size' => '80',
@@ -46,7 +46,7 @@ class Template7SlideIn extends FormTemplate {
         'type' => 'heading',
         'id' => 'heading',
         'params' => [
-          'content' => _x('<span style="font-family: Cairo" data-font="Cairo" class="mailpoet-has-font">Put your feet up and let us do the hard work for you. Sign up to receive our latest deals directly in your inbox. </span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => '<span style="font-family: Cairo" data-font="Cairo" class="mailpoet-has-font">' . _x('Put your feet up and let us do the hard work for you. Sign up to receive our latest deals directly in your inbox.', 'Text in a web form.', 'mailpoet') . '</span>',
           'level' => '2',
           'align' => 'center',
           'font_size' => '24',
@@ -146,7 +146,7 @@ class Template7SlideIn extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<span style="font-family: Cairo" data-font="Cairo" class="mailpoet-has-font">We’ll never send you spam or share your email address.<br>Find out more in our <a rel="noreferrer noopener" href="#" target="_blank">Privacy Policy</a>.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => '<span style="font-family: Cairo" data-font="Cairo" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We’ll never send you spam or share your email address.<br>Find out more in our [link]Privacy Policy[/link].', 'Text in a web form. Keep HTML tags!', 'mailpoet'), '#') . '</span>',
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '13',
