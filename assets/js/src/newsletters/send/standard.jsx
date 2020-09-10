@@ -4,6 +4,7 @@ import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 
+import Checkbox from 'common/form/checkbox/checkbox';
 import DateTime from 'newsletters/send/date_time.jsx';
 import SenderField from 'newsletters/send/sender_address_field.jsx';
 import GATrackingField from 'newsletters/send/ga_tracking.jsx';
@@ -34,7 +35,7 @@ class StandardScheduling extends React.Component {
 
   isScheduled = () => this.getCurrentValue().isScheduled === '1';
 
-  handleCheckboxChange = (event) => {
+  handleCheckboxChange = (checked, event) => {
     const changeEvent = event;
     changeEvent.target.value = event.target.checked ? '1' : '0';
     return this.handleValueChange(changeEvent);
@@ -58,36 +59,36 @@ class StandardScheduling extends React.Component {
 
     if (this.isScheduled()) {
       schedulingOptions = (
-        <span id="mailpoet_scheduling">
-          <DateTime
-            name="scheduledAt"
-            value={this.getCurrentValue().scheduledAt}
-            onChange={this.handleValueChange}
-            disabled={this.props.field.disabled}
-            dateValidation={this.getDateValidation()}
-            defaultDateTime={defaultDateTime}
-            timeOfDayItems={timeOfDayItems}
-            dateDisplayFormat={dateDisplayFormat}
-            dateStorageFormat={dateStorageFormat}
-          />
-          &nbsp;
-          <span>
+        <>
+          <span className="mailpoet-vertical-middle">
             {MailPoet.I18n.t('websiteTimeIs')}
             {' '}
             <code>{currentTime}</code>
           </span>
-        </span>
+          <div className="mailpoet-gap" />
+          <div id="mailpoet_scheduling">
+            <DateTime
+              name="scheduledAt"
+              value={this.getCurrentValue().scheduledAt}
+              onChange={this.handleValueChange}
+              disabled={this.props.field.disabled}
+              dateValidation={this.getDateValidation()}
+              defaultDateTime={defaultDateTime}
+              timeOfDayItems={timeOfDayItems}
+              dateDisplayFormat={dateDisplayFormat}
+              dateStorageFormat={dateStorageFormat}
+            />
+          </div>
+        </>
       );
     }
     return (
       <div>
-        <input
-          type="checkbox"
-          value="1"
+        <Checkbox
           checked={this.isScheduled()}
           disabled={this.props.field.disabled}
           name="isScheduled"
-          onChange={this.handleCheckboxChange}
+          onCheck={this.handleCheckboxChange}
         />
 
         {schedulingOptions}

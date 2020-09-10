@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import Grid from 'common/grid';
 import DateText from 'newsletters/send/date_text.jsx';
 import TimeSelect from 'newsletters/send/time_select.jsx';
 
@@ -55,7 +56,7 @@ class DateTime extends React.Component {
 
   render() {
     return (
-      <span>
+      <Grid.Column className="mailpoet-datetime-container">
         <DateText
           name="date"
           value={this.state.date}
@@ -73,7 +74,7 @@ class DateTime extends React.Component {
           validation={this.props.timeValidation}
           timeOfDayItems={this.props.timeOfDayItems}
         />
-      </span>
+      </Grid.Column>
     );
   }
 }
