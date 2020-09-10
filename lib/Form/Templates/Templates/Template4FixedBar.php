@@ -42,7 +42,7 @@ class Template4FixedBar extends FormTemplate {
                 'type' => 'heading',
                 'id' => 'heading',
                 'params' => [
-                  'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>Oh hi there 👋 It’s nice to meet you.</strong></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'content' => '<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>' . _x('Oh hi there 👋 It’s nice to meet you.', 'Text in a web form.', 'mailpoet') . '</strong></span>',
                   'level' => '2',
                   'align' => 'left',
                   'font_size' => '30',
@@ -57,7 +57,7 @@ class Template4FixedBar extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => _x('<strong>Sign up to receive awesome content in your inbox, every month.</strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'content' => '<strong>' . _x('Sign up to receive awesome content in your inbox, every month.', 'Text in a web form.', 'mailpoet') . '</strong>',
                   'drop_cap' => '0',
                   'align' => 'left',
                   'font_size' => '16',
@@ -71,7 +71,7 @@ class Template4FixedBar extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => _x('<em>We don’t spam! Read our <a href="#">privacy policy</a> for more info.</em>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'content' => '<em>' . $this->replaceLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</em>',
                   'drop_cap' => '0',
                   'align' => 'left',
                   'font_size' => '14',
@@ -113,7 +113,7 @@ class Template4FixedBar extends FormTemplate {
               [
                 'type' => 'submit',
                 'params' => [
-                  'label' => _x('Let\'s keep in touch', 'Form label', 'mailpoet'),
+                  'label' => _x('Let’s keep in touch', 'Form label', 'mailpoet'),
                   'class_name' => '',
                 ],
                 'id' => 'submit',

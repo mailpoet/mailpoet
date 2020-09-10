@@ -45,7 +45,7 @@ class Template6FixedBar extends FormTemplate {
                 'type' => 'heading',
                 'id' => 'heading',
                 'params' => [
-                  'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>Dive in!</strong> Start your journey today.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'content' => '<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">' . _x('<strong>Dive in!</strong> Start your journey today.', 'Text in a web form. Keep HTML tags!', 'mailpoet') . '</span>',
                   'level' => '2',
                   'align' => 'left',
                   'font_size' => '27',
@@ -60,7 +60,7 @@ class Template6FixedBar extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => _x('<strong><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">Sign up to start your fitness program. We promise we’ll never spam! Take a look at our <a href="#">Privacy Policy</a> for more info.</span></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'content' => '<strong><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('Sign up to start your fitness program. We promise we’ll never spam! Take a look at our [link]Privacy Policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</span></strong>',
                   'drop_cap' => '0',
                   'align' => 'left',
                   'font_size' => '14',

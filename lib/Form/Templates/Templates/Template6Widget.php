@@ -20,7 +20,7 @@ class Template6Widget extends FormTemplate {
         'type' => 'heading',
         'id' => 'heading',
         'params' => [
-          'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>Dive in!</strong></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => '<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>' . _x('Dive in!', 'Text in a web form.', 'mailpoet') . '</strong></span>',
           'level' => '2',
           'align' => 'center',
           'font_size' => '32',
@@ -35,7 +35,7 @@ class Template6Widget extends FormTemplate {
         'type' => 'heading',
         'id' => 'heading',
         'params' => [
-          'content' => _x('<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>Join [mailpoet_subscribers_count] others, and start your fitness journey with us today.</strong></span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => '<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font"><strong>' . _x('Join [mailpoet_subscribers_count] others, and start your fitness journey with us today.', 'Text in a web form.', 'mailpoet') . '</strong></span>',
           'level' => '2',
           'align' => 'center',
           'font_size' => '16',
@@ -89,7 +89,7 @@ class Template6Widget extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => _x('<strong><strong><strong><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">We promise we’ßll never spam! Take a look at our <a href="#">Privacy Policy </a>for more info.</span></strong></strong></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+          'content' => '<strong><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We promise we’ll never spam! Take a look at our [link]Privacy Policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</span></strong>',
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '13',
