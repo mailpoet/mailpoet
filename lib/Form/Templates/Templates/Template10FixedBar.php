@@ -28,7 +28,7 @@ class Template10FixedBar extends FormTemplate {
                 'type' => 'heading',
                 'id' => 'heading',
                 'params' => [
-                  'content' => _x('<strong><span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">LET’S KEEP IN TOUCH!</span></strong>', 'Text in a web form. Keep HTML tags!', 'mailpoet') . ' ' .  $this->wp->wpStaticizeEmoji('😎'),
+                  'content' => '<strong><span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">' . _x('LET’S KEEP IN TOUCH!', 'Text in a web form.', 'mailpoet') . '</span></strong> ' . $this->wp->wpStaticizeEmoji('😎'),
                   'level' => '2',
                   'align' => 'left',
                   'font_size' => '40',
@@ -53,7 +53,7 @@ class Template10FixedBar extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => _x('<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">We’d love to keep you updated with our latest news! We promise we’ll never spam. Take a look at our <a href="#">Privacy Policy</a> for more details.</span>', 'Text in a web form. Keep HTML tags!', 'mailpoet'),
+                  'content' => '<span style="font-family: Concert One" data-font="Concert One" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We’d love to keep you updated with our latest news! We promise we’ll never spam. Take a look at our [link]Privacy Policy[/link] for more details.', 'Text in a web form.', 'mailpoet'), '#') . '</span>',
                   'drop_cap' => '0',
                   'align' => 'left',
                   'font_size' => '20',
