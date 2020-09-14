@@ -156,7 +156,6 @@ class DisplayFormInWPContent {
     $templateData['delay'] = $formSettings['form_placement'][$displayType]['delay'] ?? 0;
     $templateData['position'] = $formSettings['form_placement'][$displayType]['position'] ?? '';
     $templateData['animation'] = $formSettings['form_placement'][$displayType]['animation'] ?? '';
-    $templateData['backgroundColor'] = $formSettings['backgroundColor'] ?? '';
     $templateData['fontFamily'] = $formSettings['font_family'] ?? '';
     $templateData['enableExitIntent'] = false;
     if (

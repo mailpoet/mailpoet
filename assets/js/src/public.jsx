@@ -83,8 +83,6 @@ jQuery(($) => {
 
   function showForm(formDiv, showOverlay = false) {
     const form = formDiv.find('form');
-    const background = form.data('background-color');
-    formDiv.css('background-color', background || 'white');
     let delay = form.data('delay');
     delay = parseInt(delay, 10);
     if (Number.isNaN(delay)) {
