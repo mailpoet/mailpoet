@@ -4,7 +4,6 @@ namespace MailPoet\DynamicSegments;
 
 use MailPoet\DynamicSegments\FreePluginConnectors\AddToSubscribersFilters;
 use MailPoet\DynamicSegments\FreePluginConnectors\SubscribersBulkActionHandler;
-use MailPoet\DynamicSegments\FreePluginConnectors\SubscribersListingsHandlerFactory;
 use MailPoet\DynamicSegments\Mappers\DBMapper;
 use MailPoet\DynamicSegments\Persistence\Loading\Loader;
 use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
@@ -21,11 +20,6 @@ class DynamicSegmentHooks {
 
   public function init() {
     $this->wp->addAction(
-      'mailpoet_get_subscribers_listings_in_segment_handlers',
-      [$this, 'getSubscribersListingsInSegmentsHandlers']
-    );
-
-    $this->wp->addAction(
       'mailpoet_subscribers_listings_filters_segments',
       [$this, 'addDynamicFiltersToSubscribersListingsFilters']
     );
@@ -39,11 +33,6 @@ class DynamicSegmentHooks {
       'mailpoet_get_segment_filters',
       [$this, 'getSegmentFilters']
     );
-  }
-
-  public function getSubscribersListingsInSegmentsHandlers(array $handlers) {
-    $handlers[] = new SubscribersListingsHandlerFactory();
-    return $handlers;
   }
 
   public function addDynamicFiltersToSubscribersListingsFilters($segmentFilters) {

@@ -2,22 +2,22 @@
 
 namespace MailPoet\Segments;
 
-require_once('DynamicListingsHandlerMock.php');
+require_once(ABSPATH . 'wp-admin/includes/user.php');
 
-use Codeception\Util\Stub;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Models\DynamicSegmentFilter;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoetVendor\Idiorm\ORM;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscribersListingsTest extends \MailPoetTest {
   public $subscriber2;
   public $subscriber1;
   public $segment2;
   public $segment1;
+  public $dynamicSegment;
 
   /** @var SubscribersListings */
   private $finder;
@@ -26,8 +26,19 @@ class SubscribersListingsTest extends \MailPoetTest {
     parent::_before();
     $this->finder = ContainerWrapper::getInstance()->get(SubscribersListings::class);
     $this->cleanData();
+    wp_insert_user([
+      'user_login' => 'user-role-test1',
+      'user_email' => 'user-role-test1@example.com',
+      'role' => 'editor',
+      'user_pass' => '12123154',
+    ]);
     $this->segment1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
     $this->segment2 = Segment::createOrUpdate(['name' => 'Segment 3', 'type' => 'not default']);
+    $dynamicSegmentFactory = new DynamicSegment();
+    $this->dynamicSegment = $dynamicSegmentFactory
+      ->withName('Dynamic')
+      ->withUserRoleFilter('editor')
+      ->create();
     $this->subscriber1 = Subscriber::createOrUpdate([
       'email' => 'john@mailpoet.com',
       'first_name' => 'John',
@@ -57,7 +68,12 @@ class SubscribersListingsTest extends \MailPoetTest {
   private function cleanData() {
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    $user = get_user_by('email', 'user-role-test1@example.com');
+    if ($user) {
+      \wp_delete_user($user->ID);
+    }
   }
 
   public function testTryToGetListingsWithoutPassingSegment() {
@@ -75,26 +91,14 @@ class SubscribersListingsTest extends \MailPoetTest {
     expect($listings['items'])->notEmpty();
   }
 
-  public function testGetListingsUsingFilter() {
-    /** @var MockObject $mock */
-    $mock = Stub::makeEmpty('MailPoet\Test\Segments\DynamicListingsHandlerMock', ['get']);
-    $mock
-      ->expects($this->once())
-      ->method('get')
-      ->will($this->returnValue('dynamic listings'));
-
-    remove_all_filters('mailpoet_get_subscribers_listings_in_segment_handlers');
-    (new WPFunctions)->addFilter('mailpoet_get_subscribers_listings_in_segment_handlers', function () use ($mock) {
-      return [$mock];
-    });
-
-    $listings = $this->finder->getListingsInSegment(['filter' => ['segment' => $this->segment2->id]]);
-    expect($listings)->equals('dynamic listings');
+  public function testGetListingsForDynamicSegment() {
+    $listings = $this->finder->getListingsInSegment(['filter' => ['segment' => $this->dynamicSegment->id]]);
+    expect($listings['items'])->count(1);
+    expect($listings['items'][0]->email)->equals('user-role-test1@example.com');
   }
 
   public function testTryToGetListingsForSegmentWithoutHandler() {
     $this->expectException('InvalidArgumentException');
-    remove_all_filters('mailpoet_get_subscribers_listings_in_segment_handlers');
     $this->finder->getListingsInSegment(['filter' => ['segment' => $this->segment2->id]]);
   }
 }
