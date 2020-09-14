@@ -2,7 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import Loading from 'common/loading.jsx';
-import Tabs from 'newsletters/templates/tabs.jsx';
+import Categories from 'common/categories/categories';
 import TemplateBox from 'newsletters/templates/template_box.jsx';
 import ImportTemplate from 'newsletters/templates/import_template.jsx';
 import _ from 'underscore';
@@ -227,7 +227,7 @@ class NewsletterTemplates extends React.Component {
   render() {
     if (this.state.loading) return <Loading />;
 
-    const tabs = templatesCategories.concat({
+    const categories = templatesCategories.concat({
       name: 'import',
       label: MailPoet.I18n.t('tabImportTitle'),
     });
@@ -266,21 +266,22 @@ class NewsletterTemplates extends React.Component {
           />
         ));
       }
-      content = <ul className="mailpoet_boxes clearfix">{templates}</ul>;
+      content = templates;
     }
 
     return (
       <div>
         <ListingHeadingStepsRoute emailType={this.state.emailType} automationId="email_template_selection_heading" />
 
-        <Tabs
-          tabs={tabs}
-          selected={this.state.selectedTab}
-          select={(name) => this.setState({ selectedTab: name })}
-        />
+        <div className="mailpoet-templates">
+          <Categories
+            categories={categories}
+            active={this.state.selectedTab}
+            onSelect={(name) => this.setState({ selectedTab: name })}
+          />
 
-        {content}
-
+          {content}
+        </div>
       </div>
     );
   }

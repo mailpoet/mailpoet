@@ -1,0 +1,67 @@
+.mailpoet-templates {
+  display: grid;
+  grid-gap: $grid-gap;
+  grid-template-columns: repeat(auto-fill, 304px);
+  justify-content: center;
+  padding-top: $grid-gap-large;
+
+  .mailpoet-categories {
+    grid-column: 1 / -1;
+  }
+}
+
+.mailpoet-template {
+  background: #fff;
+  border: 1px solid $color-tertiary-light;
+  border-radius: $grid-border-radius;
+  height: 384px;
+  overflow: hidden;
+  position: relative;
+
+  &:hover {
+    box-shadow: 0 10px 20px $color-tertiary-light;
+  }
+}
+
+.mailpoet-template-thumbnail {
+  border-radius: $grid-border-radius $grid-border-radius 0 0;
+  height: 320px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+  }
+}
+
+.mailpoet-template-preview-overlay {
+  align-items: center;
+  background: rgba(#fff, .96);
+  border-radius: $grid-border-radius;
+  display: none;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+
+  .mailpoet-template-preview:hover & { display: flex; }
+}
+
+.mailpoet-template-info {
+  align-items: center;
+  display: flex;
+  gap: $grid-gap;
+  justify-content: space-between;
+  padding: $grid-gap;
+  white-space: nowrap;
+
+  h5 {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
