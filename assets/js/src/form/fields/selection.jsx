@@ -286,7 +286,23 @@ class Selection extends React.Component {
   };
 
   render() {
+    const items = this.getItems(this.props.field);
     const selectedValues = this.getSelectedValues();
+    const options = items.map((item) => {
+      const label = this.getLabel(item);
+      const searchLabel = this.getSearchLabel(item);
+      const value = this.getValue(item);
+      return (
+        <option
+          key={`option-${item.id}`}
+          className="default"
+          value={value}
+          title={searchLabel}
+        >
+          { label }
+        </option>
+      );
+    });
     return (
       <div className="mailpoet-form-select mailpoet-form-input">
         <select
@@ -299,6 +315,7 @@ class Selection extends React.Component {
           {...this.props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
         >
           { this.insertEmptyOption() }
+          { options }
         </select>
       </div>
     );
