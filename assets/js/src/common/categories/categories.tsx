@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 import CategoriesItem, { Category } from './categories_item';
 
 type Props = {

@@ -2,6 +2,8 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
+import Button from 'common/button/button';
+import Heading from 'common/typography/heading/heading';
 import confirmAlert from 'common/confirm_alert.jsx';
 import { GlobalContext } from 'context/index.jsx';
 
@@ -97,64 +99,46 @@ class TemplateBox extends React.Component {
     } = this.props;
 
     const deleteLink = (
-      <button className="mailpoet_delete button button-secondary" onClick={this.onDelete} type="button">
+      <Button dimension="small" variant="light" onClick={this.onDelete}>
         {MailPoet.I18n.t('delete')}
-      </button>
+      </Button>
     );
 
     let preview = '';
     if (typeof thumbnail === 'string' && thumbnail.length > 0) {
       preview = (
         <a
+          className="mailpoet-template-preview"
           href="#"
           onClick={(event) => {
             event.preventDefault();
             this.onPreview(event);
           }}
         >
-          <img src={thumbnail} alt={MailPoet.I18n.t('templatePreview')} loading="lazy" />
-          <div className="mailpoet_overlay">
-            <p className="mailpoet_more_details">{MailPoet.I18n.t('zoom')}</p>
+          <div className="mailpoet-template-thumbnail">
+            <img src={thumbnail} alt={MailPoet.I18n.t('templatePreview')} loading="lazy" />
+          </div>
+          <div className="mailpoet-template-preview-overlay">
+            <Button>{MailPoet.I18n.t('zoom')}</Button>
           </div>
         </a>
       );
     }
 
     return (
-      <li className="mailpoet_template_boxes" data-automation-id="select_template_box">
-        <div className="mailpoet_thumbnail">
-          { preview }
-        </div>
+      <div className="mailpoet-template" data-automation-id="select_template_box">
+        { preview }
 
-        <div className="mailpoet_template_content">
-          <div className="mailpoet_description">
-            <h3>{ name }</h3>
-          </div>
-
-          <div className="mailpoet_actions">
+        <div className="mailpoet-template-info">
+          <Heading level={5} title={name}>{name}</Heading>
+          <div>
             { readonly === true ? false : deleteLink }
-            <a
-              className="button button-primary"
-              data-automation-id={`select_template_${index}`}
-              onClick={this.onSelect}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(event) => {
-                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-                ) {
-                  event.preventDefault();
-                  this.onSelect();
-                }
-              }}
-            >
-              {' '}
+            <Button dimension="small" automationId={`select_template_${index}`} onClick={this.onSelect}>
               {MailPoet.I18n.t('select')}
-              {' '}
-
-            </a>
+            </Button>
           </div>
         </div>
-      </li>
+      </div>
     );
   }
 }
