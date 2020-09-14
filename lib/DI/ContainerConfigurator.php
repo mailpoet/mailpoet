@@ -131,6 +131,9 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\PostEditorBlocks\SubscriptionFormBlock::class);
     // Dynamic segments
     $container->autowire(\MailPoet\DynamicSegments\DynamicSegmentHooks::class);
+    $container->autowire(\MailPoet\DynamicSegments\FreePluginConnectors\AddToNewslettersSegments::class);
+    $container->autowire(\MailPoet\DynamicSegments\Persistence\Loading\Loader::class);
+    $container->autowire(\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount::class);
     // Cron
     $container->autowire(\MailPoet\Cron\CronHelper::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CronTrigger::class)->setPublic(true);

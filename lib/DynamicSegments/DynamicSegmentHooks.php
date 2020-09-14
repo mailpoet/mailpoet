@@ -2,7 +2,6 @@
 
 namespace MailPoet\DynamicSegments;
 
-use MailPoet\DynamicSegments\FreePluginConnectors\AddToNewslettersSegments;
 use MailPoet\DynamicSegments\FreePluginConnectors\AddToSubscribersFilters;
 use MailPoet\DynamicSegments\FreePluginConnectors\SendingNewslettersSubscribersFinder;
 use MailPoet\DynamicSegments\FreePluginConnectors\SubscribersBulkActionHandler;
@@ -23,11 +22,6 @@ class DynamicSegmentHooks {
   }
 
   public function init() {
-    $this->wp->addAction(
-      'mailpoet_segments_with_subscriber_count',
-      [$this, 'addSegmentsWithSubscribersCount']
-    );
-
     $this->wp->addAction(
       'mailpoet_get_subscribers_in_segment_finders',
       [$this, 'getSubscribersInSegmentsFinders']
@@ -52,11 +46,6 @@ class DynamicSegmentHooks {
       'mailpoet_get_segment_filters',
       [$this, 'getSegmentFilters']
     );
-  }
-
-  public function addSegmentsWithSubscribersCount($initialSegments) {
-    $newslettersAddSegments = new AddToNewslettersSegments(new Loader(new DBMapper()), new SubscribersCount());
-    return $newslettersAddSegments->add($initialSegments);
   }
 
   public function getSubscribersInSegmentsFinders(array $finders) {

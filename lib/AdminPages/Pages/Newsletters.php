@@ -7,6 +7,7 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\DynamicSegments\FreePluginConnectors\AddToNewslettersSegments;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
@@ -58,6 +59,9 @@ class Newsletters {
   /** @var NewsletterTemplatesRepository */
   private $newsletterTemplatesRepository;
 
+  /** @var AddToNewslettersSegments */
+  private $dynamicSegmentsLoader;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -69,7 +73,8 @@ class Newsletters {
     FeaturesController $featuresController,
     SubscribersFeature $subscribersFeature,
     ServicesChecker $servicesChecker,
-    NewsletterTemplatesRepository $newsletterTemplatesRepository
+    NewsletterTemplatesRepository $newsletterTemplatesRepository,
+    AddToNewslettersSegments $dynamicSegmentsLoader
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -82,6 +87,7 @@ class Newsletters {
     $this->subscribersFeature = $subscribersFeature;
     $this->servicesChecker = $servicesChecker;
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
+    $this->dynamicSegmentsLoader = $dynamicSegmentsLoader;
   }
 
   public function render() {
@@ -100,6 +106,7 @@ class Newsletters {
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('newsletters');
     $segments = Segment::getSegmentsWithSubscriberCount($type = false);
+    $segments = $this->dynamicSegmentsLoader->add($segments);
     $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
     usort($segments, function ($a, $b) {
       return strcasecmp($a["name"], $b["name"]);
