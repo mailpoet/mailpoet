@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.5
-Stable tag: 3.50.0
+Stable tag: 3.50.1
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.50.1 - 2020-09-14 =
+* Added: check for possible image rendering issues;
+* Improved: redesigned email schedule page;
+* Improved: redesigned email type selection;
+* Improved: new design of "Settings > Send with" tab;
+* Fixed: subscriber counts in list filter on subscribers page;
+* Fixed: excessive space at bottom of forms;
+* Fixed: duplicate confirmation emails when registering through WordPress form.
 
 = 3.50.0 - 2020-09-08 =
 * Added: option to display a popup form when a user leaves the page;
