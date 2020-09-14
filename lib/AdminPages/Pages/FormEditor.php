@@ -174,6 +174,9 @@ class FormEditor {
       'pages' => $this->getAllPages(),
       'categories' => $this->getAllCategories(),
       'tags' => $this->getAllTags(),
+      'products' => $this->getWooCommerceProducts(),
+      'product_categories' => $this->getWooCommerceCategories(),
+      'product_tags' => $this->getWooCommerceTags(),
     ];
     $this->wp->wpEnqueueMedia();
     $this->pageRenderer->displayPage('form/editor.html', $data);
@@ -260,11 +263,23 @@ class FormEditor {
   }
 
   private function getAllPosts() {
-    return $this->formatPosts($this->wp->getPosts());
+    return $this->formatPosts($this->wp->getPosts(['numberposts' => -1]));
+  }
+
+  private function getWooCommerceProducts() {
+    return $this->formatPosts($this->wp->getPosts(['post_type' => 'product', 'numberposts' => -1]));
   }
 
   private function getAllPages() {
     return $this->formatPosts($this->wp->getPages());
+  }
+
+  private function getWooCommerceCategories() {
+    return $this->formatTerms($this->wp->getCategories(['taxonomy' => 'product_cat']));
+  }
+
+  private function getWooCommerceTags() {
+    return $this->formatTerms($this->wp->getTerms('product_tag'));
   }
 
   private function getAllCategories() {
@@ -276,6 +291,7 @@ class FormEditor {
   }
 
   private function formatPosts($posts) {
+    if (empty($posts)) return [];
     $result = [];
     foreach ($posts as $post) {
       $result[] = [
@@ -287,6 +303,8 @@ class FormEditor {
   }
 
   private function formatTerms($terms) {
+    if (empty($terms)) return [];
+    if (!is_array($terms)) return []; // there can be instance of WP_Error instead of list of terms if woo commerce is not active
     $result = [];
     foreach ($terms as $term) {
       $result[] = [
