@@ -7,10 +7,21 @@
     <%= before_title | raw %><%= title | raw %><%= after_title | raw %>
   <% endif %>
 
-  <div class="mailpoet_form_popup_overlay"></div>
+  <div class="
+    mailpoet_form_popup_overlay
+    <% if(animation != '') %>
+      mailpoet_form_overlay_animation_<%= animation %>
+      mailpoet_form_overlay_animation
+    <% endif %>
+  "></div>
   <div
     id="<%= form_html_id %>"
-    class="mailpoet_form mailpoet_form_<%= form_type %>"
+    class="
+      mailpoet_form
+      mailpoet_form_<%= form_type %>
+      mailpoet_form_position_<%= position %>
+      mailpoet_form_animation_<%= animation %>
+    "
     <% if(is_preview) %>
       data-is-preview="1"
       data-editor-url="<%= editor_url %>"
@@ -33,8 +44,6 @@
       class="mailpoet_form mailpoet_form_form mailpoet_form_<%= form_type %>"
       novalidate
       data-delay="<%= delay %>"
-      data-position="<%= position %>"
-      data-animation="<%= animation %>"
       data-exit-intent-enabled="<%= enableExitIntent %>"
       data-background-color="<%= backgroundColor %>"
       data-font-family="<%= fontFamily %>"
