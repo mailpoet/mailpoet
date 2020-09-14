@@ -2,19 +2,24 @@
 
 namespace MailPoet\Test\Subscribers\ImportExport\Export;
 
+use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
 use MailPoet\Models\CustomField;
+use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Subscribers\ImportExport\Export\DynamicSubscribersGetter;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class DynamicSubscribersGetterTest extends \MailPoetTest {
   public $segmentsData;
   public $customFieldsData;
   public $subscribersData;
   public $subscriberFields;
+
+  /** @var SingleSegmentLoader & MockObject */
+  private $singleSegmentLoader;
 
   public function _before() {
     parent::_before();
@@ -92,19 +97,19 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
     $entity->customFieldId = 1;
     $entity->value = $this->subscribersData[1][1];
     $entity->save();
-    $wp = new WPFunctions;
-    $wp->removeAllFilters('mailpoet_get_segment_filters');
-    $wp->addAction(
-      'mailpoet_get_segment_filters',
-      function($segmentId) {
+
+    $this->singleSegmentLoader = $this->createMock(SingleSegmentLoader::class);
+    $this->singleSegmentLoader->method('load')
+      ->willReturnCallback(function($segmentId) {
+        $segment = DynamicSegment::create();
+        $segment->name = 'Dynamic';
         if ($segmentId == 1) {
-          return [new \DynamicSegmentFilter([1, 2])];
+          $segment->setFilters([new \DynamicSegmentFilter([1, 2])]);
         } else if ($segmentId == 2) {
-          return [new \DynamicSegmentFilter([1, 3, 4])];
+          $segment->setFilters([new \DynamicSegmentFilter([1, 3, 4])]);
         }
-        return [];
-      }
-    );
+        return $segment;
+      });
   }
 
   protected function filterSubscribersData($subscribers) {
@@ -122,7 +127,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersInOneSegment() {
-    $getter = new DynamicSubscribersGetter([1], 10);
+    $getter = new DynamicSubscribersGetter([1], 10, $this->singleSegmentLoader);
     $subscribers = $getter->get();
     expect($this->filterSubscribersData($subscribers))->equals([
       [
@@ -151,7 +156,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersInMultipleSegments() {
-    $getter = new DynamicSubscribersGetter([1, 2], 10);
+    $getter = new DynamicSubscribersGetter([1, 2], 10, $this->singleSegmentLoader);
     expect($this->filterSubscribersData($getter->get()))->equals([
       [
         'first_name' => 'Adam',
@@ -212,7 +217,7 @@ class DynamicSubscribersGetterTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersInBatches() {
-    $getter = new DynamicSubscribersGetter([1, 2], 2);
+    $getter = new DynamicSubscribersGetter([1, 2], 2, $this->singleSegmentLoader);
     expect($this->filterSubscribersData($getter->get()))->equals([
       [
         'first_name' => 'Adam',

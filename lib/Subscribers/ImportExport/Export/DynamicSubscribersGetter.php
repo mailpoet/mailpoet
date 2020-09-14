@@ -2,9 +2,10 @@
 
 namespace MailPoet\Subscribers\ImportExport\Export;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * Gets batches of subscribers from dynamic segments.
@@ -13,15 +14,15 @@ class DynamicSubscribersGetter extends SubscribersGetter {
 
   protected $segmentIndex = 0;
 
-  /** @var WPFunctions */
-  private $wp;
+  /** @var SingleSegmentLoader */
+  private $dynamicSegmentsLoader;
 
-  public function __construct($segmentsIds, $batchSize, WPFunctions $wp = null) {
+  public function __construct($segmentsIds, $batchSize, SingleSegmentLoader $dynamicSegmentsLoader = null) {
     parent::__construct($segmentsIds, $batchSize);
-    if ($wp == null) {
-      $wp = new WPFunctions;
+    if ($dynamicSegmentsLoader === null) {
+      $dynamicSegmentsLoader = ContainerWrapper::getInstance()->get(SingleSegmentLoader::class);
     }
-    $this->wp = $wp;
+    $this->dynamicSegmentsLoader = $dynamicSegmentsLoader;
   }
 
   public function reset() {
@@ -32,10 +33,7 @@ class DynamicSubscribersGetter extends SubscribersGetter {
   protected function filter($subscribers) {
     $segmentId = $this->segmentsIds[$this->segmentIndex];
 
-    $filters = $this->wp->applyFilters(
-      'mailpoet_get_segment_filters',
-      $segmentId
-    );
+    $filters = $this->dynamicSegmentsLoader->load($segmentId)->getFilters();
 
     if (!is_array($filters) || empty($filters)) {
       return [];
