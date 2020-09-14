@@ -122,48 +122,52 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
           selected: () => formSettings.formPlacement[settingsPlacementKey].posts.selected,
         }}
       />
-      <h3>{MailPoet.I18n.t('displayOnCategories')}</h3>
-      <Selection
-        item={{
-          id: formSettings.formPlacement[settingsPlacementKey].categories.join(),
-        }}
-        onValueChange={(e) => compose([
-          changeFormSettings,
-          assocPath(`formPlacement.${settingsPlacementKey}.categories`, e.target.value),
-          assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
-          assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
-        ])(formSettings)}
-        field={{
-          id: 'categories',
-          name: 'categories',
-          values: categories,
-          multiple: true,
-          placeholder: MailPoet.I18n.t('selectPage'),
-          getLabel: (category) => category.name,
-          selected: () => formSettings.formPlacement[settingsPlacementKey].categories,
-        }}
-      />
-      <h3>{MailPoet.I18n.t('displayOnTags')}</h3>
-      <Selection
-        item={{
-          id: formSettings.formPlacement[settingsPlacementKey].tags.join(),
-        }}
-        onValueChange={(e) => compose([
-          changeFormSettings,
-          assocPath(`formPlacement.${settingsPlacementKey}.tags`, e.target.value),
-          assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
-          assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
-        ])(formSettings)}
-        field={{
-          id: 'tags',
-          name: 'tags',
-          values: tags,
-          multiple: true,
-          placeholder: MailPoet.I18n.t('selectPage'),
-          getLabel: (tag) => tag.name,
-          selected: () => formSettings.formPlacement[settingsPlacementKey].tags,
-        }}
-      />
+      <div>
+        <h3 className="form-editor-sidebar-heading">{MailPoet.I18n.t('displayOnCategories')}</h3>
+        <Selection
+          item={{
+            id: formSettings.formPlacement[settingsPlacementKey].categories.join(),
+          }}
+          onValueChange={(e) => compose([
+            changeFormSettings,
+            assocPath(`formPlacement.${settingsPlacementKey}.categories`, e.target.value),
+            assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
+            assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
+          ])(formSettings)}
+          field={{
+            id: 'categories',
+            name: 'categories',
+            values: categories,
+            multiple: true,
+            placeholder: MailPoet.I18n.t('selectPage'),
+            getLabel: (category) => category.name,
+            selected: () => formSettings.formPlacement[settingsPlacementKey].categories,
+          }}
+        />
+      </div>
+      <div>
+        <h3 className="form-editor-sidebar-heading">{MailPoet.I18n.t('displayOnTags')}</h3>
+        <Selection
+          item={{
+            id: formSettings.formPlacement[settingsPlacementKey].tags.join(),
+          }}
+          onValueChange={(e) => compose([
+            changeFormSettings,
+            assocPath(`formPlacement.${settingsPlacementKey}.tags`, e.target.value),
+            assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
+            assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
+          ])(formSettings)}
+          field={{
+            id: 'tags',
+            name: 'tags',
+            values: tags,
+            multiple: true,
+            placeholder: MailPoet.I18n.t('selectPage'),
+            getLabel: (tag) => tag.name,
+            selected: () => formSettings.formPlacement[settingsPlacementKey].tags,
+          }}
+        />
+      </div>
     </>
   );
 };
