@@ -18,9 +18,9 @@ const Categories = ({ onSelect, categories, active }: Props) => {
   ));
 
   return (
-    <ul className="mailpoet-categories">
+    <div className="mailpoet-categories">
       { cats }
-    </ul>
+    </div>
   );
 };
 

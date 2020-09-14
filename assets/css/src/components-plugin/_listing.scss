@@ -11,6 +11,11 @@
     border-radius: 0;
     padding: 0;
   }
+
+  .mailpoet-categories {
+    padding-left: $grid-gap-half;
+    padding-right: $grid-gap-half;
+  }
 }
 
 .mailpoet-listing-search {
