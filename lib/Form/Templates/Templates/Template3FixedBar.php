@@ -79,20 +79,6 @@ class Template3FixedBar extends FormTemplate {
             ],
             'body' => [
               [
-                'type' => 'divider',
-                'params' => [
-                  'class_name' => '',
-                  'height' => '1',
-                  'type' => 'spacer',
-                  'style' => 'solid',
-                  'divider_height' => '1',
-                  'divider_width' => '100',
-                  'color' => 'black',
-                ],
-                'id' => 'divider',
-                'name' => 'Divider',
-              ],
-              [
                 'type' => 'text',
                 'params' => [
                   'label' => _x('Email', 'Form label', 'mailpoet'),

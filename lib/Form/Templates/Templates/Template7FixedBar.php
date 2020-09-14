@@ -14,20 +14,6 @@ class Template7FixedBar extends FormTemplate {
   public function getBody(): array {
     return [
       [
-        'type' => 'divider',
-        'params' => [
-          'class_name' => '',
-          'height' => '1',
-          'type' => 'spacer',
-          'style' => 'solid',
-          'divider_height' => '1',
-          'divider_width' => '100',
-          'color' => 'black',
-        ],
-        'id' => 'divider',
-        'name' => 'Divider',
-      ],
-      [
         'type' => 'columns',
         'body' => [
           [
