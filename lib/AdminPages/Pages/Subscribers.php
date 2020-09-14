@@ -62,7 +62,6 @@ class Subscribers {
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('subscribers');
     $segments = Segment::getSegmentsWithSubscriberCount($type = false);
     $segments = $this->dynamicSegmentsLoader->add($segments);
-    $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
     usort($segments, function ($a, $b) {
       return strcasecmp($a["name"], $b["name"]);
     });

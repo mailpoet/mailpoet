@@ -29,7 +29,6 @@ class ImportExportFactory {
     } else {
       $segments = Segment::getSegmentsForExport();
       $segments = $this->dynamicSegmentsLoader->add($segments);
-      $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
       $segments = array_values(array_filter($segments, function($segment) {
         return $segment['subscribers'] > 0;
       }));
