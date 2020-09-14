@@ -5,13 +5,13 @@ namespace MailPoet\Segments;
 require_once('FinderMock.php');
 
 use Codeception\Util\Stub;
+use MailPoet\DynamicSegments\FreePluginConnectors\SendingNewslettersSubscribersFinder;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -72,38 +72,28 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testFindSubscribersInSegmentUsingFinder() {
-    /** @var MockObject $mock */
-    $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['findSubscribersInSegment']);
+    /** @var SendingNewslettersSubscribersFinder & MockObject $mock */
+    $mock = Stub::makeEmpty(SendingNewslettersSubscribersFinder::class, ['findSubscribersInSegment']);
     $mock
       ->expects($this->once())
       ->method('findSubscribersInSegment')
       ->will($this->returnValue([$this->subscriber3]));
 
-    remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
-    (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
-      return [$mock];
-    });
-
-    $finder = new SubscribersFinder();
+    $finder = new SubscribersFinder($mock);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->id], [$this->segment3->id]);
     expect($subscribers)->count(1);
     expect($subscribers)->contains($this->subscriber3->id);
   }
 
   public function testFindSubscribersInSegmentUsingFinderMakesResultUnique() {
-    /** @var MockObject $mock */
-    $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['findSubscribersInSegment']);
+    /** @var SendingNewslettersSubscribersFinder & MockObject $mock */
+    $mock = Stub::makeEmpty(SendingNewslettersSubscribersFinder::class, ['findSubscribersInSegment']);
     $mock
       ->expects($this->exactly(2))
       ->method('findSubscribersInSegment')
       ->will($this->returnValue([$this->subscriber3]));
 
-    remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
-    (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
-      return [$mock];
-    });
-
-    $finder = new SubscribersFinder();
+    $finder = new SubscribersFinder($mock);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->id], [$this->segment3->id, $this->segment3->id]);
     expect($subscribers)->count(1);
   }
@@ -133,19 +123,14 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testItAddsSubscribersToTaskFromDynamicSegments() {
-    /** @var MockObject $mock */
-    $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['getSubscriberIdsInSegment']);
+    /** @var SendingNewslettersSubscribersFinder & MockObject $mock */
+    $mock = Stub::makeEmpty(SendingNewslettersSubscribersFinder::class, ['getSubscriberIdsInSegment']);
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')
       ->will($this->returnValue([['id' => $this->subscriber1->id]]));
 
-    remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
-    (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
-      return [$mock];
-    });
-
-    $finder = new SubscribersFinder();
+    $finder = new SubscribersFinder($mock);
     $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
@@ -160,15 +145,11 @@ class SubscribersFinderTest extends \MailPoetTest {
     $finder = new SubscribersFinder();
 
     /** @var MockObject $mock */
-    $mock = Stub::makeEmpty('MailPoet\Segments\FinderMock', ['getSubscriberIdsInSegment']);
+    $mock = Stub::makeEmpty(SendingNewslettersSubscribersFinder::class, ['getSubscriberIdsInSegment']);
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')
       ->will($this->returnValue([['id' => $this->subscriber2->id]]));
-    remove_all_filters('mailpoet_get_subscribers_in_segment_finders');
-    (new WPFunctions)->addFilter('mailpoet_get_subscribers_in_segment_finders', function () use ($mock) {
-      return [$mock];
-    });
 
     $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),

@@ -2,25 +2,28 @@
 
 namespace MailPoet\Segments;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\DynamicSegments\FreePluginConnectors\SendingNewslettersSubscribersFinder;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 use function MailPoetVendor\array_column;
 
 class SubscribersFinder {
 
-  /** @var WPFunctions */
-  private $wp;
+  /** @var SendingNewslettersSubscribersFinder  */
+  private $dynamicSegmentSubscriberFinder;
 
-  public function __construct(WPFunctions $wp = null) {
-    if (!$wp) {
-      $wp = new WPFunctions;
+  public function __construct(
+    SendingNewslettersSubscribersFinder $dynamicSegmentSubscriberFinder = null
+  ) {
+    if ($dynamicSegmentSubscriberFinder === null) {
+      $dynamicSegmentSubscriberFinder = ContainerWrapper::getInstance()->get(SendingNewslettersSubscribersFinder::class);
     }
-    $this->wp = $wp;
+    $this->dynamicSegmentSubscriberFinder = $dynamicSegmentSubscriberFinder;
   }
 
   public function findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds) {
@@ -40,12 +43,9 @@ class SubscribersFinder {
       $subscribers = Subscriber::findSubscribersInSegments($subscribersToProcessIds, [$segment->id])->findMany();
       return Subscriber::extractSubscribersIds($subscribers);
     }
-    $finders = $this->wp->applyFilters('mailpoet_get_subscribers_in_segment_finders', []);
-    foreach ($finders as $finder) {
-      $subscribers = $finder->findSubscribersInSegment($segment, $subscribersToProcessIds);
-      if ($subscribers) {
-        return Subscriber::extractSubscribersIds($subscribers);
-      }
+    $subscribers = $this->dynamicSegmentSubscriberFinder->findSubscribersInSegment($segment, $subscribersToProcessIds);
+    if ($subscribers) {
+      return Subscriber::extractSubscribersIds($subscribers);
     }
     return [];
   }
@@ -108,13 +108,10 @@ class SubscribersFinder {
   }
 
   private function addSubscribersToTaskFromDynamicSegment(ScheduledTask $task, Segment $segment) {
-    $finders = $this->wp->applyFilters('mailpoet_get_subscribers_in_segment_finders', []);
     $count = 0;
-    foreach ($finders as $finder) {
-      $subscribers = $finder->getSubscriberIdsInSegment($segment);
-      if ($subscribers) {
-        $count += $this->addSubscribersToTaskByIds($task, $subscribers);
-      }
+    $subscribers = $this->dynamicSegmentSubscriberFinder->getSubscriberIdsInSegment($segment);
+    if ($subscribers) {
+      $count += $this->addSubscribersToTaskByIds($task, $subscribers);
     }
     return $count;
   }
