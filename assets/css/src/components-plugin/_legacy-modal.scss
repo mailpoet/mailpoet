@@ -234,29 +234,26 @@ body.mailpoet_modal_opened {
 
 .mailpoet_modal_loading {
   animation-direction: linear;
-  animation-duration: 1.9500000000000002s;
+  animation-duration: 2.4s;
   animation-iteration-count: infinite;
   animation-name: bounce_mailpoet_modal_loading;
-  background-color: #e01d4e;
+  background-color: $color-secondary-light;
   border-radius: 21px;
   height: 32px;
   margin-left: 17px;
   width: 32px;
 }
 
-.mailpoet_modal_loading_1 {
-  animation-delay: .39s;
-}
-
 .mailpoet_modal_loading_2 {
-  animation-delay: .9099999999999999s;
+  animation-delay: .5s;
 }
 
 .mailpoet_modal_loading_3 {
-  animation-delay: 1.1700000000000002s;
+  animation-delay: 1s;
 }
 
 @keyframes bounce_mailpoet_modal_loading {
-  0%,
-  50% { background-color: #064e6d; }
+  20%,
+  90% { background-color: $color-secondary-light; }
+  50% { background-color: $color-secondary; }
 }
