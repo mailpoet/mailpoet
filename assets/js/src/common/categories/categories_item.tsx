@@ -22,33 +22,30 @@ const CategoriesItem = ({
   active,
 }: Props) => {
   const classes = classNames(
-    { 'mailpoet-categories-current': !!active }
+    'mailpoet-categories-item',
+    { active: !!active }
   );
 
   return (
-    <li key={name}>
-      <a
-        href="#"
-        className={classes}
-        onClick={(event) => {
-          event.preventDefault();
-          onSelect(name);
-        }}
-        data-automation-id={automationId}
-      >
-        <span className="mailpoet-categories-title">
-          {label}
+    <a
+      key={name}
+      href="#"
+      className={classes}
+      onClick={(event) => {
+        event.preventDefault();
+        onSelect(name);
+      }}
+      data-automation-id={automationId}
+    >
+      <span className="mailpoet-categories-title">
+        {label}
+      </span>
+      {count > 0 && (
+        <span className="mailpoet-categories-count">
+          { parseInt(count.toString(), 10).toLocaleString() }
         </span>
-        {count > 0 && (
-          <>
-            &nbsp;
-            <span className="mailpoet-categories-count">
-              { parseInt(count.toString(), 10).toLocaleString() }
-            </span>
-          </>
-        )}
-      </a>
-    </li>
+      )}
+    </a>
   );
 };
 

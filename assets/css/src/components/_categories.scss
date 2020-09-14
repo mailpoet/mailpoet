@@ -1,57 +1,37 @@
 .mailpoet-categories {
+  column-gap: $grid-gap-large;
+  display: flex;
+  flex-wrap: wrap;
   font-family: $font-family;
+  justify-content: flex-start;
   line-height: 16px;
   list-style: none;
   margin: 0;
-  padding: $grid-gap ($grid-gap / 2);
+  padding: $grid-gap 0;
+  row-gap: $grid-gap;
+}
 
-  li {
-    display: inline-block;
-    margin-bottom: 0;
-    padding: 0 $grid-gap $grid-gap $grid-gap;
-    white-space: nowrap;
+.mailpoet-categories-item {
+  color: $color-text-light;
+  font-size: $font-size;
+  padding-bottom: $grid-gap;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: $color-text-light-hover;
   }
 
-  li:first-child {
-    padding-left: 0;
-  }
-
-  li:last-child {
-    padding-right: 0;
-  }
-
-  li a {
-    color: $color-text-light;
-    font-size: $font-size;
-    text-decoration: none;
-  }
-
-  li a.mailpoet-categories-current {
+  &.active {
     color: $color-secondary;
     font-weight: bold;
   }
+}
 
-  li a span.mailpoet-categories-count {
-    background-color: $color-tertiary-light;
-    border-radius: 8px;
-    display: inline-block;
-    font-size: $font-size-extra-small;
-    font-weight: 600;
-    line-height: 16px;
-    margin: 1px 0 0 2px;
-    padding: 0 6px;
-    vertical-align: top;
-  }
+.mailpoet-categories-title {
+  position: relative;
 
-  li a.mailpoet-categories-current span.mailpoet-categories-count {
-    background-color: $color-secondary-light;
-  }
-
-  a.mailpoet-categories-current span.mailpoet-categories-title {
-    position: relative;
-  }
-
-  a.mailpoet-categories-current span.mailpoet-categories-title:after {
+  .mailpoet-categories-item.active &:after {
     background: $color-secondary;
     border-radius: 2px;
     content: '';
@@ -61,5 +41,21 @@
     position: absolute;
     top: 100%;
     width: 100%;
+  }
+}
+
+.mailpoet-categories-count {
+  background-color: $color-tertiary-light;
+  border-radius: 8px;
+  display: inline-block;
+  font-size: $font-size-extra-small;
+  font-weight: 600;
+  line-height: 16px;
+  margin: 1px 0 0 $grid-gap-half;
+  padding: 0 6px;
+  vertical-align: top;
+
+  .mailpoet-categories-item.active & {
+    background-color: $color-secondary-light;
   }
 }
