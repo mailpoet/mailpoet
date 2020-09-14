@@ -43,6 +43,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -323,17 +324,19 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data[0]['email'])->equals($this->subscriber2->getEmail());
   }
 
-  public function testItCanAddSegmentsUsingHooks() {
-    $addSegment = function() {
-      return 'segment';
-    };
-    add_filter('mailpoet_subscribers_listings_filters_segments', $addSegment);
+  public function testItCanLoadDymanicSegments() {
+    $dynamicSegmentFactory = new DynamicSegment();
+    $dynamicSegment = $dynamicSegmentFactory
+      ->withName('Dynamic')
+      ->withUserRoleFilter('master_of_universe')
+      ->create();
+    $dynamicSegment->save();
     $response = $this->endpoint->listing([
       'filter' => [
-        'segment' => $this->segment2->getId(),
+        'segment' => $dynamicSegment->id,
       ],
     ]);
-    expect($response->meta['filters']['segment'])->equals('segment');
+    expect($response->meta['filters']['segment'])->contains(['value' => $dynamicSegment->id, 'label' => 'Dynamic (0)']);
   }
 
   public function testItCanSearchListing() {
