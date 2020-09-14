@@ -162,7 +162,15 @@ export default {
   getAllWPTags(state) {
     return state.allWpTags;
   },
-
+  getAllWooCommerceProducts(state) {
+    return state.allWooCommerceProducts;
+  },
+  getAllWooCommerceCategories(state) {
+    return state.allWooCommerceCategories;
+  },
+  getAllWooCommerceTags(state) {
+    return state.allWooCommerceTags;
+  },
   /**
    * Goes thru all parents of the block and return
    * the attribute value from the closest parent which has the attribute defined
