@@ -2,13 +2,10 @@
 
 namespace MailPoet\Segments;
 
-use Codeception\Util\Stub;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
-use PHPUnit\Framework\MockObject\MockObject;
 
 require_once('SubscribersBulkActionHandlerMock.php');
 
@@ -87,26 +84,5 @@ class BulkActionTest extends \MailPoetTest {
     $this->expectException('InvalidArgumentException');
     remove_all_filters('mailpoet_subscribers_in_segment_apply_bulk_action_handlers');
     $handler->apply();
-  }
-
-  public function testBulkActionUsingFilter() {
-    /** @var MockObject $mock */
-    $mock = Stub::makeEmpty('\MailPoet\Test\Segments\SubscribersBulkActionHandlerMock', ['apply']);
-    $mock
-      ->expects($this->once())
-      ->method('apply')
-      ->will($this->returnValue('result'));
-
-    remove_all_filters('mailpoet_subscribers_in_segment_apply_bulk_action_handlers');
-    (new WPFunctions)->addFilter('mailpoet_subscribers_in_segment_apply_bulk_action_handlers', function () use ($mock) {
-      return [$mock];
-    });
-
-    $handler = new BulkAction([
-      'listing' => ['filter' => ['segment' => $this->segment2->id]],
-      'action' => 'trash',
-    ]);
-    $result = $handler->apply();
-    expect($result)->equals('result');
   }
 }
