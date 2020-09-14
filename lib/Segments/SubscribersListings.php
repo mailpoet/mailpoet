@@ -2,20 +2,17 @@
 
 namespace MailPoet\Segments;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Segment;
-use MailPoet\WP\Functions as WPFunctions;
 
 class SubscribersListings {
 
   /** @var Handler */
   private $handler;
 
-  private $wp;
-
-  public function __construct(Handler $handler, WPFunctions $wp) {
+  public function __construct(Handler $handler) {
     $this->handler = $handler;
-    $this->wp = $wp;
   }
 
   public function getListingsInSegment($data) {
@@ -29,16 +26,12 @@ class SubscribersListings {
 
   private function getListings($data, Segment $segment = null) {
     if (!$segment
-      || in_array($segment->type, [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS], true)
+      || in_array($segment->type, [SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS, SegmentEntity::TYPE_WC_USERS], true)
     ) {
       return $listingData = $this->handler->get('\MailPoet\Models\Subscriber', $data);
     }
-    $handlers = $this->wp->applyFilters('mailpoet_get_subscribers_listings_in_segment_handlers', []);
-    foreach ($handlers as $handler) {
-      $listings = $handler->get($segment, $data);
-      if ($listings) {
-        return $listings;
-      }
+    if ($segment->type === SegmentEntity::TYPE_DYNAMIC) {
+      return $this->handler->get('\MailPoet\Models\SubscribersInDynamicSegment', $data);
     }
     throw new \InvalidArgumentException('No handler found for segment');
   }
