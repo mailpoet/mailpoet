@@ -98,7 +98,6 @@ class PreviewPage {
       'delay' => 1,
       'position' => $formData['settings']['form_placement'][$formDisplayType]['position'] ?? '',
       'animation' => $formData['settings']['form_placement'][$formDisplayType]['animation'] ?? '',
-      'backgroundColor' => $formData['settings']['backgroundColor'] ?? '',
       'fontFamily' => $formData['settings']['font_family'] ?? '',
     ];
     $formPosition = $formData['settings']['form_placement'][$formDisplayType]['position'] ?? '';
