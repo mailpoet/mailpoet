@@ -7,6 +7,7 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\Config\AccessControl;
+use MailPoet\DynamicSegments\FreePluginConnectors\AddToSubscribersFilters;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
@@ -89,6 +90,9 @@ class Subscribers extends APIEndpoint {
   /** @var SubscriberListingRepository */
   private $subscriberListingRepository;
 
+  /** @var AddToSubscribersFilters */
+  private $dynamicSegmentsFiltersLoader;
+
   public function __construct(
     Listing\BulkActionController $bulkActionController,
     SubscribersListings $subscribersListings,
@@ -105,7 +109,8 @@ class Subscribers extends APIEndpoint {
     SubscribersRepository $subscribersRepository,
     SubscribersResponseBuilder $subscribersResponseBuilder,
     SubscriberListingRepository $subscriberListingRepository,
-    FieldNameObfuscator $fieldNameObfuscator
+    FieldNameObfuscator $fieldNameObfuscator,
+    AddToSubscribersFilters $dynamicSegmentsFiltersLoader
   ) {
     $this->bulkActionController = $bulkActionController;
     $this->subscribersListings = $subscribersListings;
@@ -123,6 +128,7 @@ class Subscribers extends APIEndpoint {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
     $this->subscriberListingRepository = $subscriberListingRepository;
+    $this->dynamicSegmentsFiltersLoader = $dynamicSegmentsFiltersLoader;
   }
 
   public function get($data = []) {
@@ -143,12 +149,7 @@ class Subscribers extends APIEndpoint {
       $count = $this->subscriberListingRepository->getCount($definition);
       $filters = $this->subscriberListingRepository->getFilters($definition);
       $groups = $this->subscriberListingRepository->getGroups($definition);
-
-      $filters['segment'] = $this->wp->applyFilters(
-        'mailpoet_subscribers_listings_filters_segments',
-        $filters['segment']
-      );
-
+      $filters['segment'] = $this->dynamicSegmentsFiltersLoader->add($filters['segment'] ?? []);
       return $this->successResponse($this->subscribersResponseBuilder->buildForListing($items), [
         'count' => $count,
         'filters' => $filters,
@@ -169,10 +170,7 @@ class Subscribers extends APIEndpoint {
         $result[] = $subscriberResult;
       }
 
-      $listingData['filters']['segment'] = $this->wp->applyFilters(
-        'mailpoet_subscribers_listings_filters_segments',
-        $listingData['filters']['segment'] ?? []
-      );
+      $listingData['filters']['segment'] = $this->dynamicSegmentsFiltersLoader->add($listingData['filters']['segment'] ?? []);
 
       return $this->successResponse(
         $result, [

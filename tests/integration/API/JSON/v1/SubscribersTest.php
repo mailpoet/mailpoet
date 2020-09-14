@@ -7,6 +7,7 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\DynamicSegments\FreePluginConnectors\AddToSubscribersFilters;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
@@ -101,7 +102,8 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(SubscribersRepository::class),
       $container->get(SubscribersResponseBuilder::class),
       $container->get(SubscriberListingRepository::class),
-      $obfuscator
+      $obfuscator,
+      $container->get(AddToSubscribersFilters::class)
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');

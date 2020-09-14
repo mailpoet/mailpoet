@@ -133,6 +133,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\DynamicSegments\DynamicSegmentHooks::class);
     $container->autowire(\MailPoet\DynamicSegments\FreePluginConnectors\AddToNewslettersSegments::class);
     $container->autowire(\MailPoet\DynamicSegments\FreePluginConnectors\SendingNewslettersSubscribersFinder::class)->setPublic(true);
+    $container->autowire(\MailPoet\DynamicSegments\FreePluginConnectors\AddToSubscribersFilters::class);
     $container->autowire(\MailPoet\DynamicSegments\Mappers\DBMapper::class);
     $container->autowire(\MailPoet\DynamicSegments\Persistence\Loading\Loader::class);
     $container->autowire(\MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount::class);
