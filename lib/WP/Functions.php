@@ -240,6 +240,10 @@ class Functions {
     return has_tag($tag, $post);
   }
 
+  public function hasTerm($term = '', $taxonomy = '', $post = null): bool {
+    return has_term($term, $taxonomy, $post);
+  }
+
   public function getPostThumbnailId($post = null) {
     return get_post_thumbnail_id($post);
   }

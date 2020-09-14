@@ -111,6 +111,34 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     expect($result)->endsWith($renderedForm);
   }
 
+  public function testAppendsRenderedFormAfterOnASpecificWoocommerceCategory() {
+    $renderedForm = '<form class="form"></form>';
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 1]);
+    $this->wp->expects($this->any())->method('hasCategory')->willReturn(false);
+    $this->wp->expects($this->any())->method('hasTerm')->with(['2'], 'product_cat')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($renderedForm);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => ''],
+          'posts' => ['all' => '', 'selected' => ['2']],
+          'categories' => ['2'],
+        ],
+      ],
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+    $result = $this->hook->display('content');
+    expect($result)->notEquals('content');
+    expect($result)->endsWith($renderedForm);
+  }
+
   public function testAppendsRenderedFormAfterOnASpecificTag() {
     $renderedForm = '<form class="form"></form>';
     $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
@@ -129,6 +157,35 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
           'pages' => ['all' => ''],
           'posts' => ['all' => '', 'selected' => ['2']],
           'categories' => ['2'],
+          'tags' => ['3'],
+        ],
+      ],
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+    $result = $this->hook->display('content');
+    expect($result)->notEquals('content');
+    expect($result)->endsWith($renderedForm);
+  }
+
+  public function testAppendsRenderedFormAfterOnASpecificWooCommerceTag() {
+    $renderedForm = '<form class="form"></form>';
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(true);
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->any())->method('getPost')->willReturn(['ID' => 1]);
+    $this->wp->expects($this->any())->method('hasCategory')->willReturn(false);
+    $this->wp->expects($this->any())->method('hasTag')->willReturn(false);
+    $this->wp->expects($this->any())->method('hasTerm')->with(['3'], 'product_tag')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($renderedForm);
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => [
+          'enabled' => '1',
+          'pages' => ['all' => ''],
+          'posts' => ['all' => '', 'selected' => ['2']],
           'tags' => ['3'],
         ],
       ],
