@@ -144,7 +144,7 @@ class Template6FixedBar extends FormTemplate {
       ],
       'border_radius' => '0',
       'border_size' => '0',
-      'form_padding' => '0',
+      'form_padding' => '20',
       'input_padding' => '12',
       'font_family' => 'Montserrat',
       'background_image_url' => $this->getAssetUrl('form-bg.jpg'),

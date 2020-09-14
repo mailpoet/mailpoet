@@ -169,10 +169,6 @@ class Template1BelowPages extends FormTemplate {
       'background_image_url' => '',
       'close_button' => 'classic',
       'border_color' => '#f7f7f7',
-      'form_placement_bellow_posts_enabled' => '1',
-      'form_placement_popup_enabled' => '',
-      'form_placement_fixed_bar_enabled' => '',
-      'form_placement_slide_in_enabled' => '',
     ];
   }
 

@@ -188,8 +188,8 @@ class Template1FixedBar extends FormTemplate {
       ],
       'border_radius' => '0',
       'border_size' => '10',
-      'form_padding' => '0',
-      'input_padding' => '12',
+      'form_padding' => '20',
+      'input_padding' => '16',
       'background_image_display' => 'scale',
       'fontSize' => '16',
       'font_family' => 'Montserrat',
@@ -199,10 +199,6 @@ class Template1FixedBar extends FormTemplate {
       'background_image_url' => '',
       'close_button' => 'round_black',
       'border_color' => '#f7f7f7',
-      'form_placement_bellow_posts_enabled' => '',
-      'form_placement_popup_enabled' => '',
-      'form_placement_fixed_bar_enabled' => '1',
-      'form_placement_slide_in_enabled' => '',
     ];
   }
 

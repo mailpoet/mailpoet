@@ -179,10 +179,6 @@ class Template7FixedBar extends FormTemplate {
       'close_button' => 'round_black',
       'segments_selected_by' => 'admin',
       'gradient' => 'linear-gradient(180deg,rgb(255,233,112) 0%,rgb(230,174,70) 51%,rgb(228,37,111) 100%)',
-      'form_placement_bellow_posts_enabled' => '',
-      'form_placement_popup_enabled' => '',
-      'form_placement_fixed_bar_enabled' => '1',
-      'form_placement_slide_in_enabled' => '',
     ];
   }
 

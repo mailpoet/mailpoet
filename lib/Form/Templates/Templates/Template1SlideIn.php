@@ -147,10 +147,6 @@ class Template1SlideIn extends FormTemplate {
       'backgroundColor' => '#ffffff',
       'background_image_url' => '',
       'close_button' => 'round_black',
-      'form_placement_bellow_posts_enabled' => '',
-      'form_placement_popup_enabled' => '',
-      'form_placement_fixed_bar_enabled' => '',
-      'form_placement_slide_in_enabled' => '1',
     ];
   }
 
