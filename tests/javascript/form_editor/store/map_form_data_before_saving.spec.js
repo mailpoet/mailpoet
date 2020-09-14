@@ -20,6 +20,10 @@ const data = {
           all: true,
         },
       },
+      fixedBar: {
+        animation: 'slideright',
+      },
+      popup: {},
     },
   },
   styles: 'styles definition',
@@ -79,6 +83,12 @@ describe('Form Data Save Mapper', () => {
         .to.have.property('pages')
         .that.is.an('object')
         .that.have.property('all', '1');
+    });
+
+    it('Maps animation', () => {
+      expect(map(data).settings.form_placement.fixed_bar).to.have.property('animation').that.eq('slideright');
+      expect(map(data).settings.form_placement.popup).to.have.property('animation');
+      expect(map(data).settings.form_placement.below_posts).to.not.have.property('animation');
     });
   });
 });

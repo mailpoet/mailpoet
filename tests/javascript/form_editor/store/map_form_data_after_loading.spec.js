@@ -20,6 +20,10 @@ const data = {
           all: '1',
         },
       },
+      fixed_bar: {
+        animation: 'slideright',
+      },
+      popup: {},
     },
   },
   styles: 'styles definition',
@@ -137,6 +141,12 @@ describe('Form Data Load Mapper', () => {
       expect(map(mapData).settings.formPlacement.fixedBar).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 103 } });
       expect(map(mapData).settings.formPlacement.slideIn).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 104 } });
       expect(map(mapData).settings.formPlacement.others).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 105 } });
+    });
+
+    it('Maps animation', () => {
+      expect(map(data).settings.formPlacement.fixedBar).to.have.property('animation').that.eq('slideright');
+      expect(map(data).settings.formPlacement.popup).to.have.property('animation').that.eq('slideup');// default
+      expect(map(data).settings.formPlacement.belowPosts).to.not.have.property('animation');
     });
   });
 });
