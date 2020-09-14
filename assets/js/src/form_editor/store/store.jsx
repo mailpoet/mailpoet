@@ -71,6 +71,9 @@ export default () => {
     allWpPages: window.mailpoet_all_wp_pages,
     allWpCategories: window.mailpoet_all_wp_categories,
     allWpTags: window.mailpoet_all_wp_tags,
+    allWooCommerceProducts: window.mailpoet_woocommerce_products,
+    allWooCommerceCategories: window.mailpoet_woocommerce_categories,
+    allWooCommerceTags: window.mailpoet_woocommerce_tags,
   };
 
   const config = {

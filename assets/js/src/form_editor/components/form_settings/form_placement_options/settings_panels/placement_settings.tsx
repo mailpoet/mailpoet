@@ -8,6 +8,7 @@ import {
   __,
   cond,
   identity,
+  sortBy,
 } from 'lodash/fp';
 import Selection from 'form/fields/selection.jsx';
 
@@ -21,20 +22,29 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
     []
   );
   const tags = useSelect(
-    (select) => select('mailpoet-form-editor').getAllWPTags(),
-    []
+    (select) => sortBy(
+      'name',
+      select('mailpoet-form-editor').getAllWPTags()
+        .concat(select('mailpoet-form-editor').getAllWooCommerceTags())
+    ), []
   );
   const categories = useSelect(
-    (select) => select('mailpoet-form-editor').getAllWPCategories(),
-    []
+    (select) => sortBy(
+      'name',
+      select('mailpoet-form-editor').getAllWPCategories()
+        .concat(select('mailpoet-form-editor').getAllWooCommerceCategories())
+    ), []
   );
   const pages = useSelect(
     (select) => select('mailpoet-form-editor').getAllWPPages(),
     []
   );
   const posts = useSelect(
-    (select) => select('mailpoet-form-editor').getAllWPPosts(),
-    []
+    (select) => sortBy(
+      'name',
+      select('mailpoet-form-editor').getAllWPPosts()
+        .concat(select('mailpoet-form-editor').getAllWooCommerceProducts())
+    ), []
   );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
