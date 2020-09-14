@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\DynamicSegments\FreePluginConnectors\AddToNewslettersSegments;
 use MailPoet\Form\Block;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\CustomField;
@@ -34,13 +35,17 @@ class Subscribers {
   /** @var ServicesChecker */
   private $servicesChecker;
 
+  /** @var AddToNewslettersSegments */
+  private $dynamicSegmentsLoader;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
     SubscribersFeature $subscribersFeature,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
-    Block\Date $dateBlock
+    Block\Date $dateBlock,
+    AddToNewslettersSegments $dynamicSegmentsLoader
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -48,6 +53,7 @@ class Subscribers {
     $this->wp = $wp;
     $this->dateBlock = $dateBlock;
     $this->servicesChecker = $servicesChecker;
+    $this->dynamicSegmentsLoader = $dynamicSegmentsLoader;
   }
 
   public function render() {
@@ -55,6 +61,7 @@ class Subscribers {
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('subscribers');
     $segments = Segment::getSegmentsWithSubscriberCount($type = false);
+    $segments = $this->dynamicSegmentsLoader->add($segments);
     $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
     usort($segments, function ($a, $b) {
       return strcasecmp($a["name"], $b["name"]);

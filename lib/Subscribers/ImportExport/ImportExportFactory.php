@@ -2,22 +2,25 @@
 
 namespace MailPoet\Subscribers\ImportExport;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\DynamicSegments\FreePluginConnectors\AddToNewslettersSegments;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Functions as WPFunctions;
 
 class ImportExportFactory {
   const IMPORT_ACTION = 'import';
   const EXPORT_ACTION = 'export';
 
+  /** @var string|null  */
   public $action;
 
-  private $wp;
+  /** @var AddToNewslettersSegments */
+  private $dynamicSegmentsLoader;
 
   public function __construct($action = null) {
     $this->action = $action;
-    $this->wp = new WPFunctions;
+    $this->dynamicSegmentsLoader = ContainerWrapper::getInstance()->get(AddToNewslettersSegments::class);
   }
 
   public function getSegments() {
@@ -25,6 +28,7 @@ class ImportExportFactory {
       $segments = Segment::getSegmentsForImport();
     } else {
       $segments = Segment::getSegmentsForExport();
+      $segments = $this->dynamicSegmentsLoader->add($segments);
       $segments = $this->wp->applyFilters('mailpoet_segments_with_subscriber_count', $segments);
       $segments = array_values(array_filter($segments, function($segment) {
         return $segment['subscribers'] > 0;
@@ -32,7 +36,7 @@ class ImportExportFactory {
     }
 
     return array_map(function($segment) {
-      if (!$segment['name']) $segment['name'] = WPFunctions::get()->__('Not In List', 'mailpoet');
+      if (!$segment['name']) $segment['name'] = __('Not In List', 'mailpoet');
       if (!$segment['id']) $segment['id'] = 0;
       return [
         'id' => $segment['id'],
@@ -45,17 +49,17 @@ class ImportExportFactory {
 
   public function getSubscriberFields() {
     $fields = [
-      'email' => WPFunctions::get()->__('Email', 'mailpoet'),
-      'first_name' => WPFunctions::get()->__('First name', 'mailpoet'),
-      'last_name' => WPFunctions::get()->__('Last name', 'mailpoet'),
+      'email' => __('Email', 'mailpoet'),
+      'first_name' => __('First name', 'mailpoet'),
+      'last_name' => __('Last name', 'mailpoet'),
     ];
     if ($this->action === 'export') {
       $fields = array_merge(
         $fields,
         [
-          'list_status' => WPFunctions::get()->_x('List status', 'Subscription status', 'mailpoet'),
-          'global_status' => WPFunctions::get()->_x('Global status', 'Subscription status', 'mailpoet'),
-          'subscribed_ip' => WPFunctions::get()->__('IP address', 'mailpoet'),
+          'list_status' => _x('List status', 'Subscription status', 'mailpoet'),
+          'global_status' => _x('Global status', 'Subscription status', 'mailpoet'),
+          'subscribed_ip' => __('IP address', 'mailpoet'),
         ]
       );
     }
@@ -96,36 +100,36 @@ class ImportExportFactory {
       [
         [
           'id' => 'ignore',
-          'name' => WPFunctions::get()->__('Ignore field...', 'mailpoet'),
+          'name' => __('Ignore field...', 'mailpoet'),
         ],
         [
           'id' => 'create',
-          'name' => WPFunctions::get()->__('Create new field...', 'mailpoet'),
+          'name' => __('Create new field...', 'mailpoet'),
         ],
       ] :
       [
         [
           'id' => 'select',
-          'name' => WPFunctions::get()->__('Select all...', 'mailpoet'),
+          'name' => __('Select all...', 'mailpoet'),
         ],
         [
           'id' => 'deselect',
-          'name' => WPFunctions::get()->__('Deselect all...', 'mailpoet'),
+          'name' => __('Deselect all...', 'mailpoet'),
         ],
       ];
     $select2Fields = [
       [
-        'name' => WPFunctions::get()->__('Actions', 'mailpoet'),
+        'name' => __('Actions', 'mailpoet'),
         'children' => $actions,
       ],
       [
-        'name' => WPFunctions::get()->__('System fields', 'mailpoet'),
+        'name' => __('System fields', 'mailpoet'),
         'children' => $this->formatSubscriberFields($subscriberFields),
       ],
     ];
     if ($subscriberCustomFields) {
       array_push($select2Fields, [
-        'name' => WPFunctions::get()->__('User fields', 'mailpoet'),
+        'name' => __('User fields', 'mailpoet'),
         'children' => $this->formatSubscriberCustomFields(
           $subscriberCustomFields
         ),
