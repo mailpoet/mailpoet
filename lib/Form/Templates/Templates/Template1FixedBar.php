@@ -78,20 +78,6 @@ class Template1FixedBar extends FormTemplate {
             ],
             'body' => [
               [
-                'type' => 'divider',
-                'params' => [
-                  'class_name' => '',
-                  'height' => '1',
-                  'type' => 'spacer',
-                  'style' => 'solid',
-                  'divider_height' => '1',
-                  'divider_width' => '100',
-                  'color' => 'black',
-                ],
-                'id' => 'divider',
-                'name' => 'Divider',
-              ],
-              [
                 'type' => 'columns',
                 'body' => [
                   [
@@ -148,7 +134,7 @@ class Template1FixedBar extends FormTemplate {
                           'font_color' => '#ffd456',
                           'border_size' => '0',
                           'border_radius' => '8',
-                          'padding' => '16',
+                          'padding' => '20',
                           'font_family' => 'Montserrat',
                         ],
                       ],

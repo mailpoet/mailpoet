@@ -17,20 +17,6 @@ class Template6FixedBar extends FormTemplate {
   public function getBody(): array {
     return [
       [
-        'type' => 'divider',
-        'params' => [
-          'class_name' => '',
-          'height' => '1',
-          'type' => 'spacer',
-          'style' => 'solid',
-          'divider_height' => '1',
-          'divider_width' => '100',
-          'color' => 'black',
-        ],
-        'id' => 'divider',
-        'name' => 'Divider',
-      ],
-      [
         'type' => 'columns',
         'body' => [
           [
@@ -38,7 +24,7 @@ class Template6FixedBar extends FormTemplate {
             'params' => [
               'class_name' => '',
               'vertical_alignment' => 'center',
-              'width' => '50',
+              'width' => '70',
             ],
             'body' => [
               [
@@ -48,7 +34,7 @@ class Template6FixedBar extends FormTemplate {
                   'content' => '<span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">' . _x('<strong>Dive in!</strong> Start your journey today.', 'Text in a web form. Keep HTML tags!', 'mailpoet') . '</span>',
                   'level' => '2',
                   'align' => 'left',
-                  'font_size' => '27',
+                  'font_size' => '30',
                   'text_color' => '#38527a',
                   'line_height' => '1',
                   'background_color' => '',
@@ -76,8 +62,8 @@ class Template6FixedBar extends FormTemplate {
             'type' => 'column',
             'params' => [
               'class_name' => '',
-              'vertical_alignment' => 'center',
-              'width' => '25',
+              'vertical_alignment' => '',
+              'width' => '30',
             ],
             'body' => [
               [
@@ -99,16 +85,6 @@ class Template6FixedBar extends FormTemplate {
                   'border_radius' => '10',
                 ],
               ],
-            ],
-          ],
-          [
-            'type' => 'column',
-            'params' => [
-              'class_name' => '',
-              'vertical_alignment' => 'center',
-              'width' => '25',
-            ],
-            'body' => [
               [
                 'type' => 'submit',
                 'params' => [
@@ -125,7 +101,7 @@ class Template6FixedBar extends FormTemplate {
                   'font_color' => '#ffffff',
                   'border_size' => '0',
                   'border_radius' => '10',
-                  'padding' => '12',
+                  'padding' => '10',
                   'font_family' => 'Montserrat',
                 ],
               ],
