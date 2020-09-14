@@ -187,10 +187,10 @@ class DisplayFormInWPContent {
       return false;
     }
 
-    if ($this->wp->isSingular('post')) {
+    if ($this->wp->isSingular('post') || $this->wp->isSingular('product')) {
       if ($this->shouldDisplayFormOnPost($setup, 'posts')) return true;
-      if (isset($setup['categories']) && $this->wp->hasCategory($setup['categories'])) return true;
-      if (isset($setup['tags']) && $this->wp->hasTag($setup['tags'])) return true;
+      if ($this->shouldDisplayFormOnCategory($setup)) return true;
+      if ($this->shouldDisplayFormOnTag($setup)) return true;
       return false;
     }
     if ($this->wp->isPage() && $this->shouldDisplayFormOnPost($setup, 'pages')) {
@@ -211,6 +211,20 @@ class DisplayFormInWPContent {
     if (isset($setup[$postsKey]['selected']) && in_array($post['ID'], $setup[$postsKey]['selected'])) {
       return true;
     }
+    return false;
+  }
+
+  private function shouldDisplayFormOnCategory(array $setup): bool {
+    if (!isset($setup['categories'])) return false;
+    if ($this->wp->hasCategory($setup['categories'])) return true;
+    if ($this->wp->hasTerm($setup['categories'], 'product_cat')) return true;
+    return false;
+  }
+
+  private function shouldDisplayFormOnTag(array $setup): bool {
+    if (!isset($setup['tags'])) return false;
+    if ($this->wp->hasTag($setup['tags'])) return true;
+    if ($this->wp->hasTerm($setup['tags'], 'product_tag')) return true;
     return false;
   }
 }
