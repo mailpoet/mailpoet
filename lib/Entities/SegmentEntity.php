@@ -22,6 +22,7 @@ class SegmentEntity {
   const TYPE_WP_USERS = 'wp_users';
   const TYPE_WC_USERS = 'woocommerce_users';
   const TYPE_DEFAULT = 'default';
+  const TYPE_DYNAMIC = 'dynamic';
 
   /**
    * @ORM\Column(type="string")
