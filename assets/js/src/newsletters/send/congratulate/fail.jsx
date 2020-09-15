@@ -8,9 +8,9 @@ import Heading from 'common/typography/heading/heading';
 
 function Fail(props) {
   return (
-    <div className="mailpoet_congratulate_fail">
+    <div>
       <Heading level={1}>{MailPoet.I18n.t('congratulationsSendFailHeader')}</Heading>
-      <h1>
+      <Heading level={3}>
         { ReactStringReplace(
           MailPoet.I18n.t('congratulationsSendFailExplain'),
           /\[link\](.*?)\[\/link\]/g,
@@ -26,8 +26,11 @@ function Fail(props) {
             </a>
           )
         )}
-      </h1>
+      </Heading>
+      <div className="mailpoet-gap-large" />
+      <div className="mailpoet-gap-large" />
       <img src={window.mailpoet_congratulations_error_image} alt="" width="500" />
+      <div className="mailpoet-gap-large" />
       <Button dimension="small" type="button" onClick={props.failClicked}>{MailPoet.I18n.t('close')}</Button>
     </div>
   );

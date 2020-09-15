@@ -8,7 +8,7 @@ import { BenefitsList, Controls } from '../../../wizard/steps/pitch_mss_step.jsx
 
 function PitchMss(props) {
   return (
-    <div className="mailpoet_congratulate_success mailpoet_congratulate_mss_pitch">
+    <>
       <Heading level={1}>{MailPoet.I18n.t('congratulationsMSSPitchHeader')}</Heading>
       <WelcomeWizardStepLayoutBody
         illustrationUrl={props.MSSPitchIllustrationUrl}
@@ -34,7 +34,7 @@ function PitchMss(props) {
           />
         </div>
       </WelcomeWizardStepLayoutBody>
-    </div>
+    </>
   );
 }
 
