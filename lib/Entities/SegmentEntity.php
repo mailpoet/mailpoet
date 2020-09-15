@@ -6,6 +6,7 @@ use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
 
@@ -42,6 +43,19 @@ class SegmentEntity {
    * @var string
    */
   private $description;
+
+  /**
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\DynamicSegmentFilterEntity", mappedBy="segment")
+   * @var DynamicSegmentFilterEntity[]|ArrayCollection
+   */
+  private $dynamicFilters;
+
+  public function __construct(string $name, string $type, string $description = '') {
+    $this->name = $name;
+    $this->type = $type;
+    $this->description = $description;
+    $this->dynamicFilters = new ArrayCollection();
+  }
 
   /**
    * @return string
@@ -83,5 +97,12 @@ class SegmentEntity {
    */
   public function setDescription($description) {
     $this->description = $description;
+  }
+
+  /**
+   * @return DynamicSegmentFilterEntity[]|ArrayCollection
+   */
+  public function getDynamicFilters() {
+    return $this->dynamicFilters;
   }
 }

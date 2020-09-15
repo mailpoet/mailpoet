@@ -170,10 +170,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
   }
 
   public function testItCanModifySegmentsOfExistingNewsletter() {
-    $segment = new SegmentEntity();
-    $segment->setType(SegmentEntity::TYPE_DEFAULT);
-    $segment->setName('Segment 1');
-    $segment->setDescription('Segment 1 description');
+    $segment = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Segment 1 description');
     $this->entityManager->persist($segment);
     $this->entityManager->flush();
     $fakeSegmentId = 1;

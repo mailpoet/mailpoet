@@ -69,10 +69,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     $newsletter->setSubject('Newsletter without segment');
     $this->entityManager->persist($newsletter);
 
-    $segment = new SegmentEntity();
-    $segment->setName('Segment');
-    $segment->setType(SegmentEntity::TYPE_DEFAULT);
-    $segment->setDescription('Segment description');
+    $segment = new SegmentEntity('Segment', SegmentEntity::TYPE_DEFAULT, 'Segment description');
     $this->entityManager->persist($segment);
 
     $newsletter = new NewsletterEntity();
@@ -299,19 +296,13 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     $newsletter1->setSubject('Newsletter with segment 1');
     $this->entityManager->persist($newsletter1);
 
-    $segment1 = new SegmentEntity();
-    $segment1->setName('Segment 1');
-    $segment1->setType(SegmentEntity::TYPE_DEFAULT);
-    $segment1->setDescription('Segment description');
+    $segment1 = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Segment description');
     $this->entityManager->persist($segment1);
 
     $newsletterSegment1 = new NewsletterSegmentEntity($newsletter1, $segment1);
     $this->entityManager->persist($newsletterSegment1);
 
-    $segment2 = new SegmentEntity();
-    $segment2->setName('Segment 2');
-    $segment2->setType(SegmentEntity::TYPE_DEFAULT);
-    $segment2->setDescription('Segment without any newsletter');
+    $segment2 = new SegmentEntity('Segment 2', SegmentEntity::TYPE_DEFAULT, 'Segment without any newsletter');
     $this->entityManager->persist($segment2);
     $this->entityManager->flush();
 
