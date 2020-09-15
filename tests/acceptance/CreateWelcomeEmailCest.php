@@ -12,7 +12,7 @@ class CreateWelcomeEmailCest {
     $i->waitForText('Welcome Email');
     $i->click('Next');
     $welcomeTemplate = $i->checkTemplateIsPresent(0, 'welcome');
-    $i->see('Welcome Emails', ['css' => 'a.current']);
+    $i->see('Welcome Emails', ['css' => '.mailpoet-categories-item.active']);
     $i->click($welcomeTemplate);
     $titleElement = '[data-automation-id="newsletter_title"]';
     $i->waitForElement($titleElement);

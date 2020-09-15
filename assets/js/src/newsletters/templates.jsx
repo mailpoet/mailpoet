@@ -230,7 +230,9 @@ class NewsletterTemplates extends React.Component {
     const categories = templatesCategories.concat({
       name: 'import',
       label: MailPoet.I18n.t('tabImportTitle'),
-    });
+    }).map((category) => Object.assign(category, {
+      automationId: `templates-${category.name.replace(/\s+/g, '-').toLowerCase()}`,
+    }));
 
     const selectedTab = this.state.selectedTab;
     let content = null;

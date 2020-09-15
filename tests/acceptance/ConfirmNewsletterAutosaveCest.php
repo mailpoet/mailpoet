@@ -16,7 +16,7 @@ class ConfirmNewsletterAutosaveCest {
 
     // step 2 - select template
     $standardTemplate = $i->checkTemplateIsPresent(0);
-    $i->see('Newsletters', ['css' => 'a.current']);
+    $i->see('Newsletters', ['css' => '.mailpoet-categories-item.active']);
     $i->click($standardTemplate);
 
     // step 3 - Add subject, wait for Autosave

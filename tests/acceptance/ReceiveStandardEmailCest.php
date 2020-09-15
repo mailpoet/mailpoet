@@ -34,7 +34,7 @@ class ReceiveStandardEmailCest {
     $i->amOnMailpoetPage('Emails');
     $i->click('[data-automation-id="create_standard"]');
     $i->waitForElement($standardTemplate);
-    $i->see('Newsletters', ['css' => 'a.current']);
+    $i->see('Newsletters', ['css' => '.mailpoet-categories-item.active']);
     $i->click($standardTemplate);
     $i->waitForElement($titleElement);
     $i->fillField($titleElement, $newsletterTitle);

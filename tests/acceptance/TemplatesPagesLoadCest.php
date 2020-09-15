@@ -20,17 +20,17 @@ class TemplatesPagesLoadCest {
     $i->waitForElement('[data-automation-id="select_template_23"]');
     //Post Notification templates tab
     $i->click('Post Notifications');
-    $i->see('Post Notifications', ['css' => 'a.current']);
+    $i->see('Post Notifications', ['css' => '.mailpoet-categories-item.active']);
     $i->waitForElement('[data-automation-id="select_template_5"]');
     $i->waitForElement('[data-automation-id="select_template_8"]');
     //Welcome Emails templates tab
     $i->click('Welcome Emails');
-    $i->see('Welcome Emails', ['css' => 'a.current']);
+    $i->see('Welcome Emails', ['css' => '.mailpoet-categories-item.active']);
     $i->waitForElement('[data-automation-id="select_template_5"]');
     $i->waitForElement('[data-automation-id="select_template_9"]');
     //WooCommerce templates tab
     $i->click('WooCommerce Emails');
-    $i->see('WooCommerce Emails', ['css' => 'a.current']);
+    $i->see('WooCommerce Emails', ['css' => '.mailpoet-categories-item.active']);
     $i->waitForElement('[data-automation-id="select_template_5"]');
     $i->waitForElement('[data-automation-id="select_template_2"]');
   }
