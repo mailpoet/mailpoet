@@ -41,20 +41,22 @@ class NewsletterTypes extends React.Component {
       const email = automaticEmail;
       return (
         <React.Fragment key={email.slug}>
-          <div className="mailpoet-newsletter-types-separator">
-            <div className="mailpoet-newsletter-types-separator-line" />
-            <div className="mailpoet-newsletter-types-separator-logo">
-              {AutomaticEmailEventGroupLogos[email.slug] || null}
+          {!this.props.filter && (
+            <div className="mailpoet-newsletter-types-separator">
+              <div className="mailpoet-newsletter-types-separator-line" />
+              <div className="mailpoet-newsletter-types-separator-logo">
+                {AutomaticEmailEventGroupLogos[email.slug] || null}
+              </div>
+              <div className="mailpoet-newsletter-types-separator-line" />
             </div>
-            <div className="mailpoet-newsletter-types-separator-line" />
-          </div>
-          <ul className="mailpoet_boxes woocommerce clearfix">
-            <AutomaticEmailEventsList
-              email={email}
-              history={this.props.history}
-            />
-            {email.slug === 'woocommerce' && this.getAdditionalTypes().map((type) => this.renderType(type), this)}
-          </ul>
+          )}
+
+          <AutomaticEmailEventsList
+            email={email}
+            history={this.props.history}
+          />
+
+          {email.slug === 'woocommerce' && this.getAdditionalTypes().map((type) => this.renderType(type), this)}
         </React.Fragment>
       );
     });
@@ -154,31 +156,27 @@ class NewsletterTypes extends React.Component {
     const badgeClassName = (window.mailpoet_is_new_user === true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
 
     return (
-      <li key={type.slug} data-type={type.slug} className="mailpoet_newsletter_types">
-        <div className="mailpoet_thumbnail">
-          {type.thumbnailImage ? <img src={type.thumbnailImage} alt="" /> : null}
-        </div>
-        <div className="mailpoet_boxes_content">
-          <div className="mailpoet_description">
-            <Heading level={4}>
-              {type.title}
-              {' '}
-              {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
-            </Heading>
-            <p>{type.description}</p>
-            { type.videoGuide && (
-              <a className={badgeClassName} href={type.videoGuide} data-beacon-article={type.videoGuideBeacon} target="_blank" rel="noopener noreferrer">
-                <span className="dashicons dashicons-format-video" />
-                {MailPoet.I18n.t('seeVideoGuide')}
-              </a>
-            ) }
-          </div>
-
-          <div className="mailpoet_actions">
+      <div key={type.slug} data-type={type.slug} className="mailpoet-newsletter-type">
+        <div className="mailpoet-newsletter-type-image" />
+        <div className="mailpoet-newsletter-type-content">
+          <Heading level={4}>
+            {type.title}
+            {' '}
+            {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
+          </Heading>
+          <p>{type.description}</p>
+          { type.videoGuide && (
+            <a className={badgeClassName} href={type.videoGuide} data-beacon-article={type.videoGuideBeacon} target="_blank" rel="noopener noreferrer">
+              <span className="dashicons dashicons-format-video" />
+              {MailPoet.I18n.t('seeVideoGuide')}
+            </a>
+          ) }
+          <div className="mailpoet-flex-grow" />
+          <div className="mailpoet-newsletter-type-action">
             {type.action}
           </div>
         </div>
-      </li>
+      </div>
     );
   }
 
@@ -274,19 +272,21 @@ class NewsletterTypes extends React.Component {
     });
 
     return (
-      <div className="mailpoet-newsletter-types">
+      <>
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
 
-        <button type="button" onClick={() => this.props.history.push('/')} className="mailpoet-modal-close">{ModalCloseIcon}</button>
+        <div className="mailpoet-newsletter-types">
+          <div className="mailpoet-newsletter-types-close">
+            <button type="button" onClick={() => this.props.history.push('/')} className="mailpoet-modal-close">{ModalCloseIcon}</button>
+          </div>
 
-        <ul className="mailpoet_boxes mailpoet_boxes_types">
           {types.map((type) => this.renderType(type), this)}
-        </ul>
 
-        {this.getAutomaticEmails()}
+          {this.getAutomaticEmails()}
+        </div>
 
         <link rel="prefetch" href={templatesGETUrl} as="fetch" />
-      </div>
+      </>
     );
   }
 }

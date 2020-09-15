@@ -53,33 +53,23 @@ class AutomaticEmailEvent extends React.PureComponent {
     }
 
     return (
-      <li data-type={event.slug}>
-        <div>
-          <div className="mailpoet-boxes-badge">
-            {event.badge ? (
-              <Badge title={event.badge.text} />
-            ) : ''}
-          </div>
-          <div className="mailpoet_thumbnail">
-            {event.thumbnailImage ? <img src={event.thumbnailImage} alt="" /> : null}
-          </div>
+      <div data-type={event.slug} className="mailpoet-newsletter-type">
+        <div className="mailpoet-newsletter-type-image">
+          {event.badge && <Badge title={event.badge.text} /> }
         </div>
-        <div className="mailpoet_boxes_content">
-          <div className="mailpoet_description">
-            <div className="mailpoet-boxes-title">
-              <Heading level={4}>
-                {event.title}
-                {' '}
-                {event.soon ? `(${MailPoet.I18n.t('soon')})` : ''}
-              </Heading>
-            </div>
-            <p>{event.description}</p>
-          </div>
-          <div className="mailpoet_actions">
+        <div className="mailpoet-newsletter-type-content">
+          <Heading level={4}>
+            {event.title}
+            {' '}
+            {event.soon && `(${MailPoet.I18n.t('soon')})`}
+          </Heading>
+          <p>{event.description}</p>
+          <div className="mailpoet-flex-grow" />
+          <div className="mailpoet-newsletter-type-action">
             {action}
           </div>
         </div>
-      </li>
+      </div>
     );
   }
 }
@@ -93,7 +83,6 @@ AutomaticEmailEvent.propTypes = {
   eventsConfigurator: PropTypes.func.isRequired,
   event: PropTypes.shape({
     slug: PropTypes.string.isRequired,
-    thumbnailImage: PropTypes.string,
     actionButtonLink: PropTypes.string,
     title: PropTypes.string.isRequired,
     soon: PropTypes.bool,

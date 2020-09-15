@@ -2,6 +2,10 @@
   display: flex;
 }
 
+.mailpoet-flex-grow {
+  flex-grow: 1;
+}
+
 .mailpoet-grid-column {
   width: $grid-column;
 }
