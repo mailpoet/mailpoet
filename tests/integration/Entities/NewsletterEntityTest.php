@@ -59,10 +59,7 @@ class NewsletterEntityTest extends \MailPoetTest {
   }
 
   private function createSegment(): SegmentEntity {
-    $segment = new SegmentEntity();
-    $segment->setType(SegmentEntity::TYPE_DEFAULT);
-    $segment->setName('Segment');
-    $segment->setDescription('Segment description');
+    $segment = new SegmentEntity('Segment', SegmentEntity::TYPE_DEFAULT, 'Segment description');
     $this->entityManager->persist($segment);
     return $segment;
   }

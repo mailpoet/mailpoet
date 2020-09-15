@@ -129,10 +129,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   }
 
   private function createSegmentEntity(): SegmentEntity {
-    $segment = new SegmentEntity();
-    $segment->setName('Segment' . rand(0, 10000));
-    $segment->setType(SegmentEntity::TYPE_DEFAULT);
-    $segment->setDescription('Segment description');
+    $segment = new SegmentEntity('Segment' . rand(0, 10000), SegmentEntity::TYPE_DEFAULT, 'Segment description');
     $this->entityManager->persist($segment);
     return $segment;
   }

@@ -259,10 +259,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($queue);
     $newsletter->getQueues()->add($queue);
 
-    $segment = new SegmentEntity();
-    $segment->setType(SegmentEntity::TYPE_DEFAULT);
-    $segment->setName(" List for newsletter id {$newsletter->getId()}");
-    $segment->setDescription('');
+    $segment = new SegmentEntity("List for newsletter id {$newsletter->getId()}", SegmentEntity::TYPE_DEFAULT);
     $this->entityManager->persist($segment);
 
     $subscriber = new SubscriberEntity();

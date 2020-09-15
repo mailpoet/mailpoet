@@ -107,14 +107,8 @@ class SubscribersTest extends \MailPoetTest {
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
-    $this->segment1 = new SegmentEntity();
-    $this->segment1->setName('Segment 1');
-    $this->segment1->setDescription('Segment 1');
-    $this->segment1->setType(SegmentEntity::TYPE_DEFAULT);
-    $this->segment2 = new SegmentEntity();
-    $this->segment2->setName('Segment 2');
-    $this->segment2->setDescription('Segment 2');
-    $this->segment2->setType(SegmentEntity::TYPE_DEFAULT);
+    $this->segment1 = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Segment 1');
+    $this->segment2 = new SegmentEntity('Segment 2', SegmentEntity::TYPE_DEFAULT, 'Segment 2');
     $this->entityManager->persist($this->segment1);
     $this->entityManager->persist($this->segment2);
 
