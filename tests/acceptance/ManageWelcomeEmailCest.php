@@ -30,7 +30,7 @@ class ManageWelcomeEmailCest {
     $i->click('Next');
     $welcomeTemplate = $i->checkTemplateIsPresent(0, 'welcome');
     $i->waitForElement($welcomeTemplate);
-    $i->see('Welcome Emails', ['css' => 'a.current']);
+    $i->see('Welcome Emails', ['css' => '.mailpoet-categories-item.active']);
     $i->click($welcomeTemplate);
     $i->waitForElement($this->titleElement);
     $i->fillField($this->titleElement, $newsletterTitle);
@@ -123,7 +123,7 @@ class ManageWelcomeEmailCest {
     $i->click('[data-automation-id="create_welcome"]');
     $i->click('Next');
     $i->checkTemplateIsPresent(0, 'welcome');
-    $i->see('Welcome Emails', ['css' => 'a.current']);
+    $i->see('Welcome Emails', ['css' => '.mailpoet-categories-item.active']);
     $i->scrollTo('[data-automation-id="templates-welcome"]');
     $i->see($templateTitle);
     $i->click(['xpath' => '//*[text()="' . $templateTitle . '"]//ancestor::*[@data-automation-id="select_template_box"]//*[starts-with(@data-automation-id,"select_template_")]']);

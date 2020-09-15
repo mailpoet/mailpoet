@@ -25,7 +25,7 @@ class NewsletterCreationCest {
 
     // step 3 - select template
     $postNotificationTemplate = $i->checkTemplateIsPresent(1, 'notification');
-    $i->see('Post Notifications', ['css' => 'a.current']);
+    $i->see('Post Notifications', ['css' => '.mailpoet-categories-item.active']);
     $i->click($postNotificationTemplate);
 
     // step 4 - design newsletter (update subject)
@@ -60,7 +60,7 @@ class NewsletterCreationCest {
 
     // step 2 - select template
     $standardTemplate = $i->checkTemplateIsPresent(0);
-    $i->see('Newsletters', ['css' => 'a.current']);
+    $i->see('Newsletters', ['css' => '.mailpoet-categories-item.active']);
     $i->click($standardTemplate);
 
     // step 3 - design newsletter (update subject)
@@ -83,7 +83,7 @@ class NewsletterCreationCest {
     $i->click('[data-automation-id="new_email"]');
     $i->click('[data-automation-id="create_standard"]');
     $i->waitForElement('[data-automation-id="email_template_selection_heading"]');
-    $i->see('Recently sent', ['css' => 'a.current']);
+    $i->see('Recently sent', ['css' => '.mailpoet-categories-item.active']);
     $i->click($standardTemplate);
     $i->waitForElement($titleElement);
     $i->fillField($titleElement, $newsletterTitle);
@@ -114,7 +114,7 @@ class NewsletterCreationCest {
 
     // step 2 - select template
     $standardTemplate = $i->checkTemplateIsPresent(0);
-    $i->see('Newsletters', ['css' => 'a.current']);
+    $i->see('Newsletters', ['css' => '.mailpoet-categories-item.active']);
     $i->click($standardTemplate);
 
     // step 3 - see notice in 'Send preview' with link to authorized emails
