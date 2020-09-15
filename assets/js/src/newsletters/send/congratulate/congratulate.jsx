@@ -9,6 +9,7 @@ import Loading from './loading.jsx';
 
 const SECONDS_WAITING_FOR_SUCCESS = 20;
 const SECONDS_MINIMUIM_LOADING_SCREEN_DISPLAYED = 6;
+const SUCCESS_IMAGE_INDEX = Math.floor(Math.random() * 4);
 
 function successPageClosed() {
   return MailPoet.Ajax.post({
@@ -27,11 +28,10 @@ function renderSuccess(newsletter, testingPassed) {
       'Cron is working': 'true',
     });
   }
-  const successImgIndex = Math.floor(Math.random() * 4);
   return (
     <Success
-      illustrationImageUrl={window.mailpoet_congratulations_success_images[successImgIndex]}
-      MSSPitchIllustrationUrl={window.mailpoet_congratulations_success_images[successImgIndex]}
+      illustrationImageUrl={window.mailpoet_congratulations_success_images[SUCCESS_IMAGE_INDEX]}
+      MSSPitchIllustrationUrl={window.mailpoet_congratulations_success_images[SUCCESS_IMAGE_INDEX]}
       successClicked={successPageClosed}
       newsletter={newsletter}
       isWoocommerceActive={window.mailpoet_woocommerce_active}
