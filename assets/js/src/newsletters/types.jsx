@@ -32,8 +32,12 @@ class NewsletterTypes extends React.Component {
 
   getAutomaticEmails = () => {
     if (!window.mailpoet_woocommerce_automatic_emails) return [];
+    let automaticEmails = window.mailpoet_woocommerce_automatic_emails;
+    if (this.props.filter) {
+      automaticEmails = _.filter(automaticEmails, this.props.filter);
+    }
 
-    return _.map(window.mailpoet_woocommerce_automatic_emails, (automaticEmail) => {
+    return _.map(automaticEmails, (automaticEmail) => {
       const email = automaticEmail;
       return (
         <React.Fragment key={email.slug}>
