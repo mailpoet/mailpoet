@@ -138,7 +138,7 @@ class Congratulate extends React.Component {
   render() {
     return (
       <>
-        <style dangerouslySetInnerHTML={{__html: `body { overflow-x: hidden; }`}} />
+        <style dangerouslySetInnerHTML={{__html: `body { background: #fff; overflow-x: hidden; }`}} />
         <div className="mailpoet-congratulate">
           <div className="mailpoet-gap-large" />
           {this.renderContent()}
