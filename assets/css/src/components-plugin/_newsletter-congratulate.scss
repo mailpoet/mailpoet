@@ -1,50 +1,23 @@
-.newsletter_congratulate_page {
+.mailpoet-congratulate {
+  @include full-width-background(linear-gradient(to top, $color-white, $color-secondary-light));
+  align-items: center;
   background: $color-white;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   position: absolute;
+  text-align: center;
   top: 0;
   width: 100%;
   z-index: 0;
 
-  @include full-width-background(linear-gradient(to top, $color-white, $color-secondary-light));
-}
-
-.mailpoet_newsletter_loading {
-  text-align: center;
-
-  .mailpoet_loading {
-    margin: 100px auto 0;
+  .mailpoet-h3 {
+    font-style: 22px;
+    font-weight: normal;
+    max-width: 700px;
   }
 
-  .mailpoet_newsletter_loading_body {
-    font-size: 23px;
-    font-weight: 400;
-    margin: 30px auto;
-    width: 700px;
-  }
-}
-
-.mailpoet_congratulate_success,
-.mailpoet_congratulate_fail {
-  width: 100%;
-
-  h1 {
-    margin-bottom: 30px;
-    text-align: center;
-  }
-
-  img,
-  .mailpoet-button {
-    display: block;
-    margin-bottom: 15px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-.mailpoet_congratulate_success.mailpoet_congratulate_mss_pitch {
-  .button,
-  img {
-    display: inline-block;
+  .mailpoet-wizard-step-content {
+    text-align: left;
   }
 }

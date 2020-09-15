@@ -22,12 +22,15 @@ function getSuccessMessage(newsletter) {
 
 function MSSUserSuccess(props) {
   return (
-    <div className="mailpoet_congratulate_success">
+    <>
       <Heading level={0}>{MailPoet.I18n.t('congratulationsSuccessHeader')}</Heading>
-      <h1>{getSuccessMessage(props.newsletter)}</h1>
+      <Heading level={3}>{getSuccessMessage(props.newsletter)}</Heading>
+      <div className="mailpoet-gap-large" />
+      <div className="mailpoet-gap-large" />
       <img src={props.illustrationImageUrl} alt="" width="500" />
+      <div className="mailpoet-gap-large" />
       <Button type="button" dimension="small" onClick={props.successClicked}>{MailPoet.I18n.t('close')}</Button>
-    </div>
+    </>
   );
 }
 

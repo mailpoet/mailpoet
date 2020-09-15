@@ -139,7 +139,8 @@ class Congratulate extends React.Component {
     return (
       <>
         <style dangerouslySetInnerHTML={{__html: `body { overflow-x: hidden; }`}} />
-        <div className="newsletter_congratulate_page">
+        <div className="mailpoet-congratulate">
+          <div className="mailpoet-gap-large" />
           {this.renderContent()}
         </div>
       </>
