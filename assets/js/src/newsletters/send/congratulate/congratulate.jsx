@@ -136,7 +136,14 @@ class Congratulate extends React.Component {
   }
 
   render() {
-    return (<div className="newsletter_congratulate_page">{this.renderContent()}</div>);
+    return (
+      <>
+        <style dangerouslySetInnerHTML={{__html: `body { overflow-x: hidden; }`}} />
+        <div className="newsletter_congratulate_page">
+          {this.renderContent()}
+        </div>
+      </>
+    );
   }
 }
 
