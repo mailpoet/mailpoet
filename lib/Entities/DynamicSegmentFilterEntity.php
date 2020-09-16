@@ -19,6 +19,8 @@ class DynamicSegmentFilterEntity {
   use SafeToOneAssociationLoadTrait;
 
   const TYPE_USER_ROLE = 'userRole';
+  const TYPE_EMAIL = 'email';
+  const TYPE_WOOCOMMERCE = 'woocommerce';
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SegmentEntity", inversedBy="filters")
