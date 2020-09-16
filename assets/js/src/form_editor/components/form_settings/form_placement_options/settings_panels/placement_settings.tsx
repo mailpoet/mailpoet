@@ -10,7 +10,7 @@ import {
   identity,
   sortBy,
 } from 'lodash/fp';
-import Selection from 'form/fields/selection.jsx';
+import Selection from '../../selection';
 
 type Props = {
   settingsPlacementKey: string
