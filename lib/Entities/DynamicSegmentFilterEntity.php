@@ -51,6 +51,13 @@ class DynamicSegmentFilterEntity {
   }
 
   /**
+   * @return mixed|null
+   */
+  public function getFilterDataParam(string $name) {
+    return $this->filterData[$name] ?? null;
+  }
+
+  /**
    * @return string|null
    */
   public function getSegmentType() {
