@@ -23,6 +23,7 @@ const AnimationSettings = ({ settingsPlacementKey }: Props) => {
         { label: MailPoet.I18n.t('animationNone'), value: 'none' },
         { label: 'Fade In', value: 'fadein' },
         { label: 'Slide Right', value: 'slideright' },
+        { label: 'Slide Left', value: 'slideleft' },
         { label: 'Slide Up', value: 'slideup' },
         { label: 'Slide Down', value: 'slidedown' },
         { label: 'Zoom Out', value: 'zoomout' },
