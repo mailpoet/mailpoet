@@ -18,6 +18,8 @@ class DynamicSegmentFilterEntity {
   use UpdatedAtTrait;
   use SafeToOneAssociationLoadTrait;
 
+  const TYPE_USER_ROLE = 'userRole';
+
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SegmentEntity", inversedBy="filters")
    * @var SegmentEntity|null
