@@ -77,11 +77,19 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             item={{
               id: formSettings.formPlacement[settingsPlacementKey].pages.selected.join(),
             }}
-            onValueChange={(e) => compose([
-              changeFormSettings,
-              assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, e.target.value),
-              assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false), // disable all if some pages are selected
-            ])(formSettings)}
+            onValueChange={(e) => {
+              compose([
+                changeFormSettings,
+                assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, e.target.value),
+                cond([
+                  [
+                    () => !!e.target.value.length, // only disable "All pages" toggle if not empty
+                    assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false), // disable all if some pages are selected
+                  ],
+                  [() => !e.target.value.length, identity],
+                ]),
+              ])(formSettings);
+            }}
             field={{
               id: 'pages',
               name: 'pages',
@@ -120,11 +128,19 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
           item={{
             id: formSettings.formPlacement[settingsPlacementKey].posts.selected.join(),
           }}
-          onValueChange={(e) => compose([
-            changeFormSettings,
-            assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, e.target.value),
-            assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
-          ])(formSettings)}
+          onValueChange={(e) => {
+            compose([
+              changeFormSettings,
+              assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, e.target.value),
+              cond([
+                [
+                  () => !!e.target.value.length, // only disable "All pages" toggle if not empty
+                  assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some pages are selected
+                ],
+                [() => !e.target.value.length, identity],
+              ]),
+            ])(formSettings);
+          }}
           field={{
             id: 'posts',
             name: 'posts',
@@ -143,12 +159,22 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             item={{
               id: formSettings.formPlacement[settingsPlacementKey].categories.join(),
             }}
-            onValueChange={(e) => compose([
-              changeFormSettings,
-              assocPath(`formPlacement.${settingsPlacementKey}.categories`, e.target.value),
-              assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
-              assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
-            ])(formSettings)}
+            onValueChange={(e) => {
+              compose([
+                changeFormSettings,
+                assocPath(`formPlacement.${settingsPlacementKey}.categories`, e.target.value),
+                cond([
+                  [
+                    () => !!e.target.value.length, // only disable "All pages" toggle if not empty
+                    compose([
+                      assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
+                      assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
+                    ]),
+                  ],
+                  [() => !e.target.value.length, identity],
+                ]),
+              ])(formSettings);
+            }}
             field={{
               id: 'categories',
               name: 'categories',
@@ -168,12 +194,22 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             item={{
               id: formSettings.formPlacement[settingsPlacementKey].tags.join(),
             }}
-            onValueChange={(e) => compose([
-              changeFormSettings,
-              assocPath(`formPlacement.${settingsPlacementKey}.tags`, e.target.value),
-              assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
-              assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
-            ])(formSettings)}
+            onValueChange={(e) => {
+              compose([
+                changeFormSettings,
+                assocPath(`formPlacement.${settingsPlacementKey}.tags`, e.target.value),
+                cond([
+                  [
+                    () => !!e.target.value.length, // only disable "All pages" toggle if not empty
+                    compose([
+                      assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
+                      assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
+                    ]),
+                  ],
+                  [() => !e.target.value.length, identity],
+                ]),
+              ])(formSettings);
+            }}
             field={{
               id: 'tags',
               name: 'tags',
