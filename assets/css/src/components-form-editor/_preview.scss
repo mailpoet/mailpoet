@@ -75,5 +75,10 @@
   .mailpoet_preview_sidebar {
     padding: 42px 16px 10px 0;
     width: 300px;
+
+    .form-editor-sidebar-heading {
+      color: #1e1e1e;
+      font-size: 13px;
+    }
   }
 }
