@@ -61,8 +61,9 @@ class SettingsPageBasicsCest {
     $i->click($postTitle);
     $i->waitForText($postTitle);
     $i->scrollTo('#commentform');
+    $i->scrollTo('.comment-form-comment');
     $i->waitForElementVisible(['css' => '.comment-form-mailpoet']);
-    $i->see($optinMessage);
+    $i->waitForText($optinMessage);
     $i->click('#comment');
     $i->fillField('#comment', $comment);
     $i->waitForText($optinMessage);
@@ -70,8 +71,7 @@ class SettingsPageBasicsCest {
     $i->click('Post Comment');
     $i->waitForText($comment, 10, '.comment-content');
     //check if user is really subscribed to a list
-    $i->amOnMailpoetPage('Lists');
-    $i->clickItemRowActionByItemName('Newsletter mailing list', 'View Subscribers');
+    $i->amOnMailpoetPage('Subscribers');
     $i->waitForText('Subscribers');
     $i->waitForText('test@test.com');
     $i->waitForText('Unconfirmed');

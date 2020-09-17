@@ -90,6 +90,7 @@ class EditorProductsCest {
 
     // Create products block (added wait checks to avoid flakiness)
     $i->waitForText('Content');
+    $i->scrollTo('[data-automation-id="newsletter_title"]');
     $i->dragAndDrop('#automation_editor_block_products', '#mce_0');
     $i->waitForText('There is no content to display.');
     $i->waitForText('Display options');

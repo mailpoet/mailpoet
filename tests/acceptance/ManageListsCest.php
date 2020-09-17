@@ -52,6 +52,7 @@ class ManageListsCest {
 
     // Edit existing list
     $i->clickItemRowActionByItemName($newListTitle, 'Edit');
+    $i->clearFormField('#field_name');
     $i->fillField('Name', $editedListTitle);
     $i->fillField('Description', $editedListDesc);
     $i->click('Save');
