@@ -71,10 +71,12 @@ class SettingsPageBasicsCest {
     $i->click('Post Comment');
     $i->waitForText($comment, 10, '.comment-content');
     //check if user is really subscribed to a list
-    $i->amOnMailpoetPage('Subscribers');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForText('Lists');
+    $i->clickItemRowActionByItemName('Newsletter mailing list', 'View Subscribers');
     $i->waitForText('Subscribers');
+    $i->click('[data-automation-id="filters_unconfirmed"]');
     $i->waitForText('test@test.com');
-    $i->waitForText('Unconfirmed');
     //clear checkbox to hide Select2 from next test
     $i->amOnMailPoetPage('Settings');
     $i->uncheckOption('[data-automation-id="subscribe-on_comment-checkbox"]');
