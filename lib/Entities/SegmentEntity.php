@@ -105,4 +105,8 @@ class SegmentEntity {
   public function getDynamicFilters() {
     return $this->dynamicFilters;
   }
+
+  public function isDynamic(): bool {
+    return $this->getType() === self::TYPE_DYNAMIC;
+  }
 }
