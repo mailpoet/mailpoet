@@ -5,7 +5,8 @@ namespace MailPoet\Segments;
 require_once('FinderMock.php');
 
 use Codeception\Util\Stub;
-use MailPoet\DynamicSegments\FreePluginConnectors\SendingNewslettersSubscribersFinder;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Models\DynamicSegmentFilter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
@@ -30,6 +31,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     $this->segment1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
     $this->segment2 = Segment::createOrUpdate(['name' => 'Segment 2', 'type' => 'default']);
@@ -72,12 +74,12 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testFindSubscribersInSegmentUsingFinder() {
-    /** @var SendingNewslettersSubscribersFinder & MockObject $mock */
-    $mock = Stub::makeEmpty(SendingNewslettersSubscribersFinder::class, ['findSubscribersInSegment']);
+    /** @var SegmentSubscribersRepository & MockObject $mock */
+    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class, ['findSubscribersIdsInSegment']);
     $mock
       ->expects($this->once())
-      ->method('findSubscribersInSegment')
-      ->will($this->returnValue([$this->subscriber3]));
+      ->method('findSubscribersIdsInSegment')
+      ->will($this->returnValue([$this->subscriber3->id]));
 
     $finder = new SubscribersFinder($mock);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->id], [$this->segment3->id]);
@@ -86,12 +88,12 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testFindSubscribersInSegmentUsingFinderMakesResultUnique() {
-    /** @var SendingNewslettersSubscribersFinder & MockObject $mock */
-    $mock = Stub::makeEmpty(SendingNewslettersSubscribersFinder::class, ['findSubscribersInSegment']);
+    /** @var SegmentSubscribersRepository & MockObject $mock */
+    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class, ['findSubscribersIdsInSegment']);
     $mock
       ->expects($this->exactly(2))
-      ->method('findSubscribersInSegment')
-      ->will($this->returnValue([$this->subscriber3]));
+      ->method('findSubscribersIdsInSegment')
+      ->will($this->returnValue([$this->subscriber3->id]));
 
     $finder = new SubscribersFinder($mock);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->id], [$this->segment3->id, $this->segment3->id]);
@@ -123,18 +125,18 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testItAddsSubscribersToTaskFromDynamicSegments() {
-    /** @var SendingNewslettersSubscribersFinder & MockObject $mock */
-    $mock = Stub::makeEmpty(SendingNewslettersSubscribersFinder::class, ['getSubscriberIdsInSegment']);
+    /** @var SegmentSubscribersRepository & MockObject $mock */
+    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class, ['getSubscriberIdsInSegment']);
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')
-      ->will($this->returnValue([['id' => $this->subscriber1->id]]));
+      ->will($this->returnValue([$this->subscriber1->id]));
 
     $finder = new SubscribersFinder($mock);
     $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
-        $this->getDummySegment($this->segment2->id, ''),
+        $this->getDummySegment($this->segment2->id, SegmentEntity::TYPE_DYNAMIC),
       ]
     );
     expect($subscribersCount)->equals(1);
@@ -142,21 +144,20 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testItAddsSubscribersToTaskFromStaticAndDynamicSegments() {
-    $finder = new SubscribersFinder();
-
-    /** @var MockObject $mock */
-    $mock = Stub::makeEmpty(SendingNewslettersSubscribersFinder::class, ['getSubscriberIdsInSegment']);
+    /** @var SegmentSubscribersRepository & MockObject $mock */
+    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class, ['getSubscriberIdsInSegment']);
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')
-      ->will($this->returnValue([['id' => $this->subscriber2->id]]));
+      ->will($this->returnValue([$this->subscriber2->id]));
 
+    $finder = new SubscribersFinder($mock);
     $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
         $this->getDummySegment($this->segment1->id, Segment::TYPE_DEFAULT),
         $this->getDummySegment($this->segment2->id, Segment::TYPE_DEFAULT),
-        $this->getDummySegment($this->segment3->id, ''),
+        $this->getDummySegment($this->segment3->id, SegmentEntity::TYPE_DYNAMIC),
       ]
     );
 

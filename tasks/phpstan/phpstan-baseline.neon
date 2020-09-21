@@ -76,11 +76,6 @@ parameters:
 			path: ../../lib/DynamicSegments/Filters/WooCommerceProduct.php
 
 		-
-			message: "#^Parameter \\#1 \\$segmentId of method MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SingleSegmentLoader\\:\\:load\\(\\) expects int\\|string, string\\|null given\\.$#"
-			count: 2
-			path: ../../lib/DynamicSegments/FreePluginConnectors/SendingNewslettersSubscribersFinder.php
-
-		-
 			message: "#^Parameter \\#2 \\$code of class MailPoet\\\\DynamicSegments\\\\Exceptions\\\\ErrorSavingException constructor expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../lib/DynamicSegments/Persistence/Saver.php
