@@ -453,16 +453,19 @@ MailPoet.Modal = {
     return this;
   },
   showOverlay: function () {
+    var $body = jQuery('body');
+    // Used to add space which was took by scrollbar when it's hidden by overflow:hidden
+    var bodyInnerWidth = $body.innerWidth();
     if (!this.options.overlayRender) {
       return this;
     }
     jQuery('#mailpoet_modal_overlay').show();
-    jQuery('body').addClass('mailpoet_modal_opened');
+    jQuery('body').addClass('mailpoet_modal_opened').css('marginRight', $body.innerWidth() - bodyInnerWidth);
     return this;
   },
   hideOverlay: function () {
     jQuery('#mailpoet_modal_overlay').hide();
-    jQuery('body').removeClass('mailpoet_modal_opened');
+    jQuery('body').removeClass('mailpoet_modal_opened').css('marginRight', 0);
     return this;
   },
   popup: function (opts) {
