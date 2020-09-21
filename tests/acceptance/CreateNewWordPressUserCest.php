@@ -18,7 +18,6 @@ class CreateNewWordPressUserCest {
     $i->wantTo('Create a new WP user and check if the confirmation email is sent and if user is subscribed properly');
     $this->settings->withConfirmationEmailEnabled();
     $this->settings->withSubscribeOnRegisterEnabled();
-    $wordpressUsers = 'WordPress Users';
     $secondListName = 'Newsletter mailing list';
     $emailTitle = 'Confirm your subscription';
 
@@ -43,7 +42,7 @@ class CreateNewWordPressUserCest {
     $i->switchToIframe('#preview-html');
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
-    $i->see('You have subscribed to:' * $wordpressUsers * ', ' * $secondListName);
+    $i->see('You have subscribed to: WordPress Users, Newsletter mailing list');
     $i->seeNoJSErrors();
 
     // check if user is assigned to second list
