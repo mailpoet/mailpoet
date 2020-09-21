@@ -3,27 +3,26 @@
 namespace MailPoet\Segments;
 
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\DynamicSegments\FreePluginConnectors\SendingNewslettersSubscribersFinder;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoetVendor\Idiorm\ORM;
 
-use function MailPoetVendor\array_column;
-
 class SubscribersFinder {
 
-  /** @var SendingNewslettersSubscribersFinder  */
-  private $dynamicSegmentSubscriberFinder;
+  /** @var SegmentSubscribersRepository  */
+  private $segmentSubscriberRepository;
 
   public function __construct(
-    SendingNewslettersSubscribersFinder $dynamicSegmentSubscriberFinder = null
+    SegmentSubscribersRepository $segmentSubscriberRepository = null
   ) {
-    if ($dynamicSegmentSubscriberFinder === null) {
-      $dynamicSegmentSubscriberFinder = ContainerWrapper::getInstance()->get(SendingNewslettersSubscribersFinder::class);
+    if ($segmentSubscriberRepository === null) {
+      $segmentSubscriberRepository = ContainerWrapper::getInstance()->get(SegmentSubscribersRepository::class);
     }
-    $this->dynamicSegmentSubscriberFinder = $dynamicSegmentSubscriberFinder;
+    $this->segmentSubscriberRepository = $segmentSubscriberRepository;
   }
 
   public function findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds) {
@@ -38,16 +37,12 @@ class SubscribersFinder {
     return $this->unique($result);
   }
 
-  private function findSubscribersInSegment(Segment $segment, $subscribersToProcessIds) {
-    if ($this->isStaticSegment($segment)) {
-      $subscribers = Subscriber::findSubscribersInSegments($subscribersToProcessIds, [$segment->id])->findMany();
-      return Subscriber::extractSubscribersIds($subscribers);
+  private function findSubscribersInSegment(Segment $segment, $subscribersToProcessIds): array {
+    try {
+      return $this->segmentSubscriberRepository->findSubscribersIdsInSegment((int)$segment->id, $subscribersToProcessIds);
+    } catch (InvalidStateException $e) {
+      return [];
     }
-    $subscribers = $this->dynamicSegmentSubscriberFinder->findSubscribersInSegment($segment, $subscribersToProcessIds);
-    if ($subscribers) {
-      return Subscriber::extractSubscribersIds($subscribers);
-    }
-    return [];
   }
 
   private function isStaticSegment(Segment $segment) {
@@ -61,7 +56,7 @@ class SubscribersFinder {
     foreach ($segments as $segment) {
       if ($this->isStaticSegment($segment)) {
         $staticSegments[] = $segment;
-      } else {
+      } elseif ($segment->type === SegmentEntity::TYPE_DYNAMIC) {
         $dynamicSegments[] = $segment;
       }
     }
@@ -109,15 +104,14 @@ class SubscribersFinder {
 
   private function addSubscribersToTaskFromDynamicSegment(ScheduledTask $task, Segment $segment) {
     $count = 0;
-    $subscribers = $this->dynamicSegmentSubscriberFinder->getSubscriberIdsInSegment($segment);
+    $subscribers = $this->segmentSubscriberRepository->getSubscriberIdsInSegment((int)$segment->id);
     if ($subscribers) {
       $count += $this->addSubscribersToTaskByIds($task, $subscribers);
     }
     return $count;
   }
 
-  private function addSubscribersToTaskByIds(ScheduledTask $task, array $subscribers) {
-    $subscribers = array_column($subscribers, 'id');
+  private function addSubscribersToTaskByIds(ScheduledTask $task, array $subscriberIds) {
     Subscriber::rawExecute(
       'INSERT IGNORE INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '
        (task_id, subscriber_id, processed)
@@ -125,7 +119,7 @@ class SubscribersFinder {
        FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers
        WHERE subscribers.`deleted_at` IS NULL
        AND subscribers.`status` = ?
-       AND subscribers.`id` IN (' . join(',', array_map('intval', $subscribers)) . ')',
+       AND subscribers.`id` IN (' . join(',', array_map('intval', $subscriberIds)) . ')',
       [
         $task->id,
         ScheduledTaskSubscriber::STATUS_UNPROCESSED,
@@ -135,16 +129,10 @@ class SubscribersFinder {
     return ORM::getLastStatement()->rowCount();
   }
 
-  private function unique($subscribers) {
+  private function unique(array $subscriberIds) {
     $result = [];
-    foreach ($subscribers as $subscriber) {
-      if (is_a($subscriber, 'MailPoet\Models\Model')) {
-        $result[$subscriber->id] = $subscriber;
-      } elseif (is_scalar($subscriber)) {
-        $result[$subscriber] = $subscriber;
-      } else {
-        $result[$subscriber['id']] = $subscriber;
-      }
+    foreach ($subscriberIds as $id) {
+      $result[$id] = $id;
     }
     return $result;
   }

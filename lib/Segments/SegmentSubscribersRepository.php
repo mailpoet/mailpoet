@@ -8,10 +8,12 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\NotFoundException;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
-use function \MailPoetVendor\array_column;
+
+use function MailPoetVendor\array_column;
 
 class SegmentSubscribersRepository {
   /** @var EntityManager */
@@ -28,23 +30,12 @@ class SegmentSubscribersRepository {
     $this->filterHandler = $filterHandler;
   }
 
-  public function getSubscriberIdsInSegment(int $segmentId): array {
-    $segment = $this->getSegment($segmentId);
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $queryBuilder = $this->entityManager
-      ->getConnection()
-      ->createQueryBuilder()
-      ->select("DISTINCT $subscribersTable.id")
-      ->from($subscribersTable);
+  public function findSubscribersIdsInSegment(int $segmentId, array $candidateIds = null): array {
+    return $this->loadSubscriberIdsInSegment($segmentId, $candidateIds);
+  }
 
-    if ($segment->isDynamic()) {
-      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
-    } else {
-      $queryBuilder = $this->filterSubscribersInStaticSegment($queryBuilder, $segment);
-    }
-    $statement = $this->executeQuery($queryBuilder);
-    $result = $statement->fetchAll();
-    return array_column($result, 'id');
+  public function getSubscriberIdsInSegment(int $segmentId): array {
+    return $this->loadSubscriberIdsInSegment($segmentId);
   }
 
   public function getSubscribersCount(int $segmentId): int {
@@ -66,6 +57,30 @@ class SegmentSubscribersRepository {
     return (int)$result;
   }
 
+  private function loadSubscriberIdsInSegment(int $segmentId, array $candidateIds = null): array {
+    $segment = $this->getSegment($segmentId);
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $queryBuilder = $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder()
+      ->select("DISTINCT $subscribersTable.id")
+      ->from($subscribersTable);
+
+    if ($segment->isDynamic()) {
+      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
+    } else {
+      $queryBuilder = $this->filterSubscribersInStaticSegment($queryBuilder, $segment);
+    }
+    if ($candidateIds) {
+      $queryBuilder->andWhere("$subscribersTable.id IN (:candidateIds)")
+        ->setParameter('candidateIds', $candidateIds, Connection::PARAM_STR_ARRAY);
+    }
+
+    $statement = $this->executeQuery($queryBuilder);
+    $result = $statement->fetchAll();
+    return array_column($result, 'id');
+  }
+
   private function filterSubscribersInStaticSegment(QueryBuilder $queryBuilder, SegmentEntity $segment): QueryBuilder {
     $subscribersSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
@@ -76,6 +91,7 @@ class SegmentSubscribersRepository {
       "subsegment.subscriber_id = $subscribersTable.id AND subsegment.segment_id = :segment"
     )->andWhere("$subscribersTable.deleted_at IS NULL")
       ->andWhere("$subscribersTable.status = :status")
+      ->andWhere("subsegment.status = :status")
       ->setParameter('segment', $segment->getId())
       ->setParameter('status', SubscriberEntity::STATUS_SUBSCRIBED);
   }
@@ -83,8 +99,10 @@ class SegmentSubscribersRepository {
   private function filterSubscribersInDynamicSegment(QueryBuilder $queryBuilder, SegmentEntity $segment): QueryBuilder {
     $filters = $segment->getDynamicFilters();
     // We don't allow dynamic segment without filers since it would return all subscribers
+    // For BC compatibility fetching an empty result
     if (count($filters) === 0) {
-      throw new InvalidStateException('Missing filters for dynamic segment.');
+      $queryBuilder->andWhere('0 = 1');
+      return $queryBuilder;
     }
     foreach ($filters as $filter) {
       $queryBuilder = $this->filterHandler->apply($queryBuilder, $filter);

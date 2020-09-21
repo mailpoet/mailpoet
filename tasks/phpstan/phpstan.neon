@@ -16,6 +16,7 @@ parameters:
     - '#Parameter \#2 \$prefix of function http_build_query expects string, null given.#'
     - '#Parameter \#1 \$function of function call_user_func_array expects callable(): mixed, .wc_.*. given.#'
     - '#Parameter \#1 \$reader of class MailPoetVendor\\Doctrine\\ORM\\Mapping\\Driver\\AnnotationDriver constructor expects MailPoetVendor\\Doctrine\\Common\\Annotations\\AnnotationReader, MailPoetVendor\\Doctrine\\Common\\Annotations\\CachedReader given#'
+    - '#Parameter \#3 \$type of method MailPoetVendor\\Doctrine\\DBAL\\Query\\QueryBuilder::setParameter\(\) expects string\|null, int given\.#' # Doctrine 2.5 has incorrect annotation https://github.com/doctrine/dbal/blob/2.5/lib/Doctrine/DBAL/Query/QueryBuilder.php#L267
     - '/(with|has) no (return )?typehint specified/' # exclude level 6 errors
     - # Primary keys ScheduledTaskSubscriberEntity of are foreign keys and foreign keys may be null because of missing related record
       message: '#Property MailPoet\\Entities\\[a-zA-Z]+::\$[a-z]+ type mapping mismatch: property can contain MailPoet\\Entities\\[a-zA-Z]+\|null but database expects MailPoet\\Entities\\[a-zA-Z]+.#'

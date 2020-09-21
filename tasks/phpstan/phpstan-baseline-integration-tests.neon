@@ -361,16 +361,6 @@ parameters:
 			path: ../../tests/integration/DynamicSegments/Filters/UserRoleTest.php
 
 		-
-			message: "#^Property MailPoet\\\\DynamicSegments\\\\FreePluginConnectors\\\\SendingNewslettersSubscribersFinderTest\\:\\:\\$singleSegmentLoader \\(MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SingleSegmentLoader&PHPUnit\\\\Framework\\\\MockObject\\\\MockObject\\) does not accept MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SingleSegmentLoader\\.$#"
-			count: 1
-			path: ../../tests/integration/DynamicSegments/FreePluginConnectors/SendingNewslettersSubscribersFinderTest.php
-
-		-
-			message: "#^Property MailPoet\\\\DynamicSegments\\\\FreePluginConnectors\\\\SendingNewslettersSubscribersFinderTest\\:\\:\\$subscribersIdsLoader \\(MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SubscribersIds&PHPUnit\\\\Framework\\\\MockObject\\\\MockObject\\) does not accept MailPoet\\\\DynamicSegments\\\\Persistence\\\\Loading\\\\SubscribersIds\\.$#"
-			count: 1
-			path: ../../tests/integration/DynamicSegments/FreePluginConnectors/SendingNewslettersSubscribersFinderTest.php
-
-		-
 			message: "#^Cannot access property \\$name on MailPoet\\\\Models\\\\DynamicSegment\\|false\\.$#"
 			count: 1
 			path: ../../tests/integration/DynamicSegments/Persistence/SaverTest.php
