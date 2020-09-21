@@ -11,11 +11,11 @@ use MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException;
 use MailPoet\DynamicSegments\Mappers\DBMapper;
 use MailPoet\DynamicSegments\Mappers\FormDataMapper;
 use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
-use MailPoet\DynamicSegments\Persistence\Loading\SubscribersCount;
 use MailPoet\DynamicSegments\Persistence\Saver;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Model;
+use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DynamicSegments extends APIEndpoint {
@@ -33,22 +33,29 @@ class DynamicSegments extends APIEndpoint {
   /** @var SingleSegmentLoader */
   private $dynamicSegmentsLoader;
 
-  /** @var SubscribersCount */
-  private $subscribersCountsLoader;
-
   /** @var BulkActionController */
   private $bulkAction;
 
   /** @var Handler */
   private $listingHandler;
 
-  public function __construct(BulkActionController $bulkAction, Handler $handler, $mapper = null, $saver = null, $dynamicSegmentsLoader = null, $subscribersCountsLoader = null) {
+  /** @var SegmentSubscribersRepository */
+  private $segmentSubscriberRepository;
+
+  public function __construct(
+    BulkActionController $bulkAction,
+    Handler $handler,
+    SegmentSubscribersRepository $segmentSubscriberRepository,
+    $mapper = null,
+    $saver = null,
+    $dynamicSegmentsLoader = null
+  ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $handler;
     $this->mapper = $mapper ?: new FormDataMapper();
     $this->saver = $saver ?: new Saver();
     $this->dynamicSegmentsLoader = $dynamicSegmentsLoader ?: new SingleSegmentLoader(new DBMapper());
-    $this->subscribersCountsLoader = $subscribersCountsLoader ?: new SubscribersCount();
+    $this->segmentSubscriberRepository = $segmentSubscriberRepository;
   }
 
   public function get($data = []) {
@@ -193,8 +200,7 @@ class DynamicSegments extends APIEndpoint {
       );
 
       $row = $segment->asArray();
-      $segmentWithFilters = $this->dynamicSegmentsLoader->load($segment->id);
-      $row['count'] = $this->subscribersCountsLoader->getSubscribersCount($segmentWithFilters);
+      $row['count'] = $this->segmentSubscriberRepository->getSubscribersCount($segment->id);
       $data[] = $row;
     }
 
