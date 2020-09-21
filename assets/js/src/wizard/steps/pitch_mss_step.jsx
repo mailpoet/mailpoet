@@ -44,6 +44,7 @@ export const Controls = (props) => (
           props.next();
         }
       }}
+      withSpinner={props.nextWithSpinner}
     >
       {MailPoet.I18n.t('welcomeWizardMSSNoThanks')}
     </Button>
@@ -54,6 +55,11 @@ Controls.propTypes = {
   mailpoetAccountUrl: PropTypes.string.isRequired,
   next: PropTypes.func.isRequired,
   nextButtonText: PropTypes.string.isRequired,
+  nextWithSpinner: PropTypes.bool,
+};
+
+Controls.defaultProps = {
+  nextWithSpinner: false,
 };
 
 const FreePlanSubscribers = (props) => (

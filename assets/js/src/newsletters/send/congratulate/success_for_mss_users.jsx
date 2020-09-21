@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import Heading from 'common/typography/heading/heading';
@@ -21,6 +21,7 @@ function getSuccessMessage(newsletter) {
 }
 
 function MSSUserSuccess(props) {
+  const [isClosing, setIsClosing] = useState(false);
   return (
     <>
       <Heading level={0}>{MailPoet.I18n.t('congratulationsSuccessHeader')}</Heading>
@@ -29,7 +30,14 @@ function MSSUserSuccess(props) {
       <div className="mailpoet-gap-large" />
       <img src={props.illustrationImageUrl} alt="" width="500" />
       <div className="mailpoet-gap-large" />
-      <Button type="button" dimension="small" onClick={props.successClicked}>{MailPoet.I18n.t('close')}</Button>
+      <Button
+        type="button"
+        dimension="small"
+        onClick={() => { props.successClicked(); setIsClosing(true); }}
+        withSpinner={isClosing}
+      >
+        {MailPoet.I18n.t('close')}
+      </Button>
     </>
   );
 }
