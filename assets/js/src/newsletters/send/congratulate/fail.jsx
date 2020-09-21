@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
@@ -7,6 +7,7 @@ import { Button } from 'common';
 import Heading from 'common/typography/heading/heading';
 
 function Fail(props) {
+  const [isClosing, setIsClosing] = useState(false);
   return (
     <div>
       <Heading level={1}>{MailPoet.I18n.t('congratulationsSendFailHeader')}</Heading>
@@ -31,7 +32,14 @@ function Fail(props) {
       <div className="mailpoet-gap-large" />
       <img src={window.mailpoet_congratulations_error_image} alt="" width="500" />
       <div className="mailpoet-gap-large" />
-      <Button dimension="small" type="button" onClick={props.failClicked}>{MailPoet.I18n.t('close')}</Button>
+      <Button
+        dimension="small"
+        type="button"
+        onClick={() => { props.failClicked(); setIsClosing(true); }}
+        withSpinner={isClosing}
+      >
+        {MailPoet.I18n.t('close')}
+      </Button>
     </div>
   );
 }

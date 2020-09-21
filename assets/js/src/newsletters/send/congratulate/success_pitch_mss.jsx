@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
@@ -7,6 +7,7 @@ import WelcomeWizardStepLayoutBody from '../../../wizard/layout/step_layout_body
 import { BenefitsList, Controls } from '../../../wizard/steps/pitch_mss_step.jsx';
 
 function PitchMss(props) {
+  const [isClosing, setIsClosing] = useState(false);
   return (
     <>
       <Heading level={1}>{MailPoet.I18n.t('congratulationsMSSPitchHeader')}</Heading>
@@ -29,8 +30,9 @@ function PitchMss(props) {
           <BenefitsList />
           <Controls
             mailpoetAccountUrl={props.mailpoetAccountUrl}
-            next={props.onFinish}
+            next={() => { props.onFinish(); setIsClosing(true); }}
             nextButtonText={MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
+            nextWithSpinner={isClosing}
           />
         </div>
       </WelcomeWizardStepLayoutBody>
