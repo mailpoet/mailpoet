@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.5
-Stable tag: 3.50.1
+Stable tag: 3.51.0
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.51.0 - 2020-09-21 =
+* Added: display form on various locations;
+* Added: 8 custom form animations to choose;
+* Fixed: "Normalizer" error on plugin activation/update, once again. Thanks Douglas!
 
 = 3.50.1 - 2020-09-14 =
 * Added: check for possible image rendering issues;
