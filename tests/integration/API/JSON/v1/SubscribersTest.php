@@ -30,7 +30,6 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Segments\SubscribersListings;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
@@ -88,7 +87,6 @@ class SubscribersTest extends \MailPoetTest {
     $obfuscator = new FieldNameObfuscator($wp);
     $this->endpoint = new Subscribers(
       $container->get(BulkActionController::class),
-      $container->get(SubscribersListings::class),
       $container->get(SubscriberActions::class),
       $container->get(RequiredCustomFieldValidator::class),
       $container->get(Handler::class),
