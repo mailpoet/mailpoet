@@ -10,7 +10,7 @@ import jQuery from 'jquery';
 import PropTypes from 'prop-types';
 
 class FormField extends React.Component {
-  renderField = (data, inline = false) => {
+  renderField = (data) => {
     let description = false;
     if (data.field.description) {
       description = (
@@ -134,15 +134,6 @@ class FormField extends React.Component {
       default:
         field = 'invalid';
         break;
-    }
-
-    if (inline === true) {
-      return (
-        <span key={`field-${data.index || 0}`}>
-          { field }
-          { description }
-        </span>
-      );
     }
     return (
       <div key={`field-${data.index || 0}`}>
