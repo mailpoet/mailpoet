@@ -6,3 +6,27 @@ select {
 label[for] {
   cursor: pointer;
 }
+
+.mailpoet-form-grid {
+  align-items: flex-start;
+  display: grid;
+  grid-gap: $grid-gap;
+  grid-template-columns: $grid-column $grid-column;
+  justify-content: space-between;
+  margin: $grid-gap auto;
+  max-width: 976px;
+}
+
+.mailpoet-form-description {
+  color: $color-text;
+  font-size: $font-size;
+  margin-top: 0;
+
+  .mailpoet-h4 + & {
+    margin-top: -$grid-gap;
+  }
+}
+
+.mailpoet-form-field + .mailpoet-form-field {
+  margin-top: $grid-gap;
+}

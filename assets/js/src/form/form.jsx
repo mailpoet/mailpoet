@@ -226,11 +226,9 @@ class Form extends React.Component {
         >
           { errors }
 
-          <table className="form-table">
-            <tbody>
-              {fields}
-            </tbody>
-          </table>
+          <div className="mailpoet-form-grid">
+            {fields}
+          </div>
 
           { actions }
         </form>
