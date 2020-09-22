@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Config;
 
 use MailPoet\Config\Env;
+use MailPoet\WP\Functions as WPFunctions;
 
 class EnvTest extends \MailPoetTest {
   public $version;
@@ -86,6 +87,18 @@ class EnvTest extends \MailPoetTest {
     expect(Env::getDbTimezoneOffset('+1.5'))->equals("+01:30");
     expect(Env::getDbTimezoneOffset('+11'))->equals("+11:00");
     expect(Env::getDbTimezoneOffset('-5.5'))->equals("-05:30");
+  }
+
+  public function testItCanSetCachePathWithAFilter() {
+    $newCachePath = '/tmp/';
+    WPFunctions::get()->addFilter('mailpoet_template_cache_path', function () use ($newCachePath) {
+      return $newCachePath;
+    });
+    Env::init('file', '1.0.0', DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+    expect(Env::$cachePath)->equals($newCachePath);
+    WPFunctions::get()->removeAllFilters('mailpoet_template_cache_path');
+    Env::init('file', '1.0.0', DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+    expect(Env::$cachePath)->equals(Env::$tempPath . '/cache');
   }
 
   public function _after() {
