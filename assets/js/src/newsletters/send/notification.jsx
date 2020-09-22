@@ -91,6 +91,7 @@ let fields = [
       },
     ],
   },
+  GATrackingField,
   {
     name: 'reply-to',
     label: MailPoet.I18n.t('replyTo'),
@@ -112,7 +113,6 @@ let fields = [
       },
     ],
   },
-  GATrackingField,
 ];
 
 fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
