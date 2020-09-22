@@ -2,10 +2,14 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Listing\ListingDefinition;
+use MailPoet\Segments\DynamicSegments\FilterHandler;
+
+require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 class SubscriberListingRepositoryTest extends \MailPoetTest {
 
@@ -27,10 +31,11 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   ];
 
   public function _before() {
-    $this->repository = new SubscriberListingRepository($this->entityManager);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->repository = new SubscriberListingRepository(
+      $this->entityManager,
+      $this->diContainer->get(FilterHandler::class)
+    );
+    $this->cleanup();
   }
 
   public function testItBuildsFilters() {
@@ -116,6 +121,79 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     expect($groups['6']['count'])->equals(1);
   }
 
+  public function testLoadAllSubscribers() {
+    $this->createSubscriberEntity(); // subscriber without a list
+
+    $list = $this->createSegmentEntity();
+    $subscriberUnsubscribedFromAList = $this->createSubscriberEntity();
+    $subscriberSegment = $this->createSubscriberSegmentEntity($list, $subscriberUnsubscribedFromAList);
+    $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $regularSubscriber = $this->createSubscriberEntity();
+    $regularSubscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegmentEntity($list, $regularSubscriber);
+
+    $unsubscribed = $this->createSubscriberEntity();
+    $unsubscribed->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $unconfirmed = $this->createSubscriberEntity();
+    $unconfirmed->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
+
+    $inactive = $this->createSubscriberEntity();
+    $inactive->setStatus(SubscriberEntity::STATUS_INACTIVE);
+
+    $bounced = $this->createSubscriberEntity();
+    $bounced->setStatus(SubscriberEntity::STATUS_BOUNCED);
+
+    $this->entityManager->flush();
+
+    $data = $this->repository->getData($this->getListingDefinition());
+    expect(count($data))->equals(7);
+  }
+
+  public function testLoadSubscribersInDefaultSegment() {
+    $list = $this->createSegmentEntity();
+    $subscriberUnsubscribedFromAList = $this->createSubscriberEntity();
+    $subscriberSegment = $this->createSubscriberSegmentEntity($list, $subscriberUnsubscribedFromAList);
+    $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $this->createSubscriberEntity(); // subscriber without a list
+
+    $regularSubscriber = $this->createSubscriberEntity();
+    $regularSubscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegmentEntity($list, $regularSubscriber);
+
+    $this->entityManager->flush();
+
+    $this->listingData['filter'] = ['segment' => $list->getId()];
+    $data = $this->repository->getData($this->getListingDefinition());
+    expect(count($data))->equals(2);
+    expect($data[0]->getEmail())->equals($subscriberUnsubscribedFromAList->getEmail());
+    expect($data[1]->getEmail())->equals($regularSubscriber->getEmail());
+  }
+
+  public function testLoadSubscribersInDynamicSegment() {
+    $wpUserEmail = 'user-role-test1@example.com';
+    $this->cleanupWpUser($wpUserEmail);
+    wp_insert_user([
+      'user_login' => 'user-role-test1',
+      'user_email' => $wpUserEmail,
+      'role' => 'editor',
+      'user_pass' => '12123154',
+    ]);
+
+    $list = $this->createDynamicSegmentEntity();
+
+    $this->createSubscriberEntity(); // subscriber without a list
+    $this->entityManager->flush();
+
+    $this->listingData['filter'] = ['segment' => $list->getId()];
+    $data = $this->repository->getData($this->getListingDefinition());
+    expect(count($data))->equals(1);
+    expect($data[0]->getEmail())->equals($wpUserEmail);
+    $this->cleanupWpUser($wpUserEmail);
+  }
+
   private function createSubscriberEntity(): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $rand = rand(0, 100000);
@@ -134,10 +212,36 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     return $segment;
   }
 
+  private function createDynamicSegmentEntity(): SegmentEntity {
+    $segment = new SegmentEntity('Segment' . rand(0, 10000), SegmentEntity::TYPE_DYNAMIC, 'Segment description');
+    $dynamicFilter = new DynamicSegmentFilterEntity($segment, [
+      'wordpressRole' => 'editor',
+      'segmentType' => DynamicSegmentFilterEntity::TYPE_USER_ROLE,
+    ]);
+    $segment->getDynamicFilters()->add($dynamicFilter);
+    $this->entityManager->persist($segment);
+    $this->entityManager->persist($dynamicFilter);
+    return $segment;
+  }
+
   private function createSubscriberSegmentEntity(SegmentEntity $segment, SubscriberEntity $subscriber): SubscriberSegmentEntity {
     $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
     $this->entityManager->persist($subscriberSegment);
     return $subscriberSegment;
+  }
+
+  private function cleanupWpUser(string $email) {
+    $user = get_user_by('email', $email);
+    if ($user) {
+      wp_delete_user($user->ID);
+    }
+  }
+
+  private function cleanup() {
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 
   private function getListingDefinition(): ListingDefinition {
@@ -152,5 +256,9 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
       $this->listingData['limit'],
       $this->listingData['selection']
     );
+  }
+
+  public function _after() {
+    $this->cleanup();
   }
 }
