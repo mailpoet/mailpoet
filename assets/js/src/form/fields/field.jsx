@@ -173,7 +173,7 @@ class FormField extends React.Component {
     }
 
     return (
-      <div className={`form-field-row-${this.props.field.name}`}>
+      <div className={`mailpoet-form-field-${this.props.field.name} form-field-row-${this.props.field.name}`}>
         { label }
         { tip }
         { field }
