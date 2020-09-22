@@ -17,6 +17,18 @@ label[for] {
   max-width: 976px;
 }
 
+.mailpoet-form-actions {
+  grid-column: 2 / -1;
+  padding-top: $grid-gap + ($heading-font-size-h4 * $heading-line-height) + ($font-size * $line-height * 2);
+  text-align: right;
+
+  p {
+    color: $color-text;
+    font-size: $font-size;
+    margin: $grid-gap 0;
+  }
+}
+
 .mailpoet-form-description {
   color: $color-text;
   font-size: $font-size;

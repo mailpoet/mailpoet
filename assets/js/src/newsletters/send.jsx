@@ -2,6 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
+import { Button } from 'common';
 import Form from 'form/form.jsx';
 import StandardNewsletterFields from 'newsletters/send/standard.jsx';
 import NotificationNewsletterFields from 'newsletters/send/notification.jsx';
@@ -452,8 +453,8 @@ class NewsletterSend extends React.Component {
     });
     const sendButtonOptions = this.getSendButtonOptions();
 
-    const sendingDisabled = window.mailpoet_subscribers_limit_reached
-      || window.mailpoet_mss_key_pending_approval;
+    const sendingDisabled = !!(window.mailpoet_subscribers_limit_reached
+      || window.mailpoet_mss_key_pending_approval);
 
     return (
       <div>
@@ -473,39 +474,38 @@ class NewsletterSend extends React.Component {
             mssKeyInvalid={window.mailpoet_mss_key_invalid}
             subscribersCount={window.mailpoet_subscribers_count}
           />
-          <p className="submit">
+          <p>
+            <Button variant="light" type="submit">
+              {MailPoet.I18n.t('saveDraftAndClose')}
+            </Button>
             {
               isPaused
                 ? (
-                  <input
-                    className="button button-primary"
+                  <Button
                     type="button"
                     onClick={this.handleResume}
-                    value={MailPoet.I18n.t('resume')}
-                    disabled={sendingDisabled}
-                  />
+                    isDisabled={sendingDisabled}
+                  >
+                    {MailPoet.I18n.t('resume')}
+                  </Button>
                 )
                 : (
-                  <input
-                    className="button button-primary"
+                  <Button
                     type="button"
                     onClick={this.handleSend}
-                    value={MailPoet.I18n.t('send')}
                     {...sendButtonOptions} // eslint-disable-line react/jsx-props-no-spreading
-                    disabled={sendingDisabled}
-                  />
+                    isDisabled={sendingDisabled}
+                  >
+                    {MailPoet.I18n.t('send')}
+                  </Button>
                 )
             }
-            &nbsp;
-            <input
-              className="button button-secondary"
-              type="submit"
-              value={MailPoet.I18n.t('saveDraftAndClose')}
-            />
-            &nbsp;
+          </p>
+          <p>
             {MailPoet.I18n.t('orSimply')}
             &nbsp;
             <a
+              className="mailpoet-link"
               href={
                 `?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`
               }

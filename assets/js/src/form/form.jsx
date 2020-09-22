@@ -5,6 +5,7 @@ import FormField from 'form/fields/field.jsx';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import { Button } from 'common';
 
 class Form extends React.Component {
   constructor(props) {
@@ -201,12 +202,12 @@ class Form extends React.Component {
       actions = this.props.children;
     } else {
       actions = (
-        <input
-          className="button button-primary"
+        <Button
           type="submit"
-          value={MailPoet.I18n.t('save')}
-          disabled={this.state.loading}
-        />
+          isDisabled={this.state.loading}
+        >
+          {MailPoet.I18n.t('save')}
+        </Button>
       );
     }
 
@@ -228,9 +229,12 @@ class Form extends React.Component {
 
           <div className="mailpoet-form-grid">
             {fields}
+
+            <div className="mailpoet-form-actions">
+              { actions }
+            </div>
           </div>
 
-          { actions }
         </form>
         { afterFormContent }
       </div>
