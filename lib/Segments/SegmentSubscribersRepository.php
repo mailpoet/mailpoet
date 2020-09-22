@@ -47,10 +47,10 @@ class SegmentSubscribersRepository {
       ->select("DISTINCT count($subscribersTable.id)")
       ->from($subscribersTable);
 
-    if ($segment->isDynamic()) {
-      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
-    } else {
+    if ($segment->isStatic()) {
       $queryBuilder = $this->filterSubscribersInStaticSegment($queryBuilder, $segment);
+    } else {
+      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
     }
     $statement = $this->executeQuery($queryBuilder);
     $result = $statement->fetchColumn();
@@ -66,11 +66,12 @@ class SegmentSubscribersRepository {
       ->select("DISTINCT $subscribersTable.id")
       ->from($subscribersTable);
 
-    if ($segment->isDynamic()) {
-      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
-    } else {
+    if ($segment->isStatic()) {
       $queryBuilder = $this->filterSubscribersInStaticSegment($queryBuilder, $segment);
+    } else {
+      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
     }
+
     if ($candidateIds) {
       $queryBuilder->andWhere("$subscribersTable.id IN (:candidateIds)")
         ->setParameter('candidateIds', $candidateIds, Connection::PARAM_STR_ARRAY);
