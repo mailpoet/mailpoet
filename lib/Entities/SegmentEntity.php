@@ -109,4 +109,8 @@ class SegmentEntity {
   public function isDynamic(): bool {
     return $this->getType() === self::TYPE_DYNAMIC;
   }
+
+  public function isStatic(): bool {
+    return in_array($this->getType(), [self::TYPE_DEFAULT, self::TYPE_WP_USERS, self::TYPE_WC_USERS], true);
+  }
 }
