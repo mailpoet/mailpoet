@@ -25,7 +25,7 @@ class CreateNewWordPressUserCest {
     $i->login();
     $i->amOnMailpoetPage('Settings');
     $i->waitForText('Settings');
-    $i->selectOptionInSelect2($secondListName);
+    $i->selectOptionInSelect2($secondListName, '[data-automation-id="subscribe-on_register-segments-selection"] input.select2-search__field');
     $i->click('[data-automation-id="settings-submit-button"]'); //save settings
 
     // create a wp user via registration
@@ -42,7 +42,9 @@ class CreateNewWordPressUserCest {
     $i->switchToIframe('#preview-html');
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
-    $i->see('You have subscribed to: WordPress Users, Newsletter mailing list');
+    $i->see('You have subscribed to');
+    $i->see('WordPress Users');
+    $i->see('Newsletter mailing list');
     $i->seeNoJSErrors();
 
     // check if user is assigned to second list
