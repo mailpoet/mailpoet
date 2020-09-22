@@ -113,14 +113,30 @@ StandardScheduling.defaultProps = {
 
 let fields = [
   {
-    name: 'subject',
-    label: MailPoet.I18n.t('subjectLine'),
-    tip: MailPoet.I18n.t('subjectLineTip'),
-    type: 'text',
-    validation: {
-      'data-parsley-required': true,
-      'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError'),
-    },
+    name: 'info',
+    label: null,
+    tip: null,
+    fields: [
+      {
+        name: 'subject',
+        placeholder: MailPoet.I18n.t('subjectLine'),
+        tip: MailPoet.I18n.t('subjectLineTip'),
+        type: 'text',
+        validation: {
+          'data-parsley-required': true,
+          'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError'),
+        },
+      },
+      {
+        name: 'preheader',
+        placeholder: MailPoet.I18n.t('preheaderLine'),
+        tip: MailPoet.I18n.t('preheaderLineTip1') + ' ' + MailPoet.I18n.t('preheaderLineTip2'),
+        type: 'text',
+        validation: {
+          'data-parsley-maxlength': 250,
+        },
+      },
+    ],
   },
   {
     name: 'segments',
