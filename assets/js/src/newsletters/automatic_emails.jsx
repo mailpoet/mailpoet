@@ -81,6 +81,7 @@ const configureSendPageOptions = (defaultFields, newsletter) => {
       email,
       emailOptions,
     },
+    GATrackingField,
     {
       name: 'sender',
       label: MailPoet.I18n.t('sender'),
@@ -106,6 +107,10 @@ const configureSendPageOptions = (defaultFields, newsletter) => {
       ],
     },
     {
+      name: 'empty',
+      type: 'empty',
+    },
+    {
       name: 'reply-to',
       label: MailPoet.I18n.t('replyTo'),
       tip: MailPoet.I18n.t('replyToTip'),
@@ -126,7 +131,6 @@ const configureSendPageOptions = (defaultFields, newsletter) => {
         },
       ],
     },
-    GATrackingField,
   ];
 
   return {

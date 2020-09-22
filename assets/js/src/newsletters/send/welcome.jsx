@@ -37,6 +37,7 @@ let fields = [
     type: 'reactComponent',
     component: Scheduling,
   },
+  GATrackingField,
   {
     name: 'sender',
     label: MailPoet.I18n.t('sender'),
@@ -63,6 +64,10 @@ let fields = [
     ],
   },
   {
+    name: 'empty',
+    type: 'empty',
+  },
+  {
     name: 'reply-to',
     label: MailPoet.I18n.t('replyTo'),
     tip: MailPoet.I18n.t('replyToTip'),
@@ -83,7 +88,6 @@ let fields = [
       },
     ],
   },
-  GATrackingField,
 ];
 
 fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);

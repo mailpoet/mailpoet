@@ -132,6 +132,9 @@ class FormField extends React.Component {
         );
         break;
 
+      case 'empty':
+        break;
+
       default:
         field = 'invalid';
         break;

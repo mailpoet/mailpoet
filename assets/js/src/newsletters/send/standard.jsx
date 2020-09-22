@@ -167,6 +167,12 @@ let fields = [
     },
   },
   {
+    name: 'options',
+    label: MailPoet.I18n.t('scheduleIt'),
+    type: 'reactComponent',
+    component: StandardScheduling,
+  },
+  {
     name: 'sender',
     label: MailPoet.I18n.t('sender'),
     tip: MailPoet.I18n.t('senderTip'),
@@ -191,6 +197,7 @@ let fields = [
       },
     ],
   },
+  GATrackingField,
   {
     name: 'reply-to',
     label: MailPoet.I18n.t('replyTo'),
@@ -211,13 +218,6 @@ let fields = [
         },
       },
     ],
-  },
-  GATrackingField,
-  {
-    name: 'options',
-    label: MailPoet.I18n.t('scheduleIt'),
-    type: 'reactComponent',
-    component: StandardScheduling,
   },
 ];
 
