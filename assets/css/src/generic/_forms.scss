@@ -42,3 +42,7 @@ label[for] {
 .mailpoet-form-field + .mailpoet-form-field {
   margin-top: $grid-gap;
 }
+
+.mailpoet-form-field-email-header {
+  grid-column: 1 / -1;
+}

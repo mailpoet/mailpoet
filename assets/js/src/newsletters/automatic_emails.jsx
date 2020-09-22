@@ -48,7 +48,7 @@ const configureSendPageOptions = (defaultFields, newsletter) => {
   const emailOptions = newsletter.options;
   const fields = [
     {
-      name: 'info',
+      name: 'email-header',
       label: null,
       tip: null,
       fields: [
@@ -65,7 +65,7 @@ const configureSendPageOptions = (defaultFields, newsletter) => {
         {
           name: 'preheader',
           placeholder: MailPoet.I18n.t('preheaderLine'),
-          tip: MailPoet.I18n.t('preheaderLineTip1') + ' ' + MailPoet.I18n.t('preheaderLineTip2'),
+          tip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t('preheaderLineTip2')}`,
           type: 'text',
           validation: {
             'data-parsley-maxlength': 250,

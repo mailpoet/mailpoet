@@ -113,7 +113,7 @@ StandardScheduling.defaultProps = {
 
 let fields = [
   {
-    name: 'info',
+    name: 'email-header',
     label: null,
     tip: null,
     fields: [
@@ -130,7 +130,7 @@ let fields = [
       {
         name: 'preheader',
         placeholder: MailPoet.I18n.t('preheaderLine'),
-        tip: MailPoet.I18n.t('preheaderLineTip1') + ' ' + MailPoet.I18n.t('preheaderLineTip2'),
+        tip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t('preheaderLineTip2')}`,
         type: 'text',
         validation: {
           'data-parsley-maxlength': 250,
