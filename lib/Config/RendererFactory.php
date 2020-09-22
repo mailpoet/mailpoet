@@ -2,6 +2,8 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class RendererFactory {
 
   /** @var Renderer|null */
@@ -9,7 +11,7 @@ class RendererFactory {
 
   public function getRenderer() {
     if (!$this->renderer) {
-      $caching = !WP_DEBUG;
+      $caching = WPFunctions::get()->applyFilters('mailpoet_template_cache_enabled', !WP_DEBUG);
       $debugging = WP_DEBUG;
       $this->renderer = new Renderer($caching, $debugging);
     }

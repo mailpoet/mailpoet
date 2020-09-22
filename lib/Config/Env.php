@@ -54,7 +54,7 @@ class Env {
     self::$utilPath = self::$path . '/lib/Util';
     $wpUploadDir = WPFunctions::get()->wpUploadDir();
     self::$tempPath = $wpUploadDir['basedir'] . '/' . self::$pluginName;
-    self::$cachePath = self::$tempPath . '/cache';
+    self::$cachePath = WPFunctions::get()->applyFilters('mailpoet_template_cache_path', self::$tempPath . '/cache');
     self::$tempUrl = $wpUploadDir['baseurl'] . '/' . self::$pluginName;
     self::$languagesPath = self::$path . '/lang';
     self::$libPath = self::$path . '/lib';
