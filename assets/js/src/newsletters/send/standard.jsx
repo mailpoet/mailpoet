@@ -4,10 +4,10 @@ import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 
-import Checkbox from 'common/form/checkbox/checkbox';
 import DateTime from 'newsletters/send/date_time.jsx';
 import SenderField from 'newsletters/send/sender_address_field.jsx';
 import GATrackingField from 'newsletters/send/ga_tracking.jsx';
+import Toggle from 'common/form/toggle/toggle';
 
 const currentTime = window.mailpoet_current_time || '00:00';
 const defaultDateTime = `${window.mailpoet_current_date} 00:00:00`;
@@ -60,10 +60,10 @@ class StandardScheduling extends React.Component {
     if (this.isScheduled()) {
       schedulingOptions = (
         <>
-          <span className="mailpoet-vertical-middle">
+          <span className="mailpoet-form-schedule-time">
             {MailPoet.I18n.t('websiteTimeIs')}
             {' '}
-            <code>{currentTime}</code>
+            {currentTime}
           </span>
           <div className="mailpoet-gap" />
           <div id="mailpoet_scheduling">
@@ -84,7 +84,7 @@ class StandardScheduling extends React.Component {
     }
     return (
       <div>
-        <Checkbox
+        <Toggle
           checked={this.isScheduled()}
           disabled={this.props.field.disabled}
           name="isScheduled"

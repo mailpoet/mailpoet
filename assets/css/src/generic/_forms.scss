@@ -46,3 +46,9 @@ label[for] {
 .mailpoet-form-field-email-header {
   grid-column: 1 / -1;
 }
+
+.mailpoet-form-schedule-time {
+  color: $color-text;
+  margin-left: $grid-gap;
+  vertical-align: middle;
+}
