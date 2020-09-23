@@ -1,14 +1,16 @@
-import React, { InputHTMLAttributes } from 'react';
+import React, { ChangeEvent, InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   dimension?: 'small',
-  onCheck: (isChecked: boolean) => void,
+  onCheck: (isChecked: boolean, event: ChangeEvent) => void,
+  automationId?: string,
 };
 
 const Toggle = ({
   dimension,
   onCheck,
+  automationId,
   ...attributes
 }: Props) => (
   <label
@@ -19,10 +21,11 @@ const Toggle = ({
         'mailpoet-disabled': attributes.disabled,
       })
     }
+    data-automation-id={automationId}
   >
     <input
       type="checkbox"
-      onChange={(e) => onCheck(e.target.checked)}
+      onChange={(e) => onCheck(e.target.checked, e)}
       {...attributes}
     />
     <span className="mailpoet-form-toggle-control" />
