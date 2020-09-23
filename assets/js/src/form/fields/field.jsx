@@ -164,7 +164,9 @@ class FormField extends React.Component {
     let label = false;
     if (this.props.field.label) {
       label = (
-        <Heading level={4}>{ this.props.field.label }</Heading>
+        <Heading level={4}>
+          <label htmlFor={`field_${this.props.field.name}`}>{ this.props.field.label }</label>
+        </Heading>
       );
     }
 
