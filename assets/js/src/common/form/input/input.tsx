@@ -2,6 +2,7 @@ import React, { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
+  customLabel?: string,
   dimension?: 'small',
   isFullWidth?: boolean,
   iconStart?: JSX.Element,
@@ -9,6 +10,8 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
 };
 
 const Input = ({
+  className,
+  customLabel,
   dimension,
   isFullWidth,
   iconStart,
@@ -18,6 +21,7 @@ const Input = ({
   <div
     className={
       classnames(
+        className,
         'mailpoet-form-input',
         {
           [`mailpoet-form-input-${dimension}`]: dimension,
@@ -29,6 +33,7 @@ const Input = ({
   >
     {iconStart}
     <input {...attributes} />
+    {customLabel && <div className="mailpoet-form-input-label">{customLabel}</div>}
     {iconEnd}
   </div>
 );

@@ -2,11 +2,14 @@ import React, { TextareaHTMLAttributes } from 'react';
 import classnames from 'classnames';
 
 type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  customLabel?: string,
   dimension?: 'small',
   isFullWidth?: boolean,
 };
 
 const Textarea = ({
+  className,
+  customLabel,
   dimension,
   isFullWidth,
   ...attributes
@@ -14,6 +17,7 @@ const Textarea = ({
   <div
     className={
       classnames(
+        className,
         'mailpoet-form-textarea',
         {
           [`mailpoet-form-textarea-${dimension}`]: dimension,
@@ -24,6 +28,7 @@ const Textarea = ({
     }
   >
     <textarea {...attributes} />
+    {customLabel && <div className="mailpoet-form-input-label">{customLabel}</div>}
   </div>
 );
 

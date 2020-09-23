@@ -12,6 +12,8 @@ let fields = [
     fields: [
       {
         name: 'subject',
+        customLabel: MailPoet.I18n.t('subjectLabel'),
+        class: 'mailpoet-form-field-subject',
         placeholder: MailPoet.I18n.t('subjectLine'),
         tip: MailPoet.I18n.t('subjectLineTip'),
         type: 'text',
@@ -22,9 +24,11 @@ let fields = [
       },
       {
         name: 'preheader',
+        customLabel: MailPoet.I18n.t('preheaderLabel'),
+        class: 'mailpoet-form-field-preheader',
         placeholder: MailPoet.I18n.t('preheaderLine'),
         tip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t('preheaderLineTip2')}`,
-        type: 'text',
+        type: 'textarea',
         validation: {
           'data-parsley-maxlength': 250,
         },

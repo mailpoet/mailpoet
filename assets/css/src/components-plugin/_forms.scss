@@ -99,7 +99,57 @@ progress::-moz-progress-bar {
 }
 
 .mailpoet-form-field-email-header {
+  border-bottom: 1px solid $color-tertiary-light;
   grid-column: 1 / -1;
+  margin-bottom: $grid-gap-medium;
+  padding: $grid-gap-large 0 $grid-gap-xl;
+}
+
+.mailpoet-form-field-subject,
+.mailpoet-form-field-preheader {
+  background: transparent;
+  border: 0;
+  height: auto;
+  width: 100%;
+
+  .mailpoet-form-input-label {
+    bottom: 100%;
+    color: $color-text-light;
+    display: none;
+    font-size: 12px;
+    font-weight: bold;
+    left: 4px;
+    position: absolute;
+    text-transform: uppercase;
+  }
+
+  input,
+  textarea {
+    font-family: $font-family;
+    padding: 4px;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background: rgba($color-tertiary-light, .6);
+
+      ~ .mailpoet-form-input-label {
+        display: block;
+      }
+    }
+  }
+}
+
+.mailpoet-form-field-subject input {
+  font-size: $heading-font-size-h1;
+  font-weight: bold;
+  line-height: 40px;
+}
+
+.mailpoet-form-field-preheader textarea {
+  font-size: 18px;
+  height: 56px;
+  line-height: 24px;
 }
 
 .mailpoet-form-schedule-time {
