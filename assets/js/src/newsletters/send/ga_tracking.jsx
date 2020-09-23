@@ -13,15 +13,18 @@ const tip = ReactStringReplace(
   MailPoet.I18n.t('gaCampaignTip'),
   /\[link\](.*?)\[\/link\]/g,
   (match, i) => (
-    <a
-      key={i}
-      href={tipLink}
-      data-beacon-article="58b597d12c7d3a576d359144"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      { match }
-    </a>
+    <span key={i}>
+      <br />
+      <a
+        href={tipLink}
+        data-beacon-article="58b597d12c7d3a576d359144"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mailpoet-link"
+      >
+        { match }
+      </a>
+    </span>
   )
 );
 
