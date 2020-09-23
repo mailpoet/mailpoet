@@ -1,4 +1,5 @@
 import React from 'react';
+import Heading from 'common/typography/heading/heading';
 import Selection from 'form/fields/selection.jsx';
 import EventScheduling from 'newsletters/automatic_emails/events/event_scheduling.jsx';
 import EventOptions from 'newsletters/automatic_emails/events/event_options.jsx';
@@ -162,12 +163,10 @@ class SendEventConditions extends React.Component {
   render() {
     return (
       <div>
-        <div className="events-conditions-header">{this.displayHeader()}</div>
-        <div className="events-conditions-container">
-          <div>{this.displayEventOptions()}</div>
-          <div>{this.displaySegments()}</div>
-          <div>{this.displayScheduling()}</div>
-        </div>
+        <Heading level={5}>{this.displayHeader()}</Heading>
+        {this.displayEventOptions()}
+        {this.displaySegments()}
+        {this.displayScheduling()}
       </div>
     );
   }
