@@ -25,6 +25,9 @@ class SubscribersFinderTest extends \MailPoetTest {
   public $segment2;
   public $segment1;
 
+  /** @var SubscribersFinder */
+  private $subscribersFinder;
+
   public function _before() {
     parent::_before();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
@@ -63,12 +66,12 @@ class SubscribersFinderTest extends \MailPoetTest {
     SubscriberSegment::resubscribeToAllSegments($this->subscriber2);
     SubscriberSegment::resubscribeToAllSegments($this->subscriber3);
     $this->sending = SendingTask::create();
+    $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
   }
 
   public function testFindSubscribersInSegmentInSegmentDefaultSegment() {
-    $finder = new SubscribersFinder();
     $deletedSegmentId = 1000; // non-existent segment
-    $subscribers = $finder->findSubscribersInSegments([$this->subscriber2->id], [$this->segment1->id, $deletedSegmentId]);
+    $subscribers = $this->subscribersFinder->findSubscribersInSegments([$this->subscriber2->id], [$this->segment1->id, $deletedSegmentId]);
     expect($subscribers)->count(1);
     expect($subscribers[$this->subscriber2->id])->equals($this->subscriber2->id);
   }
@@ -101,8 +104,7 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testItAddsSubscribersToTaskFromStaticSegments() {
-    $finder = new SubscribersFinder();
-    $subscribersCount = $finder->addSubscribersToTaskFromSegments(
+    $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
         $this->getDummySegment($this->segment1->id, Segment::TYPE_DEFAULT),
@@ -114,8 +116,7 @@ class SubscribersFinderTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAddSubscribersToTaskFromNoSegment() {
-    $finder = new SubscribersFinder();
-    $subscribersCount = $finder->addSubscribersToTaskFromSegments(
+    $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
         $this->getDummySegment($this->segment1->id, 'UNKNOWN SEGMENT'),

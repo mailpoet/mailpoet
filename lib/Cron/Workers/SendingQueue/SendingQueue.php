@@ -50,17 +50,22 @@ class SendingQueue {
   /** @var CronHelper */
   private $cronHelper;
 
+  /** @var SubscribersFinder */
+  private $subscribersFinder;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     StatsNotificationsScheduler $statsNotificationsScheduler,
     LoggerFactory $loggerFactory,
     NewslettersRepository $newslettersRepository,
     CronHelper $cronHelper,
+    SubscribersFinder $subscriberFinder,
     $mailerTask = false,
     $newsletterTask = false
   ) {
     $this->errorHandler = $errorHandler;
     $this->statsNotificationsScheduler = $statsNotificationsScheduler;
+    $this->subscribersFinder = $subscriberFinder;
     $this->mailerTask = ($mailerTask) ? $mailerTask : new MailerTask();
     $this->newsletterTask = ($newsletterTask) ? $newsletterTask : new NewsletterTask();
     $this->mailerMetaInfo = new MetaInfo;
@@ -116,8 +121,7 @@ class SendingQueue {
         );
         if (!empty($newsletterSegmentsIds[0])) {
           // Check that subscribers are in segments
-          $finder = new SubscribersFinder();
-          $foundSubscribersIds = $finder->findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds);
+          $foundSubscribersIds = $this->subscribersFinder->findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds);
           $foundSubscribers = SubscriberModel::whereIn('id', $subscribersToProcessIds)
             ->whereNull('deleted_at')
             ->findMany();

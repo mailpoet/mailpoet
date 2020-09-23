@@ -34,6 +34,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
+use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscribers\LinkTokens;
@@ -65,6 +66,8 @@ class SendingQueueTest extends \MailPoetTest {
   private $loggerFactory;
   /** @var NewslettersRepository */
   private $newslettersRepository;
+  /** @var SubscribersFinder */
+  private $subscribersFinder;
 
   public function _before() {
     parent::_before();
@@ -116,16 +119,18 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletterLink->url = '[link:subscription_instant_unsubscribe_url]';
     $this->newsletterLink->hash = 'abcde';
     $this->newsletterLink->save();
+    $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
     $this->sendingErrorHandler = new SendingErrorHandler();
     $this->statsNotificationsWorker = Stub::makeEmpty(StatsNotificationsScheduler::class);
     $this->loggerFactory = LoggerFactory::getInstance();
-    $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->cronHelper = $this->diContainer->get(CronHelper::class);
     $this->sendingQueueWorker = new SendingQueueWorker(
       $this->sendingErrorHandler,
       $this->statsNotificationsWorker,
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
-      $this->cronHelper
+      $this->cronHelper,
+      $this->subscribersFinder
     );
     $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
   }
@@ -163,7 +168,8 @@ class SendingQueueTest extends \MailPoetTest {
         $this->statsNotificationsWorker,
         $this->loggerFactory,
         Stub::makeEmpty(NewslettersRepository::class),
-        $this->cronHelper
+        $this->cronHelper,
+        $this->subscribersFinder
       ),
       [
         'processQueue' => Expected::never(),
@@ -171,7 +177,14 @@ class SendingQueueTest extends \MailPoetTest {
           throw new \Exception();
         }),
       ], $this);
-    $sendingQueueWorker->__construct($this->sendingErrorHandler, $this->statsNotificationsWorker, $this->loggerFactory, Stub::makeEmpty(NewslettersRepository::class), $this->cronHelper);
+    $sendingQueueWorker->__construct(
+      $this->sendingErrorHandler,
+      $this->statsNotificationsWorker,
+      $this->loggerFactory,
+      Stub::makeEmpty(NewslettersRepository::class),
+      $this->cronHelper,
+      $this->subscribersFinder
+    );
     try {
       $sendingQueueWorker->process();
       self::fail('Execution limits function was not called.');
@@ -182,7 +195,14 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItEnforcesExecutionLimitsAfterSendingWhenQueueStatusIsNotSetToComplete() {
     $sendingQueueWorker = Stub::make(
-      new SendingQueueWorker($this->sendingErrorHandler, $this->statsNotificationsWorker, $this->loggerFactory, Stub::makeEmpty(NewslettersRepository::class), $this->cronHelper),
+      new SendingQueueWorker(
+        $this->sendingErrorHandler,
+        $this->statsNotificationsWorker,
+        $this->loggerFactory,
+        Stub::makeEmpty(NewslettersRepository::class),
+        $this->cronHelper,
+        $this->subscribersFinder
+      ),
       [
         'enforceSendingAndExecutionLimits' => Expected::exactly(1),
       ], $this);
@@ -192,6 +212,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -220,7 +241,14 @@ class SendingQueueTest extends \MailPoetTest {
     $queue = $this->queue;
     $queue->status = SendingQueue::STATUS_COMPLETED;
     $sendingQueueWorker = Stub::make(
-      new SendingQueueWorker($this->sendingErrorHandler, $this->statsNotificationsWorker, $this->loggerFactory, Stub::makeEmpty(NewslettersRepository::class), $this->cronHelper),
+      new SendingQueueWorker(
+        $this->sendingErrorHandler,
+        $this->statsNotificationsWorker,
+        $this->loggerFactory,
+        Stub::makeEmpty(NewslettersRepository::class),
+        $this->cronHelper,
+        $this->subscribersFinder
+      ),
       [
         'enforceSendingAndExecutionLimits' => Expected::never(),
       ], $this);
@@ -230,6 +258,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -253,7 +282,14 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItEnforcesExecutionLimitsAfterQueueProcessing() {
     $sendingQueueWorker = Stub::make(
-      new SendingQueueWorker($this->sendingErrorHandler, $this->statsNotificationsWorker, $this->loggerFactory, Stub::makeEmpty(NewslettersRepository::class), $this->cronHelper),
+      new SendingQueueWorker(
+        $this->sendingErrorHandler,
+        $this->statsNotificationsWorker,
+        $this->loggerFactory,
+        Stub::makeEmpty(NewslettersRepository::class),
+        $this->cronHelper,
+        $this->subscribersFinder
+      ),
       [
         'processQueue' => function() {
           // this function returns a queue object
@@ -261,7 +297,14 @@ class SendingQueueTest extends \MailPoetTest {
         },
         'enforceSendingAndExecutionLimits' => Expected::exactly(2),
       ], $this);
-    $sendingQueueWorker->__construct($this->sendingErrorHandler, $this->statsNotificationsWorker, $this->loggerFactory, Stub::makeEmpty(NewslettersRepository::class), $this->cronHelper);
+    $sendingQueueWorker->__construct(
+      $this->sendingErrorHandler,
+      $this->statsNotificationsWorker,
+      $this->loggerFactory,
+      Stub::makeEmpty(NewslettersRepository::class),
+      $this->cronHelper,
+      $this->subscribersFinder
+    );
     $sendingQueueWorker->process();
   }
 
@@ -288,6 +331,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -318,6 +362,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -346,6 +391,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -395,6 +441,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -447,6 +494,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -506,6 +554,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::makeEmpty(new MailerTask(), [], $this)
     );
     $sendingQueueWorker->process();
@@ -524,6 +573,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -578,6 +628,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -760,7 +811,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->statsNotificationsWorker,
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
-      $this->cronHelper
+      $this->cronHelper,
+      $this->subscribersFinder
     ));
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
@@ -768,6 +820,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -805,6 +858,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->cronHelper,
+      $this->subscribersFinder,
       Stub::make(
         new MailerTask(),
         [
@@ -833,7 +887,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->statsNotificationsWorker,
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
-      $this->cronHelper
+      $this->cronHelper,
+      $this->subscribersFinder
     );
     expect($sendingQueueWorker->batchSize)->equals($customBatchSizeValue);
     $wp->removeFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
@@ -852,6 +907,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->cronHelper,
+      $this->subscribersFinder,
       $this->make(new MailerTask(), [
         'send' => $this->mailerTaskDummyResponse,
       ])
@@ -877,6 +933,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
       $this->cronHelper,
+      $this->subscribersFinder,
       $this->make(new MailerTask(), [
         'send' => $this->mailerTaskDummyResponse,
       ])

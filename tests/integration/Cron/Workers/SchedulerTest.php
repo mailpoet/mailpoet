@@ -6,7 +6,6 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\Scheduler;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -31,10 +30,14 @@ class SchedulerTest extends \MailPoetTest {
   /** @var LoggerFactory */
   private $loggerFactory;
 
+  /** @var SubscribersFinder */
+  private $subscribersFinder;
+
   public function _before() {
     parent::_before();
     $this->loggerFactory = LoggerFactory::getInstance();
-    $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->cronHelper = $this->diContainer->get(CronHelper::class);
+    $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
   }
 
   public function testItThrowsExceptionWhenExecutionLimitIsReached() {
@@ -414,7 +417,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler(new SubscribersFinder(), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper);
 
     // return true
     expect($scheduler->processScheduledStandardNewsletter($newsletter, $queue))->true();
@@ -453,7 +456,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletterSegment = $this->_createNewsletterSegment($newsletter->id, $segment->id);
 
     // delete or reschedule queue when there are no subscribers in segments
-    $scheduler = $this->construct(Scheduler::class, [new SubscribersFinder(), $this->loggerFactory, $this->cronHelper], [
+    $scheduler = $this->construct(Scheduler::class, [$this->subscribersFinder, $this->loggerFactory, $this->cronHelper], [
       'deleteQueueOrUpdateNextRunDate' => Expected::exactly(1, function() {
         return false;
       }),
@@ -476,7 +479,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
-    $scheduler = new Scheduler(new SubscribersFinder(), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper);
 
     // return true
     expect($scheduler->processPostNotificationNewsletter($newsletter, $queue))->true();
@@ -701,7 +704,7 @@ class SchedulerTest extends \MailPoetTest {
     expect($task->newsletterId)->equals($newsletter->id);
 
     // task should have its status set to null (i.e., sending)
-    $scheduler = new Scheduler(new SubscribersFinder(), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper);
     $scheduler->process();
     $task = SendingTask::getByNewsletterId($newsletter->id);
     expect($task->status)->null();

@@ -2,7 +2,6 @@
 
 namespace MailPoet\Segments;
 
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\ScheduledTask;
@@ -17,11 +16,8 @@ class SubscribersFinder {
   private $segmentSubscriberRepository;
 
   public function __construct(
-    SegmentSubscribersRepository $segmentSubscriberRepository = null
+    SegmentSubscribersRepository $segmentSubscriberRepository
   ) {
-    if ($segmentSubscriberRepository === null) {
-      $segmentSubscriberRepository = ContainerWrapper::getInstance()->get(SegmentSubscribersRepository::class);
-    }
     $this->segmentSubscriberRepository = $segmentSubscriberRepository;
   }
 
