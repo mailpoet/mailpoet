@@ -457,10 +457,15 @@ class NewsletterSend extends React.Component {
     const sendingDisabled = !!(window.mailpoet_subscribers_limit_reached
       || window.mailpoet_mss_key_pending_approval);
 
+    let emailType = this.state.item.type;
+    if (emailType === 'automatic') {
+      emailType = this.state.item.options.group || emailType;
+    }
+
     return (
       <div>
         <Background color="#fff" />
-        <ListingHeadingStepsRoute emailType={this.state.item.type} automationId="newsletter_send_heading" />
+        <ListingHeadingStepsRoute emailType={emailType} automationId="newsletter_send_heading" />
 
         <Form
           id="mailpoet_newsletter"
