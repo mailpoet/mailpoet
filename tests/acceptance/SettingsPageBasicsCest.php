@@ -60,14 +60,12 @@ class SettingsPageBasicsCest {
     $i->waitForText($postTitle);
     $i->click($postTitle);
     $i->waitForText($postTitle);
-    $i->scrollTo('#commentform');
-    $i->scrollTo('.comment-form-comment');
-    $i->waitForElementVisible(['css' => '.comment-form-mailpoet']);
-    $i->waitForText($optinMessage);
-    $i->click('#comment');
-    $i->fillField('#comment', $comment);
+    $i->scrollTo(['css' => '.comment-form-comment'], 20, 50);
     $i->waitForText($optinMessage);
     $i->click('#mailpoet_subscribe_on_comment');
+    $i->waitForElementVisible(['css' => '#comment']);
+    $i->click(['css' => '#comment']);
+    $i->fillField('#comment', $comment);
     $i->click('Post Comment');
     $i->waitForText($comment, 10, '.comment-content');
     //check if user is really subscribed to a list
