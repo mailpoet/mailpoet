@@ -11,6 +11,8 @@ const FormFieldTextarea = (props) => (
     placeholder={props.field.placeholder}
     defaultValue={props.field.defaultValue}
     onChange={props.onValueChange}
+    className={props.field.class}
+    customLabel={props.field.customLabel}
     {...props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
   />
 );
@@ -22,6 +24,8 @@ FormFieldTextarea.propTypes = {
     placeholder: PropTypes.string,
     defaultValue: PropTypes.string,
     validation: PropTypes.object, //  eslint-disable-line react/forbid-prop-types
+    class: PropTypes.string,
+    customLabel: PropTypes.string,
   }).isRequired,
   onValueChange: PropTypes.func.isRequired,
 };

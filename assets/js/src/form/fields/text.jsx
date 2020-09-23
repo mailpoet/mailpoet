@@ -50,6 +50,7 @@ class FormFieldText extends React.Component { // eslint-disable-line react/prefe
         defaultValue={defaultValue}
         placeholder={this.props.field.placeholder}
         onChange={this.props.onValueChange}
+        customLabel={this.props.field.customLabel}
         {...this.props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
       />
     );
@@ -70,6 +71,7 @@ FormFieldText.propTypes = {
     disabled: PropTypes.func,
     placeholder: PropTypes.string,
     validation: PropTypes.object,
+    customLabel: PropTypes.string,
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
