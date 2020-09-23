@@ -6,3 +6,20 @@ select {
 label[for] {
   cursor: pointer;
 }
+
+.mailpoet-form-tooltip-holder {
+  margin-top: -($grid-gap + 8px);
+  padding: $grid-gap;
+  position: absolute;
+  right: 100%;
+  top: 50%;
+}
+
+.mailpoet-form-tooltip-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%239CA6CC' d='M8 0C3.582 0 0 3.582 0 8s3.582 8 8 8 8-3.582 8-8c-.005-4.416-3.584-7.995-8-8zm.167 3.333c.552 0 1 .448 1 1 0 .553-.448 1-1 1-.553 0-1-.447-1-1 0-.552.447-1 1-1zm1.5 9H7c-.368 0-.667-.298-.667-.666 0-.369.299-.667.667-.667h.5c.092 0 .167-.075.167-.167v-3c0-.092-.075-.166-.167-.166H7c-.368 0-.667-.299-.667-.667 0-.368.299-.667.667-.667h.667C8.403 6.333 9 6.93 9 7.667v3.166c0 .092.075.167.167.167h.5c.368 0 .666.298.666.667 0 .368-.298.666-.666.666z'/%3E%3C/svg%3E%0A");
+  background-position: center;
+  background-repeat: no-repeat;
+  display: block;
+  height: 16px;
+  width: 16px;
+}
