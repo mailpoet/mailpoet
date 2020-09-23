@@ -503,7 +503,7 @@ class NewsletterSend extends React.Component {
                     {...sendButtonOptions} // eslint-disable-line react/jsx-props-no-spreading
                     isDisabled={sendingDisabled}
                   >
-                    {MailPoet.I18n.t('send')}
+                    {sendButtonOptions.value || MailPoet.I18n.t('send')}
                   </Button>
                 )
             }
