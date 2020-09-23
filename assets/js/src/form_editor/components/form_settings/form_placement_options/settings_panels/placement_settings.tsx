@@ -46,7 +46,16 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
         .concat(select('mailpoet-form-editor').getAllWooCommerceProducts())
     ), []
   );
+  const isPreviewShown = useSelect(
+    (select) => select('mailpoet-form-editor').getIsPreviewShown(),
+    []
+  );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
+
+  let prefix = 'no-preview';
+  if (isPreviewShown) {
+    prefix = 'preview';
+  }
 
   return (
     <>
@@ -74,8 +83,9 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
       <div data-automation-id="form-placement-select-page">
         <div className="form-editor-placement-selection">
           <Selection
+            dropDownParent={isPreviewShown ? '.mailpoet-modal-content' : undefined}
             item={{
-              id: formSettings.formPlacement[settingsPlacementKey].pages.selected.join(),
+              id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].pages.selected.join()}`,
             }}
             onValueChange={(e) => {
               compose([
@@ -91,7 +101,7 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
               ])(formSettings);
             }}
             field={{
-              id: 'pages',
+              id: `${prefix}pages`,
               name: 'pages',
               values: pages,
               multiple: true,
@@ -125,8 +135,9 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
       />
       <div className="form-editor-placement-selection">
         <Selection
+          dropDownParent={isPreviewShown ? '.mailpoet-modal-content' : undefined}
           item={{
-            id: formSettings.formPlacement[settingsPlacementKey].posts.selected.join(),
+            id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].posts.selected.join()}`,
           }}
           onValueChange={(e) => {
             compose([
@@ -142,7 +153,7 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             ])(formSettings);
           }}
           field={{
-            id: 'posts',
+            id: `${prefix}posts`,
             name: 'posts',
             values: posts,
             multiple: true,
@@ -156,8 +167,9 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
         <h3 className="form-editor-sidebar-heading">{MailPoet.I18n.t('displayOnCategories')}</h3>
         <div className="form-editor-placement-selection">
           <Selection
+            dropDownParent={isPreviewShown ? '.mailpoet-modal-content' : undefined}
             item={{
-              id: formSettings.formPlacement[settingsPlacementKey].categories.join(),
+              id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].categories.join()}`,
             }}
             onValueChange={(e) => {
               compose([
@@ -176,7 +188,7 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
               ])(formSettings);
             }}
             field={{
-              id: 'categories',
+              id: `${prefix}categories`,
               name: 'categories',
               values: categories,
               multiple: true,
@@ -191,8 +203,9 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
         <h3 className="form-editor-sidebar-heading">{MailPoet.I18n.t('displayOnTags')}</h3>
         <div className="form-editor-placement-selection">
           <Selection
+            dropDownParent={isPreviewShown ? '.mailpoet-modal-content' : undefined}
             item={{
-              id: formSettings.formPlacement[settingsPlacementKey].tags.join(),
+              id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].tags.join()}`,
             }}
             onValueChange={(e) => {
               compose([
@@ -211,7 +224,7 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
               ])(formSettings);
             }}
             field={{
-              id: 'tags',
+              id: `${prefix}tags`,
               name: 'tags',
               values: tags,
               multiple: true,

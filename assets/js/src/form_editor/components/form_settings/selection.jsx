@@ -121,6 +121,9 @@ class Selection extends React.Component {
         return item.text;
       },
     };
+    if (this.props.dropDownParent) {
+      select2Options.dropdownParent = jQuery(this.props.dropDownParent);
+    }
 
     const remoteQuery = this.props.field.remoteQuery || null;
     if (remoteQuery) {
@@ -315,6 +318,7 @@ Selection.propTypes = {
   item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   disabled: PropTypes.bool,
   width: PropTypes.string,
+  dropDownParent: PropTypes.string,
 };
 
 Selection.defaultProps = {
@@ -324,6 +328,7 @@ Selection.defaultProps = {
   disabled: false,
   width: '',
   item: undefined,
+  dropDownParent: undefined,
 };
 
 
