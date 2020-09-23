@@ -138,18 +138,41 @@ progress::-moz-progress-bar {
       }
     }
   }
+
+  .mailpoet-form-tooltip-holder {
+    opacity: 0;
+  }
+
+  &:hover,
+  &:focus {
+    .mailpoet-form-tooltip-holder {
+      opacity: 1;
+    }
+  }
 }
 
-.mailpoet-form-field-subject input {
-  font-size: $heading-font-size-h1;
-  font-weight: bold;
-  line-height: 40px;
+.mailpoet-form-field-subject {
+  input {
+    font-size: $heading-font-size-h1;
+    font-weight: bold;
+    line-height: 40px;
+  }
+
+  .mailpoet-form-tooltip-holder {
+    margin-top: -($grid-gap + 8px) + 2px;
+  }
 }
 
-.mailpoet-form-field-preheader textarea {
-  font-size: 18px;
-  height: 56px;
-  line-height: 24px;
+.mailpoet-form-field-preheader {
+  textarea {
+    font-size: 18px;
+    height: 56px;
+    line-height: 24px;
+  }
+
+  .mailpoet-form-tooltip-holder {
+    margin-top: -($grid-gap + 8px) - 9px;
+  }
 }
 
 .mailpoet-form-schedule-time {

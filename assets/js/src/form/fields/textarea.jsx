@@ -13,6 +13,7 @@ const FormFieldTextarea = (props) => (
     onChange={props.onValueChange}
     className={props.field.class}
     customLabel={props.field.customLabel}
+    tooltip={props.field.tooltip}
     {...props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
   />
 );
@@ -26,6 +27,7 @@ FormFieldTextarea.propTypes = {
     validation: PropTypes.object, //  eslint-disable-line react/forbid-prop-types
     class: PropTypes.string,
     customLabel: PropTypes.string,
+    tooltip: PropTypes.string,
   }).isRequired,
   onValueChange: PropTypes.func.isRequired,
 };
