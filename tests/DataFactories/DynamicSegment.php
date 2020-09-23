@@ -5,7 +5,6 @@ namespace MailPoet\Test\DataFactories;
 use MailPoet\DynamicSegments\Mappers\FormDataMapper;
 use MailPoet\DynamicSegments\Persistence\Saver;
 use MailPoet\Models\DynamicSegment as DynamicSegmentModel;
-use MailPoet\Test\DataFactories\Segment;
 
 class DynamicSegment extends Segment {
 
@@ -14,6 +13,20 @@ class DynamicSegment extends Segment {
   public function withUserRoleFilter($role) {
     $this->filterData['segmentType'] = 'userRole';
     $this->filterData['wordpressRole'] = $role;
+    return $this;
+  }
+
+  public function withWooCommerceProductFilter($productId) {
+    $this->filterData['segmentType'] = 'woocommerce';
+    $this->filterData['action'] = 'purchasedProduct';
+    $this->filterData['product_id'] = $productId;
+    return $this;
+  }
+
+  public function withWooCommerceCategoryFilter($categoryId) {
+    $this->filterData['segmentType'] = 'woocommerce';
+    $this->filterData['action'] = 'purchasedCategory';
+    $this->filterData['category_id'] = $categoryId;
     return $this;
   }
 
