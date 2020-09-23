@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
+import Background from 'common/background/background';
 import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
 import Grid from 'common/grid';
@@ -74,6 +75,8 @@ class NewsletterWelcome extends React.Component {
   render() {
     return (
       <div>
+        <Background color="#fff" />
+
         <ListingHeadingStepsRoute emailType="welcome" automationId="welcome_email_creation_heading" />
 
         <Grid.Column align="center" className="mailpoet-schedule-email">

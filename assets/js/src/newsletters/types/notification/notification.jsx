@@ -4,6 +4,7 @@ import MailPoet from 'mailpoet';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import _ from 'underscore';
 import Scheduling from 'newsletters/types/notification/scheduling.jsx';
+import Background from 'common/background/background';
 import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
 import Grid from 'common/grid';
@@ -64,6 +65,8 @@ class NewsletterNotification extends React.Component {
   render() {
     return (
       <div>
+        <Background color="#fff" />
+
         <ListingHeadingStepsRoute emailType="notification" automationId="post_notification_creation_heading" />
 
         <Grid.Column align="center" className="mailpoet-schedule-email">

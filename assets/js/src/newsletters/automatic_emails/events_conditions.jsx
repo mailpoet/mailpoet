@@ -1,4 +1,5 @@
 import React from 'react';
+import Background from 'common/background/background';
 import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
 import Grid from 'common/grid';
@@ -214,6 +215,8 @@ class EventsConditions extends React.Component {
   render() {
     return (
       <div>
+        <Background color="#fff" />
+
         <ListingHeadingStepsRoute emailType="woocommerce" automationId="woocommerce_email_creation_heading" />
 
         <Grid.Column align="center" className="mailpoet-schedule-email">
