@@ -165,6 +165,9 @@ class NewsletterTemplates extends React.Component {
       },
     }).done((response) => {
       emailType = response.data.type;
+      if (emailType === 'automatic') {
+        emailType = response.data.options.group || emailType;
+      }
       if (window.mailpoet_newsletters_templates_recently_sent_count) {
         selectedTab = 'recent';
       } else if (_.findWhere(templatesCategories, { name: response.data.type })) {
