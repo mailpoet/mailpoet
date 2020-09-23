@@ -1,26 +1,4 @@
-div.events-conditions-header {
-  font-weight: 600;
-}
-
 a.event-scheduling-read-more-link {
   display: block;
   line-height: 20px;
-}
-
-div.events-conditions-container {
-  a.event-scheduling-read-more-link {
-    clear: both;
-    margin-top: 50px;
-  }
-
-  &:after {
-    clear: both;
-    content: '';
-    display: table;
-  }
-
-  input {
-    border: 1px solid #aaa;
-    border-radius: 4px;
-  }
 }
