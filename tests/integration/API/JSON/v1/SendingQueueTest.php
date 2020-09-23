@@ -6,15 +6,14 @@ use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingQueue as SendingQueueAPI;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
+use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
-use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Idiorm\ORM;
@@ -52,7 +51,7 @@ class SendingQueueTest extends \MailPoetTest {
       $newletterOptions
     );
 
-    $sendingQueue = new SendingQueueAPI(new SubscribersFeature(ContainerWrapper::getInstance()->get(SettingsController::class), ContainerWrapper::getInstance()->get(SubscribersRepository::class)));
+    $sendingQueue = $this->diContainer->get(SendingQueueAPI::class);
     $result = $sendingQueue->add(['newsletter_id' => $newsletter->id]);
     $scheduledTask = ScheduledTask::findOne($result->data['task_id']);
     expect($scheduledTask->status)->equals(ScheduledTask::STATUS_SCHEDULED);
@@ -61,9 +60,12 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItReturnsErrorIfSubscribersLimitReached() {
-    $sendingQueue = new SendingQueueAPI(Stub::make(SubscribersFeature::class, [
-      'check' => true,
-    ]));
+    $sendingQueue = new SendingQueueAPI(
+      Stub::make(SubscribersFeature::class, [
+        'check' => true,
+      ]),
+      $this->diContainer->get(SubscribersFinder::class)
+    );
     $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->id]);
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
     $res = $sendingQueue->resume(['newsletter_id' => $this->newsletter->id]);
@@ -83,7 +85,7 @@ class SendingQueueTest extends \MailPoetTest {
       Newsletter::TYPE_STANDARD,
       $newletterOptions
     );
-    $sendingQueue = new SendingQueueAPI(new SubscribersFeature(ContainerWrapper::getInstance()->get(SettingsController::class), ContainerWrapper::getInstance()->get(SubscribersRepository::class)));
+    $sendingQueue = $this->diContainer->get(SendingQueueAPI::class);
 
     // add scheduled task
     $result = $sendingQueue->add(['newsletter_id' => $newsletter->id]);

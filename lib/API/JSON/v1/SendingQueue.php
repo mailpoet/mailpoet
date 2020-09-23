@@ -22,8 +22,15 @@ class SendingQueue extends APIEndpoint {
   /** @var SubscribersFeature */
   private $subscribersFeature;
 
-  public function __construct(SubscribersFeature $subscribersFeature) {
+  /** @var SubscribersFinder */
+  private $subscribersFinder;
+
+  public function __construct(
+    SubscribersFeature $subscribersFeature,
+    SubscribersFinder $subscribersFinder
+  ) {
     $this->subscribersFeature = $subscribersFeature;
+    $this->subscribersFinder = $subscribersFinder;
   }
 
   public function add($data = []) {
@@ -90,8 +97,7 @@ class SendingQueue extends APIEndpoint {
       $queue->scheduledAt = Scheduler::formatDatetimeString($newsletter->scheduledAt);
     } else {
       $segments = $newsletter->segments()->findMany();
-      $finder = new SubscribersFinder();
-      $subscribersCount = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
+      $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($queue->task(), $segments);
       if (!$subscribersCount) {
         return $this->errorResponse([
           APIError::UNKNOWN => __('There are no subscribers in that list!', 'mailpoet'),

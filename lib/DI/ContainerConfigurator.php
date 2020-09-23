@@ -180,7 +180,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Form\Util\FieldNameObfuscator::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\AssetsController::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\DisplayFormInWPContent::class);
-    $container->autowire(\MailPoet\Form\FormsRepository::class);
+    $container->autowire(\MailPoet\Form\FormsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\Renderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\BlocksRenderer::class);
     $container->autowire(\MailPoet\Form\BlockStylesRenderer::class);
@@ -252,7 +252,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository::class);
     // Segments
     $container->autowire(\MailPoet\Segments\WooCommerce::class)->setPublic(true);
-    $container->autowire(\MailPoet\Segments\SubscribersFinder::class);
+    $container->autowire(\MailPoet\Segments\SubscribersFinder::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SegmentsRepository::class);
     $container->autowire(\MailPoet\Segments\SegmentSubscribersRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\FilterHandler::class)->setPublic(true);
@@ -304,7 +304,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Text::class);
     $container->autowire(\MailPoet\Newsletter\Renderer\Columns\Renderer::class);
     $container->autowire(\MailPoet\Newsletter\Renderer\Preprocessor::class);
-    $container->autowire(\MailPoet\Newsletter\Renderer\Renderer::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Renderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Segment\NewsletterSegmentRepository::class);
     $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class);
     $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class)->setPublic(true);
