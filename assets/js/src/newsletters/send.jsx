@@ -9,6 +9,7 @@ import NotificationNewsletterFields from 'newsletters/send/notification.jsx';
 import WelcomeNewsletterFields from 'newsletters/send/welcome.jsx';
 import HelpTooltip from 'help-tooltip.jsx';
 import jQuery from 'jquery';
+import Background from 'common/background/background';
 import { fromUrl } from 'common/thumbnail.ts';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
@@ -458,6 +459,7 @@ class NewsletterSend extends React.Component {
 
     return (
       <div>
+        <Background color="#fff" />
         <ListingHeadingStepsRoute emailType={this.state.item.type} automationId="newsletter_send_heading" />
 
         <Form

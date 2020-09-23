@@ -2,6 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import Loading from 'common/loading.jsx';
+import Background from 'common/background/background';
 import Categories from 'common/categories/categories';
 import TemplateBox from 'newsletters/templates/template_box.jsx';
 import ImportTemplate from 'newsletters/templates/import_template.jsx';
@@ -273,6 +274,8 @@ class NewsletterTemplates extends React.Component {
 
     return (
       <div>
+        <Background color="#fff" />
+
         <ListingHeadingStepsRoute emailType={this.state.emailType} automationId="email_template_selection_heading" />
 
         <div className="mailpoet-templates">
