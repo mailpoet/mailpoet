@@ -29,12 +29,13 @@ class CreateNewWordPressUserCest {
     $i->click('[data-automation-id="settings-submit-button"]'); //save settings
 
     // create a wp user via registration
+    // Note: Xpath used to avoid flakyness and to pass multisite testing where we have different registration page designs
     $i->logOut();
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/wp-login.php?action=register');
-    $i->fillField('#user_login', 'newuser');
-    $i->fillField('#user_email', 'newuser@test.com');
+    $i->fillField(['xpath' => "//input[@type='text'][contains(@name, 'user')]"], 'newuser');
+    $i->fillField(['xpath' => "//input[@type='email'][contains(@name, 'email')]"], 'newuser@test.com');
     $i->click('#mailpoet_subscribe_on_register');
-    $i->click('Register');
+    $i->click(['xpath' => "//input[@type='submit']"]);
 
     // check email was received and confirm subscribing to both lists
     $i->checkEmailWasReceived($emailTitle);
