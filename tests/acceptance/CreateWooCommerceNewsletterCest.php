@@ -26,7 +26,7 @@ class CreateWooCommerceNewsletterCest {
 
     $i->waitForElement('[data-automation-id="newsletter_send_form"]');
     $newsletterListingElement = '[data-automation-id="listing_item_' . basename($i->getCurrentUrl()) . '"]';
-    $i->waitForElementClickable('[value="Activate"]');
+    $i->waitForElementClickable('[data-automation-id="email-submit"]');
     $i->click('Activate');
 
     $i->waitForElement($newsletterListingElement);
@@ -57,7 +57,7 @@ class CreateWooCommerceNewsletterCest {
 
     $i->waitForElement('[data-automation-id="newsletter_send_form"]');
     $newsletterListingElement = '[data-automation-id="listing_item_' . basename($i->getCurrentUrl()) . '"]';
-    $i->waitForElementClickable('[value="Activate"]');
+    $i->waitForElementClickable('[data-automation-id="email-submit"]');
     $i->click('Activate');
 
     $i->waitForElement($newsletterListingElement);

@@ -482,7 +482,7 @@ class NewsletterSend extends React.Component {
             subscribersCount={window.mailpoet_subscribers_count}
           />
           <p>
-            <Button variant="light" type="submit">
+            <Button variant="light" type="submit" automationId="email-save-draft">
               {MailPoet.I18n.t('saveDraftAndClose')}
             </Button>
             {
@@ -492,6 +492,7 @@ class NewsletterSend extends React.Component {
                     type="button"
                     onClick={this.handleResume}
                     isDisabled={sendingDisabled}
+                    automationId="email-resume"
                   >
                     {MailPoet.I18n.t('resume')}
                   </Button>
@@ -502,6 +503,7 @@ class NewsletterSend extends React.Component {
                     onClick={this.handleSend}
                     {...sendButtonOptions} // eslint-disable-line react/jsx-props-no-spreading
                     isDisabled={sendingDisabled}
+                    automationId="email-submit"
                   >
                     {sendButtonOptions.value || MailPoet.I18n.t('send')}
                   </Button>
