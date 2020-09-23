@@ -3,7 +3,7 @@
 }
 
 .mailpoet_automated_latest_content_block_overlay {
-  background: rgba(255, 255, 255, 0);
+  background: rgba(#fff, 0);
   height: 100%;
   position: absolute;
   transition: background .15s ease-out;
@@ -11,7 +11,7 @@
   z-index: 19;
 
   .mailpoet_automated_latest_content_block:hover & {
-    background: rgba(255, 255, 255, .7);
+    background: rgba(#fff, .9);
     cursor: pointer;
 
     .mailpoet_overlay_message {
@@ -23,7 +23,7 @@
     color: black;
     display: none;
     font-size: 20px;
-    margin: 1em 0;
+    margin: 80px;
     text-align: center;
   }
 }
