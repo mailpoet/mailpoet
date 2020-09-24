@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Listing;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -202,7 +203,7 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search) {
-    $search = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $search); // escape for 'LIKE'
+    $search = Helpers::escapeSearch($search);
     $queryBuilder
       ->andWhere('n.subject LIKE :search')
       ->setParameter('search', "%$search%");

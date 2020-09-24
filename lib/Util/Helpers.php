@@ -98,4 +98,8 @@ class Helpers {
       return trim($value);
     return $value;
   }
+
+  public static function escapeSearch(string $search): string {
+    return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], trim($search)); // escape for 'LIKE'
+  }
 }

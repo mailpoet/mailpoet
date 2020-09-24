@@ -58,4 +58,15 @@ class HelpersTest extends \MailPoetUnitTest {
       'number' => 523,
     ]);
   }
+
+  public function testSanitizeSearch() {
+    expect(Helpers::escapeSearch('Hello'))->equals('Hello');
+    expect(Helpers::escapeSearch('Hello '))->equals('Hello');
+    expect(Helpers::escapeSearch(' Hello '))->equals('Hello');
+    expect(Helpers::escapeSearch('%Hello '))->equals('\%Hello');
+    expect(Helpers::escapeSearch('%Hello %'))->equals('\%Hello \%');
+    expect(Helpers::escapeSearch('He%llo'))->equals('He\%llo');
+    expect(Helpers::escapeSearch('He_llo'))->equals('He\_llo');
+    expect(Helpers::escapeSearch('He\\llo'))->equals('He\\\llo');
+  }
 }
