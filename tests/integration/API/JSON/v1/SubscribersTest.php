@@ -7,7 +7,6 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\DynamicSegments\FreePluginConnectors\AddToSubscribersFilters;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
@@ -47,6 +46,8 @@ use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
+
+require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 class SubscribersTest extends \MailPoetTest {
 
@@ -100,8 +101,7 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(SubscribersRepository::class),
       $container->get(SubscribersResponseBuilder::class),
       $container->get(SubscriberListingRepository::class),
-      $obfuscator,
-      $container->get(AddToSubscribersFilters::class)
+      $obfuscator
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
@@ -322,15 +322,26 @@ class SubscribersTest extends \MailPoetTest {
     $dynamicSegmentFactory = new DynamicSegment();
     $dynamicSegment = $dynamicSegmentFactory
       ->withName('Dynamic')
-      ->withUserRoleFilter('master_of_universe')
+      ->withUserRoleFilter('editor')
       ->create();
     $dynamicSegment->save();
+    $wpUserEmail = 'wpuserEditor@example.com';
+    wp_insert_user([
+      'user_login' => 'user-role-test1',
+      'user_email' => $wpUserEmail,
+      'role' => 'editor',
+      'user_pass' => '12123154',
+    ]);
     $response = $this->endpoint->listing([
       'filter' => [
         'segment' => $dynamicSegment->id,
       ],
     ]);
-    expect($response->meta['filters']['segment'])->contains(['value' => $dynamicSegment->id, 'label' => 'Dynamic (0)']);
+    expect($response->meta['filters']['segment'])->contains(['value' => $dynamicSegment->id, 'label' => 'Dynamic (1)']);
+    $user = get_user_by('email', $wpUserEmail);
+    if ($user) {
+      wp_delete_user($user->ID);
+    }
   }
 
   public function testItCanSearchListing() {

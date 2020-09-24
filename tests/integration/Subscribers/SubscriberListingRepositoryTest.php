@@ -8,6 +8,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
+use MailPoet\Segments\SegmentSubscribersRepository;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
@@ -33,7 +34,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   public function _before() {
     $this->repository = new SubscriberListingRepository(
       $this->entityManager,
-      $this->diContainer->get(FilterHandler::class)
+      $this->diContainer->get(FilterHandler::class),
+      $this->diContainer->get(SegmentSubscribersRepository::class)
     );
     $this->cleanup();
   }
@@ -166,10 +168,12 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->listingData['filter'] = ['segment' => $list->getId()];
+    $this->listingData['sort_by'] = 'id';
     $data = $this->repository->getData($this->getListingDefinition());
     expect(count($data))->equals(2);
     expect($data[0]->getEmail())->equals($subscriberUnsubscribedFromAList->getEmail());
     expect($data[1]->getEmail())->equals($regularSubscriber->getEmail());
+    $this->listingData['sort_by'] = '';
   }
 
   public function testLoadSubscribersInDynamicSegment() {
