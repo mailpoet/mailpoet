@@ -7,7 +7,6 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\Config\AccessControl;
-use MailPoet\DynamicSegments\FreePluginConnectors\AddToSubscribersFilters;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
@@ -87,9 +86,6 @@ class Subscribers extends APIEndpoint {
   /** @var SubscriberListingRepository */
   private $subscriberListingRepository;
 
-  /** @var AddToSubscribersFilters */
-  private $dynamicSegmentsFiltersLoader;
-
   public function __construct(
     Listing\BulkActionController $bulkActionController,
     SubscriberActions $subscriberActions,
@@ -105,8 +101,7 @@ class Subscribers extends APIEndpoint {
     SubscribersRepository $subscribersRepository,
     SubscribersResponseBuilder $subscribersResponseBuilder,
     SubscriberListingRepository $subscriberListingRepository,
-    FieldNameObfuscator $fieldNameObfuscator,
-    AddToSubscribersFilters $dynamicSegmentsFiltersLoader
+    FieldNameObfuscator $fieldNameObfuscator
   ) {
     $this->bulkActionController = $bulkActionController;
     $this->subscriberActions = $subscriberActions;
@@ -123,7 +118,6 @@ class Subscribers extends APIEndpoint {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
     $this->subscriberListingRepository = $subscriberListingRepository;
-    $this->dynamicSegmentsFiltersLoader = $dynamicSegmentsFiltersLoader;
   }
 
   public function get($data = []) {
@@ -143,7 +137,6 @@ class Subscribers extends APIEndpoint {
     $count = $this->subscriberListingRepository->getCount($definition);
     $filters = $this->subscriberListingRepository->getFilters($definition);
     $groups = $this->subscriberListingRepository->getGroups($definition);
-    $filters['segment'] = $this->dynamicSegmentsFiltersLoader->add($filters['segment'] ?? []);
     $subscribers = $this->subscribersResponseBuilder->buildForListing($items);
     if ($data['filter']['segment'] ?? false) {
       foreach ($subscribers as $key => $subscriber) {
