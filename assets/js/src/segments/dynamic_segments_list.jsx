@@ -13,8 +13,18 @@ const columns = [
     sortable: true,
   },
   {
+    name: 'description',
+    label: MailPoet.I18n.t('description'),
+    sortable: false,
+  },
+  {
     name: 'count',
     label: MailPoet.I18n.t('subscribersCountColumn'),
+    sortable: false,
+  },
+  {
+    name: 'subscribed',
+    label: MailPoet.I18n.t('subscribed'),
     sortable: false,
   },
   {
@@ -105,8 +115,14 @@ function renderItem(item, actions) {
         </strong>
         { actions }
       </td>
+      <td className="column-date" data-colname={MailPoet.I18n.t('description')}>
+        <abbr>{ item.description }</abbr>
+      </td>
       <td className="column" data-colname={MailPoet.I18n.t('subscribersCountColumn')}>
-        { parseInt(item.count, 10).toLocaleString() }
+        { parseInt(item.count_all, 10).toLocaleString() }
+      </td>
+      <td className="column" data-colname={MailPoet.I18n.t('subscribed')}>
+        { parseInt(item.count_subscribed, 10).toLocaleString() }
       </td>
       <td className="column" data-colname={MailPoet.I18n.t('updatedAtColumn')}>
         { MailPoet.Date.format(item.updated_at) }
