@@ -60,7 +60,7 @@ class Newsletters {
   private $newsletterTemplatesRepository;
 
   /** @var AddToNewslettersSegments */
-  private $dynamicSegmentsLoader;
+  private $addToNewslettersSegments;
 
   public function __construct(
     PageRenderer $pageRenderer,
@@ -74,7 +74,7 @@ class Newsletters {
     SubscribersFeature $subscribersFeature,
     ServicesChecker $servicesChecker,
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
-    AddToNewslettersSegments $dynamicSegmentsLoader
+    AddToNewslettersSegments $addToNewslettersSegments
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -87,7 +87,7 @@ class Newsletters {
     $this->subscribersFeature = $subscribersFeature;
     $this->servicesChecker = $servicesChecker;
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
-    $this->dynamicSegmentsLoader = $dynamicSegmentsLoader;
+    $this->addToNewslettersSegments = $addToNewslettersSegments;
   }
 
   public function render() {
@@ -106,7 +106,7 @@ class Newsletters {
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('newsletters');
     $segments = Segment::getSegmentsWithSubscriberCount($type = false);
-    $segments = $this->dynamicSegmentsLoader->add($segments);
+    $segments = $this->addToNewslettersSegments->add($segments);
     usort($segments, function ($a, $b) {
       return strcasecmp($a["name"], $b["name"]);
     });
