@@ -14,7 +14,7 @@ let fields = [
       {
         name: 'subject',
         customLabel: MailPoet.I18n.t('subjectLabel'),
-        class: 'mailpoet-form-field-subject',
+        className: 'mailpoet-form-field-subject',
         placeholder: MailPoet.I18n.t('subjectLine'),
         tooltip: MailPoet.I18n.t('subjectLineTip'),
         type: 'text',
@@ -26,7 +26,7 @@ let fields = [
       {
         name: 'preheader',
         customLabel: MailPoet.I18n.t('preheaderLabel'),
-        class: 'mailpoet-form-field-preheader',
+        className: 'mailpoet-form-field-preheader',
         placeholder: MailPoet.I18n.t('preheaderLine'),
         tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t('preheaderLineTip2')}`,
         type: 'textarea',

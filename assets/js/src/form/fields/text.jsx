@@ -25,7 +25,7 @@ class FormFieldText extends React.Component { // eslint-disable-line react/prefe
       id = `field_${this.props.field.name}`;
     }
 
-    let className = this.props.field.class || null;
+    let className = this.props.field.className || null;
     if (!className && !this.props.field.size) {
       className = 'regular-text';
     }
@@ -64,7 +64,7 @@ FormFieldText.propTypes = {
     name: PropTypes.string.isRequired,
     defaultValue: PropTypes.string,
     id: PropTypes.string,
-    class: PropTypes.string,
+    className: PropTypes.string,
     size: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,
