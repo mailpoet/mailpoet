@@ -12,6 +12,7 @@ use MailPoet\DynamicSegments\Mappers\DBMapper;
 use MailPoet\DynamicSegments\Mappers\FormDataMapper;
 use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
 use MailPoet\DynamicSegments\Persistence\Saver;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Model;
@@ -200,7 +201,8 @@ class DynamicSegments extends APIEndpoint {
       );
 
       $row = $segment->asArray();
-      $row['count'] = $this->segmentSubscriberRepository->getSubscribersCount($segment->id);
+      $row['count_all'] = $this->segmentSubscriberRepository->getSubscribersCount($segment->id);
+      $row['count_subscribed'] = $this->segmentSubscriberRepository->getSubscribersCount($segment->id, SubscriberEntity::STATUS_SUBSCRIBED);
       $data[] = $row;
     }
 
