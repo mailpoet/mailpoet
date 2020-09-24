@@ -38,7 +38,7 @@ class SegmentSubscribersRepository {
     return $this->loadSubscriberIdsInSegment($segmentId);
   }
 
-  public function getSubscribersCount(int $segmentId): int {
+  public function getSubscribersCount(int $segmentId, string $status = null): int {
     $segment = $this->getSegment($segmentId);
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $queryBuilder = $this->entityManager
@@ -48,9 +48,9 @@ class SegmentSubscribersRepository {
       ->from($subscribersTable);
 
     if ($segment->isStatic()) {
-      $queryBuilder = $this->filterSubscribersInStaticSegment($queryBuilder, $segment);
+      $queryBuilder = $this->filterSubscribersInStaticSegment($queryBuilder, $segment, $status);
     } else {
-      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
+      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment, $status);
     }
     $statement = $this->executeQuery($queryBuilder);
     $result = $statement->fetchColumn();
@@ -67,9 +67,9 @@ class SegmentSubscribersRepository {
       ->from($subscribersTable);
 
     if ($segment->isStatic()) {
-      $queryBuilder = $this->filterSubscribersInStaticSegment($queryBuilder, $segment);
+      $queryBuilder = $this->filterSubscribersInStaticSegment($queryBuilder, $segment, SubscriberEntity::STATUS_SUBSCRIBED);
     } else {
-      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
+      $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment, SubscriberEntity::STATUS_SUBSCRIBED);
     }
 
     if ($candidateIds) {
@@ -82,31 +82,48 @@ class SegmentSubscribersRepository {
     return array_column($result, 'id');
   }
 
-  private function filterSubscribersInStaticSegment(QueryBuilder $queryBuilder, SegmentEntity $segment): QueryBuilder {
+  private function filterSubscribersInStaticSegment(
+    QueryBuilder $queryBuilder,
+    SegmentEntity $segment,
+    string $status = null
+  ): QueryBuilder {
     $subscribersSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    return $queryBuilder->join(
+    $queryBuilder = $queryBuilder->join(
       $subscribersTable,
       $subscribersSegmentsTable,
       'subsegment',
       "subsegment.subscriber_id = $subscribersTable.id AND subsegment.segment_id = :segment"
     )->andWhere("$subscribersTable.deleted_at IS NULL")
-      ->andWhere("$subscribersTable.status = :status")
-      ->andWhere("subsegment.status = :status")
-      ->setParameter('segment', $segment->getId())
-      ->setParameter('status', SubscriberEntity::STATUS_SUBSCRIBED);
+      ->setParameter('segment', $segment->getId());
+    if ($status) {
+      $queryBuilder = $queryBuilder->andWhere("$subscribersTable.status = :status")
+        ->andWhere("subsegment.status = :status")
+        ->setParameter('status', $status);
+    }
+    return $queryBuilder;
   }
 
-  private function filterSubscribersInDynamicSegment(QueryBuilder $queryBuilder, SegmentEntity $segment): QueryBuilder {
+  private function filterSubscribersInDynamicSegment(
+    QueryBuilder $queryBuilder,
+    SegmentEntity $segment,
+    string $status = null
+  ): QueryBuilder {
     $filters = $segment->getDynamicFilters();
     // We don't allow dynamic segment without filers since it would return all subscribers
     // For BC compatibility fetching an empty result
     if (count($filters) === 0) {
-      $queryBuilder->andWhere('0 = 1');
-      return $queryBuilder;
+      return $queryBuilder->andWhere('0 = 1');
     }
     foreach ($filters as $filter) {
       $queryBuilder = $this->filterHandler->apply($queryBuilder, $filter);
+    }
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $queryBuilder = $queryBuilder->andWhere("$subscribersTable.deleted_at IS NULL");
+    if ($status) {
+      $queryBuilder = $queryBuilder->andWhere("$subscribersTable.status = :status")
+        ->andWhere("$subscribersTable.deleted_at IS NULL")
+        ->setParameter('status', $status);
     }
     return $queryBuilder;
   }
