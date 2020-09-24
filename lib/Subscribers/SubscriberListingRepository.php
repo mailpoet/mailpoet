@@ -74,7 +74,7 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search) {
-    $search = $this->sanitizeSearch($search);
+    $search = Helpers::escapeSearch($search);
     $queryBuilder
       ->andWhere('s.email LIKE :search or s.firstName LIKE :search or s.lastName LIKE :search')
       ->setParameter('search', "%$search%");
@@ -258,10 +258,6 @@ class SubscriberListingRepository extends ListingRepository {
     return ['segment' => $segmentList];
   }
 
-  private function sanitizeSearch(string $search): string {
-    return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], trim($search)); // escape for 'LIKE'
-  }
-
   private function applyDynamicSegmentsFilter(
     QueryBuilder $queryBuilder,
     ListingDefinition $definition,
@@ -282,7 +278,7 @@ class SubscriberListingRepository extends ListingRepository {
     // Apply group, search, order and paging to fetch only necessary ids
     // This id done for performance reasons instead of fetching all IDs in dynamic segment
     if ($definition->getSearch()) {
-      $search = $this->sanitizeSearch((string)$definition->getSearch());
+      $search = Helpers::escapeSearch((string)$definition->getSearch());
       $subscribersIdsQuery
         ->andWhere("$subscribersTable.email LIKE :search or $subscribersTable.first_name LIKE :search or $subscribersTable.last_name LIKE :search")
         ->setParameter('search', "%$search%");
