@@ -58,12 +58,10 @@ class WooCommerceCategory implements Filter {
       'term_taxonomy.term_taxonomy_id=term_relationships.term_taxonomy_id
       AND
       term_taxonomy.term_id IN (' . join(',', $this->getAllCategoryIds($categoryId)) . ')'
-    )->andWhere(
-      $subscribersTable . '.status = :status
-      AND postmeta.post_id NOT IN (
-               SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed")
+    )->andWhere('postmeta.post_id NOT IN (
+        SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed")
       )'
-    )->setParameter('status', SubscriberEntity::STATUS_SUBSCRIBED);
+    );
   }
 
   private function getAllCategoryIds(int $categoryId) {

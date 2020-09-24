@@ -35,10 +35,7 @@ class WooCommerceProduct implements Filter {
       $wpdb->prefix . 'woocommerce_order_itemmeta',
       'itemmeta',
       "itemmeta.order_item_id=items.order_item_id AND itemmeta.meta_key='_product_id' AND itemmeta.meta_value=:product"
-    )->andWhere(
-      $subscribersTable . '.status = :status AND
-      postmeta.post_id NOT IN ( SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed"))'
-    )->setParameter('product', $productId
-    )->setParameter('status', SubscriberEntity::STATUS_SUBSCRIBED);
+    )->andWhere('postmeta.post_id NOT IN ( SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed"))'
+    )->setParameter('product', $productId);
   }
 }
