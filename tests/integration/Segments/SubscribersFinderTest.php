@@ -2,8 +2,6 @@
 
 namespace MailPoet\Segments;
 
-require_once('FinderMock.php');
-
 use Codeception\Util\Stub;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Models\DynamicSegmentFilter;
