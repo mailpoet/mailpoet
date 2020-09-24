@@ -67,7 +67,7 @@ class UserRoleTest extends \MailPoetTest {
 
   private function getSegmentFilter(string $role): DynamicSegmentFilterEntity {
     return new DynamicSegmentFilterEntity(
-      new SegmentEntity('segment', SegmentEntity::TYPE_DYNAMIC),
+      new SegmentEntity('segment', SegmentEntity::TYPE_DYNAMIC, 'Description'),
       [
         'segmentType' => DynamicSegmentFilterEntity::TYPE_USER_ROLE,
         'wordpressRole' => $role,
