@@ -20,6 +20,7 @@ let fields = [
         validation: {
           'data-parsley-required': true,
           'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError'),
+          maxLength: 250,
         },
       },
       {
@@ -30,7 +31,7 @@ let fields = [
         tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t('preheaderLineTip2')}`,
         type: 'textarea',
         validation: {
-          'data-parsley-maxlength': 250,
+          maxLength: 250,
         },
       },
     ],
