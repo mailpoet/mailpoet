@@ -180,7 +180,10 @@ class Selection extends React.Component {
       });
     } else {
       const items = this.getItems(this.props.field);
-      const selectedValues = this.getSelectedValues() || [];
+      let selectedValues = this.getSelectedValues() || [];
+      if (!Array.isArray(selectedValues)) {
+        selectedValues = [selectedValues];
+      }
       const data = items.map((item) => {
         const id = this.getValue(item);
         return {
