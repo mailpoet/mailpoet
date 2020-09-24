@@ -180,7 +180,7 @@ class EmailActionTest extends \MailPoetTest {
 
   private function getSegmentFilter(string $action, int $newsletterId, int $linkId = null): DynamicSegmentFilterEntity {
     return new DynamicSegmentFilterEntity(
-      new SegmentEntity('segment', SegmentEntity::TYPE_DYNAMIC),
+      new SegmentEntity('segment', SegmentEntity::TYPE_DYNAMIC, 'Description'),
       [
         'segmentType' => DynamicSegmentFilterEntity::TYPE_EMAIL,
         'action' => $action,
