@@ -46,6 +46,8 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $count = $this->repository->getSubscribersCount((int)$segment->getId());
+    expect($count)->equals(3);
+    $count = $this->repository->getSubscribersCount((int)$segment->getId(), SubscriberEntity::STATUS_SUBSCRIBED);
     expect($count)->equals(1);
     $ids = $this->repository->getSubscriberIdsInSegment((int)$segment->getId());
     expect($ids)->equals([$subscriberInSegment->getId()]);
@@ -70,10 +72,16 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
       ->getRepository(SubscriberEntity::class)
       ->findOneBy(['email' => $wpUserEmail]);
     assert($wpUserSubscriber instanceof SubscriberEntity);
+    $wpUserSubscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    assert($wpUserSubscriber instanceof SubscriberEntity);
     $subscriberNoList = $this->createSubscriberEntity(); // Subscriber without segment
     $this->entityManager->flush();
 
     $count = $this->repository->getSubscribersCount((int)$segment->getId());
+    expect($count)->equals(1);
+    $count = $this->repository->getSubscribersCount((int)$segment->getId(), SubscriberEntity::STATUS_UNSUBSCRIBED);
+    expect($count)->equals(0);
+    $count = $this->repository->getSubscribersCount((int)$segment->getId(), SubscriberEntity::STATUS_SUBSCRIBED);
     expect($count)->equals(1);
     $ids = $this->repository->getSubscriberIdsInSegment((int)$segment->getId());
     expect($ids)->equals([$wpUserSubscriber->getId()]);
