@@ -32,6 +32,7 @@ class SubscribersCount {
     foreach ($dynamicSegment->getFilters() as $filter) {
       $orm = $filter->toSql($orm);
     }
+    $orm->where(MP_SUBSCRIBERS_TABLE . '.status', Subscriber::STATUS_SUBSCRIBED);
     return $orm->findOne()->cnt;
   }
 }

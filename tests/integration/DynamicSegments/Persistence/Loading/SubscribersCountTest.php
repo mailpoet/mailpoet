@@ -7,6 +7,7 @@ require_once(ABSPATH . 'wp-admin/includes/user.php');
 use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoet\DynamicSegments\RequirementsChecker;
 use MailPoet\Models\DynamicSegment;
+use MailPoet\Models\Subscriber;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscribersCountTest extends \MailPoetTest {
@@ -43,6 +44,12 @@ class SubscribersCountTest extends \MailPoetTest {
   public function testItConstructsQuery() {
     $this->requirementChecker->method('shouldSkipSegment')->willReturn(false);
     $userRole = DynamicSegment::create();
+    $subscriber1 = Subscriber::findOne('user-role-test1@example.com');
+    $subscriber1->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber1->save();
+    $subscriber3 = Subscriber::findOne('user-role-test3@example.com');
+    $subscriber3->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber3->save();
     $userRole->hydrate([
       'name' => 'segment',
       'description' => 'description',
