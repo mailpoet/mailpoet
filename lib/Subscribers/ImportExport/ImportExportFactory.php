@@ -16,11 +16,11 @@ class ImportExportFactory {
   public $action;
 
   /** @var AddToNewslettersSegments */
-  private $dynamicSegmentsLoader;
+  private $addToNewslettersSegments;
 
   public function __construct($action = null) {
     $this->action = $action;
-    $this->dynamicSegmentsLoader = ContainerWrapper::getInstance()->get(AddToNewslettersSegments::class);
+    $this->addToNewslettersSegments = ContainerWrapper::getInstance()->get(AddToNewslettersSegments::class);
   }
 
   public function getSegments() {
@@ -28,7 +28,7 @@ class ImportExportFactory {
       $segments = Segment::getSegmentsForImport();
     } else {
       $segments = Segment::getSegmentsForExport();
-      $segments = $this->dynamicSegmentsLoader->add($segments);
+      $segments = $this->addToNewslettersSegments->add($segments);
       $segments = array_values(array_filter($segments, function($segment) {
         return $segment['subscribers'] > 0;
       }));
