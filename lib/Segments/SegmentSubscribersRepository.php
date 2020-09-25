@@ -44,7 +44,7 @@ class SegmentSubscribersRepository {
     $queryBuilder = $this->entityManager
       ->getConnection()
       ->createQueryBuilder()
-      ->select("DISTINCT count($subscribersTable.id)")
+      ->select("count(DISTINCT $subscribersTable.id)")
       ->from($subscribersTable);
 
     if ($segment->isStatic()) {
@@ -122,7 +122,6 @@ class SegmentSubscribersRepository {
     $queryBuilder = $queryBuilder->andWhere("$subscribersTable.deleted_at IS NULL");
     if ($status) {
       $queryBuilder = $queryBuilder->andWhere("$subscribersTable.status = :status")
-        ->andWhere("$subscribersTable.deleted_at IS NULL")
         ->setParameter('status', $status);
     }
     return $queryBuilder;
