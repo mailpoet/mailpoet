@@ -24,6 +24,7 @@ const events = {
 
 const segmentField = {
   name: 'segment',
+  placeholder: MailPoet.I18n.t('selectSegmentPlaceholder'),
   forceSelect2: true,
   values: availableSegments,
   getCount: (segment) => parseInt(segment.subscribers, 10).toLocaleString(),
