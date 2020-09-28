@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import Button from 'common/button/button.tsx';
+import Tags from 'common/tag/tags';
 import Listing from 'listing/listing.jsx';
 import Modal from 'common/modal/modal.tsx';
 import Selection from 'form/fields/selection.jsx';
@@ -341,25 +342,17 @@ const SubscriberList = ({ match }) => {
         break;
     }
 
-    let segments = false;
+    const subscribedSegments = [];
 
     // Subscriptions
     if (subscriber.subscriptions.length > 0) {
-      const subscribedSegments = [];
-
       subscriber.subscriptions.forEach((subscription) => {
         const segment = getSegmentFromId(subscription.segment_id);
         if (segment === false) return;
         if (subscription.status === 'subscribed') {
-          subscribedSegments.push(segment.name);
+          subscribedSegments.push(segment);
         }
       });
-
-      segments = (
-        <span>
-          { subscribedSegments.join(', ') }
-        </span>
-      );
     }
 
     return (
@@ -389,7 +382,7 @@ const SubscriberList = ({ match }) => {
           { status }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
-          { segments }
+          <Tags segments={subscribedSegments} />
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('subscribedOn')}>
           <abbr>{ MailPoet.Date.format(subscriber.created_at) }</abbr>

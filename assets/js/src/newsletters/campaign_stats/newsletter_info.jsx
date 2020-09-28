@@ -1,6 +1,7 @@
 import MailPoet from 'mailpoet';
 import React from 'react';
 import PropTypes from 'prop-types';
+import Tags from 'common/tag/tags';
 
 function formatAddress(address, name) {
   let addressString = '';
@@ -24,7 +25,7 @@ function NewsletterStatsInfo(props) {
     newsletter.reply_to_name || ''
   );
 
-  const segments = (newsletter.segments || []).map((segment) => segment.name).join(', ');
+  const segments = newsletter.segments || [];
 
   return (
     <div>
@@ -46,12 +47,12 @@ function NewsletterStatsInfo(props) {
         {MailPoet.Date.format(newsletterDate)}
       </p>
 
-      { segments && (
+      { segments.length && (
         <p>
           {MailPoet.I18n.t('statsToSegments')}
 :
           {' '}
-          { segments }
+          <Tags segments={segments} />
         </p>
       ) }
 

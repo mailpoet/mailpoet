@@ -5,6 +5,7 @@ import jQuery from 'jquery';
 import PropTypes from 'prop-types';
 import Listing from 'listing/listing.jsx';
 import withNpsPoll from 'nps_poll.jsx';
+import Tags from 'common/tag/tags';
 
 const columns = [
   {
@@ -212,14 +213,8 @@ class FormList extends React.Component {
       'has-row-actions'
     );
 
-    let segments = window.mailpoet_segments
-      .filter((segment) => (jQuery.inArray(segment.id, form.segments) !== -1))
-      .map((segment) => segment.name)
-      .join(', ');
-
-    if (form.settings.segments_selected_by === 'user') {
-      segments = `${MailPoet.I18n.t('userChoice')} ${segments}`;
-    }
+    const segments = window.mailpoet_segments
+      .filter((segment) => (jQuery.inArray(segment.id, form.segments) !== -1));
 
     const placement = getFormPlacement(form.settings);
 
@@ -240,7 +235,9 @@ class FormList extends React.Component {
           { this.renderStatus(form) }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('segments')}>
-          { segments }
+          <Tags segments={segments}>
+            {form.settings.segments_selected_by === 'user' && <span className="mailpoet-tags-prefix">{MailPoet.I18n.t('userChoice')}</span>}
+          </Tags>
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('type')}>
           { placement }
