@@ -6,12 +6,18 @@ import {
 import { t } from 'common/functions';
 
 type NewsletterStatusProps = {
-  scheduledFor?: Date
-  processed?: number
-  total?: number
+  scheduledFor?: Date,
+  processed?: number,
+  total?: number,
+  isPaused?: boolean,
 }
 
-const NewsletterStatus = ({ scheduledFor, processed, total }: NewsletterStatusProps) => {
+const NewsletterStatus = ({
+  scheduledFor,
+  processed,
+  total,
+  isPaused,
+}: NewsletterStatusProps) => {
   const unknown = !scheduledFor && !processed && !total;
   const scheduled = scheduledFor && isFuture(scheduledFor);
   const inProgress = (!scheduledFor || isPast(scheduledFor)) && processed < total;
@@ -31,8 +37,11 @@ const NewsletterStatus = ({ scheduledFor, processed, total }: NewsletterStatusPr
     label = `${processed} / ${total}`;
     percentage = 100 * (processed / total);
   } else if (sent) {
-    label = `${total}`;
+    label = `${total} / ${total}`;
     percentage = 100;
+  }
+  if (isPaused && !sent) {
+    label = t('paused');
   }
   return (
     <div className={classNames({
