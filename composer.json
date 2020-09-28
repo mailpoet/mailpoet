@@ -6,7 +6,7 @@
     }
   ],
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.1",
     "mtdowling/cron-expression": "^1.1",
     "soundasleep/html2text": "dev-master",
     "tburry/pquery": "^1.1.1"
@@ -96,7 +96,7 @@
   },
   "config": {
     "platform": {
-      "php": "7.0.33"
+      "php": "7.1.0"
     },
     "sort-packages": true
   }
