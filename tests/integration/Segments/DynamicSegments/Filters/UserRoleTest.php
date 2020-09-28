@@ -6,8 +6,6 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 
-require_once(ABSPATH . 'wp-admin/includes/user.php');
-
 class UserRoleTest extends \MailPoetTest {
 
   private $userRole;
@@ -16,24 +14,9 @@ class UserRoleTest extends \MailPoetTest {
     $this->userRole = $this->diContainer->get(UserRole::class);
     $this->cleanWpUsers();
     // Insert WP users and subscribers are created automatically
-    wp_insert_user([
-      'user_login' => 'user-role-test1',
-      'user_email' => 'user-role-test1@example.com',
-      'role' => 'editor',
-      'user_pass' => '12123154',
-    ]);
-    wp_insert_user([
-      'user_login' => 'user-role-test2',
-      'user_email' => 'user-role-test2@example.com',
-      'role' => 'administrator',
-      'user_pass' => '12123154',
-    ]);
-    wp_insert_user([
-      'user_login' => 'user-role-test3',
-      'user_email' => 'user-role-test3@example.com',
-      'role' => 'editor',
-      'user_pass' => '12123154',
-    ]);
+    $this->tester->createWordPressUser('user-role-test1@example.com', 'editor');
+    $this->tester->createWordPressUser('user-role-test2@example.com', 'administrator');
+    $this->tester->createWordPressUser('user-role-test3@example.com', 'editor');
   }
 
   public function testItAppliesFilter() {
@@ -83,10 +66,7 @@ class UserRoleTest extends \MailPoetTest {
   private function cleanWpUsers() {
     $emails = ['user-role-test1@example.com', 'user-role-test2@example.com', 'user-role-test3@example.com'];
     foreach ($emails as $email) {
-      $user = get_user_by('email', $email);
-      if ($user) {
-        wp_delete_user($user->ID);
-      }
+      $this->tester->deleteWordPressUser($email);
     }
   }
 }

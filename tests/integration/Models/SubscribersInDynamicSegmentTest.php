@@ -2,8 +2,6 @@
 
 namespace MailPoet\Models;
 
-require_once(ABSPATH . 'wp-admin/includes/user.php');
-
 use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -21,24 +19,9 @@ class SubscribersInDynamicSegmentTest extends \MailPoetTest {
     $dataFilter->segmentId = $this->dynamicSegment->id;
     $dataFilter->filterData = $filter->toArray();
     $dataFilter->save();
-    wp_insert_user([
-      'user_login' => 'user-role-test1',
-      'user_email' => 'user-role-test1@example.com',
-      'role' => 'editor',
-      'user_pass' => '12123154',
-    ]);
-    wp_insert_user([
-      'user_login' => 'user-role-test2',
-      'user_email' => 'user-role-test2@example.com',
-      'role' => 'administrator',
-      'user_pass' => '12123154',
-    ]);
-    wp_insert_user([
-      'user_login' => 'user-role-test3',
-      'user_email' => 'user-role-test3@example.com',
-      'role' => 'editor',
-      'user_pass' => '12123154',
-    ]);
+    $this->tester->createWordPressUser('user-role-test1@example.com', 'editor');
+    $this->tester->createWordPressUser('user-role-test2@example.com', 'administrator');
+    $this->tester->createWordPressUser('user-role-test3@example.com', 'editor');
   }
 
   public function testListingQuery() {
@@ -75,16 +58,7 @@ class SubscribersInDynamicSegmentTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
     $emails = ['user-role-test1@example.com', 'user-role-test2@example.com', 'user-role-test3@example.com'];
     foreach ($emails as $email) {
-      $user = get_user_by('email', $email);
-      if (!$user) {
-        continue;
-      }
-
-      if (is_multisite()) {
-        wpmu_delete_user($user->ID);
-      } else {
-        wp_delete_user($user->ID);
-      }
+      $this->tester->deleteWordPressUser($email);
     }
   }
 }
