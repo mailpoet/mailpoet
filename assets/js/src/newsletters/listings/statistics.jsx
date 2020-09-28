@@ -43,9 +43,7 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
       && newsletter.queue.status !== 'scheduled';
   }
   if (!sent) {
-    return (
-      <span>{MailPoet.I18n.t('notSentYet')}</span>
-    );
+    return null;
   }
 
   const params = {

@@ -146,7 +146,7 @@ const renderItem = (newsletter, actions, meta) => {
         </td>
       ) : null }
       <td className="column-date" data-colname={MailPoet.I18n.t('sentOn')}>
-        { (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet') }
+        { (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : null }
       </td>
     </>
   );

@@ -214,7 +214,7 @@ class NewsletterListStandard extends React.Component {
           </td>
         ) : null }
         <td className="column-date" data-colname={MailPoet.I18n.t('sentOn')}>
-          <abbr>{ (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet') }</abbr>
+          <abbr>{ (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : null }</abbr>
         </td>
       </div>
     );
