@@ -6,6 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\Config\Localizer;
 use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Block;
 use MailPoet\Form\FormFactory;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -78,36 +79,46 @@ class FormEditor {
   private $templatesRepository;
 
   private $activeTemplates = [
-    Template1BelowPages::ID,
-    Template1FixedBar::ID,
-    Template1Popup::ID,
-    Template1SlideIn::ID,
-    Template1Widget::ID,
-    Template3BelowPages::ID,
-    Template3FixedBar::ID,
-    Template3Popup::ID,
-    Template3SlideIn::ID,
-    Template3Widget::ID,
-    Template4BelowPages::ID,
-    Template4FixedBar::ID,
-    Template4Popup::ID,
-    Template4SlideIn::ID,
-    Template4Widget::ID,
-    Template6BelowPages::ID,
-    Template6FixedBar::ID,
-    Template6Popup::ID,
-    Template6SlideIn::ID,
-    Template6Widget::ID,
-    Template7BelowPages::ID,
-    Template7FixedBar::ID,
-    Template7PopUp::ID,
-    Template7SlideIn::ID,
-    Template7Widget::ID,
-    Template10BelowPages::ID,
-    Template10FixedBar::ID,
-    Template10Popup::ID,
-    Template10SlideIn::ID,
-    Template10Widget::ID,
+    FormEntity::DISPLAY_TYPE_POPUP => [
+      Template1Popup::ID,
+      Template3Popup::ID,
+      Template4Popup::ID,
+      Template6Popup::ID,
+      Template7PopUp::ID,
+      Template10Popup::ID,
+    ],
+    FormEntity::DISPLAY_TYPE_SLIDE_IN => [
+      Template1SlideIn::ID,
+      Template3SlideIn::ID,
+      Template4SlideIn::ID,
+      Template6SlideIn::ID,
+      Template7SlideIn::ID,
+      Template10SlideIn::ID,
+    ],
+    FormEntity::DISPLAY_TYPE_FIXED_BAR => [
+      Template1FixedBar::ID,
+      Template3FixedBar::ID,
+      Template4FixedBar::ID,
+      Template6FixedBar::ID,
+      Template7FixedBar::ID,
+      Template10FixedBar::ID,
+    ],
+    FormEntity::DISPLAY_TYPE_BELOW_POST => [
+      Template1BelowPages::ID,
+      Template3BelowPages::ID,
+      Template4BelowPages::ID,
+      Template6BelowPages::ID,
+      Template7BelowPages::ID,
+      Template10BelowPages::ID,
+    ],
+    FormEntity::DISPLAY_TYPE_OTHERS => [
+      Template1Widget::ID,
+      Template3Widget::ID,
+      Template4Widget::ID,
+      Template6Widget::ID,
+      Template7Widget::ID,
+      Template10Widget::ID,
+    ],
   ];
 
   public function __construct(
@@ -183,13 +194,16 @@ class FormEditor {
   }
 
   public function renderTemplateSelection() {
-    $templateForms = $this->templatesRepository->getFormTemplates($this->activeTemplates);
     $templatesData = [];
-    foreach ($templateForms as $templateId => $form) {
-      $templatesData[] = [
-        'id' => $templateId,
-        'name' => $form->getName(),
-      ];
+    foreach ($this->activeTemplates as $formType => $templateIds) {
+      $templateForms = $this->templatesRepository->getFormTemplates($this->activeTemplates[$formType]);
+      $templatesData[$formType] = [];
+      foreach ($templateForms as $templateId => $form) {
+        $templatesData[$formType][] = [
+          'id' => $templateId,
+          'name' => $form->getName(),
+        ];
+      }
     }
     $data = [
       'templates' => $templatesData,
