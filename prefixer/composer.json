@@ -1,6 +1,6 @@
 {
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.1",
     "cerdic/css-tidy": "^1.7",
     "doctrine/common": "2.7.3",
     "doctrine/dbal": "2.5.13",
@@ -38,7 +38,7 @@
   },
   "config": {
     "platform": {
-      "php": "7.0.33"
+      "php": "7.1.0"
     },
     "sort-packages": true
   }
