@@ -3,7 +3,8 @@ import classnames from 'classnames';
 
 type Props = {
   children?: React.ReactNode,
-  variant?: 'average' | 'good' | 'excellent',
+  variant?: 'average' | 'good' | 'excellent' | 'list',
+  dimension?: 'large',
   isInverted?: boolean,
   data?: string,
 }
@@ -11,6 +12,7 @@ type Props = {
 const Tag = ({
   children,
   variant,
+  dimension,
   isInverted,
   ...dataAttributes
 }: Props) => (
@@ -21,6 +23,7 @@ const Tag = ({
         'mailpoet-tag',
         {
           [`mailpoet-tag-${variant}`]: variant,
+          [`mailpoet-tag-${dimension}`]: dimension,
           'mailpoet-tag-inverted': isInverted,
         }
       )
