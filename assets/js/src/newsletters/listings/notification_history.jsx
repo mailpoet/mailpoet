@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
+import Tags from 'common/tag/tags';
 import Listing from 'listing/listing.jsx';
 import QueueStatus from 'newsletters/listings/queue_status.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
@@ -119,8 +120,6 @@ const renderItem = (newsletter, actions, meta) => {
     'has-row-actions'
   );
 
-  const segments = newsletter.segments.map((segment) => segment.name).join(', ');
-
   return (
     <>
       <td className={rowClasses}>
@@ -139,7 +138,7 @@ const renderItem = (newsletter, actions, meta) => {
         <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
       </td>
       <td className="column" data-colname={MailPoet.I18n.t('lists')}>
-        { segments }
+        <Tags segments={newsletter.segments} />
       </td>
       { (mailpoetTrackingEnabled === true) ? (
         <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
