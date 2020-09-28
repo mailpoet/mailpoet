@@ -113,14 +113,21 @@ progress::-moz-progress-bar {
   width: 100%;
 
   .mailpoet-form-input-label {
+    background: #fff;
     bottom: 100%;
     color: $color-text-light;
     display: none;
     font-size: 12px;
     font-weight: bold;
+    height: 16px;
     left: 4px;
     position: absolute;
     text-transform: uppercase;
+    width: 100%;
+  }
+
+  .parsley-errors-list {
+    left: 4px;
   }
 
   input,
