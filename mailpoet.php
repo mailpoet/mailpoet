@@ -39,7 +39,7 @@ if (version_compare(get_bloginfo('version'), '4.6', '<')) {
 }
 
 // Check for minimum supported PHP version
-if (version_compare(phpversion(), '7.0.0', '<')) {
+if (version_compare(phpversion(), '7.1.0', '<')) {
   add_action('admin_notices', 'mailpoet_php_version_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
@@ -59,7 +59,7 @@ function mailpoet_wp_version_notice() {
 
 // Display PHP version error notice
 function mailpoet_php_version_notice() {
-  $noticeP1 = __('MailPoet requires PHP version 7.0 or newer (7.3 recommended). You are running version [version].', 'mailpoet');
+  $noticeP1 = __('MailPoet requires PHP version 7.1 or newer (7.4 recommended). You are running version [version].', 'mailpoet');
   $noticeP1 = str_replace('[version]', phpversion(), $noticeP1);
 
   $noticeP2 = __('Please read our [link]instructions[/link] on how to upgrade your site.', 'mailpoet');
@@ -73,7 +73,7 @@ function mailpoet_php_version_notice() {
   $noticeP3 = __('If you can’t upgrade the PHP version, [link]install this version[/link] of MailPoet. Remember to not update MailPoet ever again!', 'mailpoet');
   $noticeP3 = str_replace(
     '[link]',
-    '<a href="https://downloads.wordpress.org/plugin/mailpoet.3.44.0.zip" target="_blank">',
+    '<a href="https://downloads.wordpress.org/plugin/mailpoet.3.51.0.zip" target="_blank">',
     $noticeP3
   );
   $noticeP3 = str_replace('[/link]', '</a>', $noticeP3);
