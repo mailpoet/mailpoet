@@ -129,9 +129,15 @@ div.mailpoet-listing-bulk-actions-container {
     text-transform: uppercase;
   }
 
-  thead th a {
-    align-items: center;
-    display: flex;
+  thead th {
+    a {
+      align-items: center;
+      display: flex;
+    }
+
+    &:last-child a {
+      justify-content: flex-end;
+    }
   }
 
   thead .mailpoet-listing-check-column,
@@ -168,6 +174,11 @@ div.mailpoet-listing-bulk-actions-container {
     .mailpoet-segments-listing & {
       width: 18em;
     }
+  }
+
+  th:last-child:not(:only-child),
+  td:last-child:not(:only-child) {
+    text-align: right;
   }
 
   @include breakpoint-max-width(782px) {
