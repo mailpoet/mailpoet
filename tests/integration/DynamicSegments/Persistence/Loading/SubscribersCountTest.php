@@ -2,8 +2,6 @@
 
 namespace MailPoet\DynamicSegments\Persistence\Loading;
 
-require_once(ABSPATH . 'wp-admin/includes/user.php');
-
 use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoet\DynamicSegments\RequirementsChecker;
 use MailPoet\Models\DynamicSegment;
@@ -17,24 +15,9 @@ class SubscribersCountTest extends \MailPoetTest {
 
   public function _before() {
     $this->cleanData();
-    wp_insert_user([
-      'user_login' => 'user-role-test1',
-      'user_email' => 'user-role-test1@example.com',
-      'role' => 'editor',
-      'user_pass' => '12123154',
-    ]);
-    wp_insert_user([
-      'user_login' => 'user-role-test2',
-      'user_email' => 'user-role-test2@example.com',
-      'role' => 'administrator',
-      'user_pass' => '12123154',
-    ]);
-    wp_insert_user([
-      'user_login' => 'user-role-test3',
-      'user_email' => 'user-role-test3@example.com',
-      'role' => 'editor',
-      'user_pass' => '12123154',
-    ]);
+    $this->tester->createWordPressUser('user-role-test1@example.com', 'editor');
+    $this->tester->createWordPressUser('user-role-test2@example.com', 'administrator');
+    $this->tester->createWordPressUser('user-role-test3@example.com', 'editor');
     $this->requirementChecker = $this
       ->getMockBuilder(RequirementsChecker::class)
       ->setMethods(['shouldSkipSegment'])
@@ -82,16 +65,7 @@ class SubscribersCountTest extends \MailPoetTest {
   private function cleanData() {
     $emails = ['user-role-test1@example.com', 'user-role-test2@example.com', 'user-role-test3@example.com'];
     foreach ($emails as $email) {
-      $user = get_user_by('email', $email);
-      if (!$user) {
-        continue;
-      }
-
-      if (is_multisite()) {
-        wpmu_delete_user($user->ID);
-      } else {
-        wp_delete_user($user->ID);
-      }
+      $this->tester->deleteWordPressUser($email);
     }
   }
 }

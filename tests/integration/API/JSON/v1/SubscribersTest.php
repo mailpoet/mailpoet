@@ -47,8 +47,6 @@ use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
-require_once(ABSPATH . 'wp-admin/includes/user.php');
-
 class SubscribersTest extends \MailPoetTest {
 
   /** @var FormEntity */
@@ -326,22 +324,14 @@ class SubscribersTest extends \MailPoetTest {
       ->create();
     $dynamicSegment->save();
     $wpUserEmail = 'wpuserEditor@example.com';
-    wp_insert_user([
-      'user_login' => 'user-role-test1',
-      'user_email' => $wpUserEmail,
-      'role' => 'editor',
-      'user_pass' => '12123154',
-    ]);
+    $this->tester->createWordPressUser($wpUserEmail, 'editor');
     $response = $this->endpoint->listing([
       'filter' => [
         'segment' => $dynamicSegment->id,
       ],
     ]);
     expect($response->meta['filters']['segment'])->contains(['value' => $dynamicSegment->id, 'label' => 'Dynamic (1)']);
-    $user = get_user_by('email', $wpUserEmail);
-    if ($user) {
-      wp_delete_user($user->ID);
-    }
+    $this->tester->deleteWordPressUser($wpUserEmail);
   }
 
   public function testItCanSearchListing() {

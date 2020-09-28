@@ -1,5 +1,6 @@
 <?php
 
+require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 /**
  * Inherited Methods
@@ -19,6 +20,27 @@
 // phpcs:ignore PSR1.Classes.ClassDeclaration
 class IntegrationTester extends \Codeception\Actor {
   use _generated\IntegrationTesterActions;
+
+  public function createWordPressUser(string $email, string $role) {
+    wp_insert_user([
+      'user_login' => explode('@', $email)[0],
+      'user_email' => $email,
+      'role' => $role,
+      'user_pass' => '12123154',
+    ]);
+  }
+
+  public function deleteWordPressUser(string $email) {
+    $user = get_user_by('email', $email);
+    if (!$user) {
+      return;
+    }
+    if (is_multisite()) {
+      wpmu_delete_user($user->ID);
+    } else {
+      wp_delete_user($user->ID);
+    }
+  }
 
   // generate random users
   public function generateSubscribers($count, $data = []) {

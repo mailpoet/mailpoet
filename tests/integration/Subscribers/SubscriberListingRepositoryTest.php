@@ -10,8 +10,6 @@ use MailPoet\Listing\ListingDefinition;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\SegmentSubscribersRepository;
 
-require_once(ABSPATH . 'wp-admin/includes/user.php');
-
 class SubscriberListingRepositoryTest extends \MailPoetTest {
 
   /** @var SubscriberListingRepository */
@@ -178,14 +176,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
   public function testLoadSubscribersInDynamicSegment() {
     $wpUserEmail = 'user-role-test1@example.com';
-    $this->cleanupWpUser($wpUserEmail);
-    wp_insert_user([
-      'user_login' => 'user-role-test1',
-      'user_email' => $wpUserEmail,
-      'role' => 'editor',
-      'user_pass' => '12123154',
-    ]);
-
+    $this->tester->deleteWordPressUser($wpUserEmail);
+    $this->tester->createWordPressUser($wpUserEmail, 'editor');
     $list = $this->createDynamicSegmentEntity();
 
     $this->createSubscriberEntity(); // subscriber without a list
@@ -195,7 +187,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $data = $this->repository->getData($this->getListingDefinition());
     expect(count($data))->equals(1);
     expect($data[0]->getEmail())->equals($wpUserEmail);
-    $this->cleanupWpUser($wpUserEmail);
+    $this->tester->deleteWordPressUser($wpUserEmail);
   }
 
   private function createSubscriberEntity(): SubscriberEntity {
@@ -232,13 +224,6 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
     $this->entityManager->persist($subscriberSegment);
     return $subscriberSegment;
-  }
-
-  private function cleanupWpUser(string $email) {
-    $user = get_user_by('email', $email);
-    if ($user) {
-      wp_delete_user($user->ID);
-    }
   }
 
   private function cleanup() {

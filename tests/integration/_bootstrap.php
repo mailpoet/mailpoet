@@ -104,8 +104,10 @@ if (isset($GLOBALS['GLOBALS']['_wp_registered_theme_features']['post-formats']['
   unset($GLOBALS['GLOBALS']['_wp_registered_theme_features']['post-formats']['show_in_rest']);
 }
 
-// phpcs:ignore PSR1.Classes.ClassDeclaration, Squiz.Classes.ClassFileName
-abstract class MailPoetTest extends \Codeception\TestCase\Test {
+/**
+ * @property IntegrationTester $tester
+ */
+abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
   protected $backupGlobals = true;
   protected $backupGlobalsBlacklist = [
     'app',
