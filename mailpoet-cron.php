@@ -25,8 +25,8 @@ if (!is_plugin_active('mailpoet/mailpoet.php')) {
 }
 
 // Check for minimum supported PHP version
-if (version_compare(phpversion(), '7.0.0', '<')) {
-  echo 'MailPoet requires PHP version 7.0 or newer (version 7.3 recommended).';
+if (version_compare(phpversion(), '7.1.0', '<')) {
+  echo 'MailPoet requires PHP version 7.1 or newer (version 7.4 recommended).';
   exit(1);
 }
 
