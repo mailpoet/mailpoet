@@ -44,7 +44,6 @@ class CreateNewWordPressUserCest {
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
     $i->see('You have subscribed to');
-    $i->see('WordPress Users');
     $i->see('Newsletter mailing list');
     $i->seeNoJSErrors();
 
