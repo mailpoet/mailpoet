@@ -4,7 +4,7 @@ Tags: email, email marketing, post notification, woocommerce emails, email autom
 Requires at least: 5.3
 Tested up to: 5.5
 Stable tag: 3.51.1
-Requires PHP: 7.0
+Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
