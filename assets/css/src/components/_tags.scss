@@ -1,3 +1,14 @@
+.mailpoet-tags {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mailpoet-tags-prefix {
+  line-height: 20px;
+}
+
 .mailpoet-tag {
   border: 1px solid $color-tertiary;
   border-radius: 3px;
