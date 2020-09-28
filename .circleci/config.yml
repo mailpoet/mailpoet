@@ -25,7 +25,7 @@ executors:
   wpcli_php_oldest:
     <<: *default_job_config
     docker:
-    - image: mailpoet/wordpress:7.0_20200203.1
+    - image: mailpoet/wordpress:7.1_20200617.1
 
   wpcli_php_latest:
     <<: *default_job_config
@@ -35,7 +35,7 @@ executors:
   wpcli_php_mysql_oldest:
     <<: *default_job_config
     docker:
-    - image: mailpoet/wordpress:7.0_20200203.1
+    - image: mailpoet/wordpress:7.1_20200617.1
     - image: circleci/mysql:5.5-ram
 
   wpcli_php_mysql_latest:
@@ -137,7 +137,7 @@ jobs:
         name: "Static analysis"
         command: ./do qa:phpstan
   qa_js:
-    executor: wpcli_php_oldest
+    executor: wpcli_php_latest
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -452,7 +452,7 @@ workflows:
           name: acceptance_oldest
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
-          wordpress_image_version: wp-5.0_php7.0_20200617.1
+          wordpress_image_version: wp-5.0_php7.1_20200928.1
           requires:
             - build
       - unit_tests:
