@@ -227,7 +227,7 @@ class FormList extends React.Component {
           { actions }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('segments')}>
-          <Tags segments={segments}>
+          <Tags segments={segments} dimension="large">
             {form.settings.segments_selected_by === 'user' && <span className="mailpoet-tags-prefix">{MailPoet.I18n.t('userChoice')}</span>}
           </Tags>
         </td>

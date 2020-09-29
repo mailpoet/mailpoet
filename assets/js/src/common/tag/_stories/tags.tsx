@@ -15,7 +15,7 @@ const segments = [
 export const Segments = () => (
   <>
     <Heading level={1}>Segments</Heading>
-    <Tags segments={segments} />
+    <Tags segments={segments} dimension="large" />
     <div className="mailpoet-gap" />
     <Tags segments={segments}>
       <span>Prefix: </span>

@@ -3,13 +3,14 @@ import Tag from './tag';
 
 type Props = {
   children?: React.ReactNode,
+  dimension?: 'large',
   segments: any[]
 }
 
-const Tags = ({ children, segments }: Props) => (
+const Tags = ({ children, dimension, segments }: Props) => (
   <div className="mailpoet-tags">
     {children}
-    {segments.map((segment) => <Tag key={segment.name} dimension="large" variant="list">{segment.name}</Tag>)}
+    {segments.map((segment) => <Tag key={segment.name} dimension={dimension} variant="list">{segment.name}</Tag>)}
   </div>
 );
 
