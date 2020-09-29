@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
+import Toggle from 'common/form/toggle/toggle';
 import Listing from 'listing/listing.jsx';
 
 import {
@@ -166,7 +167,7 @@ class NewsletterListNotification extends React.Component {
     };
   }
 
-  updateStatus = (e) => {
+  updateStatus = (checked, e) => {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
     e.persist();
@@ -177,7 +178,7 @@ class NewsletterListNotification extends React.Component {
       action: 'setStatus',
       data: {
         id: Number(e.target.getAttribute('data-id')),
-        status: e.target.value,
+        status: checked ? 'active' : 'draft',
       },
     }).done((response) => {
       if (response.data.status === 'active') {
@@ -188,20 +189,18 @@ class NewsletterListNotification extends React.Component {
     }).fail((response) => {
       MailPoet.Notice.showApiErrorNotice(response);
 
-      // reset value to actual newsletter's status
-      e.target.value = response.status;
+      // reset value to previous newsletter's status
+      e.target.checked = !checked;
     });
   };
 
   renderStatus = (newsletter) => (
-    <select
+    <Toggle
+      onCheck={this.updateStatus}
       data-id={newsletter.id}
-      defaultValue={newsletter.status}
-      onChange={this.updateStatus}
-    >
-      <option value="active">{ MailPoet.I18n.t('active') }</option>
-      <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
-    </select>
+      dimension="small"
+      defaultChecked={newsletter.status === 'active'}
+    />
   );
 
   renderSettings = (newsletter) => {

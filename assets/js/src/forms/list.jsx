@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import Listing from 'listing/listing.jsx';
 import withNpsPoll from 'nps_poll.jsx';
 import Tags from 'common/tag/tags';
+import Toggle from 'common/form/toggle/toggle';
 
 const columns = [
   {
@@ -159,7 +160,7 @@ class FormList extends React.Component {
     }, 200); // leave some time for the event to track
   };
 
-  updateStatus = (e) => {
+  updateStatus = (checked, e) => {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
     e.persist();
@@ -170,7 +171,7 @@ class FormList extends React.Component {
       action: 'setStatus',
       data: {
         id: Number(e.target.getAttribute('data-id')),
-        status: e.target.value,
+        status: checked ? 'enabled' : 'disabled',
       },
     }).done((response) => {
       if (response.data.status === 'enabled') {
@@ -179,24 +180,20 @@ class FormList extends React.Component {
     }).fail((response) => {
       MailPoet.Notice.showApiErrorNotice(response);
 
-      // reset value to actual newsletter's status
-      e.target.value = response.status;
+      // reset value to previous form's status
+      e.target.checked = !checked;
     });
   };
 
   renderStatus(form) {
     return (
       <div>
-        <p>
-          <select
-            data-id={form.id}
-            defaultValue={form.status}
-            onChange={this.updateStatus}
-          >
-            <option value="enabled">{MailPoet.I18n.t('active')}</option>
-            <option value="disabled">{MailPoet.I18n.t('inactive')}</option>
-          </select>
-        </p>
+        <Toggle
+          onCheck={this.updateStatus}
+          data-id={form.id}
+          dimension="small"
+          defaultChecked={form.status === 'enabled'}
+        />
         <p>
           {MailPoet.I18n.t('signups')}
           {': '}
