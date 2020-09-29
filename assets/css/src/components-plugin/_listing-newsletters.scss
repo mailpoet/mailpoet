@@ -92,6 +92,27 @@ h1.title.mailpoet-newsletter-listing-heading {
   margin-bottom: $grid-gap;
 }
 
+.mailpoet-listing-schedule {
+  align-items: center;
+  display: flex;
+}
+
+.mailpoet-listing-schedule-icon {
+  border: 2px solid $color-secondary;
+  border-radius: 8px;
+  box-sizing: border-box;
+  height: 16px;
+  margin-right: 4px;
+  width: 16px;
+
+  svg {
+    display: block;
+    height: 18px;
+    margin: -3px;
+    width: 18px;
+  }
+}
+
 .mailpoet-listing-status {
   display: flex;
   height: 24px;

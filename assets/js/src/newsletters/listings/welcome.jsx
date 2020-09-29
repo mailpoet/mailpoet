@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
+import ReactStringReplace from 'react-string-replace';
 
 import Toggle from 'common/form/toggle/toggle';
+import Tag from 'common/tag/tag';
+import { ScheduledIcon } from 'common/listings/newsletter_status';
 import Listing from 'listing/listing.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
 import {
@@ -229,8 +232,12 @@ class NewsletterListWelcome extends React.Component {
         if (newsletter.options.role === 'mailpoet_all') {
           sendingEvent = MailPoet.I18n.t('welcomeEventWPUserAnyRole');
         } else {
-          sendingEvent = MailPoet.I18n.t('welcomeEventWPUserWithRole').replace(
-            '%$1s', mailpoetRoles[newsletter.options.role]
+          sendingEvent = ReactStringReplace(
+            MailPoet.I18n.t('welcomeEventWPUserWithRole'),
+            '"%$1s"',
+            (match, i) => (
+              <Tag variant="list" key={i}>{mailpoetRoles[newsletter.options.role]}</Tag>
+            )
           );
         }
         break;
@@ -244,13 +251,18 @@ class NewsletterListWelcome extends React.Component {
 
         if (segment === undefined) {
           return (
-            <span className="mailpoet_error">
+            <Link className="mailpoet-listing-error" to={`/send/${newsletter.id}`}>
               { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }
-            </span>
+            </Link>
           );
         }
-        sendingEvent = MailPoet.I18n.t('welcomeEventSegment').replace(
-          '%$1s', segment.name
+
+        sendingEvent = ReactStringReplace(
+          MailPoet.I18n.t('welcomeEventSegment'),
+          '"%$1s"',
+          (match, i) => (
+            <Tag variant="list" key={i}>{segment.name}</Tag>
+          )
         );
 
         break;
@@ -288,13 +300,20 @@ class NewsletterListWelcome extends React.Component {
             sendingDelay = MailPoet.I18n.t('sendingDelayInvalid');
             break;
         }
-        sendingEvent += ` [${sendingDelay}].`;
       }
     }
 
     return (
       <span>
         { sendingEvent }
+        { sendingDelay && (
+          <div className="mailpoet-listing-schedule">
+            <div className="mailpoet-listing-schedule-icon">
+              <ScheduledIcon />
+            </div>
+            {sendingDelay}
+          </div>
+        ) }
       </span>
     );
   };
