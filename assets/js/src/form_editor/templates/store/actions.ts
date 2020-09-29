@@ -2,6 +2,7 @@ import { select } from '@wordpress/data';
 
 // eslint-disable-next-line import/prefer-default-export
 export function* selectTemplate(templateId) {
+  yield { type: 'SELECT_TEMPLATE_START' };
   const { res, success, error } = yield {
     type: 'CALL_API',
     endpoint: 'forms',
