@@ -206,6 +206,25 @@ div.mailpoet-listing-bulk-actions-container {
   }
 }
 
+.mailpoet-listing-title {
+  color: $color-text;
+  font-size: $font-size;
+  font-weight: 600;
+}
+
+a.mailpoet-listing-title {
+  &:hover,
+  &:focus {
+    color: $color-secondary;
+  }
+}
+
+.mailpoet-listing-subtitle {
+  color: $color-text;
+  font-size: $font-size-small;
+  font-weight: normal;
+}
+
 .mailpoet-listing-footer {
   background-color: $color-white;
 }

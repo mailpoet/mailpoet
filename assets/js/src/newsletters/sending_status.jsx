@@ -176,17 +176,15 @@ const ListingItem = ({
   return (
     <>
       <td data-automation-id={`name_${taskId}_${subscriberId}`} className={rowClasses}>
-        <strong>
-          <a
-            className="row-title"
-            href={`admin.php?page=mailpoet-subscribers#/edit/${subscriberId}`}
-          >
-            { email }
-          </a>
-        </strong>
-        <p style={{ margin: 0 }}>
+        <a
+          className="mailpoet-listing-title"
+          href={`admin.php?page=mailpoet-subscribers#/edit/${subscriberId}`}
+        >
+          { email }
+        </a>
+        <div className="mailpoet-listing-subtitle">
           { `${firstName} ${lastName}` }
-        </p>
+        </div>
       </td>
       <td className="column" data-automation-id={`status_${taskId}_${subscriberId}`} data-colname={MailPoet.I18n.t('sendingStatus')}>
         { status }

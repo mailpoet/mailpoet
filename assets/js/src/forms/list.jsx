@@ -221,14 +221,12 @@ class FormList extends React.Component {
     return (
       <div>
         <td className={rowClasses}>
-          <strong>
-            <a
-              className="row-title"
-              href={`admin.php?page=mailpoet-form-editor&id=${form.id}`}
-            >
-              { form.name ? form.name : `(${MailPoet.I18n.t('noName')})`}
-            </a>
-          </strong>
+          <a
+            className="mailpoet-listing-title"
+            href={`admin.php?page=mailpoet-form-editor&id=${form.id}`}
+          >
+            { form.name ? form.name : `(${MailPoet.I18n.t('noName')})`}
+          </a>
           { actions }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('status')}>

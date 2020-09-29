@@ -188,18 +188,16 @@ class NewsletterListStandard extends React.Component {
     return (
       <div>
         <td className={rowClasses}>
-          <strong>
-            <a
-              className="row-title"
-              href="#"
-              onClick={(event) => {
-                event.preventDefault();
-                confirmEdit(newsletter);
-              }}
-            >
-              { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
-            </a>
-          </strong>
+          <a
+            className="mailpoet-listing-title"
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              confirmEdit(newsletter);
+            }}
+          >
+            { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
+          </a>
           { actions }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('status')}>

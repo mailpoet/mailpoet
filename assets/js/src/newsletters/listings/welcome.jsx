@@ -312,14 +312,12 @@ class NewsletterListWelcome extends React.Component {
     return (
       <div>
         <td className={rowClasses}>
-          <strong>
-            <a
-              className="row-title"
-              href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
-            >
-              { newsletter.subject }
-            </a>
-          </strong>
+          <a
+            className="mailpoet-listing-title"
+            href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
+          >
+            { newsletter.subject }
+          </a>
           { actions }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('status')}>
