@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { Button } from '@wordpress/components';
 import Categories from 'common/categories/categories';
 import Background from 'common/background/background';
 import { TemplateData } from './store/types';
+import TemplateBox from './components/template_box';
 
 export default () => {
   const [selectedCategory, setSelectedCategory] = useState('popup');
@@ -52,21 +52,14 @@ export default () => {
           active={selectedCategory}
           onSelect={setSelectedCategory}
         />
-        <ol>
-          {templates[selectedCategory].map((template, index) => (
-            <li key={template.id}>
-              <Button
-                isLink
-                onClick={() => selectTemplate(template.id)}
-                data-automation-id={`template_index_${index}`}
-              >
-                {template.name}
-              </Button>
-            </li>
-          ))}
-        </ol>
+        {templates[selectedCategory].map((template, index) => (
+          <TemplateBox
+            key={template.id}
+            onSelect={selectTemplate}
+            template={template}
+          />
+        ))}
       </div>
-
     </div>
   );
 };
