@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
+import Button from 'common/button/button';
 import Toggle from 'common/form/toggle/toggle';
 import Listing from 'listing/listing.jsx';
 
@@ -283,10 +284,11 @@ class NewsletterListNotification extends React.Component {
     }
     return (
       <Link
+        className="mailpoet-nowrap"
         data-automation-id={`history-${newsletter.id}`}
         to={`/notification/history/${newsletter.id}`}
       >
-        { MailPoet.I18n.t('viewHistory') }
+        <Button dimension="extra-small">{ MailPoet.I18n.t('viewHistory') }</Button>
       </Link>
     );
   };
