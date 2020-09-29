@@ -202,6 +202,7 @@ class FormEditor {
         $templatesData[$formType][] = [
           'id' => $templateId,
           'name' => $form->getName(),
+          'thumbnail' => $form->getThumbnailUrl(),
         ];
       }
     }
