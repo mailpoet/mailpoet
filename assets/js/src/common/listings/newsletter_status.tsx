@@ -83,7 +83,7 @@ const CircularProgress = ({ percentage }: CircularProgressProps) => {
   );
 };
 
-const ScheduledIcon = () => (
+export const ScheduledIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
     <path className="mailpoet-listing-status-scheduled-icon" strokeLinecap="round" d="M12 7L12 12 15 15" />
   </svg>

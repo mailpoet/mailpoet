@@ -286,6 +286,21 @@ a.mailpoet-listing-title {
   background-color: $color-white;
 }
 
+.mailpoet-listing-error {
+  color: #f00;
+}
+
+a.mailpoet-listing-error {
+  color: #f00;
+  text-decoration: underline;
+
+  &:hover,
+  &:focus {
+    color: #f00;
+    text-decoration: none;
+  }
+}
+
 @include respond-to(small-screen) {
   .mailpoet-listing {
     padding: 0;
