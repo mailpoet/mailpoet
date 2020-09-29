@@ -1,6 +1,10 @@
 import React from 'react';
+import ReactStringReplace from 'react-string-replace';
+
 import Listing from 'listing/listing.jsx';
+import Tags from 'common/tag/tags';
 import Toggle from 'common/form/toggle/toggle';
+import { ScheduledIcon } from 'common/listings/newsletter_status';
 import { checkMailerStatus, addStatsCTAAction } from 'newsletters/listings/utils.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
 import NewsletterTypes from 'newsletters/types.jsx';
@@ -222,7 +226,7 @@ class Listings extends React.Component {
 
     if (meta && _.isEmpty(metaOptionValues)) {
       return (
-        <span className="mailpoet_error">
+        <span className="mailpoet-listing-error">
           { MailPoet.I18n.t('automaticEmailEventOptionsNotConfigured') }
         </span>
       );
@@ -231,9 +235,21 @@ class Listings extends React.Component {
     // set sending event
     let displayText;
     if (metaOptionValues.length > 1 && 'listingScheduleDisplayTextPlural' in event) {
-      displayText = event.listingScheduleDisplayTextPlural.replace('%s', metaOptionValues.join(', '));
+      displayText = ReactStringReplace(
+        event.listingScheduleDisplayTextPlural,
+        '%s',
+        (match, i) => (
+          <Tags strings={metaOptionValues} key={i} />
+        )
+      );
     } else {
-      displayText = event.listingScheduleDisplayText.replace('%s', metaOptionValues.join(', '));
+      displayText = ReactStringReplace(
+        event.listingScheduleDisplayText,
+        '%s',
+        (match, i) => (
+          <Tags strings={metaOptionValues} key={i} />
+        )
+      );
     }
 
     // set sending delay
@@ -266,10 +282,12 @@ class Listings extends React.Component {
       <span>
         { displayText }
         { sendingDelay && (
-          <>
-            <br />
+          <div className="mailpoet-listing-schedule">
+            <div className="mailpoet-listing-schedule-icon">
+              <ScheduledIcon />
+            </div>
             { sendingDelay }
-          </>
+          </div>
         ) }
       </span>
     );
