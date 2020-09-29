@@ -75,11 +75,6 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'status',
-    label: MailPoet.I18n.t('status'),
-    width: 145,
-  },
-  {
     name: 'settings',
     label: MailPoet.I18n.t('settings'),
   },
@@ -87,6 +82,11 @@ const columns = [
     name: 'statistics',
     label: MailPoet.I18n.t('statistics'),
     display: mailpoetTrackingEnabled,
+  },
+  {
+    name: 'status',
+    label: MailPoet.I18n.t('status'),
+    width: 145,
   },
   {
     name: 'updated_at',
@@ -320,9 +320,6 @@ class NewsletterListWelcome extends React.Component {
           </a>
           { actions }
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('status')}>
-          { this.renderStatus(newsletter) }
-        </td>
         <td className="column" data-colname={MailPoet.I18n.t('settings')}>
           { this.renderSettings(newsletter) }
         </td>
@@ -334,6 +331,9 @@ class NewsletterListWelcome extends React.Component {
             />
           </td>
         ) : null }
+        <td className="column" data-colname={MailPoet.I18n.t('status')}>
+          { this.renderStatus(newsletter) }
+        </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
         </td>

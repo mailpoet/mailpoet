@@ -14,16 +14,16 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'status',
-    label: MailPoet.I18n.t('status'),
-  },
-  {
     name: 'segments',
     label: MailPoet.I18n.t('segments'),
   },
   {
     name: 'type',
     label: MailPoet.I18n.t('type'),
+  },
+  {
+    name: 'status',
+    label: MailPoet.I18n.t('status'),
   },
   {
     name: 'updated_at',
@@ -229,9 +229,6 @@ class FormList extends React.Component {
           </a>
           { actions }
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('status')}>
-          { this.renderStatus(form) }
-        </td>
         <td className="column" data-colname={MailPoet.I18n.t('segments')}>
           <Tags segments={segments}>
             {form.settings.segments_selected_by === 'user' && <span className="mailpoet-tags-prefix">{MailPoet.I18n.t('userChoice')}</span>}
@@ -239,6 +236,9 @@ class FormList extends React.Component {
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('type')}>
           { placement }
+        </td>
+        <td className="column" data-colname={MailPoet.I18n.t('status')}>
+          { this.renderStatus(form) }
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('updatedAt')}>
           <abbr>{ MailPoet.Date.format(form.updated_at) }</abbr>
