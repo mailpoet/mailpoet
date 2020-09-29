@@ -279,7 +279,9 @@ class NewsletterListNotification extends React.Component {
     const childrenCount = Number((newsletter.children_count));
     if (childrenCount === 0) {
       return (
-        MailPoet.I18n.t('notSentYet')
+        <span className="mailpoet-listing-status-unknown mailpoet-font-extra-small">
+          {MailPoet.I18n.t('notSentYet')}
+        </span>
       );
     }
     return (

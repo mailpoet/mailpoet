@@ -188,7 +188,7 @@ class Listings extends React.Component {
     const totalSent = (parseInt(newsletter.total_sent, 10))
       ? MailPoet.I18n.t('sentToXCustomers')
         .replace('%$1d', newsletter.total_sent.toLocaleString())
-      : MailPoet.I18n.t('notSentYet');
+      : null;
 
     return (
       <div>
@@ -198,7 +198,14 @@ class Listings extends React.Component {
           dimension="small"
           defaultChecked={newsletter.status === 'active'}
         />
-        <p><Link to={`/sending-status/${newsletter.id}`}>{ totalSent }</Link></p>
+        <p>
+          { totalSent && <Link to={`/sending-status/${newsletter.id}`}>{ totalSent }</Link> }
+          { !totalSent && (
+            <span className="mailpoet-listing-status-unknown mailpoet-font-extra-small">
+              {MailPoet.I18n.t('notSentYet')}
+            </span>
+          )}
+        </p>
       </div>
     );
   };
