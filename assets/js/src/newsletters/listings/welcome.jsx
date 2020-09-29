@@ -311,7 +311,7 @@ class NewsletterListWelcome extends React.Component {
             <div className="mailpoet-listing-schedule-icon">
               <ScheduledIcon />
             </div>
-            {sendingDelay}
+            { sendingDelay }
           </div>
         ) }
       </span>
