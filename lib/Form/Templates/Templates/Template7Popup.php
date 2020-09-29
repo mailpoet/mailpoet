@@ -8,7 +8,7 @@ class Template7Popup extends FormTemplate {
   const ID = 'template_7';
 
   public function getName(): string {
-    return 'Template 7 Popup';
+    return _x('Latest Deals', 'Form template name', 'mailpoet');
   }
 
   public function getBody(): array {

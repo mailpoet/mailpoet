@@ -11,7 +11,7 @@ class Template4SlideIn extends FormTemplate {
   protected $assetsDirectory = 'template-4';
 
   public function getName(): string {
-    return 'Template 4 Slide-in';
+    return _x('Newsletter Signup', 'Form template name', 'mailpoet');
   }
 
   public function getBody(): array {

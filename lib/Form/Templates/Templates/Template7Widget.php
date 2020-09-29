@@ -8,7 +8,7 @@ class Template7Widget extends FormTemplate {
   const ID = 'template-7-widget';
 
   public function getName(): string {
-    return 'Template 7 Widget';
+    return _x('Latest Deals', 'Form template name', 'mailpoet');
   }
 
   public function getBody(): array {

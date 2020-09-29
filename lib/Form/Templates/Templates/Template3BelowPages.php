@@ -8,7 +8,7 @@ class Template3BelowPages extends FormTemplate {
   const ID = 'template_3_below_pages';
 
   public function getName(): string {
-    return 'Template 3 Below Pages';
+    return _x('Welcome Discount', 'Form template name', 'mailpoet');
   }
 
   public function getBody(): array {
