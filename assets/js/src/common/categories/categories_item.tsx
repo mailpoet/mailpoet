@@ -37,7 +37,7 @@ const CategoriesItem = ({
       }}
       data-automation-id={automationId}
     >
-      <span className="mailpoet-categories-title">
+      <span className="mailpoet-categories-title" data-title={label}>
         {label}
       </span>
       {count > 0 && (
