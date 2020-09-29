@@ -16,6 +16,10 @@
     padding-left: $grid-gap-half;
     padding-right: $grid-gap-half;
   }
+
+  a {
+    color: $color-text;
+  }
 }
 
 .mailpoet-listing-search {
@@ -72,8 +76,8 @@ input.mailpoet-listing-current-page {
 
 tr.mailpoet-listing-actions-and-select-all-row td {
   background-color: $color-white;
-  box-shadow: 0 -1px 0 0 $color-tertiary-light, 0 2px 4px 0 rgba($color-tertiary-light, .5);
-  padding: 0;
+  box-shadow: 0 4px 4px -2px rgba($color-tertiary-light, .5) !important;
+  padding: 0 !important;
 }
 
 div.mailpoet-listing-bulk-actions-container {
@@ -108,9 +112,14 @@ div.mailpoet-listing-bulk-actions-container {
 }
 
 .mailpoet-listing-table {
+  td,
+  p {
+    color: $color-text;
+  }
+
   .mailpoet-listing & {
-    border-left: $color-black;
-    border-right: $color-black;
+    border: 0;
+    border-top: 1px solid $color-tertiary-light;
     margin: $grid-gap 0 - $grid-gap;
     width: calc(100% + 2 * #{$grid-gap});
   }
@@ -130,6 +139,10 @@ div.mailpoet-listing-bulk-actions-container {
   }
 
   thead th {
+    border-bottom: 1px solid $color-tertiary-light;
+    box-shadow: 0 4px 4px -2px rgba($color-tertiary-light, .5);
+    white-space: nowrap;
+
     a {
       align-items: center;
       display: flex;
@@ -138,6 +151,15 @@ div.mailpoet-listing-bulk-actions-container {
     &:last-child a {
       justify-content: flex-end;
     }
+  }
+
+  tbody th,
+  tbody td {
+    border-bottom: 1px solid $color-tertiary-light;
+    box-shadow: none;
+    padding-bottom: $grid-gap-medium;
+    padding-top: $grid-gap-medium;
+    vertical-align: middle;
   }
 
   thead .mailpoet-listing-check-column,
@@ -150,7 +172,6 @@ div.mailpoet-listing-bulk-actions-container {
   tbody .mailpoet-listing-check-column {
     margin: 0 0 0 8px;
     padding: 8px 10px;
-    vertical-align: text-top;
   }
 
   tbody tr .mailpoet-listing-check-column input[type='checkbox'] {
@@ -169,11 +190,7 @@ div.mailpoet-listing-bulk-actions-container {
 
   thead th.column-primary,
   tfoot th.column-primary {
-    width: 25em;
-
-    .mailpoet-segments-listing & {
-      width: 18em;
-    }
+    min-width: 25em;
   }
 
   th:last-child:not(:only-child),
