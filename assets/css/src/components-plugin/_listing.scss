@@ -225,6 +225,46 @@ a.mailpoet-listing-title {
   font-weight: normal;
 }
 
+.mailpoet-listing-actions-holder {
+  position: relative;
+}
+
+.mailpoet-listing-actions {
+  align-items: center;
+  display: none;
+  flex-wrap: wrap;
+  left: 0;
+  line-height: 15px;
+  position: absolute;
+  top: 0;
+  width: 100%;
+
+  a {
+    color: $color-text-light;
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+      color: $color-secondary;
+    }
+  }
+
+  > span {
+    align-items: center;
+    color: $color-text-light;
+    display: flex;
+
+    + span:before {
+      content: '•';
+      margin: 0 4px;
+    }
+  }
+
+  tr:hover & {
+    display: flex;
+  }
+}
+
 .mailpoet-listing-footer {
   background-color: $color-white;
 }

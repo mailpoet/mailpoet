@@ -69,7 +69,6 @@ class ListingItem extends React.Component {
     let itemActions = false;
 
     if (customActions.length > 0) {
-      let isFirst = true;
       itemActions = customActions
         .filter((action) => action.display === undefined || action.display(this.props.item))
         .map((action, index) => {
@@ -78,7 +77,6 @@ class ListingItem extends React.Component {
           if (action.name === 'trash') {
             customAction = (
               <span key={`action-${action.name}`} className="trash">
-                {(!isFirst) ? ' | ' : ''}
                 <a
                   type="button"
                   href="#"
@@ -107,7 +105,6 @@ class ListingItem extends React.Component {
                   }
                 }}
               >
-                {(!isFirst) ? ' | ' : ''}
                 { action.link(this.props.item) }
               </span>
             );
@@ -117,7 +114,6 @@ class ListingItem extends React.Component {
                 key={`action-${action.name}`}
                 className={action.name}
               >
-                {(!isFirst) ? ' | ' : ''}
                 { action.link(this.props.item, this.props.location) }
               </span>
             );
@@ -127,7 +123,6 @@ class ListingItem extends React.Component {
                 key={`action-${action.name}`}
                 className={action.name}
               >
-                {(!isFirst) ? ' | ' : ''}
                 <a
                   href="#"
                   onClick={(event) => {
@@ -142,11 +137,6 @@ class ListingItem extends React.Component {
               </span>
             );
           }
-
-          if (customAction !== null && isFirst === true) {
-            isFirst = false;
-          }
-
           return customAction;
         });
     } else {
@@ -169,8 +159,8 @@ class ListingItem extends React.Component {
 
     if (this.props.group === 'trash') {
       actions = (
-        <div>
-          <div className="row-actions">
+        <div className="mailpoet-listing-actions-holder">
+          <div className="mailpoet-listing-actions">
             <span>
               <a
                 href="#"
@@ -209,8 +199,8 @@ class ListingItem extends React.Component {
       );
     } else {
       actions = (
-        <div>
-          <div className="row-actions">
+        <div className="mailpoet-listing-actions-holder">
+          <div className="mailpoet-listing-actions">
             { itemActions }
           </div>
           <button
