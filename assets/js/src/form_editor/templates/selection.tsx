@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 import Categories from 'common/categories/categories';
 import Background from 'common/background/background';
+import Loading from 'common/loading';
 import Heading from 'common/typography/heading/heading';
 import { TemplateData } from './store/types';
 import TemplateBox from './components/template_box';
@@ -35,6 +36,11 @@ export default () => {
 
   const templates: TemplateData = useSelect(
     (select) => select('mailpoet-form-editor-templates').getTemplates(),
+    []
+  );
+
+  const loading: boolean = useSelect(
+    (select) => select('mailpoet-form-editor-templates').getLoading(),
     []
   );
 
@@ -71,6 +77,7 @@ export default () => {
           ))}
         </div>
       </div>
+      {loading && <Loading />}
     </>
   );
 };

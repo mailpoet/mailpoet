@@ -13,6 +13,7 @@ export default () => {
     templates: (window as any).mailpoet_templates,
     formEditorUrl: (window as any).mailpoet_form_edit_url,
     selectTemplateFailed: false,
+    loading: false,
   };
 
   const config = {

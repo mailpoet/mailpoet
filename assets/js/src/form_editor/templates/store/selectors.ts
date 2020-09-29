@@ -10,4 +10,7 @@ export default {
   getSelectTemplateFailed(state): boolean {
     return state.selectTemplateFailed;
   },
+  getLoading(state): boolean {
+    return state.loading;
+  },
 };
