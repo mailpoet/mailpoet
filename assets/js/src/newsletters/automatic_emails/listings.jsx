@@ -332,6 +332,8 @@ class Listings extends React.Component {
     );
   };
 
+  isItemInactive = (newsletter) => newsletter.status === 'draft';
+
   afterGetItems(state) {
     checkMailerStatus(state);
     this.countEmailTypes(state);
@@ -398,6 +400,7 @@ class Listings extends React.Component {
             type="automatic"
             base_url="woocommerce"
             onRenderItem={this.renderItem}
+            isItemInactive={this.isItemInactive}
             columns={columns}
             bulk_actions={bulkActions}
             item_actions={newsletterActions}

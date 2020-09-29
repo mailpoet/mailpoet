@@ -185,6 +185,8 @@ class FormList extends React.Component {
     });
   };
 
+  isItemInactive = (form) => form.status === 'disabled';
+
   renderStatus(form) {
     return (
       <div>
@@ -268,6 +270,7 @@ class FormList extends React.Component {
           search={false}
           endpoint="forms"
           onRenderItem={this.renderItem}
+          isItemInactive={this.isItemInactive}
           columns={columns}
           bulk_actions={bulkActions}
           item_actions={itemActions}

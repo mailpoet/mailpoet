@@ -214,7 +214,11 @@ class ListingItem extends React.Component {
       );
     }
 
-    const rowClasses = classNames({ 'is-expanded': this.state.expanded });
+    const rowClasses = classNames({
+      'is-expanded': this.state.expanded,
+      'mailpoet-listing-row-selected': this.props.item.selected || this.props.selection === 'all',
+      'mailpoet-listing-row-inactive': this.props.isItemInactive(this.props.item),
+    });
 
     return (
       <tr className={rowClasses} data-automation-id={`listing_item_${this.props.item.id}`}>
@@ -241,6 +245,7 @@ ListingItem.propTypes = {
   item_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
   onRefreshItems: PropTypes.func.isRequired,
   onRenderItem: PropTypes.func.isRequired,
+  isItemInactive: PropTypes.func.isRequired,
   group: PropTypes.string.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string,

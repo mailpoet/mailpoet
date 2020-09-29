@@ -218,6 +218,8 @@ class NewsletterListStandard extends React.Component {
     );
   };
 
+  isItemInactive = (newsletter) => newsletter.status === 'draft';
+
   render() {
     return (
       <>
@@ -235,6 +237,7 @@ class NewsletterListStandard extends React.Component {
             type="standard"
             base_url="standard"
             onRenderItem={this.renderItem}
+            isItemInactive={this.isItemInactive}
             columns={columns}
             bulk_actions={bulkActions}
             item_actions={newsletterActions}

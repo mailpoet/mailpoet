@@ -338,6 +338,8 @@ class NewsletterListNotification extends React.Component {
     );
   };
 
+  isItemInactive = (newsletter) => newsletter.status === 'draft';
+
   render() {
     return (
       <>
@@ -355,6 +357,7 @@ class NewsletterListNotification extends React.Component {
             type="notification"
             base_url="notification"
             onRenderItem={this.renderItem}
+            isItemInactive={this.isItemInactive}
             columns={columns}
             bulk_actions={bulkActions}
             item_actions={newsletterActions}
