@@ -1,5 +1,6 @@
 import React from 'react';
 import Listing from 'listing/listing.jsx';
+import Toggle from 'common/form/toggle/toggle';
 import { checkMailerStatus, addStatsCTAAction } from 'newsletters/listings/utils.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
 import NewsletterTypes from 'newsletters/types.jsx';
@@ -156,7 +157,7 @@ class Listings extends React.Component {
     this.afterGetItems = this.afterGetItems.bind(this);
   }
 
-  updateStatus = (e) => {
+  updateStatus = (checked, e) => {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
     e.persist();
@@ -167,7 +168,7 @@ class Listings extends React.Component {
       action: 'setStatus',
       data: {
         id: Number(e.target.getAttribute('data-id')),
-        status: e.target.value,
+        status: checked ? 'active' : 'draft',
       },
     }).done((response) => {
       if (response.data.status === 'active') {
@@ -178,8 +179,8 @@ class Listings extends React.Component {
     }).fail((response) => {
       MailPoet.Notice.showApiErrorNotice(response);
 
-      // reset value to actual newsletter's status
-      e.target.value = response.status;
+      // reset value to previous newsletter's status
+      e.target.checked = !checked;
     });
   };
 
@@ -191,16 +192,12 @@ class Listings extends React.Component {
 
     return (
       <div>
-        <p>
-          <select
-            data-id={newsletter.id}
-            defaultValue={newsletter.status}
-            onChange={this.updateStatus}
-          >
-            <option value="active">{ MailPoet.I18n.t('active') }</option>
-            <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
-          </select>
-        </p>
+        <Toggle
+          onCheck={this.updateStatus}
+          data-id={newsletter.id}
+          dimension="small"
+          defaultChecked={newsletter.status === 'active'}
+        />
         <p><Link to={`/sending-status/${newsletter.id}`}>{ totalSent }</Link></p>
       </div>
     );
