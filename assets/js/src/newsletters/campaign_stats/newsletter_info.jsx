@@ -52,7 +52,7 @@ function NewsletterStatsInfo(props) {
           {MailPoet.I18n.t('statsToSegments')}
 :
           {' '}
-          <Tags segments={segments} />
+          <Tags segments={segments} dimension="large" />
         </p>
       ) }
 

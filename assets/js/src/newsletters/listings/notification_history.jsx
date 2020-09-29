@@ -138,7 +138,7 @@ const renderItem = (newsletter, actions, meta) => {
         <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
       </td>
       <td className="column" data-colname={MailPoet.I18n.t('lists')}>
-        <Tags segments={newsletter.segments} />
+        <Tags segments={newsletter.segments} dimension="large" />
       </td>
       { (mailpoetTrackingEnabled === true) ? (
         <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
