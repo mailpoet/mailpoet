@@ -3,7 +3,7 @@ import classnames from 'classnames';
 
 type Props = {
   children?: React.ReactNode,
-  dimension?: 'small' | 'large',
+  dimension?: 'extra-small' | 'small' | 'large',
   variant?: 'light' | 'dark' | 'link' | 'link-dark',
   withSpinner?: boolean, // also disables href and onClick (via pointer-events in CSS)
   isDisabled?: boolean, // also disables href and onClick (via pointer-events in CSS)
