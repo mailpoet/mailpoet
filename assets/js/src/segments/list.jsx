@@ -246,12 +246,12 @@ class SegmentList extends React.Component {
       // the WP users and WooCommerce customers segments
       // are not editable so just display their names
       segmentName = (
-        <span className="row-title">{ segment.name }</span>
+        <span className="mailpoet-listing-title">{ segment.name }</span>
       );
     } else {
       segmentName = (
         <Link
-          className="row-title"
+          className="mailpoet-listing-title"
           to={`/edit/${segment.id}`}
         >
           { segment.name }
@@ -262,9 +262,7 @@ class SegmentList extends React.Component {
     return (
       <div>
         <td className={rowClasses} data-automation-id={`segment_name_${segment.name}`}>
-          <strong>
-            { segmentName }
-          </strong>
+          { segmentName }
           { actions }
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('description')}>

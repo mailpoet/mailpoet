@@ -358,24 +358,22 @@ const SubscriberList = ({ match }) => {
     return (
       <div>
         <td className={rowClasses}>
-          <strong>
-            <Link
-              className="row-title"
-              to={{
-                pathname: `/edit/${subscriber.id}`,
-                state: {
-                  backUrl: location?.pathname,
-                },
-              }}
-            >
-              { subscriber.email }
-            </Link>
-          </strong>
-          <p style={{ margin: 0 }}>
+          <Link
+            className="mailpoet-listing-title"
+            to={{
+              pathname: `/edit/${subscriber.id}`,
+              state: {
+                backUrl: location?.pathname,
+              },
+            }}
+          >
+            { subscriber.email }
+          </Link>
+          <div className="mailpoet-listing-subtitle">
             { subscriber.first_name }
             {' '}
             { subscriber.last_name }
-          </p>
+          </div>
           { actions }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('status')}>

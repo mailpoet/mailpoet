@@ -110,9 +110,9 @@ function renderItem(item, actions) {
   return (
     <>
       <td data-colname={MailPoet.I18n.t('nameColumn')}>
-        <strong>
+        <span className="mailpoet-listing-title">
           { item.name }
-        </strong>
+        </span>
         { actions }
       </td>
       <td className="column-date" data-colname={MailPoet.I18n.t('description')}>
