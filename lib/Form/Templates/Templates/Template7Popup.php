@@ -4,7 +4,7 @@ namespace MailPoet\Form\Templates\Templates;
 
 use MailPoet\Form\Templates\FormTemplate;
 
-class Template7PopUp extends FormTemplate {
+class Template7Popup extends FormTemplate {
   const ID = 'template_7';
 
   public function getName(): string {
