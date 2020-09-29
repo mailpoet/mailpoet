@@ -116,6 +116,7 @@ class ListingItems extends React.Component { // eslint-disable-line react/prefer
           return (
             <ListingItem
               columns={this.props.columns}
+              isItemInactive={this.props.isItemInactive}
               onSelectItem={this.props.onSelectItem}
               onRenderItem={this.props.onRenderItem}
               onDeleteItem={this.props.onDeleteItem}
@@ -164,6 +165,7 @@ ListingItems.propTypes = {
   onRestoreItem: PropTypes.func.isRequired,
   onTrashItem: PropTypes.func.isRequired,
   onRefreshItems: PropTypes.func.isRequired,
+  isItemInactive: PropTypes.func.isRequired,
   item_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
   bulk_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
   onBulkAction: PropTypes.func.isRequired,

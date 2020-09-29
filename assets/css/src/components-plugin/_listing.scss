@@ -162,32 +162,6 @@ div.mailpoet-listing-bulk-actions-container {
     vertical-align: middle;
   }
 
-  thead .mailpoet-listing-check-column,
-  tfoot .mailpoet-listing-check-column {
-    padding: 8px 10px;
-    vertical-align: top;
-    width: 2.2em;
-  }
-
-  tbody .mailpoet-listing-check-column {
-    margin: 0 0 0 8px;
-    padding: 8px 10px;
-  }
-
-  tbody tr .mailpoet-listing-check-column input[type='checkbox'] {
-    + span {
-      visibility: hidden;
-    }
-
-    &:checked + span {
-      visibility: visible;
-    }
-  }
-
-  tbody tr:hover .mailpoet-listing-check-column input[type='checkbox'] + span {
-    visibility: visible;
-  }
-
   thead th.column-primary,
   tfoot th.column-primary {
     min-width: 25em;
@@ -280,6 +254,35 @@ a.mailpoet-listing-title {
   tr:hover & {
     display: flex;
   }
+}
+
+.mailpoet-listing-check-column {
+  border-left: 6px solid transparent;
+  padding: 8px 0 8px 10px;
+  width: $form-control-choice-height;
+
+  .mailpoet-form-checkbox-control {
+    margin-right: 0;
+    opacity: 0;
+  }
+
+  thead &,
+  tr:hover &,
+  input:checked + {
+    .mailpoet-form-checkbox-control {
+      opacity: 1;
+    }
+  }
+}
+
+.mailpoet-listing-row-inactive {
+  background: rgba($color-tertiary-light, .2);
+}
+
+.mailpoet-listing-row-selected {
+  background: rgba($color-secondary-light, .6);
+
+  .mailpoet-listing-check-column { border-left-color: $color-secondary; }
 }
 
 .mailpoet-listing-footer {

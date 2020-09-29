@@ -639,6 +639,7 @@ class Listing extends React.Component {
               onRestoreItem={this.handleRestoreItem}
               onTrashItem={this.handleTrashItem}
               onRefreshItems={this.handleRefreshItems}
+              isItemInactive={this.props.isItemInactive}
               columns={columns}
               is_selectable={bulkActions.length > 0}
               onSelectItem={this.handleSelectItem}
@@ -696,6 +697,7 @@ Listing.propTypes = {
     onDelete: PropTypes.func,
   }),
   onRenderItem: PropTypes.func.isRequired,
+  isItemInactive: PropTypes.func,
   columns: PropTypes.arrayOf(PropTypes.object),
   bulk_actions: PropTypes.arrayOf(PropTypes.object),
   item_actions: PropTypes.arrayOf(PropTypes.object),
@@ -730,6 +732,7 @@ Listing.defaultProps = {
   onBeforeSelectFilter: undefined,
   getListingItemKey: undefined,
   isItemDeletable: () => true,
+  isItemInactive: () => false,
 };
 
 export default withRouter(Listing);

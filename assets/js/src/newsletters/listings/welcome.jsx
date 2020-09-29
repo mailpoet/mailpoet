@@ -357,6 +357,8 @@ class NewsletterListWelcome extends React.Component {
     );
   };
 
+  isItemInactive = (newsletter) => newsletter.status === 'draft';
+
   render() {
     return (
       <>
@@ -374,6 +376,7 @@ class NewsletterListWelcome extends React.Component {
             type="welcome"
             base_url="welcome"
             onRenderItem={this.renderItem}
+            isItemInactive={this.isItemInactive}
             columns={columns}
             bulk_actions={bulkActions}
             item_actions={newsletterActions}
