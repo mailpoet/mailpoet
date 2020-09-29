@@ -46,6 +46,11 @@ export default () => {
   const { selectTemplate } = useDispatch('mailpoet-form-editor-templates');
   return (
     <>
+      {categories.map((category) => (
+        templates[category.name].map((template) => (
+          <link key={`thumbnail_prefetch_${template.id}`} rel="preload" href={template.thumbnail} as="image" />
+        ))
+      ))}
       <div className="template-selection-header">
         <Heading level={4}>{MailPoet.I18n.t('selectTemplate')}</Heading>
       </div>
