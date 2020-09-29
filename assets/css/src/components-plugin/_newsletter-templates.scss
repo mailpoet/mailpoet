@@ -11,29 +11,6 @@
   }
 }
 
-.mailpoet-template {
-  background: #fff;
-  border: 1px solid $color-tertiary-light;
-  border-radius: $grid-border-radius;
-  height: 384px;
-  overflow: hidden;
-  position: relative;
-
-  &:hover {
-    box-shadow: 0 10px 20px $color-tertiary-light;
-  }
-}
-
-.mailpoet-template-thumbnail {
-  border-radius: $grid-border-radius $grid-border-radius 0 0;
-  height: 320px;
-  overflow: hidden;
-
-  img {
-    width: 100%;
-  }
-}
-
 .mailpoet-template-preview-overlay {
   align-items: center;
   background: rgba(#fff, .96);

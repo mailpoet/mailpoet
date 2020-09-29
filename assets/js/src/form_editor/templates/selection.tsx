@@ -4,9 +4,10 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import Categories from 'common/categories/categories';
 import Background from 'common/background/background';
 import Loading from 'common/loading';
+import TemplateBox from 'common/template_box/template_box';
 import Heading from 'common/typography/heading/heading';
+
 import { TemplateData } from './store/types';
-import TemplateBox from './components/template_box';
 
 export default () => {
   const [selectedCategory, setSelectedCategory] = useState('popup');
@@ -71,9 +72,15 @@ export default () => {
           {templates[selectedCategory].map((template, index) => (
             <TemplateBox
               key={template.id}
-              onSelect={selectTemplate}
-              template={template}
-            />
+              onSelect={() => selectTemplate(template.id)}
+              label={template.name}
+              automationId={`select_template_${template.id}`}
+              className="mailpoet-form-template"
+            >
+              <div className="mailpoet-template-thumbnail">
+                <img src={template.thumbnail} alt={template.name} />
+              </div>
+            </TemplateBox>
           ))}
         </div>
       </div>

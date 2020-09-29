@@ -3,7 +3,7 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
 import Button from 'common/button/button';
-import Heading from 'common/typography/heading/heading';
+import TemplateBoxWrap from 'common/template_box/template_box';
 import confirmAlert from 'common/confirm_alert.jsx';
 import { GlobalContext } from 'context/index.jsx';
 
@@ -98,12 +98,6 @@ class TemplateBox extends React.Component {
       index, name, thumbnail, readonly,
     } = this.props;
 
-    const deleteLink = (
-      <Button dimension="small" variant="light" onClick={this.onDelete}>
-        {MailPoet.I18n.t('delete')}
-      </Button>
-    );
-
     let preview = '';
     if (typeof thumbnail === 'string' && thumbnail.length > 0) {
       preview = (
@@ -126,19 +120,14 @@ class TemplateBox extends React.Component {
     }
 
     return (
-      <div className="mailpoet-template" data-automation-id="select_template_box">
+      <TemplateBoxWrap
+        label={name}
+        onSelect={this.onSelect}
+        onDelete={readonly === false ? this.onDelete : undefined}
+        automationId={`select_template_${index}`}
+      >
         { preview }
-
-        <div className="mailpoet-template-info">
-          <Heading level={5} title={name}>{name}</Heading>
-          <div>
-            { readonly === true ? false : deleteLink }
-            <Button dimension="small" automationId={`select_template_${index}`} onClick={this.onSelect}>
-              {MailPoet.I18n.t('select')}
-            </Button>
-          </div>
-        </div>
-      </div>
+      </TemplateBoxWrap>
     );
   }
 }
