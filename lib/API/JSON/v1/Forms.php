@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\ResponseBuilders\FormsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\DisplayFormInWPContent;
@@ -36,6 +37,9 @@ class Forms extends APIEndpoint {
   /** @var FormFactory */
   private $formFactory;
 
+  /** @var FormsResponseBuilder */
+  private $formsResponseBuilder;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -48,6 +52,7 @@ class Forms extends APIEndpoint {
     UserFlagsController $userFlags,
     FormFactory $formFactory,
     FormsRepository $formsRepository,
+    FormsResponseBuilder $formsResponseBuilder,
     WPFunctions $wp
   ) {
     $this->bulkAction = $bulkAction;
@@ -56,13 +61,14 @@ class Forms extends APIEndpoint {
     $this->formFactory = $formFactory;
     $this->wp = $wp;
     $this->formsRepository = $formsRepository;
+    $this->formsResponseBuilder = $formsResponseBuilder;
   }
 
   public function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $form = Form::findOne($id);
-    if ($form instanceof Form) {
-      return $this->successResponse($form->asArray());
+    $form = $this->formsRepository->findOneById($id);
+    if ($form instanceof FormEntity) {
+      return $this->successResponse($this->formsResponseBuilder->build($form));
     }
     return $this->errorResponse([
       APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet'),
