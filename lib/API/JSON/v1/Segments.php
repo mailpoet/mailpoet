@@ -4,9 +4,12 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing;
 use MailPoet\Models\Segment;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WP;
 use MailPoet\WP\Functions as WPFunctions;
@@ -22,24 +25,34 @@ class Segments extends APIEndpoint {
   /** @var Listing\Handler */
   private $listingHandler;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  /** @var SegmentsResponseBuilder */
+  private $segmentsResponseBuilder;
+
   /** @var WooCommerce */
   private $wooCommerceSync;
 
   public function __construct(
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
+    SegmentsRepository $segmentsRepository,
+    SegmentsResponseBuilder $segmentsResponseBuilder,
     WooCommerce $wooCommerce
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
     $this->wooCommerceSync = $wooCommerce;
+    $this->segmentsRepository = $segmentsRepository;
+    $this->segmentsResponseBuilder = $segmentsResponseBuilder;
   }
 
   public function get($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $segment = Segment::findOne($id);
-    if ($segment instanceof Segment) {
-      return $this->successResponse($segment->asArray());
+    $segment = $this->segmentsRepository->findOneById($id);
+    if ($segment instanceof SegmentEntity) {
+      return $this->successResponse($this->segmentsResponseBuilder->build($segment));
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet'),

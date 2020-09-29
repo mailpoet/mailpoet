@@ -91,6 +91,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder::class);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder::class);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\FormsResponseBuilder::class);
+    $container->autowire(\MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder::class);
     // Config
     $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Activator::class)->setPublic(true);
