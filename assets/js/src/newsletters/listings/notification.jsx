@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import ReactStringReplace from 'react-string-replace';
 
 import Button from 'common/button/button';
 import Toggle from 'common/form/toggle/toggle';
+import Tags from 'common/tag/tags';
+import { ScheduledIcon } from 'common/listings/newsletter_status';
 import Listing from 'listing/listing.jsx';
 
 import {
@@ -207,20 +210,22 @@ class NewsletterListNotification extends React.Component {
   renderSettings = (newsletter) => {
     let sendingFrequency;
 
-    // get list of segments' name
-    const segments = newsletter.segments.map((segment) => segment.name);
-    const sendingToSegments = MailPoet.I18n.t('ifNewContentToSegments').replace(
-      '%$1s', segments.join(', ')
-    );
-
     // check if the user has specified segments to send to
-    if (segments.length === 0) {
+    if (newsletter.segments.length === 0) {
       return (
-        <span className="mailpoet_error">
+        <Link className="mailpoet-listing-error" to={`/send/${newsletter.id}`}>
           { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }
-        </span>
+        </Link>
       );
     }
+
+    const sendingToSegments = ReactStringReplace(
+      MailPoet.I18n.t('sendTo'),
+      '%1$s',
+      (match, i) => (
+        <Tags segments={newsletter.segments} key={i} />
+      )
+    );
 
     // set sending frequency
     switch (newsletter.options.intervalType) {
@@ -268,9 +273,13 @@ class NewsletterListNotification extends React.Component {
 
     return (
       <span>
-        { sendingFrequency }
-        {' '}
         { sendingToSegments }
+        <div className="mailpoet-listing-schedule">
+          <div className="mailpoet-listing-schedule-icon">
+            <ScheduledIcon />
+          </div>
+          { sendingFrequency }
+        </div>
       </span>
     );
   };
