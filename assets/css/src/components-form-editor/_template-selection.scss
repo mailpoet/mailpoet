@@ -20,3 +20,13 @@
   height: 375px;
   width: 468px;
 }
+
+.template-selection-header {
+  align-items: center;
+  background: $color-input-background;
+  border-bottom: 1px solid $color-tertiary-light;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: $grid-gap-half;
+}
