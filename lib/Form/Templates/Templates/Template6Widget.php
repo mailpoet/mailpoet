@@ -11,7 +11,7 @@ class Template6Widget extends FormTemplate {
   protected $assetsDirectory = 'template-6';
 
   public function getName(): string {
-    return 'Template 6 Widget';
+    return _x('Fitness Tips', 'Form template name', 'mailpoet');
   }
 
   public function getBody(): array {

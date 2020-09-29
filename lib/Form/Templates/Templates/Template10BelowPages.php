@@ -8,7 +8,7 @@ class Template10BelowPages extends FormTemplate {
   const ID = 'template_10_below_pages';
 
   public function getName(): string {
-    return 'Template 10 Below Pages';
+    return _x('Keep in Touch', 'Form template name', 'mailpoet');
   }
 
   public function getBody(): array {

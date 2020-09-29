@@ -11,7 +11,7 @@ class Template1Popup extends FormTemplate {
   protected $assetsDirectory = 'template-1';
 
   public function getName(): string {
-    return 'Template 1 Popup';
+    return _x('Join the Club', 'Form template name', 'mailpoet');
   }
 
   public function getBody(): array {

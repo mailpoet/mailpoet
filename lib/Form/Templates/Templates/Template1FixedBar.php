@@ -8,7 +8,7 @@ class Template1FixedBar extends FormTemplate {
   const ID = 'template_1_fixed_bar';
 
   public function getName(): string {
-    return 'Template 1 Fixed Bar';
+    return _x('Join the Club', 'Form template name', 'mailpoet');
   }
 
   public function getBody(): array {

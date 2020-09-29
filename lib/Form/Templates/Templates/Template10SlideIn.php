@@ -8,7 +8,7 @@ class Template10SlideIn extends FormTemplate {
   const ID = 'template_10_slide_in';
 
   public function getName(): string {
-    return 'Template 10 Slide-in';
+    return _x('Keep in Touch', 'Form template name', 'mailpoet');
   }
 
   public function getBody(): array {
