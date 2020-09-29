@@ -76,17 +76,17 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'status',
-    label: MailPoet.I18n.t('status'),
-    width: 100,
-  },
-  {
     name: 'settings',
     label: MailPoet.I18n.t('settings'),
   },
   {
     name: 'history',
     label: MailPoet.I18n.t('history'),
+    width: 100,
+  },
+  {
+    name: 'status',
+    label: MailPoet.I18n.t('status'),
     width: 100,
   },
   {
@@ -310,14 +310,14 @@ class NewsletterListNotification extends React.Component {
           </a>
           { actions }
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('status')}>
-          { this.renderStatus(newsletter) }
-        </td>
         <td className="column" data-colname={MailPoet.I18n.t('settings')}>
           { this.renderSettings(newsletter) }
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('history')}>
           { this.renderHistoryLink(newsletter) }
+        </td>
+        <td className="column" data-colname={MailPoet.I18n.t('status')}>
+          { this.renderStatus(newsletter) }
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
