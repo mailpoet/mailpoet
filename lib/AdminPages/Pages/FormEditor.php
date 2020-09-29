@@ -38,7 +38,7 @@ use MailPoet\Form\Templates\Templates\Template6SlideIn;
 use MailPoet\Form\Templates\Templates\Template6Widget;
 use MailPoet\Form\Templates\Templates\Template7BelowPages;
 use MailPoet\Form\Templates\Templates\Template7FixedBar;
-use MailPoet\Form\Templates\Templates\Template7PopUp;
+use MailPoet\Form\Templates\Templates\Template7Popup;
 use MailPoet\Form\Templates\Templates\Template7SlideIn;
 use MailPoet\Form\Templates\Templates\Template7Widget;
 use MailPoet\Form\Util\CustomFonts;
@@ -84,7 +84,7 @@ class FormEditor {
       Template3Popup::ID,
       Template4Popup::ID,
       Template6Popup::ID,
-      Template7PopUp::ID,
+      Template7Popup::ID,
       Template10Popup::ID,
     ],
     FormEntity::DISPLAY_TYPE_SLIDE_IN => [
