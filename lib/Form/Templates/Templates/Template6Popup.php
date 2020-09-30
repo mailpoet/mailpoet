@@ -14,6 +14,10 @@ class Template6Popup extends FormTemplate {
     return _x('Fitness Tips', 'Form template name', 'mailpoet');
   }
 
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('popup.png');
+  }
+
   public function getBody(): array {
     return [
       [

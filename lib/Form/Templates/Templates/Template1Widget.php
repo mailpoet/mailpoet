@@ -14,6 +14,10 @@ class Template1Widget extends FormTemplate {
     return _x('Join the Club', 'Form template name', 'mailpoet');
   }
 
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('widget.png');
+  }
+
   public function getBody(): array {
     return [
       [

@@ -14,6 +14,10 @@ class Template1SlideIn extends FormTemplate {
     return _x('Join the Club', 'Form template name', 'mailpoet');
   }
 
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('slidein.png');
+  }
+
   public function getBody(): array {
     return [
       [

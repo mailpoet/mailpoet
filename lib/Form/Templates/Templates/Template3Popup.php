@@ -7,8 +7,15 @@ use MailPoet\Form\Templates\FormTemplate;
 class Template3Popup extends FormTemplate {
   const ID = 'template_3_popup';
 
+  /** @var string */
+  protected $assetsDirectory = 'template-3';
+
   public function getName(): string {
     return _x('Welcome Discount', 'Form template name', 'mailpoet');
+  }
+
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('popup.png');
   }
 
   public function getBody(): array {

@@ -7,8 +7,15 @@ use MailPoet\Form\Templates\FormTemplate;
 class Template7SlideIn extends FormTemplate {
   const ID = 'template_7_slide_in';
 
+  /** @var string */
+  protected $assetsDirectory = 'template-7';
+
   public function getName(): string {
     return _x('Latest Deals', 'Form template name', 'mailpoet');
+  }
+
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('slidein.png');
   }
 
   public function getBody(): array {

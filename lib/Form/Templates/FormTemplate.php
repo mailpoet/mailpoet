@@ -2,7 +2,6 @@
 
 namespace MailPoet\Form\Templates;
 
-use MailPoet\Config\Env;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\Helpers;
@@ -101,6 +100,8 @@ EOL;
 
   abstract public function getBody(): array;
 
+  abstract public function getThumbnailUrl(): string;
+
   public function getSettings(): array {
     return [
       'on_success' => 'message',
@@ -108,22 +109,6 @@ EOL;
       'segments' => null,
       'segments_selected_by' => 'admin',
     ];
-  }
-
-  public function getThumbnailUrl(): string {
-    if (strpos(get_class($this), 'BelowPages')) {
-      return Env::$assetsUrl . '/img/form_template/belowpage@1130.png';
-    }
-    if (strpos(get_class($this), 'Popup')) {
-      return Env::$assetsUrl . '/img/form_template/popup@1130.png';
-    }
-    if (strpos(get_class($this), 'SlideIn')) {
-      return Env::$assetsUrl . '/img/form_template/slidein@1130.png';
-    }
-    if (strpos(get_class($this), 'FixedBar')) {
-      return Env::$assetsUrl . '/img/form_template/fixedbar@1130.png';
-    }
-    return Env::$assetsUrl . '/img/form_template/widget@1130.png';
   }
 
   public function getStyles(): string {

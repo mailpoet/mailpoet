@@ -14,6 +14,10 @@ class Template4Popup extends FormTemplate {
     return _x('Newsletter Signup', 'Form template name', 'mailpoet');
   }
 
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('popup.png');
+  }
+
   public function getBody(): array {
     return [
       [

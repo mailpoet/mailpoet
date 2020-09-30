@@ -11,6 +11,10 @@ class InitialForm extends FormTemplate {
     return '';
   }
 
+  public function getThumbnailUrl(): string {
+    return '';
+  }
+
   public function getBody(): array {
     return [
       [

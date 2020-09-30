@@ -14,6 +14,10 @@ class Template6FixedBar extends FormTemplate {
     return _x('Fitness Tips', 'Form template name', 'mailpoet');
   }
 
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('fixedbar.png');
+  }
+
   public function getBody(): array {
     return [
       [
