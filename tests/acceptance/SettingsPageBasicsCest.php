@@ -66,8 +66,18 @@ class SettingsPageBasicsCest {
     $i->waitForElementVisible(['css' => '#comment']);
     $i->click(['css' => '#comment']);
     $i->fillField('#comment', $comment);
-    $i->click('Post Comment');
-    $i->waitForText($comment, 10, '.comment-content');
+    //a patch for fixing flakyness
+    try {
+      $i->seeInField('#comment', $comment);
+      $i->click('Post Comment');
+      $i->waitForText($comment, 10, '.comment-content');
+    }
+    catch (\Exception $e) {
+      $i->clearField('#comment');
+      $i->fillField('#comment', $comment);
+      $i->click('Post Comment');
+      $i->waitForText($comment, 10, '.comment-content');
+    }
     //check if user is really subscribed to a list
     $i->amOnMailpoetPage('Lists');
     $i->waitForText('Lists');

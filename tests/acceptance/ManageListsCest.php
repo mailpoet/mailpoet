@@ -90,8 +90,9 @@ class ManageListsCest {
     $i->waitForText('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
     $i->seeNoJSErrors();
     $i->seeInCurrentURL(urlencode('group[all]'));
+    $i->reloadPage();
+    $i->waitForText($newListTitle . '2');
     $i->dontSee($editedListTitle, '[data-automation-id="listing_item_4"]');
-    $i->see($newListTitle . '2');
   }
 
   public function emptyTrash(\AcceptanceTester $i) {
