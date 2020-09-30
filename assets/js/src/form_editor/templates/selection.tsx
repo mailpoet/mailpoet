@@ -57,8 +57,8 @@ export default () => {
   return (
     <>
       {categories.map((category) => (
-        templates[category.name].map((template) => (
-          <link key={`thumbnail_prefetch_${template.id}`} rel="preload" href={template.thumbnail} as="image" />
+        templates[category.name].map((template, index) => (
+          index < 4 && (<link key={`thumbnail_prefetch_${template.id}`} rel="preload" href={template.thumbnail} as="image" />)
         ))
       ))}
       <div className="template-selection-header">
@@ -82,7 +82,7 @@ export default () => {
               className="mailpoet-form-template"
             >
               <div className="mailpoet-template-thumbnail">
-                <img src={template.thumbnail} alt={template.name} />
+                <img src={template.thumbnail} alt={template.name} width="480" height="317" />
               </div>
             </TemplateBox>
           ))}
