@@ -85,6 +85,11 @@ class Functions extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
+        'wp_date_format',
+        [$this, 'getWPDateFormat'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
         'wp_time_format',
         [$this, 'getWPTimeFormat'],
         ['is_safe' => ['all']]

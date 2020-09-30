@@ -9,7 +9,7 @@ MailPoet.Date = {
   options: {},
   defaults: {
     offset: 0,
-    format: 'F, d Y H:i:s',
+    format: 'F j, Y H:i:s',
   },
   init: function init(opts) {
     var options = opts || {};
@@ -21,12 +21,12 @@ MailPoet.Date = {
     ) {
       options.offset = window.mailpoet_date_offset;
     }
-    // set date format
+    // set dateTime format
     if (
       options.format === undefined
-        && window.mailpoet_date_format !== undefined
+        && window.mailpoet_datetime_format !== undefined
     ) {
-      options.format = window.mailpoet_date_format;
+      options.format = window.mailpoet_datetime_format;
     }
     // merge options
     this.options = jQuery.extend({}, this.defaults, options);
@@ -50,17 +50,17 @@ MailPoet.Date = {
   },
   short: function short(date) {
     return this.format(date, {
-      format: 'F, j Y',
+      format: window.mailpoet_date_format || 'F j, Y',
     });
   },
   full: function full(date) {
     return this.format(date, {
-      format: 'F, j Y H:i:s',
+      format: window.mailpoet_datetime_format || 'F j, Y H:i:s',
     });
   },
   time: function time(date) {
     return this.format(date, {
-      format: 'H:i:s',
+      format: window.mailpoet_time_format || 'H:i:s',
     });
   },
   convertFormat: function convertFormat(format) {
