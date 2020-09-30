@@ -383,7 +383,9 @@ const SubscriberList = ({ match }) => {
           <Tags segments={subscribedSegments} dimension="large" />
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('subscribedOn')}>
-          <abbr>{ MailPoet.Date.format(subscriber.created_at) }</abbr>
+          { MailPoet.Date.short(subscriber.created_at) }
+          <br />
+          { MailPoet.Date.time(subscriber.created_at) }
         </td>
       </div>
     );
