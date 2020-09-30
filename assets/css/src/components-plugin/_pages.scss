@@ -237,7 +237,7 @@ Please add custom styles to pages_custom.styl
     }
   }
 
-  @include breakpoint-max-width(782px) {
+  @include respond-to(small-screen) {
     .two-col-text {
       column-count: 1;
     }

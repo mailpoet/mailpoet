@@ -193,7 +193,7 @@ body.mailpoet_modal_opened {
   text-align: right;
 }
 
-@include breakpoint-max-width(782px) {
+@include respond-to(small-screen) {
   .mailpoet_modal_overlay {
     padding: $legacy-modal-popup-margin-mobile;
   }

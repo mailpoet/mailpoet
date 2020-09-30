@@ -176,7 +176,7 @@ div.mailpoet-listing-bulk-actions-container {
     white-space: nowrap;
   }
 
-  @include breakpoint-max-width(782px) {
+  @include respond-to(small-screen) {
     thead th.column-primary,
     tfoot th.column-primary {
       width: 100% !important;
