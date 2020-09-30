@@ -9,25 +9,23 @@
   grid-gap: $grid-gap;
   grid-template-columns: auto auto 1fr;
 
-  .mailpoet-listing-pages {
-    margin-bottom: 0;
-  }
-
   .mailpoet-listing .mailpoet-listing-table {
     border: 0;
     box-shadow: none;
-  }
-
-  .mailpoet-tab-content.mailpoet-subscriber-stats-summary {
-    display: inline-block;
-    margin-top: $grid-gap;
-    min-width: 300px;
-    padding: $grid-gap-half $grid-gap;
-  }
-
-  .mailpoet-tab-content.mailpoet-subscriber-stats-summary table.mailpoet-listing-table {
     margin: 0 (-$grid-gap);
+
+    td {
+      padding-bottom: 10px;
+      padding-top: 10px;
+    }
   }
+}
+
+.mailpoet-subscriber-stats-summary {
+  display: inline-block;
+  margin-top: $grid-gap;
+  min-width: 300px;
+  padding: $grid-gap-half $grid-gap;
 }
 
 .mailpoet-subscriber-stats-no-access-content {
@@ -41,7 +39,7 @@
     box-shadow: 0 2px 4px -2px $color-tertiary-light;
   }
 
-  td {
+  tbody td {
     border-bottom: 1px solid $color-tertiary-light;
     color: $color-tertiary;
     font-size: $font-size-small;
