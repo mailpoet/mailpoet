@@ -11,7 +11,7 @@
 - Require other classes with 'use' at the beginning of the class file.
 - Do not specify 'public' if method is public, it's implicit.
 - Always use guard clauses.
-- Ensure compatibility with PHP 5.5 and newer versions.
+- Ensure compatibility with PHP 7.1 and newer versions.
 - Cover your code in tests.
 
 ## SCSS Code
@@ -20,6 +20,7 @@
 
 ## JS Code
 - Javascript code should follow the [Airbnb style guide](https://github.com/airbnb/javascript).
+- Prefer named export before default export in JS and TS files
 
 ## Git flow
 - Do not commit to master.
