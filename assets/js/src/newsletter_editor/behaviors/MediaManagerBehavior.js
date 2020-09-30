@@ -10,6 +10,7 @@ import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
 import jQuery from 'jquery';
 
 var BL = BehaviorsLookup;
+var DELAY_REFRESH_FOR_MS = 500;
 
 BL.MediaManagerBehavior = Marionette.Behavior.extend({
   ui: {
@@ -25,7 +26,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
       this.showMediaManager();
     }
   },
-  changeAddress: function (event) {
+  changeAddress: _.debounce(function (event) {
     var src = jQuery(event.target).val();
     var image = new Image();
 
@@ -49,7 +50,7 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
     }.bind(this);
 
     image.src = src;
-  },
+  }, DELAY_REFRESH_FOR_MS),
   showMediaManager: function () {
     var that = this;
     var MediaManager;
