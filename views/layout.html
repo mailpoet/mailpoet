@@ -50,7 +50,8 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
 <% block after_css %><% endblock %>
 
 <script type="text/javascript">
-  var mailpoet_date_format = "<%= wp_datetime_format()|escape('js') %>";
+  var mailpoet_datetime_format = "<%= wp_datetime_format()|escape('js') %>";
+  var mailpoet_date_format = "<%= wp_date_format()|escape('js') %>";
   var mailpoet_time_format = "<%= wp_time_format()|escape('js') %>";
   var mailpoet_version = "<%= mailpoet_version() %>";
   var mailpoet_locale = "<%= mailpoet_locale() %>";
