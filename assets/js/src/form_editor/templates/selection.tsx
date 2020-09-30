@@ -6,7 +6,7 @@ import Background from 'common/background/background';
 import Loading from 'common/loading';
 import TemplateBox from 'common/template_box/template_box';
 import Heading from 'common/typography/heading/heading';
-
+import Notice from 'notices/notice';
 import { TemplateData } from './store/types';
 
 export default () => {
@@ -45,10 +45,10 @@ export default () => {
     []
   );
 
-  // const selectTemplateFailed: boolean = useSelect(
-  //   (select) => select('mailpoet-form-editor-templates').getSelectTemplateFailed(),
-  //   []
-  // );
+  const selectTemplateFailed: boolean = useSelect(
+    (select) => select('mailpoet-form-editor-templates').getSelectTemplateFailed(),
+    []
+  );
 
   const { selectTemplate } = useDispatch('mailpoet-form-editor-templates');
   return (
@@ -61,6 +61,7 @@ export default () => {
       <div className="template-selection-header">
         <Heading level={4}>{MailPoet.I18n.t('selectTemplate')}</Heading>
       </div>
+      {selectTemplateFailed && <Notice type="error" scroll renderInPlace><p>{MailPoet.I18n.t('createFormError')}</p></Notice>}
       <div className="template-selection" data-automation-id="template_selection_list">
         <Background color="#fff" />
         <div className="mailpoet-templates">
