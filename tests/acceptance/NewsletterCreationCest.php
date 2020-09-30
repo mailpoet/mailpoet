@@ -43,9 +43,10 @@ class NewsletterCreationCest {
     $i->click('Activate');
     $i->waitForElement($newsletterListingElement);
     $i->see($newsletterTitle, $newsletterListingElement);
-    $i->see("Send immediately if there's new content to " . $segmentName . ".", $newsletterListingElement);
+    $i->see('Immediately', $newsletterListingElement);
+    $i->see('Send to ' . $segmentName, $newsletterListingElement);
   }
-
+  
   public function createStandardNewsletter(\AcceptanceTester $i) {
     $i->wantTo('Create and configure standard newsletter');
 

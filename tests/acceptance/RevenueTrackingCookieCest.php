@@ -43,7 +43,7 @@ class RevenueTrackingCookieCest {
     $i->waitForElement('[data-automation-id="newsletter_send_form"]');
     $i->selectOptionInSelect2($segmentName);
     $i->click('Send');
-    $i->waitForElement('.mailpoet_progress_label');
+    $i->waitForEmailSendingOrSent();
 
     $i->logOut();
     $i->checkEmailWasReceived($newsletterSubject);
@@ -81,7 +81,7 @@ class RevenueTrackingCookieCest {
     $i->waitForElement('[data-automation-id="newsletter_send_form"]');
     $i->selectOptionInSelect2($segmentName);
     $i->click('Send');
-    $i->waitForElement('.mailpoet_progress_label');
+    $i->waitForEmailSendingOrSent();
 
     $i->logOut();
     $i->checkEmailWasReceived($newsletterSubject);
