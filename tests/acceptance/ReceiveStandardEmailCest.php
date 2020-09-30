@@ -43,7 +43,7 @@ class ReceiveStandardEmailCest {
     $i->waitForElement($sendFormElement);
     $i->selectOptionInSelect2($segmentName);
     $i->click('Send');
-    $i->waitForElement('.mailpoet_progress_label', 90);
+    $i->waitForEmailSendingOrSent();
     //confirm newsletter is received
     $i->checkEmailWasReceived($newsletterTitle);
     $i->click(Locator::contains('span.subject', $newsletterTitle));

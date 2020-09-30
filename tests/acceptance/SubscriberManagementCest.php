@@ -232,6 +232,6 @@ class SubscriberManagementCest {
   }
 
   private function seeListCountByStatus(\AcceptanceTester $i, $count, $listName, $status) {
-    $i->see($count, "//*[@class='row-title'][contains(text(), '$listName')]/ancestor::tr/td[@data-colname='$status']");
+    $i->see($count, "//*[@class='mailpoet-listing-title'][contains(text(), '$listName')]/ancestor::tr/td[@data-colname='$status']");
   }
 }

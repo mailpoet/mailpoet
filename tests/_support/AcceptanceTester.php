@@ -174,6 +174,11 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->waitForElementNotVisible('.mailpoet-listing-loading');
   }
 
+  public function waitForEmailSendingOrSent() {
+    $i = $this;
+    $i->waitForElement('.mailpoet-listing-status:not(.mailpoet-listing-status-unknown)', 30);
+  }
+
   public function clickLabelWithInput($inputName, $inputValue) {
     $i = $this;
     $i->click("//*[name()='label'][.//*[name()='input'][@name='{$inputName}'][@value='{$inputValue}']]");
