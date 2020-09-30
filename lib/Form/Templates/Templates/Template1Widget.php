@@ -97,7 +97,7 @@ class Template1Widget extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => '<em><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We don’t spam! Read more in our [link]privacy policy[/link]', 'Text in a web form.', 'mailpoet'), "#") . '</span></em>',
+          'content' => '<em><span style="font-family: Montserrat" data-font="Montserrat" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), "#") . '</span></em>',
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '13',
