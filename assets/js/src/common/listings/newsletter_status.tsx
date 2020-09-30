@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import {
   isFuture, isPast, differenceInMinutes, format,
 } from 'date-fns';
-import { t } from 'common/functions';
+import t from 'common/functions/t';
 
 type NewsletterStatusProps = {
   scheduledFor?: Date,
