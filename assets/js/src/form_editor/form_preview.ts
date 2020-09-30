@@ -15,6 +15,7 @@ jQuery(($) => {
       setTimeout(() => form.addClass(to));
     };
 
+    let originalWidth = previewForm.css('width');
     const updateForm = (event) => {
       if (!event.data) {
         return;
@@ -34,28 +35,32 @@ jQuery(($) => {
         return;
       }
 
+      // Apply width settings
+      const unit = width.unit === 'pixel' ? 'px' : '%';
+      const newWidth = `${width.value}${unit}`;
+      if (formType === 'fixed_bar') {
+        const formElement = previewForm.find('form.mailpoet_form');
+        formElement.css('width', newWidth);
+      } else {
+        previewForm.css('width', newWidth);
+        if (unit === 'px') { // Update others container width to render full pixel size
+          $('#mailpoet_widget_preview #sidebar').css('width', newWidth);
+        } else { // Reset container size to default render percent size
+          $('#mailpoet_widget_preview #sidebar').css('width', null);
+        }
+      }
+      // When the width is changed we want to forbid animation
+      const forbidAnimation = newWidth !== originalWidth;
+      originalWidth = newWidth;
+
       const animation = event.data.formSettings?.formPlacement?.[placementName]?.animation;
-      if (animation !== '') {
+      if (animation !== '' && !forbidAnimation) {
         previewForm.removeClass((index, className) => (className.match(/(^|\s)mailpoet_form_animation\S+/g) || []).join(' '));
         setTimeout(() => previewForm.addClass(`mailpoet_form_animation_${animation}`));
         toggleClass(previewForm.prev('.mailpoet_form_popup_overlay'), 'mailpoet_form_overlay_animation', 'mailpoet_form_overlay_animation');
       }
 
       const position = event.data.formSettings?.formPlacement?.[placementName]?.position;
-
-      // Apply width settings
-      const unit = width.unit === 'pixel' ? 'px' : '%';
-      if (formType === 'fixed_bar') {
-        const formElement = previewForm.find('form.mailpoet_form');
-        formElement.css('width', `${width.value}${unit}`);
-      } else {
-        previewForm.css('width', `${width.value}${unit}`);
-        if (unit === 'px') { // Update others container width to render full pixel size
-          $('#mailpoet_widget_preview #sidebar').css('width', `${width.value}${unit}`);
-        } else { // Reset container size to default render percent size
-          $('#mailpoet_widget_preview #sidebar').css('width', null);
-        }
-      }
 
       // Ajdust others (widget) container
       if (formType === 'others') {
