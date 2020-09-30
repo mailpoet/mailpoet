@@ -2,16 +2,9 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Segment;
 
 class CreateFormUsingTemplateCest {
-  public function _before() {
-    $features = new Features();
-    $features->withFeatureEnabled(FeaturesController::TEMPLATES_SELECTION);
-  }
-
   public function createFormUsingTemplate(\AcceptanceTester $i) {
     $segmentFactory = new Segment();
     $segmentName = 'Fancy List';
@@ -23,7 +16,11 @@ class CreateFormUsingTemplateCest {
     $i->click('[data-automation-id="create_new_form"]');
 
     $i->waitForElement('[data-automation-id="template_selection_list"]');
-    $i->click('[data-automation-id="select_template_template_1_popup"]');
+    $i->waitForElement('[data-automation-id="select_template_template_1_popup"]');
+    $i->wantTo('Switch template category and crete a form');
+    $i->click('[data-title="Fixed bar"]');
+    $i->waitForElement('[data-automation-id="select_template_template_1_fixed_bar"]');
+    $i->click('[data-automation-id="select_template_template_1_fixed_bar"]');
 
     $i->waitForElement('[data-automation-id="form_title_input"]', 20);
     $i->selectOptionInSelect2($segmentName);

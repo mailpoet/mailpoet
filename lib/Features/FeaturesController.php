@@ -6,15 +6,9 @@ use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 
 class FeaturesController {
 
-  // Define features below in the following form:
-  //   const FEATURE_NAME_OF_FEATURE = 'name-of-feature';
-  const TEMPLATES_SELECTION = 'templates-selection';
-
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
-  private $defaults = [
-    self::TEMPLATES_SELECTION => false,
-  ];
+  private $defaults = [];
 
   /** @var array */
   private $flags;
