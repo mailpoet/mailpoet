@@ -7,8 +7,8 @@
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
  * Author URI: http://www.mailpoet.com
- * Requires at least: 5.2
- * Tested up to: 5.4
+ * Requires at least: 5.3
+ * Tested up to: 5.5
  *
  * @package WordPress
  * @author MailPoet
@@ -31,7 +31,7 @@ function mailpoet_deactivate_plugin() {
 }
 
 // Check for minimum supported WP version
-if (version_compare(get_bloginfo('version'), '4.6', '<')) {
+if (version_compare(get_bloginfo('version'), '5.0', '<')) {
   add_action('admin_notices', 'mailpoet_wp_version_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
