@@ -22,6 +22,7 @@ use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
+use MailPoet\Logging\LoggerFactory;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -33,6 +34,14 @@ use function MailPoetVendor\array_column;
  * @extends Repository<NewsletterEntity>
  */
 class NewslettersRepository extends Repository {
+  /** @var LoggerFactory */
+  private $loggerFactory;
+
+  public function __construct(EntityManager $entityManager) {
+    parent::__construct($entityManager);
+    $this->loggerFactory = LoggerFactory::getInstance();
+  }
+
   protected function getEntityClassName() {
     return NewsletterEntity::class;
   }
@@ -127,6 +136,9 @@ class NewslettersRepository extends Repository {
     if (empty($ids)) {
       return 0;
     }
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS, $attachProcessors = true)->addInfo(
+      'trashing newsletters', ['id' => $ids]
+    );
     // Fetch children id for trashing
     $childrenIds = $this->fetchChildrenIds($ids);
     $ids = array_merge($ids, $childrenIds);
