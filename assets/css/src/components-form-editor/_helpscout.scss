@@ -12,14 +12,14 @@
     }
   }
 
-  @include breakpoint-max-width(960px) {
+  @include respond-to(medium-screen) {
     .BeaconFabButtonFrame,
     .BeaconContainer {
       left: 50px;
     }
   }
 
-  @include breakpoint-max-width(782px) {
+  @include respond-to(small-screen) {
     .BeaconFabButtonFrame,
     .BeaconContainer {
       left: 15px;

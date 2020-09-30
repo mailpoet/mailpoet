@@ -35,7 +35,7 @@ textarea.regular-text {
   width: 25em !important;
 }
 
-@include breakpoint-max-width(782px) {
+@include respond-to(small-screen) {
   .select2-container {
     width: 100% !important;
   }

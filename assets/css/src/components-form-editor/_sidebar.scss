@@ -88,7 +88,7 @@
 .components-circular-option-picker {
   width: 245px;
 
-  @include breakpoint-max-width(782px) {
+  @include respond-to(small-screen) {
     width: 100%;
   }
 }
