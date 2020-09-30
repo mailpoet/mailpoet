@@ -1,0 +1,33 @@
+.mailpoet_abandoned_cart_content_block {
+  padding: 0;
+}
+
+.mailpoet_abandoned_cart_content_block_overlay {
+  background: rgba(#fff, 0);
+  height: 100%;
+  position: absolute;
+  transition: background .15s ease-out;
+  width: 100%;
+  z-index: 19;
+
+  .mailpoet_abandoned_cart_content_block:hover & {
+    background: rgba(#fff, .9);
+    cursor: pointer;
+
+    .mailpoet_overlay_message {
+      display: block;
+    }
+  }
+
+  .mailpoet_overlay_message {
+    color: black;
+    display: none;
+    font-size: 20px;
+    margin: 80px;
+    text-align: center;
+  }
+}
+
+.mailpoet_abandoned_cart_content_container > .mailpoet_droppable_block {
+  width: 100%;
+}
