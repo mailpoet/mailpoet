@@ -115,7 +115,7 @@ function renderItem(item, actions) {
         </span>
         { actions }
       </td>
-      <td className="column-date" data-colname={MailPoet.I18n.t('description')}>
+      <td data-colname={MailPoet.I18n.t('description')}>
         <abbr>{ item.description }</abbr>
       </td>
       <td className="column" data-colname={MailPoet.I18n.t('subscribersCountColumn')}>
@@ -124,8 +124,10 @@ function renderItem(item, actions) {
       <td className="column" data-colname={MailPoet.I18n.t('subscribed')}>
         { parseInt(item.count_subscribed, 10).toLocaleString() }
       </td>
-      <td className="column" data-colname={MailPoet.I18n.t('updatedAtColumn')}>
-        { MailPoet.Date.format(item.updated_at) }
+      <td className="column-date" data-colname={MailPoet.I18n.t('updatedAtColumn')}>
+        { MailPoet.Date.short(item.created_at) }
+        <br />
+        { MailPoet.Date.time(item.created_at) }
       </td>
     </>
   );

@@ -265,26 +265,28 @@ class SegmentList extends React.Component {
           { segmentName }
           { actions }
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('description')}>
+        <td data-colname={MailPoet.I18n.t('description')}>
           <abbr>{ segment.description }</abbr>
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('subscribed')}>
+        <td data-colname={MailPoet.I18n.t('subscribed')}>
           <abbr>{ subscribed.toLocaleString() }</abbr>
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('unconfirmed')}>
+        <td data-colname={MailPoet.I18n.t('unconfirmed')}>
           <abbr>{ unconfirmed.toLocaleString() }</abbr>
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('unsubscribed')}>
+        <td data-colname={MailPoet.I18n.t('unsubscribed')}>
           <abbr>{ unsubscribed.toLocaleString() }</abbr>
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('inactive')}>
+        <td data-colname={MailPoet.I18n.t('inactive')}>
           <abbr>{ inactive.toLocaleString() }</abbr>
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('bounced')}>
+        <td data-colname={MailPoet.I18n.t('bounced')}>
           <abbr>{ bounced.toLocaleString() }</abbr>
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('createdOn')}>
-          <abbr>{ MailPoet.Date.format(segment.created_at) }</abbr>
+          { MailPoet.Date.short(segment.created_at) }
+          <br />
+          { MailPoet.Date.time(segment.created_at) }
         </td>
       </div>
     );

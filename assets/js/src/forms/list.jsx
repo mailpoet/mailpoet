@@ -240,7 +240,9 @@ class FormList extends React.Component {
           { this.renderStatus(form) }
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('updatedAt')}>
-          <abbr>{ MailPoet.Date.format(form.updated_at) }</abbr>
+          { MailPoet.Date.short(form.updated_at) }
+          <br />
+          { MailPoet.Date.time(form.updated_at) }
         </td>
       </div>
     );

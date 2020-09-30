@@ -326,7 +326,9 @@ class Listings extends React.Component {
           { this.renderStatus(newsletter) }
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
-          <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
+          { MailPoet.Date.short(newsletter.updated_at) }
+          <br />
+          { MailPoet.Date.time(newsletter.updated_at) }
         </td>
       </div>
     );

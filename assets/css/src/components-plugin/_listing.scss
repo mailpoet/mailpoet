@@ -172,6 +172,10 @@ div.mailpoet-listing-bulk-actions-container {
     text-align: right;
   }
 
+  .column-date {
+    white-space: nowrap;
+  }
+
   @include breakpoint-max-width(782px) {
     thead th.column-primary,
     tfoot th.column-primary {
