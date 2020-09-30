@@ -1,9 +1,12 @@
+$mailpoet-form-template-thumbnail-width: 480px;
+$mailpoet-form-template-thumbnail-height: 316px;
+
 .mailpoet-templates {
   display: grid;
-  grid-gap: 16px;
-  grid-template-columns: repeat(auto-fill, 468px);
+  grid-gap: $grid-gap;
+  grid-template-columns: repeat(auto-fill, $mailpoet-form-template-thumbnail-width + $grid-gap-half);
   justify-content: center;
-  padding-top: 32px;
+  padding-top: $grid-gap-large;
 
   .mailpoet-categories {
     grid-column: 1 / -1;
@@ -11,14 +14,15 @@
   }
 }
 
-.mailpoet-template-thumbnail {
-  height: 306px;
-  padding: 4px 4px 0;
-}
-
 .mailpoet-form-template {
-  height: 375px;
-  width: 468px;
+  height: $mailpoet-form-template-thumbnail-height + (2 * $grid-gap-large);
+  padding-bottom: ($grid-gap-half / 2);
+  width: $mailpoet-form-template-thumbnail-width + $grid-gap-half;
+
+  .mailpoet-template-thumbnail {
+    height: $mailpoet-form-template-thumbnail-height;
+    padding: ($grid-gap-half / 2) ($grid-gap-half / 2) 0;
+  }
 }
 
 .template-selection-header {
