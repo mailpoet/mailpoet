@@ -7,8 +7,15 @@ use MailPoet\Form\Templates\FormTemplate;
 class Template7FixedBar extends FormTemplate {
   const ID = 'template_7_fixed_bar';
 
+  /** @var string */
+  protected $assetsDirectory = 'template-7';
+
   public function getName(): string {
     return _x('Latest Deals', 'Form template name', 'mailpoet');
+  }
+
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('fixedbar.png');
   }
 
   public function getBody(): array {

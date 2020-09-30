@@ -7,8 +7,15 @@ use MailPoet\Form\Templates\FormTemplate;
 class Template10Widget extends FormTemplate {
   const ID = 'template_10_widget';
 
+  /** @var string */
+  protected $assetsDirectory = 'template-10';
+
   public function getName(): string {
     return _x('Keep in Touch', 'Form template name', 'mailpoet');
+  }
+
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('widget.png');
   }
 
   public function getBody(): array {

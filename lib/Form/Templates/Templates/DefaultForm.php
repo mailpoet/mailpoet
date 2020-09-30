@@ -14,6 +14,10 @@ class DefaultForm extends FormTemplate {
     return _x('My First Form', 'default name of form (GDPR friendly) to capture emails', 'mailpoet');
   }
 
+  public function getThumbnailUrl(): string {
+    return '';
+  }
+
   public function getBody(): array {
     return [
       [

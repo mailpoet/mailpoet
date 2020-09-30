@@ -14,6 +14,10 @@ class Template extends FormTemplate {
     return 'TEMPLATE_NAME';
   }
 
+  public function getThumbnailUrl(): array {
+    return ''; //@todo Add thunbmail
+  }
+
   public function getBody(): array {
     return TEMPLATE_BODY;
   }

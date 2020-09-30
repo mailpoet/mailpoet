@@ -7,8 +7,15 @@ use MailPoet\Form\Templates\FormTemplate;
 class Template7Widget extends FormTemplate {
   const ID = 'template-7-widget';
 
+  /** @var string */
+  protected $assetsDirectory = 'template-7';
+
   public function getName(): string {
     return _x('Latest Deals', 'Form template name', 'mailpoet');
+  }
+
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('widget.png');
   }
 
   public function getBody(): array {

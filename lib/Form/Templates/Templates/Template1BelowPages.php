@@ -7,8 +7,15 @@ use MailPoet\Form\Templates\FormTemplate;
 class Template1BelowPages extends FormTemplate {
   const ID = 'template_1_below_pages';
 
+  /** @var string */
+  protected $assetsDirectory = 'template-1';
+
   public function getName(): string {
     return _x('Join the Club', 'Form template name', 'mailpoet');
+  }
+
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('belowpage.png');
   }
 
   public function getBody(): array {

@@ -14,6 +14,10 @@ class Template4SlideIn extends FormTemplate {
     return _x('Newsletter Signup', 'Form template name', 'mailpoet');
   }
 
+  public function getThumbnailUrl(): string {
+    return $this->getAssetUrl('slidein.png');
+  }
+
   public function getBody(): array {
     return [
       [
