@@ -1,6 +1,5 @@
 import { select } from '@wordpress/data';
 
-// eslint-disable-next-line import/prefer-default-export
 export function* selectTemplate(templateId) {
   yield { type: 'SELECT_TEMPLATE_START' };
   const { res, success, error } = yield {
@@ -18,4 +17,11 @@ export function* selectTemplate(templateId) {
 
   window.location = url + res.data.id;
   return {};
+}
+
+export function selectCategory(category) {
+  return {
+    type: 'SELECT_CATEGORY',
+    category,
+  };
 }
