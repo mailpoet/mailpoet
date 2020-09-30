@@ -190,8 +190,8 @@ class Menu {
     // form editor templates
     $formTemplateSelectionEditorPage = $this->wp->addSubmenuPage(
       true,
-      $this->setPageTitle(__('Form Editor', 'mailpoet')),
-      $this->wp->__('Form Editor', 'mailpoet'),
+      $this->setPageTitle(__('Select Form Template', 'mailpoet')),
+      $this->wp->__('Select Form Template', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_FORMS,
       'mailpoet-form-editor-template-selection',
       [
