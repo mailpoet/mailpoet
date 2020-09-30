@@ -182,8 +182,20 @@
   'newsletter/templates/blocks/products/settingsSinglePost.hbs'
   ) %>
   <%= partial(
+  'newsletter_editor_template_acc_block',
+  'newsletter/templates/blocks/abandonedCartContent/block.hbs'
+  ) %>
+  <%= partial(
   'newsletter_editor_template_acc_widget',
   'newsletter/templates/blocks/abandonedCartContent/widget.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_acc_settings',
+  'newsletter/templates/blocks/abandonedCartContent/settings.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_acc_settings_display_options',
+  'newsletter/templates/blocks/abandonedCartContent/settingsDisplayOptions.hbs'
   ) %>
   <%= partial(
     'newsletter_editor_template_social_block',
@@ -631,8 +643,17 @@
         jQuery('#newsletter_editor_template_products_settings_display_options').html()
       ),
 
+      abandonedCartContentBlock: Handlebars.compile(
+        jQuery('#newsletter_editor_template_acc_block').html()
+      ),
       abandonedCartContentInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_acc_widget').html()
+      ),
+      abandonedCartContentBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_acc_settings').html()
+      ),
+      displayOptionsAbandonedCartContentBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_acc_settings_display_options').html()
       ),
 
       textBlock: Handlebars.compile(
@@ -1106,6 +1127,39 @@
         },
       },
       blockDefaults: {
+        abandonedCartContent: {
+          amount: '2',
+          withLayout: true,
+          contentType: 'product',
+          postStatus: 'publish', // 'draft'|'pending'|'publish'
+          inclusionType: 'include', // 'include'|'exclude'
+          displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
+          titleFormat: 'h1', // 'h1'|'h2'|'h3'
+          titleAlignment: 'left', // 'left'|'center'|'right'
+          titleIsLink: false, // false|true
+          imageFullWidth: false, // true|false
+          featuredImagePosition: 'alternate', // 'centered'|'left'|'right'|'alternate'|'none',
+          pricePosition: 'below', // 'hidden'|'above'|'below'
+          readMoreType: 'none', // 'link'|'button'|'none'
+          readMoreText: '',
+          readMoreButton: {},
+          sortBy: 'newest', // 'newest'|'oldest',
+          showDivider: true, // true|false
+          divider: {
+            context: 'abandonedCartContent.divider',
+            styles: {
+              block: {
+                backgroundColor: 'transparent',
+                padding: '13px',
+                borderStyle: 'solid',
+                borderWidth: '3px',
+                borderColor: '#aaaaaa',
+              },
+            },
+          },
+          backgroundColor: '#ffffff',
+          backgroundColorAlternate: '#eeeeee',
+        },
         automatedLatestContent: {
           amount: '5',
           withLayout: false,
