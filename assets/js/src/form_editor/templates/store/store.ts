@@ -14,6 +14,7 @@ export default () => {
     formEditorUrl: (window as any).mailpoet_form_edit_url,
     selectTemplateFailed: false,
     loading: false,
+    activeCategory: 'popup',
   };
 
   const config = {

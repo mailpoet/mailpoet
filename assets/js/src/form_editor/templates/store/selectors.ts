@@ -13,4 +13,7 @@ export default {
   getLoading(state): boolean {
     return state.loading;
   },
+  getSelectedCategory(state): boolean {
+    return state.activeCategory;
+  },
 };

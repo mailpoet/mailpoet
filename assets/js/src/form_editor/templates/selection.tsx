@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 import Categories from 'common/categories/categories';
@@ -10,8 +10,6 @@ import Notice from 'notices/notice';
 import { TemplateData } from './store/types';
 
 export default () => {
-  const [selectedCategory, setSelectedCategory] = useState('popup');
-
   const categories = [
     {
       name: 'popup',
@@ -35,6 +33,11 @@ export default () => {
     },
   ];
 
+  const selectedCategory: string = useSelect(
+    (select) => select('mailpoet-form-editor-templates').getSelectedCategory(),
+    []
+  );
+
   const templates: TemplateData = useSelect(
     (select) => select('mailpoet-form-editor-templates').getTemplates(),
     []
@@ -50,7 +53,7 @@ export default () => {
     []
   );
 
-  const { selectTemplate } = useDispatch('mailpoet-form-editor-templates');
+  const { selectTemplate, selectCategory } = useDispatch('mailpoet-form-editor-templates');
   return (
     <>
       {categories.map((category) => (
@@ -68,7 +71,7 @@ export default () => {
           <Categories
             categories={categories}
             active={selectedCategory}
-            onSelect={setSelectedCategory}
+            onSelect={selectCategory}
           />
           {templates[selectedCategory].map((template, index) => (
             <TemplateBox
