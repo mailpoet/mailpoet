@@ -40,36 +40,38 @@ function NewsletterStatsInfo(props) {
         </a>
       </div>
 
-      <p>
+      <div>
         {MailPoet.I18n.t('statsDateSent')}
 :
         {' '}
         {MailPoet.Date.format(newsletterDate)}
-      </p>
+      </div>
 
       { segments.length && (
-        <p>
-          {MailPoet.I18n.t('statsToSegments')}
-:
-          {' '}
-          <Tags segments={segments} dimension="large" />
-        </p>
+        <>
+          <div className="mailpoet-gap" />
+          <div>
+            {`${MailPoet.I18n.t('statsToSegments')}: `}
+            <Tags segments={segments} dimension="large" />
+          </div>
+        </>
       ) }
 
-      <p>
-        {MailPoet.I18n.t('statsFromAddress')}
-:
-        {' '}
+      <div className="mailpoet-gap" />
+
+      <div>
+        {`${MailPoet.I18n.t('statsFromAddress')}: `}
         { senderAddress }
-      </p>
+      </div>
 
       {replyToAddress && (
-        <p>
-          {MailPoet.I18n.t('statsReplyToAddress')}
-:
-          {' '}
-          { replyToAddress }
-        </p>
+        <>
+          <div className="mailpoet-gap" />
+          <div>
+            {`${MailPoet.I18n.t('statsReplyToAddress')}: `}
+            { replyToAddress }
+          </div>
+        </>
       ) }
     </div>
   );
