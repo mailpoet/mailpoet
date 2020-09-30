@@ -29,6 +29,7 @@
     "no-only-tests/no-only-tests": 2,
     "no-script-url": 0,
     "import/extensions": 0, // we wouldn't be able to import jQuery without this line
+    "import/prefer-default-export": 0, // we want to stop using default exports and start using named exports
     "react/destructuring-assignment": 0, // that would be too many changes to fix this one
     "prefer-destructuring": 0, // that would be too many changes to fix this one
     "jsx-a11y/label-has-for": [2, {
