@@ -263,15 +263,21 @@ class FormEditor {
   }
 
   private function getAllPosts() {
-    return $this->formatPosts($this->wp->getPosts(['numberposts' => -1]));
+    global $wpdb;
+    $optionList = $wpdb->get_results('SELECT ID, post_title FROM ' . $wpdb->posts . " WHERE post_type='post'");
+    return $this->formatPosts($optionList);
   }
 
   private function getWooCommerceProducts() {
-    return $this->formatPosts($this->wp->getPosts(['post_type' => 'product', 'numberposts' => -1]));
+    global $wpdb;
+    $optionList = $wpdb->get_results('SELECT ID, post_title FROM ' . $wpdb->posts . " WHERE post_type='product'");
+    return $this->formatPosts($optionList);
   }
 
   private function getAllPages() {
-    return $this->formatPosts($this->wp->getPages());
+    global $wpdb;
+    $optionList = $wpdb->get_results('SELECT ID, post_title FROM ' . $wpdb->posts . " WHERE post_type='page'");
+    return $this->formatPosts($optionList);
   }
 
   private function getWooCommerceCategories() {
