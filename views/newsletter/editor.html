@@ -182,6 +182,10 @@
   'newsletter/templates/blocks/products/settingsSinglePost.hbs'
   ) %>
   <%= partial(
+  'newsletter_editor_template_acc_widget',
+  'newsletter/templates/blocks/abandonedCartContent/widget.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_social_block',
     'newsletter/templates/blocks/social/block.hbs'
   ) %>
@@ -625,6 +629,10 @@
       ),
       displayOptionsProductsBlockSettings: Handlebars.compile(
         jQuery('#newsletter_editor_template_products_settings_display_options').html()
+      ),
+
+      abandonedCartContentInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_acc_widget').html()
       ),
 
       textBlock: Handlebars.compile(
