@@ -39,7 +39,9 @@ class PostTransformerContentsExtractor {
 
     $readMoreBtn = $this->getReadMoreButton($post);
     $blocksCount = count($content);
-    if ($readMoreBtn['type'] === 'text' && $blocksCount > 0 && $content[$blocksCount - 1]['type'] === 'text') {
+    if (!$readMoreBtn) {
+      // Don't attach a button
+    } else if ($readMoreBtn['type'] === 'text' && $blocksCount > 0 && $content[$blocksCount - 1]['type'] === 'text') {
       $content[$blocksCount - 1]['text'] .= $readMoreBtn['text'];
     } else {
       $content[] = $readMoreBtn;
@@ -106,6 +108,10 @@ class PostTransformerContentsExtractor {
   }
 
   private function getReadMoreButton($post) {
+    if ($this->args['readMoreType'] === 'none') {
+      return false;
+    }
+
     if ($this->args['readMoreType'] === 'button') {
       $button = $this->args['readMoreButton'];
       $button['url'] = $this->wp->getPermalink($post->ID);
