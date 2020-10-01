@@ -1,5 +1,5 @@
 import React from 'react';
-import { action } from '@storybook/addon-actions';
+import { action } from '_storybook/action';
 import Checkbox from '../checkbox';
 import CheckboxGroup from '../group';
 import Heading from '../../../typography/heading/heading';
