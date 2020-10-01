@@ -11,7 +11,7 @@ class Template11Widget extends FormTemplate {
   protected $assetsDirectory = 'template-11';
 
   public function getName(): string {
-    return _x('Don’t Miss a Beat', 'Form template name', 'mailpoet');
+    return _x('Priority List', 'Form template name', 'mailpoet');
   }
 
   public function getThumbnailUrl(): string {

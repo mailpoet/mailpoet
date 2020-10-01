@@ -11,7 +11,7 @@ class Template12FixedBar extends FormTemplate {
   protected $assetsDirectory = 'template-12';
 
   public function getName(): string {
-    return _x('Deal Week', 'Form template name', 'mailpoet');
+    return _x('Limited Time Offer', 'Form template name', 'mailpoet');
   }
 
   public function getThumbnailUrl(): string {
