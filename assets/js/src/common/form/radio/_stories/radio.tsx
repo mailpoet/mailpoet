@@ -1,5 +1,5 @@
 import React from 'react';
-import { action } from '@storybook/addon-actions';
+import { action } from '_storybook/action';
 import Radio from '../radio';
 import RadioGroup from '../group';
 import Heading from '../../../typography/heading/heading';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { action } from '@storybook/addon-actions';
+import { action } from '_storybook/action';
 import Option from '../form_placement_option';
 import Icon from '../icons/sidebar_icon';
 
