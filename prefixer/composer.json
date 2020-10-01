@@ -2,9 +2,9 @@
   "require": {
     "php": ">=7.1",
     "cerdic/css-tidy": "^1.7",
-    "doctrine/common": "2.7.3",
-    "doctrine/dbal": "2.5.13",
-    "doctrine/orm": "2.5.14",
+    "doctrine/common": "3.0.2",
+    "doctrine/dbal": "2.9.3",
+    "doctrine/orm": "2.7.3",
     "gregwar/captcha": "^1.1",
     "monolog/monolog": "^1.23",
     "nesbot/carbon": "1.39.1",
