@@ -1,0 +1,31 @@
+.top-bar {
+  align-items: center;
+  background-color: $color-white;
+  box-shadow:
+    0 -1px 0 0 $color-tertiary-light,
+    0 2px 4px 0 opacify($color-tertiary-light, .5);
+  display: flex;
+  flex-direction: row;
+  height: 64px;
+  justify-content: space-between;
+  margin: 0;
+  padding-left: $grid-gap;
+  padding-right: $grid-gap;
+}
+
+.top-bar-logo {
+  height: 24px;
+  object-fit: contain;
+  width: 80px;
+}
+
+.top-bar-beamer {
+  align-items: center;
+  background-color: $color-white;
+  border: solid 2px $color-tertiary-light;
+  border-radius: 4px;
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
