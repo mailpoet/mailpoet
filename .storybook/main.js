@@ -14,14 +14,6 @@ module.exports = {
     '@storybook/addon-links',
     'storybook-addon-performance/register',
     {
-      name: '@storybook/preset-typescript',
-      options: {
-        tsLoaderOptions: {
-          configFile: 'tsconfig.storybook.json',
-        },
-      },
-    },
-    {
       name: '@storybook/addon-storysource',
       options: {
         rule: {
