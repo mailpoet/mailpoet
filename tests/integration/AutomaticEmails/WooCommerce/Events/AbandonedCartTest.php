@@ -61,7 +61,7 @@ class AbandonedCartTest extends \MailPoetTest {
     WPFunctions::set($this->wp);
 
     $this->wooCommerceMock = $this->mockWooCommerceClass(WooCommerce::class, []);
-    $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty']);
+    $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty', 'get_cart']);
     $this->wooCommerceMock->cart = $this->wooCommerceCartMock;
     $this->wooCommerceHelperMock = $this->make(WooCommerceHelper::class, [
       'isWooCommerceActive' => true,
@@ -147,6 +147,9 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->pageVisitTrackerMock->expects($this->once())->method('startTracking');
 
     $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
+    $this->wooCommerceCartMock->method('get_cart')->willReturn([
+      ['product_id' => 123], ['product_id' => 456], // dummy product IDs
+    ]);
     $abandonedCartEmail = $this->createAbandonedCartEmail();
     $abandonedCartEmail->init();
     $abandonedCartEmail->handleCartChange();
@@ -156,6 +159,9 @@ class AbandonedCartTest extends \MailPoetTest {
     expect($scheduledTasks)->count(1);
     expect($scheduledTasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
     expect($scheduledTasks[0]->scheduled_at)->same($expectedTime->format('Y-m-d H:i:s'));
+    /** @var SendingQueue $sendingQueue */
+    $sendingQueue = SendingQueue::where('task_id', $scheduledTasks[0]->id)->findOne();
+    expect($sendingQueue->getMeta())->same([AbandonedCart::TASK_META_NAME => [123, 456]]);
   }
 
   public function testItPostponesEmailWhenCartEdited() {
