@@ -216,6 +216,10 @@ class Sending {
     return $this->queue->validate() && $this->task->validate();
   }
 
+  public function getMeta() {
+    return $this->queue->getMeta();
+  }
+
   public function __isset($prop) {
     $prop = Helpers::camelCaseToUnderscore($prop);
     if ($this->isQueueProperty($prop)) {

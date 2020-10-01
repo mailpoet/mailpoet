@@ -9,6 +9,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\RuntimeException;
 use MailPoet\Services\Bridge;
+use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
@@ -69,7 +70,7 @@ class Renderer {
     return $this->newslettersRepository->findOneById($newsletterId);
   }
 
-  public function render($newsletter, $preview = false, $type = false) {
+  public function render($newsletter, $preview = false, $type = false, SendingTask $sendingTask = null) {
     $newsletter = $this->getNewsletter($newsletter);
     if (!$newsletter instanceof NewsletterEntity) {
       throw new RuntimeException('Newsletter was not found');
@@ -92,7 +93,7 @@ class Renderer {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
 
-    $content = $this->preprocessor->process($newsletter, $content);
+    $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingTask);
     $renderedBody = $this->renderBody($newsletter, $content);
     $renderedStyles = $this->renderStyles($styles);
     $customFontsLinks = StylesHelper::getCustomFontsLinks($styles);

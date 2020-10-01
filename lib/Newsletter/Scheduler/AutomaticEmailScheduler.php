@@ -33,7 +33,7 @@ class AutomaticEmailScheduler {
       // try to find existing scheduled task for given subscriber
       $task = ScheduledTask::findOneScheduledByNewsletterIdAndSubscriberId($newsletter->id, $subscriberId);
       if ($task) {
-        $this->rescheduleAutomaticEmailSendingTask($newsletter, $task);
+        $this->rescheduleAutomaticEmailSendingTask($newsletter, $task, $meta);
       } else {
         $this->createAutomaticEmailSendingTask($newsletter, $subscriberId, $meta);
       }
@@ -80,7 +80,7 @@ class AutomaticEmailScheduler {
     }
   }
 
-  public function createAutomaticEmailSendingTask($newsletter, $subscriberId, $meta) {
+  public function createAutomaticEmailSendingTask($newsletter, $subscriberId, $meta = false) {
     $sendingTask = SendingTask::create();
     $sendingTask->newsletterId = $newsletter->id;
     if ($newsletter->sendTo === 'user' && $subscriberId) {
@@ -96,7 +96,10 @@ class AutomaticEmailScheduler {
     return $sendingTask->save();
   }
 
-  private function rescheduleAutomaticEmailSendingTask($newsletter, $task) {
+  private function rescheduleAutomaticEmailSendingTask($newsletter, $task, $meta = false) {
+    if ($meta) {
+      $task->__set('meta', $meta);
+    }
     // compute new 'scheduled_at' from now
     $task->scheduledAt = Scheduler::getScheduledTimeWithDelay($newsletter->afterTimeType, $newsletter->afterTimeNumber);
     $task->save();
