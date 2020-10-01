@@ -153,7 +153,6 @@ class Template10Popup extends FormTemplate {
       'form_placement' => [
         'popup' => [
           'enabled' => '1',
-          'delay' => '0',
           'styles' => [
             'width' => [
               'unit' => 'pixel',

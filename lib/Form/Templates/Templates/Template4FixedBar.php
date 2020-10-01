@@ -151,7 +151,6 @@ class Template4FixedBar extends FormTemplate {
         'below_posts' => ['enabled' => ''],
         'fixed_bar' => [
           'enabled' => '1',
-          'delay' => '0',
           'position' => 'top',
           'styles' => [
             'width' => [

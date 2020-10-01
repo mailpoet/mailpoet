@@ -118,7 +118,6 @@ class Template6SlideIn extends FormTemplate {
         'fixed_bar' => ['enabled' => ''],
         'slide_in' => [
           'enabled' => '1',
-          'form_delay' => '0',
           'form_position' => 'right',
           'styles' => [
             'width' => [

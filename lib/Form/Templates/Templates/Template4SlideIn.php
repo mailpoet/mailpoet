@@ -171,7 +171,6 @@ class Template4SlideIn extends FormTemplate {
         'fixed_bar' => ['enabled' => ''],
         'slide_in' => [
           'enabled' => '1',
-          'delay' => '0',
           'position' => 'right',
           'styles' => [
             'width' => [

@@ -222,7 +222,6 @@ class Template10FixedBar extends FormTemplate {
         'below_posts' => ['enabled' => ''],
         'fixed_bar' => [
           'enabled' => '1',
-          'delay' => '0',
           'position' => 'bottom',
           'styles' => [
             'width' => [
