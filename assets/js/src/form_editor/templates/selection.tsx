@@ -82,7 +82,7 @@ export default () => {
               className="mailpoet-form-template"
             >
               <div className="mailpoet-template-thumbnail">
-                <img src={template.thumbnail} alt={template.name} width="480" height="317" />
+                <img src={template.thumbnail} alt={template.name} width="480" height="317" loading="lazy" />
               </div>
             </TemplateBox>
           ))}
