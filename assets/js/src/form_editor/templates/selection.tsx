@@ -16,16 +16,16 @@ export default () => {
       label: MailPoet.I18n.t('popupCategory'),
     },
     {
+      name: 'slide_in',
+      label: MailPoet.I18n.t('slideInCategory'),
+    },
+    {
       name: 'fixed_bar',
       label: MailPoet.I18n.t('fixedBarCategory'),
     },
     {
       name: 'below_posts',
       label: MailPoet.I18n.t('belowPagesCategory'),
-    },
-    {
-      name: 'slide_in',
-      label: MailPoet.I18n.t('slideInCategory'),
     },
     {
       name: 'others',
