@@ -13,6 +13,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class AbandonedCart {
   const SLUG = 'woocommerce_abandoned_shopping_cart';
   const LAST_VISIT_TIMESTAMP_OPTION_NAME = 'mailpoet_last_visit_timestamp';
+  const TASK_META_NAME = 'cart_product_ids';
 
   /** @var WPFunctions */
   private $wp;
@@ -130,7 +131,7 @@ class AbandonedCart {
   public function handleCartChange() {
     $cart = $this->wooCommerceHelper->WC()->cart;
     if ($cart && !$cart->is_empty()) {
-      $this->scheduleAbandonedCartEmail();
+      $this->scheduleAbandonedCartEmail($this->getCartProductIds($cart));
     } else {
       $this->cancelAbandonedCartEmail();
       $this->pageVisitTracker->stopTracking();
@@ -145,13 +146,19 @@ class AbandonedCart {
     });
   }
 
-  private function scheduleAbandonedCartEmail() {
+  private function getCartProductIds($cart) {
+    $cartItems = $cart->get_cart() ?: [];
+    return array_column($cartItems, 'product_id');
+  }
+
+  private function scheduleAbandonedCartEmail(array $cartProductIds = []) {
     $subscriber = $this->getSubscriber();
     if (!$subscriber || $subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
       return;
     }
 
-    $this->scheduler->scheduleOrRescheduleAutomaticEmail(WooCommerceEmail::SLUG, self::SLUG, $subscriber->id);
+    $meta = [self::TASK_META_NAME => $cartProductIds];
+    $this->scheduler->scheduleOrRescheduleAutomaticEmail(WooCommerceEmail::SLUG, self::SLUG, $subscriber->id, $meta);
 
     // start tracking page visits to detect inactivity
     $this->pageVisitTracker->startTracking();

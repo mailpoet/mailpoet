@@ -114,7 +114,7 @@ class Newsletter {
       // hook to the newsletter post-processing filter and add tracking image
       $this->trackingImageInserted = OpenTracking::addTrackingImage();
       // render newsletter
-      $renderedNewsletter = $this->renderer->render($newsletter);
+      $renderedNewsletter = $this->renderer->render($newsletter, false, false, $sendingTask);
       $renderedNewsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $renderedNewsletter,

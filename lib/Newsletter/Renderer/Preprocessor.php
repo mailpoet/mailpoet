@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Renderer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Editor\LayoutHelper;
 use MailPoet\Newsletter\Renderer\Blocks\Renderer as BlocksRenderer;
+use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\TransactionalEmails;
 
 class Preprocessor {
@@ -36,20 +37,25 @@ class Preprocessor {
    * @param NewsletterEntity $newsletter
    * @return array
    */
-  public function process(NewsletterEntity $newsletter, $content) {
+  public function process(NewsletterEntity $newsletter, $content, bool $preview = false, SendingTask $sendingTask = null) {
     if (!array_key_exists('blocks', $content)) {
       return $content;
     }
     $blocks = [];
     foreach ($content['blocks'] as $block) {
-      $blocks = array_merge($blocks, $this->processBlock($newsletter, $block));
+      $processedBlock = $this->processBlock($newsletter, $block, $preview, $sendingTask);
+      if (!empty($processedBlock)) {
+        $blocks = array_merge($blocks, $processedBlock);
+      }
     }
     $content['blocks'] = $blocks;
     return $content;
   }
 
-  public function processBlock(NewsletterEntity $newsletter, array $block): array {
+  public function processBlock(NewsletterEntity $newsletter, array $block, bool $preview = false, SendingTask $sendingTask = null): array {
     switch ($block['type']) {
+      case 'abandonedCartContent':
+        return $this->blocksRenderer->abandonedCartContentTransformedProducts($newsletter, $block, $preview, $sendingTask);
       case 'automatedLatestContentLayout':
         return $this->blocksRenderer->automatedLatestContentTransformedPosts($newsletter, $block);
       case 'woocommerceHeading':
