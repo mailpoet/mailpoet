@@ -16,6 +16,11 @@ use MailPoet\Form\Templates\Templates\Template10FixedBar;
 use MailPoet\Form\Templates\Templates\Template10Popup;
 use MailPoet\Form\Templates\Templates\Template10SlideIn;
 use MailPoet\Form\Templates\Templates\Template10Widget;
+use MailPoet\Form\Templates\Templates\Template11BelowPages;
+use MailPoet\Form\Templates\Templates\Template11FixedBar;
+use MailPoet\Form\Templates\Templates\Template11Popup;
+use MailPoet\Form\Templates\Templates\Template11SlideIn;
+use MailPoet\Form\Templates\Templates\Template11Widget;
 use MailPoet\Form\Templates\Templates\Template1BelowPages;
 use MailPoet\Form\Templates\Templates\Template1FixedBar;
 use MailPoet\Form\Templates\Templates\Template1Popup;
@@ -86,6 +91,7 @@ class FormEditor {
       Template6Popup::ID,
       Template7Popup::ID,
       Template10Popup::ID,
+      Template11Popup::ID,
     ],
     FormEntity::DISPLAY_TYPE_SLIDE_IN => [
       Template1SlideIn::ID,
@@ -94,6 +100,7 @@ class FormEditor {
       Template6SlideIn::ID,
       Template7SlideIn::ID,
       Template10SlideIn::ID,
+      Template11SlideIn::ID,
     ],
     FormEntity::DISPLAY_TYPE_FIXED_BAR => [
       Template1FixedBar::ID,
@@ -102,6 +109,7 @@ class FormEditor {
       Template6FixedBar::ID,
       Template7FixedBar::ID,
       Template10FixedBar::ID,
+      Template11FixedBar::ID,
     ],
     FormEntity::DISPLAY_TYPE_BELOW_POST => [
       Template1BelowPages::ID,
@@ -110,6 +118,7 @@ class FormEditor {
       Template6BelowPages::ID,
       Template7BelowPages::ID,
       Template10BelowPages::ID,
+      Template11BelowPages::ID,
     ],
     FormEntity::DISPLAY_TYPE_OTHERS => [
       Template1Widget::ID,
@@ -118,6 +127,7 @@ class FormEditor {
       Template6Widget::ID,
       Template7Widget::ID,
       Template10Widget::ID,
+      Template11Widget::ID,
     ],
   ];
 
