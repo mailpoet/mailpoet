@@ -7,6 +7,7 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\Config\AccessControl;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
@@ -17,7 +18,7 @@ use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
-use MailPoet\Segments\BulkAction;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
@@ -30,6 +31,7 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
+use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Subscribers extends APIEndpoint {
@@ -39,10 +41,6 @@ class Subscribers extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
     'methods' => ['subscribe' => AccessControl::NO_ACCESS_RESTRICTION],
   ];
-
-  /** @var Listing\BulkActionController */
-  private $bulkActionController;
-
 
   /** @var SubscriberActions */
   private $subscriberActions;
@@ -86,8 +84,10 @@ class Subscribers extends APIEndpoint {
   /** @var SubscriberListingRepository */
   private $subscriberListingRepository;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   public function __construct(
-    Listing\BulkActionController $bulkActionController,
     SubscriberActions $subscriberActions,
     RequiredCustomFieldValidator $requiredCustomFieldValidator,
     Listing\Handler $listingHandler,
@@ -101,9 +101,9 @@ class Subscribers extends APIEndpoint {
     SubscribersRepository $subscribersRepository,
     SubscribersResponseBuilder $subscribersResponseBuilder,
     SubscriberListingRepository $subscriberListingRepository,
+    SegmentsRepository $segmentsRepository,
     FieldNameObfuscator $fieldNameObfuscator
   ) {
-    $this->bulkActionController = $bulkActionController;
     $this->subscriberActions = $subscriberActions;
     $this->requiredCustomFieldValidator = $requiredCustomFieldValidator;
     $this->listingHandler = $listingHandler;
@@ -118,6 +118,7 @@ class Subscribers extends APIEndpoint {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
     $this->subscriberListingRepository = $subscriberListingRepository;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   public function get($data = []) {
@@ -425,14 +426,12 @@ class Subscribers extends APIEndpoint {
   }
 
   public function restore($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $subscriber = Subscriber::findOne($id);
-    if ($subscriber instanceof Subscriber) {
-      $subscriber->restore();
-      $subscriber = Subscriber::findOne($subscriber->id);
-      if(!$subscriber instanceof Subscriber) return $this->errorResponse();
+    $subscriber = $this->getSubscriber($data);
+    if ($subscriber instanceof SubscriberEntity) {
+      $this->subscribersRepository->bulkRestore([$subscriber->getId()]);
+      $this->subscribersRepository->refresh($subscriber);
       return $this->successResponse(
-        $subscriber->asArray(),
+        $this->subscribersResponseBuilder->build($subscriber),
         ['count' => 1]
       );
     } else {
@@ -443,14 +442,12 @@ class Subscribers extends APIEndpoint {
   }
 
   public function trash($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $subscriber = Subscriber::findOne($id);
-    if ($subscriber instanceof Subscriber) {
-      $subscriber->trash();
-      $subscriber = Subscriber::findOne($subscriber->id);
-      if(!$subscriber instanceof Subscriber) return $this->errorResponse();
+    $subscriber = $this->getSubscriber($data);
+    if ($subscriber instanceof SubscriberEntity) {
+      $this->subscribersRepository->bulkTrash([$subscriber->getId()]);
+      $this->subscribersRepository->refresh($subscriber);
       return $this->successResponse(
-        $subscriber->asArray(),
+        $this->subscribersResponseBuilder->build($subscriber),
         ['count' => 1]
       );
     } else {
@@ -461,10 +458,9 @@ class Subscribers extends APIEndpoint {
   }
 
   public function delete($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $subscriber = Subscriber::findOne($id);
-    if ($subscriber instanceof Subscriber) {
-      $subscriber->delete();
+    $subscriber = $this->getSubscriber($data);
+    if ($subscriber instanceof SubscriberEntity) {
+      $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
       return $this->successResponse(null, ['count' => 1]);
     } else {
       return $this->errorResponse([
@@ -489,21 +485,46 @@ class Subscribers extends APIEndpoint {
   }
 
   public function bulkAction($data = []) {
-    try {
-      if (!isset($data['listing']['filter']['segment'])) {
-        return $this->successResponse(
-          null,
-          $this->bulkActionController->apply('\MailPoet\Models\Subscriber', $data)
-        );
-      } else {
-        $bulkAction = new BulkAction($data);
-        return $this->successResponse(null, $bulkAction->apply());
+    $definition = $this->listingHandler->getListingDefinition($data['listing']);
+    $ids = $this->subscriberListingRepository->getActionableIds($definition);
+
+    $count = 0;
+    $segment = null;
+    if (isset($data['segment_id'])) {
+      $segment = $this->getSegment($data);
+      if (!$segment) {
+        return $this->errorResponse([
+          APIError::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
+        ]);
       }
-    } catch (\Exception $e) {
-      return $this->errorResponse([
-        $e->getCode() => $e->getMessage(),
-      ]);
     }
+
+    if ($data['action'] === 'trash') {
+      $count = $this->subscribersRepository->bulkTrash($ids);
+    } elseif ($data['action'] === 'restore') {
+      $count = $this->subscribersRepository->bulkRestore($ids);
+    } elseif ($data['action'] === 'delete') {
+      $count = $this->subscribersRepository->bulkDelete($ids);
+    } elseif ($data['action'] === 'removeFromAllLists') {
+      $count = $this->subscribersRepository->bulkRemoveFromAllSegments($ids);
+    } elseif ($data['action'] === 'removeFromList' && $segment instanceof SegmentEntity) {
+      $count = $this->subscribersRepository->bulkRemoveFromSegment($segment, $ids);
+    } elseif ($data['action'] === 'addToList' && $segment instanceof SegmentEntity) {
+      $count = $this->subscribersRepository->bulkAddToSegment($segment, $ids);
+    } elseif ($data['action'] === 'moveToList' && $segment instanceof SegmentEntity) {
+      $count = $this->subscribersRepository->bulkMoveToSegment($segment, $ids);
+    } else {
+      throw UnexpectedValueException::create()
+        ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
+    }
+    $meta = [
+      'count' => $count,
+    ];
+
+    if ($segment) {
+      $meta['segment'] = $segment->getName();
+    }
+    return $this->successResponse(null, $meta);
   }
 
   /**
@@ -513,6 +534,12 @@ class Subscribers extends APIEndpoint {
   private function getSubscriber($data) {
     return isset($data['id'])
       ? $this->subscribersRepository->findOneById((int)$data['id'])
+      : null;
+  }
+
+  private function getSegment(array $data): ?SegmentEntity {
+    return isset($data['segment_id'])
+      ? $this->segmentsRepository->findOneById((int)$data['segment_id'])
       : null;
   }
 }
