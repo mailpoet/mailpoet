@@ -17,7 +17,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
-use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
@@ -85,7 +84,6 @@ class SubscribersTest extends \MailPoetTest {
     $this->captchaSession = new CaptchaSession($container->get(Functions::class));
     $obfuscator = new FieldNameObfuscator($wp);
     $this->endpoint = new Subscribers(
-      $container->get(BulkActionController::class),
       $container->get(SubscriberActions::class),
       $container->get(RequiredCustomFieldValidator::class),
       $container->get(Handler::class),
@@ -99,6 +97,7 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(SubscribersRepository::class),
       $container->get(SubscribersResponseBuilder::class),
       $container->get(SubscriberListingRepository::class),
+      $container->get(SubscribersRepository::class),
       $obfuscator
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
