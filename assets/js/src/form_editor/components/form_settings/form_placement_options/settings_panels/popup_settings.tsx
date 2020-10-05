@@ -30,7 +30,21 @@ const PopUpSettings = () => {
       {isActive && (
         <>
           <hr />
+          <SizeSettings
+            label={MailPoet.I18n.t('formSettingsWidth')}
+            value={formSettings.formPlacement.popup.styles.width}
+            minPixels={200}
+            maxPixels={1200}
+            minPercents={10}
+            maxPercents={100}
+            defaultPixelValue={560}
+            defaultPercentValue={100}
+            onChange={(width) => (
+              changeFormSettings(assocPath('formPlacement.popup.styles.width', width, formSettings))
+            )}
+          />
           <PlacementSettings settingsPlacementKey="popup" />
+          <AnimationSettings settingsPlacementKey="popup" />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
             value={formSettings.formPlacement.popup.delay}
@@ -49,20 +63,6 @@ const PopUpSettings = () => {
               onChange={compose([changeFormSettings, assocPath('formPlacement.popup.exitIntentEnabled', __, formSettings)])}
             />
           </div>
-          <SizeSettings
-            label={MailPoet.I18n.t('formSettingsWidth')}
-            value={formSettings.formPlacement.popup.styles.width}
-            minPixels={200}
-            maxPixels={1200}
-            minPercents={10}
-            maxPercents={100}
-            defaultPixelValue={560}
-            defaultPercentValue={100}
-            onChange={(width) => (
-              changeFormSettings(assocPath('formPlacement.popup.styles.width', width, formSettings))
-            )}
-          />
-          <AnimationSettings settingsPlacementKey="popup" />
         </>
       )}
     </>
