@@ -254,6 +254,7 @@ form {
   padding: 0px;
 }
 
+.wp-block-column:not(:first-child),
 .mailpoet_form_column:not(:first-child) {
  padding: 0 20px;
 }
