@@ -29,16 +29,6 @@ const FixedBarSettings = () => {
       {isActive && (
         <>
           <hr />
-          <PlacementSettings settingsPlacementKey="fixedBar" />
-          <SelectControl
-            label={MailPoet.I18n.t('formPlacementDelay')}
-            value={formSettings.formPlacement.fixedBar.delay}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.fixedBar.delay', __, formSettings)])}
-            options={delayValues.map((delayValue) => ({
-              value: delayValue,
-              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
-            }))}
-          />
           <RadioControl
             label={MailPoet.I18n.t('formPlacementPlacementPosition')}
             selected={formSettings.formPlacement.fixedBar.position}
@@ -61,7 +51,17 @@ const FixedBarSettings = () => {
               changeFormSettings(assocPath('formPlacement.fixedBar.styles.width', width, formSettings))
             )}
           />
+          <PlacementSettings settingsPlacementKey="fixedBar" />
           <AnimationSettings settingsPlacementKey="fixedBar" />
+          <SelectControl
+            label={MailPoet.I18n.t('formPlacementDelay')}
+            value={formSettings.formPlacement.fixedBar.delay}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.fixedBar.delay', __, formSettings)])}
+            options={delayValues.map((delayValue) => ({
+              value: delayValue,
+              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
+            }))}
+          />
         </>
       )}
     </>

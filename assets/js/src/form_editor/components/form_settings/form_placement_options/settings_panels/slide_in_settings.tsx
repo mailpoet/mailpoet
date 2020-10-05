@@ -29,16 +29,6 @@ const SlideInSettings = () => {
       {isActive && (
         <>
           <hr />
-          <PlacementSettings settingsPlacementKey="slideIn" />
-          <SelectControl
-            label={MailPoet.I18n.t('formPlacementDelay')}
-            value={formSettings.formPlacement.slideIn.delay}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.delay', __, formSettings)])}
-            options={delayValues.map((delayValue) => ({
-              value: delayValue,
-              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
-            }))}
-          />
           <RadioControl
             label={MailPoet.I18n.t('formPlacementPlacementPosition')}
             selected={formSettings.formPlacement.slideIn.position}
@@ -61,7 +51,17 @@ const SlideInSettings = () => {
               changeFormSettings(assocPath('formPlacement.slideIn.styles.width', width, formSettings))
             )}
           />
+          <PlacementSettings settingsPlacementKey="slideIn" />
           <AnimationSettings settingsPlacementKey="slideIn" />
+          <SelectControl
+            label={MailPoet.I18n.t('formPlacementDelay')}
+            value={formSettings.formPlacement.slideIn.delay}
+            onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.delay', __, formSettings)])}
+            options={delayValues.map((delayValue) => ({
+              value: delayValue,
+              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
+            }))}
+          />
         </>
       )}
     </>

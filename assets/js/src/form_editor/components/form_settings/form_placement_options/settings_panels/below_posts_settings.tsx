@@ -24,7 +24,6 @@ const BelowPostsSettings = () => {
       />
       {isActive && (
         <>
-          <PlacementSettings settingsPlacementKey="belowPosts" />
           <SizeSettings
             label={MailPoet.I18n.t('formSettingsWidth')}
             value={formSettings.formPlacement.belowPosts.styles.width}
@@ -38,6 +37,7 @@ const BelowPostsSettings = () => {
               changeFormSettings(assocPath('formPlacement.belowPosts.styles.width', width, formSettings))
             )}
           />
+          <PlacementSettings settingsPlacementKey="belowPosts" />
         </>
       )}
     </>
