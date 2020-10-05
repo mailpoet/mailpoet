@@ -174,7 +174,7 @@ class Styles {
   }
 
   private function renderMessagesStyles(array $formSettings, string $selector): string {
-    $styles = '';
+    $styles = "$selector .mailpoet_message {margin: 0;}";
     if (isset($formSettings['success_validation_color']) && $formSettings['success_validation_color']) {
       $success = $formSettings['success_validation_color'];
       $styles .= "
