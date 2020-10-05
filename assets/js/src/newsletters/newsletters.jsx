@@ -44,51 +44,58 @@ const trackTabSwitch = (tabKey) => MailPoet.trackEvent(
 const Tabs = withNpsPoll(() => {
   const { parentId } = useParams();
   return (
-    <RoutedTabs
-      activeKey="standard"
-      routerType="switch-only"
-      onSwitch={(tabKey) => trackTabSwitch(tabKey)}
-      automationId="newsletters_listing_tabs"
-    >
-      <Tab
-        key="standard"
-        route="standard/(.*)?"
-        title={MailPoet.I18n.t('tabStandardTitle')}
-        automationId={`tab-${MailPoet.I18n.t('tabStandardTitle')}`}
+    <>
+      <ListingHeadingDisplay>
+        <ListingHeading />
+        <FeatureAnnouncement />
+      </ListingHeadingDisplay>
+
+      <RoutedTabs
+        activeKey="standard"
+        routerType="switch-only"
+        onSwitch={(tabKey) => trackTabSwitch(tabKey)}
+        automationId="newsletters_listing_tabs"
       >
-        <NewsletterListStandard />
-      </Tab>
-      <Tab
-        key="welcome"
-        route="welcome/(.*)?"
-        title={MailPoet.I18n.t('tabWelcomeTitle')}
-        automationId={`tab-${MailPoet.I18n.t('tabWelcomeTitle')}`}
-      >
-        <NewsletterListWelcome />
-      </Tab>
-      <Tab
-        key="notification"
-        route="notification/(.*)?"
-        title={MailPoet.I18n.t('tabNotificationTitle')}
-        automationId={`tab-${MailPoet.I18n.t('tabNotificationTitle')}`}
-      >
-        {
-          parentId
-            ? <NewsletterListNotificationHistory parentId={parentId} />
-            : <NewsletterListNotification />
-        }
-      </Tab>
-      {window.mailpoet_woocommerce_active && _.map(automaticEmails, (email) => (
         <Tab
-          key={email.slug}
-          route={`${email.slug}/(.*)?`}
-          title={email.title}
-          automationId={`tab-${email.title}`}
+          key="standard"
+          route="standard/(.*)?"
+          title={MailPoet.I18n.t('tabStandardTitle')}
+          automationId={`tab-${MailPoet.I18n.t('tabStandardTitle')}`}
         >
-          <Listings />
+          <NewsletterListStandard />
         </Tab>
-      ))}
-    </RoutedTabs>
+        <Tab
+          key="welcome"
+          route="welcome/(.*)?"
+          title={MailPoet.I18n.t('tabWelcomeTitle')}
+          automationId={`tab-${MailPoet.I18n.t('tabWelcomeTitle')}`}
+        >
+          <NewsletterListWelcome />
+        </Tab>
+        <Tab
+          key="notification"
+          route="notification/(.*)?"
+          title={MailPoet.I18n.t('tabNotificationTitle')}
+          automationId={`tab-${MailPoet.I18n.t('tabNotificationTitle')}`}
+        >
+          {
+            parentId
+              ? <NewsletterListNotificationHistory parentId={parentId} />
+              : <NewsletterListNotification />
+          }
+        </Tab>
+        {window.mailpoet_woocommerce_active && _.map(automaticEmails, (email) => (
+          <Tab
+            key={email.slug}
+            route={`${email.slug}/(.*)?`}
+            title={email.title}
+            automationId={`tab-${email.title}`}
+          >
+            <Listings />
+          </Tab>
+        ))}
+      </RoutedTabs>
+    </>
   );
 });
 
@@ -193,11 +200,6 @@ const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
     <HashRouter>
       <Notices />
-
-      <ListingHeadingDisplay>
-        <ListingHeading />
-        <FeatureAnnouncement />
-      </ListingHeadingDisplay>
 
       <SubscribersLimitNotice />
       <TransactionalEmailsProposeOptInNotice
