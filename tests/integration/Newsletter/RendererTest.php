@@ -63,7 +63,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItRendersCompleteNewsletter() {
-    $template = $this->renderer->render($this->newsletter, true);// do not render logo
+    $template = $this->renderer->renderAsPreview($this->newsletter);// do not render logo
     expect(isset($template['html']))->true();
     expect(isset($template['text']))->true();
     $DOM = $this->dOMParser->parseStr($template['html']);
@@ -592,7 +592,7 @@ class RendererTest extends \MailPoetTest {
     $this->license->method('hasLicense')->willReturn(true);
 
     $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
-    $template = $this->renderer->render($this->newsletter, false);
+    $template = $this->renderer->render($this->newsletter);
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
 
@@ -601,7 +601,7 @@ class RendererTest extends \MailPoetTest {
     $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(true);
 
     $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
-    $template = $this->renderer->render($this->newsletter, false);
+    $template = $this->renderer->render($this->newsletter);
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
 
@@ -610,7 +610,7 @@ class RendererTest extends \MailPoetTest {
     $this->license->method('hasLicense')->willReturn(false);
 
     $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
-    $template = $this->renderer->render($this->newsletter, true);
+    $template = $this->renderer->renderAsPreview($this->newsletter);
     expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
   }
 
@@ -619,7 +619,7 @@ class RendererTest extends \MailPoetTest {
     $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(false);
     $this->license->method('hasLicense')->willReturn(false);
 
-    $template = $this->renderer->render($this->newsletter, false);
+    $template = $this->renderer->render($this->newsletter);
     expect($template['html'])->contains('mailpoet_logo_newsletter.png');
   }
 

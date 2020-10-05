@@ -43,7 +43,7 @@ class SendPreviewController {
       throw new SendPreviewException("Newsletter with ID '{$newsletter->getId()}' not found");
     }
 
-    $renderedNewsletter = $this->renderer->render($newsletter, $preview = true);
+    $renderedNewsletter = $this->renderer->renderAsPreview($newsletter);
     $divider = '***MailPoet***';
     $dataForShortcodes = array_merge(
       [$newsletter->getSubject()],

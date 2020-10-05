@@ -70,7 +70,15 @@ class Renderer {
     return $this->newslettersRepository->findOneById($newsletterId);
   }
 
-  public function render($newsletter, $preview = false, $type = false, SendingTask $sendingTask = null) {
+  public function render($newsletter, SendingTask $sendingTask = null, $type = false) {
+    return $this->_render($newsletter, $sendingTask, $type);
+  }
+
+  public function renderAsPreview($newsletter, $type = false) {
+    return $this->_render($newsletter, null, $type, true);
+  }
+
+  private function _render($newsletter, SendingTask $sendingTask = null, $type = false, $preview = false) {
     $newsletter = $this->getNewsletter($newsletter);
     if (!$newsletter instanceof NewsletterEntity) {
       throw new RuntimeException('Newsletter was not found');

@@ -55,7 +55,11 @@ class ViewInBrowserRenderer {
         $newsletterBody = str_replace(Links::DATA_TAG_OPEN, '', $newsletterBody);
       }
     } else {
-      $newsletterBody = $this->renderer->render($newsletter, $wpUserPreview, 'html');
+      if ($wpUserPreview) {
+        $newsletterBody = $this->renderer->renderAsPreview($newsletter, 'html');
+      } else {
+        $newsletterBody = $this->renderer->render($newsletter, $sendingTask = null, 'html');
+      }
     }
     $shortcodes = new Shortcodes(
       $newsletter,
