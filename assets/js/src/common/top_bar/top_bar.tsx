@@ -19,7 +19,7 @@ export const TopBar = ({
   onLogoClick,
 }: Props) => {
   const buttonClasses = classNames(
-    'button top-bar-beamer',
+    'top-bar-beamer',
     hasNews ? 'top-bar-beamer-dot' : ''
   );
   return (
@@ -43,14 +43,22 @@ export const TopBar = ({
         <div className="top-bar-children">
           {children}
         </div>
-        <button
-          type="button"
+        <a
+          role="button"
           onClick={onBeamerClick}
           className={buttonClasses}
           title={MailPoet.I18n.t('whatsNew')}
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+            ) {
+              event.preventDefault();
+              onBeamerClick();
+            }
+          }}
         >
           <BeamerIcon />
-        </button>
+        </a>
       </div>
     </div>
   );

@@ -4,10 +4,18 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
+import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 
 import NewsletterGeneralStats from './newsletter_stats.jsx';
 import NewsletterStatsInfo from './newsletter_info.jsx';
 import PremiumBanner from './premium_banner.jsx';
+
+const hideWPScreenOptions = () => {
+  const screenOptions = document.getElementById('screen-meta-links');
+  if (screenOptions && screenOptions.style.display !== 'none') {
+    screenOptions.style.display = 'none';
+  }
+};
 
 class CampaignStatsPage extends React.Component {
   constructor(props) {
@@ -24,6 +32,7 @@ class CampaignStatsPage extends React.Component {
     // from the middle of a long newsletter listing
     window.scrollTo(0, 0);
     this.loadItem(match.params.id);
+    hideWPScreenOptions();
   }
 
   componentDidUpdate(prevProps) {
@@ -68,7 +77,7 @@ class CampaignStatsPage extends React.Component {
   render() {
     const { item, loading } = this.state;
     const newsletter = item;
-    const { match, location } = this.props;
+    const { match, location, history } = this.props;
 
     if (loading || !newsletter.queue) {
       return (
@@ -87,45 +96,50 @@ class CampaignStatsPage extends React.Component {
     }
 
     return (
-      <div>
-        <h1 className="title">
-          {`${MailPoet.I18n.t('statsTitle')}: ${newsletter.subject}`}
-          <Link
-            className="page-title-action"
-            to="/"
-          >
-            {MailPoet.I18n.t('backToList')}
-          </Link>
-        </h1>
-
-        <InvalidMssKeyNotice
-          mssKeyInvalid={window.mailpoet_mss_key_invalid}
-          subscribersCount={window.mailpoet_subscribers_count}
+      <>
+        <TopBarWithBeamer
+          onLogoClick={() => history.push('/')}
         />
+        <div>
+          <h1 className="title">
+            {`${MailPoet.I18n.t('statsTitle')}: ${newsletter.subject}`}
+            <Link
+              className="page-title-action"
+              to="/"
+            >
+              {MailPoet.I18n.t('backToList')}
+            </Link>
+          </h1>
 
-        <div className="mailpoet_stat_triple-spaced">
-          <div className="mailpoet_stat_info">
-            <NewsletterStatsInfo newsletter={newsletter} />
+          <InvalidMssKeyNotice
+            mssKeyInvalid={window.mailpoet_mss_key_invalid}
+            subscribersCount={window.mailpoet_subscribers_count}
+          />
+
+          <div className="mailpoet_stat_triple-spaced">
+            <div className="mailpoet_stat_info">
+              <NewsletterStatsInfo newsletter={newsletter} />
+            </div>
+            <div className="mailpoet_stat_general">
+              <NewsletterGeneralStats newsletter={newsletter} />
+            </div>
+            <div style={{ clear: 'both' }} />
           </div>
-          <div className="mailpoet_stat_general">
-            <NewsletterGeneralStats newsletter={newsletter} />
+
+          <h2>{MailPoet.I18n.t('clickedLinks')}</h2>
+
+          <div className="mailpoet_stat_triple-spaced">
+            {Hooks.applyFilters('mailpoet_newsletters_clicked_links_table', <PremiumBanner />, newsletter.clicked_links)}
           </div>
-          <div style={{ clear: 'both' }} />
+
+          <div className="mailpoet_stat_triple-spaced">
+            {Hooks.applyFilters('mailpoet_newsletters_purchased_products', null, newsletter)}
+          </div>
+
+          <h2>{MailPoet.I18n.t('subscriberEngagement')}</h2>
+          {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
         </div>
-
-        <h2>{MailPoet.I18n.t('clickedLinks')}</h2>
-
-        <div className="mailpoet_stat_triple-spaced">
-          {Hooks.applyFilters('mailpoet_newsletters_clicked_links_table', <PremiumBanner />, newsletter.clicked_links)}
-        </div>
-
-        <div className="mailpoet_stat_triple-spaced">
-          {Hooks.applyFilters('mailpoet_newsletters_purchased_products', null, newsletter)}
-        </div>
-
-        <h2>{MailPoet.I18n.t('subscriberEngagement')}</h2>
-        {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
-      </div>
+      </>
     );
   }
 }
