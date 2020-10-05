@@ -19,6 +19,16 @@
   width: 80px;
 }
 
+.top-bar-content {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+
+.top-bar-children {
+  margin-right: $grid-gap;
+}
+
 .top-bar-beamer {
   align-items: center;
   background-color: $color-white;
