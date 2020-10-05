@@ -29,7 +29,7 @@ import Tab from 'common/tabs/tab';
 import withNpsPoll from 'nps_poll.jsx';
 import ListingHeading from 'newsletters/listings/heading.jsx';
 import ListingHeadingDisplay from 'newsletters/listings/heading_display.jsx';
-import FeatureAnnouncement from 'announcements/feature_announcement.jsx';
+import FeatureAnnouncement from 'announcements/feature_announcement';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import TransactionalEmailsProposeOptInNotice from 'notices/transactional_emails_propose_opt_in_notice';
@@ -196,7 +196,7 @@ const App = () => (
 
       <ListingHeadingDisplay>
         <ListingHeading />
-        <FeatureAnnouncement hasNews={window.mailpoet_feature_announcement_has_news} />
+        <FeatureAnnouncement />
       </ListingHeadingDisplay>
 
       <SubscribersLimitNotice />
