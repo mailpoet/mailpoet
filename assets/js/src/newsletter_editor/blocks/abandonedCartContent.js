@@ -27,11 +27,8 @@ Module.AbandonedCartContentBlockModel = base.BlockModel.extend({
       type: 'abandonedCartContent',
       withLayout: true,
       amount: '2',
-      offset: 0,
       contentType: 'product',
       postStatus: 'publish', // 'draft'|'pending'|'publish'
-      terms: [], // List of category and tag objects
-      search: '', // Search keyword term
       inclusionType: 'include', // 'include'|'exclude'
       displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
       titleFormat: 'h1', // 'h1'|'h2'|'h3'
