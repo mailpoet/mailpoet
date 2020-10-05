@@ -4,20 +4,22 @@ namespace MailPoet\Test\Newsletter;
 
 use Codeception\Stub;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Newsletter\Renderer\Blocks\Renderer;
+use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
+use MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\WooCommerce\TransactionalEmails;
 
 class PreprocessorTest extends \MailPoetUnitTest {
   public function testProcessWooCommerceHeadingBlock() {
-    $renderer = Stub::make(Renderer::class);
+    $acc = Stub::make(AbandonedCartContent::class);
+    $alc = Stub::make(AutomatedLatestContentBlock::class);
     $transactionalEmails = Stub::make(TransactionalEmails::class, [
       'getWCEmailSettings' => [
         'base_color' => '{base_color}',
         'base_text_color' => '{base_text_color}',
       ],
     ]);
-    $preprocessor = new Preprocessor($renderer, $transactionalEmails);
+    $preprocessor = new Preprocessor($acc, $alc, $transactionalEmails);
     expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceHeading']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
@@ -41,8 +43,9 @@ class PreprocessorTest extends \MailPoetUnitTest {
   }
 
   public function testProcessWooCommerceContentBlock() {
-    $renderer = Stub::make(Renderer::class);
-    $preprocessor = new Preprocessor($renderer, Stub::make(TransactionalEmails::class));
+    $acc = Stub::make(AbandonedCartContent::class);
+    $alc = Stub::make(AutomatedLatestContentBlock::class);
+    $preprocessor = new Preprocessor($acc, $alc, Stub::make(TransactionalEmails::class));
     expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceContent']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',

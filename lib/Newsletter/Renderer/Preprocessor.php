@@ -4,7 +4,8 @@ namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Editor\LayoutHelper;
-use MailPoet\Newsletter\Renderer\Blocks\Renderer as BlocksRenderer;
+use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
+use MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\TransactionalEmails;
 
@@ -21,14 +22,22 @@ class Preprocessor {
       </tr>
     </table>';
 
-  /** @var BlocksRenderer */
-  private $blocksRenderer;
+  /** @var AbandonedCartContent */
+  private $abandonedCartContent;
+
+  /** @var AutomatedLatestContentBlock */
+  private $automatedLatestContent;
 
   /** @var TransactionalEmails */
   private $transactionalEmails;
 
-  public function __construct(BlocksRenderer $blocksRenderer, TransactionalEmails $transactionalEmails) {
-    $this->blocksRenderer = $blocksRenderer;
+  public function __construct(
+    AbandonedCartContent $abandonedCartContent,
+    AutomatedLatestContentBlock $automatedLatestContent,
+    TransactionalEmails $transactionalEmails
+  ) {
+    $this->abandonedCartContent = $abandonedCartContent;
+    $this->automatedLatestContent = $automatedLatestContent;
     $this->transactionalEmails = $transactionalEmails;
   }
 
@@ -55,9 +64,9 @@ class Preprocessor {
   public function processBlock(NewsletterEntity $newsletter, array $block, bool $preview = false, SendingTask $sendingTask = null): array {
     switch ($block['type']) {
       case 'abandonedCartContent':
-        return $this->blocksRenderer->abandonedCartContentTransformedProducts($newsletter, $block, $preview, $sendingTask);
+        return $this->abandonedCartContent->render($newsletter, $block, $preview, $sendingTask);
       case 'automatedLatestContentLayout':
-        return $this->blocksRenderer->automatedLatestContentTransformedPosts($newsletter, $block);
+        return $this->automatedLatestContent->render($newsletter, $block);
       case 'woocommerceHeading':
         $wcEmailSettings = $this->transactionalEmails->getWCEmailSettings();
         $content = self::WC_HEADING_BEFORE . '<h1 style="color:' . $wcEmailSettings['base_text_color'] . ';">' . self::WC_HEADING_PLACEHOLDER . '</h1>' . self::WC_HEADING_AFTER;
