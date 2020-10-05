@@ -9,12 +9,14 @@ type Props = {
   children?: React.ReactNode
   hasNews: boolean
   onBeamerClick: () => void
+  onLogoClick: () => void
 };
 
 export const TopBar = ({
   children,
   hasNews,
   onBeamerClick,
+  onLogoClick,
 }: Props) => {
   const buttonClasses = classNames(
     'button top-bar-beamer',
@@ -22,9 +24,21 @@ export const TopBar = ({
   );
   return (
     <div className="top-bar">
-      <div className="top-bar-logo">
+      <a
+        role="button"
+        className="top-bar-logo"
+        onClick={onLogoClick}
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+          ) {
+            event.preventDefault();
+            onLogoClick();
+          }
+        }}
+      >
         <MailPoetLogo />
-      </div>
+      </a>
       <div className="top-bar-content">
         <div className="top-bar-children">
           {children}

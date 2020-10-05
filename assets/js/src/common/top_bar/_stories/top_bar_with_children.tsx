@@ -20,6 +20,7 @@ export const TopBarWithChildren = () => (
     <TopBar
       hasNews={false}
       onBeamerClick={action('beamer click')}
+      onLogoClick={action('logo click')}
     >
       <Button>Button</Button>
     </TopBar>
