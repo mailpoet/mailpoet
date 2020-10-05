@@ -3,6 +3,7 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Util\Fixtures;
+use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\JSON\v1\Subscribers;
@@ -28,6 +29,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
@@ -42,6 +44,7 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Test\DataFactories\DynamicSegment;
+use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -97,7 +100,7 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(SubscribersRepository::class),
       $container->get(SubscribersResponseBuilder::class),
       $container->get(SubscriberListingRepository::class),
-      $container->get(SubscribersRepository::class),
+      $container->get(SegmentsRepository::class),
       $obfuscator
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
@@ -269,9 +272,11 @@ class SubscribersTest extends \MailPoetTest {
   public function testItCanTrashASubscriber() {
     $response = $this->endpoint->trash(['id' => $this->subscriber2->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Subscriber::findOne($this->subscriber2->getId())->asArray()
-    );
+    $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
+    $subscriber = $subscriberRepository->findOneById($this->subscriber2->getId());
+    expect($response->data['id'])->equals($subscriber->getId());
+    expect($response->data['email'])->equals($subscriber->getEmail());
+    expect($response->data['status'])->equals($subscriber->getStatus());
     expect($response->data['deleted_at'])->notNull();
     expect($response->meta['count'])->equals(1);
   }
@@ -520,12 +525,15 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   public function testItCannotRunAnInvalidBulkAction() {
-    $response = $this->endpoint->bulkAction([
-      'action' => 'invalidAction',
-      'listing' => [],
-    ]);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains('has no method');
+    try {
+      $this->endpoint->bulkAction([
+        'action' => 'invalidAction',
+        'listing' => [],
+      ]);
+    } catch (UnexpectedValueException $exception) {
+      expect($exception->getHttpStatusCode())->equals(APIResponse::STATUS_BAD_REQUEST);
+      expect($exception->getErrors()[Error::BAD_REQUEST])->contains('Invalid bulk action');
+    }
   }
 
   public function testItFailsWithEmailFilled() {
