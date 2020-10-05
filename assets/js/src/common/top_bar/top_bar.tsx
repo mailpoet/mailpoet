@@ -3,11 +3,15 @@ import { MailPoetLogo } from './mailpoet_logo';
 import { BeamerIcon } from './beamer_icon';
 
 type Props = {
-  children?: React.ReactNode,
+  children?: React.ReactNode
+  hasNews: boolean
+  onBeamerClick: () => {}
 };
 
 export const TopBar = ({
   children,
+  hasNews,
+  onBeamerClick,
 }: Props) => (
   <div className="top-bar">
     <div className="top-bar-logo">
