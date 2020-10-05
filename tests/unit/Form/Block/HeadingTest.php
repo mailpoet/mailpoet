@@ -99,7 +99,7 @@ class HeadingTest extends \MailPoetUnitTest {
         'font_size' => '33',
       ],
     ]);
-    expect($html)->equals('<h2 class="mailpoet-heading" style="font-size: 33px">Header</h2>');
+    expect($html)->equals('<h2 class="mailpoet-heading mailpoet-has-font-size" style="font-size: 33px">Header</h2>');
   }
 
   public function testItShouldRenderLineHeight() {

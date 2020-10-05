@@ -6,7 +6,7 @@ $form-mobile-font-size: 16px;
 $form-mobile-low-level-heading-font-size: 18px;
 $form-mobile-level1-heading-font-size: 23px;
 $form-mobile-level2-heading-font-size: 20px;
-$form-mobile-line-height: 1.4;
+$form-line-height: 1.4;
 
 /* labels */
 .mailpoet_text_label,
@@ -20,7 +20,7 @@ $form-mobile-line-height: 1.4;
 
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-font-size !important;
-    line-height: $form-mobile-line-height !important;
+    line-height: $form-line-height !important;
   }
 }
 
@@ -38,8 +38,16 @@ $form-mobile-line-height: 1.4;
 
     @include breakpoint-max-width($form-break-small-width - 1) {
       font-size: $form-mobile-font-size !important;
-      line-height: $form-mobile-line-height !important;
+      line-height: $form-line-height !important;
     }
+  }
+
+  .mailpoet-has-background-color {
+    padding: 20px 30px;
+  }
+
+  .mailpoet-has-font-size {
+    line-height: $form-line-height;
   }
 }
 
@@ -389,31 +397,27 @@ div.mailpoet_form_slide_in.active {
   clear: both; // Message is a last item in form. Cleanup ensures that nothing floats out and paddings are respected.
 }
 
-.mailpoet-has-background-color {
-  padding: 20px 30px;
-}
-
 .mailpoet_form .mailpoet-heading {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-low-level-heading-font-size !important;
-    line-height: $form-mobile-line-height !important;
-    margin: $form-mobile-low-level-heading-font-size * ($form-mobile-line-height / 2) 0 !important;
+    line-height: $form-line-height !important;
+    margin: $form-mobile-low-level-heading-font-size * ($form-line-height / 2) 0 !important;
   }
 }
 
 h1.mailpoet-heading {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-level1-heading-font-size !important;
-    line-height: $form-mobile-line-height !important;
-    margin: $form-mobile-level1-heading-font-size * ($form-mobile-line-height / 2) 0 !important;
+    line-height: $form-line-height !important;
+    margin: $form-mobile-level1-heading-font-size * ($form-line-height / 2) 0 !important;
   }
 }
 
 h2.mailpoet-heading {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-level2-heading-font-size !important;
-    line-height: $form-mobile-line-height !important;
-    margin: $form-mobile-level2-heading-font-size * ($form-mobile-line-height / 2) 0 !important;
+    line-height: $form-line-height !important;
+    margin: $form-mobile-level2-heading-font-size * ($form-line-height / 2) 0 !important;
   }
 
   &:before {

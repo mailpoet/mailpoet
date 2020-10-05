@@ -58,6 +58,10 @@ class Heading {
       $classes[] = 'mailpoet-has-background-color';
     }
 
+    if (!empty($block['params']['font_size'])) {
+      $classes[] = 'mailpoet-has-font-size';
+    }
+
     return 'class="'
       . join(' ', $classes)
       . '"';

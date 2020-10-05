@@ -44,6 +44,9 @@ class Paragraph {
     if (!empty($block['params']['background_color'])) {
       $classes[] = 'mailpoet-has-background-color';
     }
+    if (!empty($block['params']['font_size'])) {
+      $classes[] = 'mailpoet-has-font-size';
+    }
     if (empty($classes)) {
       return null;
     }

@@ -74,7 +74,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'font_size' => '33',
       ],
     ]);
-    expect($html)->equals('<p class="mailpoet_form_paragraph" style="font-size: 33px">Paragraph</p>');
+    expect($html)->equals('<p class="mailpoet_form_paragraph mailpoet-has-font-size" style="font-size: 33px">Paragraph</p>');
   }
 
   public function testItShouldRenderLineHeight() {
