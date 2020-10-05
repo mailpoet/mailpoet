@@ -39,7 +39,8 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
       $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
       new Preprocessor(
-        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
+        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
+        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
         Stub::make(
           \MailPoet\WooCommerce\TransactionalEmails::class,
           [
@@ -70,7 +71,8 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
       $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
       new Preprocessor(
-        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
+        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
+        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
         Stub::make(
           \MailPoet\WooCommerce\TransactionalEmails::class,
           [
