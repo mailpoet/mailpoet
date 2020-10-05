@@ -260,10 +260,10 @@ class Template11BelowPages extends FormTemplate {
             ],
           ],
           'posts' => [
-            'all' => '1',
+            'all' => '',
           ],
           'pages' => [
-            'all' => '1',
+            'all' => '',
           ],
         ],
         'slide_in' => ['enabled' => ''],
