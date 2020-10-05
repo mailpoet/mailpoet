@@ -20,6 +20,7 @@ export const TopBarWithoutChildren = () => (
       <TopBar
         hasNews={false}
         onBeamerClick={action('beamer click')}
+        onLogoClick={action('logo click')}
       />
     </div>
   </>
@@ -39,6 +40,7 @@ export const TopBarWithoutChildrenWithNews = () => (
       <TopBar
         hasNews
         onBeamerClick={action('beamer click')}
+        onLogoClick={action('logo click')}
       />
     </div>
   </>
