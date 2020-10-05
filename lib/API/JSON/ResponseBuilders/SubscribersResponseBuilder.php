@@ -70,7 +70,7 @@ class SubscribersResponseBuilder {
 
   public function build(SubscriberEntity $subscriberEntity): array {
     $data = [
-      'id' => $subscriberEntity->getId(),
+      'id' => (string)$subscriberEntity->getId(),
       'wp_user_id' => $subscriberEntity->getWpUserId(),
       'is_woocommerce_user' => $subscriberEntity->getIsWoocommerceUser(),
       'subscriptions' => $this->buildSubscriptions($subscriberEntity),
@@ -79,6 +79,7 @@ class SubscribersResponseBuilder {
       'last_name' => $subscriberEntity->getLastName(),
       'first_name' => $subscriberEntity->getFirstName(),
       'email' => $subscriberEntity->getEmail(),
+      'deleted_at' => ($deletedAt = $subscriberEntity->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null, 
     ];
     $data = $this->buildCustomFields($subscriberEntity, $data);
     return $data;
