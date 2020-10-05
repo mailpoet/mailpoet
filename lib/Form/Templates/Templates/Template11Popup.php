@@ -228,71 +228,16 @@ class Template11Popup extends FormTemplate {
           ],
           'animation' => 'slideup',
           'posts' => [
-            'all' => '1',
-          ],
-          'pages' => [
-            'all' => '1',
-          ],
-        ],
-        'fixed_bar' => [
-          'enabled' => '',
-          'delay' => '15',
-          'styles' => [
-            'width' => [
-              'unit' => 'percent',
-              'value' => '100',
-            ],
-          ],
-          'position' => 'top',
-          'animation' => 'slideup',
-          'posts' => [
             'all' => '',
           ],
           'pages' => [
             'all' => '',
           ],
         ],
-        'below_posts' => [
-          'enabled' => '',
-          'styles' => [
-            'width' => [
-              'unit' => 'percent',
-              'value' => '100',
-            ],
-          ],
-          'posts' => [
-            'all' => '',
-          ],
-          'pages' => [
-            'all' => '',
-          ],
-        ],
-        'slide_in' => [
-          'enabled' => '',
-          'delay' => '15',
-          'position' => 'right',
-          'animation' => 'right',
-          'styles' => [
-            'width' => [
-              'unit' => 'pixel',
-              'value' => '560',
-            ],
-          ],
-          'posts' => [
-            'all' => '',
-          ],
-          'pages' => [
-            'all' => '',
-          ],
-        ],
-        'others' => [
-          'styles' => [
-            'width' => [
-              'unit' => 'percent',
-              'value' => '100',
-            ],
-          ],
-        ],
+        'fixed_bar' => ['enabled' => ''],
+        'below_posts' => ['enabled' => '',],
+        'slide_in' => ['enabled' => '',],
+        'others' => [],
       ],
       'border_radius' => '3',
       'border_size' => '0',
