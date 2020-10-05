@@ -1,4 +1,5 @@
 import React from 'react';
+import { action } from '_storybook/action';
 import { TopBar } from '../top_bar';
 import Button from '../../button/button';
 
@@ -16,7 +17,10 @@ export const TopBarWithChildren = () => (
     left: '0px',
   }}
   >
-    <TopBar>
+    <TopBar
+      hasNews={false}
+      onBeamerClick={action('beamer click')}
+    >
       <Button>Button</Button>
     </TopBar>
   </div>

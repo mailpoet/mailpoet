@@ -1,3 +1,5 @@
+$beamer-dot-size: 8px;
+
 .top-bar {
   align-items: center;
   background-color: $color-white;
@@ -37,5 +39,18 @@
   display: flex;
   height: 40px;
   justify-content: center;
+  position: relative;
   width: 40px;
+}
+
+.top-bar-beamer-dot:before {
+  background: $color-editor-warning;
+  border-radius: $beamer-dot-size;
+  content: '';
+  display: block;
+  height: $beamer-dot-size;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: $beamer-dot-size;
 }
