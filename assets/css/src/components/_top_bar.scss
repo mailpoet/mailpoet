@@ -1,6 +1,6 @@
 $beamer-dot-size: 8px;
 
-.top-bar {
+.mailpoet-top-bar {
   align-items: center;
   background-color: $color-white;
   box-shadow:
@@ -15,23 +15,23 @@ $beamer-dot-size: 8px;
   padding-right: $grid-gap;
 }
 
-.top-bar-logo {
+.mailpoet-top-bar-logo {
   height: 24px;
   object-fit: contain;
   width: 80px;
 }
 
-.top-bar-content {
+.mailpoet-top-bar-content {
   align-items: center;
   display: flex;
   flex-direction: row;
 }
 
-.top-bar-children {
+.mailpoet-top-bar-children {
   margin-right: $grid-gap;
 }
 
-.top-bar-beamer {
+.mailpoet-top-bar-beamer {
   align-items: center;
   background-color: $color-white;
   border: solid 2px $color-tertiary-light;
@@ -43,7 +43,7 @@ $beamer-dot-size: 8px;
   width: 40px;
 }
 
-.top-bar-beamer-dot:before {
+.mailpoet-top-bar-beamer-dot:before {
   background: $color-editor-warning;
   border-radius: $beamer-dot-size;
   content: '';

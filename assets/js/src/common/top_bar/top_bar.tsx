@@ -19,14 +19,14 @@ export const TopBar = ({
   onLogoClick,
 }: Props) => {
   const buttonClasses = classNames(
-    'top-bar-beamer',
-    hasNews ? 'top-bar-beamer-dot' : ''
+    'mailpoet-top-bar-beamer',
+    hasNews ? 'mailpoet-top-bar-beamer-dot' : ''
   );
   return (
-    <div className="top-bar">
+    <div className="mailpoet-top-bar">
       <a
         role="button"
-        className="top-bar-logo"
+        className="mailpoet-top-bar-logo"
         onClick={onLogoClick}
         tabIndex={0}
         onKeyDown={(event) => {
@@ -39,8 +39,8 @@ export const TopBar = ({
       >
         <MailPoetLogo />
       </a>
-      <div className="top-bar-content">
-        <div className="top-bar-children">
+      <div className="mailpoet-top-bar-content">
+        <div className="mailpoet-top-bar-children">
           {children}
         </div>
         <a
