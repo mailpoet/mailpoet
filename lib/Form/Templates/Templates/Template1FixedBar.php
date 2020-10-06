@@ -195,7 +195,7 @@ class Template1FixedBar extends FormTemplate {
       ],
       'border_radius' => '0',
       'border_size' => '10',
-      'form_padding' => '20',
+      'form_padding' => '0',
       'input_padding' => '16',
       'background_image_display' => 'scale',
       'fontSize' => '16',
