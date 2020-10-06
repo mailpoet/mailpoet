@@ -137,7 +137,9 @@ class CampaignStatsPage extends React.Component {
           </div>
 
           <h2>{MailPoet.I18n.t('subscriberEngagement')}</h2>
-          {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
+          <div className="mailpoet-stat-subscriber-engagement">
+            {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
+          </div>
         </div>
       </>
     );

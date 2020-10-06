@@ -16,6 +16,11 @@
   margin-bottom: 3rem;
 }
 
+.mailpoet_stat_triple-spaced .mailpoet-premium-required,
+.mailpoet-stat-subscriber-engagement .mailpoet-premium-required {
+  margin: 70px auto;
+}
+
 .mailpoet_stat_force-wrap {
   word-break: break-all;
 }
@@ -27,12 +32,6 @@
 
 .mailpoet_stat_general {
   width: 60%;
-}
-
-.mailpoet_stats_premium_banner {
-  background-color: #fed2bf;
-  padding: 10px;
-  text-align: center;
 }
 
 @include breakpoint-max-width(520px) {
