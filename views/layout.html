@@ -95,6 +95,13 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
   'setFromAddressEmailNotAuthorized': __('Can’t use this email yet! [link]Please authorize it first[/link].', 'mailpoet'),
   'setFromAddressEmailUnknownError': __('An error occured when saving FROM email address.', 'mailpoet'),
 
+  'reviewRequestHeading': _x('Thank you! Time to tell the world?', 'After a user gives us positive feedback via the NPS poll, we ask them to review our plugin on WordPress.org.'),
+  'reviewRequestDidYouKnow': __('[username], did you know that hundreds of WordPress users read the reviews on the plugin repository? They’re also a source of inspiration for our team.'),
+  'reviewRequestUsingForDays': _n('You’ve been using MailPoet for [days] day now, and we would love to read your own review.', 'You’ve been using MailPoet for [days] days now, and we would love to read your own review.', installed_days_ago),
+  'reviewRequestUsingForMonths': _n('You’ve been using MailPoet for [months] month now, and we would love to read your own review.', 'You’ve been using MailPoet for [months] months now, and we would love to read your own review.', (installed_days_ago / 30) | round),
+  'reviewRequestRateUsNow': _x('Rate us now', 'Review our plugin on WordPress.org.'),
+  'reviewRequestNotNow': __('Not now'),
+
   'notSentYet': __('Not sent yet!'),
 }) %>
 <% block translations %><% endblock %>
