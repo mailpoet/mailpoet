@@ -102,6 +102,15 @@ class Sending {
     return $result;
   }
 
+  public static function createFromScheduledTask(ScheduledTask $task) {
+    $queue = SendingQueue::where('task_id', $task->id)->findOne();
+    if (!$queue) {
+      return false;
+    }
+
+    return self::create($task, $queue);
+  }
+
   public static function createFromQueue(SendingQueue $queue) {
     $task = $queue->task()->findOne();
     if (!$task) {

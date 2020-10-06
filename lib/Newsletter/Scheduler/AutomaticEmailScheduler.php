@@ -96,12 +96,13 @@ class AutomaticEmailScheduler {
     return $sendingTask->save();
   }
 
-  private function rescheduleAutomaticEmailSendingTask($newsletter, $task, $meta = false) {
+  private function rescheduleAutomaticEmailSendingTask($newsletter, ScheduledTask $task, $meta = false) {
+    $sendingTask = SendingTask::createFromScheduledTask($task);
     if ($meta) {
-      $task->__set('meta', $meta);
+      $sendingTask->__set('meta', $meta);
     }
     // compute new 'scheduled_at' from now
-    $task->scheduledAt = Scheduler::getScheduledTimeWithDelay($newsletter->afterTimeType, $newsletter->afterTimeNumber);
-    $task->save();
+    $sendingTask->scheduledAt = Scheduler::getScheduledTimeWithDelay($newsletter->afterTimeType, $newsletter->afterTimeNumber);
+    $sendingTask->save();
   }
 }

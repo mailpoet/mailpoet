@@ -58,6 +58,12 @@ class SendingTest extends \MailPoetTest {
     expect($queue->taskId)->equals($this->task->id);
   }
 
+  public function testItCanBeCreatedFromScheduledTask() {
+    $sending = SendingTask::createFromScheduledTask($this->task);
+    $queue = $sending->queue();
+    expect($queue->taskId)->equals($this->task->id);
+  }
+
   public function testItCanBeCreatedFromQueue() {
     $sending = SendingTask::createFromQueue($this->queue);
     $task = $sending->task();
