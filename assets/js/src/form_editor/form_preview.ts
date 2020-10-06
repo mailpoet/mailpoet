@@ -15,7 +15,7 @@ jQuery(($) => {
       setTimeout(() => form.addClass(to));
     };
 
-    let originalWidth = previewForm.css('width');
+    let originalFormSettings;
     const updateForm = (event) => {
       if (!event.data) {
         return;
@@ -49,12 +49,15 @@ jQuery(($) => {
           $('#mailpoet_widget_preview #sidebar').css('width', null);
         }
       }
-      // When the width is changed we want to forbid animation
-      const forbidAnimation = newWidth !== originalWidth;
-      originalWidth = newWidth;
+
+      // When some settings are changed we want to replay animation
+      const newFormSettings = event.data.formSettings?.formPlacement?.[placementName];
+      const allowAnimation = newFormSettings?.position !== originalFormSettings?.position
+        || newFormSettings?.animation !== originalFormSettings?.animation;
+      originalFormSettings = newFormSettings;
 
       const animation = event.data.formSettings?.formPlacement?.[placementName]?.animation;
-      if (animation !== '' && !forbidAnimation) {
+      if (animation !== '' && allowAnimation) {
         previewForm.removeClass((index, className) => (className.match(/(^|\s)mailpoet_form_animation\S+/g) || []).join(' '));
         setTimeout(() => previewForm.addClass(`mailpoet_form_animation_${animation}`));
         toggleClass(previewForm.prev('.mailpoet_form_popup_overlay'), 'mailpoet_form_overlay_animation', 'mailpoet_form_overlay_animation');
