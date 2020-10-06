@@ -29,6 +29,12 @@ class Emoji {
     return $this->decodeEntities($newsletterRenderedBody);
   }
 
+  public function sanitizeEmojisInFormBody(array $body): array {
+    $bodyJson = json_encode($body, JSON_UNESCAPED_UNICODE);
+    $fixedJson = $this->encodeForUTF8Column(MP_FORMS_TABLE, 'body', $bodyJson);
+    return json_decode($fixedJson, true);
+  }
+
   private function encodeRenderedBodyForUTF8Column($value) {
     return $this->encodeForUTF8Column(
       MP_SENDING_QUEUES_TABLE,

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Doctrine;
 
+use MailPoet\Doctrine\EventListeners\EmojiEncodingListener;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
 use MailPoet\Doctrine\EventListeners\ValidationListener;
 use MailPoet\Tracy\DoctrinePanel\DoctrinePanel;
@@ -25,16 +26,21 @@ class EntityManagerFactory {
   /** @var ValidationListener */
   private $validationListener;
 
+  /** @var EmojiEncodingListener */
+  private $emojiEncodingListener;
+
   public function __construct(
     Connection $connection,
     Configuration $configuration,
     TimestampListener $timestampListener,
-    ValidationListener $validationListener
+    ValidationListener $validationListener,
+    EmojiEncodingListener $emojiEncodingListener
   ) {
     $this->connection = $connection;
     $this->configuration = $configuration;
     $this->timestampListener = $timestampListener;
     $this->validationListener = $validationListener;
+    $this->emojiEncodingListener = $emojiEncodingListener;
   }
 
   public function createEntityManager() {
@@ -55,6 +61,11 @@ class EntityManagerFactory {
     $entityManager->getEventManager()->addEventListener(
       [Events::onFlush],
       $this->validationListener
+    );
+
+    $entityManager->getEventManager()->addEventListener(
+      [Events::prePersist, Events::preUpdate],
+      $this->emojiEncodingListener
     );
   }
 }
