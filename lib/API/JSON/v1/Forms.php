@@ -16,6 +16,7 @@ use MailPoet\Listing;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Forms extends APIEndpoint {
@@ -46,6 +47,9 @@ class Forms extends APIEndpoint {
   /** @var FormsRepository */
   private $formsRepository;
 
+  /** @var Emoji */
+  private $emoji;
+
   public function __construct(
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
@@ -53,7 +57,8 @@ class Forms extends APIEndpoint {
     FormFactory $formFactory,
     FormsRepository $formsRepository,
     FormsResponseBuilder $formsResponseBuilder,
-    WPFunctions $wp
+    WPFunctions $wp,
+    Emoji $emoji
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
@@ -62,6 +67,7 @@ class Forms extends APIEndpoint {
     $this->wp = $wp;
     $this->formsRepository = $formsRepository;
     $this->formsResponseBuilder = $formsResponseBuilder;
+    $this->emoji = $emoji;
   }
 
   public function get($data = []) {
@@ -223,6 +229,10 @@ class Forms extends APIEndpoint {
       $settings['segments'] = $listSelection;
     } else {
       $settings['segments_selected_by'] = 'admin';
+    }
+
+    if ($body !== null) {
+      $body = $this->emoji->sanitizeEmojisInFormBody($body);
     }
 
     $form = Form::createOrUpdate([
