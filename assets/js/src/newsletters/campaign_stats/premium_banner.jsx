@@ -1,5 +1,6 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
+import PremiumRequired from 'common/premium_required/premium_required';
 
 const PremiumBanner = () => {
   if (!window.mailpoet_display_detailed_stats) {
@@ -14,12 +15,23 @@ const PremiumBanner = () => {
       </a>
     );
 
+    const description = (
+      <>
+        {MailPoet.I18n.t('premiumBannerDescription')}
+        {' '}
+        <a href="admin.php?page=mailpoet-premium">
+          {MailPoet.I18n.t('learnMore')}
+        </a>
+        .
+      </>
+    );
+
     return (
-      <div className="mailpoet_stats_premium_banner">
-        <h1>{MailPoet.I18n.t('premiumBannerTitle')}</h1>
-        <p>{ctaButton}</p>
-        <a href="admin.php?page=mailpoet-premium">{MailPoet.I18n.t('premiumBannerLink')}</a>
-      </div>
+      <PremiumRequired
+        title={MailPoet.I18n.t('premiumFeature')}
+        message={description}
+        actionButton={ctaButton}
+      />
     );
   }
   if (window.mailpoet_subscribers_limit_reached) {
