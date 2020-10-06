@@ -211,6 +211,8 @@ class Template7Popup extends FormTemplate {
       'close_button' => 'round_black',
       'segments_selected_by' => 'admin',
       'gradient' => 'linear-gradient(180deg,rgb(255,233,112) 0%,rgb(230,174,70) 50%,rgb(228,37,111) 100%)',
+      'success_validation_color' => '#00d084',
+      'error_validation_color' => '#cf2e2e',
     ];
   }
 
