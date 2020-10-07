@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { withFeatureAnnouncement } from 'announcements/with_feature_announcement';
 import { MailPoetLogo } from './mailpoet_logo';
+import { MailPoetLogoMobile } from './mailpoet_logo_mobile';
 import { BeamerIcon } from './beamer_icon';
 import MailPoet from '../../mailpoet';
 
@@ -37,7 +38,12 @@ export const TopBar = ({
           }
         }}
       >
-        <MailPoetLogo />
+        <div className="mailpoet-top-bar-logo-desktop">
+          <MailPoetLogo />
+        </div>
+        <div className="mailpoet-top-bar-logo-mobile">
+          <MailPoetLogoMobile />
+        </div>
       </a>
       <div className="mailpoet-top-bar-content">
         <div className="mailpoet-top-bar-children">

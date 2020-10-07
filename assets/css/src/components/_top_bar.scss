@@ -16,9 +16,27 @@ $beamer-dot-size: 8px;
 }
 
 .mailpoet-top-bar-logo {
-  height: 24px;
   object-fit: contain;
+}
+
+.mailpoet-top-bar-logo-desktop {
+  display: block;
+  height: 24px;
   width: 80px;
+
+  @include respond-to(small-screen) {
+    display: none;
+  }
+}
+
+.mailpoet-top-bar-logo-mobile {
+  display: none;
+  height: 40px;
+  width: 39px;
+
+  @include respond-to(small-screen) {
+    display: block;
+  }
 }
 
 .mailpoet-top-bar-content {
