@@ -19,8 +19,7 @@ class FormFactoryTest extends \MailPoetTest {
   public function testItCreatesAndPersistEmptyForm() {
     $formEntity = $this->formFactory->createEmptyForm();
     expect($formEntity)->isInstanceOf(FormEntity::class);
-    $this->entityManager->detach($formEntity);
-    $formEntity = $this->entityManager->find(FormEntity::class, $formEntity->getId());
+    $this->entityManager->refresh($formEntity);
     assert($formEntity instanceof FormEntity);
     expect($formEntity->getName())->equals('');
     expect($formEntity->getBody())->notEmpty();
@@ -31,8 +30,7 @@ class FormFactoryTest extends \MailPoetTest {
   public function testItCreatesAndPersistFormFromTemplateId() {
     $formEntity = $this->formFactory->createFormFromTemplate(TemplateRepository::INITIAL_FORM_TEMPLATE);
     expect($formEntity)->isInstanceOf(FormEntity::class);
-    $this->entityManager->detach($formEntity);
-    $formEntity = $this->entityManager->find(FormEntity::class, $formEntity->getId());
+    $this->entityManager->refresh($formEntity);
     assert($formEntity instanceof FormEntity);
     expect($formEntity->getName())->equals('');
     expect($formEntity->getBody())->notEmpty();
