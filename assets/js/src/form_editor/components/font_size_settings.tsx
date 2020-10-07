@@ -2,7 +2,7 @@ import React from 'react';
 import {
   FontSizePicker,
 } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { __experimentalUseEditorFeature } from '@wordpress/block-editor';
 
 type Props = {
   name: string,
@@ -15,13 +15,7 @@ const FontSizeSettings = ({
   value,
   onChange,
 }: Props) => {
-  const fontSizes = useSelect(
-    (select) => {
-      const { getSettings } = select('core/block-editor');
-      return getSettings().fontSizes;
-    },
-    []
-  );
+  const fontSizes = __experimentalUseEditorFeature('typography.fontSizes');
   return (
     <div>
       <h3 className="mailpoet-styles-settings-heading">

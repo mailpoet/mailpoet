@@ -3,7 +3,7 @@ import {
   ColorIndicator,
   ColorPalette,
 } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { __experimentalUseEditorFeature } from '@wordpress/block-editor';
 
 type Props = {
   name: string,
@@ -16,15 +16,7 @@ const ColorSettings = ({
   value,
   onChange,
 }: Props) => {
-  const { settingsColors } = useSelect(
-    (select) => {
-      const { getSettings } = select('core/block-editor');
-      return {
-        settingsColors: getSettings().colors,
-      };
-    },
-    []
-  );
+  const settingsColors = __experimentalUseEditorFeature('color.palette');
   return (
     <div>
       <h3 className="mailpoet-styles-settings-heading">
