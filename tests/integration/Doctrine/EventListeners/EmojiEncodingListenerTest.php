@@ -19,10 +19,10 @@ class EmojiEncodingListenerTest extends \MailPoetTest {
     $originalListener = $this->diContainer->get(EmojiEncodingListener::class);
     $this->replaceListeners($originalListener, $emojiEncodingListenerWithMockedEmoji);
     $this->entityManager->persist($form);
-    $this->entityManager->flush($form);
+    $this->entityManager->flush();
     expect($form->getBody())->equals(['sanitizedBody']);
     $form->setBody(['updatedBody']);
-    $this->entityManager->flush($form);
+    $this->entityManager->flush();
     expect($form->getBody())->equals(['sanitizedBody']);
     $this->replaceListeners($emojiEncodingListenerWithMockedEmoji, $originalListener);
   }
