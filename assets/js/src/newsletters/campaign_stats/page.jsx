@@ -17,6 +17,14 @@ const hideWPScreenOptions = () => {
   }
 };
 
+const showWPScreenOptions = () => {
+  const screenOptions = document.getElementById('screen-meta-links');
+  if (screenOptions && screenOptions.style.display === 'none') {
+    screenOptions.style.display = 'block';
+  }
+};
+
+
 class CampaignStatsPage extends React.Component {
   constructor(props) {
     super(props);
@@ -39,6 +47,10 @@ class CampaignStatsPage extends React.Component {
     if (prevProps.match.params.id !== this.props.match.params.id) {
       this.loadItem(this.props.match.params.id);
     }
+  }
+
+  componentWillUnmount() {
+    showWPScreenOptions();
   }
 
   loadItem(id) {
