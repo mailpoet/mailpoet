@@ -29,7 +29,7 @@ class ConfigurationFactory {
 
   public function createConfiguration() {
     $configuration = new Configuration();
-    $configuration->setNamingStrategy(new UnderscoreNamingStrategy());
+    $configuration->setNamingStrategy(new UnderscoreNamingStrategy(\CASE_LOWER, true));
 
     $this->configureMetadata($configuration);
     $this->configureProxies($configuration);
