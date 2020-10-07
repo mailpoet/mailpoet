@@ -30,7 +30,7 @@ class SettingsRepository extends Repository {
       'value' => is_array($value) ? serialize($value) : $value,
       'now' => $now,
     ]);
-    $this->entityManager->clear(SettingEntity::class);
+    $this->entityManager->getUnitOfWork()->clear(SettingEntity::class);
   }
 
   protected function getEntityClassName() {
