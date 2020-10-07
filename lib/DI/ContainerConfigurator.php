@@ -89,7 +89,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder::class);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\NewsletterTemplatesResponseBuilder::class);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder::class);
-    $container->autowire(\MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder::class);
+    $container->autowire(\MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\FormsResponseBuilder::class);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder::class);
     // Config
@@ -247,8 +247,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\SubscriberActions::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\InactiveSubscribersController::class);
     $container->autowire(\MailPoet\Subscribers\LinkTokens::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscribers\SubscribersRepository::class);
-    $container->autowire(\MailPoet\Subscribers\SubscriberListingRepository::class);
+    $container->autowire(\MailPoet\Subscribers\SubscribersRepository::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\SubscriberListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberSegmentRepository::class);
     $container->autowire(\MailPoet\Subscribers\SubscriberCustomFieldRepository::class);
     $container->autowire(\MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository::class);
