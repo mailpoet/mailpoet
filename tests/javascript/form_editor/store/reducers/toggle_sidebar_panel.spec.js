@@ -46,23 +46,13 @@ describe('Toggle Sidebar Panel Reducer', () => {
     const action = {
       type: 'TOGGLE_SIDEBAR_PANEL',
       id: 'nice-panel',
-      toggleTo: 'opened',
+      toggleTo: true,
     };
     reducer(initialState, action);
     let finalState = reducer(initialState, action);
     expect(finalState.sidebar.openedPanels).to.include('nice-panel');
-    action.toggleTo = 'closed';
+    action.toggleTo = false;
     finalState = reducer(initialState, action);
     expect(finalState.sidebar.openedPanels).to.not.include('nice-panel');
-  });
-
-  it('Should throw an error for unexpected toggleTo value', () => {
-    const action = {
-      type: 'TOGGLE_SIDEBAR_PANEL',
-      id: 'nice-panel',
-      toggleTo: 'nonsense',
-    };
-    expect(() => (reducer(initialState, action)))
-      .to.throw('Unexpected toggleTo value "nonsense"');
   });
 });

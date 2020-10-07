@@ -21,11 +21,11 @@ const getRequiredAction = (openedPanels, panelId, toggleTo) => {
  * @return {object} Modified state object
  */
 export default (state, action) => {
-  if (action.toggleTo !== undefined && !['opened', 'closed'].includes(action.toggleTo)) {
-    throw new Error(`Unexpected toggleTo value "${action.toggleTo}"`);
-  }
+  let toggleTo;
+  if (action.toggleTo === true) toggleTo = 'opened';
+  if (action.toggleTo === false) toggleTo = 'closed';
   const openedPanels = [...state.sidebar.openedPanels];
-  const requiredAction = getRequiredAction(openedPanels, action.id, action.toggleTo);
+  const requiredAction = getRequiredAction(openedPanels, action.id, toggleTo);
   if (requiredAction === 'open') {
     openedPanels.push(action.id);
   } else if (requiredAction === 'close') {
