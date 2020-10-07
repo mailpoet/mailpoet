@@ -34,7 +34,7 @@ use function MailPoetVendor\array_column;
  * @property array $segments
  * @property string $subject
  * @property string $preheader
- * @property string $body
+ * @property string|array|null $body
  * @property string|null $schedule
  * @property bool|null $isScheduled
  * @property string|null $scheduledAt
@@ -116,9 +116,7 @@ class Newsletter extends Model {
     }
 
     if (isset($this->body) && ($this->body !== false)) {
-      if (is_array($this->body)) {
-        $this->body = (string)json_encode($this->body);
-      }
+      $this->body = $this->getBodyString();
       $this->set(
         'body',
         $this->body
@@ -155,7 +153,7 @@ class Newsletter extends Model {
 
   public function setStatus($status = null) {
     if ($status === self::STATUS_ACTIVE) {
-      if (!$this->body || empty(json_decode($this->body))) {
+      if (!$this->body || empty(json_decode($this->getBodyString()))) {
         $this->setError(
           Helpers::replaceLinkTags(
             __('This is an empty email without any content and it cannot be sent. Please update [link]the email[/link].'),
@@ -340,6 +338,16 @@ class Newsletter extends Model {
 
   public function getQueue($columns = '*') {
     return SendingTask::getByNewsletterId($this->id);
+  }
+
+  public function getBodyString(): string {
+    if (is_array($this->body)) {
+      return (string)json_encode($this->body);
+    }
+    if ($this->body === null) {
+      return '';
+    }
+    return $this->body;
   }
 
   public function withSendingQueue() {

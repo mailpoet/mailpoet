@@ -205,7 +205,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     $newsletter->parentId = $newsletter->id;
     // replace post id data tag with something else
-    $newsletter->body = str_replace('data-post-id', 'id', $newsletter->body);
+    $newsletter->body = str_replace('data-post-id', 'id', $newsletter->getBodyString());
     $newsletter->save();
     // returned result is false
     $result = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
