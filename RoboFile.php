@@ -503,6 +503,9 @@ class RoboFile extends \Robo\Tasks {
     // PHPStan must be run out of main plugin directory to avoid its autoloading
     // from vendor/autoload.php where some dev dependencies cause conflicts.
     return $this->collectionBuilder()
+      // temp dir
+      ->taskExec('mkdir -p ' . __DIR__ . '/temp')
+      ->taskExec('rm -rf ' . __DIR__ . '/temp/phpstan')
       // lib
       ->taskExec($task)
       ->arg("$dir/lib")
