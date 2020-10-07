@@ -1,6 +1,6 @@
 import React from 'react';
 import ColorGradientControl from '@wordpress/block-editor/build-module/components/colors-gradients/control';
-import { useSelect } from '@wordpress/data';
+import { __experimentalUseEditorFeature } from '@wordpress/block-editor';
 
 type Props = {
   name: string,
@@ -17,16 +17,8 @@ const ColorGradientSettings = ({
   onColorChange,
   onGradientChange,
 }: Props) => {
-  const { settingsColors, settingsGradients } = useSelect(
-    (select) => {
-      const { getSettings } = select('core/block-editor');
-      return {
-        settingsColors: getSettings().colors,
-        settingsGradients: getSettings().gradients,
-      };
-    },
-    []
-  );
+  const settingsColors = __experimentalUseEditorFeature('color.palette');
+  const settingsGradients = __experimentalUseEditorFeature('color.gradients');
   return (
     <div>
       <ColorGradientControl
