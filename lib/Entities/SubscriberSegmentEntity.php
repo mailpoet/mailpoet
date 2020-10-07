@@ -25,7 +25,7 @@ class SubscriberSegmentEntity {
   private $segment;
 
   /**
-   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SubscriberEntity")
+   * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SubscriberEntity", inversedBy="subscriberSegments")
    * @var SubscriberEntity|null
    */
   private $subscriber;
