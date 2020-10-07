@@ -4,7 +4,7 @@ import '@wordpress/notices';
  * @see https://developer.wordpress.org/block-editor/packages/packages-data/
  */
 import { registerStore } from '@wordpress/data';
-import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
+import { global as SETTINGS_DEFAULTS } from './experimental-default-theme.json';
 import * as actions from './actions';
 import createReducer from './reducer.jsx';
 import selectors from './selectors.jsx';
@@ -19,9 +19,9 @@ export default () => {
   );
 
   const formBodyToBlocks = formBodyToBlocksFactory(
-    SETTINGS_DEFAULTS.fontSizes,
-    SETTINGS_DEFAULTS.colors,
-    SETTINGS_DEFAULTS.gradients,
+    SETTINGS_DEFAULTS.presets['font-size'],
+    SETTINGS_DEFAULTS.presets.color,
+    SETTINGS_DEFAULTS.presets.gradient,
     customFields
   );
 
