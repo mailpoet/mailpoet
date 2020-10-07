@@ -1,14 +1,16 @@
 parameters:
   level: 8
   tmpDir: ../../temp/phpstan
-  bootstrap: bootstrap.php
-  autoload_files:
+  bootstrapFiles:
+    - bootstrap.php
     - ../../vendor/autoload.php
     - ../../vendor/codeception/codeception/autoload.php
     - ../../vendor/codeception/verify/src/Codeception/function.php
     - ../../vendor/codeception/verify/src/Codeception/Verify.php
-  autoload_directories:
-    - ../../tests/_support/_generated # without this line PHPStan segfaults ¯\_(ツ)_/¯
+    - ../../tests/_support/_generated/AcceptanceTesterActions.php
+    - ../../tests/_support/_generated/IntegrationTesterActions.php
+    - ../../tests/_support/_generated/UnitTesterActions.php
+  scanDirectories:
     - ../../tests/_support
     - ../../tests/acceptance
     - ../../tests/integration
@@ -16,7 +18,7 @@ parameters:
   dynamicConstantNames:
     - WP_DEBUG
   ignoreErrors:
-    - '/Parameter #1 $cssOrXPath of method AcceptanceTester::moveMouseOver() expects string|null, array<string, string> given./'
+    - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
     - '/Function expect invoked with 1 parameter, 0 required\./'
     - '/(with|has) no (return )?typehint specified/' # exclude level 6 errors
   excludes_analyse:

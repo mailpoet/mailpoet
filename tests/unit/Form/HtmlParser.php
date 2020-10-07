@@ -35,6 +35,7 @@ class HtmlParser {
   }
 
   public function getAttribute(\DOMElement $element, string $attrNam): \DOMAttr {
+    assert($element->attributes instanceof \DOMNamedNodeMap);
     $attr = $element->attributes->getNamedItem($attrNam);
     assert($attr instanceof \DOMAttr);
     return $attr;
