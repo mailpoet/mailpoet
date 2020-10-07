@@ -61,7 +61,7 @@ class ReleaseVersionController {
   private function getUnreleasedDoneIssues($project = null) {
     $project = $project ?: $this->project;
     $jql = "project = $project AND status = Done AND (fixVersion = EMPTY OR fixVersion IN unreleasedVersions()) AND updated >= -52w";
-    $result = $this->jira->search($jql, ['key', JiraController::VERSION_INCREMENT_FIELD_ID]);
+    $result = $this->jira->search($jql);
     return $result['issues'];
   }
 
