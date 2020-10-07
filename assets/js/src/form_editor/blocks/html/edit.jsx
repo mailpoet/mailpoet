@@ -6,7 +6,7 @@ import {
   ToggleControl,
   SandBox,
 } from '@wordpress/components';
-import { InspectorControls } from '@wordpress/block-editor';
+import { InspectorControls, __experimentalUseEditorFeature } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { debounce } from 'lodash';
@@ -16,6 +16,7 @@ import { mapColorSlugToValue } from 'form_editor/store/mapping/from_blocks/style
 import ParagraphEdit from '../paragraph_edit.jsx';
 
 const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
+  const colorDefinitions = __experimentalUseEditorFeature('color.palette');
   const {
     fontColor,
     fontSize,
@@ -24,8 +25,6 @@ const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
   } = useSelect(
     (select) => {
       const settings = select('mailpoet-form-editor').getFormSettings();
-      const { getSettings } = select('core/block-editor');
-      const colorDefinitions = getSettings().colors;
       const parentBackgroundColor = mapColorSlugToValue(
         colorDefinitions,
         select('mailpoet-form-editor').getClosestParentAttribute(clientId, 'backgroundColor'),
