@@ -16,21 +16,22 @@ class GitHubController {
 
   const QA_GITHUB_LOGIN = 'veljkho';
 
+  private const API_BASE_URI = 'https://api.github.com/repos/mailpoet';
+
   /** @var string */
   private $zipFilename;
 
-  /** @var HttpClient */
+  /** @var Client */
   private $httpClient;
 
   public function __construct($username, $token, $project) {
     $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
-    $githubPath = $project === self::PROJECT_MAILPOET ? 'mailpoet' : 'mailpoet-premium';
     $this->httpClient = new Client([
       'auth' => [$username, $token],
       'headers' => [
         'Accept' => 'application/vnd.github.v3+json',
       ],
-      'base_uri' => "https://api.github.com/repos/mailpoet/$githubPath/",
+      'base_uri' => self::API_BASE_URI . "/{$this->getGithubPathByProject($project)}/",
     ]);
   }
 
@@ -145,6 +146,22 @@ class GitHubController {
     return $data['sha'];
   }
 
+  public function projectBranchExists(string $project, string $branch): bool {
+    $githubProject = $this->getGithubPathByProject($project);
+    $branch = urlencode($branch);
+    try {
+      $this->httpClient->get(
+        self::API_BASE_URI . "/{$githubProject}/git/ref/heads/{$branch}"
+      );
+    } catch (ClientException $e) {
+      if ($e->getCode() === 404) {
+        return false;
+      }
+      throw $e;
+    }
+    return true;
+  }
+
   private function ensureNoDraftReleaseExists() {
     $response = $this->httpClient->get('releases');
     $data = json_decode($response->getBody()->getContents(), true);
@@ -200,5 +217,9 @@ class GitHubController {
         'draft' => false,
       ],
     ]);
+  }
+
+  private function getGithubPathByProject(string $project): string {
+    return urlencode($project === self::PROJECT_MAILPOET ? 'mailpoet' : 'mailpoet-premium');
   }
 }
