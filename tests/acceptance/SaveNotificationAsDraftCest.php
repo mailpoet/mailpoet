@@ -20,10 +20,14 @@ class SaveNotificationAsDraftCest {
     $i->click('Next');
     //Save Notification As Draft
     $sendFormElement = '[data-automation-id="newsletter_send_form"]';
+    $saveAsDraftButton = '[data-automation-id="email-save-draft"]';
     $i->waitForElement($sendFormElement);
     $i->selectOptionInSelect2($segmentName);
-    $i->click('Save as draft and close');
+    $i->scrollTo($saveAsDraftButton);
+    $i->waitForElementVisible($saveAsDraftButton);
+    $i->click($saveAsDraftButton);
     $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForText('Draft Test Post Notification');
+    $i->waitForText('Not Active');
   }
 }
