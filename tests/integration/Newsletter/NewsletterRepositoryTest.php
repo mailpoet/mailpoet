@@ -161,28 +161,8 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     // Delete
     $this->repository->bulkDelete([$standardNewsletter->getId(), $notification->getId()]);
 
-    // Detach entities so that ORM forget them
-    $this->entityManager->detach($standardNewsletter);
-    $this->entityManager->detach($notification);
-    $this->entityManager->detach($notificationHistory);
-    $this->entityManager->detach($standardQueue);
-    $this->entityManager->detach($notificationHistoryQueue);
-    $this->entityManager->detach($standardScheduledTaks);
-    $this->entityManager->detach($notificationHistoryScheduledTask);
-    $this->entityManager->detach($standardSegment);
-    $this->entityManager->detach($notificationHistorySegment);
-    $this->entityManager->detach($standardStatsNotification);
-    $this->entityManager->detach($standardStatsNotificationScheduledTask);
-    $this->entityManager->detach($notificationHistoryStatsNotification);
-    $this->entityManager->detach($notificationHistoryStatsNotificationScheduledTask);
-    $this->entityManager->detach($standardLink);
-    $this->entityManager->detach($notificationHistoryLink);
-    $this->entityManager->detach($optionValue);
-    $this->entityManager->detach($newsletterPost);
-    $this->entityManager->detach($statisticsNewsletter);
-    $this->entityManager->detach($statisticsOpen);
-    $this->entityManager->detach($statisticsClick);
-    $this->entityManager->detach($statisticsPurchase);
+    // Clear entity manager to forget all entities
+    $this->entityManager->clear();
 
     // Check they were all deleted
     // Newsletters
