@@ -65,6 +65,7 @@ export const TopBar = ({
         >
           <BeamerIcon />
         </a>
+        <span id="beamer-empty-element" />
       </div>
     </div>
   );
