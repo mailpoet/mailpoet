@@ -168,6 +168,7 @@ class Widget extends \WP_Widget {
       }
     </script>
     <?php
+    return '';
   }
 
   /**

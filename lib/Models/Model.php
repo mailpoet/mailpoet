@@ -222,6 +222,10 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     }
   }
 
+  /**
+   * @return static
+   * @phpstan-ignore-next-line Our Model has incompatible return type with parent
+   */
   public function save() {
     $this->setTimestamp();
     $this->newRecord = $this->isNew();
@@ -387,7 +391,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
 
   public function __set($name, $value) {
     $name = Helpers::camelCaseToUnderscore($name);
-    return parent::__set($name, $value);
+    parent::__set($name, $value);
   }
 
   public function __isset($name) {

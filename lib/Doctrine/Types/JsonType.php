@@ -36,7 +36,7 @@ class JsonType extends Type {
       $value = stream_get_contents($value);
     }
 
-    $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8'); // sanitize invalid utf8
+    $value = mb_convert_encoding((string)$value, 'UTF-8', 'UTF-8'); // sanitize invalid utf8
     $decoded = json_decode($value, true);
     $this->handleErrors();
     return $decoded;
