@@ -75,8 +75,9 @@ class JiraController {
     return reset($version['values']);
   }
 
-  public function getLastReleasedVersion() {
-    $response = $this->httpClient->get("project/$this->project/version", [
+  public function getLastReleasedVersion(?string $project = null) {
+    $project = $project ?: $this->project;
+    $response = $this->httpClient->get("project/$project/version", [
       'query' => [
         'maxResults' => 1,
         'orderBy' => '-sequence',

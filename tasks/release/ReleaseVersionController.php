@@ -7,11 +7,15 @@ class ReleaseVersionController {
   /** @var JiraController */
   private $jira;
 
+  /** @var GitHubController */
+  private $github;
+
   /** @var string */
   private $project;
 
-  public function __construct(JiraController $jira, $project) {
+  public function __construct(JiraController $jira, GitHubController $github, $project) {
     $this->jira = $jira;
+    $this->github = $github;
     $this->project = $project;
   }
 
@@ -35,37 +39,23 @@ class ReleaseVersionController {
   public function determineNextVersion() {
     $lastVersion = $this->jira->getLastReleasedVersion();
 
-    $partToIncrement = VersionHelper::PATCH;
+    $partToIncrement = VersionHelper::MINOR;
 
     if ($this->project === JiraController::PROJECT_MAILPOET) {
-      $freeIncrement = $this->checkProjectVersionIncrement(JiraController::PROJECT_MAILPOET);
-      $premiumIncrement = $this->checkProjectVersionIncrement(JiraController::PROJECT_PREMIUM);
+      $isPremiumReleased = $this->github->projectBranchExists(
+        JiraController::PROJECT_PREMIUM,
+        GitHubController::RELEASE_SOURCE_BRANCH
+      );
 
-      if (in_array(VersionHelper::MINOR, [$freeIncrement, $premiumIncrement])) {
-        $partToIncrement = VersionHelper::MINOR;
+      if (!$isPremiumReleased) {
+        $partToIncrement = VersionHelper::PATCH;
       }
+    } elseif ($this->project === JiraController::PROJECT_PREMIUM) {
+      $lastVersion = $this->jira->getLastReleasedVersion(JiraController::PROJECT_MAILPOET);
     }
 
     $nextVersion = VersionHelper::incrementVersion($lastVersion['name'], $partToIncrement);
     return $nextVersion;
-  }
-
-  private function checkProjectVersionIncrement($project) {
-    $issues = $this->getUnreleasedDoneIssues($project);
-
-    $partToIncrement = VersionHelper::PATCH;
-    $fieldId = JiraController::VERSION_INCREMENT_FIELD_ID;
-
-    foreach ($issues as $issue) {
-      if (!empty($issue['fields'][$fieldId]['value'])
-        && $issue['fields'][$fieldId]['value'] === VersionHelper::MINOR
-      ) {
-        $partToIncrement = VersionHelper::MINOR;
-        break;
-      }
-    }
-
-    return $partToIncrement;
   }
 
   private function getUnreleasedDoneIssues($project = null) {
