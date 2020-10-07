@@ -85,6 +85,7 @@ class RendererTest extends \MailPoetUnitTest {
     expect($recaptchaIframes->length)->equals(1);
     $iframe = $recaptchaIframes->item(0);
     assert($iframe instanceof \DOMNode);
+    assert($iframe->attributes instanceof \DOMNamedNodeMap);
     $source = $iframe->attributes->getNamedItem('src');
     assert($source instanceof \DOMAttr);
     expect($source->value)->equals("https://www.google.com/recaptcha/api/fallback?k=$token");
