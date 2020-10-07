@@ -44,7 +44,8 @@ const PremiumBanner = () => {
     const hasValidApiKey = window.mailpoet_has_valid_api_key;
     const title = MailPoet.I18n.t('upgradeRequired');
     const youReachedTheLimit = MailPoet.I18n.t(hasValidApiKey ? 'newsletterYourPlanLimit' : 'newsletterFreeVersionLimit')
-      .replace('[subscribersLimit]', window.mailpoet_subscribers_limit);
+      .replace('[subscribersLimit]', window.mailpoet_subscribers_limit)
+      .replace('[subscribersCount]', window.mailpoet_subscribers_count);
     const upgradeLink = hasValidApiKey
       ? 'https://account.mailpoet.com/upgrade'
       : `https://account.mailpoet.com/?s=${window.mailpoet_subscribers_count + 1}`;
