@@ -16,6 +16,7 @@ $beamer-dot-size: 8px;
 }
 
 .mailpoet-top-bar-logo {
+  cursor: pointer;
   object-fit: contain;
 }
 
@@ -54,6 +55,7 @@ $beamer-dot-size: 8px;
   background-color: $color-white;
   border: solid 2px $color-tertiary-light;
   border-radius: 4px;
+  cursor: pointer;
   display: flex;
   height: 40px;
   justify-content: center;
