@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Button,
-  __experimentalToolbarItem as ToolbarItem,
+  ToolbarItem,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { plus } from '@wordpress/icons';
