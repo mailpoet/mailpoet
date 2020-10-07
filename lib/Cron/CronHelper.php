@@ -186,20 +186,23 @@ class CronHelper {
       throw new \Exception(__('Site URL is unreachable.', 'mailpoet'));
     }
 
-    $scheme = '';
+    $callScheme = '';
     if (isset($parsedUrl['scheme']) && ($parsedUrl['scheme'] === 'https')) {
-      $scheme = 'ssl://';
+      $callScheme = 'ssl://';
     }
+
     // 1. if site URL does not contain a port, return the URL
     if (!isset($parsedUrl['port']) || empty($parsedUrl['port'])) return $siteUrl;
     // 2. if site URL contains valid port, try connecting to it
-    $fp = @fsockopen($scheme . $parsedUrl['host'], $parsedUrl['port'], $errno, $errstr, 1);
+    $urlHost = $parsedUrl['host'] ?? '';
+    $fp = @fsockopen($callScheme . $urlHost, $parsedUrl['port'], $errno, $errstr, 1);
     if ($fp) return $siteUrl;
     // 3. if connection fails, attempt to connect the standard port derived from URL
     // schema
-    $port = (strtolower($parsedUrl['scheme']) === 'http') ? 80 : 443;
-    $fp = @fsockopen($scheme . $parsedUrl['host'], $port, $errno, $errstr, 1);
-    if ($fp) return sprintf('%s://%s', $parsedUrl['scheme'], $parsedUrl['host']);
+    $urlScheme = $parsedUrl['scheme'] ?? '';
+    $port = (strtolower($urlScheme) === 'http') ? 80 : 443;
+    $fp = @fsockopen($callScheme . $urlHost, $port, $errno, $errstr, 1);
+    if ($fp) return sprintf('%s://%s', $urlScheme, $urlHost);
     // 4. throw an error if all connection attempts failed
     throw new \Exception(__('Site URL is unreachable.', 'mailpoet'));
   }
