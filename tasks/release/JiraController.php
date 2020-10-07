@@ -8,7 +8,6 @@ class JiraController {
 
   const CHANGELOG_FIELD_ID = 'customfield_10500';
   const RELEASENOTE_FIELD_ID = 'customfield_10504';
-  const VERSION_INCREMENT_FIELD_ID = 'customfield_10509';
   const PULL_REQUESTS_ID = 'customfield_10000';
 
   const WONT_DO_RESOLUTION_ID = '10001';
