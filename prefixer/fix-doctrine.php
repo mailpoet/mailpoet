@@ -19,28 +19,6 @@ foreach ($files as $file) {
   }
 }
 
-// fix '"continue" targeting switch is equivalent to "break". Did you mean to use "continue 2" on PHP 7.3+'
-$file = __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/UnitOfWork.php';
-$data = file_get_contents($file);
-if (strpos($data, '// mp-fixed') === false) {
-  $data = preg_replace('#(// use the entity association.+?if.+?{.+?)continue;#s', '$1break; // mp-fixed', $data);
-  $data = preg_replace('#(if\s+\(!\$associatedId\)\s+{\s+// Foreign key is NULL.+?)continue;#s', '$1break; // mp-fixed', $data);
-  file_put_contents($file, $data);
-}
-
-// apply https://github.com/doctrine/common/commit/59374594248862ccfb418bbb5fc2cf91c5ef8dd0#diff-ce03ab9b396edcbb313c54234c20e0de
-// to our version of Doctrine - when we can upgrade to Doctrine\Common >= v2.11.0, this patch can be removed
-$file = __DIR__ . '/../vendor-prefixed/doctrine/common/lib/Doctrine/Common/Proxy/ProxyGenerator.php';
-$data = file_get_contents($file);
-$data = str_replace('$code = \\file($method->getDeclaringClass()->getFileName());', '$code = \\file($method->getFileName());', $data);
-file_put_contents($file, $data);
-
-// apply https://github.com/doctrine/orm/pull/7785/files
-// to our version of Doctrine - when we can upgrade to Doctrine\ORM >= v2.6.0, this patch can be removed
-$file = __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Query/Parser.php';
-$data = file_get_contents(__DIR__ . '/Parser.php');
-file_put_contents($file, $data);
-
 // cleanup file types by extension
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name '*.xsd' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'phpstan.neon' -delete");
