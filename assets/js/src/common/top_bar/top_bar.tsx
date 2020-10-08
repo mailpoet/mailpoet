@@ -4,6 +4,7 @@ import { withFeatureAnnouncement } from 'announcements/with_feature_announcement
 import { MailPoetLogo } from './mailpoet_logo';
 import { MailPoetLogoMobile } from './mailpoet_logo_mobile';
 import { BeamerIcon } from './beamer_icon';
+import { ScreenOptionsFix } from './screen_options_fix';
 import MailPoet from '../../mailpoet';
 
 type Props = {
@@ -68,6 +69,7 @@ export const TopBar = ({
         </a>
         <span id="beamer-empty-element" />
       </div>
+      <ScreenOptionsFix />
     </div>
   );
 };
