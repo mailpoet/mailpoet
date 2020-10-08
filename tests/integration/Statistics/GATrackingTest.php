@@ -66,8 +66,8 @@ class GATrackingTest extends \MailPoetTest {
       'ga_campaign' => $this->gaCampaign,
     ]);
     $result = $tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
-    expect($result['text'])->contains('utm_campaign=' . urlencode($this->gaCampaign));
-    expect($result['html'])->contains('utm_campaign=' . urlencode($this->gaCampaign));
+    expect($result['text'])->stringContainsString('utm_campaign=' . urlencode($this->gaCampaign));
+    expect($result['html'])->stringContainsString('utm_campaign=' . urlencode($this->gaCampaign));
   }
 
   public function testItKeepsShorcodes() {
@@ -76,8 +76,8 @@ class GATrackingTest extends \MailPoetTest {
       'ga_campaign' => $this->gaCampaign,
     ]);
     $result = $tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
-    expect($result['text'])->contains('email=[subscriber:email]');
-    expect($result['html'])->contains('email=[subscriber:email]');
+    expect($result['text'])->stringContainsString('email=[subscriber:email]');
+    expect($result['html'])->stringContainsString('email=[subscriber:email]');
   }
 
   public function _after() {

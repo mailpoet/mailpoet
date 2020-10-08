@@ -168,7 +168,7 @@ class NewslettersTest extends \MailPoetTest {
     );
     $hookName = 'mailpoet_api_newsletters_get_after';
     expect(WPHooksHelper::isFilterApplied($hookName))->true();
-    expect(WPHooksHelper::getFilterApplied($hookName)[0])->internalType('array');
+    expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
   }
 
   public function testItCanSaveANewsletter() {
@@ -670,7 +670,7 @@ class NewslettersTest extends \MailPoetTest {
     ]);
 
     $response = $this->endpoint->showPreview($data);
-    expect($response->meta['preview_url'])->notContains('http');
+    expect($response->meta['preview_url'])->stringNotContainsString('http');
     expect($response->meta['preview_url'])->regExp('!^\/\/!');
   }
 

@@ -17,7 +17,7 @@ class SubscriberExporterTest extends \MailPoetTest {
 
   public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->exporter->export('email.that@doesnt.exists');
-    expect($result)->internalType('array');
+    expect($result)->array();
     expect($result)->hasKey('data');
     expect($result['data'])->equals([]);
     expect($result)->hasKey('done');
@@ -33,10 +33,10 @@ class SubscriberExporterTest extends \MailPoetTest {
       'created_at' => '2018-05-03 10:30:08',
     ]);
     $result = $this->exporter->export('email.that@has.no.custom.fields');
-    expect($result)->internalType('array');
+    expect($result)->array();
     expect($result)->hasKey('data');
     expect($result)->hasKey('done');
-    expect($result['data'])->internalType('array');
+    expect($result['data'])->array();
     expect($result['data'])->count(1);
     expect($result['done'])->equals(true);
     expect($result['data'][0])->hasKey('group_id');

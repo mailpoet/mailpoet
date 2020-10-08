@@ -103,7 +103,7 @@ class RendererTest extends \MailPoetTest {
       $renderedColumnContent[] = trim($column->text());
     };
     expect($renderedColumnContent)->equals($columnContent);
-    expect((string)$DOM)->contains(' bgcolor="#999999"');
+    expect((string)$DOM)->stringContainsString(' bgcolor="#999999"');
   }
 
   public function testItRendersTwoColumns() {
@@ -130,7 +130,7 @@ class RendererTest extends \MailPoetTest {
       $renderedColumnContent[] = trim($column->text());
     };
     expect($renderedColumnContent)->equals($columnContent);
-    expect((string)$DOM)->contains(' bgcolor="#999999"');
+    expect((string)$DOM)->stringContainsString(' bgcolor="#999999"');
   }
 
   public function testItRendersThreeColumns() {
@@ -158,7 +158,7 @@ class RendererTest extends \MailPoetTest {
       $renderedColumnContent[] = trim($column->text());
     };
     expect($renderedColumnContent)->equals($columnContent);
-    expect((string)$DOM)->contains(' bgcolor="#999999"');
+    expect((string)$DOM)->stringContainsString(' bgcolor="#999999"');
   }
 
   public function testItRendersScaledColumnBackgroundImage() {
@@ -176,12 +176,12 @@ class RendererTest extends \MailPoetTest {
       )
     );
     $columnCss = $DOM('td.mailpoet_content')[0]->attr('style');
-    expect($columnCss)->contains('background: #999999 url(https://example.com/image.jpg) no-repeat center/cover;');
-    expect($columnCss)->contains('background-color: #999999;');
-    expect($columnCss)->contains('background-image: url(https://example.com/image.jpg);');
-    expect($columnCss)->contains('background-repeat: no-repeat;');
-    expect($columnCss)->contains('background-position: center;');
-    expect($columnCss)->contains('background-size: cover;');
+    expect($columnCss)->stringContainsString('background: #999999 url(https://example.com/image.jpg) no-repeat center/cover;');
+    expect($columnCss)->stringContainsString('background-color: #999999;');
+    expect($columnCss)->stringContainsString('background-image: url(https://example.com/image.jpg);');
+    expect($columnCss)->stringContainsString('background-repeat: no-repeat;');
+    expect($columnCss)->stringContainsString('background-position: center;');
+    expect($columnCss)->stringContainsString('background-size: cover;');
   }
 
   public function testItRendersFitColumnBackgroundImage() {
@@ -199,12 +199,12 @@ class RendererTest extends \MailPoetTest {
       )
     );
     $columnCss = $DOM('td.mailpoet_content')[0]->attr('style');
-    expect($columnCss)->contains('background: #999999 url(https://example.com/image.jpg) no-repeat center/contain;');
-    expect($columnCss)->contains('background-color: #999999;');
-    expect($columnCss)->contains('background-image: url(https://example.com/image.jpg);');
-    expect($columnCss)->contains('background-repeat: no-repeat;');
-    expect($columnCss)->contains('background-position: center;');
-    expect($columnCss)->contains('background-size: contain;');
+    expect($columnCss)->stringContainsString('background: #999999 url(https://example.com/image.jpg) no-repeat center/contain;');
+    expect($columnCss)->stringContainsString('background-color: #999999;');
+    expect($columnCss)->stringContainsString('background-image: url(https://example.com/image.jpg);');
+    expect($columnCss)->stringContainsString('background-repeat: no-repeat;');
+    expect($columnCss)->stringContainsString('background-position: center;');
+    expect($columnCss)->stringContainsString('background-size: contain;');
   }
 
   public function testItRendersTiledColumnBackgroundImage() {
@@ -222,12 +222,12 @@ class RendererTest extends \MailPoetTest {
       )
     );
     $columnCss = $DOM('td.mailpoet_content')[0]->attr('style');
-    expect($columnCss)->contains('background: #999999 url(https://example.com/image.jpg) repeat center/contain;');
-    expect($columnCss)->contains('background-color: #999999;');
-    expect($columnCss)->contains('background-image: url(https://example.com/image.jpg);');
-    expect($columnCss)->contains('background-repeat: repeat;');
-    expect($columnCss)->contains('background-position: center;');
-    expect($columnCss)->contains('background-size: contain;');
+    expect($columnCss)->stringContainsString('background: #999999 url(https://example.com/image.jpg) repeat center/contain;');
+    expect($columnCss)->stringContainsString('background-color: #999999;');
+    expect($columnCss)->stringContainsString('background-image: url(https://example.com/image.jpg);');
+    expect($columnCss)->stringContainsString('background-repeat: repeat;');
+    expect($columnCss)->stringContainsString('background-position: center;');
+    expect($columnCss)->stringContainsString('background-size: contain;');
   }
 
   public function testItRendersFallbackColumnBackgroundColorForBackgroundImage() {
@@ -245,8 +245,8 @@ class RendererTest extends \MailPoetTest {
       )
     );
     $columnCss = $DOM('td.mailpoet_content')[0]->attr('style');
-    expect($columnCss)->contains('background: #ffffff url(https://example.com/image.jpg) repeat center/contain;');
-    expect($columnCss)->contains('background-color: #ffffff;');
+    expect($columnCss)->stringContainsString('background: #ffffff url(https://example.com/image.jpg) repeat center/contain;');
+    expect($columnCss)->stringContainsString('background-color: #ffffff;');
   }
 
   public function testItRendersHeader() {
@@ -314,7 +314,7 @@ class RendererTest extends \MailPoetTest {
     ];
     $renderedImage = (new Image)->render($image, self::COLUMN_BASE_WIDTH);
     $siteUrl = get_option('siteurl');
-    expect($renderedImage)->contains('src="' . $siteUrl . '/relative-path"');
+    expect($renderedImage)->stringContainsString('src="' . $siteUrl . '/relative-path"');
 
     $image = [
       'src' => '//path-without-protocol',
@@ -325,7 +325,7 @@ class RendererTest extends \MailPoetTest {
       'alt' => 'some test alt text',
     ];
     $renderedImage = (new Image)->render($image, self::COLUMN_BASE_WIDTH);
-    expect($renderedImage)->contains('src="//path-without-protocol"');
+    expect($renderedImage)->stringContainsString('src="//path-without-protocol"');
   }
 
   public function testItRendersImageWithLink() {
@@ -334,7 +334,7 @@ class RendererTest extends \MailPoetTest {
     $template['link'] = 'http://example.com';
     $DOM = $this->dOMParser->parseStr((new Image)->render($template, self::COLUMN_BASE_WIDTH));
     // element should be wrapped in <a> tag
-    expect($DOM('tr > td > a', 0)->html())->contains('<img');
+    expect($DOM('tr > td > a', 0)->html())->stringContainsString('<img');
     expect($DOM('tr > td > a', 0)->attr('href'))->equals($template['link']);
   }
 
@@ -377,7 +377,7 @@ class RendererTest extends \MailPoetTest {
       'alt' => 'some test alt text',
     ];
     $renderedImage = (new Image)->render($image, self::COLUMN_BASE_WIDTH);
-    expect($renderedImage)->contains('width="auto"');
+    expect($renderedImage)->stringContainsString('width="auto"');
   }
 
   public function testItAdjustImageDimensionsWithPx() {
@@ -390,7 +390,7 @@ class RendererTest extends \MailPoetTest {
       'alt' => 'some test alt text',
     ];
     $renderedImage = (new Image)->render($image, self::COLUMN_BASE_WIDTH);
-    expect($renderedImage)->contains('width="620"');
+    expect($renderedImage)->stringContainsString('width="620"');
   }
 
   public function testItAdjustImageDimensionsWithoutPx() {
@@ -403,7 +403,7 @@ class RendererTest extends \MailPoetTest {
       'alt' => 'some test alt text',
     ];
     $renderedImage = (new Image)->render($image, self::COLUMN_BASE_WIDTH);
-    expect($renderedImage)->contains('width="620"');
+    expect($renderedImage)->stringContainsString('width="620"');
   }
 
   public function testItRendersText() {
@@ -420,10 +420,10 @@ class RendererTest extends \MailPoetTest {
     // blockquote should contain heading elements but not paragraphs
     expect(
       $DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
-    )->contains('<h2');
+    )->stringContainsString('<h2');
     expect(
       $DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
-    )->notContains('<p');
+    )->stringNotContainsString('<p');
     // ul/ol/li should have mailpoet_paragraph class added & styles applied
     expect(
       $DOM('tr > td > ul.mailpoet_paragraph > li.mailpoet_paragraph', 0)->html()
@@ -432,10 +432,10 @@ class RendererTest extends \MailPoetTest {
       $DOM('tr > td > ol.mailpoet_paragraph > li.mailpoet_paragraph', 0)->html()
     )->notEmpty();
     expect($DOM('tr > td.mailpoet_text > ul.mailpoet_paragraph', 0)->attr('style'))
-      ->contains('padding-top:0;padding-bottom:0;margin-top:10px;text-align:left;margin-bottom:10px;');
+      ->stringContainsString('padding-top:0;padding-bottom:0;margin-top:10px;text-align:left;margin-bottom:10px;');
     // headings should be styled
     expect($DOM('tr > td.mailpoet_text > h1', 0)->attr('style'))
-      ->contains('padding:0;font-style:normal;font-weight:normal;');
+      ->stringContainsString('padding:0;font-style:normal;font-weight:normal;');
 
     // trailing line breaks should be cut off, but not inside an element
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][8];
@@ -443,7 +443,7 @@ class RendererTest extends \MailPoetTest {
     expect(count($DOM('tr > td > br', 0)))
       ->equals(0);
     expect($DOM('tr > td > h3', 0)->html())
-      ->contains('<a');
+      ->stringContainsString('<a');
   }
 
   public function testItRendersDivider() {
@@ -540,7 +540,7 @@ class RendererTest extends \MailPoetTest {
     // image source/link href/alt should be  properly set
     expect($DOM('tr > td', 0)->html())->notEmpty();
     expect($DOM('a', 0)->attr('href'))->equals('http://example.com');
-    expect($DOM('td > a:nth-of-type(10) > img')->attr('src'))->contains('custom.png');
+    expect($DOM('td > a:nth-of-type(10) > img')->attr('src'))->stringContainsString('custom.png');
     expect($DOM('td > a:nth-of-type(10) > img')->attr('alt'))->equals('custom');
     // there should be 10 icons
     expect(count($DOM('a > img')))->equals(10);
@@ -593,7 +593,7 @@ class RendererTest extends \MailPoetTest {
 
     $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->render($this->newsletter);
-    expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
+    expect($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
   }
 
   public function testItDoesNotAddMailpoetLogoWhenMSSIsActive() {
@@ -602,7 +602,7 @@ class RendererTest extends \MailPoetTest {
 
     $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->render($this->newsletter);
-    expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
+    expect($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
   }
 
   public function testItDoesNotAddMailpoetLogoWhenPreviewIsEnabled() {
@@ -611,7 +611,7 @@ class RendererTest extends \MailPoetTest {
 
     $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->renderAsPreview($this->newsletter);
-    expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
+    expect($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
   }
 
   public function testItAddsMailpoetLogo() {
@@ -620,7 +620,7 @@ class RendererTest extends \MailPoetTest {
     $this->license->method('hasLicense')->willReturn(false);
 
     $template = $this->renderer->render($this->newsletter);
-    expect($template['html'])->contains('mailpoet_logo_newsletter.png');
+    expect($template['html'])->stringContainsString('mailpoet_logo_newsletter.png');
   }
 
   public function testItPostProcessesTemplate() {

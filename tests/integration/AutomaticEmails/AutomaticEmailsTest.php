@@ -81,7 +81,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
 
     $result = $this->AM->getAutomaticEmails();
     expect($result)->hasKey('email1');
-    expect($result)->hasntKey('email2');
+    expect($result)->hasNotKey('email2');
 
     $this->wp->removeAllFilters('mailpoet_automatic_email_test1');
     $this->wp->removeAllFilters('mailpoet_automatic_email_test2');

@@ -74,10 +74,10 @@ class LinksTest extends \MailPoetTest {
     expect(count($hashedLinks))->equals(2);
     // links in returned content were replaced with hashes
     expect($updatedContent)
-      ->contains(Links::DATA_TAG_CLICK . '-' . $hashedLinks[0]['hash']);
+      ->stringContainsString(Links::DATA_TAG_CLICK . '-' . $hashedLinks[0]['hash']);
     expect($updatedContent)
-      ->contains(Links::DATA_TAG_CLICK . '-' . $hashedLinks[1]['hash']);
-    expect($updatedContent)->notContains('link');
+      ->stringContainsString(Links::DATA_TAG_CLICK . '-' . $hashedLinks[1]['hash']);
+    expect($updatedContent)->stringNotContainsString('link');
   }
 
   public function testItHashesAndReplacesLinksWithSpecialCharacters() {
@@ -109,10 +109,10 @@ class LinksTest extends \MailPoetTest {
     expect($replacedLinks)->count(1);
     // links in returned content were replaced with hashes
     expect($updatedContent)
-      ->contains('replace by this');
+      ->stringContainsString('replace by this');
     expect($updatedContent)
-      ->contains('[link:some_link_shortcode]');
-    expect($updatedContent)->notContains('http://example.com');
+      ->stringContainsString('[link:some_link_shortcode]');
+    expect($updatedContent)->stringNotContainsString('http://example.com');
   }
 
   public function testItCreatesAndTransformsUrlDataObject() {
@@ -149,8 +149,8 @@ class LinksTest extends \MailPoetTest {
     $result = Links::replaceSubscriberData($subscriber->id, $queue->id, $template);
 
     // there are no click/open data tags
-    expect($result)->notContains(Links::DATA_TAG_CLICK);
-    expect($result)->notContains(Links::DATA_TAG_OPEN);
+    expect($result)->stringNotContainsString(Links::DATA_TAG_CLICK);
+    expect($result)->stringNotContainsString(Links::DATA_TAG_OPEN);
 
     // data tags were converted to URLs
     expect($result)
@@ -233,8 +233,8 @@ class LinksTest extends \MailPoetTest {
       <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
     $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queueId);
-    expect($result)->contains($newsletterLink->url);
-    expect($result)->contains('[mailpoet_click_data]-123');
+    expect($result)->stringContainsString($newsletterLink->url);
+    expect($result)->stringContainsString('[mailpoet_click_data]-123');
   }
 
   public function testItCanEnsureThatUnsubscribeLinkIsAmongProcessedLinks() {
@@ -275,8 +275,8 @@ class LinksTest extends \MailPoetTest {
       <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
     $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = true);
-    expect($result)->contains($newsletterLink1->url);
-    expect($result)->contains($newsletterLink2->url);
+    expect($result)->stringContainsString($newsletterLink1->url);
+    expect($result)->stringContainsString($newsletterLink2->url);
   }
 
   public function _after() {

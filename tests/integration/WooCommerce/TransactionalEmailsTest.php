@@ -90,7 +90,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
       'type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL,
     ]);
     expect($email)->notEmpty();
-    expect(json_encode($email->getBody()))->contains('my-awesome-image-url');
+    expect(json_encode($email->getBody()))->stringContainsString('my-awesome-image-url');
   }
 
   public function testInitStripsUnwantedTagsFromWCFooterText() {

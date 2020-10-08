@@ -164,13 +164,13 @@ class NewsletterTest extends \MailPoetTest {
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();
     expect($renderedNewsletter['html'])
-      ->contains('[mailpoet_click_data]-' . $link->hash);
+      ->stringContainsString('[mailpoet_click_data]-' . $link->hash);
     expect($renderedNewsletter['html'])
-      ->contains('[mailpoet_open_data]');
+      ->stringContainsString('[mailpoet_open_data]');
 
     $hookName = 'mailpoet_sending_newsletter_render_after';
     expect(WPHooksHelper::isFilterApplied($hookName))->true();
-    expect(WPHooksHelper::getFilterApplied($hookName)[0])->internalType('array');
+    expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
     expect(WPHooksHelper::getFilterApplied($hookName)[1] instanceof Newsletter)->true();
   }
 
@@ -189,13 +189,13 @@ class NewsletterTest extends \MailPoetTest {
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();
     expect($renderedNewsletter['html'])
-      ->notContains('[mailpoet_click_data]');
+      ->stringNotContainsString('[mailpoet_click_data]');
     expect($renderedNewsletter['html'])
-      ->notContains('[mailpoet_open_data]');
+      ->stringNotContainsString('[mailpoet_open_data]');
 
     $hookName = 'mailpoet_sending_newsletter_render_after';
     expect(WPHooksHelper::isFilterApplied($hookName))->true();
-    expect(WPHooksHelper::getFilterApplied($hookName)[0])->internalType('array');
+    expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
     expect(WPHooksHelper::getFilterApplied($hookName)[1] instanceof Newsletter)->true();
   }
 
@@ -270,7 +270,7 @@ class NewsletterTest extends \MailPoetTest {
     $queue = SendingTask::getByNewsletterId($newsletter->id);
     $wp = new WPFunctions();
     expect($queue->newsletterRenderedSubject)
-      ->contains(date_i18n('jS', $wp->currentTime('timestamp')));
+      ->stringContainsString(date_i18n('jS', $wp->currentTime('timestamp')));
   }
 
   public function testItUsesADefaultSubjectIfRenderedSubjectIsEmptyWhenPreprocessingNewsletter() {
@@ -314,11 +314,11 @@ class NewsletterTest extends \MailPoetTest {
       $this->subscriber,
       $this->queue
     );
-    expect($result['subject'])->contains($this->subscriber->firstName);
+    expect($result['subject'])->stringContainsString($this->subscriber->firstName);
     expect($result['body']['html'])
-      ->contains(Router::NAME . '&endpoint=track&action=click&data=');
+      ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
     expect($result['body']['text'])
-      ->contains(Router::NAME . '&endpoint=track&action=click&data=');
+      ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
   public function testItDoesNotReplaceSubscriberDataInLinksWhenTrackingIsNotEnabled() {
@@ -331,9 +331,9 @@ class NewsletterTest extends \MailPoetTest {
       $this->queue
     );
     expect($result['body']['html'])
-      ->notContains(Router::NAME . '&endpoint=track&action=click&data=');
+      ->stringNotContainsString(Router::NAME . '&endpoint=track&action=click&data=');
     expect($result['body']['text'])
-      ->notContains(Router::NAME . '&endpoint=track&action=click&data=');
+      ->stringNotContainsString(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
   public function testItGetsSegments() {

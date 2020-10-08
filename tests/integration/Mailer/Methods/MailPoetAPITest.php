@@ -292,8 +292,8 @@ class MailPoetAPITest extends \MailPoetTest {
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->contains('unknown error');
-    expect($result['error']->getMessage())->contains('MailPoet has returned an unknown error.');
+    expect($result['error']->getMessage())->stringContainsString('unknown error');
+    expect($result['error']->getMessage())->stringContainsString('MailPoet has returned an unknown error.');
   }
 
   public function testItChecksBlacklistBeforeSendingToMultipleSubscribers() {
@@ -318,7 +318,7 @@ class MailPoetAPITest extends \MailPoetTest {
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->contains('unknown error');
-    expect($result['error']->getMessage())->contains('MailPoet has returned an unknown error.');
+    expect($result['error']->getMessage())->stringContainsString('unknown error');
+    expect($result['error']->getMessage())->stringContainsString('MailPoet has returned an unknown error.');
   }
 }

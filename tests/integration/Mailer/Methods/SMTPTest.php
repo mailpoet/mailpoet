@@ -198,7 +198,7 @@ class SMTPTest extends \MailPoetTest {
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->contains('SMTP has returned an unknown error.');
+    expect($result['error']->getMessage())->stringContainsString('SMTP has returned an unknown error.');
   }
 
   public function testItCanSend() {

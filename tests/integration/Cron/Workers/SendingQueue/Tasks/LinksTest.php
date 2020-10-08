@@ -34,9 +34,9 @@ class LinksTest extends \MailPoetTest {
     $processedRenderedNewsletterBody = $result[0];
     $processedAndHashedLinks = $result[1];
     expect($processedRenderedNewsletterBody['html'])
-      ->contains($processedAndHashedLinks[0]['hash']);
+      ->stringContainsString($processedAndHashedLinks[0]['hash']);
     expect($processedRenderedNewsletterBody['text'])
-      ->contains($processedAndHashedLinks[0]['hash']);
+      ->stringContainsString($processedAndHashedLinks[0]['hash']);
     expect($processedAndHashedLinks[0]['link'])->equals('http://example.com');
   }
 
@@ -52,7 +52,7 @@ class LinksTest extends \MailPoetTest {
     $result = Links::process($renderedNewsletter, $newsletter, $queue);
     $newsletterLink = NewsletterLink::where('newsletter_id', $newsletter->id)
       ->findOne();
-    expect($result['html'])->contains($newsletterLink->hash);
+    expect($result['html'])->stringContainsString($newsletterLink->hash);
   }
 
   public function testItCanEnsureThatInstantUnsubscribeLinkIsAlwaysPresent() {

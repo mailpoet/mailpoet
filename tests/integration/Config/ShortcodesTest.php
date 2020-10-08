@@ -52,7 +52,7 @@ class ShortcodesTest extends \MailPoetTest {
     $link = $dom->query('a');
     /** @var string $link */
     $link = $link->attr('href');
-    expect($link)->contains('endpoint=view_in_browser');
+    expect($link)->stringContainsString('endpoint=view_in_browser');
     $parsedLink = parse_url($link, PHP_URL_QUERY);
     parse_str(html_entity_decode((string)$parsedLink), $data);
     $requestData = Url::transformUrlDataObject(
@@ -73,8 +73,8 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->contains('form class="mailpoet-manage-subscription" method="post"');
-    expect($result)->contains($subscriber->email);
+    expect($result)->stringContainsString('form class="mailpoet-manage-subscription" method="post"');
+    expect($result)->stringContainsString($subscriber->email);
   }
 
   public function testItAppliesFilterForManageSubscriptionForm() {
@@ -94,8 +94,8 @@ class ShortcodesTest extends \MailPoetTest {
       return $page . ' MY CUSTOM CONTENT';
     });
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->contains('form class="mailpoet-manage-subscription" method="post"');
-    expect($result)->contains('MY CUSTOM CONTENT');
+    expect($result)->stringContainsString('form class="mailpoet-manage-subscription" method="post"');
+    expect($result)->stringContainsString('MY CUSTOM CONTENT');
     $wp->removeAllActions('mailpoet_manage_subscription_page');
   }
 
@@ -107,7 +107,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->contains('Subscription management form is only available to mailing lists subscribers.');
+    expect($result)->stringContainsString('Subscription management form is only available to mailing lists subscribers.');
   }
 
   public function testItDoesNotDisplayManageSubscriptionFormForLoggedOutUsers() {
@@ -117,7 +117,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->contains('Subscription management form is only available to mailing lists subscribers.');
+    expect($result)->stringContainsString('Subscription management form is only available to mailing lists subscribers.');
   }
 
   public function testItDisplaysLinkToManageSubscriptionPageForLoggedinExistingUsers() {
@@ -132,7 +132,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage]');
-    expect($result)->contains('Manage your subscription');
+    expect($result)->stringContainsString('Manage your subscription');
   }
 
   public function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
@@ -143,7 +143,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage]');
-    expect($result)->contains('Link to subscription management page is only available to mailing lists subscribers.');
+    expect($result)->stringContainsString('Link to subscription management page is only available to mailing lists subscribers.');
   }
 
   public function testItDoesNotDisplayManageSubscriptionPageForLoggedOutUsers() {
@@ -153,7 +153,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage]');
-    expect($result)->contains('Link to subscription management page is only available to mailing lists subscribers.');
+    expect($result)->stringContainsString('Link to subscription management page is only available to mailing lists subscribers.');
   }
 
   public function _after() {

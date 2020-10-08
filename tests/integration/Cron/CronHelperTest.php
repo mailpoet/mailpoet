@@ -271,7 +271,7 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItAllowsSettingCustomCronUrl() {
     $filter = function($url) {
-      expect($url)->contains('&endpoint=cron');
+      expect($url)->stringContainsString('&endpoint=cron');
       return 'http://custom_cron_url';
     };
     add_filter('mailpoet_cron_request_url', $filter);

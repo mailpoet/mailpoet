@@ -22,11 +22,11 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
     $subscriber = $this->getSubscriber($this->getSegment());
     $form = $this->formRenderer->renderForm(Subscriber::findOne($subscriber->getId()));
     expect($form)->regExp('/<form class="mailpoet-manage-subscription" method="post" action="[a-z0-9:\/\._]+wp-admin\/admin-post.php" novalidate>/');
-    expect($form)->contains('<input type="hidden" name="data[email]" value="subscriber@test.com" />');
+    expect($form)->stringContainsString('<input type="hidden" name="data[email]" value="subscriber@test.com" />');
     expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="First name" value="Fname" data-automation-id="form_first_name" \/>/');
     expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="Last name" value="Lname" data-automation-id="form_last_name" \/>/');
     expect($form)->regExp('/<input type="checkbox" class="mailpoet_checkbox" name="data\[[a-zA-Z0-9=_]+\]\[\]" value="1"  data-parsley-required="true" data-parsley-group="segments" data-parsley-errors-container="\.mailpoet_error_segments" data-parsley-required-message="Please select a list" \/> Test segment/');
-    expect($form)->contains('Need to change your email address? Unsubscribe here, then simply sign up again.');
+    expect($form)->stringContainsString('Need to change your email address? Unsubscribe here, then simply sign up again.');
   }
 
   public function testItAppliesFieldsFilter() {

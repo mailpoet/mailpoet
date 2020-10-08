@@ -18,7 +18,7 @@ class SegmentsExporterTest extends \MailPoetTest {
 
   public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->exporter->export('email.that@doesnt.exists');
-    expect($result)->internalType('array');
+    expect($result)->array();
     expect($result)->hasKey('data');
     expect($result['data'])->equals([]);
     expect($result)->hasKey('done');
@@ -30,7 +30,7 @@ class SegmentsExporterTest extends \MailPoetTest {
       'email' => 'email.that@has.no.segments',
     ]);
     $result = $this->exporter->export('email.that@has.no.segments');
-    expect($result)->internalType('array');
+    expect($result)->array();
     expect($result)->hasKey('data');
     expect($result['data'])->equals([]);
     expect($result)->hasKey('done');
@@ -56,7 +56,7 @@ class SegmentsExporterTest extends \MailPoetTest {
       'updated_at' => '2018-05-02 15:26:00',
     ]);
     $result = $this->exporter->export('email.that@has.some.segments');
-    expect($result)->internalType('array');
+    expect($result)->array();
     expect($result)->hasKey('data');
     expect($result)->hasKey('done');
     $expected = [
@@ -81,7 +81,7 @@ class SegmentsExporterTest extends \MailPoetTest {
           ],
        ],
     ];
-    expect($result['data'])->internalType('array');
+    expect($result['data'])->array();
     expect($result['data'])->count(2);
     expect($result['done'])->equals(true);
     expect($result['data'][0])->hasKey('group_id');

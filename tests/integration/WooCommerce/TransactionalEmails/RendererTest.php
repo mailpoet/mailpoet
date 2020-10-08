@@ -60,10 +60,10 @@ class RendererTest extends \MailPoetTest {
     $renderer = new Renderer(new csstidy, $newsletterRenderer);
     $renderer->render($this->newsletter);
     $html = $renderer->getHTMLBeforeContent('Heading Text');
-    expect($html)->contains('Some text before heading');
-    expect($html)->contains('Heading Text');
-    expect($html)->contains('Some text between heading and content');
-    expect($html)->notContains('Some text after content');
+    expect($html)->stringContainsString('Some text before heading');
+    expect($html)->stringContainsString('Heading Text');
+    expect($html)->stringContainsString('Some text between heading and content');
+    expect($html)->stringNotContainsString('Some text after content');
   }
 
   public function testGetHTMLAfterContent() {
@@ -91,10 +91,10 @@ class RendererTest extends \MailPoetTest {
     $renderer = new Renderer(new csstidy, $newsletterRenderer);
     $renderer->render($this->newsletter);
     $html = $renderer->getHTMLAfterContent();
-    expect($html)->notContains('Some text before heading');
-    expect($html)->notContains('Heading Text');
-    expect($html)->notContains('Some text between heading and content');
-    expect($html)->contains('Some text after content');
+    expect($html)->stringNotContainsString('Some text before heading');
+    expect($html)->stringNotContainsString('Heading Text');
+    expect($html)->stringNotContainsString('Some text between heading and content');
+    expect($html)->stringContainsString('Some text after content');
   }
 
   public function testPrefixCss() {
@@ -106,8 +106,8 @@ class RendererTest extends \MailPoetTest {
         font-weight:bold;
       }
     ');
-    expect($css)->contains("#mailpoet_woocommerce_container #some_id {\ncolor:black\n}");
-    expect($css)->contains("#mailpoet_woocommerce_container .some-class {\nheight:50px;\nwidth:30px\n}");
-    expect($css)->contains("#mailpoet_woocommerce_container h1 {\nfont-weight:700\n}");
+    expect($css)->stringContainsString("#mailpoet_woocommerce_container #some_id {\ncolor:black\n}");
+    expect($css)->stringContainsString("#mailpoet_woocommerce_container .some-class {\nheight:50px;\nwidth:30px\n}");
+    expect($css)->stringContainsString("#mailpoet_woocommerce_container h1 {\nfont-weight:700\n}");
   }
 }
