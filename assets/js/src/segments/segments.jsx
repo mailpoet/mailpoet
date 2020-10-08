@@ -11,23 +11,27 @@ import SegmentForm from 'segments/form.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 import DynamicSegmentForm from './dynamic_segments_form';
+import ListHeading from './heading';
 
 const container = document.getElementById('segments_container');
 
 const Tabs = () => (
-  <RoutedTabs activeKey="" routerType="switch-only">
-    <Tab key="" route="*" title={MailPoet.I18n.t('pageTitle')}>
-      <SegmentList />
-    </Tab>
-    <Tab
-      key="segments"
-      route="segments/(.*)?"
-      title={MailPoet.I18n.t('pageTitleSegments')}
-      automationId="dynamic-segments-tab"
-    >
-      <DynamicSegmentList />
-    </Tab>
-  </RoutedTabs>
+  <>
+    <ListHeading />
+    <RoutedTabs activeKey="" routerType="switch-only">
+      <Tab key="" route="*" title={MailPoet.I18n.t('pageTitle')}>
+        <SegmentList />
+      </Tab>
+      <Tab
+        key="segments"
+        route="segments/(.*)?"
+        title={MailPoet.I18n.t('pageTitleSegments')}
+        automationId="dynamic-segments-tab"
+      >
+        <DynamicSegmentList />
+      </Tab>
+    </RoutedTabs>
+  </>
 );
 
 const App = () => (

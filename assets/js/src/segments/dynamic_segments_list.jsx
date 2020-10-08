@@ -4,8 +4,6 @@ import MailPoet from 'mailpoet';
 import Listing from 'listing/listing.jsx';
 import PropTypes from 'prop-types';
 
-import SubscribersInPlan from '../common/subscribers_in_plan';
-
 const columns = [
   {
     name: 'name',
@@ -136,23 +134,6 @@ function renderItem(item, actions) {
 function DynamicSegmentList(props) {
   return (
     <>
-      <h1 className="pageTitle">
-        {MailPoet.I18n.t('pageTitleSegments')}
-        {' '}
-        <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
-        <Link className="page-title-action" to="/new-segment" data-automation-id="new-segment">{MailPoet.I18n.t('newSegment')}</Link>
-      </h1>
-
-      <SubscribersInPlan
-        subscribersInPlan={window.mailpoet_subscribers_in_plan_count}
-        subscribersInPlanLimit={window.mailpoet_subscribers_limit}
-        mailpoetSubscribers={window.mailpoet_premium_subscribers_count}
-        mailpoetSubscribersLimit={window.mailpoet_subscribers_limit}
-        hasPremiumSupport={window.mailpoet_has_premium_support}
-        wpUsersCount={window.mailpoet_wp_users_count}
-        mssActive={window.mailpoet_mss_active}
-      />
-
       <Listing
         limit={window.mailpoet_listing_per_page}
         location={props.location}

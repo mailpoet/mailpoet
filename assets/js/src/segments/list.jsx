@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import Listing from 'listing/listing.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from '../notices/invalid_mss_key_notice';
-import SubscribersInPlan from '../common/subscribers_in_plan';
 
 const isWPUsersSegment = (segment) => segment.type === 'wp_users';
 const isWooCommerceCustomersSegment = (segment) => segment.type === 'woocommerce_users';
@@ -295,23 +294,6 @@ class SegmentList extends React.Component {
   render() {
     return (
       <div className="mailpoet-segments-listing">
-        <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')}
-          {' '}
-          <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
-          <Link className="page-title-action" to="/new-segment" data-automation-id="new-segment">{MailPoet.I18n.t('newSegment')}</Link>
-        </h1>
-
-        <SubscribersInPlan
-          subscribersInPlan={window.mailpoet_subscribers_in_plan_count}
-          subscribersInPlanLimit={window.mailpoet_subscribers_limit}
-          mailpoetSubscribers={window.mailpoet_premium_subscribers_count}
-          mailpoetSubscribersLimit={window.mailpoet_subscribers_limit}
-          hasPremiumSupport={window.mailpoet_has_premium_support}
-          wpUsersCount={window.mailpoet_wp_users_count}
-          mssActive={window.mailpoet_mss_active}
-        />
-
         <SubscribersLimitNotice />
         <InvalidMssKeyNotice
           mssKeyInvalid={window.mailpoet_mss_key_invalid}
