@@ -113,6 +113,12 @@ h1.title.mailpoet-newsletter-listing-heading {
   }
 }
 
+.mailpoet-listing-status-column {
+  .mailpoet-button {
+    margin-top: $grid-gap-half;
+  }
+}
+
 .mailpoet-listing-status {
   display: flex;
   height: 24px;
