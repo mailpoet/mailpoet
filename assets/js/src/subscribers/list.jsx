@@ -14,6 +14,7 @@ import Selection from 'form/fields/selection.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import SubscribersInPlan from '../common/subscribers_in_plan';
+import SubscribersHeading from './heading';
 
 const columns = [
   {
@@ -393,35 +394,7 @@ const SubscriberList = ({ match }) => {
 
   return (
     <div>
-      <h1 className="title">
-        {MailPoet.I18n.t('pageTitle')}
-        {' '}
-        <Link
-          className="page-title-action"
-          to={{
-            pathname: '/new',
-            state: {
-              backUrl: location?.pathname,
-            },
-          }}
-        >
-          {MailPoet.I18n.t('new')}
-        </Link>
-        <a
-          className="page-title-action"
-          href="?page=mailpoet-import"
-          data-automation-id="import-subscribers-button"
-        >
-          {MailPoet.I18n.t('import')}
-        </a>
-        <a
-          id="mailpoet_export_button"
-          className="page-title-action"
-          href="?page=mailpoet-export"
-        >
-          {MailPoet.I18n.t('export')}
-        </a>
-      </h1>
+      <SubscribersHeading />
 
       <SubscribersInPlan
         subscribersInPlan={window.mailpoet_subscribers_in_plan_count}

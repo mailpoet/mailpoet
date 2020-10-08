@@ -63,12 +63,12 @@ p.sender_email_address_warning:first-child {
   margin-bottom: $grid-gap;
 }
 
-.mailpoet_subscribers_in_plan {
+.mailpoet-subscribers-in-plan {
   font-size: 18px;
-  margin-bottom: 1em;
-  margin-top: 1em;
+  margin-bottom: 20px;
+  margin-top: -20px;
 
-  .mailpoet_subscribers_in_plan_spacer {
+  .mailpoet-subscribers-in-plan-spacer {
     display: inline-block;
     width: 20px;
   }
@@ -77,5 +77,9 @@ p.sender_email_address_warning:first-child {
     position: relative;
     top: -1px;
     vertical-align: middle;
+  }
+
+  @include respond-to(small-screen) {
+    margin-top: 0;
   }
 }

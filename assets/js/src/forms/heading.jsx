@@ -16,7 +16,6 @@ const FormsHeading = ({ history }) => {
     <>
       <TopBarWithBeamer onLogoClick={() => history.push('/')}>
         <Link
-          id="mailpoet-new-email"
           className="mailpoet-button"
           to="/new"
           onClick={goToSelectTemplate}

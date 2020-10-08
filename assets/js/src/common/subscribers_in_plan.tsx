@@ -44,7 +44,7 @@ const SubscribersInPlan = ({
       .replace('%$1d', wpUsersCount.toLocaleString());
   }
   return (
-    <div className="mailpoet_subscribers_in_plan">
+    <div className="mailpoet-subscribers-in-plan">
       {mssActive && subscribersInPlanLimit && (
         <>
           {ReactStringReplace(MailPoet.I18n.t('subscribersInPlan'), '%s', () => subscribersInPlanCount)}
@@ -53,7 +53,7 @@ const SubscribersInPlan = ({
             tooltip={MailPoet.I18n.t('subscribersInPlanTooltip')}
             place="right"
           />
-          <span className="mailpoet_subscribers_in_plan_spacer">{' '}</span>
+          <span className="mailpoet-subscribers-in-plan-spacer">{' '}</span>
         </>
       )}
       {ReactStringReplace(MailPoet.I18n.t('mailpoetSubscribers'), '%s', () => mailpoetSubscribersCount)}
